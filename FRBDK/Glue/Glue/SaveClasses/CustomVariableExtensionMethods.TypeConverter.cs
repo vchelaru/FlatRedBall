@@ -73,8 +73,25 @@ namespace FlatRedBall.Glue.SaveClasses
                         throw new NullReferenceException("The ProjectValues property in FAcadeContainer.Self.ProjectValues must be set before trying to get the CSV type converter for the variable " + customVariable.ToString());
                     }
 
-                    ReferencedFileSave rfs = ObjectFinder.Self.GetAllReferencedFiles().FirstOrDefault(item =>
+                    var rfsesUsingType = ObjectFinder.Self.GetAllReferencedFiles().Where(item =>
                         item.IsCsvOrTreatedAsCsv && item.GetTypeForCsvFile() == customVariable.Type);
+
+
+                    // May 3, 2020
+                    // This currently
+                    // uses only one RFS
+                    // but maybe we want to 
+                    // support setting the variable
+                    // from a collection of RFS's? If
+                    // so, then the variable will not only
+                    // need to contain the CSV name, but the 
+                    // fully-qualified CSV name
+
+                    var rfs = 
+                        // prioritize this element...
+                        rfsesUsingType.FirstOrDefault(item => containingElement.ReferencedFiles.Contains(item)) ??
+                        // ... and if none found, fall back to any
+                        rfsesUsingType.FirstOrDefault();
 
                     AvailableSpreadsheetValueTypeConverter converter = null;
                     if (rfs != null)
@@ -84,7 +101,6 @@ namespace FlatRedBall.Glue.SaveClasses
                     }
                     else
                     {
-
                         converter = new AvailableSpreadsheetValueTypeConverter(
                             FacadeContainer.Self.ProjectValues.ContentDirectory + customVariable.Type, containingElement);
                     }
