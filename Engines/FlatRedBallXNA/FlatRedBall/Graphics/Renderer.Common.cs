@@ -416,7 +416,7 @@ namespace FlatRedBall.Graphics
 
                 #region Sprites
 
-                else if (nextSpriteSortValue <= nextTextSortValue && nextSpriteSortValue <= nextBatchSortValue)
+                else if (nextSpriteSortValue <= nextTextSortValue && nextSpriteSortValue <= nextBatchSortValue && spriteIndex < mVisibleSprites.Count)
                 {
                     if (section != null)
                     {
