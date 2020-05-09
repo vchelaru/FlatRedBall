@@ -46,7 +46,7 @@ namespace FlatRedBall.AI.Pathfinding
         Color mLinkColor = Color.White;
         Color mNodeColor = Color.LimeGreen;
 
-        protected float mLinkPerpendicularOffset = .1f;
+        protected float mLinkPerpendicularOffset = 2f;
 
         protected float mShortestPath;
 
@@ -56,6 +56,11 @@ namespace FlatRedBall.AI.Pathfinding
 
         #region Properties
 
+        public float LinkPerpendicularOffset
+        {
+            get => mLinkPerpendicularOffset;
+            set => mLinkPerpendicularOffset = value;
+        }
 
         public Layer LayerToDrawOn
         {
@@ -969,8 +974,6 @@ namespace FlatRedBall.AI.Pathfinding
              
                     foreach (Link link in mNodes[i].mLinks)
                     {
-                        #region If this line hasn't been created or updated during this method yet, update it
-                        //if (nodesAlreadyLinkedTo.Contains(link.NodeLinkingTo) == false)
                         {
                             // haven't drawn links to this node yet so draw it
 
@@ -983,11 +986,6 @@ namespace FlatRedBall.AI.Pathfinding
 
                                 const bool makeAutomaticallyUpdated = false;
                                 ShapeManager.AddToLayer(line, LayerToDrawOn, makeAutomaticallyUpdated);
-
-                                //line.Visible = true;
-
-
-
                             }
                             #endregion
 
@@ -1016,11 +1014,12 @@ namespace FlatRedBall.AI.Pathfinding
                             //lineModifying.RelativePoint2.X = link.NodeLinkingTo.X - lineModifying.X;
                             //lineModifying.RelativePoint2.Y = link.NodeLinkingTo.Y - lineModifying.Y;
 
-                            UpdateLinkColor(lineModifying, link.Cost);  
+                            UpdateLinkColor(lineModifying, link.Cost);
+
+                            AdjustLinkRepresentation(mNodes[i], link, lineModifying);
                             #endregion
 
                         }
-                        #endregion
 
                     }
                     //nodesAlreadyLinkedTo.Add(mNodes[i]);
@@ -1034,6 +1033,11 @@ namespace FlatRedBall.AI.Pathfinding
                     ShapeManager.Remove(mLinkVisibleRepresentation[mLinkVisibleRepresentation.Count - 1]);
                 }
             }
+        }
+
+        protected virtual void AdjustLinkRepresentation(PositionedNode sourceNode, Link link, Line line)
+        {
+
         }
 
         #endregion

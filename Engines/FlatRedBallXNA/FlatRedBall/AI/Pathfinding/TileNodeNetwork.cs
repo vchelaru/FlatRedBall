@@ -56,6 +56,10 @@ namespace FlatRedBall.AI.Pathfinding
             set;
         }
 
+        public float GridSpacing => mGridSpacing;
+
+        public float NumberOfXTiles => mNumberOfXTiles;
+        public float NumberOfYTiles => mNumberOfYTiles;
 
         #endregion
 
@@ -202,7 +206,10 @@ namespace FlatRedBall.AI.Pathfinding
             int yIndex;
 
             WorldToIndex(nodeToAdd.X, nodeToAdd.Y, out xIndex, out yIndex);
-
+            if(xIndex == 2 && yIndex == 0)
+            {
+                int m = 3;
+            }
             if(mTiledNodes[xIndex][yIndex] != null)
             {
                 throw new InvalidOperationException($"There is already a node at index ({xIndex}, {yIndex})");
@@ -529,11 +536,11 @@ namespace FlatRedBall.AI.Pathfinding
             OccupyTile(xIndex, yIndex, occupier);
         }
 
-        public object GetOccupier(float x, float y)
+        public object GetOccupier(float worldX, float worldY)
         {
             object occupier = null;
             
-            IsTileOccupiedWorld(x, y, out occupier);
+            IsTileOccupiedWorld(worldX, worldY, out occupier);
 
             return occupier;
         }
@@ -569,11 +576,13 @@ namespace FlatRedBall.AI.Pathfinding
             xIndex = MathFunctions.RoundToInt((xWorld - mXSeed) / mGridSpacing);
             yIndex = MathFunctions.RoundToInt((yWorld - mYSeed) / mGridSpacing);
 
-            xIndex = System.Math.Max(0, xIndex);
-            xIndex = System.Math.Min(xIndex, mNumberOfXTiles - 1);
+            // Seems like this code checks the indexes and clamps them inward, but then down below we do null checks
+            // I think we should make this return null if out of bounds
+            //xIndex = System.Math.Max(0, xIndex);
+            //xIndex = System.Math.Min(xIndex, mNumberOfXTiles - 1);
 
-            yIndex = System.Math.Max(0, yIndex);
-            yIndex = System.Math.Min(yIndex, mNumberOfYTiles - 1);
+            //yIndex = System.Math.Max(0, yIndex);
+            //yIndex = System.Math.Min(yIndex, mNumberOfYTiles - 1);
             
             if (xIndex < 0 || xIndex >= mNumberOfXTiles || yIndex < 0 || yIndex >= mNumberOfYTiles)
             {

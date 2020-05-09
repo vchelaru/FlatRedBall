@@ -14,7 +14,14 @@ namespace FlatRedBall.TileCollisions
 
         ShapeCollection mShapes;
         Axis mSortAxis = Axis.X;
+        /// <summary>
+        /// The leftmost edge of the map. This will correspond with the left edge of an AxisAlignedRectangle.
+        /// </summary>
         public float LeftSeedX = 0;
+
+        /// <summary>
+        /// The bottommost edge of the map. This will correspond with the bottom edge of an AxisAlignedRectangle.
+        /// </summary>
         public float BottomSeedY = 0;
         float mGridSize;
         bool mVisible = true;
@@ -769,6 +776,9 @@ namespace FlatRedBall.TileCollisions
         public static void AddCollisionFrom(this TileShapeCollection tileShapeCollection,
             MapDrawableBatch layer, LayeredTileMap layeredTileMap, Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate)
         {
+            tileShapeCollection.LeftSeedX = layeredTileMap.X;
+            tileShapeCollection.BottomSeedY = layeredTileMap.Y - layeredTileMap.Height;
+
             var properties = layeredTileMap.TileProperties;
 
             foreach (var kvp in properties)
@@ -807,6 +817,9 @@ namespace FlatRedBall.TileCollisions
         public static void AddCollisionFrom(this TileShapeCollection tileShapeCollection, LayeredTileMap layeredTileMap,
             Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate)
         {
+            tileShapeCollection.LeftSeedX = layeredTileMap.X;
+            tileShapeCollection.BottomSeedY = layeredTileMap.Y - layeredTileMap.Height;
+
             var properties = layeredTileMap.TileProperties;
 
             foreach (var kvp in properties)
@@ -853,6 +866,9 @@ namespace FlatRedBall.TileCollisions
             float dimensionHalf = dimension / 2.0f;
             tileShapeCollection.GridSize = dimension;
 
+            tileShapeCollection.LeftSeedX = layeredTileMap.X;
+            tileShapeCollection.BottomSeedY = layeredTileMap.Y - layeredTileMap.Height;
+
             Dictionary<int, List<int>> rectangleIndexes = new Dictionary<int, List<int>>();
 
             foreach (var layer in layeredTileMap.MapLayers)
@@ -870,6 +886,9 @@ namespace FlatRedBall.TileCollisions
             float dimension = layeredTileMap.WidthPerTile.Value;
             float dimensionHalf = dimension / 2.0f;
             tileShapeCollection.GridSize = dimension;
+
+            tileShapeCollection.LeftSeedX = layeredTileMap.X;
+            tileShapeCollection.BottomSeedY = layeredTileMap.Y - layeredTileMap.Height;
 
             Dictionary<int, List<int>> rectangleIndexes = new Dictionary<int, List<int>>();
 

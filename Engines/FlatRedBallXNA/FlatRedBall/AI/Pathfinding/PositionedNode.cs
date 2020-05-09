@@ -33,7 +33,6 @@ namespace FlatRedBall.AI.Pathfinding
 
         // made internal for speed boosts
         protected internal List<Link> mLinks = new List<Link>();
-        ReadOnlyCollection<Link> mLinksReadOnly;
 
         public int PropertyField;
 
@@ -150,10 +149,13 @@ namespace FlatRedBall.AI.Pathfinding
         /// This is a list of Links which reference the PositionedNodes that this links to.
         /// Links are one-way and PositionedNodes that this links to do not necessarily contain
         /// Links back to this.
+        /// 
+        /// This list is provided for advanced scenarios, such as when when adding a subclassed Link. Otherwise
+        /// use functions like LinkTo and LinkToOneWay
         /// </remarks>
-        public ReadOnlyCollection<Link> Links
+        public List<Link> Links
         {
-            get { return mLinksReadOnly; }
+            get { return mLinks; }
         }
 
         /// <summary>
@@ -175,7 +177,7 @@ namespace FlatRedBall.AI.Pathfinding
         #endregion
         public PositionedNode()
         {
-            mLinksReadOnly = new ReadOnlyCollection<Link>(mLinks);
+
         }
 
         #region XML Docs
@@ -212,7 +214,6 @@ namespace FlatRedBall.AI.Pathfinding
             PositionedNode newNode = (PositionedNode)this.MemberwiseClone();
 
             newNode.mLinks = new List<Link>();
-            newNode.mLinksReadOnly = new ReadOnlyCollection<Link>(newNode.mLinks);
             newNode.mParentNode = null;
             newNode.mCostToGetHere = 0;
 

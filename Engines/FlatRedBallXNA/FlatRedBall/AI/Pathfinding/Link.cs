@@ -6,7 +6,7 @@ namespace FlatRedBall.AI.Pathfinding
 {
     #region XML Docs
     /// <summary>
-    /// Represents a one-way const-including path to a PositionedNode.
+    /// Represents a one-way cost-including path to a PositionedNode.
     /// </summary>
     #endregion
     public class Link : IEquatable<Link>
