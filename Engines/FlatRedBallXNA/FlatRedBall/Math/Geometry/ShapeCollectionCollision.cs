@@ -531,15 +531,22 @@ namespace FlatRedBall.Math.Geometry
             #endregion
             #region Get the boundStartPosition
 
-            float boundStartPosition = 0;
+            float lineStartPosition = 0;
+			float lineHalfWidthOrHeight = 0;
 
             switch (axisToUse)
             {
                 case Axis.X:
-					boundStartPosition = shapeToCollideAgainstThis.X;
+					var left = System.Math.Min(shapeToCollideAgainstThis.AbsolutePoint1.X, shapeToCollideAgainstThis.AbsolutePoint2.X);
+					var right = System.Math.Max(shapeToCollideAgainstThis.AbsolutePoint1.X, shapeToCollideAgainstThis.AbsolutePoint2.X);
+					lineHalfWidthOrHeight = (float)(right - left) / 2.0f;
+					lineStartPosition = (float)(left + right) / 2.0f;
                     break;
                 case Axis.Y:
-					boundStartPosition = shapeToCollideAgainstThis.Y;
+					var bottom = System.Math.Min(shapeToCollideAgainstThis.AbsolutePoint1.Y, shapeToCollideAgainstThis.AbsolutePoint2.Y);
+					var top = System.Math.Max(shapeToCollideAgainstThis.AbsolutePoint1.Y, shapeToCollideAgainstThis.AbsolutePoint2.Y);
+					lineHalfWidthOrHeight = (float)(top - bottom) / 2.0f;
+					lineStartPosition = (float)((top + bottom) / 2.0f);
                     break;
                 case Axis.Z:
                     throw new ArgumentException();
@@ -554,8 +561,8 @@ namespace FlatRedBall.Math.Geometry
 			    axisToUse, 
 			    out startIndex, 
 			    out endIndex, 
-			    boundStartPosition, 
-			    shapeToCollideAgainstThis.BoundingRadius,
+			    lineStartPosition,
+				lineHalfWidthOrHeight,
 			    // SET THIS:
 			    thisShapeCollection.mMaxAxisAlignedRectanglesRadius, 
 			    thisShapeCollection.mAxisAlignedRectangles
@@ -580,8 +587,8 @@ namespace FlatRedBall.Math.Geometry
 			    axisToUse, 
 			    out startIndex, 
 			    out endIndex, 
-			    boundStartPosition, 
-			    shapeToCollideAgainstThis.BoundingRadius,
+			    lineStartPosition,
+				lineHalfWidthOrHeight,
 			    // SET THIS:
 			    thisShapeCollection.mMaxCirclesRadius, 
 			    thisShapeCollection.mCircles
@@ -606,8 +613,8 @@ namespace FlatRedBall.Math.Geometry
 			    axisToUse, 
 			    out startIndex, 
 			    out endIndex, 
-			    boundStartPosition, 
-			    shapeToCollideAgainstThis.BoundingRadius,
+			    lineStartPosition,
+				lineHalfWidthOrHeight,
 			    // SET THIS:
 			    thisShapeCollection.mMaxPolygonsRadius, 
 			    thisShapeCollection.mPolygons
@@ -632,8 +639,8 @@ namespace FlatRedBall.Math.Geometry
 			    axisToUse, 
 			    out startIndex, 
 			    out endIndex, 
-			    boundStartPosition, 
-			    shapeToCollideAgainstThis.BoundingRadius,
+			    lineStartPosition,
+				lineHalfWidthOrHeight,
 			    // SET THIS:
 			    thisShapeCollection.mMaxLinesRadius, 
 			    thisShapeCollection.mLines
@@ -658,8 +665,8 @@ namespace FlatRedBall.Math.Geometry
 			    axisToUse, 
 			    out startIndex, 
 			    out endIndex, 
-			    boundStartPosition, 
-			    shapeToCollideAgainstThis.BoundingRadius,
+			    lineStartPosition,
+				lineHalfWidthOrHeight,
 			    // SET THIS:
 			    thisShapeCollection.mMaxCapsule2DsRadius, 
 			    thisShapeCollection.mCapsule2Ds
