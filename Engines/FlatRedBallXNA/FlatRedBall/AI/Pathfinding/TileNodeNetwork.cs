@@ -206,10 +206,7 @@ namespace FlatRedBall.AI.Pathfinding
             int yIndex;
 
             WorldToIndex(nodeToAdd.X, nodeToAdd.Y, out xIndex, out yIndex);
-            if(xIndex == 2 && yIndex == 0)
-            {
-                int m = 3;
-            }
+
             if(mTiledNodes[xIndex][yIndex] != null)
             {
                 throw new InvalidOperationException($"There is already a node at index ({xIndex}, {yIndex})");
