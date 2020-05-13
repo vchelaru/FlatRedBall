@@ -531,7 +531,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             if (mValuesJumpedWith != null && 
                 mCanContinueToApplyJumpToHold &&
                 secondsSincePush < mValuesJumpedWith.JumpApplyLength &&
-				(mValuesJumpedWith.JumpApplyByButtonHold == false || JumpInput.IsDown)
+				(mValuesJumpedWith.JumpApplyByButtonHold == true && JumpInput.IsDown)
                 )
             {
                 this.YVelocity = mValuesJumpedWith.JumpVelocity;

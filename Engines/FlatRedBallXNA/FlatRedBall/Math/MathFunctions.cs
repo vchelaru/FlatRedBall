@@ -3,18 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 
 using FlatRedBall.Math.Geometry;
-using FlatRedBall.Utilities;
 using FlatRedBall.Graphics;
 
-#if !SILVERLIGHT
-using FlatRedBall.Graphics.Animation;
-#endif
-
-#if FRB_MDX
-using Microsoft.DirectX;
-using Rectangle = System.Drawing.Rectangle;
-#else//if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
-//using Microsoft.Xna.Framework;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 using Ray = Microsoft.Xna.Framework.Ray;
@@ -23,11 +13,8 @@ using Quaternion = Microsoft.Xna.Framework.Quaternion;
 using MathHelper = Microsoft.Xna.Framework.MathHelper;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
-#if !SILVERLIGHT
 using Plane = Microsoft.Xna.Framework.Plane;
-
-#endif
-#endif
+using FlatRedBall.Graphics.Animation;
 
 namespace FlatRedBall.Math
 {
@@ -170,7 +157,7 @@ namespace FlatRedBall.Math
         }
 
         static int frameToFrameInteger;
-#if !SILVERLIGHT
+
         #region XML Docs
         /// <summary>
         /// Determines the shortest absolute difference between two frames.
@@ -196,7 +183,6 @@ namespace FlatRedBall.Math
             return frameToFrameInteger;
 
         }
-#endif
 
         public static float GetAspectRatioForSameSizeAtResolution(float resolution)
         {
