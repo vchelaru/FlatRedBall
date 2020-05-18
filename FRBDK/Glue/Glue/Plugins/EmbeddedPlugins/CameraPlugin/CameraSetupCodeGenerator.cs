@@ -219,6 +219,14 @@ namespace FlatRedBall.Glue.CodeGeneration
                     if(global::RenderingLibrary.SystemManagers.Default != null)
                     {
                         global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = zoom;
+
+                        foreach(var layer in global::RenderingLibrary.SystemManagers.Default.Renderer.Layers)
+                        {
+                            if(layer.LayerCameraSettings != null)
+                            {
+                                layer.LayerCameraSettings.Zoom = zoom;
+                            }
+                        }
                     }
                     
 ")
@@ -230,6 +238,13 @@ namespace FlatRedBall.Glue.CodeGeneration
                     if(global::RenderingLibrary.SystemManagers.Default != null)
                     {
                         global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = zoom;
+                        foreach(var layer in global::RenderingLibrary.SystemManagers.Default.Renderer.Layers)
+                        {
+                            if(layer.LayerCameraSettings != null)
+                            {
+                                layer.LayerCameraSettings.Zoom = zoom;
+                            }
+                        }
                     }
                     ");
 
