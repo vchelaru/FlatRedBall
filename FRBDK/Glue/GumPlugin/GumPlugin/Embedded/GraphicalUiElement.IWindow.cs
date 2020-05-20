@@ -544,8 +544,8 @@ namespace Gum.Wireframe
 
             if (((IWindow)this).AbsoluteVisible && shouldConsider)
             {
-                int screenX = cursor.ScreenX;
-                int screenY = cursor.ScreenY;
+                int cursorScreenX = cursor.ScreenX;
+                int cursorScreenY = cursor.ScreenY;
                 float worldX;
                 float worldY;
 
@@ -561,20 +561,22 @@ namespace Gum.Wireframe
                 if(managers != null)
                 {
                     // Adjust by viewport values:
-                    screenX -= managers.Renderer.GraphicsDevice.Viewport.X;
-                    screenY -= managers.Renderer.GraphicsDevice.Viewport.Y;
+                    cursorScreenX -= managers.Renderer.GraphicsDevice.Viewport.X;
+                    cursorScreenY -= managers.Renderer.GraphicsDevice.Viewport.Y;
+
+                    var camera = managers.Renderer.Camera;
 
                     if(this.mLayer != null)
                     {
                         mLayer.ScreenToWorld(
-                            managers.Renderer.Camera,
-                            screenX, screenY,
+                            camera,
+                            cursorScreenX, cursorScreenY,
                             out worldX, out worldY);
                     }
                     else
                     {
-                        managers.Renderer.Camera.ScreenToWorld(
-                            screenX, screenY,
+                        camera.ScreenToWorld(
+                            cursorScreenX, cursorScreenY,
                             out worldX, out worldY);
                     }
 
