@@ -85,6 +85,9 @@ namespace OfficialPlugins.CollisionPlugin
             var isCollisionActive = namedObject.Properties.GetValue<bool>(
                 nameof(CollisionRelationshipViewModel.IsCollisionActive));
 
+            var collisionLimit = (FlatRedBall.Math.Collision.CollisionLimit) namedObject.Properties.GetValue<int>(
+                nameof(CollisionRelationshipViewModel.CollisionLimit));
+
             var instanceName = namedObject.InstanceName;
 
             bool isFirstList;
@@ -156,6 +159,11 @@ namespace OfficialPlugins.CollisionPlugin
                 collisionType != CollisionType.PlatformerSolidCollision)
             {
                 codeBlock.Line($"{instanceName}.SetSecondSubCollision(item => item.{secondSubCollision});");
+            }
+
+            if(isFirstList && isSecondList)
+            {
+                codeBlock.Line($"{instanceName}.CollisionLimit = FlatRedBall.Math.Collision.CollisionLimit.{collisionLimit};");
             }
 
             codeBlock.Line($"{instanceName}.Name = \"{instanceName}\";");

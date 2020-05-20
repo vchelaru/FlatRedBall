@@ -141,6 +141,30 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             return false;
         }
 
+        public static void RefreshViewModelTo(CollisionRelationshipViewModel viewModel, NamedObjectSave selectedNos)
+        {
+            viewModel.GlueObject = selectedNos;
+
+            viewModel.UpdateFromGlueObject();
+
+            viewModel.FirstIndividualType = AssetTypeInfoManager.GetFirstGenericType(selectedNos, out bool isFirstList);
+            viewModel.SecondIndividualType = AssetTypeInfoManager.GetSecondGenericType(selectedNos, out bool isSecondList);
+
+            viewModel.IsFirstList = isFirstList;
+            viewModel.IsSecondList = isSecondList;
+
+            CollisionRelationshipViewModelController
+                .RefreshAvailableCollisionObjects(GlueState.Self.CurrentElement, viewModel);
+
+            CollisionRelationshipViewModelController
+                .RefreshSubcollisionObjects(GlueState.Self.CurrentElement, viewModel);
+
+
+
+            CollisionRelationshipViewModelController
+                .RefreshIfIsPlatformer(GlueState.Self.CurrentElement, viewModel);
+        }
+
         public static void RefreshSubcollisionObjects(IElement element, CollisionRelationshipViewModel viewModel)
         {
             var firstNos = element.GetNamedObject(viewModel.FirstCollisionName);

@@ -229,29 +229,12 @@ namespace OfficialPlugins.CollisionPlugin
                 relationshipControl.DataContext = null;
             }
 
-            relationshipViewModel.GlueObject = selectedNos;
-
-            relationshipViewModel.UpdateFromGlueObject();
-
-            CollisionRelationshipViewModelController
-                .RefreshAvailableCollisionObjects(GlueState.Self.CurrentElement, relationshipViewModel);
-
-            CollisionRelationshipViewModelController
-                .RefreshSubcollisionObjects(GlueState.Self.CurrentElement, relationshipViewModel);
-
-            
-
-            CollisionRelationshipViewModelController
-                .RefreshIfIsPlatformer(GlueState.Self.CurrentElement, relationshipViewModel);
+            CollisionRelationshipViewModelController.RefreshViewModelTo(relationshipViewModel, selectedNos);
 
             if (relationshipControl != null)
             {
                 relationshipControl.DataContext = relationshipViewModel;
             }
-
-
-
-
         }
 
         private void RefreshCollidableViewModelTo(IElement element, NamedObjectSave selectedNos)

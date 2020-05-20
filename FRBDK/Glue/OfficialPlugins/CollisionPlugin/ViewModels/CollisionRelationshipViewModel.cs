@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Math.Collision;
 using OfficialPlugins.CollisionPlugin.Managers;
 using System;
 using System.Collections.Generic;
@@ -44,6 +45,30 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         {
             get { return Get<string>(); }
             set { SetAndPersist(value); }
+        }
+
+        public string FirstIndividualType
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string SecondIndividualType
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public bool IsFirstList
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsSecondList
+        {
+            get => Get<bool>();
+            set => Set(value);
         }
 
         public ObservableCollection<string> FirstCollisionItemSource
@@ -175,6 +200,77 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
                 }
             }
         }
+
+        [SyncedProperty]
+        public CollisionLimit CollisionLimit
+        {
+            get => (CollisionLimit)Get<int>();
+            set => SetAndPersist((int)value);
+        }
+
+        [DependsOn(nameof(CollisionLimit))]
+        public bool IsAllCollisionLimitChecked
+        {
+            get => CollisionLimit == CollisionLimit.All;
+            set
+            {
+                if(value)
+                {
+                    CollisionLimit = CollisionLimit.All;
+                }
+            }
+        }
+
+        [DependsOn(nameof(CollisionLimit))]
+        public bool IsFirstCollisionLimitChecked
+        {
+            get => CollisionLimit == CollisionLimit.First;
+            set
+            {
+                if(value)
+                {
+                    CollisionLimit = CollisionLimit.First;
+                }
+            }
+        }
+
+        [DependsOn(nameof(CollisionLimit))]
+        [DependsOn(nameof(FirstIndividualType))]
+        [DependsOn(nameof(SecondIndividualType))]
+        public string CollisionLimitExplanationText
+        {
+            get
+            {
+                var firstType = FirstIndividualType;
+                if(firstType?.Contains(".") == true)
+                {
+                    var lastDot = firstType.LastIndexOf('.');
+                    firstType = firstType.Substring(lastDot + 1);
+                }
+                var secondType = SecondIndividualType;
+                if(secondType?.Contains(".") == true)
+                {
+                    var lastDot = secondType.LastIndexOf('.');
+                    secondType = secondType.Substring(lastDot + 1);
+                }
+
+                switch (CollisionLimit)
+                {
+                    case CollisionLimit.All:
+                        return $"Each {secondType} will attempt to collide against each {firstType} each frame";
+                    case CollisionLimit.First:
+                        return $"Each {secondType} will only collide at most with one {firstType} each frame";
+
+                }
+                return "";
+            }
+        }
+
+        [DependsOn(nameof(IsFirstList))]
+        [DependsOn(nameof(IsSecondList))]
+        public Visibility CollisionLimitUiVisibility => IsFirstList && IsSecondList
+            ? Visibility.Visible 
+            : Visibility.Collapsed;
 
         public bool IsFirstPlatformer
         {
