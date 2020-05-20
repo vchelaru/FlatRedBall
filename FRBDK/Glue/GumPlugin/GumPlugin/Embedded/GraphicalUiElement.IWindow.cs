@@ -542,7 +542,7 @@ namespace Gum.Wireframe
                 cursor.PrimaryDown ||
                 cursor.PrimaryClick;
 
-            if (((IWindow)this).AbsoluteVisible)
+            if (((IWindow)this).AbsoluteVisible && shouldConsider)
             {
                 int screenX = cursor.ScreenX;
                 int screenY = cursor.ScreenY;
@@ -564,9 +564,19 @@ namespace Gum.Wireframe
                     screenX -= managers.Renderer.GraphicsDevice.Viewport.X;
                     screenY -= managers.Renderer.GraphicsDevice.Viewport.Y;
 
-                    managers.Renderer.Camera.ScreenToWorld(
-                        screenX, screenY,
-                        out worldX, out worldY);
+                    if(this.mLayer != null)
+                    {
+                        mLayer.ScreenToWorld(
+                            managers.Renderer.Camera,
+                            screenX, screenY,
+                            out worldX, out worldY);
+                    }
+                    else
+                    {
+                        managers.Renderer.Camera.ScreenToWorld(
+                            screenX, screenY,
+                            out worldX, out worldY);
+                    }
 
 
                     // for now we'll just rely on the bounds of the GUE itself
