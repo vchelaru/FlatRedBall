@@ -59,6 +59,8 @@ namespace OfficialPlugins.VariableDisplay
                 instanceMember.CustomGetTypeEvent += (throwaway) => type;
                 string displayName = StringFunctions.InsertSpacesInCamelCaseString(name);
 
+                // Currently this only works on TextBox variables - eventually will expand
+                instanceMember.DetailText = variable.Summary;
                 
                 instanceMember.DisplayName = displayName;
                 instanceMember.UnmodifiedVariableName = name;
