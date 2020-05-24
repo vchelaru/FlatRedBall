@@ -770,7 +770,14 @@ namespace Gum.Wireframe
 
                     BindingContextChanged?.Invoke(this, null);
 
-                    UpdateChildrenInheritedBindingContext(this.Children);
+                    if(this.Children != null)
+                    {
+                        UpdateChildrenInheritedBindingContext(this.Children);
+                    }
+                    else
+                    {
+                        UpdateChildrenInheritedBindingContext(this.ContainedElements);
+                    }
                 }
 
             }
@@ -811,6 +818,11 @@ namespace Gum.Wireframe
                 vmPropsToUiProps.Remove(vmProperty);
             }
             vmPropsToUiProps.Add(vmProperty, uiProperty);
+
+            if(EffectiveBindingContext != null)
+            {
+                UpdateToVmProperty(vmProperty);
+            }
         }
 
         private bool UpdateToVmProperty(string vmPropertyName)
