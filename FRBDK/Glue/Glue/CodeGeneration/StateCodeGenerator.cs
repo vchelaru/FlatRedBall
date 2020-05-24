@@ -31,20 +31,19 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 List<StateSave> statesForThisCategory = GetSharedVariableStates(element);
 
-                const string enumName = "VariableState";
 
-                currentBlock = CreateClassForStateCategory(currentBlock, statesForThisCategory, enumName, element);
-                GenerateCurrentStateProperty(element, codeBlock, "VariableState", statesForThisCategory);
+                currentBlock = CreateClassForStateCategory(currentBlock, statesForThisCategory, null, element);
+                GenerateCurrentStateProperty(element, codeBlock, null, statesForThisCategory);
 
                 //Build State Categories
                 var stateCategories = GetAllStateCategoryNames(element, false);
 
-                foreach (var stateCategory in stateCategories)
+                foreach (var kvp in stateCategories)
                 {
-                    var states = GetAllStatesForCategory(element, stateCategory);
+                    var states = GetAllStatesForCategory(element, kvp.Key);
 
-                    CreateClassForStateCategory(currentBlock, states, stateCategory, element);
-                    GenerateCurrentStateProperty(element, codeBlock, stateCategory, states);
+                    CreateClassForStateCategory(currentBlock, states, kvp.Value, element);
+                    GenerateCurrentStateProperty(element, codeBlock, kvp.Value, states);
                 }
             }
 
@@ -75,29 +74,33 @@ namespace FlatRedBall.Glue.CodeGeneration
             return states;
         }
 
-        private static IEnumerable<string> GetAllStateCategoryNames(IElement element, bool includeInheritance)
+        private static Dictionary<string, StateSaveCategory> GetAllStateCategoryNames(IElement element, bool includeInheritance)
         {
-            var names = new Dictionary<string, string>();
+            var names = new Dictionary<string, StateSaveCategory>();
             if (element != null)
             {
                 if (!string.IsNullOrEmpty(element.BaseElement) && includeInheritance)
                 {
-                    foreach (var name in GetAllStateCategoryNames(ObjectFinder.Self.GetIElement(element.BaseElement), includeInheritance).Where(name => !names.ContainsKey(name)))
+                    var uncontained = GetAllStateCategoryNames(ObjectFinder.Self.GetIElement(element.BaseElement), includeInheritance).Where(name => !names.ContainsKey(name.Key));
+
+                    foreach (var kvp in uncontained)
                     {
-                        names.Add(name, name);
+                        names.Add(kvp.Key, kvp.Value);
                     }
                 }
 
                 foreach (var category in element.StateCategoryList.Where(category => !category.SharesVariablesWithOtherCategories && !names.ContainsKey(category.Name)))
                 {
-                    names.Add(category.Name, category.Name);
+                    names.Add(category.Name, category);
                 }
             }
-            return new List<string>(names.Keys);
+            return names;
         }
 
-        private static ICodeBlock CreateClassForStateCategory(ICodeBlock currentBlock, List<StateSave> statesForThisCategory, string categoryClassName, IElement element)
+        private static ICodeBlock CreateClassForStateCategory(ICodeBlock currentBlock, List<StateSave> statesForThisCategory, StateSaveCategory category, IElement element)
         {
+            string categoryClassName = category?.Name ?? "VariableState";
+
             if (statesForThisCategory.Count != 0)
             {
                 string prefix = "public";
@@ -113,24 +116,22 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 currentBlock.Line($"public string Name;");
 
-                foreach(var variable in element.CustomVariables)
-                {
-                    // todo - pass the category here and skip over excluded variables
-                    var isExcluded = false;
-                    if(!isExcluded)
-                    {
-                        string type = variable.Type;
+                var includedVariables = element.CustomVariables.Where(item => category.ExcludedVariables.Contains(item.Name) == false)
+                    .ToArray();
 
-                        if (variable.GetIsFile())
-                        {
-                            type = "string";
-                        }
-                        else
-                        {
-                            type = CustomVariableCodeGenerator.GetMemberTypeFor(variable, element);
-                        }
-                        currentBlock.Line($"public {type} {variable.Name};");
+                foreach (var variable in includedVariables)
+                {
+                    string type = variable.Type;
+
+                    if (variable.GetIsFile())
+                    {
+                        type = "string";
                     }
+                    else
+                    {
+                        type = CustomVariableCodeGenerator.GetMemberTypeFor(variable, element);
+                    }
+                    currentBlock.Line($"public {type} {variable.Name};");
                 }
 
 
@@ -144,19 +145,23 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     variableBlock.Line($"Name = \"{state.Name}\",");
 
-                    foreach(var instruction in state.InstructionSaves)
+                    foreach(var variable in includedVariables)
                     {
-                        if(instruction.Value != null)
+                        var instruction = state.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name);
+
+                        var valueToSet = state.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name)?.Value
+                            ?? variable.DefaultValue;
+                        if(valueToSet != null)
                         {
-                            var rightSide = GetRightSideAssignmentValueAsString(element, instruction);
-                            var matchingVariable = element.GetCustomVariableRecursively(instruction.Member);
+                            var rightSide = GetRightSideAssignmentValueAsString(element, variable.Name, valueToSet);
+                            var matchingVariable = element.GetCustomVariableRecursively(variable.Name);
                             if(matchingVariable?.GetIsFile() == true)
                             {
                                 // If it's a file we are only going to reference the file name here as to not preload the file
                                 rightSide = $"\"{rightSide}\"";
                             }
 
-                            variableBlock.Line($"{instruction.Member} = {rightSide},");
+                            variableBlock.Line($"{variable.Name} = {rightSide},");
                         }
                     }
                     variableBlock.End().Line(";");
@@ -179,10 +184,11 @@ namespace FlatRedBall.Glue.CodeGeneration
             return currentBlock;
         }
 
-        private static ICodeBlock GenerateCurrentStateProperty(IElement element, ICodeBlock codeBlock, string enumType, List<StateSave> states)
+        private static ICodeBlock GenerateCurrentStateProperty(IElement element, ICodeBlock codeBlock, StateSaveCategory category, List<StateSave> states)
         {
+            string enumType = category?.Name ?? "VariableState";
             // early out
-            if(states.Count == 0)
+            if (states.Count == 0)
             {
                 return codeBlock;
             }
@@ -243,12 +249,12 @@ namespace FlatRedBall.Glue.CodeGeneration
             bool isElse = false;
             foreach (StateSave stateSave in states)
             {
-                GenerateVariableAssignmentForState(element, setBlock, stateSave, enumType, isElse);
+                GenerateVariableAssignmentForState(element, setBlock, stateSave, category, isElse);
                 isElse = true;
             }
 
             if ((enumType == "VariableState" && DoesBaseHaveUncategorizedStates(element)) ||
-                (!string.IsNullOrEmpty(element.BaseElement) && GetAllStateCategoryNames(ObjectFinder.Self.GetIElement(element.BaseElement), true).Any(category => category == enumType)))
+                (!string.IsNullOrEmpty(element.BaseElement) && GetAllStateCategoryNames(ObjectFinder.Self.GetIElement(element.BaseElement), true).Any(category => category.Key == enumType)))
             {
                 setBlock.Else()
                     .Line("base.Current" + variableNameModifier + "State = base.Current" + variableNameModifier + "State;");
@@ -281,8 +287,10 @@ namespace FlatRedBall.Glue.CodeGeneration
             return toReturn;
         }
 
-        private static ICodeBlock GenerateVariableAssignmentForState(IElement element, ICodeBlock codeBlock, StateSave stateSave, string enumType, bool isElse)
+        private static ICodeBlock GenerateVariableAssignmentForState(IElement element, ICodeBlock codeBlock, StateSave stateSave, StateSaveCategory category, bool isElse)
         {
+            string enumType = category?.Name ?? "VariableState";
+
             string variableNameModifier = enumType;
             if (enumType == "VariableState")
             {
@@ -302,63 +310,81 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
             bool doesStateAssignAbsoluteValues = GetDoesStateAssignAbsoluteValues(stateSave, element);
 
-            foreach (InstructionSave instruction in stateSave.InstructionSaves)
+            foreach(var variable in element.CustomVariables)
             {
-                if (instruction.Value != null)
+                var shouldInclude = false;
+                if(category != null && category.ExcludedVariables.Contains(variable.Name) == false)
                 {
-                    // Get the valueAsString, which is the right-side of the equals sign
-                    string rightSideOfEquals = GetRightSideAssignmentValueAsString(element, instruction);
-                    
-                    if (!string.IsNullOrEmpty(rightSideOfEquals))
+                    shouldInclude = true;
+                }
+                else if(category == null)
+                {
+                    shouldInclude = stateSave.InstructionSaves.Any(item => item.Member == variable.Name);
+                }
+
+                if(shouldInclude)
+                {
+
+                    string member = variable.Name;
+                    var value = stateSave.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name)?.Value ?? variable.DefaultValue;
+
+                    if (value != null)
                     {
-                        CustomVariable customVariable = element.GetCustomVariableRecursively(instruction.Member);
-                        NamedObjectSave referencedNos = element.GetNamedObjectRecursively(customVariable.SourceObject);
+                        // Get the valueAsString, which is the right-side of the equals sign
+                        string rightSideOfEquals = GetRightSideAssignmentValueAsString(element, member, value);
 
-                        if (referencedNos != null)
+                        if (!string.IsNullOrEmpty(rightSideOfEquals))
                         {
-                            NamedObjectSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(curBlock, referencedNos);
-                        }
+                            CustomVariable customVariable = element.GetCustomVariableRecursively(member);
+                            NamedObjectSave referencedNos = element.GetNamedObjectRecursively(customVariable.SourceObject);
 
-                        string leftSideOfEquals = GetLeftSideOfEquals(element, customVariable, instruction, false);
-                        string leftSideOfEqualsWithRelative = GetLeftSideOfEquals(element, customVariable, instruction, true);
-
-
-
-
-                        if (leftSideOfEquals != leftSideOfEqualsWithRelative)
-                        {
-                            string objectWithParent = null;
-
-                            if (string.IsNullOrEmpty(customVariable.SourceObject))
+                            if (referencedNos != null)
                             {
-                                objectWithParent = "this";
+                                NamedObjectSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(curBlock, referencedNos);
+                            }
+
+                            string leftSideOfEquals = GetLeftSideOfEquals(element, customVariable, member, false);
+                            string leftSideOfEqualsWithRelative = GetLeftSideOfEquals(element, customVariable, member, true);
+
+
+
+
+                            if (leftSideOfEquals != leftSideOfEqualsWithRelative)
+                            {
+                                string objectWithParent = null;
+
+                                if (string.IsNullOrEmpty(customVariable.SourceObject))
+                                {
+                                    objectWithParent = "this";
+                                }
+                                else
+                                {
+                                    objectWithParent = customVariable.SourceObject;
+                                }
+
+                                curBlock
+                                    .If(objectWithParent + ".Parent == null")
+                                        .Line(leftSideOfEquals + " = " + rightSideOfEquals + ";")
+                                    .End()
+
+                                    .Else()
+                                        .Line(leftSideOfEqualsWithRelative + " = " + rightSideOfEquals + ";");
                             }
                             else
                             {
-                                objectWithParent = customVariable.SourceObject;
+                                curBlock.Line(leftSideOfEquals + " = " + rightSideOfEquals + ";");
                             }
 
-                            curBlock
-                                .If(objectWithParent + ".Parent == null")
-                                    .Line(leftSideOfEquals + " = " + rightSideOfEquals + ";")
-                                .End()
+                            if (referencedNos != null)
+                            {
+                                NamedObjectSaveCodeGenerator.AddEndIfIfNecessary(curBlock, referencedNos);
+                            }
 
-                                .Else()
-                                    .Line(leftSideOfEqualsWithRelative + " = " + rightSideOfEquals + ";");
                         }
-                        else
-                        {
-                            curBlock.Line(leftSideOfEquals + " = " + rightSideOfEquals + ";");
-                        }
-
-                        if (referencedNos != null)
-                        {
-                            NamedObjectSaveCodeGenerator.AddEndIfIfNecessary(curBlock, referencedNos);
-                        }
-
                     }
                 }
             }
+
 
             return codeBlock;
         }
@@ -579,13 +605,13 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
 
-        private static string GetLeftSideOfEquals(IElement element, CustomVariable customVariable, InstructionSave instruction, bool switchToRelative)
+        private static string GetLeftSideOfEquals(IElement element, CustomVariable customVariable, string member, bool switchToRelative)
         {
-            string leftSideOfEquals = instruction.Member;
+            string leftSideOfEquals = member;
 
             if (switchToRelative && customVariable != null)
             {
-                string possibleLeftSide = RelativeValueForInstruction(instruction, customVariable, element);
+                string possibleLeftSide = RelativeValueForInstruction(member, customVariable, element);
                 if (!string.IsNullOrEmpty(possibleLeftSide))
                 {
                     
@@ -609,14 +635,14 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 if (customVariable != null)
                 {
-                    returnValue |= !string.IsNullOrEmpty(RelativeValueForInstruction(instruction, customVariable, element));
+                    returnValue |= !string.IsNullOrEmpty(RelativeValueForInstruction(instruction.Member, customVariable, element));
                 }
             }
 
             return returnValue;
         }
 
-        private static string RelativeValueForInstruction(InstructionSave instruction, CustomVariable customVariable, IElement element)
+        private static string RelativeValueForInstruction(string memberName, CustomVariable customVariable, IElement element)
         {
             if (!string.IsNullOrEmpty(customVariable.SourceObject))
             {
@@ -631,7 +657,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 if (element is EntitySave)
                 {
-                    relativeMember = InstructionManager.GetRelativeForAbsolute(instruction.Member);
+                    relativeMember = InstructionManager.GetRelativeForAbsolute(memberName);
                 }
                 return relativeMember;
             }
@@ -640,7 +666,14 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public static string GetRightSideAssignmentValueAsString(IElement element, InstructionSave instruction)
         {
-            CustomVariable customVariable = element.GetCustomVariableRecursively(instruction.Member);
+            var value = instruction.Value;
+            var memberName = instruction.Member;
+            return GetRightSideAssignmentValueAsString(element, memberName, value);
+        }
+
+        private static string GetRightSideAssignmentValueAsString(IElement element, string memberName, object value)
+        {
+            CustomVariable customVariable = element.GetCustomVariableRecursively(memberName);
 
             IElement referencedElement = null;
 
@@ -664,7 +697,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             if (referencedElement == null)
             {
 
-                valueAsString = CodeParser.ParseObjectValue(instruction.Value);
+                valueAsString = CodeParser.ParseObjectValue(value);
 
                 if (isFile)
                 {
@@ -704,7 +737,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                             StateSaveCategory category = objectElement.GetStateCategoryRecursively(customVariable.Type);
 
-                            if(category != null && category.SharesVariablesWithOtherCategories == false)
+                            if (category != null && category.SharesVariablesWithOtherCategories == false)
                             {
                                 typeName = category.Name;
                             }
@@ -714,15 +747,15 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     valueAsString = CodeWriter.MakeLocalizedIfNecessary(
                         namedObject,
-                        instruction.Member,
-                        instruction.Value,
+                        memberName,
+                        value,
                         valueAsString,
                         customVariable);
                 }
             }
             else
             {
-                string enumValue = (string)instruction.Value;
+                string enumValue = (string)value;
 
                 if (!string.IsNullOrEmpty(enumValue) && enumValue != "<NONE>")
                 {

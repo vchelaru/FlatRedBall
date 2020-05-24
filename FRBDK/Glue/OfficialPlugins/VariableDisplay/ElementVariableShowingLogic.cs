@@ -22,7 +22,7 @@ namespace OfficialPlugins.VariableDisplay
             grid.Categories.Clear();
 
             List<MemberCategory> categories = new List<MemberCategory>();
-            var defaultCategory = new MemberCategory("Variables");
+            var defaultCategory = new MemberCategory("Variables");  
             defaultCategory.FontSize = 14;
             categories.Add(defaultCategory);
 

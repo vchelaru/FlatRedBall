@@ -405,7 +405,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     string variableToAssign = kvp.Key.Member;
 
 
-                    string leftSideOfEqualsWithRelative = GetLeftSideOfEquals(element, variable, kvp.Key, true);
+                    string leftSideOfEqualsWithRelative = GetLeftSideOfEquals(element, variable, kvp.Key.Member, true);
 
                     if (!string.IsNullOrEmpty(leftSideOfEqualsWithRelative) && leftSideOfEqualsWithRelative != kvp.Key.Member)
                     {
