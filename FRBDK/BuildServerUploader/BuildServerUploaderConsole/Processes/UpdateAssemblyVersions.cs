@@ -51,7 +51,7 @@ namespace BuildServerUploaderConsole.Processes
             //Results.WriteMessage("FlatSilverBall assembly version updated to " + VersionString);
 
             //ModifyAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"\Glue\Glue\Properties\AssemblyInfo.cs", VersionString);
-            ModifyCsprojAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"\Glue\Glue\GlueFormsCore.csproj", VersionString);
+            ModifyCsprojAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"Glue\Glue\GlueFormsCore.csproj", VersionString);
             ModifyAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"Glue\GlueSaveClasses\Properties\AssemblyInfo.cs", VersionString);
 
             Results.WriteMessage("Glue assembly versions updated to " + VersionString);
