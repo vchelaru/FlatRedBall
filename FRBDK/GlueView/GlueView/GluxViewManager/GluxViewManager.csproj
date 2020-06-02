@@ -228,10 +228,6 @@
       <Project>{9403b27a-6e3a-4083-8a42-0eb62b699246}</Project>
       <Name>GlueCommon</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Glue\GluePropertyGridClasses\GluePropertyGridClasses.csproj">
-      <Project>{852a7438-7afe-490e-a0c7-0a35355d6179}</Project>
-      <Name>GluePropertyGridClasses</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Glue\GlueSaveClasses\GlueSaveClasses.csproj">
       <Project>{545FF183-4D9D-4121-9A04-1D354B0B0DBA}</Project>
       <Name>GlueSaveClasses</Name>

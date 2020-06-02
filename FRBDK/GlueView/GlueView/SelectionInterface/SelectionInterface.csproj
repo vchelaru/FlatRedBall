@@ -80,10 +80,6 @@
       <Project>{26dd17aa-55ae-46ab-9394-a2319728869a}</Project>
       <Name>FlatRedBallStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GluxViewManager\GluxViewManager.csproj">
-      <Project>{6CFA6ADB-1FFD-4DD7-AEF8-090A2B86A620}</Project>
-      <Name>GluxViewManager</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
