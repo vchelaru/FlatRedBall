@@ -1,5 +1,4 @@
-﻿using FlatRedBall.IO.Remote;
-using Renci.SshNet;
+﻿using Renci.SshNet;
 using Renci.SshNet.Sftp;
 using System;
 using System.Collections.Generic;

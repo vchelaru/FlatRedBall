@@ -65,7 +65,8 @@ namespace BuildServerUploaderConsole
             {
                 //CreateUploadProcessSteps("DailyBuild");
                 //ProcessSteps.Add(new ZipTemplates(Results));
-                ProcessSteps.Add(new CopyBuiltEnginesToTemplateFolder(Results));
+                //ProcessSteps.Add(new CreateChangeVersionProcessSteps());
+                CreateChangeVersionProcessSteps();
 
 
                 //CreateCopyToInstallerSteps(true);

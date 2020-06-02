@@ -55,29 +55,13 @@ namespace BuildServerUploaderConsole.Processes
             }
         }
 
-        public static string EngineDirectory
-        {
-            get
-            {
-                return FileManager.MakeAbsolute("../../../../../../Engines/");
-            }
-        }
+        public static string FlatRedBallDirectory => FileManager.MakeAbsolute("../../../../../");
 
-        public static string TemplateDirectory
-        {
-            get
-            {
-                return FileManager.MakeAbsolute("../../../../../../Templates/");
-            }
-        }
+        public static string EngineDirectory => FlatRedBallDirectory + "Engines/";
 
-        public static string AddOnsDirectory
-        {
-            get
-            {
-                return FileManager.MakeAbsolute("../../../../../../Engines/FlatRedBallAddOns/FlatRedBallAddOns/");
-            }
-        }
+        public static string TemplateDirectory => FlatRedBallDirectory + "Templates/";
+
+        public static string AddOnsDirectory => EngineDirectory + "FlatRedBallAddOns/FlatRedBallAddOns/";
 
         public static string ReleaseDirectory
         {
@@ -87,13 +71,7 @@ namespace BuildServerUploaderConsole.Processes
             }
         }
 
-        public static string FrbdkDirectory
-        {
-            get
-            {
-                return FileManager.MakeAbsolute("../../../../../../FRBDK/");
-            }
-        }
+        public static string FrbdkDirectory => FlatRedBallDirectory + "FRBDK/";
 
         public static string GumRootDirectory
         {

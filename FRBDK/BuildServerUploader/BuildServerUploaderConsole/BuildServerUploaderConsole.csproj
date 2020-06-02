@@ -210,16 +210,16 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
-      <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
-      <Name>FlatRedBallXna4</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Libraries\Ionic.Zip.dll" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Libraries\Renci.SshNet.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallDesktopGL.csproj">
+      <Project>{10bda06c-7269-4cce-ae2a-d445f414520a}</Project>
+      <Name>FlatRedBallDesktopGL</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1104,8 +1104,14 @@ namespace FlatRedBall.IO
 #else
             // .net considers a path relative if it doesn't start with a separator
             // or windows drive identifier
-
-            return !Path.IsPathRooted(fileName);
+            try
+            {
+                return !Path.IsPathRooted(fileName);
+            }
+            catch(ArgumentException e)
+            {
+                throw new ArgumentException($"Argument exception on {fileName}", e);
+            }
 #endif
 		}
 

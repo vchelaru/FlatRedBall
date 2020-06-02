@@ -85,7 +85,7 @@ namespace BuildServerUploaderConsole.Processes
             assemblyInfoText = System.Text.RegularExpressions.Regex.Replace(assemblyInfoText,
                         "<Version>[0-9]*.[0-9]*.[0-9]*.[0-9]*</Version>",
                         $"<Version>{versionString}</Version>");
-            FileManager.SaveText(assemblyInfoText, assemblyInfoText);
+            FileManager.SaveText(assemblyInfoText, csprojLocation);
 
         }
 

@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
-using FlatRedBall.IO.Remote;
 using FlatRedBall.IO;
 using BuildServerUploaderConsole.Sftp;
 
