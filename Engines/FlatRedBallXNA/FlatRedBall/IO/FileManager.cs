@@ -2246,8 +2246,6 @@ namespace FlatRedBall.IO
 
 		#region Private Methods
 
-#if !SILVERLIGHT && !WINDOWS_8
-
 		private static void CopyDirectoryHelper(string sourceDirectory, string destDirectory, bool clearDestination, List<string> excludeFiles, List<string> excludeDirectories)
 		{
 			destDirectory = FileManager.Standardize(destDirectory);
@@ -2285,11 +2283,10 @@ namespace FlatRedBall.IO
 			}
 
 		}
-#endif
 
 		public static void Close(Stream stream)
 		{
-#if WINDOWS_8 || UWP
+#if UWP
             // Close was removed - no need to do anything
 #else
 			stream.Close();
@@ -2298,7 +2295,7 @@ namespace FlatRedBall.IO
 
 		public static void Close(StreamReader streamReader)
 		{
-#if WINDOWS_8 || UWP
+#if UWP
             // Close was removed - no need to do anything
 #else
 			streamReader.Close();
@@ -2307,7 +2304,7 @@ namespace FlatRedBall.IO
 
 		private static void Close(BinaryWriter writer)
 		{
-#if WINDOWS_8 || UWP
+#if UWP
             // Close was removed - no need to do anything
 #else
 			writer.Close();
@@ -2316,7 +2313,7 @@ namespace FlatRedBall.IO
 
 		private static void Close(StreamWriter writer)
 		{
-#if WINDOWS_8 || UWP
+#if UWP
             // Close was removed - no need to do anything
 #else
 			writer.Close();

@@ -27,7 +27,7 @@ namespace BuildServerUploaderConsole.Processes
         {
             // Any tool that uses Glue should come before Glue
 
-            @"Glue\Glue\bin\Debug",
+            @"Glue\Glue\bin\x86\Debug\netcoreapp3.0",
             @"NewProjectCreator\NewProjectCreator\bin\x86\Debug",
             @"SplineEditor\SplineEditor\bin\x86\Debug",
 

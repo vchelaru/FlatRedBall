@@ -8,6 +8,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBallDesktopGL", "..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallDesktopGL.csproj", "{10BDA06C-7269-4CCE-AE2A-D445F414520A}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{10bda06c-7269-4cce-ae2a-d445f414520a}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		BuildServer|x86 = BuildServer|x86
 		Debug Docs|x86 = Debug Docs|x86
