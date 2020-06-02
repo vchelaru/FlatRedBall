@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -830,7 +831,11 @@ namespace Gum.Wireframe
             var updated = false;
             if (vmPropsToUiProps.ContainsKey(vmPropertyName))
             {
+#if UWP
+                var vmProperty = EffectiveBindingContext.GetType().GetTypeInfo().GetDeclaredProperty(vmPropertyName);
+#else
                 var vmProperty = EffectiveBindingContext.GetType().GetProperty(vmPropertyName);
+#endif
                 if (vmProperty == null)
                 {
                     System.Diagnostics.Debug.WriteLine($"Could not find property {vmPropertyName} in {mBindingContext.GetType()}");
@@ -884,7 +889,7 @@ namespace Gum.Wireframe
             }
         }
 
-        #endregion
+#endregion
 
 
     }
