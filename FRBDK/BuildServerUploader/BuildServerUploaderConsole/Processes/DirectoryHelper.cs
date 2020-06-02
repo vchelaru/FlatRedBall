@@ -55,7 +55,7 @@ namespace BuildServerUploaderConsole.Processes
             }
         }
 
-        public static string FlatRedBallDirectory => FileManager.MakeAbsolute("../../../../../");
+        public static string FlatRedBallDirectory => FileManager.MakeAbsolute("../../../../../../");
 
         public static string EngineDirectory => FlatRedBallDirectory + "Engines/";
 

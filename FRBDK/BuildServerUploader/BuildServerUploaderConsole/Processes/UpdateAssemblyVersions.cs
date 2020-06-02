@@ -20,8 +20,8 @@ namespace BuildServerUploaderConsole.Processes
             string engineDirectory = DirectoryHelper.EngineDirectory;
 
             List<string> folders = new List<string>();
-            folders.Add(engineDirectory + @"\FlatRedBallXNA\");
-            folders.Add(engineDirectory + @"\FlatRedBallMDX\");
+            folders.Add(engineDirectory + @"FlatRedBallXNA\");
+            folders.Add(engineDirectory + @"FlatRedBallMDX\");
             
 
 
@@ -79,6 +79,10 @@ namespace BuildServerUploaderConsole.Processes
 
         private static void ModifyCsprojAssemblyInfoVersion(string csprojLocation, string versionString)
         {
+            if(System.IO.File.Exists(csprojLocation) == false)
+            {
+                throw new ArgumentException($"Could not find file {csprojLocation}");
+            }
             // Look for <Version>1.1.0.0</Version>
             string assemblyInfoText = FileManager.FromFileText(csprojLocation);
 
