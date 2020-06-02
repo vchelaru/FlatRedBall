@@ -208,17 +208,28 @@ namespace FlatRedBall.Instructions.Reflection
 
         private void GetFieldRecursive(Type type, string fieldName, out FieldInfo field, out Type ownerType)
         {
+#if UWP
+            field = type.GetField(fieldName);
+#else
             field = type.GetField(fieldName, mGetFieldBindingFlags);
+#endif
             ownerType = null;
 
             if(field != null)
             {
                 ownerType = type;
             }
+#if UWP
+            else if (field == null && type.GetTypeInfo().BaseType != null)
+            {
+                GetFieldRecursive(type.GetTypeInfo().BaseType, fieldName, out field, out ownerType);
+            }
+#else
             else if(field == null && type.BaseType != null)
             {
                 GetFieldRecursive(type.BaseType, fieldName, out field, out ownerType);
             }
+#endif
         }
 
         public override bool IsReadOnly(string name)
@@ -358,13 +369,13 @@ namespace FlatRedBall.Instructions.Reflection
             FieldInfo fieldInfo = target.GetType().GetField(
                 name);
 
-	#if DEBUG && !IOS && !ANDROID && !WINDOWS_8 && !UWP
+#if DEBUG && !IOS && !ANDROID && !WINDOWS_8 && !UWP
             if (value.GetType().IsValueType && 
                 value.GetType().IsPrimitive == false)
             {
                 throw new NotImplementedException();
             }
-    #endif
+#endif
             fieldInfo.SetValue(target, value);
 
 #else
@@ -400,7 +411,7 @@ namespace FlatRedBall.Instructions.Reflection
 #endif
 
 
-#endif       
+#endif
         }
 
 
@@ -481,7 +492,7 @@ namespace FlatRedBall.Instructions.Reflection
 #endif
         }
 
-#if !WINDOWS_8 && !UWP
+#if !UWP
         static BindingFlags mGetFieldBindingFlags = BindingFlags.GetField | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | 
             BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
 #endif
@@ -492,7 +503,7 @@ namespace FlatRedBall.Instructions.Reflection
 
             if (target == null)
             {
-#if WINDOWS_8 || UWP
+#if UWP
                 FieldInfo fieldInfo = mType.GetField(fieldName);
 #else
                 FieldInfo fieldInfo = mType.GetField(fieldName, mGetFieldBindingFlags);
@@ -502,7 +513,7 @@ namespace FlatRedBall.Instructions.Reflection
             }
             else
             {
-#if WINDOWS_8 || UWP
+#if UWP
                 return mType.GetField(fieldName).GetValue(target);
 #else
 
@@ -607,9 +618,9 @@ namespace FlatRedBall.Instructions.Reflection
             return pi.GetValue(target, null);
         }
 
-        #endregion
+#endregion
 
-        #region Private Helpers
+#region Private Helpers
         private void ValidateInstance()
         {
             if (mTarget == null)
@@ -659,9 +670,9 @@ namespace FlatRedBall.Instructions.Reflection
                 }
             }
         }
-        #endregion
+#endregion
 
-        #region Contained Classes
+#region Contained Classes
         internal delegate object GetHandler(object source);
         internal delegate void SetHandler(object source, object value);
         internal delegate object InstantiateObjectHandler();
@@ -807,6 +818,6 @@ namespace FlatRedBall.Instructions.Reflection
             }
 #endif
         }
-        #endregion
+#endregion
     }
 }
