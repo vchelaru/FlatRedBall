@@ -38,8 +38,7 @@ namespace BuildServerUploaderConsole.Processes
         // them 
         List<string> mXna4_0ToolsInOwnDirectories = new List<string>
         {
-            @"AnimationEditorPlugin\PreviewProject\bin\Debug",
-            @"FlatRedBallProfiler\FlatRedBallProfiler\bin\Debug"
+            @"AnimationEditor\PreviewProject\bin\Debug"
 
 
         };
