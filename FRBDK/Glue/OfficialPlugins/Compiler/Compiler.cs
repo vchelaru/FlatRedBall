@@ -17,12 +17,12 @@ namespace OfficialPlugins.Compiler
     {
         List<FilePath> AvailableLocations = new List<FilePath>
         {
+            $@"{FileManager.GetDirectory(Assembly.GetEntryAssembly().Location)}Tools\MSBuild\15.0\MSBuild.exe",
             @"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe",
             @"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\amd64\MSBuild.exe",
             @"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\MSBuild.exe",
             @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe",
             @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe",
-            $@"{FileManager.GetDirectory(Assembly.GetEntryAssembly().Location)}Tools\MSBuild\15.0\MSBuild.exe",
 
         };
         
@@ -52,12 +52,12 @@ namespace OfficialPlugins.Compiler
         {
             var shouldCompile = true;
 
-            var message = GetMissingFrameworkMessage();
-            if(!string.IsNullOrEmpty(message))
-            {
-                printError("Cannot build due to missing .NET SDK:\n" + message);
-                shouldCompile = false;
-            }
+            //var message = GetMissingFrameworkMessage();
+            //if(!string.IsNullOrEmpty(message))
+            //{
+            //    printError("Cannot build due to missing .NET SDK:\n" + message);
+            //    shouldCompile = false;
+            //}
 
             //do we actually want to do this ?
             if(shouldCompile)
@@ -131,27 +131,28 @@ namespace OfficialPlugins.Compiler
             return false;
         }
 
-        private string GetMissingFrameworkMessage()
-        {
-            string whyCantRun = null;
+        // no longer needed for .NET Core/Standard
+        //private string GetMissingFrameworkMessage()
+        //{
+        //    string whyCantRun = null;
 
-            // check if .NET is installed:
-            // This is where the .NET 4.5.2 SDK 
-            // installs the files, which seems to 
-            // be required for running the build tool.
-            const string dotNet452Directory = @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\";
+        //    // check if .NET is installed:
+        //    // This is where the .NET 4.5.2 SDK 
+        //    // installs the files, which seems to 
+        //    // be required for running the build tool.
+        //    const string dotNet452Directory = @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\";
 
-            var directoryExists = System.IO.Directory.Exists(dotNet452Directory);
-            if(directoryExists == false)
-            {
-                var sdkLocation = "https://www.microsoft.com/en-us/download/details.aspx?id=42637";
-                whyCantRun = $"Your computer is missing the .NET framework version 4.5.2. Glue is expecting " +
-                    " it it in the following location:\n{dotNet452Directory}\n\n" +
-                    $"This can be downloaded here: {sdkLocation}";
-            }
+        //    var directoryExists = System.IO.Directory.Exists(dotNet452Directory);
+        //    if(directoryExists == false)
+        //    {
+        //        var sdkLocation = "https://www.microsoft.com/en-us/download/details.aspx?id=42637";
+        //        whyCantRun = $"Your computer is missing the .NET framework version 4.5.2. Glue is expecting " +
+        //            " it it in the following location:\n{dotNet452Directory}\n\n" +
+        //            $"This can be downloaded here: {sdkLocation}";
+        //    }
 
-            return whyCantRun;
-        }
+        //    return whyCantRun;
+        //}
 
         private bool RunMsBuildOnProject(Action<string> printOutput, Action<string> printError, string configuration, string projectFileName)
         {
