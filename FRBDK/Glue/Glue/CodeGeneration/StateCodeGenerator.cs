@@ -116,7 +116,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 currentBlock.Line($"public string Name;");
 
-                var includedVariables = element.CustomVariables.Where(item => category.ExcludedVariables.Contains(item.Name) == false)
+                var includedVariables = element.CustomVariables.Where(item => category?.ExcludedVariables.Contains(item.Name) == false)
                     .ToArray();
 
                 foreach (var variable in includedVariables)
