@@ -62,8 +62,9 @@ namespace FlatRedBall.Glue.Managers
             get
             {
                 lock (mActiveAsyncTasks)
+                lock(mSyncLockObject)
                 {
-                    return mActiveAsyncTasks.Count == 0;
+                    return mActiveAsyncTasks.Count == 0 && this.mSyncedActions.Count == 0;
                 }
             }
         }
@@ -125,7 +126,7 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        bool isTaskProcessingEnabled;
+        bool isTaskProcessingEnabled = true;
         /// <summary>
         /// Whether to process tasks - if this is false, then tasks will not be processed.
         /// </summary>

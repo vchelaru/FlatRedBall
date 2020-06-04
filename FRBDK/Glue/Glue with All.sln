@@ -86,6 +86,7 @@ EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
+		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{26dd17aa-55ae-46ab-9394-a2319728869a}*SharedItemsImports = 5
 		..\..\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems*{728151f0-03e0-4253-94fe-46b9c77edea6}*SharedItemsImports = 13
 		..\..\..\Gum\GumCoreShared.projitems*{f919c045-eac7-4806-9a1f-ce421f923e97}*SharedItemsImports = 13
 	EndGlobalSection

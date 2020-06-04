@@ -33,10 +33,8 @@
             this.PluginView = new System.Windows.Forms.Integration.ElementHost();
             this.pluginView1 = new FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins.PluginView();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.RemoteActionButton = new System.Windows.Forms.Button();
             this.RemoteActionButton2 = new System.Windows.Forms.Button();
             this.LastUpdatedValueLabel = new System.Windows.Forms.Label();
-            this.LastUpdatedTitleLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -85,25 +83,13 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.RemoteActionButton);
             this.panel1.Controls.Add(this.RemoteActionButton2);
             this.panel1.Controls.Add(this.LastUpdatedValueLabel);
-            this.panel1.Controls.Add(this.LastUpdatedTitleLabel);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(288, 85);
             this.panel1.TabIndex = 5;
-            // 
-            // RemoteActionButton
-            // 
-            this.RemoteActionButton.Location = new System.Drawing.Point(6, 25);
-            this.RemoteActionButton.Name = "RemoteActionButton";
-            this.RemoteActionButton.Size = new System.Drawing.Size(275, 23);
-            this.RemoteActionButton.TabIndex = 6;
-            this.RemoteActionButton.Text = "View on GlueVault";
-            this.RemoteActionButton.UseVisualStyleBackColor = true;
-            this.RemoteActionButton.Click += new System.EventHandler(this.RemoteActionButton_Click);
             // 
             // RemoteActionButton2
             // 
@@ -123,15 +109,6 @@
             this.LastUpdatedValueLabel.Size = new System.Drawing.Size(82, 13);
             this.LastUpdatedValueLabel.TabIndex = 5;
             this.LastUpdatedValueLabel.Text = "March 21, 1981";
-            // 
-            // LastUpdatedTitleLabel
-            // 
-            this.LastUpdatedTitleLabel.AutoSize = true;
-            this.LastUpdatedTitleLabel.Location = new System.Drawing.Point(3, 9);
-            this.LastUpdatedTitleLabel.Name = "LastUpdatedTitleLabel";
-            this.LastUpdatedTitleLabel.Size = new System.Drawing.Size(74, 13);
-            this.LastUpdatedTitleLabel.TabIndex = 4;
-            this.LastUpdatedTitleLabel.Text = "Last Updated:";
             // 
             // PluginsWindow
             // 
@@ -157,9 +134,8 @@
         private System.Windows.Forms.Integration.ElementHost PluginView;
         private Plugins.EmbeddedPlugins.ManagePlugins.PluginView pluginView1;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button RemoteActionButton;
+        
         private System.Windows.Forms.Button RemoteActionButton2;
         private System.Windows.Forms.Label LastUpdatedValueLabel;
-        private System.Windows.Forms.Label LastUpdatedTitleLabel;
     }
 }

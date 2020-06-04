@@ -312,23 +312,15 @@ namespace FlatRedBall.Glue.Controls
             switch (mPanelState)
             {
                 case DownloadState.Downloading:
-                    LastUpdatedTitleLabel.Text = "Downloading main feed...";
-                    LastUpdatedTitleLabel.Visible = true;
                     LastUpdatedValueLabel.Visible = false;
 
-                    RemoteActionButton.Visible = false;
                     RemoteActionButton2.Visible = false;
 
                     break;
                 case DownloadState.Error:
-                    LastUpdatedTitleLabel.Text = "Error connecting to GlueVault.com";
-                    LastUpdatedTitleLabel.Visible = true;
                     LastUpdatedValueLabel.Visible = false;
 
-                    RemoteActionButton.Visible = true;
                     RemoteActionButton2.Visible = false;
-
-                    RemoteActionButton.Text = "Try again";
 
                     break;
 
@@ -338,15 +330,10 @@ namespace FlatRedBall.Glue.Controls
 
                     break;
                 case DownloadState.NoConnection:
-                    LastUpdatedTitleLabel.Text = "No Internet Connection Detected";
-
-                    LastUpdatedTitleLabel.Visible = true;
                     LastUpdatedValueLabel.Visible = false;
 
-                    RemoteActionButton.Visible = true;
                     RemoteActionButton2.Visible = false;
 
-                    RemoteActionButton.Text = "Try again";
                     break;
             }
         }
@@ -357,124 +344,9 @@ namespace FlatRedBall.Glue.Controls
 
             if (selectedItem == null)
             {
-                LastUpdatedTitleLabel.Text = "Select an item to view update information";
-                LastUpdatedTitleLabel.Visible = true;
-
                 LastUpdatedValueLabel.Visible = false;
 
-                RemoteActionButton.Visible = false;
             }
-            else if(AllFeed != null)
-            {
-                RssItem item = GetItemFor(AllFeed, SelectedPlugin);
-
-                SelectedRssItem = item;
-
-                if (item != null)
-                {
-                    
-                    string glueLink = item.GlueLink;
-                    SelectedPlugin.RemoteLocation = glueLink;
-
-                    if (SelectedPlugin.DownloadState == DownloadState.InformationDownloaded)
-                    {
-                        LastUpdatedTitleLabel.Text = "Last Update: ";
-
-                        LastUpdatedValueLabel.Visible = true;
-                        LastUpdatedValueLabel.Text =  SelectedPlugin.LastUpdate.ToString();
-
-                        RemoteActionButton.Visible = true;
-                        RemoteActionButton.Text = "Go to GlueVault";
-
-                        RemoteActionButton2.Visible = true;
-                        RemoteActionButton2.Text = "Install Latest Plugin";
-                    }
-                    else if(SelectedPlugin.DownloadState == DownloadState.NotStarted)
-                    {
-                        LastUpdatedTitleLabel.Text = "Downloading information for " + item.Title;
-                        SelectedPlugin.TryStartDownload((arg)=>
-                            {
-                                // The window may have been closed already
-                                if (this.Visible)
-                                {
-                                    try
-                                    {
-                                        this.Invoke((MethodInvoker)delegate
-                                        {
-                                            ShowSelectedPluginInformation();
-                                        });
-                                    }
-                                    catch
-                                    {
-                                        // no big deal, it's disposed most likely because the user closed the window.
-                                    }
-                                }
-                            });
-                    }
-                    else if (SelectedPlugin.DownloadState == DownloadState.Error)
-                    {
-                        LastUpdatedTitleLabel.Text = "Error getting information about plugin";
-
-
-                        RemoteActionButton.Visible = true;
-                        RemoteActionButton2.Visible = false;
-
-                        RemoteActionButton.Text = "Try again";
-                    }
-
-
-                }
-                else
-                {
-                    LastUpdatedTitleLabel.Text = "Plugin not found on GlueVault.com:";
-                    LastUpdatedValueLabel.Visible = false;
-                    RemoteActionButton.Visible = false;
-                    RemoteActionButton2.Visible = false;
-
-                }
-                //LastUpdatedTitleLabel.Text = "Last Updated:";
-                //LastUpdatedValueLabel.Text = "12 34 5678";
-
-                //LastUpdatedTitleLabel.Visible = true;
-                //LastUpdatedValueLabel.Visible = true;
-
-                //RemoteActionButton.Visible = true;
-                //RemoteActionButton.Text = "Refresh";
-            }
-
-        }
-
-        private RssItem GetItemFor(AllFeed feed, PluginContainer SelectedPlugin)
-        {
-            string folder = 
-                FileManager.RemovePath(
-                 FileManager.GetDirectory(SelectedPlugin.AssemblyLocation));
-            folder = folder.Replace("/", "");
-            if (!folder.ToLowerInvariant().EndsWith("plugin"))
-            {
-                folder += "plugin";
-            }
-            folder = folder.ToLower();
-
-            RssItem itemToReturn = null;
-                
-            string whatToLookFor = folder + ".plug";
-
-            // We're going to narrow things down a bit here:
-            whatToLookFor = ">" + whatToLookFor + @"</a>";
-            
-            foreach (var item in feed.Items)
-            {
-                var description = item.Description.ToLower();
-
-                if (description.Contains(whatToLookFor))
-                {
-                    itemToReturn = item;
-                    break;
-                }
-            }
-
-            return itemToReturn;
         }
 
         private void RemoteActionButton_Click(object sender, EventArgs e)
