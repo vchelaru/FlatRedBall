@@ -10,6 +10,7 @@ using FlatRedBall.Math.Geometry;
 using FlatRedBall.Gui;
 using FlatRedBall.Utilities;
 using FlatRedBall.IO;
+using System.Linq;
 #if !SILVERLIGHT
 #endif
 
@@ -79,6 +80,10 @@ namespace FlatRedBall.Screens
             get { return mPersistentSpriteFrames; }
         }
 
+        /// <summary>
+        /// A list of IDrawableBatch instances which persist inbetween screens. Items in this list
+        /// do not result in exceptions if they are not cleaned up inbetween screens.
+        /// </summary>
         public static List<IDrawableBatch> PersistentDrawableBatches
         {
             get
@@ -91,6 +96,11 @@ namespace FlatRedBall.Screens
         {
             get { return mPersistentTexts; }
         }
+
+        public static List<IWindow> PersistentWindows
+        {
+            get; private set;
+        } = new List<IWindow>();
 
         public static bool WarnIfNotEmptyBetweenScreens
         {
@@ -682,12 +692,16 @@ namespace FlatRedBall.Screens
 
                 if (GuiManager.Windows.Count != 0)
                 {
-                    var message = "The GuiManager has " + GuiManager.Windows.Count +
-                        " windows.\n";
-                    message += $"The first is of type {GuiManager.Windows[0].GetType()} named {GuiManager.Windows[0].Name}\n";
-                    message += "See \"FlatRedBall.Gui.GuiManager.Windows\"";
+                    var remainingWindows = GuiManager.Windows.Except(PersistentWindows).ToArray();
+                    if(remainingWindows.Length > 0)
+                    {
+                        var message = "The GuiManager has " + remainingWindows.Length +
+                            " windows.\n";
+                        message += $"The first is of type {remainingWindows[0].GetType()} named {remainingWindows[0].Name}\n";
+                        message += "See \"FlatRedBall.Gui.GuiManager.Windows\" or add the window to PersistentWindows if it should persist between screens";
 
-                    messages.Add(message);
+                        messages.Add(message);
+                    }
                 }
 
                 #endregion

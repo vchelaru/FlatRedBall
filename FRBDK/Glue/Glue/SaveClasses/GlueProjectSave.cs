@@ -377,7 +377,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             //foreach (ReferencedFileSave rfs in rfsList)
             {
-                rfs.SetNameNoCall(rfs.Name.Replace("\\", "/"));
+                rfs.SetNameNoCall(rfs?.Name.Replace("\\", "/"));
             });
         }
 

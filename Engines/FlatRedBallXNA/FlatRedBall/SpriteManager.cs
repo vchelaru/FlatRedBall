@@ -1698,10 +1698,16 @@ namespace FlatRedBall
             //mManagedPositionedObjects.Add(positionedObjectToManage);
         }
 
+        /// <summary>
+        /// Adds the argument IDrawableBatch to the engine to be rendered in order of its Z value.
+        /// </summary>
+        /// <remarks>
+        /// This method must be called on the main thread.
+        /// </remarks>
+        /// <param name="drawableBatch">The IDrawableBatch to draw</param>
         public static void AddDrawableBatch(IDrawableBatch drawableBatch)
         {
 #if DEBUG
-
             if (!FlatRedBallServices.IsThreadPrimary())
             {
                 throw new InvalidOperationException("Objects can only be added on the primary thread");
