@@ -28,8 +28,6 @@ namespace BuildServerUploaderConsole.Processes
             // Any tool that uses Glue should come before Glue
 
             @"Glue\Glue\bin\x86\Debug\netcoreapp3.0",
-            @"NewProjectCreator\NewProjectCreator\bin\x86\Debug",
-            @"SplineEditor\SplineEditor\bin\x86\Debug",
 
         };
 
@@ -38,7 +36,9 @@ namespace BuildServerUploaderConsole.Processes
         // them 
         List<string> mXna4_0ToolsInOwnDirectories = new List<string>
         {
-            @"AnimationEditor\PreviewProject\bin\Debug"
+            @"AnimationEditor\PreviewProject\bin\Debug",
+            @"NewProjectCreator\NewProjectCreator\bin\x86\Debug",
+            @"SplineEditor\SplineEditor\bin\x86\Debug",
 
 
         };

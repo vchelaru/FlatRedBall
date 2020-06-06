@@ -33,11 +33,12 @@ namespace FlatRedBall.Glue.Projects
                 //FileManager.GetDirectory(FileManager.GetDirectory(Application.ExecutablePath));
                 // This causes Glue to look one directory above where the .exe is.  Glue and NewProjectCreator
                 // are both now XNA4 tools, so we're going to look in the same directory as Glue.
+                // Update - actually moved it down below one level so its files don't interfere with Glue
                 FileManager.GetDirectory(Application.ExecutablePath);
 
             List<string> files = FileManager.GetAllFilesInDirectory(
                 directory, "exe");
-            // We used to only search 
+
             string newProjectCreatorFile = null;
 
             foreach (string file in files)
@@ -48,6 +49,16 @@ namespace FlatRedBall.Glue.Projects
                     break;
                 }
             }
+
+            if(newProjectCreatorFile == null)
+            {
+                FilePath possibleFile = directory + "NewProjectCreator/NewProjectCreator.exe";
+                if(possibleFile.Exists())
+                {
+                    newProjectCreatorFile = possibleFile.FullPath;
+                }
+            }
+
             const string newProjectCreatorLocation = @"..\..\..\..\..\..\NewProjectCreator\NewProjectCreator\bin\x86\Debug\NewProjectCreator.exe";
             if (newProjectCreatorFile == null)
             {

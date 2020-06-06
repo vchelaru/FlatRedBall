@@ -1149,7 +1149,6 @@
         private System.Windows.Forms.ToolStripMenuItem importGroupToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem forAllProjectsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem forThisProjectOnlyToolStripMenuItem;
-        private System.Windows.Forms.Timer TortoiseWatchTimer;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button NavigateForwardButton;
