@@ -665,10 +665,23 @@ namespace Glue
             // But give them a chance to end...
             while (TaskManager.Self.AreAllAsyncTasksDone == false)
             {
-                System.Threading.Thread.Sleep(50);
+                // We want to wait until all tasks are done, but
+                // if the task is to reload, we can continue or else
+                // we'll have a deadlock
+                var canContinue = TaskManager.Self.CurrentTask ==
+                    UpdateReactor.ReloadingProjectDescription;
 
-                // pump events
-                Application.DoEvents();
+                if(canContinue)
+                {
+                    break;
+                }
+                else
+                {
+                    System.Threading.Thread.Sleep(50);
+
+                    // pump events
+                    Application.DoEvents();
+                }
 
             }
 

@@ -20,11 +20,13 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.Parsing;
+using System.Security.Cryptography.Pkcs;
 
 namespace FlatRedBall.Glue.IO
 {
     public static class UpdateReactor
     {
+        public const string ReloadingProjectDescription = "Reloading Project";
         static object mUpdateFileLock = new object();
         public static bool UpdateFile(string changedFile)
         {
@@ -262,7 +264,13 @@ namespace FlatRedBall.Glue.IO
             {
                 if (project == ProjectManager.ProjectBase)
                 {
-                    TaskManager.Self.OnUiThread(()=> GlueCommands.Self.LoadProject(ProjectManager.ProjectBase.FullFileName));
+                    TaskManager.Self.Add(() =>
+                    {
+                        TaskManager.Self.OnUiThread(()=>
+                        {
+                            GlueCommands.Self.LoadProject(ProjectManager.ProjectBase.FullFileName);
+                        });
+                    }, ReloadingProjectDescription);
                 }
                 else
                 {
