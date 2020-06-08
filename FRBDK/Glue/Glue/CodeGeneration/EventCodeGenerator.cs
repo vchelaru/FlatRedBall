@@ -15,6 +15,7 @@ using FlatRedBall.IO;
 using FlatRedBall.Utilities;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Managers;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -760,7 +761,17 @@ namespace FlatRedBall.Glue.CodeGeneration
             // Currently we don't support events on static variables
             if (shouldGenerate)
             {
-                EventCodeGenerator.GenerateEventsForVariable(codeBlock, customVariable.Name, customVariable.Type);
+                var variableType = customVariable.Type;
+                if(customVariable.GetIsCsv())
+                {
+                    var referencedFile = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(variableType);
+
+                    if(referencedFile != null)
+                    {
+                        variableType = referencedFile.GetTypeForCsvFile();
+                    }
+                }
+                EventCodeGenerator.GenerateEventsForVariable(codeBlock, customVariable.Name, variableType);
             }
         }
     }

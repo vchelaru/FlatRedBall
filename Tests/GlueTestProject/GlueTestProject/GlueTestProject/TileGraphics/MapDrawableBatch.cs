@@ -63,6 +63,8 @@ namespace FlatRedBall.TileGraphics
 
         Dictionary<string, List<int>> mNamedTileOrderedIndexes = new Dictionary<string, List<int>>();
 
+        public byte[] FlipFlagArray;
+
         private int mCurrentNumberOfTiles = 0;
 
         public float Red = 1;
@@ -181,6 +183,15 @@ namespace FlatRedBall.TileGraphics
         // so -(_parallaxMultiplier - 1) = value
         // thus -_parallaxMultiplier + 1 = value (get)
         private float _parallaxMultiplierX;
+
+        /// <summary>
+        /// The multiplier applied when scrolling the camera. 
+        /// Defaults to a value of 1, which 
+        /// means when the camera scrolls 1 unit, the 
+        /// layer moves by 1 unit to the left. A value of less than 1 should be used for
+        /// layers in the background, while a value greater
+        /// than 1 for layers in the foreground.
+        /// </summary>
         public float ParallaxMultiplierX
         {
             get { return -_parallaxMultiplierX + 1; }
@@ -188,6 +199,14 @@ namespace FlatRedBall.TileGraphics
         }
 
         private float _parallaxMultiplierY;
+        /// <summary>
+        /// The multiplier applied when scrolling the camera. 
+        /// Defaults to a value of 1, which 
+        /// means when the camera scrolls 1 unit, the 
+        /// layer moves by 1 unit to the left. A value of less than 1 should be used for
+        /// layers in the background, while a value greater
+        /// than 1 for layers in the foreground.
+        /// </summary>
         public float ParallaxMultiplierY
         {
             get { return -_parallaxMultiplierY + 1; }
@@ -218,6 +237,7 @@ namespace FlatRedBall.TileGraphics
 
             mTexture = texture;
             mVertices = new VertexPositionTexture[4 * numberOfTiles];
+            FlipFlagArray = new byte[numberOfTiles];
             mIndices = new int[6 * numberOfTiles];
         }
 
@@ -237,6 +257,7 @@ namespace FlatRedBall.TileGraphics
 
             mTexture = texture;
             mVertices = new VertexPositionTexture[4 * numberOfTiles];
+            FlipFlagArray = new byte[numberOfTiles];
             mIndices = new int[6 * numberOfTiles];
 
             mTileset = new Tileset(texture, textureTileDimensionWidth, textureTileDimensionHeight);
@@ -328,9 +349,12 @@ namespace FlatRedBall.TileGraphics
         public void AddToManagers()
         {
             SpriteManager.AddDrawableBatch(this);
-            //SpriteManager.AddPositionedObject(mMapBatch);
         }
 
+        /// <summary>
+        /// Adds this MapDrawableBatch to the engine (for rendering) on the argument layer.
+        /// </summary>
+        /// <param name="layer">The layer to add to.</param>
         public void AddToManagers(Layer layer)
         {
             SpriteManager.AddToLayer(this, layer);
@@ -461,21 +485,24 @@ namespace FlatRedBall.TileGraphics
             Vector3 position = new Vector3();
 
 
-            IEnumerable<TMXGlueLib.DataTypes.ReducedQuadInfo> quads = null;
+            TMXGlueLib.DataTypes.ReducedQuadInfo[] quads = null;
 
             if (rtmi.NumberCellsWide > rtmi.NumberCellsTall)
             {
-                quads = reducedLayerInfo.Quads.OrderBy(item => item.LeftQuadCoordinate).ToList();
+                quads = reducedLayerInfo.Quads.OrderBy(item => item.LeftQuadCoordinate).ToArray();
                 toReturn.mSortAxis = SortAxis.X;
             }
             else
             {
-                quads = reducedLayerInfo.Quads.OrderBy(item => item.BottomQuadCoordinate).ToList();
+                quads = reducedLayerInfo.Quads.OrderBy(item => item.BottomQuadCoordinate).ToArray();
                 toReturn.mSortAxis = SortAxis.Y;
             }
 
-            foreach (var quad in quads)
+            var quadLength = quads.Length;
+            for (int i = 0; i < quadLength; i++)
             {
+                var quad = quads[i];
+
                 Vector2 tileDimensions = new Vector2(quadWidth, quadHeight);
                 if (quad.OverridingWidth != null)
                 {
@@ -528,6 +555,8 @@ namespace FlatRedBall.TileGraphics
                     textureValues.Z = textureValues.W;
                     textureValues.W = temp;
                 }
+
+                toReturn.FlipFlagArray[i] = quad.FlipFlags;
 
                 int tileIndex = toReturn.AddTile(position, tileDimensions,
                     //quad.LeftTexturePixel, quad.TopTexturePixel, quad.LeftTexturePixel + tileDimensionWidth, quad.TopTexturePixel + tileDimensionHeight);

@@ -119,7 +119,9 @@ namespace TMXGlueLib.DataTypes
                 {
                     var objectLayer = tiledLayer as mapObjectgroup;
 
-                    var firstObjectWithTexture = objectLayer.@object.First(item => item.gid != 0);
+                    //The first element on the list might have null as a gid (it could be a shape)
+                    //so we should use ">" instead of "!=" to avoid ignoring the rest of the list
+                    var firstObjectWithTexture = objectLayer.@object?.FirstOrDefault(item => item.gid > 0);
 
                     firstGid = firstObjectWithTexture?.gid;
                 }

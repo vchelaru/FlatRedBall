@@ -138,7 +138,15 @@ namespace FlatRedBall.Math.Collision
             }
         }
 
-        private bool DoFirstCollisionLineVsShapeCollection(Line line, TileShapeCollection tileShapeCollection)
+        /// <summary>
+        /// Performs collision between the argument Line and TileShapeCollection, returning whether collision occurred. The Line's
+        /// LastCollisionPoint will be set to the closest point where collision occurs between the line and the tile shape collection.
+        /// If collision does not occur, LastCollisionPoint will be set to (NaN, NaN)
+        /// </summary>
+        /// <param name="line">The line to perform collision. The "closest point" is the closest point to the line's Position.</param>
+        /// <param name="tileShapeCollection">The TileShapeCollection to collide against.</param>
+        /// <returns></returns>
+        public static bool DoFirstCollisionLineVsShapeCollection(Line line, TileShapeCollection tileShapeCollection)
         {
             line.LastCollisionPoint = new Point(double.NaN, double.NaN);
 
@@ -355,7 +363,7 @@ namespace FlatRedBall.Math.Collision
                 }
                 else
                 {
-                    throw new NotImplementedException("Complain to Vic about this!");
+                    throw new NotImplementedException("The argument line's position is not on either endpoint. This is a requirement for this type of collision.");
                 }
             }
             else if (tileShapeCollection.SortAxis == Axis.Y)

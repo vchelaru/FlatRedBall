@@ -61,9 +61,6 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\CsvForVariable.Generated.cs">
       <Link>DataTypes\CsvForVariable.Generated.cs</Link>
     </Compile>
-    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\CsvFromTmx.Generated.cs">
-      <Link>DataTypes\CsvFromTmx.Generated.cs</Link>
-    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\CsvLoadedToList.Generated.cs">
       <Link>DataTypes\CsvLoadedToList.Generated.cs</Link>
     </Compile>
@@ -1827,8 +1824,8 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Performance\PoolList.Generated.cs">
       <Link>Performance\PoolList.Generated.cs</Link>
     </Compile>
-    <Compile Include="..\..\GlueTestProject\GlueTestProject\Platformer\Enums.cs">
-      <Link>Platformer\Enums.cs</Link>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Platformer\Enums.Generated.cs">
+      <Link>Platformer\Enums.Generated.cs</Link>
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Rendering\RenderableLayer.cs">
       <Link>Rendering\RenderableLayer.cs</Link>
@@ -2348,7 +2345,6 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\TopDown\TopDownAiInput.Generated.cs">
       <Link>TopDown\TopDownAiInput.Generated.cs</Link>
     </Compile>
-    <Compile Include="Code" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -2848,11 +2844,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>CreatedByExcel1</Name>
       <Link>content\globalcontent\createdbyexcel1.csv</Link>
-    </None>
-    <None Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\csvfolder\csvfromtmx.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>CsvFromTmx</Name>
-      <Link>content\globalcontent\csvfolder\csvfromtmx.csv</Link>
     </None>
     <None Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\csvfolder\spreadsheetfile1.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

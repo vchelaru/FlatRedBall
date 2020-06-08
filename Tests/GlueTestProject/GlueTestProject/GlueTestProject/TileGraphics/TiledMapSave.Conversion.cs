@@ -44,8 +44,8 @@ namespace TMXGlueLib
 
         public static LayerVisibleBehavior LayerVisibleBehaviorValue = LayerVisibleBehavior.Ignore;
         public static int MaxDegreeOfParallelism = 1;
-
-        const string animationColumnName = "EmbeddedAnimation (List<FlatRedBall.Content.AnimationChain.AnimationFrameSaveBase>)";
+        
+        const string animationColumnName = "EmbeddedAnimation (List<FlatRedBall.Content.AnimationChain.AnimationFrameSave>)";
 
 
         private static Tuple<float, float, float> _offset = new Tuple<float, float, float>(0f, 0f, 0f);
@@ -389,7 +389,7 @@ namespace TMXGlueLib
                     out leftCoordinate, out topCoordinate, out rightCoordinate, out bottomCoordinate);
 
                 row.Add(string.Format(
-                    "new FlatRedBall.Content.AnimationChain.AnimationFrameSaveBase(TextureName={0}, " +
+                    "new FlatRedBall.Content.AnimationChain.AnimationFrameSave(TextureName={0}, " +
                     "FrameLength={1}, LeftCoordinate={2}, RightCoordinate={3}, TopCoordinate={4}, BottomCoordinate={5})",
                     indexOfLayerReferencingTileset,
                     (frame.Duration / 1000.0f).ToString(CultureInfo.InvariantCulture),
@@ -876,7 +876,7 @@ namespace TMXGlueLib
                 }
 
                 var group = abstractMapLayer as mapObjectgroup;
-                bool shouldProcess = group?.@object != null && group.Visible && !string.IsNullOrEmpty(group.Name);
+                bool shouldProcess = group?.@object != null && group.IsVisible && !string.IsNullOrEmpty(group.Name);
                 if (shouldProcess) //&& (string.IsNullOrEmpty(layerName) || group.name.Equals(layerName)))
                 {
                     foreach (mapObjectgroupObject @object in @group.@object)

@@ -14,7 +14,14 @@ namespace FlatRedBall.TileCollisions
 
         ShapeCollection mShapes;
         Axis mSortAxis = Axis.X;
+        /// <summary>
+        /// The leftmost edge of the map. This will correspond with the left edge of an AxisAlignedRectangle.
+        /// </summary>
         public float LeftSeedX = 0;
+
+        /// <summary>
+        /// The bottommost edge of the map. This will correspond with the bottom edge of an AxisAlignedRectangle.
+        /// </summary>
         public float BottomSeedY = 0;
         float mGridSize;
         bool mVisible = true;
@@ -632,6 +639,109 @@ namespace FlatRedBall.TileCollisions
             }
         }
 
+        public void AssignAllShapesToRepositionOutward()
+        {
+            List<AxisAlignedRectangle> rectanglesWithNoneReposition = new List<AxisAlignedRectangle>();
+
+            // fill it with any rectangles
+            foreach (var rectangle in this.Rectangles)
+            {
+                if (rectangle.RepositionDirections == RepositionDirections.None)
+                {
+                    rectanglesWithNoneReposition.Add(rectangle);
+                }
+            }
+
+            HashSet<AxisAlignedRectangle> rectanglesProcessedThisRound = new HashSet<AxisAlignedRectangle>();
+
+            var width = this.Rectangles.FirstOrDefault()?.Width ?? 16;
+
+            RepositionDirections RepLeftOf(AxisAlignedRectangle rectangle)
+            {
+                var found = this.GetRectangleAtPosition(rectangle.X - width, rectangle.Y);
+                if (rectanglesProcessedThisRound.Contains(found)) return RepositionDirections.None;
+                else return found?.RepositionDirections ?? RepositionDirections.None;
+            }
+            RepositionDirections RepRightOf(AxisAlignedRectangle rectangle)
+            {
+                var found = this.GetRectangleAtPosition(rectangle.X + width, rectangle.Y);
+                if (rectanglesProcessedThisRound.Contains(found)) return RepositionDirections.None;
+                else return found?.RepositionDirections ?? RepositionDirections.None;
+            }
+            RepositionDirections RepAbove(AxisAlignedRectangle rectangle)
+            {
+                var found = this.GetRectangleAtPosition(rectangle.X, rectangle.Y + width);
+                if (rectanglesProcessedThisRound.Contains(found)) return RepositionDirections.None;
+                else return found?.RepositionDirections ?? RepositionDirections.None;
+            }
+            RepositionDirections RepBelow(AxisAlignedRectangle rectangle)
+            {
+                var found = this.GetRectangleAtPosition(rectangle.X, rectangle.Y - width);
+                if (rectanglesProcessedThisRound.Contains(found)) return RepositionDirections.None;
+                else return found?.RepositionDirections ?? RepositionDirections.None;
+            }
+
+            while (rectanglesWithNoneReposition.Count > 0)
+            {
+                rectanglesProcessedThisRound.Clear();
+
+                // see if any 
+                // reverse loop to remove:
+                for (int i = rectanglesWithNoneReposition.Count - 1; i > -1; i--)
+                {
+                    var rectangle = rectanglesWithNoneReposition[i];
+
+                    rectanglesProcessedThisRound.Add(rectangle);
+
+                    rectangle.RepositionDirections =
+                        (RepLeftOf(rectangle) & RepositionDirections.Left) |
+                        (RepRightOf(rectangle) & RepositionDirections.Right) |
+                        (RepAbove(rectangle) & RepositionDirections.Up) |
+                        (RepBelow(rectangle) & RepositionDirections.Down);
+
+                    if (rectangle.RepositionDirections != RepositionDirections.None)
+                    {
+                        rectanglesWithNoneReposition.RemoveAt(i);
+                    }
+                    else
+                    {
+                        // this thing is still using "none" reposition, but if it is missing collisions in one of the corners, then we can 
+                        // assign repositions appropriately.
+                        var aboveRight = this.GetRectangleAtPosition(rectangle.X + width, rectangle.Y + width);
+                        var aboveLeft = this.GetRectangleAtPosition(rectangle.X - width, rectangle.Y + width);
+                        var belowRight = this.GetRectangleAtPosition(rectangle.X + width, rectangle.Y - width);
+                        var belowLeft = this.GetRectangleAtPosition(rectangle.X - width, rectangle.Y - width);
+
+                        if (aboveRight == null)
+                        {
+                            rectangle.RepositionDirections |= RepositionDirections.Right;
+                            rectangle.RepositionDirections |= RepositionDirections.Up;
+                        }
+                        if (aboveLeft == null)
+                        {
+                            rectangle.RepositionDirections |= RepositionDirections.Left;
+                            rectangle.RepositionDirections |= RepositionDirections.Up;
+                        }
+                        if (belowRight == null)
+                        {
+                            rectangle.RepositionDirections |= RepositionDirections.Right;
+                            rectangle.RepositionDirections |= RepositionDirections.Down;
+                        }
+                        if (belowLeft == null)
+                        {
+                            rectangle.RepositionDirections |= RepositionDirections.Left;
+                            rectangle.RepositionDirections |= RepositionDirections.Down;
+                        }
+                        if (rectangle.RepositionDirections != RepositionDirections.None)
+                        {
+                            rectanglesWithNoneReposition.RemoveAt(i);
+                        }
+                    }
+                }
+            }
+        }
+
+
         public override string ToString()
         {
             return Name;
@@ -666,6 +776,9 @@ namespace FlatRedBall.TileCollisions
         public static void AddCollisionFrom(this TileShapeCollection tileShapeCollection,
             MapDrawableBatch layer, LayeredTileMap layeredTileMap, Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate)
         {
+            tileShapeCollection.LeftSeedX = layeredTileMap.X;
+            tileShapeCollection.BottomSeedY = layeredTileMap.Y - layeredTileMap.Height;
+
             var properties = layeredTileMap.TileProperties;
 
             foreach (var kvp in properties)
@@ -704,6 +817,9 @@ namespace FlatRedBall.TileCollisions
         public static void AddCollisionFrom(this TileShapeCollection tileShapeCollection, LayeredTileMap layeredTileMap,
             Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate)
         {
+            tileShapeCollection.LeftSeedX = layeredTileMap.X;
+            tileShapeCollection.BottomSeedY = layeredTileMap.Y - layeredTileMap.Height;
+
             var properties = layeredTileMap.TileProperties;
 
             foreach (var kvp in properties)
@@ -750,6 +866,9 @@ namespace FlatRedBall.TileCollisions
             float dimensionHalf = dimension / 2.0f;
             tileShapeCollection.GridSize = dimension;
 
+            tileShapeCollection.LeftSeedX = layeredTileMap.X;
+            tileShapeCollection.BottomSeedY = layeredTileMap.Y - layeredTileMap.Height;
+
             Dictionary<int, List<int>> rectangleIndexes = new Dictionary<int, List<int>>();
 
             foreach (var layer in layeredTileMap.MapLayers)
@@ -767,6 +886,9 @@ namespace FlatRedBall.TileCollisions
             float dimension = layeredTileMap.WidthPerTile.Value;
             float dimensionHalf = dimension / 2.0f;
             tileShapeCollection.GridSize = dimension;
+
+            tileShapeCollection.LeftSeedX = layeredTileMap.X;
+            tileShapeCollection.BottomSeedY = layeredTileMap.Y - layeredTileMap.Height;
 
             Dictionary<int, List<int>> rectangleIndexes = new Dictionary<int, List<int>>();
 

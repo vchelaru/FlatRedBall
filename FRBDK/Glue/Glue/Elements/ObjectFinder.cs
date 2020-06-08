@@ -65,7 +65,7 @@ namespace FlatRedBall.Glue.Elements
         }
 
 #if GLUE
-        [Obsolete("Use FileReferenceManager.GetReferencedFileSaveFromFile")]
+        [Obsolete("Use GluxCommands.GetReferencedFileSaveFromFile")]
 #endif
         public ReferencedFileSave GetReferencedFileSaveFromFile(string fileName)
         {

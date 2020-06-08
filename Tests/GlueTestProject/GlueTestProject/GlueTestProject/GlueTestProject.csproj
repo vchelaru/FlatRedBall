@@ -121,7 +121,6 @@
     <Compile Include="DataTypes\ClassWithNoAssociatedCsvs.Generated.cs" />
     <Compile Include="DataTypes\CreatedByExcel1.Generated.cs" />
     <Compile Include="DataTypes\CsvForVariable.Generated.cs" />
-    <Compile Include="DataTypes\CsvFromTmx.Generated.cs" />
     <Compile Include="DataTypes\CsvLoadedToList.Generated.cs" />
     <Compile Include="DataTypes\CsvManuallyLoadedForPropertyTest.Generated.cs" />
     <Compile Include="DataTypes\CsvWithAnimationFrameSaveBase.Generated.cs" />
@@ -1087,7 +1086,7 @@
     </Compile>
     <Compile Include="Performance\IEntityFactory.Generated.cs" />
     <Compile Include="Performance\PoolList.Generated.cs" />
-    <Compile Include="Platformer\Enums.cs" />
+    <Compile Include="Platformer\Enums.Generated.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />

@@ -89,6 +89,12 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>bool</Type>
+      <Name>IsXamarinFormsControl</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>ColorCategoryState</Type>
       <Name>NineSliceInstance.ColorCategoryState</Name>
       <Value xsi:type="xsd:string">Blue</Value>

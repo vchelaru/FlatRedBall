@@ -44,8 +44,8 @@ namespace TMXGlueLib
 
         public static LayerVisibleBehavior LayerVisibleBehaviorValue = LayerVisibleBehavior.Ignore;
         public static int MaxDegreeOfParallelism = 1;
-
-        const string animationColumnName = "EmbeddedAnimation (List<FlatRedBall.Content.AnimationChain.AnimationFrameSaveBase>)";
+        
+        const string animationColumnName = "EmbeddedAnimation (List<FlatRedBall.Content.AnimationChain.AnimationFrameSave>)";
 
 
         private static Tuple<float, float, float> _offset = new Tuple<float, float, float>(0f, 0f, 0f);

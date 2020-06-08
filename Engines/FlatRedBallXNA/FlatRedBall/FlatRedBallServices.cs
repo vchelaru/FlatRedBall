@@ -1056,7 +1056,7 @@ namespace FlatRedBall
 
         public static bool IsThreadPrimary()
         {
-#if WINDOWS_8 || UWP
+#if UWP
             int threadId = Environment.CurrentManagedThreadId;
 #else
             int threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;

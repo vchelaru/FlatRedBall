@@ -42,7 +42,7 @@ namespace FlatRedBall.TileGraphics
         private void ReactToChangedAnimationFrame(string spriteName, AnimationChainContainer animationChainContainer, LayeredTileMap layeredTileMap)
         {
             AnimationFrame animationFrame = animationChainContainer.CurrentFrame;
-
+            Microsoft.Xna.Framework.Vector4 textureValues = new Microsoft.Xna.Framework.Vector4();
             foreach (var mapLayer in layeredTileMap.MapLayers)
             {
                 var nameDictionary = mapLayer.NamedTileOrderedIndexes;
@@ -53,8 +53,36 @@ namespace FlatRedBall.TileGraphics
 
                     foreach (int value in indexes)
                     {
-                        mapLayer.PaintTileTextureCoordinates(value, animationFrame.LeftCoordinate, animationFrame.TopCoordinate,
-                            animationFrame.RightCoordinate, animationFrame.BottomCoordinate);
+                        textureValues.X = animationFrame.LeftCoordinate;
+                        textureValues.Y = animationFrame.RightCoordinate;
+                        textureValues.Z = animationFrame.TopCoordinate;
+                        textureValues.W = animationFrame.BottomCoordinate;
+
+                        var flipFlags = mapLayer.FlipFlagArray[value];
+
+                        if ((flipFlags & TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedHorizontallyFlag) == TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedHorizontallyFlag)
+                        {
+                            var temp = textureValues.Y;
+                            textureValues.Y = textureValues.X;
+                            textureValues.X = temp;
+                        }
+
+                        if ((flipFlags & TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedVerticallyFlag) == TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedVerticallyFlag)
+                        {
+                            var temp = textureValues.Z;
+                            textureValues.Z = textureValues.W;
+                            textureValues.W = temp;
+                        }
+
+                        mapLayer.PaintTileTextureCoordinates(value,
+                            textureValues.X, textureValues.Z,
+                            textureValues.Y, textureValues.W);
+
+                        // not sure why it's done this way, copied from MapDrawableBatch...
+                        if ((flipFlags & TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedDiagonallyFlag) == TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedDiagonallyFlag)
+                        {
+                            mapLayer.ApplyDiagonalFlip(value);
+                        }
                     }
                 }
             }

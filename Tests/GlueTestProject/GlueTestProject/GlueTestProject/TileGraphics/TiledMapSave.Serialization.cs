@@ -198,6 +198,31 @@ namespace TMXGlueLib
                 }
             }
 
+            foreach(var layer in this.Layers)
+            {
+                foreach(var dataItem in layer.data)
+                {
+
+                }
+            }
+
+            foreach(var objectLayer in this.objectgroup)
+            {
+                if(objectLayer.@object != null)
+                {
+                    foreach(var item in objectLayer.@object)
+                    {
+                        foreach(var property in item.properties)
+                        {
+                            if(property.Type == "file" && !string.IsNullOrWhiteSpace(property.value))
+                            {
+                                referencedFiles.Add(property.value);
+                            }
+                        }
+                    }
+                }
+            }
+
 
             return referencedFiles;
         }
@@ -311,7 +336,6 @@ namespace TMXGlueLib
         }
 
         private IDictionary<string, string> propertyDictionaryField = null;
-        private int _visibleAsInt = 1;
 
         [XmlIgnore]
         public IDictionary<string, string> PropertyDictionary
@@ -344,14 +368,6 @@ namespace TMXGlueLib
         }
 
 
-        [XmlAttribute("visible")]
-        public int VisibleAsInt
-        {
-            get { return _visibleAsInt; }
-            set { _visibleAsInt = value; }
-        }
-
-
         [XmlAttribute("opacity")]
         public float Opacity
         {
@@ -373,14 +389,6 @@ namespace TMXGlueLib
             set { _offsetY = value; }
         }
 
-        [XmlIgnore]
-        public bool Visible
-        {
-            get
-            {
-                return VisibleAsInt != 0;
-            }
-        }
     }
 
     public partial class MapImageLayerImage
@@ -703,7 +711,6 @@ namespace TMXGlueLib
         }
 
         private IDictionary<string, string> propertyDictionaryField = null;
-        private int _visibleAsInt = 1;
 
         [XmlIgnore]
         public IDictionary<string, string> PropertyDictionary
@@ -732,23 +739,6 @@ namespace TMXGlueLib
             set
             {
                 this.objectField = value;
-            }
-        }
-
-
-        [XmlAttribute("visible")]
-        public int VisibleAsInt
-        {
-            get { return _visibleAsInt; }
-            set { _visibleAsInt = value; }
-        }
-
-        [XmlIgnore]
-        public bool Visible
-        {
-            get
-            {
-                return VisibleAsInt != 0;
             }
         }
 

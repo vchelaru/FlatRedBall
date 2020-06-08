@@ -12,8 +12,23 @@ using FlatRedBall.Math.Geometry;
 
 namespace FlatRedBall.TileEntities
 {
+    public class InstantiationRestrictions
+    {
+        public AxisAlignedRectangle Bounds = null;
+        public List<string> InclusiveList = null;
+
+    }
+
+
     public static class TileEntityInstantiator
     {
+        public class Settings
+        {
+            public bool RemoveTileObjectsAfterEntityCreation = true;
+        }
+
+        public static Settings CurrentSettings { get; set; } = new Settings();
+
         /// <summary>
         /// A dictionary that stores all available values for a given type.
         /// </summary>
@@ -45,40 +60,47 @@ namespace FlatRedBall.TileEntities
         {
             var entitiesToRemove = new List<string>();
 
-            CreateEntitiesFrom(entitiesToRemove, mapLayer, layeredTileMap.TileProperties);
+            CreateEntitiesFrom(entitiesToRemove, mapLayer, layeredTileMap.TileProperties, layeredTileMap.WidthPerTile ?? 16);
 
-            foreach (var entityToRemove in entitiesToRemove)
+            if(CurrentSettings.RemoveTileObjectsAfterEntityCreation)
             {
-                string remove = entityToRemove;
-                mapLayer.RemoveTiles(t => t.Any(item => (item.Name == "EntityToCreate" || item.Name == "Type") && item.Value as string == remove), layeredTileMap.TileProperties);
+                foreach (var entityToRemove in entitiesToRemove)
+                {
+                    string remove = entityToRemove;
+                    mapLayer.RemoveTiles(t => t.Any(item => (item.Name == "EntityToCreate" || item.Name == "Type") && item.Value as string == remove), layeredTileMap.TileProperties);
+                }
             }
 
         }
 
-        public static void CreateEntitiesFrom(LayeredTileMap layeredTileMap)
+        public static void CreateEntitiesFrom(LayeredTileMap layeredTileMap, InstantiationRestrictions restrictions = null)
         {
             var entitiesToRemove = new List<string>();
 
             foreach (var layer in layeredTileMap.MapLayers)
             {
-                CreateEntitiesFrom(entitiesToRemove, layer, layeredTileMap.TileProperties);
+                CreateEntitiesFrom(entitiesToRemove, layer, layeredTileMap.TileProperties, layeredTileMap.WidthPerTile ?? 16, restrictions);
             }
-            foreach (var entityToRemove in entitiesToRemove)
+            if(CurrentSettings.RemoveTileObjectsAfterEntityCreation)
             {
-                string remove = entityToRemove;
-                layeredTileMap.RemoveTiles(t => t.Any(item => (item.Name == "EntityToCreate" || item.Name == "Type") && item.Value as string == remove), layeredTileMap.TileProperties);
+                foreach (var entityToRemove in entitiesToRemove)
+                {
+                    string remove = entityToRemove;
+                    layeredTileMap.RemoveTiles(t => t.Any(item => (item.Name == "EntityToCreate" || item.Name == "Type") && item.Value as string == remove), layeredTileMap.TileProperties);
+                }
             }
+
             foreach (var shapeCollection in layeredTileMap.ShapeCollections)
             {
-                CreateEntitiesFromCircles(layeredTileMap, shapeCollection);
+                CreateEntitiesFromCircles(layeredTileMap, shapeCollection, restrictions);
 
-                CreateEntitiesFromRectangles(layeredTileMap, shapeCollection);
+                CreateEntitiesFromRectangles(layeredTileMap, shapeCollection, restrictions);
 
-                CreateEntitiesFromPolygons(layeredTileMap, shapeCollection);
+                CreateEntitiesFromPolygons(layeredTileMap, shapeCollection, restrictions);
             }
         }
 
-        private static void CreateEntitiesFromCircles(LayeredTileMap layeredTileMap, ShapeCollection shapeCollection)
+        private static void CreateEntitiesFromCircles(LayeredTileMap layeredTileMap, ShapeCollection shapeCollection, InstantiationRestrictions restrictions)
         {
             var circles = shapeCollection.Circles;
             for (int i = circles.Count - 1; i > -1; i--)
@@ -91,28 +113,40 @@ namespace FlatRedBall.TileEntities
 
                     var entityType = entityAddingProperty.Value as string;
 
-                    if (!string.IsNullOrEmpty(entityType))
+                    var shouldCreate = !string.IsNullOrEmpty(entityType);
+                    if (restrictions?.InclusiveList != null)
+                    {
+                        shouldCreate = restrictions.InclusiveList.Contains(entityType);
+                    }
+                    if(shouldCreate)
                     {
                         IEntityFactory factory = GetFactory(entityType);
 
-                        var entity = factory.CreateNew(null) as PositionedObject;
-
-                        entity.Name = circle.Name;
-                        ApplyPropertiesTo(entity, properties, circle.Position);
-                        shapeCollection.Circles.Remove(circle);
-
-                        if (entity is Math.Geometry.ICollidable)
+                        if(factory != null)
                         {
-                            var entityCollision = (entity as Math.Geometry.ICollidable).Collision;
-                            entityCollision.Circles.Add(circle);
-                            circle.AttachTo(entity, false);
+                            var entity = factory.CreateNew(null) as PositionedObject;
+
+                            entity.Name = circle.Name;
+                            ApplyPropertiesTo(entity, properties, circle.Position);
+
+                            if(CurrentSettings.RemoveTileObjectsAfterEntityCreation)
+                            {
+                                shapeCollection.Circles.Remove(circle);
+                            }
+
+                            if (entity is Math.Geometry.ICollidable)
+                            {
+                                var entityCollision = (entity as Math.Geometry.ICollidable).Collision;
+                                entityCollision.Circles.Add(circle);
+                                circle.AttachTo(entity, false);
+                            }
                         }
                     }
                 }
             }
         }
 
-        private static void CreateEntitiesFromRectangles(LayeredTileMap layeredTileMap, ShapeCollection shapeCollection)
+        private static void CreateEntitiesFromRectangles(LayeredTileMap layeredTileMap, ShapeCollection shapeCollection, InstantiationRestrictions restrictions)
         {
             var rectangles = shapeCollection.AxisAlignedRectangles;
             for (int i = rectangles.Count - 1; i > -1; i--)
@@ -124,29 +158,39 @@ namespace FlatRedBall.TileEntities
                     var entityAddingProperty = properties.FirstOrDefault(item => item.Name == "EntityToCreate" || item.Name == "Type");
 
                     var entityType = entityAddingProperty.Value as string;
-                    if (!string.IsNullOrEmpty(entityType))
+                    var shouldCreate = !string.IsNullOrEmpty(entityType);
+                    if (restrictions?.InclusiveList != null)
+                    {
+                        shouldCreate = restrictions.InclusiveList.Contains(entityType);
+                    }
+                    if (shouldCreate)
                     {
                         IEntityFactory factory = GetFactory(entityType);
-
-                        var entity = factory.CreateNew(null) as PositionedObject;
-
-                        entity.Name = rectangle.Name;
-                        ApplyPropertiesTo(entity, properties, rectangle.Position);
-                        shapeCollection.AxisAlignedRectangles.Remove(rectangle);
-
-                        if (entity is Math.Geometry.ICollidable)
+                        if(factory != null)
                         {
-                            var entityCollision = (entity as Math.Geometry.ICollidable).Collision;
-                            entityCollision.AxisAlignedRectangles.Add(rectangle);
-                            rectangle.AttachTo(entity, false);
-                        }
+                            var entity = factory.CreateNew(null) as PositionedObject;
 
+                            entity.Name = rectangle.Name;
+                            ApplyPropertiesTo(entity, properties, rectangle.Position);
+
+                            if(CurrentSettings.RemoveTileObjectsAfterEntityCreation)
+                            {
+                                shapeCollection.AxisAlignedRectangles.Remove(rectangle);
+                            }
+
+                            if (entity is Math.Geometry.ICollidable)
+                            {
+                                var entityCollision = (entity as Math.Geometry.ICollidable).Collision;
+                                entityCollision.AxisAlignedRectangles.Add(rectangle);
+                                rectangle.AttachTo(entity, false);
+                            }
+                        }
                     }
                 }
             }
         }
 
-        private static void CreateEntitiesFromPolygons(LayeredTileMap layeredTileMap, Math.Geometry.ShapeCollection shapeCollection)
+        private static void CreateEntitiesFromPolygons(LayeredTileMap layeredTileMap, Math.Geometry.ShapeCollection shapeCollection, InstantiationRestrictions restrictions)
         {
             var polygons = shapeCollection.Polygons;
             for (int i = polygons.Count - 1; i > -1; i--)
@@ -158,29 +202,41 @@ namespace FlatRedBall.TileEntities
                     var entityAddingProperty = properties.FirstOrDefault(item => item.Name == "EntityToCreate" || item.Name == "Type");
 
                     var entityType = entityAddingProperty.Value as string;
-                    if (!string.IsNullOrEmpty(entityType))
+                    var shouldCreate = !string.IsNullOrEmpty(entityType);
+                    if (restrictions?.InclusiveList != null)
+                    {
+                        shouldCreate = restrictions.InclusiveList.Contains(entityType);
+                    }
+                    if (shouldCreate)
                     {
                         IEntityFactory factory = GetFactory(entityType);
-
-                        var entity = factory.CreateNew(null) as PositionedObject;
-
-                        entity.Name = polygon.Name;
-                        ApplyPropertiesTo(entity, properties, polygon.Position);
-                        shapeCollection.Polygons.Remove(polygon);
-
-                        if (entity is Math.Geometry.ICollidable)
+                        if(factory != null)
                         {
-                            var entityCollision = (entity as Math.Geometry.ICollidable).Collision;
-                            entityCollision.Polygons.Add(polygon);
-                            polygon.AttachTo(entity, false);
-                        }
+                            var entity = factory.CreateNew(null) as PositionedObject;
 
+                            entity.Name = polygon.Name;
+                            ApplyPropertiesTo(entity, properties, polygon.Position);
+
+                            if (CurrentSettings.RemoveTileObjectsAfterEntityCreation)
+                            {
+                                shapeCollection.Polygons.Remove(polygon);
+                            }
+
+                            if (entity is Math.Geometry.ICollidable)
+                            {
+                                var entityCollision = (entity as Math.Geometry.ICollidable).Collision;
+                                entityCollision.Polygons.Add(polygon);
+                                polygon.AttachTo(entity, false);
+                            }
+                        }
                     }
                 }
             }
         }
 
-        private static void CreateEntitiesFrom(List<string> entitiesToRemove, MapDrawableBatch layer, Dictionary<string, List<NamedValue>> propertiesDictionary)
+        private static void CreateEntitiesFrom(List<string> entitiesToRemove, MapDrawableBatch layer, Dictionary<string, List<NamedValue>> propertiesDictionary, 
+            float tileSize,
+            InstantiationRestrictions restrictions = null)
         {
             var flatRedBallLayer = SpriteManager.Layers.FirstOrDefault(item => item.Batches.Contains(layer));
 
@@ -200,7 +256,15 @@ namespace FlatRedBall.TileEntities
 
                     var entityType = property.Value as string;
 
-                    if (!string.IsNullOrEmpty(entityType) && dictionary.ContainsKey(tileName))
+                    var shouldCreateEntityType =
+                        !string.IsNullOrEmpty(entityType) && dictionary.ContainsKey(tileName);
+
+                    if (shouldCreateEntityType && restrictions?.InclusiveList != null)
+                    {
+                        shouldCreateEntityType = restrictions.InclusiveList.Contains(entityType);
+                    }
+
+                    if (shouldCreateEntityType)
                     {
                         IEntityFactory factory = GetFactory(entityType);
 
@@ -223,9 +287,22 @@ namespace FlatRedBall.TileEntities
 
                             foreach (var tileIndex in indexList)
                             {
-                                var entity = factory.CreateNew(flatRedBallLayer) as PositionedObject;
+                                var shouldCreate = true;
+                                var bounds = restrictions?.Bounds;
+                                if (bounds != null)
+                                {
+                                    layer.GetBottomLeftWorldCoordinateForOrderedTile(tileIndex, out float x, out float y);
+                                    x += tileSize / 2.0f;
+                                    y += tileSize / 2.0f;
+                                    shouldCreate = bounds.IsPointInside(x, y);
+                                }
 
-                                ApplyPropertiesTo(entity, layer, tileIndex, propertyList);
+                                if(shouldCreate)
+                                {
+                                    var entity = factory.CreateNew(flatRedBallLayer) as PositionedObject;
+
+                                    ApplyPropertiesTo(entity, layer, tileIndex, propertyList);
+                                }
                             }
 
                         }
@@ -501,6 +578,15 @@ namespace FlatRedBall.TileEntities
                 }
 
             }
+            else if (valueType?.Contains(".") == true)
+            {
+                var type = typeof(TileEntityInstantiator).Assembly.GetType(valueType);
+
+                if (type != null && type.IsEnum)
+                {
+                    valueToSet = Enum.Parse(type, (string)valueToSet);
+                }
+            }
             return valueToSet;
         }
 
@@ -512,7 +598,7 @@ namespace FlatRedBall.TileEntities
 
 
         static Type[] typesInThisAssembly;
-        private static IEntityFactory GetFactory(string entityType)
+        public static IEntityFactory GetFactory(string entityType)
         {
             if (typesInThisAssembly == null)
             {

@@ -67,6 +67,12 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>bool</Type>
+      <Name>IsXamarinFormsControl</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>string</Type>
       <Name>Parent</Name>
       <SetsValue>true</SetsValue>
@@ -157,8 +163,8 @@
     <Name>Red</Name>
     <Variable>
       <Type>int</Type>
-      <Name>Red</Name>
-      <Value xsi:type="xsd:int">255</Value>
+      <Name>Blue</Name>
+      <Value xsi:type="xsd:int">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -169,8 +175,8 @@
     </Variable>
     <Variable>
       <Type>int</Type>
-      <Name>Blue</Name>
-      <Value xsi:type="xsd:int">0</Value>
+      <Name>Red</Name>
+      <Value xsi:type="xsd:int">255</Value>
       <SetsValue>true</SetsValue>
     </Variable>
   </State>

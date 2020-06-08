@@ -20492,14 +20492,6 @@
       <ProjectsToExcludeFrom />
     </ReferencedFileSave>
     <ReferencedFileSave>
-      <Name>GlobalContent/CsvFolder/CsvFromTmx.csv</Name>
-      <IsSharedStatic>true</IsSharedStatic>
-      <HasPublicProperty>true</HasPublicProperty>
-      <SourceFile>GlobalContent/CsvFolder/CsvFromTmx.tmx</SourceFile>
-      <BuildTool>*.tmx -&gt; TmxToCSV.exe -&gt; *.csv</BuildTool>
-      <ProjectsToExcludeFrom />
-    </ReferencedFileSave>
-    <ReferencedFileSave>
       <Name>GlobalContent/LoadedAtRuntimeFalseCsv.csv</Name>
       <IsSharedStatic>true</IsSharedStatic>
       <HasPublicProperty>true</HasPublicProperty>
@@ -20607,7 +20599,7 @@
           <Member>EntityToCreate</Member>
         </InstructionSave>
         <InstructionSave>
-          <Type>System.Collections.Generic.List&lt;FlatRedBall.Content.AnimationChain.AnimationFrameSaveBase&gt;</Type>
+          <Type>System.Collections.Generic.List&lt;FlatRedBall.Content.AnimationChain.AnimationFrameSave&gt;</Type>
           <Member>EmbeddedAnimation</Member>
         </InstructionSave>
       </RequiredProperties>
@@ -20749,6 +20741,7 @@
   </TranslatedFiles>
   <ApplyToFixedResolutionPlatforms>false</ApplyToFixedResolutionPlatforms>
   <ExternallyBuiltFileDirectory>../../</ExternallyBuiltFileDirectory>
+  <FileVersion>0</FileVersion>
   <PluginData>
     <RequiredPlugins>
       <PluginRequirement>

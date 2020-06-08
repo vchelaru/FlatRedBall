@@ -126,7 +126,7 @@ namespace GumPlugin.Managers
                         strippedName = FileManager.RemoveExtension(strippedName);
 
                         toReturn += 
-                            $"{rfs.GetInstanceName()} = GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetScreen(\"{strippedName}\"), true)";
+                            $"{rfs.GetInstanceName()} = GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetScreen(\"{strippedName}\"), true);";
 
                         return toReturn;
                     };
