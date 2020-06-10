@@ -115,10 +115,10 @@ namespace GumPlugin.Managers
                         var filePath = new FilePath(fileName);
 
 
-                        var gumScreensFolder = $"content/gumproject/screens/";
+                        var gumScreensFolder = $"gumproject/screens/";
 
                         var strippedName = fileName;
-                        if(fileName.StartsWith(gumScreensFolder))
+                        if(fileName.ToLowerInvariant().StartsWith(gumScreensFolder))
                         {
                             strippedName = fileName.Substring(gumScreensFolder.Length);
                         }

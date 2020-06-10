@@ -6626,7 +6626,6 @@
           </Properties>
           <Name>FloatVariable</Name>
           <Type>float</Type>
-          <DefaultValue xsi:type="xsd:string" />
           <SetByDerived>true</SetByDerived>
         </CustomVariable>
         <CustomVariable>

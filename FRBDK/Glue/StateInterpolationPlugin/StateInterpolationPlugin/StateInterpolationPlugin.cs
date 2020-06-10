@@ -125,13 +125,10 @@ namespace OfficialPlugins.StateInterpolation
 
         private void UpdateCodeInProjectPresence()
         {
-            TaskManager.Self.AddSync(
-                () =>
-                {
-                    PluginManager.ReceiveOutput("Adding state interpolation plugin code files");
-                    Assembly assembly = Assembly.GetExecutingAssembly();
-                    mItemAdder.PerformAddAndSave(assembly);
-                }, "Adding state interpolation plugin code files");
+
+            PluginManager.ReceiveOutput("Adding state interpolation plugin code files");
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            mItemAdder.PerformAddAndSaveTask(assembly);
         }
 
 

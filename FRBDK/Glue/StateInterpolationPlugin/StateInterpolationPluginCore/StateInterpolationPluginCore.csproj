@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Platforms>x86</Platforms>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Compile Include="..\StateInterpolationPlugin\StateInterpolationCodeGenerator.cs" Link="StateInterpolationCodeGenerator.cs" />
+    <Compile Include="..\StateInterpolationPlugin\StateInterpolationPlugin.cs" Link="StateInterpolationPlugin.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
+    <ProjectReference Include="..\..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj" />
+    <ProjectReference Include="..\..\GlueCommon\GlueCommon.csproj" />
+    <ProjectReference Include="..\..\GlueSaveClasses\GlueSaveClasses.csproj" />
+    <ProjectReference Include="..\..\Glue\GlueFormsCore.csproj" />
+    <ProjectReference Include="..\InterpolationCore\InterpolationCore.csproj" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="echo PostBuild Racing Plugin&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\StateInterpolationPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\StateInterpolationPlugin\&quot;&#xD;&#xA;&#xD;&#xA;echo 1&#xD;&#xA;copy &quot;$(TargetDir)\StateInterpolationPluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\StateInterpolationPlugin\StateInterpolationPluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\StateInterpolationPluginCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\StateInterpolationPlugin\StateInterpolationPluginCore.pdb&quot;&#xD;&#xA;" />
+  </Target>
+
+</Project>

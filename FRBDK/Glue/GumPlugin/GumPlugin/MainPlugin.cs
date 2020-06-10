@@ -279,7 +279,9 @@ namespace GumPlugin
             // - Fixed possible crash when reading midding event export JSON files
             // 2.2.4
             // - FlatRedBall XNA can now have .forms, but a warning message is displayed
-            get { return new Version(2, 2, 4); }
+            // 2.2.5
+            // - Fixed missing semicolon at the end of generated code
+            get { return new Version(2, 2, 5); }
         }
 
         #endregion

@@ -719,9 +719,10 @@ namespace GumPlugin.Managers
         private static void FillWithCodeBuildItemsToRemove(GumProjectSave gumProject, List<ProjectItem> toRemove, ProjectBase project)
         {
 
-            IEnumerable<ElementSave> allElements = gumProject.Components.OfType<ElementSave>().Concat(
+            var allElements = gumProject.Components.OfType<ElementSave>().Concat(
                 gumProject.StandardElements.OfType<ElementSave>()).Concat(
-                gumProject.Screens.OfType<ElementSave>());
+                gumProject.Screens.OfType<ElementSave>())
+                .ToArray();
 
             var runtimeFolder = GlueState.Self.CurrentGlueProjectDirectory + "GumRuntimes/";
 
