@@ -1,4 +1,4 @@
-Name (required),EmbeddedAnimation (List<FlatRedBall.Content.AnimationChain.AnimationFrameSaveBase>),SetByDefaultInt,EntityToCreate
+Name (required),EmbeddedAnimation (List<FlatRedBall.Content.AnimationChain.AnimationFrameSave>),SetByDefaultInt,EntityToCreate
 "Animated1","new FlatRedBall.Content.AnimationChain.AnimationFrameSaveBase(TextureName=0, FrameLength=0.1, LeftCoordinate=0, RightCoordinate=16, TopCoordinate=0, BottomCoordinate=16)","",""
 "","new FlatRedBall.Content.AnimationChain.AnimationFrameSaveBase(TextureName=0, FrameLength=0.1, LeftCoordinate=0, RightCoordinate=16, TopCoordinate=16, BottomCoordinate=32)","",""
 "","new FlatRedBall.Content.AnimationChain.AnimationFrameSaveBase(TextureName=0, FrameLength=0.1, LeftCoordinate=0, RightCoordinate=16, TopCoordinate=32, BottomCoordinate=48)","",""

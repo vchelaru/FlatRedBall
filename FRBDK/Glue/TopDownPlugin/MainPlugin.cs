@@ -37,8 +37,9 @@ namespace TopDownPlugin
         // 1.7.1 - Will ask the user if plugin should be a required plugin when marking an entity as top-down
         // 2.0 - New UI for editing top down values
         //  - TopDownAiInput.cs is now saved in TopDownAiInput.Generated.cs
+        // 2.0.1 - Fixed crash occurring if trying to save CSV while it's open in excel.
         public override Version Version => 
-            new Version(2, 0, 0);
+            new Version(2, 0, 1);
 
         MainEntityView control;
 

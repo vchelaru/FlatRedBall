@@ -275,7 +275,6 @@ namespace FlatRedBall.Glue.Managers
                 }
                 shouldProcess = mSyncedActions.Count == 1 && IsTaskProcessingEnabled;
             }
-
             // process will take care of reporting it
             if(createdNew && !shouldProcess)
             {
@@ -286,6 +285,7 @@ namespace FlatRedBall.Glue.Managers
             {
                 ProcessNextSync();
             }
+
         }
 
         private void ProcessNextSync()

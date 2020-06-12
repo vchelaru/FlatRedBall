@@ -58,6 +58,14 @@ namespace FlatRedBall.Glue.SaveClasses
             return null ;
         }
 
+        /// <summary>
+        /// Returns the value for the argument property name if it exists, otherwise returns the default 
+        /// value for the type (such as false for a bool). This will not throw an exception if the property name is missing.
+        /// </summary>
+        /// <typeparam name="T">The type of thevalue</typeparam>
+        /// <param name="propertySaveList">The property list.</param>
+        /// <param name="nameToSearchFor">The name of the property to find.</param>
+        /// <returns>The found property value, or the default for the type if not found.</returns>
         public static T GetValue<T>(this List<PropertySave> propertySaveList, string nameToSearchFor)
         {
             var copy = propertySaveList.ToArray();

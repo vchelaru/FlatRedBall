@@ -37,7 +37,14 @@ namespace TopDownPlugin.DataGenerators
 
             GlueCommands.Self.TryMultipleTimes(() =>
             {
-                FileManager.SaveText(contents, fileName);
+                try
+                {
+                    FileManager.SaveText(contents, fileName);
+                }
+                catch(System.IO.IOException)
+                {
+                    GlueCommands.Self.PrintError($"Trying to save top down CSV {fileName} but failed due to IO - maybe file is open?");
+                }
             });
         }
 

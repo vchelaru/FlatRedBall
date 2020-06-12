@@ -18231,6 +18231,16 @@
           </InstructionSaves>
           <Name>StateThatOverridesVariable</Name>
         </StateSave>
+        <StateSave>
+          <InstructionSaves>
+            <InstructionSave>
+              <Type>Single</Type>
+              <Member>VariableOnlySetInOneUncategorizedState</Member>
+              <ValueAsFloat>14</ValueAsFloat>
+            </InstructionSave>
+          </InstructionSaves>
+          <Name>StateThatSetsOneStateVariable</Name>
+        </StateSave>
       </States>
       <StateCategoryList>
         <StateSaveCategory>
@@ -18524,6 +18534,17 @@
           <Name>CurrentTypeState</Name>
           <Type>Type</Type>
           <DefaultValue xsi:type="xsd:string">TypeState1</DefaultValue>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>VariableOnlySetInOneUncategorizedState</Name>
+          <Type>float</Type>
+          <DefaultValue xsi:type="xsd:float">10</DefaultValue>
         </CustomVariable>
       </CustomVariables>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>

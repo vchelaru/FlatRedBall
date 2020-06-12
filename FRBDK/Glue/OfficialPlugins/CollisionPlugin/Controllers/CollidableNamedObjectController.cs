@@ -88,7 +88,9 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             var name1 = thisNamedObject.InstanceName;
 
-            foreach(var collidable in collidables)
+            var orderedCollidables = collidables.OrderBy(item => item.InstanceName);
+
+            foreach (var collidable in orderedCollidables)
             {
                 var name2 = collidable.InstanceName;
 
