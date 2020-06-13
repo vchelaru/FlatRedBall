@@ -101,6 +101,8 @@ namespace TopDownPlugin.ViewModels
 
         private void HandleTopDownValuePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            string propertyChanged = e.PropertyName;
+
             base.NotifyPropertyChanged(nameof(this.TopDownValues));
         }
     }

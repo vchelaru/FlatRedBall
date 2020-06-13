@@ -31,7 +31,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
             TaskManager.Self.TaskAddedOrRemoved += HandleSyncTaskAddedOrRemoved;
         }
 
-        private void HandleSyncTaskAddedOrRemoved(AddedOrRemoved addedOrRemoved, GlueTask glueTask)
+        private void HandleSyncTaskAddedOrRemoved(TaskEvent addedOrRemoved, GlueTask glueTask)
         {
             this.NotifyPropertyChanged("StatusText");
             this.NotifyPropertyChanged("CurrentTaskText");
@@ -39,7 +39,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
             if(LogTaskDetailsToOutput)
             {
                 var text = $"{addedOrRemoved} {glueTask.DisplayInfo}";
-                if(addedOrRemoved == AddedOrRemoved.Removed)
+                if(addedOrRemoved == TaskEvent.Removed)
                 {
                     var time = glueTask.TimeEnded - glueTask.TimeStarted;
 

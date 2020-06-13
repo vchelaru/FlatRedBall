@@ -18236,10 +18236,14 @@
             <InstructionSave>
               <Type>Single</Type>
               <Member>VariableOnlySetInOneUncategorizedState</Member>
-              <ValueAsFloat>14</ValueAsFloat>
+              <ValueAsFloat>19</ValueAsFloat>
             </InstructionSave>
           </InstructionSaves>
           <Name>StateThatSetsOneStateVariable</Name>
+        </StateSave>
+        <StateSave>
+          <InstructionSaves />
+          <Name>StateThatSetsNoVariables</Name>
         </StateSave>
       </States>
       <StateCategoryList>
