@@ -115,8 +115,8 @@ namespace FlatRedBall.Utilities
         /// </summary>
         /// <param name="minLength">The minimum length of the returned vector.</param>
         /// <param name="maxLength">The maximum length of the returned vector.</param>
-        /// <param name="minRadians">The minimum angle of the returned vector.</param>
-        /// <param name="maxRadians">The maximum angle of the returned vector.</param>
+        /// <param name="minRadians">The minimum angle in radians of the returned vector.</param>
+        /// <param name="maxRadians">The maximum angle in radians of the returned vector.</param>
         /// <returns>A random vector using the argument values.</returns>
         public Vector2 WedgeVector2Radians(float minLength, float maxLength, float minRadians, float maxRadians)
         {
@@ -128,6 +128,20 @@ namespace FlatRedBall.Utilities
                 (float)System.Math.Sin((double)angle) * length);
         }
 
+        /// <summary>
+        /// Returns a Vector2 of random length and angle between the argument values.
+        /// </summary>
+        /// <param name="minLength">The minimum length of the returned vector.</param>
+        /// <param name="maxLength">The maximum length of the returned vector.</param>
+        /// <param name="minDegrees">The minimum angle in degrees of the returned vector.</param>
+        /// <param name="maxDegrees">Teh maximum angle in degrees of the returned vector.</param>
+        /// <returns>A random vector using the argument values.</returns>
+        public Vector2 WedgeVector2Degrees(float minLength, float maxLength, float minDegrees, float maxDegrees)
+        {
+            var minRadians = MathHelper.ToRadians(minDegrees);
+            var maxRadians = MathHelper.ToRadians(maxDegrees);
 
+            return WedgeVector2Radians(minLength, maxLength, minRadians, maxRadians);
+        }
     }
 }
