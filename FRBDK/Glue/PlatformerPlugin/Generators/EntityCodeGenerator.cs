@@ -202,10 +202,9 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 .End()
                 .Set()
                     .Line("mMovementType = value;")
-                    .Line("UpdateCurrentMovement();")
+                    .Line("UpdateCurrentMovement();");
                     
-                    .If("CurrentMovement != null")
-                        .Line("this.YAcceleration = -CurrentMovement.Gravity;");
+
 
             codeBlock.Line("/// <summary>");
             codeBlock.Line("/// Whether input is read to control the movement of the character.");
@@ -341,6 +340,11 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                     mCurrentMovement = AfterDoubleJump;
                     break;
             }
+
+            if(CurrentMovement != null)
+                this.YAcceleration = -CurrentMovement.Gravity;
+
+
         }
         #region Platformer Methods
         /// <summary>
