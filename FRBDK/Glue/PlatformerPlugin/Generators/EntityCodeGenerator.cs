@@ -545,7 +545,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 				(!JumpInput.IsDown || mHitHead)
                 )
             {
-                mValuesJumpedWith = null;
+                mCanContinueToApplyJumpToHold = false;
             }
 
             this.YVelocity = System.Math.Max(-CurrentMovement.MaxFallSpeed, this.YVelocity);
