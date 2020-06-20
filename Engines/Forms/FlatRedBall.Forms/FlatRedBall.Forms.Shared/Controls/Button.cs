@@ -92,7 +92,8 @@ namespace FlatRedBall.Forms.Controls
                 // cursor got its input from a touch screen then the cursor really isn't
                 // over anything. Therefore, we only show the highlighted state if the cursor
                 // is a physical on-screen cursor
-                else if (cursor.LastInputDevice != InputDevice.TouchScreen)
+                else if (GetIfIsOnThisOrChildVisual(cursor) && 
+                    cursor.LastInputDevice != InputDevice.TouchScreen)
                 {
                     Visual.SetProperty("ButtonCategoryState", "HighlightedFocused");
                 }
