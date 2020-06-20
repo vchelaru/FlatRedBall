@@ -71,6 +71,12 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>bool</Type>
+      <Name>IsXamarinFormsControl</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>RadioButtonCategory</Type>
       <Name>RadioButtonCategoryState</Name>
       <SetsValue>false</SetsValue>

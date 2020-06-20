@@ -125,6 +125,17 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>bool</Type>
+      <Name>IsXamarinFormsControl</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>LineModeCategory</Type>
+      <Name>LineModeCategoryState</Name>
+      <SetsValue>false</SetsValue>
+    </Variable>
+    <Variable>
       <Type>ColorCategoryState</Type>
       <Name>SelectionInstance.ColorCategoryState</Name>
       <Value xsi:type="xsd:string">Blue</Value>
@@ -287,58 +298,9 @@
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
-        <Type>DimensionUnitType</Type>
-        <Name>TextInstance.Width Units</Name>
-        <Value xsi:type="xsd:int">4</Value>
-        <SetsValue>true</SetsValue>
-      </Variable>
-      <Variable>
         <Type>float</Type>
-        <Name>TextInstance.Width</Name>
-        <Value xsi:type="xsd:float">0</Value>
-        <SetsValue>true</SetsValue>
-      </Variable>
-      <Variable>
-        <Type>PositionUnitType</Type>
-        <Name>TextInstance.X Units</Name>
-        <Value xsi:type="xsd:int">0</Value>
-        <SetsValue>true</SetsValue>
-      </Variable>
-      <Variable>
-        <Type>VerticalAlignment</Type>
-        <Name>TextInstance.VerticalAlignment</Name>
-        <Value xsi:type="xsd:int">1</Value>
-        <SetsValue>true</SetsValue>
-      </Variable>
-      <Variable>
-        <Type>DimensionUnitType</Type>
-        <Name>TextInstance.Height Units</Name>
-        <Value xsi:type="xsd:int">0</Value>
-        <Category>Dimensions</Category>
-        <SetsValue>true</SetsValue>
-      </Variable>
-      <Variable>
-        <Type>float</Type>
-        <Name>TextInstance.Height</Name>
-        <Value xsi:type="xsd:float">20</Value>
-        <SetsValue>true</SetsValue>
-      </Variable>
-      <Variable>
-        <Type>VerticalAlignment</Type>
-        <Name>TextInstance.Y Origin</Name>
-        <Value xsi:type="xsd:int">1</Value>
-        <SetsValue>true</SetsValue>
-      </Variable>
-      <Variable>
-        <Type>float</Type>
-        <Name>TextInstance.Y</Name>
-        <Value xsi:type="xsd:float">0</Value>
-        <SetsValue>true</SetsValue>
-      </Variable>
-      <Variable>
-        <Type>PositionUnitType</Type>
-        <Name>TextInstance.Y Units</Name>
-        <Value xsi:type="xsd:int">7</Value>
+        <Name>SelectionInstance.Height</Name>
+        <Value xsi:type="xsd:float">-2</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
@@ -349,8 +311,57 @@
       </Variable>
       <Variable>
         <Type>float</Type>
-        <Name>SelectionInstance.Height</Name>
-        <Value xsi:type="xsd:float">-2</Value>
+        <Name>TextInstance.Height</Name>
+        <Value xsi:type="xsd:float">20</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>DimensionUnitType</Type>
+        <Name>TextInstance.Height Units</Name>
+        <Value xsi:type="xsd:int">0</Value>
+        <Category>Dimensions</Category>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>VerticalAlignment</Type>
+        <Name>TextInstance.VerticalAlignment</Name>
+        <Value xsi:type="xsd:int">1</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>float</Type>
+        <Name>TextInstance.Width</Name>
+        <Value xsi:type="xsd:float">0</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>DimensionUnitType</Type>
+        <Name>TextInstance.Width Units</Name>
+        <Value xsi:type="xsd:int">4</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>PositionUnitType</Type>
+        <Name>TextInstance.X Units</Name>
+        <Value xsi:type="xsd:int">0</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>float</Type>
+        <Name>TextInstance.Y</Name>
+        <Value xsi:type="xsd:float">0</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>VerticalAlignment</Type>
+        <Name>TextInstance.Y Origin</Name>
+        <Value xsi:type="xsd:int">1</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>PositionUnitType</Type>
+        <Name>TextInstance.Y Units</Name>
+        <Value xsi:type="xsd:int">7</Value>
         <SetsValue>true</SetsValue>
       </Variable>
     </State>

@@ -33,6 +33,12 @@
       <Value xsi:type="xsd:float">29</Value>
       <SetsValue>true</SetsValue>
     </Variable>
+    <Variable>
+      <Type>bool</Type>
+      <Name>IsXamarinFormsControl</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
   </State>
   <Instance>
     <Name>ContainerInstance</Name>

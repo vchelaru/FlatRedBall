@@ -40,7 +40,9 @@ namespace GumPlugin.DataGeneration
                         "Enabled",
                         "Disabled",
                         "Highlighted",
-                        "Pushed"
+                        "Pushed",
+                        "HighlightedFocused",
+                        "Focused"
                     }
                 }
             }
@@ -343,7 +345,7 @@ namespace GumPlugin.DataGeneration
     public static class BehaviorGenerator
     {
 
-        private static BehaviorSave CreateBehaviorSaveFrom(FormsControlInfo controlInfo)
+        public static BehaviorSave CreateBehaviorSaveFrom(FormsControlInfo controlInfo)
         {
             BehaviorSave toReturn = new BehaviorSave();
             toReturn.Name = controlInfo.BehaviorName;
@@ -364,17 +366,6 @@ namespace GumPlugin.DataGeneration
             }
 
             return toReturn;
-        }
-
-
-        public static BehaviorSave CreateButtonBehavior()
-        {
-            return CreateBehaviorSaveFrom(FormsControlInfo.Button);
-        }
-
-        public static BehaviorSave CreatePasswordBoxBehavior()
-        {
-            return CreateBehaviorSaveFrom(FormsControlInfo.PasswordBox);
         }
 
         public static BehaviorSave CreateRadioButtonBehavior()
@@ -437,11 +428,6 @@ namespace GumPlugin.DataGeneration
             return toReturn;
         }
 
-        public static BehaviorSave CreateToggleBehavior()
-        {
-            return CreateBehaviorSaveFrom(FormsControlInfo.ToggleButton);
-        }
-
         public static BehaviorSave CreateSliderBehavior()
         {
             var formsControl = FormsControlInfo.Slider;
@@ -496,12 +482,6 @@ namespace GumPlugin.DataGeneration
 
             return toReturn;
         }
-        
-        public static BehaviorSave CreateListBoxItemBehavior()
-        {
-            BehaviorSave toReturn = CreateBehaviorSaveFrom(FormsControlInfo.ListBoxItem);
-            return toReturn;
-        }
 
         public static BehaviorSave CreateTreeViewItemBehavior()
         {
@@ -537,10 +517,6 @@ namespace GumPlugin.DataGeneration
             return toReturn;
         }
 
-        public static BehaviorSave CreateUserControlBehavior()
-        {
-            return CreateBehaviorSaveFrom(FormsControlInfo.UserControl);
-        }
 
         public static BehaviorSave CreateComboBoxBehavior()
         {
@@ -559,11 +535,6 @@ namespace GumPlugin.DataGeneration
             toReturn.RequiredInstances.Add(textInstance);
 
             return toReturn;
-        }
-
-        public static BehaviorSave CreateCheckBoxBehavior()
-        {
-            return CreateBehaviorSaveFrom(FormsControlInfo.CheckBox);
         }
 
     }

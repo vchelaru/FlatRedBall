@@ -22,6 +22,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static GumPlugin.DataGeneration.BehaviorGenerator;
 
 namespace GumPlugin.Controls
 {
@@ -109,21 +110,21 @@ namespace GumPlugin.Controls
            {
                bool didAdd = false;
 
-               didAdd = AddIfDoesntHave(BehaviorGenerator.CreateButtonBehavior());
-               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateCheckBoxBehavior());
+               didAdd = AddIfDoesntHave(CreateBehaviorSaveFrom(FormsControlInfo.Button));
+               didAdd |= AddIfDoesntHave(CreateBehaviorSaveFrom(FormsControlInfo.CheckBox));
                didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateComboBoxBehavior());
-               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateListBoxItemBehavior());
+               didAdd |= AddIfDoesntHave(CreateBehaviorSaveFrom(FormsControlInfo.ListBoxItem));
                didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateListBoxBehavior());
-               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreatePasswordBoxBehavior());
+               didAdd |= AddIfDoesntHave(CreateBehaviorSaveFrom(FormsControlInfo.PasswordBox));
                didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateRadioButtonBehavior());
                didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateScrollBarBehavior());
                didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateScrollViewerBehavior());
                didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateSliderBehavior());
                didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateTextBoxBehavior());
-               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateToggleBehavior());
+               didAdd |= AddIfDoesntHave(CreateBehaviorSaveFrom(FormsControlInfo.ToggleButton));
                didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateTreeViewBehavior());
                didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateTreeViewItemBehavior());
-               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateUserControlBehavior());
+               didAdd |= AddIfDoesntHave(CreateBehaviorSaveFrom(FormsControlInfo.UserControl));
 
                if (didAdd)
                {

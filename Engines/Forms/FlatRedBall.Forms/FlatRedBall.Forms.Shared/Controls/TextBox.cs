@@ -70,7 +70,7 @@ namespace FlatRedBall.Forms.Controls
 
         public override void HandleCharEntered(char character)
         {
-            if(hasFocus)
+            if(isFocused)
             {
                 if(selectionLength != 0)
                 {
@@ -108,7 +108,7 @@ namespace FlatRedBall.Forms.Controls
 
         protected override void HandleBackspace(bool isCtrlDown)
         {
-            if (hasFocus && caretIndex > 0 && Text != null)
+            if (isFocused && caretIndex > 0 && Text != null)
             {
                 if(selectionLength > 0)
                 {

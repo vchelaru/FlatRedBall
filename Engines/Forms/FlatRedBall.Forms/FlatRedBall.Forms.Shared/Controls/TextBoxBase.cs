@@ -13,14 +13,22 @@ namespace FlatRedBall.Forms.Controls
     {
         #region Fields/Properties
 
-        protected bool hasFocus;
+
+        [Obsolete("Use IsFocused instead")]
         public bool HasFocus
         {
-            get { return hasFocus; }
+            get => IsFocused;
+            set => IsFocused = value;
+        }
+
+        protected bool isFocused;
+        public bool IsFocused
+        {
+            get { return isFocused; }
             set
             {
-                hasFocus = value && IsEnabled;
-                UpdateToHasFocus();
+                isFocused = value && IsEnabled;
+                UpdateToIsFocused();
             }
         }
 
@@ -370,7 +378,7 @@ namespace FlatRedBall.Forms.Controls
 
         public void HandleKeyDown(Microsoft.Xna.Framework.Input.Keys key, bool isShiftDown, bool isAltDown, bool isCtrlDown)
         {
-            if (hasFocus)
+            if (isFocused)
             {
                 var oldIndex = caretIndex;
 
@@ -598,12 +606,12 @@ namespace FlatRedBall.Forms.Controls
             caretComponent.X = measure + this.textComponent.X;
         }
 
-        private void UpdateToHasFocus()
+        private void UpdateToIsFocused()
         {
             UpdateCaretVisibility();
             UpdateState();
 
-            if (hasFocus)
+            if (isFocused)
             {
                 GuiManager.AddNextClickAction(HandleClickOff);
 
@@ -612,7 +620,7 @@ namespace FlatRedBall.Forms.Controls
 #endif
 
             }
-            else if (!hasFocus && FlatRedBall.Input.InputManager.InputReceiver == this)
+            else if (!isFocused && FlatRedBall.Input.InputManager.InputReceiver == this)
             {
                 FlatRedBall.Input.InputManager.InputReceiver = null;
 #if ANDROID
@@ -623,7 +631,7 @@ namespace FlatRedBall.Forms.Controls
 
         private void UpdateCaretVisibility()
         {
-            caretComponent.Visible = hasFocus && selectionLength == 0;
+            caretComponent.Visible = isFocused && selectionLength == 0;
         }
 
         private void UpdateToTextWrappingChanged()

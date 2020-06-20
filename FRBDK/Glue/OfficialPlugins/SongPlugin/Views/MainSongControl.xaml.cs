@@ -23,6 +23,11 @@ namespace OfficialPlugins.SongPlugin.Views
         public MainSongControl()
         {
             InitializeComponent();
+
+            var button = new Button();
+
+            var textBox = new TextBox();
+            textBox.Focused
         }
     }
 }

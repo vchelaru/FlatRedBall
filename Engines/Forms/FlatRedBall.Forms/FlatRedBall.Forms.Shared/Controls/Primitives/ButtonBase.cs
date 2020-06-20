@@ -8,6 +8,18 @@ namespace FlatRedBall.Forms.Controls.Primitives
 {
     public class ButtonBase : FrameworkElement
     {
+        protected bool isFocused;
+        public bool IsFocused
+        {
+            get { return isFocused; }
+            set
+            {
+                isFocused = value && IsEnabled;
+                UpdateState();
+            }
+        }
+
+
         #region Events
 
         /// <summary>
