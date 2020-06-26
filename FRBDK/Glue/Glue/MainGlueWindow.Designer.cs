@@ -312,6 +312,7 @@
             // 
             // ElementImages
             // 
+            this.ElementImages.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
             this.ElementImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("ElementImages.ImageStream")));
             this.ElementImages.TransparentColor = System.Drawing.Color.Transparent;
             this.ElementImages.Images.SetKeyName(0, "transparent.png");
@@ -331,6 +332,7 @@
             this.ElementImages.Images.SetKeyName(14, "screen.png");
             this.ElementImages.Images.SetKeyName(15, "states.png");
             this.ElementImages.Images.SetKeyName(16, "variable.png");
+            this.ElementImages.Images.SetKeyName(17, "layerList.png");
             // 
             // mMenu
             // 
