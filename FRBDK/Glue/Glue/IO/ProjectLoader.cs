@@ -627,7 +627,7 @@ namespace FlatRedBall.Glue.IO
                 EntitySave entitySave = ProjectManager.GlueProjectSave.Entities[i];
 
                 EntityTreeNode entityTreeNode = GlueState.Self.Find.EntityTreeNode(entitySave.Name);
-                entityTreeNode.UpdateReferencedTreeNodes();
+                entityTreeNode.RefreshTreeNodes();
             }
         }
 
@@ -643,7 +643,7 @@ namespace FlatRedBall.Glue.IO
                     screenTreeNode.BackColor = ElementViewWindow.RequiredScreenColor;
                 }
 
-                screenTreeNode.UpdateReferencedTreeNodes();
+                screenTreeNode.RefreshTreeNodes();
             }
         }
 

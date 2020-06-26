@@ -876,7 +876,7 @@ namespace Glue
                     //ProjectManager.GlueProjectSave.Entities.Add(newEntitySave);
                     GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(newEntitySave);
 
-                    GlueState.Self.Find.EntityTreeNode(newEntitySave).UpdateReferencedTreeNodes();
+                    GlueState.Self.Find.EntityTreeNode(newEntitySave).RefreshTreeNodes();
                 }
                 else if (GlueState.Self.Clipboard.CopiedScreen != null)
                 {
@@ -895,7 +895,7 @@ namespace Glue
 
                     GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(newScreenSave);
 
-                    GlueState.Self.Find.ScreenTreeNode(newScreenSave).UpdateReferencedTreeNodes();
+                    GlueState.Self.Find.ScreenTreeNode(newScreenSave).RefreshTreeNodes();
                 }
                 else if(GlueState.Self.Clipboard.CopiedNamedObject != null)
                 {

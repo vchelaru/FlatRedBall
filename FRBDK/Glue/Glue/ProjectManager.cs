@@ -789,7 +789,7 @@ namespace FlatRedBall.Glue
                     entitySave.UpdateFromBaseType();
                     // Update the tree nodes
                     EntityTreeNode treeNode = GlueState.Self.Find.EntityTreeNode(entitySave);
-                    treeNode.UpdateReferencedTreeNodes();
+                    treeNode.RefreshTreeNodes();
 
                     if (regenerateCode)
                     {
@@ -820,7 +820,7 @@ namespace FlatRedBall.Glue
                     screenSave.UpdateFromBaseType();
 
                     ScreenTreeNode treeNode = GlueState.Self.Find.ScreenTreeNode(screenSave);
-                    treeNode.UpdateReferencedTreeNodes();
+                    treeNode.RefreshTreeNodes();
 
                     if (regenerateCode)
                     {
@@ -1032,7 +1032,7 @@ namespace FlatRedBall.Glue
 
         private static void UpdateCurrentTreeNodeAndCodeAndSave()
         {
-            EditorLogic.CurrentElementTreeNode?.UpdateReferencedTreeNodes();
+            EditorLogic.CurrentElementTreeNode?.RefreshTreeNodes();
         }
 
         private static CheckResult InheritanceVerificationHelper(ref INamedObjectContainer node, ref string cycleString)

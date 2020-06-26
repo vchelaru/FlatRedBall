@@ -80,6 +80,7 @@
     <None Remove="Content\Icons\IncreaseArea.Agif" />
     <None Remove="Content\Icons\IncreaseArea.gif" />
     <None Remove="Content\Icons\IncreaseAreaGum.gif" />
+    <None Remove="Content\Icons\layerList.png" />
     <None Remove="Content\Icons\master_code.png" />
     <None Remove="Content\Icons\master_entity.png" />
     <None Remove="Content\Icons\master_file.png" />
@@ -157,6 +158,7 @@
     <EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\IncreaseAreaGum.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <Resource Include="Content\Icons\layerList.png" />
     <Resource Include="Content\Icons\master_code.png" />
     <Resource Include="Content\Icons\master_entity.png" />
     <Resource Include="Content\Icons\master_file.png" />

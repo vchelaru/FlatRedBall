@@ -736,7 +736,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             ElementViewWindow.GenerateSelectedElementCode();
 
-            EditorLogic.CurrentElementTreeNode.UpdateReferencedTreeNodes();
+            EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
 
             GluxCommands.Self.SaveGlux();
 
@@ -857,7 +857,7 @@ namespace FlatRedBall.Glue.FormHelpers
                         element.States.Add(newState);
                     }
 
-                    EditorLogic.CurrentElementTreeNode.UpdateReferencedTreeNodes();
+                    EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
                     ElementViewWindow.GenerateSelectedElementCode();
 
                     GlueCommands.Self.TreeNodeCommands.SelectTreeNode(newState);
@@ -895,7 +895,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     element.StateCategoryList.Add(newCategory);
 
-                    EditorLogic.CurrentElementTreeNode.UpdateReferencedTreeNodes();
+                    EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
                     ElementViewWindow.GenerateSelectedElementCode();
 
                     GluxCommands.Self.SaveGlux();
@@ -1170,7 +1170,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                             AskToRemoveCustomVariablesWithoutState(GlueState.Self.CurrentElement);
 
-                            EditorLogic.CurrentElementTreeNode.UpdateReferencedTreeNodes();
+                            EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
 
                             PluginManager.ReactToStateRemoved(GlueState.Self.CurrentElement, name);
 
@@ -1188,7 +1188,7 @@ namespace FlatRedBall.Glue.FormHelpers
                         {
                             GlueState.Self.CurrentElement.StateCategoryList.Remove(EditorLogic.CurrentStateSaveCategory);
 
-                            EditorLogic.CurrentElementTreeNode.UpdateReferencedTreeNodes();
+                            EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
 
                             GluxCommands.Self.SaveGlux();
                         }
@@ -2058,12 +2058,12 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (EditorLogic.CurrentEntityTreeNode != null)
             {
-                EditorLogic.CurrentEntityTreeNode.UpdateReferencedTreeNodes();
+                EditorLogic.CurrentEntityTreeNode.RefreshTreeNodes();
 
             }
             else if (EditorLogic.CurrentScreenTreeNode != null)
             {
-                EditorLogic.CurrentScreenTreeNode.UpdateReferencedTreeNodes();
+                EditorLogic.CurrentScreenTreeNode.RefreshTreeNodes();
             }
 
             MainGlueWindow.Self.PropertyGrid.Refresh();
@@ -2440,7 +2440,7 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             BaseElementTreeNode containerTreeNode = EditorLogic.CurrentElementTreeNode;
 
-            containerTreeNode.UpdateReferencedTreeNodes();
+            containerTreeNode.RefreshTreeNodes();
 
             CodeWriter.GenerateCode(containerTreeNode.SaveObject);
         }

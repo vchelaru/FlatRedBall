@@ -31,12 +31,15 @@ using FlatRedBall.Glue.IO;
 
 namespace FlatRedBall.Glue.Controls
 {
+    #region Enums
+
     public enum CodeArea
     {
         Initialize,
         AddToManagers
     }
 
+    #endregion
 
     #region BaseElementTreeNode (not generic)
 
@@ -105,7 +108,7 @@ namespace FlatRedBall.Glue.Controls
             }
         }
 
-        public void UpdateReferencedTreeNodes()
+        public void RefreshTreeNodes()
         {
             ElementViewWindow.SuppressSelectionEvents = true;
 
@@ -136,7 +139,7 @@ namespace FlatRedBall.Glue.Controls
                     Section.EndContextAndTime();
                     Section.GetAndStartContextAndTime("UpdateToNamedObjectSaves");
 
-                    mObjectsTreeNode.UpdateToNamedObjectSaves(mSaveObject.NamedObjects);
+                    mObjectsTreeNode.UpdateToNamedObjectSaves(mSaveObject);
 
 
                     Section.EndContextAndTime();
@@ -163,10 +166,6 @@ namespace FlatRedBall.Glue.Controls
 
 
                     Section.EndContextAndTime();
-                    Section.GetAndStartContextAndTime("SaveProjects");
-
-                    Section.EndContextAndTime();
-
                     break;
                 }
                 catch (Exception e)
@@ -455,7 +454,6 @@ namespace FlatRedBall.Glue.Controls
 
     public abstract class BaseElementTreeNode<T> : BaseElementTreeNode where T : IElement
     {
-
         #region Fields
 
         protected TreeNode mCodeFile;
@@ -483,7 +481,6 @@ namespace FlatRedBall.Glue.Controls
             }
         }
         
-
         public string GeneratedCodeFile
         {
             get
@@ -522,8 +519,6 @@ namespace FlatRedBall.Glue.Controls
 
         public BaseElementTreeNode(string text) : base(text)
         {
-
-
             mFilesTreeNode = new ReferencedFileListTreeNode("Files");
             mFilesTreeNode.ImageKey = "master_file.png";
             mFilesTreeNode.SelectedImageKey = "master_file.png";
@@ -561,36 +556,10 @@ namespace FlatRedBall.Glue.Controls
 
         #endregion
 
-        #region Public Methods
-        
-
         public override void RefreshStateCategoryUi(StateSaveCategory category)
         {
             mStateListTreeNode.UpdateToStateCategory(category);
         }
-
-
-        #endregion
-
-
-        #region Private Methods
-                
-
-        private TreeNode GetTreeNodeForCustomVariable(CustomVariable customVariable)
-        {
-            foreach (TreeNode node in this.mVariablesTreeNode.Nodes)
-            {
-                if (node.Tag == customVariable)
-                {
-                    return node;
-                }
-            }
-
-            return null;
-
-        }
-
-        #endregion
 
         #endregion
 

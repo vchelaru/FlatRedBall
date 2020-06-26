@@ -72,13 +72,13 @@ namespace FlatRedBall.Glue.Controls
             foreach (var entity in
                 ElementViewWindow.AllEntities.Where(entity => CheckIfNodeNeedsUpdate(entity.SaveObject)))
             {
-                entity.UpdateReferencedTreeNodes();
+                entity.RefreshTreeNodes();
             }
 
             foreach (var screen in
                 ElementViewWindow.AllScreens.Where(screen => CheckIfNodeNeedsUpdate(screen.SaveObject)))
             {
-                screen.UpdateReferencedTreeNodes();
+                screen.RefreshTreeNodes();
             }
         }
 	}

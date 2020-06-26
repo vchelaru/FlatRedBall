@@ -6,11 +6,14 @@ using System.Windows.Forms;
 using FlatRedBall.Glue.SaveClasses;
 using System.Drawing;
 using FlatRedBall.Glue.FormHelpers;
+using System.Windows.Forms.Design;
 
 namespace FlatRedBall.Glue.Controls
 {
     public class NamedObjectListTreeNode : TreeNode
     {
+        TreeNode LayersTreeNode;
+
         public NamedObjectListTreeNode(string text)
             : base(text)
         {
@@ -19,6 +22,7 @@ namespace FlatRedBall.Glue.Controls
 
         public TreeNode GetTreeNodeFor(NamedObjectSave namedObjectSave)
         {
+
             return GetTreeNodeFor(namedObjectSave, this);
         }
 
@@ -44,77 +48,143 @@ namespace FlatRedBall.Glue.Controls
 			return null;
 		}
 
-        public void UpdateToNamedObjectSaves(List<NamedObjectSave> namedObjectList)
+        public void UpdateToNamedObjectSaves(IElement element)
         {
-            UpdateToNamedObjectSaves(namedObjectList, this);
+            UpdateToNamedObjectSaves(element.NamedObjects, this);
 
         }
 
-        public void UpdateToNamedObjectSaves(List<NamedObjectSave> namedObjectList, TreeNode currentNode)
+        private void UpdateToNamedObjectSaves(List<NamedObjectSave> namedObjectList, TreeNode currentNode)
         {
-            int hiddenCountSoFar = 0;
-
-            for (int i = 0; i < namedObjectList.Count; i++)
+            if(currentNode == this)
             {
-                NamedObjectSave namedObject = namedObjectList[i];
+                UpdateLayersTreeNode(namedObjectList);
+            }
 
-                TreeNode treeNode = GetTreeNodeFor(namedObject, currentNode);
+            var objectsToShow = namedObjectList
+                .Where(item => (item.IsNodeHidden == false || EditorData.PreferenceSettings.ShowHiddenNodes == true) && item.IsLayer == false)
+                .ToList();
+            int foldersAtTop = 0;
+            if(LayersTreeNode != null && currentNode == this)
+            {
+                foldersAtTop++;
+            }
 
-                if (treeNode == null && (!namedObject.IsNodeHidden || EditorData.PreferenceSettings.ShowHiddenNodes))
+            for (int i = 0; i < objectsToShow.Count; i++)
+            {
+                NamedObjectSave namedObject = objectsToShow[i];
+
+                var desiredIndex = i + foldersAtTop;
+
+                var treeNode = GetTreeNodeFor(namedObject, currentNode);
+
+                if (treeNode == null)
                 {
-                    treeNode = new TreeNode(namedObject.InstanceName);
-                    treeNode.SelectedImageKey = "object.png";
-                    treeNode.ImageKey = "object.png";
-                    
-                    treeNode.Tag = namedObject;
-
-                    currentNode.Nodes.Add(treeNode);
+                    treeNode = CreateTreeNodeForNamedObjectAtIndex(currentNode, desiredIndex, namedObject);
                 }
-                else if (treeNode == null && namedObject.IsNodeHidden && EditorData.PreferenceSettings.ShowHiddenNodes == false)
+
+                if (treeNode != null)
                 {
-                    hiddenCountSoFar++;
+                    UpdateTreeNodeForNamedObjectAtIndex(currentNode, desiredIndex, namedObject, treeNode);
                 }
-                else if ((namedObject.IsNodeHidden && !EditorData.PreferenceSettings.ShowHiddenNodes) && treeNode != null)
-                {
-                    currentNode.Nodes.Remove(treeNode);
-                }
-                
-
-                if(treeNode != null)
-                {
-                    if (treeNode.Text != namedObject.InstanceName)
-                    {
-                        treeNode.Text = namedObject.InstanceName;
-                    }
-
-                    Color colorToSet = GetNosTreeNodeColor(namedObject);
-
-                    if (colorToSet != treeNode.ForeColor)
-                    {
-                        treeNode.ForeColor = colorToSet;
-                    }
-                                    
-                    int indexOfTreeNode = currentNode.Nodes.IndexOf(treeNode);
-
-                    if (indexOfTreeNode + hiddenCountSoFar != i && indexOfTreeNode != -1)
-                    {
-                        currentNode.Nodes.Remove(treeNode);
-                        currentNode.Nodes.Insert(i, treeNode);
-                    }
-                }
-			}
+            }
 
             for (int i = currentNode.Nodes.Count - 1; i > -1; i--)
             {
-                NamedObjectSave treeNamedObject = currentNode.Nodes[i].Tag as NamedObjectSave;
+                var nodeAtI = currentNode.Nodes[i];
+                NamedObjectSave treeNamedObject = nodeAtI.Tag as NamedObjectSave;
 
-                if (!namedObjectList.Contains(treeNamedObject))
+                if(nodeAtI != LayersTreeNode)
                 {
-                    currentNode.Nodes.RemoveAt(i);
+                    if (!namedObjectList.Contains(treeNamedObject))
+                    {
+                        currentNode.Nodes.RemoveAt(i);
+                    }
+                    else
+                    {
+                        UpdateToNamedObjectSaves(treeNamedObject.ContainedObjects, nodeAtI);
+                    }
                 }
-                else
+
+            }
+        }
+
+        private static void UpdateTreeNodeForNamedObjectAtIndex(TreeNode currentNode, int i, NamedObjectSave namedObject, TreeNode treeNode)
+        {
+            if (treeNode.Text != namedObject.InstanceName)
+            {
+                treeNode.Text = namedObject.InstanceName;
+            }
+
+            Color colorToSet = GetNosTreeNodeColor(namedObject);
+
+            if (colorToSet != treeNode.ForeColor)
+            {
+                treeNode.ForeColor = colorToSet;
+            }
+
+            int indexOfTreeNode = currentNode.Nodes.IndexOf(treeNode);
+
+            if (indexOfTreeNode != i)
+            {
+                currentNode.Nodes.Remove(treeNode);
+                currentNode.Nodes.Insert(i, treeNode);
+            }
+        }
+
+        private static TreeNode CreateTreeNodeForNamedObjectAtIndex(TreeNode currentNode, int i, NamedObjectSave namedObject)
+        {
+            TreeNode treeNode = new TreeNode(namedObject.InstanceName);
+            treeNode.SelectedImageKey = "object.png";
+            treeNode.ImageKey = "object.png";
+
+            treeNode.Tag = namedObject;
+
+            currentNode.Nodes.Insert(i, treeNode);
+            return treeNode;
+        }
+
+        private void UpdateLayersTreeNode(List<NamedObjectSave> namedObjectList)
+        {
+            var layers = namedObjectList
+                            .Where(item => item.IsLayer)
+                            .ToArray();
+
+            if(layers.Length > 0)
+            {
+                if(LayersTreeNode == null)
                 {
-                    UpdateToNamedObjectSaves(treeNamedObject.ContainedObjects, currentNode.Nodes[i]);
+                    LayersTreeNode = new TreeNode();
+                    LayersTreeNode.Text = "Layers";
+                    LayersTreeNode.SelectedImageKey = "layerList.png";
+                    LayersTreeNode.ImageKey = "layerList.png";
+                    this.Nodes.Add(LayersTreeNode);
+                }
+
+                for(int i = 0; i < layers.Length; i++)
+                {
+                    var layer = layers[i];
+
+                    var treeNode = GetTreeNodeFor(layer, LayersTreeNode);
+
+                    if (treeNode == null)
+                    {
+                        treeNode = CreateTreeNodeForNamedObjectAtIndex(LayersTreeNode, i, layer);
+                    }
+
+                    if (treeNode != null)
+                    {
+                        UpdateTreeNodeForNamedObjectAtIndex(LayersTreeNode, i, layer, treeNode);
+                    }
+                }
+
+            }
+            else
+            {
+                if (LayersTreeNode != null)
+                {
+                    this.Nodes.Remove(LayersTreeNode);
+                    LayersTreeNode = null;
                 }
             }
         }

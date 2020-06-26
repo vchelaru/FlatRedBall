@@ -146,28 +146,8 @@ namespace FlatRedBall.Glue
         [Obsolete("Use GlueState.CurrentElement")]
 		public static IElement CurrentElement
 		{
-			get
-			{
-				if (CurrentEntitySave != null)
-				{
-					return CurrentEntitySave;
-				}
-				else if (CurrentScreenSave != null)
-				{
-					return CurrentScreenSave;
-				}
-				else
-				{
-					return null;
-				}
-			}
-            set
-            {
-                var treeNode = GlueState.Self.Find.ElementTreeNode(value);
-
-                CurrentTreeNode = treeNode;
-
-            }
+            get => GlueState.Self.CurrentElement;
+            set => GlueState.Self.CurrentElement = value;
 		}
 
         public static EntitySave CurrentEntitySave

@@ -263,7 +263,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 {
                     MessageBox.Show("Could not find the file\n\n" + EditorLogic.CurrentCodeFile);
                     // This file no longer exists, so let's refresh the property grid
-                    EditorLogic.CurrentElementTreeNode.UpdateReferencedTreeNodes();
+                    EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
                 }
             }
             else
@@ -524,7 +524,7 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             if (EditorLogic.CurrentElementTreeNode != null)
             {
-                EditorLogic.CurrentElementTreeNode.UpdateReferencedTreeNodes();
+                EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
             }
             else if (EditorLogic.CurrentTreeNode != null && EditorLogic.CurrentTreeNode.Root().IsGlobalContentContainerNode())
             {
@@ -1088,7 +1088,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 var elementTreeNode = GlueState.Self.Find.ElementTreeNode(element);
                 if (elementTreeNode != null)
                 {
-                    elementTreeNode.UpdateReferencedTreeNodes();
+                    elementTreeNode.RefreshTreeNodes();
                     CodeWriter.GenerateCode(element);
                 }
                 element.HasChanged = false;
@@ -1101,7 +1101,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 var elementTreeNode = GlueState.Self.Find.ElementTreeNode(element);
                 if (elementTreeNode != null)
                 {
-                    elementTreeNode.UpdateReferencedTreeNodes();
+                    elementTreeNode.RefreshTreeNodes();
                     CodeWriter.GenerateCode(element);
                 }
                 element.HasChanged = false;

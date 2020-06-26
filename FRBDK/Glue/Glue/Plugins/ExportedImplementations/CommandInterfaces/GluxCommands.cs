@@ -606,11 +606,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     if (EditorLogic.CurrentScreenTreeNode != null)
                     {
-                        EditorLogic.CurrentScreenTreeNode.UpdateReferencedTreeNodes();
+                        EditorLogic.CurrentScreenTreeNode.RefreshTreeNodes();
                     }
                     else if (EditorLogic.CurrentEntityTreeNode != null)
                     {
-                        EditorLogic.CurrentEntityTreeNode.UpdateReferencedTreeNodes();
+                        EditorLogic.CurrentEntityTreeNode.RefreshTreeNodes();
                     }
                     if (regenerateCode)
                     {
@@ -1005,7 +1005,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                             if (updateUi)
                             {
-                                treeNode.UpdateReferencedTreeNodes();
+                                treeNode.RefreshTreeNodes();
                             }
                             CodeWriter.GenerateCode(derivedElement);
                         }
@@ -1026,7 +1026,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (updateUi)
                 {
-                    elementTreeNode.UpdateReferencedTreeNodes();
+                    elementTreeNode.RefreshTreeNodes();
                 }
                 CodeWriter.GenerateCode(element);
                 if (element is EntitySave)

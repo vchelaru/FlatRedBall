@@ -542,7 +542,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 Directory.CreateDirectory(ProjectManager.MakeAbsolute(directory, true));
 
-                EditorLogic.CurrentElementTreeNode?.UpdateReferencedTreeNodes();
+                EditorLogic.CurrentElementTreeNode?.RefreshTreeNodes();
             }
             else if (treeNodeToAddTo.IsFolderInFilesContainerNode())
             {

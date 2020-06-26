@@ -53,7 +53,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             parentNamedObject.ContainedObjects.Add(namedObject);
 
-            EditorLogic.CurrentElementTreeNode.UpdateReferencedTreeNodes();
+            EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
 
             // Since it's part of a list we know its type
             string typeOfNewObject = parentNamedObject.SourceClassGenericType;

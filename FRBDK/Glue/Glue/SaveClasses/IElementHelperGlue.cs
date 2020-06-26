@@ -110,11 +110,11 @@ namespace FlatRedBall.Glue.SaveClasses
                     TreeNode treeNode = GlueState.Self.Find.ElementTreeNode(elementToRename);
                     if (treeNode is ScreenTreeNode)
                     {
-                        ((ScreenTreeNode)treeNode).UpdateReferencedTreeNodes();
+                        ((ScreenTreeNode)treeNode).RefreshTreeNodes();
                     }
                     else if (treeNode is EntityTreeNode)
                     {
-                        ((EntityTreeNode)treeNode).UpdateReferencedTreeNodes();
+                        ((EntityTreeNode)treeNode).RefreshTreeNodes();
                     }
 
                     if (elementToRename is EntitySave)

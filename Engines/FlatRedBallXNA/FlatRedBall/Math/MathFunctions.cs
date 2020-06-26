@@ -36,24 +36,14 @@ namespace FlatRedBall.Math
     public static class MathFunctions
     {
         #region Fields
-#if FRB_MDX
-        public static Vector3 ForwardVector3 = new Vector3(0,0,1);
-#else
         public static Vector3 ForwardVector3 = Vector3.Forward;
-#endif
-
-
-#if FRB_XNA
         public static Plane ZPlane = new Plane(new Vector3(0, 0, 1), 0);
-
-#endif
-
 
         static Vector3 sMethodCallVector3;
 
-        #endregion
-
         public const float MatrixOrthonormalEpsilon = .001f;
+
+        #endregion
 
         #region Methods
 
@@ -892,6 +882,30 @@ namespace FlatRedBall.Math
             {
                 didLoop = numberOfTimesIn > 0;
                 return value - numberOfTimesIn * loopPeriod;
+            }
+        }
+
+        public static int LoopInt(int value, int maxValueExclusive)
+        {
+            if (value == 0)
+            {
+                return 0;
+            }
+            else if (value > 0)
+            {
+                return value % maxValueExclusive;
+            }
+            else
+            {
+                var negativeModValue = (value % maxValueExclusive);
+                if (negativeModValue == 0)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return maxValueExclusive + negativeModValue;
+                }
             }
         }
 

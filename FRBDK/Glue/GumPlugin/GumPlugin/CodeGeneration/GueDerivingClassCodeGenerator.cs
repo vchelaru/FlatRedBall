@@ -565,7 +565,8 @@ namespace GumPlugin.CodeGeneration
 
             if(shouldGenerate)
             {
-                currentBlock.Line($"public {controlType} FormsControl {{get; private set;}}");
+                // This should be protected so derived classes can specify this
+                currentBlock.Line($"public {controlType} FormsControl {{get; protected set;}}");
                 currentBlock.Line($"public override object FormsControlAsObject {{ get {{ return FormsControl; }} }}");
 
             }

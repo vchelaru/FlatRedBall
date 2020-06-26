@@ -229,7 +229,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     element.CustomVariables.Add(customVariable);
                     GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
-                    EditorLogic.CurrentElementTreeNode.UpdateReferencedTreeNodes();
+                    EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
                 }
             }
         }
@@ -743,7 +743,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 // The new 1:  Update 
                 if (EditorLogic.CurrentElement != null)
                 {
-                    EditorLogic.CurrentElementTreeNode.UpdateReferencedTreeNodes();
+                    EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
                 }
                 else
                 {

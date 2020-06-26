@@ -309,7 +309,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         // Refresh the UI - it's refreshed above in CreateAndAddNewVariable,
                         // but we're changing the DefinedByBase property which changes the color
                         // of the variable so refresh it again
-                        EditorLogic.CurrentElementTreeNode.UpdateReferencedTreeNodes();
+                        EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
                     }
                     ElementViewWindow.ShowAllElementVariablesInPropertyGrid();
 

@@ -173,7 +173,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             else if (changedMember == nameof(NamedObjectSave.IsDisabled))
             {
-                GlueState.Self.Find.ElementTreeNode(EditorLogic.CurrentElement).UpdateReferencedTreeNodes();
+                GlueState.Self.Find.ElementTreeNode(EditorLogic.CurrentElement).RefreshTreeNodes();
             }
 
             #endregion

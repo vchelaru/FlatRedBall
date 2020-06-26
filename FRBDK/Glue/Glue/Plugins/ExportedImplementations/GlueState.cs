@@ -45,8 +45,27 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public IElement CurrentElement
         {
-            get { return EditorLogic.CurrentElement; }
-            set { EditorLogic.CurrentElement = value; }
+            get 
+            {
+                if (CurrentEntitySave != null)
+                {
+                    return CurrentEntitySave;
+                }
+                else if (CurrentScreenSave != null)
+                {
+                    return CurrentScreenSave;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set 
+            {
+                var treeNode = GlueState.Self.Find.ElementTreeNode(value);
+
+                CurrentTreeNode = treeNode;
+            }
 
         }
 
