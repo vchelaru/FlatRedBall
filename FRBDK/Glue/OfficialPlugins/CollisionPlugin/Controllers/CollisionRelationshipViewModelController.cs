@@ -403,28 +403,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
         public static void TryFixSourceClassType(NamedObjectSave selectedNos)
         {
-
-            if (selectedNos.SourceClassType == "CollisionRelationship" ||
-                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.CollisionRelationship") == true ||
-                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.PositionedObjectVsPositionedObjectRelationship") == true ||
-                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.PositionedObjectVsListRelationship") == true ||
-                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.ListVsPositionedObjectRelationship") == true ||
-                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.PositionedObjectVsShapeCollection") == true ||
-                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.ListVsShapeCollectionRelationship") == true ||
-                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.ListVsListRelationship") == true ||
-
-                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.CollidableListVsTileShapeCollectionRelationship") == true ||
-                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.CollidableVsTileShapeCollectionRelationship") == true ||
-
-                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.DelegateCollisionRelationship<") == true ||
-                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.DelegateCollisionRelationshipBase<") == true ||
-                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.DelegateListVsSingleRelationship<") == true ||
-                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.DelegateListVsListRelationship<") == true ||
-
-                selectedNos.SourceClassType?.StartsWith("CollisionRelationship<") == true
-
-
-                )
+            if (selectedNos.IsCollisionRelationship())
             {
                 selectedNos.SourceClassType = AssetTypeInfoManager.Self.CollisionRelationshipAti
                     .QualifiedRuntimeTypeName.PlatformFunc(selectedNos);

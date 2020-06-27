@@ -7,12 +7,14 @@ using FlatRedBall.Glue.SaveClasses;
 using System.Drawing;
 using FlatRedBall.Glue.FormHelpers;
 using System.Windows.Forms.Design;
+using FlatRedBall.Graphics;
 
 namespace FlatRedBall.Glue.Controls
 {
     public class NamedObjectListTreeNode : TreeNode
     {
         TreeNode LayersTreeNode;
+        TreeNode CollisionRelationshipTreeNode;
 
         public NamedObjectListTreeNode(string text)
             : base(text)
@@ -59,15 +61,26 @@ namespace FlatRedBall.Glue.Controls
             if(currentNode == this)
             {
                 UpdateLayersTreeNode(namedObjectList);
+                UpdateCollisionRelationshipTreeNode(namedObjectList);
             }
 
             var objectsToShow = namedObjectList
-                .Where(item => (item.IsNodeHidden == false || EditorData.PreferenceSettings.ShowHiddenNodes == true) && item.IsLayer == false)
+                .Where(item => (item.IsNodeHidden == false || EditorData.PreferenceSettings.ShowHiddenNodes == true) 
+                    && item.IsLayer == false 
+                    && item.IsCollisionRelationship() == false
+                    )
                 .ToList();
             int foldersAtTop = 0;
-            if(LayersTreeNode != null && currentNode == this)
+            if(currentNode == this)
             {
-                foldersAtTop++;
+                if(LayersTreeNode != null)
+                {
+                    foldersAtTop++;
+                }
+                if(CollisionRelationshipTreeNode != null)
+                {
+                    foldersAtTop++;
+                }
             }
 
             for (int i = 0; i < objectsToShow.Count; i++)
@@ -94,7 +107,7 @@ namespace FlatRedBall.Glue.Controls
                 var nodeAtI = currentNode.Nodes[i];
                 NamedObjectSave treeNamedObject = nodeAtI.Tag as NamedObjectSave;
 
-                if(nodeAtI != LayersTreeNode)
+                if(nodeAtI != LayersTreeNode && nodeAtI != CollisionRelationshipTreeNode)
                 {
                     if (!namedObjectList.Contains(treeNamedObject))
                     {
@@ -105,7 +118,6 @@ namespace FlatRedBall.Glue.Controls
                         UpdateToNamedObjectSaves(treeNamedObject.ContainedObjects, nodeAtI);
                     }
                 }
-
             }
         }
 
@@ -144,6 +156,51 @@ namespace FlatRedBall.Glue.Controls
             return treeNode;
         }
 
+        private void UpdateCollisionRelationshipTreeNode(List<NamedObjectSave> namedObjectList)
+        {
+            var collisionRelationships = namedObjectList
+                .Where(item => item.IsCollisionRelationship())
+                .ToArray();
+
+            if(collisionRelationships.Length > 0)
+            {
+                if(CollisionRelationshipTreeNode == null)
+                {
+                    CollisionRelationshipTreeNode = new TreeNode();
+                    CollisionRelationshipTreeNode.Text = "Collision Relationships";
+                    CollisionRelationshipTreeNode.SelectedImageKey = "collisionRelationshipList.png";
+                    CollisionRelationshipTreeNode.ImageKey = "collisionRelationshipList.png";
+                    this.Nodes.Add(CollisionRelationshipTreeNode);
+                }
+
+                for (int i = 0; i < collisionRelationships.Length; i++)
+                {
+                    var collisionRelationship = collisionRelationships[i];
+
+                    var treeNode = GetTreeNodeFor(collisionRelationship, LayersTreeNode);
+
+                    if(treeNode == null)
+                    {
+                        treeNode = CreateTreeNodeForNamedObjectAtIndex(CollisionRelationshipTreeNode, i, collisionRelationship);
+                    }
+
+                    if(treeNode != null)
+                    {
+                        UpdateTreeNodeForNamedObjectAtIndex(CollisionRelationshipTreeNode, i, collisionRelationship, treeNode);
+                    }
+                }
+            }
+            else
+            {
+                if(CollisionRelationshipTreeNode != null)
+                {
+                    this.Nodes.Remove(CollisionRelationshipTreeNode);
+                    CollisionRelationshipTreeNode = null;
+                }
+            }
+
+        }
+
         private void UpdateLayersTreeNode(List<NamedObjectSave> namedObjectList)
         {
             var layers = namedObjectList
@@ -177,7 +234,6 @@ namespace FlatRedBall.Glue.Controls
                         UpdateTreeNodeForNamedObjectAtIndex(LayersTreeNode, i, layer, treeNode);
                     }
                 }
-
             }
             else
             {
