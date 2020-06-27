@@ -333,6 +333,7 @@
             this.ElementImages.Images.SetKeyName(15, "states.png");
             this.ElementImages.Images.SetKeyName(16, "variable.png");
             this.ElementImages.Images.SetKeyName(17, "layerList.png");
+            this.ElementImages.Images.SetKeyName(18, "collisionRelationshipList.png");
             // 
             // mMenu
             // 

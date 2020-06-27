@@ -71,6 +71,7 @@
     <None Remove="Content\Icons\CanInterpolate.bmp" />
     <None Remove="Content\Icons\CantInterpolate.bmp" />
     <None Remove="Content\Icons\code.png" />
+    <None Remove="Content\Icons\collisionRelationshipList.png" />
     <None Remove="Content\Icons\copyIcon.png" />
     <None Remove="Content\Icons\edit_code.png" />
     <None Remove="Content\Icons\entity.png" />
@@ -143,6 +144,7 @@
     <Resource Include="Content\Icons\CanInterpolate.bmp" />
     <Resource Include="Content\Icons\CantInterpolate.bmp" />
     <Resource Include="Content\Icons\code.png" />
+    <Resource Include="Content\Icons\collisionRelationshipList.png" />
     <Resource Include="Content\Icons\copyIcon.png" />
     <Resource Include="Content\Icons\edit_code.png" />
     <Resource Include="Content\Icons\entity.png" />
