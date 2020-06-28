@@ -11,26 +11,56 @@ namespace FlatRedBall.Forms.Controls
 {
     public class ItemsControl : ScrollViewer
     {
+        #region Fields/Properties
 
         protected Type ItemGumType { get; set; }
         protected Type ItemFormsType { get; set; } = typeof(ListBoxItem);
 
-        public ObservableCollection<object> Items
+        Collection<object> items;
+        public Collection<object> Items
         {
-            get;
-            private set;
-        } = new ObservableCollection<object>();
+            get => items;
+            set
+            {
+                if(items != value)
+                {
+                    if(items != null)
+                    {
+                        ClearVisualsInternal();
+                    }
+
+                    if(items is INotifyCollectionChanged notifyCollectionChanged)
+                    {
+                        notifyCollectionChanged.CollectionChanged -= HandleCollectionChanged;
+                    }
+                    items = value;
+                    if(items is INotifyCollectionChanged newNotifyCollectionChanged)
+                    {
+                        newNotifyCollectionChanged.CollectionChanged += HandleCollectionChanged;
+                    }
+
+                    if(items?.Count > 0)
+                    {
+                        // refresh!
+                        var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, items, startingIndex:0);
+                        HandleCollectionChanged(this, args);
+                    }
+                }
+            }
+        } 
 
         protected List<ListBoxItem> listBoxItems = new List<ListBoxItem>();
 
+        #endregion
+
         public ItemsControl() : base()
         {
-            Items.CollectionChanged += HandleCollectionChanged;
+            Items = new ObservableCollection<object>();
         }
 
         public ItemsControl(GraphicalUiElement visual) : base(visual)
         {
-            Items.CollectionChanged += HandleCollectionChanged;
+            Items = new ObservableCollection<object>();
         }
 
         private ListBoxItem CreateNewListItemVisual(object o)
@@ -58,8 +88,6 @@ namespace FlatRedBall.Forms.Controls
                 
                 if (listBoxItemGumType == null)
                 {
-
-
                     throw new Exception($"The {controlType} does not have a {prefix}ItemGumType specified, nor does the DefaultFormsControl have an entry for ListBoxItem. " +
                         "This property must be set before adding any items");
                 }
@@ -76,7 +104,6 @@ namespace FlatRedBall.Forms.Controls
 
                 var visual = gumConstructor.Invoke(new object[] { true, true }) as GraphicalUiElement;
 
-
                 if (listBoxFormsConstructor == null)
                 {
                     string message =
@@ -88,8 +115,8 @@ namespace FlatRedBall.Forms.Controls
                 item = listBoxFormsConstructor.Invoke(new object[] { visual }) as ListBoxItem;
                 item.Selected += HandleItemSelected;
                 item.UpdateToObject(o);
+                item.BindingContext = o;
             }
-
 
             return item;
         }
@@ -101,18 +128,19 @@ namespace FlatRedBall.Forms.Controls
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-
-                    foreach (var item in e.NewItems)
                     {
-                        var newItem = CreateNewListItemVisual(item);
+                        int index = e.NewStartingIndex;
+                        foreach (var item in e.NewItems)
+                        {
+                            var newItem = CreateNewListItemVisual(item);
 
-                        var newIndex = e.NewStartingIndex;
-                        InnerPanel.Children.Insert(newIndex, newItem.Visual);
+                            InnerPanel.Children.Insert(index, newItem.Visual);
 
-                        newItem.Visual.Parent = base.InnerPanel;
+                            newItem.Visual.Parent = base.InnerPanel;
 
-                        listBoxItems.Insert(e.NewStartingIndex, newItem);
-
+                            listBoxItems.Insert(e.NewStartingIndex, newItem);
+                            index++;
+                        }
                     }
 
                     break;
@@ -126,12 +154,7 @@ namespace FlatRedBall.Forms.Controls
                     }
                     break;
                 case NotifyCollectionChangedAction.Reset:
-
-                    for (int i = InnerPanel.Children.Count - 1; i > -1; i--)
-                    {
-                        InnerPanel.Children[i].Parent = null;
-                    }
-                    listBoxItems.Clear();
+                    ClearVisualsInternal();
                     break;
                 case NotifyCollectionChangedAction.Replace:
                     {
@@ -143,6 +166,15 @@ namespace FlatRedBall.Forms.Controls
 
                     break;
             }
+        }
+
+        private void ClearVisualsInternal()
+        {
+            for (int i = InnerPanel.Children.Count - 1; i > -1; i--)
+            {
+                InnerPanel.Children[i].Parent = null;
+            }
+            listBoxItems.Clear();
         }
 
         private void HandleItemSelected(object sender, EventArgs e)

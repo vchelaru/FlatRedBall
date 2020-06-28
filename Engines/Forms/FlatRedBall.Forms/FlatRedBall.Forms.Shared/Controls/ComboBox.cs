@@ -35,7 +35,7 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        public ObservableCollection<object> Items => listBox.Items;
+        public Collection<object> Items => listBox.Items;
         public Type ListBoxItemGumType
         {
             get { return listBox.ListBoxItemGumType; }
