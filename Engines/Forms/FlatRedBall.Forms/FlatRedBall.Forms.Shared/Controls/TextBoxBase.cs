@@ -620,12 +620,17 @@ namespace FlatRedBall.Forms.Controls
 #endif
 
             }
-            else if (!isFocused && FlatRedBall.Input.InputManager.InputReceiver == this)
+            else if (!isFocused)
             {
-                FlatRedBall.Input.InputManager.InputReceiver = null;
-#if ANDROID
-                FlatRedBall.Input.InputManager.Keyboard.HideKeyboard();
-#endif
+                if (FlatRedBall.Input.InputManager.InputReceiver == this)
+                {
+                    FlatRedBall.Input.InputManager.InputReceiver = null;
+    #if ANDROID
+                    FlatRedBall.Input.InputManager.Keyboard.HideKeyboard();
+    #endif
+                }
+
+                SelectionLength = 0;
             }
         }
 
