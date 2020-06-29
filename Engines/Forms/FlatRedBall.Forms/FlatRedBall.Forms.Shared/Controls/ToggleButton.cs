@@ -42,6 +42,8 @@ namespace FlatRedBall.Forms.Controls
                     {
                         Indeterminate?.Invoke(this, null);
                     }
+
+                    PushValueToViewModel();
                 }
             }
         }

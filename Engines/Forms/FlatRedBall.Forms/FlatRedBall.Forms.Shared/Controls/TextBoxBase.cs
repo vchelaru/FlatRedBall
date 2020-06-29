@@ -21,7 +21,7 @@ namespace FlatRedBall.Forms.Controls
             set => IsFocused = value;
         }
 
-        protected bool isFocused;
+        bool isFocused;
         public bool IsFocused
         {
             get { return isFocused; }
@@ -29,6 +29,7 @@ namespace FlatRedBall.Forms.Controls
             {
                 isFocused = value && IsEnabled;
                 UpdateToIsFocused();
+                PushValueToViewModel();
             }
         }
 
