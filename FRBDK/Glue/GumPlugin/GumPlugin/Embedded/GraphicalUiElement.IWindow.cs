@@ -732,7 +732,10 @@ namespace Gum.Wireframe
                     if (EffectiveBindingContext is INotifyPropertyChanged viewModel)
                     {
                         viewModel.PropertyChanged += HandleViewModelPropertyChanged;
+                    }
 
+                    if (EffectiveBindingContext != null)
+                    {
                         foreach (var vmProperty in vmPropsToUiProps.Keys)
                         {
                             UpdateToVmProperty(vmProperty);
@@ -769,6 +772,9 @@ namespace Gum.Wireframe
                     {
                         viewModel.PropertyChanged += HandleViewModelPropertyChanged;
 
+                    }
+                    if(EffectiveBindingContext != null)
+                    {
                         foreach (var vmProperty in vmPropsToUiProps.Keys)
                         {
                             UpdateToVmProperty(vmProperty);
@@ -846,13 +852,22 @@ namespace Gum.Wireframe
 #else
                 var vmProperty = EffectiveBindingContext.GetType().GetProperty(vmPropertyName);
 #endif
+                FieldInfo vmField = null;
+                
                 if (vmProperty == null)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Could not find property {vmPropertyName} in {mBindingContext.GetType()}");
+                    vmField = EffectiveBindingContext.GetType().GetField(vmPropertyName);
+                }
+
+
+                if (vmProperty == null && vmField == null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Could not find field or property {vmPropertyName} in {EffectiveBindingContext.GetType()}");
                 }
                 else
                 {
-                    var vmValue = vmProperty.GetValue(EffectiveBindingContext, null);
+                    var vmValue = vmField != null ? vmField.GetValue(EffectiveBindingContext) :
+                        vmProperty.GetValue(EffectiveBindingContext, null);
 
                     var uiProperty = this.GetType().GetProperty(vmPropsToUiProps[vmPropertyName]);
 
