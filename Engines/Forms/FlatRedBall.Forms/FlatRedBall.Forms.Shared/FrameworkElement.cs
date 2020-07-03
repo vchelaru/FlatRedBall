@@ -303,11 +303,20 @@ namespace FlatRedBall.Forms.Controls
             vmPropsToUiProps.Add(vmProperty, uiProperty);
         }
 
-        private void HandleVisualBindingContextChanged(object sender, EventArgs args)
+        private void HandleVisualBindingContextChanged(object sender, BindingContextChangedEventArgs args)
         {
+            if(args.OldBindingContext is INotifyPropertyChanged oldAsPropertyChanged)
+            {
+                oldAsPropertyChanged.PropertyChanged -= HandleViewModelPropertyChanged;
+            }
             if(BindingContext != null)
             {
                 UpdateAllUiPropertiesToVm();
+                if(BindingContext is INotifyPropertyChanged newAsPropertyChanged)
+                {
+                    newAsPropertyChanged.PropertyChanged += HandleViewModelPropertyChanged;
+                }
+
             }
         }
 

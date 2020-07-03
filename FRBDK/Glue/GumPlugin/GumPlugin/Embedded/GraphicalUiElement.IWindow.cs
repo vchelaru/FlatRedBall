@@ -12,7 +12,10 @@ using System.Text;
 namespace Gum.Wireframe
 {
 
-
+    public class BindingContextChangedEventArgs : EventArgs
+    {
+        public object OldBindingContext { get; set; }
+    }
     public partial class GraphicalUiElement : FlatRedBall.Gui.Controls.IControl
     {
         class HandledActions
@@ -736,7 +739,10 @@ namespace Gum.Wireframe
                         }
                     }
 
-                    BindingContextChanged?.Invoke(this, null);
+                    var args = new BindingContextChangedEventArgs();
+                    args.OldBindingContext = oldBindingContext;
+
+                    BindingContextChanged?.Invoke(this, args);
 
                     UpdateChildrenInheritedBindingContext(this.Children);
 
@@ -769,7 +775,10 @@ namespace Gum.Wireframe
                         }
                     }
 
-                    BindingContextChanged?.Invoke(this, null);
+                    var args = new BindingContextChangedEventArgs();
+                    args.OldBindingContext = oldBindingContext;
+
+                    BindingContextChanged?.Invoke(this, args);
 
                     if(this.Children != null)
                     {
@@ -784,7 +793,7 @@ namespace Gum.Wireframe
             }
         }
 
-        public event EventHandler BindingContextChanged;
+        public event Action<object, BindingContextChangedEventArgs> BindingContextChanged;
 
         object EffectiveBindingContext => mBindingContext ?? InheritedBindingContext;
 
@@ -806,6 +815,7 @@ namespace Gum.Wireframe
         {
             var vmPropertyName = e.PropertyName;
             var updated = UpdateToVmProperty(vmPropertyName);
+
             //if (updated)
             //{
             //    this.EffectiveManagers?.InvalidateSurface();
