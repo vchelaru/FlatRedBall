@@ -22,6 +22,15 @@ using System.Threading;
 
 namespace " + GlueState.Self.ProjectNamespace + @"
 {
+
+    public class GlueVariableSetData
+    {
+        public string VariableName { get; set; }
+        public string Value { get; set; }
+        public string Type { get; set; }
+    }
+
+
     public class GlueControlManager
     {
         bool isRunning;
@@ -156,12 +165,48 @@ namespace " + GlueState.Self.ProjectNamespace + @"
                             FlatRedBall.TimeManager.TimeFactor = timeFactor / 100.0f;
                             break;
 
-                    }       
-                });
+                        case ""SetVariable"":
+
+                            HandleSetVariable(data);
+
+                            break;
+
+
+                        }       
+                    });
+                }
+
+                return ""true"";
             }
 
-            return ""true"";
+            public void HandleSetVariable(string data)
+            {
+                var screen =
+                    FlatRedBall.Screens.ScreenManager.CurrentScreen;
+
+                var deserialized = Newtonsoft.Json.JsonConvert.DeserializeObject<GlueVariableSetData>(data);
+
+                object variableValue = deserialized.Value;
+
+                switch(deserialized.Type)
+                {
+                    case ""float"":
+                        variableValue = float.Parse(deserialized.Value);
+                break;
+                    case ""int"":
+                        variableValue = int.Parse(deserialized.Value);
+                break;
+                    case ""bool"":
+                        variableValue = bool.Parse(deserialized.Value);
+                break;
+                    case ""double"":
+                        variableValue = bool.Parse(deserialized.Value);
+                break;
+            }
+
+            screen.ApplyVariable(deserialized.VariableName, variableValue);
         }
+
     }
 }
 ";

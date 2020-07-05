@@ -1,18 +1,22 @@
 ﻿using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
+using Newtonsoft.Json;
 using OfficialPlugins.Compiler.CommandSending;
 using OfficialPlugins.Compiler.ViewModels;
+using OfficialPluginsCore.Compiler.CommandSending;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace OfficialPlugins.Compiler.Managers
 {
@@ -159,19 +163,104 @@ namespace OfficialPlugins.Compiler.Managers
             }
         }
 
-        internal void HandleVariableChanged(IElement arg1, CustomVariable arg2)
+        internal async void HandleVariableChanged(IElement variableElement, CustomVariable variable)
         {
             if (ShouldRestartOnChange)
             {
-                StopAndRestartTask($"{arg2} changed");
+                var screen = GlueState.Self.CurrentScreenSave;
+                var entity = GlueState.Self.CurrentEntitySave;
+                var name = "this." + variable.Name;
+                var type = variable.Type;
+                var value = variable.DefaultValue?.ToString();
+
+                // todo - I haven't tested this, variable.Name is probably wrong
+                await TryPushVariableOrRestart(null, name, type, value, screen, entity);
+            }
+            else
+            {
+                StopAndRestartTask($"Object variable {variable.Name} changed");
             }
         }
 
         internal void HandleNamedObjectValueChanged(string changedMember, object oldValue)
         {
-            if (ShouldRestartOnChange)
+            var nos = GlueState.Self.CurrentNamedObjectSave;
+
+            var instruction = nos.GetInstructionFromMember(changedMember);
+            if (instruction != null)
+            {
+                var screen = GlueState.Self.CurrentScreenSave;
+                var entity = GlueState.Self.CurrentEntitySave;
+                var nosName = nos.InstanceName;
+                var type = instruction.Type;
+                var value = instruction.Value?.ToString();
+                TaskManager.Self.Add(async () => await TryPushVariableOrRestart(nosName, changedMember, type, value, screen, entity), "Pushing variable to game", TaskExecutionPreference.Asap);
+            }
+            else
             {
                 StopAndRestartTask($"Object variable {changedMember} changed");
+            }
+        }
+
+        private async Task TryPushVariableOrRestart(string variableOwningNosName, string rawMemberName, string type, string value, ScreenSave currentGlueScreen, EntitySave currentEntitySave)
+        {
+            if (ShouldRestartOnChange)
+            {
+                var currentInGameScreen = await CommandSending.CommandSender
+                    .SendCommand("GetCurrentScreen", PortNumber);
+
+                if(currentGlueScreen != null)
+                {
+                    var areSame = currentInGameScreen == GlueState.Self.ProjectNamespace + "." + currentGlueScreen?.Name.Replace("\\", ".");
+
+                    if (areSame)
+                    {
+                        var data = new GlueVariableSetData();
+                        data.Type = type;
+                        data.Value = value;
+                        data.VariableName = rawMemberName;
+                        if(!string.IsNullOrEmpty(variableOwningNosName))
+                        {
+                            data.VariableName = "this." + variableOwningNosName + "." + data.VariableName;
+                        }
+                        else
+                        {
+                            data.VariableName = "this." + data.VariableName; 
+                        }
+
+                        var serialized = JsonConvert.SerializeObject(data);
+
+                        await CommandSender.SendCommand($"SetVariable:{serialized}", PortNumber);
+                    }
+                }
+                else if(currentEntitySave != null)
+                {
+                    var screens = GlueState.Self.CurrentGlueProject.Screens.ToArray();
+
+                    var matchingScreen = screens.FirstOrDefault(item => GlueState.Self.ProjectNamespace + "." + item.Name.Replace("\\", ".") == currentInGameScreen);
+
+                    if(matchingScreen != null)
+                    {
+                        // don't do "all" here, just do top-level which will catch all lists:
+                        foreach(var nos in matchingScreen.NamedObjects)
+                        {
+                            var needsToBeUpdated = nos.IsList && nos.SourceClassGenericType == currentEntitySave.Name;
+
+                            if(needsToBeUpdated)
+                            {
+                                var data = new GlueVariableSetData();
+                                data.Type = type;
+                                data.Value = value;
+                                data.VariableName = $"this.{nos.InstanceName}.{variableOwningNosName}.{rawMemberName}";
+
+                                var serialized = JsonConvert.SerializeObject(data);
+
+                                await CommandSender.SendCommand($"SetVariable:{serialized}", PortNumber);
+                            }
+                        }
+                    }
+                }
+
             }
         }
 

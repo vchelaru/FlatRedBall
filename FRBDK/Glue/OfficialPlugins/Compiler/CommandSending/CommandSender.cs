@@ -16,10 +16,19 @@ namespace OfficialPlugins.Compiler.CommandSending
         {
 
             TcpClient client = new TcpClient();
-            client.Connect("localhost", port);
+
+            // this takes ~2 seconds, according to this:
+            // https://github.com/dotnet/runtime/issues/31085
+
+            client.Connect("127.0.0.1", port);
             // Stream string to server
             Stream stm = client.GetStream();
             //ASCIIEncoding asen = new ASCIIEncoding();
+
+            if(!text.EndsWith("\n"))
+            {
+                text += "\n";
+            }
 
             //byte[] ba = asen.GetBytes(input);
             byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(text);
@@ -27,25 +36,21 @@ namespace OfficialPlugins.Compiler.CommandSending
 
 
             // give the server time to finish what it's doing:
-            await Task.Delay(1 * 60);
-            return ReadFromClient(client, stm);
-
+            //await Task.Delay((int)(1 * 60));
+            var read = await ReadFromClient(client, client.GetStream());
+            return read;
 
         }
 
-        private static string ReadFromClient(TcpClient client, Stream stm)
+        private static async Task<string> ReadFromClient(TcpClient client, Stream stm)
         {
 
             //// Read response from server.
             byte[] buffer = new byte[1024];
-            var readTask = stm.ReadAsync(buffer, 0, buffer.Length);
-            var completed = readTask.Wait(500);
-            string response = null;
-            if(completed)
-            {
-                int bytesRead = readTask.Result;
-                response = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-            }
+            //var readTask = stm.ReadAsync(buffer, 0, buffer.Length);
+            var bytesRead = await stm.ReadAsync(buffer, 0, buffer.Length);
+
+            var response = Encoding.ASCII.GetString(buffer, 0, bytesRead);
 
             client.Close();
 

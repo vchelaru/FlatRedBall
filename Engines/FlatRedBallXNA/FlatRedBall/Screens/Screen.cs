@@ -13,6 +13,7 @@ using FlatRedBall.Utilities;
 using System.Threading;
 using FlatRedBall.Input;
 using FlatRedBall.IO;
+using System.Collections;
 
 namespace FlatRedBall.Screens
 {
@@ -508,11 +509,21 @@ namespace FlatRedBall.Screens
         {
             foreach(var kvp in RestartVariableValues)
             {
-                ApplyRestartVariable(kvp.Key, kvp.Value);
+                ApplyVariable(kvp.Key, kvp.Value);
             }
         }
 
-        private void ApplyRestartVariable(string variableName, object value, object container = null)
+        /// <summary>
+        /// Applies a value to a variable like "this.Player.X". 
+        /// </summary>
+        /// <remarks>
+        /// This can be used by scripting systems, but is also used internally by
+        /// screens when restarting.
+        /// </remarks>
+        /// <param name="variableName">The variable name, where the name must start with "this." if it is on an instance on the screen.</param>
+        /// <param name="value">The value, as an object.</param>
+        /// <param name="container">The parent object, allowing variables like this.Object.Subobject, where Object is the parent.</param>
+        public void ApplyVariable(string variableName, object value, object container = null)
         {
             if (variableName.Contains("."))
             {
@@ -520,12 +531,31 @@ namespace FlatRedBall.Screens
                 object instance;
                 GetInstance(variableName, container, out afterDot, out instance);
 
-                ApplyRestartVariable(afterDot, value, instance);
+                if (container is IList asIList)
+                {
+                    foreach (var item in asIList)
+                    {
+                        ApplyVariable(afterDot, value, item);
+                    }
+                }
+                else
+                {
+                    ApplyVariable(afterDot, value, instance);
+                }
             }
             else
             {
-                FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(container, variableName, value);
-                //return FlatRedBall.Instructions.Reflection.LateBinder.GetValueStatic(container, variableName);
+                if (container is IList asIList)
+                {
+                    foreach (var item in asIList)
+                    {
+                        FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(item, variableName, value);
+                    }
+                }
+                else
+                {
+                    FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(container, variableName, value);
+                }
             }
         }
 
@@ -582,12 +612,6 @@ namespace FlatRedBall.Screens
             else
             {
                 throw new Exception("Variable must start with \"this\"");
-            }
-            if(afterDot.Contains("."))
-            {
-                var afterDotBefore = afterDot;
-                var newContainer = instance;
-                GetInstance(afterDotBefore, newContainer, out afterDot, out instance);
             }
         }
 

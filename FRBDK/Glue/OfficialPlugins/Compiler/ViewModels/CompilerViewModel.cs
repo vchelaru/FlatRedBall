@@ -125,8 +125,8 @@ namespace OfficialPlugins.Compiler.ViewModels
         [DependsOn(nameof(IsRebuildAndRestartEnabled))]
         [DependsOn(nameof(DidRunnerStartProcess))]
         public bool EffectiveIsRebuildAndRestartEnabled =>
-            IsRebuildAndRestartEnabled &&
-            DidRunnerStartProcess;
+            IsRebuildAndRestartEnabled;
+            //&&            DidRunnerStartProcess;
 
         [DependsOn(nameof(DidRunnerStartProcess))]
         [DependsOn(nameof(IsGluxVersionNewEnoughForGlueControlGeneration))]

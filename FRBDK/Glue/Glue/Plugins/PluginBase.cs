@@ -137,6 +137,9 @@ namespace FlatRedBall.Glue.Plugins
 
         public Action<IElement, EventResponseSave> ReactToEventRemoved { get; protected set; }
 
+        /// <summary>
+        /// Action raised when a variable changes. The IElement is the container of the variable, the CustomVariable is the changed variable.
+        /// </summary>
         public Action<IElement, CustomVariable> ReactToElementVariableChange { get; protected set; }
 
         /// <summary>
