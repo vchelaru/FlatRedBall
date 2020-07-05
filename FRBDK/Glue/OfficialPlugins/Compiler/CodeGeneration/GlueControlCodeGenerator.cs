@@ -192,17 +192,20 @@ namespace " + GlueState.Self.ProjectNamespace + @"
                 {
                     case ""float"":
                         variableValue = float.Parse(deserialized.Value);
-                break;
+                        break;
                     case ""int"":
                         variableValue = int.Parse(deserialized.Value);
-                break;
+                        break;
                     case ""bool"":
                         variableValue = bool.Parse(deserialized.Value);
-                break;
+                        break;
                     case ""double"":
-                        variableValue = bool.Parse(deserialized.Value);
-                break;
-            }
+                        variableValue = double.Parse(deserialized.Value);
+                        break;
+                case ""Microsoft.Xna.Framework.Color"":
+                    variableValue = typeof(Microsoft.Xna.Framework.Color).GetProperty(deserialized.Value).GetValue(null);
+                    break;
+        }
 
             screen.ApplyVariable(deserialized.VariableName, variableValue);
         }
