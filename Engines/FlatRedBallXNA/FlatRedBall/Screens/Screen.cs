@@ -531,7 +531,7 @@ namespace FlatRedBall.Screens
                 object instance;
                 GetInstance(variableName, container, out afterDot, out instance);
 
-                if (container is IList asIList)
+                if (instance is IList asIList)
                 {
                     foreach (var item in asIList)
                     {
