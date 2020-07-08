@@ -53,13 +53,8 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
                 var propBlock = codeBlock.Property("public FlatRedBall.Math.Geometry.ShapeCollection", "Collision");
 
                 propBlock.Get().Line("return mGeneratedCollision;");
-
-                return codeBlock;
             }
-            else
-            {
-                return base.GenerateFields(codeBlock, element);
-            }
+            return codeBlock;
         }
 
         public override ICodeBlock GeneratePostInitialize(ICodeBlock codeBlock, IElement element)
@@ -82,7 +77,28 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
                 // should be added to the generated collision 
                 // object too, so using AllNamedObjects instead
 
-                foreach (var item in element.AllNamedObjects.Where(item=>item.IncludeInICollidable && !item.IsDisabled && !item.DefinedByBase))
+                var baseEntities = ObjectFinder.Self.GetAllBaseElementsRecursively(element);
+                var inheritsFromICollidable =
+                    baseEntities.Any(item => (item as EntitySave).ImplementsICollidable);
+
+                var shapesToAdd = element.AllNamedObjects.Where(item =>
+                {
+                    return
+                        item.IncludeInICollidable &&
+                        !item.IsDisabled &&
+                        // July 8, 2020
+                        // We used to exclude objects
+                        // which are defined by base, but
+                        // we only want to do that if this
+                        // entity inherits from another entity
+                        // which implements ICollidable. If this
+                        // entity does not inherit from a base that
+                        // is ICollidable, then it should add all shapes
+                        // including ones defined in the base entity
+                        (!item.DefinedByBase || inheritsFromICollidable == false);
+                });
+
+                foreach (var item in shapesToAdd)
                 {
                     string addCall = item.GetAddToShapeCollection();
 

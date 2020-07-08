@@ -18270,7 +18270,10 @@
               <Name>Bottom</Name>
             </StateSave>
           </States>
-          <ExcludedVariables />
+          <ExcludedVariables>
+            <string>CurrentTopOrBottomState</string>
+            <string>CurrentTypeState</string>
+          </ExcludedVariables>
           <Name>TopOrBottom</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>

@@ -320,6 +320,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                     {
                         shouldInclude = false;
                     }
+                    // If we don't do this, the variable will recursively get set. 
+                    // I can't think of a case where a user would want this since it
+                    // will inevitably turn into a StackOverflowException.
                     else if(variable.Type == category.Name)
                     {
                         shouldInclude = false;

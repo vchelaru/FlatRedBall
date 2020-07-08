@@ -37,7 +37,7 @@ namespace GlueTestProject.Entities
 		{
             if(this.Collision.AxisAlignedRectangles.Count == 0)
             {
-                throw new Exception("Rectangles defined in the base are not getting added to the derived's Collision list in an ICollidable");
+                throw new Exception("Rectangles defined in a base entity (which is not ICollidable) are not getting added to the derived's Collision list in an ICollidable");
             }
 
             if(this.Collision.AxisAlignedRectangles[0] == null)

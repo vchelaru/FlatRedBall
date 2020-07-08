@@ -442,7 +442,83 @@ namespace TopDownPlugin.Controllers
                 out List<Type> additionalValueTypes,
                 out CsvHeader[] csvHeaders);
 
-            lastHeaders = csvHeaders;
+            // Here we read the headers from the CSV. It's possible that the CSV
+            // somehow got malformed, or is an old CSV, and is missing some of the
+            // headers. We want to make sure we include required properties from the type
+            // These are (as of July 7, 2020)
+            //string Name
+
+            //bool UsesAcceleration { get; set; } = true;
+
+            //float MaxSpeed { get; set; }
+            //float AccelerationTime { get; set; }
+            //float DecelerationTime { get; set; }
+            //bool UpdateDirectionFromVelocity { get; set; } = true;
+
+            List<CsvHeader> tempList = csvHeaders.ToList();
+            bool ContainsHeader(string name)
+            {
+                return tempList.Any(item => item.Name == name);
+            }
+
+            if(!ContainsHeader(nameof(TopDownValues.Name)))
+            {
+                tempList.Add(new CsvHeader
+                {
+                    OriginalText = nameof(TopDownValues.Name) + " (string, required)",
+                    IsRequired = true,
+                    Name = nameof(TopDownValues.Name),
+                    MemberTypes = System.Reflection.MemberTypes.Property
+                });
+
+            }
+            if (!ContainsHeader(nameof(TopDownValues.UsesAcceleration)))
+            {
+                tempList.Add(new CsvHeader
+                {
+                    OriginalText = nameof(TopDownValues.UsesAcceleration) + " (bool)",
+                    Name = nameof(TopDownValues.UsesAcceleration),
+                    MemberTypes = System.Reflection.MemberTypes.Property
+                });
+            }
+            if (!ContainsHeader(nameof(TopDownValues.MaxSpeed)))
+            {
+                tempList.Add(new CsvHeader
+                {
+                    OriginalText = nameof(TopDownValues.MaxSpeed) + " (float)",
+                    Name = nameof(TopDownValues.MaxSpeed),
+                    MemberTypes = System.Reflection.MemberTypes.Property
+                });
+            }
+            if (!ContainsHeader(nameof(TopDownValues.AccelerationTime)))
+            {
+                tempList.Add(new CsvHeader
+                {
+                    OriginalText = nameof(TopDownValues.AccelerationTime) + " (float)",
+                    Name = nameof(TopDownValues.AccelerationTime),
+                    MemberTypes = System.Reflection.MemberTypes.Property
+                });
+            }
+            if (!ContainsHeader(nameof(TopDownValues.DecelerationTime)))
+            {
+                tempList.Add(new CsvHeader
+                {
+                    OriginalText = nameof(TopDownValues.DecelerationTime) + " (float)",
+                    Name = nameof(TopDownValues.DecelerationTime),
+                    MemberTypes = System.Reflection.MemberTypes.Property
+                });
+            }
+            if (!ContainsHeader(nameof(TopDownValues.UpdateDirectionFromVelocity)))
+            {
+                tempList.Add(new CsvHeader
+                {
+                    OriginalText = nameof(TopDownValues.UpdateDirectionFromVelocity) + " (bool)",
+                    Name = nameof(TopDownValues.UpdateDirectionFromVelocity),
+                    MemberTypes = System.Reflection.MemberTypes.Property
+                });
+            }
+
+            lastHeaders = tempList.ToArray();
 
             viewModel.TopDownValues.Clear();
 
