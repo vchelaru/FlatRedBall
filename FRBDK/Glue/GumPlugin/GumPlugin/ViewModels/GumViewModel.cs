@@ -11,6 +11,8 @@ using System.Windows;
 
 namespace GumPlugin.ViewModels
 {
+    #region Enums
+
     public enum FileAdditionBehavior
     {
         EmbedCodeFiles = 0,
@@ -19,11 +21,13 @@ namespace GumPlugin.ViewModels
         IncludeNoFiles
     }
 
+    #endregion
+
     class GumViewModel : ViewModel
     {
         GumProjectSave backingGumProject;
         ReferencedFileSave backingRfs;
-
+            
         bool shouldRaiseEvents = true;
 
         bool useAtlases;
@@ -68,21 +72,30 @@ namespace GumPlugin.ViewModels
             }
         }
 
-        bool showMouse;
         public bool ShowMouse
         {
-            get { return showMouse; }
+            get => Get<bool>();
             set
             {
-                if(showMouse != value)
+                if(Set(value))
                 {
-                    showMouse = value;
-
                     backingRfs.Properties.SetValue(
                         nameof(ShowMouse), value);
-
-                    base.NotifyPropertyChanged(nameof(ShowMouse));
                 }
+            }
+        }
+
+        public bool MakeGumInstancesPublic
+        {
+            get => Get<bool>();
+            set
+            {
+                if(Set(value))
+                {
+                    backingRfs.Properties.SetValue(
+                        nameof(MakeGumInstancesPublic), value);
+                }
+
             }
         }
 
@@ -99,7 +112,7 @@ namespace GumPlugin.ViewModels
                 if (value && behavior != FileAdditionBehavior.EmbedCodeFiles)
                 {
                     behavior = FileAdditionBehavior.EmbedCodeFiles;
-                    UpdateBehaviorOnRfs();
+                    UpdateFileAdditionBehaviorOnRfs();
                     NotifyPropertyChanged(nameof(EmbedCodeFiles));
                 }
             }
@@ -136,7 +149,7 @@ namespace GumPlugin.ViewModels
                 if (value && behavior != FileAdditionBehavior.IncludeNoFiles)
                 {
                     behavior = FileAdditionBehavior.IncludeNoFiles;
-                    UpdateBehaviorOnRfs();
+                    UpdateFileAdditionBehaviorOnRfs();
                     NotifyPropertyChanged(nameof(IncludeNoFiles));
                 }
             }
@@ -187,7 +200,7 @@ namespace GumPlugin.ViewModels
         }
 
 
-        private void UpdateBehaviorOnRfs()
+        private void UpdateFileAdditionBehaviorOnRfs()
         {
             if(EmbedCodeFiles)
             {

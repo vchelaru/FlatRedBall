@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using Gum.DataTypes.Behaviors;
 using FlatRedBall.Glue.SaveClasses;
+using GumPlugin.ViewModels;
 
 namespace GumPlugin.CodeGeneration
 {
@@ -274,9 +275,12 @@ namespace GumPlugin.CodeGeneration
 
         private void GenerateInstanceProperties(ElementSave elementSave, ICodeBlock currentBlock)
         {
+            var rfs = GumProjectManager.Self.GetRfsForGumProject();
+
+            var makePublic = rfs?.Properties.GetValue<bool>(nameof(GumViewModel.MakeGumInstancesPublic)) == true;
 
             string publicOrPrivate;
-            if(elementSave is Gum.DataTypes.ScreenSave)
+            if(elementSave is Gum.DataTypes.ScreenSave || makePublic)
             {
                 // make these public for screens because the only time this will be accessed is in the Glue screen that owns it
                 publicOrPrivate = "public";

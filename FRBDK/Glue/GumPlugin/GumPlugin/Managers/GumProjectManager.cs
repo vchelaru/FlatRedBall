@@ -116,6 +116,10 @@ namespace GumPlugin.Managers
                     nameof(GumViewModel.ShowMouse),
                     true);
 
+                rfs.Properties.SetValue(
+                    nameof(GumViewModel.MakeGumInstancesPublic),
+                    true);
+
                 added = !userCancelled;
 
                 if(added)

@@ -18,6 +18,8 @@
                   Content="Automatically Create Gum Screens for Glue Screens" IsChecked="{Binding AutoCreateGumScreens}"></CheckBox>
             <CheckBox x:Name="UseAtlasesCheckBox" VerticalContentAlignment="Center" 
                   Content="Use Atlases" IsChecked="{Binding UseAtlases}"></CheckBox>
+            <CheckBox x:Name="MakeInstancesPublicCheckBox" VerticalAlignment="Center"
+                  Content="Make Generated Code Instances Public" IsChecked="{Binding MakeGumInstancesPublic}"></CheckBox>
             <Button Margin="7,5,0,0" Width="220" HorizontalAlignment="Left" Click="RegenerateFontsClicked">Re-generate Fonts</Button>
             <GroupBox Header="Core Gum Addition">
                 <StackPanel >

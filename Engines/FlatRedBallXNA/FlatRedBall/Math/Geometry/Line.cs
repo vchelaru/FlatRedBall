@@ -2,13 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using FlatRedBall.Graphics;
-#if FRB_MDX
-using System.Drawing;
-using Microsoft.DirectX;
-#else
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-#endif
 
 namespace FlatRedBall.Math.Geometry
 {
@@ -140,7 +135,7 @@ namespace FlatRedBall.Math.Geometry
 
         #region XML Docs
         /// <summary>
-        /// Gets or sets the color of this line segment, when drawn
+        /// Gets or sets the color of this line segment. This color is pre-multiplied, so the R,G,B values must be adjusted accordingly if not fully opaque.
         /// </summary>
         #endregion
         public Color Color

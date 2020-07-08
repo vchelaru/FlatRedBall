@@ -55,25 +55,31 @@ namespace GumPlugin.Managers
                 }
                 else if (propertyChanged == nameof(GumViewModel.IncludeFormsInComponents))
                 {
-                    TaskManager.Self.AddSync(
+                    TaskManager.Self.Add(
                         CodeGeneratorManager.Self.GenerateDerivedGueRuntimes,
                         $"Regenerating Gum derived runtimes because of changed {propertyChanged}");
 
                 }
                 else if(propertyChanged == nameof(GumViewModel.IncludeComponentToFormsAssociation))
                 {
-                    TaskManager.Self.AddSync(
+                    TaskManager.Self.Add(
                         () => { CodeGeneratorManager.Self.GenerateAndSaveRuntimeAssociations(); },
                         $"Regenerating runtime associations because of changed {propertyChanged}");
                 }
                 else if(propertyChanged == nameof(GumViewModel.ShowMouse))
                 {
-                    TaskManager.Self.AddSync(
+                    TaskManager.Self.Add(
                         () => { GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode(); },
                         $"Regenerating global content because of changed property {nameof(GumViewModel.ShowMouse)}"
                         );
                 }
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                else if(propertyChanged == nameof(GumViewModel.MakeGumInstancesPublic))
+                {
+                    TaskManager.Self.Add(
+                        CodeGeneratorManager.Self.GenerateDerivedGueRuntimes,
+                        $"Regenerating Gum derived runtimes because of changed {propertyChanged}");
+                }
+                GlueCommands.Self.GluxCommands.SaveGluxTask();
             }
         }
 

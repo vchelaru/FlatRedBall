@@ -42,8 +42,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     var states = GetAllStatesForCategory(element, kvp.Key);
 
-                    CreateClassForStateCategory(currentBlock, states, kvp.Value, element);
-                    GenerateCurrentStateProperty(element, codeBlock, kvp.Value, states);
+                    var category = kvp.Value;
+                    CreateClassForStateCategory(currentBlock, states, category, element);
+                    GenerateCurrentStateProperty(element, codeBlock, category, states);
                 }
             }
 
@@ -313,9 +314,20 @@ namespace FlatRedBall.Glue.CodeGeneration
             foreach(var variable in element.CustomVariables)
             {
                 var shouldInclude = false;
-                if(category != null && category.ExcludedVariables.Contains(variable.Name) == false)
+                if(category != null)
                 {
-                    shouldInclude = true;
+                    if(category.ExcludedVariables.Contains(variable.Name))
+                    {
+                        shouldInclude = false;
+                    }
+                    else if(variable.Type == category.Name)
+                    {
+                        shouldInclude = false;
+                    }
+                    else
+                    {
+                        shouldInclude = true;
+                    }
                 }
                 else if(category == null)
                 {
