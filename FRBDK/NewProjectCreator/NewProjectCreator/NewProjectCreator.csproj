@@ -127,9 +127,6 @@
       <Link>Controls\MultiButtonMessageBox.designer.cs</Link>
       <DependentUpon>MultiButtonMessageBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="..\..\Glue\Glue\IO\FilePath.cs">
-      <Link>IO\FilePath.cs</Link>
-    </Compile>
     <Compile Include="..\..\Glue\Glue\VSHelpers\VSSolution.cs">
       <Link>DataTypes\VSSolution.cs</Link>
     </Compile>
@@ -238,7 +235,9 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="IO\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\Glue\packages\MonoGame.Framework.DesktopGL.Core.3.8.0.13\build\MonoGame.Framework.DesktopGL.Core.targets" Condition="Exists('..\..\Glue\packages\MonoGame.Framework.DesktopGL.Core.3.8.0.13\build\MonoGame.Framework.DesktopGL.Core.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

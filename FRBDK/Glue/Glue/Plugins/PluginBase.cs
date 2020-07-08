@@ -20,6 +20,7 @@ using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.CodeGeneration.Game1;
+using FlatRedBall.IO;
 
 namespace FlatRedBall.Glue.Plugins
 {

@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.VSHelpers.Projects;
+using FlatRedBall.IO;
 using Microsoft.Build.Evaluation;
 using System.Collections.Generic;
 

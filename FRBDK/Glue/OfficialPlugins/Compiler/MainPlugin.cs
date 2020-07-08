@@ -19,6 +19,7 @@ using FlatRedBall.Glue.IO;
 using Newtonsoft.Json;
 using OfficialPlugins.Compiler.Models;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.IO;
 
 namespace OfficialPlugins.Compiler
 {
@@ -93,7 +94,7 @@ namespace OfficialPlugins.Compiler
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
 
             this.ReactToFileChangeHandler += (fileName) => 
-                RefreshManager.Self.HandleFileChanged(new FlatRedBall.Glue.IO.FilePath(fileName));
+                RefreshManager.Self.HandleFileChanged(new FlatRedBall.IO.FilePath(fileName));
             this.ReactToCodeFileChange += RefreshManager.Self.HandleFileChanged;
             this.ReactToNewEntityCreated += RefreshManager.Self.HandleNewEntityCreated;
             this.ReactToNewScreenCreated += RefreshManager.Self.HandleNewScreenCreated;

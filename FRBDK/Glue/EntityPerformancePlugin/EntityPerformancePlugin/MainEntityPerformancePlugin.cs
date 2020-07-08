@@ -10,6 +10,7 @@ using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.IO;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

@@ -199,6 +199,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)IO\Csv\ParseErrorAction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\Csv\RuntimeCsvRepresentation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\FileManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IO\FilePath.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\GifLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\Gif\ImageDataList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\StateManager.cs" />

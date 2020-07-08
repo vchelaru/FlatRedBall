@@ -35,6 +35,7 @@
     <Compile Remove="Events\EventSave.cs" />
     <Compile Remove="Events\IEventContainer.cs" />
     <Compile Remove="FormHelpers\ParameterPropertyDescriptor.cs" />
+    <Compile Remove="IO\FilePath.cs" />
     <Compile Remove="Parsing\ContentParser.cs" />
     <Compile Remove="Plugins\AvailableMessages.cs" />
     <Compile Remove="Plugins\EmbeddedPlugins\SyncedProjects\Controls\ToolbarControl.cs" />

@@ -123,11 +123,9 @@ namespace FlatRedBall.IO
             set;
         }
 
-#region XML Docs
         /// <summary>
         /// The directory that FlatRedBall will use when loading assets.  Defaults to the application's directory.
         /// </summary>
-#endregion
         static public string RelativeDirectory
         {
             get
@@ -297,10 +295,12 @@ namespace FlatRedBall.IO
 
         #region Methods
 
-#region Constructor
+        #region Constructor
 
         static FileManager()
         {
+            // this is for linux:
+            PreserveCase = true;
         }
 
 #endregion

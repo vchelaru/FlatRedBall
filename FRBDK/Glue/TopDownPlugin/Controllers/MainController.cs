@@ -3,6 +3,7 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.IO;
 using FlatRedBall.IO.Csv;
 using Newtonsoft.Json;
 using System;

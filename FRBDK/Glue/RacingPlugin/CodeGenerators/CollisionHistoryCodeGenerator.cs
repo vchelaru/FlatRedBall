@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
