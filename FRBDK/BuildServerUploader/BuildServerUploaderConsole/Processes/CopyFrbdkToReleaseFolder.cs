@@ -38,7 +38,8 @@ namespace BuildServerUploaderConsole.Processes
         {
             @"AnimationEditor\PreviewProject\bin\Debug",
             @"NewProjectCreator\NewProjectCreator\bin\x86\Debug",
-            @"SplineEditor\SplineEditor\bin\x86\Debug",
+            // This is removed because FRB XNA is dying.
+            //@"SplineEditor\SplineEditor\bin\x86\Debug",
 
 
         };
