@@ -13,6 +13,7 @@ using FlatRedBall.AnimationEditor;
 using ToolsUtilities;
 using Newtonsoft.Json;
 using FlatRedBall.AnimationEditor.Models;
+using FilePath = global::ToolsUtilities.FilePath;
 
 namespace PreviewProject
 {

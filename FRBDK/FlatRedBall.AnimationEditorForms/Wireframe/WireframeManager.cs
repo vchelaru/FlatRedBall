@@ -24,6 +24,7 @@ using FlatRedBall.AnimationEditorForms.ViewModels;
 using System.ComponentModel;
 using ToolsUtilities;
 using FileManager = ToolsUtilities.FileManager;
+using FilePath = global::ToolsUtilities.FilePath;
 
 namespace FlatRedBall.AnimationEditorForms
 {
