@@ -11,6 +11,7 @@ namespace BuildServerUploaderConsole.Data
         public List<EngineFileData> Files { get; set; } = new List<EngineFileData>();
 
         public List<string> DebugFiles { get; set; } = new List<string>();
+
         public List<string> ReleaseFiles { get; set; } = new List<string>();
 
         public string RelativeToLibrariesDebugFolder { get; set; }
