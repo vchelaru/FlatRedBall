@@ -23,19 +23,10 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             bool shouldShowPropertyGrid;
             bool shouldShowCodePreviewWindow;
-            DetermineWhatShouldBeShown(out shouldShowPropertyGrid, out shouldShowCodePreviewWindow);
+            DetermineWhatShouldBeShown(out shouldShowCodePreviewWindow);
 
             TabControl tabControl = MainGlueWindow.Self.MainTabControl;
             
-            if (shouldShowPropertyGrid)
-            {
-                AddTabToMain(MainGlueWindow.Self.PropertiesTab);              
-            }
-            else
-            {
-                RemoveTabFromMain(MainGlueWindow.Self.PropertiesTab);
-            }
-
             if (shouldShowCodePreviewWindow)
             {
                 MainGlueWindow.Self.CodePreviewTextBox.Visible = true;
@@ -72,7 +63,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         }
 
-        private static void DetermineWhatShouldBeShown(out bool shouldShowPropertyGrid, out bool shouldShowCodePreviewWindow)
+        public static void DetermineWhatShouldBeShown(out bool shouldShowCodePreviewWindow)
         {
 
 
@@ -80,18 +71,15 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (EditorLogic.CurrentTreeNode != null && EditorLogic.CurrentTreeNode.IsEventResponseTreeNode())
             {
-                shouldShowPropertyGrid = true;
                 shouldShowCodePreviewWindow = true;
 
             }
             else if (EditorLogic.CurrentTreeNode != null && ShouldShowCode)
             {
-                shouldShowPropertyGrid = true;
                 shouldShowCodePreviewWindow = true;
             }
             else
             {
-                shouldShowPropertyGrid = true;
                 shouldShowCodePreviewWindow = false;
             }
         }

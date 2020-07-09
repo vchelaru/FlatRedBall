@@ -130,7 +130,6 @@
             this.rightPanelContainer.Panel2.SuspendLayout();
             this.rightPanelContainer.SuspendLayout();
             this.MainTabControl.SuspendLayout();
-            this.PropertiesTab.SuspendLayout();
             this.CodeTab.SuspendLayout();
             this.tcRight.SuspendLayout();
             this.ExplorerTab.SuspendLayout();
@@ -750,7 +749,6 @@
             // MainTabControl
             // 
             this.MainTabControl.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
-            this.MainTabControl.Controls.Add(this.PropertiesTab);
             this.MainTabControl.Controls.Add(this.CodeTab);
             this.MainTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainTabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
@@ -760,19 +758,6 @@
             this.MainTabControl.SelectedIndex = 0;
             this.MainTabControl.Size = new System.Drawing.Size(542, 575);
             this.MainTabControl.TabIndex = 4;
-            // 
-            // PropertiesTab
-            // 
-            this.PropertiesTab.DrawX = false;
-            this.PropertiesTab.LastTabControl = this.MainTabControl;
-            this.PropertiesTab.LastTimeClicked = new System.DateTime(((long)(0)));
-            this.PropertiesTab.Location = new System.Drawing.Point(4, 25);
-            this.PropertiesTab.Margin = new System.Windows.Forms.Padding(0);
-            this.PropertiesTab.Name = "PropertiesTab";
-            this.PropertiesTab.Size = new System.Drawing.Size(534, 546);
-            this.PropertiesTab.TabIndex = 0;
-            this.PropertiesTab.Text = "Properties";
-            this.PropertiesTab.UseVisualStyleBackColor = true;
             // 
             // CodeTab
             // 
