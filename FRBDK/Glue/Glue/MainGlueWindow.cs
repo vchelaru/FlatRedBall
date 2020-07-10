@@ -168,7 +168,7 @@ namespace Glue
 
         private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NewProjectHelper.CreateNewProject();
+            GlueCommands.Self.ProjectCommands.CreateNewProject();
         }
 
 

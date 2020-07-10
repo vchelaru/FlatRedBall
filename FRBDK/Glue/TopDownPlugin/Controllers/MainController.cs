@@ -456,7 +456,7 @@ namespace TopDownPlugin.Controllers
             //float DecelerationTime { get; set; }
             //bool UpdateDirectionFromVelocity { get; set; } = true;
 
-            List<CsvHeader> tempList = csvHeaders.ToList();
+            List<CsvHeader> tempList = csvHeaders?.ToList() ?? new List<CsvHeader>();
             bool ContainsHeader(string name)
             {
                 return tempList.Any(item => item.Name == name);

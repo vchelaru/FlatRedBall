@@ -173,14 +173,11 @@ namespace FlatRedBall.Input
 #endif
 
 
-#if !WINDOWS_PHONE && !SILVERLIGHT && !MONOGAME
+#if !MONOGAME
         public bool IsOwnerFocused
         {
             get
             {
-#if XBOX360
-                return true;
-#else
                 //bool value = false;
 
                 System.Windows.Forms.Control control = FlatRedBallServices.Owner;
@@ -203,8 +200,6 @@ namespace FlatRedBall.Input
                 }
                 
                 return returnValue;
-#endif
-
             }
 
         }
@@ -248,8 +243,6 @@ namespace FlatRedBall.Input
                 #endif
             }
         }
-
-#if !XBOX360
 
         #region XML Docs
         /// <summary>
@@ -309,7 +302,6 @@ namespace FlatRedBall.Input
             get { return mYVelocity; }
         }
 
-#endif
         #endregion
 
         #region Events

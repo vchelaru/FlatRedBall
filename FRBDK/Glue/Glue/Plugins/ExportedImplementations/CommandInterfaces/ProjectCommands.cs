@@ -636,5 +636,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             ProjectManager.RemoveItemFromAllProjects(absoluteFileName);
         }
+
+        public void CreateNewProject()
+        {
+            NewProjectHelper.CreateNewProject();
+        }
     }
 }

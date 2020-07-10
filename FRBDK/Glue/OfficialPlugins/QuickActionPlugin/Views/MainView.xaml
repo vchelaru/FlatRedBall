@@ -1,0 +1,45 @@
+﻿<UserControl x:Class="OfficialPluginsCore.QuickActionPlugin.Views.MainView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:OfficialPluginsCore.QuickActionPlugin.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="500">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <WrapPanel HorizontalAlignment="Center" Margin="0,0,10,10">
+
+            <local:QuickActionButton
+                x:Name="CreateNewProjectButton"
+                Title="Create New Project"
+                Details="Usually new projects target Desktop GL."
+                Clicked="CreateNewProjectButton_Clicked">
+                
+            </local:QuickActionButton>
+            
+            <local:QuickActionButton 
+                x:Name="AddScreenButton"
+                Title="Add Screen" 
+                Details="Every game needs at least one screen.
+                Usually the game logic is in a screen called GameScreen."
+                Clicked="AddScreenButton_Clicked">
+
+            </local:QuickActionButton>
+            
+            <local:QuickActionButton
+                x:Name="AddLevelButton"
+                Title="Add Level"
+                Details="Create a new Screen inheriting from GameScreen."
+                Clicked="AddLevelButton_Clicked">
+            </local:QuickActionButton>
+
+            <local:QuickActionButton
+                x:Name="AddEntityButton"
+                Title="Add Entity"
+                Details="Entities represent game objects like the player, enemies, bullets, and pick-ups."
+                Clicked="AddEntityButton_Clicked">
+            </local:QuickActionButton>
+
+        </WrapPanel>
+    </ScrollViewer>
+</UserControl>

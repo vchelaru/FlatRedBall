@@ -59,6 +59,167 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return newNamedObject;
         }
 
+        private static AddObjectViewModel CreateAndShowAddNamedObjectWindow(AddObjectViewModel addObjectViewModel = null)
+        {
+
+            TextInputWindow tiw = new TextInputWindow();
+            tiw.Message = "Enter the new object's name";
+            tiw.Text = "New Object";
+            // If windows is zoomed, the text may not wrap properly, so increase it:
+            tiw.Width = 450;
+
+            var currentObject = GlueState.Self.CurrentNamedObjectSave;
+
+            bool isTypePredetermined = currentObject != null && currentObject.IsList;
+
+            if (addObjectViewModel == null)
+            {
+                addObjectViewModel = new AddObjectViewModel();
+            }
+
+            var toAdd = AvailableClassTypeConverter.GetAvailableTypes(false, SourceType.FlatRedBallType)
+                .ToList();
+
+            toAdd.Sort();
+
+            foreach(var item in toAdd)
+            {
+                addObjectViewModel.FlatRedBallAndCustomTypes.Add(item);
+            }
+
+            NewObjectTypeSelectionControl typeSelectControl = null;
+            if (!isTypePredetermined)
+            {
+                tiw.Width = 400;
+
+                typeSelectControl = new NewObjectTypeSelectionControl(addObjectViewModel);
+                typeSelectControl.Width = tiw.Width - 22;
+
+                typeSelectControl.AfterStrongSelect += delegate
+                {
+                    tiw.ClickOk();
+                };
+
+                typeSelectControl.AfterSelect += delegate (object sender, EventArgs args)
+                {
+                    string result = tiw.Result;
+
+                    bool isDefault = string.IsNullOrEmpty(result);
+
+                    // Victor Chelaru November 3, 2012
+                    // I don't know if we want to only re-assign when default.
+                    // The downside is that the user may have already entered a
+                    // name, an then changed the type.  This would result in the
+                    // user-entered name being overwritten.  However, if we don't
+                    // change the name, then an old name that the user entered which
+                    // is specific to the type may not get reset.  I'm leaning towards
+                    // always changing the name to help prevent misnaming, and it's also
+                    // less programatically complex.
+                    //if (isDefault)
+                    {
+                        string newName;
+
+                        if (!string.IsNullOrEmpty(typeSelectControl.SourceFile) && !string.IsNullOrEmpty(typeSelectControl.SourceName))
+                        {
+                            newName = HandleObjectInFileSelected(typeSelectControl);
+                        }
+                        else if (string.IsNullOrEmpty(typeSelectControl.SourceClassType))
+                        {
+                            newName = "ObjectInstance";
+
+                        }
+                        else
+                        {
+                            var classType = typeSelectControl.SourceClassType;
+                            if(classType?.Contains(".") == true)
+                            {
+                                // un-qualify if it's something like "FlatRedBall.Sprite"
+                                var lastIndex = classType.LastIndexOf(".");
+                                classType = classType.Substring(lastIndex + 1);
+                            }
+                            string textToAssign = classType + "Instance";
+                            if (textToAssign.Contains("/") || textToAssign.Contains("\\"))
+                            {
+                                textToAssign = FileManager.RemovePath(textToAssign);
+                            }
+
+                            newName = textToAssign.Replace("<T>", "");
+                        }
+
+                        // We need to make sure this is a unique name.
+                        newName = StringFunctions.MakeStringUnique(newName, EditorLogic.CurrentElement.AllNamedObjects);
+                        tiw.Result = newName;
+                    }
+                };
+
+                if (addObjectViewModel != null)
+                {
+                    typeSelectControl.SourceType = addObjectViewModel.SourceType;
+                    typeSelectControl.SourceFile = addObjectViewModel.SourceFile;
+                }
+
+
+                tiw.AddControl(typeSelectControl, AboveOrBelow.Above);
+            }
+
+            
+            addObjectViewModel.DialogResult = tiw.ShowDialog();
+
+            addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+            addObjectViewModel.SourceClassType = null;
+            addObjectViewModel.SourceFile = null;
+            addObjectViewModel.SourceNameInFile = null;
+            addObjectViewModel.SourceClassGenericType = null;
+            addObjectViewModel.ObjectName = tiw.Result;
+
+            if (isTypePredetermined)
+            {
+                var parentList = GlueState.Self.CurrentNamedObjectSave;
+
+                var genericType = parentList.SourceClassGenericType;
+
+                if (!string.IsNullOrEmpty(genericType))
+                {
+                    addObjectViewModel.SourceClassType = genericType;
+
+                    // the generic type will be fully qualified (like FlatRedBall.Sprite)
+                    // but object types for FRB primitives are not qualified, so we need to remove
+                    // any dots
+
+                    if (addObjectViewModel.SourceClassType.Contains("."))
+                    {
+                        int lastDot = addObjectViewModel.SourceClassType.LastIndexOf('.');
+
+                        addObjectViewModel.SourceClassType = addObjectViewModel.SourceClassType.Substring(lastDot + 1);
+                    }
+
+                    if (ObjectFinder.Self.GetEntitySave(genericType) != null)
+                    {
+                        addObjectViewModel.SourceType = SourceType.Entity;
+                    }
+                    else
+                    {
+                        addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                    }
+                }
+            }
+
+            if (typeSelectControl != null)
+            {
+                if (!string.IsNullOrEmpty(typeSelectControl.SourceClassType) || typeSelectControl.SourceType == SourceType.File)
+                {
+                    addObjectViewModel.SourceType = typeSelectControl.SourceType;
+                }
+                addObjectViewModel.SourceFile = typeSelectControl.SourceFile;
+                addObjectViewModel.SourceNameInFile = typeSelectControl.SourceName;
+
+                addObjectViewModel.SourceClassType = typeSelectControl.SourceClassType;
+                addObjectViewModel.SourceClassGenericType = typeSelectControl.SourceClassGenericType;
+            }
+
+            return addObjectViewModel;
+        }
+
         #endregion
 
         #region ReferencedFileSave
@@ -190,7 +351,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         {
                             string directory = "";
 
-                            if (EditorLogic.CurrentTreeNode.IsDirectoryNode())
+                            if (EditorLogic.CurrentTreeNode?.IsDirectoryNode() == true)
                             {
                                 directory = EditorLogic.CurrentTreeNode.GetRelativePath();
                                 directory = directory.Replace('/', '\\');
@@ -202,6 +363,132 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                 }
             }
+        }
+
+        private static EntitySave CreateEntityAndObjects(AddEntityWindow window, string entityName, string directory)
+        {
+            var gluxCommands = GlueCommands.Self.GluxCommands;
+
+            var newElement = gluxCommands.EntityCommands.AddEntity(
+                directory + entityName, is2D: true);
+
+            GlueState.Self.CurrentElement = newElement;
+
+            if (window.SpriteChecked)
+            {
+                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ObjectName = "SpriteInstance";
+                addObjectViewModel.SourceClassType = "Sprite";
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                GlueState.Self.CurrentElement = newElement;
+            }
+
+            if (window.TextChecked)
+            {
+                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ObjectName = "TextInstance";
+                addObjectViewModel.SourceClassType = "Text";
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                GlueState.Self.CurrentElement = newElement;
+            }
+
+            if (window.CircleChecked)
+            {
+                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ObjectName = "CircleInstance";
+                addObjectViewModel.SourceClassType = "Circle";
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                GlueState.Self.CurrentElement = newElement;
+            }
+
+            if (window.AxisAlignedRectangleChecked)
+            {
+                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ObjectName = "AxisAlignedRectangleInstance";
+                addObjectViewModel.SourceClassType = "AxisAlignedRectangle";
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                GlueState.Self.CurrentElement = newElement;
+            }
+
+            // There are a few important things to note about this function:
+            // 1. Whenever gluxCommands.AddNewNamedObjectToSelectedElement is called, Glue performs a full
+            //    refresh and save. The reason for this is that gluxCommands.AddNewNamedObjectToSelectedElement
+            //    is the standard way to add a new named object to an element, and it may be called by other parts
+            //    of the code (and plugins) that expect the add to be a complete set of logic (add, refresh, save, etc).
+            //    This is less efficient than adding all of them and saving only once, but that would require a second add
+            //    method, which would add complexity. For now, we deal with the slower calls because it's not really noticeable.
+            // 2. Some actions, like adding Points to a polygon, are done after the polygon is created and added, and that requires
+            //    an additional save. Therefore, we do one last save/refresh at the end of this method in certain situations.
+            //    Again, this is less efficient than if we performed just a single call, but a single call would be more complicated.
+            //    because we'd have to suppress all the other calls.
+            bool needsRefreshAndSave = false;
+
+            if (window.PolygonChecked)
+            {
+                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ObjectName = "PolygonInstance";
+                addObjectViewModel.SourceClassType = "Polygon";
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+
+                var nos = gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                CustomVariableInNamedObject instructions = null;
+                instructions = nos.GetCustomVariable("Points");
+                if (instructions == null)
+                {
+                    instructions = new CustomVariableInNamedObject();
+                    instructions.Member = "Points";
+                    nos.InstructionSaves.Add(instructions);
+                }
+                var points = new List<Vector2>();
+                points.Add(new Vector2(-16, 16));
+                points.Add(new Vector2(16, 16));
+                points.Add(new Vector2(16, -16));
+                points.Add(new Vector2(-16, -16));
+                points.Add(new Vector2(-16, 16));
+                instructions.Value = points;
+
+
+                needsRefreshAndSave = true;
+
+                GlueState.Self.CurrentElement = newElement;
+            }
+
+            if (window.IVisibleChecked)
+            {
+                newElement.ImplementsIVisible = true;
+                needsRefreshAndSave = true;
+            }
+
+            if (window.IClickableChecked)
+            {
+                newElement.ImplementsIClickable = true;
+                needsRefreshAndSave = true;
+            }
+
+            if (window.IWindowChecked)
+            {
+                newElement.ImplementsIWindow = true;
+                needsRefreshAndSave = true;
+            }
+
+            if (window.ICollidableChecked)
+            {
+                newElement.ImplementsICollidable = true;
+                needsRefreshAndSave = true;
+            }
+
+            if (needsRefreshAndSave)
+            {
+                MainGlueWindow.Self.PropertyGrid.Refresh();
+                ElementViewWindow.GenerateSelectedElementCode();
+                GluxCommands.Self.SaveGluxTask();
+            }
+
+            return newElement;
         }
 
         #endregion
@@ -434,6 +721,27 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
+        public void ShowCreateDerivedScreenDialog(ScreenSave baseScreen)
+        {
+            var popup = new TextInputWindow();
+            popup.Message = "Enter new screen (level) name";
+            var dialogResult = popup.ShowDialog();
+
+            if (dialogResult == DialogResult.OK)
+            {
+                var newScreenName = popup.Result;
+
+                var screen = new ScreenSave();
+                screen.Name = @"Screens\" + newScreenName;
+                screen.BaseScreen = baseScreen.Name;
+
+                GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(screen);
+
+                GlueState.Self.CurrentScreenSave = screen;
+                screen.UpdateFromBaseType();
+            }
+        }
+
         #endregion
 
         public void FocusTab(string dialogTitle)
@@ -459,299 +767,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             if (!focused) focused = TryFocus(PluginManager.RightTab);
         }
 
-        private static EntitySave CreateEntityAndObjects(AddEntityWindow window, string entityName, string directory)
-        {
-            var gluxCommands = GlueCommands.Self.GluxCommands;
-
-            var newElement = gluxCommands.EntityCommands.AddEntity(
-                directory + entityName, is2D: true);
-
-            GlueState.Self.CurrentElement = newElement;
-
-            if (window.SpriteChecked)
-            {
-                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                addObjectViewModel.ObjectName = "SpriteInstance";
-                addObjectViewModel.SourceClassType = "Sprite";
-                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
-                GlueState.Self.CurrentElement = newElement;
-            }
-
-            if (window.TextChecked)
-            {
-                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                addObjectViewModel.ObjectName = "TextInstance";
-                addObjectViewModel.SourceClassType = "Text";
-                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
-                GlueState.Self.CurrentElement = newElement;
-            }
-
-            if (window.CircleChecked)
-            {
-                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                addObjectViewModel.ObjectName = "CircleInstance";
-                addObjectViewModel.SourceClassType = "Circle";
-                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
-                GlueState.Self.CurrentElement = newElement;
-            }
-
-            if (window.AxisAlignedRectangleChecked)
-            {
-                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                addObjectViewModel.ObjectName = "AxisAlignedRectangleInstance";
-                addObjectViewModel.SourceClassType = "AxisAlignedRectangle";
-                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
-                GlueState.Self.CurrentElement = newElement;
-            }
-
-            // There are a few important things to note about this function:
-            // 1. Whenever gluxCommands.AddNewNamedObjectToSelectedElement is called, Glue performs a full
-            //    refresh and save. The reason for this is that gluxCommands.AddNewNamedObjectToSelectedElement
-            //    is the standard way to add a new named object to an element, and it may be called by other parts
-            //    of the code (and plugins) that expect the add to be a complete set of logic (add, refresh, save, etc).
-            //    This is less efficient than adding all of them and saving only once, but that would require a second add
-            //    method, which would add complexity. For now, we deal with the slower calls because it's not really noticeable.
-            // 2. Some actions, like adding Points to a polygon, are done after the polygon is created and added, and that requires
-            //    an additional save. Therefore, we do one last save/refresh at the end of this method in certain situations.
-            //    Again, this is less efficient than if we performed just a single call, but a single call would be more complicated.
-            //    because we'd have to suppress all the other calls.
-            bool needsRefreshAndSave = false;
-
-            if (window.PolygonChecked)
-            {
-                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                addObjectViewModel.ObjectName = "PolygonInstance";
-                addObjectViewModel.SourceClassType = "Polygon";
-                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-
-                var nos = gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
-                CustomVariableInNamedObject instructions = null;
-                instructions = nos.GetCustomVariable("Points");
-                if (instructions == null)
-                {
-                    instructions = new CustomVariableInNamedObject();
-                    instructions.Member = "Points";
-                    nos.InstructionSaves.Add(instructions);
-                }
-                var points = new List<Vector2>();
-                points.Add(new Vector2(-16, 16));
-                points.Add(new Vector2(16, 16));
-                points.Add(new Vector2(16, -16));
-                points.Add(new Vector2(-16, -16));
-                points.Add(new Vector2(-16, 16));
-                instructions.Value = points;
-
-
-                needsRefreshAndSave = true;
-
-                GlueState.Self.CurrentElement = newElement;
-            }
-
-            if (window.IVisibleChecked)
-            {
-                newElement.ImplementsIVisible = true;
-                needsRefreshAndSave = true;
-            }
-
-            if (window.IClickableChecked)
-            {
-                newElement.ImplementsIClickable = true;
-                needsRefreshAndSave = true;
-            }
-
-            if (window.IWindowChecked)
-            {
-                newElement.ImplementsIWindow = true;
-                needsRefreshAndSave = true;
-            }
-
-            if (window.ICollidableChecked)
-            {
-                newElement.ImplementsICollidable = true;
-                needsRefreshAndSave = true;
-            }
-
-            if (needsRefreshAndSave)
-            {
-                MainGlueWindow.Self.PropertyGrid.Refresh();
-                ElementViewWindow.GenerateSelectedElementCode();
-                GluxCommands.Self.SaveGluxTask();
-            }
-
-            return newElement;
-        }
-
-
         public void SetFormOwner(Form form)
         {
             if (MainGlueWindow.Self != null)
                 form.Owner = MainGlueWindow.Self;
         }
 
-        private static AddObjectViewModel CreateAndShowAddNamedObjectWindow(AddObjectViewModel addObjectViewModel = null)
-        {
-
-            TextInputWindow tiw = new TextInputWindow();
-            tiw.Message = "Enter the new object's name";
-            tiw.Text = "New Object";
-            // If windows is zoomed, the text may not wrap properly, so increase it:
-            tiw.Width = 450;
-
-            var currentObject = GlueState.Self.CurrentNamedObjectSave;
-
-            bool isTypePredetermined = currentObject != null && currentObject.IsList;
-
-            if (addObjectViewModel == null)
-            {
-                addObjectViewModel = new AddObjectViewModel();
-            }
-
-            var toAdd = AvailableClassTypeConverter.GetAvailableTypes(false, SourceType.FlatRedBallType)
-                .ToList();
-
-            toAdd.Sort();
-
-            foreach(var item in toAdd)
-            {
-                addObjectViewModel.FlatRedBallAndCustomTypes.Add(item);
-            }
-
-            NewObjectTypeSelectionControl typeSelectControl = null;
-            if (!isTypePredetermined)
-            {
-                tiw.Width = 400;
-
-                typeSelectControl = new NewObjectTypeSelectionControl(addObjectViewModel);
-                typeSelectControl.Width = tiw.Width - 22;
-
-                typeSelectControl.AfterStrongSelect += delegate
-                {
-                    tiw.ClickOk();
-                };
-
-                typeSelectControl.AfterSelect += delegate (object sender, EventArgs args)
-                {
-                    string result = tiw.Result;
-
-                    bool isDefault = string.IsNullOrEmpty(result);
-
-                    // Victor Chelaru November 3, 2012
-                    // I don't know if we want to only re-assign when default.
-                    // The downside is that the user may have already entered a
-                    // name, an then changed the type.  This would result in the
-                    // user-entered name being overwritten.  However, if we don't
-                    // change the name, then an old name that the user entered which
-                    // is specific to the type may not get reset.  I'm leaning towards
-                    // always changing the name to help prevent misnaming, and it's also
-                    // less programatically complex.
-                    //if (isDefault)
-                    {
-                        string newName;
-
-                        if (!string.IsNullOrEmpty(typeSelectControl.SourceFile) && !string.IsNullOrEmpty(typeSelectControl.SourceName))
-                        {
-                            newName = HandleObjectInFileSelected(typeSelectControl);
-                        }
-                        else if (string.IsNullOrEmpty(typeSelectControl.SourceClassType))
-                        {
-                            newName = "ObjectInstance";
-
-                        }
-                        else
-                        {
-                            var classType = typeSelectControl.SourceClassType;
-                            if(classType?.Contains(".") == true)
-                            {
-                                // un-qualify if it's something like "FlatRedBall.Sprite"
-                                var lastIndex = classType.LastIndexOf(".");
-                                classType = classType.Substring(lastIndex + 1);
-                            }
-                            string textToAssign = classType + "Instance";
-                            if (textToAssign.Contains("/") || textToAssign.Contains("\\"))
-                            {
-                                textToAssign = FileManager.RemovePath(textToAssign);
-                            }
-
-                            newName = textToAssign.Replace("<T>", "");
-                        }
-
-                        // We need to make sure this is a unique name.
-                        newName = StringFunctions.MakeStringUnique(newName, EditorLogic.CurrentElement.AllNamedObjects);
-                        tiw.Result = newName;
-                    }
-                };
-
-                if (addObjectViewModel != null)
-                {
-                    typeSelectControl.SourceType = addObjectViewModel.SourceType;
-                    typeSelectControl.SourceFile = addObjectViewModel.SourceFile;
-                }
-
-
-                tiw.AddControl(typeSelectControl, AboveOrBelow.Above);
-            }
-
-            
-            addObjectViewModel.DialogResult = tiw.ShowDialog();
-
-            addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-            addObjectViewModel.SourceClassType = null;
-            addObjectViewModel.SourceFile = null;
-            addObjectViewModel.SourceNameInFile = null;
-            addObjectViewModel.SourceClassGenericType = null;
-            addObjectViewModel.ObjectName = tiw.Result;
-
-            if (isTypePredetermined)
-            {
-                var parentList = GlueState.Self.CurrentNamedObjectSave;
-
-                var genericType = parentList.SourceClassGenericType;
-
-                if (!string.IsNullOrEmpty(genericType))
-                {
-                    addObjectViewModel.SourceClassType = genericType;
-
-                    // the generic type will be fully qualified (like FlatRedBall.Sprite)
-                    // but object types for FRB primitives are not qualified, so we need to remove
-                    // any dots
-
-                    if (addObjectViewModel.SourceClassType.Contains("."))
-                    {
-                        int lastDot = addObjectViewModel.SourceClassType.LastIndexOf('.');
-
-                        addObjectViewModel.SourceClassType = addObjectViewModel.SourceClassType.Substring(lastDot + 1);
-                    }
-
-                    if (ObjectFinder.Self.GetEntitySave(genericType) != null)
-                    {
-                        addObjectViewModel.SourceType = SourceType.Entity;
-                    }
-                    else
-                    {
-                        addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                    }
-                }
-            }
-
-            if (typeSelectControl != null)
-            {
-                if (!string.IsNullOrEmpty(typeSelectControl.SourceClassType) || typeSelectControl.SourceType == SourceType.File)
-                {
-                    addObjectViewModel.SourceType = typeSelectControl.SourceType;
-                }
-                addObjectViewModel.SourceFile = typeSelectControl.SourceFile;
-                addObjectViewModel.SourceNameInFile = typeSelectControl.SourceName;
-
-                addObjectViewModel.SourceClassType = typeSelectControl.SourceClassType;
-                addObjectViewModel.SourceClassGenericType = typeSelectControl.SourceClassGenericType;
-            }
-
-            return addObjectViewModel;
-        }
+        #region Show Message Box
 
         public void ShowMessageBox(string message)
         {
@@ -779,6 +801,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
+        #endregion
 
         private static string HandleObjectInFileSelected(NewObjectTypeSelectionControl typeSelectControl)
         {

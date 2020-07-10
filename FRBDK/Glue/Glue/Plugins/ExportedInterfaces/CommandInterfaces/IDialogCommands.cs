@@ -23,6 +23,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
 
         void SetFormOwner(System.Windows.Forms.Form form);
+        void ShowCreateDerivedScreenDialog(ScreenSave baseScreen);
 #endif
     }
 }

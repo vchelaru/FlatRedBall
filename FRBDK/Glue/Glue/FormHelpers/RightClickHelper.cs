@@ -597,24 +597,11 @@ namespace FlatRedBall.Glue.FormHelpers
 
         private static void HandleCreateDerivedScreenClicked(object sender, EventArgs e)
         {
-            var popup = new TextInputWindow();
-            popup.Message = "Enter new screen (level) name";
-            var dialogResult = popup.ShowDialog();
+            var baseScreen = GlueState.Self.CurrentScreenSave;
 
-            if(dialogResult == DialogResult.OK)
-            {
-                var newScreenName = popup.Result;
-
-                var screen = new ScreenSave();
-                screen.Name = @"Screens\" + newScreenName;
-                screen.BaseScreen = GlueState.Self.CurrentScreenSave.Name;
-
-                GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(screen);
-
-                GlueState.Self.CurrentScreenSave = screen;
-                screen.UpdateFromBaseType();
-            }
+            GlueCommands.Self.DialogCommands.ShowCreateDerivedScreenDialog(baseScreen);
         }
+
 
 
         private static void HandleReGenerateCodeClick(object sender, EventArgs e)
