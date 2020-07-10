@@ -11,9 +11,9 @@ namespace OfficialPlugins.Compiler.CodeGeneration
 {
     public static class MainCodeGenerator
     {
-        public static void GenerateAll()
+        public static void GenerateAll(bool fullyGenerate)
         {
-            var glueControlManagerCode = GlueControlCodeGenerator.GetStringContents();
+            var glueControlManagerCode = GlueControlCodeGenerator.GetStringContents(fullyGenerate);
             FilePath filePath = GlueState.Self.CurrentGlueProjectDirectory + 
                 "GlueControl/GlueControlManager.Generated.cs";
             GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(filePath);

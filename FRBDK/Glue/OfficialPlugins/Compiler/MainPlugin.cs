@@ -149,8 +149,9 @@ namespace OfficialPlugins.Compiler
             game1GlueControlGenerator.PortNumber = model.PortNumber;
             game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = model.GenerateGlueControlManagerCode;
             RefreshManager.Self.PortNumber = model.PortNumber;
+           
 
-            TaskManager.Self.Add(MainCodeGenerator.GenerateAll, "Generate Glue Control Code");
+            TaskManager.Self.Add(() => MainCodeGenerator.GenerateAll(model.GenerateGlueControlManagerCode), "Generate Glue Control Code");
         }
 
         private void UpdateCompileContentVisibility()
@@ -291,6 +292,7 @@ namespace OfficialPlugins.Compiler
                     {
                         // no big deal if it fails
                     }
+                    TaskManager.Self.Add(() => MainCodeGenerator.GenerateAll(model.GenerateGlueControlManagerCode), "Generate Glue Control Code");
 
                     RefreshManager.Self.StopAndRestartTask($"{propertyName} changed");
 

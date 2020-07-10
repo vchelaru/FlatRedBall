@@ -11,8 +11,55 @@ namespace OfficialPlugins.Compiler.CodeGeneration
     {
 
 
-        public static string GetStringContents()
+        public static string GetStringContents(bool generateFull)
         {
+
+            var handleSetVariable =
+@"
+            public void HandleSetVariable(string data)
+            {
+";
+            if(generateFull)
+            {
+
+                handleSetVariable +=
+                    @"
+                    var screen =
+                        FlatRedBall.Screens.ScreenManager.CurrentScreen;
+
+                    var deserialized = Newtonsoft.Json.JsonConvert.DeserializeObject<GlueVariableSetData>(data);
+
+                    object variableValue = deserialized.Value;
+
+                    switch(deserialized.Type)
+                    {
+                        case ""float"":
+                            variableValue = float.Parse(deserialized.Value);
+                            break;
+                        case ""int"":
+                            variableValue = int.Parse(deserialized.Value);
+                            break;
+                        case ""bool"":
+                            variableValue = bool.Parse(deserialized.Value);
+                            break;
+                        case ""double"":
+                            variableValue = double.Parse(deserialized.Value);
+                            break;
+                        case ""Microsoft.Xna.Framework.Color"":
+                            variableValue = typeof(Microsoft.Xna.Framework.Color).GetProperty(deserialized.Value).GetValue(null);
+                            break;
+                    }
+
+                    screen.ApplyVariable(deserialized.VariableName, variableValue);
+    ";
+            }
+
+            handleSetVariable +=
+                @"
+            }
+";
+
+
             var toReturn = @"
 using System.IO;
 using System.Net;
@@ -177,40 +224,13 @@ namespace " + GlueState.Self.ProjectNamespace + @"
                 }
 
                 return ""true"";
-            }
+            }" + 
+            handleSetVariable
+ + 
+@"
 
-            public void HandleSetVariable(string data)
-            {
-                var screen =
-                    FlatRedBall.Screens.ScreenManager.CurrentScreen;
 
-                var deserialized = Newtonsoft.Json.JsonConvert.DeserializeObject<GlueVariableSetData>(data);
-
-                object variableValue = deserialized.Value;
-
-                switch(deserialized.Type)
-                {
-                    case ""float"":
-                        variableValue = float.Parse(deserialized.Value);
-                        break;
-                    case ""int"":
-                        variableValue = int.Parse(deserialized.Value);
-                        break;
-                    case ""bool"":
-                        variableValue = bool.Parse(deserialized.Value);
-                        break;
-                    case ""double"":
-                        variableValue = double.Parse(deserialized.Value);
-                        break;
-                case ""Microsoft.Xna.Framework.Color"":
-                    variableValue = typeof(Microsoft.Xna.Framework.Color).GetProperty(deserialized.Value).GetValue(null);
-                    break;
         }
-
-            screen.ApplyVariable(deserialized.VariableName, variableValue);
-        }
-
-    }
 }
 ";
             return toReturn;
