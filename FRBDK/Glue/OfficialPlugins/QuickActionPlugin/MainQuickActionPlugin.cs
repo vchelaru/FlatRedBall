@@ -45,6 +45,7 @@ namespace OfficialPluginsCore.QuickActionPlugin
         private void CreateUi()
         {
             mainView = new MainView();
+            mainView.AnyButtonClicked += () => buttonVisibilityManager.UpdateVisibility();
 
             pluginTab = this.CreateTab(mainView, "Quick Actions");
             pluginTab.LastTabControl = PluginManager.CenterTab;

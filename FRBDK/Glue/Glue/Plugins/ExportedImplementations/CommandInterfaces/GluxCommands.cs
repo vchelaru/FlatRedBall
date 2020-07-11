@@ -790,7 +790,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 GlueState.Self.CurrentNamedObjectSave);
         }
 
-        public NamedObjectSave AddNewNamedObjectTo(AddObjectViewModel addObjectViewModel, IElement element, NamedObjectSave namedObject)
+        public NamedObjectSave AddNewNamedObjectTo(AddObjectViewModel addObjectViewModel, IElement element, NamedObjectSave listToAddTo)
         {
             if(element == null)
             {
@@ -799,7 +799,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             MembershipInfo membershipInfo = NamedObjectSaveExtensionMethodsGlue.GetMemberMembershipInfo(addObjectViewModel.ObjectName);
 
             var newNos = AddNewNamedObjectToInternal(addObjectViewModel.ObjectName,
-                membershipInfo, element, namedObject, false);
+                membershipInfo, element, listToAddTo, false);
 
             if (addObjectViewModel.SourceClassType != NoType && !string.IsNullOrEmpty(addObjectViewModel.SourceClassType))
             {
@@ -855,7 +855,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
 
         private static NamedObjectSave AddNewNamedObjectToInternal(string objectName, MembershipInfo membershipInfo,
-            IElement element, NamedObjectSave namedObjectSave, bool raisePluginResponse = true)
+            IElement element, NamedObjectSave listToAddTo, bool raisePluginResponse = true)
         {
             NamedObjectSave namedObject = new NamedObjectSave();
 
@@ -871,7 +871,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             #region Adding to a NamedObject (PositionedObjectList)
 
-            if (namedObjectSave != null)
+            if (listToAddTo != null)
             {
                 NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToCurrentNamedObjectList(namedObject);
 

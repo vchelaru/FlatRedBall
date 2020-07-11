@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPluginsCore.QuickActionPlugin.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="500">
+             d:DesignHeight="550" d:DesignWidth="550">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <WrapPanel HorizontalAlignment="Center" Margin="0,0,10,10">
 
@@ -40,6 +40,30 @@
                 Clicked="AddEntityButton_Clicked">
             </local:QuickActionButton>
 
+            <local:QuickActionButton
+                x:Name="AddObjectButton"
+                Title="Add Object"
+                Details="Set the AddObject details here, depending on if it's a Screen or entity."
+                Clicked="AddObjectButton_Clicked">
+            </local:QuickActionButton>
+
+            <local:QuickActionButton
+                x:Name="AddListOfEntityButton"
+                Title="Add XXXX List to GameScreen"
+                Details="Add a XXXX list to the GameScreen"
+                Clicked="AddListOfEntityButton_Clicked">
+                
+            </local:QuickActionButton>
+            
+
+            <local:QuickActionButton
+                x:Name="AddInstanceOfEntityButton"
+                Title="Add XXXX Instance to GameScreen"
+                Details="Adds a single XXXX instance to the GameScreen"
+                Clicked="AddInstanceOfEntityButton_Clicked">
+                
+            </local:QuickActionButton>
+            
         </WrapPanel>
     </ScrollViewer>
 </UserControl>

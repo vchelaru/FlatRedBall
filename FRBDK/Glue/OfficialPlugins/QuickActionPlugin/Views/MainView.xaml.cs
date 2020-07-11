@@ -1,4 +1,6 @@
 ﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +22,10 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
     /// </summary>
     public partial class MainView : UserControl
     {
+        const string GameScreenName = "Screens\\GameScreen";
+
+        public event Action AnyButtonClicked;
+
         public MainView()
         {
             InitializeComponent();
@@ -28,12 +34,13 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
         private void AddScreenButton_Clicked(object sender, RoutedEventArgs e)
         {
             GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog();
+            AnyButtonClicked();
         }
 
         private void AddLevelButton_Clicked(object sender, RoutedEventArgs e)
         {
             var gameScreen = GlueState.Self.CurrentGlueProject.Screens.FirstOrDefault(
-                item => item.Name == "Screens\\GameScreen");
+                item => item.Name == GameScreenName);
 
             if(gameScreen == null)
             {
@@ -41,16 +48,59 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
 
             }
             GlueCommands.Self.DialogCommands.ShowCreateDerivedScreenDialog(gameScreen);
+            AnyButtonClicked();
         }
 
         private void AddEntityButton_Clicked(object sender, RoutedEventArgs e)
         {
             GlueCommands.Self.DialogCommands.ShowAddNewEntityDialog();
+            AnyButtonClicked();
         }
 
         private void CreateNewProjectButton_Clicked(object sender, RoutedEventArgs e)
         {
             GlueCommands.Self.ProjectCommands.CreateNewProject();
+            AnyButtonClicked();
+        }
+
+        private void AddObjectButton_Clicked(object sender, RoutedEventArgs e)
+        {
+            GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog();
+            AnyButtonClicked();
+        }
+
+        private void AddInstanceOfEntityButton_Clicked(object sender, RoutedEventArgs e)
+        {
+            var viewModel = new AddObjectViewModel();
+            viewModel.SourceType = SourceType.Entity;
+
+            viewModel.SourceClassType = GlueState.Self.CurrentEntitySave.Name;
+            viewModel.ObjectName = GlueState.Self.CurrentEntitySave.GetStrippedName() + "Instance";
+
+            var gameScreen = GlueState.Self.CurrentGlueProject.GetScreenSave(GameScreenName);
+
+            var newNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(viewModel, gameScreen, null);
+
+            GlueState.Self.CurrentNamedObjectSave = newNos;
+
+            AnyButtonClicked();
+        }
+
+        private void AddListOfEntityButton_Clicked(object sender, RoutedEventArgs e)
+        {
+            var viewModel = new AddObjectViewModel();
+            viewModel.SourceType = SourceType.FlatRedBallType;
+
+            viewModel.SourceClassType = "PositionedObjectList<T>";
+            viewModel.SourceClassGenericType = GlueState.Self.CurrentEntitySave.Name;
+            viewModel.ObjectName = GlueState.Self.CurrentEntitySave.GetStrippedName() + "List";
+
+            var gameScreen = GlueState.Self.CurrentGlueProject.GetScreenSave(GameScreenName);
+            var newNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(viewModel, gameScreen, null);
+
+            GlueState.Self.CurrentNamedObjectSave = newNos;
+
+            AnyButtonClicked();
         }
     }
 }

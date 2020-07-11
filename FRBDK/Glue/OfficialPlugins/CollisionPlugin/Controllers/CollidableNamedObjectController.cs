@@ -137,7 +137,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             var newNos =
                 GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectModel,
-                selectedElement, namedObject: null);
+                selectedElement, listToAddTo: null);
 
             newNos.Properties.SetValue(nameof(CollisionRelationshipViewModel.IsAutoNameEnabled), true);
 

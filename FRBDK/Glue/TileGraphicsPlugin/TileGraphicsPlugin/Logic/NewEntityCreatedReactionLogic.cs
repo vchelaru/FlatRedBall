@@ -48,7 +48,7 @@ namespace TileGraphicsPlugin.Logic
                             addObjectViewModel.SourceClassGenericType = newEntity.Name;
 
                             GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(
-                                addObjectViewModel, screen, namedObject:null);
+                                addObjectViewModel, screen, listToAddTo:null);
 
                             GlueCommands.Self.PrintOutput(
                                 $"Tiled Plugin added {addObjectViewModel.ObjectName} to {screen}");
