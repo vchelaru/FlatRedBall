@@ -154,6 +154,21 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
             }
 
             #endregion
+
+            #region Add Factory to Entity
+
+            mainView.AddEntityFactory.Visibility = ToVisibility(
+                selectedEntity != null &&
+                selectedEntity.CreatedByOtherEntities == false
+                );
+
+            if(mainView.AddEntityFactory.Visibility == Visibility.Visible)
+            {
+                mainView.AddEntityFactory.Title =
+                    $"Add {selectedEntity.GetStrippedName()} Factory";
+            }
+
+            #endregion
         }
     }
 }

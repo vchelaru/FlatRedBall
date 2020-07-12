@@ -52,7 +52,8 @@ namespace FlatRedBall.Glue.SetVariable
             ReactToPropertyChanged(changedMember, oldValue, variableName, parentGridItemName);
         }
 
-        public void ReactToPropertyChanged(string variableNameAsDisplayed, object oldValue, string variableName, string parentGridItemName)
+        public void ReactToPropertyChanged(string variableNameAsDisplayed, object oldValue, 
+            string variableName, string parentGridItemName)
         {
             var mPropertyGrid = MainGlueWindow.Self.PropertyGrid;
 

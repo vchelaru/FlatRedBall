@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.Glue.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -99,6 +100,20 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             var newNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(viewModel, gameScreen, null);
 
             GlueState.Self.CurrentNamedObjectSave = newNos;
+
+            AnyButtonClicked();
+        }
+
+        private void AddEntityFactory_Clicked(object sender, RoutedEventArgs e)
+        {
+            var entity = GlueState.Self.CurrentEntitySave;
+
+            entity.CreatedByOtherEntities = true;
+
+            EditorObjects.IoC.Container.Get<SetPropertyManager>().ReactToPropertyChanged(
+                nameof(entity.CreatedByOtherEntities), false, nameof(entity.CreatedByOtherEntities), null);
+
+            GlueCommands.Self.GluxCommands.SaveGluxTask();
 
             AnyButtonClicked();
         }

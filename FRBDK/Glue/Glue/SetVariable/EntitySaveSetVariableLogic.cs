@@ -195,12 +195,12 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 FactoryCodeGenerator.AddGeneratedPerformanceTypes();
                 FactoryCodeGenerator.UpdateFactoryClass(entitySave);
-                ProjectManager.SaveProjects();
+                GlueCommands.Self.ProjectCommands.SaveProjectsTask();
             }
             else
             {
                 FactoryCodeGenerator.RemoveFactory(entitySave);
-                ProjectManager.SaveProjects();
+                GlueCommands.Self.ProjectCommands.SaveProjectsTask();
             }
 
 

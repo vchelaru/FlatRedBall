@@ -61,7 +61,14 @@
                 Title="Add XXXX Instance to GameScreen"
                 Details="Adds a single XXXX instance to the GameScreen"
                 Clicked="AddInstanceOfEntityButton_Clicked">
-                
+            </local:QuickActionButton>
+
+            <local:QuickActionButton
+                x:Name="AddEntityFactory"
+                Title="Add XXXX Factory"
+                Details="Factories simplify the creation and addition of entities to screen lists. 
+                Factories are required to create entities through TMX files."
+                Clicked="AddEntityFactory_Clicked">
             </local:QuickActionButton>
             
         </WrapPanel>
