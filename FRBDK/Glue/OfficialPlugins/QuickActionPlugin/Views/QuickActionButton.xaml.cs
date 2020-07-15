@@ -32,6 +32,12 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             set => DetailsTextBlock.Text = value;
         }
 
+        public ImageSource Image
+        {
+            get => ImageInstance.Source;
+            set => ImageInstance.Source = value;
+        }
+
         public QuickActionButton()
         {
             InitializeComponent();

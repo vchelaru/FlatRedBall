@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPluginsCore.QuickActionPlugin.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="175" Width="150"  Margin="10,10,0,0">
+             d:DesignHeight="175" Width="250"  Margin="10,10,0,0">
     <Grid>
         <Button Click="Button_Click">
             
@@ -14,9 +14,20 @@
             <TextBlock x:Name="TitleTextBlock" IsHitTestVisible="False" HorizontalAlignment="Center" TextAlignment="Center" FontSize="24" Margin="0,12,0,0" TextWrapping="Wrap">
                 This is the title
             </TextBlock>
-            <TextBlock x:Name="DetailsTextBlock" IsHitTestVisible="False" Margin="10,10,5,10" TextWrapping="Wrap">
-                This is the second text block, which has detail about the action
-            </TextBlock>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Image x:Name="ImageInstance" Source="/OfficialPluginsCore;component/QuickActionPlugin/Views/Add Entity instance to GameScreen.png" 
+                       IsHitTestVisible="False"
+                       Margin="10" VerticalAlignment="Top">
+                    
+                </Image>
+                <TextBlock x:Name="DetailsTextBlock" Grid.Column="1" IsHitTestVisible="False" Margin="10,10,5,10" TextWrapping="Wrap">
+                    This is the second text block, which has detail about the action
+                </TextBlock>
+            </Grid>
             
         </StackPanel>
     </Grid>

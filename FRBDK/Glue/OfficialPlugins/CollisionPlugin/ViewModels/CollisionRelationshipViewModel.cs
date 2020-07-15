@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.MVVM;
+﻿using FlatRedBall.Glue.Events;
+using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Math.Collision;
 using OfficialPlugins.CollisionPlugin.Managers;
@@ -439,6 +440,18 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             }
         }
 
+        public ObservableCollection<EventResponseSave> Events
+        {
+            get => Get<ObservableCollection<EventResponseSave>>();
+            private set => Set(value);
+        }
+
+        public Visibility AddEventButtonVisibility
+        {
+            get => Events.Count == 0 ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+
         #endregion
 
         public CollisionRelationshipViewModel()
@@ -448,6 +461,12 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
 
             FirstSubCollisionItemsSource = new ObservableCollection<string>();
             SecondSubCollisionItemsSource = new ObservableCollection<string>();
+
+            Events = new ObservableCollection<EventResponseSave>();
+            Events.CollectionChanged += (not, used) => 
+                NotifyPropertyChanged(nameof(AddEventButtonVisibility));
+
+
         }
 
         public void UpdateMassesForTileShapeCollectionCollision()

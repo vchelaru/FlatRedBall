@@ -84,6 +84,11 @@ namespace OfficialPlugins.CollisionPlugin
             this.GetEventSignatureArgs += GetEventSignatureAndArgs;
 
             this.ReactToChangedPropertyHandler += CollisionRelationshipViewModelController.HandleGlueObjectPropertyChanged;
+
+            this.ReactToCreateCollisionRelationshipsBetween += (first, second) =>
+            {
+                CollidableNamedObjectController.CreateCollisionRelationshipBetweenObjects(first.InstanceName, second.InstanceName);
+            };
         }
 
         private void HandleGluxLoad()
@@ -241,5 +246,7 @@ namespace OfficialPlugins.CollisionPlugin
         {
             CollidableNamedObjectController.RefreshViewModelTo(element, selectedNos, collidableViewModel);
         }
+
+
     }
 }

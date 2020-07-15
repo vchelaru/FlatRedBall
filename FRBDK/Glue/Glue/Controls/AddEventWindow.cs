@@ -15,11 +15,12 @@ using FlatRedBall.Utilities;
 using FlatRedBall.Glue.TypeConversions;
 using FlatRedBall.Glue.GuiDisplay;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
-
-
+using GlueFormsCore.ViewModels;
 
 namespace FlatRedBall.Glue.Controls
 {
+    #region Events
+
     public enum CustomEventType
     {
         Exposed,
@@ -27,15 +28,25 @@ namespace FlatRedBall.Glue.Controls
         New
     }
 
-	public partial class AddEventWindow : Form
+    #endregion
+
+    public partial class AddEventWindow : Form
     {
-        #region Fields
-
-
-
-        #endregion
-
         #region Properties
+
+        AddEventViewModel viewModel;
+        public AddEventViewModel ViewModel
+        {
+            get => viewModel;
+            set
+            {
+                viewModel = value;
+                if(viewModel != null)
+                {
+                    SetFrom(viewModel);
+                }
+            }
+        }
 
         public CustomEventType DesiredEventType
         {
@@ -243,6 +254,23 @@ namespace FlatRedBall.Glue.Controls
 
             UpdateGenericUiVisibility();
 		}
+
+        private void SetFrom(AddEventViewModel viewModel)
+        {
+            this.DesiredEventType = viewModel.DesiredEventType;
+
+            this.TunnelingObjectComboBox.SelectedItem = viewModel.TunnelingObject;
+
+            foreach(var item in this.TunnelingEventComboBox.Items)
+            {
+                if(item.ToString() == viewModel.TunnelingEvent)
+                {
+                    this.TunnelingEventComboBox.SelectedItem = item;
+                    break;
+                }
+            }
+
+        }
 
         private void FillAvailableDelegateTypes()
         {

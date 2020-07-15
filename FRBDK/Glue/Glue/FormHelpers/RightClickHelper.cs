@@ -656,17 +656,10 @@ namespace FlatRedBall.Glue.FormHelpers
             GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
         }
 
+        [Obsolete("Use GlueCommands.DialogCommands.ShowAddNewEventDialog")]
         public static void ShowAddEventWindow(NamedObjectSave objectToTunnelInto)
         {
-            AddEventWindow addEventWindow = new AddEventWindow();
-            addEventWindow.DesiredEventType = CustomEventType.Tunneled;
-
-            addEventWindow.TunnelingObject = objectToTunnelInto.InstanceName;;
-
-            if (addEventWindow.ShowDialog(MainGlueWindow.Self) == DialogResult.OK)
-            {
-                HandleAddEventOk(addEventWindow);
-            }
+            GlueCommands.Self.DialogCommands.ShowAddNewEventDialog(objectToTunnelInto);
 
         }
 
@@ -681,7 +674,7 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-        private static void HandleAddEventOk(AddEventWindow addEventWindow)
+        public static void HandleAddEventOk(AddEventWindow addEventWindow)
         {
             string resultName = addEventWindow.ResultName;
             IElement currentElement = EditorLogic.CurrentElement;

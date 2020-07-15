@@ -4,9 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPlugins.CollisionPlugin.Views"
-             xmlns:VM="clr-namespace:OfficialPlugins.CollisionPlugin.ViewModels"
+             xmlns:VM="clr-namespace:OfficialPlugins.CollisionPlugin.ViewModels" xmlns:views="clr-namespace:OfficialPluginsCore.CollisionPlugin.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="420" d:DesignWidth="600">
+             d:DesignHeight="550" d:DesignWidth="600">
     <ScrollViewer>
         <StackPanel>
             <Grid>
@@ -127,7 +127,25 @@
                         IsChecked="{Binding IsDelegateCollisionChecked}">Delegate Collision (delegate assigned in code)</RadioButton>
                 </StackPanel>
             </GroupBox>
-            
+
+            <GroupBox Header="Events" Margin="0,8,0,0">
+
+                <StackPanel>
+                    <ItemsControl Margin="14,0,0,0" Grid.Row="1" ItemsSource="{Binding Events}" HorizontalContentAlignment="Stretch" >
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <views:EventCell
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch">
+
+                                </views:EventCell>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Button Margin="0,10,0,0" Click="AddEventButtonClicked" Visibility="{Binding AddEventButtonVisibility}">Add Event</Button>
+                </StackPanel>
+                
+            </GroupBox>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

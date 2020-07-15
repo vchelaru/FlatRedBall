@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using GlueFormsCore.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +25,18 @@ namespace OfficialPlugins.CollisionPlugin.Views
         public CollisionRelationshipView()
         {
             InitializeComponent();
+        }
+
+        private void AddEventButtonClicked(object sender, RoutedEventArgs e)
+        {
+            var namedObject = GlueState.Self.CurrentNamedObjectSave;
+
+            var viewModel = new AddEventViewModel();
+            viewModel.DesiredEventType = FlatRedBall.Glue.Controls.CustomEventType.Tunneled;
+            viewModel.TunnelingObject = namedObject.InstanceName;
+            viewModel.TunnelingEvent = "CollisionOccurred";
+
+            GlueCommands.Self.DialogCommands.ShowAddNewEventDialog(viewModel);
         }
     }
 }

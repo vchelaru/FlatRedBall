@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.SaveClasses;
+using GlueFormsCore.ViewModels;
 using System;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
@@ -8,6 +9,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         ReferencedFileSave ShowAddNewFileDialog();
         void ShowAddNewEntityDialog();
         void ShowAddNewScreenDialog();
+        void ShowAddNewEventDialog(NamedObjectSave eventOwner);
+        void ShowAddNewEventDialog(AddEventViewModel viewModel);
 
         void ShowMessageBox(string message);
         void ShowYesNoMessageBox(string message, Action yesAction, Action noAction = null);

@@ -16,6 +16,7 @@ using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Glue.FormHelpers.StringConverters;
+using GlueFormsCore.ViewModels;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -740,6 +741,33 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 GlueState.Self.CurrentScreenSave = screen;
                 screen.UpdateFromBaseType();
             }
+        }
+
+        #endregion
+
+        #region Event
+
+        public void ShowAddNewEventDialog(NamedObjectSave eventOwner)
+        {
+            var name = eventOwner.InstanceName;
+
+            AddEventViewModel viewModel = new AddEventViewModel();
+            viewModel.TunnelingObject = name;
+            viewModel.DesiredEventType = CustomEventType.Tunneled;
+
+            ShowAddNewEventDialog(viewModel);
+        }
+
+        public void ShowAddNewEventDialog(AddEventViewModel viewModel)
+        {
+            AddEventWindow addEventWindow = new AddEventWindow();
+            addEventWindow.ViewModel = viewModel;
+
+            if (addEventWindow.ShowDialog(MainGlueWindow.Self) == DialogResult.OK)
+            {
+                RightClickHelper.HandleAddEventOk(addEventWindow);
+            }
+
         }
 
         #endregion

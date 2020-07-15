@@ -31,7 +31,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
             var selectedElement = selectedObject as IElement;
             var selectedEntity = selectedObject as EntitySave;
 
-            var gameScreen = project.Screens.FirstOrDefault(item => item.Name == "Screens\\GameScreen");
+            var gameScreen = project?.Screens.FirstOrDefault(item => item.Name == "Screens\\GameScreen");
             var hasGameScreen = gameScreen != null;
 
             #region Create New Project

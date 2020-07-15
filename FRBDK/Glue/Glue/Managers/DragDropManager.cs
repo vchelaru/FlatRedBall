@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Parsing;
@@ -81,9 +82,26 @@ namespace FlatRedBall.Glue.Managers
                         succeeded = HandleDropOnShapeCollection(treeNodeMoving, targetNode, targetNos, movingNos);
                     }
 
+                    else if(IsCollidableList(movingNos) && IsCollidableList(targetNos))
+                    {
+                        var response = HandleCreateCollisionRelationship(movingNos, targetNos);
+
+                        if(!response.Succeeded)
+                        {
+                            MessageBox.Show(response.Message);
+                        }
+
+                        succeeded = response.Succeeded;
+                    }
                     else if (targetClassType == "PositionedObjectList<T>")
                     {
-                        succeeded = HandleDropOnList(treeNodeMoving, targetNode, targetNos, movingNos);
+
+                        var response = HandleDropOnList(treeNodeMoving, targetNode, targetNos, movingNos);
+                        if(!response.Succeeded)
+                        {
+                            MessageBox.Show(response.Message);
+                        }
+                        succeeded = response.Succeeded;
                     }
 
                 }
@@ -107,6 +125,30 @@ namespace FlatRedBall.Glue.Managers
                     ProjectManager.SaveProjects();
                     GluxCommands.Self.SaveGlux();
                 }
+            }
+        }
+
+        private GeneralResponse HandleCreateCollisionRelationship(NamedObjectSave movingNos, NamedObjectSave targetNos)
+        {
+            PluginManager.ReactToCreateCollisionRelationshipsBetween(movingNos, targetNos);
+            return GeneralResponse.SuccessfulResponse;
+        }
+
+        // if both are lists, and both are ICollidable, then bring up the collision relationship 
+        static bool IsCollidableList(NamedObjectSave nos)
+        {
+            if (nos.IsList)
+            {
+                var type = nos.SourceClassGenericType;
+
+                // For a more complete impl, see:
+                // CollisionRelationshipViewModelController
+                return !string.IsNullOrEmpty(nos.SourceClassGenericType) &&
+                    ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType)?.ImplementsICollidable == true;
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -241,32 +283,36 @@ namespace FlatRedBall.Glue.Managers
             return succeeded;
         }
 
-        private static bool HandleDropOnList(TreeNode treeNodeMoving, TreeNode targetNode, NamedObjectSave targetNos, NamedObjectSave movingNos)
+        private static GeneralResponse HandleDropOnList(TreeNode treeNodeMoving, TreeNode targetNode, NamedObjectSave targetNos, NamedObjectSave movingNos)
         {
-            bool succeeded = true;
+            var toReturn = GeneralResponse.SuccessfulResponse;
 
             #region Failure cases
 
             if (string.IsNullOrEmpty(targetNos.SourceClassGenericType))
             {
-                MessageBox.Show("The target Object has not been given a list type yet");
+                toReturn.Succeeded = false;
+                toReturn.Message = "The target Object has not been given a list type yet";
             }
             else if (movingNos.CanBeInList(targetNos) == false)
             {
-                MessageBox.Show("The Object you are moving is of type " + movingNos.SourceClassType +
-                    " but the list is of type " + targetNos.SourceClassGenericType);
+                toReturn.Succeeded = false;
+                toReturn.Message = "The Object you are moving is of type " + movingNos.SourceClassType +
+                    " but the list is of type " + targetNos.SourceClassGenericType;
 
             }
             else if (treeNodeMoving.Parent.IsRootNamedObjectNode() == false)
             {
-                MessageBox.Show("The Object you are moving is already part of a list, so it can't be moved");
+                toReturn.Succeeded = false;
+                toReturn.Message = "The Object you are moving is already part of a list, so it can't be moved";
             }
 
             #endregion
 
             else
             {
-                succeeded = true;
+                toReturn.Succeeded = true;
+
                 // Get the old parent of the moving NOS
                 TreeNode parentTreeNode = treeNodeMoving.Parent;
                 if (parentTreeNode.IsNamedObjectNode())
@@ -277,7 +323,7 @@ namespace FlatRedBall.Glue.Managers
                 }
                 else
                 {
-                    EditorLogic.CurrentElement.NamedObjects.Remove(movingNos);
+                    GlueState.Self.CurrentElement.NamedObjects.Remove(movingNos);
                 }
                 parentTreeNode.Nodes.Remove(treeNodeMoving);
                 targetNode.Nodes.Add(treeNodeMoving);
@@ -285,7 +331,7 @@ namespace FlatRedBall.Glue.Managers
                 targetNos.ContainedObjects.Add(movingNos);
 
             }
-            return succeeded;
+            return toReturn;
         }
 
         private bool HandleDropOnShapeCollection(TreeNode treeNodeMoving, TreeNode targetNode, NamedObjectSave targetNos, NamedObjectSave movingNos)

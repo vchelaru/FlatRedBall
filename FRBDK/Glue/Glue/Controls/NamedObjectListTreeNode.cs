@@ -109,8 +109,9 @@ namespace FlatRedBall.Glue.Controls
 
                 if(nodeAtI != LayersTreeNode && nodeAtI != CollisionRelationshipTreeNode)
                 {
-                    if (!namedObjectList.Contains(treeNamedObject))
+                    if (!namedObjectList.Contains(treeNamedObject) || treeNamedObject.IsLayer || treeNamedObject.IsCollisionRelationship())
                     {
+                        // Remove them since they're handled by the dedicated lists.
                         currentNode.Nodes.RemoveAt(i);
                     }
                     else
@@ -173,11 +174,17 @@ namespace FlatRedBall.Glue.Controls
                     this.Nodes.Add(CollisionRelationshipTreeNode);
                 }
 
+                if(this.Nodes.IndexOf(CollisionRelationshipTreeNode) > 0)
+                {
+                    this.Nodes.Remove(CollisionRelationshipTreeNode);
+                    this.Nodes.Insert(0, CollisionRelationshipTreeNode);
+                }
+
                 for (int i = 0; i < collisionRelationships.Length; i++)
                 {
                     var collisionRelationship = collisionRelationships[i];
 
-                    var treeNode = GetTreeNodeFor(collisionRelationship, LayersTreeNode);
+                    var treeNode = GetTreeNodeFor(collisionRelationship, CollisionRelationshipTreeNode);
 
                     if(treeNode == null)
                     {

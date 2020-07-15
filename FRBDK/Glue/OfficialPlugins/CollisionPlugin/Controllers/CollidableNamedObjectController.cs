@@ -126,6 +126,14 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
         private static void HandleAddCollisionRelationshipAddClicked(NamedObjectPairRelationshipViewModel pairViewModel)
         {
 
+            var firstNosName = pairViewModel.OtherObjectName;
+            var secondNosName = pairViewModel.SelectedNamedObjectName;
+            CreateCollisionRelationshipBetweenObjects(firstNosName, secondNosName);
+
+        }
+
+        public static void CreateCollisionRelationshipBetweenObjects(string firstNosName, string secondNosName)
+        {
             var addObjectModel = new AddObjectViewModel();
 
             addObjectModel.SourceType = FlatRedBall.Glue.SaveClasses.SourceType.FlatRedBallType;
@@ -144,22 +152,22 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             bool needToInvert = selectedNamedObject.SourceType != SourceType.Entity &&
                 selectedNamedObject.IsList == false;
 
-            if(needToInvert)
+            if (needToInvert)
             {
                 newNos.Properties.SetValue(nameof(CollisionRelationshipViewModel.FirstCollisionName),
-                    pairViewModel.OtherObjectName);
+                    secondNosName);
                 newNos.Properties.SetValue(nameof(CollisionRelationshipViewModel.SecondCollisionName),
-                    pairViewModel.SelectedNamedObjectName);
+                    firstNosName);
             }
             else
             {
                 newNos.Properties.SetValue(nameof(CollisionRelationshipViewModel.FirstCollisionName),
-                    pairViewModel.SelectedNamedObjectName);
+                    firstNosName);
                 newNos.Properties.SetValue(nameof(CollisionRelationshipViewModel.SecondCollisionName),
-                    pairViewModel.OtherObjectName);
+                    secondNosName);
             }
 
-            
+
             CollisionRelationshipViewModelController.TryFixSourceClassType(newNos);
 
             // this will regenerate and save everything too:
@@ -170,6 +178,11 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             RefreshViewModelTo(selectedElement, selectedNamedObject, ViewModel);
 
             CollisionRelationshipViewModelController.TryFixMassesForTileShapeCollisionRelationship(selectedElement, newNos);
+
+            GlueCommands.Self.TreeNodeCommands.RefreshCurrentElementTreeNode();
+
+            GlueState.Self.CurrentNamedObjectSave = newNos;
+            GlueCommands.Self.DialogCommands.FocusTab("Collision");
         }
     }
 }

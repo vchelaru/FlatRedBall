@@ -184,5 +184,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             return default(T);
         }
+
+        public void RefreshCurrentElementTreeNode()
+        {
+            var currentElement = GlueState.Self.CurrentElement;
+            var treeNode = GlueState.Self.Find.ElementTreeNode(currentElement);
+
+            treeNode.RefreshTreeNodes();
+        }
     }
 }

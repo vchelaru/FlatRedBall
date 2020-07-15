@@ -143,6 +143,8 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
         public static void RefreshViewModelTo(CollisionRelationshipViewModel viewModel, NamedObjectSave selectedNos)
         {
+            var currentElement = GlueState.Self.CurrentElement;
+
             viewModel.GlueObject = selectedNos;
 
             viewModel.UpdateFromGlueObject();
@@ -153,16 +155,25 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             viewModel.IsFirstList = isFirstList;
             viewModel.IsSecondList = isSecondList;
 
-            CollisionRelationshipViewModelController
-                .RefreshAvailableCollisionObjects(GlueState.Self.CurrentElement, viewModel);
+            viewModel.Events.Clear();
+            foreach(var eventSave in currentElement.Events)
+            {
+                if(eventSave.SourceObject == selectedNos.InstanceName)
+                {
+                    viewModel.Events.Add(eventSave);
+                }
+            }
 
             CollisionRelationshipViewModelController
-                .RefreshSubcollisionObjects(GlueState.Self.CurrentElement, viewModel);
+                .RefreshAvailableCollisionObjects(currentElement, viewModel);
+
+            CollisionRelationshipViewModelController
+                .RefreshSubcollisionObjects(currentElement, viewModel);
 
 
 
             CollisionRelationshipViewModelController
-                .RefreshIfIsPlatformer(GlueState.Self.CurrentElement, viewModel);
+                .RefreshIfIsPlatformer(currentElement, viewModel);
         }
 
         public static void RefreshSubcollisionObjects(IElement element, CollisionRelationshipViewModel viewModel)

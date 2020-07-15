@@ -230,6 +230,8 @@ namespace FlatRedBall.Glue.Plugins
 
         public Func<ReferencedFileSave, List<AssetTypeInfo>> GetAvailableAssetTypes { get; protected set; }
 
+        public Action<NamedObjectSave, NamedObjectSave> ReactToCreateCollisionRelationshipsBetween { get; protected set; }
+
         #endregion
 
         #region Methods
