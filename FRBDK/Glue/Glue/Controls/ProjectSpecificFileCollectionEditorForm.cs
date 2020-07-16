@@ -153,11 +153,10 @@ namespace FlatRedBall.Glue.Controls
             if (dialogResult == true)
             {
                 AssetTypeInfo resultAssetTypeInfo = nfw.ResultAssetTypeInfo;
-                bool make2D = nfw.GetOptionFor(resultAssetTypeInfo) == "2D";
 
                 string name = nfw.ResultName;
 
-                string createdFile = PluginManager.CreateNewFile(resultAssetTypeInfo, make2D, FileManager.GetDirectoryKeepRelative(Rfs.Name), name);
+                string createdFile = PluginManager.CreateNewFile(resultAssetTypeInfo, false, FileManager.GetDirectoryKeepRelative(Rfs.Name), name);
 
                 //var createdFile = resultAssetTypeInfo.CreateNewFile(FileManager.GetDirectoryKeepRelative(Rfs.Name) + name, "", make2D);
                 createdFile = ProjectManager.MakeRelativeContent(createdFile);

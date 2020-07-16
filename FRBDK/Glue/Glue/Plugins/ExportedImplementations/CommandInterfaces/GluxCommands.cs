@@ -272,7 +272,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
 
         public ReferencedFileSave AddSingleFileTo(string fileName, string rfsName, string extraCommandLineArguments,
-            BuildToolAssociation buildToolAssociation, bool isBuiltFile, string options, IElement sourceElement, string directoryOfTreeNode)
+            BuildToolAssociation buildToolAssociation, bool isBuiltFile, object options, IElement sourceElement, string directoryOfTreeNode)
         {
             ReferencedFileSave toReturn = null;
 
@@ -528,11 +528,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return referencedFileSaveToReturn;
         }
 
-        private static void ApplyOptions(ReferencedFileSave toReturn, string options)
+        private static void ApplyOptions(ReferencedFileSave toReturn, object options)
         {
             if (toReturn.IsCsvOrTreatedAsCsv)
             {
-                toReturn.CreatesDictionary = options == "Dictionary";
+                toReturn.CreatesDictionary = ((string)options) == "Dictionary";
             }
         }
 

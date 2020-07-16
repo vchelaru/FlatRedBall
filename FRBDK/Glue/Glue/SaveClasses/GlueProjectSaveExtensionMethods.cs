@@ -100,7 +100,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         public static ReferencedFileSave AddReferencedFileSave(IElement element, string directoryPath, string fileName, 
-            AssetTypeInfo resultAssetTypeInfo, string option, out string errorMessage)
+            AssetTypeInfo resultAssetTypeInfo, object option, out string errorMessage)
         {
             char invalidCharacter;
             ReferencedFileSave rfs = null;
@@ -162,7 +162,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
             else
             {
-                string createdFile = PluginManager.CreateNewFile(resultAssetTypeInfo, option == "2D",
+                var is2D = option is string && ((string)option) == "2D";
+                string createdFile = PluginManager.CreateNewFile(resultAssetTypeInfo, is2D,
                     directoryRelativeToContent, fileName);
 
                 if(createdFile == null)

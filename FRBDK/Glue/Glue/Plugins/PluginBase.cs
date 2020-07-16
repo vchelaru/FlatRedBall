@@ -24,6 +24,8 @@ using FlatRedBall.IO;
 
 namespace FlatRedBall.Glue.Plugins
 {
+    #region Tab Location Enum
+
     public enum TabLocation
     {
         Top,
@@ -32,6 +34,8 @@ namespace FlatRedBall.Glue.Plugins
         Right,
         Bottom
     }
+
+    #endregion
 
     public abstract class PluginBase : IPlugin
     {

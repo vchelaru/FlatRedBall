@@ -26,9 +26,6 @@ namespace FlatRedBall.Glue.Controls
     {
         #region Fields/Properties
 
-        GroupBox spreadsheetBox;
-        RadioButton dictionaryRadio;
-
         List<object> allOptions = new List<object>();
         ObservableCollection<object> filteredOptions = new ObservableCollection<object>();
 
@@ -59,14 +56,19 @@ namespace FlatRedBall.Glue.Controls
         }
         #endregion
 
+        #region Events
+
+        public event SelectionChangedEventHandler SelectionChanged;
+
+        public Func<object> GetCreationOption;
+
+        #endregion
+
         public CustomizableNewFileWindow()
         {
             InitializeComponent();
 
             ListBox.ItemsSource = filteredOptions;
-
-            CreateSpreadsheetOptions();
-
 
             this.WindowStartupLocation = WindowStartupLocation.Manual;
 
@@ -78,6 +80,11 @@ namespace FlatRedBall.Glue.Controls
             this.Top = point.Y - 50;
 
             SearchTermTextBox.Focus();
+        }
+
+        public void AddCustomUi(System.Windows.Controls.Control controlToAdd)
+        {
+            AdditionalUiStack.Children.Add(controlToAdd);
         }
 
         public void AddOption(object option)
@@ -119,37 +126,6 @@ namespace FlatRedBall.Glue.Controls
             }
         }
 
-
-        //private void Create2D3DUI()
-        //{
-        //    FileTypeOptions m2D3DFileTypeOptions = new FileTypeOptions();
-        //    m2D3DFileTypeOptions.ObjectType.Add("Scene");
-        //    m2D3DFileTypeOptions.Options.Add("2D");
-        //    m2D3DFileTypeOptions.Options.Add("3D");
-        //    m2D3DFileTypeOptions.UiType = UiType.RadioButton;
-
-        //    mFileTypeOptions.Add(m2D3DFileTypeOptions);
-        //}
-
-        private void CreateSpreadsheetOptions()
-        {
-            spreadsheetBox = new GroupBox();
-            spreadsheetBox.Header = "Runtime Type";
-            var stack = new StackPanel();
-            spreadsheetBox.Content = stack;
-            spreadsheetBox.Visibility = Visibility.Collapsed;
-            AdditionalUiStack.Children.Add(spreadsheetBox);
-
-            dictionaryRadio = new RadioButton();
-            dictionaryRadio.Content = "Dictionary";
-            dictionaryRadio.IsChecked = true;
-            stack.Children.Add(dictionaryRadio);
-
-            var listRadio = new RadioButton();
-            listRadio.Content = "List";
-            stack.Children.Add(listRadio);
-        }
-
         public string GetObjectTypeFromAti(AssetTypeInfo ati)
         {
             if (ati == null)
@@ -169,19 +145,13 @@ namespace FlatRedBall.Glue.Controls
             }
         }
 
-
         private void FileTypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if(this.SelectionChanged != null)
+            {
+                this.SelectionChanged(this, e);
+            }
             AssetTypeInfo ati = SelectedItem as AssetTypeInfo;
-
-            if(ati?.FriendlyName == "Spreadsheet (.csv)")
-            {
-                spreadsheetBox.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                spreadsheetBox.Visibility = Visibility.Collapsed;
-            }
 
             if (ati != null)
             {
@@ -229,18 +199,11 @@ namespace FlatRedBall.Glue.Controls
             }
         }
 
-        public string GetOptionFor(AssetTypeInfo ati)
+        public object GetOptionFor(AssetTypeInfo ati)
         {
-            if(ati?.FriendlyName == "Spreadsheet (.csv)")
+            if(GetCreationOption != null)
             {
-                if(dictionaryRadio.IsChecked == true)
-                {
-                    return "Dictionary";
-                }
-                else
-                {
-                    return "List";
-                }
+                return GetCreationOption();
             }
             else
             {
@@ -297,18 +260,5 @@ namespace FlatRedBall.Glue.Controls
                     break;
             }
         }
-
-        //public string GetOptionFor(string type)
-        //{
-        //    foreach (var option in mFileTypeOptions)
-        //    {
-        //        if (option.ObjectType.Contains(type))
-        //        {
-        //            return mDynamicUiHelper.GetValue(option.UiId);
-        //        }
-        //    }
-
-        //    return null;
-        //}
     }
 }
