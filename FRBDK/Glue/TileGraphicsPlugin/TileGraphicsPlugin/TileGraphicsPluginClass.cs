@@ -29,6 +29,7 @@ using FlatRedBall.Glue.IO;
 using TileGraphicsPlugin.Logic;
 using System.ComponentModel;
 using TiledPluginCore.Controls;
+using TiledPluginCore.Models;
 
 namespace TileGraphicsPlugin
 {
@@ -374,6 +375,49 @@ namespace TileGraphicsPlugin
             this.ReactToNewEntityCreated += NewEntityCreatedReactionLogic.ReactToNewEntityCreated;
 
             this.ReactToNewFileHandler = ReactToNewFile;
+
+            this.AddNewFileOptionsHandler += HandleAddNewFileOptions;
+        }
+
+        private void HandleAddNewFileOptions(CustomizableNewFileWindow newFileWindow)
+        {
+            var checkBox = new System.Windows.Controls.CheckBox();
+
+            checkBox.Content = "Include Default Tileset";
+            checkBox.IsChecked = true;
+            newFileWindow.AddCustomUi(checkBox);
+
+            bool IsTmx(AssetTypeInfo ati) =>
+                ati?.Extension == "tmx";
+
+            newFileWindow.SelectionChanged += (not, used) =>
+            {
+                var ati = newFileWindow.SelectedItem as AssetTypeInfo;
+
+                if(IsTmx(ati))
+                {
+                    checkBox.Visibility = System.Windows.Visibility.Visible;
+                }
+                else
+                {
+                    checkBox.Visibility = System.Windows.Visibility.Hidden;
+                }
+            };
+
+            newFileWindow.GetCreationOption = () =>
+            {
+                var ati = newFileWindow.SelectedItem as AssetTypeInfo;
+                if (IsTmx(ati))
+                {
+                    var model = new NewTmxModel();
+                    model.IncludeDefaultTileset = checkBox.IsChecked == true;
+                    return model;
+                }
+                else
+                {
+                    return null;
+                }
+            };
         }
 
         private void CreateToolbar()

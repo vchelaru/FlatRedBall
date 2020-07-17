@@ -201,14 +201,17 @@ namespace FlatRedBall.Glue.Controls
 
         public object GetOptionFor(AssetTypeInfo ati)
         {
-            if(GetCreationOption != null)
+            foreach(var deleg in GetCreationOption.GetInvocationList())
             {
-                return GetCreationOption();
+                var result = deleg.DynamicInvoke();
+
+                if(result != null)
+                {
+                    return result;
+                }
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         private void SearchTermTextBox_TextChanged(object sender, TextChangedEventArgs e)

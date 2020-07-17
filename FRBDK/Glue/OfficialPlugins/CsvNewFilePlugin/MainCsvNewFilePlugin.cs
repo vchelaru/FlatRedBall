@@ -44,11 +44,14 @@ namespace OfficialPluginsCore.CsvNewFilePlugin
             listRadio.Content = "List";
             stack.Children.Add(listRadio);
 
+            bool IsSpreadsheet(AssetTypeInfo ati) =>
+                ati?.FriendlyName == "Spreadsheet (.csv)";
+
             newFileWindow.SelectionChanged += (not, used) =>
             {
                 var ati = newFileWindow.SelectedItem as AssetTypeInfo;
 
-                if (ati?.FriendlyName == "Spreadsheet (.csv)")
+                if (IsSpreadsheet(ati))
                 {
                     spreadsheetBox.Visibility = Visibility.Visible;
                 }
@@ -60,13 +63,21 @@ namespace OfficialPluginsCore.CsvNewFilePlugin
 
             newFileWindow.GetCreationOption = () =>
             {
-                if (dictionaryRadio.IsChecked == true)
+                var ati = newFileWindow.SelectedItem as AssetTypeInfo;
+                if(IsSpreadsheet(ati))
                 {
-                    return "Dictionary";
+                    if (dictionaryRadio.IsChecked == true)
+                    {
+                        return "Dictionary";
+                    }
+                    else
+                    {
+                        return "List";
+                    }
                 }
                 else
                 {
-                    return "List";
+                    return null;
                 }
             };
         }
