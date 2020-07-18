@@ -146,6 +146,16 @@ namespace FlatRedBall.Glue.Managers
                 return !string.IsNullOrEmpty(nos.SourceClassGenericType) &&
                     ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType)?.ImplementsICollidable == true;
             }
+            else if(nos.GetAssetTypeInfo().RuntimeTypeName == "FlatRedBall.TileCollisions.TileShapeCollection" ||
+                nos.GetAssetTypeInfo().RuntimeTypeName == "TileShapeCollection")
+            {
+                return true;
+            }
+            else if(nos.GetAssetTypeInfo().RuntimeTypeName == "FlatRedBall.Math.Geometry.ShapeCollection" ||
+                nos.GetAssetTypeInfo().RuntimeTypeName == "ShapeCollection")
+            {
+                return true;
+            }
             else
             {
                 return false;

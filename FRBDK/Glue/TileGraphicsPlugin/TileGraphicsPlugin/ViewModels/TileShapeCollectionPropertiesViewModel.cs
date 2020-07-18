@@ -206,6 +206,12 @@ namespace TileGraphicsPlugin.ViewModels
             set { Set(value);}
         }
 
+        public ObservableCollection<string> AvailableTypes
+        {
+            get { return Get<ObservableCollection<string>>(); }
+            set { Set(value); }
+        } 
+
         [SyncedProperty]
         [DefaultValue(16.0f)]
         public float CollisionTileSize
@@ -270,6 +276,12 @@ namespace TileGraphicsPlugin.ViewModels
         {
             get { return Get<bool>(); }
             set { Set(value); }
+        }
+
+        public TileShapeCollectionPropertiesViewModel()
+        {
+            AvailableTypes = new ObservableCollection<string>();
+
         }
     }
 }

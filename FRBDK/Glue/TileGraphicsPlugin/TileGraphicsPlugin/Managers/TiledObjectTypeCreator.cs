@@ -11,6 +11,9 @@ using TileGraphicsPlugin.DataTypes;
 
 namespace TileGraphicsPlugin.Managers
 {
+    /// <summary>
+    /// Saves the XML file that is used by Tiled to determine object type and variables.
+    /// </summary>
     public class TiledObjectTypeCreator
     {
 
