@@ -79,7 +79,19 @@ namespace FlatRedBall.Glue.Managers
 
                     else if(targetClassType == "ShapeCollection")
                     {
-                        succeeded = HandleDropOnShapeCollection(treeNodeMoving, targetNode, targetNos, movingNos);
+                        var response = HandleDropOnShapeCollection(treeNodeMoving, targetNode, targetNos, movingNos);
+
+                        if(!response.Succeeded && IsCollidableList(movingNos))
+                        {
+                            response = HandleCreateCollisionRelationship(movingNos, targetNos);
+                        }
+
+                        if(!response.Succeeded)
+                        {
+                            MessageBox.Show($"Could not drop {movingNos} on {targetNos}");
+
+                        }
+                        succeeded = response.Succeeded;
                     }
 
                     else if(IsCollidableList(movingNos) && IsCollidableList(targetNos))
@@ -344,18 +356,18 @@ namespace FlatRedBall.Glue.Managers
             return toReturn;
         }
 
-        private bool HandleDropOnShapeCollection(TreeNode treeNodeMoving, TreeNode targetNode, NamedObjectSave targetNos, NamedObjectSave movingNos)
+        private GeneralResponse HandleDropOnShapeCollection(TreeNode treeNodeMoving, TreeNode targetNode, NamedObjectSave targetNos, NamedObjectSave movingNos)
         {
-            bool succeeded = true;
+            var toReturn = GeneralResponse.SuccessfulResponse;
 
             if(movingNos.CanBeInShapeCollection() == false)
             {
-                MessageBox.Show("The Object you are moving is of type " + movingNos.SourceClassType +
-                    " which cannot be contained in a ShapeCollection");
+                toReturn.Succeeded = false;
+                toReturn.Message = "The Object you are moving is of type " + movingNos.SourceClassType +
+                    " which cannot be contained in a ShapeCollection";
             }
             else
             {
-                succeeded = true;
                 TreeNode parentTreeNode = treeNodeMoving.Parent;
                 if (parentTreeNode.IsNamedObjectNode())
                 {
@@ -372,7 +384,7 @@ namespace FlatRedBall.Glue.Managers
                 targetNos.ContainedObjects.Add(movingNos);
 
             }
-            return succeeded;
+            return toReturn;
         }
 
         public TreeNode MoveEntityOn(EntityTreeNode treeNodeMoving, TreeNode targetNode)

@@ -194,7 +194,17 @@ namespace OfficialPlugins.Compiler.Managers
                 var nosName = nos.InstanceName;
                 var type = instruction.Type;
                 var value = instruction.Value?.ToString();
-                TaskManager.Self.Add(async () => await TryPushVariableOrRestart(nosName, changedMember, type, value, screen, entity), "Pushing variable to game", TaskExecutionPreference.Asap);
+                TaskManager.Self.Add(async () =>
+                {
+                    try
+                    {
+                        await TryPushVariableOrRestart(nosName, changedMember, type, value, screen, entity);
+                    }
+                    catch
+                    {
+                        // no biggie...
+                    }
+                }, "Pushing variable to game", TaskExecutionPreference.Asap);
             }
             else
             {
@@ -206,9 +216,17 @@ namespace OfficialPlugins.Compiler.Managers
         {
             if (ShouldRestartOnChange)
             {
-                var currentInGameScreen = await CommandSending.CommandSender
-                    .SendCommand("GetCurrentScreen", PortNumber);
+                string currentInGameScreen = null;
 
+                try
+                {
+                    currentInGameScreen = await CommandSending.CommandSender
+                    .SendCommand("GetCurrentScreen", PortNumber);
+                }
+                catch
+                {
+                    // do nothing, maybe not connected
+                }
                 if(currentGlueScreen != null)
                 {
                     var areSame = currentInGameScreen == GlueState.Self.ProjectNamespace + "." + currentGlueScreen?.Name.Replace("\\", ".");

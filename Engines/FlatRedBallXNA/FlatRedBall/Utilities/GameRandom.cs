@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FlatRedBall.Math.Geometry;
 using Microsoft.Xna.Framework;
 
 namespace FlatRedBall.Utilities
@@ -142,6 +143,61 @@ namespace FlatRedBall.Utilities
             var maxRadians = MathHelper.ToRadians(maxDegrees);
 
             return WedgeVector2Radians(minLength, maxLength, minRadians, maxRadians);
+        }
+
+        class CumulativeAreaRectangle
+        {
+            public AxisAlignedRectangle Rectangle;
+            public float CumulativeSize;
+        }
+
+        public Vector2 PointIn(ShapeCollection shapeCollection)
+        {
+            if (shapeCollection.Circles.Count > 0)
+            {
+                throw new NotImplementedException("PointIn with Circles not implemented - bug Vic");
+            }
+            if(shapeCollection.Polygons.Count > 0)
+            {
+                throw new NotImplementedException("PointIn with Polygons not implemented - bug Vic");
+            }
+
+            var rectangles = new List<CumulativeAreaRectangle>();
+            float cumulative = 0;
+            for (int i = 0; i < shapeCollection.AxisAlignedRectangles.Count; i++)
+            {
+                var rectangle = shapeCollection.AxisAlignedRectangles[i];
+                cumulative += rectangle.Width * rectangle.Height;
+                rectangles.Add(new CumulativeAreaRectangle
+                {
+                    Rectangle = rectangle,
+                    CumulativeSize = cumulative
+                }) ;
+
+            }
+
+            var randomArea = Between(0, cumulative);
+            AxisAlignedRectangle rectangleToUse = null;
+            for(int i = 0; i < rectangles.Count; i++)
+            {
+                var cumulativeRectangle = rectangles[i];
+
+                if(cumulativeRectangle.CumulativeSize >= randomArea)
+                {
+                    rectangleToUse = cumulativeRectangle.Rectangle;
+                    break;
+                }
+            }
+
+            if(rectangleToUse != null)
+            {
+                return rectangleToUse.GetRandomPositionInThis().ToVector2();
+            }
+            else
+            {
+                return Vector2.Zero;
+            }
+
         }
     }
 }

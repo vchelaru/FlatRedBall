@@ -950,11 +950,17 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 NamedObjectSave list = parentTreeNode.Tag as NamedObjectSave;
 
-                if (list != null && list.IsList)
+                bool IsShapeCollection(NamedObjectSave nos)
+                {
+                    return nos.SourceType == SourceType.FlatRedBallType &&
+                        (nos.SourceClassType == "ShapeCollection" || nos.SourceClassType == "FlatRedBall.Math.Geometry.ShapeCollection");
+                }
+
+                if (list != null && (list.IsList || IsShapeCollection(list)))
                 {
                     int indexToInsertAt = 1 + list.ContainedObjects.IndexOf(namedObjectToDuplicate);
 
-                    container = EditorLogic.CurrentElement;
+                    container = GlueState.Self.CurrentElement;
 
                     while (container.GetNamedObjectRecursively(newNamedObject.InstanceName) != null)
                     {

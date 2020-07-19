@@ -5,19 +5,12 @@ using FlatRedBall.Graphics;
 using Microsoft.Xna.Framework;
 using FlatRedBall.Input;
 
-#if FRB_MDX
-
-using Microsoft.DirectX;
-#elif FRB_XNA || SILVERLIGHT
 using Vector3 = Microsoft.Xna.Framework.Vector3;
-#endif
 
 namespace FlatRedBall.Math.Geometry
 {
     public class ShapeCollection : ICollidable, IEquatable<ShapeCollection> 
-#if FRB_XNA
         ,IMouseOver
-#endif
     {
         #region Fields
 
