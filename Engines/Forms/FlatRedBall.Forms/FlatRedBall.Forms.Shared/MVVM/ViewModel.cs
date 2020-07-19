@@ -150,5 +150,10 @@ namespace FlatRedBall.Forms.MVVM
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public void ClearPropertyChangedEvents()
+        {
+            PropertyChanged = null;
+        }
     }
 }
