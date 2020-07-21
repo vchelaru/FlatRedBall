@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -16,8 +17,8 @@ namespace FlatRedBall.Forms.Controls
         protected Type ItemGumType { get; set; }
         protected Type ItemFormsType { get; set; } = typeof(ListBoxItem);
 
-        Collection<object> items;
-        public Collection<object> Items
+        ICollection<object> items;
+        public ICollection<object> Items
         {
             get => items;
             set
@@ -42,7 +43,8 @@ namespace FlatRedBall.Forms.Controls
                     if(items?.Count > 0)
                     {
                         // refresh!
-                        var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, items, startingIndex:0);
+                        var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, 
+                            items.ToList(), startingIndex:0);
                         HandleCollectionChanged(this, args);
                     }
                 }
@@ -161,7 +163,7 @@ namespace FlatRedBall.Forms.Controls
                         var index = e.NewStartingIndex;
                         var listItem = InnerPanel.Children[index];
 
-                        listBoxItems[e.NewStartingIndex].UpdateToObject(Items[index]);
+                        listBoxItems[e.NewStartingIndex].UpdateToObject(Items.ElementAt(index));
                     }
 
                     break;
@@ -190,7 +192,7 @@ namespace FlatRedBall.Forms.Controls
                 var listBoxItem = listBoxItems[i];
                 if (listBoxItem != sender && listBoxItem.IsSelected)
                 {
-                    args.RemovedItems.Add(Items[i]);
+                    args.RemovedItems.Add(Items.ElementAt(i));
                     listBoxItem.IsSelected = false;
                 }
             }

@@ -155,5 +155,16 @@ namespace FlatRedBall.Forms.MVVM
         {
             PropertyChanged = null;
         }
+
+        public void SetPropertyChanged(string propertyName, Action action)
+        {
+            this.PropertyChanged += (sender, args) =>
+            {
+                if(args.PropertyName == propertyName)
+                {
+                    action();
+                }
+            };
+        }
     }
 }

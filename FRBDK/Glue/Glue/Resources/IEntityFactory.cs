@@ -7,7 +7,7 @@ namespace REPLACED_NAMESPACE
 {
     public interface IEntityFactory
     {
-        object CreateNew();
+        object CreateNew(float x = 0, float y = 0);
         object CreateNew(FlatRedBall.Graphics.Layer layer);
 
         void Initialize(string contentManager);

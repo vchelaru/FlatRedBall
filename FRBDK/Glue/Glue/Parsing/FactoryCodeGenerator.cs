@@ -449,8 +449,8 @@ namespace FlatRedBall.Glue.Parsing
 
         private static void ImplementIEntityFactory(string factoryClassName, CodeBlockBase codeBlock)
         {
-            codeBlock.Function("object", "IEntityFactory.CreateNew", "")
-                .Line($"return {factoryClassName}.CreateNew();");
+            codeBlock.Function("object", "IEntityFactory.CreateNew", "float x = 0, float y = 0")
+                .Line($"return {factoryClassName}.CreateNew(x, y);");
 
             codeBlock.Function("object", "IEntityFactory.CreateNew", "Layer layer")
                 .Line($"return {factoryClassName}.CreateNew(layer);");

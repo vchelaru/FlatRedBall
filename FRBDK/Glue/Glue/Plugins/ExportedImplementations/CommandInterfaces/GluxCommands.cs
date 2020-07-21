@@ -99,7 +99,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     string projectName = FileManager.RemovePath(FileManager.RemoveExtension(ProjectManager.GlueProjectFileName));
 
-                    MessageBox.Show("STOP RIGHT THERE!!!!  There was an error in Glue at some point.  To prevent " +
+                    GlueCommands.Self.DialogCommands.ShowMessageBox("STOP RIGHT THERE!!!!  There was an error in Glue at some point.  To prevent " +
                         "corruption in the GLUX file, Glue will no longer save any changes that you make to the project.  " +
                         "You should exit out of Glue immediately and attempt to solve the problem.\n\n" +
                         "Glue has saved your work in a temporary file called " + projectName + ".gluxERROR"
@@ -134,7 +134,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     {
                         string errorLogLocation = FileManager.UserApplicationDataForThisApplication + "ExceptionInGlue.txt";
 
-                        MessageBox.Show("Error trying to save your .glux file.  Because of this error, Glue did not make any changes to the .glux file on disk.\n\nAn error log has been saved here:\n" + errorLogLocation);
+                        GlueCommands.Self.DialogCommands.ShowMessageBox(
+                            "Error trying to save your .glux file.  Because of this error, Glue did not make any changes to the .glux file on disk.\n\nAn error log has been saved here:\n" + errorLogLocation);
                         try
                         {
                             FileManager.SaveText(e.ToString(), errorLogLocation);
@@ -157,11 +158,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                         if (!succeeded)
                         {
-                            MessageBox.Show("Error saving the .glux:\n" + lastException);
+                            GlueCommands.Self.DialogCommands.ShowMessageBox("Error saving the .glux:\n" + lastException);
                         }
                         else
                         {
-
                             if (sendPluginRefreshCommand)
                             {
                                 PluginManager.ReactToGluxSave();

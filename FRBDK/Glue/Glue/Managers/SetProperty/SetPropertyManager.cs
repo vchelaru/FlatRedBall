@@ -185,7 +185,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             mPropertyGrid.Refresh();
 
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveGluxTask();
 
             // Vic says:  This was intented to refresh the variables at one point
             // but this is a messy feature.  I think we should just refresh the entire

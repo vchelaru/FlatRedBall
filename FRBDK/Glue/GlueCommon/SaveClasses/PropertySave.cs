@@ -93,6 +93,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public static void SetValue(this List<PropertySave> propertySaveList, string nameToSearchFor, object value)
         {
+
             bool isDefault = IsValueDefault(value);
 
             if (isDefault)
