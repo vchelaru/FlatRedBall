@@ -17,8 +17,8 @@ namespace FlatRedBall.Forms.Controls
         protected Type ItemGumType { get; set; }
         protected Type ItemFormsType { get; set; } = typeof(ListBoxItem);
 
-        ICollection<object> items;
-        public ICollection<object> Items
+        Collection<object> items;
+        public Collection<object> Items
         {
             get => items;
             set
