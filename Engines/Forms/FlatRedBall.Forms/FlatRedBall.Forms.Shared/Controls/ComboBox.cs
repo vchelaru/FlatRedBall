@@ -7,6 +7,7 @@ using System.Text;
 using FlatRedBall.Gui;
 using Gum.DataTypes;
 using Gum.Converters;
+using System.Collections;
 
 namespace FlatRedBall.Forms.Controls
 {
@@ -27,7 +28,17 @@ namespace FlatRedBall.Forms.Controls
             }
             set
             {
-                var foundItem = Items.FirstOrDefault(item => item.ToString() == value);
+                object foundItem = null; 
+                
+                foreach(var item in Items)
+                {
+                    if(item?.ToString() == value)
+                    {
+                        foundItem = item;
+                        break;
+                    }
+                }
+
 
                 var index = Items.IndexOf(foundItem);
                 listBox.SelectedIndex = index;
@@ -35,7 +46,7 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        public Collection<object> Items => listBox.Items;
+        public IList Items => listBox.Items;
         public Type ListBoxItemGumType
         {
             get { return listBox.ListBoxItemGumType; }

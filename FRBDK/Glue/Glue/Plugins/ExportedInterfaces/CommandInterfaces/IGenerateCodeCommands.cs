@@ -6,8 +6,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
     public interface IGenerateCodeCommands
     {
         void GenerateAllCodeTask();
-
-        [Obsolete("Use GenerateAllCodeTask")]
         void GenerateAllCode();
 
         void GenerateCurrentElementCode();
@@ -31,13 +29,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         void GenerateCurrentCsvCode();
 
-        void GenerateAllCodeSync();
-
         void GenerateCustomClassesCode();
 
         void GenerateStartupScreenCode();
 
         void GenerateGame1();
-        void GenerateGame1Task();
     }
 }

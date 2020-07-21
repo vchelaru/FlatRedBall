@@ -45,6 +45,8 @@ namespace FlatRedBall.Glue.Managers
 
         List<string> taskHistory = new List<string>();
 
+        public int? SyncTaskThreadId { get; private set; }
+
         #endregion
 
         public event Action<TaskEvent, GlueTask> TaskAddedOrRemoved;
@@ -368,8 +370,10 @@ namespace FlatRedBall.Glue.Managers
                     //this.taskHistory.Add(glueTask?.DisplayInfo);
                     glueTask.TimeStarted = DateTime.Now;
                     TaskAddedOrRemoved?.Invoke(TaskEvent.Started, glueTask);
-
+                    SyncTaskThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
                     toProcess();
+                    SyncTaskThreadId = null;
+
                     glueTask.TimeEnded = DateTime.Now;
                     bool shouldProcess = false;
 
@@ -406,6 +410,21 @@ namespace FlatRedBall.Glue.Managers
 #endif
         }
 
-#endregion
+        public void AddOrRunIfTasked(Action action, string displayInfo, TaskExecutionPreference executionPreference)
+        {
+            int threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+
+            if (threadId == TaskManager.Self.SyncTaskThreadId)
+            {
+                // we're in a task:
+                action();
+            }
+            else
+            {
+                TaskManager.Self.Add(action, displayInfo, executionPreference);
+            }
+        }
+
+        #endregion
     }
 }

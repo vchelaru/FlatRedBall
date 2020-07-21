@@ -82,7 +82,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void SaveGlux(bool sendPluginRefreshCommand = true)
         {
-            MainGlueWindow.Self.BeginInvoke(new EventHandler(delegate { SaveGluxSync(sendPluginRefreshCommand); }));
+            TaskManager.Self.AddOrRunIfTasked(
+                () => SaveGluxSync(sendPluginRefreshCommand: sendPluginRefreshCommand),
+                "Saving .glux", 
+                // asap because otherwise this may get added
+                // after a reload command
+                TaskExecutionPreference.Asap);
         }
 
         public void SaveGluxTask()

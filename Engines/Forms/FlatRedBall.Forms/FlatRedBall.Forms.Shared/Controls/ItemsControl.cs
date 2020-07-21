@@ -17,8 +17,8 @@ namespace FlatRedBall.Forms.Controls
         protected Type ItemGumType { get; set; }
         protected Type ItemFormsType { get; set; } = typeof(ListBoxItem);
 
-        Collection<object> items;
-        public Collection<object> Items
+        IList items;
+        public IList Items
         {
             get => items;
             set
@@ -44,7 +44,7 @@ namespace FlatRedBall.Forms.Controls
                     {
                         // refresh!
                         var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, 
-                            items.ToList(), startingIndex:0);
+                            items, startingIndex:0);
                         HandleCollectionChanged(this, args);
                     }
                 }
@@ -163,7 +163,7 @@ namespace FlatRedBall.Forms.Controls
                         var index = e.NewStartingIndex;
                         var listItem = InnerPanel.Children[index];
 
-                        listBoxItems[e.NewStartingIndex].UpdateToObject(Items.ElementAt(index));
+                        listBoxItems[e.NewStartingIndex].UpdateToObject(Items[index]);
                     }
 
                     break;
@@ -192,7 +192,7 @@ namespace FlatRedBall.Forms.Controls
                 var listBoxItem = listBoxItems[i];
                 if (listBoxItem != sender && listBoxItem.IsSelected)
                 {
-                    args.RemovedItems.Add(Items.ElementAt(i));
+                    args.RemovedItems.Add(Items[i]);
                     listBoxItem.IsSelected = false;
                 }
             }

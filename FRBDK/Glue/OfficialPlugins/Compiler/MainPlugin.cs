@@ -277,7 +277,7 @@ namespace OfficialPlugins.Compiler
                     game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = viewModel.IsGenerateGlueControlManagerInGame1Checked;
                     game1GlueControlGenerator.PortNumber = viewModel.PortNumber;
                     RefreshManager.Self.PortNumber = viewModel.PortNumber;
-                    GlueCommands.Self.GenerateCodeCommands.GenerateGame1Task();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
                     var model = viewModel.ToModel();
                     try
                     {

@@ -23,14 +23,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         [Obsolete("Use GenerateAllCodeTask")]
         public void GenerateAllCode()
         {
-            GenerateAllCodeTask();
+            TaskManager.Self.AddOrRunIfTasked(
+                () => GenerateAllCodeSync(),
+                "Generating all code",
+                TaskExecutionPreference.AddOrMoveToEnd
+                );
         }
 
         public void GenerateAllCodeTask()
         {
 
             TaskManager.Self.Add(
-                () => GenerateAllCodeSync(new object()),
+                () => GenerateAllCodeSync(),
                 "Generating all code",
                 TaskExecutionPreference.AddOrMoveToEnd
 
@@ -57,13 +61,20 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (element != null)
             {
-                CodeWriter.GenerateCode(element);
+                TaskManager.Self.AddOrRunIfTasked(() =>
+                {
+                        CodeWriter.GenerateCode(element);
+                }, $"Generating element {element}", TaskExecutionPreference.AddOrMoveToEnd);
             }
         }
 
         public void GenerateElementCode(IElement element)
         {
-            CodeGeneratorIElement.GenerateElementAndDerivedCode(element);
+            string taskName = nameof(GenerateElementCodeTask) + " " + element.ToString();
+
+            TaskManager.Self.AddOrRunIfTasked(() => CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
+                taskName,
+                TaskExecutionPreference.AddOrMoveToEnd);
         }
 
         public void GenerateElementAndReferencedObjectCodeTask(IElement element)
@@ -93,12 +104,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void GenerateGlobalContentCode()
         {
-            GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
+            TaskManager.Self.AddOrRunIfTasked(GlobalContentCodeGenerator.UpdateLoadGlobalContentCode, nameof(GenerateGlobalContentCode), TaskExecutionPreference.AddOrMoveToEnd);
         }
 
         public void GenerateGlobalContentCodeTask()
         {
-            TaskManager.Self.Add(GenerateGlobalContentCode, nameof(GenerateGlobalContentCode), TaskExecutionPreference.AddOrMoveToEnd);
+            TaskManager.Self.Add(GlobalContentCodeGenerator.UpdateLoadGlobalContentCode, nameof(GenerateGlobalContentCode), TaskExecutionPreference.AddOrMoveToEnd);
         }
 
         public string GetNamespaceForElement(IElement element)
@@ -117,19 +128,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             ReferencedFileSave rfs = GlueState.CurrentReferencedFileSave;
             if(rfs != null && rfs.IsCsvOrTreatedAsCsv)
             {
-                CsvCodeGenerator.GenerateAndSaveDataClass(rfs, rfs.CsvDelimiter);
+                TaskManager.Self.AddOrRunIfTasked(() =>
+                {
+                    CsvCodeGenerator.GenerateAndSaveDataClass(rfs, rfs.CsvDelimiter);
+                },
+                nameof(GenerateCurrentCsvCode) + " " + rfs,
+                TaskExecutionPreference.Fifo);
             }
         }
         
         /// <summary>
         /// Generates all code for the entire project synchronously.
         /// </summary>
-        public void GenerateAllCodeSync()
-        {
-            GenerateAllCodeSync(null);
-        }
-
-        static void GenerateAllCodeSync  (object throwaway)
+        static void GenerateAllCodeSync  ()
         {
             var glueProject = GlueState.CurrentGlueProject;
 
@@ -241,16 +252,16 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             CodeWriter.RefreshStartupScreenCode();
         }
 
-        public void GenerateGame1Task()
+        public void GenerateGame1()
         {
-            TaskManager.Self.Add(
-                GenerateGame1,
+            TaskManager.Self.AddOrRunIfTasked(
+                GenerateGame1Internal,
                 "Generating Game1.Generated.cs",
                 TaskExecutionPreference.AddOrMoveToEnd
                 );
         }
 
-        public void GenerateGame1()
+        void GenerateGame1Internal()
         {
             var code = Game1CodeGeneratorManager.GetGame1GeneratedContents();
 
