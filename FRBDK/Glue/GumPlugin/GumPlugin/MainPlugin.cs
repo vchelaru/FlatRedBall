@@ -281,7 +281,9 @@ namespace GumPlugin
             // - FlatRedBall XNA can now have .forms, but a warning message is displayed
             // 2.2.5
             // - Fixed missing semicolon at the end of generated code
-            get { return new Version(2, 2, 5); }
+            // 2.3
+            // - Added new classes for creating/updating shapes from Gum
+            get { return new Version(2, 3, 0); }
         }
 
         #endregion

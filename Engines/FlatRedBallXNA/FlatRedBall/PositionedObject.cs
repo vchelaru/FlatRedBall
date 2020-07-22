@@ -2000,25 +2000,13 @@ namespace FlatRedBall
         #endregion
         public void SetRelativeFromAbsolute()
         {
+#if DEBUG
             if (mParent == null)
             {
                 throw new InvalidOperationException("This method can only be called if the object has a valid Parent");
             }
+#endif
 
-
-#if SILVERLIGHT
-            float relativeX = X - mParent.X;
-            float relativeY = Y - mParent.Y;
-
-            FlatRedBall.Math.MathFunctions.RotatePointAroundPoint(
-                0, 0, ref relativeX, ref relativeY, -mParent.RotationZ);
-
-            this.RelativePosition.X = relativeX;
-            this.RelativePosition.Y = relativeY;
-
-
-            RelativeRotationMatrix = Matrix.CreateRotationZ(this.RotationZ - mParent.RotationZ);
-#else
             Vector3 tempVector = Position - mParent.Position;
             // TODO:  Is this right?
             Matrix invertedMatrix = Matrix.Invert(mParent.mRotationMatrix);
@@ -2044,7 +2032,6 @@ namespace FlatRedBall
             // forces a recalculation of the relative rotation matrix to prevent
             // floating point problems
             RelativeRotationX = RelativeRotationX;
-#endif
         }
 
         #region XML Docs

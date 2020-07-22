@@ -160,6 +160,9 @@ namespace GumPlugin.Managers
 
             codeItemAdder.Add(embeddedFolder + "GumIdb.cs");
             codeItemAdder.Add(embeddedFolder + "PlatformCompatability.cs");
+            codeItemAdder.Add(embeddedFolder + "GumToFrbShapeRelationship.cs");
+            codeItemAdder.Add(embeddedFolder + "GumCollidableExtensions.cs");
+            
             codeItemAdder.Add(embeddedFolder + "PositionedObjectGueWrapper.cs");
 
             codeItemAdder.Add(embeddedFolder + "GraphicalUiElement.IWindow.cs");
