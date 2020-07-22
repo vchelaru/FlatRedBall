@@ -140,7 +140,7 @@ namespace FlatRedBall.Forms.Controls
 
                             newItem.Visual.Parent = base.InnerPanel;
 
-                            listBoxItems.Insert(e.NewStartingIndex, newItem);
+                            listBoxItems.Insert(index, newItem);
                             index++;
                         }
                     }
