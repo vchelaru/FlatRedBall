@@ -400,7 +400,6 @@ namespace FlatRedBall.Glue.FormHelpers
                     throw new NullReferenceException("treeNode is null.  This is bad");
                 }
 
-
                 treeNodeToAddTo.Nodes.Add(treeNode);
                 treeNodeToAddTo.Nodes.SortByTextConsideringDirectories();
 
@@ -420,6 +419,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 Section.EndContextAndTime();
 
                 treeNode.EntitySave = entitySave;
+                treeNode.RefreshTreeNodes();
 
             }
             return treeNode;

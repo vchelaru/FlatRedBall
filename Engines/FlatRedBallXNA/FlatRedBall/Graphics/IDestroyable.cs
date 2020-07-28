@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace FlatRedBall.Graphics
 {
     /// <summary>Provides a Destroy method, generally used by Glue generated classes</summary>
@@ -5,4 +7,6 @@ namespace FlatRedBall.Graphics
     {
         void Destroy();
     }
+
+    
 }

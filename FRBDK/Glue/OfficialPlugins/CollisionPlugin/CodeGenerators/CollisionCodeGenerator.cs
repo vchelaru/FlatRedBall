@@ -231,17 +231,30 @@ namespace OfficialPlugins.CollisionPlugin
 
             string whatToCollideAgainst = "second";
 
-            // list vs list is internally handled already
             if( isSecondList)
             {
-                if(firstSubCollision == null)
+                if(collisionType == CollisionType.PlatformerCloudCollision || collisionType == CollisionType.PlatformerSolidCollision)
                 {
-                    // it's an icollidable probably
-                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, isCloud);");
+                    // list vs list is not handled, so we need a loop
+                    block.Line("var didCollide = false;");
+                    var foreachBlock = block.ForEach($"var collidableItem in {whatToCollideAgainst}");
+                    foreachBlock.Line("var collidedInternal = first.CollideAgainst(collidableItem.Collision, isCloud);");
+                    foreachBlock.Line("didCollide = didCollide || collidedInternal;");
+                    block.Line("return didCollide;");
                 }
                 else
                 {
-                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, first.{firstSubCollision}, isCloud);");
+                    // list vs list is internally handled already
+                    if(firstSubCollision == null)
+                    {
+                        // it's an icollidable probably
+                        block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, isCloud);");
+                    }
+                    else
+                    {
+                        block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, first.{firstSubCollision}, isCloud);");
+                    }
+
                 }
             }
             else // even if the first is list, we don't loop because we use a collision relationship type that handles the looping internally

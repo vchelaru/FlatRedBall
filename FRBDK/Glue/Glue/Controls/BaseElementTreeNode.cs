@@ -110,6 +110,11 @@ namespace FlatRedBall.Glue.Controls
 
         public void RefreshTreeNodes()
         {
+            if(SaveObject == null)
+            {
+                throw new InvalidOperationException("The SaveObject must be set first before refreshing");
+            }
+
             ElementViewWindow.SuppressSelectionEvents = true;
 
             const int numberOfTimesToAllowFailures = 5;

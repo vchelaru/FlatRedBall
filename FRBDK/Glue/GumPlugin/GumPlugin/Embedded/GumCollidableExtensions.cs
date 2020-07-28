@@ -17,7 +17,8 @@ namespace GumCoreShared.FlatRedBall.Embedded
 
     public static class GumCollidableExtensions
     {
-        public static void AddCollision(this IGumCollidable collidable, GraphicalUiElement graphicalUiElement, bool offsetForScreenCollision = false)
+        public static void AddCollision(this IGumCollidable collidable, GraphicalUiElement graphicalUiElement, 
+            bool offsetForScreenCollision = false, Func<GraphicalUiElement, bool> inclusionRequirement = null)
         {
             var parent = new PositionedObject();
             var gumWrapper = new PositionedObjectGueWrapper(parent, graphicalUiElement);
@@ -27,10 +28,11 @@ namespace GumCoreShared.FlatRedBall.Embedded
                 parent.Y += global::FlatRedBall.Camera.Main.OrthogonalHeight / 2.0f;
             }
 
-            collidable.AddCollision(gumWrapper);
+            collidable.AddCollision(gumWrapper, inclusionRequirement);
         }
 
-        public static void AddCollision(this IGumCollidable collidable, PositionedObjectGueWrapper gumWrapper)
+        public static void AddCollision(this IGumCollidable collidable, PositionedObjectGueWrapper gumWrapper, 
+            Func<GraphicalUiElement, bool> inclusionRequirement = null)
         {
             if (collidable.GumWrappers == null)
             {
@@ -38,10 +40,13 @@ namespace GumCoreShared.FlatRedBall.Embedded
             }
             collidable.GumWrappers.Add(gumWrapper);
             
-            AddCollision(gumWrapper, collidable.Collision, collidable.GumToFrbShapeRelationships, collidable as PositionedObject);
+            AddCollision(gumWrapper, collidable.Collision, collidable.GumToFrbShapeRelationships, collidable as PositionedObject,
+                inclusionRequirement);
         }
 
-        public static void AddCollision(PositionedObjectGueWrapper gumWrapper, ShapeCollection shapeCollection, List<GumToFrbShapeRelationship> gumToFrbShapeRelationships, PositionedObject frbShapeParent)
+        public static void AddCollision(PositionedObjectGueWrapper gumWrapper, ShapeCollection shapeCollection, 
+            List<GumToFrbShapeRelationship> gumToFrbShapeRelationships, PositionedObject frbShapeParent,
+            Func<GraphicalUiElement, bool> inclusionRequirement = null)
         {
 
             // why do we clear?
@@ -50,11 +55,20 @@ namespace GumCoreShared.FlatRedBall.Embedded
 
             var gumObject = gumWrapper.GumObject;
 
-            foreach (var gumRect in gumObject.ContainedElements)
+            foreach (var bomRectGue in gumObject.ContainedElements)
             {
-                if (gumRect.RenderableComponent is RenderingLibrary.Math.Geometry.LineRectangle)
+                var renderableComponentAsLineRectangle =
+                    bomRectGue.RenderableComponent as RenderingLibrary.Math.Geometry.LineRectangle;
+                var shouldInclude = renderableComponentAsLineRectangle != null;
+
+                if(shouldInclude && inclusionRequirement != null)
                 {
-                    gumRect.Visible = false;
+                    shouldInclude = inclusionRequirement(bomRectGue);
+                }
+
+                if (shouldInclude)
+                {
+                    bomRectGue.Visible = false;
 
                     var frbRect = new AxisAlignedRectangle();
                     // This is required so that collisions force the enemy to move,
@@ -62,10 +76,12 @@ namespace GumCoreShared.FlatRedBall.Embedded
                     // object, but translate that to a relative position in FRB coordinates
                     frbRect.AttachTo(frbShapeParent);
 
+                    frbRect.Color = renderableComponentAsLineRectangle.Color;
+
                     var relationship = new GumToFrbShapeRelationship();
                     relationship.FrbRect = frbRect;
-                    relationship.GumRect = gumRect;
-                    frbRect.Name = gumRect.Name + "_Frb";
+                    relationship.GumRect = bomRectGue;
+                    frbRect.Name = bomRectGue.Name + "_Frb";
 
                     shapeCollection.Add(frbRect);
 

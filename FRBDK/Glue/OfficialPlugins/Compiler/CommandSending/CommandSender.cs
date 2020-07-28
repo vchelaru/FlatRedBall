@@ -20,25 +20,43 @@ namespace OfficialPlugins.Compiler.CommandSending
             // this takes ~2 seconds, according to this:
             // https://github.com/dotnet/runtime/issues/31085
 
-            client.Connect("127.0.0.1", port);
-            // Stream string to server
-            Stream stm = client.GetStream();
-            //ASCIIEncoding asen = new ASCIIEncoding();
+            var isConnected = false;
 
-            if(!text.EndsWith("\n"))
+            try
             {
-                text += "\n";
+                client.Connect("127.0.0.1", port);
+                isConnected = true;
+            }
+            catch(Exception e)
+            {
+                // throw away - no need to tell the user it failed
             }
 
-            //byte[] ba = asen.GetBytes(input);
-            byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(text);
-            stm.Write(messageAsBytes, 0, messageAsBytes.Length);
+            if(isConnected)
+            {
+                // Stream string to server
+                Stream stm = client.GetStream();
+                //ASCIIEncoding asen = new ASCIIEncoding();
+
+                if(!text.EndsWith("\n"))
+                {
+                    text += "\n"; 
+                }
+
+                //byte[] ba = asen.GetBytes(input);
+                byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(text);
+                stm.Write(messageAsBytes, 0, messageAsBytes.Length);
 
 
-            // give the server time to finish what it's doing:
-            //await Task.Delay((int)(1 * 60));
-            var read = await ReadFromClient(client, client.GetStream());
-            return read;
+                // give the server time to finish what it's doing:
+                //await Task.Delay((int)(1 * 60));
+                var read = await ReadFromClient(client, client.GetStream());
+                return read;
+            }
+            else
+            {
+                return null;
+            }
 
         }
 
