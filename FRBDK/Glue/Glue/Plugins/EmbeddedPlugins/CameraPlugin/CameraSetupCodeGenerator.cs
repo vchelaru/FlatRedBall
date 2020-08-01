@@ -11,6 +11,7 @@ using FlatRedBall.Glue.SaveClasses;
 using System.Globalization;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin;
 using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Managers;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -102,19 +103,23 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public static void UpdateOrAddCameraSetup()
         {
-           string fileName = GlueState.Self.CurrentGlueProjectDirectory + @"Setup\CameraSetup.cs";
-
-            string newContents = GetCameraSetupCsContents();
-
-            GlueCommands.Self.TryMultipleTimes(()=>FileManager.SaveText(newContents, fileName), 5);
-
-            // Now, verify that this thing is part of the project.
-            bool wasAdded = GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(ProjectManager.ProjectBase, fileName, false, false);
-
-            if (wasAdded)
+            TaskManager.Self.AddOrRunIfTasked(() =>
             {
-                GlueCommands.Self.ProjectCommands.SaveProjects();
-            }
+                string fileName = GlueState.Self.CurrentGlueProjectDirectory + @"Setup\CameraSetup.cs";
+
+                string newContents = GetCameraSetupCsContents();
+
+                GlueCommands.Self.TryMultipleTimes(() => FileManager.SaveText(newContents, fileName), 5);
+
+                // Now, verify that this thing is part of the project.
+                bool wasAdded = GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(ProjectManager.ProjectBase, fileName, false, false);
+
+                if (wasAdded)
+                {
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
+                }
+
+            }, "Generating camera setup code", TaskExecutionPreference.Fifo);
         }
 
         private static string GetCameraSetupCsContents()

@@ -51,6 +51,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
                 respondToViewModelChanges = true;
 
                 CameraAtiUpdateLogic.UpdateAtiTo(viewModel);
+
+                CameraSetupCodeGenerator.UpdateOrAddCameraSetup();
             }
         }
 

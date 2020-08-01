@@ -747,7 +747,14 @@ namespace Gum.Wireframe
 
                     BindingContextChanged?.Invoke(this, args);
 
-                    UpdateChildrenInheritedBindingContext(this.Children);
+                    if (this.Children != null)
+                    {
+                        UpdateChildrenInheritedBindingContext(this.Children);
+                    }
+                    else
+                    {
+                        UpdateChildrenInheritedBindingContext(this.ContainedElements);
+                    }
 
                 }
             }
@@ -768,17 +775,19 @@ namespace Gum.Wireframe
                     }
                     mBindingContext = value;
 
-                    if (EffectiveBindingContext is INotifyPropertyChanged viewModel)
+                    if (value is INotifyPropertyChanged viewModel)
                     {
                         viewModel.PropertyChanged += HandleViewModelPropertyChanged;
 
                     }
-                    if(EffectiveBindingContext != null)
+                    if(value != null)
                     {
                         foreach (var vmProperty in vmPropsToUiProps.Keys)
                         {
                             UpdateToVmProperty(vmProperty);
                         }
+                        
+
                     }
 
                     var args = new BindingContextChangedEventArgs();
@@ -788,16 +797,44 @@ namespace Gum.Wireframe
 
                     if(this.Children != null)
                     {
+                        // do the default first...
                         UpdateChildrenInheritedBindingContext(this.Children);
+                        // ... then overwrite it
+                        foreach(var child in this.Children)
+                        {
+                            if(child is GraphicalUiElement gue)
+                            {
+                                if(gue.BindingContextBinding != null)
+                                {
+                                    gue.BindingContextBindingPropertyOwner = value;
+
+                                    gue.UpdateToVmProperty(gue.BindingContextBinding);
+                                }
+                            }
+                        }
                     }
                     else
                     {
+                        // Do the default functionalty first...
                         UpdateChildrenInheritedBindingContext(this.ContainedElements);
+                        // ... then overwrite it
+                        foreach(var gue in this.ContainedElements)
+                        {
+                            if (gue.BindingContextBinding != null)
+                            {
+                                gue.BindingContextBindingPropertyOwner = value;
+
+                                gue.UpdateToVmProperty(gue.BindingContextBinding);
+                            }
+                        }
                     }
                 }
 
             }
         }
+
+        public object BindingContextBindingPropertyOwner { get; private set; }
+        public string BindingContextBinding { get; private set; }
 
         public event Action<object, BindingContextChangedEventArgs> BindingContextChanged;
 
@@ -830,64 +867,119 @@ namespace Gum.Wireframe
 
         public void SetBinding(string uiProperty, string vmProperty)
         {
-            if (vmPropsToUiProps.ContainsKey(vmProperty))
+            if(uiProperty == nameof(BindingContext))
             {
-                vmPropsToUiProps.Remove(vmProperty);
+                BindingContextBinding = vmProperty;
             }
-            vmPropsToUiProps.Add(vmProperty, uiProperty);
-
-            if(EffectiveBindingContext != null)
+            else
             {
-                UpdateToVmProperty(vmProperty);
+                if (vmPropsToUiProps.ContainsKey(vmProperty))
+                {
+                    vmPropsToUiProps.Remove(vmProperty);
+                }
+                vmPropsToUiProps.Add(vmProperty, uiProperty);
+
+                if(EffectiveBindingContext != null)
+                {
+                    UpdateToVmProperty(vmProperty);
+                }
             }
         }
 
         private bool UpdateToVmProperty(string vmPropertyName)
         {
             var updated = false;
-            if (vmPropsToUiProps.ContainsKey(vmPropertyName))
+
+            var isBoundToVmProperty = vmPropsToUiProps.ContainsKey(vmPropertyName) ||
+                BindingContextBinding == vmPropertyName;
+
+            if (isBoundToVmProperty)
             {
+
+                var bindingContextObjectToUse = BindingContextBinding == vmPropertyName ?
+                    BindingContextBindingPropertyOwner : EffectiveBindingContext;
+
 #if UWP
-                var vmProperty = EffectiveBindingContext.GetType().GetTypeInfo().GetDeclaredProperty(vmPropertyName);
+                var vmProperty = bindingContextObjectToUse.GetType().GetTypeInfo().GetDeclaredProperty(vmPropertyName);
 #else
-                var vmProperty = EffectiveBindingContext.GetType().GetProperty(vmPropertyName);
+                var vmProperty = bindingContextObjectToUse.GetType().GetProperty(vmPropertyName);
 #endif
                 FieldInfo vmField = null;
                 
                 if (vmProperty == null)
                 {
-                    vmField = EffectiveBindingContext.GetType().GetField(vmPropertyName);
+                    vmField = bindingContextObjectToUse.GetType().GetField(vmPropertyName);
                 }
 
 
                 if (vmProperty == null && vmField == null)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Could not find field or property {vmPropertyName} in {EffectiveBindingContext.GetType()}");
+                    System.Diagnostics.Debug.WriteLine($"Could not find field or property {vmPropertyName} in {bindingContextObjectToUse.GetType()}");
                 }
                 else
                 {
-                    var vmValue = vmField != null ? vmField.GetValue(EffectiveBindingContext) :
-                        vmProperty.GetValue(EffectiveBindingContext, null);
+                    var vmValue = vmField != null ? vmField.GetValue(bindingContextObjectToUse) :
+                        vmProperty.GetValue(bindingContextObjectToUse, null);
 
-                    var uiProperty = this.GetType().GetProperty(vmPropsToUiProps[vmPropertyName]);
 
-                    if (uiProperty == null)
+                    if(vmPropertyName == BindingContextBinding)
                     {
-                        throw new Exception($"The type {this.GetType()} does not have a property {vmPropsToUiProps[vmPropertyName]}");
-                    }
-
-                    if (uiProperty.PropertyType == typeof(string))
-                    {
-                        uiProperty.SetValue(this, vmValue?.ToString(), null);
+                        BindingContext = vmValue;
                     }
                     else
                     {
-                        uiProperty.SetValue(this, vmValue, null);
+                        PropertyInfo uiProperty = this.GetType().GetProperty(vmPropsToUiProps[vmPropertyName]);
+
+                        if (uiProperty == null)
+                        {
+                            throw new Exception($"The type {this.GetType()} does not have a property {vmPropsToUiProps[vmPropertyName]}");
+                        }
+
+                        if (uiProperty.PropertyType == typeof(string))
+                        {
+                            uiProperty.SetValue(this, vmValue?.ToString(), null);
+                        }
+                        else
+                        {
+                            uiProperty.SetValue(this, vmValue, null);
+                        }
                     }
                     updated = true;
                 }
             }
+
+            TryPushBindingContextChangeToChildren(vmPropertyName);
+
             return updated;
+        }
+
+        private void TryPushBindingContextChangeToChildren(string vmPropertyName)
+        {
+            if (this.Children != null)
+            {
+                foreach(var child in Children)
+                {
+                    if(child is GraphicalUiElement gue)
+                    {
+                        if (gue.BindingContextBinding == vmPropertyName && gue.BindingContextBindingPropertyOwner == EffectiveBindingContext)
+                        {
+                            gue.UpdateToVmProperty(vmPropertyName);
+                        }
+                        gue.TryPushBindingContextChangeToChildren(vmPropertyName);
+                    }
+                }
+            }
+            else
+            {
+                foreach(var gue in ContainedElements)
+                {
+                    if (gue.BindingContextBinding == vmPropertyName && gue.BindingContextBindingPropertyOwner == EffectiveBindingContext)
+                    {
+                        gue.UpdateToVmProperty(vmPropertyName);
+                    }
+                    gue.TryPushBindingContextChangeToChildren(vmPropertyName);
+                }
+            }
         }
 
         protected void PushValueToViewModel([CallerMemberName]string uiPropertyName = null)

@@ -410,7 +410,7 @@ namespace FlatRedBall.Glue.Managers
 #endif
         }
 
-        public void AddOrRunIfTasked(Action action, string displayInfo, TaskExecutionPreference executionPreference)
+        public void AddOrRunIfTasked(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo)
         {
             int threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
 
