@@ -110,22 +110,9 @@ namespace GumPlugin.Managers
                     {
                         var toReturn = "FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera();";
 
-                        var fileName = rfs.Name;
+                        string strippedName = GetStrippedScreenName(rfs);
 
-                        var filePath = new FilePath(fileName);
-
-
-                        var gumScreensFolder = $"gumproject/screens/";
-
-                        var strippedName = fileName;
-                        if(fileName.ToLowerInvariant().StartsWith(gumScreensFolder))
-                        {
-                            strippedName = fileName.Substring(gumScreensFolder.Length);
-                        }
-
-                        strippedName = FileManager.RemoveExtension(strippedName);
-
-                        toReturn += 
+                        toReturn +=
                             $"{rfs.GetInstanceName()} = GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetScreen(\"{strippedName}\"), true);";
 
                         return toReturn;
@@ -149,6 +136,26 @@ namespace GumPlugin.Managers
 
                 return screenAti;
             }
+        }
+
+        private static string GetStrippedScreenName(ReferencedFileSave rfs)
+        {
+            var fileName = rfs.Name;
+
+            var gumxRfs = GumProjectManager.Self.GetRfsForGumProject();
+            var gumRfsfolder = FileManager.GetDirectory(gumxRfs.Name, RelativeType.Relative);
+            
+
+            var gumScreensFolder = $"{gumRfsfolder}screens/".ToLowerInvariant();
+
+            var strippedName = fileName;
+            if (fileName.ToLowerInvariant().StartsWith(gumScreensFolder))
+            {
+                strippedName = fileName.Substring(gumScreensFolder.Length);
+            }
+
+            strippedName = FileManager.RemoveExtension(strippedName);
+            return strippedName;
         }
 
         public AssetTypeInfo ScreenIdbAti
@@ -434,18 +441,7 @@ namespace GumPlugin.Managers
                 {
                     var fileName = rfs.Name;
 
-                    var filePath = new FilePath(fileName);
-
-
-                    var gumScreensFolder = $"gumproject/screens/";
-
-                    var strippedName = fileName;
-                    if (fileName.ToLowerInvariant().StartsWith(gumScreensFolder))
-                    {
-                        strippedName = fileName.Substring(gumScreensFolder.Length);
-                    }
-
-                    strippedName = FileManager.RemoveExtension(strippedName);
+                    string strippedName = GetStrippedScreenName(rfs);
 
                     var toReturn =
                         $"{rfs.GetInstanceName()} = ({qualifiedName})GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetScreen(\"{strippedName}\"), true);";
