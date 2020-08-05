@@ -365,9 +365,12 @@ namespace TopDownPlugin.CodeGenerators
 
                     if(this.Velocity.LengthSquared() == 0)
                     {
-                        // use the desired movement value, so the player can
-                        // change directions when facing a wall
-                        mDirectionFacing = TopDownDirectionExtensions.FromDirection(desiredVelocity.X, desiredVelocity.Y, PossibleDirections);
+                        if(desiredVelocity.LengthSquared() != 0)
+                        {
+                            // use the desired movement value, so the player can
+                            // change directions when facing a wall
+                            mDirectionFacing = TopDownDirectionExtensions.FromDirection(desiredVelocity.X, desiredVelocity.Y, PossibleDirections);
+                        }
                     }
                     else
                     {
