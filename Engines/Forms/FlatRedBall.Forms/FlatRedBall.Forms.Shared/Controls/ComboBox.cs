@@ -15,7 +15,6 @@ namespace FlatRedBall.Forms.Controls
     {
         #region Fields/Properties
 
-        
         ListBox listBox;
         GraphicalUiElement textComponent;
         RenderingLibrary.Graphics.Text coreTextObject;
@@ -77,8 +76,6 @@ namespace FlatRedBall.Forms.Controls
             }
         } 
 
-
-
         public object SelectedObject
         {
             get { return listBox.SelectedObject; }
@@ -96,7 +93,7 @@ namespace FlatRedBall.Forms.Controls
         // but the ListBox needs to be detached from its parent ComboBox when it is shown so
         // that it can be moved above all other UI (a sorting issue). But since the ListBox is
         // detached from its parent, we can't have it automatically update its size to the parent.
-        // Therefore, the list box showign process is as follows:
+        // Therefore, the list box showing process is as follows:
         // 1. Apply the values below to the list box (force it to have the same values it had before it was shown)
         // 2. Let the Gum layout engine do its updating
         // 3. Read the absolute x,y,width, and height (this happens in the show function)
