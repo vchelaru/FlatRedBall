@@ -47,8 +47,8 @@ namespace FlatRedBall.Forms.Controls.Popups
             if (textComponent == null)
             {
                 throw new Exception(
-                    $"This label was created with a Gum component ({Visual?.ElementSave}) " +
-                    "that does not have an instance called 'text'. A 'text' instance must be added to modify the button's Text property.");
+                    $"This Toast was created with a Gum component ({Visual?.ElementSave}) " +
+                    "that does not have an instance called 'TextInstance'. A 'TextInstance' instance must be added to modify the button's Text property.");
             }
         }
 #endif
