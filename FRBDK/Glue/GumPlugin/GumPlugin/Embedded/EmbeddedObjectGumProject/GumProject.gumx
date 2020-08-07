@@ -5,6 +5,7 @@
   <DefaultCanvasWidth>800</DefaultCanvasWidth>
   <DefaultCanvasHeight>600</DefaultCanvasHeight>
   <ShowOutlines>true</ShowOutlines>
+  <ConvertVariablesOnUnitTypeChange>false</ConvertVariablesOnUnitTypeChange>
   <RestrictToUnitValues>true</RestrictToUnitValues>
   <RestrictFileNamesForAndroid>false</RestrictFileNamesForAndroid>
   <Guides />
@@ -26,6 +27,10 @@
   </ComponentReference>
   <ComponentReference>
     <Name>DefaultForms/ComboBox</Name>
+    <ElementType>Component</ElementType>
+  </ComponentReference>
+  <ComponentReference>
+    <Name>DefaultForms/Label</Name>
     <ElementType>Component</ElementType>
   </ComponentReference>
   <ComponentReference>
@@ -128,6 +133,9 @@
   </BehaviorReference>
   <BehaviorReference>
     <Name>ComboBoxBehavior</Name>
+  </BehaviorReference>
+  <BehaviorReference>
+    <Name>LabelBehavior</Name>
   </BehaviorReference>
   <BehaviorReference>
     <Name>ListBoxBehavior</Name>

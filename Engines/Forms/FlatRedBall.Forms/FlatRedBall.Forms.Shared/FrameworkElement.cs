@@ -202,9 +202,13 @@ namespace FlatRedBall.Forms.Controls
 #else
                 var baseType = type.BaseType;
 #endif
-                if (baseType == typeof(object))
+                if (baseType == typeof(object) || baseType == typeof(FrameworkElement))
                 {
-                    throw new Exception($"Could not find default Gum Component for {type}. You can solve this by adding a Gum type for {type} to {nameof(DefaultFormsComponents)}, or constructing the Gum object itself.");
+                    var message =
+                        $"Could not find default Gum Component for {type}. You can solve this by adding a Gum type for {type} to " +
+                        $"{nameof(FrameworkElement)}.{nameof(DefaultFormsComponents)}, or constructing the Gum object itself.";
+
+                    throw new Exception(message);
                 }
                 else
                 {

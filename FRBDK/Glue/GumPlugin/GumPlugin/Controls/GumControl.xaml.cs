@@ -106,31 +106,23 @@ namespace GumPlugin.Controls
 
         private void HandleGenerateBehaviors(object sender, RoutedEventArgs e)
         {
-            TaskManager.Self.AddSync(() =>
-           {
-               bool didAdd = false;
+            TaskManager.Self.Add(() =>
+            {
+                bool didAdd = false;
 
-               didAdd = AddIfDoesntHave(CreateBehaviorSaveFrom(FormsControlInfo.Button));
-               didAdd |= AddIfDoesntHave(CreateBehaviorSaveFrom(FormsControlInfo.CheckBox));
-               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateComboBoxBehavior());
-               didAdd |= AddIfDoesntHave(CreateBehaviorSaveFrom(FormsControlInfo.ListBoxItem));
-               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateListBoxBehavior());
-               didAdd |= AddIfDoesntHave(CreateBehaviorSaveFrom(FormsControlInfo.PasswordBox));
-               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateRadioButtonBehavior());
-               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateScrollBarBehavior());
-               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateScrollViewerBehavior());
-               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateSliderBehavior());
-               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateTextBoxBehavior());
-               didAdd |= AddIfDoesntHave(CreateBehaviorSaveFrom(FormsControlInfo.ToggleButton));
-               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateTreeViewBehavior());
-               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateTreeViewItemBehavior());
-               didAdd |= AddIfDoesntHave(CreateBehaviorSaveFrom(FormsControlInfo.UserControl));
-
-               if (didAdd)
-               {
-                   AppCommands.Self.SaveGumx();
-               }
-           }, "Adding Gum Forms Behaviors");
+                foreach(var control in FormsControlInfo.AllControls)
+                {
+                    if(AddIfDoesntHave(CreateBehaviorSaveFrom(control)))
+                    {
+                        didAdd = true;
+                    }
+                }
+                
+                if (didAdd)
+                {
+                    AppCommands.Self.SaveGumx();
+                }
+            }, "Adding Gum Forms Behaviors");
         }
 
         private void HandleAddFormsComponentsClick(object sender, RoutedEventArgs e)
