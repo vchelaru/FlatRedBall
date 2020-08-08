@@ -392,7 +392,38 @@ namespace FlatRedBall.Debugging
         
         }
 
-        
+        static StringBuilder stringBuilder = new StringBuilder();
+        public static string GetFullPerformanceInformation()
+        {
+            if(Renderer.RecordRenderBreaks == false)
+            {
+                Renderer.RecordRenderBreaks = true;
+            }
+            stringBuilder.Clear();
+            var objectCount = GetAutomaticallyUpdatedObjectInformation();
+            stringBuilder.AppendLine(objectCount);
+
+            stringBuilder.AppendLine();
+            stringBuilder.AppendLine($"Render breaks: {Renderer.LastFrameRenderBreakList.Count}");
+
+            foreach(var renderBreak in Renderer.LastFrameRenderBreakList)
+            {
+                stringBuilder.AppendLine(renderBreak.ToString());
+            }
+            stringBuilder.AppendLine();
+            stringBuilder.AppendLine($"Deep collisions: {Math.Collision.CollisionManager.Self.DeepCollisionsThisFrame}");
+
+            stringBuilder.AppendLine();
+
+            if (TimeManager.SecondsSince(LastCalculationTime) > mMemoryUpdateFrequency)
+            {
+                MemoryInformation = ForceGetMemoryInformation();
+            }
+
+            stringBuilder.Append(MemoryInformation);
+
+            return stringBuilder.ToString();
+        }
 
 
         public static void WritePositionedObjectBreakdown()
