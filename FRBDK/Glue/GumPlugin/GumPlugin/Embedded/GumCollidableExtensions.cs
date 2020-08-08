@@ -55,20 +55,20 @@ namespace GumCoreShared.FlatRedBall.Embedded
 
             var gumObject = gumWrapper.GumObject;
 
-            foreach (var bomRectGue in gumObject.ContainedElements)
+            foreach (var gumRectGue in gumObject.ContainedElements)
             {
                 var renderableComponentAsLineRectangle =
-                    bomRectGue.RenderableComponent as RenderingLibrary.Math.Geometry.LineRectangle;
+                    gumRectGue.RenderableComponent as RenderingLibrary.Math.Geometry.LineRectangle;
                 var shouldInclude = renderableComponentAsLineRectangle != null;
 
                 if(shouldInclude && inclusionRequirement != null)
                 {
-                    shouldInclude = inclusionRequirement(bomRectGue);
+                    shouldInclude = inclusionRequirement(gumRectGue);
                 }
 
                 if (shouldInclude)
                 {
-                    bomRectGue.Visible = false;
+                    gumRectGue.Visible = false;
 
                     var frbRect = new AxisAlignedRectangle();
                     // This is required so that collisions force the enemy to move,
@@ -80,8 +80,8 @@ namespace GumCoreShared.FlatRedBall.Embedded
 
                     var relationship = new GumToFrbShapeRelationship();
                     relationship.FrbRect = frbRect;
-                    relationship.GumRect = bomRectGue;
-                    frbRect.Name = bomRectGue.Name + "_Frb";
+                    relationship.GumRect = gumRectGue;
+                    frbRect.Name = gumRectGue.Name + "_Frb";
 
                     shapeCollection.Add(frbRect);
 
@@ -140,6 +140,48 @@ namespace GumCoreShared.FlatRedBall.Embedded
                         }
                     }
                 }
+            }
+        }
+
+        public static void FillFrom(this ShapeCollection shapeCollection, IEnumerable<GraphicalUiElement> gueList)
+        {
+            foreach (var gumRect in gueList)
+            {
+                var frbRect = new AxisAlignedRectangle();
+
+                frbRect.Width = gumRect.GetAbsoluteWidth();
+                frbRect.Height = gumRect.GetAbsoluteHeight();
+
+
+                var gumRectX = gumRect.GetAbsoluteX();
+                var gumRectY = gumRect.GetAbsoluteY();
+
+                var rectLeftOffset = gumRectX - 0;
+                var rectTopOffset = -gumRectY - 0;
+
+                var frbOffset = new Vector3(frbRect.Width / 2.0f, -frbRect.Height / 2.0f, 0);
+
+                var gumRectangleRotation = gumRect.GetAbsoluteRotation();
+
+                global::FlatRedBall.Math.MathFunctions.RotatePointAroundPoint(Vector3.Zero, ref frbOffset,
+                    MathHelper.ToRadians(gumRectangleRotation));
+
+                frbRect.X = rectLeftOffset;
+                frbRect.Y = rectTopOffset;
+
+                frbRect.Visible = true;
+
+
+                frbRect.Position += frbOffset;
+
+                if (frbRect.Parent != null)
+                {
+                    frbRect.SetRelativeFromAbsolute();
+                }
+
+                shapeCollection.AxisAlignedRectangles.Add(frbRect);
+
+                gumRect.RemoveFromManagers();
             }
         }
     }
