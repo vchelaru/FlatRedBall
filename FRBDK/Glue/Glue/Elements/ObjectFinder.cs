@@ -15,6 +15,8 @@ namespace FlatRedBall.Glue.Elements
 {
     public class ObjectFinder : IObjectFinder
     {
+        #region Fields/Properties
+
         static ObjectFinder mSelf = new ObjectFinder();
 
         public static ObjectFinder Self
@@ -40,7 +42,7 @@ namespace FlatRedBall.Glue.Elements
             }
         }
 
-
+        #endregion
 
         public ObjectFinder()
         {
@@ -417,7 +419,6 @@ namespace FlatRedBall.Glue.Elements
             return GetAllEntitiesThatInheritFrom(baseEntity.Name);
         }
 
-
         public List<EntitySave> GetAllEntitiesThatInheritFrom(string baseEntity)
         {
             List<EntitySave> derivedEntities = new List<EntitySave>();
@@ -435,12 +436,10 @@ namespace FlatRedBall.Glue.Elements
             return derivedEntities;
         }
 
-
         public List<ScreenSave> GetAllScreensThatInheritFrom(ScreenSave baseScreen)
         {
             return GetAllScreensThatInheritFrom(baseScreen.Name);
         }
-
 
         public List<ScreenSave> GetAllScreensThatInheritFrom(string baseScreen)
         {

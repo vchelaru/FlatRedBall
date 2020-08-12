@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Utilities;
+using GlueFormsCore.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -78,6 +79,8 @@ namespace FlatRedBall.Glue.Controls
             // not sure why this is so high
             //this.Top = point.Y - this.Height/2;
             this.Top = point.Y - 50;
+
+            this.ShiftWindowOntoScreen();
 
             SearchTermTextBox.Focus();
         }

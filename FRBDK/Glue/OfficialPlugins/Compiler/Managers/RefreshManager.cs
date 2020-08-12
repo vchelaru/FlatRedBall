@@ -259,22 +259,40 @@ namespace OfficialPlugins.Compiler.Managers
 
                     if(matchingScreen != null)
                     {
-                        // don't do "all" here, just do top-level which will catch all lists:
-                        foreach(var nos in matchingScreen.NamedObjects)
+                        // we want to update even if it's defined in a base class, so let's get all the screens that inherit
+                        var screensToLoopThrough = ObjectFinder.Self.GetAllBaseElementsRecursively(matchingScreen);
+                        screensToLoopThrough.Add(matchingScreen);
+
+                        var possibleEntities = ObjectFinder.Self.GetAllBaseElementsRecursively(currentEntitySave);
+                        possibleEntities.Add(currentEntitySave);
+
+                        foreach(var screen in screensToLoopThrough)
                         {
-                            var needsToBeUpdated = nos.IsList && nos.SourceClassGenericType == currentEntitySave.Name;
-
-                            if(needsToBeUpdated)
+                            // don't do "all" here, just do top-level which will catch all lists:
+                            foreach (var nos in screen.NamedObjects)
                             {
-                                var data = new GlueVariableSetData();
-                                data.Type = type;
-                                data.Value = value;
-                                data.VariableName = $"this.{nos.InstanceName}.{variableOwningNosName}.{rawMemberName}";
+                                var managedAtThisInheritanceLevel = nos.DefinedByBase == false;
 
-                                var serialized = JsonConvert.SerializeObject(data);
+                                var needsToBeUpdated = false;
 
-                                await CommandSender.SendCommand($"SetVariable:{serialized}", PortNumber);
+                                if (managedAtThisInheritanceLevel && nos.IsList)
+                                {
+                                    needsToBeUpdated = possibleEntities.Any(item => item.Name == nos.SourceClassGenericType);
+                                }
+
+                                if(needsToBeUpdated)
+                                {
+                                    var data = new GlueVariableSetData();
+                                    data.Type = type;
+                                    data.Value = value;
+                                    data.VariableName = $"this.{nos.InstanceName}.{variableOwningNosName}.{rawMemberName}";
+
+                                    var serialized = JsonConvert.SerializeObject(data);
+
+                                    await CommandSender.SendCommand($"SetVariable:{serialized}", PortNumber);
+                                }
                             }
+
                         }
                     }
                 }
