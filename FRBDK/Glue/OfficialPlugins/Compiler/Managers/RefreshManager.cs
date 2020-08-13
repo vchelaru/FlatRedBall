@@ -285,7 +285,15 @@ namespace OfficialPlugins.Compiler.Managers
                                     var data = new GlueVariableSetData();
                                     data.Type = type;
                                     data.Value = value;
-                                    data.VariableName = $"this.{nos.InstanceName}.{variableOwningNosName}.{rawMemberName}";
+
+                                    string variableName = rawMemberName;
+
+                                    if (rawMemberName == "X" || rawMemberName == "Y" || rawMemberName == "Z")
+                                    {
+                                        variableName = "Relative" + rawMemberName;
+                                    }
+
+                                    data.VariableName = $"this.{nos.InstanceName}.{variableOwningNosName}.{variableName}";
 
                                     var serialized = JsonConvert.SerializeObject(data);
 
