@@ -83,7 +83,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public void SaveGlux(bool sendPluginRefreshCommand = true)
         {
             TaskManager.Self.AddOrRunIfTasked(
-                () => SaveGluxSync(sendPluginRefreshCommand: sendPluginRefreshCommand),
+                () => SaveGluxImmediately(sendPluginRefreshCommand: sendPluginRefreshCommand),
                 "Saving .glux", 
                 // asap because otherwise this may get added
                 // after a reload command
@@ -92,10 +92,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void SaveGluxTask()
         {
-            TaskManager.Self.Add(() => SaveGluxSync(sendPluginRefreshCommand: true), "Saving .glux", TaskExecutionPreference.AddOrMoveToEnd);
+            TaskManager.Self.Add(() => SaveGluxImmediately(sendPluginRefreshCommand: true), "Saving .glux", TaskExecutionPreference.AddOrMoveToEnd);
         }
 
-        static void SaveGluxSync(bool sendPluginRefreshCommand)
+        /// <summary>
+        /// Saves the current project immediately - this should not be called except in very rare circumstances as it will run right away and may result
+        /// in multiple threads accessing the glux at the same time.
+        /// </summary>
+        /// <param name="sendPluginRefreshCommand"></param>
+        public void SaveGluxImmediately(bool sendPluginRefreshCommand = true)
         {
             if (ProjectManager.GlueProjectSave != null)
             {

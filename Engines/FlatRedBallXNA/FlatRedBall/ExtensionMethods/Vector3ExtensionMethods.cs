@@ -62,5 +62,14 @@ namespace Microsoft.Xna.Framework
                 throw new InvalidOperationException("This vector is of length 0, so it cannot be normalized");
             }
         }
+
+        public static Vector3 FromAngle(float angle)
+        {
+            return new Vector3(
+                (float)Math.Cos(angle),
+                (float)Math.Sin(angle),
+                0
+                );
+        }
     }
 }

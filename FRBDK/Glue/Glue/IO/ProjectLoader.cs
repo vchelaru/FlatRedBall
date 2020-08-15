@@ -143,7 +143,7 @@ namespace FlatRedBall.Glue.IO
 
 
                     ProjectManager.FindGameClass();
-                    GluxCommands.Self.SaveGlux();
+                    GluxCommands.Self.SaveGluxImmediately();
 
                     // no need to do this - will do it in PerformLoadGlux:
                     //PluginManager.ReactToLoadedGlux(ProjectManager.GlueProjectSave, glueProjectFile);
