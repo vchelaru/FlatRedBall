@@ -66,6 +66,12 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
 
         private void AddObjectButton_Clicked(object sender, RoutedEventArgs e)
         {
+            // deselect the currently selected named object
+            if(GlueState.Self.CurrentNamedObjectSave != null)
+            {
+                GlueState.Self.CurrentNamedObjectSave = null;
+            }
+
             GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog();
             AnyButtonClicked();
         }
