@@ -40,6 +40,8 @@ namespace OfficialPluginsCore.QuickActionPlugin
             buttonVisibilityManager = new ButtonVisibilityManager(mainView);
 
             AssignEvents();
+
+            buttonVisibilityManager.UpdateVisibility();
         }
 
         private void CreateUi()
