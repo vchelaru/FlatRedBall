@@ -538,7 +538,7 @@ namespace FlatRedBall.Screens
                         ApplyVariable(afterDot, value, item);
                     }
                 }
-                else
+                else if(instance != null) // the instance may be null if the chain of assignments doesn't have a value
                 {
                     ApplyVariable(afterDot, value, instance);
                 }
@@ -606,7 +606,18 @@ namespace FlatRedBall.Screens
                 }
                 else
                 {
-                    instance = FlatRedBall.Instructions.Reflection.LateBinder.GetValueStatic(container, beforeDot);
+                    try
+                    {
+                        // In case there is no object by that name, don't crash. We need to suppress errors 
+                        // because Glue commands will blindly send update commands on properties on objects that
+                        // may be a base or derived type, and if the entity is of the base type, it may really not
+                        // have a property.
+                        instance = FlatRedBall.Instructions.Reflection.LateBinder.GetValueStatic(container, beforeDot);
+                    }
+                    catch
+                    {
+                        instance = null;
+                    }
                 }
             }
             else

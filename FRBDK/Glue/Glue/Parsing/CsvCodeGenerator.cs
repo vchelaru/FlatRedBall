@@ -584,7 +584,6 @@ namespace FlatRedBall.Glue
                 GetMembersForRcr(members, untypedMembers, membersAlreadyAdded, rcr);
             }
 
-
             if (customClass != null)
             {
                 foreach (var item in customClass.RequiredProperties)
@@ -596,6 +595,7 @@ namespace FlatRedBall.Glue
                 }
 
             }
+
         }
 
         private static void GetMembersForRcr(List<TypedMemberBase> members, 

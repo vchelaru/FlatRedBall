@@ -1423,6 +1423,11 @@ namespace FlatRedBallAddOns.Entities
                 memberType = TypeManager.ConvertToCommonType(memberType);
             }
 
+            // Fully qualify FRB names to prevent clashes with 
+            if(memberType.Contains("FlatRedBall."))
+            {
+                memberType = "global::" + memberType;
+            }
 
 
             return memberType;

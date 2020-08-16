@@ -336,6 +336,24 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
+        public static AssetTypeInfo GetContainedListItemAssetTypeInfo(this NamedObjectSave instance)
+        {
+            if (instance == null)
+            {
+                throw new ArgumentNullException(nameof(instance));
+            }
+            if(instance.IsList == false)
+            {
+                throw new InvalidOperationException($"The instance {instance?.InstanceName} is not of list type");
+            }
+            if (string.IsNullOrEmpty(instance.SourceClassGenericType))
+            {
+                return null;
+            }
+
+            return AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(instance.SourceClassGenericType, instance, isObject: true);
+        }
+
         public static void FixEnumerationTypes(this NamedObjectSave instance)
         {
             foreach (CustomVariableInNamedObject instruction in instance.InstructionSaves)

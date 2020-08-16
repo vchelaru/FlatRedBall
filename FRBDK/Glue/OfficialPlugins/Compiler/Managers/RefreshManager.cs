@@ -288,7 +288,35 @@ namespace OfficialPlugins.Compiler.Managers
 
                                     string variableName = rawMemberName;
 
-                                    if (rawMemberName == "X" || rawMemberName == "Y" || rawMemberName == "Z")
+                                    bool shouldAttach = false;
+
+                                    if(nos.IsList && !string.IsNullOrEmpty(nos.SourceClassGenericType) &&
+                                        ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType) != null)
+                                    {
+                                        shouldAttach = true;
+                                    }
+                                    else
+                                    {
+                                        AssetTypeInfo ati = null;
+                                        if (nos.IsList)
+                                        {
+                                            ati = nos.GetContainedListItemAssetTypeInfo();
+                                        }
+                                        else
+                                        {
+                                            ati = nos.GetAssetTypeInfo();
+                                        }
+                                        if(ati != null)
+                                        {
+                                            shouldAttach = ati.ShouldAttach;
+                                        }
+                                    }
+                                    
+
+                                    if (shouldAttach && 
+                                        // What if it ignores parent attachment? Need to consider that here...
+                                        (rawMemberName == "X" || rawMemberName == "Y" || rawMemberName == "Z" ||
+                                        rawMemberName == "RotationX" || rawMemberName == "RotationY" || rawMemberName == "RotationZ"))
                                     {
                                         variableName = "Relative" + rawMemberName;
                                     }

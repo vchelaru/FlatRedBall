@@ -22,15 +22,18 @@ namespace OfficialPlugins.Compiler.CommandSending
 
             var isConnected = false;
 
-            try
+            await Task.Run(() =>
             {
-                client.Connect("127.0.0.1", port);
-                isConnected = true;
-            }
-            catch(Exception e)
-            {
-                // throw away - no need to tell the user it failed
-            }
+                try
+                {
+                    client.Connect("127.0.0.1", port);
+                    isConnected = true;
+                }
+                catch(Exception)
+                {
+                    // throw away - no need to tell the user it failed
+                }
+            });
 
             if(isConnected)
             {
