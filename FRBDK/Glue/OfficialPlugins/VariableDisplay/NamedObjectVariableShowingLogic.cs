@@ -24,7 +24,8 @@ namespace OfficialPlugins.VariableDisplay
 {
     static class NamedObjectVariableShowingLogic
     {
-        public static void UpdateShownVariables(DataUiGrid grid, NamedObjectSave instance, IElement container)
+        public static void UpdateShownVariables(DataUiGrid grid, NamedObjectSave instance, IElement container,
+            AssetTypeInfo assetTypeInfo = null)
         {
             grid.Categories.Clear();
 
@@ -33,7 +34,10 @@ namespace OfficialPlugins.VariableDisplay
             defaultCategory.FontSize = 14;
             categories.Add(defaultCategory);
 
-            AssetTypeInfo ati = instance.GetAssetTypeInfo();
+            if(assetTypeInfo == null)
+            {
+                assetTypeInfo = instance.GetAssetTypeInfo();
+            }
 
             // not sure if this is needed:
             if (instance.TypedMembers.Count == 0)
@@ -41,11 +45,11 @@ namespace OfficialPlugins.VariableDisplay
                 instance.UpdateCustomProperties();
             }
 
-            CreateCategoriesAndVariables(instance, container, categories, ati);
+            CreateCategoriesAndVariables(instance, container, categories, assetTypeInfo);
 
-            if (ati != null)
+            if (assetTypeInfo != null)
             {
-                SortCategoriesAndMembers(ref categories, ati);
+                SortCategoriesAndMembers(ref categories, assetTypeInfo);
             }
 
 

@@ -10,6 +10,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using WpfDataUi;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.Elements;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -133,28 +134,29 @@ namespace OfficialPlugins.VariableDisplay
             //    would be blank, but if the plugin does want to, then the values from-file would show up.
             // I'm not going to implement this solution just yet, but I thought of how it could be done and thought it would
             // be good to document it here for future reference.
-            bool shouldShowVariables = namedObject.SourceType != SourceType.File;
+            // Update August 16, 2020
+            // 1. I like the solution above to avoid confusion; but there are times when an object has properties which don't
+            //    come from file - like the X/Y values of a TileMap. Therefore, some properties should have defaults that stick
+            //    around. Eventually this probably means a new property on the VariableDefinition object.
+            var isFile = namedObject.SourceType == SourceType.File;
 
-            if(shouldShowVariables == false)
+            var ati = namedObject.GetAssetTypeInfo();
+
+            if(isFile && ati != null)
             {
-                if(variableGrid != null)
+                ati = FlatRedBall.IO.FileManager.CloneObject<AssetTypeInfo>(ati);
+                foreach(var variable in ati.VariableDefinitions)
                 {
-                    variableGrid.Visibility = System.Windows.Visibility.Collapsed;
-                }
-                if(variableTab != null)
-                {
-                    RemoveTab(variableTab);
+                    variable.DefaultValue = null;
                 }
             }
-            else
-            {
-                AddOrShowVariableGrid();
-                variableGrid.Instance = namedObject;
-                variableGrid.Visibility = System.Windows.Visibility.Visible;
 
-                NamedObjectVariableShowingLogic.UpdateShownVariables(variableGrid, namedObject,
-                    GlueState.Self.CurrentElement);
-            }
+            AddOrShowVariableGrid();
+            variableGrid.Instance = namedObject;
+            variableGrid.Visibility = System.Windows.Visibility.Visible;
+
+            NamedObjectVariableShowingLogic.UpdateShownVariables(variableGrid, namedObject,
+                GlueState.Self.CurrentElement, ati);
         }
 
         private void AddOrShowSettingsGrid()
