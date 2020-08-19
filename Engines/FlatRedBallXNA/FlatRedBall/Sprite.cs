@@ -888,7 +888,6 @@ namespace FlatRedBall
 
                 if (mUseAnimationRelativePosition)
                 {
-
                     RelativePosition.X = frame.RelativeX;
                     RelativePosition.Y = frame.RelativeY;
                 }

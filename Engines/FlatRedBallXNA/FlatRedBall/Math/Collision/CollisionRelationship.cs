@@ -1339,6 +1339,11 @@ namespace FlatRedBall.Math.Collision
 
                 for (j = startInclusive; j > endExclusive; j--)
                 {
+                    // a collision could destroy everything:
+                    if(j > secondList.Count)
+                    {
+                        continue;
+                    }
                     var second = secondList[j];
 
                     var distanceY =

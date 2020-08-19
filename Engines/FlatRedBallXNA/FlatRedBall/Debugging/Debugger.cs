@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using FlatRedBall.Graphics;
 using FlatRedBall.Math;
+using FlatRedBall.Math.Collision;
 using FlatRedBall.Math.Geometry;
 
 #if WINDOWS_PHONE
@@ -400,6 +401,7 @@ namespace FlatRedBall.Debugging
                 Renderer.RecordRenderBreaks = true;
             }
             stringBuilder.Clear();
+
             var objectCount = GetAutomaticallyUpdatedObjectInformation();
             stringBuilder.AppendLine(objectCount);
 
@@ -411,7 +413,8 @@ namespace FlatRedBall.Debugging
                 stringBuilder.AppendLine(renderBreak.ToString());
             }
             stringBuilder.AppendLine();
-            stringBuilder.AppendLine($"Deep collisions: {Math.Collision.CollisionManager.Self.DeepCollisionsThisFrame}");
+            var collisionInformation = GetCollisionInformation();
+            stringBuilder.AppendLine(collisionInformation);
 
             stringBuilder.AppendLine();
 
@@ -425,6 +428,32 @@ namespace FlatRedBall.Debugging
             return stringBuilder.ToString();
         }
 
+        private static string GetCollisionInformation()
+        {
+            var collisionManager = Math.Collision.CollisionManager.Self;
+            int numberOfCollisions = 0;
+            int? maxCollisions = null;
+            CollisionRelationship collisionRelationshipWithMost = null;
+            foreach (var relationship in collisionManager.Relationships)
+            {
+                numberOfCollisions += relationship.DeepCollisionsThisFrame;
+
+                if(relationship.DeepCollisionsThisFrame > maxCollisions || maxCollisions == null)
+                {
+                    maxCollisions = numberOfCollisions;
+                    collisionRelationshipWithMost = relationship;
+                }
+            }
+
+            var collisionsThisFrame =
+            $"Deep collisions: {Math.Collision.CollisionManager.Self.DeepCollisionsThisFrame}";
+            if(collisionRelationshipWithMost != null)
+            {
+                collisionsThisFrame += 
+                    $"\nHighest Relationship: {collisionRelationshipWithMost.Name} with {collisionRelationshipWithMost.DeepCollisionsThisFrame}";
+            }
+            return collisionsThisFrame;
+        }
 
         public static void WritePositionedObjectBreakdown()
         {
