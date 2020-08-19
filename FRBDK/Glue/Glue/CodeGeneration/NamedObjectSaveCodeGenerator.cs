@@ -500,10 +500,9 @@ namespace FlatRedBall.Glue.CodeGeneration
         private static void WriteCopyToAbsoluteInInitializeCode(NamedObjectSave namedObject, ICodeBlock codeBlock, 
             Dictionary<string, string> referencedFilesAlreadyUsingFullFile, AssetTypeInfo ati, string objectName, ReferencedFileSave rfs)
         {
-            if ((ati != null && ati.ShouldAttach) ||
-                namedObject.SourceType == SourceType.Entity &&
-                !string.IsNullOrEmpty(namedObject.SourceClassType)
-                )
+            bool canWriteAbsoluteInitialize = GetIfCanAttach(namedObject, ati);
+
+            if (canWriteAbsoluteInitialize)
             {
                 bool isEntireFile = namedObject.SourceName != null && namedObject.SourceName.StartsWith("Entire File (");
                 string copyRelativeToAbsolute;
@@ -523,7 +522,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 if (rfs != null)
                 {
-                    if(!isEntireFile && referencedFilesAlreadyUsingFullFile.ContainsKey(rfs.Name))
+                    if (!isEntireFile && referencedFilesAlreadyUsingFullFile.ContainsKey(rfs.Name))
                     {
                         namedObjectToPullFrom = referencedFilesAlreadyUsingFullFile[rfs.Name];
                     }
@@ -536,6 +535,31 @@ namespace FlatRedBall.Glue.CodeGeneration
                                                  copyRelativeToAbsolute));
                 }
             }
+        }
+
+        private static bool GetIfCanAttach(NamedObjectSave namedObject, AssetTypeInfo ati)
+        {
+            var canWriteAbsoluteInitialize =
+                (ati != null && ati.ShouldAttach) ||
+                namedObject.SourceType == SourceType.Entity &&
+                !string.IsNullOrEmpty(namedObject.SourceClassType) &&
+                !namedObject.IsContainer;
+
+            if (canWriteAbsoluteInitialize && namedObject.DefinedByBase)
+            {
+                var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(namedObject.GetContainer());
+
+                var isContainerFromBase = baseElements
+                    .SelectMany(item => item.AllNamedObjects)
+                    .Any(item => item.InstanceName == namedObject.InstanceName && item.IsContainer);
+
+                if (isContainerFromBase)
+                {
+                    canWriteAbsoluteInitialize = false;
+                }
+            }
+
+            return canWriteAbsoluteInitialize;
         }
 
         private static void WriteMethodForClone(NamedObjectSave namedObject, ICodeBlock codeBlock,
@@ -2310,23 +2334,12 @@ namespace FlatRedBall.Glue.CodeGeneration
             string objectName = namedObject.FieldName;
             AssetTypeInfo ati = namedObject.GetAssetTypeInfo();
 
-            if ((namedObject.GetContainerType() == ContainerType.Entity && namedObject.AttachToContainer) || namedObject.AttachToCamera)
+            bool canAttach = GetIfCanAttach(namedObject, ati);
+
+
+            if (canAttach && 
+                ((namedObject.GetContainerType() == ContainerType.Entity && namedObject.AttachToContainer) || namedObject.AttachToCamera))
             {
-                bool shouldAttach = true;
-
-
-
-                if (ati != null)
-                {
-                    shouldAttach = ati.ShouldAttach;
-                }
-                if (namedObject.IsList)
-                {
-                    shouldAttach = false;
-                }
-
-                if (shouldAttach)
-                {
                     string whatToAttachTo = "this";
 
                     if (namedObject.AttachToCamera)
@@ -2412,7 +2425,6 @@ namespace FlatRedBall.Glue.CodeGeneration
                         }
                         currentBlock.Line(objectName + "." + attachMethodCall + "(" + whatToAttachTo + ", false);");
                     }
-                }
             }
 
         }

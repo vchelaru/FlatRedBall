@@ -48,6 +48,8 @@ namespace FlatRedBall.Glue.SetVariable
             }
             #endregion
 
+
+
             #region IsShared
 
             else if (changedMember == nameof(CustomVariable.IsShared))

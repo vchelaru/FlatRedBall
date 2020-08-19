@@ -1340,7 +1340,7 @@ namespace FlatRedBall.Math.Collision
                 for (j = startInclusive; j > endExclusive; j--)
                 {
                     // a collision could destroy everything:
-                    if(j > secondList.Count)
+                    if(j >= secondList.Count)
                     {
                         continue;
                     }
