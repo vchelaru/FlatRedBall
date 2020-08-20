@@ -1054,13 +1054,20 @@ namespace FlatRedBallAddOns.Entities
                             addMethodIndex = 1;
                         }
 
-                        if(entitySave.IsManuallyUpdated && !string.IsNullOrEmpty(ati.AddManuallyUpdatedMethod))
+                        if(entitySave.IsManuallyUpdated)
                         {
-                            var line = ati.AddManuallyUpdatedMethod
-                            .Replace("{THIS}", "this")
-                            .Replace("{LAYER}", "layerToAddTo") + ';';
+                            if (!string.IsNullOrEmpty(ati.AddManuallyUpdatedMethod))
+                            {
+                                var line = ati.AddManuallyUpdatedMethod
+                                    .Replace("{THIS}", "this")
+                                    .Replace("{LAYER}", "layerToAddTo") + ';';
+                                currentBlock.Line(line);
+                            }
+                            else
+                            {
+                                // not adding this to managers 
+                            }
 
-                            currentBlock.Line(line);
                         }
                         else if(ati.AddToManagersFunc != null)
                         {

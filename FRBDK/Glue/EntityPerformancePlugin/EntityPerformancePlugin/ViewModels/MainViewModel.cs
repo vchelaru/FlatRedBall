@@ -66,9 +66,9 @@ namespace EntityPerformancePlugin.ViewModels
                 {
                     if(SelectedIsContainer)
                     {
-                        return "The selected instance is container. Select the main entity to edit properties";
+                        return "The selected instance is set as the container. Select the main entity to edit properties";
                     }
-                    if (SelectedItemProperties.Any())
+                    else if (SelectedItemProperties.Any())
                     {
                         return null;
                     }
@@ -155,18 +155,12 @@ namespace EntityPerformancePlugin.ViewModels
         }
 
         ObservableCollection<VelocityPropertyViewModel> selectedItemProperties = new ObservableCollection<VelocityPropertyViewModel>();
-        public ObservableCollection<VelocityPropertyViewModel> SelectedItemProperties
-        {
-            get
-            {
-                return selectedItemProperties;
-            }
-        }
+        public ObservableCollection<VelocityPropertyViewModel> SelectedItemProperties => selectedItemProperties;
 
         public InstanceViewModel SelectedInstance
         {
-            get { return Get<InstanceViewModel> (); }
-            set { Set(value); }
+            get => Get<InstanceViewModel> ();
+            set => Set(value); 
         }
 
         #endregion
@@ -176,20 +170,17 @@ namespace EntityPerformancePlugin.ViewModels
             get; set;
         }
 
-        public string EntityName
-        {
-            get { return Entity.Name; }
-        }
+        public string EntityName => Entity.Name;
 
         public PropertyManagementMode EntityManagementMode
         {
-            get { return Get<PropertyManagementMode>(); }
-            set { Set(value); }
+            get => Get<PropertyManagementMode>();
+                set => Set(value); 
         }
         public ObservableCollection<string> EntityManagedProperties
         {
-            get { return Get<ObservableCollection<string>>(); }
-            set { Set(value); }
+            get => Get<ObservableCollection<string>>();
+            set => Set(value);
         }
 
         public ObservableCollection<InstanceViewModel> Instances
