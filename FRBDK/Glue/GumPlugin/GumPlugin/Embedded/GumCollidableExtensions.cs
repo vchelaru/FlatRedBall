@@ -88,6 +88,11 @@ namespace GumCoreShared.FlatRedBall.Embedded
                     gumToFrbShapeRelationships.Add(relationship);
                 }
             }
+
+            foreach(var relationship in gumToFrbShapeRelationships)
+            {
+                relationship.FrbRect.ForceUpdateDependencies();
+            }
         }
 
         public static void UpdateFrbRectanglePositionsFromGum(this IGumCollidable collidable)
