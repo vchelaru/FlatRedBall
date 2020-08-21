@@ -3,6 +3,7 @@ using EntityPerformancePlugin.Converters;
 using EntityPerformancePlugin.Models;
 using EntityPerformancePlugin.ViewModels;
 using EntityPerformancePlugin.Views;
+using EntityPerformancePluginCore.CodeGenerators;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
@@ -44,7 +45,8 @@ namespace EntityPerformancePlugin
             get { return new Version(1, 0); }
         }
 
-        VariableActivityCodeGenerator codeGenerator;
+        VariableActivityCodeGenerator variableActivityCodeGenerator;
+        UpdateDependenciesCodeGenerator updateDependenciesCodeGenerator;
 
         #endregion
 
@@ -56,8 +58,11 @@ namespace EntityPerformancePlugin
 
         public override void StartUp()
         {
-            codeGenerator = new VariableActivityCodeGenerator();
-            this.RegisterCodeGenerator(codeGenerator);
+            variableActivityCodeGenerator = new VariableActivityCodeGenerator();
+            this.RegisterCodeGenerator(variableActivityCodeGenerator);
+
+            updateDependenciesCodeGenerator = new UpdateDependenciesCodeGenerator();
+            this.RegisterCodeGenerator(updateDependenciesCodeGenerator);
 
             AssignEvents();
         }
@@ -165,7 +170,8 @@ namespace EntityPerformancePlugin
         private void HandleGluxUnload()
         {
             model = null;
-            codeGenerator.Values = null;
+            variableActivityCodeGenerator.Values = null;
+            updateDependenciesCodeGenerator.Values = null;
         }
 
         private void HandleLoadGlux()
@@ -218,7 +224,8 @@ namespace EntityPerformancePlugin
             {
                 model = new ProjectManagementValues();
             }
-            codeGenerator.Values = model;
+            variableActivityCodeGenerator.Values = model;
+            updateDependenciesCodeGenerator.Values = model;
         }
 
         private void HandleViewModelValueChanged(string propertyName)

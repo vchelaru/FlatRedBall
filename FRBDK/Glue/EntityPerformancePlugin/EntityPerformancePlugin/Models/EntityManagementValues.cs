@@ -28,5 +28,9 @@ namespace EntityPerformancePlugin.Models
             get; set;
         } = new List<InstanceManagementValues>();
 
+        public override string ToString()
+        {
+            return $"{Name} {PropertyManagementMode}";
+        }
     }
 }

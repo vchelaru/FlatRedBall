@@ -45,7 +45,7 @@ namespace EntityPerformancePlugin.CodeGenerators
                 }
 
                 foreach(var namedObject in element.AllNamedObjects)
-                    {
+                {
 
                     var isManuallyUpdated = namedObject.IsManuallyUpdated;
 
@@ -547,7 +547,13 @@ namespace EntityPerformancePlugin.CodeGenerators
         {
             return assetTypeInfo?.RuntimeTypeName == "Sprite" || 
                 assetTypeInfo?.RuntimeTypeName == "Text" ||
-                assetTypeInfo?.RuntimeTypeName == "PositionedObject"
+                assetTypeInfo?.RuntimeTypeName == "PositionedObject" ||
+                assetTypeInfo?.RuntimeTypeName == "Circle" ||
+                assetTypeInfo?.RuntimeTypeName == "AxisAlignedRectangle" ||
+                assetTypeInfo?.RuntimeTypeName == "Polygon" 
+
+
+
                 ;
 
         }
