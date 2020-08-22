@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.FormHelpers.StringConverters;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using Gum.DataTypes;
@@ -14,6 +15,8 @@ namespace GumPlugin.CodeGeneration
 {
     class GumLayerAssociationCodeGenerator : ElementComponentCodeGenerator
     {
+        const string UnderEverythingLayerPrefix = "UnderEverythingLayer";
+
         bool ShouldGenerate
         {
             get
@@ -32,10 +35,31 @@ namespace GumPlugin.CodeGeneration
             }
         }
 
-        IEnumerable<NamedObjectSave> GetObjectsForGumLayers(IElement element)
+        string[] GetUsedFrbLayerNames(IElement element)
         {
-            return element.AllNamedObjects.Where(item => item.IsLayer &&
-                NamedObjectSaveCodeGenerator.GetFieldCodeGenerationType(item) == CodeGenerationType.Full);
+            var list = element.AllNamedObjects.Where(item => item.IsLayer &&
+                NamedObjectSaveCodeGenerator.GetFieldCodeGenerationType(item) == CodeGenerationType.Full)
+                .Select(item => item.InstanceName)
+                .ToList();
+
+            bool anyOnUnderAllLayer = element.NamedObjects
+                .Any(item => item.LayerOn == AvailableLayersTypeConverter.UnderEverythingLayerName);
+
+            if(anyOnUnderAllLayer)
+            {
+                list.Add(UnderEverythingLayerPrefix);
+            }
+
+            bool anyOnAboveAllLayer = element.NamedObjects
+                    .Any(item => item.LayerOn == AvailableLayersTypeConverter.TopLayerName);
+
+            if(anyOnAboveAllLayer)
+            {
+                list.Add("TopLayer");
+            }
+
+
+            return list.ToArray();
         }
 
 
@@ -44,35 +68,39 @@ namespace GumPlugin.CodeGeneration
             if (ShouldGenerate)
             {
 
+                var rfs = GetScreenRfsIn(element);
+                var idbName = rfs?.GetInstanceName();
+                var rfsAssetTpe = rfs?.GetAssetTypeInfo();
+                var isIdb = rfsAssetTpe == AssetTypeInfoManager.Self.ScreenIdbAti;
+                if (string.IsNullOrEmpty(idbName) && element is FlatRedBall.Glue.SaveClasses.ScreenSave)
+                {
+                    idbName = "gumIdb";
+                }
+                else if(rfs != null && isIdb == false)
+                {
+                    idbName = "FlatRedBall.Gum.GumIdb.Self";
+                }
 
+                
+                var frbLayerNames = GetUsedFrbLayerNames(element);
                 // Creates Gum layers for every FRB layer, so that objects can be moved between layers at runtime, and so code gen
                 // can use these for objects that are placed on layers in Glue.
-                foreach (var layer in GetObjectsForGumLayers(element))
+                foreach (var layerPrefix in frbLayerNames)
                 {
-                    var rfs = GetScreenRfsIn(element);
-
-                    var idbName = rfs?.GetInstanceName();
-
-                    var rfsAssetTpe = rfs?.GetAssetTypeInfo();
-
-                    var isIdb = rfsAssetTpe == AssetTypeInfoManager.Self.ScreenIdbAti;
-
-                    if (string.IsNullOrEmpty(idbName) && element is FlatRedBall.Glue.SaveClasses.ScreenSave)
-                    {
-                        idbName = "gumIdb";
-                    }
-                    else if(rfs != null && isIdb == false)
-                    {
-                        idbName = "FlatRedBall.Gum.GumIdb.Self";
-                    }
 
                     if(idbName != null)
                     {
+                        codeBlock.Line(layerPrefix + "Gum = RenderingLibrary.SystemManagers.Default.Renderer.AddLayer();");
+                        codeBlock.Line(layerPrefix + "Gum.Name = \"" + layerPrefix + "Gum\";");
 
-                        codeBlock.Line(layer.InstanceName + "Gum = RenderingLibrary.SystemManagers.Default.Renderer.AddLayer();");
-                        codeBlock.Line(layer.InstanceName + "Gum.Name = \"" + layer.InstanceName + "Gum\";");
+                        string frbLayerName = layerPrefix;
 
-                        codeBlock.Line(idbName + ".AddGumLayerToFrbLayer(" + layer.InstanceName + "Gum, " + layer.InstanceName + ");");
+                        if(frbLayerName == UnderEverythingLayerPrefix)
+                        {
+                            frbLayerName = "global::FlatRedBall.SpriteManager.UnderAllDrawnLayer";
+                        }
+
+                        codeBlock.Line(idbName + ".AddGumLayerToFrbLayer(" + layerPrefix + "Gum, " + frbLayerName + ");");
                     }
                 }
 
