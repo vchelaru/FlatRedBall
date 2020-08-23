@@ -2157,21 +2157,14 @@ namespace FlatRedBall
         #endregion
         public virtual void UpdateDependencies(double currentTime)
         {
-            // Why are we locking?
-            // Victor Chelaru
-            // May 20, 2016 
-            // Still don't know 
-            // why we're locking here, so taking it out:
-            //lock (this)
+
+            if (mLastDependencyUpdate == currentTime)
             {
-                if (mLastDependencyUpdate == currentTime)
-                {
-                    return;
-                }
-                else
-                {
-                    mLastDependencyUpdate = currentTime;
-                }
+                return;
+            }
+            else
+            {
+                mLastDependencyUpdate = currentTime;
             }
 
             if (mParent != null)

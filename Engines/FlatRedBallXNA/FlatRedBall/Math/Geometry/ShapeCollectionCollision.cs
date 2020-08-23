@@ -27,7 +27,7 @@ namespace FlatRedBall.Math.Geometry
 #if DEBUG
 			CheckAndReportNaN(shapeToCollideAgainstThis);
 #endif
-			thisShapeCollection.ClearCollisionLists();
+			thisShapeCollection.ClearLastCollisionLists();
             shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
@@ -192,7 +192,7 @@ namespace FlatRedBall.Math.Geometry
 #if DEBUG
 			CheckAndReportNaN(shapeToCollideAgainstThis);
 #endif
-			thisShapeCollection.ClearCollisionLists();
+			thisShapeCollection.ClearLastCollisionLists();
             shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
@@ -356,7 +356,7 @@ namespace FlatRedBall.Math.Geometry
 #if DEBUG
 			CheckAndReportNaN(shapeToCollideAgainstThis);
 #endif
-			thisShapeCollection.ClearCollisionLists();
+			thisShapeCollection.ClearLastCollisionLists();
             shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
@@ -520,7 +520,7 @@ namespace FlatRedBall.Math.Geometry
 #if DEBUG
 			CheckAndReportNaN(shapeToCollideAgainstThis);
 #endif
-			thisShapeCollection.ClearCollisionLists();
+			thisShapeCollection.ClearLastCollisionLists();
             shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
@@ -691,7 +691,7 @@ namespace FlatRedBall.Math.Geometry
 #if DEBUG
 			CheckAndReportNaN(shapeToCollideAgainstThis);
 #endif
-			thisShapeCollection.ClearCollisionLists();
+			thisShapeCollection.ClearLastCollisionLists();
             shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
@@ -855,7 +855,7 @@ namespace FlatRedBall.Math.Geometry
 #if DEBUG
 			CheckAndReportNaN(shapeToCollideAgainstThis);
 #endif
-			thisShapeCollection.ClearCollisionLists();
+			thisShapeCollection.ClearLastCollisionLists();
             shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
@@ -941,7 +941,7 @@ namespace FlatRedBall.Math.Geometry
 #if DEBUG
 			CheckAndReportNaN(shapeToCollideAgainstThis);
 #endif
-			thisShapeCollection.ClearCollisionLists();
+			thisShapeCollection.ClearLastCollisionLists();
             shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
@@ -1028,7 +1028,7 @@ namespace FlatRedBall.Math.Geometry
 #if DEBUG
 			CheckAndReportNaN(shapeToCollideAgainstThis);
 #endif
-			thisShapeCollection.ClearCollisionLists();
+			thisShapeCollection.ClearLastCollisionLists();
             shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
@@ -1197,7 +1197,7 @@ namespace FlatRedBall.Math.Geometry
 #if DEBUG
 			CheckAndReportNaN(shapeToCollideAgainstThis);
 #endif
-			thisShapeCollection.ClearCollisionLists();
+			thisShapeCollection.ClearLastCollisionLists();
             shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
@@ -1366,7 +1366,7 @@ namespace FlatRedBall.Math.Geometry
 #if DEBUG
 			CheckAndReportNaN(shapeToCollideAgainstThis);
 #endif
-			thisShapeCollection.ClearCollisionLists();
+			thisShapeCollection.ClearLastCollisionLists();
             shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
@@ -1535,7 +1535,7 @@ namespace FlatRedBall.Math.Geometry
 #if DEBUG
 			CheckAndReportNaN(shapeToCollideAgainstThis);
 #endif
-			thisShapeCollection.ClearCollisionLists();
+			thisShapeCollection.ClearLastCollisionLists();
             shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
@@ -1704,7 +1704,7 @@ namespace FlatRedBall.Math.Geometry
 #if DEBUG
 			CheckAndReportNaN(shapeToCollideAgainstThis);
 #endif
-			thisShapeCollection.ClearCollisionLists();
+			thisShapeCollection.ClearLastCollisionLists();
             shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
@@ -1873,7 +1873,7 @@ namespace FlatRedBall.Math.Geometry
 #if DEBUG
 			CheckAndReportNaN(shapeToCollideAgainstThis);
 #endif
-			thisShapeCollection.ClearCollisionLists();
+			thisShapeCollection.ClearLastCollisionLists();
             shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
@@ -1961,7 +1961,7 @@ namespace FlatRedBall.Math.Geometry
 #if DEBUG
 			CheckAndReportNaN(shapeToCollideAgainstThis);
 #endif
-			thisShapeCollection.ClearCollisionLists();
+			thisShapeCollection.ClearLastCollisionLists();
             shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
@@ -2050,7 +2050,7 @@ namespace FlatRedBall.Math.Geometry
 #if DEBUG
 			CheckAndReportNaN(shapeToCollideAgainstThis);
 #endif
-			thisShapeCollection.ClearCollisionLists();
+			thisShapeCollection.ClearLastCollisionLists();
             shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
@@ -2219,7 +2219,7 @@ namespace FlatRedBall.Math.Geometry
 #if DEBUG
 			CheckAndReportNaN(shapeToCollideAgainstThis);
 #endif
-			thisShapeCollection.ClearCollisionLists();
+			thisShapeCollection.ClearLastCollisionLists();
             shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
@@ -2388,7 +2388,7 @@ namespace FlatRedBall.Math.Geometry
 #if DEBUG
 			CheckAndReportNaN(shapeToCollideAgainstThis);
 #endif
-			thisShapeCollection.ClearCollisionLists();
+			thisShapeCollection.ClearLastCollisionLists();
             shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
@@ -2557,7 +2557,7 @@ namespace FlatRedBall.Math.Geometry
 #if DEBUG
 			CheckAndReportNaN(shapeToCollideAgainstThis);
 #endif
-			thisShapeCollection.ClearCollisionLists();
+			thisShapeCollection.ClearLastCollisionLists();
             shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
@@ -2726,7 +2726,7 @@ namespace FlatRedBall.Math.Geometry
 #if DEBUG
 			CheckAndReportNaN(shapeToCollideAgainstThis);
 #endif
-			thisShapeCollection.ClearCollisionLists();
+			thisShapeCollection.ClearLastCollisionLists();
             shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
@@ -2895,7 +2895,7 @@ namespace FlatRedBall.Math.Geometry
 #if DEBUG
 			CheckAndReportNaN(shapeToCollideAgainstThis);
 #endif
-			thisShapeCollection.ClearCollisionLists();
+			thisShapeCollection.ClearLastCollisionLists();
             shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
@@ -2983,7 +2983,7 @@ namespace FlatRedBall.Math.Geometry
 #if DEBUG
 			CheckAndReportNaN(shapeToCollideAgainstThis);
 #endif
-			thisShapeCollection.ClearCollisionLists();
+			thisShapeCollection.ClearLastCollisionLists();
             shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
@@ -3069,6 +3069,7 @@ namespace FlatRedBall.Math.Geometry
 
 		internal static bool CollideShapeAgainstThis(ShapeCollection thisShapeCollection, ShapeCollection shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse)
 		{
+			shapeToCollideAgainstThis.ClearLastCollisionLists();
 			thisShapeCollection.mSuppressLastCollisionClear = true;
             bool returnValue = false;
 
@@ -3077,49 +3078,76 @@ namespace FlatRedBall.Math.Geometry
 			{
                 AxisAlignedRectangle shape = shapeToCollideAgainstThis.AxisAlignedRectangles[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse);
+				if(ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse))
+                {
+					returnValue = true;
+                }
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.Circles.Count; i++)
 			{
                 Circle shape = shapeToCollideAgainstThis.Circles[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse);
+                if( ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse))
+                {
+					shapeToCollideAgainstThis.LastCollisionCircles.Add(shape);
+					returnValue = true;
+                }
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.Polygons.Count; i++)
 			{
                 Polygon shape = shapeToCollideAgainstThis.Polygons[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse);
+                if(ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse))
+                {
+					shapeToCollideAgainstThis.LastCollisionPolygons.Add(shape);
+					returnValue = true;
+				}
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.Lines.Count; i++)
 			{
                 Line shape = shapeToCollideAgainstThis.Lines[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse);
+                if(ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse))
+                {
+					shapeToCollideAgainstThis.LastCollisionLines.Add(shape);
+					returnValue = true;
+                }
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.Capsule2Ds.Count; i++)
 			{
                 Capsule2D shape = shapeToCollideAgainstThis.Capsule2Ds[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse);
+                if(ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse))
+                {
+					shapeToCollideAgainstThis.LastCollisionCapsule2Ds.Add(shape);
+					returnValue = true;
+                }
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.Spheres.Count; i++)
 			{
                 Sphere shape = shapeToCollideAgainstThis.Spheres[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse);
+                if(ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse))
+                {
+					shapeToCollideAgainstThis.LastCollisionSpheres.Add(shape);
+					returnValue = true;
+                }
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.AxisAlignedCubes.Count; i++)
 			{
                 AxisAlignedCube shape = shapeToCollideAgainstThis.AxisAlignedCubes[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse);
+                if(ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse))
+                {
+					shapeToCollideAgainstThis.LastCollisionAxisAlignedCubes.Add(shape);
+					returnValue = true;
+                }
             }
 
 			thisShapeCollection.mSuppressLastCollisionClear = false;

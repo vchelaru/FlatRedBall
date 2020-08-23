@@ -925,7 +925,7 @@ namespace FlatRedBall.Math.Geometry
 
         #region Internal Methods
 
-		internal void ClearCollisionLists()
+		internal void ClearLastCollisionLists()
 		{
 			if (!mSuppressLastCollisionClear)
 			{
@@ -1455,7 +1455,7 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstBounce(ShapeCollection shapeCollection, bool considerPartitioning, Axis axisToUse, float thisMass, float otherMass, float elasticity)
         {
-            this.ClearCollisionLists();
+            this.ClearLastCollisionLists();
             return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, shapeCollection, considerPartitioning, axisToUse, otherMass, thisMass, elasticity);
         }
 
