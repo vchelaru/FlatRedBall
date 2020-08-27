@@ -594,8 +594,11 @@ namespace FlatRedBall.Forms.Controls
 
                 var lineHeight = coreTextObject.BitmapFont.LineHeightInPixels;
 
-                caretComponent.Y = (textComponent as IPositionedSizedObject).Y +
-                    lineNumber * lineHeight;
+                if(TextWrapping == TextWrapping.Wrap)
+                {
+                    caretComponent.Y = (textComponent as IPositionedSizedObject).Y +
+                        lineNumber * lineHeight;
+                }
             }
         }
 
