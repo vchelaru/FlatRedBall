@@ -2389,6 +2389,7 @@ namespace FlatRedBall
             mOrderedByDistanceFromCameraSprites.Remove(spriteToRemove);
             mAutomaticallyUpdatedSprites.Remove(spriteToRemove);
             mZBufferedSprites.Remove(spriteToRemove);
+            mManuallyUpdatedSprites.Remove(spriteToRemove);
 
             UnderAllDrawnLayer.Remove(spriteToRemove);
 
