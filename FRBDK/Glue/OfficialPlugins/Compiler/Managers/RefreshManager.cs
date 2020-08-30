@@ -54,11 +54,17 @@ namespace OfficialPlugins.Compiler.Managers
 
         #endregion
 
+        #region Initialize
+
         public void InitializeEvents(Action<string> printOutput, Action<string> printError)
         {
             this.printOutput = printOutput;
             this.printError = printError;
         }
+
+        #endregion
+
+        #region File
 
         public async void HandleFileChanged(FilePath fileName)
         {
@@ -140,6 +146,10 @@ namespace OfficialPlugins.Compiler.Managers
             return true;
         }
 
+        #endregion
+
+        #region Entity Created
+
         internal void HandleNewEntityCreated(EntitySave arg1, AddEntityWindow arg2)
         {
             if(ShouldRestartOnChange)
@@ -148,12 +158,18 @@ namespace OfficialPlugins.Compiler.Managers
             }
         }
 
+        #endregion
+
+        #region Screen Created
+
         internal void HandleNewScreenCreated(ScreenSave obj)
         {
             // don't worry about new screen, to be used additional changes have to be made
 
             //StopAndRestartTask();
         }
+
+        #endregion
 
         internal void HandleNewObjectCreated(NamedObjectSave newNamedObject)
         {
@@ -167,14 +183,21 @@ namespace OfficialPlugins.Compiler.Managers
         {
             if (ShouldRestartOnChange)
             {
-                var screen = GlueState.Self.CurrentScreenSave;
-                var entity = GlueState.Self.CurrentEntitySave;
-                var name = "this." + variable.Name;
                 var type = variable.Type;
                 var value = variable.DefaultValue?.ToString();
-
-                // todo - I haven't tested this, variable.Name is probably wrong
-                await TryPushVariableOrRestart(null, name, type, value, screen, entity);
+                string name = null;
+                if(variable.IsShared)
+                {
+                    name = GlueState.Self.ProjectNamespace + "." + variableElement.Name.Replace("/", ".").Replace("\\", ".") + "." + variable.Name;
+                    await TryPushVariableOrRestart(null, name, type, value, null, null);
+                }
+                else
+                {
+                    var screen = GlueState.Self.CurrentScreenSave;
+                    var entity = GlueState.Self.CurrentEntitySave;
+                    name = "this." + variable.Name;
+                    await TryPushVariableOrRestart(null, name, type, value, screen, entity);
+                }
             }
             else
             {
@@ -227,7 +250,18 @@ namespace OfficialPlugins.Compiler.Managers
                 {
                     // do nothing, maybe not connected
                 }
-                if(currentGlueScreen != null)
+                if(currentGlueScreen == null && currentEntitySave == null)
+                {
+                    var data = new GlueVariableSetData();
+                    data.Type = type;
+                    data.Value = value;
+                    data.VariableName = rawMemberName;
+
+                    var serialized = JsonConvert.SerializeObject(data);
+
+                    await CommandSender.SendCommand($"SetVariable:{serialized}", PortNumber);
+                }
+                else if(currentGlueScreen != null)
                 {
                     var areSame = currentInGameScreen == GlueState.Self.ProjectNamespace + "." + currentGlueScreen?.Name.Replace("\\", ".");
 

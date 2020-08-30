@@ -14,6 +14,7 @@ using System.Threading;
 using FlatRedBall.Input;
 using FlatRedBall.IO;
 using System.Collections;
+using System.Linq;
 
 namespace FlatRedBall.Screens
 {
@@ -552,6 +553,14 @@ namespace FlatRedBall.Screens
                         FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(item, variableName, value);
                     }
                 }
+                else if(container is Type asType)
+                {
+                    var field = asType.GetField(variableName, BindingFlags.Static | BindingFlags.Public);
+                    if(field != null)
+                    {
+                        field.SetValue(value, null);
+                    }
+                }
                 else
                 {
                     FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(container, variableName, value);
@@ -569,6 +578,21 @@ namespace FlatRedBall.Screens
             if (instance == null && beforeDot == "this")
             {
                 instance = this;
+            }
+            else if(instance == null)
+            {
+                // Doesnt start with "this" so it's a static variable
+                var ownerType = ScreenManager.MainAssembly.GetTypes()
+                    .Where(item => variableName.StartsWith(item.FullName))
+                    // longest means it's the most derived.
+                    .OrderBy(item => item.Name.Length)
+                    .LastOrDefault();
+
+                if(ownerType != null)
+                {
+                    afterDot = variableName.Substring((ownerType.FullName + ".").Length);
+                    instance = ownerType;
+                }
             }
             else if(container == null && beforeDot == "Camera")
             {
