@@ -684,6 +684,11 @@ namespace Gum.Wireframe
         {
         }
 
+        public virtual FlatRedBall.Gum.Animation.GumAnimation GetAnimation(string animationName)
+        {
+            return null;
+        }
+
         public FlatRedBall.Glue.StateInterpolation.Tweener InterpolateTo(Gum.DataTypes.Variables.StateSave first, Gum.DataTypes.Variables.StateSave second, double secondsToTake, FlatRedBall.Glue.StateInterpolation.InterpolationType interpolationType, FlatRedBall.Glue.StateInterpolation.Easing easing)
         {
             FlatRedBall.Glue.StateInterpolation.Tweener tweener = new FlatRedBall.Glue.StateInterpolation.Tweener(from: 0, to: 1, duration: (float)secondsToTake, type: interpolationType, easing: easing);

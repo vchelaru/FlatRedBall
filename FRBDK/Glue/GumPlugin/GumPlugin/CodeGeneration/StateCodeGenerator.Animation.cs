@@ -9,25 +9,29 @@ using System.Linq;
 using System.Text;
 using FlatRedBall.Glue.SaveClasses;
 using GumPluginCore.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace GumPlugin.CodeGeneration
 {
+    #region Classes
+
     public class StateCodeGeneratorContext
     {
         public ElementSave Element { get; set; }
-        
     }
 
+    #endregion
 
 
     public partial class StateCodeGenerator
     {
-        
+        #region Enums
         enum AbsoluteOrRelative
         {
             Absolute,
             Relative
         }
+        #endregion
 
         private void GenerateAnimationEnumerables(ElementSave elementSave, ICodeBlock currentBlock)
         {
@@ -573,6 +577,31 @@ namespace GumPlugin.CodeGeneration
                     currentBlock.Line($"{animation.Name}Animation.Stop();");
                 }
             }
+        }
+
+        private void GenerateGetAnimations(ElementSave elementSave, ICodeBlock currentBlock)
+        {
+            //////////////Early Out/////////////////////////
+            if(GlueState.Self.CurrentGlueProject.FileVersion < (int)GlueProjectSave.GluxVersions.GumGueHasGetAnimation)
+            {
+                // The method doesn't exist to override
+                return;
+            }
+
+            currentBlock = currentBlock.Function("public override FlatRedBall.Gum.Animation.GumAnimation", "GetAnimation", "string animationName");
+
+
+            ElementAnimationsSave animations = AnimationLogic.GetAnimationsFor(elementSave);
+            if (animations?.Animations.Count > 0)
+            {
+                var switchBlock = currentBlock.Switch("animationName");
+                foreach (var animation in animations.Animations)
+                {
+                    var caseBlock = switchBlock.CaseNoBreak($"\"{animation.Name}Animation\"");
+                    caseBlock.Line($"return {animation.Name}Animation;");
+                }
+            }
+            currentBlock.Line("return base.GetAnimation(animationName);");
         }
 
         private static string ToFloatString(float value)

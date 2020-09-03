@@ -108,6 +108,8 @@ namespace GumPlugin.CodeGeneration
 
             GenerateStopAnimations(elementSave, currentBlock);
 
+            GenerateGetAnimations(elementSave, currentBlock);
+
             GenerateGetCurrentValuesOnState(elementSave, currentBlock);
 
             GenerateApplyStateOverride(elementSave, currentBlock);
