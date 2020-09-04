@@ -671,7 +671,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                         .Line($"cameraToReset.OrthogonalWidth = Data.ResolutionWidth;")
                         .Line($"cameraToReset.FixAspectRatioYConstant();")
                     .End().Else()
-                        .Line("cameraToReset.UsePixelCoordinates3D(0);");
+                        .Line("cameraToReset.UsePixelCoordinates3D(0);")
+                        .Line("var zoom = cameraToReset.DestinationRectangle.Height / (float)Data.ResolutionHeight;")
+                        .Line("cameraToReset.Z /= zoom; ");
 
                     ifStatement = resetMethod.If("Data.AspectRatio != null")
                         .Line(

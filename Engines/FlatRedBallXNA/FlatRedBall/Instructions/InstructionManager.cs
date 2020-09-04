@@ -174,6 +174,14 @@ namespace FlatRedBall.Instructions
         {
             Instructions.Instruction instruction;
 
+#if DEBUG
+            if(instructable.Instructions == null)
+            {
+                throw new InvalidOperationException(
+                    $"The instructable of type {instructable.GetType()} has null instructions. These should be instantiated before attempting to execute instructions");
+            }
+#endif
+
             while (instructable.Instructions.Count > 0 &&
                 instructable.Instructions[0].TimeToExecute <= currentTime)
             {
