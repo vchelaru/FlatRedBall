@@ -513,7 +513,7 @@ namespace FlatRedBall.Glue.FormHelpers
             mMakeRequiredAtStartup.Click += new EventHandler(MakeRequiredAtStartupClick);
 
             mRebuildFile = new ToolStripMenuItem("Rebuild File");
-            mRebuildFile.Click += new EventHandler(RebuildFileClick);
+            mRebuildFile.Click += RebuildFileClick;
 
             mViewSourceInExplorer = new ToolStripMenuItem("View source file in explorer");
             mViewSourceInExplorer.Click += new EventHandler(ViewSourceInExplorerClick);
@@ -2317,9 +2317,12 @@ namespace FlatRedBall.Glue.FormHelpers
                         ErrorReporter.ReportError(FileManager.MakeAbsolute(rfs.Name), error, true);
                     }
 
-                    UpdateReactor.UpdateFile(
-                        ProjectManager.MakeAbsolute(rfs.Name));
+                    var absoluteFileName =
+                        ProjectManager.MakeAbsolute(rfs.Name);
 
+                    UpdateReactor.UpdateFile(absoluteFileName);
+
+                    PluginManager.ReactToChangedBuiltFile(absoluteFileName);
 
                     UnreferencedFilesManager.Self.RefreshUnreferencedFiles(false);
                 }

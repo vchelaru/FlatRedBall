@@ -1306,24 +1306,12 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToChangedBuiltFile(string fileName)
         {
-            var pluginManagers = mInstances.ToList();
-            foreach (PluginManager pluginManager in pluginManagers)
+            CallMethodOnPlugin((plugin) =>
             {
-                // Execute the new style plugins
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToBuiltFileChangeHandler != null);
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-                        PluginBase plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToBuiltFileChangeHandler(fileName);
-                            },container, "Failed in ReactToChangedFile");
-                    }
-                }
-            }
+                plugin.ReactToBuiltFileChangeHandler(fileName);
+            },
+                nameof(PluginBase.ReactToBuiltFileChangeHandler),
+                (plugin) => plugin.ReactToBuiltFileChangeHandler != null);
         }
 
         #region XML Docs

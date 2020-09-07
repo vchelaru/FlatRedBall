@@ -281,19 +281,6 @@ namespace FlatRedBall.Glue.ContentPipeline
             }
         }
 
-        private static string GetTextureFormatTag(ReferencedFileSave rfs)
-        {
-            if (rfs.GetAssetTypeInfo() != null && rfs.GetAssetTypeInfo().RuntimeTypeName == "Texture2D")
-            {
-                return "ProcessorParameters_TextureFormat";
-            }
-            else
-            {
-                return "ProcessorParameters_TextureProcessorOutputFormat";
-            }
-
-        }
-
         private static void RemoveFilesFromListReferencedByRfses(List<string> filesInModifiedRfs, List<ReferencedFileSave> allReferencedFiles)
         {
             foreach (ReferencedFileSave possibleReferencer in allReferencedFiles)

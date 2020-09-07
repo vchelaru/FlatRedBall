@@ -443,18 +443,6 @@ namespace FlatRedBall.Content
 			{
 				string errorString = "Could not find the file " + fileToCheckFor + "\n";
 
-#if !WINDOWS_8
-				List<string> filesInDirectory = FileManager.GetAllFilesInDirectory(FileManager.GetDirectory(assetName), null, 0);
-
-				errorString += "Found the following files:\n\n";
-
-				foreach (string s in filesInDirectory)
-				{
-
-					errorString += FileManager.RemovePath(s) + "\n";
-				}
-
-#endif
 				throw new FileNotFoundException(errorString);
 			}
 #endif

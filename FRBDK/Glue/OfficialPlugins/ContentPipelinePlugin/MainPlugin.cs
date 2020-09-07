@@ -116,6 +116,7 @@ namespace OfficialPlugins.MonoGameContent
         private void AssignEvents()
         {
             this.ReactToFileChangeHandler += HandleFileChanged;
+            this.ReactToBuiltFileChangeHandler += HandleFileChanged;
             this.ReactToLoadedGluxEarly += HandleLoadedGlux;
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
             this.ReactToLoadedSyncedProject += HandleLoadedSyncedProject;
@@ -263,7 +264,8 @@ namespace OfficialPlugins.MonoGameContent
             aliasCodeGenerator.GenerateFileAliasLogicCode(controller.Settings.UseContentPipelineOnAllPngs);
 
             // See if it's a ReferencedFileSave. If so, we might want to look at that for additional properties
-            var rfs = FlatRedBall.Glue.Elements.ObjectFinder.Self.GetReferencedFileSaveFromFile(fileName);
+            var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(
+                fileName);
 
             if(rfs != null)
             {

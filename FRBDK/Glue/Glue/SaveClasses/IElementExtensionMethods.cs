@@ -195,6 +195,10 @@ namespace FlatRedBall.Glue.SaveClasses
             if (ati != null)
             {
                 referencedFileSave.RuntimeType = ati.QualifiedRuntimeTypeName.QualifiedType;
+                if(ati.MustBeAddedToContentPipeline)
+                {
+                    referencedFileSave.UseContentPipeline = true;
+                }
             }
 
 
