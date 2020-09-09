@@ -49,7 +49,6 @@ namespace GumPlugin.DataGeneration
                         }
                     }
                 }
-
             };
 
             CheckBox = new FormsControlInfo
@@ -148,6 +147,19 @@ namespace GumPlugin.DataGeneration
                 BehaviorName = "ListBoxBehavior",
                 ComponentFile = "ListBox",
                 ControlName = "ListBox",
+                GumStateCategory = new List<GumStateCategory>
+                {
+                    new GumStateCategory
+                    {
+                        Name = "ListBoxCategory",
+                        States = new []
+                        {
+                            "Enabled",
+                            "Disabled",
+                            "Focused"
+                        }
+                    }
+                },
                 // no category (yet?)
                 //GumStateCategoryName = null,
 
@@ -508,7 +520,6 @@ namespace GumPlugin.DataGeneration
                 ComponentFile = "TreeViewToggleButton"
             };
 
-
             UserControl = new FormsControlInfo
             {
                 BehaviorName = "UserControlBehavior",
@@ -516,7 +527,6 @@ namespace GumPlugin.DataGeneration
                 ControlName = "UserControl",
                 //GumStateCategoryName = null,
             };
-
 
             AllControls = new FormsControlInfo[]
             {
@@ -542,9 +552,6 @@ namespace GumPlugin.DataGeneration
                 UserControl
             };
         // Also look in the GueRuntimeTypeAssociationGenerator
-
-
-
         }
 
         public static FormsControlInfo Button;

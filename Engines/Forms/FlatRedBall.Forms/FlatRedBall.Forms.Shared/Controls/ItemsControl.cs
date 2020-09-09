@@ -53,6 +53,18 @@ namespace FlatRedBall.Forms.Controls
 
         protected List<ListBoxItem> listBoxItems = new List<ListBoxItem>();
 
+        bool isFocused;
+        public bool IsFocused
+        {
+            get { return isFocused; }
+            set
+            {
+                isFocused = value && IsEnabled;
+                UpdateState();
+                PushValueToViewModel();
+            }
+        }
+
         #endregion
 
         public ItemsControl() : base()
@@ -197,6 +209,15 @@ namespace FlatRedBall.Forms.Controls
                 }
             }
 
+
+        }
+
+        #endregion
+
+        #region Update To
+
+        protected virtual void UpdateState()
+        {
 
         }
 

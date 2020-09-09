@@ -32,6 +32,12 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>string</Type>
+      <Name>CurrentChainName</Name>
+      <Category>Animation</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>bool</Type>
       <Name>Custom Texture Coordinates</Name>
       <Value xsi:type="xsd:boolean">false</Value>
@@ -49,14 +55,14 @@
       <Type>bool</Type>
       <Name>FlipHorizontal</Name>
       <Value xsi:type="xsd:boolean">false</Value>
-      <Category>Flip</Category>
+      <Category>Flip and Rotation</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>bool</Type>
       <Name>FlipVertical</Name>
       <Value xsi:type="xsd:boolean">false</Value>
-      <Category>Flip</Category>
+      <Category>Flip and Rotation</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -91,6 +97,12 @@
       <Name>Height Units</Name>
       <Value xsi:type="xsd:int">3</Value>
       <Category>Dimensions</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>bool</Type>
+      <Name>IsXamarinFormsControl</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>

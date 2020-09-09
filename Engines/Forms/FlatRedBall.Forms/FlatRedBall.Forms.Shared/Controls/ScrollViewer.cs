@@ -125,6 +125,7 @@ namespace FlatRedBall.Forms.Controls
                 UpdateVerticalScrollBarValues();
             }
         }
+
         #endregion
 
         #region UpdateTo methods
