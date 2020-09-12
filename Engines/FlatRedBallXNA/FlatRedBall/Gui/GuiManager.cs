@@ -807,7 +807,7 @@ namespace FlatRedBall.Gui
 
                     #region looping through all regular windows
 
-                    if (c.WindowOver == null)
+                    if (c.WindowOver == null && mDominantWindows.Count == 0)
                     {
                         DoActivityOnWindowArray(mWindowArray);
 
