@@ -34,7 +34,6 @@ namespace FlatRedBall.Input
 
         #region Properties
 
-
         public static int NumberOfConnectedGamePads
         {
             get
@@ -58,10 +57,6 @@ namespace FlatRedBall.Input
             get { return mUpdateXbox360GamePads; }
             set { mUpdateXbox360GamePads = value; }
         }
-
-
-
-
 
 #if SUPPORTS_XBOX_GAMEPADS
         public static Xbox360GamePad[] Xbox360GamePads
@@ -127,10 +122,6 @@ namespace FlatRedBall.Input
                 }
             }
         }
-
-
-
-
 
         #endregion
 

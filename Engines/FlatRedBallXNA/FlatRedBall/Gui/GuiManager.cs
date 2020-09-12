@@ -76,7 +76,7 @@ namespace FlatRedBall.Gui
 
         public const string InternalGuiContentManagerName = "FlatRedBall Internal GUI";
 
-		static WindowArray mWindowArray;
+		static List<IWindow> mWindowArray;
         static ReadOnlyCollection<IWindow> mReadOnlyWindowArray;
 
         // Perishable windows are windows which exist until
@@ -329,7 +329,7 @@ namespace FlatRedBall.Gui
 
             mCursors.Add(cursor);
 
-            mWindowArray = new WindowArray();
+            mWindowArray = new List<IWindow>();
             mReadOnlyWindowArray = new ReadOnlyCollection<IWindow>(mWindowArray);
 
             mDominantWindows = new List<IWindow>();
@@ -752,37 +752,17 @@ namespace FlatRedBall.Gui
 
                     #endregion
 
-                    #region if we have a dominant window
-                    if (DominantWindowActive && c.WindowOver == null)
+                    void DoActivityOnWindowArray(List<IWindow> windowArray)
                     {
-                        for(int i = mDominantWindows.Count - 1; i > -1; i--)
-                        {
-                            IWindow dominantWindow = mDominantWindows[i];
-
-                            if (dominantWindow.Visible && 
-                                c.IsOnWindowOrFloatingChildren(dominantWindow))
-                            {
-                                dominantWindow.TestCollision(c);
-                            }
-                        }
-                        // If there are any dominant windows, we shouldn't perform any other collision tests
-                        continue;
-                    }
-                    #endregion
-
-                    #region looping through all regular windows
-
-                    if (c.WindowOver == null)
-                    {
-                        for (int i = mWindowArray.Count - 1; i > -1; i--)
+                        for (int i = windowArray.Count - 1; i > -1; i--)
                         {
                             // Code in this loop can call
                             // events.  Events may destroy
                             // entire groups of Windows, so we
                             // need to make sure we're still vaild:
-                            if (i < mWindowArray.Count)
+                            if (i < windowArray.Count)
                             {
-                                var window = mWindowArray[i];
+                                var window = windowArray[i];
 
                                 // December 3, 2017
                                 // The GuiManager used
@@ -796,10 +776,7 @@ namespace FlatRedBall.Gui
                                 // to check its own Enabled to figure out
                                 // if it should process events or not...
                                 //if (window.Visible == false || !window.Enabled)
-                                if (window.Visible == false)
-                                        continue;
-
-                                if (!window.IgnoredByCursor && window.HasCursorOver(c))
+                                if (window.Visible && !window.IgnoredByCursor && window.HasCursorOver(c))
                                 {
                                     window.TestCollision(c);
 
@@ -811,7 +788,7 @@ namespace FlatRedBall.Gui
                                         c.LastWindowOver = c.WindowOver;
                                         if (Cursor.PrimaryPush && i < mWindowArray.Count && BringsClickedWindowsToFront == true)
                                         {// we pushed a button, so let's bring it to the front
-                                            mWindowArray.Remove(window); mWindowArray.Add(window);
+                                            windowArray.Remove(window); windowArray.Add(window);
                                         }
                                         break;
                                     }
@@ -819,6 +796,21 @@ namespace FlatRedBall.Gui
                                 }
                             }
                         }
+                    }
+
+                    #region if we have a dominant window
+                    if (DominantWindowActive && c.WindowOver == null)
+                    {
+                        DoActivityOnWindowArray(mDominantWindows);
+                    }
+                    #endregion
+
+                    #region looping through all regular windows
+
+                    if (c.WindowOver == null)
+                    {
+                        DoActivityOnWindowArray(mWindowArray);
+
                     }
                     #endregion
                 }

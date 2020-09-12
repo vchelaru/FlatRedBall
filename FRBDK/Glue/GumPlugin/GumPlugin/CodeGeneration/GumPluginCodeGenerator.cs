@@ -114,11 +114,13 @@ namespace GumPlugin.CodeGeneration
 
                 var ati = gumScreenRfs.GetAssetTypeInfo();
 
-                if(ati == null)
-                {
-                    throw new Exception($"Could not find asset type info for {element.Name}");
-                }
-                if(ati.RuntimeTypeName == "GumIdb")
+                // This could be null if the Gum screen has been deleted from the Gum project.
+                // dont' throw an exception if so...
+                //if(ati == null)
+                //{
+                //    throw new Exception($"Could not find asset type info for {element.Name}");
+                //}
+                if(ati?.RuntimeTypeName == "GumIdb")
                 {
                     method.Line($"{gumScreenRfs.GetInstanceName()}.Element.UpdateLayout();");
                 }
