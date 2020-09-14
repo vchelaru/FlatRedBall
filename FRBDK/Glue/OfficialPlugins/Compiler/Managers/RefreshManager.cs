@@ -42,7 +42,8 @@ namespace OfficialPlugins.Compiler.Managers
         }
         bool failedToRebuildAndRestart { get; set; }
 
-        bool ShouldRestartOnChange => failedToRebuildAndRestart || IsExplicitlySetRebuildAndRestartEnabled;
+        bool ShouldRestartOnChange => (failedToRebuildAndRestart || IsExplicitlySetRebuildAndRestartEnabled) &&
+            GlueState.Self.CurrentGlueProject != null;
 
         public int PortNumber { get; set; }
 
