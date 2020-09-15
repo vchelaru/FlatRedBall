@@ -13,9 +13,21 @@ using System.Text;
 
 namespace FlatRedBall.Forms.Controls
 {
+    public enum TabDirection
+    {
+        Up,
+        Down
+    }
+
+
     public class FrameworkElement
     {
         #region Fields/Properties
+
+        public virtual bool IsFocused
+        {
+            get; set;
+        }
 
         Dictionary<string, string> vmPropsToUiProps = new Dictionary<string, string>();
 
@@ -125,6 +137,30 @@ namespace FlatRedBall.Forms.Controls
         {
             get { return Visual.Name; }
             set { Visual.Name = value; }
+        }
+
+        public FrameworkElement ParentFrameworkElement
+        {
+            get
+            {
+                var parent = this.Visual.Parent;
+
+                while(parent is GraphicalUiElement parentGue)
+                {
+                    var parentForms = parentGue.FormsControlAsObject as FrameworkElement;
+
+                    if (parentForms != null)
+                    {
+                        return parentForms;
+                    }
+                    else
+                    {
+                        parent = parent.Parent;
+                    }
+                }
+
+                return null;
+            }
         }
 
         GraphicalUiElement visual;
@@ -392,6 +428,138 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        
+        public void HandleTab(TabDirection tabDirection, FrameworkElement requestingElement)
+        {
+            Collection<IRenderableIpso> children = Visual.Children;
+
+            var parentGue = requestingElement.Visual.Parent as GraphicalUiElement;
+
+            HandleTab(tabDirection, requestingElement.Visual, parentGue);
+        }
+
+        private static bool HandleTab(TabDirection tabDirection, GraphicalUiElement requestingVisual, GraphicalUiElement parentVisual)
+        {
+            void UnFocusRequestingVisual()
+            {
+                if (requestingVisual?.FormsControlAsObject is FrameworkElement requestingFrameworkElement)
+                {
+                    requestingFrameworkElement.IsFocused = false;
+                }
+            }
+
+            IList<GraphicalUiElement> children = parentVisual?.Children.Cast<GraphicalUiElement>().ToList();
+
+            if(children == null && requestingVisual != null)
+            {
+                children = requestingVisual.ElementGueContainingThis.ContainedElements.ToList();
+            }
+
+            //// early out/////////////
+            if(children== null)
+            {
+                return false;
+            }
+
+            int newIndex;
+
+            if (requestingVisual == null)
+            {
+                newIndex = tabDirection == TabDirection.Down ? 0 : children.Count - 1;
+            }
+            else
+            {
+                int index = tabDirection == TabDirection.Down ? 0 : children.Count - 1;
+
+                for (int i = 0; i < children.Count; i++)
+                {
+                    var childElement = children[i] as GraphicalUiElement;
+
+                    if (childElement == requestingVisual)
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+
+                if (tabDirection == TabDirection.Down)
+                {
+                    newIndex = index + 1;
+                }
+                else
+                {
+                    newIndex = index - 1;
+                }
+            }
+
+            var didChildHandle = false;
+            var didReachEndOfChildren = false;
+            while(true)
+            {
+                if((newIndex >= children.Count && tabDirection == TabDirection.Down) ||
+                    (newIndex < 0 && tabDirection == TabDirection.Up))
+                {
+                    didReachEndOfChildren = true;
+                    break;
+                }
+                else
+                {
+                    var childAtI = children[newIndex] as GraphicalUiElement;
+                    var elementAtI = childAtI.FormsControlAsObject as FrameworkElement;
+
+                    if(elementAtI is IInputReceiver && elementAtI.IsVisible)
+                    {
+                        elementAtI.IsFocused = true;
+
+                        UnFocusRequestingVisual();
+
+                        didChildHandle = true;
+                        break;
+                    }
+                    else
+                    {
+                        if(childAtI.Visible)
+                        {
+                            UnFocusRequestingVisual();
+
+                            // let this try to handle it:
+                            didChildHandle = HandleTab(tabDirection, null, childAtI);
+                        }
+
+                        if(!didChildHandle)
+                        {
+                            if(tabDirection == TabDirection.Down)
+                            {
+                                newIndex++;
+                            }
+                            else
+                            {
+                                newIndex--;
+                            }
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if(didChildHandle == false)
+            {
+                if(didReachEndOfChildren)
+                {
+                    UnFocusRequestingVisual();
+                    if ( parentVisual?.Parent != null)
+                    {
+                        return HandleTab(tabDirection, parentVisual, parentVisual.Parent as GraphicalUiElement);
+                    }
+                    else
+                    {
+                        return HandleTab(tabDirection, parentVisual, null);
+                    }
+                }
+            }
+            return didChildHandle;
+        }
     }
 }

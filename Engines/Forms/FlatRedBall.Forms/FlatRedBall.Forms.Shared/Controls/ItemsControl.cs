@@ -54,7 +54,7 @@ namespace FlatRedBall.Forms.Controls
         protected List<ListBoxItem> listBoxItems = new List<ListBoxItem>();
 
         bool isFocused;
-        public bool IsFocused
+        public override bool IsFocused
         {
             get { return isFocused; }
             set

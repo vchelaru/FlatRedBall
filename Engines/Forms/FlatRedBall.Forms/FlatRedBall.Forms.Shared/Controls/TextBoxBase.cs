@@ -22,7 +22,7 @@ namespace FlatRedBall.Forms.Controls
         }
 
         bool isFocused;
-        public bool IsFocused
+        public override bool IsFocused
         {
             get { return isFocused; }
             set
