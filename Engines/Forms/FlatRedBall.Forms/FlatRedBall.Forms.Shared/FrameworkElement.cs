@@ -434,10 +434,11 @@ namespace FlatRedBall.Forms.Controls
 
             var parentGue = requestingElement.Visual.Parent as GraphicalUiElement;
 
-            HandleTab(tabDirection, requestingElement.Visual, parentGue);
+            HandleTab(tabDirection, requestingElement.Visual, parentGue, shouldAskParent:true);
         }
 
-        private static bool HandleTab(TabDirection tabDirection, GraphicalUiElement requestingVisual, GraphicalUiElement parentVisual)
+        private static bool HandleTab(TabDirection tabDirection, GraphicalUiElement requestingVisual, 
+            GraphicalUiElement parentVisual, bool shouldAskParent)
         {
             void UnFocusRequestingVisual()
             {
@@ -519,10 +520,14 @@ namespace FlatRedBall.Forms.Controls
                     {
                         if(childAtI.Visible)
                         {
-                            UnFocusRequestingVisual();
 
                             // let this try to handle it:
-                            didChildHandle = HandleTab(tabDirection, null, childAtI);
+                            didChildHandle = HandleTab(tabDirection, null, childAtI, shouldAskParent:false);
+
+                            if(didChildHandle)
+                            {
+                                UnFocusRequestingVisual();
+                            }
                         }
 
                         if(!didChildHandle)
@@ -548,15 +553,20 @@ namespace FlatRedBall.Forms.Controls
             {
                 if(didReachEndOfChildren)
                 {
-                    UnFocusRequestingVisual();
+                    bool didFocusNewItem = false;
                     if ( parentVisual?.Parent != null)
                     {
-                        return HandleTab(tabDirection, parentVisual, parentVisual.Parent as GraphicalUiElement);
+                        didFocusNewItem =  HandleTab(tabDirection, parentVisual, parentVisual.Parent as GraphicalUiElement, shouldAskParent:true);
                     }
                     else
                     {
-                        return HandleTab(tabDirection, parentVisual, null);
+                        didFocusNewItem = HandleTab(tabDirection, parentVisual, null, shouldAskParent:true);
                     }
+                    if (didFocusNewItem)
+                    {
+                        UnFocusRequestingVisual();
+                    }
+                    return didFocusNewItem;
                 }
             }
             return didChildHandle;

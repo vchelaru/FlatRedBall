@@ -132,11 +132,11 @@ namespace FlatRedBall.Forms.Controls.Primitives
                 
                 if(gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.A))
                 {
-                    this.HandlePush(null);
+                    //this.HandlePush(null);
+                    this.HandleClick(null);
                 }
                 if (gamepad.ButtonReleased(FlatRedBall.Input.Xbox360GamePad.Button.A))
                 {
-                    this.HandleClick(null);
                 }
             }
 
