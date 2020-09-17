@@ -430,6 +430,12 @@ namespace FlatRedBall.Forms.Controls
 
         public void HandleTab(TabDirection tabDirection, FrameworkElement requestingElement)
         {
+            ////////////////////Early Out/////////////////
+            if(((IVisible)requestingElement.Visual).AbsoluteVisible == false)
+            {
+                return;
+            }
+            /////////////////End Early Out/////////////////
             Collection<IRenderableIpso> children = Visual.Children;
 
             var parentGue = requestingElement.Visual.Parent as GraphicalUiElement;
@@ -449,10 +455,11 @@ namespace FlatRedBall.Forms.Controls
             }
 
             IList<GraphicalUiElement> children = parentVisual?.Children.Cast<GraphicalUiElement>().ToList();
-
+            var isTopLevel = false;
             if(children == null && requestingVisual != null)
             {
                 children = requestingVisual.ElementGueContainingThis.ContainedElements.ToList();
+                isTopLevel = true;
             }
 
             //// early out/////////////
@@ -554,13 +561,16 @@ namespace FlatRedBall.Forms.Controls
                 if(didReachEndOfChildren)
                 {
                     bool didFocusNewItem = false;
-                    if ( parentVisual?.Parent != null)
-                    {
-                        didFocusNewItem =  HandleTab(tabDirection, parentVisual, parentVisual.Parent as GraphicalUiElement, shouldAskParent:true);
-                    }
-                    else
-                    {
-                        didFocusNewItem = HandleTab(tabDirection, parentVisual, null, shouldAskParent:true);
+                    if ( shouldAskParent)
+                    { 
+                        if ( parentVisual?.Parent != null)
+                        {
+                            didFocusNewItem =  HandleTab(tabDirection, parentVisual, parentVisual.Parent as GraphicalUiElement, shouldAskParent:true);
+                        }
+                        else 
+                        {
+                            didFocusNewItem = HandleTab(tabDirection, parentVisual, null, shouldAskParent:true);
+                        }
                     }
                     if (didFocusNewItem)
                     {
