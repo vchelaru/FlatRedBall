@@ -122,6 +122,7 @@ namespace FlatRedBall.Forms.Controls
         public bool TakingInput => throw new NotImplementedException();
 
         public IInputReceiver NextInTabSequence { get; set; }
+
         #endregion
 
         #region Events

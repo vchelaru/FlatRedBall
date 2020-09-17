@@ -806,12 +806,14 @@ namespace GumPlugin.CodeGeneration
             {
                 if(container is ComponentSave)
                 {
-                    variableValue = $"this.ContainedElements.FirstOrDefault(item =>item.Name == \"{variableValue}\") ?? this";
-
+                    // This does a strict comparison, but GetGraphicalUiElementByName supports the dot index, so use that
+                    //variableValue = $"this.ContainedElements.FirstOrDefault(item =>item.Name == \"{variableValue}\") ?? this";
+                    variableValue = $"this.GetGraphicalUiElementByName(\"{variableValue}\") ?? this";
+                    
                 }
                 else
                 {
-                    variableValue = $"this.ContainedElements.FirstOrDefault(item =>item.Name == \"{variableValue}\")";
+                    variableValue = $"this.GetGraphicalUiElementByName(\"{variableValue}\")";
                 }
             }
             else if(variableSave.IsFile)
