@@ -34,6 +34,8 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        bool DoListItemsHaveFocus { get; set; }
+
         int selectedIndex = -1;
 
         public Type ListBoxItemGumType
@@ -87,6 +89,11 @@ namespace FlatRedBall.Forms.Controls
                 if(value > -1 && value < listBoxItems.Count)
                 {
                     listBoxItems[value].IsSelected = true;
+
+                    if(SelectedObject != null)
+                    {
+                        ScrollIntoView(SelectedObject);
+                    }
                 }
                 else if(value == -1)
                 {
@@ -234,6 +241,18 @@ namespace FlatRedBall.Forms.Controls
 
         public void OnFocusUpdate()
         {
+            if(DoListItemsHaveFocus)
+            {
+                DoListItemFocusUpdate();
+            }
+            else
+            {
+                DoTopLevelFocusUpdate();
+            }
+        }
+
+        private void DoListItemFocusUpdate()
+        {
             for (int i = 0; i < FlatRedBall.Input.InputManager.Xbox360GamePads.Length; i++)
             {
                 var gamepad = FlatRedBall.Input.InputManager.Xbox360GamePads[i];
@@ -241,13 +260,13 @@ namespace FlatRedBall.Forms.Controls
                 if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
                     gamepad.LeftStick.AsDPadDown(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down))
                 {
-                    if(Items.Count > 0)
+                    if (Items.Count > 0)
                     {
-                        if(SelectedIndex < 0 && Items.Count > 0)
+                        if (SelectedIndex < 0 && Items.Count > 0)
                         {
                             SelectedIndex = 0;
                         }
-                        else if(SelectedIndex < Items.Count-1)
+                        else if (SelectedIndex < Items.Count - 1)
                         {
                             SelectedIndex++;
                         }
@@ -264,7 +283,7 @@ namespace FlatRedBall.Forms.Controls
                         {
                             SelectedIndex = 0;
                         }
-                        else if(SelectedIndex > 0)
+                        else if (SelectedIndex > 0)
                         {
                             SelectedIndex--;
                         }
@@ -276,7 +295,8 @@ namespace FlatRedBall.Forms.Controls
 
                 if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.A))
                 {
-                    this.HandleTab(TabDirection.Down, this);
+                    DoListItemsHaveFocus = false;
+                    //this.HandleTab(TabDirection.Down, this);
                     //this.HandlePush(null);
                 }
                 if (gamepad.ButtonReleased(FlatRedBall.Input.Xbox360GamePad.Button.A))
@@ -284,6 +304,36 @@ namespace FlatRedBall.Forms.Controls
                     //this.HandleClick(null);
                 }
             }
+
+        }
+
+        private void DoTopLevelFocusUpdate()
+        {
+            for (int i = 0; i < FlatRedBall.Input.InputManager.Xbox360GamePads.Length; i++)
+            {
+                var gamepad = FlatRedBall.Input.InputManager.Xbox360GamePads[i];
+
+                if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
+                    gamepad.LeftStick.AsDPadDown(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down))
+                {
+                    this.HandleTab(TabDirection.Down, this);
+                }
+                else if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
+                    gamepad.LeftStick.AsDPadDown(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up))
+                {
+                    this.HandleTab(TabDirection.Up, this);
+                }
+
+                if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.A))
+                {
+                    DoListItemsHaveFocus = true;
+                }
+                if (gamepad.ButtonReleased(FlatRedBall.Input.Xbox360GamePad.Button.A))
+                {
+                    //this.HandleClick(null);
+                }
+            }
+
         }
 
         public void OnGainFocus()

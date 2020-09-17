@@ -8,16 +8,34 @@ using FlatRedBall.Gui;
 using Gum.DataTypes;
 using Gum.Converters;
 using System.Collections;
+using Microsoft.Xna.Framework.Input;
 
 namespace FlatRedBall.Forms.Controls
 {
-    public class ComboBox : FrameworkElement
+    public class ComboBox : FrameworkElement, IInputReceiver
     {
         #region Fields/Properties
 
         ListBox listBox;
         GraphicalUiElement textComponent;
         RenderingLibrary.Graphics.Text coreTextObject;
+
+        protected bool isFocused;
+        public override bool IsFocused
+        {
+            get { return isFocused; }
+            set
+            {
+                isFocused = value && IsEnabled;
+
+                if (isFocused)
+                {
+                    FlatRedBall.Input.InputManager.InputReceiver = this;
+                }
+
+                UpdateState();
+            }
+        }
 
         public string Text
         {
@@ -87,6 +105,12 @@ namespace FlatRedBall.Forms.Controls
             set { listBox.SelectedIndex = value; }
         }
 
+        public List<Keys> IgnoredKeys => throw new NotImplementedException();
+
+        public bool TakingInput => throw new NotImplementedException();
+
+        public IInputReceiver NextInTabSequence { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         // These values are the list box values before the list box has been expanded.
         // The reason we need these is because the list box may have values (like Width)
         // which depend on the combo box. Normal gum objects automatically handle layout,
@@ -109,11 +133,28 @@ namespace FlatRedBall.Forms.Controls
         float listBoxWidth;
         float listBoxHeight;
 
+        public bool IsDropDownOpen
+        {
+            get => listBox.IsVisible;
+            set
+            {
+                if(value && IsDropDownOpen == false)
+                {
+                    ShowListBox();
+                }
+                else if(!value && IsDropDownOpen)
+                {
+                    HideListBox();
+                }
+            }
+        }
+
         #endregion
 
         #region Events
 
         public event Action<object, SelectionChangedEventArgs> SelectionChanged;
+        public event FocusUpdateDelegate FocusUpdate;
 
         #endregion
 
@@ -169,13 +210,17 @@ namespace FlatRedBall.Forms.Controls
             Visual.LosePush += this.HandleLosePush;
             Visual.RollOn += this.HandleRollOn;
             Visual.RollOff += this.HandleRollOff;
+
             listBox.Visual.EffectiveParentGue.RaiseChildrenEventsOutsideOfBounds = true;
             listBox.SelectionChanged += HandleSelectionChanged;
+            listBox.ItemClicked += HandleListBoxItemClicked;
 
             listBox.IsVisible = false;
             Text = null;
 
             base.ReactToVisualChanged();
+
+            UpdateState();
         }
 
         #endregion
@@ -184,7 +229,6 @@ namespace FlatRedBall.Forms.Controls
 
         private void HandleClick(IWindow window)
         {
-
             UpdateState();
         }
 
@@ -200,13 +244,13 @@ namespace FlatRedBall.Forms.Controls
 
         private void HandlePush(IWindow window)
         {
-            if(listBox.IsVisible == false)
+            if(IsDropDownOpen)
             {
-                ShowListBox();
+                HideListBox();
             }
             else
             {
-                HideListBox();
+                ShowListBox();
             }
             
         }
@@ -315,12 +359,21 @@ namespace FlatRedBall.Forms.Controls
         {
             coreTextObject.RawText = listBox.SelectedObject?.ToString();
 
-            HideListBox();
+            // Why do we hide the list box here? We don't want to do it if
+            // the user uses the arrow keys to change a selection do we?
+            //HideListBox();
 
             PushValueToViewModel(nameof(SelectedObject));
             PushValueToViewModel(nameof(SelectedIndex));
 
             SelectionChanged?.Invoke(this, args);
+
+            
+        }
+
+        private void HandleListBoxItemClicked(object sender, EventArgs args)
+        {
+            HideListBox();
         }
 
         #endregion
@@ -335,10 +388,10 @@ namespace FlatRedBall.Forms.Controls
             {
                 Visual.SetProperty("ComboBoxCategoryState", "Disabled");
             }
-            //else if (HasFocus)
-            //{
-            //    Visual.SetProperty("TextBoxCategoryState", "Selected");
-            //}
+            else if (IsFocused)
+            {
+                Visual.SetProperty("ComboBoxCategoryState", "Focused");
+            }
             else if (cursor.WindowOver == Visual)
             {
                 if (cursor.WindowPushed == Visual && cursor.PrimaryDown)
@@ -360,6 +413,142 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        #endregion
+
+        #region IInputReceiver Methods
+
+        public void OnFocusUpdate()
+        {
+
+            if(IsDropDownOpen)
+            {
+                DoOpenDropDownFocusUpdate();
+            }
+            else
+            {
+                DoClosedDropDownFocusUpdate();
+            }
+
+        }
+
+        private void DoOpenDropDownFocusUpdate()
+        {
+            for (int i = 0; i < FlatRedBall.Input.InputManager.Xbox360GamePads.Length; i++)
+            {
+                var gamepad = FlatRedBall.Input.InputManager.Xbox360GamePads[i];
+
+                if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
+                    gamepad.LeftStick.AsDPadDown(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down))
+                {
+                    if (Items.Count > 0)
+                    {
+                        if (SelectedIndex < 0 && Items.Count > 0)
+                        {
+                            SelectedIndex = 0;
+                        }
+                        else if (SelectedIndex < Items.Count - 1)
+                        {
+                            SelectedIndex++;
+                        }
+                    }
+                    // selectindex++
+                    //this.HandleTab(TabDirection.Down, this);
+                }
+                else if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
+                    gamepad.LeftStick.AsDPadDown(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up))
+                {
+                    if (Items.Count > 0)
+                    {
+                        if (SelectedIndex < 0 && Items.Count > 0)
+                        {
+                            SelectedIndex = 0;
+                        }
+                        else if (SelectedIndex > 0)
+                        {
+                            SelectedIndex--;
+                        }
+                    }
+
+                    //this.HandleTab(TabDirection.Up, this);
+                    // selectindex--
+                }
+
+                if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.A))
+                {
+                    // select...
+
+                    // and close...
+                    IsDropDownOpen = false;
+
+                    //this.HandleTab(TabDirection.Down, this);
+                    //this.HandlePush(null);
+                }
+                if (gamepad.ButtonReleased(FlatRedBall.Input.Xbox360GamePad.Button.A))
+                {
+                    //this.HandleClick(null);
+                }
+            }
+        }
+
+        private void DoClosedDropDownFocusUpdate()
+        {
+            for (int i = 0; i < FlatRedBall.Input.InputManager.Xbox360GamePads.Length; i++)
+            {
+                var gamepad = FlatRedBall.Input.InputManager.Xbox360GamePads[i];
+
+                if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
+                    gamepad.LeftStick.AsDPadDown(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down))
+                {
+                    this.HandleTab(TabDirection.Down, this);
+                    // selectindex++
+                    //this.HandleTab(TabDirection.Down, this);
+                }
+                else if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
+                    gamepad.LeftStick.AsDPadDown(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up))
+                {
+                    this.HandleTab(TabDirection.Up, this);
+
+
+                    //this.HandleTab(TabDirection.Up, this);
+                    // selectindex--
+                }
+
+                if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.A))
+                {
+                    // select...
+
+                    // and close...
+                    IsDropDownOpen = IsDropDownOpen = true;
+
+                    //this.HandleTab(TabDirection.Down, this);
+                    //this.HandlePush(null);
+                }
+                if (gamepad.ButtonReleased(FlatRedBall.Input.Xbox360GamePad.Button.A))
+                {
+                    //this.HandleClick(null);
+                }
+            }
+        }
+
+        public void OnGainFocus()
+        {
+        }
+
+        public void LoseFocus()
+        {
+        }
+
+        public void ReceiveInput()
+        {
+        }
+
+        public void HandleKeyDown(Keys key, bool isShiftDown, bool isAltDown, bool isCtrlDown)
+        {
+        }
+
+        public void HandleCharEntered(char character)
+        {
+        }
 
         #endregion
     }

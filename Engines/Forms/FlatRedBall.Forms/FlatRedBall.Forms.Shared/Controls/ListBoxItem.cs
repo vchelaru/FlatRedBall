@@ -37,6 +37,7 @@ namespace FlatRedBall.Forms.Controls
         #region Events
 
         public event EventHandler Selected;
+        public event EventHandler Clicked;
 
         #endregion
 
@@ -83,6 +84,8 @@ namespace FlatRedBall.Forms.Controls
             if(GuiManager.Cursor.LastInputDevice == InputDevice.Mouse)
             {
                 IsSelected = true;
+
+                Clicked?.Invoke(this, null);
             }
         }
 
@@ -92,6 +95,8 @@ namespace FlatRedBall.Forms.Controls
                 GuiManager.Cursor.PrimaryClickNoSlide)
             {
                 IsSelected = true;
+
+                Clicked?.Invoke(this, null);
             }
         }
 

@@ -67,6 +67,12 @@ namespace FlatRedBall.Forms.Controls
 
         #endregion
 
+        #region Events
+
+        public event EventHandler ItemClicked;
+
+        #endregion
+
         public ItemsControl() : base()
         {
             Items = new ObservableCollection<object>();
@@ -86,6 +92,7 @@ namespace FlatRedBall.Forms.Controls
                 item = o as ListBoxItem;
                 // let's hope the item doesn't already have this event - if the user recycles them that could be a problem...
                 item.Selected += HandleItemSelected;
+                item.Clicked += HandleListBoxItemClicked;
             }
             else
             {
@@ -128,6 +135,8 @@ namespace FlatRedBall.Forms.Controls
 
                 item = listBoxFormsConstructor.Invoke(new object[] { visual }) as ListBoxItem;
                 item.Selected += HandleItemSelected;
+                item.Clicked += HandleListBoxItemClicked;
+
                 item.UpdateToObject(o);
                 item.BindingContext = o;
             }
@@ -197,6 +206,11 @@ namespace FlatRedBall.Forms.Controls
 
         }
 
+        private void HandleListBoxItemClicked(object sender, EventArgs e)
+        {
+            OnItemClicked(sender, null);
+        }
+
         protected virtual void OnItemSelected(object sender, SelectionChangedEventArgs args)
         {
             for (int i = 0; i < listBoxItems.Count; i++)
@@ -208,8 +222,11 @@ namespace FlatRedBall.Forms.Controls
                     listBoxItem.IsSelected = false;
                 }
             }
+        }
 
-
+        protected void OnItemClicked(object sender, EventArgs args)
+        {
+            ItemClicked?.Invoke(sender, args);
         }
 
         #endregion
