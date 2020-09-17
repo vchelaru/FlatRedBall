@@ -82,64 +82,98 @@ namespace FlatRedBall.Forms.Controls
 
             var cursor = GuiManager.Cursor;
 
+            const string category = "CheckBoxCategoryState";
+
             if (IsChecked == true)
             {
                 if (IsEnabled == false)
                 {
-                    Visual.SetProperty("CheckBoxCategoryState", "DisabledOn");
+                    Visual.SetProperty(category, "DisabledOn");
                 }
-                //else if (HasFocus)
-                //{
-                //    Visual.SetProperty("TextBoxCategoryState", "Selected");
-                //}
+                else if (IsFocused)
+                {
+                    if (cursor.WindowPushed == Visual && cursor.PrimaryDown)
+                    {
+                        Visual.SetProperty(category, "PushedOn");
+                    }
+                    // Even if the cursor is reported as being over the button, if the
+                    // cursor got its input from a touch screen then the cursor really isn't
+                    // over anything. Therefore, we only show the highlighted state if the cursor
+                    // is a physical on-screen cursor
+                    else if (GetIfIsOnThisOrChildVisual(cursor) &&
+                        cursor.LastInputDevice != InputDevice.TouchScreen)
+                    {
+                        Visual.SetProperty(category, "HighlightedFocusedOn");
+                    }
+                    else
+                    {
+                        Visual.SetProperty(category, "FocusedOn");
+                    }
+                }
                 else if (GetIfIsOnThisOrChildVisual(cursor))
                 {
                     if (cursor.WindowPushed == Visual && cursor.PrimaryDown)
                     {
-                        Visual.SetProperty("CheckBoxCategoryState", "PushedOn");
+                        Visual.SetProperty(category, "PushedOn");
                     }
                     else if (cursor.LastInputDevice != InputDevice.TouchScreen)
                     {
-                        Visual.SetProperty("CheckBoxCategoryState", "HighlightedOn");
+                        Visual.SetProperty(category, "HighlightedOn");
                     }
                     else
                     {
-                        Visual.SetProperty("CheckBoxCategoryState", "EnabledOn");
+                        Visual.SetProperty(category, "EnabledOn");
                     }
                 }
                 else
                 {
-                    Visual.SetProperty("CheckBoxCategoryState", "EnabledOn");
+                    Visual.SetProperty(category, "EnabledOn");
                 }
             }
             else if (IsChecked == false)
             {
                 if (IsEnabled == false)
                 {
-                    Visual.SetProperty("CheckBoxCategoryState", "DisabledOff");
+                    Visual.SetProperty(category, "DisabledOff");
                 }
-                //else if (HasFocus)
-                //{
-                //    Visual.SetProperty("TextBoxCategoryState", "Selected");
-                //}
+                else if (IsFocused)
+                {
+                    if (cursor.WindowPushed == Visual && cursor.PrimaryDown)
+                    {
+                        Visual.SetProperty(category, "PushedOff");
+                    }
+                    // Even if the cursor is reported as being over the button, if the
+                    // cursor got its input from a touch screen then the cursor really isn't
+                    // over anything. Therefore, we only show the highlighted state if the cursor
+                    // is a physical on-screen cursor
+                    else if (GetIfIsOnThisOrChildVisual(cursor) &&
+                        cursor.LastInputDevice != InputDevice.TouchScreen)
+                    {
+                        Visual.SetProperty(category, "HighlightedFocusedOff");
+                    }
+                    else
+                    {
+                        Visual.SetProperty(category, "FocusedOff");
+                    }
+                }
                 else if (Visual.HasCursorOver(cursor))
                 {
                     if (cursor.WindowPushed == Visual && cursor.PrimaryDown)
                     {
-                        Visual.SetProperty("CheckBoxCategoryState", "PushedOff");
+                        Visual.SetProperty(category, "PushedOff");
                     }
                     else if (cursor.LastInputDevice != InputDevice.TouchScreen)
                     {
-                        Visual.SetProperty("CheckBoxCategoryState", "HighlightedOff");
+                        Visual.SetProperty(category, "HighlightedOff");
                     }
                     else
                     {
-                        Visual.SetProperty("CheckBoxCategoryState", "EnabledOff");
+                        Visual.SetProperty(category, "EnabledOff");
                     }
                 }
                 else
                 {
-                    Visual.SetProperty("CheckBoxCategoryState", "EnabledOff");
+                    Visual.SetProperty(category, "EnabledOff");
                 }
             }
             else

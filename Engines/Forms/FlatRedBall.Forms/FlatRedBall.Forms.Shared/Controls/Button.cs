@@ -78,15 +78,17 @@ namespace FlatRedBall.Forms.Controls
         {
             var cursor = GuiManager.Cursor;
 
+            const string category = "ButtonCategoryState";
+
             if (IsEnabled == false)
             {
-                Visual.SetProperty("ButtonCategoryState", "Disabled");
+                Visual.SetProperty(category, "Disabled");
             }
             else if (IsFocused)
             {
                 if (cursor.WindowPushed == Visual && cursor.PrimaryDown)
                 {
-                    Visual.SetProperty("ButtonCategoryState", "Pushed");
+                    Visual.SetProperty(category, "Pushed");
                 }
                 // Even if the cursor is reported as being over the button, if the
                 // cursor got its input from a touch screen then the cursor really isn't
@@ -95,18 +97,18 @@ namespace FlatRedBall.Forms.Controls
                 else if (GetIfIsOnThisOrChildVisual(cursor) && 
                     cursor.LastInputDevice != InputDevice.TouchScreen)
                 {
-                    Visual.SetProperty("ButtonCategoryState", "HighlightedFocused");
+                    Visual.SetProperty(category, "HighlightedFocused");
                 }
                 else
                 {
-                    Visual.SetProperty("ButtonCategoryState", "Focused");
+                    Visual.SetProperty(category, "Focused");
                 }
             }
             else if (GetIfIsOnThisOrChildVisual(cursor))
             {
                 if (cursor.WindowPushed == Visual && cursor.PrimaryDown)
                 {
-                    Visual.SetProperty("ButtonCategoryState", "Pushed");
+                    Visual.SetProperty(category, "Pushed");
                 }
                 // Even if the cursor is reported as being over the button, if the
                 // cursor got its input from a touch screen then the cursor really isn't
@@ -114,16 +116,16 @@ namespace FlatRedBall.Forms.Controls
                 // is a physical on-screen cursor
                 else if(cursor.LastInputDevice != InputDevice.TouchScreen)
                 {
-                    Visual.SetProperty("ButtonCategoryState", "Highlighted");
+                    Visual.SetProperty(category, "Highlighted");
                 }
                 else
                 {
-                    Visual.SetProperty("ButtonCategoryState", "Enabled");
+                    Visual.SetProperty(category, "Enabled");
                 }
             }
             else
             {
-                Visual.SetProperty("ButtonCategoryState", "Enabled");
+                Visual.SetProperty(category, "Enabled");
             }
         }
 
