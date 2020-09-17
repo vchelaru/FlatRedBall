@@ -384,32 +384,34 @@ namespace FlatRedBall.Forms.Controls
         {
             var cursor = GuiManager.Cursor;
 
+            const string category = "ComboBoxCategoryState";
+
             if (IsEnabled == false)
             {
-                Visual.SetProperty("ComboBoxCategoryState", "Disabled");
+                Visual.SetProperty(category, "Disabled");
             }
             else if (IsFocused)
             {
-                Visual.SetProperty("ComboBoxCategoryState", "Focused");
+                Visual.SetProperty(category, "Focused");
             }
             else if (cursor.WindowOver == Visual)
             {
                 if (cursor.WindowPushed == Visual && cursor.PrimaryDown)
                 {
-                    Visual.SetProperty("ComboBoxCategoryState", "Pushed");
+                    Visual.SetProperty(category, "Pushed");
                 }
                 else if (cursor.LastInputDevice != InputDevice.TouchScreen)
                 {
-                    Visual.SetProperty("ComboBoxCategoryState", "Highlighted");
+                    Visual.SetProperty(category, "Highlighted");
                 }
                 else
                 {
-                    Visual.SetProperty("ComboBoxCategoryState", "Enabled");
+                    Visual.SetProperty(category, "Enabled");
                 }
             }
             else
             {
-                Visual.SetProperty("ComboBoxCategoryState", "Enabled");
+                Visual.SetProperty(category, "Enabled");
             }
         }
 
@@ -419,7 +421,6 @@ namespace FlatRedBall.Forms.Controls
 
         public void OnFocusUpdate()
         {
-
             if(IsDropDownOpen)
             {
                 DoOpenDropDownFocusUpdate();

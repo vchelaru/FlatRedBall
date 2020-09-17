@@ -5,12 +5,12 @@ using System.Text;
 using FlatRedBall.Gui;
 using Gum.Wireframe;
 using RenderingLibrary;
+using Microsoft.Xna.Framework.Input;
 
 namespace FlatRedBall.Forms.Controls
 {
-    public class Slider : RangeBase
+    public class Slider : RangeBase, IInputReceiver
     {
-
         #region Fields/Properties
 
         public double TicksFrequency { get; set; } = 1;
@@ -18,7 +18,37 @@ namespace FlatRedBall.Forms.Controls
         public bool IsSnapToTickEnabled { get; set; } = false;
 
         public bool IsMoveToPointEnabled { get; set; }
+
+        public List<Keys> IgnoredKeys => throw new NotImplementedException();
+
+        public bool TakingInput => throw new NotImplementedException();
+
+        public IInputReceiver NextInTabSequence { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        protected bool isFocused;
+        public override bool IsFocused
+        {
+            get { return isFocused; }
+            set
+            {
+                isFocused = value && IsEnabled;
+
+                if (isFocused)
+                {
+                    FlatRedBall.Input.InputManager.InputReceiver = this;
+                }
+
+                UpdateState();
+            }
+        }
+
         #endregion
+
+        #region Events
+
+        #endregion
+
+        public event FocusUpdateDelegate FocusUpdate;
 
         #region Initialize
 
@@ -42,9 +72,9 @@ namespace FlatRedBall.Forms.Controls
         {
             base.ReactToVisualChanged();
 
-
             Track.Push += HandleTrackPush;
 
+            UpdateState();
         }
 
         #endregion
@@ -173,6 +203,24 @@ namespace FlatRedBall.Forms.Controls
 
         #region UpdateTo Methods
 
+        private void UpdateState()
+        {
+            string category = "SliderCategoryState";
+            if(IsEnabled == false)
+            {
+                Visual.SetProperty(category, "Disabled");
+            }
+            else if(IsFocused)
+            {
+                Visual.SetProperty(category, "Focused");
+
+            }
+            else
+            {
+                Visual.SetProperty(category, "Enabled");
+            }
+        }
+
         private void UpdateThumbPositionAccordingToValue()
         {
             var ratioOver = (Value - Minimum) / (Maximum - Minimum);
@@ -214,6 +262,82 @@ namespace FlatRedBall.Forms.Controls
                 Value = Minimum;
             }
         }
+
+        #endregion
+
+        #region IInputReceiver Methods
+
+        public void OnFocusUpdate()
+        {
+            for (int i = 0; i < FlatRedBall.Input.InputManager.Xbox360GamePads.Length; i++)
+            {
+                var gamepad = FlatRedBall.Input.InputManager.Xbox360GamePads[i];
+
+                if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
+                    gamepad.LeftStick.AsDPadDown(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down))
+                {
+                    this.HandleTab(TabDirection.Down, this);
+                    // selectindex++
+                    //this.HandleTab(TabDirection.Down, this);
+                }
+                else if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
+                    gamepad.LeftStick.AsDPadDown(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up))
+                {
+                    this.HandleTab(TabDirection.Up, this);
+
+
+                    //this.HandleTab(TabDirection.Up, this);
+                    // selectindex--
+                }
+
+                if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.DPadLeft) ||
+                    gamepad.LeftStick.AsDPadDown(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Left))
+                {
+                    this.Value -= this.SmallChange;
+                }
+                else if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.DPadRight) ||
+                    gamepad.LeftStick.AsDPadDown(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Right))
+                {
+                    this.Value += this.SmallChange;
+                }
+
+                if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.A))
+                {
+                    // select...
+
+                    // and close...
+                    //IsDropDownOpen = IsDropDownOpen = true;
+
+                    //this.HandleTab(TabDirection.Down, this);
+                    //this.HandlePush(null);
+                }
+                if (gamepad.ButtonReleased(FlatRedBall.Input.Xbox360GamePad.Button.A))
+                {
+                    //this.HandleClick(null);
+                }
+            }
+        }
+
+        public void OnGainFocus()
+        {
+        }
+
+        public void LoseFocus()
+        {
+        }
+
+        public void ReceiveInput()
+        {
+        }
+
+        public void HandleKeyDown(Keys key, bool isShiftDown, bool isAltDown, bool isCtrlDown)
+        {
+        }
+
+        public void HandleCharEntered(char character)
+        {
+        }
+
 
         #endregion
     }
