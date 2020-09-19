@@ -28,12 +28,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             }
         }
 
-
-        bool is2D;
         public bool Is2D
         {
-            get { return is2D; }
-            set { base.ChangeAndNotify(ref is2D, value); }
+            get => Get<bool>();
+            set => Set(value);
         }
 
         int resolutionWidth;
@@ -50,11 +48,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             set { base.ChangeAndNotify(ref resolutionHeight, value); }
         }
 
-        bool fixedAspectRatio;
         public bool FixedAspectRatio
         {
-            get { return fixedAspectRatio; }
-            set { base.ChangeAndNotify(ref fixedAspectRatio, value); }
+            get => Get<bool>();
+            set => Set(value);
         }
 
         decimal aspectRatioWidth;
@@ -71,25 +68,22 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             set { base.ChangeAndNotify(ref aspectRatioHeight, value); }
         }
 
-        bool supportLandscape;
         public bool SupportLandscape
         {
-            get { return supportLandscape; }
-            set { base.ChangeAndNotify(ref supportLandscape, value); }
+            get => Get<bool>();
+            set => Set(value);
         }
 
-        bool supportPortrait;
         public bool SupportPortrait
         {
-            get { return supportPortrait; }
-            set { base.ChangeAndNotify(ref supportPortrait, value); }
+            get => Get<bool>();
+            set => Set(value);
         }
 
-        bool runInFullScreen;
         public bool RunInFullScreen
         {
-            get { return runInFullScreen; }
-            set { base.ChangeAndNotify(ref runInFullScreen, value);  }
+            get => Get<bool>();
+            set => Set(value);
         }
 
         public bool AllowWindowResizing
@@ -103,6 +97,12 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             get => Get<int>();
             set => Set(value);
         }
+
+        [DependsOn(nameof(RunInFullScreen))]
+        public bool IsScaleUiEnabled => RunInFullScreen == false;
+
+        [DependsOn(nameof(RunInFullScreen))]
+        public Visibility FullScreenScaleMessageVisibility => RunInFullScreen ? Visibility.Visible : Visibility.Collapsed;
 
         public int ScaleGum
         {
@@ -211,13 +211,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         }
 
         [DependsOn(nameof(ResolutionHeight))]
-        public string KeepResolutionHeightConstantMessage
-        {
-            get
-            {
-                return $"Keep game coordinates height at {ResolutionHeight}";
-            }
-        }
+        public string KeepResolutionHeightConstantMessage => $"Keep game coordinates height at {ResolutionHeight}";
 
         [DependsOn(nameof(ResolutionWidth))]
         public string KeepResolutionWidthConstantMessage => $"Keep game coordinates width at {ResolutionWidth}";
@@ -227,8 +221,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         {
             get
             {
-                if (Is2D) return Visibility.Visible;
-                else return Visibility.Collapsed;
+                return Is2D ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 

@@ -63,7 +63,12 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        public IList Items => listBox.Items;
+        public IList Items
+        {
+            get => listBox.Items;
+            set => listBox.Items = value;
+        }
+
         public Type ListBoxItemGumType
         {
             get { return listBox.ListBoxItemGumType; }

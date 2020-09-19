@@ -50,9 +50,15 @@
 
                         <StackPanel Orientation="Horizontal">
                             <Label>Scale</Label>
-                            <TextBox Width="40" Height="18" Text="{Binding Scale}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"></TextBox>
+                            <TextBox Width="40" Height="18" Text="{Binding Scale}" IsEnabled="{Binding IsScaleUiEnabled}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"></TextBox>
                             <Label>%</Label>
                         </StackPanel>
+
+                        <GroupBox Margin="20,0,0,0" Background="LightYellow" Visibility="{Binding FullScreenScaleMessageVisibility}">
+                            <StackPanel>
+                                <TextBlock TextWrapping="Wrap">The game's zoom cannot be set by Glue. The zoom will effectively be a result of the desired resolution and the resolution of the monitor.</TextBlock>
+                            </StackPanel>
+                        </GroupBox>
 
                         <StackPanel Orientation="Horizontal" Visibility="{Binding GumScaleVisibility}">
                             <Label>Scale (Gum)</Label>
