@@ -54,8 +54,10 @@ namespace FlatRedBall.Input
          * float mDeadzone;
          */
 
-        double[] mLastDPadPush = new double[4];
-        double[] mLastDPadRepeatRate = new double[4];
+        // Start this at -1 instead of 0, otherwise the first frame will return "true" because
+        // the last push on time 0 will match the TimeManager.CurrentTime
+        double[] mLastDPadPush = new double[4]{ -1, -1, -1, -1};
+        double[] mLastDPadRepeatRate = new double[4] { -1, -1, -1, -1 };
 
         #endregion
 

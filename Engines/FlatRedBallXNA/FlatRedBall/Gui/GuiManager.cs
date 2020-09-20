@@ -666,33 +666,7 @@ namespace FlatRedBall.Gui
 
             mToolTipText = "";
 
-            // Eventually we may do this per cursor:
-            if(Cursor.PrimaryClick)
-            {
-                if(nextClickActions.Count > 0)
-                {
-                    var items = nextClickActions.ToList();
-                    nextClickActions.Clear();
-                    foreach(var item in items)
-                    {
-                        item();
-                    }
 
-                }
-            }
-
-            if(Cursor.PrimaryPush)
-            {
-                if(nextPushActions .Count > 0)
-                {
-                    var items = nextPushActions.ToList();
-                    nextPushActions.Clear();
-                    foreach(var item in items)
-                    {
-                        item();
-                    }
-                }
-            }
 
             foreach (Cursor c in mCursors)
             {
@@ -709,6 +683,34 @@ namespace FlatRedBall.Gui
                 c.Update(TimeManager.CurrentTime);
                 c.WindowOver = null;
                 c.WindowClosing = null;
+
+                // Eventually we may do this per cursor:
+                if (c.PrimaryClick)
+                {
+                    if (nextClickActions.Count > 0)
+                    {
+                        var items = nextClickActions.ToList();
+                        nextClickActions.Clear();
+                        foreach (var item in items)
+                        {
+                            item();
+                        }
+
+                    }
+                }
+
+                if (c.PrimaryPush)
+                {
+                    if (nextPushActions.Count > 0)
+                    {
+                        var items = nextPushActions.ToList();
+                        nextPushActions.Clear();
+                        foreach (var item in items)
+                        {
+                            item();
+                        }
+                    }
+                }
 
             }
 

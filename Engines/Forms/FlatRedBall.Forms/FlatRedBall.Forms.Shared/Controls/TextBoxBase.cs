@@ -28,6 +28,8 @@ namespace FlatRedBall.Forms.Controls
             set
             {
                 isFocused = value && IsEnabled;
+
+
                 UpdateToIsFocused();
                 PushValueToViewModel();
             }
@@ -619,11 +621,15 @@ namespace FlatRedBall.Forms.Controls
             {
                 GuiManager.AddNextClickAction(HandleClickOff);
 
+                if (FlatRedBall.Input.InputManager.InputReceiver != this)
+                {
+                    FlatRedBall.Input.InputManager.InputReceiver = this;
+                }
 #if ANDROID
                 FlatRedBall.Input.InputManager.Keyboard.ShowKeyboard();
 #endif
 
-            }
+                }
             else if (!isFocused)
             {
                 if (FlatRedBall.Input.InputManager.InputReceiver == this)
