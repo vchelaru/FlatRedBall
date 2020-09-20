@@ -119,8 +119,14 @@ namespace FlatRedBall.Forms.Controls
             {
                 if(isEnabled != value)
                 {
+                    if(value == false && IsFocused)
+                    {
+                        // If we disabled this, then unfocus it, and select next tab
+                        this.HandleTab(TabDirection.Down, this);
+                    }
                     isEnabled = value;
                     Visual.Enabled = value;
+
                 }
             }
         }
@@ -455,11 +461,9 @@ namespace FlatRedBall.Forms.Controls
             }
 
             IList<GraphicalUiElement> children = parentVisual?.Children.Cast<GraphicalUiElement>().ToList();
-            var isTopLevel = false;
             if(children == null && requestingVisual != null)
             {
                 children = requestingVisual.ElementGueContainingThis.ContainedElements.ToList();
-                isTopLevel = true;
             }
 
             //// early out/////////////
@@ -514,7 +518,7 @@ namespace FlatRedBall.Forms.Controls
                     var childAtI = children[newIndex] as GraphicalUiElement;
                     var elementAtI = childAtI.FormsControlAsObject as FrameworkElement;
 
-                    if(elementAtI is IInputReceiver && elementAtI.IsVisible)
+                    if(elementAtI is IInputReceiver && elementAtI.IsVisible && elementAtI.IsEnabled)
                     {
                         elementAtI.IsFocused = true;
 
@@ -525,7 +529,7 @@ namespace FlatRedBall.Forms.Controls
                     }
                     else
                     {
-                        if(childAtI.Visible)
+                        if(childAtI.Visible && (elementAtI == null || elementAtI.IsEnabled))
                         {
 
                             // let this try to handle it:
