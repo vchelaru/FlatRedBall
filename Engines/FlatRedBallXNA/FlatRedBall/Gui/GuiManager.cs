@@ -684,33 +684,7 @@ namespace FlatRedBall.Gui
                 c.WindowOver = null;
                 c.WindowClosing = null;
 
-                // Eventually we may do this per cursor:
-                if (c.PrimaryClick)
-                {
-                    if (nextClickActions.Count > 0)
-                    {
-                        var items = nextClickActions.ToList();
-                        nextClickActions.Clear();
-                        foreach (var item in items)
-                        {
-                            item();
-                        }
 
-                    }
-                }
-
-                if (c.PrimaryPush)
-                {
-                    if (nextPushActions.Count > 0)
-                    {
-                        var items = nextPushActions.ToList();
-                        nextPushActions.Clear();
-                        foreach (var item in items)
-                        {
-                            item();
-                        }
-                    }
-                }
 
             }
 
@@ -815,6 +789,36 @@ namespace FlatRedBall.Gui
 
                     }
                     #endregion
+
+
+                    // the click/push actions need to be after the UI activity
+                    if (c.PrimaryClick)
+                    {
+                        if (nextClickActions.Count > 0)
+                        {
+                            var items = nextClickActions.ToList();
+                            nextClickActions.Clear();
+                            foreach (var item in items)
+                            {
+                                item();
+                            }
+
+                        }
+                    }
+
+                    if (c.PrimaryPush)
+                    {
+                        if (nextPushActions.Count > 0)
+                        {
+                            var items = nextPushActions.ToList();
+                            nextPushActions.Clear();
+                            foreach (var item in items)
+                            {
+                                item();
+                            }
+                        }
+                    }
+
                 }
             }
 
