@@ -379,7 +379,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            if(!failed)
+            if(!failed && toReturn != null)
             {
                 TaskManager.Self.OnUiThread(() =>
                 {

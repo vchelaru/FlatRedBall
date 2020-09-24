@@ -11,6 +11,7 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Plugins.Performance;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.Particle;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -644,8 +645,20 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if(ati.CustomLoadFunc != null)
             {
-                var line = ati.CustomLoadFunc(container, null, rfs, contentManagerString);
-                codeBlock.Line(line);
+                string customLoadLine;
+                try
+                {
+                    customLoadLine = ati.CustomLoadFunc(container, null, rfs, contentManagerString);
+                }
+                catch(Exception e)
+                {
+                    customLoadLine =
+                        $"// Could not load {rfs.ToString()} because the AssetTypeInfo threw an exception. See the Glue output window";
+
+                    GlueCommands.Self.PrintError("Error generating code for {rfs}:\n{e}");
+
+                }
+                codeBlock.Line(customLoadLine);
             }
             else if (!string.IsNullOrEmpty(ati.CustomLoadMethod))
             {
