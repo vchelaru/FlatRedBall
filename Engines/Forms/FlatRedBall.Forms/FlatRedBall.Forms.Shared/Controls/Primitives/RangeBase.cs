@@ -24,9 +24,12 @@ namespace FlatRedBall.Forms.Controls.Primitives
         public double SmallChange { get; set; }
 
         double minimum = 0;
+        /// <summary>
+        /// The minimum value which can be set through the UI.
+        /// </summary>
         public double Minimum
         {
-            get { return minimum; }
+            get => minimum; 
             set
             {
                 var oldValue = minimum;
@@ -37,9 +40,12 @@ namespace FlatRedBall.Forms.Controls.Primitives
         }
 
         double maximum = 1;
+        /// <summary>
+        /// The maximum value which can be set through the UI.
+        /// </summary>
         public double Maximum
         {
-            get { return maximum; }
+            get => maximum; 
             set
             {
                 var oldValue = maximum;
@@ -52,10 +58,7 @@ namespace FlatRedBall.Forms.Controls.Primitives
         double value;
         public double Value
         {
-            get
-            {
-                return value;
-            }
+            get => value;
             set
             {
 #if DEBUG
@@ -77,6 +80,8 @@ namespace FlatRedBall.Forms.Controls.Primitives
                     OnValueChanged(oldValue, this.value);
 
                     ValueChanged?.Invoke(this, null);
+
+                    PushValueToViewModel();
                 }
             }
         }

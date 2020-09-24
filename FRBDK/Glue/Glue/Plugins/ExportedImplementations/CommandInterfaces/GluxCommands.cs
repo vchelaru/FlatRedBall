@@ -446,7 +446,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 bool isValidExtensionOrIsConfirmedByUser;
                 bool isUnknownType;
-                FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces.ElementCommands.CheckAndWarnAboutUnknownFileTypes(unknownTypeHandle, extension, out isValidExtensionOrIsConfirmedByUser, out isUnknownType);
+                FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces.ElementCommands.CheckAndWarnAboutUnknownFileTypes(
+                    unknownTypeHandle, extension, out isValidExtensionOrIsConfirmedByUser, out isUnknownType);
 
                 string fileToAdd = null;
                 if (isValidExtensionOrIsConfirmedByUser)
@@ -495,15 +496,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                             BuildToolAssociationManager.Self.GetBuilderToolAssociationByName(ati.CustomBuildToolName);
                     }
 
-                    if (containerForFile != null)
+                    if(!string.IsNullOrEmpty(fileToAdd))
                     {
-                        referencedFileSaveToReturn = containerForFile.AddReferencedFile(fileToAdd, ati, bta);
-                    }
-                    else
-                    {
-                        bool useFullPathAsName = false;
-                        // todo - support built files here
-                        referencedFileSaveToReturn = AddReferencedFileToGlobalContent(fileToAdd, useFullPathAsName);
+                        if (containerForFile != null)
+                        {
+                            referencedFileSaveToReturn = containerForFile.AddReferencedFile(fileToAdd, ati, bta);
+                        }
+                        else
+                        {
+                            bool useFullPathAsName = false;
+                            // todo - support built files here
+                            referencedFileSaveToReturn = AddReferencedFileToGlobalContent(fileToAdd, useFullPathAsName);
+                        }
                     }
 
 
