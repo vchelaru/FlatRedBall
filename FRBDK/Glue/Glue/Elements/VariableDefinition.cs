@@ -28,6 +28,13 @@ namespace FlatRedBall.Glue.Elements
         /// </summary>
         public bool UsesCustomCodeGeneration { get; set; }
 
+        /// <summary>
+        /// A list of options which the user must pick from. Filling this list with
+        /// options prevents the user form freely entering values. This can be used for
+        /// functionality similar to enums.
+        /// </summary>
+        public List<string> ForcedOptions { get; set; } = new List<string>();
+
         public override string ToString()
         {
             return Name + " (" + Type + ")";

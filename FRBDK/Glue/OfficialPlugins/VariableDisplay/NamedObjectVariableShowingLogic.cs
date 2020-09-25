@@ -459,7 +459,6 @@ namespace OfficialPlugins.VariableDisplay
                 {
                     instanceMember = new DataGridItem();
 
-
                 }
 
                 if(variableDefinition?.Name == "RotationZ" && variableDefinition.Type == "float")
@@ -476,6 +475,14 @@ namespace OfficialPlugins.VariableDisplay
                 instanceMember.DisplayName = displayName;
 
                 instanceMember.TypeConverter = typeConverter;
+                // Important - set the forced options after setting the type converter so they have "final say"
+                if(variableDefinition?.ForcedOptions?.Count > 0)
+                {
+                    instanceMember.PreferredDisplayer = typeof(ComboBoxDisplay);
+                    var list = new List<object>();
+                    list.AddRange(variableDefinition.ForcedOptions);
+                    instanceMember.CustomOptions = list;
+                }
 
                 instanceMember.CustomGetTypeEvent += (throwaway) => memberType;
 

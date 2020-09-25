@@ -218,7 +218,7 @@ namespace FlatRedBall.Glue.ViewModels
                         var first = classType.IndexOf("(");
                         var last = classType.IndexOf(")");
 
-                        if(first > -1 && last > -1 && first > last)
+                        if(first > -1 && last > -1 && first < last)
                         {
                             classType = classType.Substring(0, first);
                         }
@@ -237,6 +237,7 @@ namespace FlatRedBall.Glue.ViewModels
                     }
 
                     nameToAssign = nameToAssign.Replace("<T>", "");
+                    nameToAssign = nameToAssign.Replace(" ", "");
                 }
             }
 
