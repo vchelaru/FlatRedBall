@@ -102,8 +102,8 @@ namespace FlatRedBall.Forms.Controls
 
             if(visibleTrackSpace != 0)
             {
-
                 var thumbRatio = thumbHeight / visibleTrackSpace;
+
                 ViewportSize = (Maximum - Minimum) * thumbRatio;
                 LargeChange = ViewportSize;
 
@@ -176,7 +176,9 @@ namespace FlatRedBall.Forms.Controls
         private void UpdateThumbPositionAccordingToValue()
         {
             var ratioDown = (Value - Minimum) / (Maximum - Minimum);
-            if(Maximum <= Minimum)
+            ratioDown = System.Math.Max(0, ratioDown);
+            ratioDown = System.Math.Min(1, ratioDown);
+            if (Maximum <= Minimum)
             {
                 ratioDown = 0;
             }
@@ -206,8 +208,16 @@ namespace FlatRedBall.Forms.Controls
             if(range != 0)
             {
                 var ratio = (thumb.Y) / range;
-
+                var ratioBefore = ratio;
+                ratio = System.Math.Max(0, ratio);
+                ratio = System.Math.Min(1, ratio);
                 Value = Minimum + (Maximum - Minimum) * ratio;
+
+                if(ratioBefore != ratio)
+                {
+                    // we clamped it, so force the thumb:
+                    UpdateThumbPositionAccordingToValue();
+                }
             }
             else
             {

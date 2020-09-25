@@ -252,6 +252,8 @@ namespace FlatRedBall.Forms.Controls
             if(range != 0)
             {
                 var ratio = (thumb.X) / range;
+                ratio = System.Math.Max(0, ratio);
+                ratio = System.Math.Min(1, ratio);
 
                 var valueToSet = Minimum + (Maximum - Minimum) * ratio;
 

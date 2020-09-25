@@ -68,14 +68,17 @@ namespace FlatRedBall.Forms.Controls.Primitives
                 }
 #endif
                 var oldValue = this.value;
-                if(oldValue != value)
+                var newValue = value;
+
+
+                // Cap the values first so the comparison is done against
+                // the capped value
+                newValue = System.Math.Min(newValue, Maximum);
+                newValue = System.Math.Max(newValue, Minimum);
+
+                if(oldValue != newValue)
                 {
-
-                    this.value = value;
-
-                    this.value = System.Math.Min(this.value, Maximum);
-                    this.value = System.Math.Max(this.value, Minimum);
-
+                    this.value = newValue;
 
                     OnValueChanged(oldValue, this.value);
 
