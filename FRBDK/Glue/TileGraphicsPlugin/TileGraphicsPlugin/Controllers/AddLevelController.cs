@@ -494,7 +494,7 @@ namespace TileGraphicsPlugin.Controllers
                 AddObjectViewModel viewModel = new AddObjectViewModel
                 {
                     SourceType = SourceType.FlatRedBallType,
-                    SourceClassType = "TileShapeCollection",
+                    SelectedAti = AssetTypeInfoAdder.Self.TileShapeCollectionAssetTypeInfo,
                     ObjectName = "SolidCollisions"
                 };
 

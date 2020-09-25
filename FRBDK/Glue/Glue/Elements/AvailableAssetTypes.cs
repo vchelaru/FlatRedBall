@@ -10,6 +10,8 @@ using FlatRedBall.IO;
 using System.Windows.Forms;
 using System.IO;
 using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Math.Geometry;
+using FlatRedBall.Graphics;
 
 namespace FlatRedBall.Glue.Elements
 {
@@ -22,6 +24,16 @@ namespace FlatRedBall.Glue.Elements
     }
 
     #endregion
+
+    public class CommonAtis
+    {
+        public AssetTypeInfo Sprite { get; set; }
+        public AssetTypeInfo AxisAlignedRectangle { get; set; }
+        public AssetTypeInfo Circle { get; set; }
+        public AssetTypeInfo Polygon { get; set; }
+        public AssetTypeInfo Text { get; set; }
+        public AssetTypeInfo PositionedObjectList { get; set; }
+    }
 
     public class AvailableAssetTypes
     {
@@ -40,6 +52,8 @@ namespace FlatRedBall.Glue.Elements
         #endregion
 
         #region Properties
+
+        public static CommonAtis CommonAtis { get; private set; }
 
         public string GlobalCustomContentTypesFolder
         {
@@ -169,7 +183,20 @@ namespace FlatRedBall.Glue.Elements
                     }
                 }
             }
-		}
+
+            CommonAtis = new CommonAtis();
+
+            AssetTypeInfo GetAti(string name) =>
+                AllAssetTypes.First(item => item.FriendlyName == name);
+
+            CommonAtis.AxisAlignedRectangle = GetAti(nameof(AxisAlignedRectangle));
+            CommonAtis.Circle = GetAti(nameof(Circle));
+            CommonAtis.Polygon = GetAti(nameof(Polygon));
+            CommonAtis.Sprite = GetAti(nameof(Sprite));
+            CommonAtis.Text = GetAti(nameof(Text));
+            CommonAtis.PositionedObjectList = GetAti("PositionedObjectList (Generic)");
+
+        }
 
         public void ReactToProjectLoad(string projectFolder)
         {

@@ -1,0 +1,114 @@
+﻿<Window x:Class="GlueFormsCore.Controls.NewObjectTypeSelectionControlWpf"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GlueFormsCore.Controls"
+        mc:Ignorable="d"
+        Title="New Object" Width="400" Height="500"
+        >
+
+
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        
+        
+
+
+        
+        <GroupBox Header="Select Object Type" Grid.Row="0">
+            <StackPanel>
+                <RadioButton IsChecked="{Binding IsFlatRedBallType}">FlatRedBall or Custom Type</RadioButton>
+                <RadioButton IsChecked="{Binding IsEntityType}">Entity</RadioButton>
+                <RadioButton IsChecked="{Binding IsFromFileType}">From File</RadioButton>
+            </StackPanel>
+        </GroupBox>
+
+        <TextBox x:Name="SearchTextBox" 
+                 PreviewKeyDown="SearchTextBox_PreviewKeyDown" 
+                 AcceptsReturn="True"
+                 Margin="0,5,0,0" 
+                 Grid.Row="1"
+                 Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+        
+        <ListBox x:Name="MainListBox"
+                 Margin="0,5,0,0" 
+                 ItemsSource="{Binding FilteredItems}"
+                 SelectedItem="{Binding SelectedItem}"
+                 HorizontalContentAlignment="Stretch"
+                 VerticalContentAlignment="Stretch"
+                 KeyDown="ListBox_KeyDown"
+                 Grid.Row="2"
+                 >
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <StackPanel.InputBindings>
+                            <MouseBinding MouseAction="LeftDoubleClick"
+                                    Command="{Binding HandleStrongSelect}"/>
+                        </StackPanel.InputBindings>
+                        <TextBlock FontSize="14" Text="{Binding MainText}"/>
+                        <TextBlock FontSize="10" Text="{Binding SubText}" 
+                                   Visibility="{Binding SubtextVisibility}"/>
+
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+
+        </ListBox>
+
+        <Grid Margin="0,5,0,0" Visibility="{Binding ListTypeVisibility}"  Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label>List Type:</Label>
+            <ComboBox IsEditable="True" Grid.Column="1"
+                    ItemsSource="{Binding AvailableListTypes}"
+                    SelectedItem="{Binding SourceClassGenericType}"
+                      ></ComboBox>
+
+        </Grid>
+
+        <Grid Margin="0,5,0,0" Visibility="{Binding SourceNameVisibility}"  Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label>Source Name:</Label>
+            <ComboBox Grid.Column="1" 
+                      ItemsSource="{Binding AvailableFileSourceNames}"
+                      SelectedItem="{Binding SourceNameInFile}"
+                      ></ComboBox>
+
+        </Grid>
+
+
+
+        <StackPanel  Grid.Row="5">
+            <Label Margin="0,5,0,0">
+                Enter the new object's name
+            </Label>
+            <TextBox Text="{Binding ObjectName}" AcceptsReturn="True" KeyDown="NameTextBoxKeyDown"></TextBox>
+            
+        </StackPanel>
+
+        <Grid HorizontalAlignment="Right" Margin="0,5,0,0"  Grid.Row="6" Height="40">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="10"></ColumnDefinition>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button Click="OkClicked">OK</Button>
+            <Button Click="CancelClicked" Grid.Column="2">Cancel</Button>
+        </Grid>
+    </Grid>
+</Window>

@@ -44,7 +44,7 @@ namespace TileGraphicsPlugin.Logic
 
                             addObjectViewModel.ObjectName = $"{newEntity.GetStrippedName()}List";
                             addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                            addObjectViewModel.SourceClassType = "PositionedObjectList<T>";
+                            addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.PositionedObjectList;
                             addObjectViewModel.SourceClassGenericType = newEntity.Name;
 
                             GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(

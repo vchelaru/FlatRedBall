@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
@@ -47,7 +48,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.AddToShapeCollectionPlugin
         private void HandleAddAxisAlignedRectangle(object sender, EventArgs e)
         {
             string message = "Enter new AxisAlignedRectangle Name:";
-            string sourceClassType = "AxisAlignedRectangle";
+            var sourceClassType = AvailableAssetTypes.CommonAtis.AxisAlignedRectangle;
 
             HandleAddShape(message, sourceClassType);
         }
@@ -55,7 +56,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.AddToShapeCollectionPlugin
         private void HandleAddCircle(object sender, EventArgs e)
         {
             string message = "Enter new Circle Name:";
-            string sourceClassType = "Circle";
+            var sourceClassType = AvailableAssetTypes.CommonAtis.Circle;
 
             HandleAddShape(message, sourceClassType);
         }
@@ -63,7 +64,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.AddToShapeCollectionPlugin
         private void HandleAddPolygon(object sender, EventArgs e)
         {
             string message = "Enter new Polygon Name:";
-            string sourceClassType = "Polygon";
+            var sourceClassType = AvailableAssetTypes.CommonAtis.Polygon;
 
             var namedObjectSave = HandleAddShape(message, sourceClassType);
 
@@ -83,7 +84,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.AddToShapeCollectionPlugin
             GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
         }
 
-        private static NamedObjectSave HandleAddShape(string message, string sourceClassType)
+        private static NamedObjectSave HandleAddShape(string message, AssetTypeInfo ati)
         {
             NamedObjectSave toReturn = null;
 
@@ -106,7 +107,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.AddToShapeCollectionPlugin
 
                     viewModel.ObjectName = tiw.Result;
                     viewModel.SourceType = SaveClasses.SourceType.FlatRedBallType;
-                    viewModel.SourceClassType = sourceClassType;
+                    viewModel.SelectedAti = ati;
 
                     toReturn = GlueCommands.Self.GluxCommands.AddNewNamedObjectToSelectedElement(viewModel);
 

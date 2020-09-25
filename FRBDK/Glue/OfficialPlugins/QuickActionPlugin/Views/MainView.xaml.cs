@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.Glue.ViewModels;
@@ -81,7 +82,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             var viewModel = new AddObjectViewModel();
             viewModel.SourceType = SourceType.Entity;
 
-            viewModel.SourceClassType = GlueState.Self.CurrentEntitySave.Name;
+            viewModel.SelectedEntitySave = GlueState.Self.CurrentEntitySave;
             viewModel.ObjectName = GlueState.Self.CurrentEntitySave.GetStrippedName() + "Instance";
 
             var gameScreen = GlueState.Self.CurrentGlueProject.GetScreenSave(GameScreenName);
@@ -98,7 +99,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             var viewModel = new AddObjectViewModel();
             viewModel.SourceType = SourceType.FlatRedBallType;
 
-            viewModel.SourceClassType = "PositionedObjectList<T>";
+            viewModel.SelectedAti = AvailableAssetTypes.CommonAtis.PositionedObjectList;
             viewModel.SourceClassGenericType = GlueState.Self.CurrentEntitySave.Name;
             viewModel.ObjectName = GlueState.Self.CurrentEntitySave.GetStrippedName() + "List";
 

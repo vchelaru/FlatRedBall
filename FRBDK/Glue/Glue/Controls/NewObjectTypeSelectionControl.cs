@@ -35,7 +35,7 @@ namespace FlatRedBall.Glue.Controls
 
         #region Properties
 
-        public IEnumerable<EntitySave> AvailableEntities
+        IEnumerable<EntitySave> AvailableEntities
         {
             get
             {
@@ -307,19 +307,19 @@ namespace FlatRedBall.Glue.Controls
 
         private void PopulateFlatRedBallAndCustomTypes()
         {
-            IEnumerable<string> availableTypes = ViewModel.FlatRedBallAndCustomTypes;
+            //IEnumerable<string> availableTypes = ViewModel.FlatRedBallAndCustomTypes;
 
-            if (!string.IsNullOrEmpty(this.SearchTextBox.Text))
-            {
-                availableTypes = availableTypes.Where(item => item.ToLower().Contains(SearchTextBox.Text.ToLower()));
-            }
+            //if (!string.IsNullOrEmpty(this.SearchTextBox.Text))
+            //{
+            //    availableTypes = availableTypes.Where(item => item.ToLower().Contains(SearchTextBox.Text.ToLower()));
+            //}
             
-            FlatRedBallTypesTreeView.Nodes.Clear();
+            //FlatRedBallTypesTreeView.Nodes.Clear();
 
-            foreach (var available in availableTypes)
-            {
-                FlatRedBallTypesTreeView.Nodes.Add(available);
-            }
+            //foreach (var available in availableTypes)
+            //{
+            //    FlatRedBallTypesTreeView.Nodes.Add(available);
+            //}
         }
 
         private void FlatRedBallTypeRadioButton_CheckedChanged(object sender, EventArgs e)

@@ -92,6 +92,7 @@ namespace FlatRedBall.Glue.FormHelpers.StringConverters
             }
 
             #endregion
+
             return availableClasses;
         }
 
@@ -111,5 +112,6 @@ namespace FlatRedBall.Glue.FormHelpers.StringConverters
             FlatRedBall.Utilities.StringFunctions.RemoveDuplicates(toReturnAsList);
             return toReturnAsList.ToArray();
         } 
+
     }
 }

@@ -25,10 +25,12 @@ namespace FlatRedBall.Glue.Navigation
         private static extern Int32 SendMessage(IntPtr hWnd, int msg,
         int wParam, [MarshalAs(UnmanagedType.LPWStr)] string lParam);
 
-        public static void Initialize(TextBox textBox, string text = "Search... (CTRL + F)")
+        public static void Initialize(System.Windows.Forms.TextBox textBox, string text = "Search... (CTRL + F)")
         {
             SetCueText(textBox, text);
         }
+
+
 
         public static void SearchBarTextChange()
         {

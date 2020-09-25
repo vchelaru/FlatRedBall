@@ -623,14 +623,16 @@ namespace FlatRedBall.Glue.Managers
             {
                 addObjectViewModel.ObjectName += "List";
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                addObjectViewModel.SourceClassType = "PositionedObjectList<T>";
+
+                addObjectViewModel.SelectedAti = AvailableAssetTypes.Self.AllAssetTypes
+                    .FirstOrDefault(item => item.FriendlyName == "PositionedObjectList<T>");
                 addObjectViewModel.SourceClassGenericType = blueprintEntity.Name;
             }
             else
             {
                 addObjectViewModel.ObjectName += "Instance";
                 addObjectViewModel.SourceType = SourceType.Entity;
-                addObjectViewModel.SourceClassType = blueprintEntity.Name;
+                addObjectViewModel.SelectedEntitySave = blueprintEntity;
             }
 
             #endregion

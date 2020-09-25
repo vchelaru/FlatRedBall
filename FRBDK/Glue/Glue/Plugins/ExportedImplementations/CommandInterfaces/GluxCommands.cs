@@ -818,7 +818,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             if (addObjectViewModel.SourceClassType != NoType && !string.IsNullOrEmpty(addObjectViewModel.SourceClassType))
             {
                 newNos.SourceType = addObjectViewModel.SourceType;
-                newNos.SourceClassType = addObjectViewModel.SourceClassType;
+                newNos.SourceClassType =
+                    addObjectViewModel.SelectedAti?.QualifiedRuntimeTypeName.QualifiedType ??
+                    addObjectViewModel.SourceClassType;
                 newNos.SourceFile = addObjectViewModel.SourceFile;
                 newNos.SourceName = addObjectViewModel.SourceNameInFile;
                 newNos.UpdateCustomProperties();

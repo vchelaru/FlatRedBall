@@ -137,7 +137,9 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             var addObjectModel = new AddObjectViewModel();
 
             addObjectModel.SourceType = FlatRedBall.Glue.SaveClasses.SourceType.FlatRedBallType;
-            addObjectModel.SourceClassType = "FlatRedBall.Math.Collision.CollisionRelationship";
+            addObjectModel.SelectedAti =
+                AssetTypeInfoManager.Self.CollisionRelationshipAti;
+                //"FlatRedBall.Math.Collision.CollisionRelationship";
             addObjectModel.ObjectName = "ToBeRenamed";
 
             IElement selectedElement = GlueState.Self.CurrentElement;
