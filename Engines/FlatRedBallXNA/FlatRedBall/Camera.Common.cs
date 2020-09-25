@@ -14,7 +14,7 @@ using Microsoft.Xna.Framework;
 
 namespace FlatRedBall
 {
-    public partial class Camera : PositionedObject
+    public partial class Camera
     {
         #region Enums
         public enum CoordinateRelativity
@@ -56,10 +56,6 @@ namespace FlatRedBall
         float mLeftDestinationVelocity;
         float mRightDestinationVelocity;
 
-
-        bool mOrthogonal;
-        float mOrthogonalWidth;
-        float mOrthogonalHeight;
 
         float mFieldOfView;
         float mAspectRatio;
@@ -308,48 +304,6 @@ namespace FlatRedBall
         {
             get;
             set;
-        }
-
-        /// <summary>
-        /// The number of horizontal units shown by the camera when the camera has Orthogonal = true
-        /// </summary>
-        /// <remarks>
-        /// Orthogonal values will not have any impact on rendering if Orthogonal is false.
-        /// </remarks>
-        public float OrthogonalWidth
-        {
-            get { return mOrthogonalWidth; }
-            set 
-            { 
-#if DEBUG
-                if(value < 0)
-                {
-                    throw new Exception("OrthogonalWidth must be positive");
-                }
-#endif
-                mOrthogonalWidth = value; 
-            }
-        }
-
-        /// <summary>
-        /// The number of vertical units shown by the camera when the camera has Orthogonal = true 
-        /// </summary>
-        /// <remarks>
-        /// Orthogonal values will not have any impact on rendering if Orthogonal is false.
-        /// </remarks>
-        public float OrthogonalHeight
-        {
-            get { return mOrthogonalHeight; }
-            set
-            { 
-#if DEBUG
-                if (value < 0)
-                {
-                    throw new Exception("OrthogonalHeight must be positive");
-                }
-#endif
-                mOrthogonalHeight = value; 
-            }
         }
 
         #endregion

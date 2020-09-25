@@ -19,7 +19,7 @@ using FlatRedBall.Math.Geometry;
 
 namespace FlatRedBall
 {
-    public partial class Camera
+    public partial class Camera : PositionedObject
     {
         #region Fields
 
@@ -46,6 +46,10 @@ namespace FlatRedBall
         float mBaseMaximumX;
         float mBaseMaximumY;
 
+        bool mOrthogonal;
+        float mOrthogonalWidth;
+        float mOrthogonalHeight;
+
 #if SUPPORTS_POST_PROCESSING
         ShadowMap mShadow = null;
         
@@ -55,7 +59,7 @@ namespace FlatRedBall
         /// <summary>
         /// Defines the rendering order for this camera
         /// </summary>
-                #endregion
+        #endregion
         public List<RenderMode> RenderOrder;
 
 
@@ -307,6 +311,49 @@ namespace FlatRedBall
         {
             get { return mRightDestinationVelocity; }
             set { mRightDestinationVelocity = value;  }
+        }
+
+
+        /// <summary>
+        /// The number of horizontal units shown by the camera when the camera has Orthogonal = true
+        /// </summary>
+        /// <remarks>
+        /// Orthogonal values will not have any impact on rendering if Orthogonal is false.
+        /// </remarks>
+        public float OrthogonalWidth
+        {
+            get { return mOrthogonalWidth; }
+            set
+            {
+#if DEBUG
+                if (value < 0)
+                {
+                    throw new Exception("OrthogonalWidth must be positive");
+                }
+#endif
+                mOrthogonalWidth = value;
+            }
+        }
+
+        /// <summary>
+        /// The number of vertical units shown by the camera when the camera has Orthogonal = true 
+        /// </summary>
+        /// <remarks>
+        /// Orthogonal values will not have any impact on rendering if Orthogonal is false.
+        /// </remarks>
+        public float OrthogonalHeight
+        {
+            get { return mOrthogonalHeight; }
+            set
+            {
+#if DEBUG
+                if (value < 0)
+                {
+                    throw new Exception("OrthogonalHeight must be positive");
+                }
+#endif
+                mOrthogonalHeight = value;
+            }
         }
 
         #endregion
@@ -1283,7 +1330,9 @@ namespace FlatRedBall
                     FlatRedBallServices.ClientHeight);
 
                 // Update the destination rectangle
-                UpdateDestinationRectangle();             
+                UpdateDestinationRectangle();
+
+
             }
 
         }

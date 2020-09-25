@@ -675,7 +675,7 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 ShowPopupsForMissingVariablesInNewType( namedObjectSave, oldValue);
 
-                if (namedObjectSave.SourceClassType == "Layer")
+                if (namedObjectSave.GetAssetTypeInfo()?.FriendlyName == "Layer")
                 {
                     namedObjectSave.AddToManagers = true;
                 }

@@ -1508,7 +1508,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         {
             foreach(var nos in namedObjectList.Where(nos=>
                     nos.SourceType != SourceType.FlatRedBallType || 
-                    nos.SourceClassType != "Layer"))
+                    nos.GetAssetTypeInfo()?.FriendlyName != "Layer"))
             {
                 ReferencedFileSave filePullingFrom = null;
 

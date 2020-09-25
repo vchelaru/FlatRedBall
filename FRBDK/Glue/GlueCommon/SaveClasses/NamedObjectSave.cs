@@ -762,7 +762,7 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             get
             {
-                return SourceType == SaveClasses.SourceType.FlatRedBallType && SourceClassType == "Layer";
+                return SourceType == SaveClasses.SourceType.FlatRedBallType && (SourceClassType == "Layer" || SourceClassType == "FlatRedBall.Graphics.Layer");
             }
         }
 
@@ -891,7 +891,17 @@ namespace FlatRedBall.Glue.SaveClasses
             FulfillsRequirement = "<NONE>";
 
             ContainedObjects = new List<NamedObjectSave>();
-            IndependentOfCamera = true;
+
+            // Sept 25, 2020
+            // This used to be 
+            // true, but this causes
+            // unexpected behavior when 
+            // 2D games are resized. If we
+            // set this to false, then layers
+            // will automatically match the camera,
+            // which probably matches what the user expects
+            //IndependentOfCamera = true;
+            IndependentOfCamera = false;
 
         }
 

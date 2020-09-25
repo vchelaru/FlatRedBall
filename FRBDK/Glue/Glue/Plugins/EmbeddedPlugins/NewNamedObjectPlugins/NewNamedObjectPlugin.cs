@@ -25,7 +25,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewNamedObjectPlugins
             {
                 if(nos.SourceType == SourceType.FlatRedBallType)
                 {
-                    switch (nos.SourceClassType)
+                    switch (nos.GetAssetTypeInfo()?.FriendlyName)
                     {
                         case "Sprite":
                             AdjustSprite(nos, element);

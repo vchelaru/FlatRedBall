@@ -54,7 +54,7 @@ namespace FlatRedBall.Glue.Managers
                 }
                 else if (targetNos != null && targetNos.SourceType == SourceType.FlatRedBallType)
                 {
-                    string targetClassType = targetNos.SourceClassType;
+                    string targetClassType = targetNos.GetAssetTypeInfo()?.FriendlyName;
 
                     #region Failure cases
 

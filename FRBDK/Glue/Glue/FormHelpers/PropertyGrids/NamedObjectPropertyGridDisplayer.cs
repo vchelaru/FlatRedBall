@@ -398,7 +398,7 @@ namespace FlatRedBall.Glue.GuiDisplay
                     ExcludeMember(nameof(NamedObjectSave.AttachToCamera));
                 }
 
-                if (instance.SourceType == SaveClasses.SourceType.FlatRedBallType && instance.SourceClassType == "Layer")
+                if (instance.SourceType == SaveClasses.SourceType.FlatRedBallType && instance.GetAssetTypeInfo().FriendlyName == "Layer")
                 {
 
                 }

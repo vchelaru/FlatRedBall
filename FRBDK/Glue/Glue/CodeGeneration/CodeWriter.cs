@@ -920,7 +920,7 @@ namespace FlatRedBallAddOns.Entities
             {
                 NamedObjectSave nos = saveObject.NamedObjects[i];
 
-                if ( nos.SourceType == SourceType.FlatRedBallType && nos.SourceClassType == "Layer")
+                if ( nos.SourceType == SourceType.FlatRedBallType && nos.GetAssetTypeInfo()?.FriendlyName == "Layer")
                 {
                     NamedObjectSaveCodeGenerator.WriteAddToManagersForNamedObject(saveObject, nos, currentBlock);
 

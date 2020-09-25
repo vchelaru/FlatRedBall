@@ -340,13 +340,11 @@ namespace FlatRedBall.Graphics
 
         internal Camera mCameraBelongingTo = null;
 
-        #region XML Docs
         /// <summary>
         /// Used by the Renderer to override the camera's FieldOfView
         /// when drawing the layer.  This can be used to give each layer
         /// a different field of view.
         /// </summary>
-        #endregion
         internal float mOverridingFieldOfView = float.NaN;
 
         string mName;
