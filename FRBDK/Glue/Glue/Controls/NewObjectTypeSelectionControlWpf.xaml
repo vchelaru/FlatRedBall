@@ -97,7 +97,7 @@
             <Label Margin="0,5,0,0">
                 Enter the new object's name
             </Label>
-            <TextBox Text="{Binding ObjectName}" AcceptsReturn="True" KeyDown="NameTextBoxKeyDown"></TextBox>
+            <TextBox Text="{Binding ObjectName}" KeyDown="NameTextBoxKeyDown"></TextBox>
             
         </StackPanel>
 
