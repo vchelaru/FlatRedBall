@@ -27,9 +27,13 @@ namespace OfficialPlugins.SongPlugin.CodeGenerators
             {
                 int volume = playingSong.Properties.GetValue<int>(nameof(MainSongControlViewModel.Volume));
                 bool shouldLoop = playingSong.Properties.GetValue<bool>(nameof(MainSongControlViewModel.ShouldLoopSong));
+                bool shouldSetVolume = playingSong.Properties.GetValue<bool>(nameof(MainSongControlViewModel.IsSetVolumeChecked));
 
-                var dividedVolume = (volume / 100.0f).ToString(CultureInfo.InvariantCulture);
-                codeBlock.Line($"Microsoft.Xna.Framework.Media.MediaPlayer.Volume = {dividedVolume}f;");
+                if(shouldSetVolume)
+                {
+                    var dividedVolume = (volume / 100.0f).ToString(CultureInfo.InvariantCulture);
+                    codeBlock.Line($"Microsoft.Xna.Framework.Media.MediaPlayer.Volume = {dividedVolume}f;");
+                }
 
                 var isRepeatingString = shouldLoop.ToString().ToLowerInvariant();
                 codeBlock.Line($"Microsoft.Xna.Framework.Media.MediaPlayer.IsRepeating = {isRepeatingString};");

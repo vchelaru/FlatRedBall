@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace OfficialPlugins.SongPlugin.ViewModels
 {
@@ -43,6 +44,18 @@ namespace OfficialPlugins.SongPlugin.ViewModels
             get => Get<bool>();
             set => SetAndPersist(value);
         }
+
+        [SyncedProperty]
+        public bool IsSetVolumeChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(IsSetVolumeChecked))]
+        public Visibility VolumeSliderVisibility => IsSetVolumeChecked
+            ? Visibility.Visible
+            : Visibility.Collapsed;
 
         public override void UpdateFromGlueObject()
         {
