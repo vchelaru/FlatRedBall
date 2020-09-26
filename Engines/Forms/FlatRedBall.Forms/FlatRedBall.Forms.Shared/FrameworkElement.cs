@@ -529,7 +529,7 @@ namespace FlatRedBall.Forms.Controls
                     }
                     else
                     {
-                        if(childAtI.Visible && (elementAtI == null || elementAtI.IsEnabled))
+                        if(childAtI.Visible && childAtI.Enabled && (elementAtI == null || elementAtI.IsEnabled))
                         {
 
                             // let this try to handle it:
