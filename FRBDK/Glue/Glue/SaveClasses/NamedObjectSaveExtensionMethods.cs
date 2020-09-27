@@ -319,9 +319,9 @@ namespace FlatRedBall.Glue.SaveClasses
                 returnAti = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(instance.ClassType, instance, isObject:true);
             }
 
-            if (instance.ClassType.StartsWith("PositionedObjectList<"))
+            if (returnAti == null && instance.IsList)
             {
-                return null;
+                return AvailableAssetTypes.CommonAtis.PositionedObjectList;
             }
             else
             {

@@ -76,8 +76,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             {
                 // See if it's a list of ICollidables
                 shouldConsider = nos != null &&
-                    nos.SourceType == SourceType.FlatRedBallType &&
-                    nos.SourceClassType == "PositionedObjectList<T>" &&
+                    nos.IsList &&
                     !string.IsNullOrEmpty(nos.SourceClassGenericType) &&
                     ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType)?.ImplementsICollidable == true;
             }

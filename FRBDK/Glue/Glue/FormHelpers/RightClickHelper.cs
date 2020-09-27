@@ -308,7 +308,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 NamedObjectSave currentNamedObject = EditorLogic.CurrentNamedObject;
 
                 if (currentNamedObject.SourceType == SourceType.FlatRedBallType &&
-                    currentNamedObject.SourceClassType == "PositionedObjectList<T>" &&
+                    currentNamedObject?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.PositionedObjectList &&
                     !string.IsNullOrEmpty(currentNamedObject.SourceClassGenericType) &&
                     !currentNamedObject.SetByDerived)
                 {

@@ -70,6 +70,8 @@ namespace FlatRedBall.Glue.Parsing
             get
             {
                 return IsListButNotFrb ||
+                    this.Name == "FlatRedBall.Math.PositionedObjectList<T>" ||
+                    this.Name == "FlatRedBall.Math.PositionedObjectList`1" ||
                     this.Name == "PositionedObjectList" ||
                     this.Name == "PositionedObjectList`1" ||
                     this.Name == "AttachableList" ||

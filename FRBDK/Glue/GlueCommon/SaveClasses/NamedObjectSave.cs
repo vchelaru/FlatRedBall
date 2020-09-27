@@ -652,7 +652,8 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             get
             {
-                return SourceType == SaveClasses.SourceType.FlatRedBallType && SourceClassType == "PositionedObjectList<T>";
+                return SourceType == SaveClasses.SourceType.FlatRedBallType && 
+                    (SourceClassType == "PositionedObjectList<T>" || SourceClassType == "FlatRedBall.Math.PositionedObjectList<T>");
             }
         }
 

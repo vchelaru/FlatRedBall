@@ -186,7 +186,7 @@ namespace FlatRedBall.Glue.Reflection
                         }
                         break;
                     case SourceType.FlatRedBallType:
-                        if (namedObjectSave.SourceClassType == "PositionedObjectList<T>")
+                        if (namedObjectSave.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.PositionedObjectList)
                         {
                             returnValues.Add(new ExposableEvent("CollectionChanged"));
                         }

@@ -54,7 +54,8 @@ namespace FlatRedBall.Glue.Managers
                 }
                 else if (targetNos != null && targetNos.SourceType == SourceType.FlatRedBallType)
                 {
-                    string targetClassType = targetNos.GetAssetTypeInfo()?.FriendlyName;
+                    var ati = targetNos.GetAssetTypeInfo();
+                    string targetClassType = ati?.FriendlyName;
 
                     #region Failure cases
 
@@ -65,7 +66,7 @@ namespace FlatRedBall.Glue.Managers
 
                     #endregion
 
-                    else if (targetClassType == "Layer")
+                    else if (ati == AvailableAssetTypes.CommonAtis.Layer)
                     {
                         // Only allow this if the NOS's are on the same object
                         if (ObjectFinder.Self.GetElementContaining(movingNos) ==
@@ -105,7 +106,7 @@ namespace FlatRedBall.Glue.Managers
 
                         succeeded = response.Succeeded;
                     }
-                    else if (targetClassType == "PositionedObjectList<T>")
+                    else if (ati == AvailableAssetTypes.CommonAtis.PositionedObjectList)
                     {
 
                         var response = HandleDropOnList(treeNodeMoving, targetNode, targetNos, movingNos);
@@ -624,8 +625,8 @@ namespace FlatRedBall.Glue.Managers
                 addObjectViewModel.ObjectName += "List";
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;
 
-                addObjectViewModel.SelectedAti = AvailableAssetTypes.Self.AllAssetTypes
-                    .FirstOrDefault(item => item.FriendlyName == "PositionedObjectList<T>");
+                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.PositionedObjectList;
+
                 addObjectViewModel.SourceClassGenericType = blueprintEntity.Name;
             }
             else

@@ -1172,10 +1172,16 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 var ati = namedObjectSave.GetAssetTypeInfo();
 
-        
-                return
-                    ati.QualifiedRuntimeTypeName.PlatformFunc?.Invoke(namedObjectSave) ?? 
-                    ati.QualifiedRuntimeTypeName.QualifiedType;             }
+                if(ati == AvailableAssetTypes.CommonAtis.PositionedObjectList)
+                {
+                    return GetQualifiedClassType(namedObjectSave);
+                }
+                else
+                {
+                    return
+                        ati.QualifiedRuntimeTypeName.PlatformFunc?.Invoke(namedObjectSave) ?? 
+                        ati.QualifiedRuntimeTypeName.QualifiedType;             }
+                }
             else
             {
                 return GetQualifiedClassType(namedObjectSave);

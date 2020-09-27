@@ -14,8 +14,10 @@ namespace TileGraphicsPlugin.Managers
         {
             if (entity != null && screen != null)
             {
-                var hasList =
-                    screen.AllNamedObjects.Any(o => o.ClassType == "PositionedObjectList<" + entity.ClassName + ">");
+                var hasList = screen.AllNamedObjects.Any(o => 
+                        o.ClassType == "PositionedObjectList<" + entity.ClassName + ">" ||
+                        o.ClassType == "FlatRedBall.Math.PositionedObjectList<" + entity.ClassName + ">"
+                        );
 
                 if (!hasList)
                 {
