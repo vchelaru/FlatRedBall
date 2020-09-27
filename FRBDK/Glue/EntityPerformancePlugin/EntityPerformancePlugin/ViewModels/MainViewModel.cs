@@ -332,6 +332,7 @@ namespace EntityPerformancePlugin.ViewModels
             switch(type)
             {
                 case "Sprite":
+                case "FlatRedBall.Sprite":
                     AddPositionedObjectProperties(selectedItemProperties);
                     AddIColorableProperties(selectedItemProperties);
                     AddIAnimationChainAnimatableProperties(selectedItemProperties);
@@ -340,6 +341,7 @@ namespace EntityPerformancePlugin.ViewModels
                     break;
 
                 case "Text":
+                case "FlatRedBall.Graphics.Text":
                     AddPositionedObjectProperties(selectedItemProperties);
                     AddIColorableProperties(selectedItemProperties);
                     AddTextProperties(selectedItemProperties);
@@ -348,20 +350,24 @@ namespace EntityPerformancePlugin.ViewModels
                     // Shapes cannot currently be managed by this plugin. Not sure
                     // if we'll ever add that functionality.
                 case "Circle":
+                case "FlatRedBall.Math.Geometry.Circle":
                     //AddPositionedObjectProperties(selectedItemProperties);
                     //AddCircleProperties(selectedItemProperties);
                     handled = true;
                     break;
                 case "AxisAlignedRectangle":
+                case "FlatRedBall.Math.Geometry.AxisAlignedRectangle":
                     //AddPositionedObjectProperties(selectedItemProperties);
                     //AddIScalableProperties(selectedItemProperties);
                     handled = true;
                     break;
                 case "Polygon":
+                case "FlatRedBall.Math.Geometry.Polygon":
                     //AddPositionedObjectProperties(selectedItemProperties);
                     handled = true;
                     break;
                 case nameof(PositionedObject):
+                case "FlatRedBall.PositionedObject":
                     AddPositionedObjectProperties(selectedItemProperties);
                     handled = true;
                     break;

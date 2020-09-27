@@ -177,18 +177,32 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
 
             if (nos.SourceType == SourceType.FlatRedBallType || nos.SourceType == SourceType.File)
             {
-                bool hasAdd = 
+                bool hasAdd =
                     type == "AxisAlignedRectangle" ||
+                    type == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle.QualifiedRuntimeTypeName.QualifiedType ||
                     type == "Circle" ||
+                    type == AvailableAssetTypes.CommonAtis.Circle.QualifiedRuntimeTypeName.QualifiedType ||
                     type == "Line" ||
+                    type == AvailableAssetTypes.CommonAtis.Line.QualifiedRuntimeTypeName.QualifiedType ||
                     type == "Polygon" ||
+                    type == AvailableAssetTypes.CommonAtis.Polygon.QualifiedRuntimeTypeName.QualifiedType ||
                     type == "Sphere" ||
+                    type == "FlatRedBall.Math.Geometry.Sphere" ||
+
                     type == "AxisAlignedCube" ||
-                    type == "Capsule2D";
+                    type == "FlatRedBall.Math.Geometry.AxisAlignedCube" ||
+                    type == "Capsule2D" || 
+                    type == "FlatRedBall.Math.Geometry.Capsule2D"
+                    ;
 
                 if (hasAdd)
                 {
-                    return type + "s.AddOneWay";
+                    var unqualifiedType = type;
+                    if(type.Contains("."))
+                    {
+                        unqualifiedType = type.Substring(type.LastIndexOf('.') + 1);
+                    }
+                    return unqualifiedType + "s.AddOneWay";
                 }
                 else
                 {

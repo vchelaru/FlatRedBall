@@ -841,11 +841,12 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public static bool CanBeInShapeCollection(this NamedObjectSave instance)
         {
+            var ati = instance.GetAssetTypeInfo();
             var isOfCorrectType = instance.SourceType == SourceType.FlatRedBallType &&
                 (
-                    instance.SourceClassType == "Circle" ||
-                    instance.SourceClassType == "AxisAlignedRectangle" ||
-                    instance.SourceClassType == "Polygon"
+                    ati == AvailableAssetTypes.CommonAtis.Circle ||
+                    ati == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle ||
+                    ati == AvailableAssetTypes.CommonAtis.Polygon
                 );
 
             return isOfCorrectType;

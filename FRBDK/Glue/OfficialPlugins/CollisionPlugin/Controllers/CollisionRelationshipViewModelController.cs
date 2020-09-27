@@ -131,11 +131,12 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
         {
             if(nos.SourceType == SourceType.FlatRedBallType)
             {
-                return
-                    nos.SourceClassType == "AxisAlignedRectangle" ||
-                    nos.SourceClassType == "Circle" ||
-                    nos.SourceClassType == "Line" ||
-                    nos.SourceClassType == "Polygon";
+                var ati = nos.GetAssetTypeInfo();
+
+                return ati == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle ||
+                    ati == AvailableAssetTypes.CommonAtis.Circle ||
+                    ati == AvailableAssetTypes.CommonAtis.Line ||
+                    ati == AvailableAssetTypes.CommonAtis.Polygon;
             }
             return false;
         }

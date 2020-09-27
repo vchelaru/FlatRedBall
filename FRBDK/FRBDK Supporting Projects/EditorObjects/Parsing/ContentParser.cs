@@ -480,24 +480,32 @@ namespace EditorObjects.Parsing
                     switch (memberType)
                     {
                         case "AxisAlignedRectangle":
+                        case "FlatRedBall.Math.Geometry.AxisAlignedRectangle":
                             return "AxisAlignedRectangles";
                             //break;
                         case "AxisAlignedCube":
+                        case "FlatRedBall.Math.Geometry.AxisAlignedCube":
                             return "AxisAlignedCubes";
                             //break;
                         case "Circle":
+                        case "FlatRedBall.Math.Geometry.Circle":
                             return "Circles";
                             // break;
                         case "Line":
+                        case "FlatRedBall.Math.Geometry.Line":
                             return "Lines";
                             //break;
                         case "Polygon":
+                        case "FlatRedBall.Math.Geometry.Polygon":
                             return "Polygons";
                             // break;
 						case "ShapeCollection":
-							return "";
+                        case "FlatRedBall.Math.Geometry.ShapeCollection":
+
+                            return "";
 							// break;
                         case "Sphere":
+                        case "FlatRedBall.Math.Geometry.Sphere":
                             return "Spheres";
                             //break;
                     }

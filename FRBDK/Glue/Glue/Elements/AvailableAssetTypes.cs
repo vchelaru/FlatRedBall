@@ -31,6 +31,8 @@ namespace FlatRedBall.Glue.Elements
         public AssetTypeInfo AxisAlignedRectangle { get; set; }
         public AssetTypeInfo Circle { get; set; }
         public AssetTypeInfo Polygon { get; set; }
+        public AssetTypeInfo Line { get; set; }
+        
         public AssetTypeInfo Text { get; set; }
         public AssetTypeInfo PositionedObjectList { get; set; }
         public AssetTypeInfo Layer { get; set; }
@@ -193,6 +195,7 @@ namespace FlatRedBall.Glue.Elements
             CommonAtis.AxisAlignedRectangle = GetAti(nameof(AxisAlignedRectangle));
             CommonAtis.Circle = GetAti(nameof(Circle));
             CommonAtis.Polygon = GetAti(nameof(Polygon));
+            CommonAtis.Line = GetAti(nameof(Line));
             CommonAtis.Sprite = GetAti(nameof(Sprite));
             CommonAtis.Text = GetAti(nameof(Text));
             CommonAtis.Layer = GetAti(nameof(Layer));

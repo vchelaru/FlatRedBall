@@ -545,22 +545,20 @@ namespace EntityPerformancePlugin.CodeGenerators
 
         private bool IsIInstructable(AssetTypeInfo assetTypeInfo)
         {
-            return assetTypeInfo?.RuntimeTypeName == "Sprite" || 
-                assetTypeInfo?.RuntimeTypeName == "Text" ||
+            return assetTypeInfo == AvailableAssetTypes.CommonAtis.Sprite || 
+                assetTypeInfo == AvailableAssetTypes.CommonAtis.Text ||
                 assetTypeInfo?.RuntimeTypeName == "PositionedObject" ||
-                assetTypeInfo?.RuntimeTypeName == "Circle" ||
-                assetTypeInfo?.RuntimeTypeName == "AxisAlignedRectangle" ||
-                assetTypeInfo?.RuntimeTypeName == "Polygon" 
-
-
-
+                assetTypeInfo?.RuntimeTypeName == "FlatRedBall.PositionedObject" ||
+                assetTypeInfo == AvailableAssetTypes.CommonAtis.Circle ||
+                assetTypeInfo == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle ||
+                assetTypeInfo == AvailableAssetTypes.CommonAtis.Polygon 
                 ;
 
         }
 
         private bool IsText(AssetTypeInfo assetTypeInfo)
         {
-            return assetTypeInfo?.RuntimeTypeName == "Text";
+            return assetTypeInfo == AvailableAssetTypes.CommonAtis.Text;
 
         }
 
