@@ -173,6 +173,14 @@ namespace FlatRedBall.Math.Collision
 
         protected bool CollideConsideringSubCollisions(FirstCollidableT first, SecondCollidableT second)
         {
+#if DEBUG
+            if(first == second)
+            {
+                throw new InvalidOperationException($"Cannot collide a {first.GetType()} named {first.Name} against itself in a CollisionRelationship " +
+                    $"named {this.Name}");
+            }
+#endif
+
             this.DeepCollisionsThisFrame++;
 
             if (CollisionType == CollisionType.EventOnlyCollision)
