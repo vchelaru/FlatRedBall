@@ -140,9 +140,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            // call this because the incoming view model may have already had a desired selected object but the lists weren't yet filled
-            addObjectViewModel.ForceRefreshToSourceType();
-
             var wpf = new NewObjectTypeSelectionControlWpf();
             wpf.DataContext = addObjectViewModel;
             var dialogResult = wpf.ShowDialog();

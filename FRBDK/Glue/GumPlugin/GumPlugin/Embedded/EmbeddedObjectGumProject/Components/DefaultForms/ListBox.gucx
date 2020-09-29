@@ -281,6 +281,11 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>ListBoxCategory</Type>
+      <Name>ListBoxCategoryState</Name>
+      <SetsValue>false</SetsValue>
+    </Variable>
+    <Variable>
       <Type>ListBoxState</Type>
       <Name>ListBoxStateState</Name>
       <SetsValue>false</SetsValue>
