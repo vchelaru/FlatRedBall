@@ -1073,6 +1073,25 @@ namespace FlatRedBall.Math.Collision
 
     #region List vs. List
 
+    public enum ListVsListLoopingMode
+    {
+        /// <summary>
+        /// When a list is colliding against itself, the indexes will be set such
+        /// that if object A collides against object B, then object B will not also try to collide
+        /// against object A in the same frame. This is desirable when performing collision
+        /// between two objects with no subcollisions, or between two objects with the same subcollision.
+        /// </summary>
+        PreventDoubleChecksPerFrame,
+        /// <summary>
+        /// When a list is colliding against itself, the indexes will be set such
+        /// that if object A collides against object B, then object B will still attempt
+        /// to collide against object A. This is desirable when performing collision between
+        /// two objects with different subcollisions, such as a player weapon vs the player body.
+        /// </summary>
+        AllowDoubleChecksPerFrame
+
+    }
+
     public class ListVsListRelationship<FirstCollidableT, SecondCollidableT> :
         CollisionRelationship<FirstCollidableT, SecondCollidableT>
         where FirstCollidableT : PositionedObject, ICollidable where SecondCollidableT : PositionedObject, ICollidable
@@ -1110,6 +1129,8 @@ namespace FlatRedBall.Math.Collision
         }
         // instantiate one at class scope to prevent tons of allocations if done in a activity
         CollisionParameters parameters = new CollisionParameters();
+
+        public ListVsListLoopingMode ListVsListLoopingMode { get; set; } = ListVsListLoopingMode.PreventDoubleChecksPerFrame;
 
         PositionedObjectList<FirstCollidableT> firstList;
         PositionedObjectList<SecondCollidableT> secondList;
@@ -1217,7 +1238,7 @@ namespace FlatRedBall.Math.Collision
                 {
                     var first = firstList[i];
 
-                    if (firstList == (object)secondList)
+                    if (firstList == (object)secondList && ListVsListLoopingMode == ListVsListLoopingMode.PreventDoubleChecksPerFrame)
                     {
                         secondListStartInclusive = i + 1;
                     }
@@ -1247,7 +1268,7 @@ namespace FlatRedBall.Math.Collision
                 {
                     var first = firstList[i];
 
-                    if(firstList == (object)secondList)
+                    if(firstList == (object)secondList && ListVsListLoopingMode == ListVsListLoopingMode.PreventDoubleChecksPerFrame)
                     {
                         secondListStartInclusive = i - 1;
                     }
