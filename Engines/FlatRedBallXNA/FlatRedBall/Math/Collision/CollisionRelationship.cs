@@ -1247,7 +1247,8 @@ namespace FlatRedBall.Math.Collision
                     {
                         var second = secondList[j];
 
-                        if (CollideConsideringSubCollisions(first, second))
+                        // first != second needed since the two may be checked if allowing duplicate collisions per frame
+                        if (first != second && CollideConsideringSubCollisions(first, second))
                         {
                             CollisionOccurred?.Invoke(first, second);
                             collisionOccurred = true;
@@ -1280,7 +1281,8 @@ namespace FlatRedBall.Math.Collision
                         {
                             var second = secondList[j];
 
-                            if (CollideConsideringSubCollisions(first, second))
+                            // first != second needed since the two may be checked if allowing duplicate collisions per frame
+                            if (first != second && CollideConsideringSubCollisions(first, second))
                             {
                                 CollisionOccurred?.Invoke(first, second);
                                 collisionOccurred = true;
@@ -1476,7 +1478,6 @@ namespace FlatRedBall.Math.Collision
                 for (int j = startInclusive; j > endExclusive; j--)
                 {
                     var second = secondList[j];
-
                     if (CollideConsideringSubCollisions(first, second))
                     {
                         var distanceVector = first.Position - second.Position;
