@@ -78,15 +78,20 @@ namespace FlatRedBall.Glue.ViewModels
             {
                 if (base.SetWithoutNotifying(value))
                 {
-                    RefreshAllSelectedItems();
-
-                    RefreshFilteredItems();
-
-                    NotifyPropertyChanged();
-
-                    SelectIfNoSelection();
+                    ForceRefreshToSourceType();
                 }
             }
+        }
+
+        public void ForceRefreshToSourceType()
+        {
+            RefreshAllSelectedItems();
+
+            RefreshFilteredItems();
+
+            NotifyPropertyChanged();
+
+            SelectIfNoSelection();
         }
 
         public bool IsFlatRedBallType
@@ -190,7 +195,12 @@ namespace FlatRedBall.Glue.ViewModels
         [DependsOn(nameof(SelectedItem))]
         public string SourceClassType => SelectedItem?.ToString();
 
-        public string SourceFile { get; set;}
+        public ReferencedFileSave SourceFile
+        {
+            get => SelectedItem?.BackingObject as ReferencedFileSave;
+            set => SelectedItem = AllSelectedItemWrappers.FirstOrDefault(item => item.BackingObject == value) ??
+                MakeWrapper(value);
+        }
 
         #endregion
 
@@ -379,7 +389,7 @@ namespace FlatRedBall.Glue.ViewModels
             return toReturn;
         }
 
-        void RefreshAllSelectedItems()
+        public void RefreshAllSelectedItems()
         {
             AllSelectedItemWrappers.Clear();
             switch (SourceType)
@@ -412,7 +422,7 @@ namespace FlatRedBall.Glue.ViewModels
             get => filteredItems;
         }
 
-        private void RefreshFilteredItems()
+        public void RefreshFilteredItems()
         {
             filteredItems.Clear();
             if (string.IsNullOrWhiteSpace(FilterText))

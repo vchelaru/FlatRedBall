@@ -821,16 +821,16 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 newNos.SourceClassType =
                     addObjectViewModel.SelectedAti?.QualifiedRuntimeTypeName.QualifiedType ??
                     addObjectViewModel.SourceClassType;
-                newNos.SourceFile = addObjectViewModel.SourceFile;
+                newNos.SourceFile = addObjectViewModel.SelectedItem?.MainText;
                 newNos.SourceName = addObjectViewModel.SourceNameInFile;
                 newNos.UpdateCustomProperties();
 
                 GlueCommands.Self.RefreshCommands.RefreshUi(element);
             }
-            else if (!string.IsNullOrEmpty(addObjectViewModel.SourceFile))
+            else if (addObjectViewModel.SourceFile != null)
             {
                 newNos.SourceType = addObjectViewModel.SourceType;
-                newNos.SourceFile = addObjectViewModel.SourceFile;
+                newNos.SourceFile = addObjectViewModel.SelectedItem?.MainText;
                 newNos.SourceName = addObjectViewModel.SourceNameInFile;
                 newNos.UpdateCustomProperties();
 

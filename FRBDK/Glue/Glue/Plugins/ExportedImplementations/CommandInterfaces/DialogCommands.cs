@@ -70,6 +70,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             if (addObjectViewModel == null)
             {
                 addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
             }
 
             var toAdd = AvailableAssetTypes.Self.AllAssetTypes
@@ -84,18 +85,37 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             addObjectViewModel.AvailableFiles =
                 GlueState.Self.CurrentElement.ReferencedFiles.ToList();
 
+            if(addObjectViewModel.SelectedItem != null)
+            {
+
+                var backingObject = addObjectViewModel.SelectedItem.BackingObject;
+
+                // refresh the lists before trying to assing the object so the VM can select from the internal list, but do it
+                // after grabbing the backingObject.
+
+                addObjectViewModel.ForceRefreshToSourceType();
+                // re-assign the backing object so it uses the current set of wrappers:
+                if(backingObject is EntitySave backingEntitySave)
+                {
+                    addObjectViewModel.SelectedEntitySave = backingEntitySave;
+                }
+                else if(backingObject is AssetTypeInfo backingAti)
+                {
+                    addObjectViewModel.SelectedAti = backingAti;
+                }
+                else if(backingObject is ReferencedFileSave backingFile)
+                {
+                    addObjectViewModel.SourceFile = backingFile;
+                }
+            }
 
             AvailableClassGenericTypeConverter converter = new AvailableClassGenericTypeConverter();
 
-            foreach (var value in converter.GetAvailableValues(false))
-            {
-                addObjectViewModel.AvailableListTypes.Add(value);
-
-            }
+            var availableTypes = converter.GetAvailableValues(false);
+            addObjectViewModel.AvailableListTypes.AddRange(availableTypes);
 
             // todo - need to handle predetermined types here
 
-            addObjectViewModel.SourceType = SourceType.FlatRedBallType;
             
             if (isTypePredetermined)
             {
@@ -119,6 +139,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                 }
             }
+
+            // call this because the incoming view model may have already had a desired selected object but the lists weren't yet filled
+            addObjectViewModel.ForceRefreshToSourceType();
+
             var wpf = new NewObjectTypeSelectionControlWpf();
             wpf.DataContext = addObjectViewModel;
             var dialogResult = wpf.ShowDialog();
