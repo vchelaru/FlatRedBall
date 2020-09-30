@@ -13,6 +13,10 @@
     <State>
       <Name>Selected</Name>
     </State>
+    <State>
+      <Name>Focused</Name>
+    </State>
   </Category>
   <RequiredInstances />
+  <RequiredAnimations />
 </BehaviorSave>

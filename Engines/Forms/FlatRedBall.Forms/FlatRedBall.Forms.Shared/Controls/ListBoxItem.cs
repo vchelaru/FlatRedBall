@@ -29,6 +29,27 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        public override bool IsFocused 
+        { 
+            get => base.IsFocused;
+            set
+            {
+                if(value != base.IsFocused)
+                {
+                    base.IsFocused = value;
+
+                    if(base.IsFocused)
+                    {
+                        Focused?.Invoke(this, null);
+                    }
+                    UpdateState();
+                }
+
+            }
+        }
+
+
+
         GraphicalUiElement text;
         protected RenderingLibrary.Graphics.Text coreText;
 
@@ -37,6 +58,7 @@ namespace FlatRedBall.Forms.Controls
         #region Events
 
         public event EventHandler Selected;
+        public event EventHandler Focused;
         public event EventHandler Clicked;
 
         #endregion
@@ -116,17 +138,28 @@ namespace FlatRedBall.Forms.Controls
         {
             var cursor = GuiManager.Cursor;
 
-            if (IsSelected)
+            const string category = "ListBoxItemCategoryState";
+
+            //if(IsEnabled == false)
+            //{
+            //    // todo?
+            //}
+            
+            if(IsFocused)
             {
-                Visual.SetProperty("ListBoxItemCategoryState", "Selected");
+                Visual.SetProperty(category, "Focused");
+            }
+            else if (IsSelected)
+            {
+                Visual.SetProperty(category, "Selected");
             }
             else if (cursor.LastInputDevice != InputDevice.TouchScreen && GetIfIsOnThisOrChildVisual(cursor))
             {
-                Visual.SetProperty("ListBoxItemCategoryState", "Highlighted");
+                Visual.SetProperty(category, "Highlighted");
             }
             else
             {
-                Visual.SetProperty("ListBoxItemCategoryState", "Enabled");
+                Visual.SetProperty(category, "Enabled");
             }
         }
 

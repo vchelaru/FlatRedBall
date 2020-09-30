@@ -30,11 +30,25 @@ namespace FlatRedBall.Forms.Controls
                     FlatRedBall.Input.InputManager.InputReceiver = this;
                 }
 
+
                 UpdateState();
             }
         }
 
-        bool DoListItemsHaveFocus { get; set; }
+        bool doListBoxItemsHaveFocus;
+        bool DoListItemsHaveFocus 
+        {
+            get => doListBoxItemsHaveFocus;
+            set
+            {
+                doListBoxItemsHaveFocus = value;
+
+                if (SelectedIndex > -1 && SelectedIndex < listBoxItems.Count)
+                {
+                    listBoxItems[SelectedIndex].IsFocused = doListBoxItemsHaveFocus;
+                }
+            }
+        }
 
         int selectedIndex = -1;
 
@@ -270,6 +284,7 @@ namespace FlatRedBall.Forms.Controls
                         {
                             SelectedIndex++;
                         }
+                        this.listBoxItems[SelectedIndex].IsFocused = true;
                     }
                     // selectindex++
                     //this.HandleTab(TabDirection.Down, this);
@@ -287,6 +302,8 @@ namespace FlatRedBall.Forms.Controls
                         {
                             SelectedIndex--;
                         }
+
+                        this.listBoxItems[SelectedIndex].IsFocused = true;
                     }
 
                     //this.HandleTab(TabDirection.Up, this);

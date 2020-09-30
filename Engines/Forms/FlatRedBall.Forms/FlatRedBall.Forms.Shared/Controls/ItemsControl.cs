@@ -92,6 +92,7 @@ namespace FlatRedBall.Forms.Controls
                 item = o as ListBoxItem;
                 // let's hope the item doesn't already have this event - if the user recycles them that could be a problem...
                 item.Selected += HandleItemSelected;
+                item.Focused += HandleItemFocused;
                 item.Clicked += HandleListBoxItemClicked;
             }
             else
@@ -135,6 +136,7 @@ namespace FlatRedBall.Forms.Controls
 
                 item = listBoxFormsConstructor.Invoke(new object[] { visual }) as ListBoxItem;
                 item.Selected += HandleItemSelected;
+                item.Focused += HandleItemFocused;
                 item.Clicked += HandleListBoxItemClicked;
 
                 item.UpdateToObject(o);
@@ -205,6 +207,12 @@ namespace FlatRedBall.Forms.Controls
             OnItemSelected(sender, new SelectionChangedEventArgs());
 
         }
+        
+        private void HandleItemFocused(object sender, EventArgs e)
+        {
+            OnitemFocused(sender, EventArgs.Empty);
+        }
+
 
         private void HandleListBoxItemClicked(object sender, EventArgs e)
         {
@@ -220,6 +228,18 @@ namespace FlatRedBall.Forms.Controls
                 {
                     args.RemovedItems.Add(Items[i]);
                     listBoxItem.IsSelected = false;
+                }
+            }
+        }
+
+        protected virtual void OnitemFocused(object sender, EventArgs args)
+        {
+            for (int i = 0; i < listBoxItems.Count; i++)
+            {
+                var listBoxItem = listBoxItems[i];
+                if (listBoxItem != sender && listBoxItem.IsFocused)
+                {
+                    listBoxItem.IsFocused = false;
                 }
             }
         }
