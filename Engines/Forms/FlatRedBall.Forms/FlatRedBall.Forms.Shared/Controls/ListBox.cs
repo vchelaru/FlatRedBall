@@ -359,6 +359,12 @@ namespace FlatRedBall.Forms.Controls
 
         public void LoseFocus()
         {
+            IsFocused = false;
+
+            if(DoListItemsHaveFocus)
+            {
+                DoListItemsHaveFocus = false;
+            }
         }
 
         public void ReceiveInput()
