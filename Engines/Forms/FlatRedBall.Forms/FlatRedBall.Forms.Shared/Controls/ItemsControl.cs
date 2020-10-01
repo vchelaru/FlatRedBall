@@ -51,7 +51,20 @@ namespace FlatRedBall.Forms.Controls
             }
         } 
 
-        protected List<ListBoxItem> listBoxItems = new List<ListBoxItem>();
+        protected List<ListBoxItem> ListBoxItemsInternal = new List<ListBoxItem>();
+
+        ReadOnlyCollection<ListBoxItem> listBoxItemsReadOnly;
+        public ReadOnlyCollection<ListBoxItem> ListBoxItems
+        {
+            get
+            {
+                if(listBoxItemsReadOnly == null)
+                {
+                    listBoxItemsReadOnly = new ReadOnlyCollection<ListBoxItem>(ListBoxItemsInternal);
+                }
+                return listBoxItemsReadOnly;
+            }
+        }
 
         bool isFocused;
         public override bool IsFocused
@@ -163,7 +176,7 @@ namespace FlatRedBall.Forms.Controls
 
                             newItem.Visual.Parent = base.InnerPanel;
 
-                            listBoxItems.Insert(index, newItem);
+                            ListBoxItemsInternal.Insert(index, newItem);
                             index++;
                         }
                     }
@@ -174,7 +187,7 @@ namespace FlatRedBall.Forms.Controls
                         var index = e.OldStartingIndex;
 
                         var listItem = InnerPanel.Children[index];
-                        listBoxItems.RemoveAt(index);
+                        ListBoxItemsInternal.RemoveAt(index);
                         listItem.Parent = null;
                     }
                     break;
@@ -186,7 +199,7 @@ namespace FlatRedBall.Forms.Controls
                         var index = e.NewStartingIndex;
                         var listItem = InnerPanel.Children[index];
 
-                        listBoxItems[e.NewStartingIndex].UpdateToObject(Items[index]);
+                        ListBoxItemsInternal[e.NewStartingIndex].UpdateToObject(Items[index]);
                     }
 
                     break;
@@ -199,7 +212,7 @@ namespace FlatRedBall.Forms.Controls
             {
                 InnerPanel.Children[i].Parent = null;
             }
-            listBoxItems.Clear();
+            ListBoxItemsInternal.Clear();
         }
 
         private void HandleItemSelected(object sender, EventArgs e)
@@ -221,9 +234,9 @@ namespace FlatRedBall.Forms.Controls
 
         protected virtual void OnItemSelected(object sender, SelectionChangedEventArgs args)
         {
-            for (int i = 0; i < listBoxItems.Count; i++)
+            for (int i = 0; i < ListBoxItemsInternal.Count; i++)
             {
-                var listBoxItem = listBoxItems[i];
+                var listBoxItem = ListBoxItemsInternal[i];
                 if (listBoxItem != sender && listBoxItem.IsSelected)
                 {
                     args.RemovedItems.Add(Items[i]);
@@ -234,9 +247,9 @@ namespace FlatRedBall.Forms.Controls
 
         protected virtual void OnitemFocused(object sender, EventArgs args)
         {
-            for (int i = 0; i < listBoxItems.Count; i++)
+            for (int i = 0; i < ListBoxItemsInternal.Count; i++)
             {
-                var listBoxItem = listBoxItems[i];
+                var listBoxItem = ListBoxItemsInternal[i];
                 if (listBoxItem != sender && listBoxItem.IsFocused)
                 {
                     listBoxItem.IsFocused = false;

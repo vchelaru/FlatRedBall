@@ -43,9 +43,9 @@ namespace FlatRedBall.Forms.Controls
             {
                 doListBoxItemsHaveFocus = value;
 
-                if (SelectedIndex > -1 && SelectedIndex < listBoxItems.Count)
+                if (SelectedIndex > -1 && SelectedIndex < ListBoxItemsInternal.Count)
                 {
-                    listBoxItems[SelectedIndex].IsFocused = doListBoxItemsHaveFocus;
+                    ListBoxItemsInternal[SelectedIndex].IsFocused = doListBoxItemsHaveFocus;
                 }
             }
         }
@@ -100,9 +100,9 @@ namespace FlatRedBall.Forms.Controls
             }
             set
             {
-                if(value > -1 && value < listBoxItems.Count)
+                if(value > -1 && value < ListBoxItemsInternal.Count)
                 {
-                    listBoxItems[value].IsSelected = true;
+                    ListBoxItemsInternal[value].IsSelected = true;
 
                     if(SelectedObject != null)
                     {
@@ -116,9 +116,9 @@ namespace FlatRedBall.Forms.Controls
 
                     var selectionChangedArgs = new SelectionChangedEventArgs();
 
-                    for(int i = 0; i < listBoxItems.Count; i++)
+                    for(int i = 0; i < ListBoxItemsInternal.Count; i++)
                     {
-                        var listBoxItem = listBoxItems[i];
+                        var listBoxItem = ListBoxItemsInternal[i];
 
                         if (listBoxItem.IsSelected)
                         {
@@ -193,7 +193,7 @@ namespace FlatRedBall.Forms.Controls
         {
             base.OnItemSelected(sender, args);
 
-            selectedIndex = listBoxItems.IndexOf(sender as ListBoxItem);
+            selectedIndex = ListBoxItemsInternal.IndexOf(sender as ListBoxItem);
             if (selectedIndex > -1)
             {
                 args.AddedItems.Add(Items[selectedIndex]);
@@ -211,7 +211,7 @@ namespace FlatRedBall.Forms.Controls
 
             if(itemIndex != -1)
             {
-                var visual = listBoxItems[itemIndex];
+                var visual = ListBoxItemsInternal[itemIndex];
 
                 var visualAsIpso = (IPositionedSizedObject)visual.Visual;
                 var visualTop = visualAsIpso.Y;
@@ -284,7 +284,7 @@ namespace FlatRedBall.Forms.Controls
                         {
                             SelectedIndex++;
                         }
-                        this.listBoxItems[SelectedIndex].IsFocused = true;
+                        this.ListBoxItemsInternal[SelectedIndex].IsFocused = true;
                     }
                     // selectindex++
                     //this.HandleTab(TabDirection.Down, this);
@@ -303,7 +303,7 @@ namespace FlatRedBall.Forms.Controls
                             SelectedIndex--;
                         }
 
-                        this.listBoxItems[SelectedIndex].IsFocused = true;
+                        this.ListBoxItemsInternal[SelectedIndex].IsFocused = true;
                     }
 
                     //this.HandleTab(TabDirection.Up, this);

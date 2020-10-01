@@ -456,12 +456,12 @@ namespace FlatRedBall.Forms.Controls
                         {
                             SelectedIndex++;
                         }
+
+                        this.listBox.ListBoxItems[SelectedIndex].IsFocused = true;
                     }
-                    // selectindex++
-                    //this.HandleTab(TabDirection.Down, this);
                 }
                 else if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
-                    gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up))
+                         gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up))
                 {
                     if (Items.Count > 0)
                     {
@@ -473,10 +473,9 @@ namespace FlatRedBall.Forms.Controls
                         {
                             SelectedIndex--;
                         }
-                    }
 
-                    //this.HandleTab(TabDirection.Up, this);
-                    // selectindex--
+                        this.listBox.ListBoxItems[SelectedIndex].IsFocused = true;
+                    }
                 }
 
                 if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.A))
@@ -528,6 +527,10 @@ namespace FlatRedBall.Forms.Controls
 
                     //this.HandleTab(TabDirection.Down, this);
                     //this.HandlePush(null);
+                    if(SelectedIndex > -1 && SelectedIndex < this.Items.Count)
+                    {
+                        this.listBox.ListBoxItems[SelectedIndex].IsFocused = true;
+                    }
                 }
                 if (gamepad.ButtonReleased(FlatRedBall.Input.Xbox360GamePad.Button.A))
                 {
