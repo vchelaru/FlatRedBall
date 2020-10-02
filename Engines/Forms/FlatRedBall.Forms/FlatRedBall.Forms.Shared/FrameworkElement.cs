@@ -122,7 +122,16 @@ namespace FlatRedBall.Forms.Controls
                     if(value == false && IsFocused)
                     {
                         // If we disabled this, then unfocus it, and select next tab
-                        this.HandleTab(TabDirection.Down, this);
+                        //this.HandleTab(TabDirection.Down, this);
+                        // Update 10/2/2020
+                        // Actually this is causing
+                        // some annoying behavior. If
+                        // a button is used to buy items
+                        // which can be bought multiple times,
+                        // the button may become disabled after
+                        // the user has no more money, automatically
+                        // focusing on the next button which may result
+                        // in unintended actions.
                     }
                     isEnabled = value;
                     Visual.Enabled = value;

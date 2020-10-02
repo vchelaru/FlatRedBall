@@ -271,7 +271,7 @@ namespace FlatRedBall.Forms.Controls
             {
                 var gamepad = FlatRedBall.Input.InputManager.Xbox360GamePads[i];
 
-                if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
+                if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
                     gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down))
                 {
                     if (Items.Count > 0)
@@ -286,11 +286,9 @@ namespace FlatRedBall.Forms.Controls
                         }
                         this.ListBoxItemsInternal[SelectedIndex].IsFocused = true;
                     }
-                    // selectindex++
-                    //this.HandleTab(TabDirection.Down, this);
                 }
-                else if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
-                    gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up))
+                else if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
+                         gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up))
                 {
                     if (Items.Count > 0)
                     {
@@ -305,9 +303,6 @@ namespace FlatRedBall.Forms.Controls
 
                         this.ListBoxItemsInternal[SelectedIndex].IsFocused = true;
                     }
-
-                    //this.HandleTab(TabDirection.Up, this);
-                    // selectindex--
                 }
 
                 if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.A))
@@ -330,12 +325,12 @@ namespace FlatRedBall.Forms.Controls
             {
                 var gamepad = FlatRedBall.Input.InputManager.Xbox360GamePads[i];
 
-                if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
+                if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
                     gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down))
                 {
                     this.HandleTab(TabDirection.Down, this);
                 }
-                else if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
+                else if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
                     gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up))
                 {
                     this.HandleTab(TabDirection.Up, this);

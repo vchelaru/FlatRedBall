@@ -275,14 +275,14 @@ namespace FlatRedBall.Forms.Controls
             {
                 var gamepad = FlatRedBall.Input.InputManager.Xbox360GamePads[i];
 
-                if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
+                if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
                     gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down))
                 {
                     this.HandleTab(TabDirection.Down, this);
                     // selectindex++
                     //this.HandleTab(TabDirection.Down, this);
                 }
-                else if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
+                else if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
                     gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up))
                 {
                     this.HandleTab(TabDirection.Up, this);
@@ -292,12 +292,12 @@ namespace FlatRedBall.Forms.Controls
                     // selectindex--
                 }
 
-                if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.DPadLeft) ||
+                if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadLeft) ||
                     gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Left))
                 {
                     this.Value -= this.SmallChange;
                 }
-                else if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.DPadRight) ||
+                else if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadRight) ||
                     gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Right))
                 {
                     this.Value += this.SmallChange;

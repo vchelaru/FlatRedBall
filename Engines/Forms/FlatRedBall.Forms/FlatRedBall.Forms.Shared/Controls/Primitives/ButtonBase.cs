@@ -119,18 +119,21 @@ namespace FlatRedBall.Forms.Controls.Primitives
             {
                 var gamepad = FlatRedBall.Input.InputManager.Xbox360GamePads[i];
 
-                if(gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
+                if(gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
                     gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down))
                 {
                     this.HandleTab(TabDirection.Down, this);
                 }
-                else if(gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
+                else if(gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
                     gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up))
                 {
                     this.HandleTab(TabDirection.Up, this);
                 }
                 
-                if(gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.A))
+                if(gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.A) && 
+                    // A button may be focused, then through the action of clicking the button (like buying items) it may lose its enabled state,but
+                    // remain focused as to not focus a new item.
+                    IsEnabled)
                 {
                     //this.HandlePush(null);
                     this.HandleClick(null);

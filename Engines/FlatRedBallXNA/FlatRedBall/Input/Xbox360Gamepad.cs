@@ -806,6 +806,14 @@ namespace FlatRedBall.Input
 
         }
         
+        /// <summary>
+        /// Returns whether the argument was pushed this frame, or whether it is continually being held down and a "repeat" press
+        /// has occurred.
+        /// </summary>
+        /// <param name="button">The button to test, which includes DPad directions.</param>
+        /// <param name="timeAfterPush">The number of seconds after initial push to wait before raising repeat rates. This value is typically larger than timeBetweenRepeating.</param>
+        /// <param name="timeBetweenRepeating">The number of seconds between repeats once the timeAfterPush. This value is typically smaller than timeAfterPush.</param>
+        /// <returns>Whether the button was pushed or repeated this frame.</returns>
         public bool ButtonRepeatRate(Button button, double timeAfterPush = .35, double timeBetweenRepeating = .12)
         {
             if (mButtonsIgnoredForThisFrame[(int)button])

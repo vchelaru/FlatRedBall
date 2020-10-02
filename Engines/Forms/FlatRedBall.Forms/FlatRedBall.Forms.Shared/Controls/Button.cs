@@ -44,11 +44,7 @@ namespace FlatRedBall.Forms.Controls
             set
             {
                 base.IsEnabled = value;
-                if (!IsEnabled)
-                {
-                    // todo - to add focus eventually
-                    //HasFocus = false;
-                }
+                
                 UpdateState();
             }
         }
