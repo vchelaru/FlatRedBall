@@ -164,6 +164,26 @@ namespace FlatRedBall.Glue.Elements
         public string AddManuallyUpdatedMethod;
         public string ActivityMethod;
         public string AfterCustomActivityMethod;
+
+        /// <summary>
+        /// The code to generate when the object associated with this AssetTypeInfo should be destroyed. 
+        /// The generated code replaces the string "this" with the name of the named object.
+        /// </summary>
+        /// <remarks>
+        /// This code can be multiple statements. If it's a single statement, then the code does not need 
+        /// to end in a semicolon. If the code has multiple statements then all statements except the last
+        /// should end in a semicolon. 
+        /// 
+        /// For example, a single statement may look like this:
+        /// assetTypeInfo.DestroyMethod = "this.Destroy()";
+        /// 
+        /// The following example shows how to generate multiple statements:
+        /// assetTypeInfo.DestroyMethod = "this.RemoveFromManagers(); this.BroadcastRemoval()";
+        /// 
+        /// Note that the world "this" will get replaced with the named object name, so the generated code
+        /// may actually end up as shown in the following code:
+        /// "MyObjectInstance.RemoveFromManagers(); MyObjectInstance.BroadcastRemoval();"
+        /// </remarks>
 		public string DestroyMethod;
         public string RecycledDestroyMethod;
         public string SetFromOtherCode;
