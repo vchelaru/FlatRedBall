@@ -55,7 +55,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Particle
     {
         public static bool IsEmitter(this NamedObjectSave nos)
         {
-            return (nos.SourceType == SourceType.FlatRedBallType && nos.SourceClassType == "Emitter") ||
+            return (nos.SourceType == SourceType.FlatRedBallType && (nos.SourceClassType == "Emitter" || nos.SourceClassType == "FlatRedBall.Graphics.Particle.Emitter")) ||
                 (nos.SourceType == SourceType.File && !string.IsNullOrEmpty(nos.SourceFile) && FileManager.GetExtension(nos.SourceFile) == "emix");
 
         }
