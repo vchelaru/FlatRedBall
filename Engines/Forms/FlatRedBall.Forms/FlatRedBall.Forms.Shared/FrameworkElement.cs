@@ -13,20 +13,40 @@ using System.Text;
 
 namespace FlatRedBall.Forms.Controls
 {
+    #region TabDirection
+
     public enum TabDirection
     {
         Up,
         Down
     }
 
+    #endregion
 
     public class FrameworkElement
     {
         #region Fields/Properties
 
+        protected bool isFocused;
         public virtual bool IsFocused
         {
-            get; set;
+            get { return isFocused; }
+            set
+            {
+                if (value != isFocused)
+                {
+                    isFocused = value && IsEnabled;
+
+                    if (isFocused && this is IInputReceiver inputReceiver)
+                    {
+                        FlatRedBall.Input.InputManager.InputReceiver = inputReceiver;
+                    }
+
+                    UpdateState();
+
+                    PushValueToViewModel();
+                }
+            }
         }
 
         Dictionary<string, string> vmPropsToUiProps = new Dictionary<string, string>();
@@ -594,5 +614,8 @@ namespace FlatRedBall.Forms.Controls
             }
             return didChildHandle;
         }
+
+        protected virtual void UpdateState()
+        { }
     }
 }

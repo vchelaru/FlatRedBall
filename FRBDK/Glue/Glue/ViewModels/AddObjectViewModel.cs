@@ -30,7 +30,8 @@ namespace FlatRedBall.Glue.ViewModels
             {
                 if (BackingObject is string) return BackingObject.ToString();
                 else if (BackingObject is AssetTypeInfo ati) return ati.FriendlyName;
-                else if (BackingObject is EntitySave entity) return entity.Name.Substring("Entities/".Length);
+                //else if (BackingObject is EntitySave entity) return entity.Name.Substring("Entities/".Length);
+                else if (BackingObject is EntitySave entity) return entity.Name;
                 else if (BackingObject is ReferencedFileSave rfs) return rfs.Name;
                 else return null;
             }

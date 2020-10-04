@@ -29,27 +29,6 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        public override bool IsFocused 
-        { 
-            get => base.IsFocused;
-            set
-            {
-                if(value != base.IsFocused)
-                {
-                    base.IsFocused = value;
-
-                    if(base.IsFocused)
-                    {
-                        Focused?.Invoke(this, null);
-                    }
-                    UpdateState();
-                }
-
-            }
-        }
-
-
-
         GraphicalUiElement text;
         protected RenderingLibrary.Graphics.Text coreText;
 
@@ -134,7 +113,7 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        private void UpdateState()
+        protected override void UpdateState()
         {
             var cursor = GuiManager.Cursor;
 

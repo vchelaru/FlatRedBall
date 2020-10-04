@@ -20,23 +20,6 @@ namespace FlatRedBall.Forms.Controls
         GraphicalUiElement textComponent;
         RenderingLibrary.Graphics.Text coreTextObject;
 
-        protected bool isFocused;
-        public override bool IsFocused
-        {
-            get { return isFocused; }
-            set
-            {
-                isFocused = value && IsEnabled;
-
-                if (isFocused)
-                {
-                    FlatRedBall.Input.InputManager.InputReceiver = this;
-                }
-
-                UpdateState();
-            }
-        }
-
         public string Text
         {
             get
@@ -385,7 +368,7 @@ namespace FlatRedBall.Forms.Controls
 
         #region UpdateTo Methods
 
-        private void UpdateState()
+        protected override void UpdateState()
         {
             var cursor = GuiManager.Cursor;
 

@@ -66,18 +66,6 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        bool isFocused;
-        public override bool IsFocused
-        {
-            get { return isFocused; }
-            set
-            {
-                isFocused = value && IsEnabled;
-                UpdateState();
-                PushValueToViewModel();
-            }
-        }
-
         #endregion
 
         #region Events
@@ -266,10 +254,6 @@ namespace FlatRedBall.Forms.Controls
 
         #region Update To
 
-        protected virtual void UpdateState()
-        {
-
-        }
 
         #endregion
     }

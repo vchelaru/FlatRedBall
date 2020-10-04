@@ -25,23 +25,6 @@ namespace FlatRedBall.Forms.Controls
 
         public IInputReceiver NextInTabSequence { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        protected bool isFocused;
-        public override bool IsFocused
-        {
-            get { return isFocused; }
-            set
-            {
-                isFocused = value && IsEnabled;
-
-                if (isFocused)
-                {
-                    FlatRedBall.Input.InputManager.InputReceiver = this;
-                }
-
-                UpdateState();
-            }
-        }
-
         #endregion
 
         #region Events
@@ -203,7 +186,7 @@ namespace FlatRedBall.Forms.Controls
 
         #region UpdateTo Methods
 
-        private void UpdateState()
+        protected override void UpdateState()
         {
             string category = "SliderCategoryState";
             if(IsEnabled == false)

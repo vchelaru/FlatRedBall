@@ -21,17 +21,13 @@ namespace FlatRedBall.Forms.Controls
             set => IsFocused = value;
         }
 
-        bool isFocused;
         public override bool IsFocused
         {
-            get { return isFocused; }
+            get => base.IsFocused;
             set
             {
-                isFocused = value && IsEnabled;
-
-
+                base.IsFocused = value;
                 UpdateToIsFocused();
-                PushValueToViewModel();
             }
         }
 
@@ -543,7 +539,7 @@ namespace FlatRedBall.Forms.Controls
 
         #region UpdateTo Methods
 
-        private void UpdateState()
+        protected override void UpdateState()
         {
             var cursor = GuiManager.Cursor;
 

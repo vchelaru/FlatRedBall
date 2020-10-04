@@ -17,24 +17,6 @@ namespace FlatRedBall.Forms.Controls
     {
         #region Fields/Properties
 
-        protected bool isFocused;
-        public override bool IsFocused
-        {
-            get { return isFocused; }
-            set
-            {
-                isFocused = value && IsEnabled;
-
-                if (isFocused)
-                {
-                    FlatRedBall.Input.InputManager.InputReceiver = this;
-                }
-
-
-                UpdateState();
-            }
-        }
-
         bool doListBoxItemsHaveFocus;
         bool DoListItemsHaveFocus 
         {

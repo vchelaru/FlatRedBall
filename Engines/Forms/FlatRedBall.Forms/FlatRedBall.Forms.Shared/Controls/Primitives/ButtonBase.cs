@@ -9,23 +9,6 @@ namespace FlatRedBall.Forms.Controls.Primitives
 {
     public class ButtonBase : FrameworkElement, IInputReceiver
     {
-        protected bool isFocused;
-        public override bool IsFocused
-        {
-            get { return isFocused; }
-            set
-            {
-                isFocused = value && IsEnabled;
-
-                if(isFocused)
-                {
-                    FlatRedBall.Input.InputManager.InputReceiver = this;
-                }
-
-                UpdateState();
-            }
-        }
-
         public List<Keys> IgnoredKeys => throw new NotImplementedException();
 
         public bool TakingInput => throw new NotImplementedException();
@@ -71,8 +54,6 @@ namespace FlatRedBall.Forms.Controls.Primitives
         }
 
         #endregion
-
-        protected virtual void UpdateState() { }
 
         #region Event Handler Methods
 
