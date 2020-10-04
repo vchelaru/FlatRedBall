@@ -45,6 +45,11 @@ namespace FlatRedBall.Forms.Controls
                     UpdateState();
 
                     PushValueToViewModel();
+
+                    if(isFocused)
+                    {
+                        GotFocus?.Invoke(this, null);
+                    }
                 }
             }
         }
@@ -288,7 +293,13 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-#endregion
+        #endregion
+
+        #region Events
+
+        public event EventHandler GotFocus;
+
+        #endregion
 
         public FrameworkElement() 
         {

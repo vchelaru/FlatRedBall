@@ -37,7 +37,6 @@ namespace FlatRedBall.Forms.Controls
         #region Events
 
         public event EventHandler Selected;
-        public event EventHandler Focused;
         public event EventHandler Clicked;
 
         #endregion

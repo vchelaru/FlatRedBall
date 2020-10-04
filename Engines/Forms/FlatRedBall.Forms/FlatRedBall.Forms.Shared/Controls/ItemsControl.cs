@@ -93,7 +93,7 @@ namespace FlatRedBall.Forms.Controls
                 item = o as ListBoxItem;
                 // let's hope the item doesn't already have this event - if the user recycles them that could be a problem...
                 item.Selected += HandleItemSelected;
-                item.Focused += HandleItemFocused;
+                item.GotFocus += HandleItemFocused;
                 item.Clicked += HandleListBoxItemClicked;
             }
             else
@@ -137,7 +137,7 @@ namespace FlatRedBall.Forms.Controls
 
                 item = listBoxFormsConstructor.Invoke(new object[] { visual }) as ListBoxItem;
                 item.Selected += HandleItemSelected;
-                item.Focused += HandleItemFocused;
+                item.GotFocus += HandleItemFocused;
                 item.Clicked += HandleListBoxItemClicked;
 
                 item.UpdateToObject(o);
