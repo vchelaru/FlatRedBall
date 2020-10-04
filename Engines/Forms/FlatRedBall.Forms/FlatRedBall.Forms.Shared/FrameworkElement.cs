@@ -50,6 +50,10 @@ namespace FlatRedBall.Forms.Controls
                     {
                         GotFocus?.Invoke(this, null);
                     }
+                    else
+                    {
+                        LostFocus?.Invoke(this, null);
+                    }
                 }
             }
         }
@@ -298,6 +302,7 @@ namespace FlatRedBall.Forms.Controls
         #region Events
 
         public event EventHandler GotFocus;
+        public event EventHandler LostFocus;
 
         #endregion
 
