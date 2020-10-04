@@ -67,9 +67,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             bool isTypePredetermined = currentObject != null && currentObject.IsList;
 
+            var isNewWindow = false;
             if (addObjectViewModel == null)
             {
                 addObjectViewModel = new AddObjectViewModel();
+                isNewWindow = true;
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;
             }
 
@@ -108,7 +110,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     addObjectViewModel.SourceFile = backingFile;
                 }
             }
-
+            if(isNewWindow)
+            {
+                addObjectViewModel.ForceRefreshToSourceType();
+            }
             AvailableClassGenericTypeConverter converter = new AvailableClassGenericTypeConverter();
 
             var availableTypes = converter.GetAvailableValues(false);
