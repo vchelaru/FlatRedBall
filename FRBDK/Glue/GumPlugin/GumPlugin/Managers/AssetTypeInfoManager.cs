@@ -108,11 +108,15 @@ namespace GumPlugin.Managers
 
                     screenAti.CustomLoadFunc = (element, nos, rfs, contentManagerName) =>
                     {
-                        var toReturn = "FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera();";
 
                         string strippedName = GetStrippedScreenName(rfs);
 
-                        toReturn +=
+                        // Now the camera setup code handles this, so we don't have to:
+                        // In fact, specific Screen types already removed this, but as of Oct 5, 2020
+                        // the GraphicalUiElement runtime type ATI still had this and it was messing up
+                        // Gum zoom
+                        //var toReturn = "FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera();";
+                        var toReturn =
                             $"{rfs.GetInstanceName()} = GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetScreen(\"{strippedName}\"), true);";
 
                         return toReturn;
