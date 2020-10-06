@@ -14,7 +14,7 @@ FlatRedBall is an open-source game engine written in C# and using MonoGame for r
 - Cross platform project creation system
 - Normalized input management for mouse, keyboard, touchscreens, and controllers
 - Robust UI tool and runtime called [Gum](http://gumui.net/)
-- Robust tool for project layout, screen organization, and boilerplate codegen called
+- Robust tool for project layout, screen organization, and boilerplate codegen called Glue
 - [Sprite font support](http://www.angelcode.com/products/bmfont/)
 - [Tiled (TMX) support](https://www.mapeditor.org/)
 - Dear ImGui integration
