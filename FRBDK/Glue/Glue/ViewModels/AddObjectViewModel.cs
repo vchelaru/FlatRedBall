@@ -371,7 +371,7 @@ namespace FlatRedBall.Glue.ViewModels
             get
             {
                 bool usesGenericTypes = this.SourceType == SaveClasses.SourceType.FlatRedBallType &&
-                    (SourceClassType == "PositionedObjectList<T>" || SourceClassType == "FlatRedBall.Math.PositionedObjectList<T>");
+                    (SourceClassType == "PositionedObjectList (Generic)" || SourceClassType == "PositionedObjectList<T>" || SourceClassType == "FlatRedBall.Math.PositionedObjectList<T>");
                 return usesGenericTypes;
             }
         }
