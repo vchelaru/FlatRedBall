@@ -18,10 +18,10 @@ namespace FlatRedBall.Forms.Controls
         #region Fields/Properties
 
         bool doListBoxItemsHaveFocus;
-        bool DoListItemsHaveFocus 
+        public bool DoListItemsHaveFocus 
         {
             get => doListBoxItemsHaveFocus;
-            set
+            private set
             {
                 doListBoxItemsHaveFocus = value;
 
@@ -245,6 +245,8 @@ namespace FlatRedBall.Forms.Controls
             {
                 DoTopLevelFocusUpdate();
             }
+
+            FocusUpdate?.Invoke(this);
         }
 
         private void DoListItemFocusUpdate()

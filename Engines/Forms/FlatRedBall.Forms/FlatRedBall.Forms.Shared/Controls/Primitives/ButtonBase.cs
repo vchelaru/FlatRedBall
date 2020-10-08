@@ -9,12 +9,15 @@ namespace FlatRedBall.Forms.Controls.Primitives
 {
     public class ButtonBase : FrameworkElement, IInputReceiver
     {
+        #region Fields / Properties
+
         public List<Keys> IgnoredKeys => throw new NotImplementedException();
 
         public bool TakingInput => throw new NotImplementedException();
 
         public IInputReceiver NextInTabSequence { get; set; }
 
+        #endregion
 
         #region Events
 
@@ -124,6 +127,7 @@ namespace FlatRedBall.Forms.Controls.Primitives
                 }
             }
 
+            FocusUpdate?.Invoke(this);
         }
 
         public void OnGainFocus()
@@ -141,6 +145,9 @@ namespace FlatRedBall.Forms.Controls.Primitives
 
         public void HandleKeyDown(Keys key, bool isShiftDown, bool isAltDown, bool isCtrlDown)
         {
+            var args = new Input.KeyEventArgs();
+            args.Key = key;
+            base.RaiseKeyDown(args);
         }
 
         public void HandleCharEntered(char character)

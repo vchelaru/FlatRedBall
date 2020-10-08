@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Forms.GumExtensions;
+using FlatRedBall.Forms.Input;
 using FlatRedBall.Gui;
 using Gum.Wireframe;
 using RenderingLibrary.Graphics;
@@ -20,6 +21,13 @@ namespace FlatRedBall.Forms.Controls
         Up,
         Down
     }
+
+    #endregion
+
+    #region Events
+
+    public delegate void KeyEventHandler(object sender, KeyEventArgs e);
+
 
     #endregion
 
@@ -303,6 +311,8 @@ namespace FlatRedBall.Forms.Controls
 
         public event EventHandler GotFocus;
         public event EventHandler LostFocus;
+
+        public event KeyEventHandler KeyDown;
 
         #endregion
 
@@ -633,5 +643,10 @@ namespace FlatRedBall.Forms.Controls
 
         protected virtual void UpdateState()
         { }
+
+        protected void RaiseKeyDown(KeyEventArgs e)
+        {
+            KeyDown?.Invoke(this, e);
+        }
     }
 }

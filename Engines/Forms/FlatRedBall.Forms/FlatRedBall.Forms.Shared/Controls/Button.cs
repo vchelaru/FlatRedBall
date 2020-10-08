@@ -78,7 +78,14 @@ namespace FlatRedBall.Forms.Controls
 
             if (IsEnabled == false)
             {
-                Visual.SetProperty(category, "Disabled");
+                if (IsFocused)
+                {
+                    Visual.SetProperty(category, "DisabledFocused");
+                }
+                else
+                {
+                    Visual.SetProperty(category, "Disabled");
+                }
             }
             else if (IsFocused)
             {
