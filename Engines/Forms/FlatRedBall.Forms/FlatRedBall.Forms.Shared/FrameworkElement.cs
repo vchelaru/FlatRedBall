@@ -518,7 +518,7 @@ namespace FlatRedBall.Forms.Controls
             IList<GraphicalUiElement> children = parentVisual?.Children.Cast<GraphicalUiElement>().ToList();
             if(children == null && requestingVisual != null)
             {
-                children = requestingVisual.ElementGueContainingThis.ContainedElements.ToList();
+                children = requestingVisual.ElementGueContainingThis?.ContainedElements.Where(item => item.Parent == null).ToList();
             }
 
             //// early out/////////////
@@ -535,18 +535,34 @@ namespace FlatRedBall.Forms.Controls
             }
             else
             {
-                int index = tabDirection == TabDirection.Down ? 0 : children.Count - 1;
+                int index = 0;
 
-                for (int i = 0; i < children.Count; i++)
+                bool forceSelect = false;
+
+                if(tabDirection == TabDirection.Down)
                 {
-                    var childElement = children[i] as GraphicalUiElement;
+                    index = 0;
+                }
+                else
+                {
+                    index = children.Count - 1;
+                }
 
-                    if (childElement == requestingVisual)
+                if(!forceSelect)
+                {
+                    for (int i = 0; i < children.Count; i++)
                     {
-                        index = i;
-                        break;
+                        var childElement = children[i] as GraphicalUiElement;
+
+                        if (childElement == requestingVisual)
+                        {
+                            index = i;
+                            break;
+                        }
                     }
                 }
+
+
 
                 if (tabDirection == TabDirection.Down)
                 {
