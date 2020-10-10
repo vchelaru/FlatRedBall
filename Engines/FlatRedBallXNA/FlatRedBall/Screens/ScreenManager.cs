@@ -163,15 +163,19 @@ namespace FlatRedBall.Screens
 
 
 
+                // October 10, 2020
+                // We used to set the time and values before calling
+                // destroy. Now we want to call Destroy on the screen first
+                // in case Destroy happens to change the time factor:
+                mCurrentScreen.Destroy();
+
                 mWasFixedTimeStep = FlatRedBallServices.Game.IsFixedTimeStep;
                 mLastTimeFactor = TimeManager.TimeFactor;
-
                 FlatRedBallServices.Game.IsFixedTimeStep = false;
                 TimeManager.TimeFactor = 0;
-
                 GuiManager.Cursor.IgnoreInputThisFrame = true;
 
-                mCurrentScreen.Destroy();
+                //mCurrentScreen.Destroy();
 
                 // check to see if there is any leftover data
                 CheckAndWarnIfNotEmpty(mCurrentScreen);
