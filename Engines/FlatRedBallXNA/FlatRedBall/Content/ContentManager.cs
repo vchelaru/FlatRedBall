@@ -50,6 +50,7 @@ using Color = Microsoft.Xna.Framework.Color;
 using FlatRedBall.Content.ContentLoaders;
 using FlatRedBall.Performance.Measurement;
 using Microsoft.Xna.Framework.Media;
+using FlatRedBall.IO;
 
 namespace FlatRedBall.Content
 {
@@ -74,7 +75,7 @@ namespace FlatRedBall.Content
         /// </summary>
         public static bool LoadFromGlobalIfExists = true;
 
-        public static Dictionary<string, string> FileAliases { get; private set; } = new Dictionary<string, string>();
+        public static Dictionary<FilePath, FilePath> FileAliases { get; private set; } = new Dictionary<FilePath, FilePath>();
 		
 #if FRB_XNA && !MONOGAME
 		internal Effect mFirstEffect = null;
@@ -378,7 +379,7 @@ namespace FlatRedBall.Content
 
             if(FileAliases.ContainsKey(standardized))
             {
-                assetName = FileAliases[standardized];
+                assetName = FileAliases[standardized].FullPath;
             }
 
 			// Assets can be loaded either from file or from assets referenced
