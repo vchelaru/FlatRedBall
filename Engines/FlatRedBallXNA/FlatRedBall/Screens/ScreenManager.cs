@@ -174,6 +174,10 @@ namespace FlatRedBall.Screens
                 FlatRedBallServices.Game.IsFixedTimeStep = false;
                 TimeManager.TimeFactor = 0;
                 GuiManager.Cursor.IgnoreInputThisFrame = true;
+                if(Input.InputManager.InputReceiver != null)
+                {
+                    Input.InputManager.InputReceiver = null;
+                }
 
                 //mCurrentScreen.Destroy();
 
