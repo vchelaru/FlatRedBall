@@ -836,22 +836,17 @@ namespace FlatRedBall
 
                 mRotationZ = value;
                 FlatRedBall.Math.MathFunctions.RegulateAngle(ref mRotationZ);
-#if FRB_MDX
-                mRotationMatrix = Matrix.RotationX((float)mRotationX);
-                mRotationMatrix *= Matrix.RotationY((float)mRotationY);
-                mRotationMatrix *= Matrix.RotationZ((float)mRotationZ);
-#else
 
-#if SILVERLIGHT
-                mRotationMatrix = Matrix.CreateRotationZ(mRotationX);
-                mRotationMatrix *= Matrix.CreateRotationZ(mRotationY);
-                mRotationMatrix *= Matrix.CreateRotationZ(mRotationZ);
-#else
-                mRotationMatrix = Matrix.CreateRotationX(mRotationX);
-                mRotationMatrix *= Matrix.CreateRotationY(mRotationY);
-                mRotationMatrix *= Matrix.CreateRotationZ(mRotationZ);
-#endif
-#endif
+                if(mRotationX == 0 && mRotationY == 0)
+                {
+                    mRotationMatrix = Matrix.CreateRotationZ(mRotationZ);
+                }
+                else
+                {
+                    mRotationMatrix = Matrix.CreateRotationX(mRotationX);
+                    mRotationMatrix *= Matrix.CreateRotationY(mRotationY);
+                    mRotationMatrix *= Matrix.CreateRotationZ(mRotationZ);
+                }
             }
         }
 
@@ -888,7 +883,6 @@ namespace FlatRedBall
                     mRotationZ += (float)System.Math.PI * 2;
 
 #if DEBUG
-#if FRB_XNA
                 // Make sure matrix is invertable
                 if (mRotationMatrix.M44 == 0)
                 {
@@ -938,7 +932,6 @@ namespace FlatRedBall
 
                     throw new ArgumentException(message);
                 }
-#endif
 #endif
             }
 

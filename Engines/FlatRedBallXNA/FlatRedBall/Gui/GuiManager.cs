@@ -539,7 +539,7 @@ namespace FlatRedBall.Gui
 #endif
 
 
-        [Obsolete("Use AddDominantWindow instead - this method will go away soon")]
+        [Obsolete("Use AddDominantWindow instead, even if the window has already been added. This method will go away soon")]
         public static void MakeDominantWindow(IWindow window)
         {
             AddDominantWindow(window);

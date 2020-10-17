@@ -637,14 +637,20 @@ namespace FlatRedBall.Forms.Controls
                 {
                     bool didFocusNewItem = false;
                     if ( shouldAskParent)
-                    { 
-                        if ( parentVisual?.Parent != null)
+                    {
+                        // if this is a dominant window, don't allow tabbing out
+                        var isDominant = GuiManager.DominantWindows.Contains(parentVisual);
+
+                        if(!isDominant)
                         {
-                            didFocusNewItem =  HandleTab(tabDirection, parentVisual, parentVisual.Parent as GraphicalUiElement, shouldAskParent:true);
-                        }
-                        else 
-                        {
-                            didFocusNewItem = HandleTab(tabDirection, parentVisual, null, shouldAskParent:true);
+                            if ( parentVisual?.Parent != null)
+                            {
+                                didFocusNewItem =  HandleTab(tabDirection, parentVisual, parentVisual.Parent as GraphicalUiElement, shouldAskParent:true);
+                            }
+                            else 
+                            {
+                                didFocusNewItem = HandleTab(tabDirection, parentVisual, null, shouldAskParent:true);
+                            }
                         }
                     }
                     if (didFocusNewItem)
