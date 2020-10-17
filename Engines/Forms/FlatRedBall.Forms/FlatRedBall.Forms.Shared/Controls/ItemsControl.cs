@@ -135,7 +135,14 @@ namespace FlatRedBall.Forms.Controls
                     throw new Exception(message);
                 }
 
-                item = listBoxFormsConstructor.Invoke(new object[] { visual }) as ListBoxItem;
+                if(visual.FormsControlAsObject is ListBoxItem asListBoxItem)
+                {
+                    item = asListBoxItem;
+                }
+                else
+                {
+                    item = listBoxFormsConstructor.Invoke(new object[] { visual }) as ListBoxItem;
+                }
                 item.Selected += HandleItemSelected;
                 item.GotFocus += HandleItemFocused;
                 item.Clicked += HandleListBoxItemClicked;

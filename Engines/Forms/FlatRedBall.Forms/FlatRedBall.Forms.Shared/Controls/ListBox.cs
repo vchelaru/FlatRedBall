@@ -104,7 +104,7 @@ namespace FlatRedBall.Forms.Controls
 
                         if (listBoxItem.IsSelected)
                         {
-                            selectionChangedArgs.RemovedItems.Add(Items[i]);
+                            selectionChangedArgs.RemovedItems.Add(ListBoxItemsInternal[i]);
                             listBoxItem.IsSelected = false;
                         }
                     }
