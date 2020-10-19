@@ -1391,9 +1391,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     // Entities need activity!
                     codeBlock.Line(namedObjectSave.InstanceName + ".Activity();");
                 }
-                else if (namedObjectSave.SourceType == SourceType.FlatRedBallType &&
-                    namedObjectSave.ClassType != null &&
-                    namedObjectSave.ClassType.StartsWith("PositionedObjectList<"))
+                else if (namedObjectSave.IsList)
                 {
                     // Now let's see if the object in the list is an entity
                     string genericType = namedObjectSave.SourceClassGenericType;
