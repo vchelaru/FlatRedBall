@@ -1215,7 +1215,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     {
                         instanceType = "System.Collections.Generic.List<T>";
                     }
-                    else if (instanceType == "PositionedObjectList<T>")
+                    else if (instanceType?.Contains("PositionedObjectList<T>") == true)
                     {
                         instanceType = "FlatRedBall.Math.PositionedObjectList<T>";
                     }

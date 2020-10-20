@@ -90,7 +90,7 @@ namespace FlatRedBall.Glue.StateInterpolation
         }
 
         private float _elapsed = 0.0f;
-        protected float elapsed
+        public float elapsed
         {
             get
             {
