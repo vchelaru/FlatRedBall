@@ -743,7 +743,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                             WriteTextInitializationLoopForScene(codeBlock, sceneName);
                         }
                     }
-                    else if (namedObject.ClassType == "Text")
+                    else if (namedObject.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Text)
                     {
                         // If the NamedObject uses a File that has already been used in another "Entire File" NamedObject, then we want to make sure 
                         // we don't double-translate
@@ -2286,7 +2286,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             // the Text object (if they happen to be tunneled).  Therefore, we need
             // to only set pixel perfect if the user has marked the text as being pixel
             // perfect.
-            if (namedObject.SourceType == SourceType.FlatRedBallType && namedObject.SourceClassType == "Text" && namedObject.IsPixelPerfect)
+            if (namedObject.SourceType == SourceType.FlatRedBallType && namedObject.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Text && namedObject.IsPixelPerfect)
             {
                 codeBlock.If(objectName + ".Font != null")
                     .Line(objectName + ".SetPixelPerfectScale(" + layerName + ");");

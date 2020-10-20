@@ -455,7 +455,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
                 #region Text-related properties
 
-                if (instance.SourceType != SaveClasses.SourceType.FlatRedBallType || instance.SourceClassType != "Text")
+                if (instance.SourceType != SaveClasses.SourceType.FlatRedBallType || instance.GetAssetTypeInfo() != AvailableAssetTypes.CommonAtis.Text)
                 {
                     ExcludeMember(nameof(NamedObjectSave.IsPixelPerfect));
                 }

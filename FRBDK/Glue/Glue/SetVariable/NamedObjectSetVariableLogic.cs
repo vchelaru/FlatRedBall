@@ -395,7 +395,7 @@ namespace FlatRedBall.Glue.SetVariable
             // We don't do an else because there could be a CustomVariable by the name
             // of BitmapFont as well, and we dont' want to eliminate that.
             if (changedMember == "Font" && namedObjectSave.SourceType == SourceType.FlatRedBallType &&
-                namedObjectSave.SourceClassType == "Text" && namedObjectSave.IsPixelPerfect)
+                namedObjectSave.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Text && namedObjectSave.IsPixelPerfect)
             {
                 ReactToFontSet(namedObjectSave, oldValue);
             }

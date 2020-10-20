@@ -88,11 +88,11 @@ namespace EntityPerformancePlugin.CodeGenerators
             {
                 var ati = GetAssetTypeInfoFor(element);
 
-                if (ati?.RuntimeTypeName == "Text")
+                if (ati == AvailableAssetTypes.CommonAtis.Text)
                 {
                     GenerateTextVariableUpdateDependenciesFor(codeBlock, name, selectedProperties);
                 }
-                else if (ati?.RuntimeTypeName == "Sprite")
+                else if (ati == AvailableAssetTypes.CommonAtis.Sprite)
                 {
                     GenerateSpriteVariableUpdateDependenciesFor(codeBlock, name, selectedProperties);
                 }
@@ -370,7 +370,7 @@ namespace EntityPerformancePlugin.CodeGenerators
                 {
                     entity = ObjectFinder.Self.GetEntitySave(namedObject.SourceClassType);
                 }
-                else if(namedObject.SourceType == SourceType.FlatRedBallType && namedObject.SourceClassType == "PositionedObjectList<T>")
+                else if(namedObject.SourceType == SourceType.FlatRedBallType && namedObject.IsList)
                 {
                     var classType = namedObject.SourceClassGenericType;
 
@@ -491,11 +491,11 @@ namespace EntityPerformancePlugin.CodeGenerators
 
             GeneratePositionedObjectVariableUpdateDependenciesFor(codeBlock, name, instanceManagementValues);
 
-            if(ati?.RuntimeTypeName == "Text")
+            if(ati == AvailableAssetTypes.CommonAtis.Text)
             {
                 GenerateTextVariableUpdateDependenciesFor(codeBlock, name, instanceManagementValues.SelectedProperties);
             }
-            else if(ati?.RuntimeTypeName == "Sprite")
+            else if(ati == AvailableAssetTypes.CommonAtis.Sprite)
             {
                 GenerateSpriteVariableUpdateDependenciesFor(codeBlock, name, instanceManagementValues.SelectedProperties);
             }
@@ -540,7 +540,7 @@ namespace EntityPerformancePlugin.CodeGenerators
 
         private bool IsIColorable(AssetTypeInfo assetTypeInfo)
         {
-            return assetTypeInfo?.RuntimeTypeName == "Sprite" || assetTypeInfo?.RuntimeTypeName == "Text";
+            return assetTypeInfo == AvailableAssetTypes.CommonAtis.Sprite || assetTypeInfo == AvailableAssetTypes.CommonAtis.Text;
         }
 
         private bool IsIInstructable(AssetTypeInfo assetTypeInfo)
