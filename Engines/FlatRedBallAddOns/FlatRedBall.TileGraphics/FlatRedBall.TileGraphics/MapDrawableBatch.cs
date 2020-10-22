@@ -732,8 +732,22 @@ namespace FlatRedBall.TileGraphics
         /// to the MapDrawableBatch, so it supports any configuration including non-rectangular maps and maps with
         /// gaps.
         /// </summary>
+        /// <example>
+        /// newTextureId is the ID of the tile within the referenced tileset. Each ID represents one square in the texture. For example, consider
+        /// a tileset which is 64x64 pixels, and each tile in the tileset is 16 pixels wide and tall. In this case, a newTextureId of 0
+        /// would paint a tile with the the top-left 16x16 pixel in the referenced tileset. Since the tileset in this example is 4 tiles wide
+        /// (64 pixels wide, each tile is 16 pixels wide), the following indexes would reference the following sections of the tileset:
+        /// 0: top-left tile
+        /// 3: top-right tile
+        /// 4: left-most tile on the 2nd row
+        /// 7: right-most tile on the 2nd row
+        /// 12: bottom-left tile 
+        /// 15: bottom-right tile
+        /// In this case 15 is the last tile index, so values of 16 and greater are invalid.
+        /// </example>
         /// <param name="orderedTileIndex">The index of the tile to paint - this matches the index of the tile as it was added.</param>
-        /// <param name="newTextureId"></param>
+        /// <param name="newTextureId">The ID of the tile in the texture, where 0 is the top-left tile. Increasing this value moves to the right until the tile reaches
+        /// the end of the first row. After that, the next index is the first column on the second row. See remarks for an example.</param>
         public void PaintTile(int orderedTileIndex, int newTextureId)
         {
             int currentVertex = orderedTileIndex * 4; // 4 vertices per tile

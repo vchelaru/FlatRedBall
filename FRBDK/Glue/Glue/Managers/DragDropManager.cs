@@ -109,6 +109,17 @@ namespace FlatRedBall.Glue.Managers
 
                         succeeded = response.Succeeded;
                     }
+                    //else if(IsCollidable(movingNos) && IsCollidableList(targetNos) && movingNos.CanBeInList(targetNos) == false)
+                    //{
+                    //    var response = HandleCreateCollisionRelationship(movingNos, targetNos);
+
+                    //    if (!response.Succeeded)
+                    //    {
+                    //        MessageBox.Show(response.Message);
+                    //    }
+
+                    //    succeeded = response.Succeeded;
+                    //}
                     else if (ati == AvailableAssetTypes.CommonAtis.PositionedObjectList)
                     {
 
@@ -162,13 +173,13 @@ namespace FlatRedBall.Glue.Managers
                 return !string.IsNullOrEmpty(nos.SourceClassGenericType) &&
                     ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType)?.ImplementsICollidable == true;
             }
-            else if(nos.GetAssetTypeInfo().RuntimeTypeName == "FlatRedBall.TileCollisions.TileShapeCollection" ||
-                nos.GetAssetTypeInfo().RuntimeTypeName == "TileShapeCollection")
+            else if(nos.GetAssetTypeInfo()?.RuntimeTypeName == "FlatRedBall.TileCollisions.TileShapeCollection" ||
+                nos.GetAssetTypeInfo()?.RuntimeTypeName == "TileShapeCollection")
             {
                 return true;
             }
-            else if(nos.GetAssetTypeInfo().RuntimeTypeName == "FlatRedBall.Math.Geometry.ShapeCollection" ||
-                nos.GetAssetTypeInfo().RuntimeTypeName == "ShapeCollection")
+            else if(nos.GetAssetTypeInfo()?.RuntimeTypeName == "FlatRedBall.Math.Geometry.ShapeCollection" ||
+                nos.GetAssetTypeInfo()?.RuntimeTypeName == "ShapeCollection")
             {
                 return true;
             }

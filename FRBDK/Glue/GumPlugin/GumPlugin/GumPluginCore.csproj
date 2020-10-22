@@ -56,6 +56,7 @@
     <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\CheckBox.gucx" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ColoredFrame.gucx" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ComboBox.gucx" />
+    <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\Label.gucx" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ListBox.gucx" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ListBoxItem.gucx" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\PasswordBox.gucx" />
@@ -206,6 +207,7 @@
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\CheckBox.gucx" />
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ColoredFrame.gucx" />
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ComboBox.gucx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\Label.gucx" />
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ListBox.gucx" />
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ListBoxItem.gucx" />
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\PasswordBox.gucx" />

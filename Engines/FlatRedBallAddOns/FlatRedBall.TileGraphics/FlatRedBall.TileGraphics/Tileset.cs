@@ -67,6 +67,16 @@ namespace FlatRedBall.TileGraphics
         
         }
 
+        /// <summary>
+        /// Returns the texture coordinates for the argument index in this tileset. Returned coords array contains
+        /// four coordinates in the following order: 
+        /// 0: bottom left
+        /// 1: bottom right
+        /// 2: top right
+        /// 3: top left
+        /// </summary>
+        /// <param name="textureId">The texture ID, which is the index of fthe texture beginning at the top left of the tileset and moving to the right, then down</param>
+        /// <param name="coords">The resulting coordinates.</param>
         public void GetTextureCoordinateVectorsOfTextureIndex(int textureId, Vector2[] coords)
         {
             // TODO: pId needs to be constrained! 
