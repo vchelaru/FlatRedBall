@@ -846,7 +846,7 @@ namespace FlatRedBall.Math.Collision
                 secondSize = this.secondPartitioningSize ?? secondPartition.MaxWidthOrHeight;
             }
 
-            if (firstPartition?.axis == Axis.X && firstPartition?.axis == Axis.X)
+            if (firstPartition?.axis == Axis.X && secondPartition?.axis == Axis.X)
             {
                 // -1 to make it exclusive
                 endExclusive = list.GetFirstAfter(singleObject.X - firstSize / 2 - secondSize / 2, Axis.X, 0, list.Count) - 1;
@@ -858,7 +858,7 @@ namespace FlatRedBall.Math.Collision
                 }
 
             }
-            else if (firstPartition?.axis == Axis.Y && firstPartition?.axis == Axis.Y)
+            else if (firstPartition?.axis == Axis.Y && secondPartition?.axis == Axis.Y)
             {
                 // -1 to make it exclusive
                 endExclusive = list.GetFirstAfter(singleObject.Y - firstSize / 2 - secondSize / 2, Axis.Y, 0, list.Count) - 1;
@@ -1007,7 +1007,7 @@ namespace FlatRedBall.Math.Collision
                 secondSize = this.secondPartitioningSize ?? secondPartition.MaxWidthOrHeight;
             }
 
-            if (firstPartition?.axis == Axis.X && firstPartition?.axis == Axis.X)
+            if (firstPartition?.axis == Axis.X && secondPartition?.axis == Axis.X)
             {
                 // -1 to make it exclusive
                 endExclusive = list.GetFirstAfter(singleObject.X - firstSize / 2 - secondSize / 2, Axis.X, 0, list.Count) - 1;
@@ -1018,7 +1018,7 @@ namespace FlatRedBall.Math.Collision
                     startInclusive--;
                 }
             }
-            else if (firstPartition?.axis == Axis.Y && firstPartition?.axis == Axis.Y)
+            else if (firstPartition?.axis == Axis.Y && secondPartition?.axis == Axis.Y)
             {
                 // -1 to make it exclusive
                 endExclusive = list.GetFirstAfter(singleObject.Y - firstSize / 2 - secondSize / 2, Axis.Y, 0, list.Count) - 1;
