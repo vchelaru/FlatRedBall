@@ -170,11 +170,16 @@ namespace GumPlugin.Managers
             
 
             var gumScreensFolder = $"{gumRfsfolder}screens/".ToLowerInvariant();
+            var gumComponentFolder = $"{gumRfsfolder}components/".ToLowerInvariant();
 
             var strippedName = fileName;
             if (fileName.ToLowerInvariant().StartsWith(gumScreensFolder))
             {
                 strippedName = fileName.Substring(gumScreensFolder.Length);
+            }
+            else if(fileName.ToLowerInvariant().StartsWith(gumComponentFolder))
+            {
+                strippedName = fileName.Substring(gumComponentFolder.Length);
             }
 
             strippedName = FileManager.RemoveExtension(strippedName);
@@ -464,8 +469,15 @@ namespace GumPlugin.Managers
             if (element is ComponentSave)
             {
                 newAti.Extension = GumProjectSave.ComponentExtension;
-                newAti.CustomLoadMethod = ComponentAti.CustomLoadMethod + " as " + 
-                    GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element);
+                //newAti.CustomLoadMethod = ComponentAti.CustomLoadMethod + " as " + 
+                //    GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element);
+                newAti.CustomLoadFunc = (innerElement, nos, rfs, contentManagerName) =>
+                {
+                    var uncastedLine = ComponentAti.CustomLoadFunc(innerElement, nos, rfs, contentManagerName);
+                    // remove the semicolon 
+                    return uncastedLine.Substring(0, uncastedLine.Length - 1) + " as " + GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element) + ";";
+
+                };
             }
             if(element is Gum.DataTypes.ScreenSave)
             {
