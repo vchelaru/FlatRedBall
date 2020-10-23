@@ -94,7 +94,7 @@ namespace GumPlugin.DataGeneration
                     var isComponentAlreadyPartOfProject =
                         AppCommands.Self.IsComponentFileReferenced(absoluteFile);
 
-                    if(!isComponentAlreadyPartOfProject)
+                    if(!isComponentAlreadyPartOfProject && absoluteFile.Exists())
                     {
                         AppCommands.Self.AddComponent(absoluteFile);
                         wasAnythingAdded = true;
