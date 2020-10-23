@@ -73,11 +73,11 @@ namespace GumPlugin.Managers
             {
                 if (first.Name == null)
                 {
-                    first.Name.CompareTo(second.Name);
+                    return 0;
                 }
                 else
                 {
-                    return 0;
+                    return first.Name.CompareTo(second.Name);
                 }
             });
             FlatRedBall.Glue.Plugins.PluginManager.ReceiveOutput("Added Gum behavior " + behavior.Name);
