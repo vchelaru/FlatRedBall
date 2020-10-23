@@ -388,7 +388,20 @@ namespace GumPlugin
                 startInfo.FileName = fileName;
                 startInfo.UseShellExecute = true;
 
-                System.Diagnostics.Process.Start(startInfo);
+                try
+                {
+                    System.Diagnostics.Process.Start(startInfo);
+                }
+                catch(Win32Exception winException)
+                {
+                    var message = "Could not open the Gum project - have you set up the Gum tool to be associated with the .gumx file format in Windows Explorer?";
+
+                    GlueCommands.Self.DialogCommands.ShowMessageBox(message);
+                }
+                catch
+                {
+                    GlueCommands.Self.DialogCommands.ShowMessageBox("Unknown error attempting to open Gum") ;
+                }
             }
         }
 
