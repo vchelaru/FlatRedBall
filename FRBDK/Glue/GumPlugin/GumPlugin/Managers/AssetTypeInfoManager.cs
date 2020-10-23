@@ -218,7 +218,7 @@ namespace GumPlugin.Managers
             }
         }
 
-        AssetTypeInfo GraphicalUiElementAti
+        public AssetTypeInfo GraphicalUiElementAti
         {
             get
             {
