@@ -63,8 +63,27 @@ namespace GumPlugin.Managers
                     mComponentAti.QualifiedSaveTypeName = "Gum.Data.ComponentSave";
                     mComponentAti.Extension = "gucx";
                     mComponentAti.AddToManagersMethod.Add("this.AddToManagers()");
-                    mComponentAti.CustomLoadMethod =
-                        "{THIS} = GumRuntime.ElementSaveExtensions.CreateGueForElement( Gum.Managers.ObjectFinder.Self.GetComponent(FlatRedBall.IO.FileManager.RemoveExtension(FlatRedBall.IO.FileManager.RemovePath(\"{FILE_NAME}\"))), true)";
+                    //mComponentAti.CustomLoadMethod =
+                    //    "{THIS} = GumRuntime.ElementSaveExtensions.CreateGueForElement( Gum.Managers.ObjectFinder.Self.GetComponent(FlatRedBall.IO.FileManager.RemoveExtension(FlatRedBall.IO.FileManager.RemovePath(\"{FILE_NAME}\"))), true)";
+
+                    mComponentAti.CustomLoadFunc = (element, nos, rfs, contentManagerName) =>
+                    {
+
+                        string strippedName = GetStrippedScreenName(rfs);
+
+                        // Now the camera setup code handles this, so we don't have to:
+                        // In fact, specific Screen types already removed this, but as of Oct 5, 2020
+                        // the GraphicalUiElement runtime type ATI still had this and it was messing up
+                        // Gum zoom
+                        //var toReturn = "FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera();";
+
+                        var thisName = rfs.GetInstanceName() ?? nos.InstanceName;
+
+                        var toReturn =
+                            $"{thisName} = GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetComponent(\"{strippedName}\"), true);";
+
+                        return toReturn;
+                    };
 
                     mComponentAti.DestroyMethod = "this.RemoveFromManagers()";
                     mComponentAti.SupportsMakeOneWay = false;
@@ -245,6 +264,24 @@ namespace GumPlugin.Managers
                     //    "this.AddToManagers(RenderingLibrary.SystemManagers.Default, " +
                     //    "System.Linq.Enumerable.FirstOrDefault(FlatRedBall.Gum.GumIdb.AllGumLayersOnFrbLayer(mLayer)))");
                     //mGraphicalUiElementAti.AddToManagersMethod.Add("this.AddToManagers()");
+
+                    mGraphicalUiElementAti.CustomLoadFunc = (element, nos, rfs, contentManagerName) =>
+                    {
+
+                        string strippedName = GetStrippedScreenName(rfs);
+
+                        // Now the camera setup code handles this, so we don't have to:
+                        // In fact, specific Screen types already removed this, but as of Oct 5, 2020
+                        // the GraphicalUiElement runtime type ATI still had this and it was messing up
+                        // Gum zoom
+                        //var toReturn = "FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera();";
+                        var toReturn =
+                            $"{rfs.GetInstanceName()} = GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetElementSave(\"{strippedName}\"), true);";
+
+                        return toReturn;
+                    };
+
+
                     mGraphicalUiElementAti.AddToManagersFunc = GueDerivingClassCodeGenerator.Self.GetAddToManagersFunc;
 
 

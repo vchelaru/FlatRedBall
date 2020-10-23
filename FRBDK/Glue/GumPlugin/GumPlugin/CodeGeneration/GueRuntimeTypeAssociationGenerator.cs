@@ -166,6 +166,7 @@ namespace GumPlugin.CodeGeneration
                     // These require a Text object
                 case "Button": 
                 case "CheckBox":
+                case "Label":
                 case "ListBoxItem":
                 case "RadioButton":
                 case "ToggleButton":
