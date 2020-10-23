@@ -69,7 +69,17 @@ namespace GumPlugin.Managers
                 Name = behavior.Name
             };
             AppState.Self.GumProjectSave.BehaviorReferences.Add(behaviorReference);
-            AppState.Self.GumProjectSave.BehaviorReferences.Sort((first, second) => first.Name.CompareTo(second.Name));
+            AppState.Self.GumProjectSave.BehaviorReferences.Sort((first, second) =>
+            {
+                if (first.Name == null)
+                {
+                    first.Name.CompareTo(second.Name);
+                }
+                else
+                {
+                    return 0;
+                }
+            });
             FlatRedBall.Glue.Plugins.PluginManager.ReceiveOutput("Added Gum behavior " + behavior.Name);
 
         }
