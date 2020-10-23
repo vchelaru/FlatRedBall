@@ -55,7 +55,14 @@ namespace GumPlugin.DataGeneration
 
                 if(shouldSave)
                 {
-                    FileManager.SaveEmbeddedResource(assembly, resourceName.Replace("/", "."), destination);
+                    try
+                    {
+                        FileManager.SaveEmbeddedResource(assembly, resourceName.Replace("/", "."), destination);
+                    }
+                    catch (Exception e)
+                    {
+                        GlueCommands.Self.PrintError($"Could not add component {resourceName}:\n{e}");
+                    }
                 }
             }
 
