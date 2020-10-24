@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.SaveClasses;
 using GumPlugin.Managers;
 using GumPluginCore.Managers;
@@ -34,7 +35,7 @@ namespace GumPluginCore.CodeGeneration
 
         public static void GenerateAddCollision(StringBuilder stringBuilder, IElement element, NamedObjectSave nos)
         {
-            if(IsIGumCollidable(element))
+            if(IsIGumCollidable(element) || InheritsFromIGumCollidable(element))
             {
                 stringBuilder.AppendLine($"GumCoreShared.FlatRedBall.Embedded.GumCollidableExtensions.AddCollision(this, wrapperForAttachment);");
                 stringBuilder.AppendLine($"GumCoreShared.FlatRedBall.Embedded.GumCollidableExtensions.UpdateShapePositionsFromGum(this);");
@@ -50,6 +51,14 @@ namespace GumPluginCore.CodeGeneration
             return base.GenerateActivity(codeBlock, element);
         }
 
-        public static bool IsIGumCollidable(IElement element) => element is EntitySave entitySave && entitySave.Properties.GetValue<bool>(GumCollidableManager.ImplementsIGumCollidable);
+        public static bool IsIGumCollidable(IElement element) => 
+            element is EntitySave entitySave && 
+            entitySave.Properties.GetValue<bool>(GumCollidableManager.ImplementsIGumCollidable);
+
+        public static bool InheritsFromIGumCollidable(IElement element)
+        {
+            return ObjectFinder.Self.GetAllBaseElementsRecursively(element).Any(item =>
+                item.Properties.GetValue<bool>(GumCollidableManager.ImplementsIGumCollidable));
+        }
     }
 }
