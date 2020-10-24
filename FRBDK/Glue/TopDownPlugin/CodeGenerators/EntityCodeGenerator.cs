@@ -260,9 +260,9 @@ namespace TopDownPlugin.CodeGenerators
 
         public void InitializeTopDownInput(FlatRedBall.Input.IInputDevice inputDevice)
         {
-            this.MovementInput = inputDevice.Default2DInput;
+            this.MovementInput = inputDevice?.Default2DInput;
             this.InputDevice = inputDevice;
-            InputEnabled = true;
+            InputEnabled = inputDevice != null;
 
             CustomInitializeTopDownInput();
         }
