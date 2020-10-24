@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.FormHelpers.PropertyGrids;
+using FlatRedBall.Glue.Plugins.ICollidablePlugins;
 using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace GumPluginCore.Managers
         internal static void HandleDisplayedEntity(EntitySave entitySave, EntitySavePropertyGridDisplayer displayer)
         {
             // Only show this if this is an ICollidable
-            if(entitySave.ImplementsICollidable)
+            if(entitySave.IsICollidableRecursive())
             {
                 displayer.IncludeCustomPropertyMember(ImplementsIGumCollidable, typeof(bool));
             }
