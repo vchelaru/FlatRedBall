@@ -16,7 +16,7 @@ namespace GumPlugin.Managers
 {
     public class AssetTypeInfoManager : Singleton<AssetTypeInfoManager>
     {
-        #region Fields
+        #region Fields/Properties
 
         AssetTypeInfo mComponentAti;
         AssetTypeInfo mScreenIdbAti;
@@ -27,9 +27,6 @@ namespace GumPlugin.Managers
 
         public List<AssetTypeInfo> AssetTypesForThisProject { get; private set; } = new List<FlatRedBall.Glue.Elements.AssetTypeInfo>();
 
-
-        #endregion
-        
 
         // Victor Chelaru 
         // March 10, 2015
@@ -347,6 +344,8 @@ namespace GumPlugin.Managers
             }
         }
 
+        #endregion
+
         string GetGumxLoadCode(IElement element, NamedObjectSave nos, ReferencedFileSave rfs, string contentManagerName)
         {
             string fileNameToLoad = ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(rfs, mGumxAti);
@@ -403,8 +402,6 @@ namespace GumPlugin.Managers
 
             AddIfNotPresent(GraphicalUiElementAti);
         }
-
-
 
         public void AddIfNotPresent(AssetTypeInfo ati)
         {
@@ -660,5 +657,15 @@ namespace GumPlugin.Managers
             AssetTypesForThisProject.Clear();
         }
 
+        public bool IsAssetTypeInfoGum(AssetTypeInfo ati)
+        {
+            if (ati != null)
+            {
+                return ati == AssetTypeInfoManager.Self.GraphicalUiElementAti ||
+                    AssetTypeInfoManager.Self.AssetTypesForThisProject
+                        .Any(item => item.QualifiedRuntimeTypeName.QualifiedType == ati.QualifiedRuntimeTypeName.QualifiedType);
+            }
+            return false;
+        }
     }
 }

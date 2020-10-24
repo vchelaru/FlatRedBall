@@ -26,6 +26,7 @@ using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.Managers;
 using System.Diagnostics;
 using FlatRedBall.Glue.Errors;
+using GumPluginCore.Managers;
 
 namespace GumPlugin
 {
@@ -320,11 +321,9 @@ namespace GumPlugin
 
         private void AssignEvents()
         {
-            this.ReactToLoadedGlux += HandleGluxLoad;
+            this.AddEventsForObject += EventsManager.Self.HandleAddEventsForObject;
 
-            this.ReactToLoadedGluxEarly += HandleGluxLoadEarly;
-
-            this.ReactToUnloadedGlux += HandleUnloadedGlux;
+            this.AdjustDisplayedEntity += GumCollidableManager.HandleDisplayedEntity;
 
             this.CanFileReferenceContent += FileReferenceTracker.CanTrackDependenciesOn;
 
@@ -332,15 +331,19 @@ namespace GumPlugin
 
             this.GetFilesNeededOnDiskBy += FileReferenceTracker.Self.HandleGetFilesNeededOnDiskBy;
 
-            this.TryAddContainedObjects += ContainedObjectsManager.Self.HandleTryAddContainedObjects;
-
-            this.ReactToTreeViewRightClickHandler += RightClickManager.Self.HandleTreeViewRightClick;
-
             this.ReactToFileChangeHandler += HandleFileChange;
+
+            this.ReactToLoadedGlux += HandleGluxLoad;
+
+            this.ReactToLoadedGluxEarly += HandleGluxLoadEarly;
 
             this.ReactToNewFileHandler += HandleNewFile;
 
-            this.AddEventsForObject += EventsManager.Self.HandleAddEventsForObject;
+            this.ReactToTreeViewRightClickHandler += RightClickManager.Self.HandleTreeViewRightClick;
+
+            this.ReactToUnloadedGlux += HandleUnloadedGlux;
+
+            this.TryAddContainedObjects += ContainedObjectsManager.Self.HandleTryAddContainedObjects;
 
             this.ReactToItemSelectHandler += HandleItemSelected;
 

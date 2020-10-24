@@ -147,8 +147,7 @@ namespace OfficialPlugins.StateInterpolation
         public static bool SupportsAdvancedInterpolation(this IElement element)
         {
 
-            return element.Properties.ContainsValue(StateInterpolationPlugin.VariableName) &&
-                element.Properties.GetValue<bool>(StateInterpolationPlugin.VariableName);
+            return element.Properties.GetValue<bool>(StateInterpolationPlugin.VariableName);
         }
 
         public static List<string> GetStateEnumNames(this IElement element)

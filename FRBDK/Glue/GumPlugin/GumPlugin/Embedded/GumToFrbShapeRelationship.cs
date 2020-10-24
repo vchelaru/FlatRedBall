@@ -9,5 +9,8 @@ namespace GumCoreShared.FlatRedBall.Embedded
     {
         public AxisAlignedRectangle FrbRect;
         public Gum.Wireframe.GraphicalUiElement GumRect;
+
+        public Circle FrbCircle;
+        public Gum.Wireframe.GraphicalUiElement GumCircle;
     }
 }

@@ -55,20 +55,39 @@ namespace GumCoreShared.FlatRedBall.Embedded
 
             var gumObject = gumWrapper.GumObject;
 
-            foreach (var gumRectGue in gumObject.ContainedElements)
+            foreach (var gumShapeGue in gumObject.ContainedElements)
             {
-                var renderableComponentAsLineRectangle =
-                    gumRectGue.RenderableComponent as RenderingLibrary.Math.Geometry.LineRectangle;
-                var shouldInclude = renderableComponentAsLineRectangle != null;
+                AddCollisionFromGumShape(shapeCollection, gumToFrbShapeRelationships, frbShapeParent, inclusionRequirement, gumShapeGue);
+            }
 
-                if(shouldInclude && inclusionRequirement != null)
+            foreach (var relationship in gumToFrbShapeRelationships)
+            {
+                relationship.FrbRect?.ForceUpdateDependencies();
+                relationship.FrbCircle?.ForceUpdateDependencies();
+            }
+        }
+
+        public static PositionedObject AddToCollision(this IGumCollidable collidable, GraphicalUiElement gumShape)
+        {
+            return AddCollisionFromGumShape(collidable.Collision, collidable.GumToFrbShapeRelationships, collidable as PositionedObject, null, gumShape);
+        }
+
+        private static PositionedObject AddCollisionFromGumShape(ShapeCollection shapeCollection, List<GumToFrbShapeRelationship> gumToFrbShapeRelationships, PositionedObject frbShapeParent, Func<GraphicalUiElement, bool> inclusionRequirement, GraphicalUiElement gumShapeGue)
+        {
+            PositionedObject toReturn = null;
+
+            if (gumShapeGue.RenderableComponent is RenderingLibrary.Math.Geometry.LineRectangle renderableComponentAsLineRectangle)
+            {
+                var shouldInclude = true;
+
+                if (inclusionRequirement != null)
                 {
-                    shouldInclude = inclusionRequirement(gumRectGue);
+                    shouldInclude = inclusionRequirement(gumShapeGue);
                 }
 
                 if (shouldInclude)
                 {
-                    gumRectGue.Visible = false;
+                    gumShapeGue.Visible = false;
 
                     var frbRect = new AxisAlignedRectangle();
                     // This is required so that collisions force the enemy to move,
@@ -80,22 +99,53 @@ namespace GumCoreShared.FlatRedBall.Embedded
 
                     var relationship = new GumToFrbShapeRelationship();
                     relationship.FrbRect = frbRect;
-                    relationship.GumRect = gumRectGue;
-                    frbRect.Name = gumRectGue.Name + "_Frb";
+                    relationship.GumRect = gumShapeGue;
+                    frbRect.Name = gumShapeGue.Name + "_Frb";
 
                     shapeCollection.Add(frbRect);
 
                     gumToFrbShapeRelationships.Add(relationship);
+
+                    toReturn = frbRect;
                 }
             }
-
-            foreach(var relationship in gumToFrbShapeRelationships)
+            else if (gumShapeGue.RenderableComponent is RenderingLibrary.Math.Geometry.LineCircle renderableComponentAsLineCircle)
             {
-                relationship.FrbRect.ForceUpdateDependencies();
+                var shouldInclude = true;
+
+                if (inclusionRequirement != null)
+                {
+                    shouldInclude = inclusionRequirement(gumShapeGue);
+                }
+
+                if (shouldInclude)
+                {
+                    gumShapeGue.Visible = false;
+
+                    var frbCircle = new Circle();
+                    // This is required so that collisions force the enemy to move,
+                    // but it does mean we'll have to position this relative to the Gum
+                    // object, but translate that to a relative position in FRB coordinates
+                    frbCircle.AttachTo(frbShapeParent);
+
+                    frbCircle.Color = renderableComponentAsLineCircle.Color;
+
+                    var relationship = new GumToFrbShapeRelationship();
+                    relationship.FrbCircle = frbCircle;
+                    relationship.GumCircle = gumShapeGue;
+                    frbCircle.Name = gumShapeGue.Name + "_Frb";
+
+                    shapeCollection.Add(frbCircle);
+
+                    gumToFrbShapeRelationships.Add(relationship);
+
+                    toReturn = frbCircle;
+                }
             }
+            return toReturn;
         }
 
-        public static void UpdateFrbRectanglePositionsFromGum(this IGumCollidable collidable)
+        public static void UpdateShapePositionsFromGum(this IGumCollidable collidable)
         {
             if (collidable.GumWrappers?.Count > 0)
             {
@@ -113,41 +163,84 @@ namespace GumCoreShared.FlatRedBall.Embedded
 
                     foreach (var relationship in collidable.GumToFrbShapeRelationships)
                     {
-                        var gumRect = relationship.GumRect;
-                        var frbRect = relationship.FrbRect;
-
-                        frbRect.Width = gumRect.GetAbsoluteWidth();
-                        frbRect.Height = gumRect.GetAbsoluteHeight();
-
-
-                        var gumRectX = gumRect.GetAbsoluteX();
-                        var gumRectY = gumRect.GetAbsoluteY();
-
-                        var rectLeftOffset = gumRectX - parentX;
-                        var rectTopOffset = gumRectY - parentY;
-
-                        var frbOffset = new Vector3(frbRect.Width / 2.0f, -frbRect.Height / 2.0f, 0);
-
-                        var gumRectangleRotation = gumRect.GetAbsoluteRotation();
-
-                        global::FlatRedBall.Math.MathFunctions.RotatePointAroundPoint(Vector3.Zero, ref frbOffset,
-                            MathHelper.ToRadians(gumRectangleRotation));
-
-                        frbRect.X = gumWrapper.FrbObject.X + gumObjectAsIpso.X + rectLeftOffset;
-                        frbRect.Y = gumWrapper.FrbObject.Y - gumObjectAsIpso.Y - rectTopOffset;
-
-
-                        frbRect.Position += frbOffset;
-
-                        if(frbRect.Parent != null)
+                        if(relationship.GumRect != null)
                         {
-                            frbRect.SetRelativeFromAbsolute();
+                            UpdateRectFromGum(gumWrapper, parentX, parentY, gumObjectAsIpso, relationship);
+                        }
+                        else if(relationship.GumCircle != null)
+                        {
+                            UpdateCircleFromGum(gumWrapper, parentX, parentY, gumObjectAsIpso, relationship);
                         }
                     }
                 }
             }
         }
 
+        private static void UpdateRectFromGum(PositionedObjectGueWrapper gumWrapper, float parentX, float parentY, IPositionedSizedObject gumObjectAsIpso, GumToFrbShapeRelationship relationship)
+        {
+            var gumRect = relationship.GumRect;
+            var frbRect = relationship.FrbRect;
+
+            frbRect.Width = gumRect.GetAbsoluteWidth();
+            frbRect.Height = gumRect.GetAbsoluteHeight();
+
+            var gumRectX = gumRect.GetAbsoluteX();
+            var gumRectY = gumRect.GetAbsoluteY();
+
+            var rectLeftOffset = gumRectX - parentX;
+            var rectTopOffset = gumRectY - parentY;
+
+            var frbOffset = new Vector3(frbRect.Width / 2.0f, -frbRect.Height / 2.0f, 0);
+
+            var gumRectangleRotation = gumRect.GetAbsoluteRotation();
+
+            global::FlatRedBall.Math.MathFunctions.RotatePointAroundPoint(Vector3.Zero, ref frbOffset,
+                MathHelper.ToRadians(gumRectangleRotation));
+
+            frbRect.X = gumWrapper.FrbObject.X + gumObjectAsIpso.X + rectLeftOffset;
+            frbRect.Y = gumWrapper.FrbObject.Y - gumObjectAsIpso.Y - rectTopOffset;
+
+            frbRect.Position += frbOffset;
+
+            if (frbRect.Parent != null)
+            {
+                frbRect.SetRelativeFromAbsolute();
+            }
+        }
+
+        private static void UpdateCircleFromGum(PositionedObjectGueWrapper gumWrapper, float parentX, float parentY, IPositionedSizedObject gumObjectAsIpso, GumToFrbShapeRelationship relationship)
+        {
+            var gumCircle = relationship.GumCircle;
+            var frbCircle = relationship.FrbCircle;
+
+            frbCircle.Radius = gumCircle.GetAbsoluteWidth()/2.0f;
+            // make width dominant?
+
+            var gumCircleX = gumCircle.GetAbsoluteX();
+            var gumCircleY = gumCircle.GetAbsoluteY();
+
+            var circleLeftOffset = gumCircleX - parentX;
+            var circleTopOffset = gumCircleY - parentY;
+
+            var frbOffset = new Vector3(frbCircle.Radius, -frbCircle.Radius, 0);
+
+            var gumCircleRotation = gumCircle.GetAbsoluteRotation();
+
+            global::FlatRedBall.Math.MathFunctions.RotatePointAroundPoint(Vector3.Zero, ref frbOffset,
+                MathHelper.ToRadians(gumCircleRotation));
+
+            frbCircle.X = gumWrapper.FrbObject.X + gumObjectAsIpso.X + circleLeftOffset;
+            frbCircle.Y = gumWrapper.FrbObject.Y - gumObjectAsIpso.Y - circleTopOffset;
+
+            frbCircle.Position += frbOffset;
+
+            if (frbCircle.Parent != null)
+            {
+                frbCircle.SetRelativeFromAbsolute();
+            }
+        }
+
+        // Vic asks = do we still need this? Is it obsolete?
         public static void FillFrom(this ShapeCollection shapeCollection, IEnumerable<GraphicalUiElement> gueList)
         {
             foreach (var gumRect in gueList)

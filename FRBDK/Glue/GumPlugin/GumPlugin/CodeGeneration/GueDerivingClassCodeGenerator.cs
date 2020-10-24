@@ -14,6 +14,7 @@ using System.Text;
 using Gum.DataTypes.Behaviors;
 using FlatRedBall.Glue.SaveClasses;
 using GumPlugin.ViewModels;
+using GumPluginCore.CodeGeneration;
 
 namespace GumPlugin.CodeGeneration
 {
@@ -679,6 +680,8 @@ namespace GumPlugin.CodeGeneration
                     stringBuilder.AppendLine( $"var wrapperForAttachment = new GumCoreShared.FlatRedBall.Embedded.PositionedObjectGueWrapper(this, {namedObjectName});");
                     stringBuilder.AppendLine(  "FlatRedBall.SpriteManager.AddPositionedObject(wrapperForAttachment);");
                     stringBuilder.AppendLine("gumAttachmentWrappers.Add(wrapperForAttachment);");
+
+                    GumCollidableCodeGenerator.GenerateAddCollision(stringBuilder, glueElement, namedObjectSave);
                 }
 
 

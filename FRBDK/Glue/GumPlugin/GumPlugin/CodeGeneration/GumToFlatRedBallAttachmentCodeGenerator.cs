@@ -38,22 +38,10 @@ namespace GumPlugin.CodeGeneration
             if(element is EntitySave)
             {
                 return element.GetAllNamedObjectsRecurisvely()
-                    .Any(item => IsAssetTypeInfoGum(item.GetAssetTypeInfo()));
+                    .Any(item => AssetTypeInfoManager.Self.IsAssetTypeInfoGum(item.GetAssetTypeInfo()));
             }
 
             return false;
-        }
-
-        private bool IsAssetTypeInfoGum(AssetTypeInfo assetTypeInfo)
-        {
-            if(assetTypeInfo != null)
-            {
-                return assetTypeInfo == AssetTypeInfoManager.Self.GraphicalUiElementAti ||
-                    AssetTypeInfoManager.Self.AssetTypesForThisProject
-                        .Any(item => item.QualifiedRuntimeTypeName.QualifiedType == assetTypeInfo.QualifiedRuntimeTypeName.QualifiedType);
-            }
-            return false;
-                
         }
     }
 }

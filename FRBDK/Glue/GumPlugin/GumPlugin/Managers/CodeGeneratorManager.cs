@@ -13,6 +13,7 @@ using Gum.DataTypes.Behaviors;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.IO;
+using GumPluginCore.CodeGeneration;
 
 namespace GumPlugin.Managers
 {
@@ -42,6 +43,7 @@ namespace GumPlugin.Managers
         GueDerivingClassCodeGenerator mGueDerivingClassCodeGenerator;
         GumLayerCodeGenerator mGumLayerCodeGenerator;
         GumLayerAssociationCodeGenerator gumLayerAssociationCodeGenerator;
+        GumCollidableCodeGenerator gumCollidableCodeGenerator;
         BehaviorCodeGenerator behaviorCodeGenerator;
         GumToFlatRedBallAttachmentCodeGenerator gumToFlatRedBallAttachmentCodeGenerator;
 
@@ -405,6 +407,9 @@ namespace GumPlugin.Managers
             gumLayerAssociationCodeGenerator = new GumLayerAssociationCodeGenerator();
             FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Add(gumLayerAssociationCodeGenerator);
 
+            gumCollidableCodeGenerator = new GumCollidableCodeGenerator();
+            FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Add(gumCollidableCodeGenerator);
+
             gumToFlatRedBallAttachmentCodeGenerator = new GumToFlatRedBallAttachmentCodeGenerator();
             FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Add(gumToFlatRedBallAttachmentCodeGenerator);
         }
@@ -429,6 +434,11 @@ namespace GumPlugin.Managers
             if (FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Contains(gumLayerAssociationCodeGenerator))
             {
                 FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Remove(gumLayerAssociationCodeGenerator);
+            }
+
+            if (FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Contains(gumCollidableCodeGenerator))
+            {
+                FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Remove(gumCollidableCodeGenerator);
             }
 
             if (FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Contains(gumToFlatRedBallAttachmentCodeGenerator))
