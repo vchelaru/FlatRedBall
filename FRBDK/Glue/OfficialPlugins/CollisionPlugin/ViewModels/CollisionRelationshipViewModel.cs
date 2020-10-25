@@ -273,6 +273,41 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             ? Visibility.Visible 
             : Visibility.Collapsed;
 
+
+        [DependsOn(nameof(IsFirstList))]
+        [DependsOn(nameof(IsSecondList))]
+        public Visibility ListVsListDuplicateVisibility => IsFirstList && IsSecondList
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+
+        [SyncedProperty]
+        public ListVsListLoopingMode ListVsListLoopingMode
+        {
+            get => (ListVsListLoopingMode)Get<int>();
+            set => SetAndPersist((int)value);
+        }
+
+        [DependsOn(nameof(ListVsListLoopingMode))]
+        public bool IsPreventDoubleChecksChecked
+        {
+            get => ListVsListLoopingMode == ListVsListLoopingMode.PreventDoubleChecksPerFrame;
+            set
+            {
+                if (value) ListVsListLoopingMode = ListVsListLoopingMode.PreventDoubleChecksPerFrame;
+            }
+        }
+
+        [DependsOn(nameof(ListVsListLoopingMode))]
+        public bool IsAllowDoubleChecksChecked
+        {
+            get => ListVsListLoopingMode == ListVsListLoopingMode.AllowDoubleChecksPerFrame;
+            set
+            {
+                if (value) ListVsListLoopingMode = ListVsListLoopingMode.AllowDoubleChecksPerFrame;
+            }
+        }
+
+
         public bool IsFirstPlatformer
         {
             get => Get<bool>();

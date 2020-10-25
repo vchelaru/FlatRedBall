@@ -88,6 +88,9 @@ namespace OfficialPlugins.CollisionPlugin
             var collisionLimit = (FlatRedBall.Math.Collision.CollisionLimit) namedObject.Properties.GetValue<int>(
                 nameof(CollisionRelationshipViewModel.CollisionLimit));
 
+            var listVsListLoopingMode = (FlatRedBall.Math.Collision.ListVsListLoopingMode)namedObject.Properties.GetValue<int>(
+                nameof(CollisionRelationshipViewModel.ListVsListLoopingMode));
+
             var instanceName = namedObject.InstanceName;
 
             bool isFirstList;
@@ -164,6 +167,7 @@ namespace OfficialPlugins.CollisionPlugin
             if(isFirstList && isSecondList)
             {
                 codeBlock.Line($"{instanceName}.CollisionLimit = FlatRedBall.Math.Collision.CollisionLimit.{collisionLimit};");
+                codeBlock.Line($"{instanceName}.ListVsListLoopingMode = FlatRedBall.Math.Collision.ListVsListLoopingMode.{listVsListLoopingMode};");
             }
 
             codeBlock.Line($"{instanceName}.Name = \"{instanceName}\";");

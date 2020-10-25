@@ -78,6 +78,16 @@
                 </StackPanel>
             </GroupBox>
 
+            <GroupBox Header="List vs List Duplicate Collision Options" Visibility="{Binding ListVsListDuplicateVisibility}"  Margin="0,8,0,0">
+                <StackPanel>
+                    <RadioButton
+                        IsChecked="{Binding IsPreventDoubleChecksChecked}">Prevent Double Checks per Frame</RadioButton>
+                    <RadioButton
+                        IsChecked="{Binding IsAllowDoubleChecksChecked}">Allow Double Checks per Frame</RadioButton>
+                    <TextBlock TextWrapping="Wrap">Double checks should be performed if doing self-collision on an entity list with each item using a different subcollision</TextBlock>
+                </StackPanel>
+            </GroupBox>
+
             <GroupBox Header="Collision Physics" Margin="0,8,0,0">
                 <StackPanel>
                     <RadioButton
