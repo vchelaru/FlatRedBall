@@ -119,12 +119,14 @@ namespace FlatRedBall.Forms.Controls
             else
             {
                 double newValue;
-                if (GuiManager.Cursor.GumX() < thumb.ActualX)
+
+                var gumX = GuiManager.Cursor.GumX();
+                if (gumX < thumb.ActualX)
                 {
                     newValue = Value - LargeChange;
                     ApplyValueConsideringSnapToTicks(newValue);
                 }
-                else if (GuiManager.Cursor.GumX() > thumb.ActualX + thumb.ActualWidth)
+                else if (gumX > thumb.ActualX + thumb.ActualWidth)
                 {
                     newValue = Value + LargeChange;
 
