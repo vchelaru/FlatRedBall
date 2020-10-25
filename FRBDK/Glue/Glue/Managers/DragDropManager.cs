@@ -27,6 +27,8 @@ namespace FlatRedBall.Glue.Managers
 {
     public class DragDropManager : Singleton<DragDropManager>
     {
+        #region Named Object
+
         public void MoveNamedObject(TreeNode treeNodeMoving, TreeNode targetNode)
         {
             if (targetNode != null)
@@ -402,6 +404,10 @@ namespace FlatRedBall.Glue.Managers
             return toReturn;
         }
 
+        #endregion
+
+        #region Entity
+
         public TreeNode MoveEntityOn(EntityTreeNode treeNodeMoving, TreeNode targetNode)
         {
             TreeNode newTreeNode = null;
@@ -591,6 +597,8 @@ namespace FlatRedBall.Glue.Managers
             return newTreeNode;
         }
 
+        #endregion
+
         public NamedObjectSave CreateNewNamedObjectInElement(IElement elementToCreateIn, 
             EntitySave blueprintEntity, bool createList = false)
         {
@@ -630,24 +638,25 @@ namespace FlatRedBall.Glue.Managers
             var addObjectViewModel = new AddObjectViewModel();
             // We'll add "List" or "Instance" below
             //string newName = FileManager.RemovePath(blueprintEntity.Name);
-            addObjectViewModel.ObjectName = FileManager.RemovePath(blueprintEntity.Name);
 
             #region Set the source type properties for the new NamedObject
 
             if (createList)
             {
-                addObjectViewModel.ObjectName += "List";
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;
 
                 addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.PositionedObjectList;
 
                 addObjectViewModel.SourceClassGenericType = blueprintEntity.Name;
+                addObjectViewModel.ObjectName = FileManager.RemovePath(blueprintEntity.Name);
+                addObjectViewModel.ObjectName += "List";
             }
             else
             {
-                addObjectViewModel.ObjectName += "Instance";
                 addObjectViewModel.SourceType = SourceType.Entity;
                 addObjectViewModel.SelectedEntitySave = blueprintEntity;
+                addObjectViewModel.ObjectName = FileManager.RemovePath(blueprintEntity.Name);
+                addObjectViewModel.ObjectName += "Instance";
             }
 
             #endregion
