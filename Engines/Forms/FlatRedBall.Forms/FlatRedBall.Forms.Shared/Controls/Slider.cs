@@ -60,6 +60,14 @@ namespace FlatRedBall.Forms.Controls
             UpdateState();
         }
 
+        protected override void ReactToVisualRemoved()
+        {
+            base.ReactToVisualRemoved();
+
+            Track.Push -= HandleTrackPush;
+
+        }
+
         #endregion
 
         #region Event Handlers

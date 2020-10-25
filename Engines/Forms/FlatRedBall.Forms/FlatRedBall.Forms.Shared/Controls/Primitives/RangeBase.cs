@@ -12,7 +12,11 @@ namespace FlatRedBall.Forms.Controls.Primitives
 
         protected Button thumb;
 
-        protected GraphicalUiElement Track => thumb.Visual.EffectiveParentGue;
+        // version 1 of this would use the thumb's parent. But this is problematic if the thumb
+        // parent is re-assigned after the Slider is created. Instead we should look for an explicit
+        // track:
+        GraphicalUiElement explicitTrack;
+        protected GraphicalUiElement Track => explicitTrack ?? thumb.Visual.EffectiveParentGue;
 
         /// <summary>
         /// Represents the X or Y offset of the cursor relative to the thumb when the thumb was grabbed.
@@ -133,11 +137,22 @@ namespace FlatRedBall.Forms.Controls.Primitives
 
             // read the height values and infer the Value and ViewportSize based on a 0 - 100
 
+            explicitTrack = this.Visual.GetGraphicalUiElementByName("TrackInstance");
+
             Minimum = 0;
             Maximum = 100;
             SmallChange = 10;
             Value = 0;
 
+        }
+
+        protected override void ReactToVisualRemoved()
+        {
+            base.ReactToVisualRemoved();
+
+            thumb.Push -= HandleThumbPush;
+            thumb.Visual.DragOver -= HandleThumbRollOver;
+            Visual.RollOver -= HandleTrackRollOver;
         }
 
         #endregion

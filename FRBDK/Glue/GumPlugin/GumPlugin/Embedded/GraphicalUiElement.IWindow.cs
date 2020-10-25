@@ -79,6 +79,12 @@ namespace Gum.Wireframe
 
                 if (
                     instance.BaseType == "ColoredRectangle" ||
+
+                    // Vic says - a user may want to click on a container like a track, 
+                    // so we prob should allow clicks?
+                    // Update - no doing this seems to ruin all kinds of UI because containers
+                    // steal clicks from their children. We will check if the container has an explicit
+                    // event, otherwise, it will pass it along to its children.
                     instance.BaseType == "Container" ||
                     instance.BaseType == "NineSlice" ||
 
@@ -383,10 +389,21 @@ namespace Gum.Wireframe
 
                 #endregion
             }
+
             if (isOver)
             {
-                if(this.IsComponentOrInstanceOfComponent())
+                if(this.IsComponentOrInstanceOfComponent()
+                    ||
+                    Push != null ||
+                    Click != null ||
+                    ClickNoSlide != null ||
+                    SlideOnClick != null
+                    )
                 {
+                    if(cursor.PrimaryPush)
+                    {
+                        int m = 3;
+                    }
                     if (!handledByChild)
                     {
                         // Feb. 21, 2018

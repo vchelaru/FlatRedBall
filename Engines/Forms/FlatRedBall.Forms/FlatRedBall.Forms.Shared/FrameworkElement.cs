@@ -222,7 +222,8 @@ namespace FlatRedBall.Forms.Controls
             set
             {
 #if DEBUG
-                if(value == null)
+                // allow the visual to be un-assigned if it was assigned before, like if a forms control is getting removed.
+                if(value == null && visual == null)
                 {
                     throw new ArgumentNullException("Visual cannot be assigned to null");
                 }
@@ -233,14 +234,18 @@ namespace FlatRedBall.Forms.Controls
                     {
                         // unsubscribe:
                         visual.BindingContextChanged -= HandleVisualBindingContextChanged;
+                        ReactToVisualRemoved();
                     }
 
 
                     visual = value; 
-                    ReactToVisualChanged();
-                    UpdateAllUiPropertiesToVm();
+                    if(visual != null)
+                    {
+                        ReactToVisualChanged();
+                        UpdateAllUiPropertiesToVm();
 
-                    visual.BindingContextChanged += HandleVisualBindingContextChanged;
+                        visual.BindingContextChanged += HandleVisualBindingContextChanged;
+                    }
                 }
 
             }
@@ -381,6 +386,11 @@ namespace FlatRedBall.Forms.Controls
         }
 
         protected virtual void ReactToVisualChanged()
+        {
+
+        }
+
+        protected virtual void ReactToVisualRemoved()
         {
 
         }

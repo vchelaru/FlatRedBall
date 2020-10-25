@@ -74,10 +74,30 @@ namespace GumPlugin.CodeGeneration
                 {
                     foreach (var child in elementSave.Instances)
                     {
+                        // Do this only if the object is a component instance
+                        var isComponent = false;
+                        if (
+                            child.BaseType == "ColoredRectangle" ||
+
+                            child.BaseType == "Container" ||
+                            child.BaseType == "NineSlice" ||
+
+                            child.BaseType == "Sprite" ||
+                            child.BaseType == "Text")
+                        {
+                            isComponent = false;
+                        }
+                        else
+                        {
+                            // If we got here, then it's a component
+                            isComponent = true;
+                        }
+
+
                         var hasEventsAsObject =
                             defaultState.GetValueRecursive(child.Name + ".HasEvents");
                         
-                        if(hasEventsAsObject is bool hasEvents)
+                        if(hasEventsAsObject is bool hasEvents && isComponent)
                         {
 
                             if (hasEvents)
