@@ -114,6 +114,12 @@ namespace FlatRedBall.Gum.Animation
 
         public void Play(object whatStartedPlayingThis = null)
         {
+            /////////////Early Out//////////////
+            if(IsPlaying())
+            {
+                return;
+            }
+            //////////End Early Out/////////////
             WhatStartedPlayingThis = whatStartedPlayingThis;
 
             foreach (var namedEvent in namedEvents)
