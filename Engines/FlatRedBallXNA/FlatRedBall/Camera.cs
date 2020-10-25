@@ -873,7 +873,11 @@ namespace FlatRedBall
         }
 
 
-        #region XML Docs
+        public void PositionRandomlyInView(IPositionable positionable)
+        {
+            PositionRandomlyInView(positionable, Z, Z);
+        }
+
         /// <summary>
         /// Positiones the argument positionable randomly in camera between the argument bounds.
         /// </summary>
@@ -883,7 +887,6 @@ namespace FlatRedBall
         /// <param name="positionable">The object to reposition.</param>
         /// <param name="minimumDistanceFromCamera">The closest possible distance from the camera.</param>
         /// <param name="maximumDistanceFromCamera">The furthest possible distance from the camera.</param>
-        #endregion
         public void PositionRandomlyInView(IPositionable positionable, float minimumDistanceFromCamera, float maximumDistanceFromCamera)
         {
             // First get the distance from the camera.
