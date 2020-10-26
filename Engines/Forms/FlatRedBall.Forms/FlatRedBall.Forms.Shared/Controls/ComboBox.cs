@@ -287,6 +287,27 @@ namespace FlatRedBall.Forms.Controls
             // todo - what if this is on a layer?
             listBox.Visual.AddToManagers(Visual.Managers,
                 Visual.Managers.Renderer.MainLayer);
+
+            var rootParent = listBox.Visual.GetParentRoot();
+
+            var parent = Visual.Parent as IWindow;
+            var isDominant = false;
+            while(parent != null)
+            {
+                if(GuiManager.DominantWindows.Contains(parent))
+                {
+                    isDominant = true;
+                    break;
+                }
+
+                parent = parent.Parent;
+            }
+
+            if(isDominant)
+            {
+                GuiManager.AddDominantWindow(listBox.Visual);
+            }
+
             GuiManager.AddNextPushAction(TryHideFromPush);
             GuiManager.SortZAndLayerBased();
 
