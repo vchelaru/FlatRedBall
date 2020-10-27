@@ -765,12 +765,12 @@ namespace FlatRedBall.Math
 
 
 
-        public static Vector3 Reflect(Vector3 vectorToReflect, Vector3 surfaceToReflectOn)
+        public static Vector3 Reflect(Vector3 vectorToReflect, Vector3 surfaceNormal)
         {
-            surfaceToReflectOn.Normalize();
+            surfaceNormal.Normalize();
 
 
-            Vector3 projected = surfaceToReflectOn * Vector3.Dot(vectorToReflect, surfaceToReflectOn);
+            Vector3 projected = surfaceNormal * Vector3.Dot(vectorToReflect, surfaceNormal);
 
             return -(vectorToReflect - projected) + projected;
 

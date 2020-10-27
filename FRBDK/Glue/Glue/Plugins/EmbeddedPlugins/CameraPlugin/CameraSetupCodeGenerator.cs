@@ -581,8 +581,12 @@ namespace FlatRedBall.Glue.CodeGeneration
                         // http://community.monogame.net/t/how-to-implement-borderless-fullscreen-on-desktopgl-project/8359
                         ifBlock.Line("graphicsDeviceManager.HardwareModeSwitch = false;");
 
-                        // If in fullscreen we want the widow to take up just the resolution of the screen:
+                        // // If the window has been moved to the right, it will be partly off screen when fullscreen. To fix this, move it to the left first:
+                        ifBlock.Line(
+                            "FlatRedBall.FlatRedBallServices.Game.Window.Position = new Microsoft.Xna.Framework.Point(0,0);");
 
+
+                        // If in fullscreen we want the widow to take up just the resolution of the screen:
                         ifBlock.Line(
                             "FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(" +
                             "Microsoft.Xna.Framework.Graphics.GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, " +
@@ -619,6 +623,9 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     elseBlock.Line("width = System.Math.Min(width, maxWidth);");
                     elseBlock.Line("height = System.Math.Min(height, maxHeight);");
+
+                    var innerIf = elseBlock.If("FlatRedBall.FlatRedBallServices.Game.Window.Position.Y < 25");
+                    innerIf.Line("FlatRedBall.FlatRedBallServices.Game.Window.Position = new Microsoft.Xna.Framework.Point(FlatRedBall.FlatRedBallServices.Game.Window.Position.X, 25);");
 
                     elseBlock.Line("FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(width, height);");
 
