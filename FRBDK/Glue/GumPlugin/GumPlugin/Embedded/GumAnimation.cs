@@ -210,7 +210,7 @@ namespace FlatRedBall.Gum.Animation
                 {
                     Action endReachedAction = () => EndReached?.Invoke();
                     var endInstruction = new DelegateInstruction(endReachedAction);
-                    endInstruction.TimeToExecute = TimeManager.CurrentTime + this.Length;
+                    endInstruction.TimeToExecute = TimeManager.CurrentTime + this.Length / AnimationSpeed;
                     endInstruction.Target = this;
                     InstructionManager.Instructions.Add(endInstruction);
                 }
