@@ -166,7 +166,7 @@ namespace FlatRedBall.Gum.Animation
                     {
                         var instruction = new DelegateInstruction(action);
                         instruction.Target = this;
-                        instruction.TimeToExecute = TimeManager.CurrentTime + namedEvent.Time;
+                        instruction.TimeToExecute = TimeManager.CurrentTime + namedEvent.Time/AnimationSpeed;
                         InstructionManager.Instructions.Add(instruction);
                     }
                 }
