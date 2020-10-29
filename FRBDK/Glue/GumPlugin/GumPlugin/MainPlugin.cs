@@ -284,7 +284,9 @@ namespace GumPlugin
             // - Fixed missing semicolon at the end of generated code
             // 2.3
             // - Added new classes for creating/updating shapes from Gum
-            get { return new Version(2, 3, 0); }
+            // 2.4
+            // - Added Gum animation speed
+            get { return new Version(2, 4, 0); }
         }
 
         #endregion

@@ -19,6 +19,13 @@ namespace FlatRedBall.Gum.Animation
 
         #endregion
 
+        /// <summary>
+        /// The speed multiplier used to play the animation. This must be greater than 0
+        /// </summary>
+        public float AnimationSpeed
+        {
+            get; set;
+        } = 1;
 
         public List<GumAnimation> SubAnimations
         {
@@ -42,6 +49,7 @@ namespace FlatRedBall.Gum.Animation
         public event Action EndReached;
 
         Func<object, IEnumerable<Instruction>> getInstructionsFunc;
+        Func<float, object, IEnumerable<Instruction>> getTimedInstructionsFunc;
 
         public object WhatStartedPlayingThis
         {
@@ -58,6 +66,13 @@ namespace FlatRedBall.Gum.Animation
         public GumAnimation(float length, Func<object, IEnumerable<Instruction>> getInstructionsFunc)
         {
             this.getInstructionsFunc = getInstructionsFunc;
+            this.Length = length;
+            SubAnimations = new List<GumAnimation>();
+        }
+
+        public GumAnimation(float length, Func<float, object, IEnumerable<Instruction>> getTimedInstructionsFunc)
+        {
+            this.getTimedInstructionsFunc = getTimedInstructionsFunc;
             this.Length = length;
             SubAnimations = new List<GumAnimation>();
         }
@@ -102,12 +117,26 @@ namespace FlatRedBall.Gum.Animation
         {
             global::FlatRedBall.Instructions.Instruction lastInstruction = null;
 
-            foreach(var instruction in getInstructionsFunc(this))
+            if(getInstructionsFunc != null)
             {
-                if(lastInstruction == null || lastInstruction.TimeToExecute == instruction.TimeToExecute)
+                foreach(var instruction in getInstructionsFunc(this))
                 {
-                    instruction.ExecuteOn(this);
-                    lastInstruction = instruction;
+                    if(lastInstruction == null || lastInstruction.TimeToExecute == instruction.TimeToExecute)
+                    {
+                        instruction.ExecuteOn(this);
+                        lastInstruction = instruction;
+                    }
+                }
+            }
+            else if(getTimedInstructionsFunc != null)
+            {
+                foreach(var instruction in getTimedInstructionsFunc(AnimationSpeed, this))
+                {
+                    if (lastInstruction == null || lastInstruction.TimeToExecute == instruction.TimeToExecute)
+                    {
+                        instruction.ExecuteOn(this);
+                        lastInstruction = instruction;
+                    }
                 }
             }
         }
@@ -143,15 +172,32 @@ namespace FlatRedBall.Gum.Animation
                 }
             }
 
-            foreach (var instruction in getInstructionsFunc(this))
+            if(getTimedInstructionsFunc != null)
             {
-                if(instruction.TimeToExecute == TimeManager.CurrentTime)
+                foreach (var instruction in getTimedInstructionsFunc(AnimationSpeed, this))
                 {
-                    instruction.ExecuteOn(this);
+                    if (instruction.TimeToExecute == TimeManager.CurrentTime)
+                    {
+                        instruction.ExecuteOn(this);
+                    }
+                    else
+                    {
+                        InstructionManager.Instructions.Add(instruction);
+                    }
                 }
-                else
+            }
+            else if(getInstructionsFunc != null)
+            {
+                foreach (var instruction in getInstructionsFunc(this))
                 {
-                    InstructionManager.Instructions.Add(instruction);
+                    if(instruction.TimeToExecute == TimeManager.CurrentTime)
+                    {
+                        instruction.ExecuteOn(this);
+                    }
+                    else
+                    {
+                        InstructionManager.Instructions.Add(instruction);
+                    }
                 }
             }
 
