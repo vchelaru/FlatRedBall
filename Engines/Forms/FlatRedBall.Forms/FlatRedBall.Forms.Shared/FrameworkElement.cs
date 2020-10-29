@@ -370,9 +370,9 @@ namespace FlatRedBall.Forms.Controls
             }
 #endif
             var cameraTop = 0;
-            var cameraBottom = Renderer.Self.Camera.ClientHeight;
+            var cameraBottom = Renderer.Self.Camera.ClientHeight / Renderer.Self.Camera.Zoom;
             var cameraLeft = 0;
-            var cameraRight = Renderer.Self.Camera.ClientWidth;
+            var cameraRight = Renderer.Self.Camera.ClientWidth / Renderer.Self.Camera.Zoom;
 
             var amountXToShift = 0;
             var amountYToShift = 0;
