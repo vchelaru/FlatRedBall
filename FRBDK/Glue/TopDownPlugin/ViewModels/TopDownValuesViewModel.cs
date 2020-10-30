@@ -10,11 +10,15 @@ using TopDownPlugin.Models;
 
 namespace TopDownPlugin.ViewModels
 {
+    #region Class
+
     public class TypedValue
     {
         public Type Type;
         public object Value;
     }
+
+    #endregion
 
     public class TopDownValuesViewModel : ViewModel
     {
@@ -38,8 +42,8 @@ namespace TopDownPlugin.ViewModels
 
         public string Name
         {
-            get { return Get<string>(); }
-            set { Set(value); }
+            get => Get<string>();
+            set => Set(value); 
         }
 
         public float MaxSpeed
@@ -84,14 +88,8 @@ namespace TopDownPlugin.ViewModels
 
         [DependsOn(nameof(IsImmediate))]
         [DependsOn(nameof(UsesAcceleration))]
-        public Visibility AccelerationValuesVisibility
-        {
-            get
-            {
-                return IsImmediate ? Visibility.Collapsed
+        public Visibility AccelerationValuesVisibility => IsImmediate ? Visibility.Collapsed
                     : Visibility.Visible;
-            }
-        }
 
         public float AccelerationTime
         {
@@ -150,6 +148,21 @@ namespace TopDownPlugin.ViewModels
             private set;
         }
 
+        public bool IsCustomDecelerationChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(IsCustomDecelerationChecked))]
+        public bool IsCustomDecelerationValueEnabled => IsCustomDecelerationChecked;
+
+        public float CustomDecelerationValue
+        {
+            get => Get<float>();
+            set => Set(value);
+        }
+
         #endregion
 
         public TopDownValuesViewModel Clone()
@@ -182,8 +195,11 @@ namespace TopDownPlugin.ViewModels
             this.AccelerationTime = values.AccelerationTime;
             this.DecelerationTime = values.DecelerationTime;
             this.UpdateDirectionFromVelocity = values.UpdateDirectionFromVelocity;
+            this.IsCustomDecelerationChecked = values.IsUsingCustomDeceleration;
+            this.CustomDecelerationValue = values.CustomDecelerationValue;
 
             this.BackingData = values;
+
 
             int index = 0;
             foreach(var kvp in values.AdditionalValues)
@@ -211,6 +227,8 @@ namespace TopDownPlugin.ViewModels
             toReturn.DecelerationTime = this.DecelerationTime;
             toReturn.UpdateDirectionFromVelocity = this.UpdateDirectionFromVelocity;
             toReturn.UsesAcceleration = this.UsesAcceleration;
+            toReturn.IsUsingCustomDeceleration = this.IsCustomDecelerationChecked;
+            toReturn.CustomDecelerationValue = this.CustomDecelerationValue;
 
             foreach(var kvp in AdditionalProperties)
             {

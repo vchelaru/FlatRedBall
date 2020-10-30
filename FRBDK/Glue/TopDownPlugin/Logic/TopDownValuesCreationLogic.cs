@@ -94,7 +94,10 @@ namespace TopDownPlugin.Logic
                 headerName != nameof(TopDownValues.MaxSpeed) &&
                 headerName != nameof(TopDownValues.AccelerationTime) &&
                 headerName != nameof(TopDownValues.DecelerationTime) &&
-                headerName != nameof(TopDownValues.UpdateDirectionFromVelocity);
+                headerName != nameof(TopDownValues.UpdateDirectionFromVelocity) &&
+                headerName != nameof(TopDownValues.IsUsingCustomDeceleration) &&
+                headerName != nameof(TopDownValues.CustomDecelerationValue) 
+                ;
         }
 
         private static Type GetTypeFromTypeName(string typeAsString)

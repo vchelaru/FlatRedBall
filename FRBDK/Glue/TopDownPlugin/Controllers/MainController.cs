@@ -518,6 +518,24 @@ namespace TopDownPlugin.Controllers
                     MemberTypes = System.Reflection.MemberTypes.Property
                 });
             }
+            if(!ContainsHeader(nameof(TopDownValues.IsUsingCustomDeceleration)))
+            {
+                tempList.Add(new CsvHeader
+                {
+                    OriginalText = nameof(TopDownValues.IsUsingCustomDeceleration) + " (bool)",
+                    Name = nameof(TopDownValues.IsUsingCustomDeceleration),
+                    MemberTypes = System.Reflection.MemberTypes.Property
+                });
+            }
+            if (!ContainsHeader(nameof(TopDownValues.CustomDecelerationValue)))
+            {
+                tempList.Add(new CsvHeader
+                {
+                    OriginalText = nameof(TopDownValues.CustomDecelerationValue) + " (float)",
+                    Name = nameof(TopDownValues.CustomDecelerationValue),
+                    MemberTypes = System.Reflection.MemberTypes.Property
+                });
+            }
 
             lastHeaders = tempList.ToArray();
 

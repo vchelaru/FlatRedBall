@@ -337,7 +337,15 @@ namespace TopDownPlugin.CodeGenerators
                 }
                 else
                 {
-                    var accelerationMagnitude = TopDownSpeedMultiplier * mCurrentMovement.MaxSpeed / secondsToTake;
+                    float accelerationMagnitude;
+                    if(this.Velocity.Length() > mCurrentMovement.MaxSpeed && mCurrentMovement.IsUsingCustomDeceleration)
+                    {
+                        accelerationMagnitude = mCurrentMovement.CustomDecelerationValue;
+                    }
+                    else
+                    {
+                        accelerationMagnitude = TopDownSpeedMultiplier * mCurrentMovement.MaxSpeed / secondsToTake;
+                    }
                 
                     var nonNormalizedDifference = difference;
                 

@@ -17,7 +17,11 @@ namespace TopDownPlugin.Models
         public float DecelerationTime { get; set; }
         public bool UpdateDirectionFromVelocity { get; set; } = true;
 
-        // If adding properties here, modify the MainController.GetCsvFalues
+        public bool IsUsingCustomDeceleration { get; set; } = false;
+
+        public float CustomDecelerationValue { get; set; } = 100;
+
+        // If adding properties here, modify the MainController.GetCsvValues
         // to also consider the new properties
 
         public Dictionary<string, object> AdditionalValues

@@ -48,7 +48,7 @@
 
 
         <!--Horizontal Movement-->
-        <TextBlock Grid.Column="1" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3">Horizontal Movement</TextBlock>
+        <TextBlock Grid.Column="1" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3">Movement</TextBlock>
         <StackPanel Grid.Row="1" Grid.Column="1" Margin="12,3,8,3">
 
             <TextBlock>Max Speed:</TextBlock>
@@ -69,6 +69,9 @@
                          KeyUp="TextBox_KeyEnterUpdate"
                          ></TextBox>
             </StackPanel>
+
+            <CheckBox VerticalContentAlignment="Center" Margin="0,10,0,0" IsChecked="{Binding IsCustomDecelerationChecked}">Custom deceleration above max speed</CheckBox>
+            <TextBox Width="70" HorizontalAlignment="Left" IsEnabled="{Binding IsCustomDecelerationValueEnabled}" Text="{Binding CustomDecelerationValue}"></TextBox>
         </StackPanel>
 
 
