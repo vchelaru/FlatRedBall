@@ -387,7 +387,7 @@ namespace FlatRedBall.Glue.Plugins
 
         private void HandleAddingPluginInDirectory(AggregateCatalog returnValue, string pluginDirectory)
         {
-            List<Assembly> assemblies = new List<Assembly>();
+            var assemblies = new HashSet<Assembly>();
 
             var assembliesFiles = Directory.GetFiles(pluginDirectory, "*.dll");
 
@@ -395,7 +395,7 @@ namespace FlatRedBall.Glue.Plugins
             {
                 try
                 {
-                    if (IsAssemblyAlreadyReferenced(assemblyName))
+                    if (IsAssemblyAlreadyReferenced(assemblyName, out var assembly))
                     {
                         string message = $"Warning: {pluginDirectory} - Skipping over assembly {assemblyName} because it is already loaded by a different plugin";
 
@@ -403,13 +403,10 @@ namespace FlatRedBall.Glue.Plugins
                     }
                     else
                     {
-
-
-                        var asm = Assembly.LoadFrom(assemblyName);
-
-                        assemblies.Add(asm);
-
+                        assembly = Assembly.LoadFrom(assemblyName);
                     }
+                    
+                    assemblies.Add(assembly);
                 }
                 catch (Exception ex)
                 {
@@ -420,7 +417,6 @@ namespace FlatRedBall.Glue.Plugins
             AggregateCatalog catalogToMakeSureStuffIsLinked = new AggregateCatalog();
             foreach (var assembly in assemblies)
             {
-
                 var catalog = new AssemblyCatalog(assembly);
                 catalogToMakeSureStuffIsLinked.Catalogs.Add(catalog);
             }
@@ -493,8 +489,9 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
-        private bool IsAssemblyAlreadyReferenced(string assemblyName)
+        private bool IsAssemblyAlreadyReferenced(string assemblyName, out Assembly alreadyLoadedAssembly)
         {
+            alreadyLoadedAssembly = null;
             string strippedArgumentName = FileManager.RemovePath(assemblyName);
 
             string fileName = FileManager.RemovePath(assemblyName);
@@ -514,6 +511,7 @@ namespace FlatRedBall.Glue.Plugins
 
                     if (strippedArgumentName == strippedName)
                     {
+                        alreadyLoadedAssembly = assembly;
                         return true;
                     }
                 }
