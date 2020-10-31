@@ -36,6 +36,9 @@ namespace FlatRedBall.Glue.MVVM
     }
     #endregion
 
+    /// <summary>
+    /// ViewModel-implementing class used to display and persist data for a NamedObjectSave or element. 
+    /// </summary>
     public class PropertyListContainerViewModel : ViewModel
     {
         #region Embedded Classes

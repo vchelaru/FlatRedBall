@@ -15,7 +15,7 @@ namespace TileGraphicsPlugin.CodeGeneration
     {
         public override ICodeBlock GenerateInitializeLate(ICodeBlock codeBlock, IElement element)
         {
-            NamedObjectSave[] tileShapeCollections = GetAllNamedObjectsInElement(element);
+            NamedObjectSave[] tileShapeCollections = GetAllTileShapeCollectionNamedObjectsInElement(element);
 
             foreach (var tileShapeCollection in tileShapeCollections)
             {
@@ -25,7 +25,7 @@ namespace TileGraphicsPlugin.CodeGeneration
             return codeBlock;
         }
 
-        private static NamedObjectSave[] GetAllNamedObjectsInElement(IElement element)
+        static NamedObjectSave[] GetAllTileShapeCollectionNamedObjectsInElement(IElement element)
         {
             return element
                 .AllNamedObjects
@@ -35,7 +35,7 @@ namespace TileGraphicsPlugin.CodeGeneration
 
         public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
         {
-            NamedObjectSave[] tileShapeCollections = GetAllNamedObjectsInElement(element);
+            NamedObjectSave[] tileShapeCollections = GetAllTileShapeCollectionNamedObjectsInElement(element);
 
 
 
@@ -212,15 +212,16 @@ namespace TileGraphicsPlugin.CodeGeneration
             {
                 return namedObjectSave.Properties.GetValue<T>(name);
             }
+            string FloatString(float value) => value.ToString(CultureInfo.InvariantCulture) + "f";
 
             var tileSize = Get<float>(nameof(TileShapeCollectionPropertiesViewModel.CollisionTileSize));
-            var tileSizeString = tileSize.ToString(CultureInfo.InvariantCulture) + "f";
+            var tileSizeString = FloatString(tileSize);
 
             var leftFill = Get<float>(nameof(TileShapeCollectionPropertiesViewModel.CollisionFillLeft));
-            var leftFillString = leftFill.ToString(CultureInfo.InvariantCulture) + "f";
+            var leftFillString = FloatString(leftFill);
 
             var topFill = Get<float>(nameof(TileShapeCollectionPropertiesViewModel.CollisionFillTop));
-            var topFillString = topFill.ToString(CultureInfo.InvariantCulture) + "f";
+            var topFillString = FloatString(topFill);
 
             var widthFill = Get<int>(nameof(TileShapeCollectionPropertiesViewModel.CollisionFillWidth));
             var heightFill = Get<int>(nameof(TileShapeCollectionPropertiesViewModel.CollisionFillHeight));

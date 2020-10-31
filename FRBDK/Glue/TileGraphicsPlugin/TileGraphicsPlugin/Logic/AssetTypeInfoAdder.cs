@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using TiledPluginCore.CodeGeneration;
+using TiledPluginCore.ViewModels;
 using TileGraphicsPlugin.CodeGeneration;
 using TileGraphicsPlugin.ViewModels;
 
@@ -17,6 +19,7 @@ namespace TileGraphicsPlugin
     {
         AssetTypeInfo tmxAssetTypeInfo;
         AssetTypeInfo tileShapeCollectionAssetTypeInfo;
+        AssetTypeInfo tileNodeNetworkAssetTypeInfo;
 
         public AssetTypeInfo TmxAssetTypeInfo
         {
@@ -42,6 +45,18 @@ namespace TileGraphicsPlugin
             }
         }
 
+        public AssetTypeInfo TileNodeNetworkAssetTypeInfo
+        {
+            get
+            {
+                if(tileNodeNetworkAssetTypeInfo == null)
+                {
+                    tileNodeNetworkAssetTypeInfo = CreateAtiForTileNodeNetwork();
+                }
+                return tileNodeNetworkAssetTypeInfo;
+            }
+        }
+
         public void UpdateAtiCsvPresence()
         {
             string projectFolder = FileManager.GetDirectory(GlueState.Self.GlueProjectFileName);
@@ -61,6 +76,7 @@ namespace TileGraphicsPlugin
             AddIfNotPresent(layeredTileMapScnx);
             AddIfNotPresent(layeredTilemapTilb);
             AddIfNotPresent(TileShapeCollectionAssetTypeInfo);
+            AddIfNotPresent(TileNodeNetworkAssetTypeInfo);
         }
 
         public void AddIfNotPresent(AssetTypeInfo ati)
@@ -174,19 +190,19 @@ namespace TileGraphicsPlugin
             toReturn.HasVisibleProperty = true;
             toReturn.FindByNameSyntax = $"Collisions.First(item => item.Name == \"OBJECTNAME\");";
 
-            toReturn.GetObjectFromFileFunc = GetObjectFromFileFunc;
+            toReturn.GetObjectFromFileFunc = GetTileShapeCollectionObjectFromFileFunc;
             toReturn.VariableDefinitions.Add(new VariableDefinition() { Name = "Visible", DefaultValue = "false", Type = "bool" });
-            toReturn.ConstructorFunc = GenerateConstructionFunc;
+            toReturn.ConstructorFunc = GenerateTileShapeCollectionConstructionFunc;
             return toReturn;
         }
 
-        private string GenerateConstructionFunc(IElement parentElement, NamedObjectSave namedObject, ReferencedFileSave referencedFile)
+        private string GenerateTileShapeCollectionConstructionFunc(IElement parentElement, NamedObjectSave namedObject, ReferencedFileSave referencedFile)
         {
             return TileShapeCollectionCodeGenerator.GenerateConstructorFor(namedObject);
             
         }
 
-        private string GetObjectFromFileFunc(IElement element, NamedObjectSave namedObjectSave, 
+        private string GetTileShapeCollectionObjectFromFileFunc(IElement element, NamedObjectSave namedObjectSave, 
             ReferencedFileSave referencedFileSave, string overridingContainerName)
         {
             // CollisionLayer1 = TmxWithTileShapeCollectionLayers.Collisions.First(item => item.Name == "CollisionLayer1");
@@ -201,6 +217,81 @@ namespace TileGraphicsPlugin
 
             if(creationOptions == CollisionCreationOptions.FromLayer)
             {
+                //var tileType = namedObjectSave.Properties.GetValue<string>(
+                //    nameof(ViewModels.TileShapeCollectionPropertiesViewModel.CollisionTileType));
+
+                var toReturn = $"{namedObjectSave.FieldName} = new FlatRedBall.TileCollisions.TileShapeCollection();\n";
+
+
+                toReturn +=
+                    "FlatRedBall.TileCollisions.TileShapeCollectionLayeredTileMapExtensions.AddCollisionFrom(\n" +
+                    $"{namedObjectSave.FieldName},\n" +
+                    $"{referencedFileSave.GetInstanceName()}.MapLayers.FindByName(\"{namedObjectSave.FieldName}\"),\n" +
+                    $"{referencedFileSave.GetInstanceName()},\n" +
+                    $"list => list.Any(" +
+                    //$"item => item.Name == \"Type\" " +
+                    //$"  && item.Value as string == \"{tileType}\")" +
+                    $"));\n";
+
+                //if (namedObjectSave.Properties.GetValue<bool>(nameof(ViewModels.TileShapeCollectionPropertiesViewModel.IsCollisionVisible)))
+                //{
+                //    toReturn += $"{namedObjectSave.FieldName}.Visible = true;\n";
+                //}
+
+                return toReturn;
+            }
+            //else
+            //{
+            //    return $"{namedObjectSave.FieldName} = {referencedFileSave.GetInstanceName()}.Collisions.First(item => item.Name == \"{sourceName}\");";
+            //}
+            return "";
+        }
+
+        private AssetTypeInfo CreateAtiForTileNodeNetwork()
+        {
+            AssetTypeInfo toReturn = new AssetTypeInfo();
+            toReturn.FriendlyName = "TileNodeNetwork";
+            toReturn.QualifiedRuntimeTypeName = new PlatformSpecificType();
+            toReturn.QualifiedRuntimeTypeName.QualifiedType = "FlatRedBall.AI.Pathfinding.TileNodeNetwork";
+            toReturn.QualifiedSaveTypeName = null;
+            toReturn.Extension = null;
+            toReturn.AddToManagersMethod = new List<string>();
+            toReturn.CustomLoadMethod = null;
+            toReturn.DestroyMethod = "this.Visible = false";
+            toReturn.ShouldBeDisposed = false;
+            toReturn.ShouldAttach = false;
+            toReturn.MustBeAddedToContentPipeline = false;
+            toReturn.CanBeCloned = false;
+            toReturn.HasCursorIsOn = false;
+            toReturn.CanIgnorePausing = false;
+            toReturn.CanBeObject = true;
+            toReturn.HasVisibleProperty = true;
+            //toReturn.FindByNameSyntax = $"Collisions.First(item => item.Name == \"OBJECTNAME\");";
+
+            toReturn.GetObjectFromFileFunc = GetTileNodeNetworkObjectFromFileFunc;
+            toReturn.VariableDefinitions.Add(new VariableDefinition() { Name = "Visible", DefaultValue = "false", Type = "bool" });
+            toReturn.ConstructorFunc = GenerateTileNodeNetworkConstructionFunc;
+            return toReturn;
+        }
+
+        private string GenerateTileNodeNetworkConstructionFunc(IElement arg1, NamedObjectSave namedObject, ReferencedFileSave arg3)
+        {
+            return TileNodeNetworkCodeGenerator.GenerateConstructorFor(namedObject);
+        }
+
+        private string GetTileNodeNetworkObjectFromFileFunc(IElement element, NamedObjectSave namedObjectSave, ReferencedFileSave referencedFileSave, string overridingContainerName)
+        {
+            T Get<T>(string name)
+            {
+                return namedObjectSave.Properties.GetValue<T>(name);
+            }
+
+            var creationOptions = Get<TileNodeNetworkCreationOptions>(
+                nameof(TileNodeNetworkPropertiesViewModel.NetworkCreationOptions));
+
+            if (creationOptions == TileNodeNetworkCreationOptions.FromLayer)
+            {
+                throw new NotImplementedException();
                 //var tileType = namedObjectSave.Properties.GetValue<string>(
                 //    nameof(ViewModels.TileShapeCollectionPropertiesViewModel.CollisionTileType));
 

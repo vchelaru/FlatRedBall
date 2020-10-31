@@ -719,7 +719,14 @@ namespace FlatRedBallAddOns.Entities
 
             foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators)
             {
-                codeGenerator.GenerateInitialize(codeBlock, saveObject);
+                try
+                {
+                    codeGenerator.GenerateInitialize(codeBlock, saveObject);
+                }
+                catch (Exception e)
+                {
+                    GlueCommands.Self.PrintError($"Error calling GenerateInitialize on {codeGenerator.GetType()}:\n{e}");
+                }
             }
 
 
@@ -727,7 +734,14 @@ namespace FlatRedBallAddOns.Entities
 
             foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators)
             {
-                codeGenerator.GenerateInitializeLate(codeBlock, saveObject);
+                try
+                {
+                    codeGenerator.GenerateInitializeLate(codeBlock, saveObject);
+                }
+                catch(Exception e)
+                {
+                    GlueCommands.Self.PrintError($"Error calling GenerateInitializeLate on {codeGenerator.GetType()}:\n{e}");
+                }
             }
 
             if (saveObject is ScreenSave)

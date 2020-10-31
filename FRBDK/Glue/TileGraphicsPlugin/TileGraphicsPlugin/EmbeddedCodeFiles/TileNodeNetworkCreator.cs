@@ -55,7 +55,7 @@ namespace FlatRedBall.AI.Pathfinding
             return nodeNetwork;
         }
 
-        public static TileNodeNetwork CreateFromTypes(LayeredTileMap layeredTileMap, DirectionalType directionalType,
+        public static TileNodeNetwork CreateFromTilesWithProperties(LayeredTileMap layeredTileMap, DirectionalType directionalType,
             ICollection<string> types)
         {
 
@@ -65,11 +65,32 @@ namespace FlatRedBall.AI.Pathfinding
 
                 foreach (var namedValue in list)
                 {
-                    if (namedValue.Name == "Type")
+                    if(types.Contains(namedValue.Name))
+                    {
+                        toReturn = true;
+                        break;
+                    }
+                }
+
+                return toReturn;
+            };
+            return CreateFrom(layeredTileMap, directionalType, predicate);
+        }
+
+        public static TileNodeNetwork CreateFromNames(LayeredTileMap layeredTileMap, DirectionalType directionalType,
+            ICollection<string> names)
+        {
+            Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate = (list) =>
+            {
+                var toReturn = false;
+
+                foreach (var namedValue in list)
+                {
+                    if (namedValue.Name == "Name")
                     {
                         var valueAsString = namedValue.Value as string;
 
-                        if (!string.IsNullOrEmpty(valueAsString) && types.Contains(valueAsString))
+                        if (!string.IsNullOrEmpty(valueAsString) && names.Contains(valueAsString))
                         {
                             toReturn = true;
                             break;

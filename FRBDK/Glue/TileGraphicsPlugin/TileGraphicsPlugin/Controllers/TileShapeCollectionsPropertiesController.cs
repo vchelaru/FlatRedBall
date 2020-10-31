@@ -44,63 +44,81 @@ namespace TileGraphicsPlugin.Controllers
         public void RefreshAvailableTypes()
         {
             viewModel.AvailableTypes.Clear();
-
             var tmxName = viewModel.SourceTmxName;
+
+            var types = GetAvailableTypes(tmxName);
+
+            // todo - apply hashset to the view model
+            foreach (var item in types)
+            {
+                viewModel.AvailableTypes.Add(item);
+            }
+        }
+
+        public static HashSet<string> GetAvailableTypes(string tmxName)
+        {
             var element = GlueState.Self.CurrentElement;
 
             HashSet<string> types = new HashSet<string>();
 
             void AddTypesFromNos(NamedObjectSave nos)
             {
-                if(nos.SourceType == SourceType.File && !string.IsNullOrWhiteSpace( nos.SourceFile))
+                if (nos.SourceType == SourceType.File && !string.IsNullOrWhiteSpace(nos.SourceFile))
                 {
                     var element = nos.GetContainer();
 
                     var file = element?.GetReferencedFileSave(nos.SourceFile);
-
-                    if(file != null)
-                    {
-                        var fullPath = GlueCommands.Self.FileCommands.GetFullFileName(file);
-
-                        TiledMapSave tiledMapSave = TiledMapSave.FromFile(fullPath);
-
-                        foreach(var tileset in tiledMapSave.Tilesets)
-                        {
-                            foreach(var kvp in tileset.TileDictionary)
-                            {
-                                var value = kvp.Value;
-
-                                if(!string.IsNullOrWhiteSpace(value.Type))
-                                {
-                                    types.Add(value.Type);
-                                }
-                            }
-                        }
-                    }
+                    AddTypesFromFile(types, file);
                 }
             }
 
             var baseNos = element.GetNamedObjectRecursively(tmxName);
 
-            if(baseNos != null)
+            if (baseNos != null)
             {
-                if(baseNos.SetByDerived)
+                if (baseNos.SetByDerived)
                 {
                     var derivedElements = ObjectFinder.Self.GetAllElementsThatInheritFrom(element);
                     var noses = derivedElements.Select(item => item.GetNamedObjectRecursively(tmxName))
                         .ToArray();
 
-                    foreach(var nos in noses)
+                    foreach (var nos in noses)
                     {
                         AddTypesFromNos(nos);
                     }
                 }
             }
 
-            // todo - apply hashset to the view model
-            foreach(var item in types)
+            var file = element.ReferencedFiles.FirstOrDefault(item => item.Name.EndsWith(tmxName + ".tmx"));
+
+            if(file != null)
             {
-                viewModel.AvailableTypes.Add(item);
+                AddTypesFromFile(types, file);
+            }
+
+            return types;
+        }
+
+        private static void AddTypesFromFile(HashSet<string> types, ReferencedFileSave file)
+        {
+            if (file != null)
+            {
+                var fullPath = GlueCommands.Self.FileCommands.GetFullFileName(file);
+
+                TiledMapSave tiledMapSave = TiledMapSave.FromFile(fullPath);
+
+                foreach (var tileset in tiledMapSave.Tilesets)
+                {
+                    foreach (var kvp in tileset.TileDictionary)
+                    {
+                        var value = kvp.Value;
+
+                        if (!string.IsNullOrWhiteSpace(value.Type))
+                        {
+                            types.Add(value.Type);
+                        }
+                    }
+                }
             }
         }
 
@@ -142,21 +160,10 @@ namespace TileGraphicsPlugin.Controllers
 
         private void RefreshAvailableTiledObjects(IElement element)
         {
-            
-
             // refresh availble TMXs
-            var referencedFileSaves = element.ReferencedFiles
-                .Where(item =>
-                    item.LoadedAtRuntime &&
-                    item.GetAssetTypeInfo() == AssetTypeInfoAdder.Self.TmxAssetTypeInfo);
+            IEnumerable<ReferencedFileSave> referencedFileSaves = GetTmxFilesIn(element);
 
-            var namedObjects = element.AllNamedObjects
-                .Where(item =>
-                    item.IsDisabled == false &&
-                    item.GetAssetTypeInfo() == AssetTypeInfoAdder.Self.TmxAssetTypeInfo);
-
-
-
+            IEnumerable<NamedObjectSave> namedObjects = GetTmxNamedObjectsIn(element);
 
             if (viewModel.TmxObjectNames == null)
             {
@@ -171,6 +178,22 @@ namespace TileGraphicsPlugin.Controllers
             {
                 viewModel.TmxObjectNames.Add(nos.InstanceName);
             }
+        }
+
+        public static IEnumerable<NamedObjectSave> GetTmxNamedObjectsIn(IElement element)
+        {
+            return element.AllNamedObjects
+                .Where(item =>
+                    item.IsDisabled == false &&
+                    item.GetAssetTypeInfo() == AssetTypeInfoAdder.Self.TmxAssetTypeInfo);
+        }
+
+        public static IEnumerable<ReferencedFileSave> GetTmxFilesIn(IElement element)
+        {
+            return element.ReferencedFiles
+                .Where(item =>
+                    item.LoadedAtRuntime &&
+                    item.GetAssetTypeInfo() == AssetTypeInfoAdder.Self.TmxAssetTypeInfo);
         }
     }
 }

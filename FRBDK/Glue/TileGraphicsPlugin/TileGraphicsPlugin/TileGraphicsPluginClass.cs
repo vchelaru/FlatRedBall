@@ -30,6 +30,8 @@ using TileGraphicsPlugin.Logic;
 using System.ComponentModel;
 using TiledPluginCore.Controls;
 using TiledPluginCore.Models;
+using TiledPluginCore.CodeGeneration;
+using TiledPluginCore.Controllers;
 
 namespace TileGraphicsPlugin
 {
@@ -41,6 +43,7 @@ namespace TileGraphicsPlugin
         string mLastFile;
 
         PluginTab collisionTab;
+        PluginTab nodeNetworkTab;
 
         TiledObjectTypeCreator tiledObjectTypeCreator;
         TiledToolbar tiledToolbar;
@@ -252,8 +255,6 @@ namespace TileGraphicsPlugin
         {
             CodeItemAdderManager.Self.AddFilesToCodeBuildItemAdder();
 
-            InitializeTab();
-
             AddEvents();
 
             CreateToolbar();
@@ -261,38 +262,6 @@ namespace TileGraphicsPlugin
             SaveTemplateTmx();
 
             AddCodeGenerators();
-        }
-
-        private void InitializeTab()
-        {
-            //try
-            //{
-            //    mControl = new TmxEditor.TmxEditorControl();
-            //}
-            //catch(System.NotSupportedException exc)
-            //{
-            //    GlueCommands.PrintError("Could not find a graphics device that supports XNA hi-def. Attempting to load Tiled plugin without the control tab");
-            //}
-
-            //if(mControl != null)
-            //{
-            //    mControl.AnyTileMapChange += HandleUserChangeTmx;
-            //    mControl.LoadEntities += OnLoadEntities;
-
-
-            //    EntityCreationManager.Self.AddEntityCreationView(mControl);
-                
-
-            //    var commandLineArgumentsView = new TileGraphicsPlugin.Views.CommandLineArgumentsView();
-            //    mCommandLineViewModel = new CommandLineViewModel();
-            //    mCommandLineViewModel.CommandLineChanged += HandleCommandLinePropertyChanged;
-            //    commandLineArgumentsView.DataContext = mCommandLineViewModel;
-            //    mControl.AddTab("Command Line", commandLineArgumentsView);
-
-            //    mTilesetXnaRightClickController = new TilesetXnaRightClickController();
-            //    mTilesetXnaRightClickController.Initialize(mControl.TilesetXnaContextMenu);
-            //    mControl.TilesetDisplayRightClick += (o, s) => mTilesetXnaRightClickController.RefreshMenuItems();
-            //}
         }
 
         private void AddEvents()
@@ -480,6 +449,8 @@ namespace TileGraphicsPlugin
             this.RegisterCodeGenerator(new TmxCodeGenerator());
 
             this.RegisterCodeGenerator(new TileShapeCollectionCodeGenerator());
+
+            this.RegisterCodeGenerator(new TileNodeNetworkCodeGenerator());
         }
 
         #endregion
@@ -519,7 +490,6 @@ namespace TileGraphicsPlugin
 
         private void HandleGluxLoadEarly()
         {
-
             // Add the necessary files for performing the builds to the Libraries/tmx folder
             BuildToolSaver.Self.SaveBuildToolsToDisk();
 
@@ -597,6 +567,25 @@ namespace TileGraphicsPlugin
             {
                 base.RemoveTab(collisionTab);
             }
+
+            if(TileNodeNetworkPropertiesController.Self.IsTileNodeNetwork(treeNode?.Tag as NamedObjectSave))
+            {
+                if(nodeNetworkTab == null)
+                {
+                    var view = TileNodeNetworkPropertiesController.Self.GetView();
+
+                    nodeNetworkTab = base.CreateTab(view, "TileNodeNetwork Properties");
+                }
+
+                TileNodeNetworkPropertiesController.Self.RefreshViewModelTo(treeNode?.Tag as NamedObjectSave,
+                    GlueState.CurrentElement);
+
+                this.ShowTab(nodeNetworkTab, TabLocation.Center);
+            }
+            else if(nodeNetworkTab != null)
+            {
+                base.RemoveTab(nodeNetworkTab);
+            }
         }
 
         private void ReactToRfsSelected(ReferencedFileSave rfs)
@@ -662,35 +651,12 @@ namespace TileGraphicsPlugin
             }
         }
 
-
-        private void OnLoadEntities(object sender, EventArgs args)
-        {
-            //if(mControl != null)
-            //{
-            //    mControl.Entities = (GlueState.CurrentGlueProject.Entities.Select(e => e.Name).ToList());
-            //}
-        }
-
         private void OnClosedByUser(object sender)
         {
             PluginManager.ShutDownPlugin(this);
         }
 
         int changesToIgnore = 0;
-        private void HandleUserChangeTmx(object sender, EventArgs args)
-        {
-            //var asTileMapChangeEventArgs = args as TileMapChangeEventArgs;
-
-            //ChangeType changeType = ChangeType.Other;
-
-            //if(asTileMapChangeEventArgs != null)
-            //{
-            //    changeType = asTileMapChangeEventArgs.ChangeType;
-            //}
-
-            //SaveTiledMapSave(changeType);
-        }
-
         //public void SaveTiledMapSave(ChangeType changeType)
         //{
         //    if(mControl != null)
@@ -728,21 +694,9 @@ namespace TileGraphicsPlugin
             AssetTypeInfoAdder.Self.UpdateAtiCsvPresence();
 
 
-
             // Make sure the TileMapInfo CustomClassSave is there, and make sure it has all the right properties
             TileMapInfoManager.Self.AddAndModifyTileMapInfoClass();
-
-            // Ensure the TmxEditorControl has all the data it needs
-            InitializeTmxEditorControl();
-
-
         }
-
-        private void InitializeTmxEditorControl()
-        {
-            OnLoadEntities(null, null);
-        }
-
 
         internal void UpdateTilesetDisplay()
         {

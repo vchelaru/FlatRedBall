@@ -10,7 +10,7 @@ using System.Windows;
 
 namespace TileGraphicsPlugin.ViewModels
 {
-    #region Fields/Properties
+    #region Enumerations
 
     public enum CollisionCreationOptions
     {
@@ -26,14 +26,8 @@ namespace TileGraphicsPlugin.ViewModels
 
     public class TileShapeCollectionPropertiesViewModel : PropertyListContainerViewModel
     {
-        //[SyncedProperty]
-        //public bool IsCollisionVisible
-        //{
-        //    get { return Get<bool>(); }
-        //    set { SetAndPersist(value); }
-        //}
-
         [SyncedProperty]
+        // Vic asks - shouldn't the default value be (int)?
         [DefaultValue(CollisionCreationOptions.Empty)]
         public CollisionCreationOptions CollisionCreationOptions
         {
@@ -68,20 +62,14 @@ namespace TileGraphicsPlugin.ViewModels
         }
 
         [DependsOn(nameof(CollisionCreationOptions))]
-        public Visibility FillDimensionsVisibility
-        {
-            get
-            {
-                return CollisionCreationOptions == CollisionCreationOptions.FillCompletely ?
+        public Visibility FillDimensionsVisibility => CollisionCreationOptions == CollisionCreationOptions.FillCompletely ?
                   Visibility.Visible :
                   Visibility.Collapsed;
-            }
-        }
 
         [DependsOn(nameof(CollisionCreationOptions))]
         public bool IsBorderChecked
         {
-            get { return CollisionCreationOptions == CollisionCreationOptions.BorderOutline; }
+            get => CollisionCreationOptions == CollisionCreationOptions.BorderOutline; 
             set
             {
                 if (value)
@@ -96,21 +84,16 @@ namespace TileGraphicsPlugin.ViewModels
         {
             get
             {
-                if (CollisionCreationOptions == CollisionCreationOptions.BorderOutline)
-                {
-                    return Visibility.Visible;
-                }
-                else
-                {
-                    return Visibility.Collapsed;
-                }
+                return CollisionCreationOptions == CollisionCreationOptions.BorderOutline 
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
             }
         }
 
         [DependsOn(nameof(CollisionCreationOptions))]
         public bool IsFromPropertiesChecked
         {
-            get { return CollisionCreationOptions == CollisionCreationOptions.FromProperties; }
+            get => CollisionCreationOptions == CollisionCreationOptions.FromProperties; 
             set
             {
                 if (value)
@@ -121,20 +104,14 @@ namespace TileGraphicsPlugin.ViewModels
         }
 
         [DependsOn(nameof(CollisionCreationOptions))]
-        public Visibility FromPropertiesVisibility
-        {
-            get
-            {
-                return CollisionCreationOptions == CollisionCreationOptions.FromProperties ?
+        public Visibility FromPropertiesVisibility => CollisionCreationOptions == CollisionCreationOptions.FromProperties ?
                       Visibility.Visible :
                       Visibility.Collapsed;
-            }
-        }
 
         [DependsOn(nameof(CollisionCreationOptions))]
         public bool IsFromTypeChecked
         {
-            get { return CollisionCreationOptions == CollisionCreationOptions.FromType; }
+            get => CollisionCreationOptions == CollisionCreationOptions.FromType; 
             set
             {
                 if (value)
@@ -145,20 +122,14 @@ namespace TileGraphicsPlugin.ViewModels
         }
 
         [DependsOn(nameof(CollisionCreationOptions))]
-        public Visibility FromTypeVisibility
-        {
-            get
-            {
-                return CollisionCreationOptions == CollisionCreationOptions.FromType ?
+        public Visibility FromTypeVisibility => CollisionCreationOptions == CollisionCreationOptions.FromType ?
                     Visibility.Visible :
                     Visibility.Collapsed;
-            }
-        }
 
         [DependsOn(nameof(CollisionCreationOptions))]
         public bool IsFromLayerChecked
         {
-            get { return CollisionCreationOptions == CollisionCreationOptions.FromLayer; }
+            get => CollisionCreationOptions == CollisionCreationOptions.FromLayer; 
             set
             {
                 if(value)
@@ -169,107 +140,101 @@ namespace TileGraphicsPlugin.ViewModels
         }
 
         [DependsOn(nameof(CollisionCreationOptions))]
-        public Visibility FromLayerVisibility
-        {
-            get
-            {
-                return CollisionCreationOptions == CollisionCreationOptions.FromLayer ?
+        public Visibility FromLayerVisibility => CollisionCreationOptions == CollisionCreationOptions.FromLayer ?
                   Visibility.Visible :
                   Visibility.Collapsed;
-            }
-        }
 
         [SyncedProperty]
         public string CollisionLayerName
         {
-            get { return Get<string>();}
-            set { SetAndPersist(value); }
+            get => Get<string>();
+            set => SetAndPersist(value); 
         }
 
         [SyncedProperty]
         public string CollisionLayerTileType
         {
-            get { return Get<string>(); }
-            set { SetAndPersist(value); }
+            get => Get<string>(); 
+            set => SetAndPersist(value); 
         }
 
         [SyncedProperty]
         public bool IsCollisionMerged
         {
-            get { return Get<bool>(); }
-            set { SetAndPersist(value); }
+            get => Get<bool>(); 
+            set => SetAndPersist(value); 
         }
 
         public ObservableCollection<string> TmxObjectNames
         {
-            get { return Get<ObservableCollection<string>>(); }
-            set { Set(value);}
+            get => Get<ObservableCollection<string>>(); 
+            set => Set(value);
         }
 
         public ObservableCollection<string> AvailableTypes
         {
-            get { return Get<ObservableCollection<string>>(); }
-            set { Set(value); }
+            get => Get<ObservableCollection<string>>(); 
+            set => Set(value); 
         } 
 
         [SyncedProperty]
         [DefaultValue(16.0f)]
         public float CollisionTileSize
         {
-            get { return Get<float>(); }
-            set { SetAndPersist(value); }
+            get => Get<float>(); 
+            set => SetAndPersist(value); 
         }
 
         [SyncedProperty]
         public float CollisionFillLeft
         {
-            get { return Get<float>(); }
-            set { SetAndPersist(value); }
+            get => Get<float>(); 
+            set => SetAndPersist(value); 
         }
 
         [SyncedProperty]
         public float CollisionFillTop
         {
-            get { return Get<float>(); }
-            set { SetAndPersist(value); }
+            get => Get<float>(); 
+            set => SetAndPersist(value);
         }
 
         [SyncedProperty]
         [DefaultValue(32)]
         public int CollisionFillWidth
         {
-            get { return Get<int>(); }
-            set { SetAndPersist(value); }
+            get => Get<int>(); 
+            set => SetAndPersist(value); 
         }
 
         [SyncedProperty]
         [DefaultValue(1)]
         public int CollisionFillHeight
         {
-            get { return Get<int>(); }
-            set { SetAndPersist(value); }
+            get => Get<int>(); 
+            set => SetAndPersist(value); 
         }
 
         [SyncedProperty]
         public string SourceTmxName
         {
-            get { return Get<string>(); }
-            set { SetAndPersist(value); }
+            get => Get<string>(); 
+            set => SetAndPersist(value); 
         }
 
         // for now a single string, eventually a list?
         [SyncedProperty]
         public string CollisionPropertyName
         {
-            get { return Get<string>(); }
-            set { SetAndPersist(value); }
+            get => Get<string>(); 
+            set => SetAndPersist(value); 
         }
 
         [SyncedProperty]
         public string CollisionTileTypeName
         {
-            get { return Get<string>(); }
-            set { SetAndPersist(value); }
+            get => Get<string>(); 
+            set => SetAndPersist(value); 
         }
 
         public bool IsEntireViewEnabled
