@@ -32,6 +32,7 @@ using TiledPluginCore.Controls;
 using TiledPluginCore.Models;
 using TiledPluginCore.CodeGeneration;
 using TiledPluginCore.Controllers;
+using TiledPluginCore.Managers;
 
 namespace TileGraphicsPlugin
 {
@@ -346,6 +347,8 @@ namespace TileGraphicsPlugin
             this.ReactToNewFileHandler = ReactToNewFile;
 
             this.AddNewFileOptionsHandler += HandleAddNewFileOptions;
+
+            //this.CreateNewFileHandler += TmxCreationManager.Self.HandleNewTmxCreation;
         }
 
         private void HandleAddNewFileOptions(CustomizableNewFileWindow newFileWindow)
@@ -421,7 +424,10 @@ namespace TileGraphicsPlugin
                     GlueCommands.GluxCommands.SaveGluxTask();
 
                 }
+
+                TmxCreationManager.Self.HandleNewTmx(newFile);
             }
+
         }
 
         private static void SaveTemplateTmx()

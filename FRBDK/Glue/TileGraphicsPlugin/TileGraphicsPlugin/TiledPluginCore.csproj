@@ -25,6 +25,8 @@
     <None Remove="Content\Levels\TiledMap.tmx" />
     <None Remove="Content\Levels\TopDown8Bit.tmx" />
     <None Remove="Content\Tilesets\PlatformerTiles.png" />
+    <None Remove="Content\Tilesets\StandardTileset.tsx" />
+    <None Remove="Content\Tilesets\StandardTilesetIcons.png" />
     <None Remove="Content\Tilesets\TopDown8Bit.png" />
     <None Remove="Icons\TiledIcon.png" />
   </ItemGroup>
@@ -50,6 +52,8 @@
     <EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\TiledMapSave.Serialization.cs" Link="EmbeddedCodeFiles\TiledMapSave.Serialization.cs" />
     <EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\TiledMapToShapeCollectionConverter.cs" Link="EmbeddedCodeFiles\TiledMapToShapeCollectionConverter.cs" />
     <EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\TilesetExtensionMethods.cs" Link="EmbeddedCodeFiles\TilesetExtensionMethods.cs" />
+    <EmbeddedResource Include="Content\Tilesets\StandardTilesetIcons.png" />
+    <EmbeddedResource Include="Content\Tilesets\StandardTileset.tsx" />
   </ItemGroup>
 
   <ItemGroup>

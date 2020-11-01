@@ -564,29 +564,17 @@ namespace FlatRedBall.Glue.Plugins
                 // Execute the new style plugins
                 if (!created)
                 {
-                    var plugins = pluginManager
-                        .ImportedPlugins
-                        .Where(x => x.CreateNewFileHandler != null)
-                        .ToArray();
-                    foreach (var plugin in plugins)
-                    {
-                        var container = pluginManager.mPluginContainers[plugin];
-                        if (container.IsEnabled)
+                    CallMethodOnPlugin((plugin) =>
                         {
-                            PluginBase plugin1 = plugin;
-                            bool exit = false;
-                            PluginCommand(() =>
-                                              {
-                                                  if (plugin1.CreateNewFileHandler(assetTypeInfo, extraData, directory, name, out createdFile))
-                                                  {
-                                                      exit = true;
-                                                      created = true;
-                                                  }
-                                              }, container, "Failed in CreateNewFile");
-
-                            if (exit) break;
-                        }
-                    }
+                            string createdInternal = null;
+                            if (plugin.CreateNewFileHandler(assetTypeInfo, extraData, directory, name, out createdInternal))
+                            {
+                                createdFile = createdInternal;
+                                created = true;
+                            }
+                        },
+                        nameof(CreateNewFile), 
+                        (plugin) => plugin.CreateNewFileHandler != null);
                 }
             }
 

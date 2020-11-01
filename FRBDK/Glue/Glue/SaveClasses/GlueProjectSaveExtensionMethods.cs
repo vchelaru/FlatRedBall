@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using FlatRedBall.Glue.FormHelpers;
 using EditorObjects.IoC;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
+using Newtonsoft.Json;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -99,7 +100,8 @@ namespace FlatRedBall.Glue.SaveClasses
             
         }
 
-        public static ReferencedFileSave AddReferencedFileSave(IElement element, string directoryPath, string fileName, 
+        public static ReferencedFileSave AddReferencedFileSave(IElement element, string directoryPath, 
+            string fileName, 
             AssetTypeInfo resultAssetTypeInfo, object option, out string errorMessage)
         {
             char invalidCharacter;
@@ -162,8 +164,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             else
             {
-                var is2D = option is string && ((string)option) == "2D";
-                string createdFile = PluginManager.CreateNewFile(resultAssetTypeInfo, is2D,
+                string createdFile = PluginManager.CreateNewFile(resultAssetTypeInfo, option,
                     directoryRelativeToContent, fileName);
 
                 if(createdFile == null)
@@ -185,6 +186,22 @@ namespace FlatRedBall.Glue.SaveClasses
             }
 
             #endregion
+
+            if (option != null)
+            {
+                if (option is bool)
+                {
+                    // do nothing
+                }
+                else
+                {
+                    var propertySave = new PropertySave
+                    { Name = "CreationOptions", Value = JsonConvert.SerializeObject(option) };
+
+                    rfs.Properties.Add(propertySave);
+
+                }
+            }
 
 
 

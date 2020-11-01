@@ -169,7 +169,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
 
                 SaveNewFileAtLocation(assetTypeInfo, createdFile);
 
-                bool make2D = (bool)extraData;
+                bool make2D = extraData is bool && (bool)extraData;
 
                 AssetTypeInfoExtensionMethodsGlue.CreateCompanionSettingsFile(createdFile, make2D);
                 resultingName = createdFile;
