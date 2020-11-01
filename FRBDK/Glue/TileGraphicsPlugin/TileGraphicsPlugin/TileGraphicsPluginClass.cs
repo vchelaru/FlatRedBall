@@ -33,6 +33,7 @@ using TiledPluginCore.Models;
 using TiledPluginCore.CodeGeneration;
 using TiledPluginCore.Controllers;
 using TiledPluginCore.Managers;
+using TiledPluginCore.Views;
 
 namespace TileGraphicsPlugin
 {
@@ -353,11 +354,13 @@ namespace TileGraphicsPlugin
 
         private void HandleAddNewFileOptions(CustomizableNewFileWindow newFileWindow)
         {
-            var checkBox = new System.Windows.Controls.CheckBox();
+            var view = new NewTmxOptionsView();
+            var viewModel = new NewTmxViewModel();
+            viewModel.IncludeDefaultTileset = true;
+            viewModel.IncludeGameplayLayer = true;
+            view.DataContext = viewModel;
 
-            checkBox.Content = "Include Default Tileset";
-            checkBox.IsChecked = true;
-            newFileWindow.AddCustomUi(checkBox);
+            newFileWindow.AddCustomUi(view);
 
             bool IsTmx(AssetTypeInfo ati) =>
                 ati?.Extension == "tmx";
@@ -368,11 +371,11 @@ namespace TileGraphicsPlugin
 
                 if(IsTmx(ati))
                 {
-                    checkBox.Visibility = System.Windows.Visibility.Visible;
+                    view.Visibility = System.Windows.Visibility.Visible;
                 }
                 else
                 {
-                    checkBox.Visibility = System.Windows.Visibility.Hidden;
+                    view.Visibility = System.Windows.Visibility.Collapsed;
                 }
             };
 
@@ -381,9 +384,7 @@ namespace TileGraphicsPlugin
                 var ati = newFileWindow.SelectedItem as AssetTypeInfo;
                 if (IsTmx(ati))
                 {
-                    var model = new NewTmxModel();
-                    model.IncludeDefaultTileset = checkBox.IsChecked == true;
-                    return model;
+                    return viewModel;
                 }
                 else
                 {

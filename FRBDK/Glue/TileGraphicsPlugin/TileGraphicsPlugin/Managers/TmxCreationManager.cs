@@ -37,7 +37,7 @@ namespace TiledPluginCore.Managers
 
             if (!string.IsNullOrWhiteSpace(creationOptions))
             {
-                var model = JsonConvert.DeserializeObject<NewTmxModel>(creationOptions);
+                var model = JsonConvert.DeserializeObject<NewTmxViewModel>(creationOptions);
 
                 if(model?.IncludeDefaultTileset == true)
                 {
