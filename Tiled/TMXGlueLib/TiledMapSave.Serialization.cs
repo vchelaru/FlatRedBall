@@ -200,10 +200,11 @@ namespace TMXGlueLib
 
             foreach(var layer in this.Layers)
             {
-                foreach(var dataItem in layer.data)
-                {
+                // Vic says: This wans't doing anything, do we need it?
+                //foreach(var dataItem in layer.data)
+                //{
 
-                }
+                //}
             }
 
             foreach(var objectLayer in this.objectgroup)

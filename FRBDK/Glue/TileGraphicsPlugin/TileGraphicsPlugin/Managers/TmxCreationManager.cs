@@ -6,6 +6,7 @@ using FlatRedBall.IO;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using TiledPluginCore.Models;
 using TileGraphicsPlugin;
@@ -39,16 +40,39 @@ namespace TiledPluginCore.Managers
             {
                 var model = JsonConvert.DeserializeObject<NewTmxViewModel>(creationOptions);
 
-                if(model?.IncludeDefaultTileset == true)
+                if(model != null)
                 {
-                    IncludeDefaultTilesetOn(newFile);
+                    var old = Tileset.ShouldLoadValuesFromSource;
+                    Tileset.ShouldLoadValuesFromSource = false;
+                    var fullTmxFile = new FilePath(GlueCommands.Self.FileCommands.GetFullFileName(newFile));
+                    var tileMapSave = TMXGlueLib.TiledMapSave.FromFile(fullTmxFile.FullPath);
+
+                    if(model.IncludeDefaultTileset)
+                    {
+                        IncludeDefaultTilesetOn(newFile, tileMapSave);
+                    }
+                    if(model.IncludeGameplayLayer)
+                    {
+                        var layer = new MapLayer();
+                        layer.Name = "GameplayLayer";
+
+                        var existingLayer = tileMapSave.Layers.First();
+                        layer.width = existingLayer.width;
+                        layer.height = existingLayer.height;
+                        layer.data = existingLayer.data;
+
+                        tileMapSave.MapLayers.Add(layer);
+                    }
+
+                    tileMapSave.Save(fullTmxFile.FullPath);
+                    Tileset.ShouldLoadValuesFromSource = old;
+
                 }
             }
         }
 
-        private void IncludeDefaultTilesetOn(ReferencedFileSave newFile)
+        private void IncludeDefaultTilesetOn(ReferencedFileSave newFile, TiledMapSave tileMapSave)
         {
-            var fullTmxFile = new FilePath(GlueCommands.Self.FileCommands.GetFullFileName(newFile));
 
 
             FilePath existingDefaultTilesetFile = null;
@@ -94,18 +118,16 @@ namespace TiledPluginCore.Managers
                 }
             }
 
-            var tileMapSave = TMXGlueLib.TiledMapSave.FromFile(fullTmxFile.FullPath);
 
             var standardTileset = new Tileset();
+
+            var fullTmxFile = new FilePath(GlueCommands.Self.FileCommands.GetFullFileName(newFile));
             var tmxDirectory = fullTmxFile.GetDirectoryContainingThis();
-            var old = Tileset.ShouldLoadValuesFromSource;
-            Tileset.ShouldLoadValuesFromSource = false;
             standardTileset.Source = FileManager.MakeRelative( existingDefaultTilesetFile.FullPath, tmxDirectory.FullPath) ;
 
             tileMapSave.Tilesets.Add(standardTileset);
 
-            tileMapSave.Save(fullTmxFile.FullPath);
-            Tileset.ShouldLoadValuesFromSource = old;
+
         }
     }
 }
