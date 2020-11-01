@@ -249,6 +249,11 @@ namespace FlatRedBall.Glue.Plugins
                 {
                     ShutDownPlugin(plugin, PluginShutDownReason.GlueShutDown);
                 }
+                
+                mProjectInstance.PluginAssemblies.Unload();
+                mProjectInstance.PluginAssemblies = null;
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
             }
 
             mProjectInstance = new PluginManager(false);
