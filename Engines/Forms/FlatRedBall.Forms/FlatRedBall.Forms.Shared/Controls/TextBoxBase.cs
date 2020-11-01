@@ -636,7 +636,8 @@ namespace FlatRedBall.Forms.Controls
     #endif
                 }
 
-                SelectionLength = 0;
+                // Vic says - why do we need to deselect when it loses focus? It could stay selected
+                //SelectionLength = 0;
             }
         }
 

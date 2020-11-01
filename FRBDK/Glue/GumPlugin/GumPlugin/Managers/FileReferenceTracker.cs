@@ -132,7 +132,7 @@ namespace GumPlugin.Managers
 
                 state.ParentContainer = element;
 
-                TryGetFontReferences(topLevelOrRecursive, listToFill, state);
+                TryGetFontReferences(topLevelOrRecursive, listToFill, state, false);
 
                 GetRegularVariableFileReferences(listToFill, state, element.Instances, projectOrDisk);
 
@@ -266,10 +266,22 @@ namespace GumPlugin.Managers
 
         }
 
-        private static void TryGetFontReferences(TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill, Gum.DataTypes.Variables.StateSave state)
+        private static void TryGetFontReferences(TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill, Gum.DataTypes.Variables.StateSave state, bool includeReferenceInfo)
         {
 
             Gum.DataTypes.RecursiveVariableFinder rvf = new RecursiveVariableFinder(state);
+
+            var element = state.ParentContainer;
+            var isParentElementText = false;
+            if(element is StandardElementSave && element.Name == "Text")
+            {
+                isParentElementText = true;
+            }
+            else
+            {
+                var baseStandardElement = ObjectFinder.Self.GetRootStandardElementSave(element);
+                isParentElementText = baseStandardElement?.Name == "Text";
+            }
 
             foreach (var variable in state.Variables.Where(item => 
                 (item.GetRootName() == "Font" ||
@@ -285,9 +297,10 @@ namespace GumPlugin.Managers
                 // Just because this has a variable for Font or FontSize or whatever doesn't
                 // necessarily mean that this is a text object - it could have been an instance
                 // that at one time was a text object, but was later converted to a different type
-                // which no longer uses fonts. To handle this case we want to only consider this a referenced
-                // file if Coo
-                var isTextObject = true;
+                // which no longer uses fonts. 
+
+                var isTextObject = false;
+
 
                 if (variable.Name.Contains('.'))
                 {
@@ -315,6 +328,10 @@ namespace GumPlugin.Managers
                         isTextObject = false; 
                     }
                 }
+                else
+                {
+                    isTextObject = isParentElementText;
+                }
 
 
                 if(isTextObject)
@@ -333,13 +350,19 @@ namespace GumPlugin.Managers
                         int outlineThickness = rvf.GetValue<int>(fontOutlineVariableName);
                         bool useFontSmoothing = rvf.GetValue<bool>(fontSmoothingVariableName);
 
-                        TryAddFontFromSizeAndName(topLevelOrRecursive, listToFill, fontSizeValue, fontNameValue, outlineThickness, useFontSmoothing);
+                        string additionalInfo = null;
+                        if(includeReferenceInfo)
+                        {
+                            additionalInfo = $" by {variable} in {state}";
+                        }
+
+                        TryAddFontFromSizeAndName(topLevelOrRecursive, listToFill, fontSizeValue, fontNameValue, outlineThickness, useFontSmoothing, additionalInfo);
                     }
                 }
             }
         }
 
-        private static void TryAddFontFromSizeAndName(TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill, int fontSizeValue, string fontNameValue, int outlineThickness, bool useFontSmoothing)
+        private static void TryAddFontFromSizeAndName(TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill, int fontSizeValue, string fontNameValue, int outlineThickness, bool useFontSmoothing, string suffix)
         {
             if (!string.IsNullOrEmpty(fontNameValue))
             {
@@ -362,7 +385,7 @@ namespace GumPlugin.Managers
                     {
                         string absoluteFileName = fontDirectory + referencedTexture;
 
-                        listToFill.Add(absoluteFileName);
+                        listToFill.Add(absoluteFileName + suffix);
                     }
 
                 }

@@ -514,7 +514,7 @@ namespace FlatRedBall.Forms.Controls
             HandleTab(tabDirection, requestingElement.Visual, parentGue, shouldAskParent:true);
         }
 
-        private static bool HandleTab(TabDirection tabDirection, GraphicalUiElement requestingVisual, 
+        public static bool HandleTab(TabDirection tabDirection, GraphicalUiElement requestingVisual, 
             GraphicalUiElement parentVisual, bool shouldAskParent)
         {
             void UnFocusRequestingVisual()

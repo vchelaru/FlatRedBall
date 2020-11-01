@@ -193,7 +193,7 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        private void DeleteSelection()
+        public void DeleteSelection()
         {
             this.Text = Text.Remove(selectionStart, selectionLength);
             CaretIndex = selectionStart;
