@@ -55,11 +55,39 @@ namespace TileGraphicsPlugin.Controllers
             }
         }
 
+        public static HashSet<string> GetAvailableLayers(string tmxName)
+        {
+            List<ReferencedFileSave> rfses = GetRfses(tmxName);
+
+            HashSet<string> layerNames = new HashSet<string>();
+
+            foreach (var file in rfses)
+            {
+                AddLayersFromFile(layerNames, file);
+            }
+
+            return layerNames;
+        }
+
         public static HashSet<string> GetAvailableTypes(string tmxName)
         {
-            var element = GlueState.Self.CurrentElement;
+            List<ReferencedFileSave> rfses = GetRfses(tmxName);
 
             HashSet<string> types = new HashSet<string>();
+            foreach (var file in rfses)
+            {
+                AddTypesFromFile(types, file);
+            }
+
+            return types;
+        }
+
+        private static List<ReferencedFileSave> GetRfses(string tmxName)
+        {
+            List<ReferencedFileSave> rfses = new List<ReferencedFileSave>();
+
+            var element = GlueState.Self.CurrentElement;
+
 
             void AddTypesFromNos(NamedObjectSave nos)
             {
@@ -68,7 +96,11 @@ namespace TileGraphicsPlugin.Controllers
                     var element = nos.GetContainer();
 
                     var file = element?.GetReferencedFileSave(nos.SourceFile);
-                    AddTypesFromFile(types, file);
+
+                    if (file != null)
+                    {
+                        rfses.Add(file);
+                    }
                 }
             }
 
@@ -89,14 +121,14 @@ namespace TileGraphicsPlugin.Controllers
                 }
             }
 
-            var file = element.ReferencedFiles.FirstOrDefault(item => item.Name.EndsWith(tmxName + ".tmx"));
+            var foundRfs = element.ReferencedFiles.FirstOrDefault(item => item.Name.EndsWith(tmxName + ".tmx"));
 
-            if(file != null)
+            if (foundRfs != null)
             {
-                AddTypesFromFile(types, file);
+                rfses.Add(foundRfs);
             }
 
-            return types;
+            return rfses;
         }
 
         private static void AddTypesFromFile(HashSet<string> types, ReferencedFileSave file)
@@ -121,6 +153,22 @@ namespace TileGraphicsPlugin.Controllers
                 }
             }
         }
+
+        private static void AddLayersFromFile(HashSet<string> layers, ReferencedFileSave file)
+        {
+            if (file != null)
+            {
+                var fullPath = GlueCommands.Self.FileCommands.GetFullFileName(file);
+
+                TiledMapSave tiledMapSave = TiledMapSave.FromFile(fullPath);
+
+                foreach (var layer in tiledMapSave.MapLayers)
+                {
+                    layers.Add(layer.Name);
+                }
+            }
+        }
+
 
         public bool IsTileShapeCollection(NamedObjectSave namedObject)
         {

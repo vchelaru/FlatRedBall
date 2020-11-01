@@ -91,11 +91,17 @@
                               ItemsSource="{Binding TmxObjectNames}"
                               SelectedItem="{Binding SourceTmxName}"></ComboBox>
                     <TextBlock Margin="0,5,0,0">Layer:</TextBlock>
-                    <TextBox HorizontalAlignment="Left" Width="200" Text="{Binding NodeNetworkLayerName}"
-                             KeyUp="TextBox_KeyEnterUpdate"></TextBox>
-                    <TextBlock Margin="0,5,0,0">With property</TextBlock>
-                    <TextBox HorizontalAlignment="Left" Width="200" Text="{Binding NodeNetworkLayerTileType}"
-                             KeyUp="TextBox_KeyEnterUpdate"></TextBox>
+                    <ComboBox HorizontalAlignment="Left" Width="200" 
+                             Text="{Binding NodeNetworkLayerName}"
+                             ItemsSource="{Binding AvailableLayerNames}"
+                             IsEditable="True"
+                             KeyUp="TextBox_KeyEnterUpdate"></ComboBox>
+                    <TextBlock Margin="0,5,0,0">Type:</TextBlock>
+                    <ComboBox HorizontalAlignment="Left" Width="200" 
+                             Text="{Binding NodeNetworkLayerTileType}"
+                             IsEditable="True"
+                             ItemsSource="{Binding AvailableTypes}"
+                             KeyUp="TextBox_KeyEnterUpdate"></ComboBox>
                 </StackPanel>
             </StackPanel>
 

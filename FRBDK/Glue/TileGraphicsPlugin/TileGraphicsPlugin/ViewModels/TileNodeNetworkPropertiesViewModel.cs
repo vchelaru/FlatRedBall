@@ -147,6 +147,7 @@ namespace TiledPluginCore.ViewModels
             set => SetAndPersist(value);
         }
 
+
         [SyncedProperty]
         public string NodeNetworkLayerTileType
         {
@@ -168,6 +169,12 @@ namespace TiledPluginCore.ViewModels
         }
 
         public ObservableCollection<string> AvailableTypes
+        {
+            get => Get<ObservableCollection<string>>();
+            set => Set(value);
+        }
+
+        public ObservableCollection<string> AvailableLayerNames
         {
             get => Get<ObservableCollection<string>>();
             set => Set(value);
@@ -242,7 +249,7 @@ namespace TiledPluginCore.ViewModels
         public TileNodeNetworkPropertiesViewModel()
         {
             AvailableTypes = new ObservableCollection<string>();
-
+            AvailableLayerNames = new ObservableCollection<string>();
         }
     }
 }

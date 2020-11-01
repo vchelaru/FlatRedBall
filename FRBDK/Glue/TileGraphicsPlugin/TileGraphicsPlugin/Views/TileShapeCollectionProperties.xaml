@@ -123,8 +123,11 @@
                               ItemsSource="{Binding TmxObjectNames}"
                               SelectedItem="{Binding SourceTmxName}"></ComboBox>
                     <TextBlock Margin="0,5,0,0">Layer:</TextBlock>
-                    <TextBox HorizontalAlignment="Left" Width="200" Text="{Binding CollisionLayerName}"
-                             KeyUp="TextBox_KeyEnterUpdate"></TextBox>
+                    <ComboBox HorizontalAlignment="Left" Width="200" 
+                              Text="{Binding CollisionLayerName}"
+                              IsEditable="True"
+                              
+                              KeyUp="TextBox_KeyEnterUpdate"></ComboBox>
                     <TextBlock Margin="0,5,0,0">With property</TextBlock>
                     <TextBox HorizontalAlignment="Left" Width="200" Text="{Binding CollisionLayerTileType}"
                              KeyUp="TextBox_KeyEnterUpdate"></TextBox> 

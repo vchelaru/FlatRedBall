@@ -36,6 +36,7 @@ namespace TiledPluginCore.Controllers
             {
                 case nameof(viewModel.SourceTmxName):
                     RefreshAvailableTypes();
+                    RefreshAvailableLayers();
                     break;
             }
         }
@@ -51,6 +52,19 @@ namespace TiledPluginCore.Controllers
             foreach (var item in types)
             {
                 viewModel.AvailableTypes.Add(item);
+            }
+        }
+
+        public void RefreshAvailableLayers()
+        {
+            viewModel.AvailableLayerNames.Clear();
+            var tmxName = viewModel.SourceTmxName;
+
+            var layers = TileGraphicsPlugin.Controllers.TileShapeCollectionsPropertiesController.GetAvailableLayers(tmxName);
+
+            foreach(var item in layers)
+            {
+                viewModel.AvailableLayerNames.Add(item);
             }
         }
 
@@ -87,6 +101,7 @@ namespace TiledPluginCore.Controllers
             viewModel.IsEntireViewEnabled = namedObject.DefinedByBase == false;
 
             RefreshAvailableTypes();
+            RefreshAvailableLayers();
 
             view.DataContext = viewModel;
         }
