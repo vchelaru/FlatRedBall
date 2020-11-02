@@ -103,6 +103,54 @@ namespace FlatRedBall.AI.Pathfinding
             return CreateFrom(layeredTileMap, directionalType, predicate);
         }
 
+        public static TileNodeNetwork CreateFromTypes(LayeredTileMap layeredTileMap, DirectionalType directionalType, ICollection<string> types)
+        {
+            Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate = (list) =>
+            {
+                var toReturn = false;
+
+                foreach (var namedValue in list)
+                {
+                    if (namedValue.Name == "Type")
+                    {
+                        var valueAsString = namedValue.Value as string;
+
+                        if (!string.IsNullOrEmpty(valueAsString) && types.Contains(valueAsString))
+                        {
+                            toReturn = true;
+                            break;
+                        }
+                    }
+                }
+
+                return toReturn;
+            };
+            return CreateFrom(layeredTileMap, directionalType, predicate);
+        }
+
+
+        public static TileNodeNetwork CreateFromEmptyTiles(MapDrawableBatch mapDrawableBatch, LayeredTileMap layeredTileMap, DirectionalType directionalType)
+        {
+            TileNodeNetwork toReturn = CreateTileNodeNetwork(layeredTileMap, directionalType);
+
+            toReturn.FillCompletely();
+
+            var offset = new Microsoft.Xna.Framework.Vector3(layeredTileMap.WidthPerTile.Value / 2, layeredTileMap.HeightPerTile.Value / 2, 0);
+
+            for (int i = 0; i < mapDrawableBatch.Vertices.Length; i += 4)
+            {
+                var position = mapDrawableBatch.Vertices[i].Position + offset;
+
+                var nodeToRemove = toReturn.TiledNodeAtWorld(position.X, position.Y);
+
+                if (nodeToRemove != null)
+                {
+                    toReturn.Remove(nodeToRemove);
+                }
+            }
+
+            return toReturn;
+        }
 
         private static TileNodeNetwork CreateTileNodeNetwork(LayeredTileMap layeredTileMap, DirectionalType directionalType)
         {
