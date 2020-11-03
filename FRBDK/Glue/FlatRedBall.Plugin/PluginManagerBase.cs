@@ -89,8 +89,7 @@ namespace FlatRedBall.Glue.Plugins
             get { return mPluginContainers; }
         }
 
-        public AssemblyLoadContext PluginAssemblies { get; set; } = new AssemblyLoadContext(null, true);
-
+        public AssemblyLoadContext AssemblyContext { get; set; }
 
         protected virtual void LoadReferenceLists()
         {
@@ -402,7 +401,7 @@ namespace FlatRedBall.Glue.Plugins
                     }
                     else
                     {
-                        assembly = PluginAssemblies.LoadFromAssemblyPath(assemblyName);
+                        assembly = AssemblyContext.LoadFromAssemblyPath(assemblyName);
                     }
                     
                     assemblies.Add(assembly);
@@ -500,7 +499,7 @@ namespace FlatRedBall.Glue.Plugins
                 return true;
             }
 
-            alreadyLoadedAssembly = PluginAssemblies.Assemblies
+            alreadyLoadedAssembly = AssemblyContext.Assemblies
                 .FirstOrDefault(x => FileManager.RemovePath(x.Location).Equals(strippedArgumentName));
 
             return alreadyLoadedAssembly != null;
