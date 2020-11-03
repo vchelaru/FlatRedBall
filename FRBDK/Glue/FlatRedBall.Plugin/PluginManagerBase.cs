@@ -11,6 +11,7 @@ using System.CodeDom.Compiler;
 
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition;
+using System.Runtime.Loader;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -31,7 +32,6 @@ namespace FlatRedBall.Glue.Plugins
         protected List<string> mReferenceListInternal = new List<string>();
         protected List<string> mReferenceListLoaded = new List<string>();
         protected List<string> mReferenceListExternal = new List<string>();
-
 
         protected Dictionary<IPlugin, PluginContainer> mPluginContainers = new Dictionary<IPlugin, PluginContainer>();
 
@@ -64,7 +64,6 @@ namespace FlatRedBall.Glue.Plugins
         }
 
 
-
         public static List<PluginManagerBase> GetInstances()
         {
             return mInstances;
@@ -90,8 +89,7 @@ namespace FlatRedBall.Glue.Plugins
             get { return mPluginContainers; }
         }
 
-
-
+        public AssemblyLoadContext AssemblyContext { get; set; }
 
         protected virtual void LoadReferenceLists()
         {
@@ -403,7 +401,7 @@ namespace FlatRedBall.Glue.Plugins
                     }
                     else
                     {
-                        assembly = Assembly.LoadFrom(assemblyName);
+                        assembly = AssemblyContext.LoadFromAssemblyPath(assemblyName);
                     }
                     
                     assemblies.Add(assembly);
@@ -492,8 +490,8 @@ namespace FlatRedBall.Glue.Plugins
         private bool IsAssemblyAlreadyReferenced(string assemblyName, out Assembly alreadyLoadedAssembly)
         {
             alreadyLoadedAssembly = null;
-            string strippedArgumentName = FileManager.RemovePath(assemblyName);
 
+            string strippedArgumentName = FileManager.RemovePath(assemblyName);
             string fileName = FileManager.RemovePath(assemblyName);
             
             if(mReferenceListInternal.Contains(fileName))
@@ -501,23 +499,10 @@ namespace FlatRedBall.Glue.Plugins
                 return true;
             }
 
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            alreadyLoadedAssembly = AssemblyContext.Assemblies
+                .FirstOrDefault(x => FileManager.RemovePath(x.Location).Equals(strippedArgumentName));
 
-            foreach (Assembly assembly in assemblies)
-            {
-                if (!assembly.IsDynamic)
-                {
-                    string strippedName = FileManager.RemovePath(assembly.Location);
-
-                    if (strippedArgumentName == strippedName)
-                    {
-                        alreadyLoadedAssembly = assembly;
-                        return true;
-                    }
-                }
-            }
-
-            return false;
+            return alreadyLoadedAssembly != null;
         }
 
         protected virtual void AddDirectoriesForInstance(List<string> pluginDirectories)

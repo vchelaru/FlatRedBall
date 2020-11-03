@@ -25,6 +25,7 @@ using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.Reflection;
 using System.ComponentModel;
+using System.Runtime.Loader;
 using FlatRedBall.Instructions.Reflection;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Content.Instructions;
@@ -230,7 +231,21 @@ namespace FlatRedBall.Glue.Plugins
 
             if (mGlobalInstance == null)
             {
-                mGlobalInstance = new PluginManager(true);
+                mGlobalInstance = new PluginManager(true)
+                {
+                    // global assemblies must not be collectible for now (2nd argument == false).  This is because
+                    // some plugins (like Tiled) use the `XmlSerializer`, but as of now the XmlSerializer class
+                    // loads dynamic assemblies in the default assembly context, not the current/relevant one.  This
+                    // means code in a collectible assembly loads non-collectible assemblies, which isn't allowed and
+                    // causes a crash.  Right now the fix for this has been pushed back to .net 6, and it's not for
+                    // sure that it will actually be prioritized.  See https://github.com/dotnet/runtime/issues/1388.
+                    //
+                    // In the mean time, it is rare that global assemblies actually need to be unloaded without a 
+                    // Glue restart.  So to solve this for now we are making global plugins loaded in a non-collectible
+                    // context, so at least these plugins can still be used by glue, just not in a project specific
+                    // case.
+                    AssemblyContext = new AssemblyLoadContext(null, false),
+                };
                 mGlobalInstance.LoadPlugins(@"FRBDK\Plugins", pluginsToIgnore);
 
                 foreach (var output in mGlobalInstance.CompileOutput)
@@ -249,9 +264,24 @@ namespace FlatRedBall.Glue.Plugins
                 {
                     ShutDownPlugin(plugin, PluginShutDownReason.GlueShutDown);
                 }
+                
+                // Assembly loading only happens asynchronously when `Unload()` is called and all references
+                // to the context have been removed.  This means that they won't be fully cleaned up until the garbage
+                // collector runs.  Since we might end up re-loading a new version of the plugins that were previously
+                // loaded to be safe we want to pause for GC to occur to make sure the old project specific plugins
+                // are fully unloaded before we retry to load the new ones.
+                mProjectInstance.AssemblyContext.Unload();
+                mProjectInstance.AssemblyContext = null;
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
             }
 
-            mProjectInstance = new PluginManager(false);
+            mProjectInstance = new PluginManager(false)
+            {
+                // Project specific plugins should always be loaded in a collectible assembly, so they can be
+                // unloaded
+                AssemblyContext = new AssemblyLoadContext(null, true),
+            };
 
             if(FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self.CurrentGlueProject != null)
             {
