@@ -19,6 +19,12 @@ namespace TiledPluginCore.ViewModels
         FromLayer
     }
 
+    public enum TileNodeNetworkFromLayerOptions
+    {
+        AllEmpty,
+        FromType
+    }
+
     #endregion
 
     public class TileNodeNetworkPropertiesViewModel : PropertyListContainerViewModel
@@ -245,6 +251,44 @@ namespace TiledPluginCore.ViewModels
             get { return Get<bool>(); }
             set { Set(value); }
         }
+
+        [SyncedProperty]
+        public TileNodeNetworkFromLayerOptions TileNodeNetworkFromLayerOptions
+        {
+            get => (TileNodeNetworkFromLayerOptions)Get<int>();
+            set => SetAndPersist((int)value);
+        }
+
+        [DependsOn(nameof(TileNodeNetworkFromLayerOptions))]
+        public bool IsFromLayerAllEmptySelected
+        {
+            get => TileNodeNetworkFromLayerOptions == TileNodeNetworkFromLayerOptions.AllEmpty;
+            set
+            {
+                if(value)
+                {
+                    TileNodeNetworkFromLayerOptions = TileNodeNetworkFromLayerOptions.AllEmpty;
+                }
+            }
+        }
+
+        [DependsOn(nameof(TileNodeNetworkFromLayerOptions))]
+        public bool IsFromLayerFromTypeSelected
+        {
+            get => TileNodeNetworkFromLayerOptions == TileNodeNetworkFromLayerOptions.FromType;
+            set
+            {
+                if (value)
+                {
+                    TileNodeNetworkFromLayerOptions = TileNodeNetworkFromLayerOptions.FromType;
+                }
+            }
+        }
+
+        [DependsOn(nameof(TileNodeNetworkFromLayerOptions))]
+        public Visibility FromLayerFromTypeVisibility => TileNodeNetworkFromLayerOptions == TileNodeNetworkFromLayerOptions.FromType
+            ? Visibility.Visible
+            : Visibility.Collapsed;
 
         public TileNodeNetworkPropertiesViewModel()
         {
