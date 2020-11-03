@@ -129,7 +129,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.0.2</Version>
+      <Version>6.0.6</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="..\FlatRedBallShared.projitems" Label="Shared" />
