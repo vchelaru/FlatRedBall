@@ -348,7 +348,7 @@ namespace FlatRedBall.Glue.Plugins
             }
             else
             {
-                AddDirectoriesForInstance(pluginDirectories);
+                AddDirectoriesForInstance(pluginDirectories, absoluteFilePath);
             }
             return pluginDirectories;
         }
@@ -505,7 +505,7 @@ namespace FlatRedBall.Glue.Plugins
             return alreadyLoadedAssembly != null;
         }
 
-        protected virtual void AddDirectoriesForInstance(List<string> pluginDirectories)
+        protected virtual void AddDirectoriesForInstance(List<string> pluginDirectories, string searchPath)
         {
 
         }

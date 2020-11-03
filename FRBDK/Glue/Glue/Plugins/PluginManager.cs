@@ -222,7 +222,7 @@ namespace FlatRedBall.Glue.Plugins
         {
             if (isStartup)
             {
-                CopyIntalledPluginsToRunnableLocation();
+                MoveInstalledPluginsToPluginDirectory();
                 UninstallPlugins();
 
                 EditorObjects.IoC.Container.Get<List<IErrorReporter>>()
@@ -272,6 +272,7 @@ namespace FlatRedBall.Glue.Plugins
                 // are fully unloaded before we retry to load the new ones.
                 mProjectInstance.AssemblyContext.Unload();
                 mProjectInstance.AssemblyContext = null;
+                mProjectInstance = null;
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
             }
@@ -289,17 +290,18 @@ namespace FlatRedBall.Glue.Plugins
 
                 FilePath installedDirectory = gameDirectory + @"InstalledPlugins\";
                 FilePath pluginDirectory = gameDirectory + @"Plugins\";
-                CopyInstalledPluginsToRunnableLocation(installedDirectory, pluginDirectory);
+                MoveInstalledPluginsToPluginDirectory(installedDirectory, pluginDirectory);
 
-                mProjectInstance.LoadPlugins(gameDirectory + @"Plugins\");
+                var runnablePluginDirectory = CopyProjectPluginsToRunnableDirectory(pluginDirectory);
+                if (runnablePluginDirectory != null)
+                {
+                    mProjectInstance.LoadPlugins(runnablePluginDirectory.FullPath);
+                }
             }
 
             mInstances.Clear();
             mInstances.Add(mGlobalInstance);
             mInstances.Add(mProjectInstance);
-
-
-
         }
 
         public static bool InstallPlugin(InstallationType installationType, string localPlugFile)
@@ -471,15 +473,14 @@ namespace FlatRedBall.Glue.Plugins
             return dirInfo;
         }
 
-
-        private static void CopyIntalledPluginsToRunnableLocation()
+        private static void MoveInstalledPluginsToPluginDirectory()
         {
             string installedDirectory = AppDomain.CurrentDomain.BaseDirectory + @"InstalledPlugins\";
             string pluginDirectory = AppDomain.CurrentDomain.BaseDirectory + @"Plugins\";
-            CopyInstalledPluginsToRunnableLocation(installedDirectory, pluginDirectory);
+            MoveInstalledPluginsToPluginDirectory(installedDirectory, pluginDirectory);
         }
 
-        private static void CopyInstalledPluginsToRunnableLocation(FilePath installedDirectory, FilePath pluginDirectory)
+        private static void MoveInstalledPluginsToPluginDirectory(FilePath installedDirectory, FilePath pluginDirectory)
         { 
             // Making Glue startup not so verbose:
             //PluginManager.ReceiveOutput("Looking to copy plugins from " + installedDirectory);
@@ -517,12 +518,69 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
-        protected override void AddDirectoriesForInstance(List<string> pluginDirectories)
+        /// <summary>
+        /// Project specific plugins should be updatable while Glue has the project active.  Since loading the
+        /// assemblies locks the dlls we can't just load project specific plugins from the plugin directory root,
+        /// instead we have to copy them to a temporary directory that they will be loaded and run from.
+        /// </summary>
+        /// <param name="pluginDirectory">The path to the project's plugin directory</param>
+        /// <returns>The path to the directory containing the copied and loadable plugins</returns>
+        private static FilePath CopyProjectPluginsToRunnableDirectory(FilePath pluginDirectory)
         {
-            if (ProjectManager.GlueProjectFileName != null && Directory.Exists(FileManager.GetDirectory(ProjectManager.GlueProjectFileName) + "Plugins"))
+            const string directoryPrefix = ".running";
+
+            if (!Directory.Exists(pluginDirectory.FullPath)) // Directory.Exists as FilePath.Exits is only for files
             {
-                pluginDirectories.AddRange(Directory.GetDirectories(FileManager.GetDirectory(ProjectManager.GlueProjectFileName) + "Plugins"));
+                // No plugin directory, so do nothing
+                return null;
             }
+            
+            // Delete all previously created runnable directories to try and prevent a pileup
+            var prevFolders = Directory.GetDirectories(pluginDirectory.FullPath)
+                .Where(x => Path.GetFileName(x).StartsWith(directoryPrefix))
+                .ToArray();
+            
+            foreach (var folder in prevFolders)
+            {
+                try
+                {
+                    Directory.Delete(folder, true);
+                }
+                catch
+                {
+                    // Files may be locked from a previous load, so ignore it.  It'll get deleted later
+                }
+            }
+            
+            // Create a temporary directory for the runnable plugins instead of a single static directory.  
+            // This is required because something is keeping an assembly load context from being fully unloaded
+            // immediately, which is causing the existing plugin assemblies to be locked.  This means they cannot be
+            // cleaned up or updated.  This also provides the advantage is that every project load has a fresh copy
+            // of all plugins in, so if a plugin is removed we don't need logic to detect that and delete those dlls.
+
+            var tempDirectory = Path.Combine(pluginDirectory.FullPath, $"{directoryPrefix}-{Path.GetRandomFileName()}");
+            var runnablePath = new FilePath(tempDirectory);
+
+            Directory.CreateDirectory(runnablePath.FullPath);
+            
+            var folders = Directory.GetDirectories(pluginDirectory.FullPath)
+                .Where(x => !Path.GetFileName(x).StartsWith("."))
+                .ToArray();
+
+            foreach (var source in folders)
+            {
+                var destination = Path.Combine(runnablePath.FullPath, Path.GetFileName(source));
+                
+                FileManager.CopyDirectory(source, destination, false);
+            }
+
+            return runnablePath;
+        }
+
+        protected override void AddDirectoriesForInstance(List<string> pluginDirectories, string searchPath)
+        {
+            var directories = Directory.GetDirectories(searchPath);
+            pluginDirectories.AddRange(directories);
         }
 
         #endregion
