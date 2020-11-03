@@ -91,13 +91,15 @@ namespace TMXGlueLib.DataTypes
 
         }
 
-        private static void CreateFromTiledMapSave(TiledMapSave tiledMapSave, string directory, FileReferenceType referenceType,
+        private static void CreateFromTiledMapSave(TiledMapSave tiledMapSave, string tmxDirectory, FileReferenceType referenceType,
             ReducedTileMapInfo reducedTileMapInfo)
         {
             ReducedLayerInfo reducedLayerInfo = null;
 
             for (int i = 0; i < tiledMapSave.MapLayers.Count; i++)
             {
+                string directory = tmxDirectory;
+
                 var tiledLayer = tiledMapSave.MapLayers[i];
 
                 string texture = null;
