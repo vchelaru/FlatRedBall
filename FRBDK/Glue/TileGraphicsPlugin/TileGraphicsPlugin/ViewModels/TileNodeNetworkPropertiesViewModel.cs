@@ -25,10 +25,46 @@ namespace TiledPluginCore.ViewModels
         FromType
     }
 
+
+
     #endregion
 
     public class TileNodeNetworkPropertiesViewModel : PropertyListContainerViewModel
     {
+
+        [SyncedProperty]
+        public FlatRedBall.AI.Pathfinding.DirectionalType DirectionalType
+        {
+            get => (FlatRedBall.AI.Pathfinding.DirectionalType)Get<int>();
+            set => SetAndPersist((int)value);
+        }
+
+        [DependsOn(nameof(DirectionalType))]
+        public bool IsFourDirectionalTypeChecked
+        {
+            get => DirectionalType == FlatRedBall.AI.Pathfinding.DirectionalType.Four;
+            set
+            {
+                if(value)
+                {
+                    DirectionalType = FlatRedBall.AI.Pathfinding.DirectionalType.Four;
+                }
+            }
+        }
+
+        [DependsOn(nameof(DirectionalType))]
+        public bool IsEightDirectionalTypeChecked
+        {
+            get => DirectionalType == FlatRedBall.AI.Pathfinding.DirectionalType.Eight;
+            set
+            {
+                if (value)
+                {
+                    DirectionalType = FlatRedBall.AI.Pathfinding.DirectionalType.Eight;
+                }
+            }
+        }
+
         [SyncedProperty]
         [DefaultValue((int)TileNodeNetworkCreationOptions.Empty)]
         public TileNodeNetworkCreationOptions NetworkCreationOptions

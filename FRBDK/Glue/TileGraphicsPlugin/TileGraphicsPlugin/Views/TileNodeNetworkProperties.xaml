@@ -6,14 +6,22 @@
              xmlns:local="clr-namespace:TiledPluginCore.Views"
              mc:Ignorable="d" 
              d:DesignHeight="660" d:DesignWidth="300">
-    <Grid>
+    <Grid IsEnabled="{Binding IsEntireViewEnabled}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-        <GroupBox Header="Creation Options" Grid.Row="1" IsEnabled="{Binding IsEntireViewEnabled}">
+        <GroupBox Header="Links Per Node">
+            <StackPanel Orientation="Horizontal" >
+                <RadioButton IsChecked="{Binding IsFourDirectionalTypeChecked}">Four</RadioButton>
+                <RadioButton IsChecked="{Binding IsEightDirectionalTypeChecked}" Margin="10,0,0,0">Eight</RadioButton>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Header="Creation Options" Grid.Row="1">
             <StackPanel>
-                <RadioButton VerticalContentAlignment="Center"
+                <RadioButton 
+                             Margin="0,10,0,0"
+                             VerticalContentAlignment="Center"
                              IsChecked="{Binding IsEmptyChecked}">Empty</RadioButton>
                 <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
                              IsChecked="{Binding IsFillCompletelyChecked}">Fill Completely</RadioButton>

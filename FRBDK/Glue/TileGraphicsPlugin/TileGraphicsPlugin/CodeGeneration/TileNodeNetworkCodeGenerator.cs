@@ -129,9 +129,33 @@ namespace TiledPluginCore.CodeGeneration
                     }
 
                 case TileNodeNetworkCreationOptions.FromLayer:
-                    var layerName = Get<string>(nameof(TileNodeNetworkPropertiesViewModel.NodeNetworkLayerName));
-                    var typeNameInLayer = Get<string>(nameof(TileNodeNetworkPropertiesViewModel.NodeNetworkLayerTileType));
+                    return GenerateFromLayerConstructor(namedObjectSave);
 
+                //break;
+                default:
+                    return $"return new System.NotImplementedException();";
+
+            }
+        }
+
+        private static string GenerateFromLayerConstructor(NamedObjectSave namedObjectSave)
+        {
+            T Get<T>(string name)
+            {
+                return namedObjectSave.Properties.GetValue<T>(name);
+            }
+
+            var layerName = Get<string>(nameof(TileNodeNetworkPropertiesViewModel.NodeNetworkLayerName));
+            var typeNameInLayer = Get<string>(nameof(TileNodeNetworkPropertiesViewModel.NodeNetworkLayerTileType));
+            var layerOption = Get<TileNodeNetworkFromLayerOptions>(nameof(TileNodeNetworkPropertiesViewModel.TileNodeNetworkFromLayerOptions));
+            var instanceName = namedObjectSave.FieldName;
+            var mapName = Get<string>(nameof(TileNodeNetworkPropertiesViewModel.SourceTmxName));
+
+            switch (layerOption)
+            {
+                case TileNodeNetworkFromLayerOptions.AllEmpty:
+                    return $"{instanceName} = FlatRedBall.AI.Pathfinding.TileNodeNetworkCreator.CreateFromEmptyTiles({mapName}.MapLayers.FindByName(\"{layerName}\"), {mapName}, FlatRedBall.AI.Pathfinding.DirectionalType.Four);";
+                case TileNodeNetworkFromLayerOptions.FromType:
                     var effectiveName = layerName;
                     if (!string.IsNullOrEmpty(typeNameInLayer))
                     {
@@ -144,11 +168,12 @@ namespace TiledPluginCore.CodeGeneration
                     //    $" ?? new FlatRedBall.TileCollisions.TileShapeCollection();";
                     return $"return new System.NotImplementedException();";
 
-                //break;
-                default:
-                    return $"return new System.NotImplementedException();";
-
+                    break;
             }
+
+            return $"return new System.NotImplementedException();";
+
+
         }
 
         private void GenerateCodeFor(NamedObjectSave namedObjectSave, ICodeBlock codeBlock)
