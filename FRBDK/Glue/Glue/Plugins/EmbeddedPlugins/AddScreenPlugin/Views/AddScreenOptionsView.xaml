@@ -12,6 +12,9 @@
             <StackPanel Margin="10,0,0,0" Visibility="{Binding LevelScreenUiVisibility}">
                 <CheckBox VerticalContentAlignment="Center"
                           IsChecked="{Binding IsAddStandardTmxChecked }">Add Standard TMX File</CheckBox>
+                <CheckBox VerticalContentAlignment="Center"
+                          Visibility="{Binding IsInheritFromGameScreenVisible}"
+                          IsChecked="{Binding InheritFromGameScreen}">Inherit from GameScreen</CheckBox>
             </StackPanel>
             <RadioButton IsEnabled="{Binding CanAddBaseLevelScreen}" IsChecked="{Binding IsBaseLevelScreen}">Base Level Screen</RadioButton>
             <StackPanel Margin="10,0,0,0" Visibility="{Binding BaseLevelScreenUiVisibility}">

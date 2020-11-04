@@ -44,11 +44,11 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
 
         private void ApplyViewModelToScreen(ScreenSave newScreen, AddScreenViewModel viewModel)
         {
+            var shouldSave = false;
             switch(viewModel.AddScreenType)
             {
                 case AddScreenType.BaseLevelScreen:
 
-                    var shouldSave = false;
 
                     if(viewModel.IsAddMapLayeredTileMapChecked)
                     {
@@ -81,15 +81,21 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                         shouldSave = true;
                     }
 
-                    if(shouldSave)
-                    {
-                        GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(newScreen);
-                        GlueCommands.Self.GluxCommands.SaveGlux();
-                    }
-
                     break;
                 case AddScreenType.LevelScreen:
+
+                    if(viewModel.InheritFromGameScreen)
+                    {
+                        var gameScreen = ObjectFinder.Self.GetScreenSaveUnqualified("GameScreen");
+                        if(gameScreen != null)
+                        {
+                            newScreen.BaseScreen = gameScreen.Name;
+                            shouldSave = true;
+
+                        }
+                    }
+
+
                     if(viewModel.IsAddStandardTmxChecked)
                     {
                         // add standard TMX....how?
@@ -103,6 +109,13 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                     }
                     break;
             }
+
+            if (shouldSave)
+            {
+                GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(newScreen);
+                GlueCommands.Self.GluxCommands.SaveGlux();
+            }
         }
 
         private void HandleModifyAddScreenWindow(AddScreenWindow window)
@@ -112,6 +125,9 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             var viewModel = new ViewModels.AddScreenViewModel();
             viewModel.CanAddBaseLevelScreen = true;
             viewModel.CanAddLevelScreen = true;
+
+            viewModel.HasGameScreen =
+                ObjectFinder.Self.GetScreenSaveUnqualified("GameScreen") != null;
 
             optionsView.DataContext = viewModel;
             window.AddControl(optionsView);

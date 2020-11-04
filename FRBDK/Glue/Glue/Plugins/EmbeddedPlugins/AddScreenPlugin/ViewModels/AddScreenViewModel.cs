@@ -97,5 +97,19 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
             get => Get<bool>();
             set => Set(value);
         }
+
+        public bool HasGameScreen
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public Visibility IsInheritFromGameScreenVisible => HasGameScreen.ToVisibility();
+
+        public bool InheritFromGameScreen
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
     }
 }
