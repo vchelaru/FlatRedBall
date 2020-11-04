@@ -14,7 +14,7 @@ namespace TileGraphicsPlugin.ViewModels
 
     public enum CollisionCreationOptions
     {
-        Empty,
+        Empty = 0,
         FillCompletely,
         BorderOutline,
         FromProperties,

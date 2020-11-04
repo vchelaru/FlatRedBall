@@ -509,22 +509,4 @@ namespace TileGraphicsPlugin.ViewModels
         #endregion
     }
 
-    #region Extension Method Classes
-
-    static class BoolExtensions
-    {
-        public static System.Windows.Visibility ToVisibility(this bool value)
-        {
-            if(value)
-            {
-                return System.Windows.Visibility.Visible;
-            }
-            else
-            {
-                return System.Windows.Visibility.Collapsed;
-            }
-        }
-    }
-
-    #endregion
 }

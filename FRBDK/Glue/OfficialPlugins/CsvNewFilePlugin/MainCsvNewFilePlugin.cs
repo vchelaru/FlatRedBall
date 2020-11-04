@@ -49,7 +49,7 @@ namespace OfficialPluginsCore.CsvNewFilePlugin
 
             newFileWindow.SelectionChanged += (not, used) =>
             {
-                var ati = newFileWindow.SelectedItem as AssetTypeInfo;
+                var ati = newFileWindow.SelectedItem;
 
                 if (IsSpreadsheet(ati))
                 {
@@ -63,7 +63,7 @@ namespace OfficialPluginsCore.CsvNewFilePlugin
 
             newFileWindow.GetCreationOption = () =>
             {
-                var ati = newFileWindow.SelectedItem as AssetTypeInfo;
+                var ati = newFileWindow.SelectedItem;
                 if(IsSpreadsheet(ati))
                 {
                     if (dictionaryRadio.IsChecked == true)

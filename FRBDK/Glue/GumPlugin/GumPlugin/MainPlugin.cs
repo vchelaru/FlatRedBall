@@ -27,6 +27,7 @@ using FlatRedBall.Glue.Managers;
 using System.Diagnostics;
 using FlatRedBall.Glue.Errors;
 using GumPluginCore.Managers;
+using FlatRedBall.Glue.Controls;
 
 namespace GumPlugin
 {
@@ -349,7 +350,7 @@ namespace GumPlugin
 
             this.ReactToItemSelectHandler += HandleItemSelected;
 
-            this.ReactToNewScreenCreated += HandleNewScreen;
+            this.NewScreenCreated += HandleNewScreen;
 
             this.GetEventSignatureArgs += HandleGetEventSignatureArgs;
 

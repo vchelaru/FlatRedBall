@@ -152,7 +152,7 @@ namespace FlatRedBall.Glue.Controls
 
             if (dialogResult == true)
             {
-                AssetTypeInfo resultAssetTypeInfo = nfw.ResultAssetTypeInfo;
+                var resultAssetTypeInfo = nfw.SelectedItem;
 
                 string name = nfw.ResultName;
 

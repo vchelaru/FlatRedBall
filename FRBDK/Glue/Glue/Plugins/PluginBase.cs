@@ -92,8 +92,11 @@ namespace FlatRedBall.Glue.Plugins
         /// <summary>
         /// Action raised when a new Glue screen is created.
         /// </summary>
-        public Action<ScreenSave> ReactToNewScreenCreated { get; protected set; }
-        public Action<EntitySave, AddEntityWindow> ReactToNewEntityCreated { get; protected set; }
+        public Action<ScreenSave> NewScreenCreated { get; protected set; }
+        public Action<EntitySave> NewEntityCreated { get; protected set; }
+
+        public Action<ScreenSave, AddScreenWindow> NewScreenCreatedWithUi { get; protected set; }
+        public Action<EntitySave, AddEntityWindow> NewEntityCreatedWithUi { get; protected set; }
 
         public OnErrorOutputDelegate OnErrorOutputHandler { get; protected set; }
         public OnOutputDelegate OnOutputHandler { get; protected set; }
@@ -168,6 +171,7 @@ namespace FlatRedBall.Glue.Plugins
         public Action ReactToLoadedGlux { get; protected set; }
 
         public Action<AddEntityWindow> ModifyAddEntityWindow { get; protected set; }
+        public Action<AddScreenWindow> ModifyAddScreenWindow { get; protected set; }
 
         /// <summary>
         /// Raised whenever a project is unloaded. Glue will still report the project as loaded, so that plugins can

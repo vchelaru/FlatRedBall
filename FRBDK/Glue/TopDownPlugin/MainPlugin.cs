@@ -67,7 +67,7 @@ namespace TopDownPlugin
             this.ReactToEntityRemoved += HandleElementRemoved;
             this.ReactToElementRenamed += HandleElementRenamed;
             this.ModifyAddEntityWindow += ModifyAddEntityWindowLogic.HandleModifyAddEntityWindow;
-            this.ReactToNewEntityCreated += NewEntityCreatedReactionLogic.ReactToNewEntityCreated;
+            this.NewEntityCreatedWithUi += NewEntityCreatedReactionLogic.ReactToNewEntityCreated;
         }
 
         private void HandleElementRenamed(IElement renamedElement, string oldName)

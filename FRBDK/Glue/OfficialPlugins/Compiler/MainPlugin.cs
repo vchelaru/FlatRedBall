@@ -96,8 +96,8 @@ namespace OfficialPlugins.Compiler
             this.ReactToFileChangeHandler += (fileName) => 
                 RefreshManager.Self.HandleFileChanged(new FlatRedBall.IO.FilePath(fileName));
             this.ReactToCodeFileChange += RefreshManager.Self.HandleFileChanged;
-            this.ReactToNewEntityCreated += RefreshManager.Self.HandleNewEntityCreated;
-            this.ReactToNewScreenCreated += RefreshManager.Self.HandleNewScreenCreated;
+            this.NewEntityCreated += RefreshManager.Self.HandleNewEntityCreated;
+            //this.ReactToNewScreenCreated += RefreshManager.Self.HandleNewScreenCreated;
             this.ReactToNewObjectHandler += RefreshManager.Self.HandleNewObjectCreated;
             this.ReactToObjectRemoved += RefreshManager.Self.HandleObjectRemoved;
             this.ReactToElementVariableChange += RefreshManager.Self.HandleVariableChanged;

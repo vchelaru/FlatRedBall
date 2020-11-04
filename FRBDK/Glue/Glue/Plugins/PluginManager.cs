@@ -1069,20 +1069,40 @@ namespace FlatRedBall.Glue.Plugins
         {
             CallMethodOnPlugin((plugin) =>
             {
-                plugin.ReactToNewScreenCreated(screen);
+                plugin.NewScreenCreated(screen);
             },
-            nameof(ReactToNewScreenCreated),
-            plugin => plugin.ReactToNewScreenCreated != null);
+            nameof(ReactToNewScreenCreatedWithUi),
+            plugin => plugin.NewScreenCreated != null);
         }
 
-        internal static void ReactToNewEntityCreated(EntitySave entitySave, AddEntityWindow window)
+        internal static void ReactToNewEntityCreated(EntitySave entitySave)
         {
             CallMethodOnPlugin((plugin) =>
             {
-                plugin.ReactToNewEntityCreated(entitySave, window);
+                plugin.NewEntityCreated(entitySave);
             },
             nameof(ReactToNewEntityCreated),
-            plugin => plugin.ReactToNewEntityCreated != null);
+            plugin => plugin.NewEntityCreated != null);
+        }
+
+        internal static void ReactToNewScreenCreatedWithUi(ScreenSave screen, AddScreenWindow addScreenWindow)
+        {
+            CallMethodOnPlugin((plugin) =>
+            {
+                plugin.NewScreenCreatedWithUi(screen, addScreenWindow);
+            },
+            nameof(ReactToNewScreenCreatedWithUi),
+            plugin => plugin.NewScreenCreatedWithUi != null);
+        }
+
+        internal static void ReactToNewEntityCreatedWithUi(EntitySave entitySave, AddEntityWindow window)
+        {
+            CallMethodOnPlugin((plugin) =>
+            {
+                plugin.NewEntityCreatedWithUi(entitySave, window);
+            },
+            nameof(ReactToNewEntityCreatedWithUi),
+            plugin => plugin.NewEntityCreatedWithUi != null);
         }
 
         internal static void ReactToCreateCollisionRelationshipsBetween(NamedObjectSave firstNos, NamedObjectSave secondNos)
@@ -1831,6 +1851,17 @@ namespace FlatRedBall.Glue.Plugins
             },
             nameof(ModifyAddEntityWindow),
             plugin => plugin.ModifyAddEntityWindow != null);
+        }
+
+        internal static void ModifyAddScreenWindow(AddScreenWindow addScreenWindow)
+        {
+
+            CallMethodOnPlugin((plugin) =>
+            {
+                plugin.ModifyAddScreenWindow(addScreenWindow);
+            },
+            nameof(ModifyAddScreenWindow),
+            plugin => plugin.ModifyAddScreenWindow != null);
         }
 
         internal static void AdjustDisplayedEntity(EntitySave entitySave, EntitySavePropertyGridDisplayer entitySaveDisplayer)

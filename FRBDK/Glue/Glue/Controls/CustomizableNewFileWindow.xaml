@@ -17,8 +17,9 @@
             <Label>Select the file type:</Label>
             <Grid>
                 <TextBox x:Name="SearchTermTextBox" Height="24" 
-                         TextChanged="SearchTermTextBox_TextChanged"
+                         Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
                          KeyDown="SearchTermTextBox_KeyDown"
+                         
                          PreviewKeyDown="SearchTermTextBox_PreviewKeyDown"></TextBox>
                 <TextBlock IsHitTestVisible="False" Text="Search..." VerticalAlignment="Center" HorizontalAlignment="Left" 
                            Margin="4,0,0,0" Foreground="DarkGray">
@@ -43,7 +44,10 @@
             </Grid.ColumnDefinitions>
             <ListBox 
                 x:Name="ListBox" 
-                        SelectionChanged="FileTypeComboBox_SelectionChanged">
+                        SelectionChanged="FileTypeComboBox_SelectionChanged"
+                        SelectedItem="{Binding SelectedAssetTypeInfo}"
+                        ItemsSource="{Binding FilteredOptions}"
+                >
                 
             </ListBox>
             <StackPanel Grid.Column="1" x:Name="AdditionalUiStack"></StackPanel>

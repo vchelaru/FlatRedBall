@@ -114,7 +114,7 @@ namespace FlatRedBall.Glue.Controls
 
         #endregion
 
-        public void AddToStackPanel(UIElement element)
+        public void AddControl(UIElement element)
         {
             var indexToInsertAt = MainStackPanel.Children.Count - 1;
 

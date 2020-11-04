@@ -17,7 +17,7 @@ namespace TopDownPlugin.Logic
 
             var control = new AdditionalEntitiesControls();
             control.DataContext = viewModel;
-            window.AddToStackPanel(control);
+            window.AddControl(control);
         }
     }
 }

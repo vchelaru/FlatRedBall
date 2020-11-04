@@ -194,7 +194,15 @@ namespace FlatRedBall.Glue.ViewModels
         }
 
         [DependsOn(nameof(SelectedItem))]
-        public string SourceClassType => SelectedItem?.ToString();
+        public string SourceClassType
+        {
+            get => SelectedItem?.ToString();
+            set
+            {
+                SelectedItem = AllSelectedItemWrappers.FirstOrDefault(item => item.BackingObject == value) ??
+                    MakeWrapper(value);
+            }
+        }
 
         public ReferencedFileSave SourceFile
         {

@@ -151,7 +151,7 @@ namespace OfficialPlugins.Compiler.Managers
 
         #region Entity Created
 
-        internal void HandleNewEntityCreated(EntitySave arg1, AddEntityWindow arg2)
+        internal void HandleNewEntityCreated(EntitySave arg1)
         {
             if(ShouldRestartOnChange)
             {
@@ -161,16 +161,6 @@ namespace OfficialPlugins.Compiler.Managers
 
         #endregion
 
-        #region Screen Created
-
-        internal void HandleNewScreenCreated(ScreenSave obj)
-        {
-            // don't worry about new screen, to be used additional changes have to be made
-
-            //StopAndRestartTask();
-        }
-
-        #endregion
 
         internal void HandleNewObjectCreated(NamedObjectSave newNamedObject)
         {

@@ -343,7 +343,7 @@ namespace TileGraphicsPlugin
 
             this.ModifyAddEntityWindow += ModifyAddEntityWindowLogic.HandleModifyAddEntityWindow;
 
-            this.ReactToNewEntityCreated += NewEntityCreatedReactionLogic.ReactToNewEntityCreated;
+            this.NewEntityCreatedWithUi += NewEntityCreatedReactionLogic.ReactToNewEntityCreated;
 
             this.ReactToNewFileHandler = ReactToNewFile;
 
@@ -367,7 +367,7 @@ namespace TileGraphicsPlugin
 
             newFileWindow.SelectionChanged += (not, used) =>
             {
-                var ati = newFileWindow.SelectedItem as AssetTypeInfo;
+                var ati = newFileWindow.SelectedItem;
 
                 if(IsTmx(ati))
                 {
@@ -381,7 +381,7 @@ namespace TileGraphicsPlugin
 
             newFileWindow.GetCreationOption = () =>
             {
-                var ati = newFileWindow.SelectedItem as AssetTypeInfo;
+                var ati = newFileWindow.SelectedItem;
                 if (IsTmx(ati))
                 {
                     return viewModel;

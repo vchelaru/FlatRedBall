@@ -85,6 +85,8 @@ namespace TiledPluginCore.CodeGeneration
 
             var instanceName = namedObjectSave.FieldName;
             var mapName = Get<string>(nameof(TileNodeNetworkPropertiesViewModel.SourceTmxName));
+            var fourOrEight = Get<FlatRedBall.AI.Pathfinding.DirectionalType>(nameof(TileNodeNetworkPropertiesViewModel.DirectionalType));
+
             switch(creationOptions)
             {
                 case TileNodeNetworkCreationOptions.FillCompletely:
@@ -104,13 +106,13 @@ namespace TiledPluginCore.CodeGeneration
                     // heightFill - 1, because if it's just 1 cell high, we use the value as-is. Then each additional moves the bottom left by 1
                     var bottomFillString = FloatString(topFill - (heightFill-1) * tileSize);
 
-                    return $"{instanceName} = new FlatRedBall.AI.Pathfinding.TileNodeNetwork({leftFillString}, {bottomFillString}, {tileSizeString}, {widthFill}, {heightFill}, FlatRedBall.AI.Pathfinding.DirectionalType.Four);";
+                    return $"{instanceName} = new FlatRedBall.AI.Pathfinding.TileNodeNetwork({leftFillString}, {bottomFillString}, {tileSizeString}, {widthFill}, {heightFill}, FlatRedBall.AI.Pathfinding.DirectionalType.{fourOrEight});";
                 case TileNodeNetworkCreationOptions.FromType:
                     var typeName = Get<string>(nameof(TileNodeNetworkPropertiesViewModel.NodeNetworkTileTypeName));
 
                     if (!string.IsNullOrEmpty(typeName))
                     {
-                        return $"{instanceName} = FlatRedBall.AI.Pathfinding.TileNodeNetworkCreator.CreateFromTypes({mapName}, FlatRedBall.AI.Pathfinding.DirectionalType.Four, new string[]{{ \"{typeName}\" }});";
+                        return $"{instanceName} = FlatRedBall.AI.Pathfinding.TileNodeNetworkCreator.CreateFromTypes({mapName}, FlatRedBall.AI.Pathfinding.DirectionalType.{fourOrEight}, new string[]{{ \"{typeName}\" }});";
                     }
                     else
                     {
@@ -121,7 +123,7 @@ namespace TiledPluginCore.CodeGeneration
 
                     if (!string.IsNullOrEmpty(propertyName))
                     {
-                        return $"{instanceName} = FlatRedBall.AI.Pathfinding.TileNodeNetworkCreator.CreateFromTilesWithProperties({mapName}, FlatRedBall.AI.Pathfinding.DirectionalType.Four, new string[]{{ \"{propertyName}\" }});";
+                        return $"{instanceName} = FlatRedBall.AI.Pathfinding.TileNodeNetworkCreator.CreateFromTilesWithProperties({mapName}, FlatRedBall.AI.Pathfinding.DirectionalType.{fourOrEight}, new string[]{{ \"{propertyName}\" }});";
                     }
                     else
                     {
@@ -145,6 +147,8 @@ namespace TiledPluginCore.CodeGeneration
                 return namedObjectSave.Properties.GetValue<T>(name);
             }
 
+            var fourOrEight = Get<FlatRedBall.AI.Pathfinding.DirectionalType>(nameof(TileNodeNetworkPropertiesViewModel.DirectionalType));
+
             var layerName = Get<string>(nameof(TileNodeNetworkPropertiesViewModel.NodeNetworkLayerName));
             var typeNameInLayer = Get<string>(nameof(TileNodeNetworkPropertiesViewModel.NodeNetworkLayerTileType));
             var layerOption = Get<TileNodeNetworkFromLayerOptions>(nameof(TileNodeNetworkPropertiesViewModel.TileNodeNetworkFromLayerOptions));
@@ -154,7 +158,7 @@ namespace TiledPluginCore.CodeGeneration
             switch (layerOption)
             {
                 case TileNodeNetworkFromLayerOptions.AllEmpty:
-                    return $"{instanceName} = FlatRedBall.AI.Pathfinding.TileNodeNetworkCreator.CreateFromEmptyTiles({mapName}.MapLayers.FindByName(\"{layerName}\"), {mapName}, FlatRedBall.AI.Pathfinding.DirectionalType.Four);";
+                    return $"{instanceName} = FlatRedBall.AI.Pathfinding.TileNodeNetworkCreator.CreateFromEmptyTiles({mapName}.MapLayers.FindByName(\"{layerName}\"), {mapName}, FlatRedBall.AI.Pathfinding.DirectionalType.{fourOrEight});";
                 case TileNodeNetworkFromLayerOptions.FromType:
                     var effectiveName = layerName;
                     if (!string.IsNullOrEmpty(typeNameInLayer))

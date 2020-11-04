@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Utilities;
 using GlueFormsCore.Extensions;
+using GlueFormsCore.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -28,22 +29,22 @@ namespace FlatRedBall.Glue.Controls
     {
         #region Fields/Properties
 
-        List<object> allOptions = new List<object>();
-        ObservableCollection<object> filteredOptions = new ObservableCollection<object>();
+        //List<object> allOptions = new List<object>();
+        //ObservableCollection<object> filteredOptions = new ObservableCollection<object>();
+
+        AddNewFileViewModel ViewModel => DataContext as AddNewFileViewModel;
 
         bool mIsNameDefault = true;
-
-        List<FileTypeOptions> mFileTypeOptions = new List<FileTypeOptions>();
 
         public List<string> NamesAlreadyUsed
         {
             get; private set;
         } = new List<string>();
 
-        public object SelectedItem
+        public AssetTypeInfo SelectedItem
         {
-            get => ListBox.SelectedItem;
-            set => ListBox.SelectedItem = value;
+            get => ViewModel.SelectedAssetTypeInfo;
+            set => ViewModel.SelectedAssetTypeInfo = value;
         }
 
         public string ResultName
@@ -52,10 +53,6 @@ namespace FlatRedBall.Glue.Controls
             set => TextBox.Text = value;
         }
 
-        public AssetTypeInfo ResultAssetTypeInfo
-        {
-            get { return ListBox.SelectedItem as AssetTypeInfo; }
-        }
         #endregion
 
         #region Events
@@ -70,7 +67,7 @@ namespace FlatRedBall.Glue.Controls
         {
             InitializeComponent();
 
-            ListBox.ItemsSource = filteredOptions;
+            //ListBox.ItemsSource = filteredOptions;
 
             this.WindowStartupLocation = WindowStartupLocation.Manual;
 
@@ -91,46 +88,43 @@ namespace FlatRedBall.Glue.Controls
             AdditionalUiStack.Children.Add(controlToAdd);
         }
 
-        public void AddOption(object option)
+        public void AddOption(AssetTypeInfo option)
         {
             //FileTypeComboBox.Items.Add(option);
-            allOptions.Add(option);
-            RefreshListBox();
-
-
+            ViewModel.AllOptions.Add(option);
         }
 
-        private void RefreshListBox()
-        {
-            filteredOptions.Clear();
+        //private void RefreshListBox()
+        //{
+        //    filteredOptions.Clear();
 
-            var temp = allOptions
-                .OrderBy(item => item?.ToString())
-                .ToList();
-            
+        //    var temp = allOptions
+        //        .OrderBy(item => item?.ToString())
+        //        .ToList();
 
-            foreach(var item in temp)
-            {
-                var toString = item.ToString();
 
-                var text = SearchTermTextBox.Text?.ToLowerInvariant();
+        //    foreach(var item in temp)
+        //    {
+        //        var toString = item.ToString();
 
-                var shouldAdd = string.IsNullOrEmpty(text) ||
-                    toString?.ToLowerInvariant().Contains(text) == true;
+        //        var text = SearchTermTextBox.Text?.ToLowerInvariant();
 
-                if(shouldAdd)
-                {
-                    filteredOptions.Add(item);
-                }
-            }
+        //        var shouldAdd = string.IsNullOrEmpty(text) ||
+        //            toString?.ToLowerInvariant().Contains(text) == true;
 
-            if (ListBox.SelectedIndex > 0 == false && filteredOptions.Count > 0)
-            {
-                ListBox.SelectedIndex = 0;
-            }
-        }
+        //        if(shouldAdd)
+        //        {
+        //            filteredOptions.Add(item);
+        //        }
+        //    }
 
-        public string GetObjectTypeFromAti(AssetTypeInfo ati)
+        //    if (ListBox.SelectedIndex > 0 == false && filteredOptions.Count > 0)
+        //    {
+        //        ListBox.SelectedIndex = 0;
+        //    }
+        //}
+
+        private string GetObjectTypeFromAti(AssetTypeInfo ati)
         {
             if (ati == null)
             {
@@ -155,22 +149,20 @@ namespace FlatRedBall.Glue.Controls
             {
                 this.SelectionChanged(this, e);
             }
-            AssetTypeInfo ati = SelectedItem as AssetTypeInfo;
+            var ati = SelectedItem;
 
             if (ati != null)
             {
-
-                string fileType = GetObjectTypeFromAti(ati);
-
                 if (mIsNameDefault)
                 {
+                    string fileType = GetObjectTypeFromAti(ati);
                     // We want to make sure we don't
                     // suggest a name that is already
                     // being used.
                     //textBox1.Text = fileType + "File";
                     TextBox.Text = StringFunctions.MakeStringUnique(fileType + "File", NamesAlreadyUsed, 2);
 
-                    while (ObjectFinder.Self.GetReferencedFileSaveFromFile(TextBox.Text + "." + ResultAssetTypeInfo.Extension) != null)
+                    while (ObjectFinder.Self.GetReferencedFileSaveFromFile(TextBox.Text + "." +  ViewModel.SelectedAssetTypeInfo?.Extension) != null)
                     {
                         TextBox.Text = FlatRedBall.Utilities.StringFunctions.IncrementNumberAtEnd(TextBox.Text);
                     }
@@ -218,10 +210,10 @@ namespace FlatRedBall.Glue.Controls
             return null;
         }
 
-        private void SearchTermTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            RefreshListBox();
-        }
+        //private void SearchTermTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        //{
+        //    RefreshListBox();
+        //}
 
         private void SearchTermTextBox_KeyDown(object sender, KeyEventArgs e)
         {
@@ -258,7 +250,7 @@ namespace FlatRedBall.Glue.Controls
                     e.Handled = true;
                     break;
                 case Key.Down:
-                    if (ListBox.SelectedIndex < filteredOptions.Count - 1)
+                    if (ListBox.SelectedIndex < ViewModel.FilteredOptions.Count - 1)
                     {
                         ListBox.SelectedIndex++;
                         ListBox.ScrollIntoView(ListBox.SelectedItem);

@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.Views.AddScreenOptionsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="200" d:DesignWidth="300">
+    <Grid>
+        <StackPanel>
+            <RadioButton IsEnabled="{Binding CanAddLevelScreen}" IsChecked="{Binding IsLevelScreen}">Level Screen</RadioButton>
+            <StackPanel Margin="10,0,0,0" Visibility="{Binding LevelScreenUiVisibility}">
+                <CheckBox VerticalContentAlignment="Center"
+                          IsChecked="{Binding IsAddStandardTmxChecked }">Add Standard TMX File</CheckBox>
+            </StackPanel>
+            <RadioButton IsEnabled="{Binding CanAddBaseLevelScreen}" IsChecked="{Binding IsBaseLevelScreen}">Base Level Screen</RadioButton>
+            <StackPanel Margin="10,0,0,0" Visibility="{Binding BaseLevelScreenUiVisibility}">
+                <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsAddMapLayeredTileMapChecked}">Add Map LayeredTileMap</CheckBox>
+                <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsAddSolidCollisionShapeCollectionChecked}">Add SolidCollision ShapeCollection</CheckBox>
+            </StackPanel>
+
+            <RadioButton IsChecked="{Binding IsEmptyScreen}">Empty Screen</RadioButton>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -6,7 +6,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
     public interface IDialogCommands
     {
-        ReferencedFileSave ShowAddNewFileDialog();
+        ReferencedFileSave ShowAddNewFileDialog(AddNewFileViewModel viewModel = null);
         void ShowAddNewEntityDialog();
         void ShowAddNewScreenDialog();
         void ShowAddNewEventDialog(NamedObjectSave eventOwner);

@@ -155,18 +155,30 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region ReferencedFileSave
 
-        public ReferencedFileSave ShowAddNewFileDialog()
+        public ReferencedFileSave ShowAddNewFileDialog(AddNewFileViewModel viewModel = null)
         {
             ReferencedFileSave rfs = null;
 
-            var nfw = CreateNewFileWindow();
+            if (viewModel == null)
+            {
+                viewModel = new AddNewFileViewModel();
+            }
+            var nfw = CreateNewFileWindow(viewModel);
+
+            if (viewModel.SelectedAssetTypeInfo == null)
+            {
+                viewModel.SelectedAssetTypeInfo = viewModel.FilteredOptions.FirstOrDefault();
+            }
 
             var result = nfw.ShowDialog();
 
             if (result == true)
             {
                 string name = nfw.ResultName;
-                AssetTypeInfo resultAssetTypeInfo = nfw.ResultAssetTypeInfo;
+                AssetTypeInfo resultAssetTypeInfo =
+                    //nfw.ResultAssetTypeInfo;
+                    viewModel.SelectedAssetTypeInfo;
+
                 string errorMessage;
                 string directory = null;
                 var element = GlueState.Self.CurrentElement;
@@ -213,9 +225,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return rfs;
         }
 
-        private static CustomizableNewFileWindow CreateNewFileWindow()
+        private static CustomizableNewFileWindow CreateNewFileWindow(AddNewFileViewModel viewModel)
         {
             var nfw = new CustomizableNewFileWindow();
+            nfw.DataContext = viewModel;
 
             PluginManager.AddNewFileOptions(nfw);
 
@@ -289,7 +302,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                             }
                             var entity = CreateEntityAndObjects(window, entityName, directory);
 
-                            PluginManager.ReactToNewEntityCreated(entity, window);
+                            PluginManager.ReactToNewEntityCreatedWithUi(entity, window);
                         }
                     }
                 }
@@ -593,62 +606,70 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void ShowAddNewScreenDialog()
         {
-            // AddScreen, add screen, addnewscreen, add new screen
+            //////////////Early Out////////////
             if (ProjectManager.GlueProjectSave == null)
             {
                 System.Windows.Forms.MessageBox.Show("You need to create or load a project first.");
+                return;
             }
-            else
+            if (ProjectManager.StatusCheck() != ProjectManager.CheckResult.Passed)
             {
-                if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
+                return;
+            }
+                ////////////End Early Out
+
+            // AddScreen, add screen, addnewscreen, add new screen
+            var tiw = new AddScreenWindow();
+
+            tiw.Message = "Enter a name for the new Screen";
+
+            string name = "NewScreen";
+
+            if(GlueState.Self.CurrentGlueProject.Screens.Count == 0)
+            {
+                name = "GameScreen";
+            }
+
+            var allScreenNames =
+                GlueState.Self.CurrentGlueProject.Screens
+                .Select(item => item.GetStrippedName())
+                .ToList();
+
+            name = StringFunctions.MakeStringUnique(name,
+                allScreenNames, 2);
+
+            tiw.Result = name;
+
+            tiw.HighlghtText();
+
+            PluginManager.ModifyAddScreenWindow(tiw);
+
+
+            var result = tiw.ShowDialog();
+            if (result == true)
+            {
+                string whyItIsntValid;
+
+                if (!NameVerifier.IsScreenNameValid(tiw.Result, null, out whyItIsntValid))
                 {
-                    var tiw = new CustomizableTextInputWindow();
-
-                    tiw.Message = "Enter a name for the new Screen";
-
-                    string name = "NewScreen";
-
-                    if(GlueState.Self.CurrentGlueProject.Screens.Count == 0)
-                    {
-                        name = "GameScreen";
-                    }
-
-                    var allScreenNames =
-                        GlueState.Self.CurrentGlueProject.Screens
-                        .Select(item => item.GetStrippedName())
-                        .ToList();
-
-                    name = StringFunctions.MakeStringUnique(name,
-                        allScreenNames, 2);
-
-                    tiw.Result = name;
-
-                    tiw.HighlghtText();
-
-                    var result = tiw.ShowDialog();
-                    if (result == true)
-                    {
-                        string whyItIsntValid;
-
-                        if (!NameVerifier.IsScreenNameValid(tiw.Result, null, out whyItIsntValid))
-                        {
-                            MessageBox.Show(whyItIsntValid);
-                        }
-                        else
-                        {
-                            var screen =
-                                GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(tiw.Result);
-
-                            GlueState.Self.CurrentElement = screen;
-                            var treeNode = EditorLogic.CurrentScreenTreeNode;
-                            if(treeNode != null)
-                            {
-                                treeNode.Expand();
-                            }
-                        }
-
-                    }
+                    MessageBox.Show(whyItIsntValid);
                 }
+                else
+                {
+                    var screen =
+                        GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(tiw.Result);
+
+                    GlueState.Self.CurrentElement = screen;
+                    var treeNode = EditorLogic.CurrentScreenTreeNode;
+                    if(treeNode != null)
+                    {
+                        treeNode.Expand();
+                    }
+
+                    PluginManager.ReactToNewScreenCreatedWithUi(screen, tiw);
+
+                }
+
             }
         }
 
