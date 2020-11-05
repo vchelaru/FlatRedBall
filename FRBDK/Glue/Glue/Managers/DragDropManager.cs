@@ -87,7 +87,7 @@ namespace FlatRedBall.Glue.Managers
                     {
                         var response = HandleDropOnShapeCollection(treeNodeMoving, targetNode, targetNos, movingNos);
 
-                        if(!response.Succeeded && IsCollidableList(movingNos))
+                        if(!response.Succeeded && IsCollidableOrCollidableList(movingNos))
                         {
                             response = HandleCreateCollisionRelationship(movingNos, targetNos);
                         }
@@ -100,7 +100,7 @@ namespace FlatRedBall.Glue.Managers
                         succeeded = response.Succeeded;
                     }
 
-                    else if(IsCollidableList(movingNos) && IsCollidableList(targetNos))
+                    else if(IsCollidableOrCollidableList(movingNos) && IsCollidableOrCollidableList(targetNos))
                     {
                         var response = HandleCreateCollisionRelationship(movingNos, targetNos);
 
@@ -164,7 +164,7 @@ namespace FlatRedBall.Glue.Managers
         }
 
         // if both are lists, and both are ICollidable, then bring up the collision relationship 
-        static bool IsCollidableList(NamedObjectSave nos)
+        static bool IsCollidableOrCollidableList(NamedObjectSave nos)
         {
             if (nos.IsList)
             {
@@ -182,6 +182,11 @@ namespace FlatRedBall.Glue.Managers
             }
             else if(nos.GetAssetTypeInfo()?.RuntimeTypeName == "FlatRedBall.Math.Geometry.ShapeCollection" ||
                 nos.GetAssetTypeInfo()?.RuntimeTypeName == "ShapeCollection")
+            {
+                return true;
+            }
+            else if(nos.SourceType == SourceType.Entity && 
+                ObjectFinder.Self.GetEntitySave( nos.SourceClassType)?.ImplementsICollidable == true)
             {
                 return true;
             }
