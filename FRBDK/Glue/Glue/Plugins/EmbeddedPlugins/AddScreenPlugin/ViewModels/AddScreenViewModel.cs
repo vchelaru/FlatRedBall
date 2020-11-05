@@ -15,20 +15,21 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
 
     class AddScreenViewModel : ViewModel
     {
-        #region Screen Type
         public AddScreenType AddScreenType
         {
             get => Get<AddScreenType>();
             set => Set(value);
         }
 
-        public bool CanAddLevelScreen
+        public bool HasGameScreen
         {
             get => Get<bool>();
             set => Set(value);
         }
 
-        public bool CanAddBaseLevelScreen
+        #region Level Screen
+
+        public bool CanAddLevelScreen
         {
             get => Get<bool>();
             set => Set(value);
@@ -47,6 +48,43 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
             }
         }
 
+        [DependsOn(nameof(HasGameScreen))]
+        public Visibility LevelScreenOptionUiVisibility => HasGameScreen.ToVisibility();
+
+
+        [DependsOn(nameof(AddScreenType))]
+        [DependsOn(nameof(HasGameScreen))]
+        public Visibility LevelScreenUiVisibility => (HasGameScreen && IsLevelScreen).ToVisibility();
+
+
+        public bool IsAddStandardTmxChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool InheritFromGameScreen
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsSetAsStartupChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        #endregion
+
+        #region Base Level Screen
+
+        public bool CanAddBaseLevelScreen
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         [DependsOn(nameof(AddScreenType))]
         public bool IsBaseLevelScreen
         {
@@ -61,30 +99,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
         }
 
         [DependsOn(nameof(AddScreenType))]
-        public bool IsEmptyScreen
-        {
-            get => AddScreenType == AddScreenType.EmptyScreen;
-            set
-            {
-                if (value)
-                {
-                    AddScreenType = AddScreenType.EmptyScreen;
-                }
-            }
-        }
-
-        #endregion
-
-        [DependsOn(nameof(AddScreenType))]
-        public Visibility LevelScreenUiVisibility => IsLevelScreen.ToVisibility();
-        [DependsOn(nameof(AddScreenType))]
         public Visibility BaseLevelScreenUiVisibility => IsBaseLevelScreen.ToVisibility();
-
-        public bool IsAddStandardTmxChecked
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
 
         public bool IsAddMapLayeredTileMapChecked
         {
@@ -98,18 +113,25 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
             set => Set(value);
         }
 
-        public bool HasGameScreen
+        #endregion
+
+        #region Empty Screen
+
+        [DependsOn(nameof(AddScreenType))]
+        public bool IsEmptyScreen
         {
-            get => Get<bool>();
-            set => Set(value);
+            get => AddScreenType == AddScreenType.EmptyScreen;
+            set
+            {
+                if (value)
+                {
+                    AddScreenType = AddScreenType.EmptyScreen;
+                }
+            }
         }
 
-        public Visibility IsInheritFromGameScreenVisible => HasGameScreen.ToVisibility();
 
-        public bool InheritFromGameScreen
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
+        #endregion
+
     }
 }

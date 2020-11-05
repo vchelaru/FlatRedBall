@@ -18,6 +18,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         IProjectCommands ProjectCommands { get; }
 
+        string StartUpScreenName { get; set; }
+
         void SaveGlux(bool sendPluginRefreshCommand = true);
 
         /// <summary>

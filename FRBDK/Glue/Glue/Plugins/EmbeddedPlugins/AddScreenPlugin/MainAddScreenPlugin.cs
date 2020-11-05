@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -28,6 +29,44 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
         {
             this.ModifyAddScreenWindow += HandleModifyAddScreenWindow;
             this.NewScreenCreatedWithUi += HandleNewScreenCreatedWithUi;
+        }
+
+        private void HandleModifyAddScreenWindow(AddScreenWindow window)
+        {
+            var optionsView = new AddScreenOptionsView();
+
+            var viewModel = new ViewModels.AddScreenViewModel();
+            viewModel.CanAddBaseLevelScreen = true;
+            viewModel.CanAddLevelScreen = true;
+
+            var gameScreen =
+                ObjectFinder.Self.GetScreenSaveUnqualified("GameScreen");
+            var hasGameScreen = gameScreen != null;
+                
+
+            viewModel.HasGameScreen = hasGameScreen;
+
+            if(hasGameScreen)
+            {
+                viewModel.AddScreenType = AddScreenType.LevelScreen;
+                viewModel.InheritFromGameScreen = true;
+
+                if(GlueCommands.Self.GluxCommands.StartUpScreenName == gameScreen.Name)
+                {
+                    // no reason to have the game screen be the startup screen if we are going to have levels
+                    viewModel.IsSetAsStartupChecked = true;
+                }
+
+            }
+            else
+            {
+                viewModel.AddScreenType = AddScreenType.BaseLevelScreen;
+            }
+
+
+
+            optionsView.DataContext = viewModel;
+            window.AddControl(optionsView);
         }
 
         private void HandleNewScreenCreatedWithUi(ScreenSave newScreen, AddScreenWindow window)
@@ -76,7 +115,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                         const int FromType = 4;
                         nos.Properties.SetValue("CollisionCreationOptions", FromType);
                         nos.Properties.SetValue("SourceTmxName", "Map");
-                        nos.Properties.SetValue("CollisionTileTypeName", "Solid");
+                        nos.Properties.SetValue("CollisionTileTypeName", "SolidCollision");
 
                         shouldSave = true;
                     }
@@ -90,11 +129,18 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                         if(gameScreen != null)
                         {
                             newScreen.BaseScreen = gameScreen.Name;
+                            newScreen.UpdateFromBaseType();
                             shouldSave = true;
 
                         }
                     }
 
+                    if(viewModel.IsSetAsStartupChecked)
+                    {
+                        GlueCommands.Self.GluxCommands.StartUpScreenName = newScreen.Name;
+                        //GlueCommands.Self.RefreshCommands.RefreshUi()
+                        // meh, eventually we'll fix this:
+                    }
 
                     if(viewModel.IsAddStandardTmxChecked)
                     {
@@ -105,7 +151,18 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                         var addNewFileViewModel = new AddNewFileViewModel();
                         addNewFileViewModel.SelectedAssetTypeInfo = 
                             AvailableAssetTypes.Self.GetAssetTypeFromExtension("tmx");
-                        GlueCommands.Self.DialogCommands.ShowAddNewFileDialog(addNewFileViewModel);
+                        var newRfs = GlueCommands.Self.DialogCommands.ShowAddNewFileDialog(addNewFileViewModel);
+
+                        if(newRfs != null)
+                        {
+                            var mapObject = newScreen.NamedObjects.FirstOrDefault(item => item.InstanceName == "Map" && item.GetAssetTypeInfo().FriendlyName.StartsWith("LayeredTileMap"));
+                            if(mapObject != null)
+                            {
+                                mapObject.SourceType = SourceType.File;
+                                mapObject.SourceFile = newRfs.Name;
+                                mapObject.SourceName = "Entire File (LayeredTileMap)";
+                            }
+                        }
                     }
                     break;
             }
@@ -115,22 +172,13 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                 GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(newScreen);
                 GlueCommands.Self.GluxCommands.SaveGlux();
+                if(newScreen.Name == GlueCommands.Self.GluxCommands.StartUpScreenName)
+                {
+
+                    ElementViewWindow.StartUpScreen = GlueState.Self.CurrentElementTreeNode;
+                }
             }
         }
 
-        private void HandleModifyAddScreenWindow(AddScreenWindow window)
-        {
-            var optionsView = new AddScreenOptionsView();
-
-            var viewModel = new ViewModels.AddScreenViewModel();
-            viewModel.CanAddBaseLevelScreen = true;
-            viewModel.CanAddLevelScreen = true;
-
-            viewModel.HasGameScreen =
-                ObjectFinder.Self.GetScreenSaveUnqualified("GameScreen") != null;
-
-            optionsView.DataContext = viewModel;
-            window.AddControl(optionsView);
-        }
     }
 }

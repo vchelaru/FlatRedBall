@@ -8,13 +8,14 @@
              d:DesignHeight="200" d:DesignWidth="300">
     <Grid>
         <StackPanel>
-            <RadioButton IsEnabled="{Binding CanAddLevelScreen}" IsChecked="{Binding IsLevelScreen}">Level Screen</RadioButton>
+            <RadioButton Visibility="{Binding LevelScreenOptionUiVisibility}" IsEnabled="{Binding CanAddLevelScreen}" IsChecked="{Binding IsLevelScreen}">Level Screen</RadioButton>
             <StackPanel Margin="10,0,0,0" Visibility="{Binding LevelScreenUiVisibility}">
                 <CheckBox VerticalContentAlignment="Center"
                           IsChecked="{Binding IsAddStandardTmxChecked }">Add Standard TMX File</CheckBox>
                 <CheckBox VerticalContentAlignment="Center"
-                          Visibility="{Binding IsInheritFromGameScreenVisible}"
                           IsChecked="{Binding InheritFromGameScreen}">Inherit from GameScreen</CheckBox>
+                <CheckBox VerticalContentAlignment="Center"
+                          IsChecked="{Binding IsSetAsStartupChecked}">Set as StartUp Screen (first screen when running)</CheckBox>
             </StackPanel>
             <RadioButton IsEnabled="{Binding CanAddBaseLevelScreen}" IsChecked="{Binding IsBaseLevelScreen}">Base Level Screen</RadioButton>
             <StackPanel Margin="10,0,0,0" Visibility="{Binding BaseLevelScreenUiVisibility}">

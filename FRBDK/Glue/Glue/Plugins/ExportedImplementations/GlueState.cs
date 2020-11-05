@@ -118,6 +118,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             set { EditorLogic.CurrentTreeNode = value; }
         }
 
+        public TreeNode CurrentElementTreeNode
+        {
+            get { return EditorLogic.CurrentElementTreeNode; }
+            //set { EditorLogic.CurrentTreeNode = value; }
+        }
+
         public NamedObjectSave CurrentNamedObjectSave
         {
             get
