@@ -2554,8 +2554,14 @@ namespace FlatRedBallAddOns.Entities
                 item.IsFullyDefined &&
                 !item.IsDisabled &&
                 item.Instantiate &&
-                !item.SetByContainer &&
-                !item.SetByDerived
+                !item.SetByContainer 
+                // November 4, 2020
+                // If we don't consider
+                // SetByDerived, then variables
+                // that are set on the base object
+                // won't get assigned here. Shouldn't 
+                // they?
+                //&& !item.SetByDerived
                 ).ToList();
 
 
