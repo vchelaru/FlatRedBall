@@ -542,11 +542,6 @@ namespace FlatRedBall.Glue
             }
         }
         
-        internal static void RemoveItemFromAllProjects(string itemName)
-        {
-            RemoveItemFromAllProjects(itemName, true);
-        }
-
         internal static void RemoveItemFromAllProjects(string itemName, bool performSave)
         {
             mProjectBase.RemoveItem(itemName);
@@ -576,17 +571,18 @@ namespace FlatRedBall.Glue
             string elementName = element.Name;
 
 
-            GlueCommands.Self.ProjectCommands.RemoveFromProjects(
+            GlueCommands.Self.ProjectCommands.RemoveFromProjectsTask(
                 GlueState.Self.CurrentGlueProjectDirectory + elementName + ".cs");
             filesThatCouldBeRemoved.Add(elementName + ".cs");
 
             // gotta also remove the generated file
-            RemoveItemFromAllProjects(elementName + ".Generated.cs");
+            GlueCommands.Self.ProjectCommands.RemoveFromProjectsTask(
+                GlueState.Self.CurrentGlueProjectDirectory + elementName + ".Generated.cs");
             filesThatCouldBeRemoved.Add(elementName + ".Generated.cs");
 
             string eventFile = elementName + ".Event.cs";
             string absoluteEvent = MakeAbsolute(eventFile);
-            RemoveItemFromAllProjects(eventFile);
+            GlueCommands.Self.ProjectCommands.RemoveFromProjectsTask(absoluteEvent);
             if (System.IO.File.Exists(absoluteEvent))
             {
                 filesThatCouldBeRemoved.Add(eventFile);
@@ -594,7 +590,7 @@ namespace FlatRedBall.Glue
 
             string generatedEventFile = elementName + ".Generated.Event.cs";
             string absoluteGeneratedEventFile = MakeAbsolute(generatedEventFile);
-            RemoveItemFromAllProjects(generatedEventFile);
+            GlueCommands.Self.ProjectCommands.RemoveFromProjectsTask(absoluteGeneratedEventFile);
             if (System.IO.File.Exists(absoluteGeneratedEventFile))
             {
                 filesThatCouldBeRemoved.Add(generatedEventFile);
@@ -602,7 +598,7 @@ namespace FlatRedBall.Glue
 
             string factoryName = "Factories/" + FileManager.RemovePath(elementName) + "Factory.Generated.cs";
             string absoluteFactoryNameFile = MakeAbsolute(factoryName);
-            RemoveItemFromAllProjects(factoryName);
+            GlueCommands.Self.ProjectCommands.RemoveFromProjectsTask(absoluteFactoryNameFile);
             if (System.IO.File.Exists(absoluteFactoryNameFile))
             {
                 filesThatCouldBeRemoved.Add(absoluteFactoryNameFile);
