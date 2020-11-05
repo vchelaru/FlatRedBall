@@ -56,14 +56,11 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                     // no reason to have the game screen be the startup screen if we are going to have levels
                     viewModel.IsSetAsStartupChecked = true;
                 }
-
             }
             else
             {
                 viewModel.AddScreenType = AddScreenType.BaseLevelScreen;
             }
-
-
 
             optionsView.DataContext = viewModel;
             window.AddControl(optionsView);
@@ -83,6 +80,23 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
 
         private void ApplyViewModelToScreen(ScreenSave newScreen, AddScreenViewModel viewModel)
         {
+            void AddCollision(string name)
+            {
+                var addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                addObjectViewModel.SourceClassType = "FlatRedBall.TileCollisions.TileShapeCollection";
+                addObjectViewModel.ObjectName = name;
+
+                var nos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, newScreen, null);
+                nos.SetByDerived = true;
+
+                const int FromType = 4;
+                nos.Properties.SetValue("CollisionCreationOptions", FromType);
+                nos.Properties.SetValue("SourceTmxName", "Map");
+                nos.Properties.SetValue("CollisionTileTypeName", name);
+
+            }
+
             var shouldSave = false;
             switch(viewModel.AddScreenType)
             {
@@ -103,20 +117,12 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                     }
                     if(viewModel.IsAddSolidCollisionShapeCollectionChecked)
                     {
-                        var addObjectViewModel = new AddObjectViewModel();
-                        addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                        addObjectViewModel.SourceClassType = "FlatRedBall.TileCollisions.TileShapeCollection";
-                        addObjectViewModel.ObjectName = "SolidCollision";
-
-                        var nos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, newScreen, null);
-                        nos.SetByDerived = true;
-
-                        // todo - make it come from map, select "Map", Property, and "SolidCollision"
-                        const int FromType = 4;
-                        nos.Properties.SetValue("CollisionCreationOptions", FromType);
-                        nos.Properties.SetValue("SourceTmxName", "Map");
-                        nos.Properties.SetValue("CollisionTileTypeName", "SolidCollision");
-
+                        AddCollision("SolidCollision");
+                        shouldSave = true;
+                    }
+                    if (viewModel.IsAddCloudCollisionShapeCollectionChecked)
+                    {
+                        AddCollision("CloudCollision");
                         shouldSave = true;
                     }
 

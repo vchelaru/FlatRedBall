@@ -5,22 +5,38 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="300">
+             d:DesignHeight="250" d:DesignWidth="300">
     <Grid>
         <StackPanel>
             <RadioButton Visibility="{Binding LevelScreenOptionUiVisibility}" IsEnabled="{Binding CanAddLevelScreen}" IsChecked="{Binding IsLevelScreen}">Level Screen</RadioButton>
             <StackPanel Margin="10,0,0,0" Visibility="{Binding LevelScreenUiVisibility}">
-                <CheckBox VerticalContentAlignment="Center"
+                <GroupBox Header="Screen Properties">
+                    <StackPanel>
+                        <CheckBox VerticalContentAlignment="Center"
+                                  IsChecked="{Binding InheritFromGameScreen}">Inherit from GameScreen</CheckBox>
+                        <CheckBox VerticalContentAlignment="Center"
+                                  IsChecked="{Binding IsSetAsStartupChecked}">Set as StartUp Screen (first screen when running)</CheckBox>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="Tiled">
+                    <StackPanel>
+                        <CheckBox VerticalContentAlignment="Center"
                           IsChecked="{Binding IsAddStandardTmxChecked }">Add Standard TMX File</CheckBox>
-                <CheckBox VerticalContentAlignment="Center"
-                          IsChecked="{Binding InheritFromGameScreen}">Inherit from GameScreen</CheckBox>
-                <CheckBox VerticalContentAlignment="Center"
-                          IsChecked="{Binding IsSetAsStartupChecked}">Set as StartUp Screen (first screen when running)</CheckBox>
+                    </StackPanel>
+                </GroupBox>
             </StackPanel>
             <RadioButton IsEnabled="{Binding CanAddBaseLevelScreen}" IsChecked="{Binding IsBaseLevelScreen}">Base Level Screen</RadioButton>
             <StackPanel Margin="10,0,0,0" Visibility="{Binding BaseLevelScreenUiVisibility}">
-                <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsAddMapLayeredTileMapChecked}">Add Map LayeredTileMap</CheckBox>
-                <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsAddSolidCollisionShapeCollectionChecked}">Add SolidCollision ShapeCollection</CheckBox>
+                <GroupBox Header="Tiled">
+                    <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsAddMapLayeredTileMapChecked}">Add Map LayeredTileMap</CheckBox>
+                </GroupBox>
+                <GroupBox Header="Collision">
+                    <StackPanel>
+                        <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsAddSolidCollisionShapeCollectionChecked}">Add SolidCollision ShapeCollection</CheckBox>
+                        <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsAddCloudCollisionShapeCollectionChecked}">Add CloudCollision ShapeCollection</CheckBox>
+                        
+                    </StackPanel>
+                </GroupBox>
             </StackPanel>
 
             <RadioButton IsChecked="{Binding IsEmptyScreen}">Empty Screen</RadioButton>

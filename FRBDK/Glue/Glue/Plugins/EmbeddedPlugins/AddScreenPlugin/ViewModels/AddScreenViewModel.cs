@@ -113,6 +113,12 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
             set => Set(value);
         }
 
+        public bool IsAddCloudCollisionShapeCollectionChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         #endregion
 
         #region Empty Screen
