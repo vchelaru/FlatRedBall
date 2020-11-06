@@ -20,29 +20,13 @@ namespace FlatRedBall.Forms.Controls
         GraphicalUiElement textComponent;
         RenderingLibrary.Graphics.Text coreTextObject;
 
+
         public string Text
         {
-            get
-            {
-                return listBox.SelectedObject?.ToString();
-            }
+            get => coreTextObject.RawText;
             set
             {
-                object foundItem = null; 
-                
-                foreach(var item in Items)
-                {
-                    if(item?.ToString() == value)
-                    {
-                        foundItem = item;
-                        break;
-                    }
-                }
-
-
-                var index = Items.IndexOf(foundItem);
-                listBox.SelectedIndex = index;
-
+                coreTextObject.RawText = value;
             }
         }
 
@@ -366,7 +350,12 @@ namespace FlatRedBall.Forms.Controls
 
         private void HandleSelectionChanged(object sender, SelectionChangedEventArgs args)
         {
-            coreTextObject.RawText = listBox.SelectedObject?.ToString();
+            // If we bind the Text, then don't set this here, the binding will take care of it
+            var isTextBound = vmPropsToUiProps?.Values.Any(item => item == nameof(Text)) == true;
+            if(isTextBound == false)
+            {
+                coreTextObject.RawText = listBox.SelectedObject?.ToString();
+            }
 
             // Why do we hide the list box here? We don't want to do it if
             // the user uses the arrow keys to change a selection do we?

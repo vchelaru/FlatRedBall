@@ -66,7 +66,7 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        Dictionary<string, string> vmPropsToUiProps = new Dictionary<string, string>();
+        protected Dictionary<string, string> vmPropsToUiProps = new Dictionary<string, string>();
 
         public object BindingContext
         {
