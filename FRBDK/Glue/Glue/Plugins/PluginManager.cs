@@ -2095,6 +2095,19 @@ namespace FlatRedBall.Glue.Plugins
 
         #endregion
 
+        public static void CallPluginMethod(string pluginFriendlyName, string methodName)
+        {
+            CallMethodOnPlugin((plugin) =>
+            {
+                var method = plugin.GetType().GetMethod(methodName);
+                if(method != null)
+                {
+                    method.Invoke(plugin, null);
+                }
+            }, $"CallPluginMethod {methodName}",
+            (plugin) => plugin.FriendlyName == pluginFriendlyName);
+        }
+
         internal static void PrintPreInitializeOutput()
         {
             if (mPreInitializeOutput.Length != 0)

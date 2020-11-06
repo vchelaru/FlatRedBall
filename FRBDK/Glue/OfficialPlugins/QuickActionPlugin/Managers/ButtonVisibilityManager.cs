@@ -33,6 +33,8 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
 
             var gameScreen = project?.Screens.FirstOrDefault(item => item.Name == "Screens\\GameScreen");
             var hasGameScreen = gameScreen != null;
+            var hasGumProject = GlueState.Self.GetAllReferencedFiles()
+                .Any(item => item.Name.ToLowerInvariant().EndsWith(".gumx"));
 
             #region Create New Project
 
@@ -40,6 +42,8 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
                 project == null);
 
             #endregion
+
+            mainView.AddGumProject.Visibility = ToVisibility(!hasGumProject);
 
             #region Add Screen Button
 
@@ -62,16 +66,16 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
 
             #endregion
 
-            #region Add Level
-            mainView.AddLevelButton.Visibility = ToVisibility(
-                project != null &&
-                (GlueState.Self.CurrentElement == null || GlueState.Self.CurrentElement == gameScreen) &&
-                selectedEntity == null &&
-                (
-                    hasGameScreen
-                ));
+            //#region Add Level
+            //mainView.AddLevelButton.Visibility = ToVisibility(
+            //    project != null &&
+            //    (GlueState.Self.CurrentElement == null || GlueState.Self.CurrentElement == gameScreen) &&
+            //    selectedEntity == null &&
+            //    (
+            //        hasGameScreen
+            //    ));
 
-            #endregion
+            //#endregion
 
             #region Add Entity
 

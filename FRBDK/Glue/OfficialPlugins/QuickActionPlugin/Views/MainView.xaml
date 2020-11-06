@@ -17,22 +17,33 @@
                 >
                 
             </local:QuickActionButton>
-            
+
+
+            <local:QuickActionButton 
+                x:Name="AddGumProject"
+                Title="Add Gum Project" 
+                Details="Gum provides a flexible and powerful UI and HUD layout tool."
+                Clicked="AddGumButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Views/Add Gum Project.png">
+
+            </local:QuickActionButton>
+
             <local:QuickActionButton 
                 x:Name="AddScreenButton"
-                Title="Add Screen" 
+                Title="Add Screen/Level" 
                 Details="Every game needs at least one screen.
-                Usually the game logic is in a screen called GameScreen."
+                Usually the game logic is in a screen called GameScreen.
+                Typically each level requires a new screen."
                 Clicked="AddScreenButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Views/Create Screen.png">
 
             </local:QuickActionButton>
             
-            <local:QuickActionButton
+            <!--This is handled by Add Screen-->
+            <!--<local:QuickActionButton
                 x:Name="AddLevelButton"
                 Title="Add Level"
                 Details="Create a new Screen inheriting from GameScreen."
                 Clicked="AddLevelButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Views/Add Level Screen.png">
-            </local:QuickActionButton>
+            </local:QuickActionButton>-->
 
             <local:QuickActionButton
                 x:Name="AddEntityButton"

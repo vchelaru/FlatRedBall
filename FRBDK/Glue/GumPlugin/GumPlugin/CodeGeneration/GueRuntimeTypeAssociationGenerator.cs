@@ -135,7 +135,17 @@ namespace GumPlugin.CodeGeneration
 
             foreach(var fulfillment in associationFulfillments)
             {
-                var qualifiedControlType = "FlatRedBall.Forms.Controls." + fulfillment.ControlType;
+                string qualifiedControlType;
+
+                if(fulfillment.ControlType.Contains("."))
+                {
+                    qualifiedControlType = fulfillment.ControlType;
+                }
+                else
+                {
+                    qualifiedControlType = "FlatRedBall.Forms.Controls." + fulfillment.ControlType;
+
+                }
 
                 var gumRuntimeType = 
                     GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(fulfillment.Element);
@@ -170,6 +180,8 @@ namespace GumPlugin.CodeGeneration
                 case "ListBoxItem":
                 case "RadioButton":
                 case "ToggleButton":
+                case "Toast":
+                case "FlatRedBall.Forms.Controls.Popups.Toast":
                     return element.Instances.Any(item => item.Name == "TextInstance" && item.BaseType == "Text");
 
                 default:

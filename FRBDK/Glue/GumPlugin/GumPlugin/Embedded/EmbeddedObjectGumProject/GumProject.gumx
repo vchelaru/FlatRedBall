@@ -70,6 +70,10 @@
     <ElementType>Component</ElementType>
   </ComponentReference>
   <ComponentReference>
+    <Name>DefaultForms/Toast</Name>
+    <ElementType>Component</ElementType>
+  </ComponentReference>
+  <ComponentReference>
     <Name>DefaultForms/ToggleButton</Name>
     <ElementType>Component</ElementType>
   </ComponentReference>
@@ -160,6 +164,9 @@
   </BehaviorReference>
   <BehaviorReference>
     <Name>TextBoxBehavior</Name>
+  </BehaviorReference>
+  <BehaviorReference>
+    <Name>ToastBehavior</Name>
   </BehaviorReference>
   <BehaviorReference>
     <Name>ToggleBehavior</Name>

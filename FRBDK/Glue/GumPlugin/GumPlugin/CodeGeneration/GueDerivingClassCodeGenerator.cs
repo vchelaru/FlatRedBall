@@ -644,7 +644,14 @@ namespace GumPlugin.CodeGeneration
 
             if(controlName != null)
             {
-                return $"FlatRedBall.Forms.Controls.{controlName}";
+                if(controlName.Contains("."))
+                {
+                    return controlName;
+                }
+                else
+                {
+                    return $"FlatRedBall.Forms.Controls.{controlName}";
+                }
             }
             else
             {

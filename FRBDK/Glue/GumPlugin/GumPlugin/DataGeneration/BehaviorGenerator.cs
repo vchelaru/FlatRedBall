@@ -427,7 +427,7 @@ namespace GumPlugin.DataGeneration
             {
                 BehaviorName = "ToastBehavior",
                 ComponentFile = "Toast",
-                ControlName = "Toast",
+                ControlName = "FlatRedBall.Forms.Controls.Popups.Toast",
                 // no GumStateCategory
                 RequiredInstances = new List<BehaviorInstanceSave>
                 {

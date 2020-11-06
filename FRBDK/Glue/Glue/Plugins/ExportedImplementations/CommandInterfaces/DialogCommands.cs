@@ -616,7 +616,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 return;
             }
-                ////////////End Early Out
+            ////////////End Early Out
 
             // AddScreen, add screen, addnewscreen, add new screen
             var tiw = new AddScreenWindow();

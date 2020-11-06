@@ -66,6 +66,7 @@
     <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ScrollViewer.gucx" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\Slider.gucx" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\TextBox.gucx" />
+    <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\Toast.gucx" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ToggleButton.gucx" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\TreeView.gucx" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\TreeViewAnimations.ganx" />
@@ -217,6 +218,7 @@
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ScrollViewer.gucx" />
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\Slider.gucx" />
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\TextBox.gucx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\Toast.gucx" />
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ToggleButton.gucx" />
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\TreeView.gucx" />
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\TreeViewAnimations.ganx" />

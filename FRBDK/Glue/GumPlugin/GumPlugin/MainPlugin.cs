@@ -300,7 +300,7 @@ namespace GumPlugin
 
             AssetTypeInfoManager.Self.AddCommonAtis();
 
-            addGumProjectMenuItem = this.AddMenuItemTo("Add New Gum Project", HandleAddNewGumProject, "Content");
+            addGumProjectMenuItem = this.AddMenuItemTo("Add New Gum Project", HandleAddNewGumProjectMenuItemClicked, "Content");
             //var bmp = new Bitmap(WindowsFormsApplication1.Properties.Resources.myimage);
             addGumProjectMenuItem.Image = new Bitmap(GumPluginCore.Resource1.GumIcon);
 
@@ -383,7 +383,7 @@ namespace GumPlugin
 
             if(alreadyHasGumProject == false)
             {
-                HandleAddNewGumProject(null, null);
+                HandleAddNewGumProjectMenuItemClicked(null, null);
             }
             else
             {
@@ -670,7 +670,12 @@ namespace GumPlugin
             }
         }
 
-        private void HandleAddNewGumProject(object sender, EventArgs e)
+        private void HandleAddNewGumProjectMenuItemClicked(object sender, EventArgs e)
+        {
+            CreateGumProject();
+        }
+
+        public void CreateGumProject()
         {
             propertiesManager.IsReactingToProperyChanges = false;
 
@@ -708,13 +713,12 @@ namespace GumPlugin
                 GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
                     "Would you like to mark the Gum plugin as a required plugin for this project? " +
                     "This can help others who open this project",
-                    yesAction:HandleMakePluginRequiredYes);
+                    yesAction: HandleMakePluginRequiredYes);
             }
 
 
 
             propertiesManager.IsReactingToProperyChanges = true;
-
         }
 
         private void HandleMakePluginRequiredYes()

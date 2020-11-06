@@ -39,6 +39,7 @@
     <None Remove="ErrorPlugin\Icons\Refresh.png" />
     <None Remove="QuickActionPlugin\Icons\Add Entity instance to GameScreen.png" />
     <None Remove="QuickActionPlugin\Icons\Add Entity List to GameScreen.png" />
+    <None Remove="QuickActionPlugin\Icons\Add Gum Project.png" />
     <None Remove="QuickActionPlugin\Icons\Add Level Screen.png" />
     <None Remove="QuickActionPlugin\Icons\Add Object v4.png" />
     <None Remove="QuickActionPlugin\Icons\Create Entity.png" />
@@ -47,6 +48,7 @@
     <None Remove="QuickActionPlugin\Icons\Create Screen.png" />
     <None Remove="QuickActionPlugin\Views\Add Entity instance to GameScreen.png" />
     <None Remove="QuickActionPlugin\Views\Add Entity List to GameScreen.png" />
+    <None Remove="QuickActionPlugin\Views\Add Gum Project.png" />
     <None Remove="QuickActionPlugin\Views\Add Level Screen.png" />
     <None Remove="QuickActionPlugin\Views\Add Object v4.png" />
     <None Remove="QuickActionPlugin\Views\Create Entity.png" />
@@ -89,6 +91,7 @@
     <Resource Include="ErrorPlugin\Icons\Refresh.png" />
     <Resource Include="QuickActionPlugin\Icons\Add Entity instance to GameScreen.png" />
     <Resource Include="QuickActionPlugin\Icons\Add Entity List to GameScreen.png" />
+    <Resource Include="QuickActionPlugin\Icons\Add Gum Project.png" />
     <Resource Include="QuickActionPlugin\Icons\Add Level Screen.png" />
     <Resource Include="QuickActionPlugin\Icons\Add Object v4.png" />
     <Resource Include="QuickActionPlugin\Icons\Create Entity.png" />
@@ -97,6 +100,7 @@
     <Resource Include="QuickActionPlugin\Icons\Create Screen.png" />
     <Resource Include="QuickActionPlugin\Views\Add Entity instance to GameScreen.png" />
     <Resource Include="QuickActionPlugin\Views\Add Entity List to GameScreen.png" />
+    <Resource Include="QuickActionPlugin\Views\Add Gum Project.png" />
     <Resource Include="QuickActionPlugin\Views\Add Level Screen.png" />
     <Resource Include="QuickActionPlugin\Views\Add Object v4.png" />
     <Resource Include="QuickActionPlugin\Views\Create Entity.png" />

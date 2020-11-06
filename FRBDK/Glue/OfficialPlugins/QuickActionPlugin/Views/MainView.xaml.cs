@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.SetVariable;
@@ -49,8 +50,11 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
                 GlueCommands.Self.DialogCommands.ShowMessageBox("Could not find screen called GameScreen to use as the base screen for a new level screen.");
 
             }
-            GlueCommands.Self.DialogCommands.ShowCreateDerivedScreenDialog(gameScreen);
-            AnyButtonClicked();
+            else
+            {
+                GlueCommands.Self.DialogCommands.ShowCreateDerivedScreenDialog(gameScreen);
+                AnyButtonClicked();
+            }
         }
 
         private void AddEntityButton_Clicked(object sender, RoutedEventArgs e)
@@ -63,6 +67,11 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
         {
             GlueCommands.Self.ProjectCommands.CreateNewProject();
             AnyButtonClicked();
+        }
+
+        private void AddGumButton_Clicked(object sender, RoutedEventArgs args)
+        {
+            PluginManager.CallPluginMethod("Gum Plugin", "CreateGumProject");
         }
 
         private void AddObjectButton_Clicked(object sender, RoutedEventArgs e)
