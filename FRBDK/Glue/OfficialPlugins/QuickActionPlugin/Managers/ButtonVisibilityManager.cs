@@ -25,13 +25,13 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
                 else return Visibility.Collapsed;
             }
 
-            var project = GlueState.Self.CurrentGlueProject;
+            var glueProject = GlueState.Self.CurrentGlueProject;
             var treeNode = GlueState.Self.CurrentTreeNode;
             var selectedObject = treeNode?.Tag;
             var selectedElement = selectedObject as IElement;
             var selectedEntity = selectedObject as EntitySave;
 
-            var gameScreen = project?.Screens.FirstOrDefault(item => item.Name == "Screens\\GameScreen");
+            var gameScreen = glueProject?.Screens.FirstOrDefault(item => item.Name == "Screens\\GameScreen");
             var hasGameScreen = gameScreen != null;
             var hasGumProject = GlueState.Self.GetAllReferencedFiles()
                 .Any(item => item.Name.ToLowerInvariant().EndsWith(".gumx"));
@@ -39,19 +39,19 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
             #region Create New Project
 
             mainView.CreateNewProjectButton.Visibility = ToVisibility(
-                project == null);
+                glueProject == null);
 
             #endregion
 
-            mainView.AddGumProject.Visibility = ToVisibility(!hasGumProject);
+            mainView.AddGumProject.Visibility = ToVisibility(!hasGumProject && glueProject != null);
 
             #region Add Screen Button
 
             mainView.AddScreenButton.Visibility = ToVisibility(
-                project != null &&
+                glueProject != null &&
                 GlueState.Self.CurrentEntitySave == null &&
                 (selectedObject == null ||
-                    project.Screens.Count == 0)
+                    glueProject.Screens.Count == 0)
                     );
             if(hasGameScreen == false)
             {
@@ -80,10 +80,10 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
             #region Add Entity
 
             mainView.AddEntityButton.Visibility = ToVisibility(
-                project != null &&
+                glueProject != null &&
                 (
                     selectedObject == null ||
-                    project.Entities.Count == 0 
+                    glueProject.Entities.Count == 0 
                 )
                 );
 
@@ -112,7 +112,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
 
             #region Add List of Entity to GameScreen
             mainView.AddListOfEntityButton.Visibility = ToVisibility(
-                project != null &&
+                glueProject != null &&
                 selectedObject is EntitySave &&
                 hasGameScreen &&
                 // Individual:
@@ -137,7 +137,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
             #region Add Instance of Entity to GameScreen
 
             mainView.AddInstanceOfEntityButton.Visibility = ToVisibility(
-                project != null &&
+                glueProject != null &&
                 selectedObject is EntitySave &&
                 hasGameScreen &&
                 // Individual:
