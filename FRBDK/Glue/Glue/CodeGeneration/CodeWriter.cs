@@ -2592,7 +2592,14 @@ namespace FlatRedBallAddOns.Entities
 
 
                 NamedObjectSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(codeBlock, item);
-                NamedObjectSaveCodeGenerator.AssignInstanceVaraiblesOn(element, item, codeBlock);
+
+                var innerBlock = codeBlock;
+                if(item.SetByDerived)
+                {
+                    innerBlock = codeBlock.If($"{item.InstanceName} != null");
+                }
+                NamedObjectSaveCodeGenerator.AssignInstanceVaraiblesOn(element, item, innerBlock);
+
 
                 var containedItems = item.ContainedObjects.Where(containedObject =>
                     containedObject.IsFullyDefined &&
