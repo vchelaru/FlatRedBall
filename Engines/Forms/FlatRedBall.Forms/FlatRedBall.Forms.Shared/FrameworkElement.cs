@@ -412,6 +412,8 @@ namespace FlatRedBall.Forms.Controls
                 vmPropsToUiProps.Remove(vmProperty);
             }
             vmPropsToUiProps.Add(vmProperty, uiProperty);
+
+            UpdateUiToVmProperty(vmProperty);
         }
 
         private void HandleVisualBindingContextChanged(object sender, BindingContextChangedEventArgs args)
