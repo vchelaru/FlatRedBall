@@ -451,7 +451,8 @@ namespace TileGraphicsPlugin
 
         private void AddCodeGenerators()
         {
-            this.RegisterCodeGenerator(new LevelCodeGenerator());
+            // November 5, 2020 - I don't think we do this anymore, it's all handled with the inheritance model
+            //this.RegisterCodeGenerator(new LevelCodeGenerator());
 
             this.RegisterCodeGenerator(new TmxCodeGenerator());
 

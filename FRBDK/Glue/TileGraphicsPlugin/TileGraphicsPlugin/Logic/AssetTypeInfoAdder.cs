@@ -160,6 +160,14 @@ namespace TileGraphicsPlugin
 
             });
 
+            toReturn.VariableDefinitions.Add(new VariableDefinition
+            {
+                Name = "CreateEntitiesFromTiles",
+                Type = "bool",
+                DefaultValue = "false",
+                Category = "Entities and Collision"
+            });
+
             toReturn.FriendlyName = "LayeredTileMap (.tmx)";
             toReturn.QualifiedSaveTypeName = "";
             toReturn.Extension = "tmx";

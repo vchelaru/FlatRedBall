@@ -112,6 +112,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
 
                         var nos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, newScreen, null);
                         nos.SetByDerived = true;
+                        nos.SetVariableValue("CreateEntitiesFromTiles", true);
 
                         shouldSave = true;
                     }

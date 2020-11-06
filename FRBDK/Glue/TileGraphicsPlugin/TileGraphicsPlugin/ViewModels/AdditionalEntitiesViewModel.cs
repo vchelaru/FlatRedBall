@@ -34,8 +34,8 @@ namespace TileGraphicsPlugin.ViewModels
 
         public bool IncludeListsInScreens
         {
-            get { return Get<bool>(); }
-            set { Set(value); }
+            get => Get<bool>();
+            set => Set(value); 
         }
 
         public AdditionalEntitiesControlViewModel()

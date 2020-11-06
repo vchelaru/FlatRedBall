@@ -42,10 +42,10 @@ namespace TileGraphicsPlugin.Logic
                         {
                             AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
 
-                            addObjectViewModel.ObjectName = $"{newEntity.GetStrippedName()}List";
                             addObjectViewModel.SourceType = SourceType.FlatRedBallType;
                             addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.PositionedObjectList;
                             addObjectViewModel.SourceClassGenericType = newEntity.Name;
+                            addObjectViewModel.ObjectName = $"{newEntity.GetStrippedName()}List";
 
                             GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(
                                 addObjectViewModel, screen, listToAddTo:null);

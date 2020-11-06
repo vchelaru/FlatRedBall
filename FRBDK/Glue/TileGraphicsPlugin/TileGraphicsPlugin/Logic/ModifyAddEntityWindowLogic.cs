@@ -23,7 +23,17 @@ namespace TileGraphicsPlugin.Logic
                 return rfs.GetAssetTypeInfo() == AssetTypeInfoAdder.Self.TmxAssetTypeInfo;
             }
 
-            var doesProjectContainAnyTmxFiles = allScreens.Any(item => item.ReferencedFiles.Any(IsRfsTiledMap));
+            var doesProjectContainAnyTmxFiles = allScreens.Any(item =>
+            {
+                var hasRfs = item.ReferencedFiles.Any(IsRfsTiledMap);
+
+                if(!hasRfs)
+                {
+                    hasRfs = item.NamedObjects.Any(nos => nos.GetAssetTypeInfo() == AssetTypeInfoAdder.Self.TmxAssetTypeInfo);
+                }
+
+                return hasRfs;
+            });
 
             if(doesProjectContainAnyTmxFiles)
             {

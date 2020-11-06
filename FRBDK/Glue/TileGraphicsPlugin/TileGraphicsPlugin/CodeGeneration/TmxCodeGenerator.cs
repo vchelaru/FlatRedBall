@@ -22,10 +22,35 @@ namespace TileGraphicsPlugin.CodeGeneration
                 if(ati == AssetTypeInfoAdder.Self.TmxAssetTypeInfo)
                 {
                     GenerateAddToManagers(codeBlock, file);
+
+
                 }
             }
 
+            foreach(var nos in element.NamedObjects)
+            {
+                // not sure if we need this for files, but for now
+                // going to implement just on NOS's since that's the 
+                // preferred pattern.
+                GenerateCreateEntitiesCode(nos, codeBlock);
+            }
+
+
+
             return codeBlock;
+        }
+
+        private void GenerateCreateEntitiesCode(NamedObjectSave nos, ICodeBlock codeBlock)
+        {
+            var shouldGenerate = nos.DefinedByBase == false &&
+                nos.GetCustomVariable("CreateEntitiesFromTiles")?.Value as bool?  == true;
+
+            if(shouldGenerate)
+            {
+                codeBlock.Line(
+                    $"FlatRedBall.TileEntities.TileEntityInstantiator.CreateEntitiesFrom({nos.InstanceName});");
+
+            }
         }
 
         private void GenerateAddToManagers(ICodeBlock codeBlock, ReferencedFileSave file)

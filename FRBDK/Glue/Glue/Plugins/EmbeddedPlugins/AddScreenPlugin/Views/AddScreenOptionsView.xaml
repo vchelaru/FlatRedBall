@@ -25,7 +25,7 @@
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
-            <RadioButton IsEnabled="{Binding CanAddBaseLevelScreen}" IsChecked="{Binding IsBaseLevelScreen}">Base Level Screen</RadioButton>
+            <RadioButton IsEnabled="{Binding CanAddBaseLevelScreen}" IsChecked="{Binding IsBaseLevelScreen}">Game Screen (Base Level Screen)</RadioButton>
             <StackPanel Margin="10,0,0,0" Visibility="{Binding BaseLevelScreenUiVisibility}">
                 <GroupBox Header="Tiled">
                     <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsAddMapLayeredTileMapChecked}">Add Map LayeredTileMap</CheckBox>
