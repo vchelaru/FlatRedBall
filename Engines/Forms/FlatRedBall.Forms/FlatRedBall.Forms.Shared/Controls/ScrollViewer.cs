@@ -6,6 +6,13 @@ using FlatRedBall.Gui;
 
 namespace FlatRedBall.Forms.Controls
 {
+    public enum ScrollBarVisibility
+    {
+        Auto = 1,
+        Hidden = 2,
+        Visible = 3
+    }
+
     public class ScrollViewer : FrameworkElement
     {
         #region Fields/Properties
@@ -18,6 +25,23 @@ namespace FlatRedBall.Forms.Controls
         public GraphicalUiElement InnerPanel => innerPanel;
 
         protected GraphicalUiElement clipContainer;
+
+        ScrollBarVisibility verticalScrollBarVisibility = ScrollBarVisibility.Auto;
+        public ScrollBarVisibility VerticalScrollBarVisibility
+        {
+            get
+            {
+                return verticalScrollBarVisibility;
+            }
+            set
+            {
+                if(value != verticalScrollBarVisibility)
+                {
+                    verticalScrollBarVisibility = value;
+                    UpdateVerticalScrollBarValues();
+                }
+            }
+        }
 
         #endregion
 
@@ -137,7 +161,10 @@ namespace FlatRedBall.Forms.Controls
         {
             verticalScrollBar.Minimum = 0;
             verticalScrollBar.ViewportSize = clipContainer.GetAbsoluteHeight();
-            var maxValue = innerPanel.GetAbsoluteHeight() - clipContainer.GetAbsoluteHeight();
+
+            var innerPanelHeight = innerPanel.GetAbsoluteHeight();
+            var clipContainerHeight = clipContainer.GetAbsoluteHeight();
+            var maxValue = innerPanelHeight - clipContainerHeight;
 
             maxValue = System.Math.Max(0, maxValue);
 
@@ -145,6 +172,19 @@ namespace FlatRedBall.Forms.Controls
 
             verticalScrollBar.SmallChange = 10;
             verticalScrollBar.LargeChange = verticalScrollBar.ViewportSize;
+
+            switch(verticalScrollBarVisibility)
+            {
+                case ScrollBarVisibility.Hidden:
+                    verticalScrollBar.IsVisible = false;
+                    break;
+                case ScrollBarVisibility.Visible:
+                    verticalScrollBar.IsVisible = true;
+                    break;
+                case ScrollBarVisibility.Auto:
+                    verticalScrollBar.IsVisible = innerPanelHeight > clipContainerHeight;
+                    break;
+            }
         }
 
         #endregion
