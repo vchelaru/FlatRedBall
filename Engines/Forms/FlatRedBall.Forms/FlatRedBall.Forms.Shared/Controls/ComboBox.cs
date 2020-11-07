@@ -64,7 +64,19 @@ namespace FlatRedBall.Forms.Controls
 #endif
                 listBox.ListBoxItemFormsType = value;
             }
-        } 
+        }
+
+        public FrameworkElementTemplate FrameworkElementTemplate
+        {
+            get => listBox.FrameworkElementTemplate;
+            set => listBox.FrameworkElementTemplate = value;
+        }
+        
+        public VisualTemplate VisualTemplate 
+        {
+            get => listBox.VisualTemplate;
+            set => listBox.VisualTemplate = value;
+        }
 
         public object SelectedObject
         {
@@ -120,6 +132,8 @@ namespace FlatRedBall.Forms.Controls
                 }
             }
         }
+
+
 
         #endregion
 
