@@ -36,15 +36,10 @@ namespace FlatRedBall.Forms.Controls
 
         public Type ListBoxItemGumType
         {
-            get
-            {
-                return base.ItemGumType;
-            }
-            set
-            {
-                base.ItemGumType = value;
-            }
+            get => base.ItemGumType;
+            set => base.ItemGumType = value;
         }
+
         public Type ListBoxItemFormsType
         {
             get { return base.ItemFormsType; }

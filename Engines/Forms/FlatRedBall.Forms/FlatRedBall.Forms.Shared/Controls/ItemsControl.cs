@@ -66,6 +66,9 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        public FrameworkElementTemplate FrameworkElementTemplate { get; set; }
+        public VisualTemplate VisualTemplate { get; set; }
+
         #endregion
 
         #region Events
@@ -98,51 +101,10 @@ namespace FlatRedBall.Forms.Controls
             }
             else
             {
-                var listBoxItemGumType = ItemGumType;
+                var visual = CreateNewVisual(o);
 
-                if (listBoxItemGumType == null && DefaultFormsComponents.ContainsKey(typeof(ListBoxItem)))
-                {
+                item = CreateNewListBoxItem(visual);
 
-                    listBoxItemGumType = DefaultFormsComponents[typeof(ListBoxItem)];
-                }
-#if DEBUG
-                string controlType = "control";
-                string prefix = "";
-                
-                if (listBoxItemGumType == null)
-                {
-                    throw new Exception($"The {controlType} does not have a {prefix}ItemGumType specified, nor does the DefaultFormsControl have an entry for ListBoxItem. " +
-                        "This property must be set before adding any items");
-                }
-                if (ItemFormsType == null)
-                {
-                    throw new Exception($"The {controlType} does not have a {prefix}ItemFormsType specified. " +
-                        "This property must be set before adding any items");
-                }
-#endif
-                // vic says - this uses reflection, could be made faster, somehow...
-
-                var gumConstructor = listBoxItemGumType.GetConstructor(new[] { typeof(bool), typeof(bool) });
-                var listBoxFormsConstructor = ItemFormsType.GetConstructor(new Type[] { typeof(GraphicalUiElement) });
-
-                var visual = gumConstructor.Invoke(new object[] { true, true }) as GraphicalUiElement;
-
-                if (listBoxFormsConstructor == null)
-                {
-                    string message =
-                        $"Could not find a constructor for {ItemFormsType} which takes a single GraphicalUiElement argument. " +
-                        $"If you defined {ItemFormsType} without specifying a constructor, you need to add a constructor which takes a GraphicalUiElement and calls the base constructor.";
-                    throw new Exception(message);
-                }
-
-                if(visual.FormsControlAsObject is ListBoxItem asListBoxItem)
-                {
-                    item = asListBoxItem;
-                }
-                else
-                {
-                    item = listBoxFormsConstructor.Invoke(new object[] { visual }) as ListBoxItem;
-                }
                 item.Selected += HandleItemSelected;
                 item.GotFocus += HandleItemFocused;
                 item.Clicked += HandleListBoxItemClicked;
@@ -152,6 +114,75 @@ namespace FlatRedBall.Forms.Controls
             }
 
             return item;
+        }
+
+        private ListBoxItem CreateNewListBoxItem(GraphicalUiElement visual)
+        {
+            if(FrameworkElementTemplate != null)
+            {
+                return FrameworkElementTemplate.CreateContent() as ListBoxItem;
+            }
+            else
+            {
+    #if DEBUG
+                if (ItemFormsType == null)
+                {
+                    throw new Exception($"The control does not have a ItemFormsType specified. " +
+                        "This property must be set before adding any items");
+                }
+    #endif
+                var listBoxFormsConstructor = ItemFormsType.GetConstructor(new Type[] { typeof(GraphicalUiElement) });
+
+                if (listBoxFormsConstructor == null)
+                {
+                    string message =
+                        $"Could not find a constructor for {ItemFormsType} which takes a single GraphicalUiElement argument. " +
+                        $"If you defined {ItemFormsType} without specifying a constructor, you need to add a constructor which takes a GraphicalUiElement and calls the base constructor.";
+                    throw new Exception(message);
+                }
+
+                ListBoxItem item;
+                if (visual.FormsControlAsObject is ListBoxItem asListBoxItem)
+                {
+                    item = asListBoxItem;
+                }
+                else
+                {
+                    item = listBoxFormsConstructor.Invoke(new object[] { visual }) as ListBoxItem;
+                }
+
+                return item;
+            }
+        }
+
+        private GraphicalUiElement CreateNewVisual(object vm)
+        {
+            if(VisualTemplate != null)
+            {
+                return VisualTemplate.CreateContent(vm);
+            }
+            else
+            {
+                var listBoxItemGumType = ItemGumType;
+
+                if (listBoxItemGumType == null && DefaultFormsComponents.ContainsKey(typeof(ListBoxItem)))
+                {
+
+                    listBoxItemGumType = DefaultFormsComponents[typeof(ListBoxItem)];
+                }
+    #if DEBUG
+                if (listBoxItemGumType == null)
+                {
+                    throw new Exception($"The control does not have a ItemGumType specified, nor does the DefaultFormsControl have an entry for ListBoxItem. " +
+                        "This property must be set before adding any items");
+                }
+    #endif
+                // vic says - this uses reflection, could be made faster, somehow...
+
+                var gumConstructor = listBoxItemGumType.GetConstructor(new[] { typeof(bool), typeof(bool) });
+                var visual = gumConstructor.Invoke(new object[] { true, true }) as GraphicalUiElement;
+                return visual;
+            }
         }
 
         #region Event Handler methods

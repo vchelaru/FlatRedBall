@@ -35,11 +35,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\TreeViewItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\TreeViewLogic.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\UserControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FrameworkElementTemplate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\CursorExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FrameworkElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GumExtensions\GraphicalUiElementExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\KeyEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TextWrapping.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VisualTemplate.cs" />
   </ItemGroup>
 </Project>
