@@ -15,6 +15,8 @@ namespace StateInterpolationPlugin
         List<Tweener> mTweeners;
         List<Tweener> pausedTweeners = new List<Tweener>();
 
+        public IReadOnlyCollection<Tweener> Tweeners => mTweeners;
+
         static TweenerManager mSelf;
 
 

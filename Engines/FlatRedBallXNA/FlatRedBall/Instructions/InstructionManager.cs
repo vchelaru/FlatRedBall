@@ -58,6 +58,7 @@ namespace FlatRedBall.Instructions
         /// <summary>
         /// Holds instructions which will be executed by the InstructionManager
         /// in its Update method (called automatically by FlatRedBallServices).
+        /// This list is sorted by time.
         /// </summary>
         /// <remarks>
         /// Instructions for managed PositionedObjects like Sprites and Text objects

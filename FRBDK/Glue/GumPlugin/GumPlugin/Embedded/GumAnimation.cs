@@ -1,5 +1,6 @@
 ﻿using FlatRedBall;
 using FlatRedBall.Instructions;
+using StateInterpolationPlugin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,13 +20,78 @@ namespace FlatRedBall.Gum.Animation
 
         #endregion
 
+        float animationSpeed = 1;
         /// <summary>
-        /// The speed multiplier used to play the animation. This must be greater than 0
+        /// The speed multiplier used to play the animation. A value greater than 1 will make the animation
+        /// play faster than normal. For example, a value of 2 will make the animation play two times as fast.
+        /// This must be greater than 0
         /// </summary>
         public float AnimationSpeed
         {
-            get; set;
-        } = 1;
+            get => animationSpeed;
+            set
+            {
+                if(value != animationSpeed)
+                {
+                    var oldSpeed = animationSpeed;
+                    animationSpeed = value;
+
+                    if(IsPlaying())
+                    {
+                        var multiplier = oldSpeed / value;
+
+                        float elapsedAdvance = 0;
+
+                        foreach(var tweener in TweenerManager.Self.Tweeners)
+                        {
+                            if(tweener.Owner == this)
+                            {
+                                // If we increase the duration, (like from 2->4) then we  need to
+                                // also increase our elapsed, or else it will look like we "rewind" the animation
+                                var elapsedRatio = tweener.elapsed / tweener.Duration;
+                                tweener.Duration *= multiplier;
+                                tweener.elapsed = elapsedRatio * tweener.Duration;
+                            }
+                        }
+
+                        foreach (var instruction in InstructionManager.Instructions)
+                        {
+                            if (instruction.Target == this)
+                            {
+                                var timeLeft = instruction.TimeToExecute - TimeManager.CurrentTime;
+                                instruction.TimeToExecute = TimeManager.CurrentTime + timeLeft * multiplier;
+                            }
+                        }
+                        InstructionManager.Instructions.InsertionSortAscendingTimeToExecute();
+
+                    }
+                }
+            }
+        }
+
+        public float PlayingTimeLeft
+        {
+            get
+            {
+                Instruction lastInstruction = null;
+                foreach(var instruction in InstructionManager.Instructions)
+                {
+                    if(instruction.Target == this)
+                    {
+                        lastInstruction = instruction;
+                    }
+                }
+
+                if(lastInstruction == null)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return (float)(lastInstruction.TimeToExecute - TimeManager.CurrentTime);
+                }
+            }
+        }
 
         public List<GumAnimation> SubAnimations
         {

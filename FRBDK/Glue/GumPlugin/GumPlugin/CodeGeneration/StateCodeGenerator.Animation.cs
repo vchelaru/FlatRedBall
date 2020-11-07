@@ -201,7 +201,7 @@ namespace GumPlugin.CodeGeneration
 
             if (animation.States.Count == 0 && animation.Animations.Count == 0)
             {
-                currentBlock = currentBlock.Function(signature, propertyName, "float speed, object target");
+                currentBlock = currentBlock.Function(signature, propertyName, "object target");
 
                 currentBlock.Line("yield break;");
 
@@ -209,7 +209,7 @@ namespace GumPlugin.CodeGeneration
             else if(absoluteOrRelative == AbsoluteOrRelative.Relative && animation.States.Count < 2 && animation.Animations.Count == 0)
             {
 
-                currentBlock = currentBlock.Function(signature, propertyName, "float speed, object target");
+                currentBlock = currentBlock.Function(signature, propertyName, "object target");
 
                 currentBlock.Line("yield break;");
             }
@@ -227,7 +227,7 @@ namespace GumPlugin.CodeGeneration
                     }
                 }
 
-                currentBlock = currentBlock.Function(signature, propertyName, "float speed, object target");
+                currentBlock = currentBlock.Function(signature, propertyName, "object target");
 
                 GenerateOrderedStateAndSubAnimationCode(context, currentBlock, animation, animationType, absoluteOrRelative);
 
@@ -236,7 +236,7 @@ namespace GumPlugin.CodeGeneration
                     currentBlock = currentBlock.Block();
 
                     currentBlock.Line("var toReturn = new FlatRedBall.Instructions.DelegateInstruction(  " + 
-                        "() => FlatRedBall.Instructions.InstructionManager.Instructions.AddRange(this." + propertyName + "(speed, target)));");
+                        "() => FlatRedBall.Instructions.InstructionManager.Instructions.AddRange(this." + propertyName + $"(target)));");
                     string executionTime = "0.0f";
 
                     if(animation.States.Count != 0)
@@ -244,7 +244,7 @@ namespace GumPlugin.CodeGeneration
                         executionTime = ToFloatString( animation.States.Last().Time);
                     }
 
-                    currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + executionTime + "/speed;");
+                    currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + executionTime + $"/{animationName}.AnimationSpeed;");
                     currentBlock.Line("toReturn.Target = target;");
 
                     currentBlock.Line("yield return toReturn;");
@@ -337,7 +337,7 @@ namespace GumPlugin.CodeGeneration
             }
 
             currentBlock.Line($"var instruction = new FlatRedBall.Instructions.DelegateInstruction(()=>{animationName}.Play({parentAnimation.PropertyNameInCode()}));");
-            currentBlock.Line("instruction.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + ToFloatString(animationReferenceSave.Time) + "/speed;");
+            currentBlock.Line("instruction.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + ToFloatString(animationReferenceSave.Time) + $"/{animationName}.AnimationSpeed;");
 
 
             currentBlock.Line("yield return instruction;");
@@ -356,12 +356,12 @@ namespace GumPlugin.CodeGeneration
             }
             else
             {
-                CreateInstructionForInterpolationRelative(context,currentBlock,  previousState, currentState);
+                CreateInstructionForInterpolationRelative(context,currentBlock,  previousState, currentState, animationName);
             }
             currentBlock = currentBlock.End();
         }
 
-        private void CreateInstructionForInterpolationRelative(StateCodeGeneratorContext context, ICodeBlock currentBlock, AnimatedStateSave previousState, AnimatedStateSave currentState)
+        private void CreateInstructionForInterpolationRelative(StateCodeGeneratorContext context, ICodeBlock currentBlock, AnimatedStateSave previousState, AnimatedStateSave currentState, string animationName)
         {
             if(previousState != null)
             {
@@ -398,7 +398,7 @@ namespace GumPlugin.CodeGeneration
                     currentBlock.Line("Gum.DataTypes.Variables.StateSaveExtensionMethods.AddIntoThis(second, difference);");
 
 
-                    string interpolationTime = ToFloatString(currentState.Time - previousState.Time) + "/speed";
+                    string interpolationTime = ToFloatString(currentState.Time - previousState.Time) + $"/{animationName}.AnimationSpeed";
 
                     string easing = "FlatRedBall.Glue.StateInterpolation.Easing." + previousState.Easing;
                     string interpolationType = "FlatRedBall.Glue.StateInterpolation.InterpolationType." + previousState.InterpolationType;
@@ -422,7 +422,7 @@ namespace GumPlugin.CodeGeneration
                 currentBlock.Line(");");
                 string previousStateTime = ToFloatString(previousState.Time);
 
-                currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + previousStateTime + "/speed;");
+                currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + previousStateTime + $"/{animationName}.AnimationSpeed;");
                 currentBlock.Line("toReturn.Target = target;");
 
                 currentBlock.Line("yield return toReturn;");
@@ -524,7 +524,7 @@ namespace GumPlugin.CodeGeneration
 
                 string previousStateTime = ToFloatString(previousState.Time);
 
-                string interpolationTime = ToFloatString(currentState.Time - previousState.Time) + "/speed";
+                string interpolationTime = ToFloatString(currentState.Time - previousState.Time) + $"/{animationName}.AnimationSpeed";
 
                 string easing = "FlatRedBall.Glue.StateInterpolation.Easing." + previousState.Easing;
                 string interpolationType = "FlatRedBall.Glue.StateInterpolation.InterpolationType." + previousState.InterpolationType;
@@ -534,7 +534,8 @@ namespace GumPlugin.CodeGeneration
 
                 currentBlock.Line(line);
                 currentBlock.Line("toReturn.Target = target;");
-                currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + previousStateTime + "/speed;");
+                currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + previousStateTime + $"/{animationName}.AnimationSpeed;");
+                
 
             }
             currentBlock.Line("yield return toReturn;");
