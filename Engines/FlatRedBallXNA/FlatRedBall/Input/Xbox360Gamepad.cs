@@ -1040,25 +1040,32 @@ namespace FlatRedBall.Input
             if (mButtonMap == null)
             {
                 var leftStick = mGamePadState.ThumbSticks.Left;
-                if(System.Math.Abs(leftStick.X) < Deadzone)
+                var rightStick = mGamePadState.ThumbSticks.Right;
+
+                if(Deadzone > 0)
                 {
-                    leftStick.X = 0;
-                }
-                if(System.Math.Abs(leftStick.Y) < Deadzone)
-                {
-                    leftStick.Y = 0;
+                    var deadzoneSquared = Deadzone * Deadzone;
+
+                    var leftStickLengthSquared =
+                        (leftStick.X * leftStick.X) +
+                        (leftStick.Y * leftStick.Y);
+
+                    if(leftStickLengthSquared < deadzoneSquared)
+                    {
+                        leftStick = Vector2.Zero;
+                    }
+
+                    var rightStickLengthSquared =
+                        (rightStick.X * rightStick.X) +
+                        (rightStick.Y * rightStick.Y);
+
+                    if (rightStickLengthSquared < deadzoneSquared)
+                    {
+                        rightStick = Vector2.Zero;
+                    }
+
                 }
                 mLeftStick.Update(leftStick);
-
-                var rightStick = mGamePadState.ThumbSticks.Right;
-                if (System.Math.Abs(rightStick.X) < Deadzone)
-                {
-                    rightStick.X = 0;
-                }
-                if (System.Math.Abs(rightStick.Y) < Deadzone)
-                {
-                    rightStick.Y = 0;
-                }
                 mRightStick.Update(rightStick);
 
                 mLeftTrigger.Update(mGamePadState.Triggers.Left);
