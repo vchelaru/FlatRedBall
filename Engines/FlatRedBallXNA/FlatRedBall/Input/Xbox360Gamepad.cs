@@ -862,8 +862,8 @@ namespace FlatRedBall.Input
         /// </summary>
         public void Clear()
         {
-            mGamePadState = new GamePadState();
-            mLastGamePadState = new GamePadState();
+            mGamePadState = GamePadState.Default;
+            mLastGamePadState = GamePadState.Default;
 
             for (int i = 0; i < NumberOfButtons; i++)
             {

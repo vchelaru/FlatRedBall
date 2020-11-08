@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Gui;
+using FlatRedBall.Input;
 using Gum.Wireframe;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -36,6 +37,8 @@ namespace FlatRedBall.Forms.Controls.Primitives
         /// </summary>
         public event EventHandler Push;
         public event FocusUpdateDelegate FocusUpdate;
+
+        public event Action<Xbox360GamePad.Button> ControllerButtonPushed;
 
         #endregion
 
@@ -95,6 +98,11 @@ namespace FlatRedBall.Forms.Controls.Primitives
 
         protected virtual void OnClick() { }
 
+        public void PerformClick()
+        {
+            HandleClick(this.Visual);
+        }
+
         #region IInputReceiver Methods
 
         public void OnFocusUpdate()
@@ -121,6 +129,13 @@ namespace FlatRedBall.Forms.Controls.Primitives
                 {
                     //this.HandlePush(null);
                     this.HandleClick(null);
+
+                    ControllerButtonPushed?.Invoke(Xbox360GamePad.Button.A);
+                }
+                if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.B) &&
+                    IsEnabled)
+                {
+                    ControllerButtonPushed?.Invoke(Xbox360GamePad.Button.B);
                 }
                 if (gamepad.ButtonReleased(FlatRedBall.Input.Xbox360GamePad.Button.A))
                 {

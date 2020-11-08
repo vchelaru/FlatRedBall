@@ -131,7 +131,7 @@ namespace FlatRedBall.Forms.Controls
             {
                 Visual.SetProperty(category, "Selected");
             }
-            else if (cursor.LastInputDevice != InputDevice.TouchScreen && GetIfIsOnThisOrChildVisual(cursor))
+            else if (cursor.LastInputDevice != InputDevice.TouchScreen && GetIfIsOnThisOrChildVisual(cursor) && IsEnabled)
             {
                 Visual.SetProperty(category, "Highlighted");
             }

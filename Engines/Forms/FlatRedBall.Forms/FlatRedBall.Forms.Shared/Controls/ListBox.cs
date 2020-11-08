@@ -287,9 +287,12 @@ namespace FlatRedBall.Forms.Controls
                 if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.A))
                 {
                     DoListItemsHaveFocus = false;
-                    //this.HandleTab(TabDirection.Down, this);
-                    //this.HandlePush(null);
                 }
+                if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.B))
+                {
+                    DoListItemsHaveFocus = false;
+                }
+
                 if (gamepad.ButtonReleased(FlatRedBall.Input.Xbox360GamePad.Button.A))
                 {
                     //this.HandleClick(null);

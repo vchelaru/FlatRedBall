@@ -10,11 +10,9 @@ using Microsoft.Xna.Framework.Input;
 
 namespace FlatRedBall.Input
 {
-    #region XML Docs
     /// <summary>
     /// Containing functionality for keyboard, mouse, and joystick input.
     /// </summary>
-    #endregion
     public static partial class InputManager
     {
         #region Fields
@@ -52,11 +50,19 @@ namespace FlatRedBall.Input
             }
         }
 
+        /// <summary>
+        /// Whether to perform every-frame update logic on all gamepads.
+        /// </summary>
         public static bool UpdateXbox360GamePads
         {
             get { return mUpdateXbox360GamePads; }
             set { mUpdateXbox360GamePads = value; }
         }
+
+        public static bool ShouldUpdateGamepadsWhenNotFocused
+        {
+            get; set;
+        } = true;
 
 #if SUPPORTS_XBOX_GAMEPADS
         public static Xbox360GamePad[] Xbox360GamePads
@@ -125,6 +131,66 @@ namespace FlatRedBall.Input
 
         #endregion
 
+
+        public static void Update()
+        {
+            mCurrentFrameInputSuspended = false;
+
+            mIgnorePushesThisFrame = mIgnorePushesNextFrame;
+            mIgnorePushesNextFrame = false;
+
+            if (mMouse.Active)
+            {
+                mMouse.Update(TimeManager.SecondDifference, TimeManager.CurrentTime);
+            }
+
+            mKeyboard.Update();
+
+            UpdateInputReceiver();
+
+#if SUPPORTS_TOUCH_SCREEN
+            mTouchScreen.Update();
+#endif
+
+
+#if SUPPORTS_XBOX_GAMEPADS
+            PerformXbox360GamePadUpdate();
+#endif
+        }
+
+        private static void UpdateInputReceiver()
+        {
+            // Need to call the ReceiveInput method after testing out typed keys
+            if (InputReceiver != null)
+            {
+                InputReceiver.OnFocusUpdate();
+                InputReceiver.ReceiveInput();
+
+                if (Keyboard.AutomaticallyPushEventsToInputReceiver)
+                {
+                    var shift = InputReceiverKeyboard.IsShiftDown;
+                    var ctrl = InputReceiverKeyboard.IsCtrlDown;
+                    var alt = InputReceiverKeyboard.IsAltDown;
+
+                    foreach (var key in InputReceiverKeyboard.KeysTyped)
+                    {
+                        InputManager.InputReceiver.HandleKeyDown(key, shift, alt, ctrl);
+                    }
+
+                    var stringTyped = InputReceiverKeyboard.GetStringTyped();
+
+                    if (stringTyped != null)
+                    {
+                        for (int i = 0; i < stringTyped.Length; i++)
+                        {
+                            // receiver could get nulled out by itself when something like enter is pressed
+                            InputReceiver?.HandleCharEntered(stringTyped[i]);
+                        }
+                    }
+                }
+            }
+        }
+
         private static void InitializeTouchScreen()
         {
             mTouchScreen = new TouchScreen();
@@ -167,21 +233,36 @@ namespace FlatRedBall.Input
         {
             CheckControllerConnectionChange();
 
-            if (mUpdateXbox360GamePads)
+            if (FlatRedBallServices.Game.IsActive == false && !ShouldUpdateGamepadsWhenNotFocused)
             {
-                BackPressed = false;
+                // clear out the gamepads:
 #if SUPPORTS_XBOX_GAMEPADS
 
-                mXbox360GamePads[0].Update();
+                mXbox360GamePads[0].Clear();
 #if !MONODROID
-                mXbox360GamePads[1].Update();
-                mXbox360GamePads[2].Update();
-                mXbox360GamePads[3].Update();
+                mXbox360GamePads[1].Clear();
+                mXbox360GamePads[2].Clear();
+                mXbox360GamePads[3].Clear();
 #endif
 #endif
 
-                PlatformSpecificXbox360GamePadUpdate();
+            }
+            else
+            {
+                if (mUpdateXbox360GamePads)
+                {
+                    BackPressed = false;
+    #if SUPPORTS_XBOX_GAMEPADS
 
+                    mXbox360GamePads[0].Update();
+    #if !MONODROID
+                    mXbox360GamePads[1].Update();
+                    mXbox360GamePads[2].Update();
+                    mXbox360GamePads[3].Update();
+    #endif
+    #endif
+                    PlatformSpecificXbox360GamePadUpdate();
+                }
 
             }
         }
