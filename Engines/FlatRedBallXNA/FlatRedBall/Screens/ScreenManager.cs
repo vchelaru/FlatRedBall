@@ -178,6 +178,7 @@ namespace FlatRedBall.Screens
                 {
                     Input.InputManager.InputReceiver = null;
                 }
+                Instructions.InstructionManager.ObjectsIgnoringPausing.Clear();
 
                 //mCurrentScreen.Destroy();
 

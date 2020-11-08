@@ -7,7 +7,7 @@ namespace FlatRedBall.Instructions.Pause
     class InstructionListUnpause : UnpauseInstruction<InstructionList>
     {
 
-        InstructionList mTemporaryInstructions = new InstructionList();
+        public InstructionList TemporaryInstructions { get; private set; } = new InstructionList();
 
         #region Methods
 
@@ -16,7 +16,7 @@ namespace FlatRedBall.Instructions.Pause
         {
             foreach (Instruction instruction in instructions)
             {
-                mTemporaryInstructions.Add(instruction);
+                TemporaryInstructions.Add(instruction);
             }
 
         }
@@ -25,7 +25,7 @@ namespace FlatRedBall.Instructions.Pause
         {
             double timeToAdd = TimeManager.CurrentTime - mCreationTime;
 
-            foreach (Instruction instruction in mTemporaryInstructions)
+            foreach (Instruction instruction in TemporaryInstructions)
             {
                 instruction.TimeToExecute += timeToAdd;
                 mTarget.Add(instruction);

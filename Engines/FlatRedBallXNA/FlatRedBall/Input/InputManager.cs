@@ -59,11 +59,6 @@ namespace FlatRedBall.Input
             set { mUpdateXbox360GamePads = value; }
         }
 
-        public static bool ShouldUpdateGamepadsWhenNotFocused
-        {
-            get; set;
-        } = true;
-
 #if SUPPORTS_XBOX_GAMEPADS
         public static Xbox360GamePad[] Xbox360GamePads
         {
@@ -99,6 +94,9 @@ namespace FlatRedBall.Input
 
         public delegate void ControllerConnectionHandler(object sender, ControllerConnectionEventArgs e);
 
+        /// <summary>
+        /// Event raised whenever an Xbox360Controller is connected or disonnected. 
+        /// </summary>
         public static event ControllerConnectionHandler ControllerConnectionEvent;
 
         #endregion
@@ -161,7 +159,8 @@ namespace FlatRedBall.Input
         private static void UpdateInputReceiver()
         {
             // Need to call the ReceiveInput method after testing out typed keys
-            if (InputReceiver != null)
+            // Nov 8, 2020 - now we disable input when the window has no focus. Not sure if we want to make that controlled by a variable
+            if (InputReceiver != null && FlatRedBallServices.Game.IsActive)
             {
                 InputReceiver.OnFocusUpdate();
                 InputReceiver.ReceiveInput();
@@ -233,38 +232,21 @@ namespace FlatRedBall.Input
         {
             CheckControllerConnectionChange();
 
-            if (FlatRedBallServices.Game.IsActive == false && !ShouldUpdateGamepadsWhenNotFocused)
+            if (mUpdateXbox360GamePads)
             {
-                // clear out the gamepads:
-#if SUPPORTS_XBOX_GAMEPADS
-
-                mXbox360GamePads[0].Clear();
-#if !MONODROID
-                mXbox360GamePads[1].Clear();
-                mXbox360GamePads[2].Clear();
-                mXbox360GamePads[3].Clear();
-#endif
-#endif
-
-            }
-            else
-            {
-                if (mUpdateXbox360GamePads)
-                {
-                    BackPressed = false;
+                BackPressed = false;
     #if SUPPORTS_XBOX_GAMEPADS
 
-                    mXbox360GamePads[0].Update();
+                mXbox360GamePads[0].Update();
     #if !MONODROID
-                    mXbox360GamePads[1].Update();
-                    mXbox360GamePads[2].Update();
-                    mXbox360GamePads[3].Update();
+                mXbox360GamePads[1].Update();
+                mXbox360GamePads[2].Update();
+                mXbox360GamePads[3].Update();
     #endif
     #endif
-                    PlatformSpecificXbox360GamePadUpdate();
-                }
-
+                PlatformSpecificXbox360GamePadUpdate();
             }
+
         }
 
         #endregion

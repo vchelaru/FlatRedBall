@@ -407,6 +407,8 @@ namespace FlatRedBall.Instructions
         internal static PositionedObjectList<FlatRedBall.PositionedObject> PositionedObjectsIgnoringPausing = 
             new PositionedObjectList<FlatRedBall.PositionedObject>();
 
+        public static List<object> ObjectsIgnoringPausing { get; private set; } = new List<object>();
+
         public static void IgnorePausingFor(FlatRedBall.PositionedObject positionedObject)
         {
             // This function needs to tolerate
@@ -489,9 +491,25 @@ namespace FlatRedBall.Instructions
 
             TextManager.Pause(mUnpauseInstructions);
 
-            InstructionListUnpause instructions = new InstructionListUnpause(mInstructions);
+            InstructionListUnpause unpauseInstruction = new InstructionListUnpause(mInstructions);
             mInstructions.Clear();
-            mUnpauseInstructions.Add(instructions);
+
+            // the minority of instructions should be targeting objects that can't be paused, so loop through
+            // and pull them back out
+            for(int i = unpauseInstruction.TemporaryInstructions.Count - 1; i > -1; i--)
+            {
+                var instruction = unpauseInstruction.TemporaryInstructions[i];
+
+                if(ObjectsIgnoringPausing.Contains( instruction.Target))
+                {
+                    unpauseInstruction.TemporaryInstructions.RemoveAt(i);
+                    // add it back!
+                    mInstructions.Add(instruction);
+                }
+            }
+
+
+            mUnpauseInstructions.Add(unpauseInstruction);
 
             if (!storeUnpauseInstructions)
             {
@@ -701,7 +719,7 @@ namespace FlatRedBall.Instructions
         }
 
         #endregion
-
+        
         #region Private Methods
 
         private static void CreateInterpolators()
