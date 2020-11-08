@@ -79,7 +79,10 @@ namespace FlatRedBall.Forms.Controls
             {
                 if(value > -1 && value < ListBoxItemsInternal.Count)
                 {
-                    ListBoxItemsInternal[value].IsSelected = true;
+                    if(ListBoxItemsInternal[value].IsEnabled)
+                    {
+                        ListBoxItemsInternal[value].IsSelected = true;
+                    }
 
                     if(SelectedObject != null)
                     {
