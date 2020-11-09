@@ -85,6 +85,25 @@ namespace FlatRedBall.Forms.Controls
             base.ReactToVisualChanged();
         }
 
+        protected override void ReactToVisualRemoved()
+        {
+            if(Visual != null)
+            {
+                Visual.MouseWheelScroll -= HandleMouseWheelScroll;
+                Visual.RollOverBubbling -= HandleRollOver;
+                Visual.SizeChanged -= HandleVisualSizeChanged;
+
+                innerPanel.SizeChanged -= HandleInnerPanelSizeChanged;
+                innerPanel.PositionChanged -= HandleInnerPanelPositionChanged;
+
+                verticalScrollBar.Visual.SizeChanged -= HandleVerticalScrollBarThumbSizeChanged;
+                verticalScrollBar.ValueChanged -= HandleVerticalScrollBarValueChanged;
+
+            }
+
+            base.ReactToVisualRemoved();
+        }
+
         private void HandleRollOver(IWindow window, RoutedEventArgs args)
         {
             if(GuiManager.Cursor.PrimaryDown && GuiManager.Cursor.LastInputDevice == InputDevice.TouchScreen)
@@ -185,7 +204,16 @@ namespace FlatRedBall.Forms.Controls
                     verticalScrollBar.IsVisible = innerPanelHeight > clipContainerHeight;
                     break;
             }
+
+            string state = verticalScrollBar.IsVisible ?
+                "VerticalScrollVisible" :
+                "NoScrollBar";
+
+            const string category = "ScrollBarVisibilityState";
+
+            Visual.SetProperty(category, state);
         }
+
 
         #endregion
     }
