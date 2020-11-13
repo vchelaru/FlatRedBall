@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Forms.Input;
 using FlatRedBall.Gui;
+using FlatRedBall.Input;
 using Gum.Wireframe;
 using Microsoft.Xna.Framework.Input;
 using RenderingLibrary;
@@ -130,6 +131,13 @@ namespace FlatRedBall.Forms.Controls
 
         // todo - this could move to the base class, if the base objects became input receivers
         public event Action<object, KeyEventArgs> KeyDown;
+
+        #endregion
+
+        #region Events
+
+        public event Action<Xbox360GamePad.Button> ControllerButtonPushed;
+
 
         #endregion
 
@@ -518,6 +526,32 @@ namespace FlatRedBall.Forms.Controls
 
         public void OnFocusUpdate()
         {
+            for (int i = 0; i < FlatRedBall.Input.InputManager.Xbox360GamePads.Length; i++)
+            {
+                var gamepad = FlatRedBall.Input.InputManager.Xbox360GamePads[i];
+
+                if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
+                    gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down))
+                {
+                    this.HandleTab(TabDirection.Down, this);
+                }
+                else if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
+                    gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up))
+                {
+                    this.HandleTab(TabDirection.Up, this);
+                }
+
+                if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.A))
+                {
+                    this.Visual.CallClick();
+
+                    ControllerButtonPushed?.Invoke(Xbox360GamePad.Button.A);
+                }
+                if (gamepad.ButtonReleased(FlatRedBall.Input.Xbox360GamePad.Button.A))
+                {
+                    //this.HandleClick(null);
+                }
+            }
         }
 
         public void OnGainFocus()

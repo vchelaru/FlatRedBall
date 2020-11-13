@@ -260,6 +260,7 @@ namespace GumPlugin.DataGeneration
                         BaseType = "Text"
 
                     },
+                    // Vic asks - why do we have this? Was this a copy/paste issue from TextBox?
                     new BehaviorInstanceSave
                     {
                         Name = "CaretInstance"

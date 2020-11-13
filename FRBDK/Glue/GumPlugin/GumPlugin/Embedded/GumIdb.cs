@@ -214,7 +214,7 @@ namespace FlatRedBall.Gum
 
             }
 
-            if(result.MissingFiles.Count != 0)
+            if (result.MissingFiles.Count != 0)
             {
                 throw new Exception("Missing files starting with " + result.MissingFiles[0]);
             }

@@ -306,9 +306,7 @@ namespace FlatRedBall.Input
 
         #region Events
 
-#if !FRB_MDX
         public static event ModifyMouseState ModifyMouseState;
-#endif
 
         #endregion
 
@@ -581,8 +579,6 @@ namespace FlatRedBall.Input
             mLastWheel = 0;
         }
 
-#if !XBOX360
-
         Vector3 mDefaultUpVector = new Vector3(0, 1, 0);
 
 
@@ -698,10 +694,7 @@ namespace FlatRedBall.Input
 #endif
 
         }
-#endif
 
-
-#if !XBOX360
         public Ray GetMouseRay(Camera camera)
         {
 #if FRB_MDX
@@ -734,7 +727,6 @@ namespace FlatRedBall.Input
 #endif
 
         }
-#endif
 
         public void HideNativeWindowsCursor()
         {

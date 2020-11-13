@@ -39,6 +39,8 @@ namespace FlatRedBall.Forms.Controls.Primitives
         public event FocusUpdateDelegate FocusUpdate;
 
         public event Action<Xbox360GamePad.Button> ControllerButtonPushed;
+        public event Action<FlatRedBall.Input.Mouse.MouseButtons> MouseButtonPushed;
+
 
         #endregion
 
@@ -70,6 +72,7 @@ namespace FlatRedBall.Forms.Controls.Primitives
             OnClick();
 
             Click?.Invoke(this, null);
+            MouseButtonPushed?.Invoke(FlatRedBall.Input.Mouse.MouseButtons.LeftButton);
         }
 
         private void HandlePush(IWindow window)
@@ -132,11 +135,21 @@ namespace FlatRedBall.Forms.Controls.Primitives
 
                     ControllerButtonPushed?.Invoke(Xbox360GamePad.Button.A);
                 }
-                if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.B) &&
-                    IsEnabled)
+
+                void RaiseIfPushedAndEnabled(FlatRedBall.Input.Xbox360GamePad.Button button)
                 {
-                    ControllerButtonPushed?.Invoke(Xbox360GamePad.Button.B);
+                    if (IsEnabled && gamepad.ButtonPushed(button))
+                    {
+                        ControllerButtonPushed?.Invoke(button);
+                    }
                 }
+
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.B);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.X);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Y);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Start);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Back);
+
                 if (gamepad.ButtonReleased(FlatRedBall.Input.Xbox360GamePad.Button.A))
                 {
                 }

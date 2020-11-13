@@ -81,34 +81,48 @@ namespace GumPlugin.Managers
 
             foreach (var element in gumProjectSave.Screens)
             {
-                AddFilesReferencedBy(topLevelOrRecursive, listToFill, element, projectOrDisk);
+                AddElementFileFor(listToFill, element, projectOrDisk);
             }
 
             foreach (var element in gumProjectSave.Components)
             {
-                AddFilesReferencedBy(topLevelOrRecursive, listToFill, element, projectOrDisk);
+                AddElementFileFor(listToFill, element, projectOrDisk);
             }
 
             foreach (var element in gumProjectSave.StandardElements)
             {
-                AddFilesReferencedBy(topLevelOrRecursive, listToFill, element, projectOrDisk);
+                AddElementFileFor(listToFill, element, projectOrDisk);
             }
 
             StringFunctions.RemoveDuplicates(listToFill);
         }
 
-        private void AddFilesReferencedBy(TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill, ElementSave element, ProjectOrDisk projectOrDisk)
+        private void AddElementFileFor(List<string> listToFill, ElementSave element, ProjectOrDisk projectOrDisk)
         {
-            string fullFileName = FileManager.RelativeDirectory + element.Subfolder + "\\" + element.Name +
-                "." + element.FileExtension;
+            var gumProject = AppState.Self.GumProjectSave;
 
-            fullFileName = FileManager.RemoveDotDotSlash(fullFileName);
+            // This could be a link:
+            // Even though it could be linked, we require files be copied over to the current location so they can be added to a .csproj and the project can be kept in-tact
+            //var reference =
+            //    gumProject.ScreenReferences.FirstOrDefault(item => item.Name == element.Name) ??
+            //    gumProject.ComponentReferences.FirstOrDefault(item => item.Name == element.Name) ??
+            //    gumProject.StandardElementReferences.FirstOrDefault(item => item.Name == element.Name);
 
-            listToFill.Add(fullFileName);
+            //if(reference?.Link != null)
+            //{
+            //    var fullFileName = new FilePath(FileManager.RelativeDirectory + reference.Link).FullPath;
+            //    listToFill.Add(fullFileName);
 
-            if (topLevelOrRecursive == TopLevelOrRecursive.Recursive)
+            //}
+            //else
             {
-                throw new NotImplementedException("This does not support recursive calls - should use the Glue system to track reference files");
+                string fullFileName = FileManager.RelativeDirectory + element.Subfolder + "\\" + element.Name +
+                    "." + element.FileExtension;
+
+                fullFileName = FileManager.RemoveDotDotSlash(fullFileName);
+
+                listToFill.Add(fullFileName);
+
             }
         }
 
@@ -152,21 +166,11 @@ namespace GumPlugin.Managers
                 // find the element.
                 var referencedElement = AppState.Self.GetElementSave(type);
 
+
+
                 if (referencedElement != null)
                 {
-                    if (referencedElement is StandardElementSave)
-                    {
-                        listToFill.Add(FileManager.RelativeDirectory + "Standards/" + referencedElement.Name + ".gutx");
-                    }
-                    else if (referencedElement is ComponentSave)
-                    {
-                        listToFill.Add(FileManager.RelativeDirectory + "Components/" + referencedElement.Name + ".gucx");
-
-                    }
-                    else
-                    {
-                        throw new Exception();
-                    }
+                    AddElementFileFor(listToFill, referencedElement, projectOrDisk);
 
                     if (topLevelOrRecursive == TopLevelOrRecursive.Recursive)
                     {
@@ -513,7 +517,12 @@ namespace GumPlugin.Managers
                                 try
                                 {
                                     LoadGumxIfNecessaryFromDirectory(FileManager.RelativeDirectory, force:true);
-                                    GetFilesReferencedBy(Gum.Managers.ObjectFinder.Self.GumProjectSave, topLevelOrRecursive, listToFill, projectOrDisk);
+
+                                    var gumProject = Gum.Managers.ObjectFinder.Self.GumProjectSave;
+                                    if(gumProject != null)
+                                    {
+                                        GetFilesReferencedBy(gumProject, topLevelOrRecursive, listToFill, projectOrDisk);
+                                    }
                                 }
                                 catch(Exception e)
                                 {
