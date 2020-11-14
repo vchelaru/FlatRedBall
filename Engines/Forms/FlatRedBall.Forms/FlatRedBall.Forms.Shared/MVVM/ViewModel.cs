@@ -95,7 +95,7 @@ namespace FlatRedBall.Forms.MVVM
             {
                 var attributes = property.GetCustomAttributes(true);
 
-                string child = property.Name;
+                string propertyName = property.Name;
                 foreach (var uncastedAttribute in attributes)
                 {
                     if (uncastedAttribute is DependsOnAttribute)
@@ -115,7 +115,15 @@ namespace FlatRedBall.Forms.MVVM
                             childrenProps = notifyRelationships[parent];
                         }
 
-                        childrenProps.Add(child);
+#if DEBUG
+                        if(parent == propertyName)
+                        {
+                            throw new InvalidOperationException(
+                                $"The property {propertyName} should not depend on itself");
+                        }
+#endif
+
+                        childrenProps.Add(propertyName);
                     }
                 }
             }
