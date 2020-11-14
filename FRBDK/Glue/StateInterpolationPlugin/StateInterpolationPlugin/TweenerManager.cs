@@ -75,8 +75,24 @@ namespace StateInterpolationPlugin
 
         public void Pause()
         {
-            pausedTweeners.AddRange(mTweeners);
-            mTweeners.Clear();
+            // need to forward loop so tweeners stay in the same order:
+            for(int i = 0; i < mTweeners.Count; i++)
+            {
+                var tweener = mTweeners[i];
+
+                var shouldPause = tweener.Owner == null || InstructionManager.ObjectsIgnoringPausing.Contains(tweener.Owner) == false;
+
+                if(shouldPause)
+                {
+                    pausedTweeners.Add(tweener);
+                    mTweeners.RemoveAt(i);
+                    i--;
+                }
+                else
+                {
+                    // do nothing, let it keep running
+                }
+            }
         }
 
         public void Unpause()
