@@ -179,6 +179,9 @@ namespace FlatRedBall.Screens
                     Input.InputManager.InputReceiver = null;
                 }
                 Instructions.InstructionManager.ObjectsIgnoringPausing.Clear();
+                // Added Nov 15 2020 - do we want this here? If not we may get
+                // silent accumulation. Do we warn or just destroy?
+                Instructions.InstructionManager.Instructions.Clear();
 
                 //mCurrentScreen.Destroy();
 
