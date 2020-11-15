@@ -36,6 +36,7 @@ namespace FlatRedBall.Forms.Controls
         #region Fields/Properties
 
         protected bool isFocused;
+        protected double timeFocused;
         public virtual bool IsFocused
         {
             get { return isFocused; }
@@ -56,6 +57,7 @@ namespace FlatRedBall.Forms.Controls
 
                     if(isFocused)
                     {
+                        timeFocused = TimeManager.CurrentTime;
                         GotFocus?.Invoke(this, null);
                     }
                     else

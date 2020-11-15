@@ -233,9 +233,9 @@ namespace FlatRedBall.Forms.Controls
 
         private void HandleClickOff()
         {
-            if (GuiManager.Cursor.WindowOver != Visual)
+            if (GuiManager.Cursor.WindowOver != Visual && timeFocused != TimeManager.CurrentTime)
             {
-                HasFocus = false;
+                IsFocused = false;
             }
         }
 
