@@ -145,6 +145,8 @@ namespace FlatRedBall.Utilities
             return WedgeVector2Radians(minLength, maxLength, minRadians, maxRadians);
         }
 
+        public bool NextBool() => Next(2) == 0;
+
         class CumulativeAreaRectangle
         {
             public AxisAlignedRectangle Rectangle;
