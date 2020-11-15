@@ -10,6 +10,7 @@ using System.Collections;
 using RenderingLibrary;
 using FlatRedBall.Gui;
 using Microsoft.Xna.Framework.Input;
+using FlatRedBall.Input;
 
 namespace FlatRedBall.Forms.Controls
 {
@@ -134,6 +135,8 @@ namespace FlatRedBall.Forms.Controls
         /// </summary>
         public event Action<object, SelectionChangedEventArgs> SelectionChanged;
         public event FocusUpdateDelegate FocusUpdate;
+        public event Action<Xbox360GamePad.Button> ControllerButtonPushed;
+
 
         #endregion
 
@@ -325,10 +328,25 @@ namespace FlatRedBall.Forms.Controls
                 {
                     DoListItemsHaveFocus = true;
                 }
-                if (gamepad.ButtonReleased(FlatRedBall.Input.Xbox360GamePad.Button.A))
+
+                void RaiseIfPushedAndEnabled(FlatRedBall.Input.Xbox360GamePad.Button button)
                 {
-                    //this.HandleClick(null);
+                    if (IsEnabled && gamepad.ButtonPushed(button))
+                    {
+                        ControllerButtonPushed?.Invoke(button);
+                    }
                 }
+
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.B);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.X);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Y);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Start);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Back);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.DPadLeft);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.DPadRight);
+
+
+
             }
 
         }
