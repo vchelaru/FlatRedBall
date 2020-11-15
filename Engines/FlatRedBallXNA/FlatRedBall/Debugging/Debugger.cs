@@ -14,6 +14,7 @@ using Microsoft.Phone.Info;
 
 namespace FlatRedBall.Debugging
 {
+    #region CountedCategory class
     class CountedCategory
     {
         public string String;
@@ -25,7 +26,7 @@ namespace FlatRedBall.Debugging
             return String;
         }
     }
-
+    #endregion
 
     public static class Debugger
     {
@@ -404,6 +405,9 @@ namespace FlatRedBall.Debugging
 
             var objectCount = GetAutomaticallyUpdatedObjectInformation();
             stringBuilder.AppendLine(objectCount);
+            stringBuilder.AppendLine();
+
+            stringBuilder.Append(GetInstructionInformation());
 
             stringBuilder.AppendLine();
             stringBuilder.AppendLine($"Render breaks: {Renderer.LastFrameRenderBreakList.Count}");
@@ -424,6 +428,7 @@ namespace FlatRedBall.Debugging
             }
 
             stringBuilder.Append(MemoryInformation);
+
 
             return stringBuilder.ToString();
         }
@@ -533,6 +538,12 @@ namespace FlatRedBall.Debugging
             }
 
             return toReturn;
+        }
+
+        public static string GetInstructionInformation()
+        {
+            return $"Instruction Count: {Instructions.InstructionManager.Instructions.Count}\n" +
+                $"Unpause Instructions Count: {Instructions.InstructionManager.UnpauseInstructionCount}";
         }
 
         private static StringBuilder GetFilledStringBuilderWithNumberedTypes(Dictionary<string, CountedCategory> typeDictionary)

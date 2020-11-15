@@ -87,6 +87,7 @@ namespace FlatRedBall.Instructions
             set { mIsExecutingInstructions = value; }
         }
 
+        public static int UnpauseInstructionCount => mUnpauseInstructions.Count;
 
         public static ReadOnlyCollection<VelocityValueRelationship> VelocityValueRelationships
         {
