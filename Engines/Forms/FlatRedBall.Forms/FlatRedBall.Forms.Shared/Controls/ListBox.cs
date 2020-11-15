@@ -346,6 +346,10 @@ namespace FlatRedBall.Forms.Controls
                 RaiseIfPushedAndEnabled(Xbox360GamePad.Button.DPadRight);
 
 
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.LeftStickAsDPadLeft);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.LeftStickAsDPadRight);
+
+
 
             }
 

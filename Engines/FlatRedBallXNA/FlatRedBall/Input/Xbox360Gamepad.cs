@@ -32,11 +32,16 @@ namespace FlatRedBall.Input
             DPadLeft,
             DPadRight,
             LeftTrigger,
-            RightTrigger // 15
+            RightTrigger, // 15
+
+            LeftStickAsDPadUp, // = 16
+            LeftStickAsDPadDown,
+            LeftStickAsDPadLeft,
+            LeftStickAsDPadRight // = 19
         }
 
         // This serves as a sentinel value.
-        const int NumberOfButtons = 16;
+        const int NumberOfButtons = 20;
 
         public enum DPadDirection
         {
@@ -681,7 +686,18 @@ namespace FlatRedBall.Input
                 case Button.RightTrigger:
                     returnValue |= mRightTrigger.Position >= AnalogOnThreshold && mRightTrigger.LastPosition < AnalogOnThreshold;
                     break;
-
+                case Button.LeftStickAsDPadUp:
+                    returnValue |= LeftStick.AsDPadPushed(DPadDirection.Up);
+                    break;
+                case Button.LeftStickAsDPadDown:
+                    returnValue |= LeftStick.AsDPadPushed(DPadDirection.Down);
+                    break;
+                case Button.LeftStickAsDPadLeft:
+                    returnValue |= LeftStick.AsDPadPushed(DPadDirection.Left);
+                    break;
+                case Button.LeftStickAsDPadRight:
+                    returnValue |= LeftStick.AsDPadPushed(DPadDirection.Right);
+                    break;
             }
 
             return returnValue;
