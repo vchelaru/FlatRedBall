@@ -252,9 +252,11 @@ namespace FlatRedBall.Forms.Controls
 
         private void DoListItemFocusUpdate()
         {
-            for (int i = 0; i < FlatRedBall.Input.InputManager.Xbox360GamePads.Length; i++)
+            var gamepads = GuiManager.GamePadsForUiControl;
+
+            for (int i = 0; i < gamepads.Count; i++)
             {
-                var gamepad = FlatRedBall.Input.InputManager.Xbox360GamePads[i];
+                var gamepad = gamepads[i];
 
                 if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
                     gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down))
@@ -309,9 +311,11 @@ namespace FlatRedBall.Forms.Controls
 
         private void DoTopLevelFocusUpdate()
         {
-            for (int i = 0; i < FlatRedBall.Input.InputManager.Xbox360GamePads.Length; i++)
+            var gamepads = GuiManager.GamePadsForUiControl;
+
+            for (int i = 0; i < gamepads.Count; i++)
             {
-                var gamepad = FlatRedBall.Input.InputManager.Xbox360GamePads[i];
+                var gamepad = gamepads[i];
 
                 if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
                     gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down))

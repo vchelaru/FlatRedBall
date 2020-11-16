@@ -6,6 +6,7 @@ using FlatRedBall.Gui;
 using Gum.Wireframe;
 using RenderingLibrary;
 using Microsoft.Xna.Framework.Input;
+using FlatRedBall.Input;
 
 namespace FlatRedBall.Forms.Controls
 {
@@ -32,6 +33,9 @@ namespace FlatRedBall.Forms.Controls
         #endregion
 
         public event FocusUpdateDelegate FocusUpdate;
+
+        public event Action<Xbox360GamePad.Button> ControllerButtonPushed;
+
 
         #region Initialize
 
@@ -264,9 +268,11 @@ namespace FlatRedBall.Forms.Controls
 
         public void OnFocusUpdate()
         {
-            for (int i = 0; i < FlatRedBall.Input.InputManager.Xbox360GamePads.Length; i++)
+            var gamepads = GuiManager.GamePadsForUiControl;
+
+            for (int i = 0; i < gamepads.Count; i++)
             {
-                var gamepad = FlatRedBall.Input.InputManager.Xbox360GamePads[i];
+                var gamepad = gamepads[i];
 
                 if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
                     gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down))
@@ -296,20 +302,20 @@ namespace FlatRedBall.Forms.Controls
                     this.Value += this.SmallChange;
                 }
 
-                if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.A))
-                {
-                    // select...
 
-                    // and close...
-                    //IsDropDownOpen = IsDropDownOpen = true;
-
-                    //this.HandleTab(TabDirection.Down, this);
-                    //this.HandlePush(null);
-                }
-                if (gamepad.ButtonReleased(FlatRedBall.Input.Xbox360GamePad.Button.A))
+                void RaiseIfPushedAndEnabled(FlatRedBall.Input.Xbox360GamePad.Button button)
                 {
-                    //this.HandleClick(null);
+                    if (IsEnabled && gamepad.ButtonPushed(button))
+                    {
+                        ControllerButtonPushed?.Invoke(button);
+                    }
                 }
+
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.B);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.X);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Y);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Start);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Back);
             }
         }
 

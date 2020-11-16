@@ -286,6 +286,11 @@ namespace FlatRedBall.Gui
             }
         }
 
+        public static List<Xbox360GamePad> GamePadsForUiControl
+        {
+            get; private set;
+        } = new List<Xbox360GamePad>();
+
         #endregion
 
 	
