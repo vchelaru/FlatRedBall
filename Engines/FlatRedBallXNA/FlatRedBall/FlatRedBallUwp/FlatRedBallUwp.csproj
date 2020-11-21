@@ -118,6 +118,7 @@
     <Compile Include="..\IO\FileManager.IsolatedStorage.cs">
       <Link>IO\FileManager.IsolatedStorage.cs</Link>
     </Compile>
+    <Compile Include="Compatability\TypeExtensionMethodsUwp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\FlatRedBallUwp.rd.xml" />
   </ItemGroup>

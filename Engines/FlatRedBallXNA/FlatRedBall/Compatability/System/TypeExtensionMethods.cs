@@ -38,6 +38,9 @@ namespace System
         {
             return type.GetTypeInfo().IsEnum;
         }
+
+
+
 #if !UWP
         public static ConstructorInfo GetConstructor(this Type type, Type[] types)
         {

@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Forms.Controls;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 namespace FlatRedBall.Forms
@@ -12,6 +13,8 @@ namespace FlatRedBall.Forms
         public FrameworkElementTemplate(Type type)
         {
 #if DEBUG
+
+
             if(typeof(FrameworkElement).IsAssignableFrom(type) == false)
             {
                 throw new ArgumentException($"The type {type} must be derived from FrameworkElement");
