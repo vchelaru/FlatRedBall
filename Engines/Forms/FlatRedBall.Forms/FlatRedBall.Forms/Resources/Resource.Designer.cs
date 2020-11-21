@@ -8,9 +8,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("FlatRedBallAndroid.Resource", IsApplication=true)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("FlatRedBall.Forms.Android.Resource", IsApplication=false)]
 
-namespace FlatRedBallAndroid
+namespace FlatRedBall.Forms.Android
 {
 	
 	
@@ -21,10 +21,6 @@ namespace FlatRedBallAndroid
 		static Resource()
 		{
 			global::Android.Runtime.ResourceIdManager.UpdateIdValues();
-		}
-		
-		public static void UpdateIdValues()
-		{
 		}
 		
 		public partial class Attribute

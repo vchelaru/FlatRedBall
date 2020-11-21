@@ -878,9 +878,14 @@ namespace FlatRedBall.Input
         /// </summary>
         public void Clear()
         {
+#if MONOGAME
             mGamePadState = GamePadState.Default;
             mLastGamePadState = GamePadState.Default;
-
+#else
+            // XNA doesn't have .Default
+            mGamePadState = new GamePadState();
+            mLastGamePadState = new GamePadState() ;
+#endif
             for (int i = 0; i < NumberOfButtons; i++)
             {
                 if (ButtonPushed((Button)i))
@@ -897,7 +902,7 @@ namespace FlatRedBall.Input
         }
 
 
-        #region Control Positioned Object
+#region Control Positioned Object
 
         public void ControlPositionedObject(PositionedObject positionedObject)
         {
@@ -954,7 +959,7 @@ namespace FlatRedBall.Input
             positionedObject.RotationMatrix *= Matrix.CreateFromAxisAngle(up, -TimeManager.SecondDifference * RightStick.Position.X);
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Creates a ButtomMap for this controller using the default bindings.  This is 
@@ -1091,7 +1096,7 @@ namespace FlatRedBall.Input
             {
                 Vector2 newPosition = new Vector2();
 
-                #region Set the left analog stick position
+#region Set the left analog stick position
                 if (mButtonMap.LeftAnalogLeft != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.LeftAnalogLeft))
                 {
                     newPosition.X = -1;
@@ -1122,9 +1127,9 @@ namespace FlatRedBall.Input
 
                 mLeftStick.Update(newPosition);
 
-                #endregion
+#endregion
 
-                #region Set the right analog stick position
+#region Set the right analog stick position
 
                 newPosition = new Vector2();
 
@@ -1158,9 +1163,9 @@ namespace FlatRedBall.Input
 
                 mRightStick.Update(newPosition);
 
-                #endregion
+#endregion
 
-                #region Set the trigger positions
+#region Set the trigger positions
 
                 float newAnalogPosition = 0;
 
@@ -1186,7 +1191,7 @@ namespace FlatRedBall.Input
 
                 mRightTrigger.Update(newAnalogPosition);
 
-                #endregion
+#endregion
 
                 // Button remapping is used when the methods for push, release, and down are called.
                 // Nothing to do here.
@@ -1204,7 +1209,7 @@ namespace FlatRedBall.Input
 
         }
 
-        #region XML Docs
+#region XML Docs
         /// <summary>
         /// Sets the vibration of the game pad.
         /// </summary>
@@ -1213,7 +1218,7 @@ namespace FlatRedBall.Input
         /// <returns>True if the vibration motors were successfully set; false if the controller
         /// was unable to process the request.
         /// </returns>
-        #endregion
+#endregion
         public bool SetVibration(float leftMotor, float rightMotor)
         {
 
@@ -1232,9 +1237,9 @@ namespace FlatRedBall.Input
         }
 
 
-        #endregion
+#endregion
 
-        #region Internal Methods
+#region Internal Methods
 
         internal void Update()
         {
@@ -1253,11 +1258,11 @@ namespace FlatRedBall.Input
         }
 
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region IInputDevice Explicit Implementation
+#region IInputDevice Explicit Implementation
 
         I2DInput IInputDevice.Default2DInput
         {
@@ -1339,7 +1344,7 @@ namespace FlatRedBall.Input
         }
 
 
-        #endregion
+#endregion
 
     }
 }
