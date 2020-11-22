@@ -606,6 +606,7 @@ namespace FlatRedBall.Glue
         }
 
 
+        [Obsolete("Don't use this! Use GlueCommands")]
         public static void SaveProjects()
         {
             lock (mProjectBase)

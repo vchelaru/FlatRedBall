@@ -612,6 +612,7 @@ namespace GumPlugin.Managers
             {
                 if (Gum.Managers.ObjectFinder.Self.GumProjectSave == null || force)
                 {
+
                     string gumxFile = GetGumProjectFile(gumxDirectory);
 
                     // This can occur if the user has added a gumx file, then removed it, but the project still
@@ -625,7 +626,10 @@ namespace GumPlugin.Managers
                         Gum.Managers.ObjectFinder.Self.GumProjectSave =
                             GumProjectSave.Load(gumxFile, out result);
                     }
-
+                    if(Gum.Managers.ObjectFinder.Self.GumProjectSave != null)
+                    {
+                        ObjectFinder.Self.EnableCache();
+                    }
                     InitializeElements();
                 }
 

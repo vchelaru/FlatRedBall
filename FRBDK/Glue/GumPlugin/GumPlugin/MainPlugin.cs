@@ -334,7 +334,7 @@ namespace GumPlugin
 
             this.GetFilesNeededOnDiskBy += FileReferenceTracker.Self.HandleGetFilesNeededOnDiskBy;
 
-            this.ReactToFileChangeHandler += HandleFileChange;
+            this.ReactToFileChangeHandler += FileChangeManager.Self.HandleFileChange;
 
             this.ReactToLoadedGlux += HandleGluxLoad;
 
@@ -599,77 +599,6 @@ namespace GumPlugin
             return behavior;
         }
 
-        private void HandleFileChange(string fileName)
-        {
-            string extension = FileManager.GetExtension(fileName);
-
-            bool shouldHandleFileChange = false;
-
-            if (Gum.Managers.ObjectFinder.Self.GumProjectSave != null)
-            {
-                var gumProjectDirectory =
-                    FileManager.GetDirectory(Gum.Managers.ObjectFinder.Self.GumProjectSave.FullFileName);
-
-                shouldHandleFileChange = FileManager.IsRelativeTo(fileName, gumProjectDirectory);
-            }
-
-            if(shouldHandleFileChange)
-            { 
-                var isGumTypeExtension = extension == GumProjectSave.ComponentExtension ||
-                    extension == GumProjectSave.ScreenExtension ||
-                    extension == GumProjectSave.StandardExtension ||
-                    extension == GumProjectSave.ProjectExtension;
-
-
-                if (isGumTypeExtension)
-                {
-                    // November 1, 2015
-                    // Why do we reload the
-                    // entire project and not
-                    // just the object that changed?
-                    GumProjectManager.Self.ReloadGumProject();
-
-                    // Something could have changed - more components could have been added
-                    AssetTypeInfoManager.Self.RefreshProjectSpecificAtis();
-
-                    if (extension == GumProjectSave.ProjectExtension)
-                    {
-                        CodeGeneratorManager.Self.GenerateDerivedGueRuntimes();
-                    }
-                    else
-                    {
-                        CodeGeneratorManager.Self.GenerateDueToFileChange(fileName);
-                    }
-
-                    // Behaviors could have been added, so generate them
-                    CodeGeneratorManager.Self.GenerateAllBehaviors();
-
-                    EventsManager.Self.RefreshEvents();
-
-                    TaskManager.Self.Add(
-                        FileReferenceTracker.Self.RemoveUnreferencedFilesFromVsProject, 
-                        "Removing unreferenced files for Gum project",
-                        TaskExecutionPreference.AddOrMoveToEnd);
-                }
-                else if(extension == BehaviorReference.Extension)
-                {
-                    // todo: make this take just 1 behavior for speed
-                    CodeGeneratorManager.Self.GenerateAllBehaviors();
-                }
-                else if (extension == "ganx")
-                {
-                    // Animations have changed, so we need to regenerate animation code.
-                    // For now we'll generate everything, but we may want to make this faster
-                    // and more precise by only generating the selected element:
-                    CodeGeneratorManager.Self.GenerateDerivedGueRuntimes();
-                }
-                else if(extension == "json")
-                {
-                    GumPlugin.Managers.EventExportManager.Self.HandleEventExportFile(fileName);
-                }
-            }
-        }
-
         private void HandleAddNewGumProjectMenuItemClicked(object sender, EventArgs e)
         {
             CreateGumProject();
@@ -749,6 +678,7 @@ namespace GumPlugin
 
             if(gumRfs != null)
             {
+
                 var behavior = GetBehavior(gumRfs);
 
                 // todo: Removing a file should cause this to get called, but I don't think Gum lets us subscribe to that yet.

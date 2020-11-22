@@ -78,15 +78,15 @@ namespace GumPlugin.Managers
             {
                 foreach(var screen in ObjectFinder.Self.GumProjectSave.Screens)
                 {
-                    GenerateCodeFor(screen);
+                    GenerateDueToFileChangeTask(screen);
                 }
                 foreach (var component in ObjectFinder.Self.GumProjectSave.Components)
                 {
-                    GenerateCodeFor(component);
+                    GenerateDueToFileChangeTask(component);
                 }
                 foreach (var standard in ObjectFinder.Self.GumProjectSave.StandardElements)
                 {
-                    GenerateCodeFor(standard);
+                    GenerateDueToFileChangeTask(standard);
                 }
             }
             else
@@ -96,10 +96,16 @@ namespace GumPlugin.Managers
                 // Maybe the element doesn't exist - like it's a .gucx that is not part of the .gumx
                 if(changedElement != null)
                 {
-                    GenerateDueToFileChange(changedElement);
+                    GenerateDueToFileChangeTask(changedElement);
                 }
 
             }
+        }
+
+        private void GenerateDueToFileChangeTask(ElementSave element)
+        {
+            TaskManager.Self.Add(() => GenerateDueToFileChange(element),
+                $"Generating Gum {element}", TaskExecutionPreference.AddOrMoveToEnd);
         }
 
         private void GenerateDueToFileChange(ElementSave changedElement)
@@ -116,7 +122,7 @@ namespace GumPlugin.Managers
             // #1 is good if the element being generated is not being included in other elements (like Screens)
             // #2 is good if the element being generated is included in LOTS of other elements (like core elements)
 
-            var generationResult = GenerateCodeFor(changedElement, CodeGenerationSavingBehavior.SaveIfGeneratedDiffers);
+            var generationResult = GenerateCodeFor(changedElement);
 
             if (generationResult.DidSaveGenerated)
             {
@@ -124,7 +130,7 @@ namespace GumPlugin.Managers
 
                 foreach (var container in whatContainsThisElement)
                 {
-                    GenerateDueToFileChange(container);
+                    GenerateDueToFileChangeTask(container);
                 }
 
                 if(changedElement is Gum.DataTypes.ScreenSave)
@@ -133,7 +139,7 @@ namespace GumPlugin.Managers
                     {
                         if(screenSave != changedElement && screenSave.IsOfType(changedElement.Name))
                         {
-                            GenerateDueToFileChange(screenSave);
+                            GenerateDueToFileChangeTask(screenSave);
                         }
                     }
                 }
@@ -145,7 +151,7 @@ namespace GumPlugin.Managers
                     {
                         if (component != changedElement && component.IsOfType(changedElement.Name))
                         {
-                            GenerateDueToFileChange(component);
+                            GenerateDueToFileChangeTask(component);
                         }
                     }
                 }
@@ -225,61 +231,44 @@ namespace GumPlugin.Managers
 
             if (Gum.Managers.ObjectFinder.Self.GumProjectSave != null)
             {
-
                 string directoryToSave = GumRuntimesFolder;
 
                 System.IO.Directory.CreateDirectory(directoryToSave);
 
-                bool wasAnythingAdded = false;
+                GenerateAndSaveRuntimeAssociations();
 
-                wasAnythingAdded |= GenerateAndSaveRuntimeAssociations();
+                GenerateAllElements(directoryToSave);
+            }
+        }
 
-                var elements = AppState.Self.AllLoadedElements.ToList();
+        private void GenerateAllElements(string directoryToSave)
+        {
+            var elements = AppState.Self.AllLoadedElements.ToList();
 
-                var errors = new List<string>();
-                var obj = new object();
+            var errors = new List<string>();
+            var obj = new object();
 
-                // This can greatly improve speed, just don't put async calls in here or it won't block 
-                Parallel.ForEach(elements, (element) =>
+
+            foreach (var element in elements)
+            //Parallel.ForEach(elements, (element) =>
+            {
+                try
                 {
-                    GenerationResult generationResult = new GenerationResult();
-                    try
-                    {
-                        generationResult = GenerateCodeFor(element);
-                    }
-                    catch(Exception e)
-                    {
-                        lock (obj)
-                        {
-                            errors.Add(e.ToString());
-                        }
-                    }
-
-                    if (generationResult.DidSaveGenerated)
-                    {
-                        string location = directoryToSave + element.Name + "Runtime.Generated.cs";
-                        wasAnythingAdded |=
-                            FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
-                            GlueState.Self.CurrentMainProject, location);
-                    }
-                    if (generationResult.DidSaveCustom)
-                    {
-                        string location = directoryToSave + element.Name + "Runtime.cs";
-                        wasAnythingAdded |=
-                            FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
-                            GlueState.Self.CurrentMainProject, location);
-                    }
-                });
-
-                foreach(var err in errors)
-                {
-                    GlueCommands.Self.PrintError(err);
+                    GenerateDueToFileChangeTask(element);
                 }
-
-                if (wasAnythingAdded)
+                catch (Exception e)
                 {
-                    FlatRedBall.Glue.ProjectManager.SaveProjects();
+                    lock (obj)
+                    {
+                        errors.Add(e.ToString());
+                    }
                 }
+            }
+            //);
+
+            foreach (var err in errors)
+            {
+                GlueCommands.Self.PrintError(err);
             }
 
         }
@@ -290,10 +279,9 @@ namespace GumPlugin.Managers
         /// </summary>
         /// <param name="element">The element to generate.</param>
         /// <returns>Information about what was generated and saved.</returns>
-        public GenerationResult GenerateCodeFor(Gum.DataTypes.ElementSave element, 
-            CodeGenerationSavingBehavior savingBehavior = CodeGenerationSavingBehavior.AlwaysSave)
+        public GenerationResult GenerateCodeFor(Gum.DataTypes.ElementSave element)
         {
-
+            CodeGenerationSavingBehavior savingBehavior = CodeGenerationSavingBehavior.SaveIfGeneratedDiffers;
             GenerationResult resultToReturn = new GenerationResult();
 
             if (element == null)
@@ -361,6 +349,32 @@ namespace GumPlugin.Managers
                     System.IO.File.WriteAllText(customCodeSaveLocation, customCode));
             }
 
+
+
+            if (resultToReturn.DidSaveGenerated)
+            {
+                string location = directoryToSave + element.Name + "Runtime.Generated.cs";
+                bool wasAnythingAdded =
+                    FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
+                    GlueState.Self.CurrentMainProject, location);
+
+                if (wasAnythingAdded)
+                {
+                    GlueCommands.Self.ProjectCommands.SaveProjectsTask();
+                }
+            }
+            if (resultToReturn.DidSaveCustom)
+            {
+                string location = directoryToSave + element.Name + "Runtime.cs";
+                bool wasAnythingAdded =
+                    FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
+                    GlueState.Self.CurrentMainProject, location);
+                if (wasAnythingAdded)
+                {
+                    GlueCommands.Self.ProjectCommands.SaveProjectsTask();
+                }
+            }
+
             return resultToReturn;
         }
 
@@ -389,6 +403,11 @@ namespace GumPlugin.Managers
             wasAdded |=
                 FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
                 GlueState.Self.CurrentMainProject, whereToSave);
+
+            if(wasAdded)
+            {
+                GlueCommands.Self.ProjectCommands.SaveProjects();
+            }
 
             return wasAdded;
         }

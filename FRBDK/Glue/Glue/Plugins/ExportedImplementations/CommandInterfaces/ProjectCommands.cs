@@ -23,7 +23,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
     {
         public void SaveProjects()
         {
-            ProjectManager.SaveProjects();
+            TaskManager.Self.AddOrRunIfTasked(
+                ProjectManager.SaveProjects,
+                nameof(SaveProjects),
+                TaskExecutionPreference.AddOrMoveToEnd);
         }
 
         public void SaveProjectsTask()

@@ -12,7 +12,7 @@ namespace FlatRedBall.Glue.ViewModels
     {
         public string SearchText
         {
-            get { return Get<string>(); }
+            get => Get<string>(); 
             set
             {
                 if(Set(value))
@@ -25,8 +25,8 @@ namespace FlatRedBall.Glue.ViewModels
 
         public string SelectedListBoxItem
         {
-            get { return Get<string>(); }
-            set { Set(value); }
+            get => Get<string>();
+            set => Set(value); 
         }
 
         public List<string> Files
@@ -48,11 +48,6 @@ namespace FlatRedBall.Glue.ViewModels
         } = new ObservableCollection<string>();
 
         public string ContentFolder { get; internal set; }
-
-        public AddExistingFileViewModel()
-        {
-
-        }
 
         public void RefreshFilteredList()
         {
