@@ -200,7 +200,7 @@ namespace OfficialPlugins.Compiler.Managers
         {
             var nos = GlueState.Self.CurrentNamedObjectSave;
 
-            var instruction = nos.GetInstructionFromMember(changedMember);
+            var instruction = nos?.GetInstructionFromMember(changedMember);
             if (instruction != null)
             {
                 var screen = GlueState.Self.CurrentScreenSave;

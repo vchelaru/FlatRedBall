@@ -1,6 +1,9 @@
 ﻿using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Math;
 using OfficialPlugins.CollisionPlugin.Managers;
 using OfficialPlugins.CollisionPlugin.ViewModels;
 using System;
@@ -281,6 +284,48 @@ namespace OfficialPlugins.CollisionPlugin
             block.Line("FlatRedBall.Math.Collision.CollisionManager.Self.Relationships.Add(temp);");
             block.Line($"{instanceName} = temp;");
             //CollisionManager.Self.Relationships.Add(PlayerVsSolidCollision);
+        }
+
+        public static bool CanBePartitioned(NamedObjectSave nos)
+        {
+            if (nos.IsList)
+            {
+                var genericType = nos.SourceClassGenericType;
+
+                var entity = ObjectFinder.Self.GetEntitySave(genericType);
+
+                // todo - what about inheritance? We may need to handle that here.
+                return entity?.ImplementsICollidable == true;
+            }
+
+            return false;
+        }
+
+        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
+        {
+            // we only care about the top-level
+            foreach(var nos in element.NamedObjects)
+            {
+                if(CanBePartitioned(nos))
+                {
+                    T Get<T>(string propName) =>
+                        nos.Properties.GetValue<T>(propName);
+
+                    if (Get<bool>(nameof(CollidableNamedObjectRelationshipViewModel.PerformCollisionPartitioning)))
+                    {
+                        var sortAxis = Get<Axis>(nameof(CollidableNamedObjectRelationshipViewModel.SortAxis));
+                        var sortEveryFrame = Get<bool> (nameof(CollidableNamedObjectRelationshipViewModel.IsSortListEveryFrameChecked));
+                        var partitionWidthHeight = Get<float>(nameof(CollidableNamedObjectRelationshipViewModel.PartitionWidthHeight));
+
+                        // fill in this line:
+                        codeBlock.Line(
+                            $"FlatRedBall.Math.Collision.CollisionManager.Self.Partition({nos.InstanceName}, FlatRedBall.Math.Axis.{sortAxis}, " +
+                            $"{CodeParser.ConvertValueToCodeString(partitionWidthHeight)}, {sortEveryFrame.ToString().ToLowerInvariant()});");
+                    }
+                }
+            }
+
+            return codeBlock;
         }
 
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)

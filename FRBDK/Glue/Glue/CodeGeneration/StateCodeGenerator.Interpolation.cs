@@ -58,7 +58,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 CustomVariable customVariable = null;
                 customVariable = element.GetCustomVariable(instruction.Member);
 
-                string valueAsString = CodeParser.ParseObjectValue(instruction.Value);
+                string valueAsString = CodeParser.ConvertValueToCodeString(instruction.Value);
 
                 if (customVariable != null && !string.IsNullOrEmpty(valueAsString))
                 {

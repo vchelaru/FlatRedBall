@@ -712,7 +712,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             if (referencedElement == null)
             {
 
-                valueAsString = CodeParser.ParseObjectValue(value);
+                valueAsString = CodeParser.ConvertValueToCodeString(value);
 
                 if (isFile)
                 {

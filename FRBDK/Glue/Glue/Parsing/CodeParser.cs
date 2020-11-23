@@ -127,7 +127,7 @@ namespace FlatRedBall.Glue.Parsing
             }
         }
 
-        public static string ParseObjectValue(object objectToParse)
+        public static string ConvertValueToCodeString(object objectToParse)
         {
             if (objectToParse == null)
             {

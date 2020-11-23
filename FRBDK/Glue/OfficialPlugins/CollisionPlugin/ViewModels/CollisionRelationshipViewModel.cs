@@ -37,15 +37,15 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         [SyncedProperty]
         public string FirstCollisionName
         {
-            get { return Get<string>(); }
-            set { SetAndPersist(value); }
+            get => Get<string>();
+            set => SetAndPersist(value);
         }
 
         [SyncedProperty]
         public string SecondCollisionName
         {
-            get { return Get<string>(); }
-            set { SetAndPersist(value); }
+            get => Get<string>();
+            set => SetAndPersist(value); 
         }
 
         public string FirstIndividualType
@@ -71,6 +71,29 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             get => Get<bool>();
             set => Set(value);
         }
+
+        public bool IsFirstPartitioned
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsSecondPartitioned
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(IsFirstPartitioned))]
+        public Visibility FirstPartitionEnabledVisibility => IsFirstPartitioned.ToVisibility();
+        [DependsOn(nameof(IsFirstPartitioned))]
+        public Visibility FirstNoPartitioningVisibility => (!IsFirstPartitioned).ToVisibility();
+
+        [DependsOn(nameof(IsSecondPartitioned))]
+        public Visibility SecondPartitionEnabledVisibility => IsSecondPartitioned.ToVisibility();
+        [DependsOn(nameof(IsSecondPartitioned))]
+        public Visibility SecondNoPartitioningVisibility => (!IsSecondPartitioned).ToVisibility();
+
 
         public ObservableCollection<string> FirstCollisionItemSource
         {

@@ -23,7 +23,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             return viewModel;
         }
 
-        public static void RefreshAvailableCollisionObjects(IElement element, CollisionRelationshipViewModel viewModel)
+        static void RefreshAvailableCollisionObjects(IElement element, CollisionRelationshipViewModel viewModel)
         {
             viewModel.FirstCollisionItemSource.Clear();
             viewModel.SecondCollisionItemSource.Clear();
@@ -51,6 +51,32 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                     viewModel.SecondCollisionItemSource.Add(nos.InstanceName);
 
                 }
+            }
+        }
+
+        internal static void HandleFirstCollisionPartitionClicked(CollisionRelationshipViewModel viewModel)
+        {
+            var element = GlueState.Self.CurrentElement;
+            var firstNos = element?.GetNamedObject(viewModel.FirstCollisionName);
+
+            if(firstNos != null)
+            {
+                GlueState.Self.CurrentNamedObjectSave = firstNos;
+
+                GlueCommands.Self.DialogCommands.FocusTab("Collision");
+            }
+        }
+
+        internal static void HandleSecondCollisionPartitionClicked(CollisionRelationshipViewModel viewModel)
+        {
+            var element = GlueState.Self.CurrentElement;
+            var secondNos = element?.GetNamedObject(viewModel.SecondCollisionName);
+
+            if(secondNos != null)
+            {
+                GlueState.Self.CurrentNamedObjectSave = secondNos;
+
+                GlueCommands.Self.DialogCommands.FocusTab("Collision");
             }
         }
 
@@ -164,19 +190,50 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 }
             }
 
-            CollisionRelationshipViewModelController
-                .RefreshAvailableCollisionObjects(currentElement, viewModel);
-
-            CollisionRelationshipViewModelController
-                .RefreshSubcollisionObjects(currentElement, viewModel);
-
-
-
-            CollisionRelationshipViewModelController
-                .RefreshIfIsPlatformer(currentElement, viewModel);
+            RefreshAvailableCollisionObjects(currentElement, viewModel);
+            RefreshSubcollisionObjects(currentElement, viewModel);
+            RefreshIfIsPlatformer(currentElement, viewModel);
+            RefreshPartitioningIcons(currentElement, viewModel);
         }
 
-        public static void RefreshSubcollisionObjects(IElement element, CollisionRelationshipViewModel viewModel)
+        private static void RefreshPartitioningIcons(IElement element, CollisionRelationshipViewModel viewModel)
+        {
+            var firstNos = element.GetNamedObject(viewModel.FirstCollisionName);
+            var secondNos = element.GetNamedObject(viewModel.SecondCollisionName);
+            T Get<T>(NamedObjectSave nos, string propName) => nos.Properties.GetValue<T>(propName);
+
+            var isFirstEffectivelyPartitioned = false;
+            if(firstNos != null)
+            {
+                if(firstNos.IsList == false)
+                {
+                    // If it's not a list, then it's effectively partitioned, assuming the other can be partitioned
+                    isFirstEffectivelyPartitioned = true;
+                }
+                else
+                {
+                    isFirstEffectivelyPartitioned = Get<bool>(firstNos, nameof(CollidableNamedObjectRelationshipViewModel.PerformCollisionPartitioning));
+                }
+            }
+            viewModel.IsFirstPartitioned = isFirstEffectivelyPartitioned;
+
+            var isSecondEffectivelyPartitioned = false;
+            if(secondNos != null)
+            {
+                if(secondNos.IsList == false)
+                {
+                    isSecondEffectivelyPartitioned = true;
+                }
+                else
+                {
+                    isSecondEffectivelyPartitioned = Get<bool>(secondNos, nameof(CollidableNamedObjectRelationshipViewModel.PerformCollisionPartitioning));
+                }
+            }
+            viewModel.IsSecondPartitioned = isSecondEffectivelyPartitioned;
+
+        }
+
+        static void RefreshSubcollisionObjects(IElement element, CollisionRelationshipViewModel viewModel)
         {
             var firstNos = element.GetNamedObject(viewModel.FirstCollisionName);
             var secondNos = element.GetNamedObject(viewModel.SecondCollisionName);
@@ -477,7 +534,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             }
         }
 
-        public static void RefreshIfIsPlatformer(IElement element, CollisionRelationshipViewModel viewModel)
+        static void RefreshIfIsPlatformer(IElement element, CollisionRelationshipViewModel viewModel)
         {
             var firstName = viewModel.FirstCollisionName;
 

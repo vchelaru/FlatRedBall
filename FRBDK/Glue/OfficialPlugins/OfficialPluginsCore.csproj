@@ -21,6 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="CollisionPlugin\Icons\NoPartitioning.png" />
+    <None Remove="CollisionPlugin\Icons\PartitionEnabled.png" />
     <None Remove="Compiler\Icons\AdvanceOneFrame.png" />
     <None Remove="Compiler\Icons\build.png" />
     <None Remove="Compiler\Icons\HotReload.pdn" />
@@ -74,6 +76,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="CollisionPlugin\Icons\NoPartitioning.png" />
+    <Resource Include="CollisionPlugin\Icons\PartitionEnabled.png" />
     <Resource Include="Compiler\Icons\AdvanceOneFrame.png" />
     <Resource Include="Compiler\Icons\build.png" />
     <Resource Include="Compiler\Icons\HotReload.png" />

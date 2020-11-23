@@ -198,6 +198,12 @@ namespace FlatRedBall.Glue.MVVM
                 // enough that we need to support it.
                 // I could use reflection (which could
                 // be slow) or just special case it:
+
+                if(GlueObject == null)
+                {
+                    throw new InvalidOperationException("Need to set GlueObject before calling SetAndPersist");
+                }
+
                 if(GlueObject is ReferencedFileSave && modelName == nameof(ReferencedFileSave.DestroyOnUnload))
                 {
                     ((ReferencedFileSave)GlueObject).DestroyOnUnload = (bool)(object)propertyValue;

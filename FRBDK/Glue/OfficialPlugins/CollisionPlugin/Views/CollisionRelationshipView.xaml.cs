@@ -1,5 +1,7 @@
 ﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using GlueFormsCore.ViewModels;
+using OfficialPlugins.CollisionPlugin.Controllers;
+using OfficialPlugins.CollisionPlugin.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +24,8 @@ namespace OfficialPlugins.CollisionPlugin.Views
     /// </summary>
     public partial class CollisionRelationshipView : UserControl
     {
+        CollisionRelationshipViewModel ViewModel => DataContext as CollisionRelationshipViewModel;
+
         public CollisionRelationshipView()
         {
             InitializeComponent();
@@ -37,6 +41,16 @@ namespace OfficialPlugins.CollisionPlugin.Views
             viewModel.TunnelingEvent = "CollisionOccurred";
 
             GlueCommands.Self.DialogCommands.ShowAddNewEventDialog(viewModel);
+        }
+
+        private void FirstObjectCollisionPartitioningButtonClicked(object sender, RoutedEventArgs e)
+        {
+            CollisionRelationshipViewModelController.HandleFirstCollisionPartitionClicked(ViewModel);
+        }
+
+        private void SecondObjectCollisionPartitioningButtonClicked(object sender, RoutedEventArgs e)
+        {
+            CollisionRelationshipViewModelController.HandleSecondCollisionPartitionClicked(ViewModel);
         }
     }
 }

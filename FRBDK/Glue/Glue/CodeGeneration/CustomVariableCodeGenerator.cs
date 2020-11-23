@@ -580,7 +580,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 if (!IsTypeFromCsv(customVariable))
                 {
                     variableAssignment =
-                        CodeParser.ParseObjectValue(customVariable.DefaultValue);
+                        CodeParser.ConvertValueToCodeString(customVariable.DefaultValue);
 
                     // If this is a file, we don't want to assign it here
                     if (customVariable.GetIsFile())
@@ -936,7 +936,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     if (containerOfState == null)
                     {
                         variableToAssign =
-                            CodeParser.ParseObjectValue(customVariable.DefaultValue);
+                            CodeParser.ConvertValueToCodeString(customVariable.DefaultValue);
                         NamedObjectSave namedObject = saveObject.GetNamedObject(customVariable.SourceObject);
 
 
@@ -1253,7 +1253,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
 
 
-            string value = CodeParser.ParseObjectValue(objectToParse);
+            string value = CodeParser.ConvertValueToCodeString(objectToParse);
 
 
             if (CustomVariableExtensionMethods.GetIsFile(instructionSave.Type))
