@@ -58,6 +58,10 @@ namespace GumPlugin.CodeGeneration
                     interpolationCharacteristics, SecondValue);
                 currentBlock = currentBlock.End();
 
+                // todo add here:
+                currentBlock.Line("var wasSuppressed = mIsLayoutSuspended;");
+                currentBlock.If("wasSuppressed == false")
+                    .Line("SuspendLayout(true);");
 
                 currentBlock = AssignValuesUsingStartingValues(elementSave, currentBlock, interpolationCharacteristics);
 
@@ -77,6 +81,9 @@ namespace GumPlugin.CodeGeneration
                 currentBlock = currentBlock.End().Else();
                 currentBlock.Line(fieldToAssign + " = secondState;");
                 currentBlock = currentBlock.End();
+
+                currentBlock.If("!wasSuppressed")
+                    .Line("ResumeLayout(true);");
             }
         }
 

@@ -430,7 +430,8 @@ namespace GumPlugin.CodeGeneration
             }
         }
 
-        private void CreateInstructionForInterpolationAbsolute(StateCodeGeneratorContext context, ICodeBlock currentBlock, string animationType, AnimatedStateSave previousState, AnimatedStateSave currentState, string animationName)
+        private void CreateInstructionForInterpolationAbsolute(StateCodeGeneratorContext context, ICodeBlock currentBlock, string animationType, 
+            AnimatedStateSave previousState, AnimatedStateSave currentState, string animationName)
         {
 
             if (previousState == null)
@@ -491,10 +492,21 @@ namespace GumPlugin.CodeGeneration
                 // We can solve this by instead doing Interpolate to between the
                 // current state of the instance and the state that we are interpolating
                 // to. Going to accomplish this by getting rid of the "from" state:
-                //string fromState = null;
+                // Update November 22, 2020
+                // While it's true that animations can interpolate any state to any state,
+                // it's more common to place all animations in a single category. In this case,
+                // we can use a from->to interpolation which is much faster at runtime than doing
+                // a <current state>->to.
 
+                string fromState = null;
                 string toState = null;
 
+                string previousEnumValue = previousState?.StateName;
+                if(previousState.StateName.Contains("/") == true)
+                {
+                    previousCategory = context.Element.Categories.FirstOrDefault(item => item.Name == previousState.StateName.Split('/')[0]);
+                    previousEnumValue = previousState.StateName.Split('/')[1];
+                }
                 string enumValue = currentState.StateName;
                 if(currentState.StateName.Contains("/"))
                 {
@@ -511,14 +523,24 @@ namespace GumPlugin.CodeGeneration
                 //else
                 //{
                 //fromState = animationType + "." + previousState.StateName;
+
+
                 if (currentCategory == null)
                 {
                     toState = "VariableState." + enumValue;
 
+                    if(previousCategory == currentCategory)
+                    {
+                        fromState = "VariableState." + previousEnumValue;
+                    }
                 }
                 else
                 {
                     toState = currentCategory.Name + "." + enumValue;
+                    if (previousCategory == currentCategory)
+                    {
+                        fromState = currentCategory.Name + "." + previousEnumValue;
+                    }
                 }
                 //}
 
@@ -529,8 +551,18 @@ namespace GumPlugin.CodeGeneration
                 string easing = "FlatRedBall.Glue.StateInterpolation.Easing." + previousState.Easing;
                 string interpolationType = "FlatRedBall.Glue.StateInterpolation.InterpolationType." + previousState.InterpolationType;
 
-                var line = "var toReturn = new FlatRedBall.Instructions.DelegateInstruction(  () => this.InterpolateTo(" +
-                    string.Format("{0}, {1}, {2}, {3}, {4}));", toState, interpolationTime, interpolationType, easing, animationName);
+                string line;
+
+                if(previousCategory == currentCategory)
+                {
+                    line = "var toReturn = new FlatRedBall.Instructions.DelegateInstruction(  () => this.InterpolateTo(" +
+                        string.Format($"{fromState}, {toState}, {interpolationTime}, {interpolationType}, {easing}, {animationName}));");
+                }
+                else
+                {
+                    line = "var toReturn = new FlatRedBall.Instructions.DelegateInstruction(  () => this.InterpolateTo(" +
+                        string.Format("{0}, {1}, {2}, {3}, {4}));", toState, interpolationTime, interpolationType, easing, animationName);
+                }
 
                 currentBlock.Line(line);
                 currentBlock.Line("toReturn.Target = target;");
