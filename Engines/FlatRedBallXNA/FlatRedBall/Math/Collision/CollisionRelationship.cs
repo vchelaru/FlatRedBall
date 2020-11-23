@@ -1415,7 +1415,7 @@ namespace FlatRedBall.Math.Collision
             {
                 // -1 to make it exclusive
                 endExclusive = secondList.GetFirstAfter(parameters.ItemInFirstList.Position.X - parameters.FirstHalfSize - parameters.SecondHalfSize, Axis.X, 0, lastExclusiveBound) - 1;
-                if (parameters.FirstPartition.PartitionedObject == parameters.SecondPartition.PartitionedObject)
+                if (parameters.FirstPartition.PartitionedObject == parameters.SecondPartition.PartitionedObject && this.ListVsListLoopingMode == ListVsListLoopingMode.PreventDoubleChecksPerFrame)
                 {
                     startInclusive = parameters.FirstIndex - 1;
                 }
@@ -1435,7 +1435,7 @@ namespace FlatRedBall.Math.Collision
                 // -1 to make it exclusive
                 endExclusive = secondList.GetFirstAfter(parameters.ItemInFirstList.Position.Y - parameters.FirstHalfSize - parameters.SecondHalfSize, Axis.Y, 0, lastExclusiveBound) - 1;
 
-                if (parameters.FirstPartition.PartitionedObject == parameters.SecondPartition.PartitionedObject)
+                if (parameters.FirstPartition.PartitionedObject == parameters.SecondPartition.PartitionedObject && this.ListVsListLoopingMode == ListVsListLoopingMode.PreventDoubleChecksPerFrame)
                 {
                     startInclusive = parameters.FirstIndex - 1;
                 }
