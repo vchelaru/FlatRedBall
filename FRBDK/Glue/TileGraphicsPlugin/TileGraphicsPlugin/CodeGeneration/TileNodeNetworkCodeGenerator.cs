@@ -87,6 +87,8 @@ namespace TiledPluginCore.CodeGeneration
             var mapName = Get<string>(nameof(TileNodeNetworkPropertiesViewModel.SourceTmxName));
             var fourOrEight = Get<FlatRedBall.AI.Pathfinding.DirectionalType>(nameof(TileNodeNetworkPropertiesViewModel.DirectionalType));
 
+            string toReturn = null;
+
             switch(creationOptions)
             {
                 case TileNodeNetworkCreationOptions.FillCompletely:
@@ -106,38 +108,48 @@ namespace TiledPluginCore.CodeGeneration
                     // heightFill - 1, because if it's just 1 cell high, we use the value as-is. Then each additional moves the bottom left by 1
                     var bottomFillString = FloatString(topFill - (heightFill-1) * tileSize);
 
-                    return $"{instanceName} = new FlatRedBall.AI.Pathfinding.TileNodeNetwork({leftFillString}, {bottomFillString}, {tileSizeString}, {widthFill}, {heightFill}, FlatRedBall.AI.Pathfinding.DirectionalType.{fourOrEight});";
+                    toReturn = $"{instanceName} = new FlatRedBall.AI.Pathfinding.TileNodeNetwork({leftFillString}, {bottomFillString}, {tileSizeString}, {widthFill}, {heightFill}, FlatRedBall.AI.Pathfinding.DirectionalType.{fourOrEight});";
+                    break;
                 case TileNodeNetworkCreationOptions.FromType:
                     var typeName = Get<string>(nameof(TileNodeNetworkPropertiesViewModel.NodeNetworkTileTypeName));
 
                     if (!string.IsNullOrEmpty(typeName))
                     {
-                        return $"{instanceName} = FlatRedBall.AI.Pathfinding.TileNodeNetworkCreator.CreateFromTypes({mapName}, FlatRedBall.AI.Pathfinding.DirectionalType.{fourOrEight}, new string[]{{ \"{typeName}\" }});";
+                        toReturn = $"{instanceName} = FlatRedBall.AI.Pathfinding.TileNodeNetworkCreator.CreateFromTypes({mapName}, FlatRedBall.AI.Pathfinding.DirectionalType.{fourOrEight}, new string[]{{ \"{typeName}\" }});";
                     }
                     else
                     {
-                        return $"{instanceName} = new new FlatRedBall.AI.Pathfinding.TileNodeNetwork();";
+                        toReturn = $"{instanceName} = new new FlatRedBall.AI.Pathfinding.TileNodeNetwork();";
                     }
+                    break;
                 case TileNodeNetworkCreationOptions.FromProperties:
                     var propertyName = Get<string>(nameof(TileNodeNetworkPropertiesViewModel.NodeNetworkPropertyName));
 
                     if (!string.IsNullOrEmpty(propertyName))
                     {
-                        return $"{instanceName} = FlatRedBall.AI.Pathfinding.TileNodeNetworkCreator.CreateFromTilesWithProperties({mapName}, FlatRedBall.AI.Pathfinding.DirectionalType.{fourOrEight}, new string[]{{ \"{propertyName}\" }});";
+                        toReturn = $"{instanceName} = FlatRedBall.AI.Pathfinding.TileNodeNetworkCreator.CreateFromTilesWithProperties({mapName}, FlatRedBall.AI.Pathfinding.DirectionalType.{fourOrEight}, new string[]{{ \"{propertyName}\" }});";
                     }
                     else
                     {
-                        return $"{instanceName} = new new FlatRedBall.AI.Pathfinding.TileNodeNetwork();";
+                        toReturn = $"{instanceName} = new new FlatRedBall.AI.Pathfinding.TileNodeNetwork();";
                     }
-
+                    break;
                 case TileNodeNetworkCreationOptions.FromLayer:
-                    return GenerateFromLayerConstructor(namedObjectSave);
-
+                    toReturn = GenerateFromLayerConstructor(namedObjectSave);
+                    break;
                 //break;
                 default:
-                    return $"return new System.NotImplementedException();";
-
+                    toReturn = $"throw new System.NotImplementedException(\"Unknown TileNodeNetwork Creation Type {creationOptions}\");";
+                    break;
             }
+
+            var eliminateCutCorners = Get<bool>(nameof(TileNodeNetworkPropertiesViewModel.EliminateCutCorners));
+            if(eliminateCutCorners)
+            {
+                toReturn += $"{instanceName}.EliminateCutCorners();";
+            }
+
+            return toReturn;
         }
 
         private static string GenerateFromLayerConstructor(NamedObjectSave namedObjectSave)
@@ -147,13 +159,12 @@ namespace TiledPluginCore.CodeGeneration
                 return namedObjectSave.Properties.GetValue<T>(name);
             }
 
-            var fourOrEight = Get<FlatRedBall.AI.Pathfinding.DirectionalType>(nameof(TileNodeNetworkPropertiesViewModel.DirectionalType));
-
             var layerName = Get<string>(nameof(TileNodeNetworkPropertiesViewModel.NodeNetworkLayerName));
             var typeNameInLayer = Get<string>(nameof(TileNodeNetworkPropertiesViewModel.NodeNetworkLayerTileType));
             var layerOption = Get<TileNodeNetworkFromLayerOptions>(nameof(TileNodeNetworkPropertiesViewModel.TileNodeNetworkFromLayerOptions));
             var instanceName = namedObjectSave.FieldName;
             var mapName = Get<string>(nameof(TileNodeNetworkPropertiesViewModel.SourceTmxName));
+            var fourOrEight = Get<FlatRedBall.AI.Pathfinding.DirectionalType>(nameof(TileNodeNetworkPropertiesViewModel.DirectionalType));
 
             switch (layerOption)
             {
@@ -171,8 +182,6 @@ namespace TiledPluginCore.CodeGeneration
                     //return $"{instanceName} = {mapName}.Collisions.FirstOrDefault(item => item.Name == \"{effectiveName}\")" +
                     //    $" ?? new FlatRedBall.TileCollisions.TileShapeCollection();";
                     return $"return new System.NotImplementedException();";
-
-                    break;
             }
 
             return $"return new System.NotImplementedException();";

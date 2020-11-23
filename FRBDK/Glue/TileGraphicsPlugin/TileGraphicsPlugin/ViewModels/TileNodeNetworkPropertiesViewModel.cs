@@ -66,12 +66,21 @@ namespace TiledPluginCore.ViewModels
         }
 
         [SyncedProperty]
+        public bool EliminateCutCorners
+        {
+            get => Get<bool>();
+            set => SetAndPersist(value);
+        }
+
+        [SyncedProperty]
         [DefaultValue((int)TileNodeNetworkCreationOptions.Empty)]
         public TileNodeNetworkCreationOptions NetworkCreationOptions
         {
             get => (TileNodeNetworkCreationOptions)Get<int>();
             set => SetAndPersist((int)value);
         }
+
+
 
         [DependsOn(nameof(NetworkCreationOptions))]
         public bool IsEmptyChecked
