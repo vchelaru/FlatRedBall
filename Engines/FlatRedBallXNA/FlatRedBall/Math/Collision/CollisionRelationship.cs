@@ -1380,7 +1380,7 @@ namespace FlatRedBall.Math.Collision
                     var distanceY =
                         first.Position.Y - second.Position.Y;
 
-                    if (distanceY < -maxDistanceOnSecondaryAxis || distanceY > maxDistanceOnSecondaryAxis)
+                    if (distanceY < -maxDistanceOnSecondaryAxis || distanceY > maxDistanceOnSecondaryAxis || first == second)
                     {
                         continue;
                     }
@@ -1406,7 +1406,7 @@ namespace FlatRedBall.Math.Collision
             int lastExclusiveBound = secondList.Count;
             // .. but if the two lists are the same, then we don't want to go past the current item
             // since we collide back-to-front
-            if (this.firstList == (object)this.secondList)
+            if (this.firstList == (object)this.secondList && this.ListVsListLoopingMode == ListVsListLoopingMode.PreventDoubleChecksPerFrame)
             {
                 lastExclusiveBound = parameters.FirstIndex;
             }
