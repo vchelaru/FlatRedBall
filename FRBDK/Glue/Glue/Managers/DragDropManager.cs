@@ -62,6 +62,9 @@ namespace FlatRedBall.Glue.Managers
                     var ati = targetNos.GetAssetTypeInfo();
                     string targetClassType = ati?.FriendlyName;
 
+                    bool canBeMovedInList = false;
+                    bool canBeCollidable = false;
+
                     #region Failure cases
 
                     if (string.IsNullOrEmpty(targetClassType))
@@ -100,36 +103,70 @@ namespace FlatRedBall.Glue.Managers
                         succeeded = response.Succeeded;
                     }
 
-                    else if(IsCollidableOrCollidableList(movingNos) && IsCollidableOrCollidableList(targetNos))
+                    else
+                    {
+                        if(IsCollidableOrCollidableList(movingNos) && IsCollidableOrCollidableList(targetNos))
+                        {
+                            canBeCollidable = true;
+                        }
+                        //else if(IsCollidable(movingNos) && IsCollidableList(targetNos) && movingNos.CanBeInList(targetNos) == false)
+                        //{
+                        //    var response = HandleCreateCollisionRelationship(movingNos, targetNos);
+
+                        //    if (!response.Succeeded)
+                        //    {
+                        //        MessageBox.Show(response.Message);
+                        //    }
+
+                        //    succeeded = response.Succeeded;
+                        //}
+                        if (ati == AvailableAssetTypes.CommonAtis.PositionedObjectList)
+                        {
+                            canBeMovedInList = true;
+                        }
+                    }
+
+                    if(canBeMovedInList && canBeCollidable)
+                    {
+                        string message = "Move to list or create collision relationship?";
+
+                        var mbmb = new MultiButtonMessageBox();
+                        mbmb.MessageText = message;
+                        mbmb.AddButton("Move to List", DialogResult.Yes);
+                        mbmb.AddButton("Create Collision Relationship", DialogResult.No);
+
+                        var result = mbmb.ShowDialog();
+
+                        if(result == DialogResult.Yes)
+                        {
+                            canBeMovedInList = true;
+                            canBeCollidable = false;
+                        }
+                        else if(result == DialogResult.No)
+                        {
+                            canBeCollidable = true;
+                            canBeMovedInList = false;
+                        }
+                    }
+
+                    if(canBeMovedInList)
+                    {
+                        var response = HandleDropOnList(treeNodeMoving, targetNode, targetNos, movingNos);
+                        if (!response.Succeeded)
+                        {
+                            MessageBox.Show(response.Message);
+                        }
+                        succeeded = response.Succeeded;
+                    }
+                    else if(canBeCollidable)
                     {
                         var response = HandleCreateCollisionRelationship(movingNos, targetNos);
 
-                        if(!response.Succeeded)
+                        if (!response.Succeeded)
                         {
                             MessageBox.Show(response.Message);
                         }
 
-                        succeeded = response.Succeeded;
-                    }
-                    //else if(IsCollidable(movingNos) && IsCollidableList(targetNos) && movingNos.CanBeInList(targetNos) == false)
-                    //{
-                    //    var response = HandleCreateCollisionRelationship(movingNos, targetNos);
-
-                    //    if (!response.Succeeded)
-                    //    {
-                    //        MessageBox.Show(response.Message);
-                    //    }
-
-                    //    succeeded = response.Succeeded;
-                    //}
-                    else if (ati == AvailableAssetTypes.CommonAtis.PositionedObjectList)
-                    {
-
-                        var response = HandleDropOnList(treeNodeMoving, targetNode, targetNos, movingNos);
-                        if(!response.Succeeded)
-                        {
-                            MessageBox.Show(response.Message);
-                        }
                         succeeded = response.Succeeded;
                     }
 
@@ -409,6 +446,15 @@ namespace FlatRedBall.Glue.Managers
             return toReturn;
         }
 
+        private static void AddExistingNamedObjectToElement(IElement element, NamedObjectSave newNamedObject)
+        {
+            element.NamedObjects.Add(newNamedObject);
+            GlueCommands.Self.RefreshCommands.RefreshUi(element);
+            PluginManager.ReactToNewObject(newNamedObject);
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(element);
+
+        }
+
         #endregion
 
         #region Entity
@@ -602,8 +648,6 @@ namespace FlatRedBall.Glue.Managers
             return newTreeNode;
         }
 
-        #endregion
-
         public NamedObjectSave CreateNewNamedObjectInElement(IElement elementToCreateIn, 
             EntitySave blueprintEntity, bool createList = false)
         {
@@ -686,14 +730,7 @@ namespace FlatRedBall.Glue.Managers
                 elementToCreateIn, null);
         }
 
-        private static void AddExistingNamedObjectToElement(IElement element, NamedObjectSave newNamedObject)
-        {
-            element.NamedObjects.Add(newNamedObject);
-            GlueCommands.Self.RefreshCommands.RefreshUi(element);
-            PluginManager.ReactToNewObject(newNamedObject);
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(element);
-
-        }
+        #endregion
 
         private static void AskAndAddAllContainedRfsToGlobalContent(IElement element)
         {
