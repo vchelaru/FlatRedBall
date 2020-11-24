@@ -129,7 +129,7 @@ namespace FlatRedBall.Glue.Managers
                     if(canBeMovedInList && canBeCollidable)
                     {
                         string message = "Move to list or create collision relationship?";
-
+                            
                         var mbmb = new MultiButtonMessageBox();
                         mbmb.MessageText = message;
                         mbmb.AddButton("Move to List", DialogResult.Yes);

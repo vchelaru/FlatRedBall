@@ -1460,11 +1460,6 @@ namespace Glue
         //    ElementExporter.ShowExportMultipleElementsListBox();
         //}
 
-        private void glueVaultToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ProcessManager.OpenProcess("http://www.gluevault.com/", null);
-        }
-
         private void installPluginToolStripMenuItem_Click(object sender, EventArgs e)
         {
             new InstallPluginWindow().Show(this);

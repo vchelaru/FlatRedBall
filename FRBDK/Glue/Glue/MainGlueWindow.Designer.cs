@@ -98,7 +98,6 @@
             this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.tutorialsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportABugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.glueVaultToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.exportScreensAndEntitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ElementViewWindowToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.NavigateForwardButton = new System.Windows.Forms.Button();
@@ -648,8 +647,7 @@
             this.toolStripSeparator9,
             this.helpToolStripMenuItem1,
             this.tutorialsToolStripMenuItem,
-            this.reportABugToolStripMenuItem,
-            this.glueVaultToolStripMenuItem1});
+            this.reportABugToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "Help";
@@ -686,13 +684,6 @@
             this.reportABugToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
             this.reportABugToolStripMenuItem.Text = "Report a bug";
             this.reportABugToolStripMenuItem.Click += new System.EventHandler(this.reportABugToolStripMenuItem_Click);
-            // 
-            // glueVaultToolStripMenuItem1
-            // 
-            this.glueVaultToolStripMenuItem1.Name = "glueVaultToolStripMenuItem1";
-            this.glueVaultToolStripMenuItem1.Size = new System.Drawing.Size(195, 22);
-            this.glueVaultToolStripMenuItem1.Text = "GlueVault";
-            this.glueVaultToolStripMenuItem1.Click += new System.EventHandler(this.glueVaultToolStripMenuItem_Click);
             // 
             // exportScreensAndEntitiesToolStripMenuItem
             // 
@@ -1146,7 +1137,6 @@
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem tutorialsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reportABugToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem glueVaultToolStripMenuItem1;
         private System.Windows.Forms.Integration.ElementHost elementHost2;
         private FlatRedBall.Glue.Controls.ToolbarControl toolbarControl1;
     }

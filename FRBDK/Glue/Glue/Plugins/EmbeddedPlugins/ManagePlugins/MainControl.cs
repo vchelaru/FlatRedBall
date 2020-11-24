@@ -13,14 +13,6 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
 {
     public partial class MainControl : UserControl
     {
-        public GlueVaultBrowser GlueVaultBrowser
-        {
-            get
-            {
-                return elementHost1.Child as GlueVaultBrowser;
-            }
-        }
-
         public AllFeed AllFeed
         {
             get

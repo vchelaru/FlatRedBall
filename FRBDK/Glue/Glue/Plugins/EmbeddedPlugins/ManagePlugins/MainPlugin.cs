@@ -14,12 +14,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
     [Export(typeof(PluginBase))]
     class MainPlugin : EmbeddedPlugin
     {
-        const string mAllFeedUrl = "http://www.gluevault.com/glueplugins";
-
         MainControl mainControl;
-
-        BrowseGlueVaultViewModel viewModel;
-
 
         public override void StartUp()
         {
@@ -30,9 +25,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
         {
             if(mainControl == null)
             {
-                viewModel = new BrowseGlueVaultViewModel();
                 mainControl = new MainControl();
-                mainControl.GlueVaultBrowser.DataContext = viewModel;
 
                 this.AddToTab(PluginManager.LeftTab, mainControl, "Plugins");
             }
@@ -41,11 +34,6 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
                 this.AddTab();
                 mainControl.RefreshCheckboxes();
             }
-
-
-         
-
-            AllFeed.StartDownloadingInformation(mAllFeedUrl, HandleFinishedDownloading);
         }
 
         private void HandleFinishedDownloading(AllFeed allFeed, DownloadState state)
@@ -54,8 +42,6 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
             {
                 GlueCommands.Self.DoOnUiThread(() =>
                {
-                   viewModel.UpdateFrom(allFeed);
-
                    mainControl.AllFeed = allFeed;
                    mainControl.DownloadState = state;
                });

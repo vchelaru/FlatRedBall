@@ -31,8 +31,6 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
-            this.glueVaultBrowser1 = new FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins.GlueVaultBrowser();
             this.pluginsWindow1 = new FlatRedBall.Glue.Controls.PluginsWindow();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -63,7 +61,6 @@
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.elementHost1);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -71,16 +68,6 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Browse Plugins";
             this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // elementHost1
-            // 
-            this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.elementHost1.Location = new System.Drawing.Point(3, 3);
-            this.elementHost1.Name = "elementHost1";
-            this.elementHost1.Size = new System.Drawing.Size(454, 354);
-            this.elementHost1.TabIndex = 0;
-            this.elementHost1.Text = "elementHost1";
-            this.elementHost1.Child = this.glueVaultBrowser1;
             // 
             // pluginsWindow1
             // 
@@ -109,8 +96,6 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.Integration.ElementHost elementHost1;
-        private GlueVaultBrowser glueVaultBrowser1;
         private Controls.PluginsWindow pluginsWindow1;
     }
 }
