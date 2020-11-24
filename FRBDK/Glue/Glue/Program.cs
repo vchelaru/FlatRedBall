@@ -7,6 +7,7 @@ using FlatRedBall.Glue;
 using System.Runtime.Remoting;
 using System.Threading;
 using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace Glue
 {
@@ -76,7 +77,7 @@ namespace Glue
             bool wasPluginError = PluginManager.TryHandleException(objectToPrint as Exception);
             if (!wasPluginError)
             {
-                MessageBox.Show("Error: " + objectToPrint);
+                GlueCommands.Self.PrintError(objectToPrint?.ToString());
             }
         }
 

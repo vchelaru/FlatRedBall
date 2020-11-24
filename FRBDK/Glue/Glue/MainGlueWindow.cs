@@ -633,8 +633,8 @@ namespace Glue
                 // We want to wait until all tasks are done, but
                 // if the task is to reload, we can continue or else
                 // we'll have a deadlock
-                var canContinue = TaskManager.Self.CurrentTask ==
-                    UpdateReactor.ReloadingProjectDescription;
+                var canContinue = TaskManager.Self.CurrentTask == UpdateReactor.ReloadingProjectDescription ||
+                    TaskManager.Self.CurrentTask.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTask.EndsWith(".glux");
 
                 if(canContinue)
                 {
