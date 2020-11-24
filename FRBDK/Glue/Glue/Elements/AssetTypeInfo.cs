@@ -162,6 +162,9 @@ namespace FlatRedBall.Glue.Elements
         /// The method used to directly add the engine to be manually updated, rather than being converted
         /// </summary>
         public string AddManuallyUpdatedMethod;
+        /// <summary>
+        /// A string used to generate every-frame activity. The string replaces "this" with the object name, and automatically adds a semicolon at the end
+        /// </summary>
         public string ActivityMethod;
         public string AfterCustomActivityMethod;
 

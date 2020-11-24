@@ -13,7 +13,7 @@ namespace FlatRedBall.Entities
 
 
     // Influenced by https://www.gamasutra.com/blogs/ItayKeren/20150511/243083/Scroll_Back_The_Theory_and_Practice_of_Cameras_in_SideScrollers.php
-    public class CameraEntity : PositionedObject
+    public class CameraControllingEntity : PositionedObject
     {
         public CameraBehaviorType BehaviorType { get; set; }
 
@@ -21,7 +21,7 @@ namespace FlatRedBall.Entities
         /// The target PositionedObjects to fillow. In a single-player game this can be one entity. In a multi-player game, this can 
         /// be all players. The camera will average their position and follow the average.
         /// </summary>
-        public PositionedObjectList<PositionedObject> Targets { get; private set; } = new PositionedObjectList<PositionedObject>();
+        public System.Collections.IList Targets { get; set; } = new List<PositionedObject>();
 
         /// <summary>
         /// The level map. If null, the camera will move without bounds. If set, the camera will not view positions outside of the map.
@@ -60,7 +60,7 @@ namespace FlatRedBall.Entities
         public void Activity()
         {
             ///////////////////Early Out/////////////////////
-            if(!IsActive)
+            if (!IsActive || Targets == null)
             {
                 return;
             }
@@ -73,10 +73,8 @@ namespace FlatRedBall.Entities
 
             Vector2 averagePosition = Vector2.Zero;
 
-            for (int i = 0; i < Targets.Count; i++)
-            {
-                var targetAtI = Targets[i];
-
+            foreach(PositionedObject targetAtI in Targets)
+            { 
                 averagePosition.X = targetAtI.X;
                 averagePosition.Y = targetAtI.Y;
             }

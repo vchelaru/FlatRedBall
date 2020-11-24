@@ -32,43 +32,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 UpdateTypedMembers(instance);
 
-                instance.InstructionSaves.Sort(
-                    (first, second) =>
-                    {
-                        var firstTypedMember = instance.TypedMembers.FirstOrDefault((item) => item.MemberName == first.Member);
-                        var secondTypedMember = instance.TypedMembers.FirstOrDefault((item) => item.MemberName == second.Member);
-
-                        if (firstTypedMember != null && secondTypedMember == null)
-                        {
-                            return -1;
-                        }
-                        else if (firstTypedMember == null && secondTypedMember != null)
-                        {
-                            return 1;
-                        }
-                        else if (firstTypedMember == null && secondTypedMember == null)
-                        {
-                            if (first.Member != null)
-                            {
-                                return first.Member.CompareTo(second.Member);
-                            }
-                            else
-                            {
-                                return 1;
-                            }
-                        }
-                        else
-                        {
-                            int firstIndex = instance.TypedMembers.IndexOf(firstTypedMember);
-                            int secondIndex = instance.TypedMembers.IndexOf(secondTypedMember);
-
-                            return firstIndex.CompareTo(secondIndex);
-
-                        }
-
-                    }
-                );
-
+                instance.InstructionSaves.Sort((first, second) => first.Member?.CompareTo(second.Member) ?? 0);
 
                 #region Note about removing variables - why we don't do it anymore.
                 // October 3, 2011
@@ -184,14 +148,24 @@ namespace FlatRedBall.Glue.SaveClasses
 
                         if (type != null )
                         {
-                            typedMember = TypedMemberBase.GetTypedMemberUnequatable(member.Member, type);
+                            try
+                            {
+                                typedMember = TypedMemberBase.GetTypedMemberUnequatable(member.Member, type);
+                            }
+                            catch
+                            {
+                                // oh well, I think be getting rid of these anyway
+                            }
                         }
                         else
                         {
                             typedMember = TypedMemberBase.GetTypedMemberUnequatable(member.Member, typeof(object));
                             typedMember.CustomTypeName = memberType;
                         }
-                        instance.TypedMembers.Add(typedMember);
+                        if(typedMember != null)
+                        {
+                            instance.TypedMembers.Add(typedMember);
+                        }
                     }
                     catch (Exception e)
                     {

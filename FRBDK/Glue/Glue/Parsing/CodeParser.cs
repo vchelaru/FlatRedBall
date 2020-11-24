@@ -87,8 +87,6 @@ namespace FlatRedBall.Glue.Parsing
             return InheritsFrom(fileName, baseClass, null);
         }
 
-
-
         public static bool InheritsFrom(string fileName, string baseClass, string nameToMatch)
         {
             fileName = FileManager.Standardize(fileName);

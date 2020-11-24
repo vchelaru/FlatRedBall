@@ -1,7 +1,10 @@
-﻿using System;
+﻿using FlatRedBall.Glue.SaveClasses;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace FlatRedBall.Glue.Elements
 {
@@ -31,6 +34,11 @@ namespace FlatRedBall.Glue.Elements
         /// for plugins that want to fully handle their own code generation for certain variables
         /// </summary>
         public bool UsesCustomCodeGeneration { get; set; }
+
+        [XmlIgnore]
+        [JsonIgnore]
+        public Func<IElement, NamedObjectSave, ReferencedFileSave, string> CustomGenerationFunc;
+
 
         /// <summary>
         /// A list of options which the user must pick from. Filling this list with

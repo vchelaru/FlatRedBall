@@ -1179,18 +1179,25 @@ namespace FlatRedBall.Glue.CodeGeneration
                 bool usesStandardCodeGen = true;
 
                 var ati = namedObject.GetAssetTypeInfo();
-                if(ati != null)
+                var foundVariableDefinition = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == instructionSave.Member);
+                if(foundVariableDefinition != null && foundVariableDefinition.UsesCustomCodeGeneration)
                 {
-                    var foundVariableDefinition = ati.VariableDefinitions.FirstOrDefault(item => item.Name == instructionSave.Member);
-
-                    if(foundVariableDefinition != null && foundVariableDefinition.UsesCustomCodeGeneration)
-                    {
-                        usesStandardCodeGen = false;
-                    }
+                    usesStandardCodeGen = false;
                 }
 
-
-                if (usesStandardCodeGen)
+                if(foundVariableDefinition?.CustomGenerationFunc != null)
+                {
+                    var nosOwner = ObjectFinder.Self.GetElementContaining(namedObject);
+                    if(nosOwner != null)
+                    {
+                        var line = foundVariableDefinition.CustomGenerationFunc(nosOwner, namedObject, null);
+                        if(!string.IsNullOrWhiteSpace(line))
+                        {
+                            codeBlock.Line(line);
+                        }
+                    }
+                }
+                else if (usesStandardCodeGen)
                 {
                     CustomVariable customVariable = null;
                     EntitySave entitySave = null;
