@@ -18,7 +18,7 @@ namespace FlatRedBall.TileGraphics
 {
 
 
-    public partial class LayeredTileMap : PositionedObject, IVisible
+    public partial class LayeredTileMap : PositionedObject, IVisible, FlatRedBall.Math.IPositionedSizedObject
     {
         #region Fields
         FlatRedBall.Math.PositionedObjectList<MapDrawableBatch> mMapLists = new FlatRedBall.Math.PositionedObjectList<MapDrawableBatch>();

@@ -208,7 +208,9 @@ namespace TileGraphicsPlugin
             // - Added new tooltip
             // 2.15
             // - Added TileShapeCollection.AssignAllShapesToRepositionOutward 
-            get { return new Version(2, 15, 0, 0); }
+            // 2.16 
+            // - LayeredTileMap is now a FlatRedBall IPositionedSizedObject
+            get { return new Version(2, 16, 0, 0); }
         }
 
         [Import("GlueProjectSave")]

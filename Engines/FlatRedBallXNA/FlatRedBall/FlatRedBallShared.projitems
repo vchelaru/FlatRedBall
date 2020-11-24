@@ -84,6 +84,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Debugging\AutomaticDebuggingBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debugging\CrossPlatform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debugging\Debugger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\CameraEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\Vector2ExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\Vector3ExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Feedback\VibrateMotor.cs" />
@@ -205,7 +206,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)IO\StateManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\LocalizationManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ManagedSpriteGroups\SpriteFrame.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ManagedSpriteGroups\SpriteGrid\DoubleKeyDictionary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ManagedSpriteGroups\SpriteGrid\SpriteGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ManagedSpriteGroups\TextureGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ManagedSpriteGroups\TextureLocation.cs" />
@@ -254,6 +254,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Math\IAttachable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\IAttachableRemovable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\IPositionable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\IPositionedSizedObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\IRotatable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\IStaticPositionable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\MathFunctions.cs" />
