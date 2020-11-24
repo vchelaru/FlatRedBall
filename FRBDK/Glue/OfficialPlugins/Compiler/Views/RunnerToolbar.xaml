@@ -8,7 +8,7 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <Button Width="22" Height="22" Click="HandleButtonClick" IsEnabled="{Binding IsToolbarPlayButtonEnabled}">
-            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/play.png"></Image>
+            <Image ToolTip="Run Game" Source="/OfficialPluginsCore;component/Compiler/Icons/play.png"></Image>
         </Button>
     </Grid>
 </UserControl>

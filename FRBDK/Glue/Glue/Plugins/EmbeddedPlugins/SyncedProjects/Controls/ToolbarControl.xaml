@@ -7,6 +7,7 @@
              mc:Ignorable="d" >
     <Grid>
         <Button Click="VisualStudioButtonClick" 
+             ToolTip="Open Project in Visual Studio"
              Height="22" Width="22">
             <Image Source="/Plugins/EmbeddedPlugins/SyncedProjects/Images/VsIcon.png"></Image>
         </Button>

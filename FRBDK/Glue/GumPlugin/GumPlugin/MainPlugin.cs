@@ -28,6 +28,7 @@ using System.Diagnostics;
 using FlatRedBall.Glue.Errors;
 using GumPluginCore.Managers;
 using FlatRedBall.Glue.Controls;
+using GumPluginCore.ViewModels;
 
 namespace GumPlugin
 {
@@ -38,6 +39,7 @@ namespace GumPlugin
 
         GumControl control;
         GumViewModel viewModel;
+        GumToolbarViewModel toolbarViewModel;
         GumxPropertiesManager propertiesManager;
 
         ToolStripMenuItem addGumProjectMenuItem;
@@ -363,7 +365,10 @@ namespace GumPlugin
 
         private void CreateToolbar()
         {
+            toolbarViewModel = new GumToolbarViewModel();
+
             gumToolbar = new GumToolbar();
+            gumToolbar.DataContext = toolbarViewModel;
             gumToolbar.GumButtonClicked += HandleToolbarButtonClick;
             base.AddToToolBar(gumToolbar, "Standard");
         }
@@ -375,6 +380,9 @@ namespace GumPlugin
                 // gum project was removed, so mark it as removed:
                 AppState.Self.GumProjectSave = null;
             }
+
+            toolbarViewModel.HasGumProject =
+                AppState.Self.GumProjectSave != null;
         }
 
         private void HandleToolbarButtonClick(object sender, EventArgs e)
@@ -409,6 +417,9 @@ namespace GumPlugin
                     GlueCommands.Self.DialogCommands.ShowMessageBox("Unknown error attempting to open Gum") ;
                 }
             }
+
+
+            toolbarViewModel.HasGumProject = AppState.Self.GumProjectSave != null;
         }
 
         private List<AssetTypeInfo> HandleGetAvailableAssetTypes(ReferencedFileSave referencedFileSave)
@@ -648,6 +659,8 @@ namespace GumPlugin
 
 
             propertiesManager.IsReactingToProperyChanges = true;
+
+            toolbarViewModel.HasGumProject = AppState.Self.GumProjectSave != null;
         }
 
         private void HandleMakePluginRequiredYes()
@@ -670,11 +683,15 @@ namespace GumPlugin
             AssetTypeInfoManager.Self.RefreshProjectSpecificAtis();
 
             EventsManager.Self.RefreshEvents();
+
+            toolbarViewModel.HasGumProject = AppState.Self.GumProjectSave != null;
         }
 
         private void HandleGluxLoad()
         {
             var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
+
+            toolbarViewModel.HasGumProject = gumRfs != null;
 
             if(gumRfs != null)
             {

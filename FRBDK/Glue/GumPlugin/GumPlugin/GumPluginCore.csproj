@@ -96,6 +96,7 @@
     <None Remove="Embedded\EmptyProject\Standards\StandardGraphics\Red_TopRight.png" />
     <None Remove="Embedded\EmptyProject\Standards\Text.gutx" />
     <None Remove="GumCoreShared.FlatRedBall.projitems" />
+    <None Remove="Icons\AddGumProject.png" />
     <None Remove="Icons\GumIcon.png" />
     <None Remove="packages.config" />
   </ItemGroup>
@@ -288,6 +289,7 @@
 
 
   <ItemGroup>
+    <Resource Include="Icons\AddGumProject.png" />
     <Resource Include="Icons\GumIcon.png" />
   </ItemGroup>
 

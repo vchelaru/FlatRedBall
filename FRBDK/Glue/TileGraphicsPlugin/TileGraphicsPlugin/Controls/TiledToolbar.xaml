@@ -9,7 +9,8 @@
              
              d:DesignHeight="250" d:DesignWidth="300">
     <Grid>
-        <xctk:SplitButton 
+        <xctk:SplitButton
+            ToolTip="Open Tiled"
             Opened="HandleOpened"
             Width="40" Height="22" Click="HandleButtonClick"
             x:Name="AddControlButtonInstance">

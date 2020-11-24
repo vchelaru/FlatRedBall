@@ -8,7 +8,10 @@
              d:DesignHeight="150" d:DesignWidth="200">
     <Grid>
         <Button Width="22" Height="22" Click="HandleButtonClick">
-            <Image Source="/GumPluginCore;component/Icons/GumIcon.png"></Image>
+            <Grid>
+                <Image ToolTip="Add Gum Project to this Game" Visibility="{Binding AddGumProjectVisibility}" Source="/GumPluginCore;component/Icons/AddGumProject.png"></Image>
+                <Image ToolTip="Open Gum" Visibility="{Binding OpenGumVisibility}" Source="/GumPluginCore;component/Icons/GumIcon.png"></Image>
+            </Grid>
         </Button>
     </Grid>
 </UserControl>
