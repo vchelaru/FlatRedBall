@@ -16,7 +16,9 @@ namespace GumPluginCore.Managers
             // Only show this if this is an ICollidable
             if(entitySave.IsICollidableRecursive())
             {
-                displayer.IncludeCustomPropertyMember(ImplementsIGumCollidable, typeof(bool));
+                var member = displayer.IncludeCustomPropertyMember(ImplementsIGumCollidable, typeof(bool));
+
+                member.SetCategory("Inheritance and Interfaces");
             }
         }
     }

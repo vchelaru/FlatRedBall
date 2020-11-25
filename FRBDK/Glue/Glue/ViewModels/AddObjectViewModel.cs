@@ -277,6 +277,14 @@ namespace FlatRedBall.Glue.ViewModels
 
         #endregion
 
+        public bool IsTypePredetermined
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(IsTypePredetermined))]
+        public bool IsSelectionEnabled => !IsTypePredetermined;
 
         public string SourceNameInFile
         {

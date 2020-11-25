@@ -445,7 +445,9 @@ namespace FlatRedBall.Glue.GuiDisplay
             }
         }
 
-        public PropertyGridMember IncludeMember(string memberToInclude, Type type, MemberChangeEventHandler memberChangeAction, Func<object> getMember, TypeConverter converter = null, Attribute[] attributes = null)
+        public PropertyGridMember IncludeMember(string memberToInclude, Type type, 
+            MemberChangeEventHandler memberChangeAction, 
+            Func<object> getMember, TypeConverter converter = null, Attribute[] attributes = null)
         {
             if (mNativePropertyGridMembers.ContainsMember(memberToInclude))
             {
@@ -475,6 +477,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
             return pgm;
         }
+
         public PropertyGridMember GetPropertyGridMember(string name)
         {
             foreach (PropertyGridMember pgm in mNativePropertyGridMembers)
@@ -494,6 +497,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             }
             return null;
         }
+
         public void ResetToDefault()
         {
             mCustomPropertyGridMembers.Clear();

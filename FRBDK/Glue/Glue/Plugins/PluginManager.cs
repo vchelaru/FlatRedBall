@@ -2151,6 +2151,19 @@ namespace FlatRedBall.Glue.Plugins
             return null;
         }
 
+        public static List<VariableDefinition> GetVariableDefinitionsFor(IElement element)
+        {
+            List<VariableDefinition> toReturn = new List<VariableDefinition>();
+            CallMethodOnPlugin(
+                (plugin) =>
+                {
+                    toReturn.AddRange(plugin.GetVariableDefinitionsForElement(element));
+                },
+                nameof(GetVariableDefinitionsFor),
+                plugin => plugin.GetVariableDefinitionsForElement != null);
+            return toReturn;
+        }
+
         #endregion
 
         public static void CallPluginMethod(string pluginFriendlyName, string methodName)

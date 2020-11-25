@@ -47,6 +47,8 @@ namespace OfficialPlugins.VariableDisplay
 
             CreateCategoriesAndVariables(instance, container, categories, assetTypeInfo);
 
+
+
             if (assetTypeInfo != null)
             {
                 SortCategoriesAndMembers(ref categories, assetTypeInfo);

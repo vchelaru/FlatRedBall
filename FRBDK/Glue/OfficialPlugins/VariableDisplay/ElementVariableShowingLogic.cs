@@ -42,6 +42,26 @@ namespace OfficialPlugins.VariableDisplay
 
         private static void CreateInstanceMembersForVariables(IElement element, MemberCategory category)
         {
+            var variableDefinitions = PluginManager.GetVariableDefinitionsFor(element);
+            foreach (var variableDefinition in variableDefinitions)
+            {
+                var customVariable = element.GetCustomVariable(variableDefinition.Name);
+
+                if (customVariable == null)
+                {
+                    customVariable = new CustomVariable();
+                    customVariable.DefaultValue = variableDefinition.DefaultValue;
+                    customVariable.Name = variableDefinition.Name;
+                    customVariable.Type = variableDefinition.Type;
+                    // category?
+
+                    element.CustomVariables.Add(customVariable);
+
+                    GlueCommands.Self.GluxCommands.SaveGlux();
+                }
+            }
+
+
             foreach (CustomVariable variable in element.CustomVariables)
             {
                 Type type = variable.GetRuntimeType();
@@ -51,9 +71,6 @@ namespace OfficialPlugins.VariableDisplay
                 }
 
                 string name = variable.Name;
-                //object value = variable.DefaultValue;
-
-                // todo - do something with converter
 
                 var instanceMember = new DataGridItem();
                 instanceMember.CustomGetTypeEvent += (throwaway) => type;
@@ -128,6 +145,99 @@ namespace OfficialPlugins.VariableDisplay
                 instanceMember.ContextMenuEvents.Add("Variable Properties", (sender, args) => GlueState.Self.CurrentCustomVariable = variable);
 
                 category.Members.Add(instanceMember);
+            }
+
+
+            foreach(var variable in variableDefinitions)
+            {
+                var type = FlatRedBall.Glue.Parsing.TypeManager.GetTypeFromString(variable.Type);
+
+                if (type == null)
+                {
+                    type = typeof(string);
+                }
+
+                string name = variable.Name;
+
+                var instanceMember = new DataGridItem();
+                instanceMember.CustomGetTypeEvent += (throwaway) => type;
+                string displayName = StringFunctions.InsertSpacesInCamelCaseString(name);
+
+                // Currently this only works on TextBox variables - eventually will expand
+                // we don't have this on variable definitions
+                //instanceMember.DetailText = variable.Summary;
+
+                instanceMember.DisplayName = displayName;
+                instanceMember.UnmodifiedVariableName = name;
+
+                // todo - figure out type converters?
+                //TypeConverter converter = variable.GetTypeConverter(element);
+                //instanceMember.TypeConverter = converter;
+
+                instanceMember.CustomSetEvent += (intance, value) =>
+                {
+                    instanceMember.IsDefault = false;
+
+                    RefreshLogic.IgnoreNextRefresh();
+
+                    var customVariable = element.GetCustomVariable(name);
+                    var oldValue = customVariable?.DefaultValue;
+                    if(customVariable == null)
+                    {
+                        element.CustomVariables.Add(new CustomVariable() { Name = name });
+                    }
+                    element.Properties.SetValue(name, value);
+
+                    // todo - do we need this?
+                    //EditorObjects.IoC.Container.Get<CustomVariableSaveSetVariableLogic>().ReactToCustomVariableChangedValue(
+                    //        "DefaultValue", variable, oldValue);
+
+
+
+                    GlueCommands.Self.GluxCommands.SaveGlux();
+
+                    GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
+
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
+                };
+
+                instanceMember.CustomGetEvent += (instance) =>
+                {
+                    var foundVariable = element.GetCustomVariableRecursively(name);
+                    return foundVariable?.DefaultValue;
+                };
+
+                //instanceMember.IsDefaultSet += (owner, args) =>
+                //{
+
+                //    element.GetCustomVariableRecursively(name).DefaultValue = null;
+
+
+                //    GlueCommands.Self.GluxCommands.SaveGlux();
+
+                //    GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
+
+                //    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+
+                //};
+
+                //instanceMember.SetValueError = (newValue) =>
+                //{
+                //    if (newValue is string && string.IsNullOrEmpty(newValue as string))
+                //    {
+                //        element.GetCustomVariableRecursively(name).DefaultValue = null;
+
+                //        GlueCommands.Self.GluxCommands.SaveGlux();
+
+                //        GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
+
+                //        GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                //    }
+                //};
+
+                //instanceMember.ContextMenuEvents.Add("Variable Properties", (sender, args) => GlueState.Self.CurrentCustomVariable = variable);
+
+                //category.Members.Add(instanceMember);
             }
         }
 

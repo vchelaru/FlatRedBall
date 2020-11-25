@@ -85,6 +85,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Debugging\CrossPlatform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debugging\Debugger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\CameraControllingEntity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\IDamageable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\IDamageArea.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\Vector2ExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\Vector3ExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Feedback\VibrateMotor.cs" />

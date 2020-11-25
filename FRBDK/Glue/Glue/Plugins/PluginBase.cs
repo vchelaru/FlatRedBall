@@ -213,7 +213,14 @@ namespace FlatRedBall.Glue.Plugins
 
         public AdjustDisplayedReferencedFileDelegate AdjustDisplayedReferencedFile { get; protected set; }
         public AdjustDisplayedCustomVariableDelegate AdjustDisplayedCustomVariable { get; protected set; }
+
+        /// <summary>
+        /// Adjusts the properties for the selected NamedObject (not Variables window)
+        /// </summary>
         public AdjustDisplayedNamedObjectDelegate AdjustDisplayedNamedObject { get; protected set; }
+
+        public Func<IElement, IEnumerable<VariableDefinition>> GetVariableDefinitionsForElement;
+
         public Action<NamedObjectSave, List<ExposableEvent>> AddEventsForObject { get; protected set; }
         public Action<ProjectBase> ReactToLoadedSyncedProject { get; protected set; }
 

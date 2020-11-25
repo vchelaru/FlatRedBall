@@ -19,12 +19,12 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
-        
-        
 
 
-        
-        <GroupBox Header="Select Object Type" Grid.Row="0">
+
+
+
+        <GroupBox Header="Select Object Type" Grid.Row="0" IsEnabled="{Binding IsSelectionEnabled}">
             <StackPanel>
                 <RadioButton IsChecked="{Binding IsFlatRedBallType}">FlatRedBall or Custom Type</RadioButton>
                 <RadioButton IsChecked="{Binding IsEntityType}">Entity</RadioButton>
@@ -37,6 +37,7 @@
                  AcceptsReturn="True"
                  Margin="0,5,0,0" 
                  Grid.Row="1"
+                 IsEnabled="{Binding IsSelectionEnabled}"
                  Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"></TextBox>
         
         <ListBox x:Name="MainListBox"
@@ -47,6 +48,7 @@
                  VerticalContentAlignment="Stretch"
                  KeyDown="ListBox_KeyDown"
                  Grid.Row="2"
+                 IsEnabled="{Binding IsSelectionEnabled}"
                  >
             <ListBox.ItemTemplate>
                 <DataTemplate>

@@ -121,6 +121,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             // todo - need to handle predetermined types here
 
+            addObjectViewModel.IsTypePredetermined = isTypePredetermined;
             
             if (isTypePredetermined)
             {
@@ -134,9 +135,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         AvailableAssetTypes.Self.AllAssetTypes.FirstOrDefault(item =>
                             item.FriendlyName == genericType || item.QualifiedRuntimeTypeName.QualifiedType == genericType);
 
-                    if (ObjectFinder.Self.GetEntitySave(genericType) != null)
+                    var genericEntityType =
+                        ObjectFinder.Self.GetEntitySave(genericType);
+                    if (genericEntityType != null)
                     {
                         addObjectViewModel.SourceType = SourceType.Entity;
+                        addObjectViewModel.SelectedEntitySave = genericEntityType;
                     }
                     else
                     {

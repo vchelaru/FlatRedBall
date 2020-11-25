@@ -27,12 +27,12 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             (this.Instance as IElement).Properties.SetValue(name, value);
         }
 
-        public void IncludeCustomPropertyMember(string name, Type propertyType)
+        public PropertyGridMember IncludeCustomPropertyMember(string name, Type propertyType)
         {
             // Do we have to do this to make sure we don't pass the same string if this is called multiple times?
             string nameCopy = name;
 
-            IncludeMember(name, propertyType,
+            var newMember = IncludeMember(name, propertyType,
                 HandleMemberSet,
                 delegate()
                 {
@@ -46,7 +46,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
                 );
 
-
+            return newMember;
         }
 
         protected string GetClassName()

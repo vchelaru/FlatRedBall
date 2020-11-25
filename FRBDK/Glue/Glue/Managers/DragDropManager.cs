@@ -122,7 +122,27 @@ namespace FlatRedBall.Glue.Managers
                         //}
                         if (ati == AvailableAssetTypes.CommonAtis.PositionedObjectList)
                         {
-                            canBeMovedInList = true;
+                            if (string.IsNullOrEmpty(targetNos.SourceClassGenericType))
+                            {
+                                canBeMovedInList = false;
+                                //toReturn.Message = "The target Object has not been given a list type yet";
+                            }
+                            else if (movingNos.CanBeInList(targetNos) == false)
+                            {
+                                canBeMovedInList = false;
+                                //toReturn.Message = "The Object you are moving is of type " + movingNos.SourceClassType +
+                                //    " but the list is of type " + targetNos.SourceClassGenericType;
+
+                            }
+                            else if (treeNodeMoving.Parent.IsRootNamedObjectNode() == false)
+                            {
+                                canBeMovedInList = false;
+                                //toReturn.Message = "The Object you are moving is already part of a list, so it can't be moved";
+                            }
+                            else
+                            {
+                                canBeMovedInList = true;
+                            }
                         }
                     }
 
@@ -368,29 +388,7 @@ namespace FlatRedBall.Glue.Managers
         {
             var toReturn = GeneralResponse.SuccessfulResponse;
 
-            #region Failure cases
 
-            if (string.IsNullOrEmpty(targetNos.SourceClassGenericType))
-            {
-                toReturn.Succeeded = false;
-                toReturn.Message = "The target Object has not been given a list type yet";
-            }
-            else if (movingNos.CanBeInList(targetNos) == false)
-            {
-                toReturn.Succeeded = false;
-                toReturn.Message = "The Object you are moving is of type " + movingNos.SourceClassType +
-                    " but the list is of type " + targetNos.SourceClassGenericType;
-
-            }
-            else if (treeNodeMoving.Parent.IsRootNamedObjectNode() == false)
-            {
-                toReturn.Succeeded = false;
-                toReturn.Message = "The Object you are moving is already part of a list, so it can't be moved";
-            }
-
-            #endregion
-
-            else
             {
                 toReturn.Succeeded = true;
 
