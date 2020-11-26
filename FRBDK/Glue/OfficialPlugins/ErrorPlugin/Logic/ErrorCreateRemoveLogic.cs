@@ -5,6 +5,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using OfficialPlugins.ErrorPlugin.ViewModels;
+using OfficialPluginsCore.ErrorPlugin.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,23 +18,6 @@ namespace OfficialPlugins.ErrorPlugin.Logic
     {
         #region Add Errors
 
-        public static List<ErrorViewModel> GetMissingFileErrorViewModels()
-        {
-            List<ErrorViewModel> errorList = new List<ErrorViewModel>();
-
-            var allFiles = GlueState.Self.GetAllReferencedFiles();
-
-            foreach(var file in allFiles)
-            {
-                TryAddDirectMissingFileError(errorList, file);
-
-                TryAddIndirectMissingFileErrors(errorList, file);
-            }
-
-            AddAllFileParseErrors(errorList);
-
-            return errorList;
-        }
 
         private static void AddAllFileParseErrors(List<ErrorViewModel> errorList)
         {
@@ -73,6 +57,14 @@ namespace OfficialPlugins.ErrorPlugin.Logic
             TryAddIndirectMissingFileErrors(errorList, file, absoluteFile, referenceStack);
         }
 
+        private static void TryAddOutOfProjectFileErrors(List<ErrorViewModel> errorList, ReferencedFileSave file)
+        {
+            List<FilePath> referenceStack = new List<FilePath>();
+            var absoluteFile = GlueCommands.Self.GetAbsoluteFileName(file);
+            referenceStack.Add(absoluteFile);
+            TryAddOutOfProjectFileErrors(errorList, file, absoluteFile, referenceStack);
+        }
+
         private static void TryAddIndirectMissingFileErrors(List<ErrorViewModel> errorList, ReferencedFileSave rootRfs, string absoluteFile, List<FilePath> referenceStack)
         {
             var referencedFiles = GlueCommands.Self.FileCommands.GetFilesReferencedBy(absoluteFile, EditorObjects.Parsing.TopLevelOrRecursive.TopLevel);
@@ -100,9 +92,40 @@ namespace OfficialPlugins.ErrorPlugin.Logic
                     }
                 }
             }
-
         }
-        
+
+        private static void TryAddOutOfProjectFileErrors(List<ErrorViewModel> errorList, ReferencedFileSave rootRfs, string absoluteFile, List<FilePath> referenceStack)
+        {
+            var referencedFiles = GlueCommands.Self.FileCommands.GetFilesReferencedBy(absoluteFile, EditorObjects.Parsing.TopLevelOrRecursive.TopLevel);
+
+            var projectDirectory = GlueState.Self.CurrentGlueProjectDirectory;
+
+            foreach (var referencedFile in referencedFiles)
+            {
+                // make sure it's not already in the stack, to prevent circular references:
+                var isAlreadyInStack = referenceStack.Any(item => item == referencedFile);
+
+                if (!isAlreadyInStack)
+                {
+                    if(FileManager.IsRelativeTo(referencedFile, projectDirectory) == false)
+                    {
+                        var newError = new OutOfProjectErrorViewModel(rootRfs, referenceStack.ToList(), referencedFile);
+
+                        errorList.Add(newError);
+                    }
+                    else
+                    {
+                        referenceStack.Add(referencedFile);
+
+                        TryAddOutOfProjectFileErrors(errorList, rootRfs, referencedFile, referenceStack);
+
+                        referenceStack.RemoveAt(referenceStack.Count - 1);
+                    }
+                }
+            }
+        }
+
+
 
         public static void AddNewErrorsForChangedFile(FilePath fileName, ErrorListViewModel errors)
         {
@@ -114,6 +137,9 @@ namespace OfficialPlugins.ErrorPlugin.Logic
             }
 
             AddNewIndirectMissingFileErrors(errors);
+
+            AddNewOutOfProjectFileErrors(errors);
+
 
             AddFileParseErrors(fileName, errors);
         }
@@ -168,6 +194,32 @@ namespace OfficialPlugins.ErrorPlugin.Logic
             foreach (var candidateToAdd in indirectErrorsFound)
             {
                 var shouldAdd = existingIndirects.Any(item => item.Matches(candidateToAdd)) == false;
+                if (shouldAdd)
+                {
+                    lock (GlueState.ErrorListSyncLock)
+                    {
+                        errors.Errors.Add(candidateToAdd);
+                    }
+                }
+            }
+        }
+
+        private static void AddNewOutOfProjectFileErrors(ErrorListViewModel errors)
+        {
+            var errorsFound = new List<ErrorViewModel>();
+
+            var allFiles = GlueState.Self.GetAllReferencedFiles();
+
+            foreach (var file in allFiles)
+            {
+                TryAddOutOfProjectFileErrors(errorsFound, file);
+            }
+
+            // now add them:
+            var existingOutOfProjectErrors = errors.Errors.Where(item => item is OutOfProjectErrorViewModel).Select(item => item as OutOfProjectErrorViewModel);
+            foreach (var candidateToAdd in errorsFound)
+            {
+                var shouldAdd = existingOutOfProjectErrors.Any(item => item.Matches(candidateToAdd)) == false;
                 if (shouldAdd)
                 {
                     lock (GlueState.ErrorListSyncLock)
@@ -245,7 +297,31 @@ namespace OfficialPlugins.ErrorPlugin.Logic
 
         public ErrorViewModel[] GetAllErrors()
         {
-            return GetMissingFileErrorViewModels().ToArray();
+            var missingFiles = GetAllFileErrorViewModels().ToArray();
+
+
+            return missingFiles;
+        }
+
+
+        static List<ErrorViewModel> GetAllFileErrorViewModels()
+        {
+            List<ErrorViewModel> errorList = new List<ErrorViewModel>();
+
+            var allFiles = GlueState.Self.GetAllReferencedFiles();
+
+            foreach (var file in allFiles)
+            {
+                TryAddDirectMissingFileError(errorList, file);
+
+                TryAddIndirectMissingFileErrors(errorList, file);
+
+                TryAddOutOfProjectFileErrors(errorList, file);
+            }
+
+            AddAllFileParseErrors(errorList);
+
+            return errorList;
         }
     }
 }
