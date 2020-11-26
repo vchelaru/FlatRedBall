@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+﻿using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPluginsCore.QuickActionPlugin.Views;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace OfficialPluginsCore.QuickActionPlugin.Managers
 {
@@ -47,12 +49,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
 
             #region Add Screen Button
 
-            mainView.AddScreenButton.Visibility = ToVisibility(
-                glueProject != null &&
-                GlueState.Self.CurrentEntitySave == null &&
-                (selectedObject == null ||
-                    glueProject.Screens.Count == 0)
-                    );
+            mainView.AddScreenButton.Visibility = ToVisibility(glueProject != null);
             if(hasGameScreen == false)
             {
                 mainView.AddScreenButton.Details =
@@ -66,47 +63,26 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
 
             #endregion
 
-            //#region Add Level
-            //mainView.AddLevelButton.Visibility = ToVisibility(
-            //    project != null &&
-            //    (GlueState.Self.CurrentElement == null || GlueState.Self.CurrentElement == gameScreen) &&
-            //    selectedEntity == null &&
-            //    (
-            //        hasGameScreen
-            //    ));
-
-            //#endregion
-
             #region Add Entity
 
-            mainView.AddEntityButton.Visibility = ToVisibility(
-                glueProject != null &&
-                (
-                    selectedObject == null ||
-                    glueProject.Entities.Count == 0 
-                )
-                );
+            mainView.AddEntityButton.Visibility = ToVisibility(glueProject != null );
 
             #endregion
 
             #region Add Object to Screen/Entity
 
-            mainView.AddObjectButton.Visibility = ToVisibility(
-                GlueState.Self.CurrentElement != null
+            mainView.AddObjectToEntityButton.Visibility = ToVisibility(
+                GlueState.Self.CurrentEntitySave != null
                 );
-            if(mainView.AddObjectButton.Visibility == Visibility.Visible)
-            {
-                mainView.AddObjectButton.Title = $"Add Object to {GlueState.Self.CurrentElement.GetStrippedName()}";
-                // set the text
-                if(GlueState.Self.CurrentElement is ScreenSave)
-                {
-                    mainView.AddObjectButton.Details = "Common screen object types include entity lists, layers, and collision relationships.";
-                }
-                else if(GlueState.Self.CurrentElement is EntitySave)
-                {
-                    mainView.AddObjectButton.Details = "Common entity object types include sprites and shapes for collision.";
-                }
-            }
+            mainView.AddObjectToEntityButton.Title = $"Add Object to {GlueState.Self.CurrentElement?.GetStrippedName()}";
+            mainView.AddObjectToEntityButton.Details = "Common entity object types include sprites and shapes for collision.";
+
+            mainView.AddObjectToScreenButton.Visibility = ToVisibility(
+                GlueState.Self.CurrentScreenSave != null
+                );
+            mainView.AddObjectToScreenButton.Title = $"Add Object to {GlueState.Self.CurrentElement?.GetStrippedName()}";
+            mainView.AddObjectToScreenButton.Details = "Common screen object types include entity lists, layers, and collision relationships.";
+
 
             #endregion
 
@@ -173,6 +149,16 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
             }
 
             #endregion
+
+            foreach(var child in mainView.MainStackPanel.Children)
+            {
+                if(child is GroupBox groupBox)
+                {
+                    var wrapPanel = groupBox.Content as WrapPanel;
+
+                    groupBox.Visibility = wrapPanel.Children.Any(item => item.Visibility == Visibility.Visible).ToVisibility();
+                }
+            }
         }
     }
 }

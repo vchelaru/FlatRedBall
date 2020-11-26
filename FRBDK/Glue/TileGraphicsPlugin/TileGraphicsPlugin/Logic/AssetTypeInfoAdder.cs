@@ -165,7 +165,8 @@ namespace TileGraphicsPlugin
                 Name = "CreateEntitiesFromTiles",
                 Type = "bool",
                 DefaultValue = "false",
-                Category = "Entities and Collision"
+                Category = "Entities and Collision",
+                UsesCustomCodeGeneration = true
             });
 
             toReturn.FriendlyName = "LayeredTileMap (.tmx)";

@@ -623,9 +623,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             ////////////End Early Out
 
             // AddScreen, add screen, addnewscreen, add new screen
-            var tiw = new AddScreenWindow();
+            var addScreenWindow = new AddScreenWindow();
 
-            tiw.Message = "Enter a name for the new Screen";
+            addScreenWindow.Message = "Enter a name for the new Screen";
 
             string name = "NewScreen";
 
@@ -642,26 +642,26 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             name = StringFunctions.MakeStringUnique(name,
                 allScreenNames, 2);
 
-            tiw.Result = name;
+            addScreenWindow.Result = name;
 
-            tiw.HighlghtText();
+            addScreenWindow.HighlghtText();
 
-            PluginManager.ModifyAddScreenWindow(tiw);
+            PluginManager.ModifyAddScreenWindow(addScreenWindow);
 
 
-            var result = tiw.ShowDialog();
+            var result = addScreenWindow.ShowDialog();
             if (result == true)
             {
                 string whyItIsntValid;
 
-                if (!NameVerifier.IsScreenNameValid(tiw.Result, null, out whyItIsntValid))
+                if (!NameVerifier.IsScreenNameValid(addScreenWindow.Result, null, out whyItIsntValid))
                 {
                     MessageBox.Show(whyItIsntValid);
                 }
                 else
                 {
                     var screen =
-                        GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(tiw.Result);
+                        GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(addScreenWindow.Result);
 
                     GlueState.Self.CurrentElement = screen;
                     var treeNode = EditorLogic.CurrentScreenTreeNode;
@@ -670,7 +670,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         treeNode.Expand();
                     }
 
-                    PluginManager.ReactToNewScreenCreatedWithUi(screen, tiw);
+                    PluginManager.ReactToNewScreenCreatedWithUi(screen, addScreenWindow);
 
                 }
 

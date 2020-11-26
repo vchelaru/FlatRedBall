@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace System.Linq
 {
@@ -37,6 +39,18 @@ namespace System.Linq
         public static IEnumerable<T> Distinct<T>(this IEnumerable<T> list, Func<T, T, bool> lambda)
         {
             return list.Distinct(new LambdaComparer<T>(lambda));
+        }
+
+        public static bool Any(this UIElementCollection collection, Func<UIElement, bool> predicate)
+        {
+            foreach(UIElement item in collection)
+            {
+                if(predicate(item))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

@@ -27,8 +27,14 @@ namespace FlatRedBall.Glue.Controls
                     listToReturn.Add(element as UserControl);
                 }
 
+
                 return listToReturn;
             }
+        }
+
+        public AddScreenWindow() : base()
+        {
+            Width = 500;
         }
     }
 }
