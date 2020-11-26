@@ -962,7 +962,7 @@ namespace FlatRedBall.Input
 #endregion
 
         /// <summary>
-        /// Creates a ButtomMap for this controller using the default bindings.  This is 
+        /// Creates a ButtonMap for this controller using the default bindings.  This is 
         /// a quick way to simulate an Xbox360 controller using the keyboard.
         /// </summary>
         /// <remarks>

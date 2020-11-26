@@ -51,17 +51,6 @@ namespace FlatRedBall.Gui
 
         #region XML Docs
         /// <summary>
-        /// Controls how sensitive the cursor is to mouse movements.
-        /// </summary>
-        /// <remarks>
-        /// Default value is 1, so setting the value to 2 will make the mouse
-        /// twice as sensitive.
-        /// </remarks>
-        #endregion
-        public float sensitivity = 1;
-
-        #region XML Docs
-        /// <summary>
         /// The Sprite that the cursor uses to draw itself.
         /// </summary>
         /// <remarks>
@@ -304,9 +293,7 @@ namespace FlatRedBall.Gui
 
         bool mUsingMouse;
 
-#if !WINDOWS_8
         Xbox360GamePad mGamepad;
-#endif
 
 
         /// <summary>
@@ -620,17 +607,9 @@ namespace FlatRedBall.Gui
         /// </summary>
         public float ZVelocity
         {
-            get { return si.ZVelocity; }
-            set { si.ZVelocity = value; }
+            get;
+            set;
         }
-
-        public bool Visible
-        {
-
-            get { return si.Visible; }
-            set { si.Visible = value; }
-        }
-
 
         public bool ResizingWindow
         {
@@ -1307,7 +1286,6 @@ namespace FlatRedBall.Gui
             return null;
         }
 
-
         #region XML Docs
         /// <summary>
         /// Grabs a Window with the Cursor.
@@ -1323,8 +1301,8 @@ namespace FlatRedBall.Gui
         {
             this.WindowGrabbed = windowToGrab;
 
-            float cursorX = XForUI;
-            float cursorY = YForUI;
+            float cursorX = WorldXAt(0);
+            float cursorY = WorldYAt(0);
 
             if (WindowGrabbed != null)
             {
@@ -1335,7 +1313,7 @@ namespace FlatRedBall.Gui
         }
 
         #region ====IsOn Methods====
-#if !SILVERLIGHT
+
         #region XML Docs
         /// <summary>
         /// Determines whether the cursor is on a Sprite, but only considers rotation on the z axis (RotationZ).
@@ -1482,7 +1460,7 @@ namespace FlatRedBall.Gui
             return cursorX > horizontalCenter - textScaleX && cursorX < horizontalCenter + textScaleX &&
                 cursorY > verticalCenter - textScaleY && cursorY < verticalCenter + textScaleY;
         }
-#endif
+
         #region XML Docs
         /// <summary>
         /// Returns whether the cursor is over the argument windowToTest.
@@ -1808,7 +1786,6 @@ namespace FlatRedBall.Gui
 
         }
 
-#if FRB_XNA
         public bool IsOn3D(AxisAlignedCube cubeToTest)
         {
             Ray ray = this.GetRay();
@@ -1821,7 +1798,7 @@ namespace FlatRedBall.Gui
         {
             return IsOn3D(sphere, (Layer)null);
         }
-#endif
+
         public bool IsOn3D(Sphere sphere, Layer layer)
         {
             Ray ray = this.GetRay(layer);
@@ -2611,13 +2588,11 @@ namespace FlatRedBall.Gui
             }
             else
             {
-#if !WINDOWS_8
                 if(mGamepad != null)
                 {
                     UpdateValuesFromJoystick();
                 }
                 else
-#endif
                 {
                     assignPushAndClickValues = UpdateValuesFromMouse();
                 }
@@ -2658,8 +2633,31 @@ namespace FlatRedBall.Gui
         {
             if (mGamepad != null)
             {
-                mScreenX += (int)(mGamepad.LeftStick.Position.X * 10);
-                mScreenY -= (int)(mGamepad.LeftStick.Position.Y * 10);
+                // should this use time? If so, should it use time factor?
+                const float maxMovementPerFrame = 10;
+                var xPosition = mGamepad.LeftStick.Position.X;
+                var yPosition = mGamepad.LeftStick.Position.Y;
+
+                if(mGamepad.ButtonDown(Xbox360GamePad.Button.DPadLeft))
+                {
+                    xPosition = -1;
+                }
+                if (mGamepad.ButtonDown(Xbox360GamePad.Button.DPadRight))
+                {
+                    xPosition = 1;
+                }
+                if (mGamepad.ButtonDown(Xbox360GamePad.Button.DPadUp))
+                {
+                    yPosition = 1;
+                }
+                if (mGamepad.ButtonDown(Xbox360GamePad.Button.DPadDown))
+                {
+                    yPosition = -1;
+                }
+
+
+                mScreenX += (int)(xPosition * maxMovementPerFrame);
+                mScreenY -= (int)(yPosition * maxMovementPerFrame);
 
                 if(mScreenX < 0)
                 {
@@ -3005,19 +3003,16 @@ namespace FlatRedBall.Gui
                     if (WindowGrabbed.Parent == null)
                     {
 
-                        float outX = 0;
-                        float outY = 0;
+                        float outX = WorldXAt(0);
+                        float outY = WorldYAt(0);
 
-                        GetCursorPosition(out outX, out outY, 0);
                         WindowGrabbed.WorldUnitX = outX + mGrabbedWindowRelativeX;
                         WindowGrabbed.WorldUnitY = outY + mGrabbedWindowRelativeY;
                     }
                     else
                     {
-                        float cursorX = XForUI;
-                        float cursorY = YForUI;
-
-                        GetCursorPosition(out cursorX, out cursorY, 0);
+                        float cursorX = WorldXAt(0);
+                        float cursorY = WorldYAt(0);
 
                         WindowGrabbed.WorldUnitRelativeX = cursorX + mGrabbedWindowRelativeX - WindowGrabbed.Parent.WorldUnitX;
                         WindowGrabbed.WorldUnitRelativeY = cursorY + mGrabbedWindowRelativeY - WindowGrabbed.Parent.WorldUnitY;

@@ -32,13 +32,8 @@ namespace GumPlugin.CodeGeneration
             }
         }
 
-        public static string GueRuntimeNamespace
-        {
-            get
-            {
-                return FlatRedBall.Glue.ProjectManager.ProjectNamespace + ".GumRuntimes";
-            }
-        }
+        public static string GueRuntimeNamespace =>
+            FlatRedBall.Glue.ProjectManager.ProjectNamespace + ".GumRuntimes";
 
         #endregion
 
@@ -65,8 +60,7 @@ namespace GumPlugin.CodeGeneration
                 throw new ArgumentNullException(nameof(elementSave));
             }
 
-            CodeBlockBase topBlock =
-                new CodeBlockBase(null);
+            var topBlock = new CodeBlockBase();
             // It's much easier to add the LINQ usings here instead of using the qualified method names in code gen below
             topBlock.Line("using System.Linq;");
 
@@ -626,7 +620,7 @@ namespace GumPlugin.CodeGeneration
             return true;
         }
 
-        private static string GetFormsControlTypeFrom(List<ElementBehaviorReference> behaviors)
+        public static string GetFormsControlTypeFrom(List<ElementBehaviorReference> behaviors)
         {
             string controlName = null;
             foreach(var behavior in behaviors)

@@ -20,8 +20,11 @@ namespace GumPlugin.Managers
     #region Structs/Enums
     public struct GenerationResult
     {
-        public bool DidSaveGenerated;
-        public bool DidSaveCustom;
+        public bool DidSaveGeneratedGumRuntime;
+        public bool DidSaveCustomGumRuntime;
+
+        public bool DidSaveGeneratedForms;
+        public bool DidSaveCustomForms;
     }
 
 
@@ -49,21 +52,10 @@ namespace GumPlugin.Managers
 
         #endregion
 
-        string GumRuntimesFolder
-        {
-            get
-            {
-                return AppState.Self.GlueProjectFolder + @"GumRuntimes\"; 
-            }
-        }
+        FilePath GumRuntimesFolder => AppState.Self.GlueProjectFolder + @"GumRuntimes\"; 
+        FilePath FormsFolder => AppState.Self.GlueProjectFolder + @"Forms\";
 
-        string GumBehaviorsFolder
-        {
-            get
-            {
-                return GumRuntimesFolder + @"Behaviors\";
-            }
-        }
+        FilePath GumBehaviorsFolder => GumRuntimesFolder + @"Behaviors\";
 
         public CodeGeneratorManager()
         {
@@ -124,7 +116,7 @@ namespace GumPlugin.Managers
 
             var generationResult = GenerateCodeFor(changedElement);
 
-            if (generationResult.DidSaveGenerated)
+            if (generationResult.DidSaveGeneratedGumRuntime)
             {
                 var whatContainsThisElement = ObjectFinder.Self.GetElementsReferencing(changedElement);
 
@@ -231,9 +223,9 @@ namespace GumPlugin.Managers
 
             if (Gum.Managers.ObjectFinder.Self.GumProjectSave != null)
             {
-                string directoryToSave = GumRuntimesFolder;
+                var directoryToSave = GumRuntimesFolder;
 
-                System.IO.Directory.CreateDirectory(directoryToSave);
+                System.IO.Directory.CreateDirectory(directoryToSave.FullPath);
 
                 GenerateAndSaveRuntimeAssociations();
 
@@ -241,7 +233,7 @@ namespace GumPlugin.Managers
             }
         }
 
-        private void GenerateAllElements(string directoryToSave)
+        private void GenerateAllElements(FilePath directoryToSave)
         {
             var elements = AppState.Self.AllLoadedElements.ToList();
 
@@ -289,91 +281,138 @@ namespace GumPlugin.Managers
                 throw new ArgumentNullException(nameof(element));
             }
 
-            string directoryToSave = GumRuntimesFolder;
+            var gumRuntimesFolder = GumRuntimesFolder;
 
-            string generatedCode = mGueDerivingClassCodeGenerator.GenerateCodeFor(element);
+            #region Generated Gum Runtime
+            string generatedGumRuntimeCode = mGueDerivingClassCodeGenerator.GenerateCodeFor(element);
 
-            FilePath generatedSaveLocation = directoryToSave + element.Name + "Runtime.Generated.cs";
+            FilePath generatedSaveLocation = gumRuntimesFolder + element.Name + "Runtime.Generated.cs";
 
-            if (savingBehavior == CodeGenerationSavingBehavior.AlwaysSave)
+            if(string.IsNullOrEmpty(generatedGumRuntimeCode))
             {
-                resultToReturn.DidSaveGenerated = true;
+                resultToReturn.DidSaveGeneratedGumRuntime = false;
+            }
+            else if (savingBehavior == CodeGenerationSavingBehavior.AlwaysSave)
+            {
+                resultToReturn.DidSaveGeneratedGumRuntime = true;
             }
             else // if(savingBehavior == CodeGenerationSavingBehavior.SaveIfGeneratedDiffers)
             {
                 // We only want to save this file if what we've just generated is different than what is already on disk:
                 if(!generatedSaveLocation.Exists())
                 {
-                    resultToReturn.DidSaveGenerated = true;
+                    resultToReturn.DidSaveGeneratedGumRuntime = true;
                 }
                 else
                 {
                     var existingText = File.ReadAllText(generatedSaveLocation.FullPath);
 
-                    resultToReturn.DidSaveGenerated = existingText != generatedCode;
+                    resultToReturn.DidSaveGeneratedGumRuntime = existingText != generatedGumRuntimeCode;
+                }
+            }
+            if (resultToReturn.DidSaveGeneratedGumRuntime)
+            {
+                // in case directory doesn't exist
+                System.IO.Directory.CreateDirectory(generatedSaveLocation.GetDirectoryContainingThis().FullPath);
+
+                GlueCommands.Self.TryMultipleTimes(() => 
+                    System.IO.File.WriteAllText(generatedSaveLocation.FullPath, generatedGumRuntimeCode));
+                bool wasAnythingAdded =
+                    FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
+                    GlueState.Self.CurrentMainProject, generatedSaveLocation.FullPath);
+
+                if (wasAnythingAdded)
+                {
+                    GlueCommands.Self.ProjectCommands.SaveProjectsTask();
                 }
             }
 
-            string customCodeSaveLocation = directoryToSave + element.Name + "Runtime.cs";
+            #endregion
+
+            #region Custom Gum Runtime
+            string customCodeSaveLocation = gumRuntimesFolder + element.Name + "Runtime.cs";
             // If it doesn't exist, overwrite it. If it does exist, don't overwrite it - we might lose
             // custom code.
-            if (!System.IO.File.Exists(customCodeSaveLocation) && 
+            if(string.IsNullOrEmpty(generatedGumRuntimeCode))
+            {
+                resultToReturn.DidSaveCustomGumRuntime = false;
+            }
+            else if (!System.IO.File.Exists(customCodeSaveLocation) && 
                 // Standard elements don't have CustomInit  
                 (element is StandardElementSave) == false)
             {
-                resultToReturn.DidSaveCustom = true;
+                resultToReturn.DidSaveCustomGumRuntime = true;
             }
-
-            if(string.IsNullOrEmpty(generatedCode))
-            {
-                resultToReturn.DidSaveCustom = false;
-                resultToReturn.DidSaveGenerated = false;
-            }
-
-            if (resultToReturn.DidSaveGenerated)
-            {
-                // in case directory doesn't exist
-                var directory = generatedSaveLocation.GetDirectoryContainingThis();
-
-                System.IO.Directory.CreateDirectory(directory.FullPath);
-
-                GlueCommands.Self.TryMultipleTimes(() => 
-                    System.IO.File.WriteAllText(generatedSaveLocation.FullPath, generatedCode));
-            }
-
-            if(resultToReturn.DidSaveCustom)
+            if (resultToReturn.DidSaveCustomGumRuntime)
             {
                 var customCode = CustomCodeGenerator.Self.GetCustomCodeTemplateCode(element);
 
                 GlueCommands.Self.TryMultipleTimes(() =>
                     System.IO.File.WriteAllText(customCodeSaveLocation, customCode));
-            }
-
-
-
-            if (resultToReturn.DidSaveGenerated)
-            {
-                string location = directoryToSave + element.Name + "Runtime.Generated.cs";
                 bool wasAnythingAdded =
                     FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
-                    GlueState.Self.CurrentMainProject, location);
-
+                    GlueState.Self.CurrentMainProject, customCodeSaveLocation);
                 if (wasAnythingAdded)
                 {
                     GlueCommands.Self.ProjectCommands.SaveProjectsTask();
                 }
             }
-            if (resultToReturn.DidSaveCustom)
+            #endregion
+
+            #region Generated Forms
+
+            var formsFolder = FormsFolder;
+
+            string generatedFormsCode = FormsClassCodeGenerator.Self.GenerateCodeFor(element);
+
+            FilePath generatedFormsSaveLocation = formsFolder + element.Name + "Forms.Generated.cs";
+
+            if(string.IsNullOrEmpty(generatedFormsCode))
             {
-                string location = directoryToSave + element.Name + "Runtime.cs";
+                resultToReturn.DidSaveGeneratedForms = false;
+            }
+            else if(savingBehavior == CodeGenerationSavingBehavior.AlwaysSave)
+            {
+                resultToReturn.DidSaveGeneratedForms = true;
+            }
+            else
+            {
+                if(!generatedFormsSaveLocation.Exists())
+                {
+                    resultToReturn.DidSaveGeneratedForms = true;
+                }
+                else
+                {
+                    var existingText = File.ReadAllText(generatedFormsSaveLocation.FullPath);
+
+                    resultToReturn.DidSaveGeneratedForms = existingText != generatedFormsCode;
+                }
+            }
+
+            if(resultToReturn.DidSaveGeneratedForms)
+            {
+                // in case it doesn't exist
+                System.IO.Directory.CreateDirectory(generatedFormsSaveLocation.GetDirectoryContainingThis().FullPath);
+
+                GlueCommands.Self.TryMultipleTimes(() =>
+                    System.IO.File.WriteAllText(generatedFormsSaveLocation.FullPath, generatedFormsCode));
+
                 bool wasAnythingAdded =
                     FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
-                    GlueState.Self.CurrentMainProject, location);
-                if (wasAnythingAdded)
+                    GlueState.Self.CurrentMainProject, generatedFormsSaveLocation.FullPath);
+
+                if(wasAnythingAdded)
                 {
                     GlueCommands.Self.ProjectCommands.SaveProjectsTask();
                 }
             }
+
+            #endregion
+
+            #region Custom Forms
+
+
+            #endregion
 
             return resultToReturn;
         }
@@ -483,13 +522,13 @@ namespace GumPlugin.Managers
 
         private void GenerateCodeFor(BehaviorSave behavior)
         {
-            string directoryToSave = GumBehaviorsFolder;
+            var directoryToSave = GumBehaviorsFolder;
 
             string generatedCode = behaviorCodeGenerator.GenerateInterfaceCodeFor(behavior);
 
             string saveLocation = directoryToSave + "I" + behavior.Name + ".Generated.cs";
 
-            System.IO.Directory.CreateDirectory(directoryToSave);
+            System.IO.Directory.CreateDirectory(directoryToSave.GetDirectoryContainingThis().FullPath);
 
             bool didSave = false;
 

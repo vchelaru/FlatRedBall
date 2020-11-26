@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using Gum.DataTypes;
+using GumPluginCore.CodeGeneration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,11 +27,23 @@ namespace GumPlugin.CodeGeneration
         {
             bool isGlueScreen = element is FlatRedBall.Glue.SaveClasses.ScreenSave;
             bool hasGumScreen = GetIfContainsAnyGumScreenFiles(element);
+            // technically all FRB projects now have forms, so let's just default that to true
+            bool hasForms = true; // okay older projects may not but.....that's a pain in the butto handle.
 
             if(isGlueScreen && !hasGumScreen && GetIfHasGumProject())
             {
                 // Create a generic Gum IDB to support in-code creation of Gum objects:
                 codeBlock.Line("FlatRedBall.Gum.GumIdb gumIdb;");
+            }
+
+            if(isGlueScreen && hasGumScreen && hasForms)
+            {
+                var elementName = element.GetStrippedName();
+
+                var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName) +
+                    "." + FlatRedBall.IO.FileManager.RemovePath(elementName) + "GumForms";
+
+                codeBlock.Line($"{formsObjectType} Forms;");
             }
 
             return codeBlock;
@@ -40,6 +53,7 @@ namespace GumPlugin.CodeGeneration
         {
             bool isGlueScreen = element is FlatRedBall.Glue.SaveClasses.ScreenSave;
             bool hasGumScreen = GetIfContainsAnyGumScreenFiles(element);
+            bool hasForms = true; // okay older projects may not but.....that's a pain in the butto handle.
 
             if (isGlueScreen && !hasGumScreen && GetIfHasGumProject())
             {
@@ -47,8 +61,17 @@ namespace GumPlugin.CodeGeneration
                 codeBlock.Line("gumIdb = new FlatRedBall.Gum.GumIdb();");
             }
 
-            return codeBlock;
+            if (isGlueScreen && hasGumScreen && hasForms)
+            {
+                var elementName = element.GetStrippedName();
 
+                var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName) +
+                    "." + FlatRedBall.IO.FileManager.RemovePath(elementName) + "GumForms";
+                var rfs = GetGumScreenRfs(element);
+                codeBlock.Line($"Forms = new {formsObjectType}({rfs.GetInstanceName()});");
+            }
+
+            return codeBlock;
         }
 
         public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
