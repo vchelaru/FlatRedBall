@@ -1377,7 +1377,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             AddIfConditionalSymbolIfNecesssary(codeBlock, namedObjectSave);
 
-            if (!setByDerived)
+            // why not setByDerived? You may want logic in the base implementation. Let the null check do it
+            //if (!setByDerived)
             {
                 if (namedObjectSave.Instantiate == false)
                 {
@@ -1419,7 +1420,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             // If it's an emitter, call TimedEmit:
             ParticleCodeGenerator.GenerateTimedEmit(codeBlock, namedObjectSave);
 
-            if (!setByDerived)
+            //if (!setByDerived)
             {
 
                 if (namedObjectSave.Instantiate == false)

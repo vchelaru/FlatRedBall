@@ -9,19 +9,20 @@ using TileGraphicsPlugin.Controllers;
 
 namespace TileGraphicsPlugin.CodeGeneration
 {
+    // this whole thing should die:
     class LevelCodeGenerator : ElementComponentCodeGenerator
     {
-        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
-        {
-            bool shouldGenerate = GetIfShouldGenerate(element);
+        //public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
+        //{
+        //    //bool shouldGenerate = GetIfShouldGenerate(element);
 
-            if (shouldGenerate)
-            {
-                var ifBlock = codeBlock.If("CurrentTileMap != null");
-                ifBlock.Line("CurrentTileMap.AnimateSelf();");
-            }
-            return codeBlock;
-        }
+        //    //if (shouldGenerate)
+        //    //{
+        //    //    var ifBlock = codeBlock.If("CurrentTileMap != null");
+        //    //    ifBlock.Line("CurrentTileMap.AnimateSelf();");
+        //    //}
+        //    //return codeBlock;
+        //}
 
         public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
         {
@@ -40,52 +41,52 @@ namespace TileGraphicsPlugin.CodeGeneration
 
         private void GenerateInitializeLevel(ICodeBlock codeBlock, IElement element)
         {
-            #region /////////////////////////////////Early out////////////////////////////////
-            bool shouldGenerate = GetIfShouldGenerate(element);
+            //#region /////////////////////////////////Early out////////////////////////////////
+            //bool shouldGenerate = GetIfShouldGenerate(element);
 
-            if (!shouldGenerate)
-            {
-                return;
-            }
+            //if (!shouldGenerate)
+            //{
+            //    return;
+            //}
 
-            ///////////////////////////////End early out/////////////////////////////
-            #endregion
+            /////////////////////////////////End early out/////////////////////////////
+            //#endregion
 
 
-            codeBlock.Line("FlatRedBall.TileGraphics.LayeredTileMap CurrentTileMap;");
-            var function = codeBlock.Function("void", "InitializeLevel", "string levelName");
+            //codeBlock.Line("FlatRedBall.TileGraphics.LayeredTileMap CurrentTileMap;");
+            //var function = codeBlock.Function("void", "InitializeLevel", "string levelName");
 
-            GenerateInitializeLevelObjects(function);
+            //GenerateInitializeLevelObjects(function);
 
-            GenerateInitializeCamera(function);
+            //GenerateInitializeCamera(function);
 
-            GenerateAddCollisionAndEntities(function);
+            //GenerateAddCollisionAndEntities(function);
 
             //GenerateInitializeAnimations(function);
         }
 
-        private static bool GetIfShouldGenerate(IElement element)
-        {
-            bool shouldContinue = true;
+        //private static bool GetIfShouldGenerate(IElement element)
+        //{
+        //    bool shouldContinue = true;
 
-            bool isScreen = element is ScreenSave;
+        //    bool isScreen = element is ScreenSave;
 
-            if (!isScreen)
-            {
-                shouldContinue = false;
-            }
+        //    if (!isScreen)
+        //    {
+        //        shouldContinue = false;
+        //    }
 
-            if (shouldContinue)
-            {
-                var variable = element.GetCustomVariable(AddLevelController.UsesTmxLevelFilesVariableName);
+        //    if (shouldContinue)
+        //    {
+        //        var variable = element.GetCustomVariable(AddLevelController.UsesTmxLevelFilesVariableName);
 
-                if (variable == null || variable.DefaultValue == null || (variable.DefaultValue is bool) == false || (bool)(variable.DefaultValue) == false)
-                {
-                    shouldContinue = false;
-                }
-            }
-            return shouldContinue;
-        }
+        //        if (variable == null || variable.DefaultValue == null || (variable.DefaultValue is bool) == false || (bool)(variable.DefaultValue) == false)
+        //        {
+        //            shouldContinue = false;
+        //        }
+        //    }
+        //    return shouldContinue;
+        //}
 
         private static void GenerateInitializeLevelObjects(ICodeBlock function)
         {
