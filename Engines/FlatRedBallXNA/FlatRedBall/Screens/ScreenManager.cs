@@ -80,6 +80,9 @@ namespace FlatRedBall.Screens
             get { return mPersistentSpriteFrames; }
         }
 
+        public static PositionedObjectList<Sprite> PersistentSprites { get; private set; } = new PositionedObjectList<Sprite>();
+        public static PositionedObjectList<PositionedObject> PersistentPositionedObjects { get; private set; } = new PositionedObjectList<PositionedObject>();
+
         /// <summary>
         /// A list of IDrawableBatch instances which persist inbetween screens. Items in this list
         /// do not result in exceptions if they are not cleaned up inbetween screens.
@@ -483,7 +486,7 @@ namespace FlatRedBall.Screens
                 {
                     int spriteCount = SpriteManager.AutomaticallyUpdatedSprites.Count;
 
-                    foreach (SpriteFrame spriteFrame in mPersistentSpriteFrames)
+                    foreach (var spriteFrame in mPersistentSpriteFrames)
                     {
                         foreach (Sprite sprite in SpriteManager.AutomaticallyUpdatedSprites)
                         {
@@ -491,6 +494,14 @@ namespace FlatRedBall.Screens
                             {
                                 spriteCount--;
                             }
+                        }
+                    }
+
+                    foreach(var sprite in PersistentSprites)
+                    {
+                        if(sprite.ListsBelongingTo.Contains(SpriteManager.mAutomaticallyUpdatedSprites))
+                        {
+                            spriteCount--;
                         }
                     }
 
@@ -564,24 +575,38 @@ namespace FlatRedBall.Screens
                 #region Managed Positionedobjects
                 if (SpriteManager.ManagedPositionedObjects.Count != 0)
                 {
-                    messages.Add("There are " + SpriteManager.ManagedPositionedObjects.Count +
-                        " Managed PositionedObjects in the SpriteManager.  See \"FlatRedBall.SpriteManager.ManagedPositionedObjects\"");
+                    var count = SpriteManager.ManagedPositionedObjects.Count;
 
-                    var firstPositionedObject = SpriteManager.ManagedPositionedObjects[0];
-                    var type = firstPositionedObject.GetType();
-
-                    if (type.FullName.Contains(".Entities."))
+                    foreach(var persistentPositionedObject in PersistentPositionedObjects)
                     {
-                        string message;
-                        if(string.IsNullOrWhiteSpace(firstPositionedObject.Name))
+                        if(persistentPositionedObject.ListsBelongingTo.Contains(SpriteManager.mManagedPositionedObjects))
                         {
-                            message = $"The first is an unnnamed entity of type {type.Name}";
+                            count--;
                         }
-                        else
+                    }
+
+                    if(count > 1)
+                    {
+                        messages.Add("There are " + count +
+                            " Managed PositionedObjects in the SpriteManager.  See \"FlatRedBall.SpriteManager.ManagedPositionedObjects\"");
+
+                        var firstPositionedObject = SpriteManager.ManagedPositionedObjects.Except(PersistentPositionedObjects).FirstOrDefault();
+                        var type = firstPositionedObject.GetType();
+
+                        if (type.FullName.Contains(".Entities."))
                         {
-                            message = $"The first is an entity of type {type.Name} named {firstPositionedObject.Name}";
+                            string message;
+                            if(string.IsNullOrWhiteSpace(firstPositionedObject.Name))
+                            {
+                                message = $"The first is an unnnamed entity of type {type.Name}";
+                            }
+                            else
+                            {
+                                message = $"The first is an entity of type {type.Name} named {firstPositionedObject.Name}";
+                            }
+                            messages.Add(message);
                         }
-                        messages.Add(message);
+
                     }
                 }
                 #endregion

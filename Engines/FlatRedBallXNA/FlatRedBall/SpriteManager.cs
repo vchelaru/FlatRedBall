@@ -235,7 +235,8 @@ namespace FlatRedBall
         static internal SpriteList mZBufferedSprites;
         static ReadOnlyCollection<Sprite> mZBufferedSpritesReadOnly;
 
-        static SpriteList mAutomaticallyUpdatedSprites;
+        // for speed, made internal
+        internal static SpriteList mAutomaticallyUpdatedSprites;
         static ReadOnlyCollection<Sprite> mAutomaticallyUpdatedSpritesReadOnly;
 
         static SpriteList mManuallyUpdatedSprites;
@@ -256,7 +257,7 @@ namespace FlatRedBall
         // than documenting all of the steps required to manage a PositionedObject, the
         // SpriteManager can simply manage these.  This makes things more convenient and
         // standardized.
-        static PositionedObjectList<PositionedObject> mManagedPositionedObjects;
+        internal static PositionedObjectList<PositionedObject> mManagedPositionedObjects;
         static ReadOnlyCollection<PositionedObject> mManagedPositionedObjectsReadOnly;
 
 
