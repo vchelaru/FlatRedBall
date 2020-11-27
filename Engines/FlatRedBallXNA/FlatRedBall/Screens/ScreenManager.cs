@@ -633,9 +633,12 @@ namespace FlatRedBall.Screens
                         }
                     }
 
+                    if (count > 0)
+                    { 
+                        messages.Add("There are " + count +
+                            " Sprites in the SpriteManager's TopLayer.  See \"FlatRedBall.SpriteManager.TopLayer.Sprites\"");
+                    }
 
-                    messages.Add("There are " + count +
-                        " Sprites in the SpriteManager's TopLayer.  See \"FlatRedBall.SpriteManager.TopLayer.Sprites\"");
                 }
 
                 #endregion
