@@ -48,7 +48,13 @@
     <Variable>
       <Type>float</Type>
       <Name>ListBoxInstance.Y</Name>
-      <Value xsi:type="xsd:float">46</Value>
+      <Value xsi:type="xsd:float">0</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>PositionUnitType</Type>
+      <Name>ListBoxInstance.Y Units</Name>
+      <Value xsi:type="xsd:int">5</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
