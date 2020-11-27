@@ -330,14 +330,14 @@ namespace GumPlugin.Managers
             #endregion
 
             #region Custom Gum Runtime
-            string customCodeSaveLocation = gumRuntimesFolder + element.Name + "Runtime.cs";
+            string customGumRuntimeSaveLocation = gumRuntimesFolder + element.Name + "Runtime.cs";
             // If it doesn't exist, overwrite it. If it does exist, don't overwrite it - we might lose
             // custom code.
             if(string.IsNullOrEmpty(generatedGumRuntimeCode))
             {
                 resultToReturn.DidSaveCustomGumRuntime = false;
             }
-            else if (!System.IO.File.Exists(customCodeSaveLocation) && 
+            else if (!System.IO.File.Exists(customGumRuntimeSaveLocation) && 
                 // Standard elements don't have CustomInit  
                 (element is StandardElementSave) == false)
             {
@@ -345,13 +345,13 @@ namespace GumPlugin.Managers
             }
             if (resultToReturn.DidSaveCustomGumRuntime)
             {
-                var customCode = CustomCodeGenerator.Self.GetCustomCodeTemplateCode(element);
+                var customCode = CustomCodeGenerator.Self.GetCustomGumRuntimeCustomCode(element);
 
                 GlueCommands.Self.TryMultipleTimes(() =>
-                    System.IO.File.WriteAllText(customCodeSaveLocation, customCode));
+                    System.IO.File.WriteAllText(customGumRuntimeSaveLocation, customCode));
                 bool wasAnythingAdded =
                     FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
-                    GlueState.Self.CurrentMainProject, customCodeSaveLocation);
+                    GlueState.Self.CurrentMainProject, customGumRuntimeSaveLocation);
                 if (wasAnythingAdded)
                 {
                     GlueCommands.Self.ProjectCommands.SaveProjectsTask();
@@ -411,6 +411,31 @@ namespace GumPlugin.Managers
 
             #region Custom Forms
 
+            string customFormsSaveLocation = formsFolder + element.Name + "Forms.cs";
+
+            if(string.IsNullOrEmpty(generatedFormsCode))
+            {
+                resultToReturn.DidSaveCustomForms = false;
+            }
+            else if(!System.IO.File.Exists(customFormsSaveLocation))
+            {
+                resultToReturn.DidSaveCustomForms = true;
+            }
+
+            if(resultToReturn.DidSaveCustomForms)
+            {
+                var customCode = CustomCodeGenerator.Self.GetCustomFormsCodeTemplateCode(element);
+
+                GlueCommands.Self.TryMultipleTimes(() =>
+                    System.IO.File.WriteAllText(customFormsSaveLocation, customCode));
+                bool wasAnythingAdded =
+                    FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
+                    GlueState.Self.CurrentMainProject, customFormsSaveLocation);
+                if (wasAnythingAdded)
+                {
+                    GlueCommands.Self.ProjectCommands.SaveProjectsTask();
+                }
+            }
 
             #endregion
 

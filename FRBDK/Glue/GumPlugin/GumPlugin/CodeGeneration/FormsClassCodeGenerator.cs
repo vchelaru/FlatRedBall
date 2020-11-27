@@ -22,9 +22,6 @@ namespace GumPluginCore.CodeGeneration
                 throw new ArgumentNullException(nameof(elementSave));
             }
 
-
-
-
             bool generated = false;
 
             var isScreen = elementSave is ScreenSave;
@@ -74,6 +71,8 @@ namespace GumPluginCore.CodeGeneration
             string runtimeClassName = GetUnqualifiedRuntimeTypeFor(elementSave);
 
             GenerateConstructor(elementSave, currentBlock, runtimeClassName);
+
+            currentBlock.Line("partial void CustomInitialize();");
         }
 
         private void GenerateConstructor(ElementSave elementSave, ICodeBlock currentBlock, string runtimeClassName)
@@ -95,6 +94,8 @@ namespace GumPluginCore.CodeGeneration
                     }
                 }
             }
+
+            constructor.Line("CustomInitialize();");
         }
 
         private void GenerateProperties(ElementSave elementSave, ICodeBlock currentBlock)
