@@ -11,20 +11,11 @@ namespace FlatRedBall.Forms.Controls
     {
         #region Fields/Properties
 
-        protected override string DisplayedText
-        {
-            get 
-            { 
-                return Text; 
-            }
-        }
+        protected override string DisplayedText => Text; 
 
         public string Text
         {
-            get
-            {
-                return coreTextObject.RawText;
-            }
+            get => coreTextObject.RawText;
             set
             {
                 if(value != Text)

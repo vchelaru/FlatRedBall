@@ -285,9 +285,26 @@ namespace FlatRedBall.Forms.Controls
             // let's just make sure it's removed
             listBox.Visual.RemoveFromManagers();
 
-            // todo - what if this is on a layer?
+            var layerToAddListBoxTo =
+                Visual.Managers.Renderer.MainLayer;
+
+            var mainRoot = Visual.ElementGueContainingThis ?? Visual;
+
+            // do a search in the layers to see where this is held - expensive but we can at least look in non-main layers
+            foreach(var layer in Visual.Managers.Renderer.Layers)
+            {
+                if(layer != Visual.Managers.Renderer.MainLayer)
+                {
+                    if(layer.Renderables.Contains(mainRoot) || layer.Renderables.Contains(mainRoot?.RenderableComponent))
+                    {
+                        layerToAddListBoxTo = layer;
+                        break;
+                    }
+                }
+            }
+
             listBox.Visual.AddToManagers(Visual.Managers,
-                Visual.Managers.Renderer.MainLayer);
+                layerToAddListBoxTo);
 
             var rootParent = listBox.Visual.GetParentRoot();
 
