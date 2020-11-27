@@ -624,7 +624,17 @@ namespace FlatRedBall.Screens
 
                 if (SpriteManager.TopLayer.Sprites.Count != 0)
                 {
-                    messages.Add("There are " + SpriteManager.TopLayer.Sprites.Count +
+                    var count = SpriteManager.TopLayer.Sprites.Count;
+                    foreach (var sprite in PersistentSprites)
+                    {
+                        if(sprite.ListsBelongingTo.Contains(SpriteManager.TopLayer.mSprites))
+                        {
+                            count--;
+                        }
+                    }
+
+
+                    messages.Add("There are " + count +
                         " Sprites in the SpriteManager's TopLayer.  See \"FlatRedBall.SpriteManager.TopLayer.Sprites\"");
                 }
 
