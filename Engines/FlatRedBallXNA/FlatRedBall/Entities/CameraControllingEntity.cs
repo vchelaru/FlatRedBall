@@ -15,6 +15,8 @@ namespace FlatRedBall.Entities
     // Influenced by https://www.gamasutra.com/blogs/ItayKeren/20150511/243083/Scroll_Back_The_Theory_and_Practice_of_Cameras_in_SideScrollers.php
     public class CameraControllingEntity : PositionedObject
     {
+        bool hasActivityBeenCalled = false;
+
         public CameraBehaviorType BehaviorType { get; set; }
 
         /// <summary>
@@ -55,6 +57,10 @@ namespace FlatRedBall.Entities
         /// </remarks>
         public float SnapToPixelOffset { get; set; } = .25f;
 
+        /// <summary>
+        /// Whether to perform logic in the Activity call. This exists to allow control over whether Activity
+        /// should apply if Activity is called in generated code.
+        /// </summary>
         public bool IsActive { get; set; } = true;
 
         public void Activity()
@@ -67,14 +73,21 @@ namespace FlatRedBall.Entities
             //////////////////End Early Out//////////////////
 
 
+            Vector2 target = GetTarget();
 
+            ApplyTarget(target, hasActivityBeenCalled ? LerpSmooth : false);
 
+            hasActivityBeenCalled = true;
+        }
+
+        public Vector2 GetTarget()
+        {
             #region Get the average position of all the target instances
 
             Vector2 averagePosition = Vector2.Zero;
 
-            foreach(PositionedObject targetAtI in Targets)
-            { 
+            foreach (PositionedObject targetAtI in Targets)
+            {
                 averagePosition.X = targetAtI.X;
                 averagePosition.Y = targetAtI.Y;
             }
@@ -104,20 +117,44 @@ namespace FlatRedBall.Entities
 
             if (Map != null)
             {
-                target.X = System.Math.Max(target.X, Map.X + Camera.Main.OrthogonalWidth / 2);
-                target.X = System.Math.Min(target.X, Map.X + Map.Width - Camera.Main.OrthogonalWidth / 2);
+                var mapLeft = Map.X;
+                var mapRight = Map.X + Map.Width;
 
-                target.Y = System.Math.Max(target.Y, Map.Y - Map.Height + Camera.Main.OrthogonalHeight / 2);
-                target.Y = System.Math.Min(target.Y, Map.Y - Camera.Main.OrthogonalHeight / 2);
+                var mapBottom = Map.Y - Map.Height;
+                var mapTop = Map.Y;
+
+                if (Camera.Main.OrthogonalWidth > Map.Width)
+                {
+                    target.X = mapLeft + Map.Width / 2;
+                }
+                else
+                {
+                    target.X = System.Math.Max(target.X, mapLeft + Camera.Main.OrthogonalWidth / 2);
+                    target.X = System.Math.Min(target.X, mapRight - Camera.Main.OrthogonalWidth / 2);
+                }
+
+                if (Camera.Main.OrthogonalHeight > Map.Height)
+                {
+                    target.Y = mapBottom + Map.Height / 2;
+                }
+                else
+                {
+                    target.Y = System.Math.Max(target.Y, mapBottom + Camera.Main.OrthogonalHeight / 2);
+                    target.Y = System.Math.Min(target.Y, mapTop - Camera.Main.OrthogonalHeight / 2);
+                }
             }
 
             #endregion
+            return target;
+        }
 
+        public void ApplyTarget(Vector2 target, bool lerpSmooth = true)
+        {
             #region Set this position or velocity depending on whether we lerp position
 
             var objectToMove = this.Parent ?? this;
 
-            if (LerpSmooth == false)
+            if (lerpSmooth == false)
             {
                 objectToMove.Position.X = target.X;
                 objectToMove.Position.Y = target.Y;
