@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 using Gum.DataTypes;
 using Gum.DataTypes.Behaviors;
@@ -57,7 +58,9 @@ namespace GumPluginCore.Managers
 
                         if (extension == GumProjectSave.ScreenExtension)
                         {
-                            var screen = FileManager.XmlDeserialize<ScreenSave>(fileName);
+                            ScreenSave screen = null;
+                            GlueCommands.Self.TryMultipleTimes(() => screen = FileManager.XmlDeserialize<ScreenSave>(fileName));
+                            
                             screen.Initialize(screen.DefaultState);
                             // since the gum project didn't change, it should be here
                             var oldScreen = gumProject.Screens.FirstOrDefault(item => item.Name == screen.Name);
@@ -75,7 +78,8 @@ namespace GumPluginCore.Managers
                         }
                         else if(extension == GumProjectSave.ComponentExtension)
                         {
-                            var component = FileManager.XmlDeserialize<ComponentSave>(fileName);
+                            ComponentSave component = null;
+                            GlueCommands.Self.TryMultipleTimes(() => component = FileManager.XmlDeserialize<ComponentSave>(fileName));
                             component.Initialize(component.DefaultState);
 
                             // since the gum project didn't change, it should be here
@@ -93,7 +97,8 @@ namespace GumPluginCore.Managers
                         }
                         else if(extension == GumProjectSave.StandardExtension)
                         {
-                            var standard = FileManager.XmlDeserialize<StandardElementSave>(fileName);
+                            StandardElementSave standard = null;
+                            GlueCommands.Self.TryMultipleTimes(() => standard = FileManager.XmlDeserialize<StandardElementSave>(fileName));
                             standard.Initialize(standard.DefaultState);
 
                             var oldStandard = gumProject.StandardElements.FirstOrDefault(item => item.Name == standard.Name);

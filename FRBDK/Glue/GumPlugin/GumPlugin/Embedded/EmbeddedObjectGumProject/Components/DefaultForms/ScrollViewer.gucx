@@ -197,6 +197,11 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>ScrollBarVisibilityState</Type>
+      <Name>ScrollBarVisibilityState</Name>
+      <SetsValue>false</SetsValue>
+    </Variable>
+    <Variable>
       <Type>State</Type>
       <Name>State</Name>
       <SetsValue>true</SetsValue>
@@ -256,6 +261,39 @@
       <SetsValue>true</SetsValue>
     </Variable>
   </State>
+  <Category>
+    <Name>ScrollBarVisibility</Name>
+    <State>
+      <Name>NoScrollBar</Name>
+      <Variable>
+        <Type>float</Type>
+        <Name>ClipContainerInstance.Width</Name>
+        <Value xsi:type="xsd:float">-2</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>bool</Type>
+        <Name>VerticalScrollBarInstance.Visible</Name>
+        <Value xsi:type="xsd:boolean">false</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+    </State>
+    <State>
+      <Name>VerticalScrollVisible</Name>
+      <Variable>
+        <Type>bool</Type>
+        <Name>VerticalScrollBarInstance.Visible</Name>
+        <Value xsi:type="xsd:boolean">true</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>float</Type>
+        <Name>ClipContainerInstance.Width</Name>
+        <Value xsi:type="xsd:float">-37</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+    </State>
+  </Category>
   <Instance>
     <Name>ColoredFrameInstance</Name>
     <BaseType>DefaultForms/ColoredFrame</BaseType>
