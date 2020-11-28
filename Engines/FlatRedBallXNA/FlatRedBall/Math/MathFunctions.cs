@@ -559,122 +559,16 @@ namespace FlatRedBall.Math
 
         internal static bool IsOn3D<T>(T objectToTest, bool relativeToCamera, Ray mouseRay,
             Camera camera,
-            ref Vector3 intersectionPoint) where T : IPositionable, IRotatable, IReadOnlyScalable
+            out Vector3 intersectionPoint) where T : IPositionable, IRotatable, IReadOnlyScalable
         {
+            intersectionPoint = Vector3.Zero;
+
             if (objectToTest == null)
                 return false;
 
-
-            #region Old code to get the mouse ray.  Moved to Get MouseRay.  May need it later to handle ortho
-            //            #region Get the vector from the camera out and store it in cursorVector
-
-            //            if (camera.Orthogonal == false)
-            //            {
-            //                if (camera == SpriteManager.Camera)
-            //                {
-            //                    cursorVector.X = (float)(mXAt100Units);// + tipXOffset);
-            //                    cursorVector.Y = (float)(mYAt100Units);// + tipYOffset);
-            //                }
-            //                else
-            //                {
-            //                    float xAt100Units = 0;
-            //                    float yAt100Units = 0;
-
-            //                    FlatRedBall.Math.MathFunctions.WindowToAbsolute(
-            //                        X - camera.DestinationRectangle.Left, 
-            //                        Y - camera.DestinationRectangle.Top, 
-            //                        ref xAt100Units, ref yAt100Units, 
-            //                        FlatRedBall.Math.MathFunctions.ForwardVector3.Z * 100, camera,
-            //                         Camera.CoordinateRelativity.RelativeToCamera);
-            //                    cursorVector.X = xAt100Units;// + tipXOffset);
-            //                    cursorVector.Y = yAt100Units;// + tipYOffset);
-            //                }
-            //                cursorVector.Z = FlatRedBall.Math.MathFunctions.ForwardVector3.Z * 100.0f ;
-
-            //#if FRB_MDX
-            //                cursorVector.TransformCoordinate(camera.RotationMatrix);
-            //#else
-            //                Matrix cameraRotationMatrix = camera.RotationMatrix;
-            //                Vector3.Transform(ref cursorVector, ref cameraRotationMatrix, out cursorVector);
-            //#endif
-
-            //                if (relativeToCamera == false)
-            //                {
-            //                    xCoefLine = (camera.X);
-            //                    yCoefLine = (camera.Y);
-            //                    zCoefLine = (camera.Z);
-            //                }
-            //            }
-            //            else
-            //            {// when in ortho, we want to "move" the sprite to the center of the screen and run an 
-            //                // intersection between
-            //                // the sprite's plane and the vector straight down the center of the screen (0,0,1).
-            //                double horizontalPercentage = 0;
-            //                double verticalPercentage = 0;
-
-            //                if (camera == SpriteManager.Camera)
-            //                {
-            //                    horizontalPercentage = (mXAt100Units) / camera.XEdge;
-            //                    verticalPercentage = (mYAt100Units) / camera.YEdge;
-            //                }
-            //                else
-            //                {
-            //                    float xAt100Units = 0;
-            //                    float yAt100Units = 0;
-
-            //                    FlatRedBall.Math.MathFunctions.WindowToAbsolute(
-            //                        X - camera.DestinationRectangle.Left,
-            //                        Y - camera.DestinationRectangle.Top,
-            //                        ref xAt100Units, ref yAt100Units,
-            //                        FlatRedBall.Math.MathFunctions.ForwardVector3.Z * 100, camera,
-            //                         Camera.CoordinateRelativity.RelativeToCamera);
-
-            //                    horizontalPercentage = (xAt100Units) / camera.XEdge;
-            //                    verticalPercentage = (yAt100Units) / camera.YEdge;
-
-            //                }
-
-            //                double xDistanceFromCenter = horizontalPercentage * camera.OrthogonalWidth / 2.0f;
-            //                double yDistanceFromCenter = verticalPercentage * camera.OrthogonalHeight / 2.0f;
-
-            //                cursorVector.X = 0;
-            //                cursorVector.Y = 0;
-            //                cursorVector.Z = 1;
-
-            //                if (relativeToCamera == false)
-            //                {
-            //                    xCoefLine = (camera.X + xDistanceFromCenter);
-            //                    yCoefLine = (camera.Y + yDistanceFromCenter);
-            //                    zCoefLine = (camera.Z);
-            //                }
-            //                else
-            //                {
-            //                    xCoefLine = xDistanceFromCenter;
-            //                    yCoefLine = yDistanceFromCenter;
-            //                }
-            //            }
-            //            #endregion
-            #endregion
-
             mouseRay.Direction.Normalize();
 
-#if SILVERLIGHT
-                #region In SILVERLIGHT, do a 2D test
-
-
-
-                float worldX = mouseRay.Position.X;
-                float worldY = mouseRay.Position.Y;
-
-                return worldX > objectToTest.X - objectToTest.ScaleX &&
-                    worldX < objectToTest.X + objectToTest.ScaleX &&
-                    worldY > objectToTest.Y - objectToTest.ScaleY &&
-                    worldY < objectToTest.Y + objectToTest.ScaleY;
-
-
-                #endregion
-#else
-                #region Do a 3D test since the object might be rotated on all axes
+            #region Do a 3D test since the object might be rotated on all axes
 
                 Vector3 topEdge = new Vector3(1, 0, 0); Vector3 leftEdge = new Vector3(0, -1, 0);
 
@@ -748,7 +642,6 @@ namespace FlatRedBall.Math
                     return false;
 
                 #endregion
-#endif
         }
 
         public static bool IsOrthonormal(ref Matrix matrix)

@@ -438,18 +438,6 @@ namespace FlatRedBall.Gui
             return unmodifiedXEdge - GuiManager.XEdge;
         }
 
-        static public Cursor AddCursor(Camera camera)
-        {
-            Cursor cursorToAdd = new Cursor(camera);
-
-            cursorToAdd.SetCursor(
-                FlatRedBallServices.Load<Texture2D>("Assets/Textures/cursor1.bmp", InternalGuiContentManagerName), -.5f, 1);
-
-            mCursors.Add(cursorToAdd);
-            return cursorToAdd;
-
-        }
-
 		#region XML Docs
 		/// <summary>
         /// Adds a window as a Dominant Window.  If the window is a regular Window
@@ -713,7 +701,7 @@ namespace FlatRedBall.Gui
 
                         IWindow window = mPerishableArray[i];
 
-                        if (c.IsOn(window))
+                        if (window.Visible && !window.IgnoredByCursor && window.HasCursorOver(c))
                         {
                             window.TestCollision(c);
                         }

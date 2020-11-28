@@ -42,53 +42,6 @@ namespace FlatRedBall.Gui
         DelegateBasedPressableInput mSecondaryButton;
         DelegateBasedPressableInput mMiddleButton;
 
-
-#if FRB_MDX
-        System.Windows.Forms.Control mOwner;
-#endif
-
-        #region FRB-Drawn cursor Fields
-
-        #region XML Docs
-        /// <summary>
-        /// The Sprite that the cursor uses to draw itself.
-        /// </summary>
-        /// <remarks>
-        /// This field can be modified to change how the Sprite is drawn.  The following Sprite values modify the cursor:
-        /// 
-        /// <para>x - relative to the camera</para>
-        /// <para>y - relative to the camera</para>
-        /// <para>ScaleX</para>
-        /// <para>ScaleY</para>
-        /// <para>RotationX</para>
-        /// <para>RotationY</para>
-        /// <para>RotationZ</para>
-        /// <para>texture</para>
-        /// <para>fade</para>
-        /// <para>visible</para>
-        /// <para>
-        /// Other values will not modify how the Sprite is drawn.
-        /// </para>
-        /// </remarks>
-        #endregion
-        public Sprite si;
-
-        #region XML Docs
-        /// <summary>
-        /// The x distance from the center of the Cursor which is used as the cursor's tip for selection.
-        /// </summary>
-        #endregion
-        public float tipXOffset;
-
-        #region XML Docs
-        /// <summary>
-        /// The y distance from the center of the Cursor which is used as the cursor's tip for selection.
-        /// </summary>
-        #endregion
-        public float tipYOffset;
-
-        #endregion
-
         IWindow mWindowPushed;
 
         #region XML Docs
@@ -155,9 +108,6 @@ namespace FlatRedBall.Gui
         // store off the last read value and use those.
         int mLastXFromHardware;
         int mLastYFromHardware;
-
-        float mLastUnitX;
-        float mLastUnitY;
 
         bool mHasDraggedAwayFromPushPoint;
 
@@ -552,56 +502,6 @@ namespace FlatRedBall.Gui
                     System.Math.Abs(ScreenY - mPushedY) < x;
         }
 
-        #region XML Docs
-        /// <summary>
-        /// The cursor's X position relative to the camera at 100 units away from the camera.
-        /// </summary>
-        /// <remarks>
-        /// As objects can have varying distances away from the camera, when trying to move
-        /// objects with the cursor, it is usually not accurate to say:
-        /// <code>
-        /// someObject.X = cursor.X;
-        /// someObject.Y = cursor.Y;
-        /// </code>
-        /// This will only be accurate if the object is also 100 units away from the camera and
-        /// if the camera is centered on the origin.  The
-        /// x and y values must be passed to the GetCursorPosition method.
-        /// <seealso cref="FlatRedBall.Gui.Cursor.GetCursorPosition"/>
-        /// </remarks>
-        #endregion
-        public float XForUI
-        {
-            get
-            {
-
-                return si.X + tipXOffset - GuiManager.GetXOffsetForModifiedAspectRatio();
-            }
-        }
-
-        #region XML Docs
-        /// <summary>
-        /// The cursor's Y position relative to the camera at 100 units away from the camera.
-        /// </summary>
-        /// <remarks>
-        /// As objects can have varying distances away from the camera, when trying to move
-        /// objects with the cursor, it is usually not accurate to say:
-        /// <code>
-        /// someObject.X = cursor.X;
-        /// someObject.Y = cursor.Y;
-        /// </code>
-        /// This will only be accurate if the object is also 100 units away from the camera and
-        /// if the camera is centered on the origin.  The
-        /// x and y values must be passed to the GetCursorPosition method.
-        /// </remarks>
-        #endregion
-        public float YForUI
-        {
-            get { return si.Y + tipYOffset
-                 + GuiManager.GetYOffsetForModifiedAspectRatio()
-                 ; }
-        }
-
-
         /// <summary>
         /// The movement rate of the controlling input (usually mouse) on the z axis. For the mouse this refers to the scroll wheel.
         /// </summary>
@@ -776,6 +676,7 @@ namespace FlatRedBall.Gui
         /// positioning and button state logic.  The argument
         /// is the Cursor instance, and the bool indicates whether
         /// the internal Cursor logic should apply click and push values.
+        /// </summary>
         /// <remarks>
         /// If the CustomUpdate delegate assigns Click, Push, and DoubleClick
         /// values internally, then it should return false, indicating that the
@@ -783,7 +684,6 @@ namespace FlatRedBall.Gui
         /// down states, then the CustomUpdate delegate should return true so that
         /// the Click, Push, and DoubleClick values are 
         /// </remarks>
-        /// </summary>
         public Func<Cursor, bool> CustomUpdate;
 
         #region Methods
@@ -815,9 +715,6 @@ namespace FlatRedBall.Gui
             // detections when we shouldn't
             // have
             ClickNoSlideThreshold = 9;
-
-            si = new Sprite();
-            si.Visible = false;
 
             mUsingMouse = true;
             mCamera = cameraToUse;
@@ -1118,8 +1015,7 @@ namespace FlatRedBall.Gui
             double secondClosestDistance = -1;
             T secondClosest = default(T);
 
-            // creating the vector before the loop so that we can save some memory.  Just one needed now.
-            Vector3 newVector = new Vector3((float)(si.X + tipXOffset), (float)(this.si.Y + tipYOffset), 0);
+            Vector3 newVector;
 
             float distance = 0;
 
@@ -1128,9 +1024,9 @@ namespace FlatRedBall.Gui
                 bool isOver = (s.CursorSelectable || considerInactives);
 
                 if (s is Text)
-                    isOver &= IsOn3D(s as Text, ref newVector);
+                    isOver &= IsOn3D(s as Text, out newVector);
                 else
-                    isOver &= IsOn3D(s, ref newVector);
+                    isOver &= IsOn3D(s, out newVector);
 
 
                 if (isOver)
@@ -1227,65 +1123,6 @@ namespace FlatRedBall.Gui
         }
 
 
-        public IWindow GetDeepestChildWindowOver(IWindow window)
-        {
-            if (!window.Visible)
-                return null;
-            int i;
-            IWindow result = null;
-
-            for (i = 0; i < window.FloatingChildren.Count; i++)
-            {
-                IWindow w = window.FloatingChildren[i];
-
-                result = GetDeepestChildWindowOver(w);
-
-                if (result != null)
-                    return result;
-            }
-
-            result = GetDeepestFloatingChildWindowOver(window);
-
-            if (result != null)
-                return result;
-
-            if (IsOn(window))
-                return window;
-
-            return null;
-        }
-
-
-        public IWindow GetDeepestFloatingChildWindowOver(IWindow window)
-        {
-            int i;
-            IWindow windowOver = null;
-
-            if (window.IgnoredByCursor)
-            {
-                return null;
-            }
-
-            for (i = 0; i < window.FloatingChildren.Count; i++)
-            {
-                IWindow floatingChild = window.FloatingChildren[i];
-
-                windowOver = GetDeepestChildWindowOver(floatingChild);
-                if (windowOver != null)
-                    return windowOver;
-            }
-
-            for (i = 0; i < window.Children.Count; i++)
-            {
-                IWindow child = window.Children[i];
-                windowOver = GetDeepestFloatingChildWindowOver(child);
-                if (windowOver != null)
-                    return windowOver;
-            }
-
-            return null;
-        }
-
         #region XML Docs
         /// <summary>
         /// Grabs a Window with the Cursor.
@@ -1331,10 +1168,11 @@ namespace FlatRedBall.Gui
         #endregion
         public bool IsOn(Sprite spriteToTest)
         {
-            bool relativeToCamera = SpriteManager.IsRelativeToCamera(spriteToTest);
-
             if (spriteToTest == null)
                 return false;
+
+            bool relativeToCamera = SpriteManager.IsRelativeToCamera(spriteToTest);
+
 
             float cursorX = 0;
             float cursorY = 0;
@@ -1359,18 +1197,8 @@ namespace FlatRedBall.Gui
 
             if (relativeToCamera)
             {
-                if (mCamera.Orthogonal == false)
-                {
-                    cursorX = (distanceFromCamera / 100.0f) * (XForUI);
-                    cursorY = (distanceFromCamera / 100.0f) * (YForUI);
-                }
-                else
-                {
-                    // orthoWidth measures left to right side of the screen, but we want orthoScl
-                    cursorX = mCamera.OrthogonalWidth * (XForUI) / (2 * mCamera.XEdge);
-                    cursorY = mCamera.OrthogonalHeight * (YForUI) / (2 * mCamera.YEdge);
-                }
-
+                cursorX = WorldXAt(spriteToTest.Z) + mCamera.X;
+                cursorY = WorldYAt(spriteToTest.Z) + mCamera.Y;
             }
             else
             {
@@ -1460,24 +1288,6 @@ namespace FlatRedBall.Gui
             return cursorX > horizontalCenter - textScaleX && cursorX < horizontalCenter + textScaleX &&
                 cursorY > verticalCenter - textScaleY && cursorY < verticalCenter + textScaleY;
         }
-
-        #region XML Docs
-        /// <summary>
-        /// Returns whether the cursor is over the argument windowToTest.
-        /// </summary>
-        /// <remarks>
-        /// This method will work accurately for both GuiManager-drawn Windows
-        /// and SpriteFrame Windows.
-        /// </remarks>
-        /// <param name="windowToTest">Reference to the window to test.</param>
-        /// <returns>Whether the cursor is over the argument Window.</returns>
-        #endregion
-        public bool IsOn(IWindow windowToTest)
-        {
-            return windowToTest.IsPointOnWindow(
-                XForUI, YForUI);
-        }
-
 
         public bool IsOn(Polygon polygon)
         {
@@ -1691,20 +1501,20 @@ namespace FlatRedBall.Gui
 
         public bool IsOn3D(Text textToTest)
         {
-            return IsOn3D(textToTest, null, ref vector3);
+            return IsOn3D(textToTest, null, out vector3);
         }
 
         public bool IsOn3D(Text textToTest, Layer layer)
         {
-            return IsOn3D(textToTest, layer, ref vector3);
+            return IsOn3D(textToTest, layer, out vector3);
         }
 
-        public bool IsOn3D(Text textToTest, ref Vector3 intersectionPoint)
+        public bool IsOn3D(Text textToTest, out Vector3 intersectionPoint)
         {
-            return IsOn3D(textToTest, null, ref intersectionPoint);
+            return IsOn3D(textToTest, null, out intersectionPoint);
         }
 
-        public bool IsOn3D(Text textToTest, Layer layer, ref Vector3 intersectionPoint)
+        public bool IsOn3D(Text textToTest, Layer layer, out Vector3 intersectionPoint)
         {
             Vector3 oldPosition = textToTest.Position;
 
@@ -1778,7 +1588,7 @@ namespace FlatRedBall.Gui
 
             #endregion
 
-            bool returnValue = IsOn3D(textToTest, false, layer, ref intersectionPoint);
+            bool returnValue = IsOn3D(textToTest, false, layer, out intersectionPoint);
 
             textToTest.Position = oldPosition;
 
@@ -1822,14 +1632,14 @@ namespace FlatRedBall.Gui
 
         public bool IsOn3D<T>(T objectToTest) where T : IPositionable, IRotatable, IReadOnlyScalable
         {
-            return IsOn3D(objectToTest, false, null, ref vector3);
+            return IsOn3D(objectToTest, false, null, out vector3);
         }
 
         public bool IsOn3D<T>(T objectToTest, Layer layer) where T : IPositionable, IRotatable, IReadOnlyScalable
         {
-            return IsOn3D(objectToTest, false, layer, ref vector3);
+            return IsOn3D(objectToTest, false, layer, out vector3);
         }
-#if !SILVERLIGHT
+
         #region XML Docs
         /// <summary>
         /// Determines whether the Cursor is on a Sprite and stores the intersection point in a Vector3.
@@ -1852,28 +1662,27 @@ namespace FlatRedBall.Gui
         #endregion
         public bool IsOn3D(Sprite spriteToTest, ref Vector3 intersectionPoint)
         {
-            return IsOn3D(spriteToTest, SpriteManager.IsRelativeToCamera(spriteToTest), null, ref intersectionPoint);
-        }
-#endif
-
-
-
-        public bool IsOn3D<T>(T spriteToTest, ref Vector3 intersectionPoint) where T : IPositionable, IRotatable, IReadOnlyScalable
-        {
-            return IsOn3D(spriteToTest, false, null, ref intersectionPoint);
+            return IsOn3D(spriteToTest, SpriteManager.IsRelativeToCamera(spriteToTest), null, out intersectionPoint);
         }
 
 
-        public bool IsOn3D<T>(T spriteToTest, bool relativeToCamera, Layer layer, ref Vector3 intersectionPoint) where T : IPositionable, IRotatable, IReadOnlyScalable
+
+        public bool IsOn3D<T>(T spriteToTest, out Vector3 intersectionPoint) where T : IPositionable, IRotatable, IReadOnlyScalable
         {
+            return IsOn3D(spriteToTest, false, null, out intersectionPoint);
+        }
+
+
+        public bool IsOn3D<T>(T spriteToTest, bool relativeToCamera, Layer layer, out Vector3 intersectionPoint) where T : IPositionable, IRotatable, IReadOnlyScalable
+        {
+            intersectionPoint = Vector3.Zero;
             if (spriteToTest == null)
                 return false;
 
             return MathFunctions.IsOn3D<T>(
                 spriteToTest, relativeToCamera, this.GetRay(layer),
-                mCamera, ref intersectionPoint);
+                mCamera, out intersectionPoint);
         }
-#if !SILVERLIGHT
 
         public bool IsOn3D(Polygon polygon)
         {
@@ -1915,9 +1724,6 @@ namespace FlatRedBall.Gui
         {
             return IsOn3D(circle, null);
         }
-#endif
-
-#if !SILVERLIGHT
 
         public bool IsOn3D(Circle circle, Layer layer)
         {
@@ -2011,27 +1817,9 @@ namespace FlatRedBall.Gui
             return false;
         }
 
-#endif
-
         #endregion
 
 #if !SILVERLIGHT
-
-        #region XML Docs
-        /// <summary>
-        /// Checks to see if the Cursor's texture matches the passed argument.
-        /// </summary>
-        /// <param name="textureToTest">The texture to compare to.</param>
-        /// <returns>Whether the argument is the same as the Cursor's texture.</returns>
-        #endregion
-        public bool IsCursorTexture(string textureToTest)
-        {
-            if (si.mTexture.Name == textureToTest)
-                return true;
-            else
-                return false;
-
-        }
 
         #region XML Docs
         /// <summary>
@@ -2063,39 +1851,7 @@ namespace FlatRedBall.Gui
             if (FlatRedBallServices.mIsInitialized)
             {
                 UpdatePositionToMouse();
-
-                mLastUnitX = XForUI;
-                mLastUnitY = YForUI;
             }
-        }
-
-        public void SetCursor(Texture2D textureToUse, float TipXOffset, float TipYOffset)
-        {
-            si.Texture = textureToUse;
-            tipXOffset = TipXOffset;
-            tipYOffset = TipYOffset;
-
-        }
-
-
-        #region XML Docs
-        /// <summary>
-        /// Sets the texture, ScaleX and ScaleY, and the tip offsets.
-        /// </summary>
-        /// <remarks>
-        /// This method just sets the properties in one call.  The individual properties can
-        /// also be set individually.
-        /// </remarks>
-        /// <param name="textureToUse">Texture to use.</param>
-        /// <param name="ScaleX">The ScaleX to set.  ScaleY will be set according to the source texture's dimensions.</param>
-        /// <param name="TipXOffset">The relative x value of the tip of the Cursor from its center.</param>
-        /// <param name="TipYOffset">the relative y value of the tip of the Cursor from its center.</param>
-        #endregion
-        [Obsolete("Use the version of the method which does not take a ScaleX")]
-        public void SetCursor(Texture2D textureToUse, float ScaleX, float TipXOffset, float TipYOffset)
-        {
-            SetCursor(textureToUse, TipXOffset, TipYOffset);
-
         }
 
         #region XML Docs
@@ -2523,17 +2279,6 @@ namespace FlatRedBall.Gui
 
             }
 
-			// adjust the positions
-            if (si.X > cameraXEdge)
-                si.X = cameraXEdge;
-            if (si.X < -cameraXEdge)
-                si.X = -cameraXEdge;
-
-            if (si.Y > cameraYEdge)
-                si.Y = cameraYEdge;
-            if (si.Y < -cameraYEdge)
-                si.Y = -cameraYEdge;
-
 			#endregion
 
 
@@ -2794,9 +2539,6 @@ namespace FlatRedBall.Gui
 
                         si.XVelocity = xVelocity;
                         si.YVelocity = yVelocity;
-#elif !XNA4
-                        si.XVelocity = XForUI - mLastUnitX;
-                        si.YVelocity = YForUI - mLastUnitY;
 #endif
                     }
                     #endregion
@@ -2860,9 +2602,6 @@ namespace FlatRedBall.Gui
 #endif
                     }
                     #endregion
-
-                    mLastUnitX = XForUI;
-                    mLastUnitY = YForUI;
 
                 }
                 #endregion
@@ -3099,8 +2838,6 @@ namespace FlatRedBall.Gui
 
 #endif
 
-            si.X = outX;
-            si.Y = outY;
 #endif
         }
 

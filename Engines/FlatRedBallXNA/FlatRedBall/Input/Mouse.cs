@@ -830,21 +830,21 @@ namespace FlatRedBall.Input
         public bool IsOn3D<T>(T objectToTest, bool relativeToCamera) where T : IPositionable, IRotatable, IReadOnlyScalable
         {
             Vector3 temporaryVector = new Vector3();
-            return IsOn3D<T>(objectToTest, false, SpriteManager.Camera, ref temporaryVector);
+            return IsOn3D<T>(objectToTest, false, SpriteManager.Camera, out temporaryVector);
         }
 
 
         public bool IsOn3D<T>(T objectToTest, bool relativeToCamera, ref Vector3 intersectionPoint)
             where T : IPositionable, IRotatable, IReadOnlyScalable
         {
-            return IsOn3D(objectToTest, relativeToCamera, SpriteManager.Camera, ref intersectionPoint);
+            return IsOn3D(objectToTest, relativeToCamera, SpriteManager.Camera, out intersectionPoint);
         }
 
         public bool IsOn3D<T>(T objectToTest, bool relativeToCamera, Camera camera)
             where T : IPositionable, IRotatable, IReadOnlyScalable
         {
             Vector3 temporaryVector = new Vector3();
-            return IsOn3D(objectToTest, relativeToCamera, camera, ref temporaryVector);
+            return IsOn3D(objectToTest, relativeToCamera, camera, out temporaryVector);
         }
 
         /// <summary>
@@ -861,7 +861,7 @@ namespace FlatRedBall.Input
         /// <param name="intersectionPoint">The point where the intersection between the ray casted from the 
         /// mouse into the distance and the argument objectToTest occurred.</param>
         /// <returns>Whether the mouse is over the argument objectToTest</returns>
-        public bool IsOn3D<T>(T objectToTest, bool relativeToCamera, Camera camera, ref Vector3 intersectionPoint) 
+        public bool IsOn3D<T>(T objectToTest, bool relativeToCamera, Camera camera, out Vector3 intersectionPoint) 
             where T : IPositionable, IRotatable, IReadOnlyScalable
         {
             if (camera == SpriteManager.Camera)
@@ -871,7 +871,7 @@ namespace FlatRedBall.Input
                     relativeToCamera,
                     this.GetMouseRay(SpriteManager.Camera),
                     camera,
-                    ref intersectionPoint);
+                    out intersectionPoint);
             }
             else
             {
@@ -890,7 +890,7 @@ namespace FlatRedBall.Input
                     relativeToCamera,
                     this.GetMouseRay(SpriteManager.Camera),
                     camera,
-                    ref intersectionPoint);
+                    out intersectionPoint);
 
             }
         }
