@@ -84,7 +84,7 @@ namespace FlatRedBall.Entities
         {
             #region Get the average position of all the target instances
 
-            Vector2 averagePosition = Vector2.Zero;
+            Vector2 averagePosition = this.Position.ToVector2();
 
             foreach (PositionedObject targetAtI in Targets)
             {
