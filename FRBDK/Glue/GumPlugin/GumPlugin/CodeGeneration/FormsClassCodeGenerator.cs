@@ -163,10 +163,12 @@ namespace GumPluginCore.CodeGeneration
         {
             string elementName = elementSave.Name;
 
-            return GetFullRuntimeNamespaceFor(elementName);
+            var subfolder = elementSave is ScreenSave ? "Screens" : "Components";
+
+            return GetFullRuntimeNamespaceFor(elementName, subfolder);
         }
 
-        public string GetFullRuntimeNamespaceFor(string elementName)
+        public string GetFullRuntimeNamespaceFor(string elementName, string screensOrComponents)
         {
             string subNamespace;
             if ((elementName.Contains('/')))
@@ -186,7 +188,7 @@ namespace GumPluginCore.CodeGeneration
             }
 
 
-            var fullNamespace = FormsRuntimeNamespace + subNamespace;
+            var fullNamespace = FormsRuntimeNamespace + "." + screensOrComponents + subNamespace;
 
             return fullNamespace;
         }

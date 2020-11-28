@@ -273,6 +273,10 @@ namespace GumPlugin.Managers
         /// <returns>Information about what was generated and saved.</returns>
         public GenerationResult GenerateCodeFor(Gum.DataTypes.ElementSave element)
         {
+            var subfolder = element is Gum.DataTypes.ScreenSave ? "Screens/"
+                : element is ComponentSave ? "Components/"
+                : "Standard/";
+
             CodeGenerationSavingBehavior savingBehavior = CodeGenerationSavingBehavior.SaveIfGeneratedDiffers;
             GenerationResult resultToReturn = new GenerationResult();
 
@@ -365,7 +369,7 @@ namespace GumPlugin.Managers
 
             string generatedFormsCode = FormsClassCodeGenerator.Self.GenerateCodeFor(element);
 
-            FilePath generatedFormsSaveLocation = formsFolder + element.Name + "Forms.Generated.cs";
+            FilePath generatedFormsSaveLocation = formsFolder + subfolder +  element.Name + "Forms.Generated.cs";
 
             if(string.IsNullOrEmpty(generatedFormsCode))
             {
@@ -411,7 +415,7 @@ namespace GumPlugin.Managers
 
             #region Custom Forms
 
-            string customFormsSaveLocation = formsFolder + element.Name + "Forms.cs";
+            string customFormsSaveLocation = formsFolder + subfolder + element.Name + "Forms.cs";
 
             if(string.IsNullOrEmpty(generatedFormsCode))
             {

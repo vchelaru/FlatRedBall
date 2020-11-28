@@ -40,7 +40,7 @@ namespace GumPlugin.CodeGeneration
             {
                 var elementName = element.GetStrippedName();
 
-                var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName) +
+                var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName, "Screens") +
                     "." + FlatRedBall.IO.FileManager.RemovePath(elementName) + "GumForms";
 
                 codeBlock.Line($"{formsObjectType} Forms;");
@@ -65,7 +65,10 @@ namespace GumPlugin.CodeGeneration
             {
                 var elementName = element.GetStrippedName();
 
-                var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName) +
+                //var screensOrComponents = element.Name.ToLowerInvariant().EndsWith(".gusx") ? "Screens" : "Components";
+
+
+                var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName, "Screens") +
                     "." + FlatRedBall.IO.FileManager.RemovePath(elementName) + "GumForms";
                 var rfs = GetGumScreenRfs(element);
                 codeBlock.Line($"Forms = new {formsObjectType}({rfs.GetInstanceName()});");
