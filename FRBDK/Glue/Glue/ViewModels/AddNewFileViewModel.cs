@@ -16,6 +16,12 @@ namespace GlueFormsCore.ViewModels
             set => Set(value);
         }
 
+        public string FileName
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public ObservableCollection<AssetTypeInfo> AllOptions
         {
             get;

@@ -59,7 +59,8 @@
             Grid.Row="2">
             <Label Margin="0,6,0,0">Enter the new file's name:</Label>
             <TextBox x:Name="TextBox"
-                        KeyDown="TextBox_KeyDown"></TextBox>
+                    KeyDown="TextBox_KeyDown"
+                    Text="{Binding FileName}" ></TextBox>
         </StackPanel>
 
 

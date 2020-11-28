@@ -158,6 +158,8 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                         var addNewFileViewModel = new AddNewFileViewModel();
                         addNewFileViewModel.SelectedAssetTypeInfo = 
                             AvailableAssetTypes.Self.GetAssetTypeFromExtension("tmx");
+                        addNewFileViewModel.FileName = newScreen.GetStrippedName() + "Map";
+
                         var newRfs = GlueCommands.Self.DialogCommands.ShowAddNewFileDialog(addNewFileViewModel);
 
                         if(newRfs != null)

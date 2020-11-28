@@ -2471,7 +2471,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static void ImportElementClick(object sender, EventArgs e)
         {
-            ElementImporter.ImportElement();
+            ElementImporter.ShowImportElementUi();
         }
 
 

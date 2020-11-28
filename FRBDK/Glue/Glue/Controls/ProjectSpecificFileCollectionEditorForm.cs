@@ -13,6 +13,7 @@ using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.FormHelpers.PropertyGrids;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using GlueFormsCore.ViewModels;
 
 namespace FlatRedBall.Glue.Controls
 {
@@ -125,11 +126,13 @@ namespace FlatRedBall.Glue.Controls
 
         private void BtnAddNewFileClick(object sender, System.EventArgs e)
         {
+
             if (!ProjectTypeIsValid()) return;
 
             var nfw = new CustomizableNewFileWindow();
-
-            foreach(var ati in AvailableAssetTypes.Self.AllAssetTypes)
+            var viewModel = new AddNewFileViewModel();
+            nfw.DataContext = viewModel;
+            foreach (var ati in AvailableAssetTypes.Self.AllAssetTypes)
             {
                 if (!string.IsNullOrEmpty(ati.Extension) && !string.IsNullOrEmpty(ati.QualifiedSaveTypeName))
                 {
@@ -154,7 +157,7 @@ namespace FlatRedBall.Glue.Controls
             {
                 var resultAssetTypeInfo = nfw.SelectedItem;
 
-                string name = nfw.ResultName;
+                string name = viewModel.FileName;
 
                 string createdFile = PluginManager.CreateNewFile(resultAssetTypeInfo, false, FileManager.GetDirectoryKeepRelative(Rfs.Name), name);
 

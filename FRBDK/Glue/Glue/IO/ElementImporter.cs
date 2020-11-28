@@ -79,7 +79,7 @@ namespace FlatRedBall.Glue.IO
             }
         }
 
-        public static void ImportElement()
+        public static void ShowImportElementUi()
         {
 
             // import screen, import entity, import element

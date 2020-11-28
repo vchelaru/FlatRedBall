@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.ViewModels;
+using GlueFormsCore.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -26,6 +27,17 @@ namespace GlueFormsCore.Controls
             InitializeComponent();
 
             DataContextChanged += HandleDataContextChanged;
+
+            this.WindowStartupLocation = WindowStartupLocation.Manual;
+
+            // uses winforms:
+            System.Drawing.Point point = System.Windows.Forms.Control.MousePosition;
+            this.Left = point.X - this.Width / 2;
+            // not sure why this is so high
+            //this.Top = point.Y - this.Height/2;
+            this.Top = point.Y - 50;
+
+            this.ShiftWindowOntoScreen();
 
             SearchTextBox.Focus();
         }

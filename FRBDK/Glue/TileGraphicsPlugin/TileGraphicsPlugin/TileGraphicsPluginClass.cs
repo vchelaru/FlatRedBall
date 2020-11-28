@@ -34,6 +34,7 @@ using TiledPluginCore.CodeGeneration;
 using TiledPluginCore.Controllers;
 using TiledPluginCore.Managers;
 using TiledPluginCore.Views;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace TileGraphicsPlugin
 {
@@ -219,14 +220,7 @@ namespace TileGraphicsPlugin
             get;
             set;
         }
-
-        [Import("GlueCommands")]
-        public IGlueCommands GlueCommands
-        {
-            get;
-            set;
-        }
-		
+	
 		[Import("GlueState")]
 		public IGlueState GlueState
 		{
@@ -354,46 +348,6 @@ namespace TileGraphicsPlugin
             //this.CreateNewFileHandler += TmxCreationManager.Self.HandleNewTmxCreation;
         }
 
-        private void HandleAddNewFileOptions(CustomizableNewFileWindow newFileWindow)
-        {
-            var view = new NewTmxOptionsView();
-            var viewModel = new NewTmxViewModel();
-            viewModel.IncludeDefaultTileset = true;
-            viewModel.IncludeGameplayLayer = true;
-            view.DataContext = viewModel;
-
-            newFileWindow.AddCustomUi(view);
-
-            bool IsTmx(AssetTypeInfo ati) =>
-                ati?.Extension == "tmx";
-
-            newFileWindow.SelectionChanged += (not, used) =>
-            {
-                var ati = newFileWindow.SelectedItem;
-
-                if(IsTmx(ati))
-                {
-                    view.Visibility = System.Windows.Visibility.Visible;
-                }
-                else
-                {
-                    view.Visibility = System.Windows.Visibility.Collapsed;
-                }
-            };
-
-            newFileWindow.GetCreationOption = () =>
-            {
-                var ati = newFileWindow.SelectedItem;
-                if (IsTmx(ati))
-                {
-                    return viewModel;
-                }
-                else
-                {
-                    return null;
-                }
-            };
-        }
 
         private void CreateToolbar()
         {
@@ -418,13 +372,13 @@ namespace TileGraphicsPlugin
 
             if(isTmx)
             {
-                var isRequired = GlueCommands.GluxCommands.GetPluginRequirement(this);
+                var isRequired = GlueCommands.Self.GluxCommands.GetPluginRequirement(this);
 
                 if(!isRequired)
                 {
-                    GlueCommands.GluxCommands.SetPluginRequirement(this, true);
-                    GlueCommands.PrintOutput("Added Tiled Plugin as a required plugin because TMX's are used");
-                    GlueCommands.GluxCommands.SaveGluxTask();
+                    GlueCommands.Self.GluxCommands.SetPluginRequirement(this, true);
+                    GlueCommands.Self.PrintOutput("Added Tiled Plugin as a required plugin because TMX's are used");
+                    GlueCommands.Self.GluxCommands.SaveGluxTask();
 
                 }
 
@@ -572,6 +526,7 @@ namespace TileGraphicsPlugin
                     GlueState.CurrentElement);
 
                 this.ShowTab(collisionTab, TabLocation.Center);
+                GlueCommands.Self.DialogCommands.FocusTab("TileShapeCollection Properties");
             }
             else if(collisionTab != null)
             {
@@ -591,6 +546,7 @@ namespace TileGraphicsPlugin
                     GlueState.CurrentElement);
 
                 this.ShowTab(nodeNetworkTab, TabLocation.Center);
+                GlueCommands.Self.DialogCommands.FocusTab("TileNodeNetwork Properties");
             }
             else if(nodeNetworkTab != null)
             {
@@ -664,6 +620,47 @@ namespace TileGraphicsPlugin
         private void OnClosedByUser(object sender)
         {
             PluginManager.ShutDownPlugin(this);
+        }
+
+        private void HandleAddNewFileOptions(CustomizableNewFileWindow newFileWindow)
+        {
+            var view = new NewTmxOptionsView();
+            var viewModel = new NewTmxViewModel();
+            viewModel.IncludeDefaultTileset = true;
+            viewModel.IncludeGameplayLayer = true;
+            view.DataContext = viewModel;
+
+            newFileWindow.AddCustomUi(view);
+
+            bool IsTmx(AssetTypeInfo ati) =>
+                ati?.Extension == "tmx";
+
+            newFileWindow.SelectionChanged += (not, used) =>
+            {
+                var ati = newFileWindow.SelectedItem;
+
+                if(IsTmx(ati))
+                {
+                    view.Visibility = System.Windows.Visibility.Visible;
+                }
+                else
+                {
+                    view.Visibility = System.Windows.Visibility.Collapsed;
+                }
+            };
+
+            newFileWindow.GetCreationOption = () =>
+            {
+                var ati = newFileWindow.SelectedItem;
+                if (IsTmx(ati))
+                {
+                    return viewModel;
+                }
+                else
+                {
+                    return null;
+                }
+            };
         }
 
         int changesToIgnore = 0;

@@ -178,7 +178,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (result == true)
             {
-                string name = nfw.ResultName;
+                string name = viewModel.FileName;
                 AssetTypeInfo resultAssetTypeInfo =
                     //nfw.ResultAssetTypeInfo;
                     viewModel.SelectedAssetTypeInfo;
@@ -736,6 +736,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     if (tabPage.Text?.Trim() == dialogTitle)
                     {
                         control.SelectedTab = tabPage;
+                        if(tabPage is PluginTab pluginTab)
+                        {
+                            pluginTab.LastTimeClicked = DateTime.Now;
+                        }
                         return true;
                     }
                 }

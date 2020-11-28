@@ -237,9 +237,6 @@ namespace FlatRedBall.Glue.IO
             {
                 ScreenSave asScreenSave = element as ScreenSave;
 
-
-
-
                 FileManager.XmlSerialize(asScreenSave, absoluteXml);
             }
 

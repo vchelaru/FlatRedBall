@@ -61,6 +61,8 @@ namespace TiledPluginCore.Managers
                         layer.height = existingLayer.height;
                         layer.data = existingLayer.data;
 
+                        // remove existing layers, replace it with this layer so the user doesn't accidentally place tiles on the wrong layer
+                        tileMapSave.MapLayers.Clear();
                         tileMapSave.MapLayers.Add(layer);
                     }
 
@@ -73,8 +75,6 @@ namespace TiledPluginCore.Managers
 
         private void IncludeDefaultTilesetOn(ReferencedFileSave newFile, TiledMapSave tileMapSave)
         {
-
-
             FilePath existingDefaultTilesetFile = null;
 
             if (existingDefaultTilesetFile == null)

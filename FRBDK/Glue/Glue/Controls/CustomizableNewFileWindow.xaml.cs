@@ -47,11 +47,11 @@ namespace FlatRedBall.Glue.Controls
             set => ViewModel.SelectedAssetTypeInfo = value;
         }
 
-        public string ResultName
-        {
-            get => TextBox.Text;
-            set => TextBox.Text = value;
-        }
+        //public string ResultName
+        //{
+        //    get => TextBox.Text;
+        //    set => TextBox.Text = value;
+        //}
 
         #endregion
 
