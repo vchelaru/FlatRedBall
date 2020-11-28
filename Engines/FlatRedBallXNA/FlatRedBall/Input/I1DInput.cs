@@ -9,6 +9,18 @@ namespace FlatRedBall.Input
 		float Velocity { get; }
 	}
 
+    /// <summary>
+    /// Implementation of I1DInput which always returns 0s. Can be used for classes
+    /// requiring an I1DInput implementation
+    /// (like IInputDevice) which should always return 0.
+    /// </summary>
+    public class Zero1DInput : I1DInput
+    {
+        public static Zero1DInput Instance = new Zero1DInput();
+        public float Value => 0;
+        public float Velocity => 0;
+    }
+
     public class DelegateBased1DInput : I1DInput
     {
         Func<float> value;

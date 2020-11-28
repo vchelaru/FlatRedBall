@@ -17,7 +17,7 @@ namespace FlatRedBall.Input
 {
     public delegate void ModifyMouseState(ref MouseState mouseState);
 
-    public class Mouse : IEquatable<Mouse>
+    public class Mouse : IEquatable<Mouse>, IInputDevice
     {
         #region Enums
         public enum MouseButtons
@@ -301,6 +301,20 @@ namespace FlatRedBall.Input
         {
             get { return mYVelocity; }
         }
+
+        I2DInput IInputDevice.Default2DInput => Zero2DInput.Instance;
+        IPressableInput IInputDevice.DefaultUpPressable => FalsePressableInput.Instance;
+        IPressableInput IInputDevice.DefaultDownPressable => FalsePressableInput.Instance;
+        IPressableInput IInputDevice.DefaultLeftPressable => FalsePressableInput.Instance;
+        IPressableInput IInputDevice.DefaultRightPressable => FalsePressableInput.Instance;
+        I1DInput IInputDevice.DefaultHorizontalInput => Zero1DInput.Instance;
+        I1DInput IInputDevice.DefaultVerticalInput => Zero1DInput.Instance;
+        IPressableInput IInputDevice.DefaultPrimaryActionInput => FalsePressableInput.Instance;
+        IPressableInput IInputDevice.DefaultSecondaryActionInput => FalsePressableInput.Instance;
+        IPressableInput IInputDevice.DefaultConfirmInput => FalsePressableInput.Instance;
+        IPressableInput IInputDevice.DefaultJoinInput => FalsePressableInput.Instance;
+        IPressableInput IInputDevice.DefaultPauseInput => FalsePressableInput.Instance;
+        IPressableInput IInputDevice.DefaultBackInput => FalsePressableInput.Instance;
 
         #endregion
 

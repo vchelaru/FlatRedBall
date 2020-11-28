@@ -24,6 +24,21 @@ namespace FlatRedBall.Input
         bool WasJustReleased { get; }
 	}
 
+    /// <summary>
+    /// Implementation of IPressableInput which always returns false. Can be used for classes
+    /// requiring an IPressableInput implementation
+    /// (like IInputDevice) which sould always return false.
+    /// </summary>
+    public class FalsePressableInput : IPressableInput
+    {
+        public static FalsePressableInput Instance = new FalsePressableInput();
+        public bool IsDown => false;
+
+        public bool WasJustPressed => false;
+
+        public bool WasJustReleased => false;
+    }
+
     public class DelegateBasedPressableInput : IPressableInput
     {
         Func<bool> isDown;

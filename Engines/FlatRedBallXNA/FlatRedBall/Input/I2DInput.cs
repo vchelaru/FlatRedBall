@@ -44,6 +44,22 @@ namespace FlatRedBall.Input
 		float Magnitude { get; }
 	}
 
+    /// <summary>
+    /// Implementation of I2DInput which always returns 0s. Can be used for classes 
+    /// requiring an I2DInput implementation 
+    /// (like IInputDevice) which should always return 0.
+    /// </summary>
+    public class Zero2DInput : I2DInput
+    {
+        public static Zero2DInput Instance = new Zero2DInput();
+
+        public float X => 0;
+        public float Y => 0;
+        public float XVelocity => 0;
+        public float YVelocity => 0;
+        public float Magnitude => 0;
+    }
+
     public class DelegateBased2DInput : I2DInput
     {
         Func<float> x;

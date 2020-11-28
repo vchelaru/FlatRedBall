@@ -241,10 +241,10 @@ namespace FlatRedBall.Gui
 
         internal bool mLastMiddleDown;
 
-        bool mUsingMouse;
+        //bool mUsingMouse;
+        //Xbox360GamePad mGamepad;
 
-        Xbox360GamePad mGamepad;
-
+        List<IInputDevice> devicesControllingCursor = new List<IInputDevice>();
 
         /// <summary>
         /// Reference to the camera to which the cursor belongs.
@@ -519,14 +519,6 @@ namespace FlatRedBall.Gui
             }
         }
 
-        public bool UsingMouse
-        {
-            get { return mUsingMouse; }
-            // added for unit tests, but may
-            // be used later to create custom
-            // Cursor behavior.
-            set { mUsingMouse = value; }
-        }
         /// <summary>
         /// The number of pixels between the left of the screen and the cursor. Note that this does not consider
         /// the camera's position, orientation, or perspective - it will always return 0 at the left-edge of the screen.
@@ -716,7 +708,8 @@ namespace FlatRedBall.Gui
             // have
             ClickNoSlideThreshold = 9;
 
-            mUsingMouse = true;
+            devicesControllingCursor.Add(InputManager.Mouse);
+
             mCamera = cameraToUse;
             //primaryDown = false;
 
@@ -1854,22 +1847,26 @@ namespace FlatRedBall.Gui
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Sets the cursor to be controlled by the joystick rather than the mouse.
         /// </summary>
-        /// <param name="gamePad">Refernce to the joystick that will control the cursor.</param>
-        #endregion
+        /// <param name="gamePad">Refernce to the Xbox360GamePad that will control the cursor.</param>
         public void SetJoystickControl(Xbox360GamePad gamePad)
         {
-            mUsingMouse = false;
-            this.mGamepad = gamePad;
+            devicesControllingCursor.Clear();
+            devicesControllingCursor.Add(gamePad);
+        }
+
+        public void SetControllingGamepads(IEnumerable<Xbox360GamePad> gamePads)
+        {
+            devicesControllingCursor.Clear();
+            devicesControllingCursor.AddRange(gamePads);
         }
 
         public void SetMouseControl()
         {
-            mUsingMouse = true;
-            mGamepad = null;
+            devicesControllingCursor.Clear();
+            devicesControllingCursor.Add(InputManager.Mouse);
         }
 
         #region XML Docs
@@ -2258,7 +2255,7 @@ namespace FlatRedBall.Gui
                 
             if(ignoreNextFrameInput == false)
             {
-                UpdateValuesFromInputDevice(currentTime);
+                UpdateValuesFromInputDevices(currentTime);
             }
             ignoreNextFrameInput = false;
 
@@ -2323,7 +2320,7 @@ namespace FlatRedBall.Gui
             }
         }
 
-        private void UpdateValuesFromInputDevice(double currentTime)
+        private void UpdateValuesFromInputDevices(double currentTime)
         {
             bool assignPushAndClickValues = true;
 
@@ -2333,13 +2330,34 @@ namespace FlatRedBall.Gui
             }
             else
             {
-                if(mGamepad != null)
+                PrimaryDown = false;
+                SecondaryDown = false;
+
+                ZVelocity = 0;
+                for (int i = 0; i < devicesControllingCursor.Count; i++)
                 {
-                    UpdateValuesFromJoystick();
-                }
-                else
-                {
-                    assignPushAndClickValues = UpdateValuesFromMouse();
+                    var device = devicesControllingCursor[i];
+
+                    if(device is Xbox360GamePad gamepad)
+                    {
+                        UpdateValuesFromJoystick(gamepad);
+                    }
+                    else if(device is Mouse mouse)
+                    {
+                        assignPushAndClickValues = UpdateValuesFromMouse();
+                    }
+#if DEBUG
+                    else if(device == null)
+                    {
+                        throw new NullReferenceException("The cursor is referencing a null device - this not allowed");
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException(
+                            $"An input device of {device.GetType()} is attempting to control the cursor, but this is not implemented in the engine");
+                    }
+#endif
+
                 }
 
 
@@ -2374,28 +2392,28 @@ namespace FlatRedBall.Gui
             #endregion
         }
 
-        private void UpdateValuesFromJoystick()
+        private void UpdateValuesFromJoystick(Xbox360GamePad gamepad)
         {
-            if (mGamepad != null)
+            if (gamepad != null)
             {
                 // should this use time? If so, should it use time factor?
                 const float maxMovementPerFrame = 10;
-                var xPosition = mGamepad.LeftStick.Position.X;
-                var yPosition = mGamepad.LeftStick.Position.Y;
+                var xPosition = gamepad.LeftStick.Position.X;
+                var yPosition = gamepad.LeftStick.Position.Y;
 
-                if(mGamepad.ButtonDown(Xbox360GamePad.Button.DPadLeft))
+                if(gamepad.ButtonDown(Xbox360GamePad.Button.DPadLeft))
                 {
                     xPosition = -1;
                 }
-                if (mGamepad.ButtonDown(Xbox360GamePad.Button.DPadRight))
+                if (gamepad.ButtonDown(Xbox360GamePad.Button.DPadRight))
                 {
                     xPosition = 1;
                 }
-                if (mGamepad.ButtonDown(Xbox360GamePad.Button.DPadUp))
+                if (gamepad.ButtonDown(Xbox360GamePad.Button.DPadUp))
                 {
                     yPosition = 1;
                 }
-                if (mGamepad.ButtonDown(Xbox360GamePad.Button.DPadDown))
+                if (gamepad.ButtonDown(Xbox360GamePad.Button.DPadDown))
                 {
                     yPosition = -1;
                 }
@@ -2424,10 +2442,10 @@ namespace FlatRedBall.Gui
 
 
 
-                PrimaryDown = mGamepad.ButtonDown(Xbox360GamePad.Button.A);
-                SecondaryDown = mGamepad.ButtonDown(Xbox360GamePad.Button.X);
+                PrimaryDown = PrimaryDown ||gamepad.ButtonDown(Xbox360GamePad.Button.A);
+                SecondaryDown = SecondaryDown || gamepad.ButtonDown(Xbox360GamePad.Button.X);
 
-                ZVelocity = mGamepad.RightStick.Position.Y;
+                ZVelocity += gamepad.RightStick.Position.Y;
             }
         }
 
@@ -2461,7 +2479,7 @@ namespace FlatRedBall.Gui
         {
             bool assignPushAndClickValues = false;
 
-            if (mUsingMouse && InputManager.Mouse != null)
+            if (InputManager.Mouse != null)
             {
                 assignPushAndClickValues = false;
 
