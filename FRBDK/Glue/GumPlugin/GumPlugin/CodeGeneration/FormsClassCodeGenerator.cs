@@ -102,14 +102,34 @@ namespace GumPluginCore.CodeGeneration
 
             GenerateConstructor(elementSave, currentBlock, runtimeClassName);
 
+            GenerateReactToVisualChanged(elementSave, currentBlock);
+
             currentBlock.Line("partial void CustomInitialize();");
         }
 
         private void GenerateConstructor(ElementSave elementSave, ICodeBlock currentBlock, string runtimeClassName)
         {
             string baseCall = null;
+            if (elementSave is ComponentSave)
+            {
+                baseCall = "base(visual)";
+            }
             var constructor = currentBlock.Constructor("public", runtimeClassName, "Gum.Wireframe.GraphicalUiElement visual", baseCall);
 
+            if(elementSave is ScreenSave)
+            {
+                constructor.Line("Visual = visual;");
+                constructor.Line("ReactToVisualChanged();");
+            }
+
+            constructor.Line("CustomInitialize();");
+        }
+
+        private void GenerateReactToVisualChanged(ElementSave elementSave, ICodeBlock currentBlock)
+        {
+            string methodPre = elementSave is ScreenSave ? "private void" : "protected override void";
+
+            var method = currentBlock.Function(methodPre, "ReactToVisualChanged");
             if(elementSave is ScreenSave || elementSave is ComponentSave)
             {
                 foreach (var instance in elementSave.Instances)
@@ -123,19 +143,22 @@ namespace GumPluginCore.CodeGeneration
                         if(isStandard)
                         {
                             line = 
-                                $"{instance.MemberNameInCode()} = ({type})visual.GetGraphicalUiElementByName(\"{instance.Name}\").FormsControlAsObject;";
+                                $"{instance.MemberNameInCode()} = ({type})Visual.GetGraphicalUiElementByName(\"{instance.Name}\").FormsControlAsObject;";
                         }
                         else
                         {
                             line =
-                                $"{instance.MemberNameInCode()} = new {type}(visual.GetGraphicalUiElementByName(\"{instance.Name}\"));";
+                                $"{instance.MemberNameInCode()} = new {type}(Visual.GetGraphicalUiElementByName(\"{instance.Name}\"));";
                         }
-                        constructor.Line(line);
+                        method.Line(line);
                     }
                 }
             }
 
-            constructor.Line("CustomInitialize();");
+            if(elementSave is ComponentSave)
+            {
+                method.Line("base.ReactToVisualChanged();");
+            }
         }
 
         private void GenerateProperties(ElementSave elementSave, ICodeBlock currentBlock)
@@ -156,6 +179,12 @@ namespace GumPluginCore.CodeGeneration
             {
                 publicOrPrivate = "private";
             }
+
+            if(elementSave is ScreenSave)
+            {
+                currentBlock.Line("private Gum.Wireframe.GraphicalUiElement Visual;");
+            }
+
             foreach (var instance in elementSave.Instances)
             {
                 string type = GetQualifiedRuntimeTypeFor(instance, out bool isStandardType);
