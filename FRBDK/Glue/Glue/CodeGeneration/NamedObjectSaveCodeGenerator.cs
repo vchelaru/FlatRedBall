@@ -1493,7 +1493,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     if (nos.IsContainer == false)
                     {
-                        WriteAttachTo(nos, codeBlock, ReusableEntireFileRfses, rfsReferenced);
+                        WriteAttachTo(nos, codeBlock, ReusableEntireFileRfses, rfsReferenced, element);
                     }
 
                     GetPostInitializeForNamedObjectList(nos, codeBlock);
@@ -2333,7 +2333,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
         private static void WriteAttachTo(NamedObjectSave namedObject, ICodeBlock codeBlock, 
-            Dictionary<string, string> referencedFilesAlreadyUsingFullFile, ReferencedFileSave rfs)
+            Dictionary<string, string> referencedFilesAlreadyUsingFullFile, ReferencedFileSave rfs, IElement container)
         {
 
             string objectName = namedObject.FieldName;
@@ -2343,7 +2343,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
 
             if (canAttach && 
-                ((namedObject.GetContainerType() == ContainerType.Entity && namedObject.AttachToContainer) || namedObject.AttachToCamera))
+                ((container is EntitySave && namedObject.AttachToContainer) || namedObject.AttachToCamera))
             {
                     string whatToAttachTo = "this";
 
@@ -2352,13 +2352,6 @@ namespace FlatRedBall.Glue.CodeGeneration
                         whatToAttachTo = "FlatRedBall.Camera.Main";
                     }
 
-
-                    // Files (like .scnx) can
-                    // contain objects which can
-                    // be attached to other objects
-                    // in the file.  In some cases this
-                    // hierarchy is important.  Therefore,
-                    // the generated code will 
                     string attachMethodCall = "AttachTo";
                     bool wrapInIf = true;
                     if (ati != null && !string.IsNullOrEmpty(ati.AttachToNullOnlyMethod))
@@ -2367,69 +2360,59 @@ namespace FlatRedBall.Glue.CodeGeneration
                         wrapInIf = false;
                     }
 
-                    string tabs = "\t\t\t";
-
-                    if (namedObject.ClassType == "SpriteRig")
+                    var currentBlock = codeBlock;
+                    if (wrapInIf)
                     {
-                        codeBlock.Line(objectName + ".Root.AttachTo(" + whatToAttachTo + ", true);");
-
+                        currentBlock = currentBlock
+                            .If(objectName + ".Parent == null");
                     }
-                    else
-                    {
-                        var currentBlock = codeBlock;
 
-                        if (wrapInIf)
+
+                    // March 26, 2012
+                    // We used to attach
+                    // objects to their parents
+                    // by using absolute positions.
+                    // The problem is that this means
+                    // that if a script ran before the
+                    // attachment happened (when a variable
+                    // was set) then the script may run before
+                    // attachment happened and sometimes after.
+                    // That means users would have to handle both
+                    // relative and absoltue cases.  We're going to
+                    // make attachments happen first so that attachment
+                    // happens right away - then the user can always write
+                    // scripts using relative values.
+                    WriteCopyToAbsoluteInInitializeCode(namedObject, currentBlock, referencedFilesAlreadyUsingFullFile, ati, objectName, rfs);
+
+                    // March 27, 2012
+                    // We used to attach
+                    // by passing 'true' as
+                    // the 2nd argument meaning
+                    // that the relative values were
+                    // set from absolute.  Now we use
+                    // the relative values so that the
+                    // script can simply set Relative values
+                    // always whether it's before or after attachment
+                    // and it'll just work.
+                    if (namedObject.AttachToCamera)
+                    {
+                        string adjustRelativeZLine = null;
+
+                        if (ati != null && !string.IsNullOrEmpty(ati.AdjustRelativeZ))
                         {
-                            currentBlock = currentBlock
-                                .If(objectName + ".Parent == null");
+                            adjustRelativeZLine = ati.AdjustRelativeZ;
+                        }
+                        else
+                        {
+                            adjustRelativeZLine = "this.RelativeZ += value";
                         }
 
+                        adjustRelativeZLine = adjustRelativeZLine.Replace("this", "{0}").Replace("value", "{1}");
 
-                        // March 26, 2012
-                        // We used to attach
-                        // objects to their parents
-                        // by using absolute positions.
-                        // The problem is that this means
-                        // that if a script ran before the
-                        // attachment happened (when a variable
-                        // was set) then the script may run before
-                        // attachment happened and sometimes after.
-                        // That means users would have to handle both
-                        // relative and absoltue cases.  We're going to
-                        // make attachments happen first so that attachment
-                        // happens right away - then the user can always write
-                        // scripts using relative values.
-                        WriteCopyToAbsoluteInInitializeCode(namedObject, currentBlock, referencedFilesAlreadyUsingFullFile, ati, objectName, rfs);
-
-                        // March 27, 2012
-                        // We used to attach
-                        // by passing 'true' as
-                        // the 2nd argument meaning
-                        // that the relative values were
-                        // set from absolute.  Now we use
-                        // the relative values so that the
-                        // script can simply set Relative values
-                        // always whether it's before or after attachment
-                        // and it'll just work.
-                        if (namedObject.AttachToCamera)
-                        {
-                            string adjustRelativeZLine = null;
-
-                            if (ati != null && !string.IsNullOrEmpty(ati.AdjustRelativeZ))
-                            {
-                                adjustRelativeZLine = ati.AdjustRelativeZ;
-                            }
-                            else
-                            {
-                                adjustRelativeZLine = "this.RelativeZ += value";
-                            }
-
-                            adjustRelativeZLine = adjustRelativeZLine.Replace("this", "{0}").Replace("value", "{1}");
-
-                            currentBlock.Line(string.Format(adjustRelativeZLine, objectName, "-40") + ";");
-                        }
-                        currentBlock.Line(objectName + "." + attachMethodCall + "(" + whatToAttachTo + ", false);");
+                        currentBlock.Line(string.Format(adjustRelativeZLine, objectName, "-40") + ";");
                     }
+                    currentBlock.Line(objectName + "." + attachMethodCall + "(" + whatToAttachTo + ", false);");
+                    
             }
 
         }

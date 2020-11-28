@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.Plugins.ICollidablePlugins;
 using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,28 @@ namespace TileGraphicsPlugin.CodeGeneration
 
             return codeBlock;
         }
+
+        // This is handled in CollidableCodeGenerator.GeneratePostInitialize
+        //public override ICodeBlock GeneratePostInitialize(ICodeBlock codeBlock, IElement element)
+        //{
+        //    if(element.IsICollidableRecursive())
+        //    {
+        //        foreach(var nos in element.NamedObjects)
+        //        {
+        //            // If it's in derived, we don't want to add it here, since it should be added by base. Otherwise
+        //            // we'd get a double-add
+        //            if(nos.DefinedByBase == false && 
+        //                nos.GetAssetTypeInfo() == AssetTypeInfoAdder.Self.TileShapeCollectionAssetTypeInfo )
+        //            {
+        //                codeBlock.If($"{nos.InstanceName} != null")
+        //                    .Line($"mGeneratedCollision.AxisAlignedRectangles.AddRange({nos.InstanceName}.Rectangles);")
+        //                    .Line($"mGeneratedCollision.Polygons.AddRange({nos.InstanceName}.Polygons);");
+        //            }
+        //        }
+        //    }
+
+        //    return codeBlock;
+        //}
 
         static NamedObjectSave[] GetAllTileShapeCollectionNamedObjectsInElement(IElement element)
         {

@@ -122,6 +122,16 @@ namespace FlatRedBall.TileCollisions
             this.mShapes.AddToManagers(layer);
         }
 
+        public void AttachTo(PositionedObject newParent, bool changeRelative = true)
+        {
+            mShapes.AttachTo(newParent, changeRelative);
+        }
+
+        public void CopyAbsoluteToRelative()
+        {
+            mShapes.CopyAbsoluteToRelative();
+        }
+
         public bool CollideAgainstSolid(AxisAlignedRectangle movableObject)
         {
             bool toReturn = false;

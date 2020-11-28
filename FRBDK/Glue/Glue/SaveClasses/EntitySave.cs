@@ -220,11 +220,11 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             get
             {
-                return Properties.GetValue<bool>("ImplementsICollidable");
+                return Properties.GetValue<bool>(nameof(ImplementsICollidable));
             }
             set
             {
-                Properties.SetValue("ImplementsICollidable", value);
+                Properties.SetValue(nameof(ImplementsICollidable), value);
             }
         }
 

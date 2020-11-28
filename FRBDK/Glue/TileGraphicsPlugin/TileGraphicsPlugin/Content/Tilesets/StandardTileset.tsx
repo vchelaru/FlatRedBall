@@ -4,6 +4,9 @@
  <tile id="0" type="SolidCollision"/>
  <tile id="1" type="BreakableCollision"/>
  <tile id="2" type="CloudCollision"/>
+ <tile id="3" type="OneWayCollision"/>
  <tile id="32" type="Water"/>
  <tile id="33" type="IceCollision"/>
+ <tile id="64" type="Door"/>
+ <tile id="96" type="Ladder"/>
 </tileset>

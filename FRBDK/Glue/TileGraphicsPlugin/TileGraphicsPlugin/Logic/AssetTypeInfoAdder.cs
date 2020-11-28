@@ -183,6 +183,7 @@ namespace TileGraphicsPlugin
         {
 
             AssetTypeInfo toReturn = new AssetTypeInfo();
+            toReturn.AttachToNullOnlyMethod = "AttachTo";
             toReturn.FriendlyName = "TileShapeCollection";
             toReturn.QualifiedRuntimeTypeName = new PlatformSpecificType();
             toReturn.QualifiedRuntimeTypeName.QualifiedType = "FlatRedBall.TileCollisions.TileShapeCollection";
@@ -192,7 +193,7 @@ namespace TileGraphicsPlugin
             toReturn.CustomLoadMethod = null;
             toReturn.DestroyMethod = "this.Visible = false";
             toReturn.ShouldBeDisposed = false;
-            toReturn.ShouldAttach = false;
+            toReturn.ShouldAttach = true; // new as of November 28, 2020
             toReturn.MustBeAddedToContentPipeline = false;
             toReturn.CanBeCloned = false;
             toReturn.HasCursorIsOn = false;

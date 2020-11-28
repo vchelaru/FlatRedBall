@@ -100,13 +100,25 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
 
                 foreach (var item in shapesToAdd)
                 {
-                    string addCall = item.GetAddToShapeCollection();
-
-                    if (!string.IsNullOrEmpty(addCall))
+                    if(item.GetAssetTypeInfo()?.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.TileCollisions.TileShapeCollection")
                     {
-                        // use Collision instead of mGeneratedCollision since
-                        // mGeneratedCollision is private
-                        codeBlock.Line("Collision." + addCall + "(" + item.FieldName + ");");
+                        // normally this would be handled in the TileShapeCollectionCodeGenerator, but if we move the code there, it 
+                        // runs before the creation of the mGerneatedCollision. There's no good way to force plugin order, so we'll have
+                        // this plugin handle TileShapeCollections
+                        codeBlock.If($"{item.InstanceName} != null")
+                            .Line($"mGeneratedCollision.AxisAlignedRectangles.AddRange({item.InstanceName}.Rectangles);")
+                            .Line($"mGeneratedCollision.Polygons.AddRange({item.InstanceName}.Polygons);");
+                    }
+                    else
+                    {
+                        string addCall = item.GetAddToShapeCollection();
+
+                        if (!string.IsNullOrEmpty(addCall))
+                        {
+                            // use Collision instead of mGeneratedCollision since
+                            // mGeneratedCollision is private
+                            codeBlock.Line("Collision." + addCall + "(" + item.FieldName + ");");
+                        }
                     }
                 }
             }
