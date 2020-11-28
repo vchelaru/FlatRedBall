@@ -6,6 +6,7 @@ using GumPlugin.CodeGeneration;
 using GumPlugin.Managers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace GumPluginCore.CodeGeneration
@@ -22,33 +23,21 @@ namespace GumPluginCore.CodeGeneration
                 throw new ArgumentNullException(nameof(elementSave));
             }
 
-            bool generated = false;
+            bool shouldGenerate = false;
 
             var isScreen = elementSave is ScreenSave;
             var isComponent = elementSave is ComponentSave;
             if (isScreen)
             {
-                generated = true;
+                shouldGenerate = true;
             }
             else if(isComponent)
             {
-                var component = elementSave as ComponentSave;
-
-                var behaviors = component?.Behaviors;
-
-                string controlType = null;
-
-                if (behaviors != null)
-                {
-                    controlType = GueDerivingClassCodeGenerator.GetFormsControlTypeFrom(behaviors);
-                }
-
-                // todo - see if there are any Forms controls here? Or always generate? Not sure...
-                generated = controlType == null;
+                shouldGenerate = GetIfShouldGenerate(elementSave);
             }
             // don't do anything with standards
 
-            if (generated)
+            if (shouldGenerate)
             {
                 var topBlock = new CodeBlockBase();
                 var fullNamespace = GetFullRuntimeNamespaceFor(elementSave);
@@ -60,6 +49,47 @@ namespace GumPluginCore.CodeGeneration
             {
                 return null;
             }
+        }
+
+        private bool GetIfShouldGenerate(ElementSave elementSave)
+        {
+            bool shouldGenerate;
+            var component = elementSave as ComponentSave;
+
+            var behaviors = component?.Behaviors;
+
+            string controlType = null;
+
+            if (behaviors != null)
+            {
+                controlType = GueDerivingClassCodeGenerator.GetFormsControlTypeFrom(behaviors);
+            }
+
+            shouldGenerate = controlType == null;
+
+            // todo - see if there are any Forms controls here? Or always generate? Not sure...
+            // Update 11/27/2020 - Justin's game has lots of components that aren't forms and this
+            // is adding a lot of garbage to Justin's project.
+            if (shouldGenerate)
+            {
+                var allInstances = elementSave.Instances;
+
+                shouldGenerate = allInstances.Any(item =>
+                {
+                    var instanceElement = ObjectFinder.Self.GetElementSave(item);
+
+                    if(instanceElement is ComponentSave component)
+                    {
+
+                        return GueDerivingClassCodeGenerator.GetFormsControlTypeFrom(component.Behaviors) != null ||
+                            GetIfShouldGenerate(instanceElement);
+
+                    }
+                    return false;
+                });
+            }
+
+            return shouldGenerate;
         }
 
         private void GenerateScreenAndComponentCodeFor(ElementSave elementSave, ICodeBlock codeBlock)
@@ -84,12 +114,22 @@ namespace GumPluginCore.CodeGeneration
             {
                 foreach (var instance in elementSave.Instances)
                 {
-                    string type = GetQualifiedRuntimeTypeFor(instance, elementSave);
+                    string type = GetQualifiedRuntimeTypeFor(instance, out bool isStandard);
 
                     if (!string.IsNullOrEmpty(type))
                     {
-                        var line = 
-                            $"{instance.MemberNameInCode()} = ({type})visual.GetGraphicalUiElementByName(\"{instance.Name}\").FormsControlAsObject;";
+                        string line;
+
+                        if(isStandard)
+                        {
+                            line = 
+                                $"{instance.MemberNameInCode()} = ({type})visual.GetGraphicalUiElementByName(\"{instance.Name}\").FormsControlAsObject;";
+                        }
+                        else
+                        {
+                            line =
+                                $"{instance.MemberNameInCode()} = new {type}(visual.GetGraphicalUiElementByName(\"{instance.Name}\"));";
+                        }
                         constructor.Line(line);
                     }
                 }
@@ -118,7 +158,7 @@ namespace GumPluginCore.CodeGeneration
             }
             foreach (var instance in elementSave.Instances)
             {
-                string type = GetQualifiedRuntimeTypeFor(instance, elementSave);
+                string type = GetQualifiedRuntimeTypeFor(instance, out bool isStandardType);
 
                 if(!string.IsNullOrEmpty(type))
                 {
@@ -127,8 +167,9 @@ namespace GumPluginCore.CodeGeneration
             }
         }
 
-        private string GetQualifiedRuntimeTypeFor(InstanceSave instance, ElementSave elementSave)
+        private string GetQualifiedRuntimeTypeFor(InstanceSave instance, out bool isStandardForms)
         {
+            isStandardForms = false;
             var instanceType = instance.BaseType;
             var component = ObjectFinder.Self.GetComponent(instanceType);
 
@@ -141,7 +182,19 @@ namespace GumPluginCore.CodeGeneration
                 controlType = GueDerivingClassCodeGenerator.GetFormsControlTypeFrom(behaviors);
             }
 
-            return controlType;
+            if(controlType != null)
+            {
+                isStandardForms = true;
+                return controlType;
+            }
+
+            // else it may still need to be generated as a reference to a generated form type
+            if(component != null && GetIfShouldGenerate(component))
+            {
+                return GetFullRuntimeNamespaceFor(component) + "." + GetUnqualifiedRuntimeTypeFor(component);
+            }
+
+            return null;
         }
 
         private ICodeBlock GenerateClassHeader(ICodeBlock codeBlock, ElementSave elementSave)
