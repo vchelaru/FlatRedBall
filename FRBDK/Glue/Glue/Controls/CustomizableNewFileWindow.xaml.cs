@@ -160,11 +160,11 @@ namespace FlatRedBall.Glue.Controls
                     // suggest a name that is already
                     // being used.
                     //textBox1.Text = fileType + "File";
-                    TextBox.Text = StringFunctions.MakeStringUnique(fileType + "File", NamesAlreadyUsed, 2);
+                    ViewModel.FileName = StringFunctions.MakeStringUnique(fileType + "File", NamesAlreadyUsed, 2);
 
-                    while (ObjectFinder.Self.GetReferencedFileSaveFromFile(TextBox.Text + "." +  ViewModel.SelectedAssetTypeInfo?.Extension) != null)
+                    while (ObjectFinder.Self.GetReferencedFileSaveFromFile(ViewModel.FileName + "." +  ViewModel.SelectedAssetTypeInfo?.Extension) != null)
                     {
-                        TextBox.Text = FlatRedBall.Utilities.StringFunctions.IncrementNumberAtEnd(TextBox.Text);
+                        ViewModel.FileName = FlatRedBall.Utilities.StringFunctions.IncrementNumberAtEnd(ViewModel.FileName);
                     }
                 }
             }

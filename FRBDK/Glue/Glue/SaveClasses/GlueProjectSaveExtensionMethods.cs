@@ -104,6 +104,11 @@ namespace FlatRedBall.Glue.SaveClasses
             string fileName, 
             AssetTypeInfo resultAssetTypeInfo, object option, out string errorMessage)
         {
+            if(string.IsNullOrEmpty(fileName))
+            {
+                throw new ArgumentNullException(nameof(fileName));
+            }
+
             char invalidCharacter;
             ReferencedFileSave rfs = null;
             errorMessage = null;
