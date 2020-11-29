@@ -994,7 +994,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                 }
 
-                // Remove any objects that use this as a layer
+               //  Remove any objects that use this as a layer
                 for (int i = 0; i < element.NamedObjects.Count; i++)
                 {
                     if (element.NamedObjects[i].LayerOn == namedObjectToRemove.InstanceName)
@@ -1003,9 +1003,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         element.NamedObjects[i].LayerOn = null;
                     }
                 }
-
-
-
 
                 element.RefreshStatesToCustomVariables();
 
@@ -1079,8 +1076,16 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
 
                 PluginManager.ReactToObjectRemoved(element, namedObjectToRemove);
+            }
 
+            if(element == null && GlueState.Self.CurrentElement != null)
+            {
+                // we're trying to delete something that isn't actually part of the object, so we should refresh the tree view
+                //GlueCommands.Self.RefreshCommands.RefreshUi(GlueState.Self.CurrentElement);
 
+                var elementTreeNode = GlueState.Self.Find.ElementTreeNode(GlueState.Self.CurrentElement);
+
+                elementTreeNode?.RefreshTreeNodes();
             }
 
             if (performSave)

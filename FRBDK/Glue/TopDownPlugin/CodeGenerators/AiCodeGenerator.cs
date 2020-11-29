@@ -42,6 +42,8 @@ namespace {GlueState.Self.ProjectNamespace}.TopDown
 {{
     public class TopDownAiInput<T> : IInputDevice where T : PositionedObject, TopDown.ITopDownEntity
     {{
+        const float requiredDistanceForNextTarget = 16;
+
         public bool RemoveTargetOnReaching
         {{
             get; set;
@@ -128,15 +130,17 @@ namespace {GlueState.Self.ProjectNamespace}.TopDown
                 var xDiff = targetX - Owner.Position.X;
                 var yDiff = targetY - Owner.Position.Y;
 
-                const float epsilon = 1;
 
-                if(Math.Abs(xDiff) < epsilon && Math.Abs(yDiff) < epsilon && RemoveTargetOnReaching)
+                if(Math.Abs(xDiff) < requiredDistanceForNextTarget && Math.Abs(yDiff) < requiredDistanceForNextTarget && RemoveTargetOnReaching)
                 {{
                     TargetReached?.Invoke(Owner);
                     if(Path.Count > 0)
                     {{
                         Target = Path[0];
                         Path.RemoveAt(0);
+
+                        // do it again
+                        Activity();
                     }}
                     else
                     {{

@@ -637,9 +637,10 @@ namespace FlatRedBall.Glue.Elements
         {
             for (int i = 0; i < ObjectFinder.Self.GlueProject.Screens.Count; i++)
             {
-                if (IsContainedInListOrAsChild(ObjectFinder.Self.GlueProject.Screens[i].NamedObjects, namedObjectSave))
+                var screen = ObjectFinder.Self.GlueProject.Screens[i];
+                if (IsContainedInListOrAsChild(screen.NamedObjects, namedObjectSave))
                 {
-                    return ObjectFinder.Self.GlueProject.Screens[i];
+                    return screen;
                 }
             }
             for (int i = 0; i < ObjectFinder.Self.GlueProject.Entities.Count; i++)
