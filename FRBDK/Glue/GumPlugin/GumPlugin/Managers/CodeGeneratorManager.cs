@@ -593,8 +593,11 @@ namespace GumPlugin.Managers
 
             bool didSave = false;
 
+            var shouldAddToProject = false;
+
             if(!string.IsNullOrEmpty(generatedCode))
             {
+                shouldAddToProject = true;
                 try
                 {
                     GlueCommands.Self.TryMultipleTimes(() =>
@@ -607,12 +610,16 @@ namespace GumPlugin.Managers
                 }
             }
 
-            if(didSave)
+            if(shouldAddToProject)
             {
                 // add the file to the project:
-                FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
+                var didAdd = FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
                     GlueState.Self.CurrentMainProject, saveLocation);
 
+                if(didAdd)
+                {
+                    GlueCommands.Self.ProjectCommands.SaveProjectsTask();
+                }
             }
         }
 
