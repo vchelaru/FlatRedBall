@@ -49,6 +49,8 @@ namespace {GlueState.Self.ProjectNamespace}.TopDown
             get; set;
         }}
 
+        public bool ShouldRemoveLastTarget {{ get; set; }}
+
         public bool StopOnTarget
         {{
             get; set;
@@ -130,8 +132,14 @@ namespace {GlueState.Self.ProjectNamespace}.TopDown
                 var xDiff = targetX - Owner.Position.X;
                 var yDiff = targetY - Owner.Position.Y;
 
+                var isCloseToFindNextTarget =
+                    Math.Abs(xDiff) < requiredDistanceForNextTarget && Math.Abs(yDiff) < requiredDistanceForNextTarget;
 
-                if(Math.Abs(xDiff) < requiredDistanceForNextTarget && Math.Abs(yDiff) < requiredDistanceForNextTarget && RemoveTargetOnReaching)
+                var shouldRemove = isCloseToFindNextTarget &&
+                    RemoveTargetOnReaching &&
+                    (Path.Count > 1 || ShouldRemoveLastTarget);
+
+                if (shouldRemove)
                 {{
                     TargetReached?.Invoke(Owner);
                     if(Path.Count > 0)
