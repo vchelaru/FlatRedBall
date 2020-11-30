@@ -587,7 +587,7 @@ namespace GumPlugin.Managers
 
             string generatedCode = behaviorCodeGenerator.GenerateInterfaceCodeFor(behavior);
 
-            string saveLocation = directoryToSave + "I" + behavior.Name + ".Generated.cs";
+            FilePath saveLocation = directoryToSave + "I" + behavior.Name + ".Generated.cs";
 
             System.IO.Directory.CreateDirectory(saveLocation.GetDirectoryContainingThis().FullPath);
 
@@ -601,7 +601,7 @@ namespace GumPlugin.Managers
                 try
                 {
                     GlueCommands.Self.TryMultipleTimes(() =>
-                        System.IO.File.WriteAllText(saveLocation, generatedCode));
+                        System.IO.File.WriteAllText(saveLocation.FullPath, generatedCode));
                     didSave = true;
                 }
                 catch (Exception e)
@@ -614,7 +614,7 @@ namespace GumPlugin.Managers
             {
                 // add the file to the project:
                 var didAdd = FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
-                    GlueState.Self.CurrentMainProject, saveLocation);
+                    GlueState.Self.CurrentMainProject, saveLocation.FullPath);
 
                 if(didAdd)
                 {

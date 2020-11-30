@@ -289,7 +289,9 @@ namespace GumPlugin
             // - Added new classes for creating/updating shapes from Gum
             // 2.4
             // - Added Gum animation speed
-            get { return new Version(2, 4, 0); }
+            // 2.4.1
+            // - Fixed a variety of bugs where files weren't generated/saved
+            get { return new Version(2, 4, 1); }
         }
 
         #endregion
