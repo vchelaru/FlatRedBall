@@ -602,7 +602,10 @@ namespace FlatRedBall.Gui
             }
         }
 
+        public float WorldX => WorldXAt(0);
+        public float WorldY => WorldYAt(0);
 
+        public Vector2 WorldPosition => new Vector2(WorldX, WorldY);
 
         #region XML Docs
         /// <summary>

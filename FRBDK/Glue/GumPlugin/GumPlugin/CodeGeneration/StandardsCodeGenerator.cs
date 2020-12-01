@@ -43,6 +43,13 @@ namespace GumPlugin.CodeGeneration
                 codeBlock.Line("UpdateLayout();");
             });
 
+            mStandardSetterReplacements.Add("FontScale", (codeBlock) =>
+            {
+                codeBlock.Line("ContainedText.FontScale = value;");
+                codeBlock.Line("UpdateLayout();");
+            });
+
+
 
             // This says what the property name is and what the contained variable name is.
             // For example:
@@ -389,9 +396,10 @@ namespace GumPlugin.CodeGeneration
             bool wasHandled = TryHandleCustomSetter(variable, elementSave, setter);
             if (!wasHandled)
             {
-                if (mStandardSetterReplacements.ContainsKey(variable.Name))
+                var noSpaceName = variable.Name?.Replace(" ", "");
+                if (mStandardSetterReplacements.ContainsKey(noSpaceName))
                 {
-                    mStandardSetterReplacements[variable.Name](setter);
+                    mStandardSetterReplacements[noSpaceName](setter);
                 }
                 else
                 {

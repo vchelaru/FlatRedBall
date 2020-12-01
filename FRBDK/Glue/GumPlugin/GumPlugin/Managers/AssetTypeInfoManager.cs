@@ -640,6 +640,7 @@ namespace GumPlugin.Managers
                 $"global::Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = true; " +
                 $"{fieldName} = new {ati.QualifiedRuntimeTypeName.QualifiedType}();" +
                 $"global::Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = oldLayoutSuspended; " +
+                $"{fieldName}.UpdateFontRecursive();" +
                 $"{fieldName}.UpdateLayout();" +
             "}";
 
