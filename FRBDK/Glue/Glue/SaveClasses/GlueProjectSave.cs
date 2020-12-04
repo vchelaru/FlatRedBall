@@ -47,10 +47,11 @@ namespace FlatRedBall.Glue.SaveClasses
             PreVersion = 1,
             AddedGeneratedGame1 = 2,
             ListsHaveAssociateWithFactoryBool = 3,
-            GumGueHasGetAnimation = 4
+            GumGueHasGetAnimation = 4,
+            CsvInheritanceSupport = 5
 
         }
-        public const int LatestVersion = 4;
+        public const int LatestVersion = 5;
 
         public int FileVersion { get; set; }
 

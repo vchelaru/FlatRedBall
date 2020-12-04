@@ -18,8 +18,23 @@ namespace TopDownPlugin.DataGenerators
     {
         #region Fields/Properties
 
-        public const string StrippedCsvFile = "TopDownValues";
-        public const string RelativeCsvFile = StrippedCsvFile + ".csv";
+        public static string StrippedCsvFile
+        {
+            get
+            {
+                if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.CsvInheritanceSupport)
+                {
+                    // As of this version, we put the top down values in a static and then we have a virtual instance
+                    // property for inheritance
+                    return "TopDownValuesStatic";
+                }
+                else
+                {
+                    return "TopDownValues";
+                }
+            }
+        }
+        public static string RelativeCsvFile => StrippedCsvFile + ".csv";
 
         #endregion
 

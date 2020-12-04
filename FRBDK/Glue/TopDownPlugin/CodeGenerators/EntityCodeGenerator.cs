@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
 using Newtonsoft.Json;
@@ -22,18 +23,54 @@ namespace TopDownPlugin.CodeGenerators
         public override void GenerateAdditionalClasses(ICodeBlock codeBlock, IElement element)
         {
             /////////////////Early Out//////////////////////
-            if (TopDownEntityPropertyLogic.GetIfIsTopDown(element) == false)
+            var entitySave = element as EntitySave;
+            if (entitySave == null)
             {
                 return;
             }
+
             //////////////End Early Out//////////////////////
             ///
 
+            if (MainController.Self.GetIfInheritsFromTopDown(entitySave))
+            {
+                GenerateDerivedElementSave(element, codeBlock);
+            }
+            else if(TopDownEntityPropertyLogic.GetIfIsTopDown(entitySave))
+            {
+                GenerateTopDownElementSave(element, codeBlock);
+
+            }
+
+        }
+
+        string projectNamespace => GlueState.Self.ProjectNamespace;
+
+        private void GenerateDerivedElementSave(IElement element, ICodeBlock codeBlock)
+        {
+
+            if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.CsvInheritanceSupport)
+            {
+                var className = element.GetStrippedName();
+                codeBlock = codeBlock.Class("public partial", className, "");
+                codeBlock.Line($"protected override System.Collections.Generic.Dictionary<string, {projectNamespace}.DataTypes.TopDownValues> TopDownValues => TopDownValuesStatic;");
+            }
+
+
+        }
+
+        private void GenerateTopDownElementSave(IElement element, ICodeBlock codeBlock)
+        {
             var className = element.GetStrippedName();
 
             codeBlock = codeBlock.Class("public partial", className, ": TopDown.ITopDownEntity");
 
             codeBlock.Line("#region Top Down Fields");
+
+            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.CsvInheritanceSupport)
+            {
+                codeBlock.Line($"protected virtual System.Collections.Generic.Dictionary<string, {projectNamespace}.DataTypes.TopDownValues> TopDownValues => TopDownValuesStatic;");
+            }
 
             WriteAnimationFields(element, codeBlock);
 
@@ -88,20 +125,6 @@ namespace TopDownPlugin.CodeGenerators
 
 
             codeBlock.Line("#endregion");
-        }
-
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
-        {
-            /////////////////Early Out//////////////////////
-            if (TopDownEntityPropertyLogic.GetIfIsTopDown(element) == false)
-            {
-                return codeBlock;
-            }
-            //////////////End Early Out//////////////////////
-            ///
-
-
-            return codeBlock;
         }
 
         private static void WriteAnimationFields(IElement element, ICodeBlock codeBlock)
