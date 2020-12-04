@@ -22,7 +22,7 @@ namespace FlatRedBall.Instructions.Reflection
 
         static Dictionary<string, Type> mUnqualifiedTypeDictionary = new Dictionary<string, Type>();
 
-#if WINDOWS_8 || UWP
+#if UWP
 
         /// <summary>
         /// Stores a reference to the current assembly. This is the
@@ -62,7 +62,7 @@ namespace FlatRedBall.Instructions.Reflection
             Type typeToConvertTo = value.GetType();
 
             // Do the conversion
-#region Convert To String
+            #region Convert To String
 
             if (typeToConvertTo == typeof(bool))
             {
@@ -254,7 +254,7 @@ namespace FlatRedBall.Instructions.Reflection
             {
 
 
-#region bool
+                #region bool
 
                 if (desiredType == typeof(bool).FullName)
                 {
@@ -272,7 +272,7 @@ namespace FlatRedBall.Instructions.Reflection
 
 #endregion
 
-#region int, Int32, Int16, uint, long
+                #region int, Int32, Int16, uint, long
 
                 else if (desiredType == typeof(int).FullName || desiredType == typeof(Int32).FullName || desiredType == typeof(Int16).FullName ||
                     desiredType == typeof(uint).FullName || desiredType == typeof(long).FullName || desiredType == typeof(byte).FullName)
@@ -366,7 +366,7 @@ namespace FlatRedBall.Instructions.Reflection
 
 #endregion
 
-#region float, Single
+                #region float, Single
 
                 else if (desiredType == typeof(float).FullName || desiredType == typeof(Single).FullName)
                 {
@@ -380,7 +380,7 @@ namespace FlatRedBall.Instructions.Reflection
 
 #endregion
 
-#region double
+                #region double
 
                 else if (desiredType == typeof(double).FullName)
                 {
@@ -395,7 +395,7 @@ namespace FlatRedBall.Instructions.Reflection
 #endregion
 
 
-#region Decimal
+                #region Decimal
 
                 else if(desiredType == typeof(decimal).FullName)
                 {
@@ -600,7 +600,7 @@ namespace FlatRedBall.Instructions.Reflection
 
 #endregion
 #endif
-#region enum
+                #region enum
                 else if (IsEnum(desiredType))
                 {
 #if DEBUG
@@ -915,7 +915,9 @@ namespace FlatRedBall.Instructions.Reflection
 
             if (foundType == null)
             {
-                throw new ArgumentException("Could not find the type for " + typeAfterNewString);
+                throw new ArgumentException
+                    ("Could not find the type for " + typeAfterNewString + 
+                    "\nIf this is a type in your project, you may need to add the assembly to the PropertyValuePair.AdditionalAssemblies");
             }
             else
             {

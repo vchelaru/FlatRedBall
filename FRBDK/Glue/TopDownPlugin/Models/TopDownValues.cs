@@ -6,6 +6,12 @@ using System.Threading.Tasks;
 
 namespace TopDownPlugin.Models
 {
+    public enum InheritOrOverwrite
+    {
+        Inherit,
+        Overwrite
+    }
+
     public class TopDownValues
     {
         public string Name { get; set; }
@@ -21,8 +27,15 @@ namespace TopDownPlugin.Models
 
         public float CustomDecelerationValue { get; set; } = 100;
 
-        // If adding properties here, modify the MainController.GetCsvValues
-        // to also consider the new properties
+        public int InheritOrOverwriteAsInt { get; set; }
+
+        public InheritOrOverwrite InheritOrOverwrite => (InheritOrOverwrite)InheritOrOverwriteAsInt;
+
+        // If adding properties here, modify:
+        // * MainController.RefreshTopDownValues
+        // * TopDownValuesViewModel.SetFrom
+        // * TopDownValuesViewModel.ToValues
+        // It might be good to find all references to an existing property to make sure it's covered
 
         public Dictionary<string, object> AdditionalValues
         {

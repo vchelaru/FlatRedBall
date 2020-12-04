@@ -11,8 +11,10 @@ using System.Windows;
 
 namespace TopDownPlugin.ViewModels
 {
+    
     public class TopDownEntityViewModel : ViewModel
     {
+        #region IsTopDown-related
 
         public bool IsTopDown
         {
@@ -20,22 +22,26 @@ namespace TopDownPlugin.ViewModels
             set => Set(value);
         }
 
-        [DependsOn(nameof(IsTopDown))]
-        public Visibility TopDownUiVisibility
+        public bool InheritsFromTopDown
         {
-            get
-            {
-                if(IsTopDown)
-                {
-                    return Visibility.Visible;
-                }
-                else
-                {
-                    return Visibility.Collapsed;
-                }
-            }
+            get => Get<bool>();
+            set => Set(value);
         }
 
+        [DependsOn(nameof(IsTopDown))]
+        [DependsOn(nameof(InheritsFromTopDown))]
+        bool IsEffectivelyTopDown => IsTopDown || InheritsFromTopDown;
+
+        [DependsOn(nameof(IsEffectivelyTopDown))]
+        public Visibility TopDownUiVisibility => IsEffectivelyTopDown.ToVisibility();
+
+        [DependsOn(nameof(InheritsFromTopDown))]
+        public Visibility TopDownCheckBoxVisibility => (InheritsFromTopDown == false).ToVisibility();
+
+        [DependsOn(nameof(InheritsFromTopDown))]
+        public Visibility InheritanceLabelVisibility => InheritsFromTopDown.ToVisibility();
+
+        #endregion
 
         public List<string> LeftSideItems { get; private set; } = new List<string>
         {

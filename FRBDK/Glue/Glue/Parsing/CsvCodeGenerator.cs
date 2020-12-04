@@ -19,8 +19,6 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue
 {
-
-
     public static class CsvCodeGenerator
     {
         public static void RegenerateAllCsvs()
@@ -29,7 +27,7 @@ namespace FlatRedBall.Glue
             {
                 foreach (ReferencedFileSave rfs in entitySave.ReferencedFiles)
                 {
-                    if (FileManager.GetExtension(rfs.Name) == "csv" || rfs.TreatAsCsv)
+                    if (rfs.IsCsvOrTreatedAsCsv)
                     {
                         CsvCodeGenerator.GenerateAndSaveDataClass(rfs, rfs.CsvDelimiter);
                     }
@@ -40,7 +38,7 @@ namespace FlatRedBall.Glue
             {
                 foreach (ReferencedFileSave rfs in screensave.ReferencedFiles)
                 {
-                    if (FileManager.GetExtension(rfs.Name) == "csv" || rfs.TreatAsCsv)
+                    if (rfs.IsCsvOrTreatedAsCsv)
                     {
                         CsvCodeGenerator.GenerateAndSaveDataClass(rfs, rfs.CsvDelimiter);
                     }
@@ -49,7 +47,7 @@ namespace FlatRedBall.Glue
 
             foreach (ReferencedFileSave rfs in ProjectManager.GlueProjectSave.GlobalFiles)
             {
-                if ((FileManager.GetExtension(rfs.Name) == "csv" || rfs.TreatAsCsv) && !rfs.IsDatabaseForLocalizing)
+                if (rfs.IsCsvOrTreatedAsCsv && !rfs.IsDatabaseForLocalizing)
                 {
                     try
                     {
@@ -59,11 +57,9 @@ namespace FlatRedBall.Glue
                     {
                         MessageBox.Show("Error generating the file\n\n" + rfs.Name + "\n\nError details:\n\n" +
                             e.ToString());
-
                     }
                 }
             }
-
         }
 
         public static void GenerateAndSaveDataClass(ReferencedFileSave rfs, AvailableDelimiters delimiter)
@@ -71,70 +67,66 @@ namespace FlatRedBall.Glue
             string fileName = rfs.Name;
             fileName = ProjectManager.MakeAbsolute(fileName);
 
-            #region See if the CSV file doesn't exist and warn the user if not
+            /////////////// Early Out /////////////////////////
             if (!System.IO.File.Exists(fileName))
             {
-                MessageBox.Show("Could not find the CSV file " + fileName + 
+                GlueCommands.Self.PrintError("Could not find the CSV file " + fileName + 
                     " when trying to generate a data file");
             }
+            //////////////End Early Out//////////////////////
+
+            #region Save off the old delimiter and switch to using the new one - we need the old one so we can switch back after this function finishes
+
+            char oldDelimiter = CsvFileManager.Delimiter;
+            CsvFileManager.Delimiter = delimiter.ToChar();
             #endregion
 
-            else // CSV exists
+            if (!string.IsNullOrEmpty(rfs.UniformRowType))
             {
-                #region Save off the old delimiter and switch to using the new one - we need the old one so we can switch back after this function finishes
-
-                char oldDelimiter = CsvFileManager.Delimiter;
-                CsvFileManager.Delimiter = delimiter.ToChar();
-                #endregion
-
-                if (!string.IsNullOrEmpty(rfs.UniformRowType))
-                {
-                    // This simply
-                    // checks to make
-                    // sure the CSV is
-                    // set up right - it
-                    // doesn't actually generate
-                    // any code because the CSV will
-                    // deserialize to an array of primitives.
-                    CheckUniformTypeValidity(rfs, fileName, oldDelimiter);
-                }
-                else
-                {
-                    RuntimeCsvRepresentation rcr;
-                    bool succeeded;
-                    DeserializeToRcr(delimiter, fileName, out rcr, out succeeded);
+                // This simply
+                // checks to make
+                // sure the CSV is
+                // set up right - it
+                // doesn't actually generate
+                // any code because the CSV will
+                // deserialize to an array of primitives.
+                CheckUniformTypeValidity(rfs, fileName, oldDelimiter);
+            }
+            else
+            {
+                RuntimeCsvRepresentation rcr;
+                bool succeeded;
+                DeserializeToRcr(delimiter, fileName, out rcr, out succeeded);
                     
-                    if(succeeded)
+                if(succeeded)
+                {
+                    CsvFileManager.Delimiter = oldDelimiter;
+                    
+
+                    string whyIsCsvWrong = GetWhyCsvIsWrong(rcr, rfs.CreatesDictionary, fileName);
+
+                    if (!string.IsNullOrEmpty(whyIsCsvWrong))
                     {
-                        CsvFileManager.Delimiter = oldDelimiter;
-                    
+                        GlueGui.ShowMessageBox(whyIsCsvWrong);
+                        succeeded = false;
+                    }
+                    else
+                    {
+                        string className;
+                        List<TypedMemberBase> members;
+                        Dictionary<string, string> untypedMembers;
 
-                        string whyIsCsvWrong = GetWhyCsvIsWrong(rcr, rfs.CreatesDictionary, fileName);
+                        CustomClassSave customClass = GetCustomClassForCsv(rfs.Name);
 
-                        if (!string.IsNullOrEmpty(whyIsCsvWrong))
+                        if (customClass == null || customClass.GenerateCode)
                         {
-                            GlueGui.ShowMessageBox(whyIsCsvWrong);
-                            succeeded = false;
-                        }
-                        else
-                        {
-                            string className;
-                            List<TypedMemberBase> members;
-                            Dictionary<string, string> untypedMembers;
-
-                            CustomClassSave customClass = GetCustomClassForCsv(rfs.Name);
-
-                            if (customClass == null || customClass.GenerateCode)
-                            {
-                                fileName = GetClassInfoFromCsvs(rfs, fileName, rcr, out className, out members, out untypedMembers);
+                            fileName = GetClassInfoFromCsvs(rfs, fileName, rcr, out className, out members, out untypedMembers);
 
 
-                                succeeded = GenerateClassFromMembers(rfs, succeeded, className, members, untypedMembers);
-                            }
+                            succeeded = GenerateClassFromMembers(rfs, succeeded, className, members, untypedMembers);
                         }
                     }
                 }
-
             }
         }
 
@@ -854,11 +846,7 @@ namespace FlatRedBall.Glue
                 }
                 else
                 {
-
-
                     fileName = GetClassInfo(fileName, null, customClass, out members, out untypedMembers);
-
-
 
                     bool succeeded = GenerateClassFromMembers(rfs, true, customClass.Name, members, untypedMembers);
                 }

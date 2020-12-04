@@ -21,7 +21,7 @@
             <ColumnDefinition Width="Auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <Button Grid.Column="4" Width="24" Click="HandleXClick" >X</Button>
+        <Button Grid.Column="4" Width="24" Click="HandleXClick" Visibility="{Binding DeleteButtonVisibility}" >X</Button>
 
         <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="3" VerticalAlignment="Stretch" Fill="LightGray" />
 
@@ -42,14 +42,23 @@
         <!--Name-->
         <StackPanel Grid.Row="1" Margin="3">
             <TextBlock HorizontalAlignment="Center" Margin="3">Movement Type</TextBlock>
-            <TextBox Text="{Binding Name}" Width="90" VerticalAlignment="Top" KeyUp="TextBox_KeyEnterUpdate"></TextBox>
+            <TextBox Text="{Binding Name}" Width="90" VerticalAlignment="Top" 
+                     KeyUp="TextBox_KeyEnterUpdate" 
+                     IsEnabled="{Binding IsNameEditable}"></TextBox>
+
+            <GroupBox Header="Inheritance" Visibility="{Binding InheritBoxVisibility}">
+                <StackPanel>
+                    <RadioButton VerticalContentAlignment="Center" IsChecked="{Binding InheritMovementValues}">Inherit Values</RadioButton>
+                    <RadioButton VerticalContentAlignment="Center" IsChecked="{Binding OverwriteMovementValues}">Overwrite Values</RadioButton>
+                </StackPanel>
+            </GroupBox>
 
         </StackPanel>
 
 
         <!--Horizontal Movement-->
         <TextBlock Grid.Column="1" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3">Movement</TextBlock>
-        <StackPanel Grid.Row="1" Grid.Column="1" Margin="12,3,8,3">
+        <StackPanel Grid.Row="1" Grid.Column="1" Margin="12,3,8,3" IsEnabled="{Binding IsEditable}">
 
             <TextBlock>Max Speed:</TextBlock>
             <TextBox Text="{Binding MaxSpeed}" HorizontalAlignment="Left" Width="70" Margin="0,0,0,5"
@@ -77,7 +86,7 @@
 
         <!--Directions Movement-->
         <TextBlock Grid.Column="2" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3">Directions</TextBlock>
-        <StackPanel Grid.Row="1" Grid.Column="2" Margin="12,3,8,3">
+        <StackPanel Grid.Row="1" Grid.Column="2" Margin="12,3,8,3" IsEnabled="{Binding IsEditable}">
             
             <TextBlock>Direction Updates:</TextBlock>
             <RadioButton IsChecked="{Binding UpdateDirectionFromVelocity}">Update to Movement Direction</RadioButton>
@@ -85,6 +94,6 @@
         </StackPanel>
 
         <TextBlock Grid.Column="3" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3">Add'l Props </TextBlock>
-        <wpfdataui:DataUiGrid x:Name="DataGrid" Grid.Row="1" Grid.Column="3"></wpfdataui:DataUiGrid>
+        <wpfdataui:DataUiGrid x:Name="DataGrid" Grid.Row="1" Grid.Column="3"  IsEnabled="{Binding IsEditable}"></wpfdataui:DataUiGrid>
     </Grid>
 </UserControl>

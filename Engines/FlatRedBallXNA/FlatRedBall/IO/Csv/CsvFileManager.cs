@@ -48,18 +48,18 @@ namespace FlatRedBall.IO.Csv
             rcr.CreateObjectList(typeOfElement, listToPopulate, ContentManagerName);
         }
 
-        public static void CsvDeserializeDictionary<KeyType, ValueType>(string fileName, Dictionary<KeyType, ValueType> dictionaryToPopulate)
+        public static void CsvDeserializeDictionary<KeyType, ValueType>(string fileName, Dictionary<KeyType, ValueType> dictionaryToPopulate, DuplicateDictionaryEntryBehavior duplicateDictionaryEntryBehavior = DuplicateDictionaryEntryBehavior.ThrowException)
         {
-            RuntimeCsvRepresentation rcr = null;
+            var rcr = CsvDeserializeToRuntime(fileName);
 
-            CsvDeserializeDictionary(fileName, dictionaryToPopulate, out rcr);
+            rcr.FillObjectDictionary<KeyType, ValueType>(dictionaryToPopulate, ContentManagerName, duplicateDictionaryEntryBehavior);
         }
 
         public static void CsvDeserializeDictionary<KeyType, ValueType>(string fileName, Dictionary<KeyType, ValueType> dictionaryToPopulate, out RuntimeCsvRepresentation rcr)
         {
             rcr = CsvDeserializeToRuntime(fileName);
 
-            rcr.CreateObjectDictionary<KeyType, ValueType>(dictionaryToPopulate, ContentManagerName);
+            rcr.FillObjectDictionary<KeyType, ValueType>(dictionaryToPopulate, ContentManagerName);
         }
 
         public static void UpdateDictionaryValuesFromCsv<KeyType, ValueType>(Dictionary<KeyType, ValueType> dictionaryToUpdate, string fileName)
@@ -73,7 +73,7 @@ namespace FlatRedBall.IO.Csv
         {
             var rcr = CsvDeserializeToRuntime<RuntimeCsvRepresentation>(stream);
 
-            rcr.CreateObjectDictionary<KeyType, ValueType>(dictionaryToPopulate, ContentManagerName);
+            rcr.FillObjectDictionary<KeyType, ValueType>(dictionaryToPopulate, ContentManagerName);
         }
 
         public static RuntimeCsvRepresentation CsvDeserializeToRuntime(string fileName)

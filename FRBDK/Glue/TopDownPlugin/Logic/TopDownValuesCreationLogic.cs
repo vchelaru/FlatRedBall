@@ -14,20 +14,68 @@ namespace TopDownPlugin.Logic
 {
     static class TopDownValuesCreationLogic
     {
+        static List<CsvHeader> requiredCsvHeaders;
+        public static List<CsvHeader> RequiredCsvHeaders
+        {
+            get
+            {
+                if(requiredCsvHeaders == null)
+                {
+                    FillRequiredCsvHeaders();
+                }
+                return requiredCsvHeaders;
+            }
+        }
+
+        private static void FillRequiredCsvHeaders()
+        {
+            requiredCsvHeaders = new List<CsvHeader>();
+
+            CsvHeader Add(string propertyName, string suffix, bool isRequired = false)
+            {
+                var header = new CsvHeader
+                {
+                    OriginalText = propertyName + " " + suffix,
+                    IsRequired = isRequired,
+                    Name = propertyName,
+                    MemberTypes = System.Reflection.MemberTypes.Property
+                };
+                requiredCsvHeaders.Add(header);
+                return header;
+            }
+
+            Add(nameof(TopDownValues.Name), "(string, required)", true);
+
+            Add(nameof(TopDownValues.UsesAcceleration), "(bool)");
+
+            Add(nameof(TopDownValues.MaxSpeed), "(float)");
+
+            Add(nameof(TopDownValues.AccelerationTime), "(float)");
+
+            Add(nameof(TopDownValues.DecelerationTime), "(float)");
+
+            Add(nameof(TopDownValues.UpdateDirectionFromVelocity), "(bool)");
+
+            Add(nameof(TopDownValues.IsUsingCustomDeceleration), "(bool)");
+
+            Add(nameof(TopDownValues.CustomDecelerationValue), "(float)");
+
+            Add(nameof(TopDownValues.InheritOrOverwriteAsInt), "(int)");
+        }
+
+
         public static void GetCsvValues(EntitySave currentEntitySave,
             out Dictionary<string, TopDownValues> csvValues,
             out List<Type> additionalValueTypes,
             out CsvHeader[] headers)
         {
             csvValues = new Dictionary<string, TopDownValues>();
-            var filePath = CsvGenerator.Self.CsvFileFor(currentEntitySave);
+            var filePath = CsvGenerator.Self.CsvTopdownFileFor(currentEntitySave);
             headers = null;
-
-            bool doesFileExist = filePath.Exists();
 
             additionalValueTypes = new List<Type>();
 
-            if (doesFileExist)
+            if (filePath.Exists())
             {
                 try
                 {
@@ -89,15 +137,7 @@ namespace TopDownPlugin.Logic
 
         private static bool GetIfShouldIncludeInAdditionalValues(string headerName)
         {
-            return headerName != nameof(TopDownValues.Name) &&
-                headerName != nameof(TopDownValues.UsesAcceleration) &&
-                headerName != nameof(TopDownValues.MaxSpeed) &&
-                headerName != nameof(TopDownValues.AccelerationTime) &&
-                headerName != nameof(TopDownValues.DecelerationTime) &&
-                headerName != nameof(TopDownValues.UpdateDirectionFromVelocity) &&
-                headerName != nameof(TopDownValues.IsUsingCustomDeceleration) &&
-                headerName != nameof(TopDownValues.CustomDecelerationValue) 
-                ;
+            return RequiredCsvHeaders.Any(item => item.Name == headerName) == false;
         }
 
         private static Type GetTypeFromTypeName(string typeAsString)

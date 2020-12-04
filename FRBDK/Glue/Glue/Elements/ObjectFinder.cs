@@ -506,6 +506,18 @@ namespace FlatRedBall.Glue.Elements
             return derivedElements;
         }
 
+        public IElement GetBaseElement(IElement derivedElement)
+        {
+            if (!string.IsNullOrEmpty(derivedElement.BaseElement))
+            {
+                return GetIElement(derivedElement.BaseElement);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public List<IElement> GetAllBaseElementsRecursively(IElement derivedElement)
         {
             var baseElements = new List<IElement>();

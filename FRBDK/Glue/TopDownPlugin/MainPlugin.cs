@@ -56,6 +56,8 @@ namespace TopDownPlugin
         {
             MainController.Self.MainPlugin = this;
 
+            // Needed for deserialization:
+
             base.RegisterCodeGenerator(new EntityCodeGenerator());
             AssignEvents();
         }

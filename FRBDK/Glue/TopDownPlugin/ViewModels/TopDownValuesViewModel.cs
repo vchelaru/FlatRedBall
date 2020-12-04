@@ -163,6 +163,59 @@ namespace TopDownPlugin.ViewModels
             set => Set(value);
         }
 
+        public InheritOrOverwrite InheritOrOverwrite
+        {
+            get => Get<InheritOrOverwrite>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(InheritOrOverwrite))]
+        public bool InheritMovementValues
+        {
+            get => InheritOrOverwrite == InheritOrOverwrite.Inherit;
+            set
+            {
+                Set(value);
+                if(value)
+                {
+                    InheritOrOverwrite = InheritOrOverwrite.Inherit;
+                }
+            }
+        }
+
+        [DependsOn(nameof(InheritOrOverwrite))]
+        public bool OverwriteMovementValues
+        {
+            get => InheritOrOverwrite == InheritOrOverwrite.Overwrite;
+            set
+            {
+                Set(value);
+                if(value)
+                {
+                    InheritOrOverwrite = InheritOrOverwrite.Overwrite;
+                }
+            }
+        }
+
+        public bool IsInDerivedTopDownEntity
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(IsInDerivedTopDownEntity))]
+        public Visibility InheritBoxVisibility => IsInDerivedTopDownEntity.ToVisibility();
+
+        [DependsOn(nameof(IsInDerivedTopDownEntity))]
+        public Visibility DeleteButtonVisibility => (IsInDerivedTopDownEntity == false).ToVisibility();
+
+        [DependsOn(nameof(InheritOrOverwrite))]
+        [DependsOn(nameof(IsInDerivedTopDownEntity))]
+        public bool IsEditable => InheritOrOverwrite == InheritOrOverwrite.Overwrite || IsInDerivedTopDownEntity == false;
+
+        [DependsOn(nameof(IsInDerivedTopDownEntity))]
+        public bool IsNameEditable => IsInDerivedTopDownEntity == false;
+
         #endregion
 
         public TopDownValuesViewModel Clone()
@@ -186,7 +239,7 @@ namespace TopDownPlugin.ViewModels
             return newCopy;
         }
 
-        internal void SetFrom(TopDownValues values, List<Type> additionalValueTypes)
+        internal void SetFrom(TopDownValues values, List<Type> additionalValueTypes, bool isInDerivedTopDown)
         {
             this.Name = values.Name;
             this.MaxSpeed = values.MaxSpeed;
@@ -197,6 +250,9 @@ namespace TopDownPlugin.ViewModels
             this.UpdateDirectionFromVelocity = values.UpdateDirectionFromVelocity;
             this.IsCustomDecelerationChecked = values.IsUsingCustomDeceleration;
             this.CustomDecelerationValue = values.CustomDecelerationValue;
+            this.InheritOrOverwrite = values.InheritOrOverwrite;
+
+            this.IsInDerivedTopDownEntity = isInDerivedTopDown;
 
             this.BackingData = values;
 
@@ -229,8 +285,9 @@ namespace TopDownPlugin.ViewModels
             toReturn.UsesAcceleration = this.UsesAcceleration;
             toReturn.IsUsingCustomDeceleration = this.IsCustomDecelerationChecked;
             toReturn.CustomDecelerationValue = this.CustomDecelerationValue;
+            toReturn.InheritOrOverwriteAsInt = (int)this.InheritOrOverwrite;
 
-            foreach(var kvp in AdditionalProperties)
+            foreach (var kvp in AdditionalProperties)
             {
                 toReturn.AdditionalValues[kvp.Key] = kvp.Value;
             }
@@ -242,5 +299,7 @@ namespace TopDownPlugin.ViewModels
         {
             return Name;
         }
+
+
     }
 }

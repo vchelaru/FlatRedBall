@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.IO;
+﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -65,7 +66,7 @@ namespace TopDownPlugin.Controllers
 
         internal void MakeCurrentEntityTopDown()
         {
-            if(viewModel != null)
+            if (viewModel != null)
             {
                 viewModel.IsTopDown = true;
             }
@@ -87,12 +88,12 @@ namespace TopDownPlugin.Controllers
             DetermineWhatToGenerate(e.PropertyName, viewModel,
                 out shouldGenerateCsv, out shouldGenerateEntity, out shouldAddTopDownVariables);
 
-            switch(e.PropertyName)
+            switch (e.PropertyName)
             {
                 case nameof(TopDownEntityViewModel.IsTopDown):
                     HandleIsTopDownPropertyChanged(viewModel);
                     break;
-                    // already handled in a dedicated method
+                // already handled in a dedicated method
                 case nameof(TopDownEntityViewModel.TopDownValues):
                     RefreshAnimationValues(entity);
                     break;
@@ -100,7 +101,7 @@ namespace TopDownPlugin.Controllers
 
             if (shouldGenerateCsv)
             {
-                if(viewModel.IsTopDown && viewModel.TopDownValues.Count == 0)
+                if (viewModel.IsTopDown && viewModel.TopDownValues.Count == 0)
                 {
                     var newValues = PredefinedTopDownValues.GetValues("Default");
                     viewModel.TopDownValues.Add(newValues);
@@ -142,19 +143,19 @@ namespace TopDownPlugin.Controllers
                         GlueCommands.Self.GluxCommands.SaveGlux();
                         EnumFileGenerator.Self.GenerateAndSave();
                         InterfacesFileGenerator.Self.GenerateAndSave();
-                        if(shouldGenerateCsv || shouldAddTopDownVariables)
+                        if (shouldGenerateCsv || shouldAddTopDownVariables)
                         {
                             AiCodeGenerator.Self.GenerateAndSave();
                             AnimationCodeGenerator.Self.GenerateAndSave();
                         }
-                    },"Saving Glue Project");
+                    }, "Saving Glue Project");
             }
 
         }
 
         internal void HandleElementRenamed(IElement renamedElement, string oldName)
         {
-            if(topDownAnimationData != null)
+            if (topDownAnimationData != null)
             {
                 SaveCurrentEntitySaveAnimationDataTask();
             }
@@ -170,7 +171,7 @@ namespace TopDownPlugin.Controllers
                 GlueCommands.Self.GluxCommands.SaveGluxTask();
             }
 
-            if(viewModel.IsTopDown == false)
+            if (viewModel.IsTopDown == false)
             {
                 CheckForNoTopDownEntities();
             }
@@ -224,7 +225,7 @@ namespace TopDownPlugin.Controllers
         private void GenerateCsv(EntitySave entity, TopDownEntityViewModel viewModel)
         {
             TaskManager.Self.Add(
-                                () => CsvGenerator.Self.GenerateFor(entity, viewModel, lastHeaders),
+                                () => CsvGenerator.Self.GenerateFor(entity, GetIfInheritsFromTopDown(entity), viewModel, lastHeaders),
                                 "Generating Top Down CSV for " + entity.Name);
 
 
@@ -236,7 +237,7 @@ namespace TopDownPlugin.Controllers
                 if (!isAlreadyAdded)
                 {
                     GlueCommands.Self.GluxCommands.AddSingleFileTo(
-                        CsvGenerator.Self.CsvFileFor(entity).FullPath,
+                        CsvGenerator.Self.CsvTopdownFileFor(entity).FullPath,
                         CsvGenerator.RelativeCsvFile,
                         "",
                         null,
@@ -270,7 +271,7 @@ namespace TopDownPlugin.Controllers
                 {
                     if (customClass != null && customClass.CsvFilesUsingThis.Contains(rfs.Name) == false)
                     {
-                        FlatRedBall. Glue.CreatedClass.CustomClassController.Self.SetCsvRfsToUseCustomClass(rfs, customClass, force: true);
+                        FlatRedBall.Glue.CreatedClass.CustomClassController.Self.SetCsvRfsToUseCustomClass(rfs, customClass, force: true);
 
                         GlueCommands.Self.GluxCommands.SaveGlux();
                     }
@@ -292,11 +293,19 @@ namespace TopDownPlugin.Controllers
 
         #region Update To / Refresh From Model
 
+        public bool GetIfInheritsFromTopDown(EntitySave entitySave) =>
+            ObjectFinder.Self
+                .GetAllBaseElementsRecursively(entitySave)
+                .Any(item => item.Properties.GetValue<bool>(nameof(viewModel.IsTopDown)));
+
         internal void UpdateTo(EntitySave currentEntitySave)
         {
             ignoresPropertyChanges = true;
 
             viewModel.IsTopDown = currentEntitySave.Properties.GetValue<bool>(nameof(viewModel.IsTopDown));
+            var inheritsFromTopDownEntity = GetIfInheritsFromTopDown(currentEntitySave);
+            viewModel.InheritsFromTopDown = inheritsFromTopDownEntity;
+
 
             RefreshTopDownValues(currentEntitySave);
 
@@ -315,11 +324,11 @@ namespace TopDownPlugin.Controllers
 
             viewModel.AnimationRows.Clear();
 
-            foreach(var animationValues in topDownAnimationData.Animations)
+            foreach (var animationValues in topDownAnimationData.Animations)
             {
                 var row = new AnimationRowViewModel();
                 row.AnimationRowName = animationValues.MovementValuesName;
-                foreach(var setModel in animationValues.AnimationSets)
+                foreach (var setModel in animationValues.AnimationSets)
                 {
                     var setViewModel = new AnimationSetViewModel();
                     setViewModel.AnimationSetName = setModel.AnimationSetName;
@@ -345,10 +354,10 @@ namespace TopDownPlugin.Controllers
             }
         }
 
-        private void RemoveUnneededAnimationMovementValues(EntitySave currentEntitySave, 
+        private void RemoveUnneededAnimationMovementValues(EntitySave currentEntitySave,
             ObservableCollection<TopDownValuesViewModel> topDownValues)
         {
-            for(int i = topDownAnimationData.Animations.Count - 1; i > -1; i--)
+            for (int i = topDownAnimationData.Animations.Count - 1; i > -1; i--)
             {
                 var movementValueAnimations = topDownAnimationData.Animations[i];
 
@@ -357,7 +366,7 @@ namespace TopDownPlugin.Controllers
                     topDownValues
                         .Any(topDownValue => topDownValue.Name == movementValueAnimations.MovementValuesName);
 
-                if(!isReferencedByTopDownValues)
+                if (!isReferencedByTopDownValues)
                 {
                     topDownAnimationData.Animations.RemoveAt(i);
                 }
@@ -397,7 +406,7 @@ namespace TopDownPlugin.Controllers
         private void AddNecessaryAnimationMovementValuesFor(EntitySave currentEntitySave, ObservableCollection<TopDownValuesViewModel> topDownValues)
         {
 
-            if(topDownAnimationData.Animations.Any(item => item.MovementValuesName == baseAnimationsName) == false)
+            if (topDownAnimationData.Animations.Any(item => item.MovementValuesName == baseAnimationsName) == false)
             {
                 var newAnimation = new MovementValueAnimations();
                 newAnimation.MovementValuesName = baseAnimationsName;
@@ -412,12 +421,12 @@ namespace TopDownPlugin.Controllers
                 topDownAnimationData.Animations.Add(newAnimation);
 
                 // temporary:
-                
+
             }
 
             foreach (var topDownValue in viewModel.TopDownValues)
             {
-                if(topDownAnimationData.Animations.Any(item => item.MovementValuesName == topDownValue.Name) == false)
+                if (topDownAnimationData.Animations.Any(item => item.MovementValuesName == topDownValue.Name) == false)
                 {
                     var newAnimation = new MovementValueAnimations();
                     newAnimation.MovementValuesName = topDownValue.Name;
@@ -462,94 +471,82 @@ namespace TopDownPlugin.Controllers
                 return tempList.Any(item => item.Name == name);
             }
 
-            if(!ContainsHeader(nameof(TopDownValues.Name)))
+            foreach(var requirement in TopDownValuesCreationLogic.RequiredCsvHeaders)
             {
-                tempList.Add(new CsvHeader
+                if(!ContainsHeader(requirement.Name))
                 {
-                    OriginalText = nameof(TopDownValues.Name) + " (string, required)",
-                    IsRequired = true,
-                    Name = nameof(TopDownValues.Name),
-                    MemberTypes = System.Reflection.MemberTypes.Property
-                });
-
-            }
-            if (!ContainsHeader(nameof(TopDownValues.UsesAcceleration)))
-            {
-                tempList.Add(new CsvHeader
-                {
-                    OriginalText = nameof(TopDownValues.UsesAcceleration) + " (bool)",
-                    Name = nameof(TopDownValues.UsesAcceleration),
-                    MemberTypes = System.Reflection.MemberTypes.Property
-                });
-            }
-            if (!ContainsHeader(nameof(TopDownValues.MaxSpeed)))
-            {
-                tempList.Add(new CsvHeader
-                {
-                    OriginalText = nameof(TopDownValues.MaxSpeed) + " (float)",
-                    Name = nameof(TopDownValues.MaxSpeed),
-                    MemberTypes = System.Reflection.MemberTypes.Property
-                });
-            }
-            if (!ContainsHeader(nameof(TopDownValues.AccelerationTime)))
-            {
-                tempList.Add(new CsvHeader
-                {
-                    OriginalText = nameof(TopDownValues.AccelerationTime) + " (float)",
-                    Name = nameof(TopDownValues.AccelerationTime),
-                    MemberTypes = System.Reflection.MemberTypes.Property
-                });
-            }
-            if (!ContainsHeader(nameof(TopDownValues.DecelerationTime)))
-            {
-                tempList.Add(new CsvHeader
-                {
-                    OriginalText = nameof(TopDownValues.DecelerationTime) + " (float)",
-                    Name = nameof(TopDownValues.DecelerationTime),
-                    MemberTypes = System.Reflection.MemberTypes.Property
-                });
-            }
-            if (!ContainsHeader(nameof(TopDownValues.UpdateDirectionFromVelocity)))
-            {
-                tempList.Add(new CsvHeader
-                {
-                    OriginalText = nameof(TopDownValues.UpdateDirectionFromVelocity) + " (bool)",
-                    Name = nameof(TopDownValues.UpdateDirectionFromVelocity),
-                    MemberTypes = System.Reflection.MemberTypes.Property
-                });
-            }
-            if(!ContainsHeader(nameof(TopDownValues.IsUsingCustomDeceleration)))
-            {
-                tempList.Add(new CsvHeader
-                {
-                    OriginalText = nameof(TopDownValues.IsUsingCustomDeceleration) + " (bool)",
-                    Name = nameof(TopDownValues.IsUsingCustomDeceleration),
-                    MemberTypes = System.Reflection.MemberTypes.Property
-                });
-            }
-            if (!ContainsHeader(nameof(TopDownValues.CustomDecelerationValue)))
-            {
-                tempList.Add(new CsvHeader
-                {
-                    OriginalText = nameof(TopDownValues.CustomDecelerationValue) + " (float)",
-                    Name = nameof(TopDownValues.CustomDecelerationValue),
-                    MemberTypes = System.Reflection.MemberTypes.Property
-                });
+                    tempList.Add(requirement);
+                }
             }
 
             lastHeaders = tempList.ToArray();
 
             viewModel.TopDownValues.Clear();
 
+            var baseTopDownEntities = ObjectFinder.Self
+                .GetAllBaseElementsRecursively(currentEntitySave)
+                .Where(item => item.Properties.GetValue<bool>(nameof(viewModel.IsTopDown)))
+                .ToArray();
+
+            var inheritsFromTopDown = baseTopDownEntities.Length > 0;
+
+            if(inheritsFromTopDown)
+            {
+                foreach(EntitySave entity in baseTopDownEntities)
+                {
+                    TopDownValuesCreationLogic.GetCsvValues(entity,
+                        out Dictionary<string, TopDownValues> baseCsvValues,
+                        out List<Type> baseAdditionalValueTypes,
+                        out CsvHeader[] baseCsvHeaders);
+
+                    foreach(var value in baseCsvValues.Values)
+                    {
+                        TopDownValuesViewModel topDownValuesViewModel = null;
+
+                        var existing = viewModel.TopDownValues.FirstOrDefault(item => item.Name == value.Name);
+                        if(existing != null)
+                        {
+                            topDownValuesViewModel = existing;
+                        }
+                        else
+                        {
+                            topDownValuesViewModel = new TopDownValuesViewModel();
+                            viewModel.TopDownValues.Add(topDownValuesViewModel);
+                        }
+                        topDownValuesViewModel.SetFrom(value, additionalValueTypes, inheritsFromTopDown);
+                        // since it's coming from a derived, force it as "inherits"
+                        topDownValuesViewModel.InheritOrOverwrite = InheritOrOverwrite.Inherit;
+                    }
+                }
+            }
+
             foreach (var value in csvValues.Values)
             {
-                var topDownValuesViewModel = new TopDownValuesViewModel();
+                var existing = viewModel.TopDownValues.FirstOrDefault(item => item.Name == value.Name);
 
-                // setfrom before property changed so that this doesn't raise an event
-                topDownValuesViewModel.SetFrom(value, additionalValueTypes);
+                if(existing == null || value.InheritOrOverwrite == InheritOrOverwrite.Overwrite)
+                {
+                    var topDownValuesViewModel = new TopDownValuesViewModel();
+                    topDownValuesViewModel.SetFrom(value, additionalValueTypes, inheritsFromTopDown);
+
+                    if(existing != null)
+                    {
+                        var index = viewModel.TopDownValues.IndexOf(existing);
+                        viewModel.TopDownValues.RemoveAt(index);
+                        viewModel.TopDownValues.Insert(index, topDownValuesViewModel);
+                    }
+                    else
+                    {
+                        viewModel.TopDownValues.Add(topDownValuesViewModel);
+                    }
+                }
+            }
+
+            // now that they've all been set, += their property change
+            foreach(var topDownValuesViewModel in viewModel.TopDownValues)
+            {
                 topDownValuesViewModel.PropertyChanged += HandleTopDownValuesViewModelChanged;
 
-                viewModel.TopDownValues.Add(topDownValuesViewModel);
             }
         }
 

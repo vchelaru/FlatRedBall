@@ -135,7 +135,19 @@ namespace FlatRedBall.IO.Csv
         }
     }
 
-#endregion
+    #endregion
+
+    #region Enums
+
+    public enum DuplicateDictionaryEntryBehavior
+    {
+        ThrowException,
+        Replace,
+        PreserveFirst
+    }
+
+
+    #endregion
 
     #region XML Docs
     /// <summary>
@@ -143,7 +155,7 @@ namespace FlatRedBall.IO.Csv
     /// used if the data must be processed or converted by hand to
     /// other object types.
     /// </summary>
-#endregion
+    #endregion
     public class RuntimeCsvRepresentation
     {
         #region Fields
@@ -656,15 +668,27 @@ namespace FlatRedBall.IO.Csv
 
         }
 
+        [Obsolete("Use FillObjectDictionary since that more accurately describes what this method is doing")]
         public void CreateObjectDictionary<KeyType, ValueType>(Dictionary<KeyType, ValueType> dictionaryToPopulate, string contentManagerName)
         {
+            FillObjectDictionary(dictionaryToPopulate, contentManagerName, DuplicateDictionaryEntryBehavior.ThrowException);
+        }
+
+        public void FillObjectDictionary<KeyType, ValueType>(Dictionary<KeyType, ValueType> dictionaryToPopulate, 
+            string contentManagerName = FlatRedBallServices.GlobalContentManager, 
+            DuplicateDictionaryEntryBehavior duplicateDictionaryEntryBehavior = DuplicateDictionaryEntryBehavior.ThrowException)
+        {
             Type typeOfElement = typeof(ValueType);
+
+
+
+
 #if DEBUG
-#if WINDOWS_8 || UWP
+    #if UWP
             bool isPrimitive = typeOfElement.IsPrimitive();
-#else
+    #else
             bool isPrimitive = typeOfElement.IsPrimitive;
-#endif
+    #endif
 
             if (isPrimitive || typeOfElement == typeof(string))
             {
@@ -680,7 +704,7 @@ namespace FlatRedBall.IO.Csv
             List<PropertyInfo> propertyInfos = new List<PropertyInfo>(propertyInfosEnumerable);
             List<FieldInfo> fieldInfos = new List<FieldInfo>(fieldInfosEnumerable);
 
-#region Get the required header which we'll use for the key
+            #region Get the required header which we'll use for the key
 
             CsvHeader csvHeaderForKey = CsvHeader.Empty;
 
@@ -735,8 +759,20 @@ namespace FlatRedBall.IO.Csv
 
                     if (dictionaryToPopulate.ContainsKey(keyToUse))
                     {
-                        throw new InvalidOperationException("The key " + keyToUse +
-                            " is already part of the dictionary.");
+                        switch(duplicateDictionaryEntryBehavior)
+                        {
+                            case DuplicateDictionaryEntryBehavior.ThrowException:
+                                throw new InvalidOperationException("The key " + keyToUse +
+                                    " is already part of the dictionary.");
+                                break;
+                            case DuplicateDictionaryEntryBehavior.Replace:
+                                dictionaryToPopulate[keyToUse] = (ValueType)newElement;
+                                break;
+                            case DuplicateDictionaryEntryBehavior.PreserveFirst:
+                                // do nothing
+                                break;
+
+                        }
                     }
                     else
                     {
@@ -759,7 +795,6 @@ namespace FlatRedBall.IO.Csv
 
             var type = typeof(ValueType);
 
-#if !WINDOWS_8
             var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
             var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
@@ -783,7 +818,6 @@ namespace FlatRedBall.IO.Csv
                     property.SetValue(oldItem, valueOnNew, null);
                 }
             }
-#endif
         }
 
         private static KeyType GetKeyToUse<KeyType, ValueType>(Type typeOfElement, CsvHeader csvHeaderForKey, int headerIndex, object newElement)

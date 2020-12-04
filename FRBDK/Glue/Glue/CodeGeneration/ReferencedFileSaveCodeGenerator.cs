@@ -764,8 +764,14 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
             else if (referencedFile.IsCsvOrTreatedAsCsv)
             {
+
+
+                var baseElement = ObjectFinder.Self.GetBaseElement(element);
+                var hasBaseRfsWithSameName = baseElement != null && baseElement.ReferencedFiles.Any(item => item.Name == referencedFile.Name && referencedFile.IsCsvOrTreatedAsCsv);
+
+
                 GenerateCsvDeserializationCode(referencedFile, ifBlock, mThenVariableName,
-                                                referencedFileName, LoadType.CompleteLoad);
+                                                referencedFileName, LoadType.CompleteLoad, hasBaseRfsWithSameName ? baseElement.Name : null);
             }
 
 
@@ -1078,7 +1084,10 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             }
 
-            GenerateCsvDeserializationCode(referencedFile, curBlock, variableName, fileName, loadType);
+            var baseElement = ObjectFinder.Self.GetBaseElement(container);
+            var hasBaseRfsWithSameName = baseElement != null && baseElement.ReferencedFiles.Any(item => item.GetInstanceName() == referencedFile.GetInstanceName() && referencedFile.IsCsvOrTreatedAsCsv);
+
+            GenerateCsvDeserializationCode(referencedFile, curBlock, variableName, fileName, loadType, hasBaseRfsWithSameName ? baseElement.Name : null);
         }
 
         private static void GenerateInitializationForAssetTypeInfoRfs(ReferencedFileSave referencedFile, ICodeBlock codeBlock, IElement container, string fileName, AssetTypeInfo ati, ProjectBase project)
@@ -1154,7 +1163,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 string.Format("LocalizationManager.AddDatabase(\"{0}\", '{1}');", fileName, delimiter));
         }
 
-        private static void GenerateCsvDeserializationCode(ReferencedFileSave referencedFile, ICodeBlock codeBlock,  string variableName, string fileName, LoadType loadType)
+        private static void GenerateCsvDeserializationCode(ReferencedFileSave referencedFile, ICodeBlock codeBlock,  string variableName, string fileName, LoadType loadType, string baseRfsHolder)
         {
             #region Get the typeName (type as a string)
 
@@ -1197,12 +1206,20 @@ namespace FlatRedBall.Glue.CodeGeneration
             if (loadType == LoadType.CompleteLoad)
             {
                 whatToLoadInto = "temporaryCsvObject";
-                block.Line(string.Format("{0} {1} = new {0}();", typeName, whatToLoadInto));
+                block.Line($"{typeName} {whatToLoadInto} = new {typeName}();");
+
+
             }
             else
             {
                 whatToLoadInto = referencedFile.GetInstanceName();
-                block.Line(string.Format("{0}.Clear();", whatToLoadInto));
+                block.Line($"{whatToLoadInto}.Clear();");
+            }
+
+            if(baseRfsHolder != null)
+            {
+                block.ForEach($"var kvp in {baseRfsHolder.Replace("\\", ".")}.{referencedFile.GetInstanceName()}")
+                    .Line($"{whatToLoadInto}.Add(kvp.Key, kvp.Value);");
             }
 
             #region Call CsvFileManager.CsvDeserializeList/Dictionary
@@ -1221,15 +1238,13 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 }
                 // CsvFileManager.CsvDeserializeDictionary<string, CarData>("Content/CarData.csv", carDataDictionary);
-                block.Line(string.Format("FlatRedBall.IO.Csv.CsvFileManager.CsvDeserializeDictionary<{2}, {3}>(\"{0}\", {1});", fileName,
-                                  whatToLoadInto, keyType, valueType));
+                block.Line($"FlatRedBall.IO.Csv.CsvFileManager.CsvDeserializeDictionary<{keyType}, {valueType}>(\"{fileName}\", {whatToLoadInto}, FlatRedBall.IO.Csv.DuplicateDictionaryEntryBehavior.Replace);");
             }
             else
             {
                 string elementType = referencedFile.GetTypeForCsvFile();
 
-                block.Line(string.Format("FlatRedBall.IO.Csv.CsvFileManager.CsvDeserializeList(typeof({0}), \"{1}\", {2});",
-                                         elementType, fileName, whatToLoadInto));
+                block.Line($"FlatRedBall.IO.Csv.CsvFileManager.CsvDeserializeList(typeof({elementType}), \"{fileName}\", {whatToLoadInto});");
             }
 
             #endregion
@@ -1238,7 +1253,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if (loadType == LoadType.CompleteLoad)
             {
-                block.Line(string.Format("{0} = temporaryCsvObject;", variableName));
+                block.Line($"{variableName} = temporaryCsvObject;");
             }
         }
 

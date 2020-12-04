@@ -265,10 +265,7 @@ namespace FlatRedBall
             get { return mClientHeight; }
         }
 
-        public static string GlobalContentManager
-        {
-            get { return "Global"; }
-        }
+        public const string GlobalContentManager = "Global";
 
         /// <summary>
         /// Salt value that is combined with the EncryptionKey string for generating encryption keys

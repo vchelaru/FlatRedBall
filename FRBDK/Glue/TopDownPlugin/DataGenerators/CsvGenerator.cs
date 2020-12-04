@@ -23,17 +23,17 @@ namespace TopDownPlugin.DataGenerators
 
         #endregion
 
-        public FilePath CsvFileFor(EntitySave entity)
+        public FilePath CsvTopdownFileFor(EntitySave entity)
         {
             string absoluteFileName = GlueCommands.Self.FileCommands.GetContentFolder(entity) + RelativeCsvFile;
             return absoluteFileName;
         }
 
-        internal void GenerateFor(EntitySave entity, TopDownEntityViewModel viewModel, CsvHeader[] lastHeaders)
+        internal void GenerateFor(EntitySave entity, bool inheritsFromTopDown, TopDownEntityViewModel viewModel, CsvHeader[] lastHeaders)
         {
-            string contents = GenerateCsvContents(entity, viewModel, lastHeaders);
+            string contents = GenerateCsvContents(inheritsFromTopDown, viewModel, lastHeaders);
 
-            string fileName = CsvFileFor(entity).FullPath;
+            string fileName = CsvTopdownFileFor(entity).FullPath;
 
             GlueCommands.Self.TryMultipleTimes(() =>
             {
@@ -48,7 +48,7 @@ namespace TopDownPlugin.DataGenerators
             });
         }
 
-        private string GenerateCsvContents(EntitySave entity, TopDownEntityViewModel viewModel, CsvHeader[] headers)
+        private string GenerateCsvContents(bool inheritsFromTopDown, TopDownEntityViewModel viewModel, CsvHeader[] headers)
         {
             List<TopDownValues> values = new List<TopDownValues>();
 
@@ -56,7 +56,12 @@ namespace TopDownPlugin.DataGenerators
             {
                 var topDownValues = valuesViewModel.ToValues();
 
-                values.Add(topDownValues);
+                var shouldInclude = inheritsFromTopDown == false || topDownValues.InheritOrOverwrite == InheritOrOverwrite.Overwrite;
+                if(shouldInclude)
+                {
+                    values.Add(topDownValues);
+                }
+
             }
 
             RuntimeCsvRepresentation rcr = RuntimeCsvRepresentation.FromList(values);
