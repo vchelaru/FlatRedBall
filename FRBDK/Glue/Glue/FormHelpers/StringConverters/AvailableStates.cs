@@ -152,6 +152,11 @@ namespace FlatRedBall.Glue.GuiDisplay
 
             if (customVariable != null)
             {
+                if(sourceElement == null)
+                {
+                    throw new NullReferenceException("The source element is null here and it shouldn't be");
+                }
+
                 string categoryName = customVariable.Type;
 
                 // If the type name has a '.', then it's a fully qualified type. We already know the entity

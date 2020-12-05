@@ -111,6 +111,10 @@ namespace {GlueState.Self.ProjectNamespace}.TopDown
 
         public Vector3? Target {{ get; set; }}
 
+        public PositionedObject FollowingTarget {{ get; set; }}
+
+        public FlatRedBall.AI.Pathfinding.NodeNetwork NodeNetwork {{ get; set; }}
+
         public List<Vector3> Path {{ get; private set; }} = new List<Vector3>();
 
         public T Owner {{ get; set; }}
@@ -119,11 +123,78 @@ namespace {GlueState.Self.ProjectNamespace}.TopDown
         {{
             this.Owner = owner;
         }}
-
+" + 
+$@"
         public void Activity()
         {{
             values2DInput.X = 0;
             values2DInput.Y = 0;
+
+            UpdatePath();
+
+            DoTargetFollowingActivity();
+        }}
+
+        private void UpdatePath()
+        {{
+            if(FollowingTarget != null && NodeNetwork != null)
+            {{
+                var pathfindingTarget = FollowingTarget.Position;
+
+                var lineToTarget = FollowingTarget.Position - Owner.Position;
+                //var perpendicular = new Vector3(-lineToTarget.Y, lineToTarget.X, 0);
+                //if (perpendicular.Length() != 0)
+                //{{
+                //    perpendicular.Normalize();
+                //    var distanceFromTarget = lineToTarget.Length();
+
+                //    const float distanceToPerpendicularLengthRatio = 1 / 2f;
+
+                //    pathfindingTarget = target.Position + perpendicular * perpendicularLengthRatio * distanceToPerpendicularLengthRatio * distanceFromTarget;
+
+                //}}
+
+                var path = NodeNetwork.GetPathOrClosest(ref Owner.Position, ref pathfindingTarget);
+                Path.Clear();
+                var points = path.Select(item => item.Position).ToList();
+
+                // So the enemy doesn't stop on the nearest node without attacking the player:
+                points.Add(FollowingTarget.Position);
+
+                //while (points.Count > 0)
+                //{{
+                //    var length = (points[0] - Position).Length();
+                //    lineOfSightPathFindingPolygon.SetPoint(0, length / 2.0f, NavigationCollider.Radius);
+                //    lineOfSightPathFindingPolygon.SetPoint(1, length / 2.0f, -NavigationCollider.Radius);
+                //    lineOfSightPathFindingPolygon.SetPoint(2, -length / 2.0f, -NavigationCollider.Radius);
+                //    lineOfSightPathFindingPolygon.SetPoint(3, -length / 2.0f, NavigationCollider.Radius);
+                //    lineOfSightPathFindingPolygon.SetPoint(4, length / 2.0f, NavigationCollider.Radius);
+
+                //    lineOfSightPathFindingPolygon.X = (points[0].X + Position.X) / 2.0f;
+                //    lineOfSightPathFindingPolygon.Y = (points[0].Y + Position.Y) / 2.0f;
+
+                //    var angle = (float)System.Math.Atan2(points[0].Y - Position.Y, points[0].X - Position.X);
+                //    lineOfSightPathFindingPolygon.RotationZ = angle;
+
+                //    var hasClearPath = !solidCollisions.CollideAgainst(lineOfSightPathFindingPolygon) && !pitCollision.CollideAgainst(lineOfSightPathFindingPolygon);
+
+                //    if (hasClearPath && points.Count > 1)
+                //    {{
+                //        points.RemoveAt(0);
+                //    }}
+                //    else
+                //    {{
+                //        break;
+                //    }}
+                //}}
+
+                Path.AddRange(points);
+                Target = Path.FirstOrDefault();
+            }}
+        }}
+
+        private void DoTargetFollowingActivity()
+        {{
             if(Target != null && Owner?.CurrentMovement != null && IsActive)
             {{
                 var targetX = Target.Value.X;
@@ -148,7 +219,7 @@ namespace {GlueState.Self.ProjectNamespace}.TopDown
                         Path.RemoveAt(0);
 
                         // do it again
-                        Activity();
+                        DoTargetFollowingActivity();
                     }}
                     else
                     {{
@@ -199,7 +270,14 @@ namespace {GlueState.Self.ProjectNamespace}.TopDown
                     }}
                 }}
             }}
+
+
+
+
         }}
+
+
+
     }}
 }}
 
