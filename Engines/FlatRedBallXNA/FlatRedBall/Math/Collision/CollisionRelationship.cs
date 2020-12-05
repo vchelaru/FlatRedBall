@@ -1153,8 +1153,19 @@ namespace FlatRedBall.Math.Collision
 
         public ListVsListRelationship(PositionedObjectList<FirstCollidableT> firstList, PositionedObjectList<SecondCollidableT> secondList)
         {
+#if DEBUG
+            if (firstList == null)
+            {
+                throw new NullReferenceException($"The first list (of type {typeof(FirstCollidableT)}) is null. This needs to be set");
+            }
+            if (secondList == null)
+            {
+                throw new NullReferenceException($"The second list (of type {typeof(SecondCollidableT)}) is null. This needs to be set");
+            }
+#endif
             this.firstList = firstList;
             this.secondList = secondList;
+
         }
 
         public override bool DoCollisions()
@@ -1162,11 +1173,11 @@ namespace FlatRedBall.Math.Collision
 #if DEBUG
             if(firstList == null)
             {
-                throw new NullReferenceException("The first list is null. This needs to be set");
+                throw new NullReferenceException($"The first list (of type {typeof(FirstCollidableT)}) is null. This needs to be set");
             }
             if(secondList == null)
             {
-                throw new NullReferenceException("The second list is null. This needs to be set");
+                throw new NullReferenceException($"The second list (of type {typeof(SecondCollidableT)}) is null. This needs to be set");
             }
 #endif
 

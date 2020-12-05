@@ -34,6 +34,29 @@ namespace Microsoft.Xna.Framework
             return toReturn;
         }
 
+        /// <summary>
+        /// Attempts to normalize the vector, or returns Vector2.Zero if the argument vector has a lenth of 0.
+        /// </summary>
+        /// <param name="vector">The vector to normalize.</param>
+        /// <returns>A normalized vector (length 1) or Vector2.Zero if the argument vector has a length of 0.</returns>
+        public static Vector2 NormalizedOrZero(this Vector2 vector)
+        {
+            if (vector.X != 0 || vector.Y != 0)
+            {
+                vector.Normalize();
+                return vector;
+            }
+            else
+            {
+                return Vector2.Zero;
+            }
+        }
+
+        /// <summary>
+        /// Returns a normalized vector. Throws an exception if the argument vector has a length of 0.
+        /// </summary>
+        /// <param name="vector">The vector to normalize.</param>
+        /// <returns></returns>
         public static Vector2 Normalized(this Vector2 vector)
         {
             if(vector.X != 0 || vector.Y != 0)

@@ -57,28 +57,38 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             // Do the named object saves
 
-            // We're going to do all "Entire File" NOS's first so that they aren't null before 
-            for (int i = 0; i < element.NamedObjects.Count; i++)
+            var sortedNamedObjects = element.NamedObjects
+                // entire files first
+                .OrderBy(item => item.IsEntireFile == false)
+                // collision relationships last
+                .ThenBy(item => item.IsCollisionRelationship());
+
+            foreach(var nos in sortedNamedObjects)
             {
-                NamedObjectSave nos = element.NamedObjects[i];
-
-                if (nos.IsEntireFile)
-                {
-                    WriteCodeForNamedObjectInitialize(nos, element, codeBlock, null);
-                }
+                WriteCodeForNamedObjectInitialize(nos, element, codeBlock, null);
             }
+            //// We're going to do all "Entire File" NOS's first so that they aren't null before 
+            //for (int i = 0; i < element.NamedObjects.Count; i++)
+            //{
+            //    NamedObjectSave nos = element.NamedObjects[i];
 
-            // Now do non-entire files:
-            for (int i = 0; i < element.NamedObjects.Count; i++)
-            {
-                NamedObjectSave nos = element.NamedObjects[i];
+            //    if (nos.IsEntireFile)
+            //    {
+            //        WriteCodeForNamedObjectInitialize(nos, element, codeBlock, null);
+            //    }
+            //}
 
-                if (!nos.IsEntireFile)
-                {
-                    WriteCodeForNamedObjectInitialize(nos, element, codeBlock, null);
+            //// Now do non-entire files:
+            //for (int i = 0; i < element.NamedObjects.Count; i++)
+            //{
+            //    NamedObjectSave nos = element.NamedObjects[i];
 
-                }
-            }
+            //    if (!nos.IsEntireFile)
+            //    {
+            //        WriteCodeForNamedObjectInitialize(nos, element, codeBlock, null);
+
+            //    }
+            //}
 
 
 
