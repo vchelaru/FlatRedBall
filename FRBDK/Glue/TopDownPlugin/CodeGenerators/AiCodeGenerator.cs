@@ -290,11 +290,15 @@ $@"
         List<FlatRedBall.TileCollisions.TileShapeCollection> environmentCollision;
         bool isUsingLineOfSightPathfinding = false;
         static FlatRedBall.Math.Geometry.Polygon lineOfSightPathFindingPolygon;
-        public void SetLineOfSightPathfinding(float collisionWidth, List<FlatRedBall.AI.Pathfinding.TileNodeNetwork> collision)
+        public void SetLineOfSightPathfinding(float collisionWidth, List<FlatRedBall.TileCollisions.TileShapeCollection> collision)
         {{
             this.collisionWidth = collisionWidth;
             this.environmentCollision = collision;
             isUsingLineOfSightPathfinding = true;
+            if(lineOfSightPathFindingPolygon == null)
+            {{
+                lineOfSightPathFindingPolygon = FlatRedBall.Math.Geometry.Polygon.CreateEquilateral(4, 1, 0);
+            }}
         }}
 
     }}
