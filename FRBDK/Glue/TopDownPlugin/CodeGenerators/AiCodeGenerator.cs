@@ -161,38 +161,51 @@ $@"
                 // So the enemy doesn't stop on the nearest node without attacking the player:
                 points.Add(FollowingTarget.Position);
 
-                //while (points.Count > 0)
-                //{{
-                //    var length = (points[0] - Position).Length();
-                //    lineOfSightPathFindingPolygon.SetPoint(0, length / 2.0f, NavigationCollider.Radius);
-                //    lineOfSightPathFindingPolygon.SetPoint(1, length / 2.0f, -NavigationCollider.Radius);
-                //    lineOfSightPathFindingPolygon.SetPoint(2, -length / 2.0f, -NavigationCollider.Radius);
-                //    lineOfSightPathFindingPolygon.SetPoint(3, -length / 2.0f, NavigationCollider.Radius);
-                //    lineOfSightPathFindingPolygon.SetPoint(4, length / 2.0f, NavigationCollider.Radius);
+                if(isUsingLineOfSightPathfinding)
+                {{
+                    while (points.Count > 0)
+                    {{
+                        var length = (points[0] - Owner.Position).Length();
+                        lineOfSightPathFindingPolygon.SetPoint(0, length / 2.0f, collisionWidth / 2);
+                        lineOfSightPathFindingPolygon.SetPoint(1, length / 2.0f, -collisionWidth / 2);
+                        lineOfSightPathFindingPolygon.SetPoint(2, -length / 2.0f, -collisionWidth / 2);
+                        lineOfSightPathFindingPolygon.SetPoint(3, -length / 2.0f, collisionWidth / 2);
+                        lineOfSightPathFindingPolygon.SetPoint(4, length / 2.0f, collisionWidth / 2);
 
-                //    lineOfSightPathFindingPolygon.X = (points[0].X + Position.X) / 2.0f;
-                //    lineOfSightPathFindingPolygon.Y = (points[0].Y + Position.Y) / 2.0f;
+                        lineOfSightPathFindingPolygon.X = (points[0].X + Owner.Position.X) / 2.0f;
+                        lineOfSightPathFindingPolygon.Y = (points[0].Y + Owner.Position.Y) / 2.0f;
 
-                //    var angle = (float)System.Math.Atan2(points[0].Y - Position.Y, points[0].X - Position.X);
-                //    lineOfSightPathFindingPolygon.RotationZ = angle;
+                        var angle = (float)System.Math.Atan2(points[0].Y - Owner.Position.Y, points[0].X - Owner.Position.X);
+                        lineOfSightPathFindingPolygon.RotationZ = angle;
 
-                //    var hasClearPath = !solidCollisions.CollideAgainst(lineOfSightPathFindingPolygon) && !pitCollision.CollideAgainst(lineOfSightPathFindingPolygon);
+                        var hasClearPath = true;
 
-                //    if (hasClearPath && points.Count > 1)
-                //    {{
-                //        points.RemoveAt(0);
-                //    }}
-                //    else
-                //    {{
-                //        break;
-                //    }}
-                //}}
+                        for(int i = 0; i < environmentCollision.Count; i++)
+                        {{
+                            var collision = environmentCollision[i];
+                            if(collision.CollideAgainst(lineOfSightPathFindingPolygon))
+                            {{
+                                hasClearPath = false;
+                            }}
+                        }}
+
+                        if (hasClearPath && points.Count > 1)
+                        {{
+                            points.RemoveAt(0);
+                        }}
+                        else
+                        {{
+                            break;
+                        }}
+                    }}
+                }}
 
                 Path.AddRange(points);
                 Target = Path.FirstOrDefault();
             }}
         }}
-
+" + 
+$@"
         private void DoTargetFollowingActivity()
         {{
             if(Target != null && Owner?.CurrentMovement != null && IsActive)
@@ -270,13 +283,19 @@ $@"
                     }}
                 }}
             }}
-
-
-
-
         }}
-
-
+" + 
+$@"
+        float collisionWidth;
+        List<FlatRedBall.TileCollisions.TileShapeCollection> environmentCollision;
+        bool isUsingLineOfSightPathfinding = false;
+        static FlatRedBall.Math.Geometry.Polygon lineOfSightPathFindingPolygon;
+        public void SetLineOfSightPathfinding(float collisionWidth, List<FlatRedBall.AI.Pathfinding.TileNodeNetwork> collision)
+        {{
+            this.collisionWidth = collisionWidth;
+            this.environmentCollision = collision;
+            isUsingLineOfSightPathfinding = true;
+        }}
 
     }}
 }}
