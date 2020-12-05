@@ -63,6 +63,19 @@ namespace Microsoft.Xna.Framework
             }
         }
 
+        public static Vector3 NormalizedOrZero(this Vector3 vector3)
+        {
+            if (vector3.X != 0 || vector3.Y != 0 || vector3.Z != 0)
+            {
+                vector3.Normalize();
+                return vector3;
+            }
+            else
+            {
+                return Vector3.Zero;
+            }
+        }
+
         public static Vector3 FromAngle(float angle)
         {
             return new Vector3(
