@@ -66,6 +66,14 @@ namespace OfficialPluginsCore.CameraControllingEntityPlugin
 
             ati.VariableDefinitions.Add(new VariableDefinition
             {
+                Name = nameof(FlatRedBall.Entities.CameraControllingEntity.ExtraMapPadding),
+                Type = "float",
+                Category = "Targets",
+
+            });
+
+            ati.VariableDefinitions.Add(new VariableDefinition
+            {
                 Name = nameof(FlatRedBall.Entities.CameraControllingEntity.LerpSmooth),
                 Type = "bool",
                 DefaultValue = CodeParser.ConvertValueToCodeString(defaultInstance.LerpSmooth),

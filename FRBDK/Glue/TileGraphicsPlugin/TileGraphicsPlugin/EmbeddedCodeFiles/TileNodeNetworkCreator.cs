@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FlatRedBall.TileGraphics;
 using FlatRedBall.Math;
+using TMXGlueLib.DataTypes;
 
 namespace FlatRedBall.AI.Pathfinding
 {

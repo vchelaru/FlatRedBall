@@ -30,6 +30,8 @@ namespace FlatRedBall.Entities
         /// </summary>
         public IPositionedSizedObject Map { get; set; }
 
+        public float ExtraMapPadding { get; set; }
+
         /// <summary>
         /// Whether to smoothly approach the target location. If false, the camera follows the entity without any smoothing.
         /// </summary>
@@ -117,11 +119,11 @@ namespace FlatRedBall.Entities
 
             if (Map != null)
             {
-                var mapLeft = Map.X;
-                var mapRight = Map.X + Map.Width;
+                var mapLeft = Map.X + ExtraMapPadding;
+                var mapRight = Map.X + Map.Width - ExtraMapPadding;
 
-                var mapBottom = Map.Y - Map.Height;
-                var mapTop = Map.Y;
+                var mapBottom = Map.Y - Map.Height + ExtraMapPadding;
+                var mapTop = Map.Y - ExtraMapPadding;
 
                 if (Camera.Main.OrthogonalWidth > Map.Width)
                 {
