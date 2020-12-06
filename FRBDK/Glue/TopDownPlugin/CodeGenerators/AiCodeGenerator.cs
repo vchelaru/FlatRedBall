@@ -109,9 +109,10 @@ namespace {GlueState.Self.ProjectNamespace}.TopDown
 
         #endregion
 
-        public Vector3? Target {{ get; set; }}
+        public Vector3? NextImmediateTarget {{ get; set; }}
 
         public PositionedObject FollowingTarget {{ get; set; }}
+        public Vector3? TargetPosition {{ get; set; }}
 
         public FlatRedBall.AI.Pathfinding.NodeNetwork NodeNetwork {{ get; set; }}
 
@@ -134,14 +135,16 @@ $@"
 
             DoTargetFollowingActivity();
         }}
-
+" +
+$@"
         private void UpdatePath()
         {{
-            if(FollowingTarget != null && NodeNetwork != null)
+            Vector3 ? effectivePosition = FollowingTarget?.Position ?? TargetPosition;
+            if(effectivePosition != null && NodeNetwork != null)
             {{
-                var pathfindingTarget = FollowingTarget.Position;
+                var pathfindingTarget = effectivePosition.Value;
 
-                var lineToTarget = FollowingTarget.Position - Owner.Position;
+                var lineToTarget = pathfindingTarget - Owner.Position;
                 //var perpendicular = new Vector3(-lineToTarget.Y, lineToTarget.X, 0);
                 //if (perpendicular.Length() != 0)
                 //{{
@@ -159,7 +162,7 @@ $@"
                 var points = path.Select(item => item.Position).ToList();
 
                 // So the enemy doesn't stop on the nearest node without attacking the player:
-                points.Add(FollowingTarget.Position);
+                points.Add(pathfindingTarget);
 
                 if(isUsingLineOfSightPathfinding)
                 {{
@@ -201,17 +204,17 @@ $@"
                 }}
 
                 Path.AddRange(points);
-                Target = Path.FirstOrDefault();
+                NextImmediateTarget = Path.FirstOrDefault();
             }}
         }}
 " + 
 $@"
         private void DoTargetFollowingActivity()
         {{
-            if(Target != null && Owner?.CurrentMovement != null && IsActive)
+            if(NextImmediateTarget != null && Owner?.CurrentMovement != null && IsActive)
             {{
-                var targetX = Target.Value.X;
-                var targetY = Target.Value.Y;
+                var targetX = NextImmediateTarget.Value.X;
+                var targetY = NextImmediateTarget.Value.Y;
 
                 var xDiff = targetX - Owner.Position.X;
                 var yDiff = targetY - Owner.Position.Y;
@@ -228,7 +231,7 @@ $@"
                     TargetReached?.Invoke(Owner);
                     if(Path.Count > 0)
                     {{
-                        Target = Path[0];
+                        NextImmediateTarget = Path[0];
                         Path.RemoveAt(0);
 
                         // do it again
@@ -236,7 +239,7 @@ $@"
                     }}
                     else
                     {{
-                        Target = null;
+                        NextImmediateTarget = null;
                     }}
 
                 }}
