@@ -15,6 +15,15 @@ namespace FlatRedBall.AI.Pathfinding
         {
             TileNodeNetwork nodeNetwork = CreateTileNodeNetwork(layeredTileMap, directionalType);
 
+            FillFromPredicate(layeredTileMap, predicate, nodeNetwork);
+
+            nodeNetwork.Visible = true;
+
+            return nodeNetwork;
+        }
+
+        public static void FillFromPredicate(LayeredTileMap layeredTileMap, Func<List<NamedValue>, bool> predicate, TileNodeNetwork nodeNetwork)
+        {
             var dimensionHalf = layeredTileMap.WidthPerTile.Value / 2.0f;
 
             var properties = layeredTileMap.TileProperties;
@@ -49,10 +58,6 @@ namespace FlatRedBall.AI.Pathfinding
                     }
                 }
             }
-
-            nodeNetwork.Visible = true;
-
-            return nodeNetwork;
         }
 
         public static TileNodeNetwork CreateFromTilesWithProperties(LayeredTileMap layeredTileMap, DirectionalType directionalType,
@@ -103,31 +108,30 @@ namespace FlatRedBall.AI.Pathfinding
             return CreateFrom(layeredTileMap, directionalType, predicate);
         }
 
-        public static TileNodeNetwork CreateFromTypes(LayeredTileMap layeredTileMap, DirectionalType directionalType, ICollection<string> types)
+        static bool CreateFromTypesPredicate(List<NamedValue> list)
         {
-            Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate = (list) =>
+            var toReturn = false;
+
+            foreach (var namedValue in list)
             {
-                var toReturn = false;
-
-                foreach (var namedValue in list)
+                if (namedValue.Name == "Type")
                 {
-                    if (namedValue.Name == "Type")
-                    {
-                        var valueAsString = namedValue.Value as string;
+                    var valueAsString = namedValue.Value as string;
 
-                        if (!string.IsNullOrEmpty(valueAsString) && types.Contains(valueAsString))
-                        {
-                            toReturn = true;
-                            break;
-                        }
+                    if (!string.IsNullOrEmpty(valueAsString) && types.Contains(valueAsString))
+                    {
+                        toReturn = true;
+                        break;
                     }
                 }
+            }
 
-                return toReturn;
-            };
-            return CreateFrom(layeredTileMap, directionalType, predicate);
+            return toReturn;
+        };
+        public static TileNodeNetwork CreateFromTypes(LayeredTileMap layeredTileMap, DirectionalType directionalType, ICollection<string> types)
+        {
+            return CreateFrom(layeredTileMap, directionalType, CreateFromTypesPredicate);
         }
-
 
         public static TileNodeNetwork CreateFromEmptyTiles(MapDrawableBatch mapDrawableBatch, LayeredTileMap layeredTileMap, DirectionalType directionalType)
         {
