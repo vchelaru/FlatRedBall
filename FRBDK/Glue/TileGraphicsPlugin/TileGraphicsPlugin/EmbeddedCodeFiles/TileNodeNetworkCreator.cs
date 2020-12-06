@@ -15,14 +15,14 @@ namespace FlatRedBall.AI.Pathfinding
         {
             TileNodeNetwork nodeNetwork = CreateTileNodeNetwork(layeredTileMap, directionalType);
 
-            FillFromPredicate(layeredTileMap, predicate, nodeNetwork);
+            FillFromPredicate(nodeNetwork, layeredTileMap, predicate);
 
             nodeNetwork.Visible = true;
 
             return nodeNetwork;
         }
 
-        public static void FillFromPredicate(LayeredTileMap layeredTileMap, Func<List<NamedValue>, bool> predicate, TileNodeNetwork nodeNetwork)
+        public static void FillFromPredicate(this TileNodeNetwork nodeNetwork, LayeredTileMap layeredTileMap, Func<List<NamedValue>, bool> predicate)
         {
             var dimensionHalf = layeredTileMap.WidthPerTile.Value / 2.0f;
 
@@ -70,7 +70,7 @@ namespace FlatRedBall.AI.Pathfinding
 
                 foreach (var namedValue in list)
                 {
-                    if(types.Contains(namedValue.Name))
+                    if (types.Contains(namedValue.Name))
                     {
                         toReturn = true;
                         break;
@@ -108,29 +108,55 @@ namespace FlatRedBall.AI.Pathfinding
             return CreateFrom(layeredTileMap, directionalType, predicate);
         }
 
-        static bool CreateFromTypesPredicate(List<NamedValue> list)
-        {
-            var toReturn = false;
 
-            foreach (var namedValue in list)
-            {
-                if (namedValue.Name == "Type")
-                {
-                    var valueAsString = namedValue.Value as string;
-
-                    if (!string.IsNullOrEmpty(valueAsString) && types.Contains(valueAsString))
-                    {
-                        toReturn = true;
-                        break;
-                    }
-                }
-            }
-
-            return toReturn;
-        };
         public static TileNodeNetwork CreateFromTypes(LayeredTileMap layeredTileMap, DirectionalType directionalType, ICollection<string> types)
         {
+            bool CreateFromTypesPredicate(List<NamedValue> list)
+            {
+                var toReturn = false;
+
+                foreach (var namedValue in list)
+                {
+                    if (namedValue.Name == "Type")
+                    {
+                        var valueAsString = namedValue.Value as string;
+
+                        if (!string.IsNullOrEmpty(valueAsString) && types.Contains(valueAsString))
+                        {
+                            toReturn = true;
+                            break;
+                        }
+                    }
+                }
+
+                return toReturn;
+            }
             return CreateFrom(layeredTileMap, directionalType, CreateFromTypesPredicate);
+        }
+
+        public static void FillFromTypes(this TileNodeNetwork tileNodeNetwork, LayeredTileMap layeredTileMap, DirectionalType directionalType, ICollection<string> types)
+        {
+            bool CreateFromTypesPredicate(List<NamedValue> list)
+            {
+                var toReturn = false;
+
+                foreach (var namedValue in list)
+                {
+                    if (namedValue.Name == "Type")
+                    {
+                        var valueAsString = namedValue.Value as string;
+
+                        if (!string.IsNullOrEmpty(valueAsString) && types.Contains(valueAsString))
+                        {
+                            toReturn = true;
+                            break;
+                        }
+                    }
+                }
+
+                return toReturn;
+            }
+            tileNodeNetwork.FillFromPredicate(layeredTileMap, CreateFromTypesPredicate);
         }
 
         public static TileNodeNetwork CreateFromEmptyTiles(MapDrawableBatch mapDrawableBatch, LayeredTileMap layeredTileMap, DirectionalType directionalType)
