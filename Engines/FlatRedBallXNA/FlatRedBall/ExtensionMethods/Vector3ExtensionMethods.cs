@@ -28,6 +28,12 @@ namespace Microsoft.Xna.Framework
                 (vector.Y * vector.Y));
         }
 
+        /// <summary>
+        /// Returns the angle in radians of the argument vector, where 0 is to the right, and increasing the angle moves counterclockwise. 
+        /// The Z value is ignored.
+        /// </summary>
+        /// <param name="vector">The argument vector.</param>
+        /// <returns>The angle in radians, or null if the Vector has X and Y values both equal to 0.</returns>
         public static float? Angle(this Vector3 vector)
         {
             if(vector.X == 0 && vector.Y == 0)
