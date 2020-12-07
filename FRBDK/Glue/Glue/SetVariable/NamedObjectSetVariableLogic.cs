@@ -552,15 +552,13 @@ namespace FlatRedBall.Glue.SetVariable
 
         private void ReactToChangedNosSourceName(NamedObjectSave namedObjectSave, string oldValue)
         {
-            IElement container = EditorLogic.CurrentElement;
+            var container = GlueState.Self.CurrentElement;
 
             if (!string.IsNullOrEmpty(container.BaseElement) && !string.IsNullOrEmpty(namedObjectSave.InstanceType))
             {
-                IElement baseElement = ObjectFinder.Self.GetIElement(container.BaseElement);
-
+                var baseElement = ObjectFinder.Self.GetIElement(container.BaseElement);
 
                 NamedObjectSave namedObjectInBase = baseElement.GetNamedObjectRecursively(namedObjectSave.InstanceName);
-
 
                 if (namedObjectInBase == null)
                 {
@@ -740,9 +738,9 @@ namespace FlatRedBall.Glue.SetVariable
 
             else
             {
-                IElement currentElement = EditorLogic.CurrentElement;
+                var currentElement = GlueState.Self.CurrentElement;
 
-                string baseObject = ((IElement)EditorLogic.CurrentElement).BaseObject;
+                string baseObject = currentElement?.BaseObject;
                 // See if the entity has a base and if the base contains this name
                 if (!string.IsNullOrEmpty(baseObject))
                 {
@@ -811,8 +809,29 @@ namespace FlatRedBall.Glue.SetVariable
                     }
                 }
 
+                var changedDerived = false;
+                if(namedObjectSave.ExposedInDerived || namedObjectSave.SetByDerived)
+                {
+                    var derivedElements = ObjectFinder.Self.GetAllElementsThatInheritFrom(currentElement);
 
+                    foreach(var derivedElement in derivedElements)
+                    {
+                        var nosInDerived = derivedElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == oldValue && item.DefinedByBase);
 
+                        if (nosInDerived != null)
+                        {
+                            // new name:
+                            nosInDerived.InstanceName = namedObjectSave.InstanceName;
+                            changedDerived = true;
+                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(derivedElement);
+                            GlueCommands.Self.RefreshCommands.RefreshUi(derivedElement);
+                        }
+                    }
+                }
+                if(changedDerived)
+                {
+                    GlueCommands.Self.GluxCommands.SaveGluxTask();
+                }
             }
         }
 

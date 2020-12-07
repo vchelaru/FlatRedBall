@@ -449,7 +449,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             // Search terms:  add new variable, addnewvariable, add variable
 
-            AddVariableWindow addVariableWindow = new AddVariableWindow(EditorLogic.CurrentElement);
+            AddVariableWindow addVariableWindow = new AddVariableWindow(GlueState.Self.CurrentElement);
             addVariableWindow.DesiredVariableType = variableType;
 
             addVariableWindow.TunnelingObject = tunnelingObject;

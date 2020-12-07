@@ -1083,34 +1083,32 @@ namespace FlatRedBall.Glue.Reflection
                 toReturn.Remove("<none>");
             }
 
-
-            foreach (ReferencedFileSave rfs in ObjectFinder.Self.GlueProject.GlobalFiles)
+            void TryAddRfsType(ReferencedFileSave rfs)
             {
                 if (rfs.IsCsvOrTreatedAsCsv && !rfs.IsDatabaseForLocalizing)
                 {
-
                     string type = rfs.GetTypeForCsvFile();
-                    toReturn.Add(type);
+                    // Multiple CSVs may reference the same type, so make sure thsi isn't already added:
+                    if(toReturn.Contains(type) == false)
+                    {
+                        toReturn.Add(type);
+                    }
                 }
+            }
+            foreach (ReferencedFileSave rfs in ObjectFinder.Self.GlueProject.GlobalFiles)
+            {
+                TryAddRfsType(rfs);
             }
 
             // We used to only include the CSVs for the current
             // element, but any CSV in the project will make a class
             // that is accessible from outside of that class, and we want
             // to make sure that we can do the same thing
-            foreach (IElement screen in ObjectFinder.Self.GlueProject.Screens)
+            foreach (var element in ObjectFinder.Self.GlueProject.AllElements())
             {
-                if (screen != null)
+                foreach(var rfs in element.ReferencedFiles)
                 {
-                    foreach (ReferencedFileSave rfs in screen.ReferencedFiles)
-                    {
-                        if (rfs.IsCsvOrTreatedAsCsv && !rfs.IsDatabaseForLocalizing)
-                        {
-
-                            string type = rfs.GetTypeForCsvFile();
-                            toReturn.Add(type);
-                        }
-                    }
+                    TryAddRfsType(rfs);
                 }
             }
 
@@ -1121,20 +1119,11 @@ namespace FlatRedBall.Glue.Reflection
             // if screens are needed...if so
             // add them later.
 
-            foreach (IElement entity in ObjectFinder.Self.GlueProject.Entities)
+            if (includeStateCategories)
             {
-                if (entity != null)
+                foreach (IElement entity in ObjectFinder.Self.GlueProject.Entities)
                 {
-                    foreach (ReferencedFileSave rfs in entity.ReferencedFiles)
-                    {
-                        if (rfs.IsCsvOrTreatedAsCsv && !rfs.IsDatabaseForLocalizing)
-                        {
-                            string type = rfs.GetTypeForCsvFile();
-                            toReturn.Add(type);
-                        }
-                    }
-
-                    if(includeStateCategories)
+                    if (entity != null)
                     {
                         foreach(var category in entity.StateCategoryList)
                         {
