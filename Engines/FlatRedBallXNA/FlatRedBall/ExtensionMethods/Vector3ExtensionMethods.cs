@@ -76,6 +76,21 @@ namespace Microsoft.Xna.Framework
             }
         }
 
+        public static Vector3 RotatedBy(this Vector3 vector3, float angleToRotateBy)
+        {
+            if(vector3.X == 0 && vector3.Y == 0)
+            {
+                return vector3;
+            }
+            else
+            {
+                vector3 = vector3 * -1;
+                var existingAngle = vector3.Angle().Value;
+                var newAngle = existingAngle + angleToRotateBy;
+                return FromAngle(newAngle);
+            }
+        }
+
         public static Vector3 FromAngle(float angle)
         {
             return new Vector3(
