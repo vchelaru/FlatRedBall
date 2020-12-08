@@ -59,22 +59,32 @@ namespace GumPluginCore.Managers
                         if (extension == GumProjectSave.ScreenExtension)
                         {
                             ScreenSave screen = null;
-                            GlueCommands.Self.TryMultipleTimes(() => screen = FileManager.XmlDeserialize<ScreenSave>(fileName));
-                            
-                            screen.Initialize(screen.DefaultState);
-                            // since the gum project didn't change, it should be here
-                            var oldScreen = gumProject.Screens.FirstOrDefault(item => item.Name == screen.Name);
 
-                            if(oldScreen != null)
+                            // It could have been deleted so check...
+                            if(System.IO.File.Exists(fileName))
                             {
-                                var oldIndex = gumProject.Screens.IndexOf(oldScreen);
-
-                                if(oldIndex != -1)
-                                {
-                                    gumProject.Screens[oldIndex] = screen;
-                                }
+                                GlueCommands.Self.TryMultipleTimes(() => screen = FileManager.XmlDeserialize<ScreenSave>(fileName));
                             }
+                            
+                            if(screen != null)
+                            {
 
+                                screen.Initialize(screen.DefaultState);
+                                // since the gum project didn't change, it should be here
+                                var oldScreen = gumProject.Screens.FirstOrDefault(item => item.Name == screen.Name);
+
+                                if(oldScreen != null)
+                                {
+                                    var oldIndex = gumProject.Screens.IndexOf(oldScreen);
+
+                                    if(oldIndex != -1)
+                                    {
+                                        gumProject.Screens[oldIndex] = screen;
+                                    }
+                                }
+
+
+                            }
                         }
                         else if(extension == GumProjectSave.ComponentExtension)
                         {
