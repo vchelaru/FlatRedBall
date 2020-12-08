@@ -1241,7 +1241,7 @@ namespace FlatRedBall.IO.Csv
             {
                 memberTypeIndexPairs[i].Index = -1;
 
-#region See if the header at index i is a field
+                #region See if the header at index i is a field
                 int j = 0;
                 foreach(FieldInfo fieldInfo in fieldInfos)
                 {
@@ -1263,7 +1263,7 @@ namespace FlatRedBall.IO.Csv
                 }
 #endregion
 
-#region If we got this far, then it's not a field, so check if it's a property
+                #region If we got this far, then it's not a field, so check if it's a property
 
                 j = 0;
                 foreach(PropertyInfo propertyInfo in propertyInfos)

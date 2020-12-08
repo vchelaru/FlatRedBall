@@ -269,6 +269,23 @@ namespace FlatRedBall.Instructions.Reflection
                     toReturn = bool.Parse(value);
                     handled = true;
                 }
+                else if(desiredType == typeof(bool?).FullName)
+                {
+                    if(string.IsNullOrEmpty(value))
+                    {
+                        toReturn = (bool?)null;
+                        handled = true;
+
+                    }
+                    else
+                    {
+                        value = value.ToLower();
+
+                        toReturn = bool.Parse(value);
+                        handled = true;
+
+                    }
+                }
 
 #endregion
 
@@ -290,7 +307,7 @@ namespace FlatRedBall.Instructions.Reflection
                         value = value.Replace(",", "");
                     }
 
-#region uint
+                    #region uint
 #if FRB_XNA
                     if (desiredType == typeof(uint).FullName)
                     {
@@ -307,7 +324,7 @@ namespace FlatRedBall.Instructions.Reflection
 #endif
 #endregion
 
-#region byte
+                    #region byte
 #if FRB_XNA
 
                     if (desiredType == typeof(byte).FullName)
@@ -325,7 +342,7 @@ namespace FlatRedBall.Instructions.Reflection
 #endif
 #endregion
 
-#region long
+                    #region long
                     if (desiredType == typeof(long).FullName)
                     {
                         if (indexOfDecimal == -1)
@@ -344,7 +361,7 @@ namespace FlatRedBall.Instructions.Reflection
 
 #endregion
 
-#region regular int
+                    #region regular int
                     else
                     {
 
@@ -364,7 +381,21 @@ namespace FlatRedBall.Instructions.Reflection
 #endregion
                 }
 
-#endregion
+                else if(desiredType == typeof(int?).FullName)
+                {
+                    if(string.IsNullOrWhiteSpace(value))
+                    {
+                        toReturn = (int?)null;
+                        handled = true;
+                    }
+                    else
+                    {
+                        handled = true;
+                        toReturn = int.Parse(value);
+                    }
+                }
+
+                #endregion
 
                 #region float, Single
 
@@ -407,198 +438,202 @@ namespace FlatRedBall.Instructions.Reflection
                     return decimal.Parse(value, CultureInfo.InvariantCulture);
                 }
 
-#endregion
+                #endregion
 
+                else if(desiredType == typeof(DateTime).FullName)
+                {
+                    return DateTime.Parse(value);
+                }
 
 #if !FRB_RAW
 
-#region Texture2D
+                #region Texture2D
 
-                else if (desiredType == typeof(Texture2D).FullName)
-                {
-                    if (string.IsNullOrEmpty(value))
-                    {
-                        return null;
-                    }
-#if !SILVERLIGHT && !ZUNE
-                    if (FileManager.IsRelative(value))
-                    {
-                        // Vic says:  This used to throw an exception on relative values.  I'm not quite
-                        // sure why this is the case...why don't we just make it relative to the relative
-                        // directory?  Maybe there's a reason to have this exception, but I can't think of
-                        // what it is, and I'm writing a tutorial on how to load Texture2Ds from CSVs right
-                        // now and it totally makes sense that the user would want to use a relative directory.
-                        // In fact, the user will want to always use a relative directory so that their project is
-                        // portable.
-                        //throw new ArgumentException("Texture path must be absolute to load texture.  Path: " + value);
-                        value = FileManager.RelativeDirectory + value;
-                    }
+                                else if (desiredType == typeof(Texture2D).FullName)
+                                {
+                                    if (string.IsNullOrEmpty(value))
+                                    {
+                                        return null;
+                                    }
+                #if !SILVERLIGHT && !ZUNE
+                                    if (FileManager.IsRelative(value))
+                                    {
+                                        // Vic says:  This used to throw an exception on relative values.  I'm not quite
+                                        // sure why this is the case...why don't we just make it relative to the relative
+                                        // directory?  Maybe there's a reason to have this exception, but I can't think of
+                                        // what it is, and I'm writing a tutorial on how to load Texture2Ds from CSVs right
+                                        // now and it totally makes sense that the user would want to use a relative directory.
+                                        // In fact, the user will want to always use a relative directory so that their project is
+                                        // portable.
+                                        //throw new ArgumentException("Texture path must be absolute to load texture.  Path: " + value);
+                                        value = FileManager.RelativeDirectory + value;
+                                    }
 
-                    // Try to load a compiled asset first
-                    if (FileManager.FileExists(FileManager.RemoveExtension(value) + @".xnb"))
-                    {
-                        Texture2D texture =
-                            FlatRedBallServices.Load<Texture2D>(FileManager.RemoveExtension(value), contentManagerName);
-
-
-                        // Vic asks:  Why did we have to set the name?  This is redundant and gets
-                        // rid of the standardized file name which causes caching to not work properly.
-                        // texture.Name = FileManager.RemoveExtension(value);
-                        return texture;
-                    }
-                    else
-                    {
-                        Texture2D texture =
-                            FlatRedBallServices.Load<Texture2D>(value, contentManagerName);
-
-                        // Vic asks:  Why did we have to set the name?  This is redundant and gets
-                        // rid of the standardized file name which causes caching to not work properly.                        
-                        // texture.Name = value;
-                        return texture;
-                    }
-#else
-                return null;
-#endif
-                }
-
-#endregion
-
-#region Matrix
-
-                else if (desiredType == typeof(Matrix).FullName)
-                {
-                    if (string.IsNullOrEmpty(value))
-                    {
-                        return Matrix.Identity;
-                    }
-
-                    value = StripParenthesis(value);
-
-                    // Split the string
-                    string[] stringvalues = value.Split(new char[] { ',' });
-
-                    if (stringvalues.Length != 16)
-                    {
-                        throw new ArgumentException("String to Matrix conversion requires 16 values, " +
-                            "supplied string contains " + stringvalues.Length + " values", "value");
-                    }
-
-                    // Convert to floats
-                    float[] values = new float[16];
-                    for (int i = 0; i < values.Length; i++)
-                    {
-                        values[i] = float.Parse(stringvalues[i], CultureInfo.InvariantCulture);
-                    }
-
-                    // Parse to matrix
-                    Matrix m = new Matrix(
-                        values[0], values[1], values[2], values[3],
-                        values[4], values[5], values[6], values[7],
-                        values[8], values[9], values[10], values[11],
-                        values[12], values[13], values[14], values[15]
-                        );
-
-                    return m;
-                }
-
-#endregion
-
-#region Vector2
-
-                else if (desiredType == typeof(Vector2).FullName)
-                {
-                    if (string.IsNullOrEmpty(value))
-                    {
-                        return new Vector2(0, 0);
-                    }
-
-                    value = StripParenthesis(value);
-
-                    // Split the string
-                    string[] stringvalues = value.Split(new char[] { ',' });
-
-                    if (stringvalues.Length != 2)
-                    {
-                        throw new ArgumentException("String to Vector2 conversion requires 2 values, " +
-                            "supplied string contains " + stringvalues.Length + " values", "value");
-                    }
-
-                    // Convert to floats
-                    float[] values = new float[2];
-                    for (int i = 0; i < values.Length; i++)
-                    {
-                        values[i] = float.Parse(stringvalues[i], CultureInfo.InvariantCulture);
-                    }
-
-                    return new Vector2(values[0], values[1]);
-                }
-
-#endregion
-
-#region Vector3
-
-                else if (desiredType == typeof(Vector3).FullName)
-                {
-                    if (string.IsNullOrEmpty(value))
-                    {
-                        return new Vector3(0, 0, 0);
-                    }
-
-                    value = StripParenthesis(value);
+                                    // Try to load a compiled asset first
+                                    if (FileManager.FileExists(FileManager.RemoveExtension(value) + @".xnb"))
+                                    {
+                                        Texture2D texture =
+                                            FlatRedBallServices.Load<Texture2D>(FileManager.RemoveExtension(value), contentManagerName);
 
 
-                    // Split the string
-                    string[] stringvalues = value.Split(new char[] { ',' });
+                                        // Vic asks:  Why did we have to set the name?  This is redundant and gets
+                                        // rid of the standardized file name which causes caching to not work properly.
+                                        // texture.Name = FileManager.RemoveExtension(value);
+                                        return texture;
+                                    }
+                                    else
+                                    {
+                                        Texture2D texture =
+                                            FlatRedBallServices.Load<Texture2D>(value, contentManagerName);
 
-                    if (stringvalues.Length != 3)
-                    {
-                        throw new ArgumentException("String to Vector3 conversion requires 3 values, " +
-                            "supplied string contains " + stringvalues.Length + " values", "value");
-                    }
+                                        // Vic asks:  Why did we have to set the name?  This is redundant and gets
+                                        // rid of the standardized file name which causes caching to not work properly.                        
+                                        // texture.Name = value;
+                                        return texture;
+                                    }
+                #else
+                                return null;
+                #endif
+                                }
 
-                    // Convert to floats
-                    float[] values = new float[3];
-                    for (int i = 0; i < values.Length; i++)
-                    {
-                        values[i] = float.Parse(stringvalues[i], CultureInfo.InvariantCulture);
-                    }
+                #endregion
 
-                    return new Vector3(values[0], values[1], values[2]);
-                }
+                #region Matrix
 
-#endregion
+                                else if (desiredType == typeof(Matrix).FullName)
+                                {
+                                    if (string.IsNullOrEmpty(value))
+                                    {
+                                        return Matrix.Identity;
+                                    }
 
-#region Vector4
+                                    value = StripParenthesis(value);
 
-                else if (desiredType == typeof(Vector4).FullName)
-                {
-                    if (string.IsNullOrEmpty(value))
-                    {
-                        return new Vector4(0, 0, 0, 0);
-                    }
+                                    // Split the string
+                                    string[] stringvalues = value.Split(new char[] { ',' });
 
-                    value = StripParenthesis(value);
+                                    if (stringvalues.Length != 16)
+                                    {
+                                        throw new ArgumentException("String to Matrix conversion requires 16 values, " +
+                                            "supplied string contains " + stringvalues.Length + " values", "value");
+                                    }
 
-                    // Split the string
-                    string[] stringvalues = value.Split(new char[] { ',' });
+                                    // Convert to floats
+                                    float[] values = new float[16];
+                                    for (int i = 0; i < values.Length; i++)
+                                    {
+                                        values[i] = float.Parse(stringvalues[i], CultureInfo.InvariantCulture);
+                                    }
 
-                    if (stringvalues.Length != 4)
-                    {
-                        throw new ArgumentException("String to Vector4 conversion requires 4 values, " +
-                            "supplied string contains " + stringvalues.Length + " values", "value");
-                    }
+                                    // Parse to matrix
+                                    Matrix m = new Matrix(
+                                        values[0], values[1], values[2], values[3],
+                                        values[4], values[5], values[6], values[7],
+                                        values[8], values[9], values[10], values[11],
+                                        values[12], values[13], values[14], values[15]
+                                        );
 
-                    // Convert to floats
-                    float[] values = new float[4];
-                    for (int i = 0; i < values.Length; i++)
-                    {
-                        values[i] = float.Parse(stringvalues[i], CultureInfo.InvariantCulture);
-                    }
+                                    return m;
+                                }
 
-                    return new Vector4(values[0], values[1], values[2], values[3]);
-                }
+                #endregion
 
-#endregion
+                #region Vector2
+
+                                else if (desiredType == typeof(Vector2).FullName)
+                                {
+                                    if (string.IsNullOrEmpty(value))
+                                    {
+                                        return new Vector2(0, 0);
+                                    }
+
+                                    value = StripParenthesis(value);
+
+                                    // Split the string
+                                    string[] stringvalues = value.Split(new char[] { ',' });
+
+                                    if (stringvalues.Length != 2)
+                                    {
+                                        throw new ArgumentException("String to Vector2 conversion requires 2 values, " +
+                                            "supplied string contains " + stringvalues.Length + " values", "value");
+                                    }
+
+                                    // Convert to floats
+                                    float[] values = new float[2];
+                                    for (int i = 0; i < values.Length; i++)
+                                    {
+                                        values[i] = float.Parse(stringvalues[i], CultureInfo.InvariantCulture);
+                                    }
+
+                                    return new Vector2(values[0], values[1]);
+                                }
+
+                #endregion
+
+                #region Vector3
+
+                                else if (desiredType == typeof(Vector3).FullName)
+                                {
+                                    if (string.IsNullOrEmpty(value))
+                                    {
+                                        return new Vector3(0, 0, 0);
+                                    }
+
+                                    value = StripParenthesis(value);
+
+
+                                    // Split the string
+                                    string[] stringvalues = value.Split(new char[] { ',' });
+
+                                    if (stringvalues.Length != 3)
+                                    {
+                                        throw new ArgumentException("String to Vector3 conversion requires 3 values, " +
+                                            "supplied string contains " + stringvalues.Length + " values", "value");
+                                    }
+
+                                    // Convert to floats
+                                    float[] values = new float[3];
+                                    for (int i = 0; i < values.Length; i++)
+                                    {
+                                        values[i] = float.Parse(stringvalues[i], CultureInfo.InvariantCulture);
+                                    }
+
+                                    return new Vector3(values[0], values[1], values[2]);
+                                }
+
+                #endregion
+
+                #region Vector4
+
+                                else if (desiredType == typeof(Vector4).FullName)
+                                {
+                                    if (string.IsNullOrEmpty(value))
+                                    {
+                                        return new Vector4(0, 0, 0, 0);
+                                    }
+
+                                    value = StripParenthesis(value);
+
+                                    // Split the string
+                                    string[] stringvalues = value.Split(new char[] { ',' });
+
+                                    if (stringvalues.Length != 4)
+                                    {
+                                        throw new ArgumentException("String to Vector4 conversion requires 4 values, " +
+                                            "supplied string contains " + stringvalues.Length + " values", "value");
+                                    }
+
+                                    // Convert to floats
+                                    float[] values = new float[4];
+                                    for (int i = 0; i < values.Length; i++)
+                                    {
+                                        values[i] = float.Parse(stringvalues[i], CultureInfo.InvariantCulture);
+                                    }
+
+                                    return new Vector4(values[0], values[1], values[2], values[3]);
+                                }
+
+                #endregion
 #endif
                 #region enum
                 else if (IsEnum(desiredType))
@@ -630,7 +665,7 @@ namespace FlatRedBall.Instructions.Reflection
 
 #endregion
 
-#region Color
+                #region Color
 #if FRB_XNA
 
                 else if (desiredType == typeof(Color).FullName)
@@ -661,7 +696,7 @@ namespace FlatRedBall.Instructions.Reflection
 #endif
 #endregion
 
-#endregion
+                #endregion
 
             // Why do we catch exceptions here?  That seems baaaad
             //catch (Exception)
