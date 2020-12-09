@@ -2566,35 +2566,34 @@ namespace FlatRedBall.Gui
                     #region static position so reposition the cursor
                     else
                     {
-#if !SILVERLIGHT && !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME
                         int screenX = 0;
                         int screenY = 0;
-#if FRB_MDX
-                        MathFunctions.AbsoluteToScreen(
-							si.X + mCamera.X,
-							si.Y + mCamera.Y,
-							mCamera.Z + 100,
-							ref screenX,
-							ref screenY,
-							mCamera, this.mOwner);
+      //                  MathFunctions.AbsoluteToScreen(
+						//	si.X + mCamera.X,
+						//	si.Y + mCamera.Y,
+						//	mCamera.Z + 100,
+						//	ref screenX,
+						//	ref screenY,
+						//	mCamera, this.mOwner);
 
-						System.Windows.Forms.Cursor.Position = 
-							new System.Drawing.Point(screenX, screenY);
+						//System.Windows.Forms.Cursor.Position = 
+						//	new System.Drawing.Point(screenX, screenY);
 
-                        mScreenX = mOwner.PointToClient(System.Windows.Forms.Cursor.Position).X;
-                        mScreenY = mOwner.PointToClient(System.Windows.Forms.Cursor.Position).Y;
-#else
+      //                  mScreenX = mOwner.PointToClient(System.Windows.Forms.Cursor.Position).X;
+      //                  mScreenY = mOwner.PointToClient(System.Windows.Forms.Cursor.Position).Y;
 
+                        throw new NotImplementedException();
 
-                        MathFunctions.AbsoluteToWindow(
-                            si.X + mCamera.X,
-                            si.Y + mCamera.Y,
-                            mCamera.Z - 100,
-                            ref screenX,
-                            ref screenY,
-                            mCamera, false,
-                            GuiManager.XEdge,
-                            GuiManager.YEdge);
+                        //MathFunctions.AbsoluteToWindow(
+                        //    si.X + mCamera.X,
+                        //    si.Y + mCamera.Y,
+                        //    mCamera.Z - 100,
+                        //    ref screenX,
+                        //    ref screenY,
+                        //    mCamera, false,
+                        //    GuiManager.XEdge,
+                        //    GuiManager.YEdge);
 
                         if (FlatRedBallServices.Game != null)
                         {
@@ -2617,7 +2616,6 @@ namespace FlatRedBall.Gui
                         }
 
 
-#endif
 #endif
                     }
                     #endregion
