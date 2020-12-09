@@ -442,7 +442,10 @@ namespace FlatRedBall.Instructions.Reflection
 
                 else if(desiredType == typeof(DateTime).FullName)
                 {
-                    return DateTime.Parse(value);
+                    //return DateTime.Parse(value);
+                    var parsedDateTime = DateTime.Parse(value, null, DateTimeStyles.RoundtripKind);
+
+                    return parsedDateTime;
                 }
 
 #if !FRB_RAW

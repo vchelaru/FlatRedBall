@@ -38,10 +38,12 @@ namespace GumPlugin.CodeGeneration
 
             if(isGlueScreen && hasGumScreen && hasForms)
             {
+                var rfs = GetGumScreenRfs(element);
+
                 var elementName = element.GetStrippedName();
 
                 var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName, "Screens") +
-                    "." + FlatRedBall.IO.FileManager.RemovePath(elementName) + "GumForms";
+                    "." + rfs.GetInstanceName() + "Forms";
 
                 codeBlock.Line($"{formsObjectType} Forms;");
             }
@@ -53,7 +55,11 @@ namespace GumPlugin.CodeGeneration
         {
             bool isGlueScreen = element is FlatRedBall.Glue.SaveClasses.ScreenSave;
             bool hasGumScreen = GetIfContainsAnyGumScreenFiles(element);
-            bool hasForms = true; // okay older projects may not but.....that's a pain in the butto handle.
+
+            var gumScreenRfs =
+                element.ReferencedFiles.FirstOrDefault(item => item.Name.EndsWith(".gusx"));
+
+            bool hasForms = gumScreenRfs != null;
 
             if (isGlueScreen && !hasGumScreen && GetIfHasGumProject())
             {
@@ -68,10 +74,13 @@ namespace GumPlugin.CodeGeneration
                 //var screensOrComponents = element.Name.ToLowerInvariant().EndsWith(".gusx") ? "Screens" : "Components";
 
 
-                var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName, "Screens") +
-                    "." + FlatRedBall.IO.FileManager.RemovePath(elementName) + "GumForms";
                 var rfs = GetGumScreenRfs(element);
-                codeBlock.Line($"Forms = new {formsObjectType}({rfs.GetInstanceName()});");
+                var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName, "Screens") +
+                    "." + rfs.GetInstanceName() + "Forms";
+                var formsInstantiationLine =
+                    $"Forms = new {formsObjectType}({rfs.GetInstanceName()});";
+
+                codeBlock.Line(formsInstantiationLine);
             }
 
             return codeBlock;

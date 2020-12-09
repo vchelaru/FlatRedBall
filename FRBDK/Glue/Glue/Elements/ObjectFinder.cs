@@ -508,7 +508,7 @@ namespace FlatRedBall.Glue.Elements
 
         public IElement GetBaseElement(IElement derivedElement)
         {
-            if (!string.IsNullOrEmpty(derivedElement.BaseElement))
+            if (!string.IsNullOrEmpty(derivedElement?.BaseElement))
             {
                 return GetIElement(derivedElement.BaseElement);
             }
