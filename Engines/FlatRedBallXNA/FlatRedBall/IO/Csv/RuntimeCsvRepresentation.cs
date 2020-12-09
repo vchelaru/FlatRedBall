@@ -675,7 +675,8 @@ namespace FlatRedBall.IO.Csv
         }
 
         public void FillObjectDictionary<KeyType, ValueType>(Dictionary<KeyType, ValueType> dictionaryToPopulate, 
-            string contentManagerName = FlatRedBallServices.GlobalContentManager, 
+            // Tools may not have access to FRBServices, so just hardcode the string
+            string contentManagerName = "Global",
             DuplicateDictionaryEntryBehavior duplicateDictionaryEntryBehavior = DuplicateDictionaryEntryBehavior.ThrowException)
         {
             Type typeOfElement = typeof(ValueType);
