@@ -2558,8 +2558,6 @@ namespace FlatRedBall.Gui
                             -InputManager.TouchScreen.AverageTouchPointChange.Y,
                             out xVelocity, out yVelocity, mCamera.Z - 100, mCamera);
 
-                        si.XVelocity = xVelocity;
-                        si.YVelocity = yVelocity;
 #endif
                     }
                     #endregion
