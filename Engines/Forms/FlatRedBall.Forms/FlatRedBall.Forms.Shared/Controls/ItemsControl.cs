@@ -15,7 +15,29 @@ namespace FlatRedBall.Forms.Controls
         #region Fields/Properties
 
         protected Type ItemGumType { get; set; }
-        protected Type ItemFormsType { get; set; } = typeof(ListBoxItem);
+
+        Type itemFormsType = typeof(ListBoxItem);
+
+
+        // There can be a logical conflict when dealing with list items.
+        // When creating a Gum list item, the Gum object may specify a Forms
+        // type. But the list can also specify a forms type. So which do we use?
+        // We'll use the list item forms type unless the list box has its value set
+        // explicitly. then we'll go to the list box type. This eventually should get
+        // marked as obsolete and we should instead go to a VM solution.
+        bool isItemTypeSetExplicitly = false;
+        protected Type ItemFormsType 
+        {
+            get => itemFormsType; 
+            set
+            {
+                if(value !=  itemFormsType)
+                {
+                    isItemTypeSetExplicitly = true;
+                    itemFormsType = value;
+                }
+            }
+        }
 
         IList items;
         public IList Items
@@ -142,7 +164,7 @@ namespace FlatRedBall.Forms.Controls
                 }
 
                 ListBoxItem item;
-                if (visual.FormsControlAsObject is ListBoxItem asListBoxItem)
+                if (visual.FormsControlAsObject is ListBoxItem asListBoxItem && ! isItemTypeSetExplicitly)
                 {
                     item = asListBoxItem;
                 }
