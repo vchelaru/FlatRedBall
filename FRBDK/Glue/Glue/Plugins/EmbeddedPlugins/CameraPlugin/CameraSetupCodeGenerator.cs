@@ -198,11 +198,11 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             var gumElseBlock = gumIfBlock.End().Else();
 
-            gumElseBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasWidth = Data.ResolutionWidth / (Data.ScaleGum/100.0f);");
             gumElseBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasHeight = Data.ResolutionHeight / (Data.ScaleGum/100.0f);");
             var gumAspectRatio = gumElseBlock.If("Data.AspectRatio != null")
                 .Line(@"
 
+                    Gum.Wireframe.GraphicalUiElement.CanvasWidth = Data.ResolutionWidth / (Data.ScaleGum/100.0f);
                     var resolutionAspectRatio = FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth / (decimal)FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight;
                     int destinationRectangleWidth;
                     int destinationRectangleHeight;
@@ -237,6 +237,14 @@ namespace FlatRedBall.Glue.CodeGeneration
 ")
                 .End().Else()
                 .Line(@"
+
+                    // since a fixed aspect ratio isn't specified, adjust the width according to the 
+                    // current game aspect ratio and the canvas height
+                    var currentAspectRatio = FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth / (float)
+                        FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight;
+                    Gum.Wireframe.GraphicalUiElement.CanvasWidth =
+                        Gum.Wireframe.GraphicalUiElement.CanvasHeight * currentAspectRatio;
+
                     var graphicsHeight = Gum.Wireframe.GraphicalUiElement.CanvasHeight;
                     var windowHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height;
                     var zoom = windowHeight / (float)graphicsHeight;
