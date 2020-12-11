@@ -168,29 +168,68 @@ namespace FlatRedBall.Math.Geometry
 
         public Point ClosestPointTo(Point point)
         {
-            Vector2 unitSegment = new Vector2((float)(this.Point2.X - this.Point1.X), (float)(Point2.Y - Point1.Y));
-            unitSegment.Normalize();
-
-            Vector2 pointVector = new Vector2((float)(point.X - this.Point1.X), (float)(point.Y - Point1.Y));
-            //			Segment pointSegment = new Segment( new Point(0,0),
-            //				new Point(point.x - this.Point1.X, point.y - Point1.Y));
-
-            float l = Vector2.Dot(pointVector, unitSegment);
-
-            if (l < 0)
+            if (Point2 == Point1)
             {
-                return this.Point1;
-            }
-            else if (l * l > this.GetLengthSquared())
-            {
-                return this.Point2;
+                return Point1;
             }
             else
             {
-                Point newPoint = new Point(Point1.X + l * unitSegment.X, Point1.Y + l * unitSegment.Y);
-                return newPoint;
-            }
+                Vector2 unitSegment = new Vector2((float)(this.Point2.X - this.Point1.X), (float)(Point2.Y - Point1.Y));
+                unitSegment.Normalize();
 
+                Vector2 pointVector = new Vector2((float)(point.X - this.Point1.X), (float)(point.Y - Point1.Y));
+                //			Segment pointSegment = new Segment( new Point(0,0),
+                //				new Point(point.x - this.Point1.X, point.y - Point1.Y));
+
+                float l = Vector2.Dot(pointVector, unitSegment);
+
+                if (l < 0)
+                {
+                    return this.Point1;
+                }
+                else if (l * l > this.GetLengthSquared())
+                {
+                    return this.Point2;
+                }
+                else
+                {
+                    Point newPoint = new Point(Point1.X + l * unitSegment.X, Point1.Y + l * unitSegment.Y);
+                    return newPoint;
+                }
+            }
+        }
+
+        public Point ClosestPointTo(Vector3 point)
+        {
+            if(Point2 == Point1)
+            {
+                return Point1;
+            }
+            else
+            {
+                Vector2 unitSegment = new Vector2((float)(this.Point2.X - this.Point1.X), (float)(Point2.Y - Point1.Y));
+                unitSegment.Normalize();
+
+                Vector2 pointVector = new Vector2((float)(point.X - this.Point1.X), (float)(point.Y - Point1.Y));
+                //			Segment pointSegment = new Segment( new Point(0,0),
+                //				new Point(point.x - this.Point1.X, point.y - Point1.Y));
+
+                float l = Vector2.Dot(pointVector, unitSegment);
+
+                if (l < 0)
+                {
+                    return this.Point1;
+                }
+                else if (l * l > this.GetLengthSquared())
+                {
+                    return this.Point2;
+                }
+                else
+                {
+                    Point newPoint = new Point(Point1.X + l * unitSegment.X, Point1.Y + l * unitSegment.Y);
+                    return newPoint;
+                }
+            }
         }
 
         public float DistanceTo(Point point)

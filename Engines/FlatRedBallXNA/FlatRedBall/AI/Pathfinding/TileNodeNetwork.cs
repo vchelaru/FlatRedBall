@@ -296,7 +296,16 @@ namespace FlatRedBall.AI.Pathfinding
         
         public PositionedNode GetClosestNodeTo(float x, float y)
         {
-
+#if DEBUG
+            if (float.IsNaN(x))
+            {
+                throw new ArgumentException("x value is NaN");
+            }
+            if(float.IsNaN(y))
+            {
+                throw new ArgumentException("y value is NaN");
+            }
+#endif
             int xTilesFromSeed = MathFunctions.RoundToInt((x - mXSeed) / mGridSpacing);
             int yTilesFromSeed = MathFunctions.RoundToInt((y - mYSeed) / mGridSpacing);
 

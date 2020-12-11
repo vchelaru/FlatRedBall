@@ -9,6 +9,12 @@
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Embedded\TopDownAiInput.Generated.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Embedded\TopDownAiInput.Generated.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Glue\GlueFormsCore.csproj" />
