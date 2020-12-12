@@ -295,36 +295,43 @@ namespace FlatRedBall.Math.Geometry
 
         public float DistanceTo(double x, double y)
         {
-            float segmentLength = (float)this.GetLength();
-
-            Vector2 normalizedLine = new Vector2(
-                (float)(Point2.X - Point1.X) / segmentLength,
-                (float)(Point2.Y - Point1.Y) / segmentLength);
-
-            Vector2 pointVector = new Vector2((float)(x - Point1.X), (float)(y - Point1.Y));
-
-            float length = Vector2.Dot(pointVector, normalizedLine);
-
-            if (length < 0)
+            if(Point1 == Point2)
             {
-                return (float)(new Segment(x, y, Point1.X, Point1.Y).GetLength());
-            }
-            else if (length > segmentLength)
-            {
-                return (float)(new Segment(x, y, Point2.X, Point2.Y).GetLength());
+                return (Point1 - new Point(x, y)).ToVector3().Length();
             }
             else
             {
-                normalizedLine.X *= length;
-                normalizedLine.Y *= length;
+                float segmentLength = (float)this.GetLength();
 
-                float xDistanceSquared = pointVector.X - normalizedLine.X;
-                xDistanceSquared = xDistanceSquared * xDistanceSquared;
+                Vector2 normalizedLine = new Vector2(
+                    (float)(Point2.X - Point1.X) / segmentLength,
+                    (float)(Point2.Y - Point1.Y) / segmentLength);
 
-                float yDistanceSquared = pointVector.Y - normalizedLine.Y;
-                yDistanceSquared = yDistanceSquared * yDistanceSquared;
+                Vector2 pointVector = new Vector2((float)(x - Point1.X), (float)(y - Point1.Y));
 
-                return (float)System.Math.Sqrt(xDistanceSquared + yDistanceSquared);
+                float length = Vector2.Dot(pointVector, normalizedLine);
+
+                if (length < 0)
+                {
+                    return (float)(new Segment(x, y, Point1.X, Point1.Y).GetLength());
+                }
+                else if (length > segmentLength)
+                {
+                    return (float)(new Segment(x, y, Point2.X, Point2.Y).GetLength());
+                }
+                else
+                {
+                    normalizedLine.X *= length;
+                    normalizedLine.Y *= length;
+
+                    float xDistanceSquared = pointVector.X - normalizedLine.X;
+                    xDistanceSquared = xDistanceSquared * xDistanceSquared;
+
+                    float yDistanceSquared = pointVector.Y - normalizedLine.Y;
+                    yDistanceSquared = yDistanceSquared * yDistanceSquared;
+
+                    return (float)System.Math.Sqrt(xDistanceSquared + yDistanceSquared);
+                }
             }
         }   
 

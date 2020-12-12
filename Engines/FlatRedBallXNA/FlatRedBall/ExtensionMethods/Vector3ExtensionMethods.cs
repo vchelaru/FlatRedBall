@@ -82,6 +82,19 @@ namespace Microsoft.Xna.Framework
             }
         }
 
+        public static Vector3 NormalizedOrRight(this Vector3 vector3)
+        {
+            if (vector3.X != 0 || vector3.Y != 0 || vector3.Z != 0)
+            {
+                vector3.Normalize();
+                return vector3;
+            }
+            else
+            {
+                return Vector3.Right;
+            }
+        }
+
         public static Vector3 RotatedBy(this Vector3 vector3, float angleToRotateBy)
         {
             if(vector3.X == 0 && vector3.Y == 0)
