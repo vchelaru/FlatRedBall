@@ -118,13 +118,13 @@ namespace FlatRedBall.Glue.SetVariable
 
             else if (EditorLogic.CurrentCustomVariable != null)
             {
-                Container.Get<CustomVariableSaveSetVariableLogic>().ReactToCustomVariableChangedValue(
+                Container.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
                     variableNameAsDisplayed, EditorLogic.CurrentCustomVariable, oldValue);
             }
             else if (mPropertyGrid.SelectedObject != null && mPropertyGrid.SelectedObject is PropertyGridDisplayer &&
                 GlueState.Self.CurrentElement != null && GlueState.Self.CurrentElement.GetCustomVariableRecursively(variableName) != null)
             {
-                Container.Get<CustomVariableSaveSetVariableLogic>().ReactToCustomVariableChangedValue(
+                Container.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
                     variableName, GlueState.Self.CurrentElement.GetCustomVariableRecursively(variableName), oldValue);
             }
             #endregion

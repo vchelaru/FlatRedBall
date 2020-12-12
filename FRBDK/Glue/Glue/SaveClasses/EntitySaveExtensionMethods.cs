@@ -300,20 +300,6 @@ namespace FlatRedBall.Glue.SaveClasses
             return false;
         }
 
-        public static bool UpdateFromBaseType(this EntitySave instance)
-        {
-            bool haveChangesOccurred = false;
-            if (ObjectFinder.Self.GlueProject != null)
-            {
-                haveChangesOccurred |= NamedObjectContainerHelper.UpdateNamedObjectsFromBaseType(instance);
-
-                IBehaviorContainerHelper.UpdateCustomVariablesFromBaseType(instance);
-            }
-            return haveChangesOccurred;
-
-
-        }
-
 
         static void AddRangeUnique(this List<TypedMemberBase> listToAddTo, List<TypedMemberBase> whatToAdd)
         {

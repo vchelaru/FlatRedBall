@@ -22,11 +22,10 @@ namespace OfficialPlugins.VariableDisplay
             grid.Categories.Clear();
 
             List<MemberCategory> categories = new List<MemberCategory>();
-            var defaultCategory = new MemberCategory("Variables");  
-            defaultCategory.FontSize = 14;
-            categories.Add(defaultCategory);
+            var categoryName = "Variables";
+            MemberCategory defaultCategory = CreateAndAddCategory(categories, categoryName);
 
-            CreateInstanceMembersForVariables(element, defaultCategory);
+            CreateInstanceMembersForVariables(element, categories);
 
             foreach (var category in categories)
             {
@@ -40,7 +39,15 @@ namespace OfficialPlugins.VariableDisplay
 
         }
 
-        private static void CreateInstanceMembersForVariables(IElement element, MemberCategory category)
+        private static MemberCategory CreateAndAddCategory(List<MemberCategory> categories, string categoryName)
+        {
+            var defaultCategory = new MemberCategory(categoryName);
+            defaultCategory.FontSize = 14;
+            categories.Add(defaultCategory);
+            return defaultCategory;
+        }
+
+        private static void CreateInstanceMembersForVariables(IElement element, List<MemberCategory> categories)
         {
             var variableDefinitions = PluginManager.GetVariableDefinitionsFor(element);
             foreach (var variableDefinition in variableDefinitions)
@@ -96,7 +103,7 @@ namespace OfficialPlugins.VariableDisplay
 
                     variable.DefaultValue = value;
 
-                    EditorObjects.IoC.Container.Get<CustomVariableSaveSetVariableLogic>().ReactToCustomVariableChangedValue(
+                    EditorObjects.IoC.Container.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
                         "DefaultValue", variable, oldValue);
 
 
@@ -143,6 +150,16 @@ namespace OfficialPlugins.VariableDisplay
                 };
 
                 instanceMember.ContextMenuEvents.Add("Variable Properties", (sender, args) => GlueState.Self.CurrentCustomVariable = variable);
+
+                var categoryName = !string.IsNullOrWhiteSpace(variable.Category) ?
+                    variable.Category : "Variables";
+
+                var category = categories.FirstOrDefault(item => item.Name == categoryName);
+
+                if(category == null)
+                {
+                    category = CreateAndAddCategory(categories, categoryName);
+                }
 
                 category.Members.Add(instanceMember);
             }

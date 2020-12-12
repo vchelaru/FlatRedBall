@@ -20,11 +20,15 @@ using FlatRedBall.Glue.Elements;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
+    #region Enums
+
     public enum ScreenOrEntity
     {
         Screen,
         Entity
     }
+
+    #endregion
 
     public interface IElement : INamedObjectContainer, INameable, IFileReferencer, IEventContainer, IPropertyListContainer
     {

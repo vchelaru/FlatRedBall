@@ -58,16 +58,7 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        public static void UpdateFromBaseType(this ScreenSave instance)
-        {
-            if (ObjectFinder.Self.GlueProject != null)
-            {
-                NamedObjectContainerHelper.UpdateNamedObjectsFromBaseType(instance);
 
-                IBehaviorContainerHelper.UpdateCustomVariablesFromBaseType(instance);
-            }
-
-        }
 
         public static ReferencedFileSave GetReferencedFileSaveRecursively(this ScreenSave instance, string fileName)
         {

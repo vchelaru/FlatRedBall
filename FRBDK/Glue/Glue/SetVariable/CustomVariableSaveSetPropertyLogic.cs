@@ -13,9 +13,8 @@ using FlatRedBall.Glue.SaveClasses.Helpers;
 
 namespace FlatRedBall.Glue.SetVariable
 {
-    public class CustomVariableSaveSetVariableLogic
+    public class CustomVariableSaveSetPropertyLogic
     {
-
         public void ReactToCustomVariableChangedValue(string changedMember, CustomVariable customVariable, object oldValue)
         {
             #region Name
@@ -47,8 +46,6 @@ namespace FlatRedBall.Glue.SetVariable
                 }
             }
             #endregion
-
-
 
             #region IsShared
 
@@ -276,17 +273,43 @@ namespace FlatRedBall.Glue.SetVariable
 
             }
             #endregion
+
+            #region Category
+            else if (changedMember == nameof(CustomVariable.Category))
+            {
+                TryPropagateCategory(customVariable);
+            }
+            #endregion
         }
 
-        private bool GetIfCanBeRenamed(CustomVariable customVariable)
+        private void TryPropagateCategory(CustomVariable customVariable)
         {
-            if (customVariable.GetIsVariableState())
+            // usually this will be the current variable, but not always
+            var element = ObjectFinder.Self.GetElementContaining(customVariable);
+            var shouldPropagateToChildren = customVariable.SetByDerived;
+            //////////////// Early Out ////////////////
+            if(element == null)
             {
-                return false;
+                return;
+            }
+            if(shouldPropagateToChildren == false)
+            {
+                return;
+            }
+            //////////////End Early Out////////////////
+
+            var allDerived = ObjectFinder.Self.GetAllElementsThatInheritFrom(element);
+
+            foreach(var derived in allDerived)
+            {
+                var matchingVariable = derived.CustomVariables.FirstOrDefault(item => item.Name == customVariable.Name);
+
+                if(matchingVariable != null)
+                {
+                    matchingVariable.Category = customVariable.Category;
+                }
             }
 
-
-            return true;
         }
 
         private static void HandleIsSharedVariableSet(CustomVariable customVariable, object oldValue)

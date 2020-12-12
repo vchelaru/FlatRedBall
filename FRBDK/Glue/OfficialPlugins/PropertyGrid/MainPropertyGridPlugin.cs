@@ -15,7 +15,7 @@ using FlatRedBall.Glue.Elements;
 namespace OfficialPlugins.VariableDisplay
 {
     [Export(typeof(PluginBase))]
-    public class MainPlugin : EmbeddedPlugin
+    public class MainPropertyGridPlugin : EmbeddedPlugin
     {
         #region Fields
 

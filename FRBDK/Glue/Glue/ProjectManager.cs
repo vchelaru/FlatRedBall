@@ -770,6 +770,8 @@ namespace FlatRedBall.Glue
 
         public static void UpdateAllDerivedElementFromBaseValues(bool regenerateCode)
         {
+            var currentElement = GlueState.Self.CurrentElement;
+
             if (EditorLogic.CurrentEntitySave != null)
             {
                 List<EntitySave> derivedEntities = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(EditorLogic.CurrentEntitySave.Name);

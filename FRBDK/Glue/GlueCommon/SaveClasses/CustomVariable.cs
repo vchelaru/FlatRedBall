@@ -1,27 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-
 using System.Xml.Serialization;
-using Microsoft.Xna.Framework.Graphics;
-
-//using FlatRedBall.Glue.FormHelpers.StringConverters;
-//using FlatRedBall.Glue.FormHelpers;
-using FlatRedBall.Glue.Elements;
-using FlatRedBall.Content;
-using FlatRedBall.Content.Scene;
-using FlatRedBall.Content.AnimationChain;
-//using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
-using FlatRedBall.Instructions.Reflection;
-using FlatRedBall.Glue.SaveClasses;
-//using FlatRedBall.Glue.GuiDisplay;
-
-
-
-
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -78,15 +57,13 @@ namespace FlatRedBall.Glue.SaveClasses
         // but we can't because there's a lot of old
         // projects that still use this instead of the old
         // I think this will be around for a while - maybe a year?
+        // Okay we waited long enough (12/12/2020)
+        [XmlIgnore]
         [ReadOnlyAttribute(true)]
 		public string Type
 		{
-            get { return Properties.GetValue<string>("Type"); }
-			set
-			{
-                Properties.SetValue("Type", value);
-			}
-
+            get => Properties.GetValue<string>("Type");
+			set => Properties.SetValue("Type", value);
 		}
 
         [BrowsableAttribute(false)]
@@ -295,6 +272,12 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             get => Properties.GetValue<Scope>(nameof(Scope));
             set => Properties.SetValue(nameof(Scope), value);
+        }
+
+        public string Category
+        {
+            get => Properties.GetValue<string>(nameof(Category));
+            set => Properties.SetValue(nameof(Category), value);
         }
 
         //[XmlIgnore]

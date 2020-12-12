@@ -403,7 +403,7 @@ namespace Glue
             EditorObjects.IoC.Container.Set(new StateSaveSetVariableLogic());
             EditorObjects.IoC.Container.Set(new EventResponseSaveSetVariableLogic());
             EditorObjects.IoC.Container.Set(new ReferencedFileSaveSetPropertyManager());
-            EditorObjects.IoC.Container.Set(new CustomVariableSaveSetVariableLogic());
+            EditorObjects.IoC.Container.Set(new CustomVariableSaveSetPropertyLogic());
             EditorObjects.IoC.Container.Set(new EntitySaveSetVariableLogic());
             EditorObjects.IoC.Container.Set(new ScreenSaveSetVariableLogic());
             EditorObjects.IoC.Container.Set(new GlobalContentSetVariableLogic());
