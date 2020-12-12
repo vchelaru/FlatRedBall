@@ -11,9 +11,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Embedded\TopDownAiInput.Generated.cs" />
+    <Compile Remove="Embedded\TopDownAiTargetLogic.Generated.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Embedded\TopDownAiInput.Generated.cs" />
+    <EmbeddedResource Include="Embedded\TopDownAiTargetLogic.Generated.cs" />
   </ItemGroup>
 
   <ItemGroup>

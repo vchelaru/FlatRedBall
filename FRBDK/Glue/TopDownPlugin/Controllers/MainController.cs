@@ -22,6 +22,7 @@ using TopDownPlugin.Logic;
 using TopDownPlugin.Models;
 using TopDownPlugin.ViewModels;
 using TopDownPlugin.Views;
+using TopDownPluginCore.CodeGenerators;
 
 namespace TopDownPlugin.Controllers
 {
@@ -146,6 +147,7 @@ namespace TopDownPlugin.Controllers
                         if (shouldGenerateCsv || shouldAddTopDownVariables)
                         {
                             AiCodeGenerator.Self.GenerateAndSave();
+                            AiTargetLogicCodeGenerator.Self.GenerateAndSave();
                             AnimationCodeGenerator.Self.GenerateAndSave();
                         }
                     }, "Saving Glue Project");
@@ -184,12 +186,19 @@ namespace TopDownPlugin.Controllers
 
             if (!areAnyEntitiesTopDown)
             {
-                FilePath absoluteFile =
+                FilePath absoluteAiFile =
                     GlueState.Self.CurrentGlueProjectDirectory +
                     AiCodeGenerator.Self.RelativeFile;
 
-                TaskManager.Self.Add(() => GlueCommands.Self.ProjectCommands.RemoveFromProjects(absoluteFile),
+                TaskManager.Self.Add(() => GlueCommands.Self.ProjectCommands.RemoveFromProjects(absoluteAiFile),
                     "Removing " + AiCodeGenerator.Self.RelativeFile);
+
+                FilePath absoluteLogicFile =
+                    GlueState.Self.CurrentGlueProjectDirectory +
+                    AiTargetLogicCodeGenerator.Self.RelativeFile;
+
+                TaskManager.Self.Add(() => GlueCommands.Self.ProjectCommands.RemoveFromProjects(absoluteLogicFile),
+                    "Removing " + AiTargetLogicCodeGenerator.Self.RelativeFile);
 
                 // todo - probably need to remove all the other files that are created for top down
             }

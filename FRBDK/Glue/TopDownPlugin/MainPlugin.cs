@@ -13,6 +13,7 @@ using TopDownPlugin.Controllers;
 using TopDownPlugin.Logic;
 using TopDownPlugin.ViewModels;
 using TopDownPlugin.Views;
+using TopDownPluginCore.CodeGenerators;
 
 namespace TopDownPlugin
 {
@@ -96,6 +97,7 @@ namespace TopDownPlugin
                 EnumFileGenerator.Self.GenerateAndSave();
                 InterfacesFileGenerator.Self.GenerateAndSave();
                 AiCodeGenerator.Self.GenerateAndSave();
+                AiTargetLogicCodeGenerator.Self.GenerateAndSave();
                 AnimationCodeGenerator.Self.GenerateAndSave();
 
             }
