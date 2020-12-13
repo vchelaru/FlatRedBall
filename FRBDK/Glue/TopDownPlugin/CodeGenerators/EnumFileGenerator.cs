@@ -130,7 +130,7 @@ namespace {GlueState.Self.ProjectNamespace}.Entities
 
 
 
-        public static TopDownDirection FromDirection(float x, float y, PossibleDirections possibleDirections)
+        public static TopDownDirection FromDirection(float x, float y, PossibleDirections possibleDirections, TopDownDirection? lastDirection = null)
         {{
             if(x == 0 && y == 0)
             {{
@@ -177,7 +177,17 @@ namespace {GlueState.Self.ProjectNamespace}.Entities
                     }}
                     else // absx and absy are equal:
                     {{
-                        if(x > 0)
+                        // The first two if-checks preserve the direction the user was facing when
+                        // moving diagonal, instead of making the right direction the dominant direction.
+                        if(lastDirection == TopDownDirection.Up && y > 0)
+                        {{
+                            return TopDownDirection.Up;
+                        }}
+                        else if(lastDirection == TopDownDirection.Down && y < 0)
+                        {{
+                            return TopDownDirection.Down;
+                        }}
+                        else if(x > 0)
                         {{
                             return TopDownDirection.Right;
                         }}
