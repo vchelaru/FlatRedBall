@@ -88,14 +88,15 @@ namespace FlatRedBall.Entities
 
             Vector2 averagePosition = this.Position.ToVector2();
 
-            foreach (PositionedObject targetAtI in Targets)
+            if(Targets.Count > 0)
             {
-                averagePosition.X = targetAtI.X;
-                averagePosition.Y = targetAtI.Y;
-            }
+                averagePosition = Vector2.Zero;
+                foreach (PositionedObject targetAtI in Targets)
+                {
+                    averagePosition.X += targetAtI.X;
+                    averagePosition.Y += targetAtI.Y;
+                }
 
-            if (Targets.Count > 0)
-            {
                 averagePosition.X /= Targets.Count;
                 averagePosition.Y /= Targets.Count;
             }
