@@ -505,6 +505,7 @@ namespace FlatRedBall.AnimationEditorForms
 
         internal void HandleKeyPress(KeyPressEventArgs e)
         {
+            // these numbers were determined through trial and error - put a breakpoint, do the command, see what value comes in
             #region Copy ( (char)3 )
 
             if (e.KeyChar == (char)3)
@@ -512,6 +513,16 @@ namespace FlatRedBall.AnimationEditorForms
                 e.Handled = true;
 
                 CopyManager.Self.HandleCopy();
+            }
+
+            #endregion
+
+            #region Duplicate ( (char)4)
+
+            else if(e.KeyChar == (char)4)
+            {
+                e.Handled = true;
+                CopyManager.Self.HandleDuplicate();
             }
 
             #endregion

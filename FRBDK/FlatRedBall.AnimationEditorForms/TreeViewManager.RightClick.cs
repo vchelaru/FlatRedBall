@@ -125,7 +125,9 @@ namespace FlatRedBall.AnimationEditorForms
             var currentChainName = state.SelectedChain.Name;
 
 
-            toolStripMenuItem.DropDownItems.Add("Original", null, (not, used) => HandleDuplicateOriginalClicked(false, false, null));
+            var originalToolStripDuplicate = toolStripMenuItem.DropDownItems.Add("Original", null, (not, used) => HandleDuplicateOriginalClicked(false, false, null))
+                as ToolStripMenuItem;
+            originalToolStripDuplicate.ShortcutKeyDisplayString = "Ctrl+D";
 
             string horizontallyText = "Flipped Horizontally";
             string newHorizontalName = null;
