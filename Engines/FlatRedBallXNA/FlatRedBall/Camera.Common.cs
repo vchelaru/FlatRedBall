@@ -179,6 +179,8 @@ namespace FlatRedBall
             }
         }
 
+        public float AbsoluteRightXEdge => AbsoluteRightXEdgeAt(0);
+
         /// <summary>
         /// Returns the right-most visible X value at a given absolute Z value.
         /// The absoluteZ parameter is ignored if the camera has its Orthogonal = true (is 2D)
@@ -189,6 +191,8 @@ namespace FlatRedBall
         {
             return Position.X + RelativeXEdgeAt(absoluteZ);
         }
+
+        public float AbsoluteLeftXEdge => AbsoluteLeftXEdgeAt(0);
 
         /// <summary>
         /// Returns the left-most visible X value at a given absolute Z value.
@@ -201,6 +205,8 @@ namespace FlatRedBall
             return Position.X - RelativeXEdgeAt(absoluteZ);
         }
 
+        public float AbsoluteTopYEdge => AbsoluteTopYEdgeAt(0);
+
         /// <summary>
         /// Returns the top-most visible Y value at a given absolute Z value.
         /// The absoluteZ parameter is ignored if the camera has its Orthogonal = true (is 2D)
@@ -211,6 +217,8 @@ namespace FlatRedBall
         {
             return Position.Y + RelativeYEdgeAt(absoluteZ);
         }
+
+        public float AbsoluteBottomYEdge => AbsoluteBottomYEdgeAt(0);
 
         /// <summary>
         /// Returns the bottom-most visible Y value at a given absolute Z value.
