@@ -418,7 +418,7 @@ namespace FlatRedBall.AnimationEditorForms
             keyboard = new Keyboard();
             keyboard.Initialize(control);
 
-            mManagers.Renderer.Camera.CameraCenterOnScreen = CameraCenterOnScreen.TopLeft;
+            mManagers.Renderer.Camera.CameraCenterOnScreen = CameraCenterOnScreen.Center;
 
             mWireframeControl = wireframeControl;
 

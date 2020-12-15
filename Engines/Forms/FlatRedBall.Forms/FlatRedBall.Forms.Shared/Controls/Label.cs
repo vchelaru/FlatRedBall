@@ -21,11 +21,19 @@ namespace FlatRedBall.Forms.Controls
             }
             set
             {
+                if(value != Text)
+                {
+
 #if DEBUG
-                ReportMissingTextInstance();
+                    ReportMissingTextInstance();
 #endif
-                // go through the component instead of the core text object to force a layout refresh if necessary
-                textComponent.SetProperty("Text", value);
+                    // go through the component instead of the core text object to force a layout refresh if necessary
+                    textComponent.SetProperty("Text", value);
+
+                    PushValueToViewModel();
+                }
+
+
             }
         }
 

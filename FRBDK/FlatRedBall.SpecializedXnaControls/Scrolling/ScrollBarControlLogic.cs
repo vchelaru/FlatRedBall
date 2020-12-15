@@ -15,12 +15,16 @@ namespace FlatRedBall.SpecializedXnaControls.Scrolling
         ScrollBar mVerticalScrollBar;
         ScrollBar mHorizontalScrollBar;
 
+        int minimumX = 0;
+        int minimumY = 0;
+
         int displayedAreaWidth = 2048;
         int displayedAreaHeight = 2048;
 
         float zoomPercentage = 100;
 
         Panel mPanel;
+        Control xnaControl;
 
         #endregion
 
@@ -47,9 +51,10 @@ namespace FlatRedBall.SpecializedXnaControls.Scrolling
 
         #endregion
 
-        public ScrollBarControlLogic(Panel panel)
+        public ScrollBarControlLogic(Panel panel, Control xnaControl)
         {
             mPanel = panel;
+            this.xnaControl = xnaControl;
 
             mVerticalScrollBar = new VScrollBar();
             mVerticalScrollBar.Dock = DockStyle.Right;
@@ -65,10 +70,9 @@ namespace FlatRedBall.SpecializedXnaControls.Scrolling
 
             SetDisplayedArea(2048, 2048);
 
-            mPanel.Resize += HandlePanelResize;
-
+            xnaControl.Resize += HandlePanelResize;
         }
-        
+
         void HandlePanelResize(object sender, EventArgs e)
         {
             UpdateScrollBars();
@@ -87,8 +91,11 @@ namespace FlatRedBall.SpecializedXnaControls.Scrolling
 
         public void UpdateScrollBarsToCameraPosition()
         {
-            mVerticalScrollBar.Value = (int)Managers.Renderer.Camera.Y;
-            mHorizontalScrollBar.Value = (int)Managers.Renderer.Camera.X;
+            mVerticalScrollBar.Value =
+                Math.Min(Math.Max(mVerticalScrollBar.Minimum, (int)Managers.Renderer.Camera.Y), mVerticalScrollBar.Maximum);
+
+            mHorizontalScrollBar.Value =
+                Math.Min(Math.Max(mHorizontalScrollBar.Minimum, (int)Managers.Renderer.Camera.X), mHorizontalScrollBar.Maximum);
         }
 
         public void SetDisplayedArea(int width, int height)
@@ -120,19 +127,31 @@ namespace FlatRedBall.SpecializedXnaControls.Scrolling
                 // now preserve the values:
                 Managers.Renderer.Camera.X = x;
                 Managers.Renderer.Camera.Y = y;
+
+
+
+                var camera = Managers.Renderer.Camera;
+
+                var effectiveAreaHeight = -minimumY + displayedAreaHeight;
+
+                var visibleAreaHeight = xnaControl.Height / camera.Zoom;
+                mVerticalScrollBar.Minimum = minimumY;
+                mVerticalScrollBar.Maximum = (int)(effectiveAreaHeight + visibleAreaHeight);
+                mVerticalScrollBar.LargeChange = (int)visibleAreaHeight;
+
+                var visibleAreaWidth = xnaControl.Width / camera.Zoom;
+
+                var effectiveAreaWidth = -minimumX + displayedAreaWidth;
+
+                mHorizontalScrollBar.Minimum = minimumX; // The minimum value for the scroll bar, which should be 0, since that's the furthest left the scrollbar can go
+
+                // The total amount that the scrollbar can cover. This is the width of the area plus the screen width since we can scroll until the edges 
+                // are at the middle, meaning we can see half a screen width on either side 
+                mHorizontalScrollBar.Maximum = (int)(effectiveAreaWidth + visibleAreaWidth);
+                mHorizontalScrollBar.LargeChange = (int)visibleAreaWidth; // the amount of visible area. It's called LargeChange but it really means how much the scrollbar can see 
             }
 
 
-            mVerticalScrollBar.Minimum = -20;
-            mVerticalScrollBar.Maximum = displayedAreaHeight + 55;
-
-            mHorizontalScrollBar.Minimum = -20;
-            mHorizontalScrollBar.Maximum = displayedAreaWidth + 35;
-
-            float multiplier = 100 / zoomPercentage;
-
-            mHorizontalScrollBar.LargeChange = (int)(mPanel.Width * multiplier);
-            mVerticalScrollBar.LargeChange = (int)(mPanel.Height * multiplier);
         }
 
         

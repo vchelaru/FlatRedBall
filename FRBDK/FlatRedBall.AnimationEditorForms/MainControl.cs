@@ -89,7 +89,8 @@ namespace FlatRedBall.AnimationEditorForms
 
             CreateViewModel();
 
-            mScrollBarControlLogic = new ScrollBarControlLogic(PreviewSplitContainer.Panel1);
+            this.imageRegionSelectionControl1 = new FlatRedBall.SpecializedXnaControls.ImageRegionSelectionControl();
+            mScrollBarControlLogic = new ScrollBarControlLogic(PreviewSplitContainer.Panel1, imageRegionSelectionControl1);
 
             ApplicationEvents.Self.WireframePanning += delegate { mScrollBarControlLogic.UpdateScrollBars(); };
             ApplicationEvents.Self.WireframeTextureChange += ScrollBarHandleTextureChange;
@@ -99,7 +100,6 @@ namespace FlatRedBall.AnimationEditorForms
                 mScrollBarControlLogic.UpdateScrollBars();
             };
 
-            this.imageRegionSelectionControl1 = new FlatRedBall.SpecializedXnaControls.ImageRegionSelectionControl();
             imageRegionSelectionControl1.Click += new EventHandler(HandleImageRegionSelectionControlClick);
             this.PreviewSplitContainer.Panel1.Controls.Add(this.imageRegionSelectionControl1);
 

@@ -27,14 +27,27 @@ namespace FlatRedBall.Forms.Controls
             get => coreTextObject.RawText;
             set
             {
-                coreTextObject.RawText = value;
+                if(value != Text)
+                {
+                    coreTextObject.RawText = value;
+
+                    PushValueToViewModel();
+                }
             }
         }
 
         public IList Items
         {
             get => listBox.Items;
-            set => listBox.Items = value;
+            set
+            {
+                if (value != Items)
+                {
+                    listBox.Items = value;
+
+                    PushValueToViewModel();
+                }
+            }
         }
 
         public Type ListBoxItemGumType

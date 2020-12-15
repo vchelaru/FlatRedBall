@@ -448,17 +448,34 @@ namespace FlatRedBall.SpecializedXnaControls
         {
             if (mCurrentTexture != null)
             {
-                var minX = -Camera.ClientWidth / 2.0f;
-                var maxX = mCurrentTexture.Width - Camera.ClientWidth / 2.0f;
+                if(Camera.CameraCenterOnScreen == CameraCenterOnScreen.TopLeft)
+                {
+                    var minX = -Camera.ClientWidth / 2.0f;
+                    var maxX = mCurrentTexture.Width - Camera.ClientWidth / 2.0f;
 
-                var minY = -Camera.ClientHeight / 2.0f;
-                var maxY = mCurrentTexture.Height - Camera.ClientHeight / 2.0f;
+                    var minY = -Camera.ClientHeight / 2.0f;
+                    var maxY = mCurrentTexture.Height - Camera.ClientHeight / 2.0f;
 
-                Camera.X = Math.Max(minX, Camera.X);
-                Camera.X = Math.Min(maxX, Camera.X);
+                    Camera.X = Math.Max(minX, Camera.X);
+                    Camera.X = Math.Min(maxX, Camera.X);
 
-                Camera.Y = Math.Max(minY, Camera.Y);
-                Camera.Y = Math.Min(maxY, Camera.Y);
+                    Camera.Y = Math.Max(minY, Camera.Y);
+                    Camera.Y = Math.Min(maxY, Camera.Y);
+                }
+                else
+                {
+                    var minX = -Camera.ClientWidth / 2.0f;
+                    var maxX = mCurrentTexture.Width + Camera.ClientWidth / 2.0f;
+
+                    var minY = -Camera.ClientHeight / 2.0f;
+                    var maxY = mCurrentTexture.Height + Camera.ClientHeight / 2.0f;
+
+                    Camera.X = Math.Max(minX, Camera.X);
+                    Camera.X = Math.Min(maxX, Camera.X);
+
+                    Camera.Y = Math.Max(minY, Camera.Y);
+                    Camera.Y = Math.Min(maxY, Camera.Y);
+                }
             }
         }
 

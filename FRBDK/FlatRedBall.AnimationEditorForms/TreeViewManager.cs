@@ -223,6 +223,8 @@ namespace FlatRedBall.AnimationEditorForms
             // Refresh the wireframe before the property grid so the property 
             // grid can get the texture information.
             WireframeManager.Self.RefreshAll();
+
+
             PropertyGridManager.Self.Refresh();
             SelectedState.Self.TakeSnapshot();
 
@@ -236,6 +238,14 @@ namespace FlatRedBall.AnimationEditorForms
             if (lastFrame != SelectedState.Self.SelectedFrame)
             {
                 PreviewManager.Self.ReactToAnimationFrameSelected();
+                if(SelectedState.Self.SelectedFrame != null && WireframeManager.Self.Texture != null)
+                {
+                    var animationFrame = SelectedState.Self.SelectedFrame;
+                    var texture = WireframeManager.Self.Texture;
+                    var camera = WireframeManager.Self.Managers.Renderer.Camera;
+                    camera.X = texture.Width * (animationFrame.LeftCoordinate + animationFrame.RightCoordinate) / 2.0f;
+                    camera.Y = texture.Height * (animationFrame.TopCoordinate + animationFrame.BottomCoordinate) / 2.0f;
+                }
             }
 
 
