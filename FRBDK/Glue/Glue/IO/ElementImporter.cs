@@ -166,7 +166,7 @@ namespace FlatRedBall.Glue.IO
 
             GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
             GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-            ProjectManager.SaveProjects();
+            GlueCommands.Self.ProjectCommands.SaveProjects();
             GluxCommands.Self.SaveGlux();
 
             #endregion

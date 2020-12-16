@@ -180,12 +180,12 @@ namespace FlatRedBall.Glue.SetVariable
             }
             else
             {
-                TaskManager.Self.AddSync(ProjectManager.SaveProjects, "Saving due to variable change");
+                GlueCommands.Self.ProjectCommands.SaveProjects();
             }
 
             mPropertyGrid.Refresh();
 
-            GluxCommands.Self.SaveGluxTask();
+            GluxCommands.Self.SaveGlux();
 
             // Vic says:  This was intented to refresh the variables at one point
             // but this is a messy feature.  I think we should just refresh the entire

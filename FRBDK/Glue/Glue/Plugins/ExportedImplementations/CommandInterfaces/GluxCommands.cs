@@ -103,6 +103,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region Glux Methods
 
+        /// <summary>
+        /// Saves the glux if already in a task. Adds a glulx save task if not.
+        /// </summary>
         public void SaveGlux(bool sendPluginRefreshCommand = true)
         {
             TaskManager.Self.AddOrRunIfTasked(
@@ -111,11 +114,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // asap because otherwise this may get added
                 // after a reload command
                 TaskExecutionPreference.Asap);
-        }
-
-        public void SaveGluxTask()
-        {
-            TaskManager.Self.Add(() => SaveGluxImmediately(sendPluginRefreshCommand: true), "Saving .glux", TaskExecutionPreference.AddOrMoveToEnd);
         }
 
         /// <summary>
@@ -415,7 +413,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
                 TaskManager.Self.Add(() => GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(toReturn), $"Updating file membership for file {toReturn}");
                 PluginManager.ReactToNewFile(toReturn);
-                GluxCommands.Self.SaveGluxTask();
+                GluxCommands.Self.SaveGlux();
                 TaskManager.Self.Add(GluxCommands.Self.ProjectCommands.SaveProjects, "Saving projects after adding file");
 
             }

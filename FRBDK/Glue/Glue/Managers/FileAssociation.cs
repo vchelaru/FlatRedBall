@@ -13,7 +13,7 @@ namespace HQ.Util.Unmanaged
     /// <summary>
     /// Usage:  string executablePath = FileAssociation.GetExecFileAssociatedToExtension(pathExtension, "open");
     /// </summary>
-    public static class FileAssociation
+    public static class WindowsFileAssociation
     {
         /// <summary>
         /// 

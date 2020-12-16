@@ -378,7 +378,7 @@ namespace TileGraphicsPlugin
                 {
                     GlueCommands.Self.GluxCommands.SetPluginRequirement(this, true);
                     GlueCommands.Self.PrintOutput("Added Tiled Plugin as a required plugin because TMX's are used");
-                    GlueCommands.Self.GluxCommands.SaveGluxTask();
+                    GlueCommands.Self.GluxCommands.SaveGlux();
 
                 }
 

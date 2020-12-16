@@ -68,8 +68,8 @@ namespace OfficialPluginsCore.FilesPlugin.Managers
                 customClass.CsvFilesUsingThis.Add(newRfs.Name);
             }
 
-            GlueCommands.Self.GluxCommands.SaveGluxTask();
-            GlueCommands.Self.ProjectCommands.SaveProjectsTask();
+            GlueCommands.Self.GluxCommands.SaveGlux();
+            GlueCommands.Self.ProjectCommands.SaveProjects();
 
             GlueState.Self.CurrentReferencedFileSave = newRfs;
         }

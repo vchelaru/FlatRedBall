@@ -27,7 +27,7 @@ using FlatRedBall.Glue.GuiDisplay;
 using FlatRedBall.Performance.Measurement;
 using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.AutomatedGlue;
-
+using HQ.Util.Unmanaged;
 
 namespace FlatRedBall.Glue.FormHelpers
 {
@@ -868,100 +868,16 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 string text = selectedNode.Text;
 
-
-                
-
                 #region Double-clicked a file
                 string extension = FileManager.GetExtension(text);
-                string sourceExtension = null;
-
-                if (EditorLogic.CurrentReferencedFile != null && !string.IsNullOrEmpty(EditorLogic.CurrentReferencedFile.SourceFile))
-                {
-                    sourceExtension = FileManager.GetExtension(EditorLogic.CurrentReferencedFile.SourceFile);
-                }
+                
                 if (EditorLogic.CurrentReferencedFile != null && !string.IsNullOrEmpty(extension))
                 {
-                    string application = "";
-
-                    ReferencedFileSave currentReferencedFileSave = EditorLogic.CurrentReferencedFile;
-                    string fileName;
-
-                    if (currentReferencedFileSave != null && currentReferencedFileSave.OpensWith != "<DEFAULT>")
-                    {
-                        application = currentReferencedFileSave.OpensWith;
-                    }
-                    else
-                    {
-                        if (!string.IsNullOrEmpty(sourceExtension))
-                        {
-                            application = EditorData.FileAssociationSettings.GetApplicationForExtension(sourceExtension);
-                        }
-                        else
-                        {
-                            application = EditorData.FileAssociationSettings.GetApplicationForExtension(extension);
-                        }
-                    }
-
-                    if (currentReferencedFileSave != null)
-                    {
-                        if (!string.IsNullOrEmpty(currentReferencedFileSave.SourceFile))
-                        {
-                            fileName = "\"" + ProjectManager.MakeAbsolute(ProjectManager.ContentDirectoryRelative + currentReferencedFileSave.SourceFile, true) + "\"";
-                        }
-                        else
-                        {
-                            fileName = "\"" + ProjectManager.MakeAbsolute(ProjectManager.ContentDirectoryRelative + currentReferencedFileSave.Name) + "\"";
-                        }
-                    }
-                    else
-                    {
-                        fileName = "\"" + ProjectManager.MakeAbsolute(text) + "\"";
-                    }
-
-                    if (string.IsNullOrEmpty(application) || application == "<DEFAULT>")
-                    {
-                        try
-                        {
-                            var startInfo = new ProcessStartInfo();
-                            startInfo.FileName = fileName;
-                            startInfo.UseShellExecute = true;
-
-                            System.Diagnostics.Process.Start(startInfo);
-                        }
-                        catch (Exception ex)
-                        {
-                            System.Windows.Forms.MessageBox.Show("Error opening " + fileName + "\nTry navigating to this file and opening it through explorer");
-
-
-                        }
-                    }
-                    else
-                    {
-                        bool applicationFound = true;
-                        try
-                        {
-                            application = FileManager.Standardize(application);
-                        }
-                        catch
-                        {
-                            applicationFound = false;
-                        }
-
-                        if (!System.IO.File.Exists(application) || applicationFound == false)
-                        {
-                            string error = "Could not find the application\n\n" + application;
-
-                            System.Windows.Forms.MessageBox.Show(error);
-                        }
-                        else
-                        {
-                            ProcessManager.OpenProcess(application, fileName);
-                        }
-                    }
+                    HandleFileTreeNodeDoubleClick(text);
                 }
 
                 #endregion
-                
+
                 #region Double-clicked a named object
 
                 else if (selectedNode.IsNamedObjectNode())
@@ -1075,6 +991,109 @@ namespace FlatRedBall.Glue.FormHelpers
                 #endregion
             }
 
+        }
+
+        private static void HandleFileTreeNodeDoubleClick(string text)
+        {
+            string textExtension = FileManager.GetExtension(text);
+            string sourceExtension = null;
+
+            if (EditorLogic.CurrentReferencedFile != null && !string.IsNullOrEmpty(EditorLogic.CurrentReferencedFile.SourceFile))
+            {
+                sourceExtension = FileManager.GetExtension(EditorLogic.CurrentReferencedFile.SourceFile);
+            }
+
+            var effectiveExtension = sourceExtension ?? textExtension;
+
+
+            string applicationSetInGlue = "";
+
+            ReferencedFileSave currentReferencedFileSave = EditorLogic.CurrentReferencedFile;
+            string fileName;
+
+            if (currentReferencedFileSave != null && currentReferencedFileSave.OpensWith != "<DEFAULT>")
+            {
+                applicationSetInGlue = currentReferencedFileSave.OpensWith;
+            }
+            else
+            {
+                applicationSetInGlue = EditorData.FileAssociationSettings.GetApplicationForExtension(effectiveExtension);
+            }
+
+            if (currentReferencedFileSave != null)
+            {
+                if (!string.IsNullOrEmpty(currentReferencedFileSave.SourceFile))
+                {
+                    fileName = 
+                        ProjectManager.MakeAbsolute(ProjectManager.ContentDirectoryRelative + currentReferencedFileSave.SourceFile, true);
+                }
+                else
+                {
+                    fileName = ProjectManager.MakeAbsolute(ProjectManager.ContentDirectoryRelative + currentReferencedFileSave.Name);
+                }
+            }
+            else
+            {
+                fileName = ProjectManager.MakeAbsolute(text);
+            }
+
+            if (string.IsNullOrEmpty(applicationSetInGlue) || applicationSetInGlue == "<DEFAULT>")
+            {
+                try
+                {
+                    var executable = WindowsFileAssociation.GetExecFileAssociatedToExtension(effectiveExtension);
+
+                    if(string.IsNullOrEmpty(executable))
+                    {
+                        var message = $"Windows does not have an association for the extension {effectiveExtension}. You must set the " +
+                            $"program to associate with this extension to open the file. Set the assocaition now?";
+
+                        GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message, OpenProcess);
+                    }
+                    else
+                    {
+                        OpenProcess();
+                    }
+
+                    void OpenProcess()
+                    {
+                        var startInfo = new ProcessStartInfo();
+                        startInfo.FileName = "\"" + fileName + "\"";
+                        startInfo.UseShellExecute = true;
+
+                        System.Diagnostics.Process.Start(startInfo);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.Forms.MessageBox.Show("Error opening " + fileName + "\nTry navigating to this file and opening it through explorer");
+
+
+                }
+            }
+            else
+            {
+                bool applicationFound = true;
+                try
+                {
+                    applicationSetInGlue = FileManager.Standardize(applicationSetInGlue);
+                }
+                catch
+                {
+                    applicationFound = false;
+                }
+
+                if (!System.IO.File.Exists(applicationSetInGlue) || applicationFound == false)
+                {
+                    string error = "Could not find the application\n\n" + applicationSetInGlue;
+
+                    System.Windows.Forms.MessageBox.Show(error);
+                }
+                else
+                {
+                    ProcessManager.OpenProcess(applicationSetInGlue, fileName);
+                }
+            }
         }
 
         #endregion

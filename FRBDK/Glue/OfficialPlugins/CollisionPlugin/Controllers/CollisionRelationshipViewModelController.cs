@@ -464,7 +464,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             if (changedAny)
             {
-                GlueCommands.Self.GluxCommands.SaveGluxTask();
+                GlueCommands.Self.GluxCommands.SaveGlux();
                 GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
             }
         }
@@ -595,7 +595,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                     namedObject.InstanceName = desiredName;
 
                     GlueCommands.Self.RefreshCommands.RefreshUi(element);
-                    GlueCommands.Self.GluxCommands.SaveGluxTask();
+                    GlueCommands.Self.GluxCommands.SaveGlux();
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                 }
             }
@@ -637,7 +637,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             if(didMakeChange)
             {
                 GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
-                GlueCommands.Self.GluxCommands.SaveGluxTask();
+                GlueCommands.Self.GluxCommands.SaveGlux();
             }
 
             return didMakeChange;

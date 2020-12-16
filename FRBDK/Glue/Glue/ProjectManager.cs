@@ -83,6 +83,11 @@ namespace FlatRedBall.Glue
         private static string mGameClass;
 
         static bool mHaveNewProjectsBeenSyncedSinceSave = false;
+        public static bool HaveNewProjectsBeenSyncedSinceSave
+        {
+            get => mHaveNewProjectsBeenSyncedSinceSave;
+            set => mHaveNewProjectsBeenSyncedSinceSave = value;
+        }
 
         static GlueSettingsSave mGlueSettingsSave = new GlueSettingsSave();
 
@@ -185,26 +190,13 @@ namespace FlatRedBall.Glue
 
         public static ProjectBase ProjectBase
         {
-            get { return mProjectBase; }
-            set
-            {
-                mProjectBase = value;
-            }
+            get => mProjectBase; 
+            set => mProjectBase = value;
         }
 
         public static ProjectBase ContentProject
         {
-            get
-            {
-                if (mProjectBase == null)
-                {
-                    return null;
-                }
-                else
-                {
-                    return mProjectBase.ContentProject;
-                }
-            }
+            get => mProjectBase?.ContentProject;
         }
 
         string IVsProjectState.DefaultNamespace
@@ -289,10 +281,7 @@ namespace FlatRedBall.Glue
         }
 
 
-        public static ReadOnlyCollection<ProjectBase> SyncedProjects
-        {
-            get { return mSyncedProjectsReadOnly; }
-        }
+        public static ReadOnlyCollection<ProjectBase> SyncedProjects => mSyncedProjectsReadOnly; 
 
         //Used to prevent recursive references and inheritence
         public static int VerificationId
@@ -538,7 +527,7 @@ namespace FlatRedBall.Glue
 
             if (performSave)
             {
-                SaveProjects();
+                GlueCommands.Self.ProjectCommands.SaveProjects();
             }
         }
         
@@ -562,7 +551,7 @@ namespace FlatRedBall.Glue
 
             if (performSave)
             {
-                SaveProjects();
+                GlueCommands.Self.ProjectCommands.SaveProjects();
             }
         }
         
@@ -604,84 +593,6 @@ namespace FlatRedBall.Glue
                 filesThatCouldBeRemoved.Add(absoluteFactoryNameFile);
             }
         }
-
-
-        [Obsolete("Don't use this! Use GlueCommands")]
-        public static void SaveProjects()
-        {
-            lock (mProjectBase)
-            {
-                bool shouldSync = false;
-                // IsDirty means that the project has items that haven't
-                // been updated to the "evaluated" list, not if it needs to
-                // be saved.
-                //if (mProjectBase != null && mProjectBase.IsDirty)
-                if (mProjectBase != null)
-                {
-                    bool succeeded = true;
-                    try
-                    {
-                        mProjectBase.Save(mProjectBase.FullFileName);
-                    }
-                    catch (UnauthorizedAccessException)
-                    {
-                        MessageBox.Show("Could not save the file because the file is in use");
-                        succeeded = false;
-                    }
-
-                    if (succeeded)
-                    {
-                        shouldSync = true;
-                    }
-                }
-                if (ContentProject != null && ContentProject != mProjectBase)
-                {
-                    ContentProject.Save(ContentProject.FullFileName);
-                    shouldSync = true;
-                }
-
-                //Save projects in case they are dirty
-                foreach (var syncedProject in mSyncedProjects)
-                {
-                    try
-                    {
-                        syncedProject.Save(syncedProject.FullFileName);
-                    }
-                    catch(Exception e)
-                    {
-                        PluginManager.ReceiveError(e.ToString());
-                        syncedProject.IsDirty = true;
-                    }
-                    if (syncedProject.ContentProject != syncedProject)
-                    {
-                        syncedProject.ContentProject.Save(syncedProject.ContentProject.FullFileName);
-                    }
-                }
-
-                //Sync all synced projects
-                if (shouldSync || mHaveNewProjectsBeenSyncedSinceSave)
-                {
-                    var syncedProjects = mSyncedProjects.ToArray();
-                    foreach (var syncedProject in syncedProjects)
-                    {
-                        ProjectSyncer.SyncProjects(mProjectBase, syncedProject, false);
-                    }
-                }
-
-                // It may be that only the synced projects have changed, so we have to save those:
-                foreach (var syncedProject in mSyncedProjects)
-                {
-                    syncedProject.Save(syncedProject.FullFileName);
-                    if(syncedProject != syncedProject.ContentProject)
-                    {
-                        syncedProject.ContentProject.Save(syncedProject.ContentProject.FullFileName);
-                    }
-                }
-
-                mHaveNewProjectsBeenSyncedSinceSave = false;
-            }
-        }
-
 
 
         public static void SortAndUpdateUI(EntitySave entitySave)

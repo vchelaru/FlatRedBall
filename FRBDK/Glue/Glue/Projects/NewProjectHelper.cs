@@ -239,7 +239,7 @@ namespace FlatRedBall.Glue.Projects
                     // I could make it an async call but I want to figure out why it's slow at the core.
                     newProjectBase.SyncTo(ProjectManager.ProjectBase, false);
 
-                    ProjectManager.SaveProjects();
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
                 }
 
             }

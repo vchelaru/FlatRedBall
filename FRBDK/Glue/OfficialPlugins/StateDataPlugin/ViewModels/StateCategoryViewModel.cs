@@ -170,7 +170,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                     // todo - eventually may need to handle variables renaming here
                     GlueCommands.Self.RefreshCommands.RefreshUi(this.category);
                     GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
-                    GlueCommands.Self.GluxCommands.SaveGluxTask();
+                    GlueCommands.Self.GluxCommands.SaveGlux();
                     break;
             }
         }
@@ -208,7 +208,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                     ApplyViewModelVariableToStateAtIndex(variableViewModel.Value, index, stateSave);
 
                     GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
-                    GlueCommands.Self.GluxCommands.SaveGluxTask();
+                    GlueCommands.Self.GluxCommands.SaveGlux();
 
                 }
             }
@@ -394,7 +394,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                     stateSave.Name = selectedViewModel.Name;
 
                     GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
-                    GlueCommands.Self.GluxCommands.SaveGluxTask();
+                    GlueCommands.Self.GluxCommands.SaveGlux();
                 }
                 GlueCommands.Self.RefreshCommands.RefreshUi(this.category);
 
@@ -432,7 +432,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
 
                 GlueCommands.Self.RefreshCommands.RefreshUi(this.category);
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
-                GlueCommands.Self.GluxCommands.SaveGluxTask();
+                GlueCommands.Self.GluxCommands.SaveGlux();
 
                 if(oldIndex > 0)
                 {
@@ -469,7 +469,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                 category.ExcludedVariables.AddRange(this.ExcludedVariables);
 
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
-                GlueCommands.Self.GluxCommands.SaveGluxTask();
+                GlueCommands.Self.GluxCommands.SaveGlux();
                 // I guess this isn't needed because the states in the tree view didn't change
                 //GlueCommands.Self.RefreshCommands.RefreshUi(this.category);
             }

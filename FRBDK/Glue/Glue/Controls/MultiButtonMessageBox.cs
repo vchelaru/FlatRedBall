@@ -9,6 +9,7 @@ using System.Windows.Forms;
 
 namespace FlatRedBall.Glue.Controls
 {
+    [Obsolete("Use MultiButtonMessageBoxWpf")]
     public partial class MultiButtonMessageBox : Form
     {
         #region Fields

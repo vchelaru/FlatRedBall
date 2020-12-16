@@ -103,8 +103,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
                     }
 
-                    GlueCommands.Self.ProjectCommands.SaveProjectsTask();
-                    GlueCommands.Self.GluxCommands.SaveGluxTask();
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
+                    GlueCommands.Self.GluxCommands.SaveGlux();
 
 
                     TreeNode treeNode = GlueState.Self.Find.ElementTreeNode(elementToRename);

@@ -79,7 +79,7 @@ namespace GumPlugin.Managers
                         CodeGeneratorManager.Self.GenerateDerivedGueRuntimes,
                         $"Regenerating Gum derived runtimes because of changed {propertyChanged}");
                 }
-                GlueCommands.Self.GluxCommands.SaveGluxTask();
+                GlueCommands.Self.GluxCommands.SaveGlux();
             }
         }
 
@@ -92,7 +92,7 @@ namespace GumPlugin.Managers
 
                 EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
 
-                GlueCommands.Self.ProjectCommands.SaveProjectsTask();
+                GlueCommands.Self.ProjectCommands.SaveProjects();
             }
         }
 

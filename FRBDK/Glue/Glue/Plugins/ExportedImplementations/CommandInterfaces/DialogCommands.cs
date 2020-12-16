@@ -221,7 +221,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     PluginManager.ReactToNewFile(rfs);
 
-                    GluxCommands.Self.SaveGluxTask();
+                    GluxCommands.Self.SaveGlux();
                 }
 
             }
@@ -433,7 +433,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 MainGlueWindow.Self.PropertyGrid.Refresh();
                 ElementViewWindow.GenerateSelectedElementCode();
-                GluxCommands.Self.SaveGluxTask();
+                GluxCommands.Self.SaveGlux();
             }
 
             return newElement;

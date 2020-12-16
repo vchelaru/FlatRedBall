@@ -129,7 +129,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             PluginManager.ReactToNewScreenCreated(screenSave);
 
 
-            ProjectManager.SaveProjects();
+            GlueCommands.Self.ProjectCommands.SaveProjects();
 
             GluxCommands.Self.SaveGlux();
         }
@@ -240,7 +240,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(entitySave);
 
-            ProjectManager.SaveProjects();
+            GlueCommands.Self.ProjectCommands.SaveProjects();
 
             GluxCommands.Self.SaveGlux();
         }
@@ -353,7 +353,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                         PluginManager.ReactToNewFile(referencedFileSaveToReturn);
                         GluxCommands.Self.SaveGlux();
-                        ProjectManager.SaveProjects();
+                        GlueCommands.Self.ProjectCommands.SaveProjects();
                         UnreferencedFilesManager.Self.RefreshUnreferencedFiles(false);
 
                         string error;

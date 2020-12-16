@@ -71,7 +71,7 @@ namespace RacingPlugin.Controllers
                 {
                     GlueCommands.Self.GluxCommands.SetPluginRequirement(MainPlugin, true);
                     GlueCommands.Self.PrintOutput("Added Racing Plugin as a required plugin because the entity was marked as a racing entity");
-                    GlueCommands.Self.GluxCommands.SaveGluxTask();
+                    GlueCommands.Self.GluxCommands.SaveGlux();
                 }
             }
 

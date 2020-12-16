@@ -187,7 +187,7 @@ namespace FlatRedBall.Glue.VSHelpers
 
             if(GlueState.Self.CurrentMainProject != null && removed)
             {
-                ProjectManager.SaveProjects();
+                GlueCommands.Self.ProjectCommands.SaveProjects();
             }
 
         }

@@ -437,7 +437,7 @@ namespace FlatRedBall.Glue.Controls
 
             if(didChange)
             {
-                GlueCommands.Self.GluxCommands.SaveGluxTask();
+                GlueCommands.Self.GluxCommands.SaveGlux();
             }
         }
 

@@ -164,7 +164,7 @@ namespace GumPlugin.Controls
             // --rebuildfonts "C:\Users\Victor\Documents\TestProject2\TestProject2\Content\GumProject\GumProject.gumx"
             var gumFileName = AppState.Self.GumProjectSave.FullFileName;
 
-            var executable = FileAssociation.GetExecFileAssociatedToExtension("gumx");
+            var executable = WindowsFileAssociation.GetExecFileAssociatedToExtension("gumx");
 
             if(string.IsNullOrEmpty(executable))
             {

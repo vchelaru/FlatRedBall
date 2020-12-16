@@ -337,7 +337,7 @@ namespace GumPlugin.Managers
 
                 if (wasAnythingAdded)
                 {
-                    GlueCommands.Self.ProjectCommands.SaveProjectsTask();
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
                 }
             }
 
@@ -378,7 +378,7 @@ namespace GumPlugin.Managers
                     GlueState.Self.CurrentMainProject, customGumRuntimeSaveLocation);
                 if (wasAnythingAdded)
                 {
-                    GlueCommands.Self.ProjectCommands.SaveProjectsTask();
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
                 }
             }
             #endregion
@@ -435,7 +435,7 @@ namespace GumPlugin.Managers
 
                 if(wasAnythingAdded)
                 {
-                    GlueCommands.Self.ProjectCommands.SaveProjectsTask();
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
                 }
             }
 
@@ -469,7 +469,7 @@ namespace GumPlugin.Managers
                     GlueState.Self.CurrentMainProject, customFormsSaveLocation);
                 if (wasAnythingAdded)
                 {
-                    GlueCommands.Self.ProjectCommands.SaveProjectsTask();
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
                 }
             }
 
@@ -618,7 +618,7 @@ namespace GumPlugin.Managers
 
                 if(didAdd)
                 {
-                    GlueCommands.Self.ProjectCommands.SaveProjectsTask();
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
                 }
             }
         }

@@ -194,10 +194,10 @@ namespace FlatRedBall.Glue.IO
 
                 if (shouldSaveGlux)
                 {
-                    GluxCommands.Self.SaveGluxTask();
+                    GluxCommands.Self.SaveGlux();
                 }
 
-                GlueCommands.Self.ProjectCommands.SaveProjectsTask();
+                GlueCommands.Self.ProjectCommands.SaveProjects();
 
                 FileWatchManager.PerformFlushing = true;
                 FileWatchManager.FlushAndClearIgnores();
@@ -884,7 +884,7 @@ namespace FlatRedBall.Glue.IO
 
             if (shouldSave)
             {
-                ProjectManager.SaveProjects();
+                GlueCommands.Self.ProjectCommands.SaveProjects();
             }
 
         }

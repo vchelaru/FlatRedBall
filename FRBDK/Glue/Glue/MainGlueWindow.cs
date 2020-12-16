@@ -655,7 +655,7 @@ namespace Glue
             {
                 if (ProjectManager.ProjectBase != null && !string.IsNullOrEmpty(ProjectManager.ProjectBase.FullFileName))
                 {
-                    ProjectManager.SaveProjects();
+                    GlueCommands.Self.ProjectCommands.SaveProjectsImmediately();
                     Self.SaveSettings();
                 }
             }
@@ -976,7 +976,7 @@ namespace Glue
 
             ccw.ShowDialog(this);
 
-            ProjectManager.SaveProjects();
+            GlueCommands.Self.ProjectCommands.SaveProjects();
             GluxCommands.Self.SaveGlux();
         }
 

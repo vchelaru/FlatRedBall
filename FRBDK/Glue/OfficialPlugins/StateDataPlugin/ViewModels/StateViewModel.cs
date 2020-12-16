@@ -216,7 +216,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                         BackingData.SetValue(viewModel.VariableName, viewModel.Value);
                     }
                     GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
-                    GlueCommands.Self.GluxCommands.SaveGluxTask();
+                    GlueCommands.Self.GluxCommands.SaveGlux();
                     break;
             }
         }

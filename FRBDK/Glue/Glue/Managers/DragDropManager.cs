@@ -208,7 +208,7 @@ namespace FlatRedBall.Glue.Managers
                     {
                         GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
                     }
-                    ProjectManager.SaveProjects();
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
                     GluxCommands.Self.SaveGlux();
                 }
             }
@@ -780,7 +780,7 @@ namespace FlatRedBall.Glue.Managers
 
                 GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
-                ProjectManager.SaveProjects();
+                GlueCommands.Self.ProjectCommands.SaveProjects();
                 GluxCommands.Self.SaveGlux();
             }
         }
@@ -1191,7 +1191,7 @@ namespace FlatRedBall.Glue.Managers
                         }
                     }
 
-                    GlueCommands.Self.GluxCommands.SaveGluxTask();
+                    GlueCommands.Self.GluxCommands.SaveGlux();
                     GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
                 }
             }

@@ -285,6 +285,7 @@
     <Folder Include="Embedded\LibraryFiles\ToolsUtilities\" />
     <Folder Include="Embedded\LibraryFiles\RenderingLibrary\" />
     <Folder Include="Embedded\StateInterpolation\" />
+    <Folder Include="FileAssociations\" />
   </ItemGroup>
 
 

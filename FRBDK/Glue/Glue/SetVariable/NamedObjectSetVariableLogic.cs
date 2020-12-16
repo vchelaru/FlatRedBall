@@ -830,7 +830,7 @@ namespace FlatRedBall.Glue.SetVariable
                 }
                 if(changedDerived)
                 {
-                    GlueCommands.Self.GluxCommands.SaveGluxTask();
+                    GlueCommands.Self.GluxCommands.SaveGlux();
                 }
             }
         }

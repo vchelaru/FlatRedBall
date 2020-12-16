@@ -10,8 +10,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
     public interface IProjectCommands
     {
+        /// <summary>
+        /// Saves a project immediately if run from an existing task. Adds a task if not.
+        /// </summary>
         void SaveProjects();
-        void SaveProjectsTask();
+
+        void SaveProjectsImmediately();
+
 
         /// <summary>
         /// 

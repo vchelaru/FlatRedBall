@@ -61,7 +61,7 @@ namespace OfficialPlugins.VariableDisplay
             // Get this on the UI thread, but use it in the async call below
             var currentElement = GlueState.Self.CurrentElement;
 
-            GlueCommands.Self.GluxCommands.SaveGluxTask();
+            GlueCommands.Self.GluxCommands.SaveGlux();
 
             if(currentElement != null)
             {

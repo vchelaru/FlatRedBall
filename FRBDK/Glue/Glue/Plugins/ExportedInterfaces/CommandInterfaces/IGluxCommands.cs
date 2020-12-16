@@ -20,12 +20,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         string StartUpScreenName { get; set; }
 
-        void SaveGlux(bool sendPluginRefreshCommand = true);
-
         /// <summary>
-        /// Adds a task to save the project with TaskExecutionPreference.AddOrMoveToEnd
+        /// Saves the glue project immediately if in a task, and adds a task if not
         /// </summary>
-        void SaveGluxTask();
+        void SaveGlux(bool sendPluginRefreshCommand = true);
 
         /// <summary>
         /// Adds a new file to the Glue project in global content. This method updates the in-memory GlueProjectSave,

@@ -332,7 +332,7 @@ namespace FlatRedBall.Glue.Parsing
             bool wasEntityFactoryAdded = GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(ProjectManager.ProjectBase, iEntityFactoryFileName, false, false);
             if (wasPoolListAdded || wasEntityFactoryAdded)
             {
-                Managers.TaskManager.Self.AddAsyncTask( ProjectManager.SaveProjects, "Saving Project because of performance file adds");
+                GlueCommands.Self.ProjectCommands.SaveProjects();
             }
 
         }

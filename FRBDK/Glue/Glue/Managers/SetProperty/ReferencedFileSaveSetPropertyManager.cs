@@ -310,7 +310,17 @@ namespace FlatRedBall.Glue.SetVariable
         {
             string oldDirectory = FileManager.GetDirectory(oldName);
             string newDirectory = FileManager.GetDirectory(newName);
-            string newFileNameAbsolute = ProjectManager.MakeAbsolute(newName);
+
+            // it's a RFS so it's gotta be content
+            // Note - MakeAbsolute will do its best
+            // to determine if a file is content. However,
+            // a rename may change the extension to something 
+            // unrecognizable. In this case we still want to have 
+            // it be content
+            bool forceAsContent = true;
+            var oldFilePath = new FilePath(ProjectManager.MakeAbsolute(oldName, forceAsContent));
+            var newFilePath = new FilePath(ProjectManager.MakeAbsolute(newName, forceAsContent));
+
             string instanceName = FileManager.RemovePath(FileManager.RemoveExtension(newName));
             string whyIsntValid;
             if (oldDirectory != newDirectory)
@@ -332,11 +342,14 @@ namespace FlatRedBall.Glue.SetVariable
                 bool shouldMove = true;
                 bool shouldContinue = true;
 
-                CheckForExistingFileOfSameName(oldName, rfs, newFileNameAbsolute, ref shouldMove, ref shouldContinue);
+                CheckForExistingFileOfSameName(oldName, rfs, newFilePath, ref shouldMove, ref shouldContinue);
 
                 if (shouldContinue)
                 {
-                    MoveFileIfNecessary(oldName, newName, shouldMove);
+                    if(shouldMove && oldFilePath.Exists())
+                    {
+                        File.Move(oldFilePath.FullPath, newFilePath.FullPath);
+                    }
 
                     string rfsType = rfs.RuntimeType;
                     if (rfsType != null && rfsType.Contains("."))
@@ -354,7 +367,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                     GluxCommands.Self.SaveGlux();
 
-                    ProjectManager.SaveProjects();
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
                 }
             }
         }
@@ -452,7 +465,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             if (ProjectManager.ProjectBase.RemoveItem(whatToRemove) && saveProject)
             {
-                ProjectManager.SaveProjects();
+                GlueCommands.Self.ProjectCommands.SaveProjects();
             }
             string fileToDelete = whatToRemove;
             fileToDelete = ProjectManager.MakeAbsolute(fileToDelete);
@@ -519,31 +532,21 @@ namespace FlatRedBall.Glue.SetVariable
             }
         }
 
-        private static void MoveFileIfNecessary(string oldName, string newName, bool shouldMove)
+        private static void CheckForExistingFileOfSameName(string oldName, ReferencedFileSave fileSave, FilePath newFilePath, ref bool shouldMove, ref bool shouldContinue)
         {
-            if (shouldMove && System.IO.File.Exists(ProjectManager.MakeAbsolute(oldName)))
-            {
-                File.Move(
-                    ProjectManager.MakeAbsolute(oldName),
-                    ProjectManager.MakeAbsolute(newName));
-            }
-        }
-
-        private static void CheckForExistingFileOfSameName(string oldName, ReferencedFileSave fileSave, string newFileNameAbsolute, ref bool shouldMove, ref bool shouldContinue)
-        {
-            if (FileManager.FileExists(newFileNameAbsolute))
+            if (newFilePath.Exists())
             {
                 string message = "The new file name already exists.  What would you like to do?";
 
-                MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
+                var mbmb = new MultiButtonMessageBoxWpf();
 
                 mbmb.MessageText = message;
 
                 mbmb.AddButton("Use existing file", DialogResult.Yes);
                 mbmb.AddButton("Cancel the rename", DialogResult.Cancel);
 
-                DialogResult result = mbmb.ShowDialog(MainGlueWindow.Self);
-
+                mbmb.ShowDialog();
+                var result = (DialogResult)mbmb.ClickedResult;
 
                 if (result == DialogResult.Cancel)
                 {

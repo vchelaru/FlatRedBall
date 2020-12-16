@@ -211,7 +211,7 @@ namespace FlatRedBall.Glue.IO
 
                     if (shouldSave)
                     {
-                        GlueCommands.Self.ProjectCommands.SaveProjectsTask();
+                        GlueCommands.Self.ProjectCommands.SaveProjects();
                     }
                 }
 
@@ -544,7 +544,7 @@ namespace FlatRedBall.Glue.IO
             if (shouldSave)
             {
                 GluxCommands.Self.SaveGlux();
-                ProjectManager.SaveProjects();
+                GlueCommands.Self.ProjectCommands.SaveProjects();
             }
 
 

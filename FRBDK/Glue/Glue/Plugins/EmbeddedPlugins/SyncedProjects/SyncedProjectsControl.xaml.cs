@@ -66,8 +66,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                 }
 
                 GluxCommands.Self.SaveGlux();
-
-                ProjectManager.SaveProjects();
+                GlueCommands.Self.ProjectCommands.SaveProjects();
 
             }
         }
@@ -81,9 +80,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                 ViewModel.Refresh();
 
                 GluxCommands.Self.SaveGlux();
-
-                ProjectManager.SaveProjects();
-
+                GlueCommands.Self.ProjectCommands.SaveProjects();
             }
         }
 

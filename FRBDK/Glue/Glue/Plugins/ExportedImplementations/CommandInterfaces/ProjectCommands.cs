@@ -16,23 +16,98 @@ using FlatRedBall.Glue.Errors;
 using System.Linq;
 using FlatRedBall.Glue.IO;
 using Microsoft.Build.Evaluation;
+using FlatRedBall.Glue.VSHelpers;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
     class ProjectCommands : IProjectCommands
     {
+        /// <summary>
+        /// Saves the projects immediately if run from a task, or adds the save projects command to a task if not
+        /// </summary>
         public void SaveProjects()
         {
             TaskManager.Self.AddOrRunIfTasked(
-                ProjectManager.SaveProjects,
+                SaveProjectsImmediately,
                 nameof(SaveProjects),
                 TaskExecutionPreference.AddOrMoveToEnd);
         }
-
-        public void SaveProjectsTask()
+        
+        public void SaveProjectsImmediately()
         {
-            TaskManager.Self.Add(SaveProjects, nameof(SaveProjects), TaskExecutionPreference.AddOrMoveToEnd); ;
+            lock (ProjectManager.ProjectBase)
+            {
+                bool shouldSync = false;
+                // IsDirty means that the project has items that haven't
+                // been updated to the "evaluated" list, not if it needs to
+                // be saved.
+                //if (mProjectBase != null && mProjectBase.IsDirty)
+                if (ProjectManager.ProjectBase != null)
+                {
+                    bool succeeded = true;
+                    try
+                    {
+                        ProjectManager.ProjectBase.Save(ProjectManager.ProjectBase.FullFileName);
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        MessageBox.Show("Could not save the file because the file is in use");
+                        succeeded = false;
+                    }
+
+                    if (succeeded)
+                    {
+                        shouldSync = true;
+                    }
+                }
+                if (ProjectManager.ContentProject != null && ProjectManager.ContentProject != ProjectManager.ProjectBase)
+                {
+                    ProjectManager.ContentProject.Save(ProjectManager.ContentProject.FullFileName);
+                    shouldSync = true;
+                }
+
+                //Save projects in case they are dirty
+                foreach (var syncedProject in ProjectManager.SyncedProjects)
+                {
+                    try
+                    {
+                        syncedProject.Save(syncedProject.FullFileName);
+                    }
+                    catch (Exception e)
+                    {
+                        PluginManager.ReceiveError(e.ToString());
+                        syncedProject.IsDirty = true;
+                    }
+                    if (syncedProject.ContentProject != syncedProject)
+                    {
+                        syncedProject.ContentProject.Save(syncedProject.ContentProject.FullFileName);
+                    }
+                }
+
+                //Sync all synced projects
+                if (shouldSync || ProjectManager.HaveNewProjectsBeenSyncedSinceSave)
+                {
+                    var syncedProjects = ProjectManager.SyncedProjects.ToArray();
+                    foreach (var syncedProject in syncedProjects)
+                    {
+                        ProjectSyncer.SyncProjects(ProjectManager.ProjectBase, syncedProject, false);
+                    }
+                }
+
+                // It may be that only the synced projects have changed, so we have to save those:
+                foreach (var syncedProject in ProjectManager.SyncedProjects)
+                {
+                    syncedProject.Save(syncedProject.FullFileName);
+                    if (syncedProject != syncedProject.ContentProject)
+                    {
+                        syncedProject.ContentProject.Save(syncedProject.ContentProject.FullFileName);
+                    }
+                }
+
+                ProjectManager.HaveNewProjectsBeenSyncedSinceSave = false;
+            }
         }
+
 
         public void CreateAndAddPartialFile(IElement element, string partialName, string code)
         {
@@ -52,7 +127,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(ProjectManager.ProjectBase, relativeFileName, false, false, null);
             if (saveProjects)
             {
-                ProjectManager.SaveProjects();
+                SaveProjects();
             }
         }
 

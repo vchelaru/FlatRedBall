@@ -636,7 +636,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 true);
 
             GlueCommands.Self.ProjectCommands.SaveProjects();
-            GlueCommands.Self.GluxCommands.SaveGluxTask();
+            GlueCommands.Self.GluxCommands.SaveGlux();
 
         }
 
@@ -648,7 +648,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
 
             GlueCommands.Self.ProjectCommands.SaveProjects();
-            GlueCommands.Self.GluxCommands.SaveGluxTask();
+            GlueCommands.Self.GluxCommands.SaveGlux();
         }
 
         static void OnRefreshTreeNodesClick(object sender, EventArgs e)
@@ -718,7 +718,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
 
-            GluxCommands.Self.SaveGluxTask();
+            GluxCommands.Self.SaveGlux();
 
             EditorLogic.CurrentEventResponseSave = eventResponseSave;
         }
@@ -793,7 +793,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 ElementViewWindow.GenerateSelectedElementCode();
 
-                GluxCommands.Self.SaveGluxTask();
+                GluxCommands.Self.SaveGlux();
             }
         }
 
@@ -842,7 +842,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     GlueCommands.Self.TreeNodeCommands.SelectTreeNode(newState);
 
-                    GluxCommands.Self.SaveGluxTask();
+                    GluxCommands.Self.SaveGlux();
                     GlueCommands.Self.ProjectCommands.SaveProjects();
                 }
             }
@@ -878,8 +878,8 @@ namespace FlatRedBall.Glue.FormHelpers
                     EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
                     ElementViewWindow.GenerateSelectedElementCode();
 
-                    GluxCommands.Self.SaveGluxTask();
-                    ProjectManager.SaveProjects();
+                    GluxCommands.Self.SaveGlux();
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
                 }
             }
         }
@@ -983,8 +983,8 @@ namespace FlatRedBall.Glue.FormHelpers
 
             GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
-            ProjectManager.SaveProjects();
-            GluxCommands.Self.SaveGluxTask();
+            GlueCommands.Self.ProjectCommands.SaveProjects();
+            GluxCommands.Self.SaveGlux();
         }
 
         private static void DuplicateCurrentStateSave()
@@ -1025,8 +1025,8 @@ namespace FlatRedBall.Glue.FormHelpers
 
             ElementViewWindow.UpdateCurrentObjectReferencedTreeNodes();
             CodeWriter.GenerateCode(EditorLogic.CurrentElement);
-            ProjectManager.SaveProjects();
-            GluxCommands.Self.SaveGluxTask();
+            GlueCommands.Self.ProjectCommands.SaveProjects();
+            GluxCommands.Self.SaveGlux();
 
         }
 
@@ -1160,10 +1160,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                             PluginManager.ReactToStateRemoved(GlueState.Self.CurrentElement, name);
 
-                            
-
-
-                            GluxCommands.Self.SaveGluxTask();
+                            GluxCommands.Self.SaveGlux();
                         }
 
                         #endregion
@@ -1176,7 +1173,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                             EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
 
-                            GluxCommands.Self.SaveGluxTask();
+                            GluxCommands.Self.SaveGlux();
                         }
 
                         #endregion
@@ -1346,8 +1343,8 @@ namespace FlatRedBall.Glue.FormHelpers
                             }
 
 
-                            GluxCommands.Self.ProjectCommands.SaveProjectsTask();
-                            GluxCommands.Self.SaveGluxTask();
+                            GluxCommands.Self.ProjectCommands.SaveProjects();
+                            GluxCommands.Self.SaveGlux();
                         }
                     }
                 }
@@ -1469,9 +1466,9 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 PluginManager.ReactToEntityRemoved(entityToRemove, filesThatCouldBeRemoved);
 
-                ProjectManager.SaveProjects();
+                GlueCommands.Self.ProjectCommands.SaveProjects();
 
-                GluxCommands.Self.SaveGluxTask();
+                GluxCommands.Self.SaveGlux();
             }
         }
 
@@ -1559,8 +1556,8 @@ namespace FlatRedBall.Glue.FormHelpers
                 ProjectManager.RemoveCodeFilesForElement(filesThatCouldBeRemoved, element);
 
 
-                ProjectManager.SaveProjects();
-                GluxCommands.Self.SaveGluxTask();
+                GlueCommands.Self.ProjectCommands.SaveProjects();
+                GluxCommands.Self.SaveGlux();
             }
         }
 
@@ -1918,8 +1915,8 @@ namespace FlatRedBall.Glue.FormHelpers
                     GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
                     GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
                     
-                    GluxCommands.Self.SaveGluxTask();
-                    ProjectManager.SaveProjects();
+                    GluxCommands.Self.SaveGlux(); 
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
 
                 }
             }
@@ -1993,8 +1990,8 @@ namespace FlatRedBall.Glue.FormHelpers
                 {
                     CsvCodeGenerator.GenerateAndSaveDataClass(rfs, rfs.CsvDelimiter);
                     GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
-                    ProjectManager.SaveProjects();
-                    GluxCommands.Self.SaveGluxTask();
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
+                    GluxCommands.Self.SaveGlux();
                 }
 
             }
@@ -2063,7 +2060,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if(save)
             {
-                GluxCommands.Self.SaveGluxTask();
+                GluxCommands.Self.SaveGlux();
             }
 
             return newVariable;
@@ -2255,7 +2252,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 ElementViewWindow.SelectedNode = namedObjectTreeNode;
             }
 
-            GluxCommands.Self.SaveGluxTask();
+            GluxCommands.Self.SaveGlux();
         }
 
         public static void SetExternallyBuiltFileIfHigherThanCurrent(string directoryOfFile, bool performSave)
@@ -2283,7 +2280,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 if (performSave)
                 {
-                    GluxCommands.Self.SaveGluxTask();
+                    GluxCommands.Self.SaveGlux();
                 }
             }
         }
@@ -2404,7 +2401,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 GlueCommands.Self.GenerateCodeCommands.GenerateStartupScreenCode();
 
-                GluxCommands.Self.SaveGluxTask();
+                GluxCommands.Self.SaveGlux();
             }
         }
 

@@ -170,15 +170,15 @@ namespace FlatRedBall.Glue.Controls
             CameraSetupCodeGenerator.GenerateCallInGame1(ProjectManager.GameClassFileName, whetherToCall);
 
             GluxCommands.Self.SaveGlux();
-			ProjectManager.SaveProjects();
-		}
+            GlueCommands.Self.ProjectCommands.SaveProjects();
+        }
 
         //private void TextChanged(object sender, EventArgs e)
         //{
 
         //}
 
-		private void cbSetOrthResolution_CheckedChanged(object sender, EventArgs e)
+        private void cbSetOrthResolution_CheckedChanged(object sender, EventArgs e)
         {
             tbOrthWidth.Enabled = cbSetOrthResolution.Checked;
             tbOrthHeight.Enabled = cbSetOrthResolution.Checked;

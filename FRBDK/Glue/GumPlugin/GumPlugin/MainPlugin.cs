@@ -577,7 +577,7 @@ namespace GumPlugin
                     if(this.propertiesManager.IsReactingToProperyChanges)
                     {
                         EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
-                        GlueCommands.Self.ProjectCommands.SaveProjectsTask();
+                        GlueCommands.Self.ProjectCommands.SaveProjects();
                     }
                 }
 
@@ -650,7 +650,7 @@ namespace GumPlugin
                     },
                     "Adding Gum referenced files to project");
 
-                GlueCommands.Self.GluxCommands.SaveGluxTask();
+                GlueCommands.Self.GluxCommands.SaveGlux();
 
                 GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
                     "Would you like to mark the Gum plugin as a required plugin for this project? " +
@@ -671,7 +671,7 @@ namespace GumPlugin
 
             if(changed)
             {
-                GlueCommands.Self.GluxCommands.SaveGluxTask();
+                GlueCommands.Self.GluxCommands.SaveGlux();
              }
         }
 
@@ -714,7 +714,7 @@ namespace GumPlugin
                     UpdateMenuItemVisibility();
 
                     // the UpdatecodeInProjectPresence may add new files, so save:
-                    GlueCommands.Self.ProjectCommands.SaveProjectsTask();
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
 
                 }, "Gum plugin reacting to glux load");
             }

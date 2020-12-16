@@ -413,7 +413,7 @@ namespace FlatRedBallAddOns.Entities
             // project. This is a last chance to add it if necessary:
             if(GlueCommands.Self.ProjectCommands.TryAddCodeFileToProject(GetAbsoluteGeneratedCodeFileFor(element)))
             {
-                GlueCommands.Self.ProjectCommands.SaveProjectsTask();
+                GlueCommands.Self.ProjectCommands.SaveProjects();
             }
         }
 
