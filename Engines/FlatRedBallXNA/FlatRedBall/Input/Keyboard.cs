@@ -170,7 +170,7 @@ namespace FlatRedBall.Input
         public void ControlPositionedObject(PositionedObject positionedObject)
         {
             // Use the default velocity for controlling positioned objects.
-            ControlPositionedObject(positionedObject, 15);
+            ControlPositionedObject(positionedObject, 100);
         }
 
 

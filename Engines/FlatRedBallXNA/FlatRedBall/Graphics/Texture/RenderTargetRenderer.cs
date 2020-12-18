@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace FlatRedBall.Graphics
+namespace FlatRedBall.Graphics.Texture
 {
     public class RenderTargetRenderer
     {
@@ -49,8 +49,7 @@ namespace FlatRedBall.Graphics
             mHeight = height;
 
             var device = FlatRedBallServices.GraphicsDevice;
-            mRenderTarget = new RenderTarget2D(device, mWidth, mHeight,
-                generateMipMaps, device.DisplayMode.Format, DepthFormat.Depth24);
+            mRenderTarget = new RenderTarget2D(device, mWidth, mHeight);
 
             Camera = new Camera(null, mWidth, mHeight);
             Camera.UsePixelCoordinates();

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace FlatRedBall.Graphics
+namespace FlatRedBall.Graphics.Texture
 {
     public class RenderTargetSprite : Sprite
     {
@@ -23,6 +23,8 @@ namespace FlatRedBall.Graphics
         public RenderTargetSprite(string contentManagerName, string spriteName)
         {
             mContentManagerName = contentManagerName;
+
+            this.Name = spriteName;
 
             mRenderer = new RenderTargetRenderer(Camera.Main.DestinationRectangle.Width,
                 Camera.Main.DestinationRectangle.Height);
