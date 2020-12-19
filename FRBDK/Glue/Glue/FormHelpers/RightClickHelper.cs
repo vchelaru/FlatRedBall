@@ -2094,7 +2094,8 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             object objectToRemove;
             IList listToRemoveFrom;
-            GetObjectAndListForMoving(out objectToRemove, out listToRemoveFrom);
+            IList listForIndexing;
+            GetObjectAndListForMoving(out objectToRemove, out listToRemoveFrom, out listForIndexing);
             if (listToRemoveFrom != null)
             {
                 int index = listToRemoveFrom.IndexOf(objectToRemove);
@@ -2135,11 +2136,24 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             object objectToRemove;
             IList listToRemoveFrom;
-            GetObjectAndListForMoving(out objectToRemove, out listToRemoveFrom);
+            IList listForIndexing;
+            GetObjectAndListForMoving(out objectToRemove, out listToRemoveFrom, out listForIndexing);
             if (listToRemoveFrom != null)
             {
                 int index = listToRemoveFrom.IndexOf(objectToRemove);
-                int newIndex = index + direction;
+                
+                var oldIndexInListForIndexing = listForIndexing.IndexOf(objectToRemove);
+                var newIndexInListForIndexing = oldIndexInListForIndexing + direction;
+
+                object objectToMoveBeforeOrAfter = objectToRemove;
+                if(newIndexInListForIndexing >= 0 && newIndexInListForIndexing < listForIndexing.Count)
+                {
+                    objectToMoveBeforeOrAfter = listForIndexing[newIndexInListForIndexing];
+                }
+
+                //int newIndex = index + direction;
+                int newIndex = listToRemoveFrom .IndexOf(objectToMoveBeforeOrAfter);
+
                 if (newIndex >= 0 && newIndex < listToRemoveFrom.Count)
                 {
                     listToRemoveFrom.Remove(objectToRemove);
@@ -2165,7 +2179,8 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             object objectToRemove;
             IList listToRemoveFrom;
-            GetObjectAndListForMoving(out objectToRemove, out listToRemoveFrom);
+            IList throwaway;
+            GetObjectAndListForMoving(out objectToRemove, out listToRemoveFrom, out throwaway);
             if (listToRemoveFrom != null)
             {
 
@@ -2182,20 +2197,24 @@ namespace FlatRedBall.Glue.FormHelpers
             return false;
         }
 
-        private static void GetObjectAndListForMoving(out object objectToRemove, out IList listToRemoveFrom)
+        private static void GetObjectAndListForMoving(out object objectToMove, 
+            out IList listToRemoveFrom, out IList listForIndexing)
         {
-            objectToRemove = null;
+            objectToMove = null;
             listToRemoveFrom = null;
-
+            listForIndexing = null;
             if (EditorLogic.CurrentCustomVariable != null)
             {
-                objectToRemove = EditorLogic.CurrentCustomVariable;
+                objectToMove = EditorLogic.CurrentCustomVariable;
                 listToRemoveFrom = GlueState.Self.CurrentElement.CustomVariables;
+                listForIndexing = listToRemoveFrom;
             }
 
             else if (GlueState.Self.CurrentNamedObjectSave != null)
             {
-                objectToRemove = GlueState.Self.CurrentNamedObjectSave;
+                var currentNamedObject = GlueState.Self.CurrentNamedObjectSave;
+
+                objectToMove = currentNamedObject;
 
                 NamedObjectSave container = NamedObjectContainerHelper.GetNamedObjectThatIsContainerFor(
                     GlueState.Self.CurrentElement, GlueState.Self.CurrentNamedObjectSave);
@@ -2203,10 +2222,24 @@ namespace FlatRedBall.Glue.FormHelpers
                 if (container != null)
                 {
                     listToRemoveFrom = container.ContainedObjects;
+                    listForIndexing = listToRemoveFrom;
+                }
+                else if(currentNamedObject.IsLayer)
+                {
+                    listToRemoveFrom = GlueState.Self.CurrentElement.NamedObjects;
+                    listForIndexing = GlueState.Self.CurrentElement.NamedObjects.Where(item => item.IsLayer).ToList();
+                }
+                else if(currentNamedObject.IsCollisionRelationship())
+                {
+                    listToRemoveFrom = GlueState.Self.CurrentElement.NamedObjects;
+                    listForIndexing = GlueState.Self.CurrentElement.NamedObjects.Where(item => item.IsCollisionRelationship()).ToList();
                 }
                 else
                 {
                     listToRemoveFrom = GlueState.Self.CurrentElement.NamedObjects;
+                    listForIndexing = GlueState.Self.CurrentElement.NamedObjects
+                        .Where(item => item.IsLayer == false && item.IsCollisionRelationship() == false)
+                        .ToList();
                 }
             }
         }
