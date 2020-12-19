@@ -26,6 +26,7 @@ using FlatRedBall.Glue.Errors;
 using GlueSaveClasses;
 using System.Text;
 using FlatRedBall.Glue.Events;
+using FlatRedBall.Glue.Plugins.Interfaces;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -302,8 +303,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
 
 
-        public ReferencedFileSave AddSingleFileTo(string fileName, string rfsName, string extraCommandLineArguments,
-            BuildToolAssociation buildToolAssociation, bool isBuiltFile, object options, IElement sourceElement, string directoryOfTreeNode)
+        public ReferencedFileSave AddSingleFileTo(string fileName, string rfsName, 
+            string extraCommandLineArguments,
+            BuildToolAssociation buildToolAssociation, bool isBuiltFile, 
+            object options, IElement sourceElement, string directoryOfTreeNode,
+            bool selectFileAfterCreation = true 
+            )
         {
             ReferencedFileSave toReturn = null;
 
@@ -432,16 +437,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 ApplyOptions(toReturn, options);
 
-                TaskManager.Self.AddSync( () =>
-                    TaskManager.Self.OnUiThread( () => 
-                        GlueState.Self.CurrentReferencedFileSave = toReturn), "Select new file");
+                if(selectFileAfterCreation)
+                {
+                    TaskManager.Self.Add( () =>
+                        TaskManager.Self.OnUiThread( () => 
+                            GlueState.Self.CurrentReferencedFileSave = toReturn), "Select new file");
+                }
             }
 
             return toReturn;
         }
 
 
-        public ReferencedFileSave CreateReferencedFileSaveForExistingFile(IElement containerForFile, string directoryInsideContainer, string absoluteFileName,
+        private ReferencedFileSave CreateReferencedFileSaveForExistingFile(IElement containerForFile, string directoryInsideContainer, string absoluteFileName,
             PromptHandleEnum unknownTypeHandle, AssetTypeInfo ati, out string creationReport, out string errorMessage)
         {
             creationReport = "";
@@ -1290,6 +1298,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             var name = plugin.FriendlyName;
 
+            return SetPluginRequirement(name, requiredByProject, plugin.Version);
+        }
+
+        public bool SetPluginRequirement(string name, bool requiredByProject, Version version)
+        {
             var requiredPlugins = GlueState.Self.CurrentGlueProject.PluginData.RequiredPlugins;
 
             bool didChange = false;
@@ -1299,7 +1312,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 var pluginToAdd = new PluginRequirement
                 {
                     Name = name,
-                    Version = plugin.Version.ToString()
+                    Version = version.ToString()
                 };
 
                 requiredPlugins.Add(pluginToAdd);

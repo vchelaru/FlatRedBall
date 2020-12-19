@@ -16,7 +16,7 @@ using TopDownPlugin.ViewModels;
 
 namespace TopDownPlugin.CodeGenerators
 {
-    class EntityCodeGenerator : ElementComponentCodeGenerator
+    public class EntityCodeGenerator : ElementComponentCodeGenerator
     {
         public override CodeLocation CodeLocation => CodeLocation.AfterStandardGenerated;
 

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace TopDownPlugin.CodeGenerators
 {
-    class EnumFileGenerator : FullFileCodeGenerator
+    public class EnumFileGenerator : FullFileCodeGenerator
     {
         public override string RelativeFile => "TopDown/Enums.Generated.cs";
 

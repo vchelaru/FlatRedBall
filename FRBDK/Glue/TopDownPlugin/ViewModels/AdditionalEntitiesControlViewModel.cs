@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TopDownPlugin.ViewModels
 {
-    class AdditionalEntitiesControlViewModel : ViewModel
+    public class AdditionalEntitiesControlViewModel : ViewModel
     {
         public bool IsTopDownEntity
         {

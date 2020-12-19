@@ -9,7 +9,7 @@ using TopDownPlugin.Views;
 
 namespace TopDownPlugin.Logic
 {
-    class ModifyAddEntityWindowLogic
+    public class ModifyAddEntityWindowLogic
     {
         public static void HandleModifyAddEntityWindow(AddEntityWindow window)
         {

@@ -12,9 +12,9 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-        <CheckBox IsChecked="{Binding IsTopDown}" 
+        <!--<CheckBox IsChecked="{Binding IsTopDown}" 
                   Visibility="{Binding TopDownCheckBoxVisibility}"
-                  VerticalContentAlignment="Center">Is Top-Down Entity</CheckBox>
+                  VerticalContentAlignment="Center">Is Top-Down Entity</CheckBox>-->
         <Label Visibility="{Binding InheritanceLabelVisibility}">This entity inherits from a Top-Down Entity</Label>
 
         <Grid Grid.Row="1" Visibility="{Binding TopDownUiVisibility}">

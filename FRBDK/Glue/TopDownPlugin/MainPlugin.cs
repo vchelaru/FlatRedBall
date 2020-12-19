@@ -17,12 +17,11 @@ using TopDownPluginCore.CodeGenerators;
 
 namespace TopDownPlugin
 {
-    [Export(typeof(PluginBase))]
-    public class MainPlugin : PluginBase
+    public class MainPlugin //: PluginBase
     {
         #region Fields/Properties
 
-        public override string FriendlyName => "Top Down Plugin";
+        //public override string FriendlyName => "Top Down Plugin";
 
         // 1.1 - Added support for 0 time speedup and slowdown
         // 1.2 - Fixed direction being reset when not moving with 
@@ -39,39 +38,39 @@ namespace TopDownPlugin
         // 2.0 - New UI for editing top down values
         //  - TopDownAiInput.cs is now saved in TopDownAiInput.Generated.cs
         // 2.0.1 - Fixed crash occurring if trying to save CSV while it's open in excel.
-        public override Version Version => 
-            new Version(2, 0, 1);
+        //public override Version Version => 
+        //    new Version(2, 0, 1);
 
-        MainEntityView control;
+        //MainEntityView topDownControl;
 
-        PluginTab pluginTab;
+        //PluginTab topDownPluginTab;
 
         #endregion
 
-        public override bool ShutDown(FlatRedBall.Glue.Plugins.Interfaces.PluginShutDownReason shutDownReason)
-        {
-            return true;
-        }
+        //public override bool ShutDown(FlatRedBall.Glue.Plugins.Interfaces.PluginShutDownReason shutDownReason)
+        //{
+        //    return true;
+        //}
 
-        public override void StartUp()
-        {
-            MainController.Self.MainPlugin = this;
+        //public override void StartUp()
+        //{
+        //    //MainController.Self.MainPlugin = this;
 
-            // Needed for deserialization:
+        //    // Needed for deserialization:
 
-            base.RegisterCodeGenerator(new EntityCodeGenerator());
-            AssignEvents();
-        }
+        //    //base.RegisterCodeGenerator(new EntityCodeGenerator());
+        //    AssignEvents();
+        //}
 
-        private void AssignEvents()
-        {
-            this.ReactToLoadedGlux += HandleGluxLoaded;
-            this.ReactToItemSelectHandler += HandleItemSelected;
-            this.ReactToEntityRemoved += HandleElementRemoved;
-            this.ReactToElementRenamed += HandleElementRenamed;
-            this.ModifyAddEntityWindow += ModifyAddEntityWindowLogic.HandleModifyAddEntityWindow;
-            this.NewEntityCreatedWithUi += NewEntityCreatedReactionLogic.ReactToNewEntityCreated;
-        }
+        //private void AssignEvents()
+        //{
+        //    this.ReactToLoadedGlux += HandleGluxLoaded;
+        //    //this.ReactToItemSelectHandler += HandleItemSelected;
+        //    this.ReactToEntityRemoved += HandleElementRemoved;
+        //    this.ReactToElementRenamed += HandleElementRenamed;
+        //    this.ModifyAddEntityWindow += ModifyAddEntityWindowLogic.HandleModifyAddEntityWindow;
+        //    this.NewEntityCreatedWithUi += NewEntityCreatedReactionLogic.ReactToNewEntityCreated;
+        //}
 
         private void HandleElementRenamed(IElement renamedElement, string oldName)
         {
@@ -103,32 +102,32 @@ namespace TopDownPlugin
             }
         }
 
-        private void HandleItemSelected(System.Windows.Forms.TreeNode selectedTreeNode)
-        {
-            bool shouldShow = GlueState.Self.CurrentEntitySave != null &&
-                // So this only shows if the entity itself is selected:
-                selectedTreeNode?.Tag == GlueState.Self.CurrentEntitySave;
+        //private void HandleItemSelected(System.Windows.Forms.TreeNode selectedTreeNode)
+        //{
+        //    bool shouldShow = GlueState.Self.CurrentEntitySave != null &&
+        //        // So this only shows if the entity itself is selected:
+        //        selectedTreeNode?.Tag == GlueState.Self.CurrentEntitySave;
 
 
-            if (shouldShow)
-            {
-                if (control == null)
-                {
-                    control = MainController.Self.GetExistingOrNewControl();
-                    pluginTab = this.CreateTab(control, "Top Down");
-                    this.ShowTab(pluginTab, TabLocation.Center);
-                }
-                else
-                {
-                    this.ShowTab(pluginTab);
-                }
-                MainController.Self.UpdateTo(GlueState.Self.CurrentEntitySave);
-            }
-            else
-            {
-                this.RemoveTab(pluginTab);
-            }
-        }
+        //    if (shouldShow)
+        //    {
+        //        if (topDownControl == null)
+        //        {
+        //            topDownControl = MainController.Self.GetExistingOrNewControl();
+        //            topDownPluginTab = this.CreateTab(topDownControl, "Top Down");
+        //            this.ShowTab(topDownPluginTab, TabLocation.Center);
+        //        }
+        //        else
+        //        {
+        //            this.ShowTab(topDownPluginTab);
+        //        }
+        //        MainController.Self.UpdateTo(GlueState.Self.CurrentEntitySave);
+        //    }
+        //    else
+        //    {
+        //        this.RemoveTab(topDownPluginTab);
+        //    }
+        //}
 
         private void HandleElementRemoved(EntitySave removedElement, List<string> additionalFiles)
         {

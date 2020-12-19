@@ -28,8 +28,6 @@ namespace TileGraphicsPlugin.CodeGeneration
         {
             GeneratePreloadLevel(codeBlock, element);
 
-            GenerateInitializeLevel(codeBlock, element);
-
             return codeBlock;
         }
 
@@ -38,55 +36,6 @@ namespace TileGraphicsPlugin.CodeGeneration
             return base.GenerateDestroy(codeBlock, element);
         }
 
-
-        private void GenerateInitializeLevel(ICodeBlock codeBlock, IElement element)
-        {
-            //#region /////////////////////////////////Early out////////////////////////////////
-            //bool shouldGenerate = GetIfShouldGenerate(element);
-
-            //if (!shouldGenerate)
-            //{
-            //    return;
-            //}
-
-            /////////////////////////////////End early out/////////////////////////////
-            //#endregion
-
-
-            //codeBlock.Line("FlatRedBall.TileGraphics.LayeredTileMap CurrentTileMap;");
-            //var function = codeBlock.Function("void", "InitializeLevel", "string levelName");
-
-            //GenerateInitializeLevelObjects(function);
-
-            //GenerateInitializeCamera(function);
-
-            //GenerateAddCollisionAndEntities(function);
-
-            //GenerateInitializeAnimations(function);
-        }
-
-        //private static bool GetIfShouldGenerate(IElement element)
-        //{
-        //    bool shouldContinue = true;
-
-        //    bool isScreen = element is ScreenSave;
-
-        //    if (!isScreen)
-        //    {
-        //        shouldContinue = false;
-        //    }
-
-        //    if (shouldContinue)
-        //    {
-        //        var variable = element.GetCustomVariable(AddLevelController.UsesTmxLevelFilesVariableName);
-
-        //        if (variable == null || variable.DefaultValue == null || (variable.DefaultValue is bool) == false || (bool)(variable.DefaultValue) == false)
-        //        {
-        //            shouldContinue = false;
-        //        }
-        //    }
-        //    return shouldContinue;
-        //}
 
         private static void GenerateInitializeLevelObjects(ICodeBlock function)
         {

@@ -40,10 +40,5 @@ namespace TileGraphicsPlugin.Managers
 
             //}
         }
-
-        void HandleAddTiledLevelClick(object sender, EventArgs e)
-        {
-            AddLevelController.Self.ShowAddLevelUi();
-        }
     }
 }

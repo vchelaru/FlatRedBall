@@ -203,6 +203,7 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
+        [Obsolete("Use Add, which allows specifying the priority")]
         /// <summary>
         /// Adds an action to be executed, guaranteeing that no other actions will be executed at the same time as this.
         /// Actions added will be executed in the order they were added (fifo).
@@ -212,6 +213,7 @@ namespace FlatRedBall.Glue.Managers
             AddSync(action, displayInfo, isHighPriority: false);
         }
 
+        [Obsolete("Use Add, which allows specifying the priority")]
         /// <summary>
         /// Adds an action to be executed, guaranteeing that no other actions will be executed at the same time as this.
         /// Actions added will be executed in the order they were added (fifo).

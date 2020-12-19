@@ -21,44 +21,6 @@ namespace TileGraphicsPlugin.Controllers
         public const string UsesTmxLevelFilesVariableName = "UsesTmxLevelFiles";
 
 
-        public void ShowAddLevelUi()
-        {
-            AddNewLevelView view = new AddNewLevelView();
-            var viewModel = new AddNewLevelViewModel();
-
-            viewModel.MakeNameUnique(GlueState.Self.CurrentScreenSave.ReferencedFiles);
-            
-            view.DataContext = viewModel;
-
-
-
-
-
-            AddTmxWithSharedTsxTo(viewModel);
-
-            var dialogResult = view.ShowDialog();
-
-
-            if(dialogResult.HasValue && dialogResult.Value)
-            {
-                string whyIsntValid = GetWhyCantAddLevel(viewModel.Name);
-                if (string.IsNullOrEmpty(whyIsntValid))
-                {
-#if DEBUG
-                    if(viewModel.CreateShareTilesetWith && viewModel.SelectedSharedFile == null)
-                    {
-                        throw new Exception("The viewModel indicates that the user selected a shared file, but it'the file is not specified");
-                    }
-#endif
-                    AddLevel(viewModel);
-                }
-                else
-                {
-                    MessageBox.Show(whyIsntValid);
-                }
-            }
-        }
-
         private static void AddTmxWithSharedTsxTo(AddNewLevelViewModel viewModel)
         {
             List<string> filesAlreadyVisited = new List<string>();
@@ -410,77 +372,6 @@ namespace TileGraphicsPlugin.Controllers
                 newRfs.LoadedOnlyWhenReferenced = true;
             }
         }
-
-        private static void AddTilbReferencedFileSave(string levelName, TreeNode levelsFolder)
-        {
-            string absoluteLevelsDirectory = GlueCommands.Self.ProjectCommands.MakeAbsolute(
-                levelsFolder.GetRelativePath(), forceAsContent:true);
-
-            string fullTmxFile = absoluteLevelsDirectory + levelName + ".tmx";
-
-            GlueState.Self.CurrentTreeNode = levelsFolder;
-
-            var builderToolAssociation = 
-                FlatRedBall.Glue.Managers.BuildToolAssociationManager.Self.GetBuilderToolAssociationForExtensions("tmx", "tilb");
-            // Add the RFS for this TMX
-            string commandLineArguments = "copyimages=false";
-
-            var currentElement = GlueState.Self.CurrentElement;
-            var directory = levelsFolder.GetRelativePath();
-
-            var newRfs = GlueCommands.Self.GluxCommands.AddSingleFileTo(fullTmxFile, levelName, 
-                commandLineArguments,
-                builderToolAssociation,
-                isBuiltFile:false,
-                options:null, 
-                sourceElement:currentElement, 
-                directoryOfTreeNode:directory);
-
-            if (newRfs == null)
-            {
-                MessageBox.Show("Error trying to add new file to Glue project");
-            }
-            else
-            {
-                newRfs.LoadedOnlyWhenReferenced = true;
-            }
-        }
-
-
-        private void AddCsvReferencedFileSave(string levelName, TreeNode levelsFolder, TreeNode tilesetFolder)
-        {
-            string absoluteLevelsDirectory = GlueCommands.Self.ProjectCommands.MakeAbsolute(
-                levelsFolder.GetRelativePath(), forceAsContent: true);
-            string absoluteTilesetsFolder = GlueCommands.Self.ProjectCommands.MakeAbsolute(
-                tilesetFolder.GetRelativePath(), forceAsContent:true);
-
-            string fullCsvFile = absoluteTilesetsFolder + levelName + "Info.csv";
-            string fullTmxFile = absoluteLevelsDirectory + levelName + ".tmx";
-
-            GlueState.Self.CurrentTreeNode = tilesetFolder;
-            var element = GlueState.Self.CurrentElement;
-
-            var btaManager = FlatRedBall.Glue.Managers.BuildToolAssociationManager.Self;
-
-            var builderToolAssociation = btaManager.GetBuilderToolAssociationForExtensions("tmx", "csv");
-
-            var newRfs = GlueCommands.Self.GluxCommands.AddSingleFileTo(fullTmxFile, levelName + "Info", "",
-                builderToolAssociation,
-                true,
-                null, element, tilesetFolder.GetRelativePath());
-
-            newRfs.LoadedOnlyWhenReferenced = true;
-
-
-            var glueProject = GlueState.Self.CurrentGlueProject;
-            var customClass = glueProject.CustomClasses.FirstOrDefault(item => item.Name == "TileMapInfo");
-
-            if(customClass != null)
-            {
-                customClass.CsvFilesUsingThis.Add(newRfs.Name);
-            }
-        }
-
 
         private void TryAddSolidCollisions()
         {

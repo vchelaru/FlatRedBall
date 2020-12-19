@@ -10,25 +10,13 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Embedded\TopDownAiInput.Generated.cs" />
-    <Compile Remove="Embedded\TopDownAiTargetLogic.Generated.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Embedded\TopDownAiInput.Generated.cs" />
-    <EmbeddedResource Include="Embedded\TopDownAiTargetLogic.Generated.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Glue\GlueFormsCore.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Extended.Wpf.Toolkit" Version="3.7.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
   </ItemGroup>
-
-
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Gum\WpfDataUi\WpfDataUi.csproj" />
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
@@ -37,6 +25,12 @@
     <ProjectReference Include="..\GlueCommon\GlueCommon.csproj" />
     <ProjectReference Include="..\GlueSaveClasses\GlueSaveClasses.csproj" />
     <ProjectReference Include="..\Glue\GlueFormsCore.csproj" />
+    <ProjectReference Include="..\TopDownPlugin\TopDownPluginCore.csproj" />
   </ItemGroup>
+
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="echo PostBuild Top Down Plugin&#xD;&#xA;&#xA;&#xA;&#xD;&#xA;IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\EntityInputMovementPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\EntityInputMovementPlugin\&quot;&#xD;&#xA;&#xA;&#xD;&#xA;&#xA;echo 1&#xD;&#xA;&#xA;copy &quot;$(TargetDir)\EntityInputMovementPlugin.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\EntityInputMovementPlugin\EntityInputMovementPlugin.dll&quot;&#xD;&#xA;&#xA;&#xA;echo 2&#xD;&#xA;&#xD;&#xA;&#xA;copy &quot;$(TargetDir)\EntityInputMovementPlugin.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\EntityInputMovementPlugin\EntityInputMovementPlugin.pdb&quot;&#xD;&#xA;&#xA;copy &quot;$(TargetDir)\TopDownPluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\EntityInputMovementPlugin\TopDownPluginCore.dll&quot;&#xD;&#xA;&#xA;&#xA;copy &quot;$(TargetDir)\TopDownPluginCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\EntityInputMovementPlugin\TopDownPluginCore.pdb&quot;" />
+  </Target>
 
 </Project>

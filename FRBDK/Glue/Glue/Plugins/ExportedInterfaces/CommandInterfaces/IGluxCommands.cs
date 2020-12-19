@@ -6,6 +6,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
     public interface IGluxCommands
     {
+        #region Fields/Properties
+
         IScreenCommands ScreenCommands
         {
             get;
@@ -19,6 +21,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         IProjectCommands ProjectCommands { get; }
 
         string StartUpScreenName { get; set; }
+
+        #endregion
 
         /// <summary>
         /// Saves the glue project immediately if in a task, and adds a task if not
@@ -44,12 +48,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 #if GLUE
         ReferencedFileSave AddSingleFileTo(string fileName, string rfsName, string extraCommandLineArguments,
             EditorObjects.SaveClasses.BuildToolAssociation buildToolAssociation, bool isBuiltFile, object options, 
-            IElement sourceElement, string directoryOfTreeNode);
+            IElement sourceElement, string directoryOfTreeNode, bool selectFileAfterCreation = true);
+
         // SourceType sourceType, string sourceClassType, string sourceFile, string objectName, string sourceNameInFile, string sourceClassGenericType
         NamedObjectSave AddNewNamedObjectToSelectedElement(ViewModels.AddObjectViewModel addObjectViewModel);
         NamedObjectSave AddNewNamedObjectTo(ViewModels.AddObjectViewModel addObjectViewModel, IElement element, NamedObjectSave listToAddTo);
 
         bool SetPluginRequirement(Interfaces.IPlugin plugin, bool requiredByProject);
+        bool SetPluginRequirement(string name, bool requiredByProject, Version version);
         bool GetPluginRequirement(Interfaces.IPlugin plugin);
 #endif
 

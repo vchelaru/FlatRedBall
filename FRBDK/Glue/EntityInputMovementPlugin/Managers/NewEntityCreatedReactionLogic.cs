@@ -6,15 +6,14 @@ using System.Threading.Tasks;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
-using TopDownPlugin.Controllers;
 using TopDownPlugin.ViewModels;
 using TopDownPlugin.Views;
 
 namespace TopDownPlugin.Logic
 {
-    class NewEntityCreatedReactionLogic
+    public class NewEntityCreatedReactionLogic
     {
-        internal static void ReactToNewEntityCreated(EntitySave newEntity, AddEntityWindow window)
+        public static void ReactToNewEntityCreated(EntitySave newEntity, AddEntityWindow window)
         {
             var control = window
                 .UserControlChildren
@@ -22,14 +21,10 @@ namespace TopDownPlugin.Logic
 
             var viewModel = control?.DataContext as AdditionalEntitiesControlViewModel;
 
-            if(viewModel != null)
+            if(viewModel?.IsTopDownEntity == true)
             {
-                if(viewModel.IsTopDownEntity)
-                {
-                    GlueCommands.Self.DialogCommands.FocusTab("Top Down");
-                    MainController.Self.MakeCurrentEntityTopDown();
+                Controllers.MainController.Self.MakeCurrentEntityTopDown();
 
-                }
             }
         }
     }
