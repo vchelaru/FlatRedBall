@@ -65,7 +65,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             var currentObject = GlueState.Self.CurrentNamedObjectSave;
 
-            bool isTypePredetermined = currentObject != null && currentObject.IsList;
+            bool isTypePredetermined = (currentObject != null && currentObject.IsList) ||
+                addObjectViewModel.IsTypePredetermined;
 
             var isNewWindow = false;
             if (addObjectViewModel == null)
@@ -75,12 +76,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;
             }
 
-            var toAdd = AvailableAssetTypes.Self.AllAssetTypes
-                .Where(item => item.CanBeObject)
-                .OrderBy(item => item.FriendlyName);
+            if(isTypePredetermined && addObjectViewModel.SelectedAti != null)
+            {
+                addObjectViewModel.FlatRedBallAndCustomTypes.Add(addObjectViewModel.SelectedAti);
+            }
+            else
+            {
+                var toAdd = AvailableAssetTypes.Self.AllAssetTypes
+                    .Where(item => item.CanBeObject)
+                    .OrderBy(item => item.FriendlyName);
 
-            addObjectViewModel.FlatRedBallAndCustomTypes.AddRange(toAdd);
-
+                addObjectViewModel.FlatRedBallAndCustomTypes.AddRange(toAdd);
+            }
             addObjectViewModel.AvailableEntities =
                 ObjectFinder.Self.GlueProject.Entities.ToList();
 
@@ -127,7 +134,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 var parentList = GlueState.Self.CurrentNamedObjectSave;
 
-                var genericType = parentList.SourceClassGenericType;
+                var genericType = parentList?.SourceClassGenericType;
 
                 if (!string.IsNullOrEmpty(genericType))
                 {

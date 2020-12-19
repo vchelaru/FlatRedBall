@@ -102,7 +102,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static ToolStripMenuItem reGenerateCodeToolStripMenuItem;
 
-
+        static ToolStripMenuItem addLayeritem;
         #endregion
 
 
@@ -228,6 +228,16 @@ namespace FlatRedBall.Glue.FormHelpers
                     menu.Items.Add(form.addObjectToolStripMenuItem);
                 }
             }
+
+            #endregion
+
+            #region IsRootLayerNode
+
+            else if(targetNode.IsRootLayerNode())
+            {
+                menu.Items.Add(addLayeritem);
+            }
+
 
             #endregion
 
@@ -591,8 +601,10 @@ namespace FlatRedBall.Glue.FormHelpers
             mCopyToBuildFolder.Click += HandleCopyToBuildFolder;
 
             reGenerateCodeToolStripMenuItem = new ToolStripMenuItem("Re-Generate Code");
-            reGenerateCodeToolStripMenuItem.Click += HandleReGenerateCodeClick; ;
+            reGenerateCodeToolStripMenuItem.Click += HandleReGenerateCodeClick;
 
+            addLayeritem = new ToolStripMenuItem("Add Layer");
+            addLayeritem.Click += HandleAddLayerClick;
         }
 
         private static void HandleCreateDerivedScreenClicked(object sender, EventArgs e)
@@ -607,6 +619,16 @@ namespace FlatRedBall.Glue.FormHelpers
         private static void HandleReGenerateCodeClick(object sender, EventArgs e)
         {
             ReGenerateCodeForSelectedElement();
+        }
+
+        private static void HandleAddLayerClick(object sender, EventArgs e)
+        {
+            var viewModel = new AddObjectViewModel();
+            viewModel.SourceType = SourceType.FlatRedBallType;
+            viewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Layer;
+            viewModel.IsTypePredetermined = true;
+
+            GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog(viewModel);
         }
 
         private static void HandleCopyToBuildFolder(object sender, EventArgs e)

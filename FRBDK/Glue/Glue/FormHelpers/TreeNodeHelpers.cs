@@ -82,6 +82,14 @@ namespace FlatRedBall.Glue.FormHelpers
                 (treeNodeInQuestion.Parent.IsEntityNode() || treeNodeInQuestion.Parent.IsScreenNode());
         }
 
+        public static bool IsRootLayerNode(this TreeNode treeNodeInQuestion)
+        {
+            return treeNodeInQuestion.Text == "Layers" &&
+                treeNodeInQuestion.Parent != null &&
+                treeNodeInQuestion.Tag == null &&
+                treeNodeInQuestion.Parent.IsRootNamedObjectNode();
+        }
+
         public static bool IsRootScreenNode(this TreeNode treeNodeInQuestion)
         {
 #if DEBUG
