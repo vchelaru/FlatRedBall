@@ -66,7 +66,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             var currentObject = GlueState.Self.CurrentNamedObjectSave;
 
             bool isTypePredetermined = (currentObject != null && currentObject.IsList) ||
-                addObjectViewModel.IsTypePredetermined;
+                addObjectViewModel?.IsTypePredetermined == true;
 
             var isNewWindow = false;
             if (addObjectViewModel == null)
