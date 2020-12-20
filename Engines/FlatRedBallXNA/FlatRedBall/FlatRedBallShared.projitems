@@ -122,8 +122,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Text.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Text.PreRendered.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\TextManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Texture\RenderTargetSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Texture\RenderTargetRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Texture\RenderTargetSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Gui\Behaviors\BehaviorBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Gui\Behaviors\ButtonBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Gui\Behaviors\ToggleBehavior.cs" />

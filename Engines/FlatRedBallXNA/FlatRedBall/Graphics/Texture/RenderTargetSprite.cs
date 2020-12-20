@@ -16,8 +16,6 @@ namespace FlatRedBall.Graphics.Texture
         int originalDestinationWidth;
         int originalDestinationHeight;
 
-        float multiplier = 1;
-
         /// <summary>
         /// Instantiates a new RenderTargetSprite with a render target matching the spriteName belonging
         /// to the argument ContentManagerName
@@ -32,11 +30,6 @@ namespace FlatRedBall.Graphics.Texture
             this.Name = spriteName;
 
             CreateRenderer();
-
-            if(Camera.Main.Orthogonal)
-            {
-                multiplier = Camera.Main.DestinationRectangle.Height / Camera.Main.OrthogonalHeight;
-            }
 
             this.AttachTo(Camera.Main, false);
             this.RelativeX = 0;
@@ -78,8 +71,8 @@ namespace FlatRedBall.Graphics.Texture
             mRenderer.Camera.AspectRatio = Camera.Main.AspectRatio;
             mRenderer.Camera.FieldOfView = Camera.Main.FieldOfView;
 
-            mRenderer.Camera.OrthogonalWidth = Camera.Main.OrthogonalWidth / multiplier;
-            mRenderer.Camera.OrthogonalHeight = Camera.Main.OrthogonalHeight / multiplier;
+            mRenderer.Camera.OrthogonalWidth = Camera.Main.OrthogonalWidth;
+            mRenderer.Camera.OrthogonalHeight = Camera.Main.OrthogonalHeight;
 
             if (mRenderer.HasRendered)
             {
