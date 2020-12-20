@@ -193,7 +193,7 @@ namespace FlatRedBall.Content
 
         #region Methods
 
-#region Constructors
+		#region Constructors
 
 		public ContentManager(string name, IServiceProvider serviceProvider)
 			: base(serviceProvider)
@@ -215,7 +215,7 @@ namespace FlatRedBall.Content
 
 #endregion
 
-#region Public Methods
+		#region Public Methods
 
         /// <summary>
         /// Adds the argument disposable object to the content manager, to be disposed when the ContentManager Unload method is eventually called.

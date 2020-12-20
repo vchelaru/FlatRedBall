@@ -14,6 +14,8 @@ namespace FlatRedBall.Graphics.Texture
 
         RenderTarget2D mRenderTarget;
 
+        string contentManagerName;
+
         public Texture2D Texture
         {
             get
@@ -111,9 +113,18 @@ namespace FlatRedBall.Graphics.Texture
             mRenderTarget.Name = textureName;
 
             var contentManager = FlatRedBallServices.GetContentManagerByName(contentManagerName);
+            this.contentManagerName = contentManagerName;
             contentManager.AddDisposable(textureName, mRenderTarget);
 
            
+        }
+
+        public void Dispose()
+        {
+            var contentManager = FlatRedBallServices.GetContentManagerByName(contentManagerName);
+            contentManager.RemoveDisposable(mRenderTarget);
+            mRenderTarget.Dispose();
+            HasRendered = false;
         }
     }
 }

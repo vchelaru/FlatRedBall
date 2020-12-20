@@ -13,6 +13,11 @@ namespace FlatRedBall.Graphics.Texture
 
         public Layer DefaultInputLayer => mRenderer.Layer;
 
+        int originalDestinationWidth;
+        int originalDestinationHeight;
+
+        float multiplier = 1;
+
         /// <summary>
         /// Instantiates a new RenderTargetSprite with a render target matching the spriteName belonging
         /// to the argument ContentManagerName
@@ -26,28 +31,57 @@ namespace FlatRedBall.Graphics.Texture
 
             this.Name = spriteName;
 
-            mRenderer = new RenderTargetRenderer(Camera.Main.DestinationRectangle.Width,
-                Camera.Main.DestinationRectangle.Height);
+            CreateRenderer();
 
-            this.TextureScale = 1;
+            if(Camera.Main.Orthogonal)
+            {
+                multiplier = Camera.Main.DestinationRectangle.Height / Camera.Main.OrthogonalHeight;
+            }
+
             this.AttachTo(Camera.Main, false);
             this.RelativeX = 0;
             this.RelativeY = 0;
             this.RelativeZ = -40;
         }
 
+        void CreateRenderer()
+        {
+            originalDestinationWidth = Camera.Main.DestinationRectangle.Width;
+            originalDestinationHeight = Camera.Main.DestinationRectangle.Height;
+
+            mRenderer = new RenderTargetRenderer(originalDestinationWidth,
+                originalDestinationHeight);
+        }
+
         public void Refresh()
         {
+            // use the texture height, not the current ortho values:
+
+            if(originalDestinationWidth != Camera.Main.DestinationRectangle.Width ||
+                originalDestinationHeight != Camera.Main.DestinationRectangle.Height)
+            {
+                mRenderer.Dispose();
+
+                var oldLayer = mRenderer.Layer;
+                mRenderer.Camera.RemoveLayer(mRenderer.Camera.Layer);
+
+                CreateRenderer();
+
+                // preserve all added objects:
+                mRenderer.Camera.RemoveLayer(mRenderer.Camera.Layer);
+                mRenderer.Camera.AddLayer(oldLayer);
+            }
+
             Camera.Main.ForceUpdateDependencies();
             mRenderer.Camera.Position = Camera.Main.Position;
             mRenderer.Camera.Orthogonal = Camera.Main.Orthogonal;
             mRenderer.Camera.AspectRatio = Camera.Main.AspectRatio;
             mRenderer.Camera.FieldOfView = Camera.Main.FieldOfView;
-            mRenderer.Camera.OrthogonalWidth = Camera.Main.OrthogonalWidth;
-            mRenderer.Camera.OrthogonalHeight = Camera.Main.OrthogonalHeight;
 
+            mRenderer.Camera.OrthogonalWidth = Camera.Main.OrthogonalWidth / multiplier;
+            mRenderer.Camera.OrthogonalHeight = Camera.Main.OrthogonalHeight / multiplier;
 
-            if(mRenderer.HasRendered)
+            if (mRenderer.HasRendered)
             {
                 mRenderer.ReRender();
             }
@@ -56,6 +90,9 @@ namespace FlatRedBall.Graphics.Texture
                 mRenderer.PerformRender(mContentManagerName, mName);
                 Texture = mRenderer.Texture;
             }
+
+            this.Width = mRenderer.Camera.OrthogonalWidth;
+            this.Height = mRenderer.Camera.OrthogonalHeight;
         }
 
         public void AddInputLayer(Layer layer)
