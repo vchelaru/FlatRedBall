@@ -1324,8 +1324,45 @@ namespace FlatRedBall.Graphics
                         blendState.ColorBlendFunction = BlendFunction.Add;
 
                         mGraphics.GraphicsDevice.BlendState = blendState;
+
                     }
                     break;
+                case FlatRedBall.Graphics.BlendOperation.SubtractAlpha:
+                    {
+                        // Vic says 12/19/2020
+                        // This took me a while to figure out,
+                        // so I'll document what I learned.
+                        // For alpha, the operation is:
+                        // ResultAlpha = (SourceAlpha * Blend.AlphaSourceBlend) {BlendFunc} (DestinationAlpha * Blend.AlphaDestblend)
+                        // where:
+                        // ResultAlpha is the resulting pixel alpha after the operation occurs
+                        // SourceAlpha is the alpha of the pixel on the sprite that is being drawn
+                        // DestinationAlpha is the alpha of the pixel on the surface before the pixel is drawn, which is the result alpha from a previous operation
+                        // In this case we want to subtract the sprite being drawn.
+                        // To subtract the sprite that is being drawn, which is the SourceSprite, we need to do a ReverseSubtract
+                        // so that the Source is being subtracted.
+                        // We want to use Blend.One on both so that the values being used are the pixel values on source and dest.
+                        // Keep in mind that since we're making a texture, we need this texture to be premultiplied, so we
+                        // need to multiply the destination color by the inverse source alpha, so that if alpha is 0, we preserve the color, otherwise we
+                        // darken it to premult
+
+                        BlendState blendState = new BlendState();
+                        
+                        blendState.ColorSourceBlend = Blend.Zero;
+                        blendState.ColorBlendFunction = BlendFunction.Add;
+                        blendState.ColorDestinationBlend = Blend.InverseSourceAlpha;
+
+
+                        blendState.AlphaSourceBlend = Blend.One;
+
+                        blendState.AlphaBlendFunction = BlendFunction.ReverseSubtract;
+
+                        blendState.AlphaDestinationBlend = Blend.One;
+
+                        mGraphics.GraphicsDevice.BlendState = blendState;
+                    }
+                    break;
+
                 case FlatRedBall.Graphics.BlendOperation.Modulate2X:
                     {
                         BlendState blendState = new BlendState();

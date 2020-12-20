@@ -36,7 +36,8 @@ namespace FlatRedBall.Graphics
         Add,
         Modulate,
         Modulate2X,
-        NonPremultipliedAlpha
+        NonPremultipliedAlpha,
+        SubtractAlpha
     }
 
     public enum SortType
