@@ -174,10 +174,17 @@ namespace FlatRedBall.Glue.Controls
                     this.Nodes.Add(CollisionRelationshipTreeNode);
                 }
 
-                if(this.Nodes.IndexOf(CollisionRelationshipTreeNode) > 0)
+
+                var desiredIndex = 0;
+                if (LayersTreeNode != null)
+                {
+                    desiredIndex++;
+                }
+
+                if (this.Nodes.IndexOf(CollisionRelationshipTreeNode) > desiredIndex)
                 {
                     this.Nodes.Remove(CollisionRelationshipTreeNode);
-                    this.Nodes.Insert(0, CollisionRelationshipTreeNode);
+                    this.Nodes.Insert(desiredIndex, CollisionRelationshipTreeNode);
                 }
 
                 for (int i = 0; i < collisionRelationships.Length; i++)
@@ -194,6 +201,15 @@ namespace FlatRedBall.Glue.Controls
                     if(treeNode != null)
                     {
                         UpdateTreeNodeForNamedObjectAtIndex(CollisionRelationshipTreeNode, i, collisionRelationship, treeNode);
+                    }
+                }
+
+                for(int i = CollisionRelationshipTreeNode.Nodes.Count - 1; i > -1; i--)
+                {
+                    var node = CollisionRelationshipTreeNode.Nodes[i];
+                    if (collisionRelationships.Contains(node.Tag as NamedObjectSave) == false)
+                    {
+                        CollisionRelationshipTreeNode.Nodes.RemoveAt(i);
                     }
                 }
             }
@@ -225,7 +241,15 @@ namespace FlatRedBall.Glue.Controls
                     this.Nodes.Add(LayersTreeNode);
                 }
 
-                for(int i = 0; i < layers.Length; i++)
+
+                if (this.Nodes.IndexOf(LayersTreeNode) > 0)
+                {
+                    this.Nodes.Remove(LayersTreeNode);
+                    this.Nodes.Insert(0, LayersTreeNode);
+                }
+
+
+                for (int i = 0; i < layers.Length; i++)
                 {
                     var layer = layers[i];
 
@@ -239,6 +263,14 @@ namespace FlatRedBall.Glue.Controls
                     if (treeNode != null)
                     {
                         UpdateTreeNodeForNamedObjectAtIndex(LayersTreeNode, i, layer, treeNode);
+                    }
+                }
+                for(int i = LayersTreeNode.Nodes.Count - 1; i > -1; i--)
+                {
+                    var node = LayersTreeNode.Nodes[i];
+                    if (layers.Contains(node.Tag as NamedObjectSave) == false)
+                    {
+                        LayersTreeNode.Nodes.RemoveAt(i);
                     }
                 }
             }

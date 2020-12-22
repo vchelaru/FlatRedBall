@@ -1064,11 +1064,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 #endregion
 
 
-                var elementTreeNode = GlueState.Self.Find.ElementTreeNode(element);
-
                 if (updateUi)
                 {
-                    elementTreeNode.RefreshTreeNodes();
+                    GlueCommands.Self.RefreshCommands.RefreshUi(element);
                 }
                 CodeWriter.GenerateCode(element);
                 if (element is EntitySave)
