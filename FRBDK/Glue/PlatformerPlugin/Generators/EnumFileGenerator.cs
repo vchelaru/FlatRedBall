@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace FlatRedBall.PlatformerPlugin.Generators
 {
-    class EnumFileGenerator : Singleton<EnumFileGenerator>
+    public class EnumFileGenerator : Singleton<EnumFileGenerator>
     {
         public void GenerateAndSaveEnumFile()
         {

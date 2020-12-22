@@ -32,18 +32,15 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
         {
         }
 
-        public MainControl GetControl()
+        public PlatformerEntityViewModel GetViewModel()
         {
-            if(mainControl == null)
+            if(viewModel == null)
             {
                 viewModel = new PlatformerEntityViewModel();
                 viewModel.PropertyChanged += HandleViewModelPropertyChange;
-                mainControl = new MainControl();
-
-                mainControl.DataContext = viewModel;
             }
 
-            return mainControl;
+            return viewModel;
         }
 
         private void HandleViewModelPropertyChange(object sender, PropertyChangedEventArgs e)
@@ -233,7 +230,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             }
         }
 
-        internal void UpdateTo(EntitySave currentEntitySave)
+        public void UpdateTo(EntitySave currentEntitySave)
         {
             ignoresPropertyChanges = true;
 

@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EntityInputMovementPlugin.Views" 
              xmlns:TopDownViews="clr-namespace:TopDownPlugin.Views;assembly=TopDownPluginCore"
+             xmlns:PlatformerViews="clr-namespace:FlatRedBall.PlatformerPlugin.Views;assembly=PlatformerPluginCore"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -16,11 +17,12 @@
             <StackPanel>
                 <RadioButton IsChecked="{Binding IsNoneRadioChecked}">None</RadioButton>
                 <RadioButton IsChecked="{Binding IsTopDownRadioChecked}">Top-Down</RadioButton>
-<!--eventually...-->
-                <!--<RadioButton>Platformer</RadioButton>
+                <RadioButton IsChecked="{Binding IsPlatformerRadioChecked}">Platformer</RadioButton>
+<!--eventually...
                 <RadioButton>Racing</RadioButton>-->
             </StackPanel>
         </GroupBox>
-        <TopDownViews:MainEntityView x:Name="TopDownView" Grid.Row="1"></TopDownViews:MainEntityView>
+        <TopDownViews:MainEntityView Visibility="{Binding TopDownUiVisibility}" x:Name="TopDownView" Grid.Row="1"></TopDownViews:MainEntityView>
+        <PlatformerViews:MainControl Visibility="{Binding PlatformerUiVisibility}" x:Name="PlatformerView" Grid.Row="1"></PlatformerViews:MainControl>
     </Grid>
 </UserControl>

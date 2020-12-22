@@ -35,6 +35,7 @@ namespace EntityInputMovementPlugin
         public override void StartUp()
         {
             base.RegisterCodeGenerator(new TopDownPlugin.CodeGenerators.EntityCodeGenerator());
+            base.RegisterCodeGenerator(new FlatRedBall.PlatformerPlugin.Generators.EntityCodeGenerator());
 
             AssignEvents();
         }
@@ -55,14 +56,13 @@ namespace EntityInputMovementPlugin
             TopDownPlugin.Logic.NewEntityCreatedReactionLogic.ReactToNewEntityCreated(entitySave, window);
 
             GlueCommands.Self.DialogCommands.FocusTab("Entity Input Movement");
-
-
-
         }
 
         private void HandleGluxLoaded()
         {
             var entities = GlueState.Self.CurrentGlueProject.Entities;
+
+            #region TopDownPlugin
 
             var anyTopDownEntities = entities.Any(item =>
             {
@@ -82,14 +82,31 @@ namespace EntityInputMovementPlugin
             }
 
             // remove requirement for the old top-down plugin otherwise projects will get a message forever about it:
-            var didChange = GlueCommands.Self.GluxCommands.SetPluginRequirement(
+            var didChangeGlux = GlueCommands.Self.GluxCommands.SetPluginRequirement(
                 "Top Down Plugin",
                 false,
                 new Version(1, 0));
+            #endregion
 
-            if(didChange)
+            #region Platformer
+
+            var anyPlatformer = entities.Any(item =>
             {
+                var properties = item.Properties;
+                return properties.GetValue<bool>("IsPlatformer");
+            });
 
+            if (anyPlatformer)
+            {
+                // just in case it's not there:
+                FlatRedBall.PlatformerPlugin.Generators.EnumFileGenerator.Self.GenerateAndSaveEnumFile();
+            }
+
+            #endregion
+
+            if (didChangeGlux)
+            {
+                GlueCommands.Self.GluxCommands.SaveGlux();
             }
         }
 
@@ -113,7 +130,9 @@ namespace EntityInputMovementPlugin
                     this.ShowTab(mainTab);
                 }
                 var currentEntity = GlueState.Self.CurrentEntitySave;
+
                 TopDownPlugin.Controllers.MainController.Self.UpdateTo(currentEntity);
+                FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.UpdateTo(currentEntity);
 
                 mainViewModel.RefreshRadioButtonValues();
             }
@@ -127,12 +146,21 @@ namespace EntityInputMovementPlugin
         {
             mainView = new Views.MainView();
             mainViewModel = new MainViewModel();
-            var topDownViewModel = TopDownPlugin.Controllers.MainController.Self.GetViewModel();
-            mainViewModel.TopDownViewModel = topDownViewModel;
-
             mainView.DataContext = mainViewModel;
 
+            #region Top Down
+            var topDownViewModel = TopDownPlugin.Controllers.MainController.Self.GetViewModel();
+            mainViewModel.TopDownViewModel = topDownViewModel;
             mainView.TopDownView.DataContext = topDownViewModel;
+            #endregion
+
+            #region Platformer
+            var platformerViewModel = FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.GetViewModel();
+            mainViewModel.PlatformerViewModel = platformerViewModel;
+            mainView.PlatformerView.DataContext = platformerViewModel;
+
+            #endregion
+
 
             mainTab = this.CreateTab(mainView, "Entity Input Movement");
         }
@@ -142,6 +170,8 @@ namespace EntityInputMovementPlugin
             if (renamedElement is EntitySave renamedEntity)
             {
                 TopDownPlugin.Controllers.MainController.Self.HandleElementRenamed(renamedElement, oldName);
+                //FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.HandleElementRenamed(renamedElement, oldName);
+
             }
         }
 
@@ -150,6 +180,7 @@ namespace EntityInputMovementPlugin
             // This could be the very last entity that was a top-down, but isn't
             // anymore.
             TopDownPlugin.Controllers.MainController.Self.CheckForNoTopDownEntities();
+            //FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.CheckForNoPlatformerEntities();
         }
     }
 }

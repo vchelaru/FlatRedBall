@@ -12,7 +12,7 @@ using FlatRedBall.Glue.Elements;
 
 namespace FlatRedBall.PlatformerPlugin.Generators
 {
-    class EntityCodeGenerator : ElementComponentCodeGenerator
+    public class EntityCodeGenerator : ElementComponentCodeGenerator
     {
 
         public override CodeLocation CodeLocation

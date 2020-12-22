@@ -291,6 +291,11 @@
       <SetsValue>false</SetsValue>
     </Variable>
     <Variable>
+      <Type>ScrollBarVisibilityState</Type>
+      <Name>ScrollBarVisibilityState</Name>
+      <SetsValue>false</SetsValue>
+    </Variable>
+    <Variable>
       <Type>State</Type>
       <Name>State</Name>
       <SetsValue>true</SetsValue>
@@ -414,6 +419,39 @@
         <Type>bool</Type>
         <Name>HighlightRectangle.Visible</Name>
         <Value xsi:type="xsd:boolean">false</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+    </State>
+  </Category>
+  <Category>
+    <Name>ScrollBarVisibility</Name>
+    <State>
+      <Name>NoScrollBar</Name>
+      <Variable>
+        <Type>float</Type>
+        <Name>ClipContainerInstance.Width</Name>
+        <Value xsi:type="xsd:float">0</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>bool</Type>
+        <Name>VerticalScrollBarInstance.Visible</Name>
+        <Value xsi:type="xsd:boolean">false</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+    </State>
+    <State>
+      <Name>VerticalScrollBar</Name>
+      <Variable>
+        <Type>bool</Type>
+        <Name>VerticalScrollBarInstance.Visible</Name>
+        <Value xsi:type="xsd:boolean">true</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>float</Type>
+        <Name>ClipContainerInstance.Width</Name>
+        <Value xsi:type="xsd:float">-36</Value>
         <SetsValue>true</SetsValue>
       </Variable>
     </State>
