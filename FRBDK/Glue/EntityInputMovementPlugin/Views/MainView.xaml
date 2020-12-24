@@ -13,15 +13,23 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-        <GroupBox Header="Input Movement Type" IsEnabled="{Binding CanUserSelectMovementType}">
-            <StackPanel>
-                <RadioButton IsChecked="{Binding IsNoneRadioChecked}">None</RadioButton>
-                <RadioButton IsChecked="{Binding IsTopDownRadioChecked}">Top-Down</RadioButton>
-                <RadioButton IsChecked="{Binding IsPlatformerRadioChecked}">Platformer</RadioButton>
-<!--eventually...
-                <RadioButton>Racing</RadioButton>-->
-            </StackPanel>
-        </GroupBox>
+        <StackPanel Orientation="Horizontal" >
+            <GroupBox Header="Input Movement Type" IsEnabled="{Binding CanUserSelectMovementType}">
+                <StackPanel>
+                    <RadioButton IsChecked="{Binding IsNoneRadioChecked}">None</RadioButton>
+                    <RadioButton IsChecked="{Binding IsTopDownRadioChecked}">Top-Down</RadioButton>
+                    <RadioButton IsChecked="{Binding IsPlatformerRadioChecked}">Platformer</RadioButton>
+                    <!--eventually...
+                    <RadioButton>Racing</RadioButton>-->
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Input Device" Visibility="{Binding InputDeviceVisibility}">
+                <StackPanel>
+                    <RadioButton IsChecked="{Binding IsGamepadWithKeyboardFallbackInputDevice}">Xbox Gamepad with Keyboard Fallback</RadioButton>
+                    <RadioButton IsChecked="{Binding IsNoneInputDevice}">None (Can Assign in Code)</RadioButton>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
         <TopDownViews:MainEntityView Visibility="{Binding TopDownUiVisibility}" x:Name="TopDownView" Grid.Row="1"></TopDownViews:MainEntityView>
         <PlatformerViews:MainControl Visibility="{Binding PlatformerUiVisibility}" x:Name="PlatformerView" Grid.Row="1"></PlatformerViews:MainControl>
     </Grid>

@@ -47,6 +47,10 @@ namespace FlatRedBall.Glue.Elements
         /// </summary>
         public List<string> ForcedOptions { get; set; } = new List<string>();
 
+        [XmlIgnore]
+        [JsonIgnore]
+        public Func<IElement, NamedObjectSave, ReferencedFileSave, List<string>> CustomGetForcedOptionFunc;
+
         public override string ToString()
         {
             return Name + " (" + Type + ")";

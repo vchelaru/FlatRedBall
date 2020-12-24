@@ -6,6 +6,7 @@ using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Text;
 
 namespace OfficialPluginsCore.CameraControllingEntityPlugin
@@ -51,7 +52,8 @@ namespace OfficialPluginsCore.CameraControllingEntityPlugin
                 Name = nameof(FlatRedBall.Entities.CameraControllingEntity.Targets),
                 Type = "string",
                 Category = "Targets",
-                CustomGenerationFunc = GenerateTargetsCodeGen
+                CustomGenerationFunc = GenerateTargetsCodeGen,
+                CustomGetForcedOptionFunc = GetAvailableTargets
 
             });
 
@@ -60,7 +62,8 @@ namespace OfficialPluginsCore.CameraControllingEntityPlugin
                 Name = nameof(FlatRedBall.Entities.CameraControllingEntity.Map),
                 Type = "string",
                 Category = "Targets",
-                CustomGenerationFunc = GenerateMapCodeGen
+                CustomGenerationFunc = GenerateMapCodeGen,
+                CustomGetForcedOptionFunc = GetAvailableMaps
 
             });
 
@@ -108,6 +111,22 @@ namespace OfficialPluginsCore.CameraControllingEntityPlugin
             
 
             AvailableAssetTypes.Self.AddAssetType(ati);
+        }
+
+        private List<string> GetAvailableTargets(IElement element, NamedObjectSave arg2, ReferencedFileSave arg3)
+        {
+            var targetObjects = element.AllNamedObjects.Where(item =>
+                item.IsList ||
+                (item.SourceType == SourceType.Entity && !string.IsNullOrEmpty(item.SourceClassType)));
+
+            return targetObjects.Select(item => item.FieldName).ToList();
+        }
+
+        private List<string> GetAvailableMaps(IElement element, NamedObjectSave arg2, ReferencedFileSave arg3)
+        {
+            var mapObjects = element.AllNamedObjects.Where(item => item.GetAssetTypeInfo()?.Extension == "tmx");
+
+            return mapObjects.Select(item => item.FieldName).ToList();
         }
 
         private string GenerateMapCodeGen(IElement arg1, NamedObjectSave nos, ReferencedFileSave arg3)

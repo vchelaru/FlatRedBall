@@ -347,22 +347,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
         }
         #region Platformer Methods
-        /// <summary>
-        /// Sets the HorizontalInput and JumpInput instances to either the keyboard or 
-        /// Xbox360GamePad index 0. This can be overridden by base classes to default
-        /// to different input devices.
-        /// </summary>
-        protected virtual void InitializeInput()
-        {
-            if (FlatRedBall.Input.InputManager.Xbox360GamePads[0].IsConnected)
-            {
-                InitializePlatformerInput(FlatRedBall.Input.InputManager.Xbox360GamePads[0]);
-            }
-            else
-            {
-                InitializePlatformerInput(FlatRedBall.Input.InputManager.Keyboard);
-            }
-        }
+
 
         partial void CustomInitializePlatformerInput();
 
@@ -900,13 +885,13 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             return base.GenerateActivity(codeBlock, element);
         }
 
-        bool GetIfIsPlatformer(IElement element)
+        public static bool GetIfIsPlatformer(IElement element)
         {
             return element.Properties
                 .GetValue<bool>(nameof(PlatformerEntityViewModel.IsPlatformer));
         }
 
-        bool GetIfInheritsFromPlatformer(IElement element)
+        public static bool GetIfInheritsFromPlatformer(IElement element)
         {
             if(string.IsNullOrEmpty(element.BaseElement))
             {

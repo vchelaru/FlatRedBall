@@ -260,26 +260,7 @@ namespace TopDownPlugin.CodeGenerators
 
             codeBlock.Line(
 @"
-        #region Top-Down Methods
-        /// <summary>
-        /// Sets the MovementInput to either the keyboard or 
-        /// Xbox360GamePad index 0. This can be overridden by base classes to default
-        /// to different input devices.
-        /// </summary>
-        protected virtual void InitializeInput()
-        {
-            if (FlatRedBall.Input.InputManager.Xbox360GamePads[0].IsConnected)
-            {
-                InitializeTopDownInput(FlatRedBall.Input.InputManager.Xbox360GamePads[0]);
-            }
-            else
-            {
-                InitializeTopDownInput(FlatRedBall.Input.InputManager.Keyboard);
-            }
-        
-            InputEnabled = true;
-        }
-        
+        #region Top-Down Methods    
 
         public void InitializeTopDownInput(FlatRedBall.Input.IInputDevice inputDevice)
         {

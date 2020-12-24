@@ -36,7 +36,7 @@ namespace EntityInputMovementPlugin
         {
             base.RegisterCodeGenerator(new TopDownPlugin.CodeGenerators.EntityCodeGenerator());
             base.RegisterCodeGenerator(new FlatRedBall.PlatformerPlugin.Generators.EntityCodeGenerator());
-
+            base.RegisterCodeGenerator(new CodeGenerators.EntityCodeGenerator());
             AssignEvents();
         }
 
@@ -131,6 +131,9 @@ namespace EntityInputMovementPlugin
                 }
                 var currentEntity = GlueState.Self.CurrentEntitySave;
 
+                mainViewModel.GlueObject = currentEntity;
+                mainViewModel.UpdateFromGlueObject();
+
                 TopDownPlugin.Controllers.MainController.Self.UpdateTo(currentEntity);
                 FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.UpdateTo(currentEntity);
 
@@ -145,7 +148,7 @@ namespace EntityInputMovementPlugin
         private void CreateMainView()
         {
             mainView = new Views.MainView();
-            mainViewModel = new MainViewModel();
+            mainViewModel = Controllers.MainController.Self.GetViewModel();
             mainView.DataContext = mainViewModel;
 
             #region Top Down

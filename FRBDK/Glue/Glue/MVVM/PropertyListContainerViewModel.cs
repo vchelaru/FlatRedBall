@@ -39,6 +39,11 @@ namespace FlatRedBall.Glue.MVVM
     /// <summary>
     /// ViewModel-implementing class used to display and persist data for a NamedObjectSave or element. 
     /// </summary>
+    /// <example>
+    /// var viewModel = new TypeInheritingFromPropertyListContainerViewModel();
+    /// viewModel.GlueObject = namedObjectOrElement;
+    /// viewModel.UpdateFromGlueObject(); // sets the values according to this
+    /// </example>
     public class PropertyListContainerViewModel : ViewModel
     {
         #region Embedded Classes

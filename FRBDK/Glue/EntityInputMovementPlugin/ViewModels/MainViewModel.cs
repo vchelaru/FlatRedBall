@@ -18,9 +18,15 @@ namespace EntityInputMovementPlugin.ViewModels
         Platformer,
         Racing
     }
+
+    public enum InputDevice
+    {
+        GamepadWithKeyboardFallback,
+        None
+    }
     #endregion
 
-    class MainViewModel : ViewModel
+    public class MainViewModel : PropertyListContainerViewModel
     {
         public bool IsNoneRadioChecked
         {
@@ -41,6 +47,49 @@ namespace EntityInputMovementPlugin.ViewModels
             get => Get<bool>();
             set => Set(value);
         }
+
+        #region Input Device
+
+        [SyncedProperty]
+        [DefaultValue((int)InputDevice.GamepadWithKeyboardFallback)]
+        public InputDevice InputDevice
+        {
+            get => (InputDevice)Get<int>();
+            set => SetAndPersist((int)value);
+        }
+
+        [DependsOn(nameof(InputDevice))]
+        public bool IsGamepadWithKeyboardFallbackInputDevice
+        {
+            get => InputDevice == InputDevice.GamepadWithKeyboardFallback;
+            set
+            {
+                if(value)
+                {
+                    InputDevice = InputDevice.GamepadWithKeyboardFallback;
+                }
+            }
+        }
+
+        [DependsOn(nameof(InputDevice))]
+        public bool IsNoneInputDevice
+        {
+            get => InputDevice == InputDevice.None;
+            set
+            {
+                if (value)
+                {
+                    InputDevice = InputDevice.None;
+                }
+            }
+        }
+
+        [DependsOn(nameof(IsTopDownRadioChecked))]
+        [DependsOn(nameof(IsPlatformerRadioChecked))]
+        public Visibility InputDeviceVisibility =>
+            (IsTopDownRadioChecked || IsPlatformerRadioChecked).ToVisibility();
+
+        #endregion
 
         #region Top down 
         public bool IsTopDownRadioChecked

@@ -23,7 +23,6 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
         #region Fields
 
         PlatformerEntityViewModel viewModel;
-        MainControl mainControl;
 
         bool ignoresPropertyChanges = false;
 
@@ -38,7 +37,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             if(viewModel == null)
             {
                 viewModel = new PlatformerEntityViewModel();
-                viewModel.PropertyChanged += HandleViewModelPropertyChange;
+                viewModel.PropertyChanged += HandleViewModelPropertyChanged;
             }
 
             return viewModel;
@@ -114,7 +113,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             }
         }
 
-        private void HandleViewModelPropertyChange(object sender, PropertyChangedEventArgs e)
+        private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             /////////// early out ///////////
             if (ignoresPropertyChanges)

@@ -485,6 +485,13 @@ namespace OfficialPlugins.VariableDisplay
                     list.AddRange(variableDefinition.ForcedOptions);
                     instanceMember.CustomOptions = list;
                 }
+                else if(variableDefinition?.CustomGetForcedOptionFunc != null)
+                {
+                    instanceMember.PreferredDisplayer = typeof(ComboBoxDisplay);
+                    var list = new List<object>();
+                    list.AddRange(variableDefinition.CustomGetForcedOptionFunc(container, instance, null));
+                    instanceMember.CustomOptions = list;
+                }
 
                 instanceMember.CustomGetTypeEvent += (throwaway) => memberType;
 
