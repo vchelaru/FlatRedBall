@@ -16,7 +16,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
         public void GenerateAndSaveEnumFile()
         {
 
-            TaskManager.Self.AddSync(() =>
+            TaskManager.Self.Add(() =>
             {
                 var contents = GenerateFileContents();
 

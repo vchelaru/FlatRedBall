@@ -16,36 +16,61 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 {
     public class CsvGenerator : Singleton<CsvGenerator>
     {
+        #region Fields/Properties
 
-        public string CsvFileFor(EntitySave entity)
+        public static string StrippedCsvFile
+        {
+            get
+            {
+                if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.CsvInheritanceSupport)
+                {
+                    return "PlatformerValuesStatic";
+                }
+                else
+                {
+                    return "PlatformerValues";
+                }
+            }
+        }
+        public static string RelativeCsvFile => StrippedCsvFile + ".csv";
+
+        #endregion
+
+        public FilePath CsvFileFor(EntitySave entity)
         {
             string absoluteFileName = GlueCommands.Self.FileCommands.GetContentFolder(entity) + RelativeCsvFile;
             return absoluteFileName;
         }
 
-        public const string StrippedCsvFile = "PlatformerValues";
-        public const string RelativeCsvFile = StrippedCsvFile + ".csv";
 
-
-        internal void GenerateFor(EntitySave entity, PlatformerEntityViewModel viewModel)
+        internal void GenerateFor(EntitySave entity, bool inheritsFromPlatformer, PlatformerEntityViewModel viewModel)
         {
-            string contents = GenerateCsvContents(entity, viewModel);
+            string contents = GenerateCsvContents(inheritsFromPlatformer, viewModel);
 
-            string fileName = CsvFileFor(entity);
+            var fileName = CsvFileFor(entity);
 
             GlueCommands.Self.TryMultipleTimes(() =>
             {
-                FileManager.SaveText(contents, fileName);
+                FileManager.SaveText(contents, fileName.FullPath);
             });
         }
 
-        private string GenerateCsvContents(EntitySave entity, PlatformerEntityViewModel viewModel)
+        private string GenerateCsvContents(bool inheritsFromPlatformer, PlatformerEntityViewModel viewModel)
         {
             List<PlatformerValues> values = new List<PlatformerValues>();
 
             foreach(var valuesViewModel in viewModel.PlatformerValues)
             {
-                values.Add(valuesViewModel.ToValues());
+                var platformerValues = valuesViewModel.ToValues();
+
+                var shouldInclude = inheritsFromPlatformer == false
+                    //|| platformerValues.InheritOrOverwrite == InheritOrOverwrite.Overwrite
+                    ;
+
+                if (shouldInclude)
+                {
+                    values.Add(platformerValues);
+                }
             }
 
             RuntimeCsvRepresentation rcr = RuntimeCsvRepresentation.FromList(values);

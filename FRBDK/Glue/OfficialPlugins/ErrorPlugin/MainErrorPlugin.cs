@@ -3,6 +3,7 @@ using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
@@ -60,6 +61,8 @@ namespace OfficialPlugins.ErrorPlugin
             this.ReactToFileRemoved += HandleFileRemoved;
             this.ReactToUnloadedGlux += HandleUnloadedGlux;
             this.ReactToFileReadError += HandleFileReadError ;
+
+            RefreshCommands.RefreshErrorsAction = () => RefreshLogic.RefreshAllErrors(errorListViewModel);
         }
 
         private void HandleRefreshClicked(object sender, EventArgs e)

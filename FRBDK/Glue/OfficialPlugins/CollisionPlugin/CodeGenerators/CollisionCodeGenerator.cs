@@ -6,6 +6,7 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Math;
 using OfficialPlugins.CollisionPlugin.Managers;
 using OfficialPlugins.CollisionPlugin.ViewModels;
+using OfficialPluginsCore.CollisionPlugin.ExtensionMethods;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -39,11 +40,8 @@ namespace OfficialPlugins.CollisionPlugin
 
         public static void GenerateInitializeCodeFor(NamedObjectSave namedObject, ICodeBlock codeBlock)
         {
-            var firstCollidable = namedObject.Properties.GetValue<string>(
-                nameof(CollisionRelationshipViewModel.FirstCollisionName));
-
-            var secondCollidable = namedObject.Properties.GetValue<string>(
-                nameof(CollisionRelationshipViewModel.SecondCollisionName));
+            var firstCollidable = namedObject.GetFirstCollidableObjectName();
+            var secondCollidable = namedObject.GetSecondCollidableObjectName();
 
             //////////////Early Out/////////////////////
             if (string.IsNullOrEmpty(firstCollidable) || string.IsNullOrEmpty(secondCollidable))

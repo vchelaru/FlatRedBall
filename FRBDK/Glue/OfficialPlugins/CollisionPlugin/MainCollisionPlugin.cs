@@ -11,6 +11,8 @@ using OfficialPlugins.CollisionPlugin.Controllers;
 using OfficialPlugins.CollisionPlugin.Managers;
 using OfficialPlugins.CollisionPlugin.ViewModels;
 using OfficialPlugins.CollisionPlugin.Views;
+using OfficialPluginsCore.CollisionPlugin.Errors;
+using OfficialPluginsCore.CollisionPlugin.ExtensionMethods;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -71,6 +73,8 @@ namespace OfficialPlugins.CollisionPlugin
             RegisterCodeGenerator(collisionCodeGenerator);
 
             AssignEvents();
+
+            AddErrorReporter(new CollisionErrorReporter());
         }
 
         private void AssignEvents()
@@ -83,12 +87,28 @@ namespace OfficialPlugins.CollisionPlugin
 
             this.GetEventSignatureArgs += GetEventSignatureAndArgs;
 
+            this.ReactToObjectRemoved += HandleObjectRemoved;
+
             this.ReactToChangedPropertyHandler += CollisionRelationshipViewModelController.HandleGlueObjectPropertyChanged;
 
             this.ReactToCreateCollisionRelationshipsBetween += (first, second) =>
             {
                 CollidableNamedObjectController.CreateCollisionRelationshipBetweenObjects(first.InstanceName, second.InstanceName);
             };
+        }
+
+        private void HandleObjectRemoved(IElement element, NamedObjectSave namedObject)
+        {
+            if(namedObject.IsCollisionRelationship())
+            {
+                GlueCommands.Self.RefreshCommands.RefreshErrors();
+            }
+            else if(element.AllNamedObjects.Any(item => item.IsCollisionRelationship() &&
+                (item.GetFirstCollidableObjectName() == namedObject.InstanceName) ||
+                (item.GetSecondCollidableObjectName() == namedObject.InstanceName)))
+            {
+                GlueCommands.Self.RefreshCommands.RefreshErrors();
+            }
         }
 
         private void HandleGluxLoad()

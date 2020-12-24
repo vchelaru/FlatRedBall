@@ -65,6 +65,16 @@ namespace TopDownPlugin.Controllers
             }
         }
 
+        private void AddTopDownGlueVariables(EntitySave entity)
+        {
+            // We don't make any variables because currently there's no concept of
+            // different movement types that the plugin can switch between, the way
+            // the platformer switches between ground/air/double-jump
+
+            // Actually even though there's not air, ground, double jump, there is a CurrentMovementValues
+            // property. But we'll just codegen that for now.
+        }
+
         private void HandleViewModelPropertyChange(object sender, PropertyChangedEventArgs e)
         {
             /////////// early out ///////////
@@ -110,14 +120,14 @@ namespace TopDownPlugin.Controllers
 
             if (shouldGenerateEntity)
             {
-                TaskManager.Self.AddSync(
+                TaskManager.Self.Add(
                     () => GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity),
                     "Generating " + entity.Name);
             }
 
             if (shouldAddTopDownVariables)
             {
-                TaskManager.Self.AddSync(() =>
+                TaskManager.Self.Add(() =>
                 {
                     GlueCommands.Self.DoOnUiThread(() =>
                     {
@@ -130,7 +140,7 @@ namespace TopDownPlugin.Controllers
 
             if (shouldGenerateCsv || shouldGenerateEntity || shouldAddTopDownVariables)
             {
-                TaskManager.Self.AddAsyncTask(
+                TaskManager.Self.Add(
                     () =>
                     {
                         GlueCommands.Self.GluxCommands.SaveGlux();
@@ -283,15 +293,6 @@ namespace TopDownPlugin.Controllers
             );
         }
 
-        private void AddTopDownGlueVariables(EntitySave entity)
-        {
-            // We don't make any variables because currently there's no concept of
-            // different movement types that the plugin can switch between, the way
-            // the platformer switches between ground/air/double-jump
-
-            // Actually even though there's not air, ground, double jump, there is a CurrentMovementValues
-            // property. But we'll just codegen that for now.
-        }
 
         #region Update To / Refresh From Model
 

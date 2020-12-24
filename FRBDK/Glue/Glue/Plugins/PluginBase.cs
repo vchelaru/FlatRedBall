@@ -507,6 +507,11 @@ namespace FlatRedBall.Glue.Plugins
             GameCodeGenerators.Clear();
         }
 
+        protected void AddErrorReporter(IErrorReporter errorReporter)
+        {
+            EditorObjects.IoC.Container.Get<List<IErrorReporter>>().Add(errorReporter);
+        }
+
         #endregion
 
     }

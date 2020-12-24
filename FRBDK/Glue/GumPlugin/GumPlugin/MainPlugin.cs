@@ -322,7 +322,7 @@ namespace GumPlugin
             //EditorObjects.IoC.Container.Get<IErrorContainer>().
             var error = new GumPluginCore.ErrorReporting.ErrorReporter();
 
-            EditorObjects.IoC.Container.Get<List<IErrorReporter>>().Add(error);
+            AddErrorReporter(error);
 
         }
 

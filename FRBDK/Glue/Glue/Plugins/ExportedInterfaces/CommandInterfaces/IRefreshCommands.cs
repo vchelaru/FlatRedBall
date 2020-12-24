@@ -22,6 +22,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// </summary>
         void RefreshGlobalContent();
 
+        /// <summary>
+        /// Refreshes all errors.
+        /// </summary>
+        void RefreshErrors();
+
 
         /// <summary>
         /// Refreshes the propertygrid so that the latest data will be shown.  This should be called whenever data

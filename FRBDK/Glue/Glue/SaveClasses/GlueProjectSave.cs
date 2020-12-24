@@ -141,29 +141,6 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
-        public IEnumerator<NamedObjectSave> NamedObjects
-        {
-            get
-            {
-                foreach (ScreenSave screenSave in Screens)
-                {
-                    foreach (NamedObjectSave nos in screenSave.NamedObjects)
-                    {
-                        yield return nos;
-                    }
-                }
-
-                foreach (EntitySave entitySave in Entities)
-                {
-                    foreach (NamedObjectSave nos in entitySave.NamedObjects)
-                    {
-                        yield return nos;
-                    }
-                }
-            }
-        }
-
-        [XmlIgnore]
         public bool GlobalContentHasChanged { get; set; }
 
         #endregion

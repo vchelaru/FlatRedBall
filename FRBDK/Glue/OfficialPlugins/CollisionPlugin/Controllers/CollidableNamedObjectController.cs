@@ -3,6 +3,7 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.ViewModels;
 using OfficialPlugins.CollisionPlugin.Managers;
 using OfficialPlugins.CollisionPlugin.ViewModels;
+using OfficialPluginsCore.CollisionPlugin.ExtensionMethods;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -160,17 +161,13 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             if (needToInvert)
             {
-                newNos.Properties.SetValue(nameof(CollisionRelationshipViewModel.FirstCollisionName),
-                    secondNosName);
-                newNos.Properties.SetValue(nameof(CollisionRelationshipViewModel.SecondCollisionName),
-                    firstNosName);
+                newNos.SetFirstCollidableObjectName(secondNosName);
+                newNos.SetSecondCollidableObjectName(firstNosName);
             }
             else
             {
-                newNos.Properties.SetValue(nameof(CollisionRelationshipViewModel.FirstCollisionName),
-                    firstNosName);
-                newNos.Properties.SetValue(nameof(CollisionRelationshipViewModel.SecondCollisionName),
-                    secondNosName);
+                newNos.SetFirstCollidableObjectName(firstNosName);
+                newNos.SetSecondCollidableObjectName(secondNosName);
             }
 
 

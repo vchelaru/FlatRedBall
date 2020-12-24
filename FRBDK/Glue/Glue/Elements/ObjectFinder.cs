@@ -552,6 +552,29 @@ namespace FlatRedBall.Glue.Elements
             }
         }
 
+        /// <summary>
+        /// Returns a fully recursive enumerable of all NamedObjectSaves in the project. This includes
+        /// NamedObjectSaves in lists and in derived elements.
+        /// </summary>
+        public IEnumerable<NamedObjectSave> GetAllNamedObjects()
+        {
+            foreach (ScreenSave screenSave in GlueProject.Screens)
+            {
+                foreach (NamedObjectSave nos in screenSave.AllNamedObjects)
+                {
+                    yield return nos;
+                }
+            }
+
+            foreach (EntitySave entitySave in GlueProject.Entities)
+            {
+                foreach (NamedObjectSave nos in entitySave.AllNamedObjects)
+                {
+                    yield return nos;
+                }
+            }
+        }
+
         public List<NamedObjectSave> GetAllNamedObjectsThatUseElement(IElement element)
         {
             if (element is EntitySave)

@@ -2,14 +2,20 @@
 using System.Windows.Forms;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using Glue;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
-    class RefreshCommands : IRefreshCommands
+    public class RefreshCommands : IRefreshCommands
     {
+        // The error manager is in a plugin. We could put it
+        // here but it contains UI and we are trying ot move UI
+        // out of Glue, not in, so instead we're going to go through
+        public static Action RefreshErrorsAction { get; set; }
+
         public void RefreshUiForSelectedElement()
         {
             if (EditorLogic.CurrentElementTreeNode != null)
@@ -89,7 +95,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-
+        public void RefreshErrors()
+        {
+            TaskManager.Self.AddOrRunIfTasked(() => RefreshErrorsAction?.Invoke(),
+                "Refreshing Errors",
+                TaskExecutionPreference.AddOrMoveToEnd);
+        }
 
         public void RefreshDirectoryTreeNodes()
         {

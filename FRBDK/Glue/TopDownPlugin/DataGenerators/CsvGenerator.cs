@@ -50,17 +50,17 @@ namespace TopDownPlugin.DataGenerators
 
             string fileName = CsvTopdownFileFor(entity).FullPath;
 
-            GlueCommands.Self.TryMultipleTimes(() =>
+            try
             {
-                try
+                GlueCommands.Self.TryMultipleTimes(() =>
                 {
                     FileManager.SaveText(contents, fileName);
-                }
-                catch(System.IO.IOException)
-                {
-                    GlueCommands.Self.PrintError($"Trying to save top down CSV {fileName} but failed due to IO - maybe file is open?");
-                }
-            });
+                });
+            }
+            catch (System.IO.IOException)
+            {
+                GlueCommands.Self.PrintError($"Trying to save top down CSV {fileName} but failed due to IO - maybe file is open?");
+            }
         }
 
         private string GenerateCsvContents(bool inheritsFromTopDown, TopDownEntityViewModel viewModel, CsvHeader[] headers)

@@ -18,10 +18,8 @@ namespace OfficialPlugins.ErrorPlugin.Logic
     {
         public static void RefreshAllErrors(ErrorListViewModel errorListViewModel)
         {
-            TaskManager.Self.AddSync(() =>
+            TaskManager.Self.Add(() =>
             {
-                // todo - need to store a list of IErrorReporter's somewhere, and loop through them
-                // here
                 lock (GlueState.ErrorListSyncLock)
                 {
                     errorListViewModel.Errors.Clear();
@@ -31,12 +29,15 @@ namespace OfficialPlugins.ErrorPlugin.Logic
                 {
                     var errors = reporter.GetAllErrors();
 
-                    foreach (var error in errors)
+                    if(errors != null)
                     {
-                       lock (GlueState.ErrorListSyncLock)
-                       {
-                           errorListViewModel.Errors.Add(error);
-                       }
+                        foreach (var error in errors)
+                        {
+                           lock (GlueState.ErrorListSyncLock)
+                           {
+                               errorListViewModel.Errors.Add(error);
+                           }
+                        }
                     }
                 }
             }
@@ -45,7 +46,7 @@ namespace OfficialPlugins.ErrorPlugin.Logic
 
         internal static void HandleFileChange(FilePath filePath, ErrorListViewModel errorListViewModel)
         {
-            TaskManager.Self.AddSync(() =>
+            TaskManager.Self.Add(() =>
             {
                 // Add new errors:
                 ErrorCreateRemoveLogic.AddNewErrorsForChangedFile(filePath, errorListViewModel);
@@ -57,18 +58,18 @@ namespace OfficialPlugins.ErrorPlugin.Logic
 
         internal static void HandleReferencedFileRemoved(ReferencedFileSave removedFile, ErrorListViewModel errorListViewModel)
         {
-            TaskManager.Self.AddSync(() =>
+            TaskManager.Self.Add(() =>
             {
-                    ErrorCreateRemoveLogic.RemoveFixedErrorsForRemovedRfs(removedFile, errorListViewModel);
+                ErrorCreateRemoveLogic.RemoveFixedErrorsForRemovedRfs(removedFile, errorListViewModel);
 
             }, $"Handle referenced file removed {removedFile}");
         }
 
         internal static void HandleFileReadError(FilePath filePath, ErrorListViewModel errorListViewModel)
         {
-            TaskManager.Self.AddSync(() =>
+            TaskManager.Self.Add(() =>
             {
-                    ErrorCreateRemoveLogic.AddNewErrorsForFileReadError(filePath, errorListViewModel);
+                ErrorCreateRemoveLogic.AddNewErrorsForFileReadError(filePath, errorListViewModel);
 
             }, $"Handle file read error {filePath}");
 

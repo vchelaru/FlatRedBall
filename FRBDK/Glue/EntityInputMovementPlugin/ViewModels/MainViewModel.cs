@@ -48,9 +48,9 @@ namespace EntityInputMovementPlugin.ViewModels
             get => Get<bool>();
             set
             {
-                if(Set(value) && value)
+                if(Set(value))
                 {
-                    TopDownViewModel.IsTopDown = true;
+                    TopDownViewModel.IsTopDown = value;
                 }
             }
         }
@@ -101,9 +101,9 @@ namespace EntityInputMovementPlugin.ViewModels
             get => Get<bool>();
             set
             {
-                if (Set(value) && value)
+                if (Set(value))
                 {
-                    PlatformerViewModel.IsPlatformer = true;
+                    PlatformerViewModel.IsPlatformer = value;
                 }
             }
         }
