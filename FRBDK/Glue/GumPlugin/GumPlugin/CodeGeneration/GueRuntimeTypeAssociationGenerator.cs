@@ -172,6 +172,7 @@ namespace GumPlugin.CodeGeneration
                 case "UserControl":
                 case "TreeViewItem":
                 case "TreeView":
+                case "FlatRedBall.Forms.Controls.Games.OnScreenKeyboard":
                     return true;
                     // These require a Text object
                 case "Button": 
@@ -185,7 +186,7 @@ namespace GumPlugin.CodeGeneration
                     return element.Instances.Any(item => item.Name == "TextInstance" && item.BaseType == "Text");
 
                 default:
-                    throw new NotImplementedException($"Need to handle {controlType}");
+                    throw new NotImplementedException($"Need to handle {controlType} in {nameof(GetIfIsCompleteFulfillment)}");
             }
 
         }

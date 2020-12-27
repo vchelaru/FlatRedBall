@@ -206,6 +206,13 @@ namespace GumPlugin.DataGeneration
                 }
             };
 
+            OnScreenKeyboard = new FormsControlInfo
+            {
+                BehaviorName = "OnScreenKeyboardBehavior",
+                ComponentFile = "Keyboard",
+                ControlName = "FlatRedBall.Forms.Controls.Games.OnScreenKeyboard"
+            };
+
             PasswordBox = new FormsControlInfo
             {
                 BehaviorName = "PasswordBoxBehavior",
@@ -538,6 +545,7 @@ namespace GumPlugin.DataGeneration
                 Label,
                 ListBox,
                 ListBoxItem,
+                OnScreenKeyboard,
                 PasswordBox,
                 RadioButton,
                 ScrollBar,
@@ -568,6 +576,8 @@ namespace GumPlugin.DataGeneration
         public static FormsControlInfo ListBox;
 
         public static FormsControlInfo ListBoxItem;
+
+        public static FormsControlInfo OnScreenKeyboard;
 
         public static FormsControlInfo PasswordBox;
 

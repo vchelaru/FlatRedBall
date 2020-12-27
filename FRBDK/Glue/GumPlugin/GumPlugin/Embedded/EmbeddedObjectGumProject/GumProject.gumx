@@ -188,6 +188,9 @@
     <Name>ListBoxItemBehavior</Name>
   </BehaviorReference>
   <BehaviorReference>
+    <Name>OnScreenKeyboardBehavior</Name>
+  </BehaviorReference>
+  <BehaviorReference>
     <Name>PasswordBoxBehavior</Name>
   </BehaviorReference>
   <BehaviorReference>
