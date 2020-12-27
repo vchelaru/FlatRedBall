@@ -690,6 +690,8 @@ namespace FlatRedBall
 
             PreInitialization();
 
+            AddManager(new SingleThreadSynchronizationContext());
+
             mGraphics = graphics as GraphicsDeviceManager;
             mGraphicsDevice = mGraphics.GraphicsDevice;
 

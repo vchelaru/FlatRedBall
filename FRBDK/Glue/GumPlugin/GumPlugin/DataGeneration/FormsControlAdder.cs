@@ -32,36 +32,47 @@ namespace GumPlugin.DataGeneration
             var componentFiles = FormsControlInfo.AllControls.Select(item => item.ComponentFile)
                 .Where(item => !string.IsNullOrEmpty(item))
                 .ToArray();
-            
 
+            var addedFileDestinations = new List<FilePath>();
 
-            foreach (var file in componentFiles)
+            var resourcesInAssembly = assembly.GetManifestResourceNames();
+
+            foreach(var resource in resourcesInAssembly)
             {
-                // example:
-                // "GumPlugin.Embedded.EmbeddedObjectGumProject.Components.DefaultFormsButton.gucx"
-                var resourceName = "GumPluginCore/Embedded/EmbeddedObjectGumProject/Components/DefaultForms/" + file + ".gucx";
+                const string defaultFormsPrefix = "GumPluginCore.Embedded.EmbeddedObjectGumProject.Components.DefaultForms.";
+                var isFormsComponent = resource.StartsWith(defaultFormsPrefix) && resource.EndsWith(".gucx");
 
-                var destination = componentDestination + file + ".gucx";
-
-                var shouldSave = true;
-                if(System.IO.File.Exists(destination))
+                if(isFormsComponent)
                 {
-                    var result = System.Windows.Forms.MessageBox.Show($"The file {destination} already exists. Save anyway?", 
-                        "Overwrite?",
-                        System.Windows.Forms.MessageBoxButtons.YesNo);
+                    var noPrefixName = resource.Substring(defaultFormsPrefix.Length);
 
-                    shouldSave = result == System.Windows.Forms.DialogResult.Yes;
-                }
+                    var destination = componentDestination + noPrefixName;
 
-                if(shouldSave)
-                {
-                    try
+                    addedFileDestinations.Add(destination);
+
+                    var shouldSave = true;
+
+                    int m = 3;
+
+                    if (System.IO.File.Exists(destination))
                     {
-                        FileManager.SaveEmbeddedResource(assembly, resourceName.Replace("/", "."), destination);
+                        var result = System.Windows.Forms.MessageBox.Show($"The file {destination} already exists. Save anyway?",
+                            "Overwrite?",
+                            System.Windows.Forms.MessageBoxButtons.YesNo);
+
+                        shouldSave = result == System.Windows.Forms.DialogResult.Yes;
                     }
-                    catch (Exception e)
+
+                    if (shouldSave)
                     {
-                        GlueCommands.Self.PrintError($"Could not add component {resourceName}:\n{e}");
+                        try
+                        {
+                            FileManager.SaveEmbeddedResource(assembly, resource, destination);
+                        }
+                        catch (Exception e)
+                        {
+                            GlueCommands.Self.PrintError($"Could not add component {resource}:\n{e}");
+                        }
                     }
                 }
             }
@@ -83,21 +94,23 @@ namespace GumPlugin.DataGeneration
             }
 
             // Now that everything is on disk, add the files to the Gum project if necessary
-            TaskManager.Self.AddSync(() =>
+            TaskManager.Self.Add(() =>
             {
                 var wasAnythingAdded = false;
 
-                foreach(var component in componentFiles)
+                foreach(var file in addedFileDestinations)
                 {
-                    var absoluteFile = new FilePath(componentDestination + component + ".gucx");
-
-                    var isComponentAlreadyPartOfProject =
-                        AppCommands.Self.IsComponentFileReferenced(absoluteFile);
-
-                    if(!isComponentAlreadyPartOfProject && absoluteFile.Exists())
+                    if(file.Extension == "gucx")
                     {
-                        AppCommands.Self.AddComponent(absoluteFile);
-                        wasAnythingAdded = true;
+                        var isComponentAlreadyPartOfProject =
+                            AppCommands.Self.IsComponentFileReferenced(file.FullPath);
+
+                        if(!isComponentAlreadyPartOfProject && file.Exists())
+                        {
+                            AppCommands.Self.AddComponent(file.FullPath);
+                            wasAnythingAdded = true;
+                        }
+
                     }
                 }
 

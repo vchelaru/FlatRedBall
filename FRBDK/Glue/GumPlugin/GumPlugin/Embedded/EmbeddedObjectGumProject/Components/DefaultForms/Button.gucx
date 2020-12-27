@@ -534,6 +534,55 @@
         <SetsValue>true</SetsValue>
       </Variable>
     </State>
+    <State>
+      <Name>DisabledFocused</Name>
+      <Variable>
+        <Type>bool</Type>
+        <Name>HighlightRectangle.Visible</Name>
+        <Value xsi:type="xsd:boolean">true</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>int</Type>
+        <Name>NineSliceInstance.Blue</Name>
+        <Value xsi:type="xsd:int">255</Value>
+        <Category>Rendering</Category>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>ColorCategoryState</Type>
+        <Name>NineSliceInstance.ColorCategoryState</Name>
+        <Value xsi:type="xsd:string">Black</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>int</Type>
+        <Name>NineSliceInstance.Green</Name>
+        <Value xsi:type="xsd:int">255</Value>
+        <Category>Rendering</Category>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>int</Type>
+        <Name>NineSliceInstance.Red</Name>
+        <Value xsi:type="xsd:int">255</Value>
+        <Category>Rendering</Category>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>ColorCategoryState</Type>
+        <Name>TextInstance.ColorCategoryState</Name>
+        <Value xsi:type="xsd:string">Gray</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <VariableList xsi:type="VariableListSaveOfString">
+        <Type>string</Type>
+        <Name>AnimationFrames</Name>
+        <IsFile>false</IsFile>
+        <IsHiddenInPropertyGrid>false</IsHiddenInPropertyGrid>
+        <Value />
+      </VariableList>
+    </State>
   </Category>
   <Instance>
     <Name>NineSliceInstance</Name>

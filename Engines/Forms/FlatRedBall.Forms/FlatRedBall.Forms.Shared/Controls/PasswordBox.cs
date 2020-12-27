@@ -158,7 +158,7 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        protected override void HandleBackspace(bool isCtrlDown)
+        public override void HandleBackspace(bool isCtrlDown = false)
         {
             if (HasFocus && caretIndex > 0)
             {

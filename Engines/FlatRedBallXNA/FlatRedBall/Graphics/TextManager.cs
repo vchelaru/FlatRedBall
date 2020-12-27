@@ -832,7 +832,7 @@ namespace FlatRedBall.Graphics
 
             if (!FlatRedBallServices.IsThreadPrimary())
             {
-                throw new InvalidOperationException("Objects can only be added on the primary thread");
+                throw new InvalidOperationException("Text objects can only be removed on the primary thread");
             }
 #endif
             if (textToRemove == null)
@@ -857,7 +857,7 @@ namespace FlatRedBall.Graphics
 
             if (!FlatRedBallServices.IsThreadPrimary())
             {
-                throw new InvalidOperationException("Objects can only be added on the primary thread");
+                throw new InvalidOperationException("Text objects can only be removed on the primary thread");
             }
 #endif
 

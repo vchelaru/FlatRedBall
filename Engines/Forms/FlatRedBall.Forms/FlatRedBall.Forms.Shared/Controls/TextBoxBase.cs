@@ -41,6 +41,8 @@ namespace FlatRedBall.Forms.Controls
 
         public event FocusUpdateDelegate FocusUpdate;
 
+        public bool LosesFocusWhenClickedOff { get; set; } = true;
+
         protected int caretIndex;
         public int CaretIndex
         {
@@ -78,7 +80,7 @@ namespace FlatRedBall.Forms.Controls
 
         protected abstract string DisplayedText { get; }
 
-        TextWrapping textWrapping;
+        TextWrapping textWrapping = TextWrapping.NoWrap;
         public TextWrapping TextWrapping
         {
             get => textWrapping;
@@ -211,7 +213,10 @@ namespace FlatRedBall.Forms.Controls
                 UpdateCaretIndexFromCursor();
             }
 
-            GuiManager.AddNextPushAction(TryLoseFocusFromPush);
+            if(this.LosesFocusWhenClickedOff)
+            {
+                GuiManager.AddNextPushAction(TryLoseFocusFromPush);
+            }
 
         }
 
@@ -224,16 +229,16 @@ namespace FlatRedBall.Forms.Controls
                 cursor.WindowOver == this.Visual ||
                 (cursor.WindowOver != null && cursor.WindowOver.IsInParentChain(this.Visual));
 
-            if (clickedOnThisOrChild == false &&
-                HasFocus)
+            if (clickedOnThisOrChild == false && IsFocused)
             {
-                this.HasFocus = false;
+                this.IsFocused = false;
             }
         }
 
         private void HandleClickOff()
         {
-            if (GuiManager.Cursor.WindowOver != Visual && timeFocused != TimeManager.CurrentTime)
+            if (GuiManager.Cursor.WindowOver != Visual && timeFocused != TimeManager.CurrentTime &&
+                LosesFocusWhenClickedOff)
             {
                 IsFocused = false;
             }
@@ -518,7 +523,7 @@ namespace FlatRedBall.Forms.Controls
 
         }
 
-        protected abstract void HandleBackspace(bool isCtrlDown);
+        public abstract void HandleBackspace(bool isCtrlDown = false);
 
         protected abstract void HandleDelete();
 
@@ -734,12 +739,11 @@ namespace FlatRedBall.Forms.Controls
                 this.textComponent.XUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
                 this.caretComponent.XUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
 
-                float leftOfCaret = caretComponent.AbsoluteX;
-                float rightOfCaret = caretComponent.AbsoluteX + caretComponent.GetAbsoluteWidth();
+                float leftOfCaret = caretComponent.GetAbsoluteLeft();
+                float rightOfCaret = caretComponent.GetAbsoluteLeft() + caretComponent.GetAbsoluteWidth();
 
-                float leftOfParent = caretComponent.EffectiveParentGue.AbsoluteX;
-                float rightOfParent = caretComponent.EffectiveParentGue.AbsoluteX +
-                    caretComponent.EffectiveParentGue.GetAbsoluteWidth();
+                float leftOfParent = caretComponent.EffectiveParentGue.GetAbsoluteLeft();
+                float rightOfParent = leftOfParent + caretComponent.EffectiveParentGue.GetAbsoluteWidth();
 
                 float shiftAmount = 0;
                 if (rightOfCaret > rightOfParent)

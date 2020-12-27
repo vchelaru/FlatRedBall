@@ -61,7 +61,7 @@ namespace FlatRedBall.Forms.Controls
         {
             // text component is optional:
             textComponent = base.Visual.GetGraphicalUiElementByName("TextInstance");
-
+            coreTextObject = textComponent?.RenderableComponent as RenderingLibrary.Graphics.Text;
             base.ReactToVisualChanged();
         }
 

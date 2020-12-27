@@ -214,6 +214,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ManagedSpriteGroups\TextureGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ManagedSpriteGroups\TextureLocation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Managers\IManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Managers\SingleThreadSynchronizationContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\AttachableList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Attachment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Collision\CollisionEnumerations.cs" />

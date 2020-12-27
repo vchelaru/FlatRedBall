@@ -281,15 +281,15 @@
     <State>
       <Name>VerticalScrollVisible</Name>
       <Variable>
-        <Type>bool</Type>
-        <Name>VerticalScrollBarInstance.Visible</Name>
-        <Value xsi:type="xsd:boolean">true</Value>
-        <SetsValue>true</SetsValue>
-      </Variable>
-      <Variable>
         <Type>float</Type>
         <Name>ClipContainerInstance.Width</Name>
         <Value xsi:type="xsd:float">-37</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>bool</Type>
+        <Name>VerticalScrollBarInstance.Visible</Name>
+        <Value xsi:type="xsd:boolean">true</Value>
         <SetsValue>true</SetsValue>
       </Variable>
     </State>

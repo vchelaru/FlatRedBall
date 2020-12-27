@@ -62,7 +62,9 @@ namespace FlatRedBall.Forms.Controls
 
         public override void HandleCharEntered(char character)
         {
-            if(IsFocused)
+            // not sure why we require this to be focused. It blocks things like the
+            // OnScreenKeyboard from adding characters
+            //if(IsFocused)
             {
                 if(selectionLength != 0)
                 {
@@ -98,10 +100,11 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        protected override void HandleBackspace(bool isCtrlDown)
+        public override void HandleBackspace(bool isCtrlDown = false)
         {
-            if (IsFocused && caretIndex > 0 && Text != null)
-            {
+            //if (IsFocused && caretIndex > 0 && Text != null)
+            if (caretIndex > 0 && Text != null)
+                {
                 if(selectionLength > 0)
                 {
                     DeleteSelection();
