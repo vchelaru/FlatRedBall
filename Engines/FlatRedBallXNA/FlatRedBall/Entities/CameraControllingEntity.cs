@@ -6,11 +6,13 @@ using Microsoft.Xna.Framework;
 
 namespace FlatRedBall.Entities
 {
+    #region Enums
+
     public enum CameraBehaviorType
     {
         PositionLocking,
     }
-
+    #endregion
 
     // Influenced by https://www.gamasutra.com/blogs/ItayKeren/20150511/243083/Scroll_Back_The_Theory_and_Practice_of_Cameras_in_SideScrollers.php
     public class CameraControllingEntity : PositionedObject

@@ -40,7 +40,7 @@ namespace OfficialPluginsCore.CameraControllingEntityPlugin
 
             ati.CanBeObject = true;
             ati.IsPositionedObject = true;
-            ati.AddToManagersFunc += (element, nos, rfs, layerName) => $"FlatRedBall.SpriteManager.AddPositionedObject({nos.InstanceName});";
+            ati.AddToManagersFunc += (element, nos, rfs, layerName) => $"FlatRedBall.SpriteManager.AddPositionedObject({nos.InstanceName}); {nos.InstanceName}.Activity();";
             ati.ActivityMethod = "this.Activity()";
             ati.DestroyMethod = "FlatRedBall.SpriteManager.RemovePositionedObject(this);";
 
