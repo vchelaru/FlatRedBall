@@ -769,42 +769,51 @@ namespace Gum.Wireframe
             get => mInheritedBindingContext;
             set
             {
-                if (value != EffectiveBindingContext)
+                if (value != mInheritedBindingContext)
                 {
-                    var oldBindingContext = EffectiveBindingContext;
-                    if (oldBindingContext is INotifyPropertyChanged oldViewModel)
-                    {
-                        oldViewModel.PropertyChanged -= HandleViewModelPropertyChanged;
-                    }
+                    var oldEffectiveBindingContext = EffectiveBindingContext;
                     mInheritedBindingContext = value;
 
-                    if (EffectiveBindingContext is INotifyPropertyChanged viewModel)
+                    // Changing the inherited binding context should save this value, but
+                    // whether this raises events for binding context changed depends on whether
+                    // setting the inherited changes the effective. If it does, propagate as shown
+                    // below. If not, don't do anything
+                    if(oldEffectiveBindingContext != EffectiveBindingContext)
                     {
-                        viewModel.PropertyChanged += HandleViewModelPropertyChanged;
-                    }
-
-                    if (EffectiveBindingContext != null)
-                    {
-                        foreach (var vmProperty in vmPropsToUiProps.Keys)
+                        if (oldEffectiveBindingContext is INotifyPropertyChanged oldViewModel)
                         {
-                            UpdateToVmProperty(vmProperty);
+                            oldViewModel.PropertyChanged -= HandleViewModelPropertyChanged;
                         }
+                        if (EffectiveBindingContext is INotifyPropertyChanged viewModel)
+                        {
+                            viewModel.PropertyChanged += HandleViewModelPropertyChanged;
+                        }
+
+                        if (EffectiveBindingContext != null)
+                        {
+                            foreach (var vmProperty in vmPropsToUiProps.Keys)
+                            {
+                                UpdateToVmProperty(vmProperty);
+                            }
+                        }
+
+                        var args = new BindingContextChangedEventArgs();
+                        args.OldBindingContext = oldEffectiveBindingContext;
+
+                        if (this.Children != null)
+                        {
+                            UpdateChildrenInheritedBindingContext(this.Children, this.EffectiveBindingContext);
+                        }
+                        else
+                        {
+                            UpdateChildrenInheritedBindingContext(this.ContainedElements, this.EffectiveBindingContext);
+                        }
+
+                        // BindingContextChanged call should happen *after* recursively setting
+                        // the children's binding context, so that ListBoxes can override their
+                        // children ListBoxItem BindingContext after they have been created above
+                        BindingContextChanged?.Invoke(this, args);
                     }
-
-                    var args = new BindingContextChangedEventArgs();
-                    args.OldBindingContext = oldBindingContext;
-
-                    BindingContextChanged?.Invoke(this, args);
-
-                    if (this.Children != null)
-                    {
-                        UpdateChildrenInheritedBindingContext(this.Children);
-                    }
-                    else
-                    {
-                        UpdateChildrenInheritedBindingContext(this.ContainedElements);
-                    }
-
                 }
             }
         }
@@ -847,7 +856,7 @@ namespace Gum.Wireframe
                     if(this.Children != null)
                     {
                         // do the default first...
-                        UpdateChildrenInheritedBindingContext(this.Children);
+                        UpdateChildrenInheritedBindingContext(this.Children, EffectiveBindingContext);
                         // ... then overwrite it
                         foreach(var child in this.Children)
                         {
@@ -865,7 +874,7 @@ namespace Gum.Wireframe
                     else
                     {
                         // Do the default functionalty first...
-                        UpdateChildrenInheritedBindingContext(this.ContainedElements);
+                        UpdateChildrenInheritedBindingContext(this.ContainedElements, EffectiveBindingContext);
                         // ... then overwrite it
                         foreach(var gue in this.ContainedElements)
                         {
@@ -889,16 +898,25 @@ namespace Gum.Wireframe
 
         object EffectiveBindingContext => mBindingContext ?? InheritedBindingContext;
 
-        private void UpdateChildrenInheritedBindingContext(IEnumerable<IRenderableIpso> children)
+        private static void UpdateChildrenInheritedBindingContext(IEnumerable<IRenderableIpso> children, object effectiveBindingContext)
         {
             foreach (var child in children)
             {
                 if (child is GraphicalUiElement gue)
                 {
-                    gue.InheritedBindingContext = this.BindingContext;
+                    if(gue.InheritedBindingContext != effectiveBindingContext)
+                    {
+                        var effectiveBeforeChange = gue.EffectiveBindingContext;
+                        gue.InheritedBindingContext = effectiveBindingContext;
+                        if(effectiveBindingContext != gue.EffectiveBindingContext)
+                        {
+                            // This saves us some processing. If the parent's effective didn't change, then no need
+                            // to notify the children
+                            UpdateChildrenInheritedBindingContext(child.Children, gue.EffectiveBindingContext);
+                        }
+                    }
                 }
 
-                UpdateChildrenInheritedBindingContext(child.Children);
             }
         }
 

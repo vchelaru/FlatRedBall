@@ -62,7 +62,7 @@ namespace FlatRedBall.Forms.Controls
             }
             set
             {
-                var index = Items.IndexOf(value);
+                var index = Items?.IndexOf(value) ?? -1;
 
                 SelectedIndex = index;
 
