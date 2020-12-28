@@ -38,13 +38,14 @@ namespace FlatRedBall.TileGraphics
             mTileDimensionWidth = tileDimensionWidth;
             mTileDimensionHeight = tileDimensionHeight;
 
-            mNumCols = mTexture.Width / tileDimensionWidth;
-            mNumRows = mTexture.Height / tileDimensionHeight;
+            if(mTexture != null)
+            {
+                mNumCols = mTexture.Width / tileDimensionWidth;
+                mNumRows = mTexture.Height / tileDimensionHeight;
 
-            mTextureTileWidth = (float)(tileDimensionWidth) / (float)(mTexture.Width);
-            mTextureTileHeight = (float)(tileDimensionHeight) / (float)(mTexture.Height);
-
-
+                mTextureTileWidth = (float)(tileDimensionWidth) / (float)(mTexture.Width);
+                mTextureTileHeight = (float)(tileDimensionHeight) / (float)(mTexture.Height);
+            }
         }
 
         public short GetTextureIndexFromCoordinate(Vector2 topLeftUVCoordinate)

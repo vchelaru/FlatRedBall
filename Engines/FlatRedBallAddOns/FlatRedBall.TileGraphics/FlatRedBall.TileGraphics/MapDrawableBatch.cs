@@ -249,8 +249,9 @@ namespace FlatRedBall.TileGraphics
         public MapDrawableBatch(int numberOfTiles, int textureTileDimensionWidth, int textureTileDimensionHeight, Texture2D texture)
             : base()
         {
-            if (texture == null)
-                throw new ArgumentNullException("texture");
+            // Update - maybe this is okay, it's just an empty layer, and we want to support that...
+            //if (texture == null)
+            //    throw new ArgumentNullException("texture");
 
             Visible = true;
             InternalInitialize();
@@ -476,7 +477,11 @@ namespace FlatRedBall.TileGraphics
 
 #endif
 
-            Texture2D texture = FlatRedBallServices.Load<Texture2D>(textureName, contentManagerName);
+            Texture2D texture = null;
+            if (!string.IsNullOrEmpty(textureName))
+            {
+                texture = FlatRedBallServices.Load<Texture2D>(textureName, contentManagerName);
+            }
 
             MapDrawableBatch toReturn = new MapDrawableBatch(reducedLayerInfo.Quads.Count, tileDimensionWidth, tileDimensionHeight, texture);
 
