@@ -122,7 +122,34 @@ namespace Gum.Wireframe
         {
             // Always remove it - if it's not a part of it, no big deal, FRB can handle that
             //if (IsComponentOrInstanceOfComponent())
+
+            RemoveBindingContextRecursively();
+
             GuiManager.RemoveWindow(this);
+        }
+
+        private void RemoveBindingContextRecursively()
+        {
+            this.BindingContext = null;
+            if (this.Children != null)
+            {
+                foreach(var child in this.Children)
+                {
+                    if(child is GraphicalUiElement gue)
+                    {
+                        gue.RemoveBindingContextRecursively();
+                    }
+                }
+            }
+            else
+            {
+                foreach (var gue in this.mWhatThisContains)
+                {
+                    gue.RemoveBindingContextRecursively();
+                }
+            }
+
+
         }
 
         #region IWindow implementation

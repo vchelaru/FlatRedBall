@@ -314,6 +314,19 @@ namespace FlatRedBall.Forms.Controls
 
         #region Update To
 
+        protected override void HandleVisualBindingContextChanged(object sender, BindingContextChangedEventArgs args)
+        {
+            if(args.OldBindingContext != null && BindingContext == null)
+            {
+                // user removed the binding context, usually this happens when the object is removed
+                if(vmPropsToUiProps.ContainsValue(nameof(Items)))
+                {
+                    // null out the items!
+                    this.Items = null;
+                }
+            }
+            base.HandleVisualBindingContextChanged(sender, args);
+        }
 
         #endregion
     }

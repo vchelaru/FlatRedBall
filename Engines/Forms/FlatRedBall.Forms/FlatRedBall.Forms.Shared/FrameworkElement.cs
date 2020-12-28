@@ -421,7 +421,7 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        private void HandleVisualBindingContextChanged(object sender, BindingContextChangedEventArgs args)
+        protected virtual void HandleVisualBindingContextChanged(object sender, BindingContextChangedEventArgs args)
         {
             if(args.OldBindingContext is INotifyPropertyChanged oldAsPropertyChanged)
             {
