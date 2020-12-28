@@ -268,7 +268,7 @@ namespace FlatRedBall.Glue.IO
                     {
                         TaskManager.Self.OnUiThread(()=>
                         {
-                            GlueCommands.Self.LoadProject(ProjectManager.ProjectBase.FullFileName);
+                            GlueCommands.Self.LoadProject(changedFile);
                         });
                     }, ReloadingProjectDescription);
                 }

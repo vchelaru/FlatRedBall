@@ -358,30 +358,6 @@ namespace FlatRedBall.Screens
             }
         }
 
-
-        private static T LoadScreen<T>(Layer layerToLoadScreenOn) where T : Screen
-        {
-            mNextScreenLayer = layerToLoadScreenOn;
-
-#if XBOX360
-            T newScreen = (T)Activator.CreateInstance(typeof(T));
-#else
-            T newScreen = (T)Activator.CreateInstance(typeof(T), new object[0]);
-#endif
-
-            FlatRedBall.Input.InputManager.CurrentFrameInputSuspended = true;
-
-            newScreen.Initialize(true);
-            TimeManager.SetNextFrameTimeTo0 = true;
-
-            newScreen.ApplyRestartVariables();
-
-
-
-            return newScreen;
-        }
-
-
         private static Screen LoadScreen(string screen, Layer layerToLoadScreenOn)
         {
             return LoadScreen(screen, layerToLoadScreenOn, true, false);
@@ -431,7 +407,26 @@ namespace FlatRedBall.Screens
                 nextCallback?.Invoke(newScreen);
                 nextCallback = null;
 
+                if(addToManagers && makeCurrentScreen)
+                {
+                    // Dec 28, 2020
+                    // I thought we called
+                    // Activity immediately
+                    // when a new Screen was
+                    // created/added. If we don't
+                    // then a single frame will pass
+                    // without activity, and objects may
+                    // not be positioned correclty.
+                    mCurrentScreen.Activity(mCurrentScreen.ActivityCallCount == 0);
 
+                    mCurrentScreen.ActivityCallCount++;
+
+                    if (mCurrentScreen.ActivityCallCount == 1 && mWasFixedTimeStep.HasValue)
+                    {
+                        FlatRedBallServices.Game.IsFixedTimeStep = mWasFixedTimeStep.Value;
+                        TimeManager.TimeFactor = mLastTimeFactor.Value;
+                    }
+                }
 
             }
 
