@@ -77,7 +77,7 @@ namespace GumPlugin.Managers
                         var thisName = rfs.GetInstanceName() ?? nos.InstanceName;
 
                         var toReturn =
-                            $"{thisName} = GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetComponent(\"{strippedName}\"), true);";
+                            $"if({rfs.GetInstanceName()} == null) {thisName} = GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetComponent(\"{strippedName}\"), true);";
 
                         return toReturn;
                     };
@@ -133,7 +133,7 @@ namespace GumPlugin.Managers
                         // Gum zoom
                         //var toReturn = "FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera();";
                         var toReturn =
-                            $"{rfs.GetInstanceName()} = GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetScreen(\"{strippedName}\"), true);";
+                            $"if({rfs.GetInstanceName()} == null) {rfs.GetInstanceName()} = GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetScreen(\"{strippedName}\"), true);";
 
                         return toReturn;
                     };
@@ -278,7 +278,7 @@ namespace GumPlugin.Managers
                         // Gum zoom
                         //var toReturn = "FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera();";
                         var toReturn =
-                            $"{rfs.GetInstanceName()} = GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetElementSave(\"{strippedName}\"), true);";
+                            $"if({rfs.GetInstanceName()} == null) {rfs.GetInstanceName()} = GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetElementSave(\"{strippedName}\"), true);";
 
                         return toReturn;
                     };
@@ -493,8 +493,9 @@ namespace GumPlugin.Managers
 
                     string strippedName = GetStrippedScreenName(rfs);
 
+                    // Do this so that Gum objects don't get re-created every time a LoadStaticContent call is made - this can happen multiple times if dealing with screens+inheritance
                     var toReturn =
-                        $"{rfs.GetInstanceName()} = ({qualifiedName})GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetScreen(\"{strippedName}\"), true);";
+                        $"if({rfs.GetInstanceName()} == null) {rfs.GetInstanceName()} = ({qualifiedName})GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetScreen(\"{strippedName}\"), true);";
 
                     return toReturn;
                 };
