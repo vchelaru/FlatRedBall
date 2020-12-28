@@ -90,7 +90,12 @@ namespace FlatRedBall.Graphics.Texture
             var device = FlatRedBallServices.GraphicsDevice;
 
             // Default alpha blend
-            device.BlendState = BlendState.AlphaBlend;
+            // No wait, this could be causing problems internally
+            // when sprites try to change blend state! We should always
+            // use the renderer:
+            //device.BlendState = BlendState.AlphaBlend;
+            FlatRedBall.Graphics.Renderer.BlendOperation = BlendOperation.Regular;
+
 
             device.Viewport = Camera.GetViewport();
             device.SetRenderTarget(mRenderTarget);
