@@ -183,6 +183,7 @@ namespace GumPlugin.CodeGeneration
                 case "ToggleButton":
                 case "Toast":
                 case "FlatRedBall.Forms.Controls.Popups.Toast":
+                case "FlatRedBall.Forms.Controls.Games.DialogBox":
                     return element.Instances.Any(item => item.Name == "TextInstance" && item.BaseType == "Text");
 
                 default:

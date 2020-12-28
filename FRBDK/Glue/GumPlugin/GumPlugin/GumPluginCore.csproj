@@ -56,6 +56,7 @@
     <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\CheckBox.gucx" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ColoredFrame.gucx" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ComboBox.gucx" />
+    <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\DialogBox.gucx" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\Keyboard.gucx" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\KeyboardKey.gucx" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\Label.gucx" />
@@ -211,6 +212,7 @@
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\CheckBox.gucx" />
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ColoredFrame.gucx" />
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ComboBox.gucx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\DialogBox.gucx" />
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\Keyboard.gucx" />
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\KeyboardKey.gucx" />
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\Label.gucx" />

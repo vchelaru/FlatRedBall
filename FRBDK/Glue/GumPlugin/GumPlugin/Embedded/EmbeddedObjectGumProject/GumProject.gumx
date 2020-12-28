@@ -35,6 +35,11 @@
     <LinkType>ReferenceOriginal</LinkType>
   </ComponentReference>
   <ComponentReference>
+    <Name>DefaultForms/DialogBox</Name>
+    <ElementType>Component</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </ComponentReference>
+  <ComponentReference>
     <Name>DefaultForms/Keyboard</Name>
     <ElementType>Component</ElementType>
     <LinkType>ReferenceOriginal</LinkType>
@@ -177,6 +182,9 @@
   </BehaviorReference>
   <BehaviorReference>
     <Name>ComboBoxBehavior</Name>
+  </BehaviorReference>
+  <BehaviorReference>
+    <Name>DialogBoxBehavior</Name>
   </BehaviorReference>
   <BehaviorReference>
     <Name>LabelBehavior</Name>

@@ -125,6 +125,13 @@ namespace GumPlugin.DataGeneration
                 }
             };
 
+            DialogBox = new FormsControlInfo
+            {
+                BehaviorName = "DialogBoxBehavior",
+                ComponentFile = "DialogBox",
+                ControlName = "FlatRedBall.Forms.Controls.Games.DialogBox"
+            };
+
             Label = new FormsControlInfo
             {
                 BehaviorName = "LabelBehavior",
@@ -542,6 +549,7 @@ namespace GumPlugin.DataGeneration
                 CheckBox,
                 ColoredFrame,
                 ComboBox,
+                DialogBox,
                 Label,
                 ListBox,
                 ListBoxItem,
@@ -570,6 +578,8 @@ namespace GumPlugin.DataGeneration
         public static FormsControlInfo ColoredFrame;
 
         public static FormsControlInfo ComboBox;
+
+        public static FormsControlInfo DialogBox;
 
         public static FormsControlInfo Label;
 
