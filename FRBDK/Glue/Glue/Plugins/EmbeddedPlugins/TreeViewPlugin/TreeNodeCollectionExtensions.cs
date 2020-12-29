@@ -9,8 +9,6 @@ namespace FlatRedBall.Glue.FormHelpers
 {
     public static class TreeNodeCollectionExtensions
     {
-        
-
         public static void SortByTextConsideringDirectories(this TreeNodeCollection treeNodeCollection, bool recursive = false)
         {
             int lastObjectExclusive = treeNodeCollection.Count;

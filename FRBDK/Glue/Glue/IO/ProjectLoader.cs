@@ -562,15 +562,14 @@ namespace FlatRedBall.Glue.IO
             Section.GetAndStartContextAndTime("Screens");
             foreach (ScreenSave screen in ProjectManager.GlueProjectSave.Screens)
             {
-                ElementViewWindow.AddScreen(screen); ;
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screen);
 
             }
             Section.EndContextAndTime();
             Section.GetAndStartContextAndTime("Entities");
             foreach (EntitySave entity in ProjectManager.GlueProjectSave.Entities)
             {
-                ElementViewWindow.AddEntity(entity, generateCode: false);
-
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(entity);
             }
             ElementViewWindow.ResumeLayout();
             Section.EndContextAndTime();

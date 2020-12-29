@@ -447,7 +447,7 @@ namespace FlatRedBall.Glue.Managers
         private static void AddExistingNamedObjectToElement(IElement element, NamedObjectSave newNamedObject)
         {
             element.NamedObjects.Add(newNamedObject);
-            GlueCommands.Self.RefreshCommands.RefreshUi(element);
+            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
             PluginManager.ReactToNewObject(newNamedObject);
             GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(element);
 

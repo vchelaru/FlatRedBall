@@ -854,7 +854,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 newNos.SourceName = addObjectViewModel.SourceNameInFile;
                 newNos.UpdateCustomProperties();
 
-                GlueCommands.Self.RefreshCommands.RefreshUi(element);
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
             }
             else if (addObjectViewModel.SourceFile != null)
             {
@@ -863,7 +863,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 newNos.SourceName = addObjectViewModel.SourceNameInFile;
                 newNos.UpdateCustomProperties();
 
-                GlueCommands.Self.RefreshCommands.RefreshUi(element);
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
             }
 
             newNos.SourceClassGenericType = addObjectViewModel.SourceClassGenericType;
@@ -927,7 +927,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 //AddExistingNamedObjectToElement(element, namedObject, true);
                 element.NamedObjects.Add(namedObject);
-                GlueCommands.Self.RefreshCommands.RefreshUi(element);
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
                 // eventually this method will die, but for now the caller is responsible
                 //PluginManager.ReactToNewObject(namedObject);
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(element);
@@ -1066,7 +1066,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (updateUi)
                 {
-                    GlueCommands.Self.RefreshCommands.RefreshUi(element);
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
                 }
                 CodeWriter.GenerateCode(element);
                 if (element is EntitySave)

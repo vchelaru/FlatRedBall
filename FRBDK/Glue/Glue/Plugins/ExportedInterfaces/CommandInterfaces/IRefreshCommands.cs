@@ -13,7 +13,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// Refreshes everything for the selected element
         /// </summary>
         /// <param name="element">IElement to update UI for</param>
-        void RefreshUi(IElement element);
+        void RefreshTreeNodeFor(IElement element);
 
         void RefreshUi(StateSaveCategory category);
 

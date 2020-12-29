@@ -192,8 +192,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
         #endregion
 
-
-
         #region Methods
 
         public static void Initialize(TreeView treeView,  TreeNode entityNode, TreeNode screenNode, TreeNode globalContentNode)
@@ -217,7 +215,6 @@ namespace FlatRedBall.Glue.FormHelpers
             mGlobalContentNode.SelectedImageKey = "master_file.png";
             mGlobalContentNode.ImageKey = "master_file.png";
         }
-
 
         public static void SuspendLayout()
         {
@@ -333,41 +330,25 @@ namespace FlatRedBall.Glue.FormHelpers
             MainGlueWindow.Self.PropertyGrid.SelectedObject = displayer;
         }
 
-
-        public static EntityTreeNode AddEntity(EntitySave entitySave, bool generateCode = true)
+        [Obsolete("Use RefreshCommands.RefreshTreeNodeFor")]
+        public static EntityTreeNode AddEntity(EntitySave entitySave)
         {
-            Section.GetAndStartContextAndTime("Constructor");
             EntityTreeNode treeNode = new EntityTreeNode(FileManager.RemovePath(entitySave.Name));
 
-            Section.EndContextAndTime();
-            Section.GetAndStartContextAndTime("Code file");
-
             treeNode.CodeFile = entitySave.Name + ".cs";
-
-            Section.EndContextAndTime();
-            Section.GetAndStartContextAndTime("Add node");
-
-            TreeNode treeNodeToAddTo = null;
             bool succeeded = true;
 
-            if (entitySave.Name.StartsWith("Entities/") == false &&
-                entitySave.Name.StartsWith("Entities\\") == false)
-            {
-                GlueGui.ShowMessageBox(
-                    "The Entity named " + entitySave.Name + " must have a name that starts with \"Entities/\"");
-                succeeded = false;
-            }
             if (succeeded)
             {
                 string containingDirectory = FileManager.MakeRelative(FileManager.GetDirectory(entitySave.Name));
 
+                TreeNode treeNodeToAddTo;
                 if (containingDirectory == "Entities/")
                 {
                     treeNodeToAddTo = mEntityNode;
                 }
                 else
                 {
-
                     string directory = containingDirectory.Substring("Entities/".Length);
 
                     treeNodeToAddTo = GlueState.Self.Find.TreeNodeForDirectoryOrEntityNode(
@@ -403,8 +384,6 @@ namespace FlatRedBall.Glue.FormHelpers
                 treeNodeToAddTo.Nodes.Add(treeNode);
                 treeNodeToAddTo.Nodes.SortByTextConsideringDirectories();
 
-                Section.EndContextAndTime();
-                Section.GetAndStartContextAndTime("Set generated");
                 string generatedFile = entitySave.Name + ".Generated.cs";
 
                 if (FileManager.FileExists(generatedFile))
@@ -412,11 +391,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     treeNode.GeneratedCodeFile = generatedFile;
                 }
 
-                Section.EndContextAndTime();
-                Section.GetAndStartContextAndTime("Sort");
                 SortEntities();
-
-                Section.EndContextAndTime();
 
                 treeNode.EntitySave = entitySave;
                 treeNode.RefreshTreeNodes();
@@ -425,8 +400,7 @@ namespace FlatRedBall.Glue.FormHelpers
             return treeNode;
         }
 
-
-
+        [Obsolete("Use RefreshCommands.RefreshTreeNodeFor")]
         public static BaseElementTreeNode AddScreen(ScreenSave screenSave)
         {
             string screenFileName = screenSave.Name + ".cs";
@@ -858,7 +832,6 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             mEntityNode.Nodes.SortByTextConsideringDirectories();
         }
-
 
         public static void ElementDoubleClicked()
         {

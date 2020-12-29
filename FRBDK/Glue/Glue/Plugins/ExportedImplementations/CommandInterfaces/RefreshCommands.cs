@@ -24,12 +24,27 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             
         }
 
-        public void RefreshUi(IElement element)
+        public void RefreshTreeNodeFor(IElement element)
         {
             if (ProjectManager.ProjectBase != null)
             {
                 var elementTreeNode = GlueState.Self.Find.ElementTreeNode(element);
-                elementTreeNode?.RefreshTreeNodes();
+
+                if(elementTreeNode == null)
+                {
+                    if(element is ScreenSave screen)
+                    {
+                        ElementViewWindow.AddScreen(screen);
+                    }
+                    else if(element is EntitySave entitySave)
+                    {
+                        ElementViewWindow.AddEntity(entitySave);
+                    }
+                }
+                else
+                {
+                    elementTreeNode?.RefreshTreeNodes();
+                }
             }
         }
 

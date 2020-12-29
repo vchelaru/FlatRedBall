@@ -280,7 +280,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
 
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(targetElement);
-                    GlueCommands.Self.RefreshCommands.RefreshUi(targetElement);
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(targetElement);
                 }
             }
         }
@@ -402,7 +402,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
 
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(targetContainer);
-                GlueCommands.Self.RefreshCommands.RefreshUi(targetContainer);
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(targetContainer);
 
             }
 

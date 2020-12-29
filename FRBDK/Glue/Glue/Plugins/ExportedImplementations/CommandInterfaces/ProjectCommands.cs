@@ -642,7 +642,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             else
             {
-                GlueCommands.Self.RefreshCommands.RefreshUi(element);
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
             }
 
             GlueCommands.Self.RefreshCommands.RefreshDirectoryTreeNodes();

@@ -594,7 +594,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 {
                     namedObject.InstanceName = desiredName;
 
-                    GlueCommands.Self.RefreshCommands.RefreshUi(element);
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
                     GlueCommands.Self.GluxCommands.SaveGlux();
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                 }
