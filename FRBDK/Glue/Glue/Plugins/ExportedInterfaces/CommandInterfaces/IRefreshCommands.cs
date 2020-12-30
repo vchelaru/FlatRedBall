@@ -10,9 +10,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void RefreshUiForSelectedElement();
 
         /// <summary>
-        /// Refreshes everything for the selected element
+        /// Refreshes the tree node for the selected element.
+        /// This may add or remove tree nodes depending on whether
+        /// the tree node is already created, and if the element's
+        /// IsHiddenInTreeView is set to true.
         /// </summary>
-        /// <param name="element">IElement to update UI for</param>
+        /// <param name="element">IElement to update the tree node for</param>
         void RefreshTreeNodeFor(IElement element);
 
         void RefreshUi(StateSaveCategory category);

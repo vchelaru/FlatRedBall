@@ -97,7 +97,10 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             get;
         }
-       
+
+        bool IsHiddenInTreeView { get; set; }
+
+
     }
 
     #region Helper extension methods

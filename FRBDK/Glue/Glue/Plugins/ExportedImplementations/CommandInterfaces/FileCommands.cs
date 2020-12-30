@@ -247,6 +247,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return GlueState.ContentDirectory + rfs.Name;
         }
 
+        public FilePath GetFilePath(ReferencedFileSave rfs)
+        {
+            return GlueState.ContentDirectory + rfs.Name;
+        }
+
         // This replaces ObjectFinder.GetReferencedFileSaveFromFile - if any changes are made here, make the changes there too
         public ReferencedFileSave GetReferencedFile(string fileName)
         {

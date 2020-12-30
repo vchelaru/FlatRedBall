@@ -75,12 +75,11 @@ namespace FlatRedBall.Glue.Managers
             viewModel.RefreshFilteredList();
         }
 
-        public ReferencedFileSave AddSingleFile(string fileName, ref bool userCancelled, object options = null)
+        public ReferencedFileSave AddSingleFile(string fileName, ref bool userCancelled, object options = null, IElement elementToAddTo = null)
         {
+            var element = elementToAddTo ?? GlueState.Self.CurrentElement;
 
-            var element = GlueState.Self.CurrentElement;
-            string directoryOfTreeNode = EditorLogic.CurrentTreeNode.GetRelativePath();
-            return AddSingleFile(fileName, ref userCancelled, element, directoryOfTreeNode, options);
+            return AddSingleFile(fileName, ref userCancelled, element, null, options);
         }
 
         public ReferencedFileSave AddSingleFile(string fileName, ref bool userCancelled, IElement element, 

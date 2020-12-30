@@ -40,159 +40,16 @@ namespace FlatRedBall.Glue.SaveClasses
 
     #endregion
 
-    public class EntitySave : IFileReferencer, IElement, ITaggable, IPropertyListContainer
+    public class EntitySave : GlueElement, ITaggable, IPropertyListContainer
     {
         #region Fields
 
-        bool mIsUnique;
-
-
         string mBaseEntity;
 
-        string mCurrentStateChange;
-
-
-        public List<PropertySave> Properties
-        {
-            get;
-            set;
-        } = new List<PropertySave>();
-        public bool ShouldSerializeProperties()
-        {
-            return Properties != null && Properties.Count != 0;
-        }
-
-        public List<string> Tags = new List<string>();
-        public string Source = "";
 
         #endregion
 
         #region Properties
-
-        [Browsable(false)]
-        [XmlIgnore]
-        public bool HasChanged { get; set; }
-
-        [Browsable(false)]
-        [XmlIgnore]
-        public IEnumerable<StateSave> AllStates
-        {
-            get
-            {
-                foreach (StateSave state in States)
-                {
-                    yield return state;
-                }
-                foreach (StateSaveCategory category in this.StateCategoryList)
-                {
-                    foreach(StateSave state in category.States)
-                    {
-                        yield return state;
-                    }
-                }
-            }
-        }
-
-        [Browsable(false)]
-        [XmlIgnore]
-        public IEnumerable<NamedObjectSave> AllNamedObjects
-        {
-            get
-            {
-                foreach(NamedObjectSave nos in NamedObjects)
-                {
-                    yield return nos;
-
-                    foreach(NamedObjectSave containedNos in nos.ContainedObjects)
-                    {
-                        yield return containedNos;
-                    }
-                }
-            }
-        }
-
-        [Browsable(false)]
-        public List<StateSave> States
-        {
-            get;
-            set;
-        }
-        public bool ShouldSerializeStates()
-        {
-            return States != null && States.Count != 0;
-        }
-
-        [Browsable(false)]
-        public List<StateSaveCategory> StateCategoryList
-        {
-            get;
-            set;
-        }
-        public bool ShouldSerializeStateCategoryList()
-        {
-            return StateCategoryList != null && StateCategoryList.Count != 0;
-        }
-
-        [Browsable(false)]
-        [XmlIgnore]
-        public bool HasStates
-        {
-            get
-            {
-                if (States.Count != 0)
-                {
-                    return true;
-                }
-
-                foreach (StateSaveCategory category in StateCategoryList)
-                {
-                    if (category.States.Count != 0)
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-        }
-
-        [Browsable(false)]
-        public List<CustomVariable> CustomVariables
-        {
-            get;
-            set;
-        }
-        public bool ShouldSerializeCustomVariables()
-        {
-            return CustomVariables != null && CustomVariables.Count != 0;
-        }
-
-        // This is not ever used, may be removed
-        // completely from Glue, but for now let's
-        // pull it out of the UI
-        [Browsable(false)]
-        public bool IsUnique
-        {
-            get
-            {
-                return mIsUnique;
-            }
-            set
-            {
-                mIsUnique = value;
-
-                for (int i = 0; i < NamedObjects.Count; i++)
-                {
-                    NamedObjects[i].AddToManagers = !mIsUnique;
-                }
-
-
-            }
-        }
-        public bool ShouldSerializeIsUnique()
-        {
-            return IsUnique == true;
-        }
 
         [CategoryAttribute("Inheritance and Interfaces")]
         public string BaseEntity
@@ -274,46 +131,6 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        [Browsable(false)]
-        public string Name
-        {
-            get;
-            set;
-        }
-
-        [XmlIgnore]
-        [DisplayName("Name")]
-        public string ClassName
-        {
-            get
-            {
-                return FileManager.RemovePath(Name);
-            }
-        }
-
-        [Browsable(false)]
-        public List<NamedObjectSave> NamedObjects
-        {
-            get;
-            set;
-        }
-        public bool ShouldSerializeNamedObjects()
-        {
-            return NamedObjects != null && NamedObjects.Count != 0;
-        }
-
-        [Browsable(false)]
-        public List<ReferencedFileSave> ReferencedFiles
-        {
-            get;
-            set;
-        }
-        public bool ShouldSerializeReferencedFiles()
-        {
-            return ReferencedFiles != null && ReferencedFiles.Count != 0;
-        }
-
-
         //[Browsable(false)]
         //public List<BehaviorSave> Behaviors
         //{
@@ -327,18 +144,13 @@ namespace FlatRedBall.Glue.SaveClasses
 
         [XmlIgnore]
         [Browsable(false)]
-        string INamedObjectContainer.BaseObject
+        public override string BaseObject
         {
             get { return mBaseEntity; }
             set { mBaseEntity = value; }
         }
 
-        [XmlIgnore]
-        int INamedObjectContainer.VerificationIndex
-        {
-            get;
-            set;
-        }
+
 
         internal int VerificationIndex
         {
@@ -368,12 +180,6 @@ namespace FlatRedBall.Glue.SaveClasses
             return PooledByFactory == true;
         }
 
-        [CategoryAttribute("Performance")]
-        public bool UseGlobalContent
-        {
-            get;
-            set;
-        }
         public bool ShouldSerializeUseGlobalContent()
         {
             return UseGlobalContent == true;
@@ -403,7 +209,7 @@ namespace FlatRedBall.Glue.SaveClasses
             set;
         }
 
-        string IElement.BaseElement
+        public override string BaseElement
         {
             get { return BaseEntity; }
         }
@@ -508,16 +314,6 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #endregion
 
-        [Browsable(false)]
-        public List<EventResponseSave> Events
-        {
-            get;
-            set;
-        }
-        public bool ShouldSerializeEvents()
-        {
-            return Events != null && Events.Count != 0;
-        }
 
         /// <summary>
         /// Sets whether the Entity is a 2D Entity.  If this is true, then contained objects and files will default to 2D mode (pixel size will be .5, Cameras in files will be orthogonal)
@@ -614,21 +410,6 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
 
-        public EventResponseSave GetEvent(string eventName)
-        {
-            foreach (EventResponseSave es in Events)
-            {
-                if (es.EventName == eventName)
-                {
-                    return es;
-                }
-            }
-
-            return null;
-        }
-
-
-
         public object GetPropertyValue(string propertyName)
         {
             for (int i = 0; i < CustomVariables.Count; i++)
@@ -642,17 +423,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         }
 
-        public ReferencedFileSave GetReferencedFileSave(string fileName)
-        {
-            return FileReferencerHelper.GetReferencedFileSave(this, fileName);
-        }
 
-        // This method needs to be moved to IElementExtensionMethods.cs!!!
-
-        
-
-
-        
         public void SetCustomVariable(string customVariableName, object valueToSet)
         {
             for (int i = 0; i < CustomVariables.Count; i++)

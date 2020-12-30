@@ -496,9 +496,9 @@ namespace FlatRedBall.Glue.FormHelpers
             PluginManager.ReactToTreeViewRightClick(targetNode, menu);
         }
 
-        public static ReferencedFileSave AddSingleFile(string fullFileName, ref bool cancelled)
+        public static ReferencedFileSave AddSingleFile(string fullFileName, ref bool cancelled, IElement elementToAddTo = null)
         {
-            return AddExistingFileManager.Self.AddSingleFile(fullFileName, ref cancelled);
+            return AddExistingFileManager.Self.AddSingleFile(fullFileName, ref cancelled, elementToAddTo:elementToAddTo);
         }
 
         public static void Initialize()
@@ -1253,11 +1253,7 @@ namespace FlatRedBall.Glue.FormHelpers
                         else if (EditorLogic.CurrentScreenSave != null)
                         {
                             var screenToRemove = EditorLogic.CurrentScreenSave;
-                            TaskManager.Self.AddSync(() =>
-                            {
-                                RemoveScreen(screenToRemove, filesToRemove);
-                            },
-                            "Remove screen");
+                            RemoveScreen(screenToRemove, filesToRemove);
                         }
 
                         #endregion
@@ -1394,8 +1390,6 @@ namespace FlatRedBall.Glue.FormHelpers
                     message += "\n" + namedObjectsToRemove[i].ToString();
 
                 }
-
-
             }
 
             List<EntitySave> inheritingEntities = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(entityToRemove);
@@ -1419,78 +1413,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (result == DialogResult.Yes)
             {
-                for (int i = entityToRemove.NamedObjects.Count - 1; i > -1; i--)
-                {
-                    NamedObjectSave nos = entityToRemove.NamedObjects[i];
-
-
-
-                    GlueCommands.Self.GluxCommands
-                        .RemoveNamedObject(nos, false, false, null);
-                }
-
-
-                if (entityToRemove.CreatedByOtherEntities == true)
-                {
-                    FactoryCodeGenerator.RemoveFactory(entityToRemove);
-                }
-
-                // We used to rely on RemoveUnreferencedFiles to do the removal of all RFS's 
-                // However, RemoveUnreferencedFiles looks for the file's container to remove it,
-                // and by this point the entityToRemove has already been removed from the project.
-                // So we'll manually remove the RFS's first before removing the entire entity
-                for (int i = entityToRemove.ReferencedFiles.Count - 1; i > -1; i--)
-                {
-                    GluxCommands.Self.RemoveReferencedFile(entityToRemove.ReferencedFiles[i], filesThatCouldBeRemoved);
-                }
-
-                    
-                ProjectManager.GlueProjectSave.Entities.Remove(entityToRemove);
-
-
-
-                RemoveUnreferencedFiles(entityToRemove, filesThatCouldBeRemoved);
-
-                for (int i = 0; i < namedObjectsToRemove.Count; i++)
-                {
-                    MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
-                    NamedObjectSave nos = namedObjectsToRemove[i];
-                    mbmb.MessageText = "What would you like to do with the object\n\n" + nos.ToString();
-
-                    mbmb.AddButton("Remove this Object", DialogResult.OK);
-                    mbmb.AddButton("Keep this Object (the reference will be invalid)", DialogResult.Cancel);
-
-                    DialogResult namedObjectRemovalResult = mbmb.ShowDialog();
-
-                    if (namedObjectRemovalResult == DialogResult.OK)
-                    {
-                        GlueCommands.Self.GluxCommands
-                            .RemoveNamedObject(nos, false, true, filesThatCouldBeRemoved);
-                    }
-                }
-                for (int i = 0; i < inheritingEntities.Count; i++)
-                {
-                    EntitySave inheritingEntity = inheritingEntities[i];
-
-                    DialogResult resetInheritance = MessageBox.Show("Reset the inheritance for " + inheritingEntity.Name + "?",
-                        "Reset Inheritance?", MessageBoxButtons.YesNo);
-
-                    if (resetInheritance == DialogResult.Yes)
-                    {
-                        inheritingEntity.BaseEntity = "";
-                        CodeWriter.GenerateCode(inheritingEntity);
-                    }
-                }
-
-                ElementViewWindow.RemoveEntity(entityToRemove);
-
-                ProjectManager.RemoveCodeFilesForElement(filesThatCouldBeRemoved, entityToRemove);
-
-                PluginManager.ReactToEntityRemoved(entityToRemove, filesThatCouldBeRemoved);
-
-                GlueCommands.Self.ProjectCommands.SaveProjects();
-
-                GluxCommands.Self.SaveGlux();
+                GlueCommands.Self.GluxCommands.RemoveEntity(entityToRemove, filesThatCouldBeRemoved);
             }
         }
 
@@ -1518,93 +1441,7 @@ namespace FlatRedBall.Glue.FormHelpers
             {
 
 
-                // Remove objects before removing files.  Otherwise Glue will complain if any objects reference the files.
-                #region Remove the NamedObjectSaves
-
-                for (int i = screenToRemove.NamedObjects.Count - 1; i > -1; i--)
-                {
-                    NamedObjectSave nos = screenToRemove.NamedObjects[i];
-
-                    GlueCommands.Self.GluxCommands
-                        .RemoveNamedObject(nos, false, false, null);
-                }
-
-                #endregion
-
-
-                // remove all the files this references first before removing the Screen itself.
-                // For more information see the RemoveEntity function
-                for (int i = screenToRemove.ReferencedFiles.Count - 1; i > -1; i--)
-                {
-                    GluxCommands.Self.RemoveReferencedFile(screenToRemove.ReferencedFiles[i], filesThatCouldBeRemoved);
-                }
-
-                ProjectManager.GlueProjectSave.Screens.Remove(screenToRemove);
-                // If we're going to remove the Screen, we should remove all referenced objects that it references
-                // as well as any ReferencedFiles
-                
-                RemoveUnreferencedFiles(screenToRemove, filesThatCouldBeRemoved);
-
-                // test this!
-                if (screenToRemove.Name == ProjectManager.GlueProjectSave.StartUpScreen)
-                {
-                    ProjectManager.StartUpScreen = "";
-                }
-
-                for (int i = 0; i < inheritingScreens.Count; i++)
-                {
-                    ScreenSave inheritingScreen = inheritingScreens[i];
-
-                    DialogResult resetInheritance = MessageBox.Show("Reset the inheritance for " + inheritingScreen.Name + "?",
-                        "Reset Inheritance?", MessageBoxButtons.YesNo);
-
-                    if (resetInheritance == DialogResult.Yes)
-                    {
-                        inheritingScreen.BaseScreen = "";
-
-                        CodeWriter.GenerateCode(inheritingScreen);
-                    }
-                }
-
-                TaskManager.Self.OnUiThread(() =>
-                    {
-                        ElementViewWindow.RemoveScreen(screenToRemove);
-                    });
-                IElement element = screenToRemove;
-
-                PluginManager.ReactToScreenRemoved(screenToRemove, filesThatCouldBeRemoved);
-
-
-                ProjectManager.RemoveCodeFilesForElement(filesThatCouldBeRemoved, element);
-
-
-                GlueCommands.Self.ProjectCommands.SaveProjects();
-                GluxCommands.Self.SaveGlux();
-            }
-        }
-
-        private static void RemoveUnreferencedFiles(IElement element, List<string> filesThatCouldBeRemoved)
-        {
-            List<string> allReferencedFiles = GlueCommands.Self.FileCommands.GetAllReferencedFileNames();
-
-            for (int i = element.ReferencedFiles.Count - 1; i > -1; i--)
-            {
-                ReferencedFileSave rfs = element.ReferencedFiles[i];
-
-                bool shouldRemove = true;
-                foreach (string file in allReferencedFiles)
-                {
-                    if (file.ToLowerInvariant() == rfs.Name.ToLowerInvariant())
-                    {
-                        shouldRemove = false;
-                        break;
-                    }
-                }
-
-                if (shouldRemove)
-                {
-                    GluxCommands.Self.RemoveReferencedFile(rfs, filesThatCouldBeRemoved);
-                }
+                GlueCommands.Self.GluxCommands.RemoveScreen(screenToRemove);
             }
         }
 

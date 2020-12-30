@@ -1,0 +1,21 @@
+﻿<UserControl x:Class="TiledPluginCore.Views.LevelScreenView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TiledPluginCore.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="400
+             ">
+    <Grid>
+        <StackPanel>
+            <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding AutoCreateTmxScreens}" >Automatically Create Screens for TMX Files</CheckBox>
+            <StackPanel Visibility="{Binding ListBoxVisibility}">
+                <ListBox MinHeight="100" ItemsSource="{Binding TmxFiles}">
+                
+                </ListBox>
+                <TextBlock TextWrapping="Wrap" FontSize="10" >TMX files in the Content folder will automatically create Glue screens. These screens will not show up in the Glue tree view, but can be accessed in code.</TextBlock>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

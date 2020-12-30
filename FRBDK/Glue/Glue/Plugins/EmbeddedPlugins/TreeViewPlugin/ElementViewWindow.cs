@@ -464,18 +464,17 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static void RemoveEntity(EntitySave entityToRemove)
         {
-            TreeNode treeNode = GlueState.Self.Find.TreeNodeForDirectory(
+            var directoryTreeNode = GlueState.Self.Find.TreeNodeForDirectory(
                 FileManager.GetDirectory(entityToRemove.Name));
 
-
-            for (int i = 0; i < treeNode.Nodes.Count; i++)
+            for (int i = 0; i < directoryTreeNode.Nodes.Count; i++)
             {
-                EntityTreeNode entityTreeNode = treeNode.Nodes[i] as EntityTreeNode;
+                EntityTreeNode entityTreeNode = directoryTreeNode.Nodes[i] as EntityTreeNode;
 
 
                 if (entityTreeNode != null && entityTreeNode.EntitySave == entityToRemove)
                 {
-                    treeNode.Nodes.RemoveAt(i);
+                    directoryTreeNode.Nodes.RemoveAt(i);
                     break;
                 }
             }

@@ -637,12 +637,17 @@ namespace FlatRedBall.Glue.IO
                 ScreenSave screenSave = ProjectManager.GlueProjectSave.Screens[i];
 
                 ScreenTreeNode screenTreeNode = GlueState.Self.Find.ScreenTreeNode(ProjectManager.GlueProjectSave.Screens[i].Name);
-                if (ProjectManager.GlueProjectSave.Screens[i].IsRequiredAtStartup)
-                {
-                    screenTreeNode.BackColor = ElementViewWindow.RequiredScreenColor;
-                }
 
-                screenTreeNode.RefreshTreeNodes();
+                // This could be null if the Screen is marked as hidden
+                if(screenTreeNode != null)
+                {
+                    if (ProjectManager.GlueProjectSave.Screens[i].IsRequiredAtStartup)
+                    {
+                        screenTreeNode.BackColor = ElementViewWindow.RequiredScreenColor;
+                    }
+
+                    screenTreeNode.RefreshTreeNodes();
+                }
             }
         }
 

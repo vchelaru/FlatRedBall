@@ -47,9 +47,11 @@ namespace TileGraphicsPlugin
 
         PluginTab collisionTab;
         PluginTab nodeNetworkTab;
+        PluginTab levelTab;
 
         TiledObjectTypeCreator tiledObjectTypeCreator;
         TiledToolbar tiledToolbar;
+        LevelScreenView levelScreenView;
 
         #endregion
 
@@ -221,13 +223,6 @@ namespace TileGraphicsPlugin
             set;
         }
 	
-		[Import("GlueState")]
-		public IGlueState GlueState
-		{
-		    get;
-		    set;
-        }
-
         public override string FriendlyName
         {
             get { return "Tiled Plugin"; }
@@ -294,7 +289,7 @@ namespace TileGraphicsPlugin
 
             this.ReactToChangedPropertyHandler += (changedMember, oldalue) =>
             {
-                if(GlueState.CurrentCustomVariable != null)
+                if(GlueState.Self.CurrentCustomVariable != null)
                 {
                     if (changedMember == nameof(CustomVariable.Name))
                     {
@@ -302,7 +297,7 @@ namespace TileGraphicsPlugin
                     }
 
                 }
-                else if(GlueState.CurrentEntitySave != null)
+                else if(GlueState.Self.CurrentEntitySave != null)
                 {
                     if (changedMember == nameof(EntitySave.CreatedByOtherEntities))
                     {
@@ -523,7 +518,7 @@ namespace TileGraphicsPlugin
                 }
 
                 TileShapeCollectionsPropertiesController.Self.RefreshViewModelTo(treeNode?.Tag as NamedObjectSave,
-                    GlueState.CurrentElement);
+                    GlueState.Self.CurrentElement);
 
                 this.ShowTab(collisionTab, TabLocation.Center);
                 GlueCommands.Self.DialogCommands.FocusTab("TileShapeCollection Properties");
@@ -543,7 +538,7 @@ namespace TileGraphicsPlugin
                 }
 
                 TileNodeNetworkPropertiesController.Self.RefreshViewModelTo(treeNode?.Tag as NamedObjectSave,
-                    GlueState.CurrentElement);
+                    GlueState.Self.CurrentElement);
 
                 this.ShowTab(nodeNetworkTab, TabLocation.Center);
                 GlueCommands.Self.DialogCommands.FocusTab("TileNodeNetwork Properties");
@@ -551,6 +546,24 @@ namespace TileGraphicsPlugin
             else if(nodeNetworkTab != null)
             {
                 base.RemoveTab(nodeNetworkTab);
+            }
+
+            if(LevelScreenController.Self.GetIfShouldShow())
+            {
+                if(levelTab == null)
+                {
+                    var view = LevelScreenController.Self.GetView();
+
+                    levelTab = base.CreateTab(view, "Levels");
+                }
+
+                LevelScreenController.Self.RefreshViewModelTo(GlueState.Self.CurrentScreenSave);
+                this.ShowTab(levelTab, TabLocation.Center);
+                // prob don't focus it, it's rare the user needs to mess with this
+            }
+            else if(levelTab != null)
+            {
+                RemoveTab(levelTab);
             }
         }
 

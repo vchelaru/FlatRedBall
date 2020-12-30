@@ -32,18 +32,36 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if(elementTreeNode == null)
                 {
-                    if(element is ScreenSave screen)
+                    if(!element.IsHiddenInTreeView)
                     {
-                        ElementViewWindow.AddScreen(screen);
-                    }
-                    else if(element is EntitySave entitySave)
-                    {
-                        ElementViewWindow.AddEntity(entitySave);
+                        if(element is ScreenSave screen)
+                        {
+                            ElementViewWindow.AddScreen(screen);
+                        }
+                        else if(element is EntitySave entitySave)
+                        {
+                            ElementViewWindow.AddEntity(entitySave);
+                        }
                     }
                 }
                 else
                 {
-                    elementTreeNode?.RefreshTreeNodes();
+                    if(element.IsHiddenInTreeView)
+                    {
+                        // remove it!
+                        if (element is ScreenSave screen)
+                        {
+                            ElementViewWindow.RemoveScreen(screen);
+                        }
+                        else if (element is EntitySave entitySave)
+                        {
+                            ElementViewWindow.RemoveEntity(entitySave);
+                        }
+                    }
+                    else
+                    { 
+                        elementTreeNode?.RefreshTreeNodes();
+                    }
                 }
             }
         }

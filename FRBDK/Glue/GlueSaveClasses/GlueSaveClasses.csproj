@@ -153,6 +153,7 @@
     </Compile>
     <Compile Include="Models\DisplaySettings.cs" />
     <Compile Include="ExtensionMethods\GlueProjectSaveExtensions.cs" />
+    <Compile Include="Models\GlueElement.cs" />
     <Compile Include="Models\Interfaces\ITaggable.cs" />
     <Compile Include="Models\GluxPluginData.cs" />
     <Compile Include="Models\TypeConverters\IConverter.cs" />

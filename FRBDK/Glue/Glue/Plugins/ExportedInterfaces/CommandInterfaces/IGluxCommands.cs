@@ -24,10 +24,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #endregion
 
+        #region Glux Methods
         /// <summary>
         /// Saves the glue project immediately if in a task, and adds a task if not
         /// </summary>
         void SaveGlux(bool sendPluginRefreshCommand = true);
+
+        #endregion
+
+        #region ReferencedFileSave
 
         /// <summary>
         /// Adds a new file to the Glue project in global content. This method updates the in-memory GlueProjectSave,
@@ -49,7 +54,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         ReferencedFileSave AddSingleFileTo(string fileName, string rfsName, string extraCommandLineArguments,
             EditorObjects.SaveClasses.BuildToolAssociation buildToolAssociation, bool isBuiltFile, object options, 
             IElement sourceElement, string directoryOfTreeNode, bool selectFileAfterCreation = true);
+#endif
 
+        #endregion
+        
+#if GLUE
         // SourceType sourceType, string sourceClassType, string sourceFile, string objectName, string sourceNameInFile, string sourceClassGenericType
         NamedObjectSave AddNewNamedObjectToSelectedElement(ViewModels.AddObjectViewModel addObjectViewModel);
         NamedObjectSave AddNewNamedObjectTo(ViewModels.AddObjectViewModel addObjectViewModel, IElement element, NamedObjectSave listToAddTo);
@@ -59,9 +68,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         bool GetPluginRequirement(Interfaces.IPlugin plugin);
 #endif
 
+        #region Entity
+
         bool MoveEntityToDirectory(EntitySave entitySave, string newRelativeDirectory);
 
+        void RemoveEntity(EntitySave entityToRemove, List<string> filesThatCouldBeRemoved = null);
 
+        #endregion
         // was:
 
         ValidationResponse AddNewCustomClass(string className, out CustomClassSave customClassSave);
@@ -72,6 +85,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSave = true, bool updateUi = true,
             List<string> additionalFilesToRemove = null);
 
+        void RemoveScreen(ScreenSave screenToRemove, List<string> filesThatCouldBeRemoved = null);
 
         void SetVariableOn(NamedObjectSave nos, string memberName, Type memberType, object value);
         void SaveSettings();

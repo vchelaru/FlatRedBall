@@ -404,6 +404,12 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static string GetRelativePath(this TreeNode treeNodeInQuestion)
         {
+#if DEBUG
+            if (treeNodeInQuestion == null)
+            {
+                throw new ArgumentNullException(nameof(treeNodeInQuestion));
+            }
+#endif
             #region Directory tree node
             if (treeNodeInQuestion.IsDirectoryNode())
             {

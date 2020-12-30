@@ -462,13 +462,13 @@ namespace GumPlugin
             EventCodeGenerator.Self.HandleGetEventSignatureArgs(namedObject, eventResponseSave, out type, out args);
         }
 
-        private void HandleNewScreen(FlatRedBall.Glue.SaveClasses.ScreenSave newScreen)
+        private void HandleNewScreen(FlatRedBall.Glue.SaveClasses.ScreenSave newGlueScreen)
         {
             bool createGumScreen = propertiesManager.GetShouldAutoCreateGumScreens();
 
             if(createGumScreen && AppState.Self.GumProjectSave != null)
             {
-                string gumScreenName = FileManager.RemovePath( newScreen.Name ) + "Gum";
+                string gumScreenName = FileManager.RemovePath( newGlueScreen.Name ) + "Gum";
 
                 bool exists = AppState.Self.GumProjectSave.Screens.Any(item => item.Name == gumScreenName);
                 if (!exists)
@@ -487,9 +487,9 @@ namespace GumPlugin
 
                 }
                 // Select the screen to add the file to this
-                GlueState.Self.CurrentScreenSave = newScreen;
+                GlueState.Self.CurrentScreenSave = newGlueScreen;
 
-                RightClickManager.Self.AddScreenByName(gumScreenName);
+                RightClickManager.Self.AddScreenByName(gumScreenName, newGlueScreen);
             }
         }
 

@@ -110,11 +110,11 @@ namespace GumPlugin.Managers
         {
             string screenName = ((ToolStripMenuItem)sender).Text;
 
-            AddScreenByName(screenName);
+            AddScreenByName(screenName, GlueState.Self.CurrentScreenSave);
 
         }
 
-        public void AddScreenByName(string screenName)
+        public void AddScreenByName(string screenName, FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen)
         {
             string fullFileName = AppState.Self.GumProjectFolder + "Screens/" +
                 screenName + "." + GumProjectSave.ScreenExtension;
@@ -124,7 +124,7 @@ namespace GumPlugin.Managers
                 bool cancelled = false;
 
                 var newRfs = FlatRedBall.Glue.FormHelpers.RightClickHelper.AddSingleFile(
-                    fullFileName, ref cancelled);
+                    fullFileName, ref cancelled, glueScreen);
 
                 // prior to doing any codegen, need to refresh the project specific ATIs:
                 AssetTypeInfoManager.Self.RefreshProjectSpecificAtis();
