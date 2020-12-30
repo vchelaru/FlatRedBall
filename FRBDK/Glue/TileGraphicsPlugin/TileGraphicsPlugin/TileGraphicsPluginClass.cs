@@ -559,6 +559,8 @@ namespace TileGraphicsPlugin
 
                 LevelScreenController.Self.RefreshViewModelTo(GlueState.Self.CurrentScreenSave);
                 this.ShowTab(levelTab, TabLocation.Center);
+
+                LevelScreenController.Self.HandleTabShown();
                 // prob don't focus it, it's rare the user needs to mess with this
             }
             else if(levelTab != null)

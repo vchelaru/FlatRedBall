@@ -10,11 +10,15 @@
     <Grid>
         <StackPanel>
             <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding AutoCreateTmxScreens}" >Automatically Create Screens for TMX Files</CheckBox>
-            <StackPanel Visibility="{Binding ListBoxVisibility}">
+            <StackPanel Margin="5,0,5,0" Visibility="{Binding ListBoxVisibility}">
                 <ListBox MinHeight="100" ItemsSource="{Binding TmxFiles}">
                 
                 </ListBox>
-                <TextBlock TextWrapping="Wrap" FontSize="10" >TMX files in the Content folder will automatically create Glue screens. These screens will not show up in the Glue tree view, but can be accessed in code.</TextBlock>
+                <CheckBox IsChecked="{Binding ShowLevelScreensInTreeView}">Show Level Screens in Tree View</CheckBox>
+                <TextBlock TextWrapping="Wrap" FontSize="10" >
+                    TMX files in the Content folder will automatically create Glue screens. 
+                    These screens will show up in the tree view only if the check box above is checked.
+                    These screens can be accessed in code.</TextBlock>
             </StackPanel>
         </StackPanel>
     </Grid>

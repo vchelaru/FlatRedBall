@@ -17,10 +17,14 @@ namespace TiledPluginCore.Controllers
 {
     class LevelScreenController : Singleton<LevelScreenController>
     {
+        #region Fields/Properties
+
         LevelScreenView view;
         LevelScreenViewModel viewModel;
 
         const string IsTmxLevel = nameof(IsTmxLevel);
+
+        #endregion
 
         public bool GetIfShouldShow()
         {
@@ -55,6 +59,16 @@ namespace TiledPluginCore.Controllers
                         RemoveScreensForAllTmxFiles();
                     }
                     break;
+                case nameof(viewModel.ShowLevelScreensInTreeView):
+                    var isHidden = !viewModel.ShowLevelScreensInTreeView;
+                    var tmxLevelScreens =
+                        GlueState.Self.CurrentGlueProject.Screens.Where(item => item.Properties.GetValue<bool>(IsTmxLevel)).ToArray();
+                    foreach (var screen in tmxLevelScreens)
+                    {
+                        screen.IsHiddenInTreeView = isHidden;
+                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screen);
+                    }
+                    break;
             }
         }
 
@@ -62,12 +76,12 @@ namespace TiledPluginCore.Controllers
         {
             viewModel.GlueObject = currentScreenSave;
 
-            RefreshTmxFiles();
+            RefreshViewModelTmxFileList();
 
             viewModel.UpdateFromGlueObject();
         }
 
-        private void RefreshTmxFiles()
+        private void RefreshViewModelTmxFileList()
         {
             viewModel.TmxFiles.Clear();
 
@@ -176,32 +190,57 @@ namespace TiledPluginCore.Controllers
 
         private string GetLevelScreenNameFor(FilePath tmxFile)
         {
-            var stripped = tmxFile.NoPathNoExtension;
+            var stripped = tmxFile.NoPathNoExtension
+                .Replace(" ", "_")
+                .Replace("-", "_")
+                .Replace("(", " ")
+                .Replace(")", " ");
 
             stripped = char.ToUpper(stripped[0]) + stripped.Substring(1) + "Level";
+
+
 
             return "Screens\\" + stripped;
         }
 
-        private void RemoveScreensForAllTmxFiles()
+        private List<ScreenSave> GetLevelScreens()
         {
+            List<ScreenSave> screens = new List<ScreenSave>();
+
             var tmxFiles = GetAllLevelTmxFiles();
 
-            foreach(var tmxFile in tmxFiles)
+            foreach (var tmxFile in tmxFiles)
             {
                 var screenName = GetLevelScreenNameFor(tmxFile);
 
                 var screen = ObjectFinder.Self.GetScreenSave(screenName);
 
-                if(screen != null)
+                if (screen != null)
                 {
-                    TaskManager.Self.AddOrRunIfTasked(() =>
-                    {
-                        // don't delete the files, in case the user wants to reference
-                        // them or re-add.
-                        GlueCommands.Self.GluxCommands.RemoveScreen(screen);
-                    }, $"Removing {screen}");
+                    screens.Add(screen);
                 }
+            }
+            return screens;
+        }
+
+        private void RemoveScreensForAllTmxFiles()
+        {
+            foreach(var screen in GetLevelScreens())
+            {
+                TaskManager.Self.AddOrRunIfTasked(() =>
+                {
+                    // don't delete the files, in case the user wants to reference
+                    // them or re-add.
+                    GlueCommands.Self.GluxCommands.RemoveScreen(screen);
+                }, $"Removing {screen}");
+            }
+        }
+
+        internal void HandleTabShown()
+        {
+            if(viewModel.AutoCreateTmxScreens)
+            {
+                GenerateScreensForAllTmxFiles();
             }
         }
     }

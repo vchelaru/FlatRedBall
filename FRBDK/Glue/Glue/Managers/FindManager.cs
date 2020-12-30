@@ -329,12 +329,12 @@ namespace FlatRedBall.Glue.Managers
             else if (container is ScreenSave)
             {
                 ScreenTreeNode screenTreeNode = GlueState.Self.Find.ScreenTreeNode((ScreenSave)container);
-                return screenTreeNode.GetTreeNodeFor(referencedFileSave);
+                return screenTreeNode?.GetTreeNodeFor(referencedFileSave);
             }
             else if (container is EntitySave)
             {
                 EntityTreeNode entityTreeNode = GlueState.Self.Find.EntityTreeNode((EntitySave)container);
-                return entityTreeNode.GetTreeNodeFor(referencedFileSave);
+                return entityTreeNode?.GetTreeNodeFor(referencedFileSave);
             }
 
             return null;

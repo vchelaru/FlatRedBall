@@ -16,6 +16,12 @@ namespace TiledPluginCore.ViewModels
             set => SetAndPersist(value);
         }
 
+        public bool ShowLevelScreensInTreeView
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         [DependsOn(nameof(AutoCreateTmxScreens))]
         public Visibility ListBoxVisibility => AutoCreateTmxScreens.ToVisibility();
 
