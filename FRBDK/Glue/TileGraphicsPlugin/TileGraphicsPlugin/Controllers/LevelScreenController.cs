@@ -12,6 +12,7 @@ using TiledPluginCore.ViewModels;
 using TiledPluginCore.Views;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Elements;
+using System.Collections.Specialized;
 
 namespace TiledPluginCore.Controllers
 {
@@ -23,6 +24,8 @@ namespace TiledPluginCore.Controllers
         LevelScreenViewModel viewModel;
 
         const string IsTmxLevel = nameof(IsTmxLevel);
+
+        bool isIgnoringViewModelChanges = false;
 
         #endregion
 
@@ -38,15 +41,61 @@ namespace TiledPluginCore.Controllers
             if (view == null)
             {
                 view = new LevelScreenView();
+                view.RenameScreen += (not, used) => HandleRenameScreenClicked();
+
                 viewModel = new ViewModels.LevelScreenViewModel();
                 viewModel.PropertyChanged += HandleViewModelPropertyChanged;
+                viewModel.TmxFiles.CollectionChanged += HandleTmxFileCollectionChanged;
                 view.DataContext = viewModel;
             }
             return view;
         }
 
+        private void HandleTmxFileCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            ////////////Early Out/////////////
+            if (isIgnoringViewModelChanges)
+            {
+                return;
+            }
+            //////////End Early Out///////////
+
+            switch(e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    var newItems = e.NewItems;
+
+                    if(newItems.Count > 0)
+                    {
+                        GenerateScreensForAllTmxFiles();
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+
+                    foreach(var item in e.OldItems)
+                    {
+                        var screenName = GetLevelScreenNameFor(GlueState.Self.ContentDirectory +  item);
+
+                        if(screenName != null)
+                        {
+                            var screen = ObjectFinder.Self.GetScreenSave(screenName);
+                            GlueCommands.Self.GluxCommands.RemoveScreen(screen);
+                        }
+                    }
+                    break;
+            }
+
+        }
+
         private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            ////////////Early Out/////////////
+            if(isIgnoringViewModelChanges)
+            {
+                return;
+            }
+            //////////End Early Out///////////
+
             switch(e.PropertyName)
             {
                 case nameof(viewModel.AutoCreateTmxScreens):
@@ -74,11 +123,15 @@ namespace TiledPluginCore.Controllers
 
         internal void RefreshViewModelTo(FlatRedBall.Glue.SaveClasses.ScreenSave currentScreenSave)
         {
+            isIgnoringViewModelChanges = true;
+
             viewModel.GlueObject = currentScreenSave;
 
             RefreshViewModelTmxFileList();
 
             viewModel.UpdateFromGlueObject();
+            
+            isIgnoringViewModelChanges = false;
         }
 
         private void RefreshViewModelTmxFileList()
@@ -159,7 +212,7 @@ namespace TiledPluginCore.Controllers
                     var newScreen = new ScreenSave();
                     newScreen.Name = expectedScreenName;
                     newScreen.Properties.SetValue(IsTmxLevel, true);
-                    newScreen.IsHiddenInTreeView = true;
+                    newScreen.IsHiddenInTreeView = viewModel.ShowLevelScreensInTreeView == false;
                     newScreen.BaseScreen = "Screens\\GameScreen";
 
                     GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(newScreen, suppressAlreadyExistingFileMessage: true);
@@ -177,6 +230,8 @@ namespace TiledPluginCore.Controllers
                     //GlueCommands.Self.GluxCommands.ScreenCommands.
 
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(newScreen);
+
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(newScreen);
 
                 }
             }
@@ -242,6 +297,56 @@ namespace TiledPluginCore.Controllers
             {
                 GenerateScreensForAllTmxFiles();
             }
+        }
+
+        internal void HandleRenameScreenClicked()
+        {
+            TextInputWindow tiw = new TextInputWindow();
+            tiw.Message = "Enter new TMX name";
+
+            tiw.Result = viewModel.SelectedTmxFile;
+
+            var result = tiw.ShowDialog();
+
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                // first we rename the screen...
+                var currentFilePath = viewModel.SelectedTmxFilePath;
+                var currentScreenName = GetLevelScreenNameFor(currentFilePath);
+                var currentScreen = ObjectFinder.Self.GetScreenSave(currentScreenName);
+
+                var desiredFilePath = new FilePath(GlueState.Self.ContentDirectory + tiw.Result);
+                var desiredScreenName = GetLevelScreenNameFor(desiredFilePath);
+
+                var desiredScreenNameWithoutScreenPrefix = desiredScreenName.Substring("Screens\\".Length);
+
+                var isValid = NameVerifier.IsScreenNameValid(desiredScreenNameWithoutScreenPrefix, currentScreen, out string whyItIsntValid);
+
+                if(!isValid)
+                {
+                    GlueCommands.Self.DialogCommands.ShowMessageBox(
+                        "Could not rename the TMX file because it would produce an invalid screen name:\n" + 
+                        whyItIsntValid);
+                }
+                else
+                {
+                    currentScreen.RenameElement(desiredScreenNameWithoutScreenPrefix);
+
+                    var rfs = currentScreen.GetReferencedFileSave(viewModel.SelectedTmxFile);
+
+                    GlueCommands.Self.FileCommands.RenameReferencedFileSave(rfs, tiw.Result);
+
+                    isIgnoringViewModelChanges = true;
+
+                    RefreshViewModelTmxFileList();
+
+                    isIgnoringViewModelChanges = false;
+
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(currentScreen);
+                }
+                // then we rename the file
+            }
+
         }
     }
 }

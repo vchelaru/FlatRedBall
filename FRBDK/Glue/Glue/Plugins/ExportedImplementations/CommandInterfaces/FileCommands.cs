@@ -1,11 +1,13 @@
 ﻿using EditorObjects.IoC;
 using EditorObjects.Parsing;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
@@ -13,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -342,6 +345,55 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 .Location;
             return filePath.GetDirectoryContainingThis();
         }
+
+        public bool RenameReferencedFileSave(ReferencedFileSave rfs, string newName)
+        {
+            var oldName = rfs.Name;
+
+            string oldDirectory = FileManager.GetDirectory(oldName);
+            string newDirectory = FileManager.GetDirectory(newName);
+
+            // it's a RFS so it's gotta be content
+            // Note - MakeAbsolute will do its best
+            // to determine if a file is content. However,
+            // a rename may change the extension to something 
+            // unrecognizable. In this case we still want to have 
+            // it be content
+            bool forceAsContent = true;
+            var oldFilePath = new FilePath(ProjectManager.MakeAbsolute(oldName, forceAsContent));
+            var newFilePath = new FilePath(ProjectManager.MakeAbsolute(newName, forceAsContent));
+
+            string instanceName = FileManager.RemovePath(FileManager.RemoveExtension(newName));
+            string whyIsntValid;
+
+            var container = ObjectFinder.Self.GetElementContaining(rfs);
+
+            var didRename = false;
+
+            if (oldDirectory != newDirectory)
+            {
+                MessageBox.Show("The old file was located in \n" + oldDirectory + "\n" +
+                    "The new file is located in \n" + newDirectory + "\n" +
+                    "Currently Glue does not support changing directories.", "Warning");
+
+                //rfs.SetNameNoCall(oldName);
+            }
+            else if (NameVerifier.IsReferencedFileNameValid(instanceName, rfs.GetAssetTypeInfo(), rfs, container, out whyIsntValid) == false)
+            {
+                MessageBox.Show(whyIsntValid);
+                //rfs.SetNameNoCall(oldName);
+            }
+            else
+            {
+                rfs.Name = newName;
+                ReferencedFileSaveSetPropertyManager.ReactToRenamedReferencedFile(
+                    oldName, rfs.Name, rfs, container);
+                didRename = true;
+            }
+
+            return didRename;
+        }
+
     }
 
 }

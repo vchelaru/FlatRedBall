@@ -56,7 +56,7 @@ namespace FlatRedBall.Glue.SetVariable
                 {
                     if ((string)oldValue != null)
                     {
-                        RenameReferencedFile((string)oldValue, rfs.Name, rfs, GlueState.Self.CurrentElement);
+                        ReactToRenamedReferencedFile((string)oldValue, rfs.Name, rfs, GlueState.Self.CurrentElement);
                     }
                 }
             }
@@ -306,7 +306,7 @@ namespace FlatRedBall.Glue.SetVariable
             PluginManager.ReactToReferencedFileChangedValue(changedMember, oldValue);
         }
 
-        public static void RenameReferencedFile(string oldName, string newName, ReferencedFileSave rfs, IElement container)
+        public static void ReactToRenamedReferencedFile(string oldName, string newName, ReferencedFileSave rfs, IElement container)
         {
             string oldDirectory = FileManager.GetDirectory(oldName);
             string newDirectory = FileManager.GetDirectory(newName);
@@ -492,7 +492,8 @@ namespace FlatRedBall.Glue.SetVariable
         {
             if (ProjectManager.ContentProject != null)
             {
-                var item = ProjectManager.ContentProject.GetItem(oldName);
+                var oldNameWithContentPrefix = "content\\" + oldName.ToLower().Replace("/", "\\");
+                var item = ProjectManager.ContentProject.GetItem(oldNameWithContentPrefix);
 
                 // The item could be null if this file is excluded from the project
                 if (item != null)
@@ -502,13 +503,15 @@ namespace FlatRedBall.Glue.SetVariable
                         newName = newName.Substring("content\\".Length);
                     }
 
-                    item.UnevaluatedInclude = newName.Replace("/", "\\");
+                    var newNameWithContentPrefix = "content\\" + newName.ToLower().Replace("/", "\\");
+                    item.UnevaluatedInclude = newNameWithContentPrefix;
 
                     string nameWithoutExtensions = FileManager.RemovePath(FileManager.RemoveExtension(newName));
 
                     item.SetMetadataValue("Name", nameWithoutExtensions);
 
-                    ProjectManager.ContentProject.RenameInDictionary(oldName, newName, item);
+
+                    ProjectManager.ContentProject.RenameInDictionary(oldNameWithContentPrefix, newNameWithContentPrefix, item);
                 }
             }
         }

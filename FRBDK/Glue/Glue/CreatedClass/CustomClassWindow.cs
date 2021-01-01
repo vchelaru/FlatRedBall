@@ -74,7 +74,7 @@ namespace FlatRedBall.Glue.Controls
         private void NewClassButton_Click(object sender, EventArgs e)
         {
             TextInputWindow tiw = new TextInputWindow();
-            tiw.DisplayText = "Enter new class name";
+            tiw.Message = "Enter new class name";
 
             DialogResult result = tiw.ShowDialog(this);
 

@@ -36,12 +36,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     {
                         if(element is ScreenSave screen)
                         {
-                            ElementViewWindow.AddScreen(screen);
+                            elementTreeNode = ElementViewWindow.AddScreen(screen);
                         }
                         else if(element is EntitySave entitySave)
                         {
-                            ElementViewWindow.AddEntity(entitySave);
+                            elementTreeNode = ElementViewWindow.AddEntity(entitySave);
                         }
+                        elementTreeNode?.RefreshTreeNodes();
                     }
                 }
                 else

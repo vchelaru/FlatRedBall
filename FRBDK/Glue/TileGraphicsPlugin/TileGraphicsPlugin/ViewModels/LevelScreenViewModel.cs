@@ -1,7 +1,10 @@
 ﻿using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using System.Windows;
 
@@ -29,5 +32,17 @@ namespace TiledPluginCore.ViewModels
         {
             get; set;
         } = new ObservableCollection<string>();
+
+        public FilePath[] TmxFilePaths => TmxFiles.Select(item => new FilePath(GlueState.Self.ContentDirectory + item)).ToArray();
+
+        public string SelectedTmxFile
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public FilePath SelectedTmxFilePath => 
+            (GlueState.Self.CurrentGlueProject != null && SelectedTmxFile != null) ? new FilePath(GlueState.Self.ContentDirectory + SelectedTmxFile) : null;
+
     }
 }

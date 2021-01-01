@@ -1441,7 +1441,7 @@ namespace FlatRedBall.Glue.FormHelpers
             {
 
 
-                GlueCommands.Self.GluxCommands.RemoveScreen(screenToRemove);
+                GlueCommands.Self.GluxCommands.RemoveScreen(screenToRemove, filesThatCouldBeRemoved);
             }
         }
 

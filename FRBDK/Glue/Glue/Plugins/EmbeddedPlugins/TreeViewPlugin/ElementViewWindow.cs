@@ -526,6 +526,13 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             ScreenTreeNode screenTreeNode = GlueState.Self.Find.ScreenTreeNode(screenSave);
 
+            //////// Early Out////////////
+            if(screenTreeNode == null)
+            {
+                return;
+            }
+            //////End Early Out///////////
+
             bool wasSelected = MainGlueWindow.Self.ElementTreeView.SelectedNode == screenTreeNode;
 
             int desiredIndex = ProjectManager.GlueProjectSave.Screens.IndexOf(screenSave);

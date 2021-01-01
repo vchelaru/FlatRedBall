@@ -298,7 +298,13 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
 
-
+        /// <summary>
+        /// Returns whether the argument name is a valid Screen name. This name should not include the "Screens\" prefix.
+        /// </summary>
+        /// <param name="name">The name to check.</param>
+        /// <param name="screenSave">The screen which may be renamed.</param>
+        /// <param name="whyItIsntValid">Information about why the name is invalid which can be displayed to the user.</param>
+        /// <returns>Whether the name is valid.</returns>
         public static bool IsScreenNameValid(string name, ScreenSave screenSave, out string whyItIsntValid)
 		{
 			whyItIsntValid = "";

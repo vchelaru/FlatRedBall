@@ -18,6 +18,12 @@ namespace FlatRedBall.Glue.SaveClasses
 {
     public static class IElementHelperGlue
     {
+        /// <summary>
+        /// Renames the argument elementToRename. The value (name) should not include
+        /// the "Screens\" or "Entities\" prefix.
+        /// </summary>
+        /// <param name="elementToRename">The element to rename.</param>
+        /// <param name="value">The desired name without the type prefix.</param>
         public static void RenameElement(this IElement elementToRename, string value)
         {
             bool isValid = true;

@@ -1,13 +1,16 @@
 ﻿using EditorObjects.Parsing;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
@@ -38,5 +41,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         ReferencedFileSave GetReferencedFile(string absoluteFile);
 
         FilePath GetGlueExecutingFolder();
+
+        bool RenameReferencedFileSave(ReferencedFileSave rfs, string newName);
     }
 }

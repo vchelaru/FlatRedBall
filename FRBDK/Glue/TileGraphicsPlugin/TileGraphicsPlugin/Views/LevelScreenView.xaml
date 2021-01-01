@@ -10,9 +10,24 @@
     <Grid>
         <StackPanel>
             <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding AutoCreateTmxScreens}" >Automatically Create Screens for TMX Files</CheckBox>
-            <StackPanel Margin="5,0,5,0" Visibility="{Binding ListBoxVisibility}">
-                <ListBox MinHeight="100" ItemsSource="{Binding TmxFiles}">
-                
+            <StackPanel Margin="5,0,5,0">
+                <ListBox MinHeight="100" ItemsSource="{Binding TmxFiles}" SelectedItem="{Binding SelectedTmxFile}">
+                    <ListBox.Resources>
+
+                        <!--Defines a context menu-->
+                        <ContextMenu x:Key="MyElementMenu">
+                            <MenuItem Header="Delete" Click="DeleteLevelClicked"/>
+                            <MenuItem Header="Duplicate" Click="DuplicateLevelClicked"/>
+                            <MenuItem Header="Rename" Click="RenameLevelClicked"/>
+
+                        </ContextMenu>
+
+                        <!--Sets a context menu for each ListBoxItem in the current ListBox-->
+                        <Style TargetType="{x:Type ListBoxItem}">
+                            <Setter Property="ContextMenu" Value="{StaticResource MyElementMenu}"/>
+                        </Style>
+
+                    </ListBox.Resources>
                 </ListBox>
                 <CheckBox IsChecked="{Binding ShowLevelScreensInTreeView}">Show Level Screens in Tree View</CheckBox>
                 <TextBlock TextWrapping="Wrap" FontSize="10" >
