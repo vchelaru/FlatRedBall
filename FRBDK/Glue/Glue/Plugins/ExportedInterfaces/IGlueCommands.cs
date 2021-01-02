@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
+using FlatRedBall.IO;
 using System;
 using System.Threading.Tasks;
 
@@ -26,6 +27,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
 
 
         string GetAbsoluteFileName(SaveClasses.ReferencedFileSave rfs);
+        FilePath GetAbsoluteFilePath(SaveClasses.ReferencedFileSave rfs);
         string GetAbsoluteFileName(string relativeFileName, bool isContent);
         void LoadProject(string fileName);
         Task LoadProjectAsync(string fileName);

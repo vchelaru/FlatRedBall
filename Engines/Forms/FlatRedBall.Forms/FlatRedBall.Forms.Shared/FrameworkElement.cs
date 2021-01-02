@@ -413,6 +413,20 @@ namespace FlatRedBall.Forms.Controls
             {
                 vmPropsToUiProps.Remove(vmProperty);
             }
+
+            // This prevents single UI properties from being bound to multiple VM properties
+            if(vmPropsToUiProps.Any(item => item.Value == uiProperty))
+            {
+                var toRemove = vmPropsToUiProps.Where(item => item.Value == uiProperty).ToArray();
+
+                foreach(var kvp in toRemove)
+                {
+                    vmPropsToUiProps.Remove(kvp.Key);
+                }
+            }
+
+
+
             vmPropsToUiProps.Add(vmProperty, uiProperty);
 
             if(BindingContext != null)
