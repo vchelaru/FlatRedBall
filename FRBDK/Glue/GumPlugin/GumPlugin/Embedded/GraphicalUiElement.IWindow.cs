@@ -932,21 +932,21 @@ namespace Gum.Wireframe
                     BindingContextBindingPropertyOwner : EffectiveBindingContext;
 
 #if UWP
-                var vmProperty = bindingContextObjectToUse.GetType().GetTypeInfo().GetDeclaredProperty(vmPropertyName);
+                var vmProperty = bindingContextObjectToUse?.GetType().GetTypeInfo().GetDeclaredProperty(vmPropertyName);
 #else
-                var vmProperty = bindingContextObjectToUse.GetType().GetProperty(vmPropertyName);
+                var vmProperty = bindingContextObjectToUse?.GetType().GetProperty(vmPropertyName);
 #endif
                 FieldInfo vmField = null;
                 
                 if (vmProperty == null)
                 {
-                    vmField = bindingContextObjectToUse.GetType().GetField(vmPropertyName);
+                    vmField = bindingContextObjectToUse?.GetType().GetField(vmPropertyName);
                 }
 
 
                 if (vmProperty == null && vmField == null)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Could not find field or property {vmPropertyName} in {bindingContextObjectToUse.GetType()}");
+                    System.Diagnostics.Debug.WriteLine($"Could not find field or property {vmPropertyName} in {bindingContextObjectToUse?.GetType()}");
                 }
                 else
                 {
