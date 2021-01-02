@@ -320,19 +320,37 @@ namespace TiledPluginCore.Controllers
 
                 var desiredScreenNameWithoutScreenPrefix = desiredScreenName.Substring("Screens\\".Length);
 
-                var isValid = NameVerifier.IsScreenNameValid(desiredScreenNameWithoutScreenPrefix, currentScreen, out string whyItIsntValid);
+                var isScreenNameValid = NameVerifier.IsScreenNameValid(desiredScreenNameWithoutScreenPrefix, 
+                    currentScreen, out string whyScreenNameIsntValid);
 
-                if(!isValid)
+                var rfs = currentScreen.GetReferencedFileSave(viewModel.SelectedTmxFile);
+                var isRfsNameValid = NameVerifier.IsReferencedFileNameValid(tiw.Result, rfs.GetAssetTypeInfo(), 
+                    rfs, currentScreen, out string whyRfsIsntValid);
+
+                if (currentFilePath.GetDirectoryContainingThis() != desiredFilePath.GetDirectoryContainingThis())
+                {
+                    GlueCommands.Self.DialogCommands.ShowMessageBox("The old file was located in \n" +
+                        currentFilePath.GetDirectoryContainingThis() + "\n" +
+                        "The new file is located in \n" +
+                        desiredFilePath.GetDirectoryContainingThis() + "\n" +
+                        "Currently Glue does not support changing directories.");
+                }
+                else if(!isRfsNameValid)
+                {
+                    GlueCommands.Self.DialogCommands.ShowMessageBox(
+                        "Could not rename the TMX file because it would produce an invalid Glue file name:\n" +
+                        whyRfsIsntValid);
+                }
+                else if (!isScreenNameValid)
                 {
                     GlueCommands.Self.DialogCommands.ShowMessageBox(
                         "Could not rename the TMX file because it would produce an invalid screen name:\n" + 
-                        whyItIsntValid);
+                        whyScreenNameIsntValid);
                 }
                 else
                 {
                     currentScreen.RenameElement(desiredScreenNameWithoutScreenPrefix);
 
-                    var rfs = currentScreen.GetReferencedFileSave(viewModel.SelectedTmxFile);
 
                     GlueCommands.Self.FileCommands.RenameReferencedFileSave(rfs, tiw.Result);
 
