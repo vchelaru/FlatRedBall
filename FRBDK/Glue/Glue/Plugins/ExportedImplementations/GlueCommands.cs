@@ -6,6 +6,7 @@ using Glue;
 using System;
 using FlatRedBall.Glue.Errors;
 using System.Threading.Tasks;
+using FlatRedBall.IO;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 {
@@ -137,6 +138,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 throw new ArgumentNullException("rfs", "The argument ReferencedFileSave should not be null");
             }
             return ProjectManager.MakeAbsolute(rfs.Name, true);
+        }
+
+        public FilePath GetAbsoluteFilePath(SaveClasses.ReferencedFileSave rfs)
+        {
+            return GetAbsoluteFileName(rfs);
         }
 
         public string GetAbsoluteFileName(string relativeFileName, bool isContent)

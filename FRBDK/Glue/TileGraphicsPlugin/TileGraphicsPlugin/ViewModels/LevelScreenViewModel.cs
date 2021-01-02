@@ -33,6 +33,11 @@ namespace TiledPluginCore.ViewModels
             get; set;
         } = new ObservableCollection<string>();
 
+        public ObservableCollection<string> OrphanedScreens
+        {
+            get; set;
+        } = new ObservableCollection<string>();
+
         public FilePath[] TmxFilePaths => TmxFiles.Select(item => new FilePath(GlueState.Self.ContentDirectory + item)).ToArray();
 
         public string SelectedTmxFile

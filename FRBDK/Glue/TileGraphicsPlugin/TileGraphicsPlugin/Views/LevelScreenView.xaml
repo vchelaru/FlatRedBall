@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="400
              ">
-    <Grid>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel>
             <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding AutoCreateTmxScreens}" >Automatically Create Screens for TMX Files</CheckBox>
             <StackPanel Margin="5,0,5,0">
@@ -34,7 +34,15 @@
                     TMX files in the Content folder will automatically create Glue screens. 
                     These screens will show up in the tree view only if the check box above is checked.
                     These screens can be accessed in code.</TextBlock>
+
+                <GroupBox Header="Orphaned Screens">
+                    <StackPanel>
+                        <ListBox ItemsSource="{Binding OrphanedScreens}" MinHeight="30" >
+                        </ListBox>
+                    </StackPanel>
+                </GroupBox>
+                    
             </StackPanel>
         </StackPanel>
-    </Grid>
+    </ScrollViewer>
 </UserControl>

@@ -29,6 +29,8 @@ namespace TiledPluginCore.Controllers
 
         #endregion
 
+        #region View-related
+
         public bool GetIfShouldShow()
         {
             var screen = GlueState.Self.CurrentScreenSave;
@@ -49,6 +51,75 @@ namespace TiledPluginCore.Controllers
                 view.DataContext = viewModel;
             }
             return view;
+        }
+
+        internal void HandleTabShown()
+        {
+            if(viewModel.AutoCreateTmxScreens)
+            {
+                GenerateScreensForAllTmxFiles();
+            }
+        }
+
+        #endregion
+
+        #region View Model
+
+        internal void RefreshViewModelTo(FlatRedBall.Glue.SaveClasses.ScreenSave currentScreenSave)
+        {
+            isIgnoringViewModelChanges = true;
+
+            viewModel.GlueObject = currentScreenSave;
+
+            RefreshViewModelTmxFileList();
+
+            RefreshOrphanedScreens();
+
+            viewModel.UpdateFromGlueObject();
+            
+            isIgnoringViewModelChanges = false;
+        }
+
+        private void RefreshOrphanedScreens()
+        {
+            var allScreens = GlueState.Self.CurrentGlueProject?.Screens ?? new List<ScreenSave>();
+
+            List<ScreenSave> orphanedScreens = new List<ScreenSave>();
+
+            var levelScreens = GetLevelScreens();
+
+            foreach(var screen in levelScreens)
+            {
+                foreach(var tmxFile in screen.ReferencedFiles.Where(item => item.Name.ToLowerInvariant().EndsWith(".tmx")))
+                {
+                    var filePath = GlueCommands.Self.GetAbsoluteFilePath(tmxFile);
+
+                    if(!filePath.Exists())
+                    {
+                        orphanedScreens.Add(screen);
+                        break;
+                    }
+                }
+            }
+
+            viewModel.OrphanedScreens.Clear();
+            foreach(var screen in orphanedScreens)
+            {
+                viewModel.OrphanedScreens.Add(screen.Name);
+            }
+        }
+
+        private void RefreshViewModelTmxFileList()
+        {
+            viewModel.TmxFiles.Clear();
+
+            var allTmxFiles = GetAllLevelTmxFiles();
+
+            var contentDirectory = GlueState.Self.ContentDirectory;
+            foreach (var tmxFile in allTmxFiles)
+            {
+                viewModel.TmxFiles.Add(FileManager.MakeRelative(tmxFile.FullPath, contentDirectory));
+            }
         }
 
         private void HandleTmxFileCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -121,31 +192,9 @@ namespace TiledPluginCore.Controllers
             }
         }
 
-        internal void RefreshViewModelTo(FlatRedBall.Glue.SaveClasses.ScreenSave currentScreenSave)
-        {
-            isIgnoringViewModelChanges = true;
+        #endregion
 
-            viewModel.GlueObject = currentScreenSave;
-
-            RefreshViewModelTmxFileList();
-
-            viewModel.UpdateFromGlueObject();
-            
-            isIgnoringViewModelChanges = false;
-        }
-
-        private void RefreshViewModelTmxFileList()
-        {
-            viewModel.TmxFiles.Clear();
-
-            var allTmxFiles = GetAllLevelTmxFiles();
-
-            var contentDirectory = GlueState.Self.ContentDirectory;
-            foreach (var tmxFile in allTmxFiles)
-            {
-                viewModel.TmxFiles.Add(FileManager.MakeRelative(tmxFile.FullPath, contentDirectory));
-            }
-        }
+        #region Utilities
 
         private static List<FilePath> GetAllLevelTmxFiles()
         {
@@ -195,6 +244,40 @@ namespace TiledPluginCore.Controllers
 
         }
 
+        private string GetLevelScreenNameFor(FilePath tmxFile)
+        {
+            var stripped = tmxFile.NoPathNoExtension
+                .Replace(" ", "_")
+                .Replace("-", "_")
+                .Replace("(", " ")
+                .Replace(")", " ");
+
+            stripped = char.ToUpper(stripped[0]) + stripped.Substring(1) + "Level";
+
+
+
+            return "Screens\\" + stripped;
+        }
+
+        private List<ScreenSave> GetLevelScreens()
+        {
+            List<ScreenSave> screens = new List<ScreenSave>();
+
+            if(GlueState.Self.CurrentGlueProject != null)
+            {
+                screens = GlueState.Self.CurrentGlueProject.Screens
+                    .Where(item => item.Properties.GetValue<bool>(IsTmxLevel))
+                    .ToList();
+            }
+
+            return screens;
+        }
+
+
+        #endregion
+
+        #region Glue Project
+
         private void GenerateScreensForAllTmxFiles()
         {
             var tmxFiles = GetAllLevelTmxFiles();
@@ -243,41 +326,6 @@ namespace TiledPluginCore.Controllers
             }
         }
 
-        private string GetLevelScreenNameFor(FilePath tmxFile)
-        {
-            var stripped = tmxFile.NoPathNoExtension
-                .Replace(" ", "_")
-                .Replace("-", "_")
-                .Replace("(", " ")
-                .Replace(")", " ");
-
-            stripped = char.ToUpper(stripped[0]) + stripped.Substring(1) + "Level";
-
-
-
-            return "Screens\\" + stripped;
-        }
-
-        private List<ScreenSave> GetLevelScreens()
-        {
-            List<ScreenSave> screens = new List<ScreenSave>();
-
-            var tmxFiles = GetAllLevelTmxFiles();
-
-            foreach (var tmxFile in tmxFiles)
-            {
-                var screenName = GetLevelScreenNameFor(tmxFile);
-
-                var screen = ObjectFinder.Self.GetScreenSave(screenName);
-
-                if (screen != null)
-                {
-                    screens.Add(screen);
-                }
-            }
-            return screens;
-        }
-
         private void RemoveScreensForAllTmxFiles()
         {
             foreach(var screen in GetLevelScreens())
@@ -288,14 +336,6 @@ namespace TiledPluginCore.Controllers
                     // them or re-add.
                     GlueCommands.Self.GluxCommands.RemoveScreen(screen);
                 }, $"Removing {screen}");
-            }
-        }
-
-        internal void HandleTabShown()
-        {
-            if(viewModel.AutoCreateTmxScreens)
-            {
-                GenerateScreensForAllTmxFiles();
             }
         }
 
@@ -366,5 +406,7 @@ namespace TiledPluginCore.Controllers
             }
 
         }
+
+        #endregion
     }
 }
