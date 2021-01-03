@@ -9,6 +9,7 @@ using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Utilities;
 using FlatRedBall.Graphics;
+using System.Linq;
 
 namespace FlatRedBall.AI.Pathfinding
 {
@@ -630,6 +631,8 @@ namespace FlatRedBall.AI.Pathfinding
             return GetPathOrClosest(startNode, endNode); 
         }
 
+        public virtual List<Vector3> GetPositionPath(ref Vector3 startPoint, ref Vector3 endPoint) =>
+            GetPathOrClosest(ref startPoint, ref endPoint).Select(item => item.Position).ToList();
 
         #region XML Docs
         /// <summary>

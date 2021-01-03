@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
+using System.Linq;
 
 namespace FlatRedBall.AI.Pathfinding
 {
@@ -36,7 +37,87 @@ namespace FlatRedBall.AI.Pathfinding
             var startNode = GetClosestNodeTo(ref startPoint);
             var  endNode = GetClosestNodeTo(ref endPoint);
 
-            return GetPathOrClosest(startNode, endNode);
+            var nodes = GetPathOrClosest(startNode, endNode);
+
+            return nodes;
+        }
+
+        public override List<Vector3> GetPositionPath(ref Vector3 startPoint, ref Vector3 endPoint)
+        {
+            var nodes = GetPathOrClosest(ref startPoint, ref endPoint)
+                .Select(item => item as RectangleNode).ToArray();
+
+            List<Vector3> toReturn = new List<Vector3>();
+
+            float dimension = 0;
+
+            if(rectangleNodes.Count > 0)
+            {
+                // we can use the strip width to mark the tile width in either dimension
+                if (StripAxis == Axis.X)
+                {
+                    dimension = rectangleNodes[0].Height;
+                }
+                else
+                {
+                    dimension = rectangleNodes[0].Width;
+                }
+            }
+
+            for (int i = 0; i < nodes.Length-1; i++)
+            {
+                var node = nodes[i];
+                var nodeAfter = nodes[i + 1];
+
+                var isPerpendicular = node.X == nodeAfter.X ||
+                    node.Y == nodeAfter.Y;
+
+                toReturn.Add(node.Position);
+
+                if(!isPerpendicular)
+                {
+                    if(StripAxis == Axis.X)
+                    {
+                        var canMoveUp = nodeAfter.X - nodeAfter.Width / 2 < node.X &&
+                            nodeAfter.X + nodeAfter.Width / 2 > node.X;
+
+                        if(canMoveUp)
+                        {
+                            toReturn.Add(new Vector3(node.X, nodeAfter.Y, 0));
+                        }
+                        // do we just move to the left/right on the current strip
+                        else if(nodeAfter.X > node.X - node.Width/2 &&
+                            nodeAfter.X < node.X + node.Width/2)
+                        {
+                            // we can just move horizontally on this node, and we're good
+                            toReturn.Add(new Vector3(nodeAfter.X, node.Y, 0));
+                        }
+                        else
+                        {
+                            // we have to stair step
+                            if(nodeAfter.X > node.X)
+                            {
+                                toReturn.Add(new Vector3(node.Position.X + node.Width / 2.0f - dimension / 2, node.Y, 0));
+                                toReturn.Add(new Vector3(node.Position.X + node.Width / 2.0f - dimension / 2, nodeAfter.Y, 0));
+
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
+                }
+
+            }
+
+            if(nodes.Length > 0)
+            {
+                toReturn.Add(nodes[nodes.Length - 1].Position);
+            }
+
+            return toReturn;
         }
 
         public override PositionedNode GetClosestNodeTo(ref Vector3 position)
