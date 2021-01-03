@@ -385,27 +385,149 @@ namespace FlatRedBall.Math.Geometry
 
 		    #region vs. AxisAlignedRectangles
 
-		    GetStartAndEnd(
-			    considerAxisBasedPartitioning, 
-			    axisToUse, 
-			    out startIndex, 
-			    out endIndex, 
-			    boundStartPosition, 
-			    shapeToCollideAgainstThis.BoundingRadius,
-			    // SET THIS:
-			    thisShapeCollection.mMaxAxisAlignedRectanglesRadius, 
-			    thisShapeCollection.mAxisAlignedRectangles
-			    // END OF SET
-			    );
-
-            for (int i = startIndex; i < endIndex; i++)
+			if(shapeToCollideAgainstThis.Vertices.Length > 0)
             {
-                if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mAxisAlignedRectangles[i]))
+				float min;
+				float max;
+
+
+
+				var aey = boundStartPosition;
+				var be = shapeToCollideAgainstThis.BoundingRadius;
+
+				if (axisToUse == Axis.X)
                 {
-                    thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(thisShapeCollection.mAxisAlignedRectangles[i]);
-                    returnValue = true;
+					min = shapeToCollideAgainstThis.Vertices[0].Position.X;
+					max = shapeToCollideAgainstThis.Vertices[0].Position.X;
+				}
+				else // if(axisToUse == Axis.Y)
+                {
+					min = shapeToCollideAgainstThis.Vertices[0].Position.Y;
+					max = shapeToCollideAgainstThis.Vertices[0].Position.Y;
+				}
+
+				for (int vertexIndex = 1; vertexIndex < shapeToCollideAgainstThis.Vertices.Length; vertexIndex++)
+				{
+					var position = shapeToCollideAgainstThis.Vertices[vertexIndex].Position;
+
+					if (axisToUse == Axis.X)
+					{
+						min = position.X < min ? position.X : min;
+						max = position.X > max ? position.X : max;
+					}
+					else // if(axisToUse == Axis.Y)
+					{
+						min = position.Y < min ? position.Y : min;
+						max = position.Y > max ? position.Y : max;
+					}
+				}
+
+				var averagePosition = (min + max) / 2.0f;
+				var width = max - min;
+
+				GetStartAndEnd(
+					considerAxisBasedPartitioning, 
+					axisToUse, 
+					out startIndex, 
+					out endIndex, 
+					averagePosition, 
+					width,
+					// SET THIS:
+					thisShapeCollection.mMaxAxisAlignedRectanglesRadius, 
+					thisShapeCollection.mAxisAlignedRectangles
+					// END OF SET
+					);
+
+				var doOld = false;
+				if(doOld)
+                {
+					for (int i = startIndex; i < endIndex; i++)
+					{
+						var rectangle = thisShapeCollection.mAxisAlignedRectangles[i];
+						if (shapeToCollideAgainstThis.CollideAgainst(rectangle))
+						{
+							thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(rectangle);
+							returnValue = true;
+						}
+					}
                 }
+				else
+                {
+					for(int vertexIndex = 0; vertexIndex < shapeToCollideAgainstThis.mVertices.Length-1; vertexIndex++)
+                    {
+						var firstVertex = shapeToCollideAgainstThis.mVertices[vertexIndex];
+						var secondVertex = shapeToCollideAgainstThis.mVertices[vertexIndex + 1];
+
+						var difference = firstVertex.Position - secondVertex.Position;
+
+						var isHorizontal = System.Math.Abs(difference.X) > System.Math.Abs(difference.Y);
+
+						var startY = firstVertex.Position.Y;
+						var startX = firstVertex.Position.X;
+
+						if(isHorizontal)
+                        {
+							var slope = (secondVertex.Position.Y - firstVertex.Position.Y) / 
+								(secondVertex.Position.X - firstVertex.Position.X);
+
+							var isSlopedDown = slope < 0;
+
+							for (int i = startIndex; i < endIndex; i++)
+							{
+								var rectangle = thisShapeCollection.mAxisAlignedRectangles[i];
+
+								var left = rectangle.Left;
+								var right = rectangle.Right;
+								var top = rectangle.Top;
+								var bottom = rectangle.Bottom;
+
+								var leftY = startY + slope * (left - startX);
+								var rightY = startY + slope * (right - startX);
+
+								var collides = (isSlopedDown && leftY > bottom && rightY < top) ||
+									(!isSlopedDown && leftY < top && rightY > bottom);
+
+								if (collides)
+								{
+									thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(rectangle);
+									returnValue = true;
+								}
+                            }
+						}
+						else
+                        {
+							var xSlope = (secondVertex.Position.X - firstVertex.Position.X) /
+								(secondVertex.Position.Y - firstVertex.Position.Y);
+
+							var isSlopedRight = xSlope > 0;
+
+							for (int i = startIndex; i < endIndex; i++)
+							{
+								var rectangle = thisShapeCollection.mAxisAlignedRectangles[i];
+
+								var left = rectangle.Left;
+								var right = rectangle.Right;
+								var top = rectangle.Top;
+								var bottom = rectangle.Bottom;
+
+								var leftX = startX + xSlope * (bottom - startY);
+								var rightX = startY + xSlope * (top - startY);
+
+								var collides = (isSlopedRight && leftX < right && rightX > left) ||
+									(!isSlopedRight && leftX > left && rightX < right);
+
+								if (collides)
+								{
+									thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(rectangle);
+									returnValue = true;
+								}
+							}
+						}
+					}
+                }
+
             }
+
 
             #endregion
 

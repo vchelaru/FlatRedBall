@@ -612,6 +612,62 @@ namespace FlatRedBall.AI.Pathfinding
             }
         }
 
+        public RectangleNodeNetwork ToRectangleNodeNetwork(Axis stripAxis)
+        {
+            var nodeNetwork = new RectangleNodeNetwork();
+            nodeNetwork.StripAxis = stripAxis;
+            RectangleNode currentNode = null;
+
+            float halfDimension = mGridSpacing / 2.0f;
+
+            if (stripAxis == Axis.X)
+            {
+                float startX = 0;
+                for (int y = 0; y < mNumberOfYTiles; y++)
+                {
+                    for(int x = 0; x < mNumberOfXTiles; x++)
+                    {
+                        var nodeAtXY = TiledNodeAt(x, y);
+                        if (nodeAtXY != null)
+                        {
+                            if(currentNode == null)
+                            {
+                                currentNode = new RectangleNode();
+                                
+                                currentNode.Y = nodeAtXY.Y;
+                                currentNode.Height = mGridSpacing;
+
+                                startX = nodeAtXY.X - halfDimension;
+                                
+                                nodeNetwork.AddNode(currentNode);
+                            }
+                        }
+                        else if(nodeAtXY == null && currentNode != null)
+                        {
+                            var endX = x * mGridSpacing;
+                            currentNode.X = (startX + endX) / 2.0f;
+                            currentNode.Width = endX - startX;
+                            currentNode = null;
+                        }
+                    }
+                    if(currentNode != null)
+                    {
+                        // got to the end of the row:
+                        var endX = mGridSpacing * mNumberOfXTiles;
+                        currentNode.X = (startX + endX) / 2.0f;
+                        currentNode.Width = endX - startX;
+                        currentNode = null;
+                    }
+                }
+            }
+            else // Axis.Y
+            {
+
+            }
+
+            return nodeNetwork;
+        }
+
         public void Unoccupy(int x, int y)
         {
             for (int i = mOccupiedTiles.Count - 1; i > -1; i--)
@@ -724,6 +780,8 @@ namespace FlatRedBall.AI.Pathfinding
             worldX = mXSeed + mGridSpacing * xIndex;
             worldY = mYSeed + mGridSpacing * yIndex;
         }
+
+
 
         public void WorldToIndex(float worldX, float worldY, out int xIndex, out int yIndex)
         {

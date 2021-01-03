@@ -17,6 +17,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)AI\Pathfinding\OccupiedTile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AI\Pathfinding\PathfindingFunctions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AI\Pathfinding\PositionedNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AI\Pathfinding\RectangleNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AI\Pathfinding\RectangleNodeNetwork.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AI\Pathfinding\TileNodeNetwork.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\ContentSorting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\ExternalInstance.cs" />

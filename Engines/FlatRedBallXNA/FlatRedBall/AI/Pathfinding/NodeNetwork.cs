@@ -12,12 +12,10 @@ using FlatRedBall.Graphics;
 
 namespace FlatRedBall.AI.Pathfinding
 {
-    #region XML Docs
     /// <summary>
     /// Stores a collection of PositionedNodes and provides common functionality for
     /// pathfinding logic.
     /// </summary>
-    #endregion
     public class NodeNetwork : INameable, IEquatable<NodeNetwork>
     {
         #region Fields
@@ -1052,11 +1050,12 @@ namespace FlatRedBall.AI.Pathfinding
             bool partOfOpen = false;
 
             int linkCount = currentNode.Links.Count;
-        
-            foreach (Link currentLink in currentNode.Links)
-            //for (int i = 0; i < linkCount; i++)
+
+            // Vic asks - why do we foreach here? This should be faster as loop:
+            //foreach (Link currentLink in currentNode.Links)
+            for (int i = 0; i < linkCount; i++)
             {
-                //Link currentLink = currentNode.Links[i];
+                Link currentLink = currentNode.mLinks[i];
 
                 ///Links can be turned off, and when they are in that 
                 ///state they should be ignored by pathfinding calls. 
