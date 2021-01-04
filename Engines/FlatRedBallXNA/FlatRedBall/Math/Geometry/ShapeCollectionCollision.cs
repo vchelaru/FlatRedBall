@@ -1,4 +1,5 @@
 
+using Microsoft.Xna.Framework;
 using System;
 
 namespace FlatRedBall.Math.Geometry
@@ -390,11 +391,6 @@ namespace FlatRedBall.Math.Geometry
 				float min;
 				float max;
 
-
-
-				var aey = boundStartPosition;
-				var be = shapeToCollideAgainstThis.BoundingRadius;
-
 				if (axisToUse == Axis.X)
                 {
 					min = shapeToCollideAgainstThis.Vertices[0].Position.X;
@@ -456,94 +452,23 @@ namespace FlatRedBall.Math.Geometry
 					var segment = new Segment();
 					for(int vertexIndex = 0; vertexIndex < shapeToCollideAgainstThis.mVertices.Length-1; vertexIndex++)
                     {
+                        var firstPosition = shapeToCollideAgainstThis.mVertices[vertexIndex].Position;
+                        var secondPosition = shapeToCollideAgainstThis.mVertices[vertexIndex + 1].Position;
 
-						var firstPosition = shapeToCollideAgainstThis.mVertices[vertexIndex].Position;
-						var secondPosition = shapeToCollideAgainstThis.mVertices[vertexIndex + 1].Position;
-
-						segment.Point1.X = firstPosition.X;
-						segment.Point1.Y = firstPosition.Y;
+                        segment.Point1.X = firstPosition.X;
+                        segment.Point1.Y = firstPosition.Y;
 
 
-						segment.Point2.X = secondPosition.X;
-						segment.Point2.Y = secondPosition.Y;
+                        segment.Point2.X = secondPosition.X;
+                        segment.Point2.Y = secondPosition.Y;
 
-						for (int i = startIndex; i < endIndex; i++)
+                        var newValue = DoSegmentVsRectangles(thisShapeCollection, startIndex, endIndex, segment);
+
+						if (newValue)
 						{
-							var rectangle = thisShapeCollection.mAxisAlignedRectangles[i];
-
-							if(segment.CollideAgainstNoUpdate(rectangle))
-                            {
-								thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(rectangle);
-								returnValue = true;
-							}
+							returnValue = true;
 						}
-
-						//var difference = firstVertex.Position - secondVertex.Position;
-
-						//var isHorizontal = System.Math.Abs(difference.X) > System.Math.Abs(difference.Y);
-
-						//var startY = firstVertex.Position.Y;
-						//var startX = firstVertex.Position.X;
-
-						//if(isHorizontal)
-						//                  {
-						//	var slope = (secondVertex.Position.Y - firstVertex.Position.Y) / 
-						//		(secondVertex.Position.X - firstVertex.Position.X);
-
-						//	var isSlopedDown = slope < 0;
-
-						//	for (int i = startIndex; i < endIndex; i++)
-						//	{
-						//		var rectangle = thisShapeCollection.mAxisAlignedRectangles[i];
-
-						//		var left = rectangle.Left;
-						//		var right = rectangle.Right;
-						//		var top = rectangle.Top;
-						//		var bottom = rectangle.Bottom;
-
-						//		var leftY = startY + slope * (left - startX);
-						//		var rightY = startY + slope * (right - startX);
-
-						//		var collides = (isSlopedDown && leftY > bottom && rightY < top) ||
-						//			(!isSlopedDown && leftY < top && rightY > bottom);
-
-						//		if (collides)
-						//		{
-						//			thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(rectangle);
-						//			returnValue = true;
-						//		}
-						//                      }
-						//}
-						//else
-						//                  {
-						//	var xSlope = (secondVertex.Position.X - firstVertex.Position.X) /
-						//		(secondVertex.Position.Y - firstVertex.Position.Y);
-
-						//	var isSlopedRight = xSlope > 0;
-
-						//	for (int i = startIndex; i < endIndex; i++)
-						//	{
-						//		var rectangle = thisShapeCollection.mAxisAlignedRectangles[i];
-
-						//		var left = rectangle.Left;
-						//		var right = rectangle.Right;
-						//		var top = rectangle.Top;
-						//		var bottom = rectangle.Bottom;
-
-						//		var leftX = startX + xSlope * (bottom - startY);
-						//		var rightX = startY + xSlope * (top - startY);
-
-						//		var collides = (isSlopedRight && leftX < right && rightX > left) ||
-						//			(!isSlopedRight && leftX > left && rightX < right);
-
-						//		if (collides)
-						//		{
-						//			thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(rectangle);
-						//			returnValue = true;
-						//		}
-						//	}
-						//}
-					}
+                    }
                 }
 
             }
@@ -657,7 +582,98 @@ namespace FlatRedBall.Math.Geometry
 
             return returnValue;
 		}
-		internal static bool CollideShapeAgainstThis(ShapeCollection thisShapeCollection, Line shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse)
+
+        private static bool DoSegmentVsRectangles(ShapeCollection thisShapeCollection, 
+			int startIndex, int endIndex, Segment segment)
+        {
+			var returnValue = false;
+
+			var difference = (segment.Point2 - segment.Point1).ToVector3();
+
+			var isHorizontal = System.Math.Abs(difference.X) > System.Math.Abs(difference.Y);
+
+			Vector3 leftPoint = segment.Point2.ToVector3();
+			Vector3 rightPoint = segment.Point1.ToVector3();
+			if (segment.Point2.X > segment.Point1.X)
+			{
+				leftPoint = segment.Point1.ToVector3();
+				rightPoint = segment.Point2.ToVector3();
+			}
+
+			Vector3 bottomPoint = segment.Point2.ToVector3();
+			Vector3 topPoint = segment.Point1.ToVector3();
+			if (segment.Point2.Y > segment.Point1.Y)
+			{
+				bottomPoint = segment.Point1.ToVector3();
+				topPoint = segment.Point2.ToVector3();
+			}
+
+			for (int i = startIndex; i < endIndex; i++)
+            {
+                var rectangle = thisShapeCollection.mAxisAlignedRectangles[i];
+
+				// first do bounding box. If this fails, we can exit
+				if (bottomPoint.Y > rectangle.Top || topPoint.Y < rectangle.Bottom ||
+					leftPoint.X > rectangle.Right || rightPoint.X < rectangle.Left)
+				{
+					continue;
+				}
+
+				var collided = false;
+
+				if (isHorizontal)
+				{
+
+					if (leftPoint.X > rectangle.Right) collided = false;
+					else if (rightPoint.X < rectangle.Left) collided = false;
+					else
+					{
+						// they overlap on the X
+						var slope = (rightPoint.Y - leftPoint.Y) / (rightPoint.X - leftPoint.X);
+
+						var leftX = System.Math.Max(leftPoint.X, rectangle.Left);
+						var rightX = System.Math.Min(rightPoint.X, rectangle.Right);
+
+						var leftY = leftPoint.Y + slope * (leftX - leftPoint.X);
+						var rightY = leftPoint.Y + slope * (rightX - leftPoint.X);
+
+						collided = (slope < 0 && leftY > rectangle.Bottom && rightY < rectangle.Top) ||
+							(leftY < rectangle.Top && rightY > rectangle.Bottom);
+					}
+				}
+				else
+				{
+
+					if (bottomPoint.Y > rectangle.Top) collided = false;
+					else if (topPoint.Y < rectangle.Bottom) collided = false;
+					else
+					{
+						// they overlap on the Y
+						var invertSlope = (topPoint.X - bottomPoint.X) / (topPoint.Y - bottomPoint.Y);
+
+						var bottomY = System.Math.Max(bottomPoint.Y, rectangle.Bottom);
+						var topY = System.Math.Min(topPoint.Y, rectangle.Top);
+
+						var bottomX = bottomPoint.X + invertSlope * (bottomY - bottomPoint.Y);
+						var topX = bottomPoint.X + invertSlope * (topY - bottomPoint.Y);
+
+						collided = (invertSlope < 0 && bottomX > rectangle.Left && topX < rectangle.Right) ||
+							(bottomX < rectangle.Right && topX > rectangle.Bottom);
+					}
+				}
+
+
+				if (collided)
+                {
+                    thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(rectangle);
+                    returnValue = true;
+                }
+            }
+
+            return returnValue;
+        }
+
+        internal static bool CollideShapeAgainstThis(ShapeCollection thisShapeCollection, Line shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse)
 		{
 #if DEBUG
 			CheckAndReportNaN(shapeToCollideAgainstThis);
