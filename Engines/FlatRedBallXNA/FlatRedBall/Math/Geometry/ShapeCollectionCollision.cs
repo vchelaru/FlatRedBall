@@ -453,76 +453,96 @@ namespace FlatRedBall.Math.Geometry
                 }
 				else
                 {
+					var segment = new Segment();
 					for(int vertexIndex = 0; vertexIndex < shapeToCollideAgainstThis.mVertices.Length-1; vertexIndex++)
                     {
-						var firstVertex = shapeToCollideAgainstThis.mVertices[vertexIndex];
-						var secondVertex = shapeToCollideAgainstThis.mVertices[vertexIndex + 1];
 
-						var difference = firstVertex.Position - secondVertex.Position;
+						var firstPosition = shapeToCollideAgainstThis.mVertices[vertexIndex].Position;
+						var secondPosition = shapeToCollideAgainstThis.mVertices[vertexIndex + 1].Position;
 
-						var isHorizontal = System.Math.Abs(difference.X) > System.Math.Abs(difference.Y);
+						segment.Point1.X = firstPosition.X;
+						segment.Point1.Y = firstPosition.Y;
 
-						var startY = firstVertex.Position.Y;
-						var startX = firstVertex.Position.X;
 
-						if(isHorizontal)
-                        {
-							var slope = (secondVertex.Position.Y - firstVertex.Position.Y) / 
-								(secondVertex.Position.X - firstVertex.Position.X);
+						segment.Point2.X = secondPosition.X;
+						segment.Point2.Y = secondPosition.Y;
 
-							var isSlopedDown = slope < 0;
+						for (int i = startIndex; i < endIndex; i++)
+						{
+							var rectangle = thisShapeCollection.mAxisAlignedRectangles[i];
 
-							for (int i = startIndex; i < endIndex; i++)
-							{
-								var rectangle = thisShapeCollection.mAxisAlignedRectangles[i];
-
-								var left = rectangle.Left;
-								var right = rectangle.Right;
-								var top = rectangle.Top;
-								var bottom = rectangle.Bottom;
-
-								var leftY = startY + slope * (left - startX);
-								var rightY = startY + slope * (right - startX);
-
-								var collides = (isSlopedDown && leftY > bottom && rightY < top) ||
-									(!isSlopedDown && leftY < top && rightY > bottom);
-
-								if (collides)
-								{
-									thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(rectangle);
-									returnValue = true;
-								}
-                            }
-						}
-						else
-                        {
-							var xSlope = (secondVertex.Position.X - firstVertex.Position.X) /
-								(secondVertex.Position.Y - firstVertex.Position.Y);
-
-							var isSlopedRight = xSlope > 0;
-
-							for (int i = startIndex; i < endIndex; i++)
-							{
-								var rectangle = thisShapeCollection.mAxisAlignedRectangles[i];
-
-								var left = rectangle.Left;
-								var right = rectangle.Right;
-								var top = rectangle.Top;
-								var bottom = rectangle.Bottom;
-
-								var leftX = startX + xSlope * (bottom - startY);
-								var rightX = startY + xSlope * (top - startY);
-
-								var collides = (isSlopedRight && leftX < right && rightX > left) ||
-									(!isSlopedRight && leftX > left && rightX < right);
-
-								if (collides)
-								{
-									thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(rectangle);
-									returnValue = true;
-								}
+							if(segment.CollideAgainstNoUpdate(rectangle))
+                            {
+								thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(rectangle);
+								returnValue = true;
 							}
 						}
+
+						//var difference = firstVertex.Position - secondVertex.Position;
+
+						//var isHorizontal = System.Math.Abs(difference.X) > System.Math.Abs(difference.Y);
+
+						//var startY = firstVertex.Position.Y;
+						//var startX = firstVertex.Position.X;
+
+						//if(isHorizontal)
+						//                  {
+						//	var slope = (secondVertex.Position.Y - firstVertex.Position.Y) / 
+						//		(secondVertex.Position.X - firstVertex.Position.X);
+
+						//	var isSlopedDown = slope < 0;
+
+						//	for (int i = startIndex; i < endIndex; i++)
+						//	{
+						//		var rectangle = thisShapeCollection.mAxisAlignedRectangles[i];
+
+						//		var left = rectangle.Left;
+						//		var right = rectangle.Right;
+						//		var top = rectangle.Top;
+						//		var bottom = rectangle.Bottom;
+
+						//		var leftY = startY + slope * (left - startX);
+						//		var rightY = startY + slope * (right - startX);
+
+						//		var collides = (isSlopedDown && leftY > bottom && rightY < top) ||
+						//			(!isSlopedDown && leftY < top && rightY > bottom);
+
+						//		if (collides)
+						//		{
+						//			thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(rectangle);
+						//			returnValue = true;
+						//		}
+						//                      }
+						//}
+						//else
+						//                  {
+						//	var xSlope = (secondVertex.Position.X - firstVertex.Position.X) /
+						//		(secondVertex.Position.Y - firstVertex.Position.Y);
+
+						//	var isSlopedRight = xSlope > 0;
+
+						//	for (int i = startIndex; i < endIndex; i++)
+						//	{
+						//		var rectangle = thisShapeCollection.mAxisAlignedRectangles[i];
+
+						//		var left = rectangle.Left;
+						//		var right = rectangle.Right;
+						//		var top = rectangle.Top;
+						//		var bottom = rectangle.Bottom;
+
+						//		var leftX = startX + xSlope * (bottom - startY);
+						//		var rightX = startY + xSlope * (top - startY);
+
+						//		var collides = (isSlopedRight && leftX < right && rightX > left) ||
+						//			(!isSlopedRight && leftX > left && rightX < right);
+
+						//		if (collides)
+						//		{
+						//			thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(rectangle);
+						//			returnValue = true;
+						//		}
+						//	}
+						//}
 					}
                 }
 

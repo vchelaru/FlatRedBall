@@ -37,9 +37,16 @@ namespace FlatRedBall.AI.Pathfinding
             var startNode = GetClosestNodeTo(ref startPoint);
             var  endNode = GetClosestNodeTo(ref endPoint);
 
-            var nodes = GetPathOrClosest(startNode, endNode);
+            if(startNode == null || endNode == null)
+            {
+                return new List<PositionedNode>();
+            }
+            else
+            {
+                var nodes = GetPathOrClosest(startNode, endNode);
 
-            return nodes;
+                return nodes;
+            }
         }
 
         public override List<Vector3> GetPositionPath(ref Vector3 startPoint, ref Vector3 endPoint)

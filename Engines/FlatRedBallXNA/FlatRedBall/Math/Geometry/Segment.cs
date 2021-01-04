@@ -415,6 +415,80 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
+        public bool CollideAgainstNoUpdate(AxisAlignedRectangle rectangle)
+        {
+            var difference = (Point2 - Point1).ToVector3();
+
+            var isHorizontal = System.Math.Abs(difference.X) > System.Math.Abs(difference.Y);
+
+            Vector3 leftPoint = Point2.ToVector3();
+            Vector3 rightPoint = Point1.ToVector3();
+            if(Point2.X > Point1.X)
+            {
+                leftPoint = Point1.ToVector3();
+                rightPoint = Point2.ToVector3();
+            }
+
+            Vector3 bottomPoint = Point2.ToVector3();
+            Vector3 topPoint = Point1.ToVector3();
+            if(Point2.Y > Point1.Y)
+            {
+                bottomPoint = Point1.ToVector3();
+                topPoint = Point2.ToVector3();
+            }
+
+            // first do bounding box. If this fails, we can exit
+            if(bottomPoint.Y > rectangle.Top || topPoint.Y < rectangle.Bottom ||
+                leftPoint.X > rectangle.Right || rightPoint.X < rectangle.Left)
+            {
+                return false;
+            }
+
+            // If it doesn't fail, we gotta do slope checks
+
+
+            if(isHorizontal)
+            {
+
+                if (leftPoint.X > rectangle.Right) return false;
+                else if (rightPoint.X < rectangle.Left) return false;
+                else
+                {
+                    // they overlap on the X
+                    var slope = (rightPoint.Y - leftPoint.Y) / (rightPoint.X - leftPoint.X);
+
+                    var leftX = System.Math.Max(leftPoint.X, rectangle.Left);
+                    var rightX = System.Math.Min(rightPoint.X, rectangle.Right);
+
+                    var leftY = leftPoint.Y + slope * (leftX - leftPoint.X);
+                    var rightY = leftPoint.Y  + slope * (rightX - leftPoint.X);
+
+                    return (slope < 0 && leftY > rectangle.Bottom && rightY < rectangle.Top) ||
+                        (leftY < rectangle.Top && rightY > rectangle.Bottom);
+                }
+            }
+            else
+            {
+
+                if (bottomPoint.Y > rectangle.Top) return false;
+                else if (topPoint.Y < rectangle.Bottom) return false;
+                else
+                {
+                    // they overlap on the Y
+                    var invertSlope = (topPoint.X - bottomPoint.X) / (topPoint.Y - bottomPoint.Y);
+
+                    var bottomY = System.Math.Max(bottomPoint.Y, rectangle.Bottom);
+                    var topY = System.Math.Min(topPoint.Y, rectangle.Top);
+
+                    var bottomX = bottomPoint.X + invertSlope * (bottomY - bottomPoint.Y);
+                    var topX = bottomPoint.X + invertSlope * (topY - bottomPoint.Y);
+
+                    return (invertSlope < 0 && bottomX > rectangle.Left && topX < rectangle.Right) ||
+                        (bottomX < rectangle.Right && topX > rectangle.Bottom);
+                }
+            }
+
+        }
 
         public float DistanceTo(Segment otherSegment)
         {

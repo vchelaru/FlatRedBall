@@ -140,9 +140,9 @@ namespace $NAMESPACE$.TopDown
 
                 //}
 
-                var path = NodeNetwork.GetPathOrClosest(ref Owner.Position, ref pathfindingTarget);
+                var points = NodeNetwork.GetPositionPath(ref Owner.Position, ref pathfindingTarget);
                 Path.Clear();
-                var points = path.Select(item => item.Position).ToList();
+                //var points = path.Select(item => item.Position).ToList();
 
                 // So the enemy doesn't stop on the nearest node without attacking the player:
                 points.Add(pathfindingTarget);
@@ -192,6 +192,8 @@ namespace $NAMESPACE$.TopDown
                 while (ownedLines.Count < Path.Count)
                 {
                     var line = new Line();
+                    line.Color = new Color(1f, 1f, 0);
+
                     line.Visible = true;
                     ownedLines.Add(line);
                 }
