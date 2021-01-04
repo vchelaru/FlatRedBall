@@ -120,25 +120,56 @@ namespace $NAMESPACE$.TopDown
             DoTargetFollowingActivity();
         }
 
-        private void UpdatePath()
+    private void UpdatePath()
+    {
+        Vector3? effectivePosition = FollowingTarget?.Position ?? TargetPosition;
+        if (effectivePosition != null && NodeNetwork != null)
         {
-            Vector3? effectivePosition = FollowingTarget?.Position ?? TargetPosition;
-            if (effectivePosition != null && NodeNetwork != null)
+            var pathfindingTarget = effectivePosition.Value;
+
+            var lineToTarget = pathfindingTarget - Owner.Position;
+            //var perpendicular = new Vector3(-lineToTarget.Y, lineToTarget.X, 0);
+            //if (perpendicular.Length() != 0)
+            //{
+            //    perpendicular.Normalize();
+            //    var distanceFromTarget = lineToTarget.Length();
+
+            //    const float distanceToPerpendicularLengthRatio = 1 / 2f;
+
+            //    pathfindingTarget = target.Position + perpendicular * perpendicularLengthRatio * distanceToPerpendicularLengthRatio * distanceFromTarget;
+
+            //}
+
+            var hadDirectPath = Path.Count == 1 && isUsingLineOfSightPathfinding;
+            var hasDirectPathNow = false;
+            if (hadDirectPath)
             {
-                var pathfindingTarget = effectivePosition.Value;
+                var fromVector = Owner.Position;
+                var toVector = pathfindingTarget;
 
-                var lineToTarget = pathfindingTarget - Owner.Position;
-                //var perpendicular = new Vector3(-lineToTarget.Y, lineToTarget.X, 0);
-                //if (perpendicular.Length() != 0)
-                //{
-                //    perpendicular.Normalize();
-                //    var distanceFromTarget = lineToTarget.Length();
+                GetLineOfSightPathFindingPolygon(fromVector, toVector);
 
-                //    const float distanceToPerpendicularLengthRatio = 1 / 2f;
+                var hasClearPath = true;
 
-                //    pathfindingTarget = target.Position + perpendicular * perpendicularLengthRatio * distanceToPerpendicularLengthRatio * distanceFromTarget;
+                for (int i = 0; i < EnvironmentCollision.Count; i++)
+                {
+                    var collision = EnvironmentCollision[i];
+                    if (collision.CollideAgainst(lineOfSightPathFindingPolygon))
+                    {
+                        hasClearPath = false;
+                    }
+                }
 
-                //}
+                if (hasClearPath)
+                {
+                    Path[0] = pathfindingTarget;
+                }
+
+                hasDirectPathNow = hasClearPath;
+            }
+
+            if (!hasDirectPathNow)
+            {
 
                 var points = NodeNetwork.GetPositionPath(ref Owner.Position, ref pathfindingTarget);
                 Path.Clear();
@@ -179,13 +210,14 @@ namespace $NAMESPACE$.TopDown
                 }
 
                 Path.AddRange(points);
-                NextImmediateTarget = Path.FirstOrDefault();
             }
-
-            UpdateLines();
+            NextImmediateTarget = Path.FirstOrDefault();
         }
 
-        private void UpdateLines()
+        UpdateLines();
+    }
+
+    private void UpdateLines()
         {
             if (IsPathVisible)
             {
