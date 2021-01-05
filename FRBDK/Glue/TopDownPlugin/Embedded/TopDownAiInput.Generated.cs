@@ -112,110 +112,107 @@ namespace $NAMESPACE$.TopDown
 
         public void Activity()
         {
-            values2DInput.X = 0;
-            values2DInput.Y = 0;
-
             UpdatePath();
 
             DoTargetFollowingActivity();
         }
 
-    private void UpdatePath()
-    {
-        Vector3? effectivePosition = FollowingTarget?.Position ?? TargetPosition;
-        if (effectivePosition != null && NodeNetwork != null)
+        public void UpdatePath()
         {
-            var pathfindingTarget = effectivePosition.Value;
-
-            var lineToTarget = pathfindingTarget - Owner.Position;
-            //var perpendicular = new Vector3(-lineToTarget.Y, lineToTarget.X, 0);
-            //if (perpendicular.Length() != 0)
-            //{
-            //    perpendicular.Normalize();
-            //    var distanceFromTarget = lineToTarget.Length();
-
-            //    const float distanceToPerpendicularLengthRatio = 1 / 2f;
-
-            //    pathfindingTarget = target.Position + perpendicular * perpendicularLengthRatio * distanceToPerpendicularLengthRatio * distanceFromTarget;
-
-            //}
-
-            var hadDirectPath = Path.Count == 1 && isUsingLineOfSightPathfinding;
-            var hasDirectPathNow = false;
-            if (hadDirectPath)
+            Vector3? effectivePosition = FollowingTarget?.Position ?? TargetPosition;
+            if (effectivePosition != null && NodeNetwork != null)
             {
-                var fromVector = Owner.Position;
-                var toVector = pathfindingTarget;
+                var pathfindingTarget = effectivePosition.Value;
 
-                GetLineOfSightPathFindingPolygon(fromVector, toVector);
+                var lineToTarget = pathfindingTarget - Owner.Position;
+                //var perpendicular = new Vector3(-lineToTarget.Y, lineToTarget.X, 0);
+                //if (perpendicular.Length() != 0)
+                //{
+                //    perpendicular.Normalize();
+                //    var distanceFromTarget = lineToTarget.Length();
 
-                var hasClearPath = true;
+                //    const float distanceToPerpendicularLengthRatio = 1 / 2f;
 
-                for (int i = 0; i < EnvironmentCollision.Count; i++)
+                //    pathfindingTarget = target.Position + perpendicular * perpendicularLengthRatio * distanceToPerpendicularLengthRatio * distanceFromTarget;
+
+                //}
+
+                var hadDirectPath = Path.Count == 1 && isUsingLineOfSightPathfinding;
+                var hasDirectPathNow = false;
+                if (hadDirectPath)
                 {
-                    var collision = EnvironmentCollision[i];
-                    if (collision.CollideAgainst(lineOfSightPathFindingPolygon))
+                    var fromVector = Owner.Position;
+                    var toVector = pathfindingTarget;
+
+                    GetLineOfSightPathFindingPolygon(fromVector, toVector);
+
+                    var hasClearPath = true;
+
+                    for (int i = 0; i < EnvironmentCollision.Count; i++)
                     {
-                        hasClearPath = false;
-                    }
-                }
-
-                if (hasClearPath)
-                {
-                    Path[0] = pathfindingTarget;
-                }
-
-                hasDirectPathNow = hasClearPath;
-            }
-
-            if (!hasDirectPathNow)
-            {
-
-                var points = NodeNetwork.GetPositionPath(ref Owner.Position, ref pathfindingTarget);
-                Path.Clear();
-                //var points = path.Select(item => item.Position).ToList();
-
-                // So the enemy doesn't stop on the nearest node without attacking the player:
-                points.Add(pathfindingTarget);
-
-                if (isUsingLineOfSightPathfinding)
-                {
-                    while (points.Count > 0)
-                    {
-                        var fromVector = Owner.Position;
-                        var toVector = points[0];
-
-                        GetLineOfSightPathFindingPolygon(fromVector, toVector);
-
-                        var hasClearPath = true;
-
-                        for (int i = 0; i < EnvironmentCollision.Count; i++)
+                        var collision = EnvironmentCollision[i];
+                        if (collision.CollideAgainst(lineOfSightPathFindingPolygon))
                         {
-                            var collision = EnvironmentCollision[i];
-                            if (collision.CollideAgainst(lineOfSightPathFindingPolygon))
+                            hasClearPath = false;
+                        }
+                    }
+
+                    if (hasClearPath)
+                    {
+                        Path[0] = pathfindingTarget;
+                    }
+
+                    hasDirectPathNow = hasClearPath;
+                }
+
+                if (!hasDirectPathNow)
+                {
+
+                    var points = NodeNetwork.GetPositionPath(ref Owner.Position, ref pathfindingTarget);
+                    Path.Clear();
+                    //var points = path.Select(item => item.Position).ToList();
+
+                    // So the enemy doesn't stop on the nearest node without attacking the player:
+                    points.Add(pathfindingTarget);
+
+                    if (isUsingLineOfSightPathfinding)
+                    {
+                        while (points.Count > 0)
+                        {
+                            var fromVector = Owner.Position;
+                            var toVector = points[0];
+
+                            GetLineOfSightPathFindingPolygon(fromVector, toVector);
+
+                            var hasClearPath = true;
+
+                            for (int i = 0; i < EnvironmentCollision.Count; i++)
                             {
-                                hasClearPath = false;
+                                var collision = EnvironmentCollision[i];
+                                if (collision.CollideAgainst(lineOfSightPathFindingPolygon))
+                                {
+                                    hasClearPath = false;
+                                }
+                            }
+
+                            if (hasClearPath && points.Count > 1)
+                            {
+                                points.RemoveAt(0);
+                            }
+                            else
+                            {
+                                break;
                             }
                         }
-
-                        if (hasClearPath && points.Count > 1)
-                        {
-                            points.RemoveAt(0);
-                        }
-                        else
-                        {
-                            break;
-                        }
                     }
+
+                    Path.AddRange(points);
                 }
-
-                Path.AddRange(points);
+                NextImmediateTarget = Path.FirstOrDefault();
             }
-            NextImmediateTarget = Path.FirstOrDefault();
-        }
 
-        UpdateLines();
-    }
+            UpdateLines();
+        }
 
     private void UpdateLines()
         {
@@ -276,8 +273,11 @@ namespace $NAMESPACE$.TopDown
             return lineOfSightPathFindingPolygon;
         }
 
-        private void DoTargetFollowingActivity()
+        public void DoTargetFollowingActivity()
         {
+            values2DInput.X = 0;
+            values2DInput.Y = 0;
+
             if (NextImmediateTarget != null && Owner?.CurrentMovement != null && IsActive)
             {
                 var targetX = NextImmediateTarget.Value.X;
