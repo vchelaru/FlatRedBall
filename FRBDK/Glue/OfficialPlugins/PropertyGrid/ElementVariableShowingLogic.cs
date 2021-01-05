@@ -12,6 +12,7 @@ using WpfDataUi;
 using WpfDataUi.DataTypes;
 using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Elements;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -116,10 +117,10 @@ namespace OfficialPlugins.VariableDisplay
                 };
 
                 instanceMember.CustomGetEvent += (instance) =>
-                    {
-                        var foundVariable = element.GetCustomVariableRecursively(name);
-                        return foundVariable?.DefaultValue;
-                    };
+                {
+                    return GetValueRecursively(element, name);
+
+                };
 
                 instanceMember.IsDefaultSet += (owner, args) =>
                 {
@@ -134,6 +135,8 @@ namespace OfficialPlugins.VariableDisplay
                     GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
                 };
+
+                instanceMember.IsDefault = element.GetCustomVariable(name)?.DefaultValue == null;
 
                 instanceMember.SetValueError = (newValue) =>
                 {
@@ -258,6 +261,31 @@ namespace OfficialPlugins.VariableDisplay
             }
         }
 
+        private static object GetValueRecursively(IElement element, string name)
+        {
+            var variable = element.GetCustomVariable(name);
 
+            if(variable?.DefaultValue != null)
+            {
+                return variable.DefaultValue;
+            }
+            else if(!string.IsNullOrEmpty( element.BaseElement ))
+            {
+                var baseElement = ObjectFinder.Self.GetBaseElement(element);
+
+                if(baseElement == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return GetValueRecursively(baseElement, name);
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }
