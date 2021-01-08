@@ -117,12 +117,6 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
-      <Type>bool</Type>
-      <Name>TextInstance.UseCustomFont</Name>
-      <Value xsi:type="xsd:boolean">true</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
       <Type>VerticalAlignment</Type>
       <Name>TextInstance.VerticalAlignment</Name>
       <Value xsi:type="xsd:int">1</Value>

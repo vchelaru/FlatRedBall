@@ -438,14 +438,13 @@ namespace FlatRedBall.Gui
             return unmodifiedXEdge - GuiManager.XEdge;
         }
 
-		#region XML Docs
-		/// <summary>
+        /// <summary>
         /// Adds a window as a Dominant Window.  If the window is a regular Window
         /// already managed by the GuiManager it will be removed from the regularly-managed
-        /// windows.
+        /// window list. If the window is already a dominant window, this operation does nothing, so 
+        /// it can be called multiple times.
         /// </summary>
-        /// <param name="windowToSet">The window to add to the Dominant Window stack.</param>
-        #endregion
+        /// <param name="window">The window to add to the Dominant Window stack.</param>
         static public void AddDominantWindow(IWindow window)
         {
 #if DEBUG
@@ -767,8 +766,10 @@ namespace FlatRedBall.Gui
                         }
                     }
 
+                    var hasVisibleDominantWindows = DominantWindowActive;
+
                     #region if we have a dominant window
-                    if (DominantWindowActive && c.WindowOver == null)
+                    if (hasVisibleDominantWindows && c.WindowOver == null)
                     {
                         DoActivityOnWindowArray(mDominantWindows);
                     }
@@ -776,7 +777,7 @@ namespace FlatRedBall.Gui
 
                     #region looping through all regular windows
 
-                    if (c.WindowOver == null && mDominantWindows.Count == 0)
+                    if (c.WindowOver == null && !hasVisibleDominantWindows)
                     {
                         DoActivityOnWindowArray(mWindowArray);
 

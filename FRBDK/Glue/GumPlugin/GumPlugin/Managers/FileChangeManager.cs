@@ -125,6 +125,10 @@ namespace GumPluginCore.Managers
                         }
                     }
 
+                    // refresh the cache:
+                    Gum.Managers.ObjectFinder.Self.DisableCache();
+                    Gum.Managers.ObjectFinder.Self.EnableCache();
+
                     // Something could have changed - more components could have been added
                     AssetTypeInfoManager.Self.RefreshProjectSpecificAtis();
 

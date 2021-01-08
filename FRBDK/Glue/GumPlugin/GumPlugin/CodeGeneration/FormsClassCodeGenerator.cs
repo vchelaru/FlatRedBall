@@ -70,6 +70,8 @@ namespace GumPluginCore.CodeGeneration
             // todo - see if there are any Forms controls here? Or always generate? Not sure...
             // Update 11/27/2020 - Justin's game has lots of components that aren't forms and this
             // is adding a lot of garbage to Justin's project.
+            // Update 1/8/2021
+            // Vic says - we should discuss this because this is also an important feature
             if (shouldGenerate)
             {
                 var allInstances = elementSave.Instances;
