@@ -237,6 +237,13 @@ namespace TileGraphicsPlugin.ViewModels
             set => SetAndPersist(value); 
         }
 
+        [SyncedProperty]
+        public bool RemoveTilesAfterCreatingCollision
+        {
+            get => Get<bool>();
+            set => SetAndPersist(value);
+        }
+
         public bool IsEntireViewEnabled
         {
             get { return Get<bool>(); }

@@ -95,6 +95,7 @@
                               Text="{Binding CollisionTileTypeName}"
                               ItemsSource="{Binding AvailableTypes}"
                              KeyUp="TextBox_KeyEnterUpdate"></ComboBox>
+                    <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding RemoveTilesAfterCreatingCollision}">Remove Tiles</CheckBox>
 
                 </StackPanel>
 

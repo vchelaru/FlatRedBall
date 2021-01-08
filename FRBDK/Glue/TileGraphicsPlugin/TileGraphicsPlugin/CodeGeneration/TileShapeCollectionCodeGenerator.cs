@@ -379,6 +379,7 @@ namespace TileGraphicsPlugin.CodeGeneration
 
             var mapName = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.SourceTmxName));
             var typeName = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.CollisionTileTypeName));
+            var removeTiles = Get<bool>(nameof(TileShapeCollectionPropertiesViewModel.RemoveTilesAfterCreatingCollision));
             var isMerged = Get<bool>(nameof(TileShapeCollectionPropertiesViewModel.IsCollisionMerged));
             if (!string.IsNullOrEmpty(mapName) && !string.IsNullOrEmpty(typeName))
             {
@@ -389,7 +390,7 @@ namespace TileGraphicsPlugin.CodeGeneration
                 }
                 codeBlock.Line("FlatRedBall.TileCollisions.TileShapeCollectionLayeredTileMapExtensions" +
                     $".{method}(" +
-                    $"{namedObjectSave.InstanceName}, {mapName}, \"{typeName}\");");
+                    $"{namedObjectSave.InstanceName}, {mapName}, \"{typeName}\", {removeTiles.ToString().ToLowerInvariant()});");
             }
 
         }

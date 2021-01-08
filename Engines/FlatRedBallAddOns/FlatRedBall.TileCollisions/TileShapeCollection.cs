@@ -108,6 +108,28 @@ namespace FlatRedBall.TileCollisions
             }
         }
 
+        Microsoft.Xna.Framework.Color mColor = Microsoft.Xna.Framework.Color.White;
+        public Microsoft.Xna.Framework.Color Color
+        {
+            get => mColor;
+            set
+            {
+                mColor = value;
+                for (int i = 0; i < mShapes.AxisAlignedRectangles.Count; i++)
+                {
+                    mShapes.AxisAlignedRectangles[i].Color = value;
+                }
+                for (int i = 0; i < mShapes.Circles.Count; i++)
+                {
+                    mShapes.Circles[i].Color = value;
+                }
+                for (int i = 0; i < mShapes.Polygons.Count; i++)
+                {
+                    mShapes.Polygons[i].Color = value;
+                }
+            }
+        }
+
         #endregion
 
         public TileShapeCollection()
@@ -1053,7 +1075,7 @@ namespace FlatRedBall.TileCollisions
         }
 
         public static void AddCollisionFrom(this TileShapeCollection tileShapeCollection, LayeredTileMap layeredTileMap,
-            Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate)
+            Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate, bool removeTilesOnAdd = false)
         {
             tileShapeCollection.LeftSeedX = layeredTileMap.X;
             tileShapeCollection.BottomSeedY = layeredTileMap.Y - layeredTileMap.Height;
@@ -1073,6 +1095,12 @@ namespace FlatRedBall.TileCollisions
 
                     foreach (var layer in layeredTileMap.MapLayers)
                     {
+                        List<int> indexesToRemove = null;
+                        if (removeTilesOnAdd)
+                        {
+                            indexesToRemove = new List<int>();
+                        }
+
                         var dictionary = layer.NamedTileOrderedIndexes;
 
                         if (dictionary.ContainsKey(name))
@@ -1089,7 +1117,17 @@ namespace FlatRedBall.TileCollisions
                                 var centerY = bottom + dimensionHalf;
                                 tileShapeCollection.AddCollisionAtWorld(centerX,
                                     centerY);
+
                             }
+                            if(removeTilesOnAdd)
+                            {
+                                indexesToRemove.AddRange(indexList);
+                            }
+                        }
+
+                        if(removeTilesOnAdd && indexesToRemove.Count > 0)
+                        {
+                            layer.RemoveQuads(indexesToRemove);
                         }
                     }
                 }
@@ -1097,7 +1135,7 @@ namespace FlatRedBall.TileCollisions
         }
 
         public static void AddMergedCollisionFrom(this TileShapeCollection tileShapeCollection, LayeredTileMap layeredTileMap,
-            Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate)
+            Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate, bool removeTilesOnAdd = false)
         {
             var properties = layeredTileMap.TileProperties;
             float dimension = layeredTileMap.WidthPerTile.Value;
@@ -1111,7 +1149,7 @@ namespace FlatRedBall.TileCollisions
 
             foreach (var layer in layeredTileMap.MapLayers)
             {
-                AddCollisionFromLayerInternal(tileShapeCollection, predicate, properties, dimension, dimensionHalf, rectangleIndexes, layer);
+                AddCollisionFromLayerInternal(tileShapeCollection, predicate, properties, dimension, dimensionHalf, rectangleIndexes, layer, removeTilesOnAdd);
             }
 
             ApplyMerging(tileShapeCollection, dimension, rectangleIndexes);
@@ -1141,16 +1179,20 @@ namespace FlatRedBall.TileCollisions
                 layeredTileMap, (list) => list.Any(item => item.Name == propertyName));
         }
 
-        public static void AddMergedCollisionFromTilesWithProperty(this TileShapeCollection tileShapeCollection, LayeredTileMap layeredTileMap, string propertyName)
+        public static void AddMergedCollisionFromTilesWithProperty(this TileShapeCollection tileShapeCollection, LayeredTileMap layeredTileMap,
+            string propertyName, bool removeTilesOnAdd = false)
         {
             tileShapeCollection.AddMergedCollisionFrom(
-                layeredTileMap, (list) => list.Any(item => item.Name == propertyName));
+                layeredTileMap, (list) => list.Any(item => item.Name == propertyName), removeTilesOnAdd);
         }
 
-        public static void AddCollisionFromTilesWithType(this TileShapeCollection tileShapeCollection, LayeredTileMap layeredTileMap, string type)
+        public static void AddCollisionFromTilesWithType(this TileShapeCollection tileShapeCollection, 
+            LayeredTileMap layeredTileMap, string type, bool removeTilesOnAdd = false)
         {
             tileShapeCollection.AddCollisionFrom(
-                layeredTileMap, (list) => list.Any(item => item.Name == "Type" && (item.Value as string) == type));
+                layeredTileMap, 
+                (list) => list.Any(item => item.Name == "Type" && (item.Value as string) == type),
+                removeTilesOnAdd);
         }
 
         public static void AddMergedCollisionFromTilesWithType(this TileShapeCollection tileShapeCollection, LayeredTileMap layeredTileMap, string type)
@@ -1255,7 +1297,7 @@ namespace FlatRedBall.TileCollisions
             }
         }
 
-        private static void AddCollisionFromLayerInternal(TileShapeCollection tileShapeCollection, Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate, Dictionary<string, List<TMXGlueLib.DataTypes.NamedValue>> properties, float dimension, float dimensionHalf, Dictionary<int, List<int>> rectangleIndexes, MapDrawableBatch layer)
+        private static void AddCollisionFromLayerInternal(TileShapeCollection tileShapeCollection, Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate, Dictionary<string, List<TMXGlueLib.DataTypes.NamedValue>> properties, float dimension, float dimensionHalf, Dictionary<int, List<int>> rectangleIndexes, MapDrawableBatch layer, bool removeTilesOnAdd = false)
         {
             foreach (var kvp in properties)
             {
@@ -1264,6 +1306,11 @@ namespace FlatRedBall.TileCollisions
 
                 if (predicate(namedValues))
                 {
+                    List<int> indexesToRemove = null;
+                    if (removeTilesOnAdd)
+                    {
+                        indexesToRemove = new List<int>();
+                    }
 
                     var dictionary = layer.NamedTileOrderedIndexes;
 
@@ -1310,6 +1357,15 @@ namespace FlatRedBall.TileCollisions
                             }
                             listToAddTo.Add(value);
 
+                            if (removeTilesOnAdd)
+                            {
+                                indexesToRemove.AddRange(indexList);
+                            }
+
+                        }
+                        if (removeTilesOnAdd && indexesToRemove.Count > 0)
+                        {
+                            layer.RemoveQuads(indexesToRemove);
                         }
                     }
                 }

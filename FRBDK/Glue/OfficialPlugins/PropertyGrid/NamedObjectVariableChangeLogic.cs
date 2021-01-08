@@ -40,6 +40,11 @@ namespace OfficialPlugins.VariableDisplay
                         null);
                 }
             }
+            // XML serialization doesn't like enums
+            else if(value?.GetType().IsEnum() == true)
+            {
+                value = (int)value;
+            }
         }
 
         private static void PerformStandardVariableAssignments(NamedObjectSave instance, TypedMemberBase typedMember, object value, DataGridItem instanceMember, Type memberType)
