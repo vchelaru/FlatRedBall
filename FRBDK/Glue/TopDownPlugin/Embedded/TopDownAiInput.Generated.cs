@@ -210,6 +210,10 @@ namespace $NAMESPACE$.TopDown
                 }
                 NextImmediateTarget = Path.FirstOrDefault();
             }
+            else
+            {
+                Path.Clear();
+            }
 
             UpdateLines();
         }
