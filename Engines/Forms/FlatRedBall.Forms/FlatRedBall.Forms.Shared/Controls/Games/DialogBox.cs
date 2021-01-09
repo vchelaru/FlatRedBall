@@ -18,6 +18,8 @@ namespace FlatRedBall.Forms.Controls.Games
         GraphicalUiElement continueIndicatorInstance;
         RenderingLibrary.Graphics.Text coreTextObject;
 
+        public static double LastTimeDismissed { get; private set; }
+
         List<string> Pages = new List<string>();
 
         static global::Gum.DataTypes.Variables.StateSave NoTextShownState;
@@ -33,6 +35,22 @@ namespace FlatRedBall.Forms.Controls.Games
         public bool TakingInput => throw new NotImplementedException();
 
         public IInputReceiver NextInTabSequence { get; set; }
+
+        public override bool IsFocused
+        {
+            get => base.IsFocused;
+            set
+            {
+                base.IsFocused = value;
+                UpdateToIsFocused();
+            }
+        }
+
+        #endregion
+
+        #region Events
+
+        public event EventHandler FinishedShowing;
 
         #endregion
 
@@ -161,6 +179,9 @@ namespace FlatRedBall.Forms.Controls.Games
             else
             {
                 this.IsVisible = false;
+                LastTimeDismissed = TimeManager.CurrentTime;
+                FinishedShowing?.Invoke(this, null);
+                IsFocused = false;
             }
         }
 
@@ -198,6 +219,13 @@ namespace FlatRedBall.Forms.Controls.Games
                     ReactToInput();
                 }
             }
+
+            var keyboardAsInputDevice = InputManager.Keyboard as IInputDevice;
+
+            if(keyboardAsInputDevice.DefaultPrimaryActionInput.WasJustPressed)
+            {
+                ReactToInput();
+            }
         }
 
         public void OnGainFocus()
@@ -220,6 +248,34 @@ namespace FlatRedBall.Forms.Controls.Games
         public void HandleCharEntered(char character)
         {
 
+        }
+
+        #endregion
+
+        #region UpdateTo Methods
+
+        private void UpdateToIsFocused()
+        {
+            UpdateState();
+
+            if (isFocused)
+            {
+                if (FlatRedBall.Input.InputManager.InputReceiver != this)
+                {
+                    FlatRedBall.Input.InputManager.InputReceiver = this;
+                }
+            }
+
+            else if (!isFocused)
+            {
+                if (FlatRedBall.Input.InputManager.InputReceiver == this)
+                {
+                    FlatRedBall.Input.InputManager.InputReceiver = null;
+                }
+
+                // Vic says - why do we need to deselect when it loses focus? It could stay selected
+                //SelectionLength = 0;
+            }
         }
 
         #endregion

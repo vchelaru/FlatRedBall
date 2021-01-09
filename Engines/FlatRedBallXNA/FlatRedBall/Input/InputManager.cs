@@ -163,7 +163,8 @@ namespace FlatRedBall.Input
             if (InputReceiver != null && FlatRedBallServices.Game.IsActive)
             {
                 InputReceiver.OnFocusUpdate();
-                InputReceiver.ReceiveInput();
+                // OnFocusUpdate could set the InputReceiver to null, so handle that:
+                InputReceiver?.ReceiveInput();
 
                 if (Keyboard.AutomaticallyPushEventsToInputReceiver)
                 {
@@ -173,7 +174,7 @@ namespace FlatRedBall.Input
 
                     foreach (var key in InputReceiverKeyboard.KeysTyped)
                     {
-                        InputManager.InputReceiver.HandleKeyDown(key, shift, alt, ctrl);
+                        InputManager.InputReceiver?.HandleKeyDown(key, shift, alt, ctrl);
                     }
 
                     var stringTyped = InputReceiverKeyboard.GetStringTyped();

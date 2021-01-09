@@ -286,7 +286,7 @@ namespace TopDownPlugin.CodeGenerators
 
             var desiredVelocity = Microsoft.Xna.Framework.Vector3.Zero;
 
-            if(InputEnabled)
+            if(InputEnabled && MovementInput != null)
             {
                 desiredVelocity = new Microsoft.Xna.Framework.Vector3(MovementInput.X, MovementInput.Y, velocity.Z) * 
                     mCurrentMovement.MaxSpeed * TopDownSpeedMultiplier;
