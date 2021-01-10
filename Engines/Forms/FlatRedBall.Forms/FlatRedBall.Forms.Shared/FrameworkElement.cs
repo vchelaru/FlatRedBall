@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Forms.GumExtensions;
 using FlatRedBall.Forms.Input;
 using FlatRedBall.Gui;
+using FlatRedBall.Instructions;
 using Gum.Wireframe;
 using RenderingLibrary.Graphics;
 using System;
@@ -11,6 +12,8 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Forms.Controls
 {
@@ -323,6 +326,8 @@ namespace FlatRedBall.Forms.Controls
 
         #endregion
 
+        #region Constructors
+
         public FrameworkElement() 
         {
             Visual = GetGraphicalUiElementFor(this);
@@ -335,6 +340,10 @@ namespace FlatRedBall.Forms.Controls
                 this.Visual = visual;
             }
         }
+
+        #endregion
+
+
 
         public void AddChild(FrameworkElement child)
         {
@@ -357,6 +366,81 @@ namespace FlatRedBall.Forms.Controls
                 (cursor.WindowOver != null && cursor.WindowOver.IsInParentChain(this.Visual));
 
             return isOnThisOrChild;
+        }
+
+        public void Close()
+        {
+            if (!FlatRedBallServices.IsThreadPrimary())
+            {
+                InstructionManager.AddSafe(Visual.RemoveFromManagers);
+            }
+            else
+            {
+                Visual.RemoveFromManagers();
+            }
+        }
+
+        public void Show(FlatRedBall.Graphics.Layer frbLayer = null)
+        {
+#if DEBUG
+            if(Visual == null)
+            {
+                throw new InvalidOperationException("Visual must be set before calling Show");
+            }
+#endif
+
+            Layer gumLayer = null;
+            if(frbLayer != null)
+            {
+                gumLayer = Gum.GumIdb.Self.GumLayersOnFrbLayer(frbLayer).FirstOrDefault();
+
+#if DEBUG
+                if(gumLayer == null)
+                {
+                    throw new InvalidOperationException("Could not find a Gum layer on this FRB layer");
+                }
+#endif
+            }
+
+            if(!FlatRedBallServices.IsThreadPrimary())
+            {
+                InstructionManager.AddSafe(() =>
+                {
+                    Visual.AddToManagers(RenderingLibrary.SystemManagers.Default, gumLayer);
+                });
+
+            }
+            else
+            {
+                Visual.AddToManagers(RenderingLibrary.SystemManagers.Default, gumLayer);
+            }
+        }
+
+        public async Task<bool?> ShowDialog(FlatRedBall.Graphics.Layer frbLayer = null)
+        {
+#if DEBUG
+            if (Visual == null)
+            {
+                throw new InvalidOperationException("Visual must be set before calling Show");
+            }
+#endif
+            var semaphoreSlim = new SemaphoreSlim(1);
+
+            void HandleRemovedFromManagers(object sender, EventArgs args) =>
+                    semaphoreSlim.Release();
+
+            Visual.RemovedFromGuiManager += HandleRemovedFromManagers;
+
+            semaphoreSlim.Wait();
+
+            Show(frbLayer);
+
+            await semaphoreSlim.WaitAsync();
+
+            Visual.RemovedFromGuiManager -= HandleRemovedFromManagers;
+
+            // for now, return null, todo add dialog results
+            return null;
         }
 
         public void RepositionToKeepInScreen()

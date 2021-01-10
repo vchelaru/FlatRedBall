@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Forms.Controls.Games
 {
@@ -52,6 +54,8 @@ namespace FlatRedBall.Forms.Controls.Games
 
         public event EventHandler FinishedShowing;
 
+        public event EventHandler PageAdvanced;
+
         #endregion
 
         #region Initialize
@@ -89,16 +93,29 @@ namespace FlatRedBall.Forms.Controls.Games
 
         public void Show(string text)
         {
+            showNextPageOnDismissedPage = true;
             ShowInternal(text);
         }
 
         public void Show(IEnumerable<string> pages)
         {
-            if(pages.Any())
+            showNextPageOnDismissedPage = true;
+            if (pages.Any())
             {
                 this.Pages.AddRange(pages);
 
                 ShowNextPage();
+            }
+        }
+
+        public async Task ShowAsync(IEnumerable<string> pages)
+        {
+            showNextPageOnDismissedPage = false;
+            if (pages.Any())
+            {
+                this.Pages.AddRange(pages);
+
+                await ShowNextPageAsync();
             }
         }
 
@@ -110,6 +127,33 @@ namespace FlatRedBall.Forms.Controls.Games
             {
                 ShowInternal(page);
                 Pages.RemoveAt(0);
+            }
+        }
+
+        private async Task ShowNextPageAsync()
+        {
+            var page = Pages.FirstOrDefault();
+
+            while(page != null)
+            {
+                // remove it before calling ShowInternal so that the dialog box hides if there are no pages
+                Pages.RemoveAt(0);
+                var semaphoreSlim = new SemaphoreSlim(1);
+
+                void ReleaseSemaphor(object sender, EventArgs args) => 
+                    semaphoreSlim.Release();
+
+                this.PageAdvanced += ReleaseSemaphor;
+
+                semaphoreSlim.Wait();
+
+                ShowInternal(page);
+
+                await semaphoreSlim.WaitAsync();
+
+                this.PageAdvanced -= ReleaseSemaphor;
+
+                page = Pages.FirstOrDefault();
             }
         }
 
@@ -158,6 +202,12 @@ namespace FlatRedBall.Forms.Controls.Games
             ReactToInput();
         }
 
+        /// <summary>
+        /// This makes the next page auto-show when pushing input on an already-typed out page.
+        /// This should be true if doing a normal Show call, but false if in an async call since
+        /// the async call will internally loop through all pages.
+        /// </summary>
+        bool showNextPageOnDismissedPage = true;
         private void ReactToInput()
         {
             var hasMoreToType = coreTextObject.MaxLettersToShow < currentPageText?.Length;
@@ -174,12 +224,18 @@ namespace FlatRedBall.Forms.Controls.Games
             }
             else if(Pages.Count > 0)
             {
-                ShowNextPage();
+                if(showNextPageOnDismissedPage)
+                {
+                    ShowNextPage();
+                }
+
+                PageAdvanced?.Invoke(this, null);
             }
             else
             {
                 this.IsVisible = false;
                 LastTimeDismissed = TimeManager.CurrentTime;
+                PageAdvanced?.Invoke(this, null);
                 FinishedShowing?.Invoke(this, null);
                 IsFocused = false;
             }

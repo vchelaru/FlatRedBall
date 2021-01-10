@@ -42,6 +42,8 @@ namespace Gum.Wireframe
         public event WindowEvent RollOver;
         public event WindowEvent EnabledChange;
 
+        public event EventHandler RemovedFromGuiManager;
+
         public event Action<IWindow, FlatRedBall.Gui.RoutedEventArgs> MouseWheelScroll;
         public event Action<IWindow, FlatRedBall.Gui.RoutedEventArgs> RollOverBubbling;
 
@@ -126,6 +128,8 @@ namespace Gum.Wireframe
             RemoveBindingContextRecursively();
 
             GuiManager.RemoveWindow(this);
+
+            RemovedFromGuiManager?.Invoke(this, null);
         }
 
         private void RemoveBindingContextRecursively()
