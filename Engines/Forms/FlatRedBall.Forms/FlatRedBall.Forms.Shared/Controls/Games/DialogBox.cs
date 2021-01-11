@@ -12,6 +12,19 @@ using System.Threading.Tasks;
 
 namespace FlatRedBall.Forms.Controls.Games
 {
+    public class DialogPageTask
+    {
+        public string Page { get; set; }
+        public Func<Task>  Task { get; set; }
+
+        public static implicit operator DialogPageTask(string page) => 
+            new DialogPageTask { Page = page };
+
+        public static implicit operator DialogPageTask(Func<Task> task) =>
+            new DialogPageTask { Task = task };
+
+    }
+
     public class DialogBox : FrameworkElement, IInputReceiver
     {
         #region Fields/Properties
@@ -22,7 +35,7 @@ namespace FlatRedBall.Forms.Controls.Games
 
         public static double LastTimeDismissed { get; private set; }
 
-        List<string> Pages = new List<string>();
+        List<DialogPageTask> Pages = new List<DialogPageTask>();
 
         static global::Gum.DataTypes.Variables.StateSave NoTextShownState;
 
@@ -93,16 +106,22 @@ namespace FlatRedBall.Forms.Controls.Games
 
         public void Show(string text)
         {
+            base.Show();
             showNextPageOnDismissedPage = true;
             ShowInternal(text);
         }
 
         public void Show(IEnumerable<string> pages)
         {
+            base.Show();
+
             showNextPageOnDismissedPage = true;
             if (pages.Any())
             {
-                this.Pages.AddRange(pages);
+                foreach(var page in pages)
+                {
+                    this.Pages.Add(page);
+                }
 
                 ShowNextPage();
             }
@@ -110,11 +129,27 @@ namespace FlatRedBall.Forms.Controls.Games
 
         public async Task ShowAsync(IEnumerable<string> pages)
         {
+            base.Show();
+
             showNextPageOnDismissedPage = false;
             if (pages.Any())
             {
-                this.Pages.AddRange(pages);
+                foreach (var page in pages)
+                {
+                    this.Pages.Add(page);
+                }
+                await ShowNextPageAsync();
+            }
+        }
 
+        public async Task ShowAsync(IEnumerable<DialogPageTask> pageTasks)
+        {
+            base.Show();
+
+            showNextPageOnDismissedPage = false;
+            if (pageTasks.Any())
+            {
+                this.Pages.AddRange(pageTasks);
                 await ShowNextPageAsync();
             }
         }
@@ -125,7 +160,7 @@ namespace FlatRedBall.Forms.Controls.Games
 
             if(page != null)
             {
-                ShowInternal(page);
+                ShowInternal(page.Page);
                 Pages.RemoveAt(0);
             }
         }
@@ -138,21 +173,30 @@ namespace FlatRedBall.Forms.Controls.Games
             {
                 // remove it before calling ShowInternal so that the dialog box hides if there are no pages
                 Pages.RemoveAt(0);
-                var semaphoreSlim = new SemaphoreSlim(1);
+                if(page.Task != null)
+                {
+                    this.IsVisible = false;
+                    await page.Task();
+                }
+                else
+                {
+                    this.IsVisible = true;
 
-                void ReleaseSemaphor(object sender, EventArgs args) => 
-                    semaphoreSlim.Release();
+                    var semaphoreSlim = new SemaphoreSlim(1);
 
-                this.PageAdvanced += ReleaseSemaphor;
+                    void ReleaseSemaphor(object sender, EventArgs args) => 
+                        semaphoreSlim.Release();
 
-                semaphoreSlim.Wait();
+                    this.PageAdvanced += ReleaseSemaphor;
 
-                ShowInternal(page);
+                    semaphoreSlim.Wait();
+                    ShowInternal(page.Page);
 
-                await semaphoreSlim.WaitAsync();
+                    await semaphoreSlim.WaitAsync();
+                    semaphoreSlim.Dispose();
+                    this.PageAdvanced -= ReleaseSemaphor;
 
-                this.PageAdvanced -= ReleaseSemaphor;
-
+                }
                 page = Pages.FirstOrDefault();
             }
         }

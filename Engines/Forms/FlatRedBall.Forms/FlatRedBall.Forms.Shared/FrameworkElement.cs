@@ -416,7 +416,12 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        public async Task<bool?> ShowDialog(FlatRedBall.Graphics.Layer frbLayer = null)
+        public Task<bool?> ShowDialog()
+        {
+            return ShowDialog(null);
+        }
+
+        public async Task<bool?> ShowDialog(FlatRedBall.Graphics.Layer frbLayer)
         {
 #if DEBUG
             if (Visual == null)
@@ -426,20 +431,18 @@ namespace FlatRedBall.Forms.Controls
 #endif
             var semaphoreSlim = new SemaphoreSlim(1);
 
-            void HandleRemovedFromManagers(object sender, EventArgs args) =>
-                    semaphoreSlim.Release();
-
+            void HandleRemovedFromManagers(object sender, EventArgs args) => semaphoreSlim.Release();
             Visual.RemovedFromGuiManager += HandleRemovedFromManagers;
 
             semaphoreSlim.Wait();
-
             Show(frbLayer);
-
             await semaphoreSlim.WaitAsync();
 
             Visual.RemovedFromGuiManager -= HandleRemovedFromManagers;
-
             // for now, return null, todo add dialog results
+
+            semaphoreSlim.Dispose();
+
             return null;
         }
 

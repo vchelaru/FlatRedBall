@@ -23,19 +23,7 @@ namespace GumPluginCore.CodeGeneration
                 throw new ArgumentNullException(nameof(elementSave));
             }
 
-            bool shouldGenerate = false;
-
-            var isScreen = elementSave is ScreenSave;
-            var isComponent = elementSave is ComponentSave;
-            if (isScreen)
-            {
-                shouldGenerate = true;
-            }
-            else if(isComponent)
-            {
-                shouldGenerate = GetIfShouldGenerate(elementSave);
-            }
-            // don't do anything with standards
+            var shouldGenerate = GetIfShouldGenerate(elementSave);
 
             if (shouldGenerate)
             {
@@ -51,45 +39,58 @@ namespace GumPluginCore.CodeGeneration
             }
         }
 
-        private bool GetIfShouldGenerate(ElementSave elementSave)
+        public bool GetIfShouldGenerate(ElementSave elementSave)
         {
-            bool shouldGenerate;
-            var component = elementSave as ComponentSave;
+            bool shouldGenerate = false;
 
-            var behaviors = component?.Behaviors;
-
-            string controlType = null;
-
-            if (behaviors != null)
+            var isScreen = elementSave is ScreenSave;
+            var isComponent = elementSave is ComponentSave;
+            if (isScreen)
             {
-                controlType = GueDerivingClassCodeGenerator.GetFormsControlTypeFrom(behaviors);
+                shouldGenerate = true;
             }
-
-            shouldGenerate = controlType == null;
-
-            // todo - see if there are any Forms controls here? Or always generate? Not sure...
-            // Update 11/27/2020 - Justin's game has lots of components that aren't forms and this
-            // is adding a lot of garbage to Justin's project.
-            // Update 1/8/2021
-            // Vic says - we should discuss this because this is also an important feature
-            if (shouldGenerate)
+            else if (isComponent)
             {
-                var allInstances = elementSave.Instances;
 
-                shouldGenerate = allInstances.Any(item =>
+                // don't do anything with standards
+                var component = elementSave as ComponentSave;
+
+                var behaviors = component?.Behaviors;
+
+                string controlType = null;
+
+                if (behaviors != null)
                 {
-                    var instanceElement = ObjectFinder.Self.GetElementSave(item);
+                    controlType = GueDerivingClassCodeGenerator.GetFormsControlTypeFrom(behaviors);
+                }
 
-                    if(instanceElement is ComponentSave component)
+                shouldGenerate = controlType == null;
+
+                // todo - see if there are any Forms controls here? Or always generate? Not sure...
+                // Update 11/27/2020 - Justin's game has lots of components that aren't forms and this
+                // is adding a lot of garbage to Justin's project.
+                // Update 1/8/2021
+                // Vic says - we should discuss this because this is also an important feature
+                if (shouldGenerate)
+                {
+                    var allInstances = elementSave.Instances;
+
+                    shouldGenerate = allInstances.Any(item =>
                     {
+                        var instanceElement = ObjectFinder.Self.GetElementSave(item);
 
-                        return GueDerivingClassCodeGenerator.GetFormsControlTypeFrom(component.Behaviors) != null ||
-                            GetIfShouldGenerate(instanceElement);
+                        if (instanceElement is ComponentSave component)
+                        {
 
-                    }
-                    return false;
-                });
+                            return GueDerivingClassCodeGenerator.GetFormsControlTypeFrom(component.Behaviors) != null ||
+                                GetIfShouldGenerate(instanceElement);
+
+                        }
+                        return false;
+                    });
+                }
             }
+
 
             return shouldGenerate;
         }
@@ -102,21 +103,35 @@ namespace GumPluginCore.CodeGeneration
 
             string runtimeClassName = GetUnqualifiedRuntimeTypeFor(elementSave);
 
-            GenerateConstructor(elementSave, currentBlock, runtimeClassName);
+            GenerateConstructors(elementSave, currentBlock, runtimeClassName);
 
             GenerateReactToVisualChanged(elementSave, currentBlock);
 
             currentBlock.Line("partial void CustomInitialize();");
         }
 
-        private void GenerateConstructor(ElementSave elementSave, ICodeBlock currentBlock, string runtimeClassName)
+        private void GenerateConstructors(ElementSave elementSave, ICodeBlock currentBlock, string runtimeClassName)
         {
             string baseCall = null;
+
+
+            if (elementSave is ComponentSave)
+            {
+                baseCall = "base()";
+            }
+
+            var constructor = currentBlock.Constructor("public", runtimeClassName, "", baseCall);
+
+            // is it okay if we do this? The visual hasn't been set yet...
+            constructor.Line("CustomInitialize();");
+
+
             if (elementSave is ComponentSave)
             {
                 baseCall = "base(visual)";
             }
-            var constructor = currentBlock.Constructor("public", runtimeClassName, "Gum.Wireframe.GraphicalUiElement visual", baseCall);
+            
+            constructor = currentBlock.Constructor("public", runtimeClassName, "Gum.Wireframe.GraphicalUiElement visual", baseCall);
 
             if(elementSave is ScreenSave)
             {
@@ -125,6 +140,8 @@ namespace GumPluginCore.CodeGeneration
             }
 
             constructor.Line("CustomInitialize();");
+
+
         }
 
         private void GenerateReactToVisualChanged(ElementSave elementSave, ICodeBlock currentBlock)

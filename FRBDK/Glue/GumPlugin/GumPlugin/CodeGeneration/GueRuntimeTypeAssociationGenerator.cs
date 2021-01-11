@@ -3,6 +3,7 @@ using FlatRedBall.Glue.Managers;
 using Gum.DataTypes;
 using GumPlugin.DataGeneration;
 using GumPlugin.Managers;
+using GumPluginCore.CodeGeneration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -116,22 +117,23 @@ namespace GumPlugin.CodeGeneration
                         }
                     }
                 }
-                
             }
 
-            // Here we add controls that don't have explicit visual definitions (yet)
-            var userControlFulfillment = associationFulfillments.FirstOrDefault(item => item.ControlType == "UserControl");
+            foreach(var component in AppState.Self.GumProjectSave.Components)
+            {
+                // Is this component a forms control, but not a default forms control?
+                if(FormsClassCodeGenerator.Self.GetIfShouldGenerate(component))
+                {
+                    // associate them:
+                    var newFulfillment = new AssociationFulfillment();
+                    newFulfillment.Element = component;
+                    newFulfillment.IsCompletelyFulfilled = true;
+                    newFulfillment.ControlType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(component) + 
+                        "." + FormsClassCodeGenerator.Self.GetUnqualifiedRuntimeTypeFor(component);
 
-            // StackPanel doesn't have any visuals, it's invisible so it will just be a regular GraphicalUiElement.
-            //if(userControlFulfillment != null)
-            //{
-            //    associationFulfillments.Add(new AssociationFulfillment
-            //    {
-            //        Element = userControlFulfillment.Element,
-            //        IsCompletelyFulfilled = true,
-            //        ControlType = "StackPanel"
-            //    });
-            //}
+                    associationFulfillments.Add(newFulfillment);
+                }
+            }
 
             foreach(var fulfillment in associationFulfillments)
             {
