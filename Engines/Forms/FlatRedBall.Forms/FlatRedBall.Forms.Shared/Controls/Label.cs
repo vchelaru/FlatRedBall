@@ -44,7 +44,7 @@ namespace FlatRedBall.Forms.Controls
         protected override void ReactToVisualChanged()
         {
             textComponent = base.Visual.GetGraphicalUiElementByName("TextInstance");
-
+            coreTextObject = textComponent.RenderableComponent as RenderingLibrary.Graphics.Text;
             base.ReactToVisualChanged();
         }
 

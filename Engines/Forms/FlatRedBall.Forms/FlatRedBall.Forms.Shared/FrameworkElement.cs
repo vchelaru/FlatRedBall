@@ -594,7 +594,7 @@ namespace FlatRedBall.Forms.Controls
 
                 var vmProperty = BindingContext?.GetType().GetProperty(vmPropName);
 
-                if(vmProperty != null)
+                if(vmProperty?.CanWrite == true)
                 {
                     var uiProperty = this.GetType().GetProperty(uiPropertyName);
                     if(uiProperty != null)

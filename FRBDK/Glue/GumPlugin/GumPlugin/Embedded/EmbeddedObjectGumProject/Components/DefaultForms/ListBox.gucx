@@ -441,7 +441,7 @@
       </Variable>
     </State>
     <State>
-      <Name>VerticalScrollBar</Name>
+      <Name>VerticalScrollVisible</Name>
       <Variable>
         <Type>float</Type>
         <Name>ClipContainerInstance.Width</Name>
