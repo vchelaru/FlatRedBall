@@ -184,7 +184,24 @@ namespace GumPlugin.CodeGeneration
                 GenerateGenericContainerCode(codeBlock);
             }
 
+            GenerateAdditionalMethods(standardElementSave, classBodyBlock);
+
             return true;
+        }
+
+        private void GenerateAdditionalMethods(StandardElementSave standardElementSave, ICodeBlock classBodyBlock)
+        {
+            if(standardElementSave.Name == "Sprite")
+            {
+                var methodBlock = classBodyBlock.Function("public void", "SetTextureCoordinatesFrom", "FlatRedBall.Graphics.Animation.AnimationFrame frbAnimationFrame");
+
+                methodBlock.Line("this.Texture = frbAnimationFrame.Texture;");
+                methodBlock.Line("this.TextureAddress = Gum.Managers.TextureAddress.Custom;");
+                methodBlock.Line("this.TextureLeft = FlatRedBall.Math.MathFunctions.RoundToInt(frbAnimationFrame.LeftCoordinate * frbAnimationFrame.Texture.Width);");
+                methodBlock.Line("this.TextureWidth = FlatRedBall.Math.MathFunctions.RoundToInt((frbAnimationFrame.RightCoordinate - frbAnimationFrame.LeftCoordinate) * frbAnimationFrame.Texture.Width);");
+                methodBlock.Line("this.TextureTop = FlatRedBall.Math.MathFunctions.RoundToInt(frbAnimationFrame.TopCoordinate * frbAnimationFrame.Texture.Height);");
+                methodBlock.Line("this.TextureHeight = FlatRedBall.Math.MathFunctions.RoundToInt((frbAnimationFrame.BottomCoordinate - frbAnimationFrame.TopCoordinate) * frbAnimationFrame.Texture.Height);");
+            }
         }
 
         private void GenerateGenericContainerCode(ICodeBlock codeBlock)
