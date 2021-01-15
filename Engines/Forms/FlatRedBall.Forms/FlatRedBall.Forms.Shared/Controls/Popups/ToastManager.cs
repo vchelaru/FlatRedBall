@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Managers;
+﻿using FlatRedBall.Graphics;
+using FlatRedBall.Managers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -8,9 +9,15 @@ using System.Threading.Tasks;
 
 namespace FlatRedBall.Forms.Controls.Popups
 {
+    class ToastInfo
+    {
+        public string Message { get; set; }
+        public Layer FrbLayer { get; set; }
+    }
+
     public static class ToastManager 
     {
-        static BlockingCollection<string> toastMessages = new BlockingCollection<string>();
+        static BlockingCollection<ToastInfo> toastMessages = new BlockingCollection<ToastInfo>();
 
         static bool hasBeenStarted;
         static void Start()
@@ -23,7 +30,7 @@ namespace FlatRedBall.Forms.Controls.Popups
             }
         }
 
-        public static void Show(string message)
+        public static void Show(string message, Layer frbLayer = null)
         {
             if(!hasBeenStarted)
             {
@@ -36,7 +43,10 @@ namespace FlatRedBall.Forms.Controls.Popups
                     Instructions.InstructionManager.AddSafe(Start);
                 }
             }
-            toastMessages.Add(message);
+
+            var toastInfo = new ToastInfo { Message = message, FrbLayer = frbLayer };
+
+            toastMessages.Add(toastInfo);
         }
 
         private static async void DoLoop()
@@ -50,8 +60,8 @@ namespace FlatRedBall.Forms.Controls.Popups
                     toast = new FlatRedBall.Forms.Controls.Popups.Toast();
                 }
 
-                toast.Text = message;
-                toast.Show();
+                toast.Text = message.Message;
+                toast.Show(message.FrbLayer);
                 await Task.Delay(2000);
                 toast.Close();
                 // so there's a small gap between toasts
