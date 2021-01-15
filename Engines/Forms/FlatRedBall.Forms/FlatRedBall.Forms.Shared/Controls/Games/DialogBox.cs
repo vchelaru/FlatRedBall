@@ -176,11 +176,22 @@ namespace FlatRedBall.Forms.Controls.Games
                 if(page.Task != null)
                 {
                     this.IsVisible = false;
+                    this.IsFocused = false;
                     await page.Task();
+
+                    // special case if ending on a dialog:
+                    if(Pages.Count == 0)
+                    {
+                        LastTimeDismissed = TimeManager.CurrentTime;
+                        PageAdvanced?.Invoke(this, null);
+                        FinishedShowing?.Invoke(this, null);
+                    }
                 }
                 else
                 {
                     this.IsVisible = true;
+                    // todo - do we want to always focus it?
+                    this.IsFocused = true;
 
                     var semaphoreSlim = new SemaphoreSlim(1);
 
