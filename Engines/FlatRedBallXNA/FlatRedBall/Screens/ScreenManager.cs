@@ -154,6 +154,13 @@ namespace FlatRedBall.Screens
             {
                 string type = mCurrentScreen.NextScreen;
 
+#if DEBUG
+                if(string.IsNullOrWhiteSpace(type))
+                {
+                    var message = $"The current screen ({mCurrentScreen.GetType()}) just ended but didn't specify a NextScreen. " +
+                        $"You can specify the next screen by calling MoveToScreen or by manually setting the NextScreen";
+                }
+#endif
                 var isFullyQualified = type.Contains(".");
                 if(!isFullyQualified)
                 {
