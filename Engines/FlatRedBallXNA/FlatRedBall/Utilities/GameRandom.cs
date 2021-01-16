@@ -82,6 +82,9 @@ namespace FlatRedBall.Utilities
         /// <returns>The random float between the bounds.</returns>
         public float Between(float lowerBound, float upperBound) => lowerBound + (float)NextDouble() * (upperBound - lowerBound);
 
+        public int Between(int lowerInclusive, int upperExclusive) =>
+            lowerInclusive + Next(upperExclusive - lowerInclusive);
+
         /// <summary>
         /// Returns a random angle in radians (between 0 and 2*Pi).
         /// </summary>

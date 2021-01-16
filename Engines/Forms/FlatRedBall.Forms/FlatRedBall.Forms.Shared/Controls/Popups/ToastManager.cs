@@ -19,6 +19,12 @@ namespace FlatRedBall.Forms.Controls.Popups
     {
         static BlockingCollection<ToastInfo> toastMessages = new BlockingCollection<ToastInfo>();
 
+        /// <summary>
+        /// The default layer for showing toast. If this is set at the Screen level, it should
+        /// be set back to null when the Screen is destroyed.
+        /// </summary>
+        public static Layer DefaultToastLayer { get; set; }
+
         static bool hasBeenStarted;
         static void Start()
         {
@@ -61,7 +67,7 @@ namespace FlatRedBall.Forms.Controls.Popups
                 }
 
                 toast.Text = message.Message;
-                toast.Show(message.FrbLayer);
+                toast.Show(message.FrbLayer ?? DefaultToastLayer);
                 await Task.Delay(2000);
                 toast.Close();
                 // so there's a small gap between toasts
