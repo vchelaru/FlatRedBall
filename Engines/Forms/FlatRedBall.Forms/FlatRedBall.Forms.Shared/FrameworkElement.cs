@@ -575,7 +575,16 @@ namespace FlatRedBall.Forms.Controls
                     }
                     else
                     {
-                        uiProperty.SetValue(this, vmValue, null);
+                        try
+                        {
+                            uiProperty.SetValue(this, vmValue, null);
+                        }
+                        catch (ArgumentException ae)
+                        {
+                            var message = $"Could not bind the UI property {this.GetType().Name}.{uiProperty.Name} to the view model property {vmProperty} " +
+                                $"because the view model property is not of type {uiProperty.PropertyType}";
+                            throw new InvalidOperationException(message);
+                        }
                     }
                     updated = true;
                 }
