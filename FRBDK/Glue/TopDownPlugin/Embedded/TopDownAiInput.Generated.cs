@@ -10,7 +10,7 @@ namespace $NAMESPACE$.TopDown
 {
     public class TopDownAiInput<T> : IInputDevice where T : PositionedObject, TopDown.ITopDownEntity
     {
-        const float requiredDistanceForNextTarget = 16;
+        public static float RequiredDistanceForNextTarget = 16;
 
         bool isPathVisible;
         public bool IsPathVisible
@@ -291,7 +291,7 @@ namespace $NAMESPACE$.TopDown
                 var yDiff = targetY - Owner.Position.Y;
 
                 var isCloseToFindNextTarget =
-                    Math.Abs(xDiff) < requiredDistanceForNextTarget && Math.Abs(yDiff) < requiredDistanceForNextTarget;
+                    Math.Abs(xDiff) < RequiredDistanceForNextTarget && Math.Abs(yDiff) < RequiredDistanceForNextTarget;
 
                 var shouldRemove = isCloseToFindNextTarget &&
                     RemoveTargetOnReaching &&
