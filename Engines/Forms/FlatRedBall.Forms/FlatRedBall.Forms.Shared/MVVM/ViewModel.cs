@@ -23,6 +23,7 @@ namespace FlatRedBall.Forms.MVVM
     {
         Dictionary<string, List<string>> notifyRelationships = new Dictionary<string, List<string>>();
         private Dictionary<string, object> propertyDictionary = new Dictionary<string, object>();
+        private List<string> dependsOnOwners;
 
         protected T Get<T>([CallerMemberName]string propertyName = null)
         {
@@ -60,13 +61,25 @@ namespace FlatRedBall.Forms.MVVM
         {
             var didSet = false;
 
+            var isDependsOwner = dependsOnOwners?.Contains(propertyName) == true;
+
             if (propertyDictionary.ContainsKey(propertyName))
             {
-                var storage = (T)propertyDictionary[propertyName];
-                if (EqualityComparer<T>.Default.Equals(storage, propertyValue) == false)
+                var oldValue = (T)propertyDictionary[propertyName];
+                if (EqualityComparer<T>.Default.Equals(oldValue, propertyValue) == false)
                 {
+                    if(isDependsOwner && oldValue is INotifyPropertyChanged asNotifyPropertyChanged)
+                    {
+                        asNotifyPropertyChanged.PropertyChanged -= HandleDependsOwnerPropertyChanged;
+                    }
+
                     didSet = true;
                     propertyDictionary[propertyName] = propertyValue;
+
+                    if(isDependsOwner && propertyValue is INotifyPropertyChanged asNotifyPropertyChanged2)
+                    {
+                        asNotifyPropertyChanged2.PropertyChanged += HandleDependsOwnerPropertyChanged;
+                    }
                 }
             }
             else
@@ -80,10 +93,22 @@ namespace FlatRedBall.Forms.MVVM
                     EqualityComparer<T>.Default.Equals(defaultValue, propertyValue);
 
                 didSet = isSettingDefault == false;
+                // old value is null, so no need to -= the property changed, but the new one is 
+                // potentially not null, so let's += the property changed
+                if(isDependsOwner && propertyValue is INotifyPropertyChanged asNotifyPropertyChanged)
+                {
+                    asNotifyPropertyChanged.PropertyChanged += HandleDependsOwnerPropertyChanged;
+                }
+            }
+
+            void HandleDependsOwnerPropertyChanged(object sender, PropertyChangedEventArgs e)
+            {
+                NotifyPropertyChanged($"{propertyName}.{e.PropertyName}");
             }
 
             return didSet;
         }
+
 
         public ViewModel()
         {
@@ -102,21 +127,36 @@ namespace FlatRedBall.Forms.MVVM
                     {
                         var attribute = uncastedAttribute as DependsOnAttribute;
 
-                        string parent = attribute.ParentProperty;
+                        string parentProperty = attribute.ParentProperty;
 
                         List<string> childrenProps = null;
-                        if (notifyRelationships.ContainsKey(parent) == false)
+                        if (notifyRelationships.ContainsKey(parentProperty) == false)
                         {
                             childrenProps = new List<string>();
-                            notifyRelationships[parent] = childrenProps;
+                            notifyRelationships[parentProperty] = childrenProps;
                         }
                         else
                         {
-                            childrenProps = notifyRelationships[parent];
+                            childrenProps = notifyRelationships[parentProperty];
+                        }
+
+                        if(parentProperty.Contains("."))
+                        {
+                            var owner = parentProperty.Substring(0, parentProperty.IndexOf('.'));
+
+                            if(dependsOnOwners == null)
+                            {
+                                dependsOnOwners = new List<string>();
+                            }
+
+                            if(!dependsOnOwners.Contains(owner))
+                            {
+                                dependsOnOwners.Add(owner);
+                            }
                         }
 
 #if DEBUG
-                        if(parent == propertyName)
+                        if(parentProperty == propertyName)
                         {
                             throw new InvalidOperationException(
                                 $"The property {propertyName} should not depend on itself");
@@ -153,6 +193,22 @@ namespace FlatRedBall.Forms.MVVM
                 {
                     // todo - worry about recursive notifications?
                     NotifyPropertyChanged(childPropertyName);
+                }
+            }
+
+            if(dependsOnOwners?.Contains(propertyName) == true)
+            {
+                var withDot = propertyName + ".";
+                foreach(var relationship in notifyRelationships)
+                {
+                    if(relationship.Key.StartsWith(withDot))
+                    {
+                        foreach (var childPropertyName in relationship.Value)
+                        {
+                            // todo - worry about recursive notifications?
+                            NotifyPropertyChanged(childPropertyName);
+                        }
+                    }
                 }
             }
         }
