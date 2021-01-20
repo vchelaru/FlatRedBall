@@ -34,7 +34,7 @@ namespace $NAMESPACE$.TopDown
             get; set;
         }
 
-        public bool ShouldRemoveLastTarget { get; set; }
+        public bool ShouldRemoveLastTarget { get; set; } = true;
 
         public bool StopOnTarget
         {
@@ -277,89 +277,99 @@ namespace $NAMESPACE$.TopDown
             return lineOfSightPathFindingPolygon;
         }
 
-        public void DoTargetFollowingActivity()
+    public void DoTargetFollowingActivity()
+    {
+        values2DInput.X = 0;
+        values2DInput.Y = 0;
+
+        if (NextImmediateTarget != null && Owner?.CurrentMovement != null && IsActive)
         {
-            values2DInput.X = 0;
-            values2DInput.Y = 0;
-
-            if (NextImmediateTarget != null && Owner?.CurrentMovement != null && IsActive)
+            void RemoveFromPath()
             {
-                var targetX = NextImmediateTarget.Value.X;
-                var targetY = NextImmediateTarget.Value.Y;
-
-                var xDiff = targetX - Owner.Position.X;
-                var yDiff = targetY - Owner.Position.Y;
-
-                var isCloseToFindNextTarget =
-                    Math.Abs(xDiff) < RequiredDistanceForNextTarget && Math.Abs(yDiff) < RequiredDistanceForNextTarget;
-
-                var shouldRemove = isCloseToFindNextTarget &&
-                    RemoveTargetOnReaching &&
-                    (Path.Count > 1 || ShouldRemoveLastTarget);
-
-                if (shouldRemove)
+                TargetReached?.Invoke(Owner);
+                if (Path.Count > 0)
                 {
-                    TargetReached?.Invoke(Owner);
+                    NextImmediateTarget = Path[0];
+                    Path.RemoveAt(0);
+
                     if (Path.Count > 0)
                     {
-                        NextImmediateTarget = Path[0];
-                        Path.RemoveAt(0);
-
                         // do it again
                         DoTargetFollowingActivity();
                     }
-                    else
-                    {
-                        NextImmediateTarget = null;
-                    }
-
                 }
-                else if (xDiff != 0 || yDiff != 0)
+                else
                 {
-                    bool shouldMoveFullSpeed;
-                    if (StopOnTarget)
+                    NextImmediateTarget = null;
+                }
+            }
+            var targetX = NextImmediateTarget.Value.X;
+            var targetY = NextImmediateTarget.Value.Y;
+
+            var xDiff = targetX - Owner.Position.X;
+            var yDiff = targetY - Owner.Position.Y;
+
+            var isCloseToFindNextTarget =
+                Math.Abs(xDiff) < RequiredDistanceForNextTarget && Math.Abs(yDiff) < RequiredDistanceForNextTarget;
+
+            var shouldRemove = isCloseToFindNextTarget &&
+                RemoveTargetOnReaching &&
+                Path.Count > 1;
+
+            if (shouldRemove)
+            {
+                RemoveFromPath();
+            }
+            else if (xDiff != 0 || yDiff != 0)
+            {
+                bool shouldMoveFullSpeed = false;
+                if (StopOnTarget || Path.Count == 1)
+                {
+                    var currentMovementLength = Owner.Velocity.Length();
+                    var currentRatioOfMax = currentMovementLength / Owner.CurrentMovement.MaxSpeed;
+
+                    var currentTimeToSlowDown = currentRatioOfMax * Owner.CurrentMovement.DecelerationTime;
+                    var maxSpeed = Owner.CurrentMovement.MaxSpeed;
+                    var maxAccelerationValue = -maxSpeed / Owner.CurrentMovement.DecelerationTime;
+
+                    //// create the temporary vectors:
+                    // Not sure where but there's an off-by-1 error somewhere, so account for it by subtracting one frame.
+                    var position = new Vector3((float)(2 * currentMovementLength *
+                         +FlatRedBallServices.Game.TargetElapsedTime.TotalSeconds), 0, 0);
+                    var velocity = new Vector3(currentMovementLength, 0, 0);
+                    var acceleration = new Vector3(maxAccelerationValue, 0, 0);
+
+                    var positionAfterTime = FlatRedBall.Math.MathFunctions.GetPositionAfterTime(
+                      ref position,
+                      ref velocity,
+                      ref acceleration,
+                      currentTimeToSlowDown);
+
+                    var lengthToSlow = Math.Abs(positionAfterTime.X);
+                    shouldMoveFullSpeed = (xDiff * xDiff) + (yDiff * yDiff) > lengthToSlow * lengthToSlow;
+
+                    if (!shouldMoveFullSpeed && ShouldRemoveLastTarget)
                     {
-                        var currentMovementLength = Owner.Velocity.Length();
-                        var currentRatioOfMax = currentMovementLength / Owner.CurrentMovement.MaxSpeed;
-
-                        var currentTimeToSlowDown = currentRatioOfMax * Owner.CurrentMovement.DecelerationTime;
-                        var maxSpeed = Owner.CurrentMovement.MaxSpeed;
-                        var maxAccelerationValue = -maxSpeed / Owner.CurrentMovement.DecelerationTime;
-
-                        //// create the temporary vectors:
-                        // Not sure where but there's an off-by-1 error somewhere, so account for it by subtracting one frame.
-                        var position = new Vector3((float)(2 * currentMovementLength *
-                             +FlatRedBallServices.Game.TargetElapsedTime.TotalSeconds), 0, 0);
-                        var velocity = new Vector3(currentMovementLength, 0, 0);
-                        var acceleration = new Vector3(maxAccelerationValue, 0, 0);
-
-                        var positionAfterTime = FlatRedBall.Math.MathFunctions.GetPositionAfterTime(
-                          ref position,
-                          ref velocity,
-                          ref acceleration,
-                          currentTimeToSlowDown);
-
-                        var lengthToSlow = Math.Abs(positionAfterTime.X);
-                        shouldMoveFullSpeed = (xDiff * xDiff) + (yDiff * yDiff) > lengthToSlow * lengthToSlow;
+                        RemoveFromPath();
                     }
-                    else
-                    {
-                        shouldMoveFullSpeed = true;
-                    }
+                }
+                else if (Path.Count > 0)
+                {
+                    shouldMoveFullSpeed = true;
+                }
 
-                    if (shouldMoveFullSpeed)
-                    {
+                if (shouldMoveFullSpeed)
+                {
 
-                        var angle = (float)System.Math.Atan2(yDiff, xDiff);
+                    var angle = (float)System.Math.Atan2(yDiff, xDiff);
 
-                        values2DInput.X = (float)Math.Cos(angle);
-                        values2DInput.Y = (float)Math.Sin(angle);
-                    }
+                    values2DInput.X = (float)Math.Cos(angle);
+                    values2DInput.Y = (float)Math.Sin(angle);
                 }
             }
         }
-
-        public float CollisionWidth { get; private set; }
+    }
+    public float CollisionWidth { get; private set; }
         public List<FlatRedBall.TileCollisions.TileShapeCollection> EnvironmentCollision { get; private set; }
         bool isUsingLineOfSightPathfinding = false;
         static FlatRedBall.Math.Geometry.Polygon lineOfSightPathFindingPolygon;

@@ -17,6 +17,11 @@ namespace FlatRedBall.Forms.MVVM
             ParentProperty = parentPropertyName;
         }
 
+        public DependsOnAttribute(string owner, string parentPropertyName)
+        {
+            ParentProperty = owner + "." + parentPropertyName;
+        }
+
     }
 
     public class ViewModel : INotifyPropertyChanged
@@ -123,10 +128,8 @@ namespace FlatRedBall.Forms.MVVM
                 string propertyName = property.Name;
                 foreach (var uncastedAttribute in attributes)
                 {
-                    if (uncastedAttribute is DependsOnAttribute)
+                    if (uncastedAttribute is DependsOnAttribute attribute)
                     {
-                        var attribute = uncastedAttribute as DependsOnAttribute;
-
                         string parentProperty = attribute.ParentProperty;
 
                         List<string> childrenProps = null;
