@@ -1462,6 +1462,75 @@ namespace FlatRedBall.TileCollisions
 
         }
 
+        public static void RemoveCollisionFrom(this TileShapeCollection tileShapeCollection, LayeredTileMap layeredTileMap,
+            Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate, bool removeTilesOnRemove = false)
+        {
+            tileShapeCollection.LeftSeedX = layeredTileMap.X;
+            tileShapeCollection.BottomSeedY = layeredTileMap.Y - layeredTileMap.Height;
+
+            var properties = layeredTileMap.TileProperties;
+
+            foreach (var kvp in properties)
+            {
+                string name = kvp.Key;
+                var namedValues = kvp.Value;
+
+                if (predicate(namedValues))
+                {
+                    float dimension = layeredTileMap.WidthPerTile.Value;
+                    float dimensionHalf = dimension / 2.0f;
+                    tileShapeCollection.GridSize = dimension;
+
+                    foreach (var layer in layeredTileMap.MapLayers)
+                    {
+                        List<int> indexesToRemove = null;
+                        if (removeTilesOnRemove)
+                        {
+                            indexesToRemove = new List<int>();
+                        }
+
+                        var dictionary = layer.NamedTileOrderedIndexes;
+
+                        if (dictionary.ContainsKey(name))
+                        {
+                            var indexList = dictionary[name];
+
+                            foreach (var index in indexList)
+                            {
+                                float left;
+                                float bottom;
+                                layer.GetBottomLeftWorldCoordinateForOrderedTile(index, out left, out bottom);
+
+                                var centerX = left + dimensionHalf;
+                                var centerY = bottom + dimensionHalf;
+                                //tileShapeCollection.AddCollisionAtWorld(centerX,
+                                //    centerY);
+                                tileShapeCollection.RemoveCollisionAtWorld(centerX, centerY);
+
+                            }
+                            if (removeTilesOnRemove)
+                            {
+                                indexesToRemove.AddRange(indexList);
+                            }
+                        }
+
+                        if (removeTilesOnRemove && indexesToRemove.Count > 0)
+                        {
+                            layer.RemoveQuads(indexesToRemove);
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void RemoveCollisionFromTilesWithType(this TileShapeCollection tileShapeCollection,
+            LayeredTileMap layeredTileMap, string type, bool removeTilesOnAdd = false)
+        {
+            tileShapeCollection.RemoveCollisionFrom(
+                layeredTileMap,
+                (list) => list.Any(item => item.Name == "Type" && (item.Value as string) == type),
+                removeTilesOnAdd);
+        }
     }
 
 

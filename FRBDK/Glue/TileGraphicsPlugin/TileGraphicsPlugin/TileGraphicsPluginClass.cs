@@ -213,6 +213,8 @@ namespace TileGraphicsPlugin
             // - Added TileShapeCollection.AssignAllShapesToRepositionOutward 
             // 2.16 
             // - LayeredTileMap is now a FlatRedBall IPositionedSizedObject
+            // 2.17
+            // - TileShapeCollection now has RemoveCollisionFrom and RemoveCollisionFromTilesWithType
             get { return new Version(2, 16, 0, 0); }
         }
 
