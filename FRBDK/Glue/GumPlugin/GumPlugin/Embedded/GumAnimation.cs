@@ -180,7 +180,7 @@ namespace FlatRedBall.Gum.Animation
 
         public bool TryAddAction(string name, Action action)
         {
-            var hasNamedEvent = namedEvents.Contains(item => item.Name == name);
+            var hasNamedEvent = namedEvents.Any(item => item.Name == name);
 
             if(hasNamedEvent)
             {
