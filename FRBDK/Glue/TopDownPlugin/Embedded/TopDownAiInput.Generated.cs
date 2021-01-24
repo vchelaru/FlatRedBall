@@ -175,12 +175,16 @@ namespace $NAMESPACE$.TopDown
                     // So the enemy doesn't stop on the nearest node without attacking the player:
                     points.Add(pathfindingTarget);
 
+                    
                     if (isUsingLineOfSightPathfinding)
                     {
-                        while (points.Count > 0)
+                        // We will only cut line of sight points if we have more than one
+                        // point. Look at the next pointn to see if there's a direct path. If 
+                        // so, cut this one.
+                        while (points.Count > 1)
                         {
                             var fromVector = Owner.Position;
-                            var toVector = points[0];
+                            var toVector = points[1];
 
                             GetLineOfSightPathFindingPolygon(fromVector, toVector);
 
@@ -195,7 +199,7 @@ namespace $NAMESPACE$.TopDown
                                 }
                             }
 
-                            if (hasClearPath && points.Count > 1)
+                            if (hasClearPath)
                             {
                                 points.RemoveAt(0);
                             }
