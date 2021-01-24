@@ -29,7 +29,7 @@
                     <ComboBox  FontSize="26"
                               SelectedItem="{Binding FirstCollisionName}"
                               ItemsSource="{Binding FirstCollisionItemSource}"></ComboBox>
-                    <Image ToolTip="This object is manually partitioned, or it does not need partitioning" Grid.Column="1" Visibility="{Binding FirstPartitionEnabledVisibility}" Source="/OfficialPluginsCore;component/CollisionPlugin/Icons/PartitionEnabled.png"/>
+                    <Image ToolTip="This object is automatically partitioned, or it does not need partitioning" Grid.Column="1" Visibility="{Binding FirstPartitionEnabledVisibility}" Source="/OfficialPluginsCore;component/CollisionPlugin/Icons/PartitionEnabled.png"/>
                     <Button ToolTip="This object is not partitioned, so the collision relationship may run slowly" Grid.Column="1" Visibility="{Binding FirstNoPartitioningVisibility}" 
                             Click="FirstObjectCollisionPartitioningButtonClicked">
                         <Image Source="/OfficialPluginsCore;component/CollisionPlugin/Icons/NoPartitioning.png"></Image>
@@ -44,7 +44,7 @@
                     <ComboBox FontSize="26"
                               SelectedItem="{Binding SecondCollisionName}"
                               ItemsSource="{Binding SecondCollisionItemSource}"></ComboBox>
-                    <Image ToolTip="This object is manually partitioned, or it does not need partitioning" Grid.Column="1" Visibility="{Binding SecondPartitionEnabledVisibility}" Source="/OfficialPluginsCore;component/CollisionPlugin/Icons/PartitionEnabled.png"></Image>
+                    <Image ToolTip="This object is automatically partitioned, or it does not need partitioning" Grid.Column="1" Visibility="{Binding SecondPartitionEnabledVisibility}" Source="/OfficialPluginsCore;component/CollisionPlugin/Icons/PartitionEnabled.png"></Image>
                     <Button ToolTip="This object is not partitioned, so the collision relationship may run slowly" Grid.Column="1" Visibility="{Binding SecondNoPartitioningVisibility}"
                             Click="SecondObjectCollisionPartitioningButtonClicked">
                         <Image Source="/OfficialPluginsCore;component/CollisionPlugin/Icons/NoPartitioning.png"></Image>
