@@ -96,7 +96,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region NamedObject
 
-            else if (EditorLogic.CurrentNamedObject != null)
+            else if (GlueState.Self.CurrentNamedObjectSave != null)
             {
                 Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
                     variableNameAsDisplayed, parentGridItemName, oldValue);

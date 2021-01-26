@@ -1,12 +1,12 @@
 ﻿using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.Utilities;
 using OfficialPlugins.CollisionPlugin.Managers;
 using OfficialPlugins.CollisionPlugin.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -478,7 +478,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             }
         }
 
-        private static void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private static void HandleViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             var viewModel = sender as CollisionRelationshipViewModel;
 
@@ -592,7 +592,14 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
                 if (desiredName != namedObject.InstanceName)
                 {
+                    var oldName = namedObject.InstanceName;
+
                     namedObject.InstanceName = desiredName;
+
+                    // This is important otherwise references to this (like events) won't update their references
+                    EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
+                        nameof(NamedObjectSave.InstanceName), null, oldName);
+
 
                     GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
                     GlueCommands.Self.GluxCommands.SaveGlux();

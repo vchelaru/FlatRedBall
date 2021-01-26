@@ -31,21 +31,17 @@ namespace FlatRedBall.Glue.SetVariable
             PropertiesToMethods.Add("TextureAddressMode", ReactToTextureAddressMode);
         }
 
+        /// <summary>
+        /// Performs logic in response to a changed named object property, such as propagating a rename
+        /// or updating inherited objects when changing SetByDerived.
+        /// </summary>
+        /// <param name="changedMember">The name of the variable that has changed.</param>
+        /// <param name="parent">The parent property containing this property, only relevant for embedded properties like X in a Rectangle. This will usually be null.</param>
+        /// <param name="oldValue">The old value for the changed property.</param>
         public void ReactToNamedObjectChangedValue(string changedMember, string parent, object oldValue)
         {
-            string combinedMember;
-
-            if(string.IsNullOrEmpty(parent))
-            {
-                combinedMember = changedMember;
-            }
-            else
-            {
-                combinedMember = parent + "." + changedMember;
-            }
-
             NamedObjectSave namedObjectSave = GlueState.Self.CurrentNamedObjectSave;
-            IElement element = EditorLogic.CurrentElement;
+            var element = GlueState.Self.CurrentElement;
 
             if (PropertiesToMethods.ContainsKey(changedMember))
             {
