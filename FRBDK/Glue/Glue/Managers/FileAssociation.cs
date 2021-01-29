@@ -68,7 +68,7 @@ namespace HQ.Util.Unmanaged
             uint pcchOut = 0;
             AssocQueryString(AssocF.Verify, assocStr, doctype, verb, null, ref pcchOut);
 
-            Debug.Assert(pcchOut != 0);
+            //Debug.Assert(pcchOut != 0);
             if (pcchOut == 0)
             {
                 return "";

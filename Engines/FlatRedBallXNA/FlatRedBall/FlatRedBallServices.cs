@@ -1,16 +1,8 @@
-
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Reflection;
-
 using FlatRedBall.Graphics;
 using FlatRedBall.Input;
-using FlatRedBall.Instructions;
-
-using FlatRedBall.IO;
-
 using FlatRedBall.AI.Pathfinding;
 using FlatRedBall.Math.Geometry;
 
@@ -42,23 +34,8 @@ using Microsoft.Xna.Framework.Content;
 using Renderer = FlatRedBall.Graphics.Renderer;
 using Effect = Microsoft.Xna.Framework.Graphics.Effect;
 using InstructionManager = FlatRedBall.Instructions.InstructionManager;
-
-
 using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
-#if !MONOGAME
-using Model = Microsoft.Xna.Framework.Graphics.Model;
-using FlatRedBall.Instructions.ScriptedAnimations;
-#endif
-using ContentManager = Microsoft.Xna.Framework.Content.ContentManager;
-
 using FlatRedBall.Audio;
-
-using System.Text.RegularExpressions;
-using FlatRedBall.Content.Instructions;
-
-using FlatRedBall.Graphics.Texture;
-using FlatRedBall.Math.Splines;
-using FlatRedBall.Content.Math.Splines;
 using FlatRedBall.Performance.Measurement;
 using FlatRedBall.Managers;
 
@@ -68,6 +45,8 @@ using Rectangle = Microsoft.Xna.Framework.Rectangle;
 namespace FlatRedBall
 {
     #region Profiling enums and structs
+
+
 #if PROFILE
     public enum ContentLoadDetail
     {
@@ -134,6 +113,7 @@ namespace FlatRedBall
 
     public static partial class FlatRedBallServices
     {
+        static SingleThreadSynchronizationContext singleThreadSynchronizationContext;
         #region Fields
 
         static List<IManager> mManagers = new List<IManager>();
@@ -538,7 +518,7 @@ namespace FlatRedBall
         public static void InitializeFlatRedBall(Game game, GraphicsDeviceManager graphics,
             GraphicsOptions graphicsOptions)
         {
-            AddManager(new SingleThreadSynchronizationContext());
+            singleThreadSynchronizationContext = new SingleThreadSynchronizationContext();
 
             graphics.PreparingDeviceSettings += (object sender, PreparingDeviceSettingsEventArgs args) =>
             {
@@ -691,7 +671,7 @@ namespace FlatRedBall
 
             PreInitialization();
 
-            AddManager(new SingleThreadSynchronizationContext());
+            singleThreadSynchronizationContext = new SingleThreadSynchronizationContext();
 
             mGraphics = graphics as GraphicsDeviceManager;
             mGraphicsDevice = mGraphics.GraphicsDevice;
@@ -1451,6 +1431,13 @@ namespace FlatRedBall
                 {
                     Section.EndContextAndTime();
                 }
+
+                // Vic says = I think this needs to happen either at the very
+                // beginning of the frame or the very end of the frame. It will 
+                // contain custom user code, so we don't want this to fall in the
+                // middle of a frame
+                singleThreadSynchronizationContext.Update();
+
             }
         }
 
