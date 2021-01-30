@@ -1312,9 +1312,10 @@ namespace FlatRedBall.TileGraphics
             this.RemoveSelfFromListsBelongingTo();
         }
 
-
         public void MergeOntoThis(IEnumerable<MapDrawableBatch> mapDrawableBatches)
         {
+
+
             int quadsToAdd = 0;
             int quadsOnThis = QuadCount;
             foreach (var mdb in mapDrawableBatches)
@@ -1329,6 +1330,132 @@ namespace FlatRedBall.TileGraphics
             var oldVerts = mVertices;
             var oldIndexes = mIndices;
 
+            if (this.SortAxis == SortAxis.X)
+            {
+                MergeSortedX(mapDrawableBatches, totalNumberOfVerts, totalNumberOfIndexes);
+            }
+            else if (this.SortAxis == SortAxis.Y)
+            {
+                throw new NotImplementedException("Merge on sort Y axi not yet merged");
+            }
+            else
+            {
+                MergeUnsorted(mapDrawableBatches, quadsOnThis, totalNumberOfVerts, totalNumberOfIndexes, oldVerts, oldIndexes);
+            }
+        }
+
+        private void MergeSortedX(IEnumerable<MapDrawableBatch> mapDrawableBatches, int totalNumberOfVerts, int totalNumberOfIndexes)
+        {
+            List<Dictionary<int, string>> invertedDictionaries = new List<Dictionary<int, string>>();
+
+
+            var newNameIndexDictionary = new Dictionary<string, List<int>>();
+
+            List<MapDrawableBatch> layers = mapDrawableBatches.ToList();
+            layers.Insert(0, this);
+
+            int[] currentVertIndex = new int[layers.Count];
+            // they should be initialized to 0
+
+            int destinationVertIndex = 0;
+            int destinationIndexIndex = 0;
+
+            var newVerts = new VertexType[totalNumberOfVerts];
+            var newIndexes = new int[totalNumberOfIndexes];
+
+            mCurrentNumberOfTiles = totalNumberOfVerts / 4;
+
+            foreach (var layer in layers)
+            {
+                var invertedLayerDictionary = new Dictionary<int, string>();
+
+                foreach (var kvp in layer.NamedTileOrderedIndexes)
+                {
+                    foreach (var index in kvp.Value)
+                    {
+                        invertedLayerDictionary[index] = kvp.Key;
+                    }
+                }
+
+                invertedDictionaries.Add(invertedLayerDictionary);
+            }
+
+            while (true)
+            {
+                float smallestX = float.PositiveInfinity;
+                //int smallestIndex = -1;
+                int toCopyFrom = -1;
+
+                for (int layerIndex = 0; layerIndex < currentVertIndex.Length; layerIndex++)
+                {
+                    if (currentVertIndex[layerIndex] < layers[layerIndex].mVertices.Length)
+                    {
+                        var vertX = layers[layerIndex].mVertices[currentVertIndex[layerIndex]].Position.X;
+
+                        if (vertX < smallestX)
+                        {
+                            smallestX = vertX;
+                            toCopyFrom = layerIndex;
+                            //smallestIndex = currentVertIndex[layerIndex];
+                        }
+                    }
+                }
+
+                if (toCopyFrom == -1)
+                {
+                    break;
+                }
+                else
+                {
+                    var sourceVertIndex = currentVertIndex[toCopyFrom];
+                    var sourceIndexIndex = (sourceVertIndex / 4) * 6;
+
+                    newVerts[destinationVertIndex] = layers[toCopyFrom].mVertices[sourceVertIndex];
+                    newVerts[destinationVertIndex + 1] = layers[toCopyFrom].mVertices[sourceVertIndex + 1];
+                    newVerts[destinationVertIndex + 2] = layers[toCopyFrom].mVertices[sourceVertIndex + 2];
+                    newVerts[destinationVertIndex + 3] = layers[toCopyFrom].mVertices[sourceVertIndex + 3];
+
+                    var firstVert = layers[toCopyFrom].mIndices[sourceIndexIndex];
+
+                    newIndexes[destinationIndexIndex] =
+                        destinationVertIndex - firstVert + layers[toCopyFrom].mIndices[sourceIndexIndex];
+                    newIndexes[destinationIndexIndex + 1] =
+                        destinationVertIndex - firstVert + layers[toCopyFrom].mIndices[sourceIndexIndex + 1];
+                    newIndexes[destinationIndexIndex + 2] =
+                        destinationVertIndex - firstVert + layers[toCopyFrom].mIndices[sourceIndexIndex + 2];
+                    newIndexes[destinationIndexIndex + 3] =
+                        destinationVertIndex - firstVert + layers[toCopyFrom].mIndices[sourceIndexIndex + 3];
+                    newIndexes[destinationIndexIndex + 4] =
+                        destinationVertIndex - firstVert + layers[toCopyFrom].mIndices[sourceIndexIndex + 4];
+                    newIndexes[destinationIndexIndex + 5] =
+                        destinationVertIndex - firstVert + layers[toCopyFrom].mIndices[sourceIndexIndex + 5];
+
+                    if (invertedDictionaries[toCopyFrom].ContainsKey(sourceVertIndex))
+                    {
+                        var newName = invertedDictionaries[toCopyFrom][sourceVertIndex];
+
+                        if (newNameIndexDictionary.ContainsKey(newName) == false)
+                        {
+                            newNameIndexDictionary[newName] = new List<int>();
+                        }
+
+                        newNameIndexDictionary[newName].Add(destinationVertIndex);
+                    }
+
+                    destinationVertIndex += 4;
+                    destinationIndexIndex += 6;
+                    currentVertIndex[toCopyFrom] += 4;
+                }
+            }
+
+            this.mNamedTileOrderedIndexes = newNameIndexDictionary;
+
+            this.mVertices = newVerts;
+            this.mIndices = newIndexes;
+        }
+
+        private void MergeUnsorted(IEnumerable<MapDrawableBatch> mapDrawableBatches, int quadsOnThis, int totalNumberOfVerts, int totalNumberOfIndexes, VertexType[] oldVerts, int[] oldIndexes)
+        {
             mVertices = new VertexType[totalNumberOfVerts];
             mIndices = new int[totalNumberOfIndexes];
 
@@ -1387,6 +1514,7 @@ namespace FlatRedBall.TileGraphics
                 index++;
             }
         }
+
 
 
         public void RemoveQuads(IEnumerable<int> quadIndexes)

@@ -215,6 +215,8 @@ namespace TileGraphicsPlugin
             // - LayeredTileMap is now a FlatRedBall IPositionedSizedObject
             // 2.17
             // - TileShapeCollection now has RemoveCollisionFrom and RemoveCollisionFromTilesWithType
+            // 2.18
+            // - LayeredTileMap merge function now works properly on x-sorted maps (y sorted will prob come soon)
             get { return new Version(2, 16, 0, 0); }
         }
 
