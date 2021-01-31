@@ -337,14 +337,12 @@ namespace FlatRedBall.Math
                 (attachable.ListsBelongingTo.Contains(this) || mInternalList.Contains(attachable)));
         }
 
-        #region XML Docs
         /// <summary>
-        /// Returns the IAttachable with name matching the argument.
+        /// Returns the IAttachable with name matching the argument, or null if not found.
         /// </summary>
         /// <remarks>This method performs a case-sensitive search.</remarks>
         /// <param name="nameToSearchFor">The name to match when searching.</param>
         /// <returns>The IAttachable with matching name or null if none are found.</returns>
-        #endregion
         public T FindByName(string nameToSearchFor)
         {
             for (int i = 0; i < Count; i++)
