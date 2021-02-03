@@ -268,6 +268,13 @@ namespace TMXGlueLib.DataTypes
         private static void AddObjectLayerTiles(ReducedLayerInfo reducedLayerInfo, AbstractMapLayer tiledLayer, Tileset tileSet, uint? gid, int tileWidth, int tileHeight)
         {
             var asMapLayer = tiledLayer as mapObjectgroup;
+
+            // early out
+            if(asMapLayer.@object == null)
+            {
+                return;
+            }
+
             foreach (var objectInstance in asMapLayer.@object)
             {
                 if (objectInstance.gid > 0)
