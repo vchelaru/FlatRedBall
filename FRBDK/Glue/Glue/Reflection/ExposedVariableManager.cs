@@ -38,6 +38,7 @@ namespace FlatRedBall.Glue.Reflection
             "bool",
 
             "int",
+            "int?",
             "double",
 
 

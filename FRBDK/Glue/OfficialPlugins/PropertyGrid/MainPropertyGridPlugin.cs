@@ -11,6 +11,8 @@ using WpfDataUi;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Elements;
+using OfficialPluginsCore.PropertyGrid.Views;
+using OfficialPluginsCore.PropertyGrid.ViewModels;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -20,7 +22,9 @@ namespace OfficialPlugins.VariableDisplay
         #region Fields
 
         DataUiGrid settingsGrid;
-        DataUiGrid variableGrid;
+        VariableView variableGrid;
+
+        VariableViewModel variableViewModel;
 
         PluginTab settingsTab;
         PluginTab variableTab;
@@ -48,7 +52,7 @@ namespace OfficialPlugins.VariableDisplay
         {
             if (this.variableGrid != null)
             {
-                RefreshLogic.RefreshGrid(variableGrid);
+                RefreshLogic.RefreshGrid(variableGrid.DataUiGrid);
             }
         }
 
@@ -96,8 +100,10 @@ namespace OfficialPlugins.VariableDisplay
             }
 
             AddOrShowVariableGrid();
-            variableGrid.Instance = GlueState.Self.CurrentElement;
-            ElementVariableShowingLogic.UpdateShownVariables(variableGrid, GlueState.Self.CurrentElement);
+            // we can always add new variables to entities....right?
+            variableViewModel.CanAddVariable = true;
+            variableGrid.DataUiGrid.Instance = GlueState.Self.CurrentElement;
+            ElementVariableShowingLogic.UpdateShownVariables(variableGrid.DataUiGrid, GlueState.Self.CurrentElement);
         }
 
         private void HandleNamedObjectSelect(NamedObjectSave namedObject)
@@ -152,10 +158,12 @@ namespace OfficialPlugins.VariableDisplay
             }
 
             AddOrShowVariableGrid();
-            variableGrid.Instance = namedObject;
+            // can't add variables on the instance:
+            variableViewModel.CanAddVariable = false;
+            variableGrid.DataUiGrid.Instance = namedObject;
             variableGrid.Visibility = System.Windows.Visibility.Visible;
 
-            NamedObjectVariableShowingLogic.UpdateShownVariables(variableGrid, namedObject,
+            NamedObjectVariableShowingLogic.UpdateShownVariables(variableGrid.DataUiGrid, namedObject,
                 GlueState.Self.CurrentElement, ati);
         }
 
@@ -178,15 +186,20 @@ namespace OfficialPlugins.VariableDisplay
         {
             if(variableGrid == null)
             {
-                variableGrid = new DataUiGrid();
+                variableGrid = new VariableView();
+
+                variableViewModel = new VariableViewModel();
+                variableGrid.DataContext = variableViewModel;
+
+                variableTab = this.CreateTab(variableGrid, "Variables");
+                this.ShowTab(variableTab, TabLocation.Center);
                 
-                var tabControl = PluginManager.CenterTab;
-                
-                variableTab = this.AddToTab(tabControl, variableGrid, "Variables");
+                //variableTab = this.AddToTab(tabControl, variableGrid, "Variables");
                 variableTab.DrawX = false;
 
                 // let's make this the first item and have it be focused:
-                tabControl.SelectedTab = variableTab;
+                //tabControl.SelectedTab = variableTab;
+                GlueCommands.Self.DialogCommands.FocusTab("Variables");
                 // This makes it the last tab clicked, which gives it priority:
                 variableTab.LastTimeClicked = DateTime.Now;
             }
