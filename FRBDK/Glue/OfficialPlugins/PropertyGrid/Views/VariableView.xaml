@@ -5,9 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPluginsCore.PropertyGrid.Views" xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUi"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel>
-        <wpfdataui:DataUiGrid x:Name="DataUiGrid"></wpfdataui:DataUiGrid>
-        <Button Visibility="{Binding AddVariableVisibility}" Click="AddVariableButtonClick">Add New Variable</Button>
-    </StackPanel>
+             d:DesignHeight="200" d:DesignWidth="400">
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+        
+            <wpfdataui:DataUiGrid x:Name="DataUiGrid"></wpfdataui:DataUiGrid>
+            <Button Visibility="{Binding AddVariableVisibility}" Click="AddVariableButtonClick">Add New Variable</Button>
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

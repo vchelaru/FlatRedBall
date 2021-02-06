@@ -194,6 +194,10 @@ namespace FlatRedBall.Glue.Parsing
             {
                 typeToReturn = typeof(float);
             }
+            else if(typeString == "float?")
+            {
+                typeToReturn = typeof(float?);
+            }
             else if (typeString == "string" || typeString == "String")
             {
                 typeToReturn = typeof(string);
@@ -206,9 +210,17 @@ namespace FlatRedBall.Glue.Parsing
             {
                 typeToReturn = typeof(long);
             }
+            else if(typeString == "long?")
+            {
+                typeToReturn = typeof(long?);
+            }
             else if (typeString == "int" || typeString == "Int32")
             {
                 typeToReturn = typeof(int);
+            }
+            else if(typeString == "int?")
+            {
+                typeToReturn = typeof(int?);
             }
             else if (typeString == "uint")
             {
@@ -217,6 +229,10 @@ namespace FlatRedBall.Glue.Parsing
             else if (typeString == "double" || typeString == "Double")
             {
                 typeToReturn = typeof(double);
+            }
+            else if(typeString == "double?")
+            {
+                typeToReturn = typeof(double?);
             }
             else if (typeString == "byte")
             {
@@ -617,6 +633,11 @@ namespace FlatRedBall.Glue.Parsing
                 //break;
                 case "Double":
                     return "double";
+            }
+
+            if(qualifiedName.StartsWith("System.Nullable`1[[System.Int32,"))
+            {
+                return "int?";
             }
 
             return qualifiedName;
