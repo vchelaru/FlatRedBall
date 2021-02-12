@@ -54,13 +54,19 @@ namespace TopDownPlugin.Logic
 
             Add(nameof(TopDownValues.DecelerationTime), "(float)");
 
-            Add(nameof(TopDownValues.UpdateDirectionFromVelocity), "(bool)");
+
+            Add(nameof(TopDownValues.UpdateDirectionFromInput), "(bool)");
+
 
             Add(nameof(TopDownValues.IsUsingCustomDeceleration), "(bool)");
 
             Add(nameof(TopDownValues.CustomDecelerationValue), "(float)");
 
             Add(nameof(TopDownValues.InheritOrOverwriteAsInt), "(int)");
+
+            Add(nameof(TopDownValues.UpdateDirectionFromVelocity), "(bool)");
+
+            // I think new values should be added at the end of they will mess up existing CSVs
         }
 
 

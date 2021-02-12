@@ -27,7 +27,7 @@ namespace TopDownPlugin.Data
                 MaxSpeed = 300,
                 AccelerationTime = .5f,
                 DecelerationTime = .25f,
-                ShouldChangeMovementDirection = TopDownValuesViewModel.ChangeOrUnchange.Change
+                ShouldChangeMovementDirection = TopDownValuesViewModel.VelocityChangeMode.UpdateFromInput
             };
 
             topDownValues.Add(defaultValues.Name, defaultValues);

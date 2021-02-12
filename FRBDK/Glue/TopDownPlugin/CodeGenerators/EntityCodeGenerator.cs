@@ -365,19 +365,27 @@ namespace TopDownPlugin.CodeGenerators
                         this.Acceleration = accelerationToSet * ratioOfToAdd;
                     }
                     else
-                    {
                         this.Acceleration = accelerationToSet;
                     }
+                    {
                 }
 
-                if (mCurrentMovement.UpdateDirectionFromVelocity)
+
+                if (mCurrentMovement.UpdateDirectionFromInput)
+                {
+                    if (desiredVelocity.X != 0 || desiredVelocity.Y != 0)
+                    {
+                        mDirectionFacing = TopDownDirectionExtensions.FromDirection(desiredVelocity.X, desiredVelocity.Y, PossibleDirections, mDirectionFacing);
+                    }
+                }
+                else if (mCurrentMovement.UpdateDirectionFromVelocity)
                 {
                     const float velocityEpsilon = .1f;
                     var shouldAssignDirection = this.Velocity.Length() > velocityEpsilon || difference.Length() > 0;
 
                     if(this.Velocity.LengthSquared() == 0)
                     {
-                        if(desiredVelocity.LengthSquared() != 0)
+                        if(desiredVelocity.X != 0 || desiredVelocity.Y != 0)
                         {
                             // use the desired movement value, so the player can
                             // change directions when facing a wall

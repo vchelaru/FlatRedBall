@@ -63,9 +63,9 @@ namespace TopDownPlugin.DataGenerators
             }
         }
 
-        private string GenerateCsvContents(bool inheritsFromTopDown, TopDownEntityViewModel viewModel, CsvHeader[] headers)
+        private string GenerateCsvContents(bool inheritsFromTopDown, TopDownEntityViewModel viewModel, CsvHeader[] oldHeaders)
         {
-            List<TopDownValues> values = new List<TopDownValues>();
+             List<TopDownValues> values = new List<TopDownValues>();
 
             foreach(var valuesViewModel in viewModel.TopDownValues)
             {
@@ -81,35 +81,78 @@ namespace TopDownPlugin.DataGenerators
 
             RuntimeCsvRepresentation rcr = RuntimeCsvRepresentation.FromList(values);
 
+            var newHeaders = rcr.Headers.ToList();
 
-            if(headers != null)
+            foreach(var oldHeader in oldHeaders)
             {
-                rcr.Headers = headers;
-
-                for(int rowIndex = 0; rowIndex < rcr.Records.Count; rowIndex++)
+                if(newHeaders.Any(item => item.Name == oldHeader.Name) == false)
                 {
-                    var row = rcr.Records[rowIndex];
-                    var topDownValues = values[rowIndex];
-
-                    var rowRecordAsList = row.ToList();
-
-                    for (int columnIndex = row.Length; columnIndex < headers.Length; columnIndex++)
-                    {
-                        var headerName = headers[columnIndex].Name;
-
-                        if (topDownValues.AdditionalValues.ContainsKey(headerName))
-                        {
-                            var value = topDownValues.AdditionalValues[headerName] as TypedValue;
-
-                            // does this need to account for culture?
-                            rowRecordAsList.Add(value?.Value?.ToString());
-
-                        }
-                    }
-
-                    rcr.Records[rowIndex] = rowRecordAsList.ToArray();
+                    newHeaders.Add(oldHeader);
                 }
             }
+
+
+            for(int rowIndex = 0; rowIndex < values.Count; rowIndex++)
+            {
+                //foreach(var value in values)
+                var value = values[rowIndex];
+
+                var row = rcr.Records[rowIndex];
+
+                if(row.Length != newHeaders.Count)
+                {
+                    var newRow = row.ToList();
+                    while(newRow.Count < newHeaders.Count)
+                    {
+                        newRow.Add(""); // will be filled in later
+                    }
+
+                    rcr.Records[rowIndex] = newRow.ToArray();
+                    row = rcr.Records[rowIndex];
+                }
+
+                foreach (var additionalValue in value.AdditionalValues)
+                {
+                    var matchingHeader = newHeaders.FirstOrDefault(item => item.Name == additionalValue.Key);
+
+                    // this better not be null
+                    var index = newHeaders.IndexOf(matchingHeader);
+
+                    if(index > 0)
+                    {
+                        row[index] = additionalValue.Value?.ToString();
+                    }
+                }
+            }
+
+            //if(headers != null)
+            //{
+            //    rcr.Headers = headers;
+
+            //    for(int rowIndex = 0; rowIndex < rcr.Records.Count; rowIndex++)
+            //    {
+            //        var row = rcr.Records[rowIndex];
+            //        var topDownValues = values[rowIndex];   
+
+            //        var rowRecordAsList = row.ToList();
+
+            //        for (int columnIndex = row.Length; columnIndex < headers.Length; columnIndex++)
+            //        {
+            //            var headerName = headers[columnIndex].Name;
+
+            //            if (topDownValues.AdditionalValues.ContainsKey(headerName))
+            //            {
+            //                var value = topDownValues.AdditionalValues[headerName] as TypedValue;
+
+            //                // does this need to account for culture?
+            //                rowRecordAsList.Add(value?.Value?.ToString());
+
+            //            }
+            //        }
+
+            //        rcr.Records[rowIndex] = rowRecordAsList.ToArray();
+            //    }
+            //}
 
             // assume header[0] is name, so make it required:
             if(rcr.Headers.Length > 0)

@@ -89,8 +89,9 @@
         <StackPanel Grid.Row="1" Grid.Column="2" Margin="12,3,8,3" IsEnabled="{Binding IsEditable}">
             
             <TextBlock>Direction Updates:</TextBlock>
-            <RadioButton IsChecked="{Binding UpdateDirectionFromVelocity}">Update to Movement Direction</RadioButton>
-            <RadioButton  IsChecked="{Binding DontChangeDirectionFromVelocity}" Margin="0,0,0,5">Don't Change Direction</RadioButton>
+            <RadioButton IsChecked="{Binding UpdateDirectionFromVelocity}">Update to Velocity</RadioButton>
+            <RadioButton IsChecked="{Binding UpdateDirectionFromInput}">Update to Input</RadioButton>
+            <RadioButton  IsChecked="{Binding DontChangeDirection}" Margin="0,0,0,5">Don't Change Direction</RadioButton>
         </StackPanel>
 
         <TextBlock Grid.Column="3" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3">Add'l Props </TextBlock>

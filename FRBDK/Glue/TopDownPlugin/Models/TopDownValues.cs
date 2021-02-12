@@ -22,6 +22,7 @@ namespace TopDownPlugin.Models
         public float AccelerationTime { get; set; }
         public float DecelerationTime { get; set; }
         public bool UpdateDirectionFromVelocity { get; set; } = true;
+        public bool UpdateDirectionFromInput { get; set; } = false;
 
         public bool IsUsingCustomDeceleration { get; set; } = false;
 

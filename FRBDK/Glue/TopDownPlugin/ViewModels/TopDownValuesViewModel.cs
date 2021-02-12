@@ -30,10 +30,11 @@ namespace TopDownPlugin.ViewModels
             Accelerate
         }
 
-        public enum ChangeOrUnchange
+        public enum VelocityChangeMode
         {
-            Change,
-            Unchange
+            UpdateFromVelocity,
+            UpdateFromInput,
+            DoNotUpdate
         }
 
         #endregion
@@ -103,34 +104,47 @@ namespace TopDownPlugin.ViewModels
             set => Set(value); 
         }
 
-        public ChangeOrUnchange ShouldChangeMovementDirection
+        public VelocityChangeMode ShouldChangeMovementDirection
         {
-            get => Get<ChangeOrUnchange>();
+            get => Get<VelocityChangeMode>();
             set => Set(value);
         }
 
+        [DependsOn(nameof(ShouldChangeMovementDirection))]
         public bool UpdateDirectionFromVelocity
         {
-            get => ShouldChangeMovementDirection == ChangeOrUnchange.Change;
+            get => ShouldChangeMovementDirection == VelocityChangeMode.UpdateFromVelocity;
             set
             {
-                Set(value);
                 if (value)
                 {
-                    ShouldChangeMovementDirection = ChangeOrUnchange.Change;
+                    ShouldChangeMovementDirection = VelocityChangeMode.UpdateFromVelocity;
                 }
             }
         }
 
-        public bool DontChangeDirectionFromVelocity
+        [DependsOn(nameof(ShouldChangeMovementDirection))]
+        public bool UpdateDirectionFromInput
         {
-            get => ShouldChangeMovementDirection == ChangeOrUnchange.Unchange;
+            get => ShouldChangeMovementDirection == VelocityChangeMode.UpdateFromInput;
             set
             {
-                Set(value);
+                if(value)
+                {
+                    ShouldChangeMovementDirection = VelocityChangeMode.UpdateFromInput;
+                }
+            }
+        }
+
+        [DependsOn(nameof(ShouldChangeMovementDirection))]
+        public bool DontChangeDirection
+        {
+            get => ShouldChangeMovementDirection == VelocityChangeMode.DoNotUpdate;
+            set
+            {
                 if (value)
                 {
-                    ShouldChangeMovementDirection = ChangeOrUnchange.Unchange;
+                    ShouldChangeMovementDirection = VelocityChangeMode.DoNotUpdate;
                 }
             }
         }
@@ -248,6 +262,7 @@ namespace TopDownPlugin.ViewModels
             this.AccelerationTime = values.AccelerationTime;
             this.DecelerationTime = values.DecelerationTime;
             this.UpdateDirectionFromVelocity = values.UpdateDirectionFromVelocity;
+            this.UpdateDirectionFromInput = values.UpdateDirectionFromInput;
             this.IsCustomDecelerationChecked = values.IsUsingCustomDeceleration;
             this.CustomDecelerationValue = values.CustomDecelerationValue;
             this.InheritOrOverwrite = values.InheritOrOverwrite;
@@ -282,6 +297,7 @@ namespace TopDownPlugin.ViewModels
             toReturn.AccelerationTime = this.AccelerationTime;
             toReturn.DecelerationTime = this.DecelerationTime;
             toReturn.UpdateDirectionFromVelocity = this.UpdateDirectionFromVelocity;
+            toReturn.UpdateDirectionFromInput = this.UpdateDirectionFromInput;
             toReturn.UsesAcceleration = this.UsesAcceleration;
             toReturn.IsUsingCustomDeceleration = this.IsCustomDecelerationChecked;
             toReturn.CustomDecelerationValue = this.CustomDecelerationValue;

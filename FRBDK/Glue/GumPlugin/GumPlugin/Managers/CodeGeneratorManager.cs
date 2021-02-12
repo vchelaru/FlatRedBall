@@ -273,19 +273,28 @@ namespace GumPlugin.Managers
         /// <returns>Information about what was generated and saved.</returns>
         public GenerationResult GenerateCodeFor(Gum.DataTypes.ElementSave element)
         {
+            GenerationResult resultToReturn = new GenerationResult();
+
+            ///////////////early out////////////////
+            var gumRuntimesFolder = GumRuntimesFolder;
+            if(gumRuntimesFolder == null)
+            {
+                return resultToReturn;
+            }
+            /////////end early out///////////////
+
+
+
             var subfolder = element is Gum.DataTypes.ScreenSave ? "Screens/"
                 : element is ComponentSave ? "Components/"
                 : "Standard/";
 
             CodeGenerationSavingBehavior savingBehavior = CodeGenerationSavingBehavior.SaveIfGeneratedDiffers;
-            GenerationResult resultToReturn = new GenerationResult();
 
             if (element == null)
             {
                 throw new ArgumentNullException(nameof(element));
             }
-
-            var gumRuntimesFolder = GumRuntimesFolder;
 
             #region Generated Gum Runtime
 

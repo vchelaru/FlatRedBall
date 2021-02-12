@@ -469,18 +469,19 @@ namespace TopDownPlugin.Controllers
             //bool UpdateDirectionFromVelocity { get; set; } = true;
 
             List<CsvHeader> tempList = csvHeaders?.ToList() ?? new List<CsvHeader>();
-            bool ContainsHeader(string name)
-            {
-                return tempList.Any(item => item.Name == name);
-            }
+            //bool ContainsHeader(string name)
+            //{
+            //    return tempList.Any(item => item.Name == name);
+            //}
 
-            foreach(var requirement in TopDownValuesCreationLogic.RequiredCsvHeaders)
-            {
-                if(!ContainsHeader(requirement.Name))
-                {
-                    tempList.Add(requirement);
-                }
-            }
+            // What if a CSV is missing required headers? We don't want to include those in the "last" list right?
+            //foreach(var requirement in TopDownValuesCreationLogic.RequiredCsvHeaders)
+            //{
+            //    if(!ContainsHeader(requirement.Name))
+            //    {
+            //        tempList.Add(requirement);
+            //    }
+            //}
 
             lastHeaders = tempList.ToArray();
 
