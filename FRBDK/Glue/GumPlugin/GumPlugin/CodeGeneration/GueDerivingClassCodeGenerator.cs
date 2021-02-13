@@ -217,7 +217,7 @@ namespace GumPlugin.CodeGeneration
         private void GenerateFields(ElementSave elementSave, ICodeBlock currentBlock)
         {
             string throwaway;
-            if(GetIfShouldGenerateFormsCode(elementSave, out throwaway))
+            if(GetIfShouldGenerateFormsCode(elementSave, out throwaway) || FormsClassCodeGenerator.Self.GetIfShouldGenerate(elementSave))
             {
                 currentBlock.Line("private bool tryCreateFormsObject;");
             }
@@ -411,7 +411,7 @@ namespace GumPlugin.CodeGeneration
             var state = elementSave.DefaultState;
 
             string throwaway;
-            if (GetIfShouldGenerateFormsCode(elementSave, out throwaway))
+            if (GetIfShouldGenerateFormsCode(elementSave, out throwaway) || FormsClassCodeGenerator.Self.GetIfShouldGenerate(elementSave))
             {
                 constructor.Line("this.tryCreateFormsObject = tryCreateFormsObject;");
             }
@@ -525,11 +525,21 @@ namespace GumPlugin.CodeGeneration
 
                 string controlType;
                 var shouldGenerate = GetIfShouldGenerateFormsCode(elementSave, out controlType);
+
+                if(!shouldGenerate)
+                {
+                    shouldGenerate = FormsClassCodeGenerator.Self.GetIfShouldGenerate(elementSave);
+
+                    if(shouldGenerate)
+                    {
+                        controlType = FormsClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(elementSave);
+                    }
+                }
                 if(shouldGenerate)
                 {
                     currentBlock
                         .If("tryCreateFormsObject")
-                        .Line($"FormsControl = new {controlType}(this);");
+                        .Line($"FormsControlAsObject = new {controlType}(this);");
 
                 }
 
@@ -559,15 +569,22 @@ namespace GumPlugin.CodeGeneration
 
         private void GenerateFormsCode(ElementSave element, ICodeBlock currentBlock)
         {
-            string controlType;
-            var shouldGenerate = GetIfShouldGenerateFormsCode(element, out controlType);
+            string controlType = null;
+            var shouldGenerateStandardForms = GetIfShouldGenerateFormsCode(element, out controlType);
 
-            if(shouldGenerate)
+            // This is for standard forms types like Button, TextBox, etc
+            if(shouldGenerateStandardForms)
             {
                 // This should be protected so derived classes can specify this
-                currentBlock.Line($"public {controlType} FormsControl {{get; protected set;}}");
-                currentBlock.Line($"public override object FormsControlAsObject {{ get {{ return FormsControl; }} }}");
+                currentBlock.Line($"public {controlType} FormsControl {{get => ({controlType}) FormsControlAsObject;}}");
+            }
+            // This is for custom classes that exist in Gum but don't have standard Gum representations, like game-specific pause menus, popups, etc
+            else if(FormsClassCodeGenerator.Self.GetIfShouldGenerate(element))
+            {
+                controlType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(element) + "." +
+                    FormsClassCodeGenerator.Self.GetUnqualifiedRuntimeTypeFor(element);
 
+                currentBlock.Line($"public {controlType} FormsControl {{get => ({controlType}) FormsControlAsObject;}}");
             }
         }
 

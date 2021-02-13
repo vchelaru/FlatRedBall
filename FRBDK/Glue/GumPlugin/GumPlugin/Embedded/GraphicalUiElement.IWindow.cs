@@ -752,7 +752,7 @@ namespace Gum.Wireframe
             this.ApplyState(stateName);
         }
 
-        public virtual object FormsControlAsObject { get { return null; } }
+        public virtual object FormsControlAsObject { get; set; }
 
         #region Binding
         // Apr 19 2020:

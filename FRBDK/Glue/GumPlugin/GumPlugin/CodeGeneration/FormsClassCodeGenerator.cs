@@ -81,10 +81,8 @@ namespace GumPluginCore.CodeGeneration
 
                         if (instanceElement is ComponentSave component)
                         {
-
                             return GueDerivingClassCodeGenerator.GetFormsControlTypeFrom(component.Behaviors) != null ||
                                 GetIfShouldGenerate(instanceElement);
-
                         }
                         return false;
                     });
@@ -293,5 +291,7 @@ namespace GumPluginCore.CodeGeneration
 
             return fullNamespace;
         }
+
+        public string GetQualifiedRuntimeTypeFor(ElementSave elementSave) => GetFullRuntimeNamespaceFor(elementSave) + "." + GetUnqualifiedRuntimeTypeFor(elementSave);
     }
 }

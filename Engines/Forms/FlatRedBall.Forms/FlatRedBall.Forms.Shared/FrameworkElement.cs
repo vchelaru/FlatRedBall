@@ -331,6 +331,7 @@ namespace FlatRedBall.Forms.Controls
         public FrameworkElement() 
         {
             Visual = GetGraphicalUiElementFor(this);
+            Visual.FormsControlAsObject = this;
         }
 
         public FrameworkElement(GraphicalUiElement visual)
