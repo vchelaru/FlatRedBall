@@ -1418,11 +1418,30 @@ namespace FlatRedBall.Glue.CodeGeneration
 
 
                 }
-                // if it's a file, then the file should handle that (I think)
-                else if(namedObjectSave.SourceType != SourceType.File && namedObjectSave.GetAssetTypeInfo()?.ActivityMethod != null)
+                else
                 {
-                    var activityMethod = namedObjectSave.GetAssetTypeInfo()?.ActivityMethod;
-                    codeBlock.Line(activityMethod.Replace("this", namedObjectSave.FieldName) + ";");
+                    // Update 2/13/2021
+                    // If an object comes
+                    // from a file, the file
+                    // will call its activity.
+                    // If it doesn't come from a 
+                    // file, we need to make sure
+                    // that it is not SetByDerived.
+                    // If it is SetByDerived, then the
+                    // derived may be responsible for it,
+                    // and if we call activity in the base, 
+                    // the object may get double activities called.
+                    // This happened with TileMaps where the base GameScreen
+                    // set the Map to SetByDerived, then the derived screen set
+                    // the Map to be from file. The base screen was calling Activity
+                    // and so was the derived on the file.
+
+                    if (namedObjectSave.SourceType != SourceType.File && !namedObjectSave.SetByDerived && namedObjectSave.GetAssetTypeInfo()?.ActivityMethod != null)
+                    {
+                        // if it's a file, then the file should handle that (I think)
+                        var activityMethod = namedObjectSave.GetAssetTypeInfo()?.ActivityMethod;
+                        codeBlock.Line(activityMethod.Replace("this", namedObjectSave.FieldName) + ";");
+                    }
                 }
 
             }

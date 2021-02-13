@@ -65,7 +65,7 @@ namespace FlatRedBall.TileGraphics
         {
             if (AnimationChain != null)
             {
-                double modifiedTimePassed = TimeManager.SecondDifference * AnimationSpeed;
+                double modifiedTimePassed = secondDifference * AnimationSpeed;
 
                 mTimeIntoAnimation += modifiedTimePassed;
 

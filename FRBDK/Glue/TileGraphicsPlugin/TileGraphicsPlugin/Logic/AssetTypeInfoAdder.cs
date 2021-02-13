@@ -174,6 +174,7 @@ namespace TileGraphicsPlugin
             toReturn.Extension = "tmx";
             toReturn.CustomLoadMethod = "{THIS} = FlatRedBall.TileGraphics.LayeredTileMap.FromTiledMapSave(\"{FILE_NAME}\", {CONTENT_MANAGER_NAME});";
             toReturn.HideFromNewFileWindow = false;
+
             toReturn.ActivityMethod = "this?.AnimateSelf();";
 
             return toReturn;
