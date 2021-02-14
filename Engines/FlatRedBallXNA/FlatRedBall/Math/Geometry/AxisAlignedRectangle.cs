@@ -720,16 +720,48 @@ namespace FlatRedBall.Math.Geometry
                 bool shouldApplyReposition = float.IsPositiveInfinity(smallest) == false;
                 // this is kinda crappy but addresses this bug:
                 // https://trello.com/c/twwOTKFz/411-l-shaped-corners-can-cause-entities-to-teleport-through-despite-using-proper-reposition-directions
-                float maxMovement;
-                if(side == Side.Left || side == Side.Right)
+                float? maxMovement = null;
+                // Update Feb 14, 2021
+                // The fix for the trello card above causes problems with objects inside long strips. For example, consider 
+                // a collision as follows:
+                // OOOOOOOOOOOOOOOOOOOOO
+                //      X
+                // OOOOOOOOOOOOOOOOOOOOO
+                // In this case, the rectangle in the middle would never get pushed out because the rectangles
+                // above and below only allow moving a max of half the width or height 
+                // The card above is specifically about L-shaped collision areas when colliding with the corner
+                // Therefore, we could restrict this to only L shaped reposition rectangles. 
+                // Eventually we may even want L shaped corners to push out fully, like in the case of a solid block
+                // that always pushes out. But that's a bigger change that requires modifying the RepositionDirections to have
+                // an extra value for whether it's a full or half movement, and then modifying the tile shape collection reposition
+                // assigning code.
+
+                var isLShaped =
+                    this.RepositionDirections == (RepositionDirections.Left | RepositionDirections.Up) ||
+                    this.RepositionDirections == (RepositionDirections.Right | RepositionDirections.Up) ||
+
+                    this.RepositionDirections == (RepositionDirections.Left | RepositionDirections.Down) ||
+                    this.RepositionDirections == (RepositionDirections.Right | RepositionDirections.Down) ||
+
+                    rectangle.RepositionDirections == (RepositionDirections.Left | RepositionDirections.Up) ||
+                    rectangle.RepositionDirections == (RepositionDirections.Right | RepositionDirections.Up) ||
+
+                    rectangle.RepositionDirections == (RepositionDirections.Left | RepositionDirections.Down) ||
+                    rectangle.RepositionDirections == (RepositionDirections.Right | RepositionDirections.Down);
+
+
+                if(isLShaped)
                 {
-                    maxMovement = rectangle.Width / 2.0f + Width / 2.0f;
+                    if (side == Side.Left || side == Side.Right)
+                    {
+                        maxMovement = rectangle.Width / 2.0f + Width / 2.0f;
+                    }
+                    else
+                    {
+                        maxMovement = rectangle.Height / 2.0f + Height / 2.0f;
+                    }
                 }
-                else
-                {
-                    maxMovement = rectangle.Height / 2.0f + Height / 2.0f;
-                }
-                shouldApplyReposition &= System.Math.Abs(smallest) < maxMovement;
+                shouldApplyReposition &= (maxMovement == null || System.Math.Abs(smallest) < maxMovement);
 
                 if (shouldApplyReposition)
                 {
@@ -1002,12 +1034,6 @@ namespace FlatRedBall.Math.Geometry
 #endif
             if (CollideAgainstMove(rectangle, thisMass, otherMass))
             {
-
-                if (YVelocity + 103.6 < .01f)
-                {
-                    int m = 3;
-                }
-
                 PositionedObject thisTopParent = this.TopParent;
                 PositionedObject otherTopParent = rectangle.TopParent;
 
