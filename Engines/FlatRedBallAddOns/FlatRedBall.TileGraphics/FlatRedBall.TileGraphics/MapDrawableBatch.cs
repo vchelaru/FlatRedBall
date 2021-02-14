@@ -118,6 +118,12 @@ namespace FlatRedBall.TileGraphics
             set;
         }
 
+        /// <summary>
+        /// Contains the list of tile indexes for each name, enabling quick lookup of tile
+        /// indexes by name. The indexes stored in the list indicate the ordered index of the tile
+        /// (not the vertex or index in the index buffer), so the values will always be less
+        /// than the total number of tiles in the MapDrawableBatch.
+        /// </summary>
         public Dictionary<string, List<int>> NamedTileOrderedIndexes
         {
             get
@@ -1347,6 +1353,11 @@ namespace FlatRedBall.TileGraphics
 
         private void MergeSortedX(IEnumerable<MapDrawableBatch> mapDrawableBatches, int totalNumberOfVerts, int totalNumberOfIndexes)
         {
+            if (totalNumberOfVerts == this.mVertices.Length)
+            {
+                return;// nothing being added
+            }
+
             List<Dictionary<int, string>> invertedDictionaries = new List<Dictionary<int, string>>();
             var newNameIndexDictionary = new Dictionary<string, List<int>>();
 
@@ -1359,13 +1370,17 @@ namespace FlatRedBall.TileGraphics
             int destinationVertIndex = 0;
             int destinationIndexIndex = 0;
 
+
+
             var newVerts = new VertexType[totalNumberOfVerts];
             var newIndexes = new int[totalNumberOfIndexes];
 
             mCurrentNumberOfTiles = totalNumberOfVerts / 4;
 
+            int newFlagFlipArraySize = 0;
             foreach (var layer in layers)
             {
+                newFlagFlipArraySize += layer.FlipFlagArray.Length;
                 var invertedLayerDictionary = new Dictionary<int, string>();
 
                 foreach (var kvp in layer.NamedTileOrderedIndexes)
@@ -1379,11 +1394,13 @@ namespace FlatRedBall.TileGraphics
                 invertedDictionaries.Add(invertedLayerDictionary);
             }
 
+            var newFlipFlagArray = new byte[newFlagFlipArraySize];
+
             while (true)
             {
                 float smallestX = float.PositiveInfinity;
                 //int smallestIndex = -1;
-                int toCopyFrom = -1;
+                int layerIndexToCopyFrom = -1;
 
                 for (int layerIndex = 0; layerIndex < currentVertIndex.Length; layerIndex++)
                 {
@@ -1394,60 +1411,67 @@ namespace FlatRedBall.TileGraphics
                         if (vertX < smallestX)
                         {
                             smallestX = vertX;
-                            toCopyFrom = layerIndex;
+                            layerIndexToCopyFrom = layerIndex;
                             //smallestIndex = currentVertIndex[layerIndex];
                         }
                     }
                 }
 
-                if (toCopyFrom == -1)
+                if (layerIndexToCopyFrom == -1)
                 {
                     break;
                 }
                 else
                 {
-                    var sourceVertIndex = currentVertIndex[toCopyFrom];
+                    var layerToCopyFrom = layers[layerIndexToCopyFrom];
+                    var sourceVertIndex = currentVertIndex[layerIndexToCopyFrom];
                     var sourceIndexIndex = (sourceVertIndex / 4) * 6;
+                    var sourceFlipIndex = (sourceVertIndex / 4);
 
-                    newVerts[destinationVertIndex] = layers[toCopyFrom].mVertices[sourceVertIndex];
-                    newVerts[destinationVertIndex + 1] = layers[toCopyFrom].mVertices[sourceVertIndex + 1];
-                    newVerts[destinationVertIndex + 2] = layers[toCopyFrom].mVertices[sourceVertIndex + 2];
-                    newVerts[destinationVertIndex + 3] = layers[toCopyFrom].mVertices[sourceVertIndex + 3];
+                    var destinationFlipIndex = destinationVertIndex / 4;
 
-                    var firstVert = layers[toCopyFrom].mIndices[sourceIndexIndex];
+                    newFlipFlagArray[destinationFlipIndex] = layerToCopyFrom.FlipFlagArray[sourceFlipIndex];
+
+                    newVerts[destinationVertIndex] = layerToCopyFrom.mVertices[sourceVertIndex];
+                    newVerts[destinationVertIndex + 1] = layerToCopyFrom.mVertices[sourceVertIndex + 1];
+                    newVerts[destinationVertIndex + 2] = layerToCopyFrom.mVertices[sourceVertIndex + 2];
+                    newVerts[destinationVertIndex + 3] = layerToCopyFrom.mVertices[sourceVertIndex + 3];
+
+                    var firstVert = layerToCopyFrom.mIndices[sourceIndexIndex];
 
                     newIndexes[destinationIndexIndex] =
-                        destinationVertIndex - firstVert + layers[toCopyFrom].mIndices[sourceIndexIndex];
+                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex];
                     newIndexes[destinationIndexIndex + 1] =
-                        destinationVertIndex - firstVert + layers[toCopyFrom].mIndices[sourceIndexIndex + 1];
+                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex + 1];
                     newIndexes[destinationIndexIndex + 2] =
-                        destinationVertIndex - firstVert + layers[toCopyFrom].mIndices[sourceIndexIndex + 2];
+                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex + 2];
                     newIndexes[destinationIndexIndex + 3] =
-                        destinationVertIndex - firstVert + layers[toCopyFrom].mIndices[sourceIndexIndex + 3];
+                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex + 3];
                     newIndexes[destinationIndexIndex + 4] =
-                        destinationVertIndex - firstVert + layers[toCopyFrom].mIndices[sourceIndexIndex + 4];
+                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex + 4];
                     newIndexes[destinationIndexIndex + 5] =
-                        destinationVertIndex - firstVert + layers[toCopyFrom].mIndices[sourceIndexIndex + 5];
+                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex + 5];
 
-                    if (invertedDictionaries[toCopyFrom].ContainsKey(sourceVertIndex))
+                    if (invertedDictionaries[layerIndexToCopyFrom].ContainsKey(sourceVertIndex/4))
                     {
-                        var newName = invertedDictionaries[toCopyFrom][sourceVertIndex];
+                        var newName = invertedDictionaries[layerIndexToCopyFrom][sourceVertIndex/4];
 
                         if (newNameIndexDictionary.ContainsKey(newName) == false)
                         {
                             newNameIndexDictionary[newName] = new List<int>();
                         }
 
-                        newNameIndexDictionary[newName].Add(destinationVertIndex);
+                        newNameIndexDictionary[newName].Add(destinationVertIndex / 4);
                     }
 
                     destinationVertIndex += 4;
                     destinationIndexIndex += 6;
-                    currentVertIndex[toCopyFrom] += 4;
+                    currentVertIndex[layerIndexToCopyFrom] += 4;
                 }
             }
 
             this.mNamedTileOrderedIndexes = newNameIndexDictionary;
+            this.FlipFlagArray = newFlipFlagArray;
 
             this.mVertices = newVerts;
             this.mIndices = newIndexes;
@@ -1542,16 +1566,16 @@ namespace FlatRedBall.TileGraphics
                     newIndexes[destinationIndexIndex + 5] =
                         destinationVertIndex - firstVert + layers[toCopyFrom].mIndices[sourceIndexIndex + 5];
 
-                    if (invertedDictionaries[toCopyFrom].ContainsKey(sourceVertIndex))
+                    if (invertedDictionaries[toCopyFrom].ContainsKey(sourceVertIndex/4))
                     {
-                        var newName = invertedDictionaries[toCopyFrom][sourceVertIndex];
+                        var newName = invertedDictionaries[toCopyFrom][sourceVertIndex/4];
 
                         if (newNameIndexDictionary.ContainsKey(newName) == false)
                         {
                             newNameIndexDictionary[newName] = new List<int>();
                         }
 
-                        newNameIndexDictionary[newName].Add(destinationVertIndex);
+                        newNameIndexDictionary[newName].Add(destinationVertIndex/4);
                     }
 
                     destinationVertIndex += 4;
