@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Forms.GumExtensions;
 using FlatRedBall.Forms.Input;
 using FlatRedBall.Gui;
+using FlatRedBall.Input;
 using FlatRedBall.Instructions;
 using Gum.Wireframe;
 using RenderingLibrary.Graphics;
@@ -373,12 +374,36 @@ namespace FlatRedBall.Forms.Controls
         {
             if (!FlatRedBallServices.IsThreadPrimary())
             {
-                InstructionManager.AddSafe(Visual.RemoveFromManagers);
+
+                InstructionManager.AddSafe(CloseInternal);
             }
             else
             {
-                Visual.RemoveFromManagers();
+                CloseInternal();
             }
+        }
+
+        private void CloseInternal()
+        {
+            var inputReceiver = InputManager.InputReceiver;
+            if(inputReceiver != null)
+            {
+                if(inputReceiver is GraphicalUiElement gue)
+                {
+                    if(gue.IsInParentChain(this.Visual))
+                    {
+                        InputManager.InputReceiver = null;
+                    }
+                }
+                else if(inputReceiver is FrameworkElement frameworkElement)
+                {
+                    if(frameworkElement.Visual?.IsInParentChain(this.Visual) == true)
+                    {
+                        InputManager.InputReceiver = null;
+                    }
+                }
+            }
+            Visual.RemoveFromManagers();
         }
 
         public void Show(FlatRedBall.Graphics.Layer frbLayer = null)
