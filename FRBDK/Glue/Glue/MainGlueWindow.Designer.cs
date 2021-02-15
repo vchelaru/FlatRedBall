@@ -31,27 +31,6 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainGlueWindow));
             this.mElementContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.addScreenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.newFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.existingFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.setAsStartUpScreenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openWithDEFAULTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addEntityToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.viewInExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.removeFromProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addVariableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addBehaviorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openBehaviorFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.importBehaviorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.editResetVariablesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ignoreDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.setCreatedClassToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.newBehaviorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.existingBehaviorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ElementImages = new System.Windows.Forms.ImageList(this.components);
             this.mMenu = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -149,164 +128,10 @@
             // 
             // mElementContextMenu
             // 
-            this.mElementContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addScreenToolStripMenuItem,
-            this.addFileToolStripMenuItem,
-            this.toolStripSeparator1,
-            this.setAsStartUpScreenToolStripMenuItem,
-            this.addObjectToolStripMenuItem,
-            this.openWithDEFAULTToolStripMenuItem,
-            this.addEntityToolStripMenuItem,
-            this.viewInExplorerToolStripMenuItem,
-            this.removeFromProjectToolStripMenuItem,
-            this.addVariableToolStripMenuItem,
-            this.addBehaviorToolStripMenuItem,
-            this.openBehaviorFolderToolStripMenuItem,
-            this.importBehaviorToolStripMenuItem,
-            this.editResetVariablesToolStripMenuItem,
-            this.addFolderToolStripMenuItem,
-            this.ignoreDirectoryToolStripMenuItem,
-            this.setCreatedClassToolStripMenuItem});
+            
             this.mElementContextMenu.Name = "mElementContextMenu";
             this.mElementContextMenu.Size = new System.Drawing.Size(187, 384);
             this.mElementContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
-            // 
-            // addScreenToolStripMenuItem
-            // 
-            this.addScreenToolStripMenuItem.Name = "addScreenToolStripMenuItem";
-            this.addScreenToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.addScreenToolStripMenuItem.Text = "Add Screen";
-            this.addScreenToolStripMenuItem.Click += new System.EventHandler(this.addScreenToolStripMenuItem_Click);
-            // 
-            // addFileToolStripMenuItem
-            // 
-            this.addFileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newFileToolStripMenuItem,
-            this.existingFileToolStripMenuItem});
-            this.addFileToolStripMenuItem.Name = "addFileToolStripMenuItem";
-            this.addFileToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.addFileToolStripMenuItem.Text = "Add File";
-            this.addFileToolStripMenuItem.Click += new System.EventHandler(this.addFileToolStripMenuItem_Click);
-            // 
-            // newFileToolStripMenuItem
-            // 
-            this.newFileToolStripMenuItem.Name = "newFileToolStripMenuItem";
-            this.newFileToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
-            this.newFileToolStripMenuItem.Text = "New File";
-            this.newFileToolStripMenuItem.Click += new System.EventHandler(this.newFileToolStripMenuItem_Click);
-            // 
-            // existingFileToolStripMenuItem
-            // 
-            this.existingFileToolStripMenuItem.Name = "existingFileToolStripMenuItem";
-            this.existingFileToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
-            this.existingFileToolStripMenuItem.Text = "Existing File";
-            this.existingFileToolStripMenuItem.Click += new System.EventHandler(this.existingFileToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(183, 6);
-            // 
-            // setAsStartUpScreenToolStripMenuItem
-            // 
-            this.setAsStartUpScreenToolStripMenuItem.Name = "setAsStartUpScreenToolStripMenuItem";
-            this.setAsStartUpScreenToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.setAsStartUpScreenToolStripMenuItem.Text = "Set as StartUp Screen";
-            this.setAsStartUpScreenToolStripMenuItem.Click += new System.EventHandler(this.setAsStartUpScreenToolStripMenuItem_Click);
-            // 
-            // addObjectToolStripMenuItem
-            // 
-            this.addObjectToolStripMenuItem.Name = "addObjectToolStripMenuItem";
-            this.addObjectToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.addObjectToolStripMenuItem.Text = "Add Object";
-            this.addObjectToolStripMenuItem.Click += new System.EventHandler(this.addObjectToolStripMenuItem_Click);
-            // 
-            // openWithDEFAULTToolStripMenuItem
-            // 
-            this.openWithDEFAULTToolStripMenuItem.Name = "openWithDEFAULTToolStripMenuItem";
-            this.openWithDEFAULTToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.openWithDEFAULTToolStripMenuItem.Text = "Open with...";
-            // 
-            // addEntityToolStripMenuItem
-            // 
-            this.addEntityToolStripMenuItem.Name = "addEntityToolStripMenuItem";
-            this.addEntityToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.addEntityToolStripMenuItem.Text = "Add Entity";
-            this.addEntityToolStripMenuItem.Click += new System.EventHandler(this.addEntityToolStripMenuItem_Click);
-            // 
-            // viewInExplorerToolStripMenuItem
-            // 
-            this.viewInExplorerToolStripMenuItem.Name = "viewInExplorerToolStripMenuItem";
-            this.viewInExplorerToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.viewInExplorerToolStripMenuItem.Text = "View in explorer";
-            this.viewInExplorerToolStripMenuItem.Click += new System.EventHandler(this.viewInExplorerToolStripMenuItem_Click);
-            // 
-            // removeFromProjectToolStripMenuItem
-            // 
-            this.removeFromProjectToolStripMenuItem.Name = "removeFromProjectToolStripMenuItem";
-            this.removeFromProjectToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.removeFromProjectToolStripMenuItem.Text = "Remove from project";
-            this.removeFromProjectToolStripMenuItem.Click += new System.EventHandler(this.removeFromProjectToolStripMenuItem_Click);
-            // 
-            // addVariableToolStripMenuItem
-            // 
-            this.addVariableToolStripMenuItem.Name = "addVariableToolStripMenuItem";
-            this.addVariableToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.addVariableToolStripMenuItem.Text = "Add Variable";
-            this.addVariableToolStripMenuItem.Click += new System.EventHandler(this.addVariableToolStripMenuItem_Click);
-            // 
-            // addBehaviorToolStripMenuItem
-            // 
-            this.addBehaviorToolStripMenuItem.Name = "addBehaviorToolStripMenuItem";
-            this.addBehaviorToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            // 
-            // openBehaviorFolderToolStripMenuItem
-            // 
-            this.openBehaviorFolderToolStripMenuItem.Name = "openBehaviorFolderToolStripMenuItem";
-            this.openBehaviorFolderToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            // 
-            // importBehaviorToolStripMenuItem
-            // 
-            this.importBehaviorToolStripMenuItem.Name = "importBehaviorToolStripMenuItem";
-            this.importBehaviorToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            // 
-            // editResetVariablesToolStripMenuItem
-            // 
-            this.editResetVariablesToolStripMenuItem.Name = "editResetVariablesToolStripMenuItem";
-            this.editResetVariablesToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.editResetVariablesToolStripMenuItem.Text = "Edit Reset Variables";
-            this.editResetVariablesToolStripMenuItem.Click += new System.EventHandler(this.editResetVariablesToolStripMenuItem_Click);
-            // 
-            // addFolderToolStripMenuItem
-            // 
-            this.addFolderToolStripMenuItem.Name = "addFolderToolStripMenuItem";
-            this.addFolderToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.addFolderToolStripMenuItem.Text = "Add Folder";
-            this.addFolderToolStripMenuItem.Click += new System.EventHandler(this.addFolderToolStripMenuItem_Click);
-            // 
-            // ignoreDirectoryToolStripMenuItem
-            // 
-            this.ignoreDirectoryToolStripMenuItem.Name = "ignoreDirectoryToolStripMenuItem";
-            this.ignoreDirectoryToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.ignoreDirectoryToolStripMenuItem.Text = "Ignore Directory";
-            this.ignoreDirectoryToolStripMenuItem.Click += new System.EventHandler(this.ignoreDirectoryToolStripMenuItem_Click);
-            // 
-            // setCreatedClassToolStripMenuItem
-            // 
-            this.setCreatedClassToolStripMenuItem.Name = "setCreatedClassToolStripMenuItem";
-            this.setCreatedClassToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.setCreatedClassToolStripMenuItem.Text = "Set Created Class";
-            this.setCreatedClassToolStripMenuItem.Click += new System.EventHandler(this.setCreatedClassToolStripMenuItem_Click);
-            // 
-            // newBehaviorToolStripMenuItem
-            // 
-            this.newBehaviorToolStripMenuItem.Name = "newBehaviorToolStripMenuItem";
-            this.newBehaviorToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
-            // 
-            // existingBehaviorToolStripMenuItem
-            // 
-            this.existingBehaviorToolStripMenuItem.Name = "existingBehaviorToolStripMenuItem";
-            this.existingBehaviorToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
             // 
             // ElementImages
             // 
@@ -1052,7 +877,6 @@
 		private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadProjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeProjectToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem projectToolStripMenuItem;
         internal System.Windows.Forms.TreeView ElementTreeView;
         private System.Windows.Forms.ToolStripMenuItem newProjectToolStripMenuItem;
@@ -1062,28 +886,9 @@
 		private System.Windows.Forms.ToolStripMenuItem fileAssociationsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem performanceSettingsToolStripMenuItem;
         internal System.Windows.Forms.ContextMenuStrip mElementContextMenu;
-        internal System.Windows.Forms.ToolStripMenuItem addScreenToolStripMenuItem;
-        internal System.Windows.Forms.ToolStripMenuItem addFileToolStripMenuItem;
-        internal System.Windows.Forms.ToolStripMenuItem newFileToolStripMenuItem;
-        internal System.Windows.Forms.ToolStripMenuItem existingFileToolStripMenuItem;
-        internal System.Windows.Forms.ToolStripMenuItem setAsStartUpScreenToolStripMenuItem;
-        internal System.Windows.Forms.ToolStripMenuItem addObjectToolStripMenuItem;
-        internal System.Windows.Forms.ToolStripMenuItem addEntityToolStripMenuItem;
-        internal System.Windows.Forms.ToolStripMenuItem removeFromProjectToolStripMenuItem;
-        internal System.Windows.Forms.ToolStripMenuItem viewInExplorerToolStripMenuItem;
-        internal System.Windows.Forms.ToolStripMenuItem openWithDEFAULTToolStripMenuItem;
-        internal System.Windows.Forms.ToolStripMenuItem addVariableToolStripMenuItem;
-        internal System.Windows.Forms.ToolStripMenuItem addBehaviorToolStripMenuItem;
-        internal System.Windows.Forms.ToolStripMenuItem newBehaviorToolStripMenuItem;
-        internal System.Windows.Forms.ToolStripMenuItem existingBehaviorToolStripMenuItem;
-        internal System.Windows.Forms.ToolStripMenuItem openBehaviorFolderToolStripMenuItem;
-        internal System.Windows.Forms.ToolStripMenuItem importBehaviorToolStripMenuItem;
-        internal System.Windows.Forms.ToolStripMenuItem editResetVariablesToolStripMenuItem;
-        internal System.Windows.Forms.ToolStripMenuItem addFolderToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem ignoreDirectoryToolStripMenuItem;
+
         private System.Windows.Forms.ToolTip ElementViewWindowToolTip;
         private System.Windows.Forms.ToolStripMenuItem updateToolStripMenuItem;
-        internal System.Windows.Forms.ToolStripMenuItem setCreatedClassToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem experimentalToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createActionScriptLoadingCodeToolStripMenuItem;
         public System.Windows.Forms.SplitContainer rightPanelContainer;

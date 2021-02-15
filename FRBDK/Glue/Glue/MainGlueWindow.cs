@@ -534,21 +534,6 @@ namespace Glue
 
         }
 
-        private void addScreenToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog();
-        }
-
-        private void addFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-            if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
-            {
-
-            }
-
-        }
-
         private void SaveSettings()
         {
             GlueSettingsSave save = ProjectManager.GlueSettingsSave;
@@ -586,17 +571,6 @@ namespace Glue
 
             save.Save();
         }
-
-        private void existingFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            AddExistingFileManager.Self.AddExistingFileClick();
-        }
-
-        private void newFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            GlueCommands.Self.DialogCommands.ShowAddNewFileDialog();
-        }
-
 
         private void mElementTreeView_DoubleClick(object sender, EventArgs e)
         {
@@ -695,29 +669,10 @@ namespace Glue
 
         }
 
-        private void setAsStartUpScreenToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (ElementTreeView.SelectedNode != null)
-            {
-                ElementViewWindow.StartUpScreen = ElementTreeView.SelectedNode;
-
-            }
-        }
-
         private void FileWatchTimer_Tick(object sender, EventArgs e)
         {
             if(ProjectManager.ProjectBase != null && !string.IsNullOrEmpty(ProjectManager.ProjectBase.FullFileName))
                 FileWatchManager.Flush();
-        }
-
-        private void addObjectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog();
-        }
-
-        private void addEntityToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            GlueCommands.Self.DialogCommands.ShowAddNewEntityDialog();
         }
 
         private async void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -736,12 +691,6 @@ namespace Glue
             CloseProject(true, true);
         }
 
-        private void removeFromProjectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            RightClickHelper.RemoveFromProjectToolStripMenuItem();
-
-        }
-
         private void richTextBox1_TextChanged(object sender, EventArgs e)
         {
 
@@ -752,17 +701,6 @@ namespace Glue
             ElementViewWindow.AfterSelect();
 
         }
-
-        private void viewInExplorerToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            RightClickHelper.ViewInExplorerClick();
-        }
-       
-        private void addVariableToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            GlueCommands.Self.DialogCommands.ShowAddNewVariableDialog();
-        }
-
 
         private void fileAssociationsToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -875,49 +813,9 @@ namespace Glue
             psw.ShowDialog(this);
         }
 
-        private void editResetVariablesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            
-            NamedObjectSave nos = EditorLogic.CurrentNamedObject;
-
-            VariablesToResetWindow vtrw = new VariablesToResetWindow(nos.VariablesToReset);
-            DialogResult result = vtrw.ShowDialog(this);
-
-            if (result == DialogResult.OK)
-            {
-
-                string[] results = vtrw.Results;
-                nos.VariablesToReset.Clear();
-
-                nos.VariablesToReset.AddRange(results);
-
-                for (int i = nos.VariablesToReset.Count - 1; i > -1 ; i--)
-                {
-                    nos.VariablesToReset[i] = nos.VariablesToReset[i].Replace("\n", "").Replace("\r", "");
-
-                    if (string.IsNullOrEmpty(nos.VariablesToReset[i]))
-                    {
-                        nos.VariablesToReset.RemoveAt(i);
-                    }
-                }
-                StringFunctions.RemoveDuplicates(nos.VariablesToReset);
-                GluxCommands.Self.SaveGlux();
-
-                ElementViewWindow.GenerateSelectedElementCode();
-
-
-            }
-
-        }
-
         private void Form1_Activated(object sender, EventArgs e)
         {
             int m = 3;
-        }
-
-        private void addFolderToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            RightClickHelper.AddFolderClick();
         }
 
         private void ElementTreeView_MouseDown(object sender, MouseEventArgs e)
@@ -958,26 +856,9 @@ namespace Glue
             }
         }
 
-        private void ignoreDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            RightClickHelper.IgnoreDirectoryClick();
-        }
-
         private void ElementTreeView_MouseHover(object sender, EventArgs e)
         {
 
-        }
-
-        private void setCreatedClassToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            CustomClassWindow ccw = new CustomClassWindow();
-
-            ccw.SelectFile(GlueState.Self.CurrentReferencedFileSave);
-
-            ccw.ShowDialog(this);
-
-            GlueCommands.Self.ProjectCommands.SaveProjects();
-            GluxCommands.Self.SaveGlux();
         }
 
         private void createActionScriptLoadingCodeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1630,6 +1511,11 @@ namespace Glue
             System.Diagnostics.Process.Start("https://github.com/vchelaru/flatredball/issues");
 
         }
+
+        #region Menu Strip
+
+
+        #endregion
 
     }
 }
