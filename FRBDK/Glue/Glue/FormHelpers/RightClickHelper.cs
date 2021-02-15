@@ -379,7 +379,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 if (FileManager.GetExtension(rfs.Name) == "csv" || rfs.TreatAsCsv)
                 {
                     menu.Items.Add("-");
-                    menu.Items.Add(form.setCreatedClassToolStripMenuItem);
+                    menu.Items.Add(setCreatedClassToolStripMenuItem);
                     menu.Items.Add(reGenerateCodeToolStripMenuItem);
                 }
 
