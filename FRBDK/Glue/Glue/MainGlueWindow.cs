@@ -66,7 +66,6 @@ namespace Glue
 
         public System.ComponentModel.IContainer Components => components;
 
-
         public System.Windows.Forms.PropertyGrid PropertyGrid;
 
         private int NumberOfStoredRecentFiles
@@ -74,8 +73,6 @@ namespace Glue
             get;
             set;
         }
-
-        //private string[] RecentFiles = new string[5];
 
         public MainGlueWindow()
         {
@@ -97,8 +94,6 @@ namespace Glue
 
         }
 
-
-
         public void Invoke(Action action)
         {
             this.Invoke((MethodInvoker)delegate
@@ -119,58 +114,10 @@ namespace Glue
 
         }
 
-        private async void loadProjectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
-            {
-                OpenFileDialog openFileDialog1 = new OpenFileDialog();
-
-                openFileDialog1.InitialDirectory = "c:\\";
-                openFileDialog1.Filter = "Project/Solution files (*.vcproj;*.csproj;*.sln)|*.vcproj;*.csproj;*.sln;";
-                openFileDialog1.FilterIndex = 2;
-                openFileDialog1.RestoreDirectory = true;
-
-                if (openFileDialog1.ShowDialog() == DialogResult.OK)
-                {
-                    string projectFileName = openFileDialog1.FileName;
-
-                    if(FileManager.GetExtension(projectFileName) == "sln")
-                    {
-                        var solution = VSSolution.FromFile(projectFileName);
-
-                        string solutionName = projectFileName;
-
-                        projectFileName = solution.ReferencedProjects.FirstOrDefault(item=>
-                        {
-                            var isRegularProject = FileManager.GetExtension(item) == "csproj" || FileManager.GetExtension(item) == "vsproj";
-
-                            bool hasSameName = FileManager.RemovePath(FileManager.RemoveExtension(solutionName)).ToLowerInvariant() ==
-                                FileManager.RemovePath(FileManager.RemoveExtension(item)).ToLowerInvariant();
-
-
-                            return isRegularProject && hasSameName;
-                        });
-
-                        projectFileName = FileManager.GetDirectory(solutionName) + projectFileName;
-                    }
-
-                    await GlueCommands.Self.LoadProjectAsync(projectFileName);
-
-                    SaveSettings();
-                }
-            }
-        }
-
         public async Task LoadProject(string projectFileName, InitializationWindow initializationWindow)
         {
             await ProjectLoader.Self.LoadProject(projectFileName, initializationWindow);
         }
-
-        private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            GlueCommands.Self.ProjectCommands.CreateNewProject();
-        }
-
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -534,7 +481,7 @@ namespace Glue
 
         }
 
-        private void SaveSettings()
+        private void UpdateGlueSettings()
         {
             GlueSettingsSave save = ProjectManager.GlueSettingsSave;
 
@@ -569,7 +516,7 @@ namespace Glue
             save.MainSplitterDistance = this.rightPanelContainer.SplitterDistance;
             save.StoredRecentFiles = this.NumberOfStoredRecentFiles;
 
-            save.Save();
+            GlueCommands.Self.GluxCommands.SaveSettings();
         }
 
         private void mElementTreeView_DoubleClick(object sender, EventArgs e)
@@ -588,12 +535,6 @@ namespace Glue
             {
                 ElementViewWindow.ElementDoubleClicked();
             }
-        }
-
-
-        private void closeProjectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            CloseProject(true, false);
         }
 
         public static void CloseProject(bool shouldSave, bool isExiting)
@@ -630,7 +571,7 @@ namespace Glue
                 if (ProjectManager.ProjectBase != null && !string.IsNullOrEmpty(ProjectManager.ProjectBase.FullFileName))
                 {
                     GlueCommands.Self.ProjectCommands.SaveProjectsImmediately();
-                    Self.SaveSettings();
+                    Self.UpdateGlueSettings();
                 }
             }
 
@@ -702,13 +643,6 @@ namespace Glue
 
         }
 
-        private void fileAssociationsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            FileAssociationWindow faw = new FileAssociationWindow();
-            faw.ShowDialog(this);
-
-        }
-       
         private void ElementTreeView_KeyPress(object sender, KeyPressEventArgs e)
         {
             // copy, paste, ctrl c, ctrl v, ctrl + c, ctrl + v, ctrl+c, ctrl+v
@@ -805,14 +739,6 @@ namespace Glue
 
         }
 
-
-
-        private void performanceSettingsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            PerformanceSettingsWindow psw = new PerformanceSettingsWindow();
-            psw.ShowDialog(this);
-        }
-
         private void Form1_Activated(object sender, EventArgs e)
         {
             int m = 3;
@@ -861,192 +787,11 @@ namespace Glue
 
         }
 
-        private void createActionScriptLoadingCodeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
-            {
-                OpenFileDialog openFileDialog1 = new OpenFileDialog();
-
-                openFileDialog1.InitialDirectory = "c:\\";
-                openFileDialog1.Filter = "All Files (*.*)|*.*";
-                openFileDialog1.RestoreDirectory = true;
-
-                if (openFileDialog1.ShowDialog() == DialogResult.OK)
-                {
-                    
-                    string fileName = openFileDialog1.FileName;
-
-
-                    // Let's get the relative directory
-                    string directory = FileManager.GetDirectory(fileName);
-
-                    if (!directory.Contains("/Content/"))
-                    {
-                        System.Windows.Forms.MessageBox.Show("Couldn't find the Content directory.  Glue assumes that the file you are loading sits in Content or a subdirectory of a Content folder.");
-                    }
-                    else
-                    {
-
-                        while (!directory.EndsWith("/Content/"))
-                        {
-                            directory = FileManager.GetDirectory(directory);
-                        }
-
-
-                        List<string> allFiles = FileReferenceManager.Self.GetFilesReferencedBy(fileName, TopLevelOrRecursive.Recursive);
-
-                        allFiles.Insert(0,FileManager.Standardize(fileName));
-
-
-                        StringBuilder outputString = new StringBuilder();
-
-                        outputString.AppendLine("// Fields");
-                        outputString.AppendLine();
-
-
-                        foreach (string file in allFiles)
-                        {
-                            string modifiedFile = FileManager.MakeRelative(file, directory);
-
-                            string memberName = FileManager.RemoveExtension(modifiedFile).Replace("/", "");
-
-                            modifiedFile = "./Content/" + modifiedFile;
-
-                            //[Embed(source="./Content/Entities/FlyingPet/Purple/FlyingAnimations.achx",mimeType="application/octet-stream")]
-                            string mimeString = "";
-
-                            if (file.EndsWith(".achx"))
-                            {
-                                mimeString = ",mimeType=\"application/octet-stream\"";
-                            }
-
-                            string firstLine = string.Format("[Embed(source=\"{0}\"{1})]", modifiedFile, mimeString);
-
-
-
-                            string secondLine = string.Format("public var {0}:Class;", memberName);
-
-                            outputString.AppendLine(firstLine);
-                            outputString.AppendLine(secondLine);
-                        }
-
-                        outputString.AppendLine();
-
-                        foreach (string file in allFiles)
-                        {
-                            string modifiedFile = FileManager.MakeRelative(file, directory);
-
-                            string memberName = FileManager.RemoveExtension(modifiedFile).Replace("/", "");
-
-                            modifiedFile = "./Content/" + modifiedFile;
-
-                            string line = string.Format("Resources[\"{0}\"] = {1};", modifiedFile, memberName);
-
-                            outputString.AppendLine(line);
-                        }
-
-                        FileManager.SaveText(outputString.ToString(), FileManager.GetDirectory(fileName) + "Output.txt");
-                    }
-                }
-            }
-        }
-        
         protected override void OnSizeChanged(EventArgs e)
         {
             base.OnSizeChanged(e);
         }
         
-        private void fileBuildToolsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            FileBuildToolAssociationWindow fbtaw = new FileBuildToolAssociationWindow(BuildToolAssociationManager.Self.ProjectSpecificBuildTools.BuildToolList);
-            fbtaw.Show(this);
-        }
-
-        private void errorCheckToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            RightClickHelper.ErrorCheckClick();
-        }
-
-        private void cleanAllscnxFilesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            foreach (ScreenSave screenSave in ProjectManager.GlueProjectSave.Screens)
-            {
-                foreach (ReferencedFileSave rfs in screenSave.ReferencedFiles)
-                {
-                    string fullFileName = FileManager.MakeAbsolute(rfs.Name);
-
-                    if (FileManager.GetExtension(fullFileName) == "scnx")
-                    {
-                        ScnxCleaner.Clean(fullFileName);
-                    }
-                }
-            }
-
-            foreach (EntitySave entitySave in ProjectManager.GlueProjectSave.Entities)
-            {
-                foreach (ReferencedFileSave rfs in entitySave.ReferencedFiles)
-                {
-                    string fullFileName = FileManager.MakeAbsolute(rfs.Name);
-
-                    if (FileManager.GetExtension(fullFileName) == "scnx")
-                    {
-                        ScnxCleaner.Clean(fullFileName);
-                    }
-                }
-            }
-            foreach (ReferencedFileSave rfs in ProjectManager.GlueProjectSave.GlobalFiles)
-            {
-                string fullFileName = FileManager.MakeAbsolute(rfs.Name);
-
-                if (FileManager.GetExtension(fullFileName) == "scnx")
-                {
-                    ScnxCleaner.Clean(fullFileName);
-                }
-            }
-
-            MessageBox.Show("All done cleaning!");
-        }
-
-        private void cleanAllemixFilesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            foreach (ScreenSave screenSave in ProjectManager.GlueProjectSave.Screens)
-            {
-                foreach (ReferencedFileSave rfs in screenSave.ReferencedFiles)
-                {
-                    string fullFileName = FileManager.MakeAbsolute(rfs.Name);
-
-                    if (FileManager.GetExtension(fullFileName) == "emix")
-                    {
-                        EmixCleaner.Clean(fullFileName);
-                    }
-                }
-            }
-
-            foreach (EntitySave entitySave in ProjectManager.GlueProjectSave.Entities)
-            {
-                foreach (ReferencedFileSave rfs in entitySave.ReferencedFiles)
-                {
-                    string fullFileName = FileManager.MakeAbsolute(rfs.Name);
-
-                    if (FileManager.GetExtension(fullFileName) == "emix")
-                    {
-                        EmixCleaner.Clean(fullFileName);
-                    }
-                }
-            }
-            foreach (ReferencedFileSave rfs in ProjectManager.GlueProjectSave.GlobalFiles)
-            {
-                string fullFileName = FileManager.MakeAbsolute(rfs.Name);
-
-                if (FileManager.GetExtension(fullFileName) == "emix")
-                {
-                    EmixCleaner.Clean(fullFileName);
-                }
-            }
-
-            MessageBox.Show("All done cleaning!");
-        }
-
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             SearchBarHelper.SearchBarTextChange();
@@ -1064,11 +809,6 @@ namespace Glue
             SearchBarHelper.TextBoxKeyDown(e);
         }
 
-        private void launchGlueViewToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if(HotkeyManager.Self.TryHandleKeys(keyData))
@@ -1079,95 +819,6 @@ namespace Glue
             {
                 return base.ProcessCmdKey(ref msg, keyData);
             }
-        }
-
-        private void connectToGlueViewToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void getCharacterListInFilesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            CharacterListCreationWindow characterListCreationWindow = new CharacterListCreationWindow();
-            characterListCreationWindow.Show(this);
-        }
-
-        private void findFileReferencesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            TextInputWindow tiw = new TextInputWindow();
-
-            tiw.DisplayText = "Enter the file name with extension, but no path (for example \"myfile.png\")";
-
-            
-
-            if (tiw.ShowDialog(MainGlueWindow.Self) == DialogResult.OK)
-            {
-                List<ReferencedFileSave> matchingReferencedFileSaves = new List<ReferencedFileSave>();
-                List<string> matchingRegularFiles = new List<string>();
-
-                string result = tiw.Result.ToLower();
-                
-                List<ReferencedFileSave> allReferencedFiles = ObjectFinder.Self.GetAllReferencedFiles();
-
-                foreach (ReferencedFileSave rfs in allReferencedFiles)
-                {
-                    if (FileManager.RemovePath(rfs.Name.ToLower()) == result)
-                    {
-                        matchingReferencedFileSaves.Add(rfs);
-                    }
-                    
-                    string absoluteFileName = ProjectManager.MakeAbsolute(rfs.Name);
-
-                    if (File.Exists(absoluteFileName))
-                    {
-                        List<string> referencedFiles = null;
-
-                        try
-                        {
-                            referencedFiles = FileReferenceManager.Self.GetFilesReferencedBy(absoluteFileName, TopLevelOrRecursive.Recursive);
-                        }
-                        catch (FileNotFoundException fnfe)
-                        {
-                            ErrorReporter.ReportError(absoluteFileName, "Trying to find file references, but could not find contained file " + fnfe.FileName, true);
-                        }
-
-                        if (referencedFiles != null)
-                        {
-                            foreach (string referencedFile in referencedFiles)
-                            {
-                                if (result == FileManager.RemovePath(referencedFile).ToLower())
-                                {
-                                    matchingRegularFiles.Add(referencedFile + " in " + rfs.ToString() + "\n");
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (matchingReferencedFileSaves.Count == 0 && matchingRegularFiles.Count == 0)
-                {
-                    MessageBox.Show("There are no files referencing " + result, "No files found");
-                }
-                else
-                {
-                    string message = "Found the following:\n\n";
-
-                    foreach (string s in matchingRegularFiles)
-                    {
-                        message += s + "\n";
-                    }
-
-                    foreach (ReferencedFileSave rfs in matchingReferencedFileSaves)
-                    {
-                        message += rfs.ToString() + "\n";
-                    }
-                    MessageBox.Show(message, "Files found");
-                }
-
-                
-
-            }
-
         }
 
         private void ElementTreeView_KeyDown(object sender, KeyEventArgs e)
@@ -1187,59 +838,6 @@ namespace Glue
                 e.Handled = true;
             }
         }
-
-        private void customGameClassToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (ProjectManager.GlueProjectSave == null)
-            {
-                MessageBox.Show("There is no loaded Glue project");
-            }
-            else
-            {
-                TextInputWindow tiw = new TextInputWindow();
-                tiw.DisplayText = "Enter the custom class name.  Delete the contents to not use a custom class.";
-                tiw.Result = ProjectManager.GlueProjectSave.CustomGameClass;
-
-                DialogResult result = tiw.ShowDialog();
-
-
-                if (result == System.Windows.Forms.DialogResult.OK)
-                {
-                    ProjectManager.GlueProjectSave.CustomGameClass = tiw.Result;
-                    GluxCommands.Self.SaveGlux();
-
-                    ProjectManager.FindGameClass();
-
-                    if (string.IsNullOrEmpty(ProjectManager.GameClassFileName))
-                    {
-                        MessageBox.Show("Couldn't find the game class.");
-                    }
-                    else
-                    {
-                        MessageBox.Show("Game class found:\n\n" + ProjectManager.GameClassFileName);
-                    }
-                }
-            }
-
-        }
-
-        void programPanel_ProcessLoaded(EmbeddedProgramPanel obj)
-        {
-            MainTabControl.TabPages["Tab" + obj.Id()].Text = "   " + obj.Title() + "    ";
-        }
-
-        private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            PreferencesWindow window = new PreferencesWindow();
-            window.Show();
-        }
-
-        private void addProcessAsTabToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ProcessesWindow window = new ProcessesWindow();
-            window.Show();
-        }
-
 
         private void ControlAddedToRightView(object sender, ControlEventArgs e)
         {
@@ -1303,12 +901,6 @@ namespace Glue
 
         }
 
-        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            AboutBox1 aboutBox = new AboutBox1();
-            aboutBox.Show();
-        }
-
         private void MsProcessesItemAdded(object sender, ToolStripItemEventArgs e)
         {
             if (msProcesses.Items.Count > 0)
@@ -1335,125 +927,6 @@ namespace Glue
         {
 
         }
-
-        //private void exportScreensAndEntitiesToolStripMenuItem_Click(object sender, EventArgs e)
-        //{
-        //    ElementExporter.ShowExportMultipleElementsListBox();
-        //}
-
-        private void installPluginToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            new InstallPluginWindow().Show(this);
-        }
-
-        private void createPluginToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            new CreatePluginWindow().Show(this);
-        }
-
-        private void uninstallPluginToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            new UninstallPluginWindow().Show(this);
-        }
-        
-        private void ViewAdditionalContentTypes(GlobalOrProjectSpecific globalOrProjectSpecific)
-        {
-            string whatToView;
-            if (globalOrProjectSpecific == GlobalOrProjectSpecific.Global)
-            {
-                whatToView = AvailableAssetTypes.Self.GlobalCustomContentTypesFolder;
-            }
-            else
-            {
-                whatToView = AvailableAssetTypes.Self.ProjectSpecificContentTypesFolder;
-                // only do this if viewing project specific, as Glue probably can't access the folder where projects are shown
-                Directory.CreateDirectory(whatToView);
-            }
-
-            if(System.IO.Directory.Exists(whatToView))
-            {
-                Process.Start(whatToView);
-            }
-            else
-            {
-                MessageBox.Show("Could not open " + whatToView);
-            }
-        }
-
-
-        private void newContentCSVToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            TextInputWindow tiw = new TextInputWindow();
-            tiw.DisplayText = "Enter new CSV name";
-
-            ComboBox comboBox = new ComboBox();
-
-            // project-specific CSVs are always named ProjectSpecificContent.csv
-            //const string allProjects = "For all projects";
-            //const string thisProjectOnly = "For this project only";
-
-            //comboBox.Items.Add(allProjects);
-            //comboBox.Text = allProjects;
-            //comboBox.Items.Add(thisProjectOnly);
-            //comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            //comboBox.Width = 136;
-            //tiw.AddControl(comboBox);
-
-            DialogResult result = tiw.ShowDialog();
-
-            // CSVs can be added to be project-specific or shared across all projects (installed to a centralized location)
-
-            if (result == System.Windows.Forms.DialogResult.OK)
-            {
-                string textResult = tiw.Result;
-                if (textResult.ToLower().EndsWith(".csv"))
-                {
-                    textResult = FileManager.RemoveExtension(textResult);
-                }
-
-                GlobalOrProjectSpecific globalOrProjectSpecific;
-
-                //if (comboBox.SelectedItem == allProjects)
-                //{
-                    globalOrProjectSpecific = GlobalOrProjectSpecific.Global;
-                //}
-                //else
-                //{
-                //    globalOrProjectSpecific = GlobalOrProjectSpecific.ProjectSpecific;
-                //}
-
-                AvailableAssetTypes.Self.CreateAdditionalCsvFile(tiw.Result, globalOrProjectSpecific);
-
-                ViewAdditionalContentTypes(globalOrProjectSpecific);
-            }
-        }
-
-        private void exportToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            GroupExportForm groupExportForm = new GroupExportForm();
-            DialogResult result = groupExportForm.ShowDialog();
-
-            if (result == System.Windows.Forms.DialogResult.OK)
-            {
-                ElementExporter.ExportGroup(groupExportForm.SelectedElements);
-            }
-        }
-
-        private void importGroupToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ElementImporter.AskAndImportGroup();
-        }
-
-        private void forAllProjectsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            this.ViewAdditionalContentTypes(GlobalOrProjectSpecific.Global);
-        }
-
-        private void forThisProjectOnlyToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            this.ViewAdditionalContentTypes(GlobalOrProjectSpecific.ProjectSpecific);
-        }
-
 
         private void ElementTreeView_BeforeSelect(object sender, TreeViewCancelEventArgs e)
         {
@@ -1487,35 +960,5 @@ namespace Glue
         {
             TreeNodeStackManager.Self.GoForward();
         }
-
-        private void viewNewFileTemplateFolderToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            string directory = FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles.NewFilePlugin.CustomFileTemplateFolder;
-
-            System.Diagnostics.Process.Start(directory);
-        }
-
-        private void helpToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            System.Diagnostics.Process.Start("http://flatredball.com/documentation/tools/glue-reference/");
-        }
-
-        private void tutorialsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            System.Diagnostics.Process.Start("http://flatredball.com/documentation/tutorials/");
-            
-        }
-
-        private void reportABugToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            System.Diagnostics.Process.Start("https://github.com/vchelaru/flatredball/issues");
-
-        }
-
-        #region Menu Strip
-
-
-        #endregion
-
     }
 }

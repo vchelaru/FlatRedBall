@@ -18,11 +18,59 @@ using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Glue.FormHelpers.StringConverters;
 using GlueFormsCore.ViewModels;
 using GlueFormsCore.Controls;
+using FlatRedBall.Glue.VSHelpers;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
     class DialogCommands : IDialogCommands
     {
+        #region Project
+
+        public async void ShowLoadProjectDialog()
+        {
+            if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
+            {
+                OpenFileDialog openFileDialog1 = new OpenFileDialog();
+
+                openFileDialog1.InitialDirectory = "c:\\";
+                openFileDialog1.Filter = "Project/Solution files (*.vcproj;*.csproj;*.sln)|*.vcproj;*.csproj;*.sln;";
+                openFileDialog1.FilterIndex = 2;
+                openFileDialog1.RestoreDirectory = true;
+
+                if (openFileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    string projectFileName = openFileDialog1.FileName;
+
+                    if (FileManager.GetExtension(projectFileName) == "sln")
+                    {
+                        var solution = VSSolution.FromFile(projectFileName);
+
+                        string solutionName = projectFileName;
+
+                        projectFileName = solution.ReferencedProjects.FirstOrDefault(item =>
+                        {
+                            var isRegularProject = FileManager.GetExtension(item) == "csproj" || FileManager.GetExtension(item) == "vsproj";
+
+                            bool hasSameName = FileManager.RemovePath(FileManager.RemoveExtension(solutionName)).ToLowerInvariant() ==
+                                FileManager.RemovePath(FileManager.RemoveExtension(item)).ToLowerInvariant();
+
+
+                            return isRegularProject && hasSameName;
+                        });
+
+                        projectFileName = FileManager.GetDirectory(solutionName) + projectFileName;
+                    }
+
+                    await GlueCommands.Self.LoadProjectAsync(projectFileName);
+
+                    // not sure why we need to do this....
+                    //SaveSettings();
+                }
+            }
+        }
+
+        #endregion
+
         #region NamedObjectSave
 
         public NamedObjectSave ShowAddNewObjectDialog(AddObjectViewModel addObjectViewModel = null)

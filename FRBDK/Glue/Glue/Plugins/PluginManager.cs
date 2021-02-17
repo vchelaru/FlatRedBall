@@ -31,6 +31,7 @@ using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Content.Instructions;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -180,13 +181,33 @@ namespace FlatRedBall.Glue.Plugins
                     StartupPlugin(plugin);
             }
 
-            foreach (var plugin in ImportedPlugins)
+            var embedded = ImportedPlugins
+                .Where(item => item is EmbeddedPlugin)
+                .Select(item => item as EmbeddedPlugin);
+            var sortedEmbedded = embedded
+                .OrderBy(item => item.DesiredOrder)
+                .ToArray();
+            foreach (var plugin in sortedEmbedded)
             {
                 StartupPlugin(plugin);
 
                 // did it fail?
                 var container = mPluginContainers[plugin];
                 if(container.FailureException != null)
+                {
+                    PluginManager.ReceiveError(container.FailureException.ToString());
+
+                }
+            }
+
+            var normal = ImportedPlugins.Except(embedded);
+            foreach (var plugin in normal)
+            {
+                StartupPlugin(plugin);
+
+                // did it fail?
+                var container = mPluginContainers[plugin];
+                if (container.FailureException != null)
                 {
                     PluginManager.ReceiveError(container.FailureException.ToString());
 

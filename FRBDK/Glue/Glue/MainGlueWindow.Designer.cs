@@ -33,51 +33,6 @@
             this.mElementContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ElementImages = new System.Windows.Forms.ImageList(this.components);
             this.mMenu = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.newProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.closeProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.findFileReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.projectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.errorCheckToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.importGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.contentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.viewAdditionalContentTypesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.viewAdditionalContentTypesToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.forAllProjectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.forThisProjectOnlyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.newContentCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.viewNewFileTemplateFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
-            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.fileAssociationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.fileBuildToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.performanceSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
-            this.customGameClassToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.updateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pluginsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.installPluginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.uninstallPluginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.createPluginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
-            this.experimentalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.createActionScriptLoadingCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.cleanAllscnxFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.cleanAllemixFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.getCharacterListInFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addProcessAsTabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
-            this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.tutorialsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.reportABugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportScreensAndEntitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ElementViewWindowToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.NavigateForwardButton = new System.Windows.Forms.Button();
             this.NavigateBackButton = new System.Windows.Forms.Button();
@@ -160,361 +115,11 @@
             // 
             // mMenu
             // 
-            this.mMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.editToolStripMenuItem,
-            this.projectToolStripMenuItem,
-            this.contentToolStripMenuItem,
-            this.settingsToolStripMenuItem,
-            this.updateToolStripMenuItem,
-            this.pluginsToolStripMenuItem,
-            this.experimentalToolStripMenuItem,
-            this.helpToolStripMenuItem});
             this.mMenu.Location = new System.Drawing.Point(0, 0);
             this.mMenu.Name = "mMenu";
             this.mMenu.Size = new System.Drawing.Size(764, 24);
             this.mMenu.TabIndex = 1;
             this.mMenu.Text = "menuStrip1";
-            // 
-            // fileToolStripMenuItem
-            // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newProjectToolStripMenuItem,
-            this.loadProjectToolStripMenuItem,
-            this.closeProjectToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "File";
-            // 
-            // newProjectToolStripMenuItem
-            // 
-            this.newProjectToolStripMenuItem.Name = "newProjectToolStripMenuItem";
-            this.newProjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.newProjectToolStripMenuItem.Text = "New Project";
-            this.newProjectToolStripMenuItem.Click += new System.EventHandler(this.newProjectToolStripMenuItem_Click);
-            // 
-            // loadProjectToolStripMenuItem
-            // 
-            this.loadProjectToolStripMenuItem.Name = "loadProjectToolStripMenuItem";
-            this.loadProjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.loadProjectToolStripMenuItem.Text = "Load Project...";
-            this.loadProjectToolStripMenuItem.Click += new System.EventHandler(this.loadProjectToolStripMenuItem_Click);
-            // 
-            // closeProjectToolStripMenuItem
-            // 
-            this.closeProjectToolStripMenuItem.Name = "closeProjectToolStripMenuItem";
-            this.closeProjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.closeProjectToolStripMenuItem.Text = "Close Project";
-            this.closeProjectToolStripMenuItem.Click += new System.EventHandler(this.closeProjectToolStripMenuItem_Click);
-            // 
-            // editToolStripMenuItem
-            // 
-            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.findFileReferencesToolStripMenuItem});
-            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
-            this.editToolStripMenuItem.Text = "Edit";
-            // 
-            // findFileReferencesToolStripMenuItem
-            // 
-            this.findFileReferencesToolStripMenuItem.Name = "findFileReferencesToolStripMenuItem";
-            this.findFileReferencesToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.findFileReferencesToolStripMenuItem.Text = "Find file references...";
-            this.findFileReferencesToolStripMenuItem.Click += new System.EventHandler(this.findFileReferencesToolStripMenuItem_Click);
-            // 
-            // projectToolStripMenuItem
-            // 
-            this.projectToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.errorCheckToolStripMenuItem,
-            this.toolStripSeparator3,
-            this.exportToolStripMenuItem,
-            this.importGroupToolStripMenuItem});
-            this.projectToolStripMenuItem.Name = "projectToolStripMenuItem";
-            this.projectToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
-            this.projectToolStripMenuItem.Text = "Project";
-            // 
-            // errorCheckToolStripMenuItem
-            // 
-            this.errorCheckToolStripMenuItem.Name = "errorCheckToolStripMenuItem";
-            this.errorCheckToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.errorCheckToolStripMenuItem.Text = "Error Check";
-            this.errorCheckToolStripMenuItem.Click += new System.EventHandler(this.errorCheckToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(152, 6);
-            // 
-            // exportToolStripMenuItem
-            // 
-            this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.exportToolStripMenuItem.Text = "Export Group...";
-            this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
-            // 
-            // importGroupToolStripMenuItem
-            // 
-            this.importGroupToolStripMenuItem.Name = "importGroupToolStripMenuItem";
-            this.importGroupToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.importGroupToolStripMenuItem.Text = "Import Group...";
-            this.importGroupToolStripMenuItem.Click += new System.EventHandler(this.importGroupToolStripMenuItem_Click);
-            // 
-            // contentToolStripMenuItem
-            // 
-            this.contentToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.viewAdditionalContentTypesToolStripMenuItem,
-            this.toolStripSeparator8});
-            this.contentToolStripMenuItem.Name = "contentToolStripMenuItem";
-            this.contentToolStripMenuItem.Size = new System.Drawing.Size(62, 20);
-            this.contentToolStripMenuItem.Text = "Content";
-            // 
-            // viewAdditionalContentTypesToolStripMenuItem
-            // 
-            this.viewAdditionalContentTypesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.viewAdditionalContentTypesToolStripMenuItem1,
-            this.newContentCSVToolStripMenuItem,
-            this.viewNewFileTemplateFolderToolStripMenuItem});
-            this.viewAdditionalContentTypesToolStripMenuItem.Name = "viewAdditionalContentTypesToolStripMenuItem";
-            this.viewAdditionalContentTypesToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
-            this.viewAdditionalContentTypesToolStripMenuItem.Text = "Additional Content";
-            // 
-            // viewAdditionalContentTypesToolStripMenuItem1
-            // 
-            this.viewAdditionalContentTypesToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.forAllProjectsToolStripMenuItem,
-            this.forThisProjectOnlyToolStripMenuItem});
-            this.viewAdditionalContentTypesToolStripMenuItem1.Name = "viewAdditionalContentTypesToolStripMenuItem1";
-            this.viewAdditionalContentTypesToolStripMenuItem1.Size = new System.Drawing.Size(236, 22);
-            this.viewAdditionalContentTypesToolStripMenuItem1.Text = "View Additional Content Types";
-            // 
-            // forAllProjectsToolStripMenuItem
-            // 
-            this.forAllProjectsToolStripMenuItem.Name = "forAllProjectsToolStripMenuItem";
-            this.forAllProjectsToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.forAllProjectsToolStripMenuItem.Text = "For All Projects";
-            this.forAllProjectsToolStripMenuItem.Click += new System.EventHandler(this.forAllProjectsToolStripMenuItem_Click);
-            // 
-            // forThisProjectOnlyToolStripMenuItem
-            // 
-            this.forThisProjectOnlyToolStripMenuItem.Name = "forThisProjectOnlyToolStripMenuItem";
-            this.forThisProjectOnlyToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.forThisProjectOnlyToolStripMenuItem.Text = "For This Project Only";
-            this.forThisProjectOnlyToolStripMenuItem.Click += new System.EventHandler(this.forThisProjectOnlyToolStripMenuItem_Click);
-            // 
-            // newContentCSVToolStripMenuItem
-            // 
-            this.newContentCSVToolStripMenuItem.Name = "newContentCSVToolStripMenuItem";
-            this.newContentCSVToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
-            this.newContentCSVToolStripMenuItem.Text = "New Content CSV...";
-            this.newContentCSVToolStripMenuItem.Click += new System.EventHandler(this.newContentCSVToolStripMenuItem_Click);
-            // 
-            // viewNewFileTemplateFolderToolStripMenuItem
-            // 
-            this.viewNewFileTemplateFolderToolStripMenuItem.Name = "viewNewFileTemplateFolderToolStripMenuItem";
-            this.viewNewFileTemplateFolderToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
-            this.viewNewFileTemplateFolderToolStripMenuItem.Text = "View New File Template Folder";
-            this.viewNewFileTemplateFolderToolStripMenuItem.Click += new System.EventHandler(this.viewNewFileTemplateFolderToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator8
-            // 
-            this.toolStripSeparator8.Name = "toolStripSeparator8";
-            this.toolStripSeparator8.Size = new System.Drawing.Size(172, 6);
-            // 
-            // settingsToolStripMenuItem
-            // 
-            this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileAssociationsToolStripMenuItem,
-            this.fileBuildToolsToolStripMenuItem,
-            this.performanceSettingsToolStripMenuItem,
-            this.preferencesToolStripMenuItem,
-            this.toolStripSeparator5,
-            this.customGameClassToolStripMenuItem});
-            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
-            this.settingsToolStripMenuItem.Text = "Settings";
-            // 
-            // fileAssociationsToolStripMenuItem
-            // 
-            this.fileAssociationsToolStripMenuItem.Name = "fileAssociationsToolStripMenuItem";
-            this.fileAssociationsToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.fileAssociationsToolStripMenuItem.Text = "File Associations";
-            this.fileAssociationsToolStripMenuItem.Click += new System.EventHandler(this.fileAssociationsToolStripMenuItem_Click);
-            // 
-            // fileBuildToolsToolStripMenuItem
-            // 
-            this.fileBuildToolsToolStripMenuItem.Name = "fileBuildToolsToolStripMenuItem";
-            this.fileBuildToolsToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.fileBuildToolsToolStripMenuItem.Text = "File Build Tools";
-            this.fileBuildToolsToolStripMenuItem.Click += new System.EventHandler(this.fileBuildToolsToolStripMenuItem_Click);
-            // 
-            // performanceSettingsToolStripMenuItem
-            // 
-            this.performanceSettingsToolStripMenuItem.Name = "performanceSettingsToolStripMenuItem";
-            this.performanceSettingsToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.performanceSettingsToolStripMenuItem.Text = "Performance Settings";
-            this.performanceSettingsToolStripMenuItem.Click += new System.EventHandler(this.performanceSettingsToolStripMenuItem_Click);
-            // 
-            // preferencesToolStripMenuItem
-            // 
-            this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
-            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.preferencesToolStripMenuItem.Text = "Preferences";
-            this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator5
-            // 
-            this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(184, 6);
-            // 
-            // customGameClassToolStripMenuItem
-            // 
-            this.customGameClassToolStripMenuItem.Name = "customGameClassToolStripMenuItem";
-            this.customGameClassToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.customGameClassToolStripMenuItem.Text = "Custom Game Class";
-            this.customGameClassToolStripMenuItem.Click += new System.EventHandler(this.customGameClassToolStripMenuItem_Click);
-            // 
-            // updateToolStripMenuItem
-            // 
-            this.updateToolStripMenuItem.Name = "updateToolStripMenuItem";
-            this.updateToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
-            this.updateToolStripMenuItem.Text = "Update";
-            // 
-            // pluginsToolStripMenuItem
-            // 
-            this.pluginsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.installPluginToolStripMenuItem,
-            this.uninstallPluginToolStripMenuItem,
-            this.createPluginToolStripMenuItem,
-            this.toolStripSeparator7});
-            this.pluginsToolStripMenuItem.Name = "pluginsToolStripMenuItem";
-            this.pluginsToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
-            this.pluginsToolStripMenuItem.Text = "Plugins";
-            // 
-            // installPluginToolStripMenuItem
-            // 
-            this.installPluginToolStripMenuItem.Name = "installPluginToolStripMenuItem";
-            this.installPluginToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-            this.installPluginToolStripMenuItem.Text = "Install Plugin";
-            this.installPluginToolStripMenuItem.Click += new System.EventHandler(this.installPluginToolStripMenuItem_Click);
-            // 
-            // uninstallPluginToolStripMenuItem
-            // 
-            this.uninstallPluginToolStripMenuItem.Name = "uninstallPluginToolStripMenuItem";
-            this.uninstallPluginToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-            this.uninstallPluginToolStripMenuItem.Text = "Uninstall Plugin";
-            this.uninstallPluginToolStripMenuItem.Click += new System.EventHandler(this.uninstallPluginToolStripMenuItem_Click);
-            // 
-            // createPluginToolStripMenuItem
-            // 
-            this.createPluginToolStripMenuItem.Name = "createPluginToolStripMenuItem";
-            this.createPluginToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-            this.createPluginToolStripMenuItem.Text = "Create Plugin";
-            this.createPluginToolStripMenuItem.Click += new System.EventHandler(this.createPluginToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator7
-            // 
-            this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(154, 6);
-            // 
-            // experimentalToolStripMenuItem
-            // 
-            this.experimentalToolStripMenuItem.Checked = true;
-            this.experimentalToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.experimentalToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.createActionScriptLoadingCodeToolStripMenuItem,
-            this.cleanAllscnxFilesToolStripMenuItem,
-            this.cleanAllemixFilesToolStripMenuItem,
-            this.getCharacterListInFilesToolStripMenuItem,
-            this.addProcessAsTabToolStripMenuItem});
-            this.experimentalToolStripMenuItem.Name = "experimentalToolStripMenuItem";
-            this.experimentalToolStripMenuItem.Size = new System.Drawing.Size(87, 20);
-            this.experimentalToolStripMenuItem.Text = "Experimental";
-            // 
-            // createActionScriptLoadingCodeToolStripMenuItem
-            // 
-            this.createActionScriptLoadingCodeToolStripMenuItem.Name = "createActionScriptLoadingCodeToolStripMenuItem";
-            this.createActionScriptLoadingCodeToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
-            this.createActionScriptLoadingCodeToolStripMenuItem.Text = "Create ActionScript Loading Code";
-            this.createActionScriptLoadingCodeToolStripMenuItem.Click += new System.EventHandler(this.createActionScriptLoadingCodeToolStripMenuItem_Click);
-            // 
-            // cleanAllscnxFilesToolStripMenuItem
-            // 
-            this.cleanAllscnxFilesToolStripMenuItem.Name = "cleanAllscnxFilesToolStripMenuItem";
-            this.cleanAllscnxFilesToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
-            this.cleanAllscnxFilesToolStripMenuItem.Text = "Clean all .scnx files";
-            this.cleanAllscnxFilesToolStripMenuItem.Click += new System.EventHandler(this.cleanAllscnxFilesToolStripMenuItem_Click);
-            // 
-            // cleanAllemixFilesToolStripMenuItem
-            // 
-            this.cleanAllemixFilesToolStripMenuItem.Name = "cleanAllemixFilesToolStripMenuItem";
-            this.cleanAllemixFilesToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
-            this.cleanAllemixFilesToolStripMenuItem.Text = "Clean all .emix files";
-            this.cleanAllemixFilesToolStripMenuItem.Click += new System.EventHandler(this.cleanAllemixFilesToolStripMenuItem_Click);
-            // 
-            // getCharacterListInFilesToolStripMenuItem
-            // 
-            this.getCharacterListInFilesToolStripMenuItem.Name = "getCharacterListInFilesToolStripMenuItem";
-            this.getCharacterListInFilesToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
-            this.getCharacterListInFilesToolStripMenuItem.Text = "Get character list in files...";
-            this.getCharacterListInFilesToolStripMenuItem.Click += new System.EventHandler(this.getCharacterListInFilesToolStripMenuItem_Click);
-            // 
-            // addProcessAsTabToolStripMenuItem
-            // 
-            this.addProcessAsTabToolStripMenuItem.Name = "addProcessAsTabToolStripMenuItem";
-            this.addProcessAsTabToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
-            this.addProcessAsTabToolStripMenuItem.Text = "Add process as tab";
-            this.addProcessAsTabToolStripMenuItem.Click += new System.EventHandler(this.addProcessAsTabToolStripMenuItem_Click);
-            // 
-            // helpToolStripMenuItem
-            // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutToolStripMenuItem,
-            this.toolStripSeparator9,
-            this.helpToolStripMenuItem1,
-            this.tutorialsToolStripMenuItem,
-            this.reportABugToolStripMenuItem});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "Help";
-            // 
-            // aboutToolStripMenuItem
-            // 
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
-            this.aboutToolStripMenuItem.Text = "About FlatRedBall Glue";
-            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator9
-            // 
-            this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(192, 6);
-            // 
-            // helpToolStripMenuItem1
-            // 
-            this.helpToolStripMenuItem1.Name = "helpToolStripMenuItem1";
-            this.helpToolStripMenuItem1.Size = new System.Drawing.Size(195, 22);
-            this.helpToolStripMenuItem1.Text = "Help";
-            this.helpToolStripMenuItem1.Click += new System.EventHandler(this.helpToolStripMenuItem1_Click);
-            // 
-            // tutorialsToolStripMenuItem
-            // 
-            this.tutorialsToolStripMenuItem.Name = "tutorialsToolStripMenuItem";
-            this.tutorialsToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
-            this.tutorialsToolStripMenuItem.Text = "Tutorials";
-            this.tutorialsToolStripMenuItem.Click += new System.EventHandler(this.tutorialsToolStripMenuItem_Click);
-            // 
-            // reportABugToolStripMenuItem
-            // 
-            this.reportABugToolStripMenuItem.Name = "reportABugToolStripMenuItem";
-            this.reportABugToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
-            this.reportABugToolStripMenuItem.Text = "Report a bug";
-            this.reportABugToolStripMenuItem.Click += new System.EventHandler(this.reportABugToolStripMenuItem_Click);
-            // 
-            // exportScreensAndEntitiesToolStripMenuItem
-            // 
-            this.exportScreensAndEntitiesToolStripMenuItem.Name = "exportScreensAndEntitiesToolStripMenuItem";
-            this.exportScreensAndEntitiesToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
-
             // 
             // NavigateForwardButton
             // 
@@ -873,38 +478,15 @@
 		#endregion
 
         private System.Windows.Forms.MenuStrip mMenu;
-		private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem loadProjectToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem closeProjectToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem projectToolStripMenuItem;
         internal System.Windows.Forms.TreeView ElementTreeView;
-        private System.Windows.Forms.ToolStripMenuItem newProjectToolStripMenuItem;
         public System.Windows.Forms.RichTextBox CodePreviewTextBox;
         public System.Windows.Forms.ImageList ElementImages;
-		private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem fileAssociationsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem performanceSettingsToolStripMenuItem;
         internal System.Windows.Forms.ContextMenuStrip mElementContextMenu;
 
         private System.Windows.Forms.ToolTip ElementViewWindowToolTip;
-        private System.Windows.Forms.ToolStripMenuItem updateToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem experimentalToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem createActionScriptLoadingCodeToolStripMenuItem;
         public System.Windows.Forms.SplitContainer rightPanelContainer;
-        private System.Windows.Forms.ToolStripMenuItem fileBuildToolsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem errorCheckToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem cleanAllscnxFilesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem cleanAllemixFilesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem getCharacterListInFilesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem findFileReferencesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem pluginsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
-        private System.Windows.Forms.ToolStripMenuItem customGameClassToolStripMenuItem;
         public System.Windows.Forms.TextBox SearchTextbox;
         public System.Windows.Forms.ListBox SearchListBox;
-        private System.Windows.Forms.ToolStripMenuItem preferencesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem addProcessAsTabToolStripMenuItem;
         private System.Windows.Forms.SplitContainer topPanelContainer;
         private System.Windows.Forms.SplitContainer bottomPanelContainer;
         private System.Windows.Forms.SplitContainer leftPanelContainer;
@@ -913,35 +495,13 @@
         private FlatRedBall.Glue.Controls.TabControlEx tcTop;
         private FlatRedBall.Glue.Controls.TabControlEx tcLeft;
         private FlatRedBall.Glue.Controls.TabControlEx tcBottom;
-        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         public System.Windows.Forms.MenuStrip msProcesses;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        private System.Windows.Forms.ToolStripMenuItem contentToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exportScreensAndEntitiesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem installPluginToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem createPluginToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem uninstallPluginToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
         internal FlatRedBall.Glue.Controls.PluginTab PropertiesTab;
         internal System.Windows.Forms.TabPage CodeTab;
         internal FlatRedBall.Glue.Controls.TabControlEx MainTabControl;
-        private System.Windows.Forms.ToolStripMenuItem viewAdditionalContentTypesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem viewAdditionalContentTypesToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem newContentCSVToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem importGroupToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem forAllProjectsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem forThisProjectOnlyToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button NavigateForwardButton;
         private System.Windows.Forms.Button NavigateBackButton;
-        private System.Windows.Forms.ToolStripMenuItem viewNewFileTemplateFolderToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
-        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem tutorialsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem reportABugToolStripMenuItem;
         private System.Windows.Forms.Integration.ElementHost elementHost2;
         private FlatRedBall.Glue.Controls.ToolbarControl toolbarControl1;
     }

@@ -259,9 +259,21 @@ namespace FlatRedBall.Glue.Plugins
 
         public abstract bool ShutDown(PluginShutDownReason shutDownReason);
 
+        protected ToolStripMenuItem AddTopLevelMenuItem(string whatToAdd)
+        {
+            ToolStripMenuItem menuItem = new ToolStripMenuItem(whatToAdd);
+            GlueGui.MenuStrip.Items.Add(menuItem);
+            return menuItem;
+        }
+
         protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, EventHandler eventHandler, string container)
         {
             return AddMenuItemTo(whatToAdd, eventHandler, container, -1);
+        }
+
+        protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, Action action, string container)
+        {
+            return AddMenuItemTo(whatToAdd, (not, used) => action?.Invoke(), container, -1);
         }
 
         protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, EventHandler eventHandler, string container, int preferredIndex)

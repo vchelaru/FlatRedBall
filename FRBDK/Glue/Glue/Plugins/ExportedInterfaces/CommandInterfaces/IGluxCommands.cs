@@ -30,6 +30,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// </summary>
         void SaveGlux(bool sendPluginRefreshCommand = true);
 
+        void SaveSettings();
+
         #endregion
 
         #region ReferencedFileSave
@@ -88,6 +90,5 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void RemoveScreen(ScreenSave screenToRemove, List<string> filesThatCouldBeRemoved = null);
 
         void SetVariableOn(NamedObjectSave nos, string memberName, Type memberType, object value);
-        void SaveSettings();
     }
 }
