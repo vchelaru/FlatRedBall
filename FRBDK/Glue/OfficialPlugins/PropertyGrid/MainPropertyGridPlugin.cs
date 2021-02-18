@@ -76,7 +76,12 @@ namespace OfficialPlugins.VariableDisplay
                 // they are editing states
                 RemoveTab(variableTab);
             }
-            else if(GlueState.Self.CurrentElement != null && selectedTreeNode.IsRootCustomVariablesNode())
+            else if(GlueState.Self.CurrentElement != null && 
+                (selectedTreeNode.IsRootCustomVariablesNode() 
+                // Feb 18, 2021 - It's annoying to have to select the Variables
+                // node. The user should be able to see variables just by selecting
+                // the entity itself.
+                || selectedTreeNode.IsElementNode()))
             {
                 ShowVariablesForCurrentElement();
             }
