@@ -61,70 +61,7 @@ namespace PluginTestbed.MoveToLayerPlugin
 
             foreach (NamedObjectSave nos in element.NamedObjects)
             {
-                if (!nos.IsDisabled && !nos.IsContainer && !nos.DefinedByBase )
-                {
-                    bool shouldCheckForNull = nos.Instantiate == false;
-
-
-
-                    var nosAti = nos.GetAssetTypeInfo();
-
-                    if (nosAti != null && !string.IsNullOrEmpty(nos.GetAssetTypeInfo().RemoveFromLayerMethod))
-                    {
-                        NamedObjectSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(codeBlock, nos);
-                        bool shouldSkip = GetShouldSkip(nos);
-
-                        if (!shouldSkip)
-                        {
-
-                            if (shouldCheckForNull)
-                            {
-                                codeBlock = codeBlock.If(nos.InstanceName + " != null");
-                            }
-                            codeBlock.If("layerToRemoveFrom != null")
-                                .Line(nos.GetAssetTypeInfo().RemoveFromLayerMethod.Replace("this", nos.InstanceName).Replace("mLayer", "layerToRemoveFrom") + ";")
-                            .End();
-
-                            var codeBlockForAddCall = codeBlock;
-
-                            // hardcoed special case
-                            if (nosAti.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Sprite")
-                            {
-                                codeBlockForAddCall = codeBlock.If($"layerToMoveTo != null || !SpriteManager.AutomaticallyUpdatedSprites.Contains({nos.InstanceName})");
-                            }
-                            else if (nosAti.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Graphics.Text")
-                            {
-                                codeBlockForAddCall = codeBlock.If($"layerToMoveTo != null || !TextManager.AutomaticallyUpdatedTexts.Contains({nos.InstanceName})");
-                            }
-
-                            codeBlockForAddCall.Line(nosAti.LayeredAddToManagersMethod[0].Replace("this", nos.InstanceName).Replace("mLayer", "layerToMoveTo") + ";");
-
-                            if (shouldCheckForNull)
-                            {
-                                codeBlock = codeBlock.End();
-                            }
-                        }
-                        NamedObjectSaveCodeGenerator.AddEndIfIfNecessary(codeBlock, nos);
-                    }
-                    else if (nos.SourceType == SourceType.Entity && !string.IsNullOrEmpty(nos.SourceClassType))
-                    {
-
-                        if (shouldCheckForNull)
-                        {
-                            codeBlock = codeBlock.If(nos.InstanceName + " != null");
-                        }
-                        NamedObjectSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(codeBlock, nos);
-                        codeBlock.Line(nos.InstanceName + ".MoveToLayer(layerToMoveTo);");
-                        NamedObjectSaveCodeGenerator.AddEndIfIfNecessary(codeBlock, nos);
-
-
-                        if (shouldCheckForNull)
-                        {
-                            codeBlock = codeBlock.End();
-                        }
-                    }
-
-                }
+                GenerateMoveToLayerForNos(codeBlock, nos);
             }
 
             if (isInDerived == false)
@@ -136,6 +73,72 @@ namespace PluginTestbed.MoveToLayerPlugin
             codeBlock = codeBlock.End();
 
             return codeBlock;
+        }
+
+        private void GenerateMoveToLayerForNos(ICodeBlock codeBlock, NamedObjectSave nos)
+        {
+            if (!nos.IsDisabled && !nos.IsContainer && !nos.DefinedByBase)
+            {
+                bool shouldCheckForNull = nos.Instantiate == false;
+
+                var nosAti = nos.GetAssetTypeInfo();
+
+                if (nosAti != null && !string.IsNullOrEmpty(nos.GetAssetTypeInfo().RemoveFromLayerMethod))
+                {
+                    NamedObjectSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(codeBlock, nos);
+                    bool shouldSkip = GetShouldSkip(nos);
+
+                    if (!shouldSkip)
+                    {
+
+                        if (shouldCheckForNull)
+                        {
+                            codeBlock = codeBlock.If(nos.InstanceName + " != null");
+                        }
+                        codeBlock.If("layerToRemoveFrom != null")
+                            .Line(nos.GetAssetTypeInfo().RemoveFromLayerMethod.Replace("this", nos.InstanceName).Replace("mLayer", "layerToRemoveFrom") + ";")
+                        .End();
+
+                        var codeBlockForAddCall = codeBlock;
+
+                        // hardcoed special case
+                        if (nosAti.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Sprite")
+                        {
+                            codeBlockForAddCall = codeBlock.If($"layerToMoveTo != null || !SpriteManager.AutomaticallyUpdatedSprites.Contains({nos.InstanceName})");
+                        }
+                        else if (nosAti.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Graphics.Text")
+                        {
+                            codeBlockForAddCall = codeBlock.If($"layerToMoveTo != null || !TextManager.AutomaticallyUpdatedTexts.Contains({nos.InstanceName})");
+                        }
+
+                        codeBlockForAddCall.Line(nosAti.LayeredAddToManagersMethod[0].Replace("this", nos.InstanceName).Replace("mLayer", "layerToMoveTo") + ";");
+
+                        if (shouldCheckForNull)
+                        {
+                            codeBlock = codeBlock.End();
+                        }
+                    }
+                    NamedObjectSaveCodeGenerator.AddEndIfIfNecessary(codeBlock, nos);
+                }
+                else if (nos.SourceType == SourceType.Entity && !string.IsNullOrEmpty(nos.SourceClassType))
+                {
+
+                    if (shouldCheckForNull)
+                    {
+                        codeBlock = codeBlock.If(nos.InstanceName + " != null");
+                    }
+                    NamedObjectSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(codeBlock, nos);
+                    codeBlock.Line(nos.InstanceName + ".MoveToLayer(layerToMoveTo);");
+                    NamedObjectSaveCodeGenerator.AddEndIfIfNecessary(codeBlock, nos);
+
+
+                    if (shouldCheckForNull)
+                    {
+                        codeBlock = codeBlock.End();
+                    }
+                }
+
+            }
         }
 
         private bool GetShouldSkip(NamedObjectSave nos)

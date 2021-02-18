@@ -475,6 +475,12 @@ namespace GumPlugin.Managers
                     return uncastedLine.Substring(0, uncastedLine.Length - 1) + " as " + GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element) + ";";
 
                 };
+
+                // The plugin requires a remove function, so let's just put comments
+                newAti.RemoveFromLayerMethod = "// No remove call, just a move. Comment is for the code generator";
+
+                newAti.LayeredAddToManagersMethod.Add(
+                    "this.MoveToFrbLayer(mLayer, FlatRedBall.Gum.GumIdb.Self);");
             }
             if(element is Gum.DataTypes.ScreenSave)
             {
