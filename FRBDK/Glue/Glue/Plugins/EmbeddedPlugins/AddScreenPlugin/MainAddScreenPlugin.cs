@@ -184,7 +184,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                 if(newScreen.Name == GlueCommands.Self.GluxCommands.StartUpScreenName)
                 {
 
-                    ElementViewWindow.StartUpScreen = GlueState.Self.CurrentElementTreeNode;
+                    ElementViewWindow.StartUpScreenTreeNode = GlueState.Self.CurrentElementTreeNode;
                 }
             }
         }

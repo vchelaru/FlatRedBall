@@ -20,6 +20,8 @@ using Newtonsoft.Json;
 using OfficialPlugins.Compiler.Models;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
+using OfficialPluginsCore.Compiler.ViewModels;
+using OfficialPluginsCore.Compiler.Managers;
 
 namespace OfficialPlugins.Compiler
 {
@@ -97,11 +99,16 @@ namespace OfficialPlugins.Compiler
                 RefreshManager.Self.HandleFileChanged(new FlatRedBall.IO.FilePath(fileName));
             this.ReactToCodeFileChange += RefreshManager.Self.HandleFileChanged;
             this.NewEntityCreated += RefreshManager.Self.HandleNewEntityCreated;
-            //this.ReactToNewScreenCreated += RefreshManager.Self.HandleNewScreenCreated;
+
+
+            this.NewScreenCreated += ToolbarController.Self.HandleNewScreenCreated;
+            this.ReactToScreenRemoved += ToolbarController.Self.HandleScreenRemoved;
+            // todo - handle startup changed...
             this.ReactToNewObjectHandler += RefreshManager.Self.HandleNewObjectCreated;
             this.ReactToObjectRemoved += RefreshManager.Self.HandleObjectRemoved;
             this.ReactToElementVariableChange += RefreshManager.Self.HandleVariableChanged;
             this.ReactToNamedObjectChangedValue += RefreshManager.Self.HandleNamedObjectValueChanged;
+            this.ReactToChangedStartupScreen += ToolbarController.Self.ReactToChangedStartupScreen;
         }
 
 
@@ -109,6 +116,8 @@ namespace OfficialPlugins.Compiler
         {
             viewModel.CompileContentButtonVisibility = Visibility.Collapsed;
             viewModel.HasLoadedGlux = false;
+
+            ToolbarController.Self.HandleGluxUnloaded();
         }
 
         private CompilerSettingsModel LoadOrCreateCompilerSettings()
@@ -149,7 +158,8 @@ namespace OfficialPlugins.Compiler
             game1GlueControlGenerator.PortNumber = model.PortNumber;
             game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = model.GenerateGlueControlManagerCode;
             RefreshManager.Self.PortNumber = model.PortNumber;
-           
+
+            ToolbarController.Self.HandleGluxLoaded();
 
             TaskManager.Self.Add(() => MainCodeGenerator.GenerateAll(model.GenerateGlueControlManagerCode), "Generate Glue Control Code");
         }
@@ -190,7 +200,11 @@ namespace OfficialPlugins.Compiler
         {
             var toolbar = new RunnerToolbar();
             toolbar.RunClicked += HandleToolbarRunClicked;
-            toolbar.DataContext = viewModel;
+
+            ToolbarController.Self.Initialize(toolbar);
+
+            toolbar.DataContext = ToolbarController.Self.GetViewModel();
+
             base.AddToToolBar(toolbar, "Standard");
         }
 

@@ -115,6 +115,7 @@ namespace FlatRedBall.Glue.Plugins
         public ReactToChangedPropertyDelegate ReactToChangedPropertyHandler { get; protected set; }
         public ReactToFileChangeDelegate ReactToFileChangeHandler { get; protected set; }
         public ReactToFileChangeDelegate ReactToBuiltFileChangeHandler { get; protected set; }
+        public Action ReactToChangedStartupScreen { get; protected set; }
         public Action<FilePath> ReactToCodeFileChange { get; protected set; }
         public ReactToItemSelectDelegate ReactToItemSelectHandler { get; protected set; }
         public ReactToNamedObjectChangedValueDelegate ReactToNamedObjectChangedValue { get; protected set; }
@@ -145,6 +146,11 @@ namespace FlatRedBall.Glue.Plugins
         /// </summary>
         public Action<EntitySave, List<string>> ReactToEntityRemoved { get; protected set; }
 
+        /// <summary>
+        /// Delegate raised whenever a Screen is removed. The first argument is the screen
+        /// which is being removed. The second argument is a list of files to remove. Plugins
+        /// can optionally add additional files to-be-removed when a Screen is removed.
+        /// </summary>
         public Action<ScreenSave, List<string>> ReactToScreenRemoved { get; protected set; }
 
         public Action<IElement, EventResponseSave> ReactToEventRemoved { get; protected set; }

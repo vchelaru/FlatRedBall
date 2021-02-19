@@ -118,9 +118,9 @@ namespace FlatRedBall.Glue.FormHelpers
             get { return mDirectoriesToIgnore; }
         }
 
-        public static TreeNode StartUpScreen
+        public static TreeNode StartUpScreenTreeNode
         {
-            get { return mStartUpScreen; }
+            get => mStartUpScreen;
             set
             {
                 if (value != mStartUpScreen)
@@ -1074,6 +1074,9 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
             }
         }
+
+        public static TreeNode GetTreeNodeFor(ScreenSave screenSave) => 
+            AllScreens.FirstOrDefault(item => item.Tag == screenSave); 
 
         #endregion
 

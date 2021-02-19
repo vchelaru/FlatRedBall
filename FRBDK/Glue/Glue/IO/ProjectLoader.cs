@@ -484,7 +484,7 @@ namespace FlatRedBall.Glue.IO
                 {
                     TreeNode startUpTreeNode = GlueState.Self.Find.ScreenTreeNode(ProjectManager.GlueProjectSave.StartUpScreen);
 
-                    ElementViewWindow.StartUpScreen = startUpTreeNode;
+                    ElementViewWindow.StartUpScreenTreeNode = startUpTreeNode;
 
                     if (startUpTreeNode == null)
                     {

@@ -22,6 +22,12 @@ namespace OfficialPlugins.Compiler
     {
         public event EventHandler RunClicked;
 
+        public bool IsOpen
+        {
+            get => SplitButton.IsOpen;
+            set => SplitButton.IsOpen = value;
+        }
+
         public RunnerToolbar()
         {
             InitializeComponent();

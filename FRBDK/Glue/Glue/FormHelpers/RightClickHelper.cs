@@ -543,7 +543,9 @@ namespace FlatRedBall.Glue.FormHelpers
                 var selectedNode = GlueState.Self.CurrentTreeNode;
                 if (selectedNode != null)
                 {
-                    ElementViewWindow.StartUpScreen = selectedNode;
+                    GlueCommands.Self.GluxCommands.StartUpScreenName =
+                        GlueState.Self.CurrentScreenSave?.Name;
+                //    ElementViewWindow.StartUpScreenTreeNode = selectedNode;
                 }
             };
 

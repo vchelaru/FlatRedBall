@@ -88,15 +88,23 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     GlueState.Self.CurrentGlueProject.StartUpScreen = value;
                     GluxCommands.Self.SaveGlux();
-                }
-                if (string.IsNullOrEmpty(ProjectManager.GameClassFileName))
-                {
-                    System.Windows.Forms.MessageBox.Show(
-                        "Could not set the startup screen because Glue could not find the Game class.");
-                }
-                else
-                {
-                    GlueCommands.Self.GenerateCodeCommands.GenerateStartupScreenCode();
+                    if (string.IsNullOrEmpty(ProjectManager.GameClassFileName))
+                    {
+                        System.Windows.Forms.MessageBox.Show(
+                            "Could not set the startup screen because Glue could not find the Game class.");
+                    }
+                    else
+                    {
+                        GlueCommands.Self.GenerateCodeCommands.GenerateStartupScreenCode();
+                    }
+
+                    var screen = GlueState.Self.CurrentGlueProject.Screens
+                        .FirstOrDefault(item => item.Name == value);
+
+                    ElementViewWindow.StartUpScreenTreeNode =
+                        ElementViewWindow.GetTreeNodeFor(screen);
+
+                    PluginManager.ReactToChangedStartupScreen();
                 }
             }
         }

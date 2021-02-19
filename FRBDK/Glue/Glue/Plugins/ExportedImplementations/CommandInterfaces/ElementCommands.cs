@@ -121,7 +121,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screenSave);
             if (glueProject.Screens.Count == 1)
             {
-                ElementViewWindow.StartUpScreen =
+                ElementViewWindow.StartUpScreenTreeNode =
                     GlueState.Self.Find.ElementTreeNode(screenSave);
             }
 

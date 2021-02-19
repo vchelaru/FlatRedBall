@@ -1431,6 +1431,16 @@ namespace FlatRedBall.Glue.Plugins
                 (plugin) => plugin.ReactToBuiltFileChangeHandler != null);
         }
 
+        internal static void ReactToChangedStartupScreen()
+        {
+            CallMethodOnPlugin((plugin) =>
+            {
+                plugin.ReactToChangedStartupScreen();
+            },
+            nameof(ReactToChangedStartupScreen),
+            plugin => plugin.ReactToChangedStartupScreen != null);
+        }
+
         #region XML Docs
         /// <summary>
         /// Receives output and passes it to any output plugins.

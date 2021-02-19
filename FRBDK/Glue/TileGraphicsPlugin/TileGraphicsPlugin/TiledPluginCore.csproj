@@ -84,6 +84,7 @@
 
   <ItemGroup>
     <Folder Include="Properties\" />
+    <Folder Include="TiledPluginCore\" />
   </ItemGroup>
 
 

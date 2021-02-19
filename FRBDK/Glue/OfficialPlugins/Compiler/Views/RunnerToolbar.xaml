@@ -3,12 +3,24 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OfficialPlugins.Compiler"
-             mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             xmlns:local="clr-namespace:OfficialPlugins.Compiler" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             mc:Ignorable="d" >
     <Grid>
-        <Button Width="22" Height="22" Click="HandleButtonClick" IsEnabled="{Binding IsToolbarPlayButtonEnabled}">
+        <!--<Button Width="22" Height="22" Click="HandleButtonClick" IsEnabled="{Binding IsToolbarPlayButtonEnabled}">
             <Image ToolTip="Run Game" Source="/OfficialPluginsCore;component/Compiler/Icons/play.png"></Image>
-        </Button>
+        </Button>-->
+
+        <xctk:SplitButton x:Name="SplitButton" Width="148" Height="22" HorizontalContentAlignment="Left" 
+                          Click="HandleButtonClick" IsEnabled="{Binding IsToolbarPlayButtonEnabled}">
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                <Image ToolTip="Run Game" Source="/OfficialPluginsCore;component/Compiler/Icons/play.png"></Image>
+                <TextBlock Margin="5,0,0,0" Text="{Binding StartupScreenName}"></TextBlock>
+            </StackPanel>
+            <xctk:SplitButton.DropDownContent>
+                <ListBox ItemsSource="{Binding AvailableScreens}" SelectedItem="{Binding StartupScreenName}">
+                    
+                </ListBox>
+            </xctk:SplitButton.DropDownContent>
+        </xctk:SplitButton>
     </Grid>
 </UserControl>

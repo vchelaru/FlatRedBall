@@ -52,6 +52,8 @@ namespace TiledPluginCore.Controls
             Opened?.Invoke(this, null);
         }
 
+        // Vic asks - why use a list of MenuItems rather than a ListBox...because we didn't want
+        // the list box to keep its selection??
         internal void FillDropdown(List<ReferencedFileSave> availableTmxFiles)
         {
             TiledDropdown.Children.Clear();
