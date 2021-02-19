@@ -419,7 +419,7 @@ namespace FlatRedBall
                 mTypesThatCanBeLoaded.Add(typeof(EmitterList));
 #if !MONOGAME
                 mTypesThatCanBeLoaded.Add(typeof(System.Drawing.Image));
-                mTypesThatCanBeLoaded.Add(typeof(BitmapList));
+                //mTypesThatCanBeLoaded.Add(typeof(BitmapList));
 #endif
 
 
@@ -734,7 +734,7 @@ namespace FlatRedBall
             // All InitializeFlatRedBall methods call this one
 
 #if !MONOGAME
-            PngLoader.Initialize();
+            //PngLoader.Initialize();
 #endif
 
             Texture2D fontTexture = null;
@@ -1046,81 +1046,6 @@ namespace FlatRedBall
         }
 
         #region Load/IsLoaded/Unload asset methods
-
-#if !FRB_MDX && !MONOGAME
-        internal static Model Load(string modelName, string contentManagerName)
-        {
-#if DEBUG
-            if (!mIsInitialized)
-            {
-                throw new InvalidOperationException("FlatRedBall is not initialized yet");
-            }
-#endif
-            if (FileManager.GetExtension(modelName) != "")
-            {
-                return Load<Model>(modelName, contentManagerName);
-                //                throw new System.ArgumentException("Cannot load models from " +
-                //                  FileManager.GetExtension(modelName) + " file.  Add the model to the project and " +
-                //                "load without the extension");
-            }
-            else
-            {
-                FlatRedBall.Content.ContentManager contentManager = GetContentManagerByName(contentManagerName);
-                //#if PROFILE
-                //            bool exists = false;
-
-                //            exists = ((FlatRedBall.Content.ContentManager)contentManager).IsAssetLoaded(modelName);
-
-                //            if (exists)
-                //            {
-                //                mHistory.Add(new ContentLoadHistory(
-                //                    TimeManager.CurrentTime, typeof(Model).Name, modelName, ContentLoadDetail.Cached));
-                //            }
-                //            else
-                //            {
-                //                mHistory.Add(new ContentLoadHistory(
-                //                    TimeManager.CurrentTime, typeof(T).Name, assetName, ContentLoadDetail.HddFromContentPipeline));
-                //            }
-                //#endif
-
-                return (Model)contentManager.LoadFromProject<Model>(modelName);
-            }
-        }
-
-        internal static bool ModelHasAnimation(string modelName)
-        {
-            bool found = false;
-            string line;
-
-            // Create the regular expression and open the file
-            Regex regx = new Regex("AnimationSet .* {");
-
-            StreamReader sr = null;
-
-            if (FileManager.IsRelative(modelName))
-            {
-                sr = new StreamReader(FileManager.RelativeDirectory + modelName);
-            }
-            else
-            {
-                sr = new StreamReader(modelName);
-            }
-
-
-            // Try to find
-            while (!found && (line = sr.ReadLine()) != null)
-            {
-                if (regx.IsMatch(line))
-                    found = true;
-            }
-
-            // Close the file
-            sr.Close();
-
-            // return the success value
-            return found;
-        }
-#endif
 
         public static bool IsLoaded<T>(string assetName, string contentManagerName)
         {

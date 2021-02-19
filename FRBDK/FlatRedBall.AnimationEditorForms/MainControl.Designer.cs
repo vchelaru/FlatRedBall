@@ -124,7 +124,6 @@
             this.AnimationTreeView.AllowDrop = true;
             this.AnimationTreeView.ContextMenuStrip = this.TreeViewRightClickMenu;
             this.AnimationTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.AnimationTreeView.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawText;
             this.AnimationTreeView.HideSelection = false;
             this.AnimationTreeView.Location = new System.Drawing.Point(3, 33);
             this.AnimationTreeView.Name = "AnimationTreeView";

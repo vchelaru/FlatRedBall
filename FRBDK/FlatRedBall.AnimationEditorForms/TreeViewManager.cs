@@ -82,7 +82,7 @@ namespace FlatRedBall.AnimationEditorForms
             mTreeView.Invoke((MethodInvoker)delegate()
             {
                 AnimationFrameSave selectedAnimationFrame = SelectedState.Self.SelectedFrame;
-                AnimationChainSave selectedAnimationChain = SelectedState.Self.SelectedChain;
+                var selectedAnimationChains = SelectedState.Self.SelectedChains;
 
                 List<AnimationChainSave> expandedAnimationChains = new List<AnimationChainSave>();
 
@@ -123,9 +123,9 @@ namespace FlatRedBall.AnimationEditorForms
                     {
                         SelectedState.Self.SelectedFrame = selectedAnimationFrame;
                     }
-                    if (mTreeView.SelectedNode == null && selectedAnimationChain != null)
+                    if (mTreeView.SelectedNode == null && selectedAnimationChains.Count > 0)
                     {
-                        SelectedState.Self.SelectedChain = selectedAnimationChain;
+                        SelectedState.Self.SelectedChains = selectedAnimationChains;
                     }
                 }
             });
@@ -315,7 +315,7 @@ namespace FlatRedBall.AnimationEditorForms
 
         internal void HandleDrop(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent("FileDrop"))
+            if (e.Data?.GetDataPresent("FileDrop") == true)
             {
                 DragDropFile(sender, e);
             }

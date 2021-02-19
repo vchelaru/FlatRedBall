@@ -7,6 +7,7 @@ using FlatRedBall.Graphics.Animation;
 using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.AnimationEditorForms.Data;
 using Microsoft.Xna.Framework.Graphics;
+using CommonFormsAndControls;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -26,7 +27,7 @@ namespace FlatRedBall.AnimationEditorForms
 
         static SelectedState mSelf;
         
-        TreeView mTreeView;
+        MultiSelectTreeView mTreeView;
 
         SelectionSnapshot mSnapshot = new SelectionSnapshot();
 
@@ -86,6 +87,12 @@ namespace FlatRedBall.AnimationEditorForms
             }
         }
 
+        public List<TreeNode> SelectedNodes
+        {
+            get => mTreeView.SelectedNodes;
+            set => mTreeView.SelectedNodes = value;
+        }
+
         public AnimationChainSave SelectedChain
         {
             get
@@ -110,6 +117,38 @@ namespace FlatRedBall.AnimationEditorForms
                 TreeNode treeNode = TreeViewManager.Self.GetTreeNodeFor(value);
 
                 SelectedNode = treeNode;
+            }
+        }
+
+        public List<AnimationChainSave> SelectedChains
+        {
+            get
+            {
+                List<AnimationChainSave> toReturn = new List<AnimationChainSave>();
+                var treeNodes = SelectedNodes;
+
+                foreach(var treeNode in treeNodes)
+                {
+                    if(treeNode.Tag is AnimationChainSave animationChainSave)
+                    {
+                        toReturn.Add(animationChainSave);
+                    }
+                }
+
+                return toReturn;
+            }
+            set
+            {
+                List<TreeNode> treeNodes = new List<TreeNode>();
+
+                if(value == null)
+                {
+                    SelectedNodes = new List<TreeNode>();
+                }
+                else
+                {
+                    SelectedNodes = value.Select(item => TreeViewManager.Self.GetTreeNodeFor(item)).ToList();
+                }
             }
         }
 
@@ -178,7 +217,7 @@ namespace FlatRedBall.AnimationEditorForms
 
         #endregion
 
-        public void Initialize(TreeView treeView)
+        public void Initialize(MultiSelectTreeView treeView)
         {
             mTreeView = treeView;
 

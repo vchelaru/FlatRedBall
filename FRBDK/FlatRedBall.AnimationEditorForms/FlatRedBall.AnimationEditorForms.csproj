@@ -267,6 +267,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Gum\CommonFormsAndControls\CommonFormsAndControls.csproj">
+      <Project>{54bfe18a-84b4-48ab-92e0-0774ea019202}</Project>
+      <Name>CommonFormsAndControls</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Gum\RenderingLibrary\RenderingLibrary.csproj">
       <Project>{a86ee399-7c93-42e1-80ed-ca4cbf4ca573}</Project>
       <Name>RenderingLibrary</Name>
@@ -275,9 +279,9 @@
       <Project>{938d9a00-8529-4ce8-9077-e0a3994a73ea}</Project>
       <Name>InputLibrary</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Gum\ToolsUtilities\ToolsUtilities.csproj">
-      <Project>{b941a93f-6093-4dc6-ad11-91a058b6c2cc}</Project>
-      <Name>ToolsUtilities</Name>
+    <ProjectReference Include="..\..\..\Gum\ToolsUtilities\ToolsUtilitiesStandard.csproj">
+      <Project>{4cf72913-817f-4b60-8920-3214fcaf7be9}</Project>
+      <Name>ToolsUtilitiesStandard</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Gum\XnaAndWinforms\XnaAndWinforms.csproj">
       <Project>{c39a973c-66d6-4a6c-82b5-ae0042f210f8}</Project>

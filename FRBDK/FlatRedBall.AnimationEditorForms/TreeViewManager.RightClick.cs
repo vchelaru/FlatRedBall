@@ -219,7 +219,25 @@ namespace FlatRedBall.AnimationEditorForms
             {
                 var chain = SelectedState.Self.SelectedChain;
                 var frame = SelectedState.Self.SelectedFrame;
-                if(frame != null && chain != null && frame != chain.Frames[0])
+                var chains = SelectedState.Self.SelectedChains;
+                if(chains.Count > 0)
+                {
+                    var chainsByIndex = chains.OrderBy(item => ProjectManager.Self.AnimationChainListSave.AnimationChains.IndexOf(item))
+                        .ToList();
+
+                    var allChains = ProjectManager.Self.AnimationChainListSave.AnimationChains;
+
+                    for(int i = 0; i < chainsByIndex.Count; i++)
+                    {
+                        var chainToMove = chainsByIndex[i];
+
+                        allChains.Remove(chainToMove);
+                        allChains.Insert(i, chainToMove);
+                    }
+                    TreeViewManager.Self.RefreshTreeView();
+                    CallAnimationChainsChange();
+                }
+                else if(frame != null && chain != null && frame != chain.Frames[0])
                 {
                     chain.Frames.Remove(frame);
                     chain.Frames.Insert(0, frame);
@@ -246,9 +264,33 @@ namespace FlatRedBall.AnimationEditorForms
         {
             if (ProjectManager.Self.AnimationChainListSave != null)
             {
+                var chains = SelectedState.Self.SelectedChains;
                 var chain = SelectedState.Self.SelectedChain;
                 var frame = SelectedState.Self.SelectedFrame;
-                if(frame != null && chain != null && frame != chain.Frames[0])
+
+                if(chains.Count > 0)
+                {
+                    var chainsByIndex = chains.OrderBy(item => ProjectManager.Self.AnimationChainListSave.AnimationChains.IndexOf(item))
+                        .ToList();
+
+                    var allChains = ProjectManager.Self.AnimationChainListSave.AnimationChains;
+
+                    foreach (var chainToMove in chainsByIndex)
+                    {
+                        if(chainToMove == allChains.First())
+                        {
+                            break;
+                        }
+                        var oldIndex = allChains.IndexOf(chainToMove);
+
+                        allChains.Remove(chainToMove);
+                        allChains.Insert(oldIndex - 1, chainToMove);
+
+                    }
+                    TreeViewManager.Self.RefreshTreeView();
+                    CallAnimationChainsChange();
+                }
+                else if(frame != null && chain != null && frame != chain.Frames[0])
                 {
                     var oldIndex = chain.Frames.IndexOf(frame);
 
@@ -280,8 +322,35 @@ namespace FlatRedBall.AnimationEditorForms
             if (ProjectManager.Self.AnimationChainListSave != null)
             {
                 var chain = SelectedState.Self.SelectedChain;
+                var chains = SelectedState.Self.SelectedChains;
                 var frame = SelectedState.Self.SelectedFrame;
-                if(frame != null && chain != null && frame != chain.Frames.Last())
+
+                if (chains.Count > 0)
+                {
+                    var chainsByIndex = chains
+                        .OrderByDescending(item => ProjectManager.Self.AnimationChainListSave.AnimationChains.IndexOf(item))
+                        .ToList();
+
+                    var allChains = ProjectManager.Self.AnimationChainListSave.AnimationChains;
+
+                    foreach (var chainToMove in chainsByIndex)
+                    {
+                        if(chainToMove == allChains.Last())
+                        {
+                            // do nothing...
+                            break;
+                        }
+                        var oldIndex = allChains.IndexOf(chainToMove);
+
+                        allChains.Remove(chainToMove);
+                        allChains.Insert(oldIndex + 1, chainToMove);
+
+                    }
+                    TreeViewManager.Self.RefreshTreeView();
+                    CallAnimationChainsChange();
+                }
+
+                else if (frame != null && chain != null && frame != chain.Frames.Last())
                 {
                     var oldIndex = chain.Frames.IndexOf(frame);
 
@@ -313,8 +382,26 @@ namespace FlatRedBall.AnimationEditorForms
             if (ProjectManager.Self.AnimationChainListSave != null)
             {
                 var chain = SelectedState.Self.SelectedChain;
+                var chains = SelectedState.Self.SelectedChains;
                 var frame = SelectedState.Self.SelectedFrame;
-                if (frame != null && chain != null && frame != chain.Frames.Last())
+                if(chains.Count > 0)
+                {
+                    var chainsByIndex = chains
+                        .OrderByDescending(item => ProjectManager.Self.AnimationChainListSave.AnimationChains.IndexOf(item))
+                        .ToList();
+
+                    var allChains = ProjectManager.Self.AnimationChainListSave.AnimationChains;
+
+                    for (int i = 0; i < chainsByIndex.Count; i++)
+                    { 
+                        var chainToMove = chainsByIndex[i];
+                        allChains.Remove(chainToMove);
+                        allChains.Insert(allChains.Count-i, chainToMove);
+                    }
+                    TreeViewManager.Self.RefreshTreeView();
+                    CallAnimationChainsChange();
+                }
+                else if (frame != null && chain != null && frame != chain.Frames.Last())
                 {
                     chain.Frames.Remove(frame);
                     chain.Frames.Add(frame);
@@ -559,14 +646,25 @@ namespace FlatRedBall.AnimationEditorForms
 
         void DeleteAnimationChainClick(object sender, EventArgs args)
         {
-            if (SelectedState.Self.SelectedChain != null)
+            if (SelectedState.Self.SelectedChains.Count > 0)
             {
+                string message = "Delete the following animations?\n\n";
+
+                foreach(var chain in SelectedState.Self.SelectedChains)
+                {
+                    message += chain.Name + "\n";
+                }
+
                 DialogResult result = 
-                    MessageBox.Show("Delete AnimationChain " + SelectedState.Self.SelectedChain + "?", "Delete?", MessageBoxButtons.YesNo);
+                    MessageBox.Show(message, "Delete?", MessageBoxButtons.YesNo);
 
                 if (result == DialogResult.Yes)
                 {
-                    ProjectManager.Self.AnimationChainListSave.AnimationChains.Remove(SelectedState.Self.SelectedChain);
+                    var chainsCopy = SelectedState.Self.SelectedChains.ToArray();
+                    foreach(var chain in chainsCopy)
+                    {
+                        ProjectManager.Self.AnimationChainListSave.AnimationChains.Remove(chain);
+                    }
 
                     // refresh the tree view before refreshing the PreviewManager, since refreshing the tree view deselects the animation
                     TreeViewManager.Self.RefreshTreeView();
