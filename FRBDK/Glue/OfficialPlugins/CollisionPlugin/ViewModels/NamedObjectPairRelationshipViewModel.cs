@@ -12,20 +12,20 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
     {
         public string OtherObjectName
         {
-            get { return Get<string>(); }
-            set { Set(value); }
+            get => Get<string>();
+            set => Set(value); 
         }
 
         public string SelectedNamedObjectName
         {
-            get { return Get<string>(); }
-            set { Set(value); }
+            get => Get<string>();
+            set => Set(value); 
         }
 
         public ObservableCollection<RelationshipListCellViewModel> Relationships
         {
-            get { return Get<ObservableCollection<RelationshipListCellViewModel>>(); }
-            set { Set(value); }
+            get => Get<ObservableCollection<RelationshipListCellViewModel>>(); 
+            set => Set(value); 
         }
 
         public event EventHandler AddObjectClicked;

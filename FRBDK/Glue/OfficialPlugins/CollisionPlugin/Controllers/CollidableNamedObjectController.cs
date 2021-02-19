@@ -130,11 +130,16 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
         private static void HandleAddCollisionRelationshipAddClicked(NamedObjectPairRelationshipViewModel pairViewModel)
         {
+            // Vic asks - why is the selected "second"?
+            // If I select the player and have it collide against
+            // bullets, I would expect a PlayerVsBullets collision...
+            //var firstNosName = pairViewModel.OtherObjectName;
+            //var secondNosName = pairViewModel.SelectedNamedObjectName;
 
-            var firstNosName = pairViewModel.OtherObjectName;
-            var secondNosName = pairViewModel.SelectedNamedObjectName;
+            var firstNosName = pairViewModel.SelectedNamedObjectName;
+            var secondNosName = pairViewModel.OtherObjectName;
+
             CreateCollisionRelationshipBetweenObjects(firstNosName, secondNosName);
-
         }
 
         public static void CreateCollisionRelationshipBetweenObjects(string firstNosName, string secondNosName)
@@ -158,6 +163,11 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             bool needToInvert = selectedNamedObject.SourceType != SourceType.Entity &&
                 selectedNamedObject.IsList == false;
+
+            //if(!needToInvert)
+            //{
+            //    needToInvert = 
+            //}
 
             if (needToInvert)
             {
