@@ -62,6 +62,12 @@
       <IsAppExtension>false</IsAppExtension>
       <IsWatchApp>false</IsWatchApp>
     </ProjectReference>
+    <ProjectReference Include="..\StateInterpolation\StateInterpolation.iOS.csproj">
+      <Project>{5c0f32fc-d7f4-4b3e-aa7e-5a5b426357a7}</Project>
+      <Name>StateInterpolation.iOS</Name>
+      <IsAppExtension>false</IsAppExtension>
+      <IsWatchApp>false</IsWatchApp>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
