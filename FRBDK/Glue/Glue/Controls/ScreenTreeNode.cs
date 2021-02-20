@@ -15,12 +15,8 @@ using FlatRedBall.Glue.CodeGeneration;
 
 namespace FlatRedBall.Glue.Controls
 {
-	public class ScreenTreeNode : BaseElementTreeNode<ScreenSave>
-	{
-        #region Properties
-
-		#endregion
-
+	public class ScreenTreeNode : BaseElementTreeNode
+    {
 		#region Methods
 
         public ScreenTreeNode(string text) : base(text)

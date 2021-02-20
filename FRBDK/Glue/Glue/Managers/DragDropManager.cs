@@ -549,6 +549,9 @@ namespace FlatRedBall.Glue.Managers
                         // any instance added to a list will not be defined by base
                         namedObject.DefinedByBase = false;
 
+                        // make sure that the target list is the current
+                        GlueState.Self.CurrentNamedObjectSave = targetNamedObjectSave;
+
                         NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToCurrentNamedObjectList(namedObject);
 
                         if(namedObject.SourceClassType != entity.Name)
@@ -635,14 +638,26 @@ namespace FlatRedBall.Glue.Managers
 
             #endregion
 
-            // We used to ask the user if they're sure, but this isn't a destructive action so just do it:
-            //DialogResult result =
-            //    MessageBox.Show("Create a new Object in\n\n" + elementToCreateIn.Name + "\n\nusing\n\n\t" + entitySaveMoved.Name + "?", "Create new Object?", MessageBoxButtons.YesNo);
+            // does the target have a list of this type? If so, add it to that list. Otherwise, add it to the root
+            var listOfThisType = elementToCreateIn.NamedObjects.FirstOrDefault(item => item.IsList && item.SourceClassGenericType == entitySaveMoved.Name);
 
-            NamedObjectSave newNamedObject = CreateNewNamedObjectInElement(elementToCreateIn, entitySaveMoved);
-            newTreeNode = GlueState.Self.Find.NamedObjectTreeNode(newNamedObject);
-            GlueState.Self.CurrentNamedObjectSave = newNamedObject;
+            if(listOfThisType != null)
+            {
+                var namedObjectNode = ElementViewWindow.GetTreeNodeFor(listOfThisType);
+                // move it onto this
+                MoveEntityOn(treeNodeMoving, namedObjectNode);
+            }
+            else
+            {
 
+                // We used to ask the user if they're sure, but this isn't a destructive action so just do it:
+                //DialogResult result =
+                //    MessageBox.Show("Create a new Object in\n\n" + elementToCreateIn.Name + "\n\nusing\n\n\t" + entitySaveMoved.Name + "?", "Create new Object?", MessageBoxButtons.YesNo);
+
+                NamedObjectSave newNamedObject = CreateNewNamedObjectInElement(elementToCreateIn, entitySaveMoved);
+                newTreeNode = GlueState.Self.Find.NamedObjectTreeNode(newNamedObject);
+                GlueState.Self.CurrentNamedObjectSave = newNamedObject;
+            }
             return newTreeNode;
         }
 

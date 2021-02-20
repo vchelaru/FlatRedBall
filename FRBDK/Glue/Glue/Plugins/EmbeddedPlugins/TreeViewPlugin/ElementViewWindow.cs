@@ -1075,8 +1075,39 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-        public static TreeNode GetTreeNodeFor(ScreenSave screenSave) => 
-            AllScreens.FirstOrDefault(item => item.Tag == screenSave); 
+        public static BaseElementTreeNode GetTreeNodeFor(IElement element)
+        { 
+            if(element is ScreenSave screenSave)
+            {
+                return GetTreeNodeFor(screenSave);
+            }
+            else if(element is EntitySave entitySave)
+            {
+                return GetTreeNodeFor(entitySave);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+
+        public static BaseElementTreeNode GetTreeNodeFor(ScreenSave screenSave) => 
+            AllScreens.FirstOrDefault(item => item.Tag == screenSave);
+
+
+        public static BaseElementTreeNode GetTreeNodeFor(EntitySave entitySave) =>
+            AllEntities.FirstOrDefault(item => item.Tag == entitySave);
+
+
+        public static TreeNode GetTreeNodeFor(NamedObjectSave nos)
+        {
+            var parent = nos.GetContainer();
+
+            var parentTreeNode = GetTreeNodeFor(parent);
+
+            return parentTreeNode?.GetTreeNodeFor(nos);
+        }
 
         #endregion
 

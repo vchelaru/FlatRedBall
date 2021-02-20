@@ -10,7 +10,7 @@ using FlatRedBall.Utilities;
 
 namespace FlatRedBall.Glue.Controls
 {
-    public class EntityTreeNode : BaseElementTreeNode<EntitySave>
+    public class EntityTreeNode : BaseElementTreeNode
     {
         #region Properties
 

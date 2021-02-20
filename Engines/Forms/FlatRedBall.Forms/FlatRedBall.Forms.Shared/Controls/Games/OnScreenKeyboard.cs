@@ -46,6 +46,11 @@ namespace FlatRedBall.Forms.Controls.Games
 
         private void HandleButtonClick(object sender, EventArgs e)
         {
+            if(AssociatedTextBox == null)
+            {
+                throw new InvalidOperationException("You must first set the AssociatedTextBox before any input events are handled");
+            }
+
             var button = sender as Button;
             var visual = button.Visual;
 

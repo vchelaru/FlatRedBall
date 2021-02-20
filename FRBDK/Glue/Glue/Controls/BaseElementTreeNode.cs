@@ -41,11 +41,13 @@ namespace FlatRedBall.Glue.Controls
 
     #endregion
 
-    #region BaseElementTreeNode (not generic)
-
     public abstract class BaseElementTreeNode : TreeNode
     {
         #region Fields
+
+        protected TreeNode mCodeFile;
+
+        protected TreeNode mGeneratedCodeFile;
 
         protected TreeNode mCodeTreeNode;
 
@@ -83,12 +85,90 @@ namespace FlatRedBall.Glue.Controls
             }
         }
 
+        public string CodeFile
+        {
+            get { return this.mSaveObject.Name + ".cs"; }
+            set
+            {
+                if (mCodeFile == null)
+                {
+                    mCodeFile = new TreeNode(value);
+                    mCodeTreeNode.Nodes.Add(mCodeFile);
+                }
+                if (mCodeFile.Text != value)
+                {
+                    mCodeFile.Text = value;
+                }
+            }
+        }
+
+        public string GeneratedCodeFile
+        {
+            get
+            {
+                string returnValue = this.mSaveObject.Name + ".Generated.cs";
+                return returnValue;
+                //return mGeneratedCodeFile.Text;
+            }
+            set
+            {
+                if (mGeneratedCodeFile == null)
+                {
+                    mGeneratedCodeFile = new TreeNode(value);
+
+                    ElementViewWindow.Invoke((MethodInvoker)(() =>
+                    {
+                        mCodeTreeNode.Nodes.Add(mGeneratedCodeFile);
+                    }));
+                }
+                else if (mGeneratedCodeFile.Text != value)
+                {
+
+                    ElementViewWindow.Invoke((MethodInvoker)(() =>
+                    {
+                        mGeneratedCodeFile.Text = value;
+                    }));
+                }
+            }
+        }
+
+
         #region Methods
 
         public BaseElementTreeNode(string text)
             : base(text)
         {
+            mFilesTreeNode = new ReferencedFileListTreeNode("Files");
+            mFilesTreeNode.ImageKey = "master_file.png";
+            mFilesTreeNode.SelectedImageKey = "master_file.png";
+            this.Nodes.Add(mFilesTreeNode);
 
+            mObjectsTreeNode = new NamedObjectListTreeNode("Objects");
+            mObjectsTreeNode.ImageKey = "master_object.png";
+            mObjectsTreeNode.SelectedImageKey = "master_object.png";
+            this.Nodes.Add(mObjectsTreeNode);
+
+            mVariablesTreeNode = new TreeNode("Variables");
+            mVariablesTreeNode.ImageKey = "master_variables.png";
+            mVariablesTreeNode.SelectedImageKey = "master_variables.png";                
+            this.Nodes.Add(mVariablesTreeNode);
+
+            mStateListTreeNode = new StateListTreeNode("States");
+            mStateListTreeNode.ImageKey = "master_states.png";
+            mStateListTreeNode.SelectedImageKey = "master_states.png";                
+            this.Nodes.Add(mStateListTreeNode);
+
+
+            mEventsTreeNode = new TreeNode("Events");
+            mEventsTreeNode.ImageKey = "master_code.png";
+            mEventsTreeNode.SelectedImageKey = "master_code.png";                
+            this.Nodes.Add(mEventsTreeNode);
+
+           
+            mCodeTreeNode = new TreeNode("Code");
+            mCodeTreeNode.ImageKey = "master_code.png";
+            mCodeTreeNode.SelectedImageKey = "master_code.png";
+            this.Nodes.Add(mCodeTreeNode);
         }
 
 
@@ -279,7 +359,10 @@ namespace FlatRedBall.Glue.Controls
         }
 
 
-        public abstract void RefreshStateCategoryUi(StateSaveCategory category);
+        public void RefreshStateCategoryUi(StateSaveCategory category)
+        {
+            mStateListTreeNode.UpdateToStateCategory(category);
+        }
 
         //public abstract void GenerateCode();
 
@@ -455,118 +538,5 @@ namespace FlatRedBall.Glue.Controls
         #endregion
     }
 
-    #endregion
 
-    public abstract class BaseElementTreeNode<T> : BaseElementTreeNode where T : IElement
-    {
-        #region Fields
-
-        protected TreeNode mCodeFile;
-
-        protected TreeNode mGeneratedCodeFile;
-
-        #endregion
-
-        #region Properties
-
-        public string CodeFile
-        {
-            get { return this.mSaveObject.Name + ".cs"; }
-            set
-            {
-                if (mCodeFile == null)
-                {
-                    mCodeFile = new TreeNode(value);
-                    mCodeTreeNode.Nodes.Add(mCodeFile);
-                }
-                if (mCodeFile.Text != value)
-                {
-                    mCodeFile.Text = value;
-                }
-            }
-        }
-        
-        public string GeneratedCodeFile
-        {
-            get
-            {
-                string returnValue = this.mSaveObject.Name + ".Generated.cs";
-                return returnValue;
-                //return mGeneratedCodeFile.Text;
-            }
-            set
-            {
-                if (mGeneratedCodeFile == null)
-                {
-                    mGeneratedCodeFile = new TreeNode(value);
-
-                    ElementViewWindow.Invoke((MethodInvoker)(() =>
-                    {
-                        mCodeTreeNode.Nodes.Add(mGeneratedCodeFile);
-                    }));
-                }
-                else if (mGeneratedCodeFile.Text != value)
-                {
-
-                    ElementViewWindow.Invoke((MethodInvoker)(() =>
-                    {
-                        mGeneratedCodeFile.Text = value;
-                    }));
-                }
-            }
-        }
-
-        #endregion
-
-        #region Methods
-
-        #region Constructor
-
-        public BaseElementTreeNode(string text) : base(text)
-        {
-            mFilesTreeNode = new ReferencedFileListTreeNode("Files");
-            mFilesTreeNode.ImageKey = "master_file.png";
-            mFilesTreeNode.SelectedImageKey = "master_file.png";
-            this.Nodes.Add(mFilesTreeNode);
-
-            mObjectsTreeNode = new NamedObjectListTreeNode("Objects");
-            mObjectsTreeNode.ImageKey = "master_object.png";
-            mObjectsTreeNode.SelectedImageKey = "master_object.png";
-            this.Nodes.Add(mObjectsTreeNode);
-
-            mVariablesTreeNode = new TreeNode("Variables");
-            mVariablesTreeNode.ImageKey = "master_variables.png";
-            mVariablesTreeNode.SelectedImageKey = "master_variables.png";                
-            this.Nodes.Add(mVariablesTreeNode);
-
-            mStateListTreeNode = new StateListTreeNode("States");
-            mStateListTreeNode.ImageKey = "master_states.png";
-            mStateListTreeNode.SelectedImageKey = "master_states.png";                
-            this.Nodes.Add(mStateListTreeNode);
-
-
-            mEventsTreeNode = new TreeNode("Events");
-            mEventsTreeNode.ImageKey = "master_code.png";
-            mEventsTreeNode.SelectedImageKey = "master_code.png";                
-            this.Nodes.Add(mEventsTreeNode);
-
-           
-            mCodeTreeNode = new TreeNode("Code");
-            mCodeTreeNode.ImageKey = "master_code.png";
-            mCodeTreeNode.SelectedImageKey = "master_code.png";
-            this.Nodes.Add(mCodeTreeNode);
-
-
-        }
-
-        #endregion
-
-        public override void RefreshStateCategoryUi(StateSaveCategory category)
-        {
-            mStateListTreeNode.UpdateToStateCategory(category);
-        }
-
-        #endregion
-
-    }
 }
