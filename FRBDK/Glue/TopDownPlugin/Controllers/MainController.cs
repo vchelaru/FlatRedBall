@@ -65,6 +65,7 @@ namespace TopDownPlugin.Controllers
             }
         }
 
+
         private void AddTopDownGlueVariables(EntitySave entity)
         {
             // We don't make any variables because currently there's no concept of

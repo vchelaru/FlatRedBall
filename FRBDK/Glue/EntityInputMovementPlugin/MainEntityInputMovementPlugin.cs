@@ -32,6 +32,8 @@ namespace EntityInputMovementPlugin
             return true;
         }
 
+        #region Startup/Assign Events
+
         public override void StartUp()
         {
             base.RegisterCodeGenerator(new TopDownPlugin.CodeGenerators.EntityCodeGenerator());
@@ -50,10 +52,12 @@ namespace EntityInputMovementPlugin
             this.NewEntityCreatedWithUi += HandleNewEntityCreatedWithUi;
         }
 
+        #endregion
+
         private void HandleNewEntityCreatedWithUi(EntitySave entitySave, AddEntityWindow window)
         {
 
-            TopDownPlugin.Logic.NewEntityCreatedReactionLogic.ReactToNewEntityCreated(entitySave, window);
+            EntityInputMovementPlugin.Logic.NewEntityCreatedReactionLogic.ReactToNewEntityCreated(entitySave, window);
 
             GlueCommands.Self.DialogCommands.FocusTab("Entity Input Movement");
         }

@@ -9,7 +9,7 @@ using FlatRedBall.Glue.SaveClasses;
 using TopDownPlugin.ViewModels;
 using TopDownPlugin.Views;
 
-namespace TopDownPlugin.Logic
+namespace EntityInputMovementPlugin.Logic
 {
     public class NewEntityCreatedReactionLogic
     {
@@ -21,10 +21,13 @@ namespace TopDownPlugin.Logic
 
             var viewModel = control?.DataContext as AdditionalEntitiesControlViewModel;
 
-            if(viewModel?.IsTopDownEntity == true)
+            if(viewModel?.MovementType == EntityInputMovementPlugin.ViewModels.MovementType.TopDown)
             {
-                Controllers.MainController.Self.MakeCurrentEntityTopDown();
-
+                TopDownPlugin.Controllers.MainController.Self.MakeCurrentEntityTopDown();
+            }
+            else if(viewModel?.MovementType == EntityInputMovementPlugin.ViewModels.MovementType.Platformer)
+            {
+                FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.MakeCurrentEntityPlatformer();
             }
         }
     }

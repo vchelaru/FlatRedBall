@@ -6,12 +6,13 @@
              xmlns:local="clr-namespace:TopDownPlugin.Views"
              mc:Ignorable="d" 
              d:DesignWidth="300">
-    <GroupBox Header="Top Down Entity">
+    <GroupBox Header="Input Movement Type">
         <StackPanel>
-            <CheckBox VerticalContentAlignment="Center"
-                      IsChecked="{Binding IsTopDownEntity}">
-                Is Top Down Entity
-            </CheckBox>
+            <RadioButton IsChecked="{Binding IsNoneRadioChecked}">None</RadioButton>
+            <RadioButton IsChecked="{Binding IsTopDownRadioChecked}">Top-Down</RadioButton>
+            <RadioButton IsChecked="{Binding IsPlatformerRadioChecked}">Platformer</RadioButton>
+            <!--eventually...
+                    <RadioButton>Racing</RadioButton>-->
         </StackPanel> 
     </GroupBox>
 </UserControl>

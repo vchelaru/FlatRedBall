@@ -28,6 +28,11 @@
     <ProjectReference Include="..\PlatformerPlugin\PlatformerPluginCore.csproj" />
     <ProjectReference Include="..\TopDownPlugin\TopDownPluginCore.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\AdditionalEntitiesControls.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+  </ItemGroup>
 
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
