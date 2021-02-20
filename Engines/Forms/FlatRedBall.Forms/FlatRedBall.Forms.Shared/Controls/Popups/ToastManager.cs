@@ -3,6 +3,7 @@ using FlatRedBall.Managers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,20 +27,24 @@ namespace FlatRedBall.Forms.Controls.Popups
         public static Layer DefaultToastLayer { get; set; }
 
         static bool hasBeenStarted;
+#if !UWP
+        // threading works differently in UWP. do we care? Is UWP going to live?
         static void Start()
         {
             if(!hasBeenStarted)
             {
                 hasBeenStarted = true;
-                var thread = new Thread(new ThreadStart(DoLoop));
+                var thread = new System.Threading.Thread(new ThreadStart(DoLoop));
                 thread.Start();
             }
         }
+#endif
 
         public static void Show(string message, Layer frbLayer = null)
         {
             if(!hasBeenStarted)
             {
+#if !UWP
                 if(FlatRedBallServices.IsThreadPrimary())
                 {
                     Start();
@@ -48,6 +53,7 @@ namespace FlatRedBall.Forms.Controls.Popups
                 {
                     Instructions.InstructionManager.AddSafe(Start);
                 }
+#endif
             }
 
             var toastInfo = new ToastInfo { Message = message, FrbLayer = frbLayer };
