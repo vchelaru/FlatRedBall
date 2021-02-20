@@ -59,6 +59,10 @@
       <Project>{f842215c-bce1-472d-a4a0-7bab70b428b3}</Project>
       <Name>FlatRedBallAndroidv2</Name>
     </ProjectReference>
+    <ProjectReference Include="..\StateInterpolation\StateInterpolation.Android.csproj">
+      <Project>{970471cd-e8a6-4a02-8c5f-62136cc25606}</Project>
+      <Name>StateInterpolation.Android</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
