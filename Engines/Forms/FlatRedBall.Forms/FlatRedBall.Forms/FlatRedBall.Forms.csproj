@@ -74,6 +74,10 @@
       <Project>{e1cb7d7b-e2ec-4deb-92e2-6ef0b76f40f0}</Project>
       <Name>FlatRedBallXna4</Name>
     </ProjectReference>
+    <ProjectReference Include="..\StateInterpolation\StateInterpolation.csproj">
+      <Project>{f0bdee46-0374-4278-b1c3-f91a76fe3a8d}</Project>
+      <Name>StateInterpolation</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
