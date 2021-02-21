@@ -1822,7 +1822,10 @@ namespace FlatRedBallAddOns.Entities
 
 
             // Do attachments before setting any variables (which may call events)
-            NamedObjectSaveCodeGenerator.GetPostInitializeForNamedObjectList(null, saveObject.NamedObjects, currentBlock, saveObject);
+            NamedObjectSaveCodeGenerator.GetPostInitializeForNamedObjectList(null, 
+                // There may be a race condition so handle it by to-listing it
+                saveObject.NamedObjects.ToList(), 
+                currentBlock, saveObject);
 
             // July 24, 2013
             // Victor Chelaru
