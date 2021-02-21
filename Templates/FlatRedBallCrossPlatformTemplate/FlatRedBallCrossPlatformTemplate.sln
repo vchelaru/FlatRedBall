@@ -5,11 +5,14 @@ VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBallDesktopGlTemplate", "FlatRedBallDesktopGlTemplate\FlatRedBallDesktopGlTemplate.csproj", "{EBE46970-B0EF-4151-96F2-92041F649931}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameStandard", "GameStandard\GameStandard.csproj", "{61AB94AC-C3DC-497D-A680-1AACD2493612}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameStandard", "GameStandard\GameStandard.csproj", "{61AB94AC-C3DC-497D-A680-1AACD2493612}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBallStandard", "..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj", "{D8AC2D6D-5462-4FCE-907D-FF7C936FA66D}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{d8ac2d6d-5462-4fce-907d-ff7c936fa66d}*SharedItemsImports = 5
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
@@ -19,7 +22,8 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EBE46970-B0EF-4151-96F2-92041F649931}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{EBE46970-B0EF-4151-96F2-92041F649931}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBE46970-B0EF-4151-96F2-92041F649931}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EBE46970-B0EF-4151-96F2-92041F649931}.Debug|x86.ActiveCfg = Debug|x86
 		{EBE46970-B0EF-4151-96F2-92041F649931}.Debug|x86.Build.0 = Debug|x86
 		{EBE46970-B0EF-4151-96F2-92041F649931}.DebugWindows|Any CPU.ActiveCfg = DebugWindows|x86
