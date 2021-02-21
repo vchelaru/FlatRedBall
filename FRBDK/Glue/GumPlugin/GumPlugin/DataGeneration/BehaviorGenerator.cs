@@ -622,29 +622,6 @@ namespace GumPlugin.DataGeneration
     public static class BehaviorGenerator
     {
 
-        public static BehaviorSave CreateBehaviorSaveFrom(FormsControlInfo controlInfo)
-        {
-            BehaviorSave toReturn = new BehaviorSave();
-            toReturn.Name = controlInfo.BehaviorName;
 
-            foreach(var gumStateCategory in controlInfo.GumStateCategory)
-            {
-                var category = new StateSaveCategory();
-                toReturn.Categories.Add(category);
-                category.Name = gumStateCategory.Name;
-
-                if (gumStateCategory.States != null)
-                {
-                    foreach (var stateName in gumStateCategory.States)
-                    {
-                        category.States.Add(new StateSave { Name = stateName });
-                    }
-                }
-            }
-
-            toReturn.RequiredInstances.AddRange(controlInfo.RequiredInstances);
-
-            return toReturn;
-        }
     }
 }

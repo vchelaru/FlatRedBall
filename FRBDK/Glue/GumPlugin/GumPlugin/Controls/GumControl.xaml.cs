@@ -6,6 +6,7 @@ using Gum.DataTypes.Behaviors;
 using GumPlugin.DataGeneration;
 using GumPlugin.Managers;
 using GumPlugin.ViewModels;
+using GumPluginCore.Managers;
 using HQ.Util.Unmanaged;
 using System;
 using System.Collections.Generic;
@@ -76,10 +77,12 @@ namespace GumPlugin.Controls
 
                 viewModel.IncludeFormsInComponents = true;
                 viewModel.IncludeComponentToFormsAssociation = true;
-                HandleGenerateBehaviors(this, null);
-                HandleAddFormsComponentsClick(this, null);
+                FormsAddManager.GenerateBehaviors();
+                FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
             }
         }
+
+        private void HandleGenerateBehaviors(object sender, RoutedEventArgs args) => FormsAddManager.GenerateBehaviors();
 
         private GeneralResponse GetWhyAddingMonoGameIsNotSupported(ProjectBase project)
         {
@@ -104,48 +107,12 @@ namespace GumPlugin.Controls
             return response;
         }
 
-        private void HandleGenerateBehaviors(object sender, RoutedEventArgs e)
-        {
-            TaskManager.Self.Add(() =>
-            {
-                bool didAdd = false;
-
-                foreach(var control in FormsControlInfo.AllControls)
-                {
-                    if(AddIfDoesntHave(CreateBehaviorSaveFrom(control)))
-                    {
-                        didAdd = true;
-                    }
-                }
-                
-                if (didAdd)
-                {
-                    AppCommands.Self.SaveGumx();
-                }
-            }, "Adding Gum Forms Behaviors");
-        }
-
         private void HandleAddFormsComponentsClick(object sender, RoutedEventArgs e)
         {
             FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
         }
 
-        private bool AddIfDoesntHave(BehaviorSave behaviorSave)
-        {
-            var project = AppState.Self.GumProjectSave;
 
-            bool doesProjectAlreadyHaveBehavior =
-                project.Behaviors.Any(item => item.Name == behaviorSave.Name);
-
-            if(!doesProjectAlreadyHaveBehavior)
-            {
-                AppCommands.Self.AddBehavior(behaviorSave);
-            }
-            // in case it's changed, or in case the user has somehow corrupted their behavior, force save it
-            AppCommands.Self.SaveBehavior(behaviorSave);
-
-            return doesProjectAlreadyHaveBehavior == false;
-        }
 
         private void AdvancedClick(object sender, RoutedEventArgs e)
         {

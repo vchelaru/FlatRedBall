@@ -1189,16 +1189,22 @@ namespace FlatRedBall.TileCollisions
         public static void AddCollisionFromTilesWithType(this TileShapeCollection tileShapeCollection, 
             LayeredTileMap layeredTileMap, string type, bool removeTilesOnAdd = false)
         {
-            tileShapeCollection.AddCollisionFrom(
-                layeredTileMap, 
-                (list) => list.Any(item => item.Name == "Type" && (item.Value as string) == type),
-                removeTilesOnAdd);
+            if(layeredTileMap != null)
+            {
+                tileShapeCollection.AddCollisionFrom(
+                    layeredTileMap, 
+                    (list) => list.Any(item => item.Name == "Type" && (item.Value as string) == type),
+                    removeTilesOnAdd);
+            }
         }
 
         public static void AddMergedCollisionFromTilesWithType(this TileShapeCollection tileShapeCollection, LayeredTileMap layeredTileMap, string type)
         {
-            tileShapeCollection.AddMergedCollisionFrom(
+            if (layeredTileMap != null)
+            {
+                tileShapeCollection.AddMergedCollisionFrom(
                 layeredTileMap, (list) => list.Any(item => item.Name == "Type" && (item.Value as string) == type));
+            }
         }
 
         public static void MergeRectangles(this TileShapeCollection tileShapeCollection)

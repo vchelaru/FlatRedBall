@@ -75,28 +75,31 @@ namespace FlatRedBall.TileEntities
 
         public static void CreateEntitiesFrom(LayeredTileMap layeredTileMap, InstantiationRestrictions restrictions = null)
         {
-            var entitiesToRemove = new List<string>();
+            if(layeredTileMap != null)
+            {
+                var entitiesToRemove = new List<string>();
 
-            foreach (var layer in layeredTileMap.MapLayers)
-            {
-                CreateEntitiesFrom(entitiesToRemove, layer, layeredTileMap.TileProperties, layeredTileMap.WidthPerTile ?? 16, restrictions);
-            }
-            if(CurrentSettings.RemoveTileObjectsAfterEntityCreation)
-            {
-                foreach (var entityToRemove in entitiesToRemove)
+                foreach (var layer in layeredTileMap.MapLayers)
                 {
-                    string remove = entityToRemove;
-                    layeredTileMap.RemoveTiles(t => t.Any(item => (item.Name == "EntityToCreate" || item.Name == "Type") && item.Value as string == remove), layeredTileMap.TileProperties);
+                    CreateEntitiesFrom(entitiesToRemove, layer, layeredTileMap.TileProperties, layeredTileMap.WidthPerTile ?? 16, restrictions);
                 }
-            }
+                if(CurrentSettings.RemoveTileObjectsAfterEntityCreation)
+                {
+                    foreach (var entityToRemove in entitiesToRemove)
+                    {
+                        string remove = entityToRemove;
+                        layeredTileMap.RemoveTiles(t => t.Any(item => (item.Name == "EntityToCreate" || item.Name == "Type") && item.Value as string == remove), layeredTileMap.TileProperties);
+                    }
+                }
 
-            foreach (var shapeCollection in layeredTileMap.ShapeCollections)
-            {
-                CreateEntitiesFromCircles(layeredTileMap, shapeCollection, restrictions);
+                foreach (var shapeCollection in layeredTileMap.ShapeCollections)
+                {
+                    CreateEntitiesFromCircles(layeredTileMap, shapeCollection, restrictions);
 
-                CreateEntitiesFromRectangles(layeredTileMap, shapeCollection, restrictions);
+                    CreateEntitiesFromRectangles(layeredTileMap, shapeCollection, restrictions);
 
-                CreateEntitiesFromPolygons(layeredTileMap, shapeCollection, restrictions);
+                    CreateEntitiesFromPolygons(layeredTileMap, shapeCollection, restrictions);
+                }
             }
         }
 

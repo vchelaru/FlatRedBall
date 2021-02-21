@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Glue;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,6 +40,26 @@ namespace FlatRedBall.Glue.Controls
         public MultiButtonMessageBoxWpf()
         {
             InitializeComponent();
+
+
+            // Can this be done in the constructor?
+            this.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
+
+            double width = this.Width;
+            if (double.IsNaN(width))
+            {
+                width = 0;
+            }
+            double height = this.Height;
+            if (double.IsNaN(height))
+            {
+                height = 0;
+            }
+
+            this.Left = MainGlueWindow.MousePosition.X - width / 2;
+            this.Top = MainGlueWindow.MousePosition.Y - height / 2;
+
+
         }
 
         public void AddButton(string text, object result)

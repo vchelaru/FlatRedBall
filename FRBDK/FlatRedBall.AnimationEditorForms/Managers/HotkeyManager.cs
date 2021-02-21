@@ -25,6 +25,15 @@ namespace FlatRedBall.AnimationEditorForms.Managers
                 case Keys.Alt | Keys.Shift | Keys.Up:
                     TreeViewManager.Self.MoveToTopClick(null, null);
                     return true;
+                case Keys.Control | Keys.C:
+                    CopyManager.Self.HandleCopy();
+                    return true;
+                case Keys.Control | Keys.V:
+                    CopyManager.Self.HandlePaste();
+                    return true;
+                case Keys.Control | Keys.D:
+                    CopyManager.Self.HandleDuplicate();
+                    return true;
                 default:
                     return false;
             }
