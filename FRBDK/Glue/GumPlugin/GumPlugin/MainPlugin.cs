@@ -671,10 +671,11 @@ namespace GumPlugin
                         FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
                     }
 
-                    GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
-                        "Would you like to mark the Gum plugin as a required plugin for this project? " +
-                        "This can help others who open this project",
-                        yesAction: HandleMakePluginRequiredYes);
+                    // no longer needed now that we embed the plugins
+                    //GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
+                    //    "Would you like to mark the Gum plugin as a required plugin for this project? " +
+                    //    "This can help others who open this project",
+                    //    yesAction: HandleMakePluginRequiredYes);
                 }
 
 

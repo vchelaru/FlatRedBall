@@ -10,8 +10,10 @@
             <Image ToolTip="Run Game" Source="/OfficialPluginsCore;component/Compiler/Icons/play.png"></Image>
         </Button>-->
 
-        <xctk:SplitButton x:Name="SplitButton" Width="148" Height="22" HorizontalContentAlignment="Left" 
-                          Click="HandleButtonClick" IsEnabled="{Binding IsToolbarPlayButtonEnabled}">
+        <xctk:SplitButton x:Name="SplitButton" Width="148" Height="22" 
+                          HorizontalContentAlignment="Left"
+                          IsEnabled="{Binding IsEnabled}"
+                          Click="HandleButtonClick">
             <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                 <Image ToolTip="Run Game" Source="/OfficialPluginsCore;component/Compiler/Icons/play.png"></Image>
                 <TextBlock Margin="5,0,0,0" Text="{Binding StartupScreenName}"></TextBlock>

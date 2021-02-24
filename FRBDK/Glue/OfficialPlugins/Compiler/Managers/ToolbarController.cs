@@ -81,10 +81,13 @@ namespace OfficialPluginsCore.Compiler.Managers
                 GlueState.Self.CurrentGlueProject.StartUpScreen?.Substring("Screens\\".Length);
         }
 
+
         internal void HandleGluxUnloaded()
         {
             toolbarViewModel.AvailableScreens.Clear();
+            toolbarViewModel.StartupScreenName = null;
         }
+        
 
         string ScreenName(ScreenSave screen) => screen.Name.Substring("Screens\\".Length);
 
@@ -95,6 +98,11 @@ namespace OfficialPluginsCore.Compiler.Managers
                 toolbarViewModel.StartupScreenName =
                     GlueState.Self.CurrentGlueProject.StartUpScreen?.Substring("Screens\\".Length);
             }
+        }
+
+        internal void SetEnabled(bool isToolbarPlayButtonEnabled)
+        {
+            toolbarViewModel.IsEnabled = isToolbarPlayButtonEnabled;
         }
     }
 }

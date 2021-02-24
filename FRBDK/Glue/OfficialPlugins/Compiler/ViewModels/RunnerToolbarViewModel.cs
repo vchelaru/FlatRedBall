@@ -19,6 +19,15 @@ namespace OfficialPluginsCore.Compiler.ViewModels
             get; set;
         } = new ObservableCollection<string>();
 
+        public bool IsEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
+        public RunnerToolbarViewModel()
+        {
+            IsEnabled = true;
+        }
     }
 }

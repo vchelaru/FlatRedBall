@@ -318,6 +318,9 @@ namespace OfficialPlugins.Compiler
                 case nameof(CompilerViewModel.EffectiveIsRebuildAndRestartEnabled):
                     RefreshManager.Self.IsExplicitlySetRebuildAndRestartEnabled = viewModel.EffectiveIsRebuildAndRestartEnabled;
                     break;
+                case nameof(CompilerViewModel.IsToolbarPlayButtonEnabled):
+                    ToolbarController.Self.SetEnabled(viewModel.IsToolbarPlayButtonEnabled);
+                    break;
             }
         }
 
