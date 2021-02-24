@@ -56,7 +56,7 @@ namespace FlatRedBall.Glue.Controls
                 height = 0;
             }
 
-            this.Left = MainGlueWindow.MousePosition.X - width / 2;
+            this.Left = System.Math.Max(0, MainGlueWindow.MousePosition.X - width / 2);
             this.Top = MainGlueWindow.MousePosition.Y - height / 2;
 
 
