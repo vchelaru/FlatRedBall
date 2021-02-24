@@ -34,7 +34,6 @@ namespace FlatRedBall.Glue.Controls
 
         AddNewFileViewModel ViewModel => DataContext as AddNewFileViewModel;
 
-        bool mIsNameDefault = true;
 
         public List<string> NamesAlreadyUsed
         {
@@ -153,7 +152,7 @@ namespace FlatRedBall.Glue.Controls
 
             if (ati != null)
             {
-                if (mIsNameDefault)
+                if (ViewModel.IsNameDefault)
                 {
                     string fileType = GetObjectTypeFromAti(ati);
                     // We want to make sure we don't

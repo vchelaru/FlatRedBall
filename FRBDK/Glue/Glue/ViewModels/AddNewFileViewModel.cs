@@ -19,6 +19,23 @@ namespace GlueFormsCore.ViewModels
         public string FileName
         {
             get => Get<string>();
+            set
+            {
+                if (Set(value))
+                {
+                    IsNameDefault = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// If true, then changing the selection will rename
+        /// the file. If false, the name will stick regardless
+        /// of the selection
+        /// </summary>
+        public bool IsNameDefault
+        {
+            get => Get<bool>();
             set => Set(value);
         }
 
@@ -48,6 +65,7 @@ namespace GlueFormsCore.ViewModels
 
         public AddNewFileViewModel()
         {
+            IsNameDefault = true;
             AllOptions.CollectionChanged += (not, used) => RefreshFilteredOptions();
         }
 

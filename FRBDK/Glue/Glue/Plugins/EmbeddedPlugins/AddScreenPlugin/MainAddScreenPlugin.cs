@@ -6,6 +6,7 @@ using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.ViewModels;
+using FlatRedBall.Utilities;
 using GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels;
 using GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.Views;
 using GlueFormsCore.ViewModels;
@@ -56,6 +57,18 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                     // no reason to have the game screen be the startup screen if we are going to have levels
                     viewModel.IsSetAsStartupChecked = true;
                 }
+
+                var levelName = "Level1";
+
+                var allScreenNames =
+                    GlueState.Self.CurrentGlueProject.Screens
+                    .Select(item => item.GetStrippedName())
+                    .ToList();
+
+                levelName = StringFunctions.MakeStringUnique(levelName,
+                    allScreenNames, 2);
+
+                window.Result = levelName;
             }
             else
             {
