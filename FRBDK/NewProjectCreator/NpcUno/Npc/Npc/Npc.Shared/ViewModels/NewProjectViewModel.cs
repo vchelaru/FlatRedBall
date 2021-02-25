@@ -1,5 +1,7 @@
-﻿using System;
+﻿using NewProjectCreator;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using Windows.UI.Xaml;
 
@@ -7,6 +9,22 @@ namespace Npc.ViewModels
 {
     public class NewProjectViewModel : ViewModel
     {
+        char[] invalidNamespaceCharacters = new char[]
+        {
+                '~', '`', '!', '@', '#', '$', '%', '^', '&', '*',
+                '(', ')', '-', '=', '+', ';', '\'', ':', '"', '<',
+                ',', '>', '.', '/', '\\', '?', '[', '{', ']', '}',
+                '|',
+        // Spaces are handled separately
+        //    ' ' 
+        };
+
+        public bool IsOnlineTemplatesChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public bool OpenSlnFolderAfterCreation
         {
             get => Get<bool>();
@@ -51,7 +69,7 @@ namespace Npc.ViewModels
 
         [DependsOn(nameof(ProjectLocation))]
         [DependsOn(nameof(ProjectName))]
-        string CombinedProjectDirectory
+        public string CombinedProjectDirectory
         {
             get
             {
@@ -85,9 +103,53 @@ namespace Npc.ViewModels
             }
         }
 
+        public ObservableCollection<PlatformProjectInfo> AvailableProjects
+        {
+            get;
+            private set;
+        } = new ObservableCollection<PlatformProjectInfo>();
+
+        public PlatformProjectInfo SelectedProject
+        {
+            get => Get<PlatformProjectInfo>();
+            set => Set(value);
+        }
+
         public NewProjectViewModel()
         {
             ProjectName = "MyProject";
+        }
+
+        internal string GetWhyIsntValid()
+        {
+            string whyIsntValid = null;
+            if (IsDifferentNamespaceChecked)
+            {
+                if (string.IsNullOrEmpty(DifferentNamespace))
+                {
+                    whyIsntValid = "You must enter a non-empty namespace if using a different namespace";
+                }
+                else if (char.IsDigit(DifferentNamespace[0]))
+                {
+                    whyIsntValid = "Namespace can't start with a number.";
+                }
+                else if (DifferentNamespace.Contains(" "))
+                {
+                    whyIsntValid = "The namespace can't have any spaces.";
+                }
+                else if (DifferentNamespace.IndexOfAny(invalidNamespaceCharacters) != -1)
+                {
+                    whyIsntValid = "The namespace can't contain invalid character " + DifferentNamespace[DifferentNamespace.IndexOfAny(invalidNamespaceCharacters)];
+                }
+            }
+
+            if (string.IsNullOrEmpty(whyIsntValid))
+            {
+                whyIsntValid = ProjectCreationHelper.GetWhyProjectNameIsntValid(ProjectName);
+            }
+
+
+            return whyIsntValid;
         }
     }
 }

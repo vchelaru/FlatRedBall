@@ -64,9 +64,50 @@ namespace Npc
             }
         }
 
-        void SelectLocationClicked(object sender, RoutedEventArgs args)
+        async void SelectLocationClicked(object sender, RoutedEventArgs args)
         {
+            var folderPicker = new Windows.Storage.Pickers.FolderPicker();
+            folderPicker.SuggestedStartLocation = 
+                Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+            folderPicker.FileTypeFilter.Add("*");
 
+            Windows.Storage.StorageFolder folder = await folderPicker.PickSingleFolderAsync();
+            if (folder != null)
+            {
+                // Application now has read/write access to all contents in the picked folder
+                // (including other sub-folder contents)
+                Windows.Storage.AccessCache.StorageApplicationPermissions.
+                FutureAccessList.AddOrReplace("PickedFolderToken", folder);
+                //this.textBlock.Text = "Picked folder: " + folder.Name;
+                ViewModel.ProjectLocation = folder.Path;
+            }
+        }
+
+        async void HandleMakeMyProjectClicked(object sender, RoutedEventArgs args)
+        {
+            string whyIsntValid = ViewModel.GetWhyIsntValid();
+
+            if (!string.IsNullOrEmpty(whyIsntValid))
+            {
+                MessageBox.Show(whyIsntValid);
+            }
+            else
+            {
+                bool succeeded = false;
+                try
+                {
+                    succeeded = await ProjectCreationHelper.MakeNewProject(ViewModel);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+
+                if (succeeded)
+                {
+                    this.Close();
+                }
+            }
         }
     }
 }

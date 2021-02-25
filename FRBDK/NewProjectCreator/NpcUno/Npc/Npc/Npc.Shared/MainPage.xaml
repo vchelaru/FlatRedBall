@@ -66,7 +66,7 @@
                 <TextBlock>Solution (.sln) will be located in:</TextBlock>
                 <TextBlock Text="{x:Bind Path=ViewModel.FinalDirectory, Mode=OneWay}" Margin="15,0,0,0"></TextBlock>
             </StackPanel>
-            <Button HorizontalAlignment="Stretch" Grid.Row="1">Make my project!</Button>
+            <Button HorizontalAlignment="Stretch" Grid.Row="1" Click="HandleMakeMyProjectClicked">Make my project!</Button>
         </Grid>
     </Grid>
 </Page>

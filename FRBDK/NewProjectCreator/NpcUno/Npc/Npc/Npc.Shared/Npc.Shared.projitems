@@ -23,8 +23,13 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Managers\CommandLineManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Managers\EmbeddedExecutableExtractor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Managers\GuidLogic.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Managers\ProjectCreationHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Managers\Singleton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Managers\UnzipManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PlatformProjectInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\UpdaterRuntimeSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\NewProjectViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ViewModel.cs" />
   </ItemGroup>
