@@ -59,136 +59,7 @@ namespace FlatRedBall.Glue.Managers
                 }
                 else if (targetNos != null && targetNos.SourceType == SourceType.FlatRedBallType)
                 {
-                    var ati = targetNos.GetAssetTypeInfo();
-                    string targetClassType = ati?.FriendlyName;
-
-                    bool canBeMovedInList = false;
-                    bool canBeCollidable = false;
-
-                    #region Failure cases
-
-                    if (string.IsNullOrEmpty(targetClassType))
-                    {
-                        MessageBox.Show("The target Object does not have a defined type.  This operation is not valid");
-                    }
-
-                    #endregion
-
-                    else if (ati == AvailableAssetTypes.CommonAtis.Layer)
-                    {
-                        // Only allow this if the NOS's are on the same object
-                        if (ObjectFinder.Self.GetElementContaining(movingNos) ==
-                            ObjectFinder.Self.GetElementContaining(targetNos))
-                        {
-                            succeeded = true;
-                            movingNos.LayerOn = targetNos.InstanceName;
-                            MainGlueWindow.Self.PropertyGrid.Refresh();
-                        }
-                    }
-
-                    else if(targetClassType == "ShapeCollection")
-                    {
-                        var response = HandleDropOnShapeCollection(treeNodeMoving, targetNode, targetNos, movingNos);
-
-                        if(!response.Succeeded && IsCollidableOrCollidableList(movingNos))
-                        {
-                            response = HandleCreateCollisionRelationship(movingNos, targetNos);
-                        }
-
-                        if(!response.Succeeded)
-                        {
-                            MessageBox.Show($"Could not drop {movingNos} on {targetNos}");
-
-                        }
-                        succeeded = response.Succeeded;
-                    }
-
-                    else
-                    {
-                        if(IsCollidableOrCollidableList(movingNos) && IsCollidableOrCollidableList(targetNos))
-                        {
-                            canBeCollidable = true;
-                        }
-                        //else if(IsCollidable(movingNos) && IsCollidableList(targetNos) && movingNos.CanBeInList(targetNos) == false)
-                        //{
-                        //    var response = HandleCreateCollisionRelationship(movingNos, targetNos);
-
-                        //    if (!response.Succeeded)
-                        //    {
-                        //        MessageBox.Show(response.Message);
-                        //    }
-
-                        //    succeeded = response.Succeeded;
-                        //}
-                        if (ati == AvailableAssetTypes.CommonAtis.PositionedObjectList)
-                        {
-                            if (string.IsNullOrEmpty(targetNos.SourceClassGenericType))
-                            {
-                                canBeMovedInList = false;
-                                //toReturn.Message = "The target Object has not been given a list type yet";
-                            }
-                            else if (movingNos.CanBeInList(targetNos) == false)
-                            {
-                                canBeMovedInList = false;
-                                //toReturn.Message = "The Object you are moving is of type " + movingNos.SourceClassType +
-                                //    " but the list is of type " + targetNos.SourceClassGenericType;
-
-                            }
-                            else if (treeNodeMoving.Parent.IsRootNamedObjectNode() == false)
-                            {
-                                canBeMovedInList = false;
-                                //toReturn.Message = "The Object you are moving is already part of a list, so it can't be moved";
-                            }
-                            else
-                            {
-                                canBeMovedInList = true;
-                            }
-                        }
-                    }
-
-                    if(canBeMovedInList && canBeCollidable)
-                    {
-                        string message = "Move to list or create collision relationship?";
-                            
-                        var mbmb = new MultiButtonMessageBox();
-                        mbmb.MessageText = message;
-                        mbmb.AddButton("Move to List", DialogResult.Yes);
-                        mbmb.AddButton("Create Collision Relationship", DialogResult.No);
-
-                        var result = mbmb.ShowDialog();
-
-                        if(result == DialogResult.Yes)
-                        {
-                            canBeMovedInList = true;
-                            canBeCollidable = false;
-                        }
-                        else if(result == DialogResult.No)
-                        {
-                            canBeCollidable = true;
-                            canBeMovedInList = false;
-                        }
-                    }
-
-                    if(canBeMovedInList)
-                    {
-                        var response = HandleDropOnList(treeNodeMoving, targetNode, targetNos, movingNos);
-                        if (!response.Succeeded)
-                        {
-                            MessageBox.Show(response.Message);
-                        }
-                        succeeded = response.Succeeded;
-                    }
-                    else if(canBeCollidable)
-                    {
-                        var response = HandleCreateCollisionRelationship(movingNos, targetNos);
-
-                        if (!response.Succeeded)
-                        {
-                            MessageBox.Show(response.Message);
-                        }
-
-                        succeeded = response.Succeeded;
-                    }
+                    succeeded = DragDropNosOnNos(treeNodeMoving, targetNode, targetNos, movingNos, succeeded);
 
                 }
                 else
@@ -212,6 +83,155 @@ namespace FlatRedBall.Glue.Managers
                     GluxCommands.Self.SaveGlux();
                 }
             }
+        }
+
+        private bool DragDropNosOnNos(TreeNode treeNodeMoving, TreeNode targetNode, NamedObjectSave targetNos, NamedObjectSave movingNos, bool succeeded)
+        {
+            var ati = targetNos.GetAssetTypeInfo();
+            string targetClassType = ati?.FriendlyName;
+
+            bool canBeMovedInList = false;
+            bool canBeCollidable = false;
+
+            #region Failure cases
+
+            if (string.IsNullOrEmpty(targetClassType))
+            {
+                MessageBox.Show("The target Object does not have a defined type.  This operation is not valid");
+            }
+
+            #endregion
+
+            #region On Layer
+
+            else if (ati == AvailableAssetTypes.CommonAtis.Layer)
+            {
+                // Only allow this if the NOS's are on the same object
+                if (ObjectFinder.Self.GetElementContaining(movingNos) ==
+                    ObjectFinder.Self.GetElementContaining(targetNos))
+                {
+                    succeeded = true;
+                    movingNos.LayerOn = targetNos.InstanceName;
+                    MainGlueWindow.Self.PropertyGrid.Refresh();
+                }
+            }
+
+            #endregion
+
+            else if (ati == AvailableAssetTypes.CommonAtis.ShapeCollection)
+            {
+                var response = HandleDropOnShapeCollection(treeNodeMoving, targetNode, targetNos, movingNos);
+
+                if (!response.Succeeded && IsCollidableOrCollidableList(movingNos))
+                {
+                    response = HandleCreateCollisionRelationship(movingNos, targetNos);
+                }
+
+                if (!response.Succeeded)
+                {
+                    MessageBox.Show($"Could not drop {movingNos} on {targetNos}");
+
+                }
+                else
+                {
+
+                }
+                succeeded = response.Succeeded;
+            }
+
+            else
+            {
+                if (IsCollidableOrCollidableList(movingNos) && IsCollidableOrCollidableList(targetNos))
+                {
+                    canBeCollidable = true;
+                }
+                //else if(IsCollidable(movingNos) && IsCollidableList(targetNos) && movingNos.CanBeInList(targetNos) == false)
+                //{
+                //    var response = HandleCreateCollisionRelationship(movingNos, targetNos);
+
+                //    if (!response.Succeeded)
+                //    {
+                //        MessageBox.Show(response.Message);
+                //    }
+
+                //    succeeded = response.Succeeded;
+                //}
+                if (ati == AvailableAssetTypes.CommonAtis.PositionedObjectList)
+                {
+                    if (string.IsNullOrEmpty(targetNos.SourceClassGenericType))
+                    {
+                        canBeMovedInList = false;
+                        //toReturn.Message = "The target Object has not been given a list type yet";
+                    }
+                    else if (movingNos.CanBeInList(targetNos) == false)
+                    {
+                        canBeMovedInList = false;
+                        //toReturn.Message = "The Object you are moving is of type " + movingNos.SourceClassType +
+                        //    " but the list is of type " + targetNos.SourceClassGenericType;
+
+                    }
+                    else if (treeNodeMoving.Parent.IsRootNamedObjectNode() == false)
+                    {
+                        canBeMovedInList = false;
+                        //toReturn.Message = "The Object you are moving is already part of a list, so it can't be moved";
+                    }
+                    else
+                    {
+                        canBeMovedInList = true;
+                    }
+                }
+            }
+
+            if (canBeMovedInList && canBeCollidable)
+            {
+                string message = "Move to list or create collision relationship?";
+
+                var mbmb = new MultiButtonMessageBox();
+                mbmb.MessageText = message;
+                mbmb.AddButton("Move to List", DialogResult.Yes);
+                mbmb.AddButton("Create Collision Relationship", DialogResult.No);
+
+                var result = mbmb.ShowDialog();
+
+                if (result == DialogResult.Yes)
+                {
+                    canBeMovedInList = true;
+                    canBeCollidable = false;
+                }
+                else if (result == DialogResult.No)
+                {
+                    canBeCollidable = true;
+                    canBeMovedInList = false;
+                }
+            }
+
+            if (canBeMovedInList)
+            {
+                var response = HandleDropOnList(treeNodeMoving, targetNode, targetNos, movingNos);
+                if (!response.Succeeded)
+                {
+                    MessageBox.Show(response.Message);
+                }
+                succeeded = response.Succeeded;
+            }
+            else if (canBeCollidable)
+            {
+                var response = HandleCreateCollisionRelationship(movingNos, targetNos);
+
+                if (!response.Succeeded)
+                {
+                    MessageBox.Show(response.Message);
+                }
+
+                succeeded = response.Succeeded;
+            }
+
+            if(succeeded)
+            {
+                GlueState.Self.CurrentNamedObjectSave = movingNos;
+            }
+
+            return succeeded;
         }
 
         private GeneralResponse HandleCreateCollisionRelationship(NamedObjectSave movingNos, NamedObjectSave targetNos)
@@ -743,8 +763,6 @@ namespace FlatRedBall.Glue.Managers
                 elementToCreateIn, null);
         }
 
-        #endregion
-
         private static void AskAndAddAllContainedRfsToGlobalContent(IElement element)
         {
             string message = "Add all contained files in " + element.ToString() + " to Global Content Files?  Files will still be referenced by " + element.ToString();
@@ -799,6 +817,10 @@ namespace FlatRedBall.Glue.Managers
                 GluxCommands.Self.SaveGlux();
             }
         }
+
+        #endregion
+
+        #region Referenced File
 
         public void MoveReferencedFile(TreeNode treeNodeMoving, TreeNode targetNode)
         {
@@ -1017,7 +1039,6 @@ namespace FlatRedBall.Glue.Managers
 
         }
 
-
         private static void MoveReferencedFileToDirectory(ReferencedFileSave referencedFileSave, string targetDirectory)
         {
             // Things to do:
@@ -1219,6 +1240,8 @@ namespace FlatRedBall.Glue.Managers
 
             return response;
         }
+
+        #endregion
 
     }
 }

@@ -81,9 +81,11 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             {
                 GlueState.Self.CurrentNamedObjectSave = null;
             }
-
-            GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog();
-            AnyButtonClicked();
+            if(GlueState.Self.CurrentElement != null)
+            {
+                GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog();
+                AnyButtonClicked();
+            }
         }
 
         private void AddInstanceOfEntityButton_Clicked(object sender, RoutedEventArgs e)

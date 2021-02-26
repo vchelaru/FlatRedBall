@@ -1,46 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
+﻿using Npc.Managers;
 using Npc.ViewModels;
-using Npc.Managers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Forms;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
 namespace Npc
 {
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public sealed partial class MainPage : Page
+    public partial class MainWindow : Window
     {
         public NewProjectViewModel ViewModel { get; set; }
 
-
-        public MainPage()
+        public MainWindow()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             ViewModel = new NewProjectViewModel();
             ViewModel.OpenSlnFolderAfterCreation = true;
             ViewModel.IsCreateProjectDirectoryChecked = true;
 
-            foreach (var item in Data.EmptyTemplates.Projects)
+            foreach (var item in Npc.Data.EmptyTemplates.Projects)
             {
                 ViewModel.AvailableProjects.Add(item);
             }
-            ViewModel.SelectedProject = Data.EmptyTemplates.Projects.FirstOrDefault();
+            ViewModel.SelectedProject = Npc.Data.EmptyTemplates.Projects.FirstOrDefault();
 
             string folderName = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\FlatRedBallProjects\";
             ViewModel.ProjectLocation = folderName;
@@ -72,34 +69,15 @@ namespace Npc
             }
         }
 
-        async void SelectLocationClicked(object sender, RoutedEventArgs args)
+        void SelectLocationClicked(object sender, RoutedEventArgs args)
         {
-            var folderPicker = new Windows.Storage.Pickers.FolderPicker();
-            folderPicker.SuggestedStartLocation = 
-                Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
-            folderPicker.FileTypeFilter.Add("*");
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            System.Windows.Forms.DialogResult result = fbd.ShowDialog();
 
-            Windows.Storage.StorageFolder folder = await folderPicker.PickSingleFolderAsync();
-            if (folder != null)
+            if (result == System.Windows.Forms.DialogResult.OK)
             {
-                // Application now has read/write access to all contents in the picked folder
-                // (including other sub-folder contents)
-                Windows.Storage.AccessCache.StorageApplicationPermissions.
-                FutureAccessList.AddOrReplace("PickedFolderToken", folder);
-                //this.textBlock.Text = "Picked folder: " + folder.Name;
-                ViewModel.ProjectLocation = folder.Path;
+                ViewModel.ProjectLocation = fbd.SelectedPath;
             }
-        }
-
-        static async Task ShowMessageBox(string message)
-        {
-            var msgbox = new ContentDialog
-            {
-                Title = "",
-                Content = message,
-                CloseButtonText = "OK"
-            };
-            await msgbox.ShowAsync();
         }
 
         async void HandleMakeMyProjectClicked(object sender, RoutedEventArgs args)
@@ -108,7 +86,7 @@ namespace Npc
 
             if (!string.IsNullOrEmpty(whyIsntValid))
             {
-                await ShowMessageBox(whyIsntValid);
+                System.Windows.MessageBox.Show(whyIsntValid);
             }
             else
             {
@@ -119,12 +97,12 @@ namespace Npc
                 }
                 catch (Exception ex)
                 {
-                    await ShowMessageBox(ex.ToString());
+                    System.Windows.MessageBox.Show(ex.ToString());
                 }
 
                 if (succeeded)
                 {
-                    Application.Current.Exit();
+                    this.Close();
                 }
             }
         }

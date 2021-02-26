@@ -6,10 +6,8 @@ using System.IO;
 using System.Diagnostics;
 using Npc.ViewModels;
 using Npc.Managers;
-using NewProjectCreator;
 using ToolsUtilities;
 using System.Threading.Tasks;
-using Windows.UI.Xaml.Controls;
 using FRBDKUpdater;
 
 namespace Npc
@@ -68,15 +66,9 @@ namespace Npc
 
         #endregion
 
-        static async Task ShowMessageBox(string message)
+        static void ShowMessageBox(string message)
         {
-            var msgbox = new ContentDialog
-            {
-                Title = "",
-                Content = message,
-                CloseButtonText = "OK"
-            };
-            await msgbox.ShowAsync();
+            System.Windows.MessageBox.Show(message);
         }
 
         public static async Task<bool> MakeNewProject(NewProjectViewModel viewModel)
@@ -95,7 +87,7 @@ namespace Npc
                 if (!ppi.SupportedInGlue)
                 {
                     succeeded = false;
-                    await ShowMessageBox("This project type is not supported in Glue.  You must launch the New Project Creator manually");
+                    ShowMessageBox("This project type is not supported in Glue.  You must launch the New Project Creator manually");
                 }
             }
 
@@ -127,7 +119,7 @@ namespace Npc
 
                     if (!downloadSucceeded)
                     {
-                        await ShowMessageBox("Error downloading the file");
+                        ShowMessageBox("Error downloading the file");
                     }
                 }
 
@@ -140,7 +132,7 @@ namespace Npc
                     }
                     catch (UnauthorizedAccessException)
                     {
-                        await ShowMessageBox("The program does not have permission to create a directory at\n\n" + unpackDirectory + "\n\nPlease run as administrator mode");
+                        ShowMessageBox("The program does not have permission to create a directory at\n\n" + unpackDirectory + "\n\nPlease run as administrator mode");
                         succeeded = false;
                     }
 
@@ -148,7 +140,7 @@ namespace Npc
                     {
                         if (!File.Exists(zipToUnpack))
                         {
-                            await ShowMessageBox("Could not find the template file:\n" + zipToUnpack);
+                            ShowMessageBox("Could not find the template file:\n" + zipToUnpack);
                         }
 
 
@@ -302,7 +294,7 @@ namespace Npc
 
             if(!string.IsNullOrEmpty(whyIsInvalid))
             {
-                await ShowMessageBox(whyIsInvalid);
+                ShowMessageBox(whyIsInvalid);
             }
 
             isFileNameValid = string.IsNullOrEmpty(whyIsInvalid);

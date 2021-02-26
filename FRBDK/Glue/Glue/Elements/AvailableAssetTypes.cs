@@ -36,6 +36,8 @@ namespace FlatRedBall.Glue.Elements
         public AssetTypeInfo Text { get; set; }
         public AssetTypeInfo PositionedObjectList { get; set; }
         public AssetTypeInfo Layer { get; set; }
+
+        public AssetTypeInfo ShapeCollection { get; set; }
     }
 
     public class AvailableAssetTypes
@@ -199,6 +201,8 @@ namespace FlatRedBall.Glue.Elements
             CommonAtis.Sprite = GetAti(nameof(Sprite));
             CommonAtis.Text = GetAti(nameof(Text));
             CommonAtis.Layer = GetAti(nameof(Layer));
+
+            CommonAtis.ShapeCollection = GetAti("Shape Collection (.shcx)");
 
             CommonAtis.PositionedObjectList = GetAti("PositionedObjectList (Generic)");
 

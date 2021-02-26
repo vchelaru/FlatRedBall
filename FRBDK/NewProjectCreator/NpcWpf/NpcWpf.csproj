@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>Npc</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Libraries\FlatRedBall.Tools.dll" />
+    <None Remove="Libraries\FRBDKUpdater.exe" />
+    <None Remove="Libraries\Ionic.Zip.dll" />
+    <None Remove="Libraries\Ionic.Zlib.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Libraries\FlatRedBall.Tools.dll" />
+    <EmbeddedResource Include="Libraries\FRBDKUpdater.exe" />
+    <EmbeddedResource Include="Libraries\Ionic.Zip.dll" />
+    <EmbeddedResource Include="Libraries\Ionic.Zlib.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotNetZip" Version="1.15.0" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0-preview.1.21102.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Gum\ToolsUtilities\ToolsUtilitiesStandard.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.Windows.Forms.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

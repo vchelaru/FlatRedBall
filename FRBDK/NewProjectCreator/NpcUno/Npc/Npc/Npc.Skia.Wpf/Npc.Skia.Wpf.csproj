@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- Note that for WebAssembly version 1.1.1 of the console logger required -->
+    <PackageReference Include="Ionic.Zip" Version="1.9.1.8" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Filter" Version="1.1.1" />
     <PackageReference Include="Uno.Microsoft.Toolkit.Uwp.UI.Controls" Version="6.1.0-build.207.gcac670e618" />
@@ -13,6 +14,9 @@
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Include="..\Npc.Shared\**\*.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\..\Gum\ToolsUtilities\ToolsUtilitiesStandard.csproj" />
   </ItemGroup>
   <Import Project="..\Npc.Shared\Npc.Shared.projitems" Label="Shared" />
 </Project>
