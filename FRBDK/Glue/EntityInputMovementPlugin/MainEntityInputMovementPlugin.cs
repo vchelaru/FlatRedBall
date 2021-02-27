@@ -189,5 +189,15 @@ namespace EntityInputMovementPlugin
             TopDownPlugin.Controllers.MainController.Self.CheckForNoTopDownEntities();
             //FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.CheckForNoPlatformerEntities();
         }
+
+        public void MakeCurrentEntityPlatformer()
+        {
+            mainViewModel.PlatformerViewModel.IsPlatformer = true;
+        }
+
+        public void MakeCurrentEntityTopDown()
+        {
+            mainViewModel.TopDownViewModel.IsTopDown = true;
+        }
     }
 }

@@ -159,12 +159,13 @@ namespace FlatRedBall.Glue.Controls
                     // suggest a name that is already
                     // being used.
                     //textBox1.Text = fileType + "File";
+                    //This sets the IsNameDefault to false, so set it back to true:
                     ViewModel.FileName = StringFunctions.MakeStringUnique(fileType + "File", NamesAlreadyUsed, 2);
-
                     while (ObjectFinder.Self.GetReferencedFileSaveFromFile(ViewModel.FileName + "." +  ViewModel.SelectedAssetTypeInfo?.Extension) != null)
                     {
                         ViewModel.FileName = FlatRedBall.Utilities.StringFunctions.IncrementNumberAtEnd(ViewModel.FileName);
                     }
+                    ViewModel.IsNameDefault = true;
                 }
             }
         }

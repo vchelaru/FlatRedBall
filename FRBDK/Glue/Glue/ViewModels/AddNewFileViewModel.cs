@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Windows;
 
 namespace GlueFormsCore.ViewModels
 {
@@ -50,6 +51,27 @@ namespace GlueFormsCore.ViewModels
             get;
             private set;
         } = new ObservableCollection<AssetTypeInfo>();
+
+        public AssetTypeInfo ForcedType
+        {
+            get => Get<AssetTypeInfo>();
+            set
+            {
+                if (Set(value) && value != null)
+                {
+                    SelectedAssetTypeInfo = value;
+                }
+            }
+        }
+
+        [DependsOn(nameof(ForcedType))]
+        public Visibility FileTypeSelectionVisibility => ForcedType == null ? Visibility.Visible : Visibility.Collapsed;
+
+        [DependsOn(nameof(ForcedType))]
+        public SizeToContent SizeToContent => ForcedType == null ? SizeToContent.Manual : SizeToContent.Height;
+
+        [DependsOn(nameof(ForcedType))]
+        public int AdditionalUiStackColumn => ForcedType == null ? 1 : 0;
 
         public string FilterText
         {

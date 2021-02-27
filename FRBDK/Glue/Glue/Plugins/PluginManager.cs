@@ -1184,7 +1184,7 @@ namespace FlatRedBall.Glue.Plugins
             plugin => plugin.NewEntityCreatedWithUi != null);
         }
 
-        internal static void ReactToCreateCollisionRelationshipsBetween(NamedObjectSave firstNos, NamedObjectSave secondNos)
+        public static void ReactToCreateCollisionRelationshipsBetween(NamedObjectSave firstNos, NamedObjectSave secondNos)
         {
             CallMethodOnPlugin((plugin) =>
             {

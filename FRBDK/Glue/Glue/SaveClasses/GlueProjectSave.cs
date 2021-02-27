@@ -36,12 +36,9 @@ namespace FlatRedBall.Glue.SaveClasses
 
     public class GlueProjectSave
     {
-        #region Fields / Properties
-
         // Version 0/1 didn't exist
-
-
         // Version 2 introduces a partial game class
+        // Version 3 has lists associated with factory
         public enum GluxVersions
         {
             PreVersion = 1,
@@ -51,6 +48,9 @@ namespace FlatRedBall.Glue.SaveClasses
             CsvInheritanceSupport = 5
 
         }
+
+        #region Fields / Properties
+
         public const int LatestVersion = 5;
 
         public int FileVersion { get; set; }
@@ -132,6 +132,9 @@ namespace FlatRedBall.Glue.SaveClasses
         // Glue knows to use the new settings. Eventually we'll just "new" this right here, but
         // in the meantime, Glue code will new it in ProjectLoader.
         public DisplaySettings DisplaySettings { get; set; }
+
+        public List<DisplaySettings> AllDisplaySettings { get; set; }
+        = new List<DisplaySettings>();
 
         [XmlIgnore]
         public bool UsesTranslation

@@ -6,9 +6,24 @@
              xmlns:local="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin"
              mc:Ignorable="d" 
              
-             d:DesignHeight="660" Width="230">
+             d:DesignHeight="900" Width="230">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel>
+            <Grid Margin="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <ComboBox SelectedItem="{Binding SelectedOption}" 
+                          ItemsSource="{Binding AvailableOptions}" ></ComboBox>
+                <Button Grid.Column="1" Width="26" Click="SaveClicked" Margin="2,0,0,0">
+                    <Image Source="/Content/Icons/SaveIcon.png"></Image>
+                </Button>
+                <Button Grid.Column="2" Width="26" Click="DeleteClicked"  Margin="2,0,0,0">
+                    <Image Source="/Content/Icons/Delete.png"></Image>
+                </Button>
+            </Grid>
             <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding GenerateDisplayCode}">Generate Display Code</CheckBox>
             <StackPanel Visibility="{Binding AllPropertiesVisibility}">
                 <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding Is2D}">Is 2D</CheckBox>
@@ -50,7 +65,9 @@
 
                         <StackPanel Orientation="Horizontal">
                             <Label>Scale</Label>
+                            <Button Width="20" Margin="5" Click="ScaleMinusClicked">-</Button>
                             <TextBox Width="40" Height="18" Text="{Binding Scale}" IsEnabled="{Binding IsScaleUiEnabled}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"></TextBox>
+                            <Button Width="20" Margin="5,5,0,5" Click="ScalePlusClicked">+</Button>
                             <Label>%</Label>
                         </StackPanel>
 

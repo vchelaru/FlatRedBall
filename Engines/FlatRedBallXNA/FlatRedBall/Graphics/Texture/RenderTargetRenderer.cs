@@ -53,6 +53,7 @@ namespace FlatRedBall.Graphics.Texture
             var device = FlatRedBallServices.GraphicsDevice;
             mRenderTarget = new RenderTarget2D(device, mWidth, mHeight);
 
+
             Camera = new Camera(null, mWidth, mHeight);
             Camera.UsePixelCoordinates();
             Camera.Z = 40;

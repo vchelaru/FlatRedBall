@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,11 +12,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 {
     public class DisplaySettingsViewModel : ViewModel
     {
-        bool generateDisplayCode;
         public bool GenerateDisplayCode
         {
-            get { return generateDisplayCode; }
-            set { base.ChangeAndNotify(ref generateDisplayCode, value); }
+            get => Get<bool>();
+            set => Set(value);
         }
 
         [DependsOn(nameof(GenerateDisplayCode))]
@@ -34,18 +34,16 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             set => Set(value);
         }
 
-        int resolutionWidth;
         public int ResolutionWidth
         {
-            get { return resolutionWidth; }
-            set { base.ChangeAndNotify(ref resolutionWidth, value); }
+            get => Get<int>();
+            set => Set(value);
         }
 
-        int resolutionHeight;
         public int ResolutionHeight
         {
-            get { return resolutionHeight; }
-            set { base.ChangeAndNotify(ref resolutionHeight, value); }
+            get => Get<int>();
+            set => Set(value);
         }
 
         public bool FixedAspectRatio
@@ -54,18 +52,16 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             set => Set(value);
         }
 
-        decimal aspectRatioWidth;
         public decimal AspectRatioWidth
         {
-            get { return aspectRatioWidth; }
-            set { base.ChangeAndNotify(ref aspectRatioWidth, value); }
+            get => Get<decimal>();
+            set => Set(value);
         }
 
-        decimal aspectRatioHeight;
         public decimal AspectRatioHeight
         {
-            get { return aspectRatioHeight; }
-            set { base.ChangeAndNotify(ref aspectRatioHeight, value); }
+            get => Get<decimal>();
+            set => Set(value);
         }
 
         public bool SupportLandscape
@@ -286,8 +282,33 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             }
         }
 
+        public string Name
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public DisplaySettings SelectedOption
+        {
+            get => Get<DisplaySettings>();
+            set
+            {
+                if (Set(value) && value != null)
+                {
+                    SetFrom(value);
+                }
+            }
+        }
+
+        public ObservableCollection<DisplaySettings> AvailableOptions
+        {
+            get; private set;
+        } = new ObservableCollection<DisplaySettings>();
+
         public void SetFrom(DisplaySettings displaySettings)
         {
+            this.Name = displaySettings.Name;
+
             this.GenerateDisplayCode = displaySettings.GenerateDisplayCode;
 
             this.Is2D = displaySettings.Is2D;
@@ -322,6 +343,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         public DisplaySettings ToDisplaySettings()
         {
             DisplaySettings toReturn = new DisplaySettings();
+
+            toReturn.Name = this.Name;
 
             toReturn.GenerateDisplayCode = this.GenerateDisplayCode;
 

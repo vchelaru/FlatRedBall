@@ -134,6 +134,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
                     respondToViewModelChanges = false;
                     {
                         viewModel.SetFrom(glueProject.DisplaySettings);
+                        foreach(var setting in glueProject.AllDisplaySettings)
+                        {
+                            viewModel.AvailableOptions.Add(setting);
+                        }
 
                         bool showSupportedOrientationLink =
                             GetIfSupportsOrientation(GlueState.Self.CurrentMainProject) ||

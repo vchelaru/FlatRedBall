@@ -24,68 +24,6 @@ namespace FlatRedBall.Glue.Controls
     {
         #region Fields/Properties
 
-        bool hasUserUncheckedICollidable = false;
-
-        public string EnteredText
-        {
-            get { return TextBox.Text; }
-            set { TextBox.Text = value; }
-        }
-
-        public bool SpriteChecked
-        {
-            get { return SpriteCheckBox.IsChecked == true; }
-            set { SpriteCheckBox.IsChecked = value; }
-        }
-
-        public bool TextChecked
-        {
-            get { return TextCheckBox.IsChecked == true; }
-            set { TextCheckBox.IsChecked = value; }
-        }
-
-        public bool CircleChecked
-        {
-            get { return CircleCheckBox.IsChecked == true; }
-            set { CircleCheckBox.IsChecked = value; }
-        }
-
-        public bool AxisAlignedRectangleChecked
-        {
-            get { return AxisAlignedRectangleCheckBox.IsChecked == true; }
-            set { AxisAlignedRectangleCheckBox.IsChecked = value; }
-        }
-
-        public bool PolygonChecked
-        {
-            get { return PolygonCheckBox.IsChecked == true; }
-            set { PolygonCheckBox.IsChecked = value; }
-        }
-
-        public bool IVisibleChecked
-        {
-            get { return IVisibleCheckBox.IsChecked == true; }
-            set { IVisibleCheckBox.IsChecked = value; }
-        }
-
-        public bool IClickableChecked
-        {
-            get { return IClickableCheckBox.IsChecked == true; }
-            set { IClickableCheckBox.IsChecked = value; }
-        }
-
-        public bool IWindowChecked
-        {
-            get { return IWindowCheckBox.IsChecked == true; }
-            set { IWindowCheckBox.IsChecked = value; }
-        }
-
-        public bool ICollidableChecked
-        {
-            get { return ICollidableCheckBox.IsChecked == true; }
-            set { ICollidableCheckBox.IsChecked = value; }
-        }
-
         public IReadOnlyCollection<UserControl> UserControlChildren
         {
             get
@@ -151,63 +89,6 @@ namespace FlatRedBall.Glue.Controls
             if(e.Key == Key.Escape)
             {
                 this.DialogResult = false;
-            }
-        }
-
-        private void CircleCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            if(CircleCheckBox.IsChecked == true && !hasUserUncheckedICollidable)
-            {
-                ICollidableChecked = true;
-            }
-        }
-
-        private void AxisAlignedRectangleCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            if (AxisAlignedRectangleCheckBox.IsChecked == true && !hasUserUncheckedICollidable)
-            {
-                ICollidableChecked = true;
-            }
-        }
-
-        private void PolygonCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            if (PolygonCheckBox.IsChecked == true && !hasUserUncheckedICollidable)
-            {
-                ICollidableChecked = true;
-            }
-        }
-
-        private void ICollidableCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            if(!ICollidableCheckBox.IsChecked == false)
-            {
-                hasUserUncheckedICollidable = true;
-            }
-        }
-
-        private void IWindowCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            if(IWindowCheckBox.IsChecked == true)
-            {
-                IVisibleCheckBox.IsChecked = true;
-            }
-        }
-
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            string whyIsntValid;
-
-            var isValid = NameVerifier.IsEntityNameValid(TextBox.Text, null, out whyIsntValid);
-
-            if(isValid)
-            {
-                FailureTextBlock.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                FailureTextBlock.Visibility = Visibility.Visible;
-                FailureTextBlock.Text = whyIsntValid;
             }
         }
 

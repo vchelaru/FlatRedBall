@@ -91,24 +91,25 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             }
         }
 
+        public static NamedObjectSave AddCollision(ScreenSave screen, string name)
+        {
+            var addObjectViewModel = new AddObjectViewModel();
+            addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+            addObjectViewModel.SourceClassType = "FlatRedBall.TileCollisions.TileShapeCollection";
+            addObjectViewModel.ObjectName = name;
+
+            var nos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, screen, null);
+            nos.SetByDerived = true;
+
+            const int FromType = 4;
+            nos.Properties.SetValue("CollisionCreationOptions", FromType);
+            nos.Properties.SetValue("SourceTmxName", "Map");
+            nos.Properties.SetValue("CollisionTileTypeName", name);
+
+            return nos;
+        }
         private void ApplyViewModelToScreen(ScreenSave newScreen, AddScreenViewModel viewModel)
         {
-            void AddCollision(string name)
-            {
-                var addObjectViewModel = new AddObjectViewModel();
-                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                addObjectViewModel.SourceClassType = "FlatRedBall.TileCollisions.TileShapeCollection";
-                addObjectViewModel.ObjectName = name;
-
-                var nos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, newScreen, null);
-                nos.SetByDerived = true;
-
-                const int FromType = 4;
-                nos.Properties.SetValue("CollisionCreationOptions", FromType);
-                nos.Properties.SetValue("SourceTmxName", "Map");
-                nos.Properties.SetValue("CollisionTileTypeName", name);
-
-            }
 
             var shouldSave = false;
             switch(viewModel.AddScreenType)
@@ -118,25 +119,18 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
 
                     if(viewModel.IsAddMapLayeredTileMapChecked)
                     {
-                        var addObjectViewModel = new AddObjectViewModel();
-                        addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                        addObjectViewModel.SourceClassType = "FlatRedBall.TileGraphics.LayeredTileMap";
-                        addObjectViewModel.ObjectName = "Map";
-
-                        var nos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, newScreen, null);
-                        nos.SetByDerived = true;
-                        nos.SetVariableValue("CreateEntitiesFromTiles", true);
+                        AddMapObject(newScreen);
 
                         shouldSave = true;
                     }
-                    if(viewModel.IsAddSolidCollisionShapeCollectionChecked)
+                    if (viewModel.IsAddSolidCollisionShapeCollectionChecked)
                     {
-                        AddCollision("SolidCollision");
+                        AddCollision(newScreen, "SolidCollision");
                         shouldSave = true;
                     }
                     if (viewModel.IsAddCloudCollisionShapeCollectionChecked)
                     {
-                        AddCollision("CloudCollision");
+                        AddCollision(newScreen, "CloudCollision");
                         shouldSave = true;
                     }
 
@@ -164,27 +158,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
 
                     if(viewModel.IsAddStandardTmxChecked)
                     {
-                        // add standard TMX....how?
-                        // Currently there's no way to run
-                        // logic in plugins, so we'll just show the window and select the 
-                        // TMX option:
-                        var addNewFileViewModel = new AddNewFileViewModel();
-                        addNewFileViewModel.SelectedAssetTypeInfo = 
-                            AvailableAssetTypes.Self.GetAssetTypeFromExtension("tmx");
-                        addNewFileViewModel.FileName = newScreen.GetStrippedName() + "Map";
-
-                        var newRfs = GlueCommands.Self.DialogCommands.ShowAddNewFileDialog(addNewFileViewModel);
-
-                        if(newRfs != null)
-                        {
-                            var mapObject = newScreen.NamedObjects.FirstOrDefault(item => item.InstanceName == "Map" && item.GetAssetTypeInfo().FriendlyName.StartsWith("LayeredTileMap"));
-                            if(mapObject != null)
-                            {
-                                mapObject.SourceType = SourceType.File;
-                                mapObject.SourceFile = newRfs.Name;
-                                mapObject.SourceName = "Entire File (LayeredTileMap)";
-                            }
-                        }
+                        ShowUiForNewTmx(newScreen);
                     }
                     break;
             }
@@ -202,5 +176,43 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             }
         }
 
+        public static void AddMapObject(ScreenSave newScreen)
+        {
+            var addObjectViewModel = new AddObjectViewModel();
+            addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+            addObjectViewModel.SourceClassType = "FlatRedBall.TileGraphics.LayeredTileMap";
+            addObjectViewModel.ObjectName = "Map";
+
+            var nos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, newScreen, null);
+            nos.SetByDerived = true;
+            nos.SetVariableValue("CreateEntitiesFromTiles", true);
+        }
+
+        private static void ShowUiForNewTmx(ScreenSave newScreen)
+        {
+            // add standard TMX....how?
+            // Currently there's no way to run
+            // logic in plugins, so we'll just show the window and select the 
+            // TMX option:
+            var addNewFileViewModel = new AddNewFileViewModel();
+            var tmxAti = 
+                AvailableAssetTypes.Self.GetAssetTypeFromExtension("tmx");
+            addNewFileViewModel.SelectedAssetTypeInfo = tmxAti;
+            addNewFileViewModel.ForcedType = tmxAti;
+            addNewFileViewModel.FileName = newScreen.GetStrippedName() + "Map";
+
+            var newRfs = GlueCommands.Self.DialogCommands.ShowAddNewFileDialog(addNewFileViewModel);
+
+            if (newRfs != null)
+            {
+                var mapObject = newScreen.NamedObjects.FirstOrDefault(item => item.InstanceName == "Map" && item.GetAssetTypeInfo().FriendlyName.StartsWith("LayeredTileMap"));
+                if (mapObject != null)
+                {
+                    mapObject.SourceType = SourceType.File;
+                    mapObject.SourceFile = newRfs.Name;
+                    mapObject.SourceName = "Entire File (LayeredTileMap)";
+                }
+            }
+        }
     }
 }

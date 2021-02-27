@@ -18,6 +18,10 @@ using FlatRedBall.Glue.Utilities;
 using FlatRedBall.Glue.Projects;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Controls;
+using GlueFormsCore.ViewModels;
+using FlatRedBall.Glue.ViewModels;
+using Microsoft.Xna.Framework;
+using Glue;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -136,12 +140,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
 
 
-        public SaveClasses.EntitySave AddEntity(string entityName)
-        {
-            return AddEntity(entityName, false);
-        }
-
-        public SaveClasses.EntitySave AddEntity(string entityName, bool is2D)
+        public SaveClasses.EntitySave AddEntity(string entityName, bool is2D = false)
         {
 
             string fileName = entityName + ".cs";
@@ -171,6 +170,133 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return entitySave;
 
         }
+
+        public SaveClasses.EntitySave AddEntity(AddEntityViewModel viewModel, string directory = null)
+        {
+            var gluxCommands = GlueCommands.Self.GluxCommands;
+
+            var newElement = gluxCommands.EntityCommands.AddEntity(
+                directory + viewModel.Name, is2D: true);
+
+            GlueState.Self.CurrentElement = newElement;
+
+            if (viewModel.IsSpriteChecked)
+            {
+                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ObjectName = "SpriteInstance";
+                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Sprite;
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                GlueState.Self.CurrentElement = newElement;
+            }
+
+            if (viewModel.IsTextChecked)
+            {
+                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ObjectName = "TextInstance";
+                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Text;
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                GlueState.Self.CurrentElement = newElement;
+            }
+
+            if (viewModel.IsCircleChecked)
+            {
+                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ObjectName = "CircleInstance";
+                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Circle;
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                GlueState.Self.CurrentElement = newElement;
+            }
+
+            if (viewModel.IsAxisAlignedRectangleChecked)
+            {
+                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ObjectName = "AxisAlignedRectangleInstance";
+                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.AxisAlignedRectangle;
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                GlueState.Self.CurrentElement = newElement;
+            }
+
+            // There are a few important things to note about this function:
+            // 1. Whenever gluxCommands.AddNewNamedObjectToSelectedElement is called, Glue performs a full
+            //    refresh and save. The reason for this is that gluxCommands.AddNewNamedObjectToSelectedElement
+            //    is the standard way to add a new named object to an element, and it may be called by other parts
+            //    of the code (and plugins) that expect the add to be a complete set of logic (add, refresh, save, etc).
+            //    This is less efficient than adding all of them and saving only once, but that would require a second add
+            //    method, which would add complexity. For now, we deal with the slower calls because it's not really noticeable.
+            // 2. Some actions, like adding Points to a polygon, are done after the polygon is created and added, and that requires
+            //    an additional save. Therefore, we do one last save/refresh at the end of this method in certain situations.
+            //    Again, this is less efficient than if we performed just a single call, but a single call would be more complicated.
+            //    because we'd have to suppress all the other calls.
+            bool needsRefreshAndSave = false;
+
+            if (viewModel.IsPolygonChecked)
+            {
+                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ObjectName = "PolygonInstance";
+                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Polygon;
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+
+                var nos = gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                CustomVariableInNamedObject instructions = null;
+                instructions = nos.GetCustomVariable("Points");
+                if (instructions == null)
+                {
+                    instructions = new CustomVariableInNamedObject();
+                    instructions.Member = "Points";
+                    nos.InstructionSaves.Add(instructions);
+                }
+                var points = new List<Vector2>();
+                points.Add(new Vector2(-16, 16));
+                points.Add(new Vector2(16, 16));
+                points.Add(new Vector2(16, -16));
+                points.Add(new Vector2(-16, -16));
+                points.Add(new Vector2(-16, 16));
+                instructions.Value = points;
+
+
+                needsRefreshAndSave = true;
+
+                GlueState.Self.CurrentElement = newElement;
+            }
+
+            if (viewModel.IsIVisibleChecked)
+            {
+                newElement.ImplementsIVisible = true;
+                needsRefreshAndSave = true;
+            }
+
+            if (viewModel.IsIClickableChecked)
+            {
+                newElement.ImplementsIClickable = true;
+                needsRefreshAndSave = true;
+            }
+
+            if (viewModel.IsIWindowChecked)
+            {
+                newElement.ImplementsIWindow = true;
+                needsRefreshAndSave = true;
+            }
+
+            if (viewModel.IsICollidableChecked)
+            {
+                newElement.ImplementsICollidable = true;
+                needsRefreshAndSave = true;
+            }
+
+            if (needsRefreshAndSave)
+            {
+                MainGlueWindow.Self.PropertyGrid.Refresh();
+                ElementViewWindow.GenerateSelectedElementCode();
+                GluxCommands.Self.SaveGlux();
+            }
+
+            return newElement;
+        }
+
 
         public void AddEntity(EntitySave entitySave)
         {

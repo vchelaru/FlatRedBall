@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FlatRedBall.Glue.SaveClasses;
+using GlueFormsCore.ViewModels;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
@@ -14,8 +15,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
             Elements.AssetTypeInfo ati,
             out string creationReport, out string errorMessage);
 #endif
-        SaveClasses.EntitySave AddEntity(string entityName);
-        SaveClasses.EntitySave AddEntity(string entityName, bool is2D);
+        SaveClasses.EntitySave AddEntity(string entityName, bool is2D = false);
+
+        SaveClasses.EntitySave AddEntity(AddEntityViewModel viewModel, string directory = null);
 
         void AddEntity(EntitySave entitySave);
         void AddEntity(EntitySave entitySave, bool suppressAlreadyExistingFileMessage);

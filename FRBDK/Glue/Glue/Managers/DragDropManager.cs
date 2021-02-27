@@ -132,10 +132,6 @@ namespace FlatRedBall.Glue.Managers
                     MessageBox.Show($"Could not drop {movingNos} on {targetNos}");
 
                 }
-                else
-                {
-
-                }
                 succeeded = response.Succeeded;
             }
 

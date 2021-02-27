@@ -20,6 +20,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
     public class DisplaySettings
     {
+        public string Name { get; set; } = "Custom";
+
         public bool Is2D { get; set; }
 
         public bool GenerateDisplayCode { get; set; } = true;
@@ -42,5 +44,10 @@ namespace FlatRedBall.Glue.SaveClasses
         public ResizeBehavior ResizeBehavior { get; set; }
         public ResizeBehavior ResizeBehaviorGum { get; set; }
         public WidthOrHeight DominantInternalCoordinates { get; set; } = WidthOrHeight.Height;
+
+        public override string ToString()
+        {
+            return $"{Name} {ResolutionWidth}x{ResolutionHeight} at {Scale}%";
+        }
     }
 }

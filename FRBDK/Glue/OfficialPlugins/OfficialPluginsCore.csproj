@@ -113,6 +113,10 @@
     <Resource Include="QuickActionPlugin\Views\Create Screen.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Wizard\Models\" />
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="echo Creating $(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\&#xD;&#xA;if not exist &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\&quot; md &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\&quot;&#xD;&#xA;&#xD;&#xA;echo $(TargetDir)&#xD;&#xA;&#xD;&#xA;echo creating $(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\OfficialPlugins\&#xD;&#xA;if not exist &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\OfficialPlugins\&quot; md &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\OfficialPlugins\&quot;&#xD;&#xA;echo copy $(TargetDir)OfficialPluginsCore.dll to $(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\OfficialPlugins\OfficialPluginsCore.dll&#xD;&#xA;copy &quot;$(TargetDir)OfficialPluginsCore.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\OfficialPlugins\OfficialPluginsCore.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)OfficialPluginsCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\OfficialPlugins\OfficialPluginsCore.pdb&quot;" />
   </Target>

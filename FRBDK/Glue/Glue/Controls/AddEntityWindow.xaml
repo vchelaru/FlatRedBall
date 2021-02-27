@@ -10,27 +10,29 @@
              Width="220">
     <StackPanel x:Name="MainStackPanel">
         <TextBlock Margin="3,0,3,0">Enter a name for the new entity:</TextBlock>
-        <TextBox x:Name="TextBox" Margin="3,0,3,0" KeyDown="TextBox_KeyDown" TextChanged="TextBox_TextChanged"></TextBox>
-        <TextBlock x:Name="FailureTextBlock" Margin="3,0,3,3" Foreground="Red" Visibility="Collapsed" TextWrapping="Wrap">Failure Message</TextBlock>
+        <TextBox x:Name="TextBox" Margin="3,0,3,0" KeyDown="TextBox_KeyDown" 
+                 Text="{Binding Name}"></TextBox>
+        <TextBlock x:Name="FailureTextBlock" Margin="3,0,3,3" Foreground="Red" 
+                   Visibility="{Binding FailureTextVisibility}" Text="{Binding FailureText}" TextWrapping="Wrap"></TextBlock>
         <GroupBox Header="Visuals">
             <StackPanel>
-                <CheckBox x:Name="SpriteCheckBox">Sprite</CheckBox>
-                <CheckBox x:Name="TextCheckBox">Text</CheckBox>
+                <CheckBox x:Name="SpriteCheckBox" IsChecked="{Binding IsSpriteChecked}">Sprite</CheckBox>
+                <CheckBox x:Name="TextCheckBox" IsChecked="{Binding IsTextChecked}">Text</CheckBox>
             </StackPanel>
         </GroupBox>
         <GroupBox Header="Collisions">
             <StackPanel>
-                <CheckBox x:Name="CircleCheckBox" Checked="CircleCheckBox_Checked">Circle</CheckBox>
-                <CheckBox x:Name="AxisAlignedRectangleCheckBox" Checked="AxisAlignedRectangleCheckBox_Checked">AxisAlignedRectangle</CheckBox>
-                <CheckBox x:Name="PolygonCheckBox" Checked="PolygonCheckBox_Checked">Polygon (Rectangle)</CheckBox>
+                <CheckBox x:Name="CircleCheckBox" IsChecked="{Binding IsCircleChecked}">Circle</CheckBox>
+                <CheckBox x:Name="AxisAlignedRectangleCheckBox" IsChecked="{Binding IsAxisAlignedRectangleChecked}">AxisAlignedRectangle</CheckBox>
+                <CheckBox x:Name="PolygonCheckBox" IsChecked="{Binding IsPolygonChecked}">Polygon (Rectangle)</CheckBox>
             </StackPanel>            
         </GroupBox>
         <GroupBox Header="Interfaces">
             <StackPanel>
-                <CheckBox x:Name="IVisibleCheckBox">IVisible</CheckBox>
-                <CheckBox x:Name="IClickableCheckBox">IClickable</CheckBox>
-                <CheckBox x:Name="IWindowCheckBox" Checked="IWindowCheckBox_Checked">IWindow</CheckBox>
-                <CheckBox x:Name="ICollidableCheckBox" Checked="ICollidableCheckBox_Checked">ICollidable</CheckBox>
+                <CheckBox x:Name="IVisibleCheckBox" IsChecked="{Binding IsIVisibleChecked}">IVisible</CheckBox>
+                <CheckBox x:Name="IClickableCheckBox" IsChecked="{Binding IsIClickableChecked}">IClickable</CheckBox>
+                <CheckBox x:Name="IWindowCheckBox" IsChecked="{Binding IsIWindowChecked}">IWindow</CheckBox>
+                <CheckBox x:Name="ICollidableCheckBox" IsChecked="{Binding IsICollidableChecked}">ICollidable</CheckBox>
             </StackPanel>
         </GroupBox>
 

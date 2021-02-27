@@ -21,6 +21,8 @@ namespace FlatRedBall.Glue.Controls
     /// </summary>
     public partial class MultiButtonMessageBoxWpf : System.Windows.Window
     {
+        #region Fields/Properties
+
         List<Button> buttons = new List<Button>();
 
         public object ClickedResult
@@ -37,10 +39,13 @@ namespace FlatRedBall.Glue.Controls
             }
         }
 
+        #endregion
+
         public MultiButtonMessageBoxWpf()
         {
             InitializeComponent();
 
+            this.KeyDown += HandleKeyDown;
 
             // Can this be done in the constructor?
             this.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
@@ -60,6 +65,14 @@ namespace FlatRedBall.Glue.Controls
             this.Top = MainGlueWindow.MousePosition.Y - height / 2;
 
 
+        }
+
+        private void HandleKeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Escape)
+            {
+                this.Close();
+            }
         }
 
         public void AddButton(string text, object result)
