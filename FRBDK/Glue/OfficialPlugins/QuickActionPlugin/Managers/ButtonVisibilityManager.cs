@@ -45,7 +45,11 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
 
             #endregion
 
+            #region Add Gum Project
+
             mainView.AddGumProject.Visibility = ToVisibility(!hasGumProject && glueProject != null);
+
+            #endregion
 
             #region Add Screen Button
 

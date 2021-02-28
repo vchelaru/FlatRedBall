@@ -233,51 +233,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (result == true)
             {
-                string name = viewModel.FileName;
                 AssetTypeInfo resultAssetTypeInfo =
-                    //nfw.ResultAssetTypeInfo;
                     viewModel.SelectedAssetTypeInfo;
 
-                string errorMessage;
-                string directory = null;
-                var element = GlueState.Self.CurrentElement;
-
-                if (EditorLogic.CurrentTreeNode.IsDirectoryNode())
-                {
-                    directory = EditorLogic.CurrentTreeNode.GetRelativePath().Replace("/", "\\");
-                }
-
                 var option = nfw.GetOptionFor(resultAssetTypeInfo);
-
-                rfs = GlueProjectSaveExtensionMethods.AddReferencedFileSave(
-                    element, directory, name, resultAssetTypeInfo,
-                    option, out errorMessage);
-
-                if (!string.IsNullOrEmpty(errorMessage))
-                {
-                    MessageBox.Show(errorMessage);
-                }
-                else if (rfs != null)
-                {
-
-                    var createdFile = ProjectManager.MakeAbsolute(rfs.GetRelativePath());
-
-                    if (createdFile.EndsWith(".csv"))
-                    {
-                        string location = ProjectManager.MakeAbsolute(createdFile);
-
-                        CsvCodeGenerator.GenerateAndSaveDataClass(rfs, AvailableDelimiters.Comma);
-                    }
-
-
-                    ElementViewWindow.UpdateChangedElements();
-
-                    ElementViewWindow.SelectedNode = GlueState.Self.Find.ReferencedFileSaveTreeNode(rfs);
-
-                    PluginManager.ReactToNewFile(rfs);
-
-                    GluxCommands.Self.SaveGlux();
-                }
+                rfs = GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSave(viewModel, option);
 
             }
 

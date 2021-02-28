@@ -596,6 +596,12 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
                     namedObject.InstanceName = desiredName;
 
+                    // this requires the NOS being selected:
+                    if(namedObject != GlueState.Self.CurrentNamedObjectSave)
+                    {
+                        GlueState.Self.CurrentNamedObjectSave = namedObject;
+                    }
+
                     // This is important otherwise references to this (like events) won't update their references
                     EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
                         nameof(NamedObjectSave.InstanceName), null, oldName);

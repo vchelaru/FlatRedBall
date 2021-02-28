@@ -139,12 +139,20 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             var firstNosName = pairViewModel.SelectedNamedObjectName;
             var secondNosName = pairViewModel.OtherObjectName;
 
-            CreateCollisionRelationshipBetweenObjects(firstNosName, secondNosName);
+            CreateCollisionRelationshipBetweenObjects(firstNosName, secondNosName, GlueState.Self.CurrentElement);
         }
 
-        public static void CreateCollisionRelationshipBetweenObjects(string firstNosName, string secondNosName)
+        public static void CreateCollisionRelationshipBetweenObjects(string firstNosName, string secondNosName, IElement container)
         {
             var addObjectModel = new AddObjectViewModel();
+
+            var firstNos = container.GetNamedObjectRecursively(firstNosName);
+
+            if(firstNos == null)
+            {
+                throw new InvalidOperationException(
+                    $"Could not find an entity with the name {firstNosName} in {container}");
+            }
 
             addObjectModel.SourceType = FlatRedBall.Glue.SaveClasses.SourceType.FlatRedBallType;
             addObjectModel.SelectedAti =
@@ -152,17 +160,14 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 //"FlatRedBall.Math.Collision.CollisionRelationship";
             addObjectModel.ObjectName = "ToBeRenamed";
 
-            IElement selectedElement = GlueState.Self.CurrentElement;
-            var selectedNamedObject = GlueState.Self.CurrentNamedObjectSave;
-
             var newNos =
                 GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectModel,
-                selectedElement, listToAddTo: null);
+                container, listToAddTo: null);
 
             newNos.Properties.SetValue(nameof(CollisionRelationshipViewModel.IsAutoNameEnabled), true);
 
-            bool needToInvert = selectedNamedObject.SourceType != SourceType.Entity &&
-                selectedNamedObject.IsList == false;
+            bool needToInvert = firstNos.SourceType != SourceType.Entity &&
+                firstNos.IsList == false;
 
             //if(!needToInvert)
             //{
@@ -185,14 +190,17 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             // this will regenerate and save everything too:
             CollisionRelationshipViewModelController.TryApplyAutoName(
-                selectedElement, newNos);
+                container, newNos);
 
 
-            RefreshViewModelTo(selectedElement, selectedNamedObject, ViewModel);
+            RefreshViewModelTo(container, firstNos, ViewModel);
 
-            CollisionRelationshipViewModelController.TryFixMassesForTileShapeCollisionRelationship(selectedElement, newNos);
+            CollisionRelationshipViewModelController.TryFixMassesForTileShapeCollisionRelationship(container, newNos);
 
-            GlueCommands.Self.TreeNodeCommands.RefreshCurrentElementTreeNode();
+            if(GlueState.Self.CurrentElement == container)
+            {
+                GlueCommands.Self.TreeNodeCommands.RefreshCurrentElementTreeNode();
+            }
 
             GlueState.Self.CurrentNamedObjectSave = newNos;
             GlueCommands.Self.DialogCommands.FocusTab("Collision");

@@ -641,6 +641,10 @@ namespace TileGraphicsPlugin
             PluginManager.ShutDownPlugin(this);
         }
 
+
+        bool IsTmx(AssetTypeInfo ati) =>
+            ati?.Extension == "tmx";
+
         private void HandleAddNewFileOptions(CustomizableNewFileWindow newFileWindow)
         {
             var view = new NewTmxOptionsView();
@@ -650,9 +654,6 @@ namespace TileGraphicsPlugin
             view.DataContext = viewModel;
 
             newFileWindow.AddCustomUi(view);
-
-            bool IsTmx(AssetTypeInfo ati) =>
-                ati?.Extension == "tmx";
 
             newFileWindow.SelectionChanged += (not, used) =>
             {
@@ -727,6 +728,30 @@ namespace TileGraphicsPlugin
         internal void UpdateTilesetDisplay()
         {
             //mControl?.UpdateTilesetDisplay();
+        }
+
+        public void AddStandardTilesetOnCurrentFile()
+        {
+            var rfs = GlueState.Self.CurrentReferencedFileSave;
+
+            var rfsAti = rfs?.GetAssetTypeInfo();
+
+            if (rfsAti != null && IsTmx(rfsAti))
+            {
+                TmxCreationManager.Self.IncludeDefaultTilesetOn(rfs);
+            }
+        }
+
+        public void AddGameplayLayerToCurrentFile()
+        {
+            var rfs = GlueState.Self.CurrentReferencedFileSave;
+
+            var rfsAti = rfs?.GetAssetTypeInfo();
+
+            if (rfsAti != null && IsTmx(rfsAti))
+            {
+                TmxCreationManager.Self.IncludeGameplayLayerOn(rfs);
+            }
         }
 
         #endregion

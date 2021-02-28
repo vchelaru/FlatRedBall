@@ -1,6 +1,7 @@
 ﻿using System;
 using FlatRedBall.Glue.SaveClasses;
 using System.Collections.Generic;
+using GlueFormsCore.ViewModels;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
@@ -35,6 +36,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         #endregion
 
         #region ReferencedFileSave
+
+        ReferencedFileSave CreateNewFileAndReferencedFileSave(AddNewFileViewModel viewModel, object creationOptions = null);
+
 
         /// <summary>
         /// Adds a new file to the Glue project in global content. This method updates the in-memory GlueProjectSave,

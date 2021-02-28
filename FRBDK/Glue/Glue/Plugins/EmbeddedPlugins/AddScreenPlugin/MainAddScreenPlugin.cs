@@ -94,6 +94,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
         public static NamedObjectSave AddCollision(ScreenSave screen, string name)
         {
             var addObjectViewModel = new AddObjectViewModel();
+            addObjectViewModel.ForcedElementToAddTo = screen;
             addObjectViewModel.SourceType = SourceType.FlatRedBallType;
             addObjectViewModel.SourceClassType = "FlatRedBall.TileCollisions.TileShapeCollection";
             addObjectViewModel.ObjectName = name;
@@ -179,6 +180,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
         public static void AddMapObject(ScreenSave newScreen)
         {
             var addObjectViewModel = new AddObjectViewModel();
+            addObjectViewModel.ForcedElementToAddTo = newScreen;
             addObjectViewModel.SourceType = SourceType.FlatRedBallType;
             addObjectViewModel.SourceClassType = "FlatRedBall.TileGraphics.LayeredTileMap";
             addObjectViewModel.ObjectName = "Map";

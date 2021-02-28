@@ -615,79 +615,84 @@ namespace GumPlugin
 
         private void HandleAddNewGumProjectMenuItemClicked(object sender, EventArgs e)
         {
-            CreateGumProject();
+            AskToCreateGumProject();
         }
 
-        public void CreateGumProject()
+        public void CreateGumProjectWithForms()
         {
-            propertiesManager.IsReactingToProperyChanges = false;
+            CreateGumProjectInternal(shouldAlsoAddForms: true);
+        }
 
+        public void CreateGumProjectNoForms()
+        {
+            CreateGumProjectInternal(shouldAlsoAddForms: false);
+        }
+
+        public void AskToCreateGumProject()
+        {
             var mbmb = new MultiButtonMessageBoxWpf();
             mbmb.AddButton("Include Forms Controls (Recommended)", true);
-            mbmb.AddButton("No Forms, only raw Gum", true);
+            mbmb.AddButton("No Forms, only raw Gum", false);
             mbmb.MessageText = "Add Gum and FlatRedBall Forms?";
-
-
             var showDialogResult = mbmb.ShowDialog();
+
+
+
             if(showDialogResult == true)
             {
-                var result = mbmb.ClickedResult;
 
-                var added = GumProjectManager.Self.TryAddNewGumProject();
-
-                if (added)
-                {
-                    var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
-
-                    var behavior = GetBehavior(gumRfs);
-
-                    EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
-
-                    // show the tab for the new file:
-                    this.FocusTab();
-
-                    TaskManager.Self.Add(
-                        () =>
-                        {
-                            // When we first add the RFS to Glue, the RFS tries to refresh its file cache.
-                            // But since the .glux hasn't yet been assigned as the currently-loaded project, 
-                            // the Gum plugin doesn't track its references and returns an empty list. That empty
-                            // list return is then cached, and future calls will always treat the .gumx as having 
-                            // no referenced files. Now that we've assigned the custom project, clear the cache so
-                            // it can properly be set up.
-                            GlueCommands.Self.FileCommands.ClearFileCache(
-                                GlueCommands.Self.GetAbsoluteFileName(gumRfs));
-                            GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(gumRfs);
-
-                        },
-                        "Adding Gum referenced files to project");
-
-                    GlueCommands.Self.GluxCommands.SaveGlux();
-
-                    if(((bool)result) == true)
-                    {
-                        // add forms:
-                        FormsAddManager.GenerateBehaviors();
-                        FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
-                    }
-
-                    // no longer needed now that we embed the plugins
-                    //GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
-                    //    "Would you like to mark the Gum plugin as a required plugin for this project? " +
-                    //    "This can help others who open this project",
-                    //    yesAction: HandleMakePluginRequiredYes);
-                }
-
-
-
-                propertiesManager.IsReactingToProperyChanges = true;
-
-                toolbarViewModel.HasGumProject = AppState.Self.GumProjectSave != null;
-
+                var shouldAlsoAddForms = (bool)mbmb.ClickedResult;
+                CreateGumProjectInternal(shouldAlsoAddForms);
             }
 
 
 
+        }
+
+        private void CreateGumProjectInternal(bool shouldAlsoAddForms)
+        {
+            propertiesManager.IsReactingToProperyChanges = false;
+            var added = GumProjectManager.Self.TryAddNewGumProject();
+
+            if (added)
+            {
+                var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
+
+                var behavior = GetBehavior(gumRfs);
+
+                EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
+
+                // show the tab for the new file:
+                this.FocusTab();
+
+                TaskManager.Self.Add(
+                    () =>
+                    {
+                        // When we first add the RFS to Glue, the RFS tries to refresh its file cache.
+                        // But since the .glux hasn't yet been assigned as the currently-loaded project, 
+                        // the Gum plugin doesn't track its references and returns an empty list. That empty
+                        // list return is then cached, and future calls will always treat the .gumx as having 
+                        // no referenced files. Now that we've assigned the custom project, clear the cache so
+                        // it can properly be set up.
+                        GlueCommands.Self.FileCommands.ClearFileCache(
+                        GlueCommands.Self.GetAbsoluteFileName(gumRfs));
+                        GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(gumRfs);
+
+                    },
+                    "Adding Gum referenced files to project");
+
+                GlueCommands.Self.GluxCommands.SaveGlux();
+
+                if (((bool)shouldAlsoAddForms) == true)
+                {
+                    // add forms:
+                    FormsAddManager.GenerateBehaviors();
+                    FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
+                }
+            }
+            propertiesManager.IsReactingToProperyChanges = true;
+
+            toolbarViewModel.HasGumProject = AppState.Self.GumProjectSave != null;
         }
 
         private void HandleMakePluginRequiredYes()

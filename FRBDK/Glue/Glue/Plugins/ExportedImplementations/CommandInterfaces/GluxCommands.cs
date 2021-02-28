@@ -27,6 +27,7 @@ using GlueSaveClasses;
 using System.Text;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.Plugins.Interfaces;
+using GlueFormsCore.ViewModels;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -245,6 +246,55 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
 
         #region ReferencedFileSave
+
+        public ReferencedFileSave CreateNewFileAndReferencedFileSave(AddNewFileViewModel viewModel, object creationOptions = null)
+        {
+            ReferencedFileSave rfs;
+            string name = viewModel.FileName;
+            AssetTypeInfo resultAssetTypeInfo =
+                viewModel.SelectedAssetTypeInfo;
+
+            string errorMessage;
+            string directory = null;
+            var element = GlueState.Self.CurrentElement;
+
+            if (EditorLogic.CurrentTreeNode.IsDirectoryNode())
+            {
+                directory = EditorLogic.CurrentTreeNode.GetRelativePath().Replace("/", "\\");
+            }
+
+
+            rfs = GlueProjectSaveExtensionMethods.AddReferencedFileSave(
+                element, directory, name, resultAssetTypeInfo,
+                creationOptions, out errorMessage);
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                MessageBox.Show(errorMessage);
+            }
+            else if (rfs != null)
+            {
+
+                var createdFile = ProjectManager.MakeAbsolute(rfs.GetRelativePath());
+
+                if (createdFile.EndsWith(".csv"))
+                {
+                    CsvCodeGenerator.GenerateAndSaveDataClass(rfs, AvailableDelimiters.Comma);
+                }
+
+
+                ElementViewWindow.UpdateChangedElements();
+
+                ElementViewWindow.SelectedNode = GlueState.Self.Find.ReferencedFileSaveTreeNode(rfs);
+
+                PluginManager.ReactToNewFile(rfs);
+
+                GluxCommands.Self.SaveGlux();
+            }
+
+            return rfs;
+        }
+
 
         public ReferencedFileSave AddReferencedFileToGlobalContent(string fileToAdd, bool useFullPathAsName)
         {
@@ -848,6 +898,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 throw new ArgumentNullException(nameof(element));
             }
+            addObjectViewModel.ForcedElementToAddTo = element;
             MembershipInfo membershipInfo = NamedObjectSaveExtensionMethodsGlue.GetMemberMembershipInfo(addObjectViewModel.ObjectName);
 
             var newNos = AddNewNamedObjectToInternal(addObjectViewModel.ObjectName,
@@ -927,7 +978,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (listToAddTo != null)
             {
-                NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToCurrentNamedObjectList(namedObject);
+                NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToList(namedObject, listToAddTo);
 
             }
             #endregion

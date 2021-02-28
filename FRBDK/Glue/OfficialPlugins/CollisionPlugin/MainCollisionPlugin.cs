@@ -91,9 +91,9 @@ namespace OfficialPlugins.CollisionPlugin
 
             this.ReactToChangedPropertyHandler += CollisionRelationshipViewModelController.HandleGlueObjectPropertyChanged;
 
-            this.ReactToCreateCollisionRelationshipsBetween += (first, second) =>
+            this.ReactToCreateCollisionRelationshipsBetween += (NamedObjectSave first, NamedObjectSave second) =>
             {
-                CollidableNamedObjectController.CreateCollisionRelationshipBetweenObjects(first.InstanceName, second.InstanceName);
+                CollidableNamedObjectController.CreateCollisionRelationshipBetweenObjects(first.InstanceName, second.InstanceName, first.GetContainer());
             };
         }
 

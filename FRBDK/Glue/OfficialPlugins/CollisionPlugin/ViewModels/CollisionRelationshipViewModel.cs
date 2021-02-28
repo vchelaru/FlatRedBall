@@ -18,11 +18,11 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
 
     public enum CollisionType
     {
-        NoPhysics,
-        MoveCollision,
-        BounceCollision,
-        PlatformerSolidCollision,
-        PlatformerCloudCollision,
+        NoPhysics = 0,
+        MoveCollision = 1,
+        BounceCollision = 2,
+        PlatformerSolidCollision = 3,
+        PlatformerCloudCollision = 4,
         DelegateCollision
     }
     #endregion

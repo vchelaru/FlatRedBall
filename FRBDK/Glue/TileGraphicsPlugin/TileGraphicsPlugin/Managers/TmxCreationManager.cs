@@ -42,39 +42,54 @@ namespace TiledPluginCore.Managers
 
                 if(model != null)
                 {
-                    var old = Tileset.ShouldLoadValuesFromSource;
-                    Tileset.ShouldLoadValuesFromSource = false;
-                    var fullTmxFile = new FilePath(GlueCommands.Self.FileCommands.GetFullFileName(newFile));
-                    var tileMapSave = TMXGlueLib.TiledMapSave.FromFile(fullTmxFile.FullPath);
+
 
                     if(model.IncludeDefaultTileset)
                     {
-                        IncludeDefaultTilesetOn(newFile, tileMapSave);
+                        IncludeDefaultTilesetOn(newFile);
+
+
                     }
-                    if(model.IncludeGameplayLayer)
+                    if (model.IncludeGameplayLayer)
                     {
-                        var layer = new MapLayer();
-                        layer.Name = "GameplayLayer";
-
-                        var existingLayer = tileMapSave.Layers.First();
-                        layer.width = existingLayer.width;
-                        layer.height = existingLayer.height;
-                        layer.data = existingLayer.data;
-
-                        // remove existing layers, replace it with this layer so the user doesn't accidentally place tiles on the wrong layer
-                        tileMapSave.MapLayers.Clear();
-                        tileMapSave.MapLayers.Add(layer);
+                        IncludeGameplayLayerOn(newFile);
                     }
-
-                    tileMapSave.Save(fullTmxFile.FullPath);
-                    Tileset.ShouldLoadValuesFromSource = old;
-
                 }
             }
         }
 
-        private void IncludeDefaultTilesetOn(ReferencedFileSave newFile, TiledMapSave tileMapSave)
+        public void IncludeGameplayLayerOn(ReferencedFileSave newFile)
         {
+            var old = Tileset.ShouldLoadValuesFromSource;
+            Tileset.ShouldLoadValuesFromSource = false;
+            var fullTmxFile = new FilePath(GlueCommands.Self.FileCommands.GetFullFileName(newFile));
+            var tileMapSave = TMXGlueLib.TiledMapSave.FromFile(fullTmxFile.FullPath);
+
+
+
+            var layer = new MapLayer();
+            layer.Name = "GameplayLayer";
+
+            var existingLayer = tileMapSave.Layers.First();
+            layer.width = existingLayer.width;
+            layer.height = existingLayer.height;
+            layer.data = existingLayer.data;
+
+            // remove existing layers, replace it with this layer so the user doesn't accidentally place tiles on the wrong layer
+            tileMapSave.MapLayers.Clear();
+            tileMapSave.MapLayers.Add(layer);
+
+            tileMapSave.Save(fullTmxFile.FullPath);
+            Tileset.ShouldLoadValuesFromSource = old;
+        }
+
+        public void IncludeDefaultTilesetOn(ReferencedFileSave newFile)
+        {
+            var old = Tileset.ShouldLoadValuesFromSource;
+            Tileset.ShouldLoadValuesFromSource = false;
+            var fullTmxFile = new FilePath(GlueCommands.Self.FileCommands.GetFullFileName(newFile));
+            var tileMapSave = TMXGlueLib.TiledMapSave.FromFile(fullTmxFile.FullPath);
+
             FilePath existingDefaultTilesetFile = null;
 
             if (existingDefaultTilesetFile == null)
@@ -121,12 +136,13 @@ namespace TiledPluginCore.Managers
 
             var standardTileset = new Tileset();
 
-            var fullTmxFile = new FilePath(GlueCommands.Self.FileCommands.GetFullFileName(newFile));
             var tmxDirectory = fullTmxFile.GetDirectoryContainingThis();
             standardTileset.Source = FileManager.MakeRelative( existingDefaultTilesetFile.FullPath, tmxDirectory.FullPath) ;
 
             tileMapSave.Tilesets.Add(standardTileset);
 
+            tileMapSave.Save(fullTmxFile.FullPath);
+            Tileset.ShouldLoadValuesFromSource = old;
 
         }
     }

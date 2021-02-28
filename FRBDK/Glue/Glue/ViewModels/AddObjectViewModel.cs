@@ -10,6 +10,7 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using FlatRedBall.Utilities;
@@ -211,6 +212,16 @@ namespace FlatRedBall.Glue.ViewModels
                 MakeWrapper(value);
         }
 
+        public bool IsTypePredetermined
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(IsTypePredetermined))]
+        public bool IsSelectionEnabled => !IsTypePredetermined;
+
+
         #endregion
 
         #region Object Name
@@ -262,8 +273,12 @@ namespace FlatRedBall.Glue.ViewModels
 
             if (!string.IsNullOrEmpty(nameToAssign))
             {
+                if(EffectiveElement == null)
+                {
+                    throw new InvalidOperationException("The AddObjectViewModel must either have its ForcedElementToAddTo set, or there must be a selected element.");
+                }
                 // We need to make sure this is a unique name.
-                nameToAssign = StringFunctions.MakeStringUnique(nameToAssign, EditorLogic.CurrentElement.AllNamedObjects);
+                nameToAssign = StringFunctions.MakeStringUnique(nameToAssign, EffectiveElement.AllNamedObjects);
 
                 ObjectName = nameToAssign;
             }
@@ -277,14 +292,17 @@ namespace FlatRedBall.Glue.ViewModels
 
         #endregion
 
-        public bool IsTypePredetermined
+        /// <summary>
+        /// The element to add to. If not set, the current element is used. This must be set first, as
+        /// otherh properties (like setting the name or the SourceClassType) may adjust the name of the element.
+        /// </summary>
+        public IElement ForcedElementToAddTo
         {
-            get => Get<bool>();
+            get => Get<IElement>();
             set => Set(value);
         }
 
-        [DependsOn(nameof(IsTypePredetermined))]
-        public bool IsSelectionEnabled => !IsTypePredetermined;
+        public IElement EffectiveElement => ForcedElementToAddTo ?? GlueState.Self.CurrentElement;
 
         public string SourceNameInFile
         {

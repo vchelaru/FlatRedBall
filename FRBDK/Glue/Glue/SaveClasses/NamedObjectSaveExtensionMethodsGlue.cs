@@ -47,16 +47,27 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public static void AddNamedObjectToCurrentNamedObjectList(NamedObjectSave namedObject)
         {
+            NamedObjectSave namedObjectList = GlueState.Self.CurrentNamedObjectSave;
+
+            AddNamedObjectToList(namedObject, namedObjectList);
+        }
+
+        public static void AddNamedObjectToList(NamedObjectSave namedObject, NamedObjectSave namedObjectList)
+        {
             namedObject.AddToManagers = true;
 
-            NamedObjectSave parentNamedObject = EditorLogic.CurrentNamedObject;
 
-            parentNamedObject.ContainedObjects.Add(namedObject);
+            if (namedObjectList == null)
+            {
+                throw new InvalidOperationException("No object is currently selected");
+            }
 
-            EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
+            namedObjectList.ContainedObjects.Add(namedObject);
+
+            EditorLogic.CurrentElementTreeNode?.RefreshTreeNodes();
 
             // Since it's part of a list we know its type
-            string typeOfNewObject = parentNamedObject.SourceClassGenericType;
+            string typeOfNewObject = namedObjectList.SourceClassGenericType;
 
             if (ObjectFinder.Self.GetEntitySave(typeOfNewObject) != null)
             {
@@ -80,8 +91,5 @@ namespace FlatRedBall.Glue.SaveClasses
                 MainGlueWindow.Self.ElementTreeView.SelectedNode = newNode;
             }
         }
-
-
-
     }
 }

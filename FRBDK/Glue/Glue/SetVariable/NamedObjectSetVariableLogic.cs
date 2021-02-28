@@ -716,6 +716,10 @@ namespace FlatRedBall.Glue.SetVariable
 
         private void ReactToNamedObjectChangedInstanceName(NamedObjectSave namedObjectSave, object oldValueAsObject)
         {
+            if(namedObjectSave == null)
+            {
+                throw new ArgumentNullException(nameof(namedObjectSave));
+            }
             string oldValue = (string)oldValueAsObject;
 
             #region Fail checks

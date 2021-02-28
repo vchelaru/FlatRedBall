@@ -10,8 +10,10 @@ using OfficialPluginsCore.Wizard.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Text;
 using WpfDataUi;
+using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace OfficialPluginsCore.Wizard
 {
@@ -53,6 +55,7 @@ namespace OfficialPluginsCore.Wizard
                 {
                     MainAddScreenPlugin.AddMapObject(gameScreen);
                 }
+
                 if(vm.AddSolidCollision)
                 {
                     solidCollisionNos = MainAddScreenPlugin.AddCollision(gameScreen, "SolidCollision");
@@ -67,7 +70,7 @@ namespace OfficialPluginsCore.Wizard
             {
                 var addEntityVm = new AddEntityViewModel();
                 addEntityVm.Name = "Player";
-                // todo - ask!
+                // todo - ask what kind of collision the user wants...
                 addEntityVm.IsAxisAlignedRectangleChecked = true;
                 addEntityVm.IsICollidableChecked = true;
 
@@ -93,7 +96,7 @@ namespace OfficialPluginsCore.Wizard
                 {
                     {
                         AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-
+                        addObjectViewModel.ForcedElementToAddTo = gameScreen;
                         addObjectViewModel.SourceType = SourceType.FlatRedBallType;
                         addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.PositionedObjectList;
                         addObjectViewModel.SourceClassGenericType = playerEntity.Name;
@@ -107,7 +110,7 @@ namespace OfficialPluginsCore.Wizard
                         AddObjectViewModel addPlayerVm = new AddObjectViewModel();
 
                         addPlayerVm.SourceType = SourceType.Entity;
-                        addPlayerVm.SourceClassType = nameof(playerEntity.Name);
+                        addPlayerVm.SourceClassType = playerEntity.Name;
                         addPlayerVm.ObjectName = "Player1";
 
                         GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addPlayerVm, gameScreen, playerList);
@@ -119,10 +122,39 @@ namespace OfficialPluginsCore.Wizard
                     if(vm.CollideAgainstSolidCollision)
                     {
                         PluginManager.ReactToCreateCollisionRelationshipsBetween(playerList, solidCollisionNos);
+
+                        var nos = gameScreen.GetNamedObject("PlayerListVsSolidCollision");
+
+                        // move is 1
+                        // bounce is 2
+                        // PlatformerSolid is 3
+                        // PlatformerCloud is 4
+
+                        if(vm.PlayerControlType == GameType.Platformer)
+                        {
+                            nos.Properties.SetValue("CollisionType", 3);
+                            // todo - set the masses and elasticity here
+                            nos.Properties.SetValue("FirstCollisionMass", 0.0f);
+                            nos.Properties.SetValue("SecondCollisionMass", 1.0f);
+                            nos.Properties.SetValue("CollisionElasticity", 0.0f);
+                        }
+                        else
+                        { 
+                            nos.Properties.SetValue("CollisionType", 2);
+
+                        }
+
                     }
                     if(vm.CollideAgainstCloudCollision)
                     {
                         PluginManager.ReactToCreateCollisionRelationshipsBetween(playerList, cloudCollisionNos);
+
+                        var nos = gameScreen.GetNamedObject("PlayerListVsCloudCollision");
+
+                        if(vm.PlayerControlType == GameType.Platformer)
+                        {
+                            nos.Properties.SetValue("CollisionType", 4);
+                        }
                     }
                 }
 
@@ -137,11 +169,85 @@ namespace OfficialPluginsCore.Wizard
                     var levelScreen = GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(levelName);
                     levelScreen.BaseScreen = gameScreen.Name;
                     levelScreen.UpdateFromBaseType();
+                    GlueState.Self.CurrentScreenSave = levelScreen;
+
 
                     if(i == 0)
                     {
                         GlueCommands.Self.GluxCommands.StartUpScreenName = levelScreen.Name;
                     }
+
+                    if(vm.AddGameScreen && vm.AddTiledMap)
+                    {
+                        // add a regular TMX
+                        var addNewFileVm = new AddNewFileViewModel();
+
+                        var tmxAti =
+                            AvailableAssetTypes.Self.GetAssetTypeFromExtension("tmx");
+                        addNewFileVm.SelectedAssetTypeInfo = tmxAti;
+
+                        addNewFileVm.ForcedType = tmxAti;
+                        addNewFileVm.FileName = levelName + "Map";
+                        GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSave(addNewFileVm);
+
+                        var mapObject = levelScreen.NamedObjects.FirstOrDefault(item => item.InstanceName == "Map" && item.GetAssetTypeInfo().FriendlyName.StartsWith("LayeredTileMap"));
+                        if (mapObject != null)
+                        {
+                            mapObject.SourceType = SourceType.File;
+                            mapObject.SourceFile = "Screens/Level1/" +  levelName + "Map.tmx";
+                            mapObject.SourceName = "Entire File (LayeredTileMap)";
+                        }
+
+                        void SelectTmxRfs()
+                        {
+                            GlueState.Self.CurrentReferencedFileSave = levelScreen.ReferencedFiles
+                                .FirstOrDefault(Item => Item.GetAssetTypeInfo()?.Extension == "tmx");
+                        }
+
+                        if(vm.IncludStandardTilesetInLevels)
+                        {
+                            SelectTmxRfs();
+                            PluginManager.CallPluginMethod("Tiled Plugin", "AddStandardTilesetOnCurrentFile");
+                        }
+                        if(vm.IncludeGameplayLayerInLevels)
+                        {
+                            SelectTmxRfs();
+                            PluginManager.CallPluginMethod("Tiled Plugin", "AddGameplayLayerToCurrentFile");
+                        }
+
+                    }
+                }
+            }
+
+            if(vm.AddGum)
+            {
+                if (vm.AddFlatRedBallForms)
+                {
+                    PluginManager.CallPluginMethod("Gum Plugin", "CreateGumProjectWithForms");
+                }
+                else
+                {
+                    PluginManager.CallPluginMethod("Gum Plugin", "CreateGumProjectNoForms");
+                }
+            }
+
+            if(vm.AddCameraController && vm.AddGameScreen)
+            {
+                var addCameraControllerVm = new AddObjectViewModel();
+                addCameraControllerVm.ForcedElementToAddTo = gameScreen;
+                addCameraControllerVm.SourceType = SourceType.FlatRedBallType;
+                addCameraControllerVm.SourceClassType = "FlatRedBall.Entities.CameraControllingEntity";
+                addCameraControllerVm.ObjectName = "CameraControllingEntityInstance";
+
+                var cameraNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addCameraControllerVm, gameScreen, null);
+
+                if(vm.FollowPlayersWithCamera && vm.AddPlayerListToGameScreen)
+                {
+                    cameraNos.SetVariableValue(nameof(FlatRedBall.Entities.CameraControllingEntity.Targets), "PlayerList");
+                }
+                if(vm.KeepCameraInMap && vm.AddTiledMap)
+                {
+                    cameraNos.SetVariableValue(nameof(FlatRedBall.Entities.CameraControllingEntity.Map), "Map");
                 }
             }
         }
