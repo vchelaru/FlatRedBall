@@ -133,14 +133,13 @@ namespace OfficialPluginsCore.Wizard
                         if(vm.PlayerControlType == GameType.Platformer)
                         {
                             nos.Properties.SetValue("CollisionType", 3);
-                            // todo - set the masses and elasticity here
-                            nos.Properties.SetValue("FirstCollisionMass", 0.0f);
-                            nos.Properties.SetValue("SecondCollisionMass", 1.0f);
-                            nos.Properties.SetValue("CollisionElasticity", 0.0f);
                         }
                         else
                         { 
                             nos.Properties.SetValue("CollisionType", 2);
+                            nos.Properties.SetValue("FirstCollisionMass", 0.0f);
+                            nos.Properties.SetValue("SecondCollisionMass", 1.0f);
+                            nos.Properties.SetValue("CollisionElasticity", 0.0f);
 
                         }
 
