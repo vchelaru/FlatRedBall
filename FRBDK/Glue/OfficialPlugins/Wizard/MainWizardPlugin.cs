@@ -7,11 +7,13 @@ using FlatRedBall.Glue.ViewModels;
 using GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin;
 using GlueFormsCore.ViewModels;
 using OfficialPluginsCore.Wizard.Models;
+using OfficialPluginsCore.Wizard.Views;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using WpfDataUi;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
@@ -36,18 +38,36 @@ namespace OfficialPluginsCore.Wizard
 
         private void RunWizard(object sender, EventArgs e)
         {
-            var vm = new WizardData();
+            var window = new WizardWindow();
 
-            Apply(vm);
+            window.DoneClicked += () => Apply(window.WizardData);
+
+            window.ShowDialog();
+
         }
 
-        private void Apply(WizardData vm)
+        private async Task Apply(WizardData vm)
         {
             ScreenSave gameScreen = null;
             NamedObjectSave solidCollisionNos = null;
             NamedObjectSave cloudCollisionNos = null;
 
-            if(vm.AddGameScreen)
+            // Add Gum before adding a GameScreen, so the GameScreen gets its Gum screen
+            if (vm.AddGum)
+            {
+                if (vm.AddFlatRedBallForms)
+                {
+                    PluginManager.CallPluginMethod("Gum Plugin", "CreateGumProjectWithForms");
+                }
+                else
+                {
+                    PluginManager.CallPluginMethod("Gum Plugin", "CreateGumProjectNoForms");
+                }
+
+                await FlatRedBall.Glue.Managers.TaskManager.Self.WaitForAllTasksFinished();
+            }
+
+            if (vm.AddGameScreen)
             {
                 gameScreen = GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("GameScreen");
 
@@ -218,17 +238,7 @@ namespace OfficialPluginsCore.Wizard
                 }
             }
 
-            if(vm.AddGum)
-            {
-                if (vm.AddFlatRedBallForms)
-                {
-                    PluginManager.CallPluginMethod("Gum Plugin", "CreateGumProjectWithForms");
-                }
-                else
-                {
-                    PluginManager.CallPluginMethod("Gum Plugin", "CreateGumProjectNoForms");
-                }
-            }
+
 
             if(vm.AddCameraController && vm.AddGameScreen)
             {

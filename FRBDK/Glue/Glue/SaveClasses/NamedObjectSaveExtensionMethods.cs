@@ -371,7 +371,8 @@ namespace FlatRedBall.Glue.SaveClasses
                     instruction.Value = (int)instruction.Value;
                 }
             }
-            foreach(var property in instance.Properties)
+            // to prevent some threading issues:
+            foreach(var property in instance.Properties.ToArray())
             {
                 if(property.Value != null && property.Value.GetType().IsEnum)
                 {

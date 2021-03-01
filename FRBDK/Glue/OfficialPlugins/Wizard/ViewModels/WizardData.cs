@@ -4,13 +4,13 @@ using System.Text;
 
 namespace OfficialPluginsCore.Wizard.Models
 {
-    enum GameType
+    public enum GameType
     {
         Platformer,
         Topdown,
         None
     }
-    class WizardData
+    public class WizardData
     {
 
         public bool AddGameScreen { get; set; } = true;
