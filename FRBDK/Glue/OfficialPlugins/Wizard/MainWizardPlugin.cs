@@ -265,7 +265,8 @@ namespace OfficialPluginsCore.Wizard
 
                 if (didWait)
                 {
-                    // Glue checks for files every 2 seconds, so let's wait 2.5 seconds
+                    // Glue checks for file changes every 2 seconds, so let's wait 2.5 seconds
+                    // to make sure it's had enough time to look for file changes.
                     var msToWaitEachTime = 2500;
                     await Task.Delay(msToWaitEachTime);
                 }
