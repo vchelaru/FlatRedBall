@@ -40,6 +40,8 @@ namespace OfficialPluginsCore.Wizard.Views
             {
                 if(!hasClickedDone)
                 {
+                    GridInstance.Visibility = Visibility.Collapsed;
+                    PleaseWaitGrid.Visibility = Visibility.Visible;
                     // prevent double clicking
                     hasClickedDone = true;
                     await DoneClicked();

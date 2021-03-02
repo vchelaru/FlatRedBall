@@ -8,8 +8,15 @@ namespace OfficialPluginsCore.Wizard.Models
 {
     class WizardFormsDefinition
     {
+        #region Fields/Properties
+
         public List<FormsData> FormsDataList { get; private set; } = new List<FormsData>();
         public WizardData ViewModel { get; private set; }
+
+        #endregion
+
+        public event Action DoneClicked;
+
         public void CreatePages()
         {
             ViewModel = new WizardData();
@@ -28,10 +35,13 @@ namespace OfficialPluginsCore.Wizard.Models
                 formsData.AddText("Most games have a GameScreen which is where the main gameplay happens. " +
                     "Adding a GameScreen enables lots of automated Glue behavior");
 
+
+
                 formsData.AddBoolValue("Add GameScreen", nameof(ViewModel.AddGameScreen));
-                formsData.AddBoolValue("Add Tiled Map", nameof(ViewModel.AddTiledMap));
-                formsData.AddBoolValue("Add SolidCollision", nameof(ViewModel.AddSolidCollision));
-                formsData.AddBoolValue("Add CloudCollision", nameof(ViewModel.AddCloudCollision));
+                formsData.AddText("We strongly recommend adding a GameScreen.", nameof(ViewModel.NoGameScreen));
+                formsData.AddBoolValue("Add Tiled Map", nameof(ViewModel.AddTiledMap), nameof(ViewModel.AddGameScreen));
+                formsData.AddBoolValue("Add SolidCollision", nameof(ViewModel.AddSolidCollision), nameof(ViewModel.AddGameScreen));
+                formsData.AddBoolValue("Add CloudCollision", nameof(ViewModel.AddCloudCollision), nameof(ViewModel.AddGameScreen));
 
 
 
@@ -47,16 +57,16 @@ namespace OfficialPluginsCore.Wizard.Models
 
                 formsData.AddBoolValue("Add Player Entity", nameof(ViewModel.AddPlayerEntity));
 
-                formsData.AddOptions("What kind of control will the Player have?", nameof(ViewModel.PlayerControlType))
+                formsData.AddOptions("What kind of control will the Player have?", nameof(ViewModel.PlayerControlType), nameof(ViewModel.AddPlayerEntity))
                     .Add("Top-down", GameType.Topdown)
                     .Add("Platformer", GameType.Platformer)
                     .Add("None (controls be added later)", GameType.None);
 
-                formsData.AddBoolValue("Add Player list to GameScreen", nameof(ViewModel.AddPlayerListToGameScreen));
-                formsData.AddBoolValue("Add Player instance to list", nameof(ViewModel.AddPlayerToList));
+                formsData.AddBoolValue("Add Player list to GameScreen", nameof(ViewModel.AddPlayerListToGameScreen), nameof(ViewModel.AddPlayerEntity));
+                formsData.AddBoolValue("Add Player instance to list", nameof(ViewModel.AddPlayerToList), nameof(ViewModel.AddPlayerEntity));
 
-                formsData.AddBoolValue("Add Player vs. solid collision", nameof(ViewModel.CollideAgainstSolidCollision));
-                formsData.AddBoolValue("Add Player vs. cloud collision", nameof(ViewModel.CollideAgainstCloudCollision));
+                formsData.AddBoolValue("Add Player vs. solid collision", nameof(ViewModel.CollideAgainstSolidCollision), nameof(ViewModel.AddPlayerEntity));
+                formsData.AddBoolValue("Add Player vs. cloud collision", nameof(ViewModel.CollideAgainstCloudCollision), nameof(ViewModel.AddPlayerEntity));
 
                 FormsDataList.Add(formsData);
             }
@@ -66,10 +76,13 @@ namespace OfficialPluginsCore.Wizard.Models
                 formsData.AddTitle("Levels");
                 formsData.AddText("Games can have multiple levels. Usually each level is a separate Tiled file.");
 
-                formsData.AddIntValue("Number of levels to create", nameof(ViewModel.NumberOfLevels));
+                formsData.AddText("Levels cannot be added because there is no game screen.", nameof(ViewModel.NoGameScreen));
 
-                formsData.AddBoolValue("Include standard tileset", nameof(ViewModel.IncludStandardTilesetInLevels));
-                formsData.AddBoolValue("Include gameplay layer", nameof(ViewModel.IncludeGameplayLayerInLevels));
+
+                formsData.AddIntValue("Number of levels to create", nameof(ViewModel.NumberOfLevels), nameof(ViewModel.AddGameScreen));
+
+                formsData.AddBoolValue("Include standard tileset", nameof(ViewModel.IncludStandardTilesetInLevels), nameof(ViewModel.AddGameScreen));
+                formsData.AddBoolValue("Include gameplay layer", nameof(ViewModel.IncludeGameplayLayerInLevels), nameof(ViewModel.AddGameScreen));
 
                 FormsDataList.Add(formsData);
 
@@ -92,9 +105,11 @@ namespace OfficialPluginsCore.Wizard.Models
                 formsData.AddTitle("Camera");
                 formsData.AddText("The Camera Controller Entity can simplify code for following a player and staying within the bounds of a map.");
 
-                formsData.AddBoolValue("Add Camera Controller", nameof(ViewModel.AddCameraController));
-                formsData.AddBoolValue("Follow Players with Camera", nameof(ViewModel.FollowPlayersWithCamera));
-                formsData.AddBoolValue("Keep Camera in Map bounds", nameof(ViewModel.KeepCameraInMap));
+                formsData.AddText("A Camera Controller Entity instance cannot be added because there is no game screen.", nameof(ViewModel.NoGameScreen));
+
+                formsData.AddBoolValue("Add Camera Controller", nameof(ViewModel.AddCameraController), nameof(ViewModel.AddGameScreen));
+                formsData.AddBoolValue("Follow Players with Camera", nameof(ViewModel.FollowPlayersWithCamera), nameof(ViewModel.AddGameScreen));
+                formsData.AddBoolValue("Keep Camera in Map bounds", nameof(ViewModel.KeepCameraInMap), nameof(ViewModel.AddGameScreen));
 
                 FormsDataList.Add(formsData);
             }
@@ -107,7 +122,6 @@ namespace OfficialPluginsCore.Wizard.Models
             }
 
         }
-        public event Action DoneClicked;
         public void Start(Grid grid)
         {
             var formsDataList = FormsDataList;

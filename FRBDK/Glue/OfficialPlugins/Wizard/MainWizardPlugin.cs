@@ -33,10 +33,10 @@ namespace OfficialPluginsCore.Wizard
 
         public override void StartUp()
         {
-            AddMenuItemTo("Start New Project Wizard", RunWizard, "Plugins");
+            AddMenuItemTo("Start New Project Wizard", (not, used) => RunWizard(), "Plugins");
         }
 
-        private void RunWizard(object sender, EventArgs e)
+        public void RunWizard()
         {
             var window = new WizardWindow();
 
@@ -238,8 +238,6 @@ namespace OfficialPluginsCore.Wizard
                 }
             }
 
-
-
             if(vm.AddCameraController && vm.AddGameScreen)
             {
                 var addCameraControllerVm = new AddObjectViewModel();
@@ -259,6 +257,20 @@ namespace OfficialPluginsCore.Wizard
                     cameraNos.SetVariableValue(nameof(FlatRedBall.Entities.CameraControllingEntity.Map), "Map");
                 }
             }
+
+            var didWait = false;
+            do
+            {
+                didWait = await FlatRedBall.Glue.Managers.TaskManager.Self.WaitForAllTasksFinished();
+
+                if (didWait)
+                {
+                    // Glue checks for files every 2 seconds, so let's wait 2.5 seconds
+                    var msToWaitEachTime = 2500;
+                    await Task.Delay(msToWaitEachTime);
+                }
+            } while (didWait);
+
         }
     }
 }

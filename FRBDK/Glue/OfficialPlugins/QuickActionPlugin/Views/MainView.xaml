@@ -59,6 +59,15 @@
                 <WrapPanel HorizontalAlignment="Center" Margin="0,0,10,10">
 
                     <local:QuickActionButton
+                        x:Name="RunWizardButton"
+                        Title="Run Glue Wizard"
+                        Details="The Glue Wizard can help you get a fully functional game set up in seconds."
+                        Clicked="RunWizard_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Views/StartWizard.png"
+                        >
+
+                    </local:QuickActionButton>
+
+                    <local:QuickActionButton
                         x:Name="CreateNewProjectButton"
                         Title="Create New Project"
                         Details="Usually new projects target Desktop GL."

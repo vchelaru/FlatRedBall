@@ -48,6 +48,7 @@
     <None Remove="QuickActionPlugin\Icons\Create Factory for Entity v2.png" />
     <None Remove="QuickActionPlugin\Icons\Create Project v2.png" />
     <None Remove="QuickActionPlugin\Icons\Create Screen.png" />
+    <None Remove="QuickActionPlugin\Icons\StartWizard.png" />
     <None Remove="QuickActionPlugin\Views\Add Entity instance to GameScreen.png" />
     <None Remove="QuickActionPlugin\Views\Add Entity List to GameScreen.png" />
     <None Remove="QuickActionPlugin\Views\Add Gum Project.png" />
@@ -57,6 +58,7 @@
     <None Remove="QuickActionPlugin\Views\Create Factory for Entity v2.png" />
     <None Remove="QuickActionPlugin\Views\Create Project v2.png" />
     <None Remove="QuickActionPlugin\Views\Create Screen.png" />
+    <None Remove="QuickActionPlugin\Views\StartWizard.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -102,6 +104,7 @@
     <Resource Include="QuickActionPlugin\Icons\Create Factory for Entity v2.png" />
     <Resource Include="QuickActionPlugin\Icons\Create Project v2.png" />
     <Resource Include="QuickActionPlugin\Icons\Create Screen.png" />
+    <Resource Include="QuickActionPlugin\Icons\StartWizard.png" />
     <Resource Include="QuickActionPlugin\Views\Add Entity instance to GameScreen.png" />
     <Resource Include="QuickActionPlugin\Views\Add Entity List to GameScreen.png" />
     <Resource Include="QuickActionPlugin\Views\Add Gum Project.png" />
@@ -111,6 +114,7 @@
     <Resource Include="QuickActionPlugin\Views\Create Factory for Entity v2.png" />
     <Resource Include="QuickActionPlugin\Views\Create Project v2.png" />
     <Resource Include="QuickActionPlugin\Views\Create Screen.png" />
+    <Resource Include="QuickActionPlugin\Views\StartWizard.png" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

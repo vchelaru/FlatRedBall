@@ -63,6 +63,11 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             AnyButtonClicked();
         }
 
+        private void RunWizard_Clicked(object sender, RoutedEventArgs e)
+        {
+            PluginManager.CallPluginMethod("New Project Wizard", "RunWizard");
+        }
+
         private void CreateNewProjectButton_Clicked(object sender, RoutedEventArgs e)
         {
             GlueCommands.Self.ProjectCommands.CreateNewProject();

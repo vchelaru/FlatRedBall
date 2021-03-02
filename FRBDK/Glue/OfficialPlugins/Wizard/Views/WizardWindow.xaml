@@ -6,7 +6,13 @@
         xmlns:local="clr-namespace:OfficialPluginsCore.Wizard.Views"
         mc:Ignorable="d"
         Title="Project Setup Wizard" Height="450" Width="500">
-    <Grid x:Name="GridInstance" Margin="16">
-        
+    <Grid Margin="16">
+        <Grid x:Name="PleaseWaitGrid" Visibility="Collapsed">
+            <local:ActivitySpinner></local:ActivitySpinner>
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Margin="0,70,0,0">Please wait...</TextBlock>
+        </Grid>
+        <Grid x:Name="GridInstance" >
+            
+        </Grid>
     </Grid>
 </Window>

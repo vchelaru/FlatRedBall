@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlatRedBall.Glue.MVVM;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,33 +11,144 @@ namespace OfficialPluginsCore.Wizard.Models
         Topdown,
         None
     }
-    public class WizardData
+    public class WizardData : ViewModel
     {
 
-        public bool AddGameScreen { get; set; } = true;
-        public bool AddTiledMap { get; set; } = true;
-        public bool AddSolidCollision { get; set; } = true;
-        public bool AddCloudCollision { get; set; } = true;
+        public bool AddGameScreen
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
-        public bool AddPlayerEntity { get; set; } = true;
+        [DependsOn(nameof(AddGameScreen))]
+        public bool NoGameScreen => AddGameScreen == false;
 
-        public GameType PlayerControlType { get; set; } = GameType.Topdown;
-        public bool AddPlayerListToGameScreen { get; set; } = true;
-        public bool AddPlayerToList { get; set; } = true;
+        public bool AddTiledMap
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+        public bool AddSolidCollision
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+        public bool AddCloudCollision
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
-        public bool CollideAgainstSolidCollision { get; set; } = true;
-        public bool CollideAgainstCloudCollision { get; set; } = true;
+        public bool AddPlayerEntity
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
-        public bool CreateLevels { get; set; } = true;
-        public int NumberOfLevels { get; set; } = 2;
-        public bool IncludStandardTilesetInLevels { get; set; } = true;
-        public bool IncludeGameplayLayerInLevels { get; set; } = true;
+        public GameType PlayerControlType
+        {
+            get => Get<GameType>();
+            set => Set(value);
+        }
+        public bool AddPlayerListToGameScreen
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+        public bool AddPlayerToList
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
-        public bool AddGum { get; set; } = true;
-        public bool AddFlatRedBallForms { get; set; } = true;
+        public bool CollideAgainstSolidCollision
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+        public bool CollideAgainstCloudCollision
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
-        public bool AddCameraController { get; set; } = true;
-        public bool FollowPlayersWithCamera { get; set; } = true;
-        public bool KeepCameraInMap { get; set; } = true;
+        public bool CreateLevels
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+        public int NumberOfLevels
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+        public bool IncludStandardTilesetInLevels
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+        public bool IncludeGameplayLayerInLevels
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool AddGum {
+            get => Get<bool>();
+            set => Set(value);
+        }
+        public bool AddFlatRedBallForms
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool AddCameraController
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+        public bool FollowPlayersWithCamera
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+        public bool KeepCameraInMap
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+
+        public WizardData()
+        {
+            AddGameScreen = true;
+            AddTiledMap = true;
+            AddSolidCollision = true;
+            AddCloudCollision = true;
+
+            AddPlayerEntity = true;
+
+            PlayerControlType = GameType.Topdown;
+            AddPlayerListToGameScreen = true;
+            AddPlayerToList = true;
+
+            CollideAgainstSolidCollision = true;
+            CollideAgainstCloudCollision = true;
+
+            CreateLevels = true;
+            NumberOfLevels = 2;
+            IncludStandardTilesetInLevels = true;
+            IncludeGameplayLayerInLevels = true;
+
+            AddGum = true;
+            AddFlatRedBallForms = true;
+
+            AddCameraController = true;
+            FollowPlayersWithCamera = true;
+            KeepCameraInMap = true;
+        }
+
+
     }
 }

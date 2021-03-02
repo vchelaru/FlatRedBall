@@ -195,12 +195,15 @@ namespace FlatRedBall.Glue.Managers
         }
 
 
-        public async Task WaitForAllTasksFinished()
+        public async Task<bool> WaitForAllTasksFinished()
         {
+            var didWait = false;
             while (!AreAllAsyncTasksDone)
             {
+                didWait = true;
                 await Task.Delay(500);
             }
+            return didWait;
         }
 
         [Obsolete("Use Add, which allows specifying the priority")]

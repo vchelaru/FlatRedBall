@@ -38,6 +38,17 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
             var hasGumProject = GlueState.Self.GetAllReferencedFiles()
                 .Any(item => item.Name.ToLowerInvariant().EndsWith(".gumx"));
 
+            #region Wizard 
+
+            var isWizardButtonVisible =
+                glueProject != null &&
+                glueProject.Screens.Count == 0 &&
+                glueProject.Entities.Count == 0;
+
+            mainView.RunWizardButton.Visibility = ToVisibility(isWizardButtonVisible);
+
+            #endregion
+
             #region Create New Project
 
             mainView.CreateNewProjectButton.Visibility = ToVisibility(

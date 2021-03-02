@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Security.Permissions;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Shapes;
 
 namespace OfficialPluginsCore.Wizard.Models
@@ -33,7 +35,7 @@ namespace OfficialPluginsCore.Wizard.Models
         public object Value { get; set; }
 
         public string ViewModelProperty { get; set; }
-
+        public string VisibilityBinding { get; set; }
         public string Subtext { get; set; }
     }
 
@@ -82,11 +84,12 @@ namespace OfficialPluginsCore.Wizard.Models
             return item;
         }
 
-        public OptionContainer AddOptions(string label, string vmPropertyName = null)
+        public OptionContainer AddOptions(string label, string vmPropertyName = null, string visibilityBinding = null)
         {
             var item = new OptionContainer { LabelText = label };
             item.ViewModelProperty = vmPropertyName;
             item.ViewType = ViewType.Group;
+            item.VisibilityBinding = visibilityBinding;
             return (OptionContainer)Add(item);
         }
 
@@ -95,27 +98,32 @@ namespace OfficialPluginsCore.Wizard.Models
             Add(new DataItem { LabelText = title, LabelFontSize = 24 });
         }
 
-        public void AddText(string text)
+        public void AddText(string text, string visibilityBinding = null)
         {
-            Add(new DataItem { LabelText = text });
+            var dataItem = new DataItem { LabelText = text };
+            dataItem.VisibilityBinding = visibilityBinding;
+            Add(dataItem);
         }
 
-        public DataItem AddIntValue(string label, string vmPropertyName = null)
+        public DataItem AddIntValue(string label, string vmPropertyName = null, string visibilityBinding = null)
         {
             var dataItem = new DataItem();
             dataItem.ViewType = ViewType.IntTextBox;
             dataItem.LabelText = label;
             dataItem.ViewModelProperty = vmPropertyName;
+            dataItem.VisibilityBinding = visibilityBinding;
+
 
             return Add(dataItem);
         }
 
-        public DataItem AddBoolValue(string label, string vmPropertyName = null)
+        public DataItem AddBoolValue(string label, string vmPropertyName = null, string visibilityBinding = null)
         {
             var dataItem = new DataItem();
             dataItem.ViewType = ViewType.CheckBox;
             dataItem.LabelText = label;
             dataItem.ViewModelProperty = vmPropertyName;
+            dataItem.VisibilityBinding = visibilityBinding;
 
             return Add(dataItem);
         }
@@ -188,12 +196,25 @@ namespace OfficialPluginsCore.Wizard.Models
                 vmProperty = vmType.GetProperty(dataItem.ViewModelProperty);
             }
             var vmValue = vmProperty?.GetValue(viewModel);
+
+            void TryBindVisibility(FrameworkElement element)
+            {
+                if(!string.IsNullOrEmpty(dataItem.VisibilityBinding ))
+                {
+                    var binding = new Binding(dataItem.VisibilityBinding) { Converter = new BooleanToVisibilityConverter() };
+                    element.SetBinding(UIElement.VisibilityProperty, binding);
+                }
+            }
             switch (dataItem.ViewType)
             {
                 case ViewType.CheckBox:
                     var checkBox = new CheckBox();
                     checkBox.Content = dataItem.LabelText;
-                    checkBox.IsChecked = vmValue is bool asBool && asBool;
+                    checkBox.SetBinding(CheckBox.IsCheckedProperty, dataItem.ViewModelProperty);
+                        //IsChecked = vmValue is bool asBool && asBool;
+
+                    TryBindVisibility(checkBox);
+
                     stackPanel.Children.Add(checkBox);
 
                     break;
@@ -206,6 +227,8 @@ namespace OfficialPluginsCore.Wizard.Models
                     var innerStack = new StackPanel();
                     group.Content = innerStack;
                     group.MinWidth = 150;
+                    TryBindVisibility(group);
+
                     foreach (var child in asOptionContainer.Options)
                     {
                         var radioButton = new RadioButton();
@@ -227,18 +250,22 @@ namespace OfficialPluginsCore.Wizard.Models
                     {
                         textBlock.FontSize = dataItem.LabelFontSize.Value;
                     }
+                    TryBindVisibility(textBlock);
+
                     stackPanel.Children.Add(textBlock);
                     break;
                 case ViewType.IntTextBox:
                     {
                         var label = new TextBlock();
                         label.Text = dataItem.LabelText;
+                        TryBindVisibility(label);
                         stackPanel.Children.Add(label);
 
                         var textBox = new TextBox();
                         textBox.MinWidth = 150;
                         textBox.HorizontalAlignment = HorizontalAlignment.Left;
                         textBox.SetBinding(TextBox.TextProperty, dataItem.ViewModelProperty);
+                        TryBindVisibility(textBox);
                         stackPanel.Children.Add(textBox);
                     }
 
@@ -248,12 +275,14 @@ namespace OfficialPluginsCore.Wizard.Models
                     {
                         var label = new TextBlock();
                         label.Text = dataItem.LabelText;
+                        TryBindVisibility(label);
                         stackPanel.Children.Add(label);
 
                         var textBox = new TextBox();
                         textBox.SetBinding(TextBox.TextProperty, dataItem.ViewModelProperty);
                         textBox.MinWidth = 150;
                         textBox.HorizontalAlignment = HorizontalAlignment.Left;
+                        TryBindVisibility(textBox);
                         stackPanel.Children.Add(textBox);
                     }
                     break;
