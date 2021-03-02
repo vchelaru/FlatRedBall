@@ -16,7 +16,7 @@ namespace Npc.Managers
         {
             bool succeeded = true;
 
-            succeeded = await Unzip(zipToUnpack, unpackDirectory, succeeded);
+            succeeded = Unzip(zipToUnpack, unpackDirectory, succeeded);
 
             if (succeeded)
             {
