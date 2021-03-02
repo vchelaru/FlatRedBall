@@ -21,6 +21,7 @@ using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.CodeGeneration.Game1;
 using FlatRedBall.IO;
+using System.Windows;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -312,6 +313,7 @@ namespace FlatRedBall.Glue.Plugins
             if (toAddTo == null)
             {
                 toAddTo = new System.Windows.Controls.ToolBar();
+
                 toAddTo.Name = toolbarName;
                 tray.ToolBars.Add(toAddTo);
             }

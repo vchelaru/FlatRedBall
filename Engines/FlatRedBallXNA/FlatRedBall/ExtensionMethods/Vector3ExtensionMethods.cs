@@ -118,5 +118,16 @@ namespace Microsoft.Xna.Framework
                 0
                 );
         }
+
+        /// <summary>
+        /// Returns a vector in the same direction as the argument vector, but of the length specified by the length argument.
+        /// </summary>
+        /// <param name="vector3">The vector specifying the direction.</param>
+        /// <param name="length">The desired length.</param>
+        /// <returns>The resulting vector in the same direction as the argument of the desired length, or a vector of 0 length if the argument has 0 length.</returns>
+        public static Vector3 AtLength(this Vector3 vector3, float length)
+        {
+            return vector3.NormalizedOrZero() * length;
+        }
     }
 }

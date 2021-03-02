@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:FlatRedBall.Glue.Controls"
              mc:Ignorable="d" 
              Height="30" d:DesignWidth="200">
-    <ToolBarTray x:Name="ToolBarTray">
+    <ToolBarTray x:Name="ToolBarTray" IsLocked="True">
             
     </ToolBarTray>
 </UserControl>

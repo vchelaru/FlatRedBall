@@ -37,5 +37,18 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects.Controls
                 MessageBox.Show("No Glue project loaded");
             }
         }
+
+        private void FolderButtonClick(object sender, RoutedEventArgs args)
+        {
+            if (GlueState.Self.CurrentMainProject != null)
+            {
+                ProjectListEntry.OpenInExplorer(GlueState.Self.CurrentMainProject);
+
+            }
+            else
+            {
+                GlueCommands.Self.DialogCommands.ShowMessageBox("No Glue project loaded");
+            }
+        }
     }
 }

@@ -124,6 +124,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
             window.ShowDialog();
         }
 
+        public static void OpenInExplorer(ProjectBase project)
+        {
+            Process.Start("explorer.exe", "/select," + project.FullFileName);
+        }
+
         private void OpenInExplorer(object sender, RoutedEventArgs e)
         {
             Process.Start("explorer.exe", "/select," + Project.FullFileName);

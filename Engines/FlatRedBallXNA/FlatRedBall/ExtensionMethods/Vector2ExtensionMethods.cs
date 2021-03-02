@@ -69,5 +69,16 @@ namespace Microsoft.Xna.Framework
                 throw new InvalidOperationException("This vector is of length 0, so it cannot be normalized");
             }
         }
+
+        /// <summary>
+        /// Returns a vector in the same direction as the argument vector, but of the length specified by the length argument.
+        /// </summary>
+        /// <param name="vector2">The vector specifying the direction.</param>
+        /// <param name="length">The desired length.</param>
+        /// <returns>The resulting vector in the same direction as the argument of the desired length, or a vector of 0 length if the argument has 0 length.</returns>
+        public static Vector2 AtLength(this Vector2 vector2, float length)
+        {
+            return vector2.NormalizedOrZero() * length;
+        }
     }
 }

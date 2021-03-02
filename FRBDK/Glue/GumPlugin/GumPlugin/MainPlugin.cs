@@ -373,7 +373,7 @@ namespace GumPlugin
             gumToolbar = new GumToolbar();
             gumToolbar.DataContext = toolbarViewModel;
             gumToolbar.GumButtonClicked += HandleToolbarButtonClick;
-            base.AddToToolBar(gumToolbar, "Standard");
+            base.AddToToolBar(gumToolbar, "Tools");
         }
 
         private void HandleFileRemoved(IElement container, ReferencedFileSave file)

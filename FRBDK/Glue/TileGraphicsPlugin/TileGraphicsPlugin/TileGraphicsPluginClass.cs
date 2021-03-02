@@ -353,7 +353,7 @@ namespace TileGraphicsPlugin
             tiledToolbar = new TiledToolbar();
             tiledToolbar.Opened += HandleToolbarOpened;
             //gumToolbar.GumButtonClicked += HandleToolbarButtonClick;
-            base.AddToToolBar(tiledToolbar, "Standard");
+            base.AddToToolBar(tiledToolbar, "Tools");
         }
 
         private void HandleToolbarOpened(object sender, EventArgs e)

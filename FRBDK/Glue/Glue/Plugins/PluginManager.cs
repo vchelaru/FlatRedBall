@@ -762,7 +762,8 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
-        internal static void SetTabs(TabControl top, TabControl bottom, TabControl left, TabControl right, TabControl center, ToolbarControl toolbar)
+        internal static void SetTabs(TabControl top, TabControl bottom, TabControl left, TabControl right, TabControl center, 
+            ToolbarControl toolbar)
         {
             TopTab = top;
             LeftTab = left;
