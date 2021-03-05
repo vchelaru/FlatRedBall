@@ -33,7 +33,7 @@ namespace OfficialPluginsCore.Wizard
 
         public override void StartUp()
         {
-            AddMenuItemTo("Start New Project Wizard", (not, used) => RunWizard(), "Plugins");
+            //AddMenuItemTo("Start New Project Wizard", (not, used) => RunWizard(), "Plugins");
         }
 
         public void RunWizard()

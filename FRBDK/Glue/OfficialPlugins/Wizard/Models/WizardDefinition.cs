@@ -52,7 +52,7 @@ namespace OfficialPluginsCore.Wizard.Models
                 var formsData = new FormsData(ViewModel);
                 formsData.AddTitle("Player Entity");
 
-                formsData.AddText("A Player Entity is controlled by the player. Examples include a" +
+                formsData.AddText("A Player Entity is controlled by the player. Examples include a " +
                     "character in a platformer, a space ship in a shooter, or a car in a racing game.");
 
                 formsData.AddBoolValue("Add Player Entity", nameof(ViewModel.AddPlayerEntity));
