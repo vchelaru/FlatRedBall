@@ -719,5 +719,41 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             NewProjectHelper.CreateNewProject();
         }
+
+        public void AddNugetIfNotAdded(string packageName, string versionNumber)
+        {
+            //////////////Early Out///////////////////
+            // Just in case this is called when the project is unloaded:
+            if (GlueState.Self.CurrentGlueProject == null)
+            {
+                return;
+            }
+            ////////////End Early Out////////////////
+
+            var hasNugetsEmbeddedInCsproj = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.NugetPackageInCsproj;
+            // If not....do we fail silently?
+            // So far this is for adding Newtonsoft json, and if we don't have it the user will get a compile error so maybe that's enough to guide them?
+            if(hasNugetsEmbeddedInCsproj)
+            {
+                var mainProject = GlueState.Self.CurrentMainProject;
+
+                if (mainProject?.CodeProject == null)
+                {
+                    throw new NullReferenceException("Main Project");
+                }
+
+                var codeProject = mainProject.CodeProject as VisualStudioProject;
+
+                if(!codeProject.HasPackage(packageName))
+                {
+                    TaskManager.Self.Add(() =>
+                    {
+                        codeProject.AddNugetPackage(packageName, versionNumber);
+                        GlueCommands.Self.ProjectCommands.SaveProjects();
+                    }, $"Adding Nuget Package {packageName}");
+                }
+            }
+
+        }
     }
 }

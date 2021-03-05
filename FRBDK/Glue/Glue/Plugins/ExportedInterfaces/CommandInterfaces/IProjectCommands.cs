@@ -18,6 +18,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void SaveProjectsImmediately();
 
 
+        void AddNugetIfNotAdded(string packageName, string versionNumber);
+
         /// <summary>
         /// 
         /// </summary>

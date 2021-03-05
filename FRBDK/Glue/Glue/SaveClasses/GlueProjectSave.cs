@@ -45,13 +45,14 @@ namespace FlatRedBall.Glue.SaveClasses
             AddedGeneratedGame1 = 2,
             ListsHaveAssociateWithFactoryBool = 3,
             GumGueHasGetAnimation = 4,
-            CsvInheritanceSupport = 5
+            CsvInheritanceSupport = 5,
+            NugetPackageInCsproj = 6
 
         }
 
         #region Fields / Properties
 
-        public const int LatestVersion = 5;
+        public const int LatestVersion = 6;
 
         public int FileVersion { get; set; }
 

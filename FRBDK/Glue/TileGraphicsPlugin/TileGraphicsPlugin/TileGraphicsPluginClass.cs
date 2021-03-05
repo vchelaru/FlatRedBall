@@ -714,7 +714,7 @@ namespace TileGraphicsPlugin
         void HandleGluxLoad()
         {
             // Add the .cs files which include the map drawable batch classes
-            FlatRedBall.Glue.Managers.TaskManager.Self.AddSync( CodeItemAdderManager.Self.UpdateCodeInProjectPresence,
+            FlatRedBall.Glue.Managers.TaskManager.Self.AddSync( CodeItemAdderManager.Self.UpdateCodePresenceInProject,
                 "Adding Tiled .cs files to the project");
 
             // Add the CSV entry so that Glue knows how to load a .scnx into the classes added above

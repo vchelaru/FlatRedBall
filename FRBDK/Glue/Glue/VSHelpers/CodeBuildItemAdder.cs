@@ -14,6 +14,8 @@ using FlatRedBall.Glue.Managers;
 
 namespace FlatRedBall.Glue.VSHelpers
 {
+    #region Enums
+
     public enum AddFileBehavior
     {
         AlwaysCopy,
@@ -21,6 +23,8 @@ namespace FlatRedBall.Glue.VSHelpers
         IfOutOfDate,
         NeverCopy
     }
+
+    #endregion
 
     /// <summary>
     /// Extracts code files from an assembly and saves them to disk, relative to the current project.

@@ -743,18 +743,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                 fileName = fileName.Replace('/', '\\');
                 ProjectItem item;
-                if (!isSyncedProject)
+                item = this.Project.AddItem("Compile", fileName).First();
+                Project.ReevaluateIfNecessary();
+                item.UnevaluatedInclude = fileName;
+                if (isSyncedProject)
                 {
-
-                    item = ((VisualStudioProject)this).Project.AddItem("Compile", fileName).First();
-                    Project.ReevaluateIfNecessary();
-                    item.UnevaluatedInclude = fileName;
-                }
-                else
-                {
-                    item = ((VisualStudioProject)this).Project.AddItem("Compile", fileName).First();
-                    Project.ReevaluateIfNecessary();
-                    item.UnevaluatedInclude = fileName;
                     item.SetMetadataValue("Link", nameRelativeToThisProject);
 
                     if (nameRelativeToThisProject.Contains("Generated"))
@@ -768,6 +761,25 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 mBuildItemDictionaries.Add(fileNameToLower, item);
 
                 return item;
+            }
+        }
+
+        public bool HasPackage(string packageName)
+        {
+            return mBuildItemDictionaries.ContainsKey(packageName) &&
+                mBuildItemDictionaries[packageName].ItemType == "PackageReference" &&
+                mBuildItemDictionaries[packageName].HasMetadata("Version");
+
+        }
+
+        public void AddNugetPackage(string packageName, string versionNumber)
+        {
+            lock(this)
+            {
+                ProjectItem projectItem = this.Project.AddItem("PackageReference", packageName).First();
+                projectItem.SetMetadataValue("Version", versionNumber);
+                mBuildItemDictionaries.Add(packageName, projectItem);
+                Project.ReevaluateIfNecessary();
             }
         }
 
@@ -786,7 +798,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         }
 
 
-#region Private Methods
+        #region Private Methods
 
         private void FindRootNamespace()
         {
@@ -804,7 +816,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
         }
 
-#endregion
+        #endregion
 
 
 #endregion

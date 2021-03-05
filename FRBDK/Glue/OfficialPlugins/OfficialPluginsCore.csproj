@@ -21,6 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="ProfilePlugin\EmbeddedCodeFiles\ProfileManagerBase.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="CollisionPlugin\Icons\NoPartitioning.png" />
     <None Remove="CollisionPlugin\Icons\PartitionEnabled.png" />
     <None Remove="Compiler\Icons\AdvanceOneFrame.png" />
@@ -59,6 +63,10 @@
     <None Remove="QuickActionPlugin\Views\Create Project v2.png" />
     <None Remove="QuickActionPlugin\Views\Create Screen.png" />
     <None Remove="QuickActionPlugin\Views\StartWizard.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="ProfilePlugin\EmbeddedCodeFiles\ProfileManagerBase.cs" />
   </ItemGroup>
 
   <ItemGroup>
