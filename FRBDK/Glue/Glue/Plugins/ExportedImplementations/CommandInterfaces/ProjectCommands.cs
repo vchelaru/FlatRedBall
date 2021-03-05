@@ -730,6 +730,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             ////////////End Early Out////////////////
 
+            if(string.IsNullOrWhiteSpace(packageName))
+            {
+                throw new ArgumentException(nameof(packageName));
+            }
+            if (string.IsNullOrWhiteSpace(versionNumber))
+            {
+                throw new ArgumentException(nameof(versionNumber));
+            }
+
             var hasNugetsEmbeddedInCsproj = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.NugetPackageInCsproj;
             // If not....do we fail silently?
             // So far this is for adding Newtonsoft json, and if we don't have it the user will get a compile error so maybe that's enough to guide them?
