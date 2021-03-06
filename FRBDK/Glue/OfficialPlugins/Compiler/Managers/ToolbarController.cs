@@ -77,8 +77,16 @@ namespace OfficialPluginsCore.Compiler.Managers
                 toolbarViewModel.AvailableScreens.Add(ScreenName(screen));
             }
 
-            toolbarViewModel.StartupScreenName = 
-                GlueState.Self.CurrentGlueProject.StartUpScreen?.Substring("Screens\\".Length);
+            var startupScreen =
+                GlueState.Self.CurrentGlueProject.StartUpScreen;
+
+            if(!string.IsNullOrEmpty(startupScreen) && startupScreen.Length > "Screens\\".Length)
+            {
+
+                toolbarViewModel.StartupScreenName = 
+                    startupScreen.Substring("Screens\\".Length);
+            }
+
         }
 
 

@@ -261,7 +261,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public static void ConvertEnumerationValuesToInts(this IElement instance)
         {
-            foreach (NamedObjectSave nos in instance.NamedObjects)
+            foreach (NamedObjectSave nos in instance.NamedObjects.ToList())
             {
                 nos.ConvertEnumerationValuesToInts();
             }

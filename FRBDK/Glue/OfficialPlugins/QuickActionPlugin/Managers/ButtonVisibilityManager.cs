@@ -13,7 +13,12 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
 {
     class ButtonVisibilityManager
     {
+        #region Fields/Properties
+        
         MainView mainView;
+
+        #endregion
+
         public ButtonVisibilityManager(MainView mainView)
         {
             this.mainView = mainView;
@@ -21,11 +26,15 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
 
         public void UpdateVisibility()
         {
+            #region Helper Methods
+
             Visibility ToVisibility(bool value)
             {
                 if (value) return Visibility.Visible;
                 else return Visibility.Collapsed;
             }
+
+            #endregion
 
             var glueProject = GlueState.Self.CurrentGlueProject;
             var treeNode = GlueState.Self.CurrentTreeNode;
@@ -43,7 +52,8 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
             var isWizardButtonVisible =
                 glueProject != null &&
                 glueProject.Screens.Count == 0 &&
-                glueProject.Entities.Count == 0;
+                glueProject.Entities.Count == 0 &&
+                glueProject.GlobalFiles.Count == 0;
 
             mainView.RunWizardButton.Visibility = ToVisibility(isWizardButtonVisible);
 

@@ -22,9 +22,8 @@ namespace TopDownPlugin.Logic
             {
                 switch (args.PropertyName)
                 {
-                    case nameof(AddEntityViewModel.SelectedBaseEntity):
-                        var isNone = commonViewModel.SelectedBaseEntity == "<NONE>";
-                        viewModel.AllUiVisibility = isNone.ToVisibility();
+                    case nameof(AddEntityViewModel.HasInheritance):
+                        viewModel.AllUiVisibility = (commonViewModel.HasInheritance == false).ToVisibility();
                         break;
                 }
             };

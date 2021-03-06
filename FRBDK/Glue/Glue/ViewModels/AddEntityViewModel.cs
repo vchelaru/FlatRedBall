@@ -126,8 +126,12 @@ namespace GlueFormsCore.ViewModels
         }
 
         [DependsOn(nameof(SelectedBaseEntity))]
+        public bool HasInheritance =>
+            SelectedBaseEntity != "<NONE>" && !string.IsNullOrEmpty(SelectedBaseEntity);
+
+        [DependsOn(nameof(SelectedBaseEntity))]
         public Visibility InterfaceVisibility =>
-            (SelectedBaseEntity == "<NONE>").ToVisibility();
+            (HasInheritance == false).ToVisibility();
 
         bool hasExplicitlyUncheckedICollidable;
 

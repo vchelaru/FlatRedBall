@@ -180,11 +180,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             GlueState.Self.CurrentElement = newElement;
 
-            var hasBaseEntity = false;
-            if(viewModel.SelectedBaseEntity != "<NONE>")
+            var hasInheritance = false;
+            if(viewModel.HasInheritance)
             {
                 newElement.BaseEntity = viewModel.SelectedBaseEntity;
-                hasBaseEntity = true;
+                hasInheritance = true;
             }
 
             if (viewModel.IsSpriteChecked)
@@ -270,7 +270,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 GlueState.Self.CurrentElement = newElement;
             }
 
-            if(!hasBaseEntity)
+            if(!hasInheritance)
             {
                 if (viewModel.IsIVisibleChecked)
                 {

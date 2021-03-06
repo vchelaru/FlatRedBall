@@ -48,9 +48,8 @@ namespace TileGraphicsPlugin.Logic
                 {
                     switch(args.PropertyName)
                     {
-                        case nameof(AddEntityViewModel.SelectedBaseEntity):
-                            var isNone = commonViewModel.SelectedBaseEntity == "<NONE>";
-                            viewModel.AllTileMapUiVisibility = isNone.ToVisibility();
+                        case nameof(AddEntityViewModel.HasInheritance):
+                            viewModel.AllTileMapUiVisibility = (commonViewModel.HasInheritance == false).ToVisibility();
                             break;
                     }
                 };

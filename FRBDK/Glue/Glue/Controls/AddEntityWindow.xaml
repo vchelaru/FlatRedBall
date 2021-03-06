@@ -8,7 +8,7 @@
              mc:Ignorable="d" 
              SizeToContent="Height"
              Width="220">
-    <StackPanel x:Name="MainStackPanel">
+    <StackPanel x:Name="MainStackPanel" Margin="4">
         <TextBlock Margin="3,0,3,0">Enter a name for the new entity:</TextBlock>
         <TextBox x:Name="TextBox" Margin="3,0,3,0" KeyDown="TextBox_KeyDown" 
                  Text="{Binding Name}"></TextBox>
@@ -20,7 +20,7 @@
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <TextBlock VerticalAlignment="Center">Base Entity:</TextBlock>
-            <ComboBox Grid.Column="1" ItemsSource="{Binding BaseEntityOptions}" SelectedItem="{Binding SelectedBaseEntity}"></ComboBox>
+            <ComboBox Grid.Column="1" Margin="2,0,2,0" ItemsSource="{Binding BaseEntityOptions}" SelectedItem="{Binding SelectedBaseEntity}"></ComboBox>
         </Grid>
         <GroupBox Header="Visuals">
             <StackPanel>
