@@ -1,4 +1,6 @@
 ﻿using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.MVVM;
+using GlueFormsCore.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +16,18 @@ namespace TopDownPlugin.Logic
         public static void HandleModifyAddEntityWindow(AddEntityWindow window)
         {
             var viewModel = new AdditionalEntitiesControlViewModel();
+
+            var commonViewModel = window.DataContext as AddEntityViewModel;
+            commonViewModel.PropertyChanged += (sender, args) =>
+            {
+                switch (args.PropertyName)
+                {
+                    case nameof(AddEntityViewModel.SelectedBaseEntity):
+                        var isNone = commonViewModel.SelectedBaseEntity == "<NONE>";
+                        viewModel.AllUiVisibility = isNone.ToVisibility();
+                        break;
+                }
+            };
 
             var control = new AdditionalEntitiesControls();
             control.DataContext = viewModel;

@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows;
 
@@ -112,6 +113,21 @@ namespace GlueFormsCore.ViewModels
         [DependsOn(nameof(FailureText))]
         public Visibility FailureTextVisibility => string.IsNullOrWhiteSpace(FailureText) ?
             Visibility.Collapsed : Visibility.Visible;
+
+        public ObservableCollection<string> BaseEntityOptions
+        {
+            get; set;
+        } = new ObservableCollection<string>();
+
+        public string SelectedBaseEntity
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(SelectedBaseEntity))]
+        public Visibility InterfaceVisibility =>
+            (SelectedBaseEntity == "<NONE>").ToVisibility();
 
         bool hasExplicitlyUncheckedICollidable;
 

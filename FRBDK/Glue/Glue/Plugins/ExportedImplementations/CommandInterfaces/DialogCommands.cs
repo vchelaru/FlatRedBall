@@ -281,6 +281,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     AddEntityWindow window = new Controls.AddEntityWindow();
                     var viewModel = new AddEntityViewModel();
+
+                    var project = GlueState.Self.CurrentGlueProject;
+                    var sortedEntities = project.Entities.ToList().OrderBy(item => item);
+
+                    viewModel.BaseEntityOptions.Add("<NONE>");
+
+                    foreach (var entity in project.Entities.ToList())
+                    {
+                        viewModel.BaseEntityOptions.Add(entity.Name);
+                    }
+
+                    viewModel.SelectedBaseEntity = "<NONE>";
+
                     window.DataContext = viewModel;
                     window.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
 

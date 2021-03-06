@@ -1,8 +1,12 @@
 ﻿using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using GlueFormsCore.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,6 +42,18 @@ namespace TileGraphicsPlugin.Logic
             if(doesProjectContainAnyTmxFiles)
             {
                 var viewModel = new AdditionalEntitiesControlViewModel();
+
+                var commonViewModel = window.DataContext as AddEntityViewModel;
+                commonViewModel.PropertyChanged += (sender, args) =>
+                {
+                    switch(args.PropertyName)
+                    {
+                        case nameof(AddEntityViewModel.SelectedBaseEntity):
+                            var isNone = commonViewModel.SelectedBaseEntity == "<NONE>";
+                            viewModel.AllTileMapUiVisibility = isNone.ToVisibility();
+                            break;
+                    }
+                };
 
                 var control = new AdditionalEntitiesControls();
                 control.DataContext = viewModel;

@@ -14,6 +14,14 @@
                  Text="{Binding Name}"></TextBox>
         <TextBlock x:Name="FailureTextBlock" Margin="3,0,3,3" Foreground="Red" 
                    Visibility="{Binding FailureTextVisibility}" Text="{Binding FailureText}" TextWrapping="Wrap"></TextBlock>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center">Base Entity:</TextBlock>
+            <ComboBox Grid.Column="1" ItemsSource="{Binding BaseEntityOptions}" SelectedItem="{Binding SelectedBaseEntity}"></ComboBox>
+        </Grid>
         <GroupBox Header="Visuals">
             <StackPanel>
                 <CheckBox x:Name="SpriteCheckBox" IsChecked="{Binding IsSpriteChecked}">Sprite</CheckBox>
@@ -27,7 +35,7 @@
                 <CheckBox x:Name="PolygonCheckBox" IsChecked="{Binding IsPolygonChecked}">Polygon (Rectangle)</CheckBox>
             </StackPanel>            
         </GroupBox>
-        <GroupBox Header="Interfaces">
+        <GroupBox Header="Interfaces" Visibility="{Binding InterfaceVisibility}">
             <StackPanel>
                 <CheckBox x:Name="IVisibleCheckBox" IsChecked="{Binding IsIVisibleChecked}">IVisible</CheckBox>
                 <CheckBox x:Name="IClickableCheckBox" IsChecked="{Binding IsIClickableChecked}">IClickable</CheckBox>

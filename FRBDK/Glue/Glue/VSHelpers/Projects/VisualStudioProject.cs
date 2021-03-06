@@ -766,9 +766,10 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public bool HasPackage(string packageName)
         {
-            return mBuildItemDictionaries.ContainsKey(packageName) &&
-                mBuildItemDictionaries[packageName].ItemType == "PackageReference" &&
-                mBuildItemDictionaries[packageName].HasMetadata("Version");
+            var packageNameToLower = packageName.ToLowerInvariant();
+            return mBuildItemDictionaries.ContainsKey(packageNameToLower) &&
+                mBuildItemDictionaries[packageNameToLower].ItemType == "PackageReference" &&
+                mBuildItemDictionaries[packageNameToLower].HasMetadata("Version");
 
         }
 
@@ -778,7 +779,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             {
                 ProjectItem projectItem = this.Project.AddItem("PackageReference", packageName).First();
                 projectItem.SetMetadataValue("Version", versionNumber);
-                mBuildItemDictionaries.Add(packageName, projectItem);
+                mBuildItemDictionaries.Add(packageName.ToLowerInvariant(), projectItem);
                 Project.ReevaluateIfNecessary();
             }
         }

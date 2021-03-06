@@ -21,46 +21,49 @@ namespace TileGraphicsPlugin.Logic
             var control = window.UserControlChildren.FirstOrDefault(item => item is AdditionalEntitiesControls);
             var viewModel = control?.DataContext as AdditionalEntitiesControlViewModel;
 
-            if (viewModel?.InstantiateInTileMap == true)
+            if(viewModel?.AllTileMapUiVisibility == System.Windows.Visibility.Visible)
             {
-                // make it have a factory
-                newEntity.CreatedByOtherEntities = true;
-
-                GlueCommands.Self.PrintOutput($"Tiled Plugin marked entity {newEntity} as CreatedByOtherEntities=true");
-
-                if (viewModel.IncludeListsInScreens)
+                if (viewModel?.InstantiateInTileMap == true)
                 {
-                    // loop through all screens that have a TMX object and add them.
-                    // be smart - if the base screen does, don't do it in the derived
-                    var allScreens = GlueState.Self.CurrentGlueProject.Screens;
+                    // make it have a factory
+                    newEntity.CreatedByOtherEntities = true;
 
-                    foreach(var screen in allScreens)
+                    GlueCommands.Self.PrintOutput($"Tiled Plugin marked entity {newEntity} as CreatedByOtherEntities=true");
+
+                    if (viewModel.IncludeListsInScreens)
                     {
-                        var needsList = GetIfScreenNeedsList(screen);
+                        // loop through all screens that have a TMX object and add them.
+                        // be smart - if the base screen does, don't do it in the derived
+                        var allScreens = GlueState.Self.CurrentGlueProject.Screens;
 
-                        if(needsList)
+                        foreach(var screen in allScreens)
                         {
-                            AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                            var needsList = GetIfScreenNeedsList(screen);
 
-                            addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                            addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.PositionedObjectList;
-                            addObjectViewModel.SourceClassGenericType = newEntity.Name;
-                            addObjectViewModel.ObjectName = $"{newEntity.GetStrippedName()}List";
+                            if(needsList)
+                            {
+                                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
 
-                            GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(
-                                addObjectViewModel, screen, listToAddTo:null);
+                                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.PositionedObjectList;
+                                addObjectViewModel.SourceClassGenericType = newEntity.Name;
+                                addObjectViewModel.ObjectName = $"{newEntity.GetStrippedName()}List";
 
-                            GlueCommands.Self.PrintOutput(
-                                $"Tiled Plugin added {addObjectViewModel.ObjectName} to {screen}");
+                                GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(
+                                    addObjectViewModel, screen, listToAddTo:null);
 
-                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screen);
+                                GlueCommands.Self.PrintOutput(
+                                    $"Tiled Plugin added {addObjectViewModel.ObjectName} to {screen}");
+
+                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screen);
+                            }
                         }
                     }
-                }
 
-                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(newEntity);
-                GlueCommands.Self.ProjectCommands.SaveProjects();
-                GlueState.Self.CurrentEntitySave = newEntity;
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(newEntity);
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
+                    GlueState.Self.CurrentEntitySave = newEntity;
+                }
             }
         }
 

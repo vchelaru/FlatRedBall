@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:TileGraphicsPlugin.Views"
              mc:Ignorable="d" 
              d:DesignWidth="300">
-    <GroupBox Header="Tiled">
+    <GroupBox Header="Tiled" Visibility="{Binding AllTileMapUiVisibility}">
         
         <Grid>
             <Grid.RowDefinitions>

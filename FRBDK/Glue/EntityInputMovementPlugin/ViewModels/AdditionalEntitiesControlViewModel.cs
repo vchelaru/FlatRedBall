@@ -5,11 +5,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace TopDownPlugin.ViewModels
 {
     public class AdditionalEntitiesControlViewModel : ViewModel
     {
+        public Visibility AllUiVisibility
+        {
+            get => Get<Visibility>();
+            set => Set(value);
+        }
+
         public MovementType MovementType
         {
             get => Get<MovementType>();

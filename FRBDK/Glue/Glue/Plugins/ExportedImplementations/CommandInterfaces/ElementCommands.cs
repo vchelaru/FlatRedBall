@@ -180,6 +180,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             GlueState.Self.CurrentElement = newElement;
 
+            var hasBaseEntity = false;
+            if(viewModel.SelectedBaseEntity != "<NONE>")
+            {
+                newElement.BaseEntity = viewModel.SelectedBaseEntity;
+                hasBaseEntity = true;
+            }
+
             if (viewModel.IsSpriteChecked)
             {
                 AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
@@ -263,29 +270,33 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 GlueState.Self.CurrentElement = newElement;
             }
 
-            if (viewModel.IsIVisibleChecked)
+            if(!hasBaseEntity)
             {
-                newElement.ImplementsIVisible = true;
-                needsRefreshAndSave = true;
+                if (viewModel.IsIVisibleChecked)
+                {
+                    newElement.ImplementsIVisible = true;
+                    needsRefreshAndSave = true;
+                }
+
+                if (viewModel.IsIClickableChecked)
+                {
+                    newElement.ImplementsIClickable = true;
+                    needsRefreshAndSave = true;
+                }
+
+                if (viewModel.IsIWindowChecked)
+                {
+                    newElement.ImplementsIWindow = true;
+                    needsRefreshAndSave = true;
+                }
+
+                if (viewModel.IsICollidableChecked)
+                {
+                    newElement.ImplementsICollidable = true;
+                    needsRefreshAndSave = true;
+                }
             }
 
-            if (viewModel.IsIClickableChecked)
-            {
-                newElement.ImplementsIClickable = true;
-                needsRefreshAndSave = true;
-            }
-
-            if (viewModel.IsIWindowChecked)
-            {
-                newElement.ImplementsIWindow = true;
-                needsRefreshAndSave = true;
-            }
-
-            if (viewModel.IsICollidableChecked)
-            {
-                newElement.ImplementsICollidable = true;
-                needsRefreshAndSave = true;
-            }
 
             if (needsRefreshAndSave)
             {

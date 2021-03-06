@@ -21,14 +21,18 @@ namespace EntityInputMovementPlugin.Logic
 
             var viewModel = control?.DataContext as AdditionalEntitiesControlViewModel;
 
-            if(viewModel?.MovementType == EntityInputMovementPlugin.ViewModels.MovementType.TopDown)
+            if(viewModel.AllUiVisibility == System.Windows.Visibility.Visible)
             {
-                TopDownPlugin.Controllers.MainController.Self.MakeCurrentEntityTopDown();
+                if(viewModel?.MovementType == EntityInputMovementPlugin.ViewModels.MovementType.TopDown)
+                {
+                    TopDownPlugin.Controllers.MainController.Self.MakeCurrentEntityTopDown();
+                }
+                else if(viewModel?.MovementType == EntityInputMovementPlugin.ViewModels.MovementType.Platformer)
+                {
+                    FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.MakeCurrentEntityPlatformer();
+                }
             }
-            else if(viewModel?.MovementType == EntityInputMovementPlugin.ViewModels.MovementType.Platformer)
-            {
-                FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.MakeCurrentEntityPlatformer();
-            }
+
         }
     }
 }

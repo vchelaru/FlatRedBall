@@ -10,6 +10,12 @@ namespace TileGraphicsPlugin.ViewModels
 {
     class AdditionalEntitiesControlViewModel : ViewModel
     {
+        public Visibility AllTileMapUiVisibility
+        {
+            get => Get<Visibility>();
+            set => Set(value);
+        }
+
         public bool InstantiateInTileMap
         {
             get { return Get<bool>(); }
