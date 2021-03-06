@@ -162,6 +162,8 @@ namespace OfficialPlugins.Compiler
             ToolbarController.Self.HandleGluxLoaded();
 
             TaskManager.Self.Add(() => MainCodeGenerator.GenerateAll(model.GenerateGlueControlManagerCode), "Generate Glue Control Code");
+
+            GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
         }
 
         private void UpdateCompileContentVisibility()
@@ -307,6 +309,11 @@ namespace OfficialPlugins.Compiler
                         // no big deal if it fails
                     }
                     TaskManager.Self.Add(() => MainCodeGenerator.GenerateAll(model.GenerateGlueControlManagerCode), "Generate Glue Control Code");
+
+                    if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.NugetPackageInCsproj)
+                    {
+                        GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
+                    }
 
                     RefreshManager.Self.StopAndRestartTask($"{propertyName} changed");
 
