@@ -140,6 +140,19 @@ namespace GumPlugin.Managers
 
         }
 
+        internal void SaveComponent(ComponentSave gumComponent)
+        {
+            string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
+
+            var directory = FileManager.GetDirectory(gumProjectFileName) + ElementReference.ComponentSubfolder + "/";
+            string componentFileName =
+                directory + gumComponent.Name + "." + GumProjectSave.ComponentExtension;
+
+
+            gumComponent.Save(componentFileName);
+
+        }
+
         internal void SaveStandardElement(StandardElementSave gumStandardElement)
         {
             string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();

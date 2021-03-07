@@ -364,6 +364,55 @@ namespace GumPlugin
             this.GetAvailableAssetTypes = HandleGetAvailableAssetTypes;
 
             this.ReactToFileRemoved += HandleFileRemoved;
+
+            this.TryHandleTreeNodeDoubleClicked += HandleTreeNodeDoubleClicked;
+        }
+
+        private bool HandleTreeNodeDoubleClicked(TreeNode arg)
+        {
+            var nos = arg.Tag as NamedObjectSave;
+
+            if(nos != null && nos.SourceType == SourceType.FlatRedBallType &&
+                !string.IsNullOrEmpty(nos.SourceClassType))
+            {
+                var ati = nos.GetAssetTypeInfo();
+
+                var isGumAti = AssetTypeInfoManager.Self.AssetTypesForThisProject
+                    .Any(item => item.QualifiedRuntimeTypeName.QualifiedType == ati?.QualifiedRuntimeTypeName.QualifiedType);
+
+                if(isGumAti)
+                {
+                    var qualified = ati.QualifiedRuntimeTypeName.QualifiedType;
+                    // open it!
+                    var endsInRuntime = qualified.EndsWith("Runtime");
+
+                    if(endsInRuntime)
+                    {
+                        var withoutRuntime = qualified.Substring(0, qualified.Length - "Runtime".Length);
+                        var lastPeriod = withoutRuntime.LastIndexOf(".");
+                        var strippedName = withoutRuntime.Substring(lastPeriod + 1);
+
+                        var matchingComponent = AppState.Self.GumProjectSave.Components.FirstOrDefault(
+                            item => item.Name == strippedName || item.Name.EndsWith("/" + strippedName));
+
+                        if(matchingComponent != null)
+                        {
+                            string fileName = AppState.Self.GumProjectFolder +
+                                "Components/" + matchingComponent.Name + "." + GumProjectSave.ComponentExtension;
+
+                            var startInfo = new ProcessStartInfo();
+                            startInfo.FileName = "\"" + fileName + "\"";
+                            startInfo.UseShellExecute = true;
+
+                            System.Diagnostics.Process.Start(startInfo);
+                        }
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void CreateToolbar()

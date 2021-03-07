@@ -40,13 +40,7 @@ namespace OfficialPlugins.Compiler
 
         Game1GlueControlGenerator game1GlueControlGenerator;
 
-        public override string FriendlyName
-        {
-            get
-            {
-                return "Glue Compiler";
-            }
-        }
+        public override string FriendlyName => "Glue Compiler";
 
         public override Version Version
         {
@@ -227,6 +221,11 @@ namespace OfficialPlugins.Compiler
 
         private async void HandleToolbarRunClicked(object sender, EventArgs e)
         {
+            await BuildAndRun();
+        }
+
+        public async Task BuildAndRun()
+        {
             GlueCommands.Self.DialogCommands.FocusTab("Build");
             var succeeded = await Compile();
 
@@ -237,7 +236,7 @@ namespace OfficialPlugins.Compiler
                 {
                     var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
 
-                    GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, async () => await runner.Run(preventFocus:false));
+                    GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, async () => await runner.Run(preventFocus: false));
                 }
                 else
                 {
@@ -249,8 +248,6 @@ namespace OfficialPlugins.Compiler
             else
             {
                 PluginManager.ReceiveError("Building failed. See \"Build\" tab for more information.");
-
-
             }
         }
 

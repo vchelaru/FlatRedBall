@@ -11,6 +11,7 @@ using System.Text;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.IO;
+using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace GumPlugin.Managers
 {
@@ -438,7 +439,7 @@ namespace GumPlugin.Managers
             {
                 if (GueDerivingClassCodeGenerator.Self.ShouldGenerateRuntimeFor(element))
                 {
-                    AssetTypeInfo newAti = GetAtiFor(element);
+                    AssetTypeInfo newAti = CreateAtiFor(element);
                     assetTypeInfos.Add(newAti);
                 }
             }
@@ -446,7 +447,14 @@ namespace GumPlugin.Managers
             return assetTypeInfos;
         }
 
-        private AssetTypeInfo GetAtiFor(ElementSave element)
+        public AssetTypeInfo GetAtiFor(ElementSave elementSave)
+        {
+            var qualified = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(elementSave);
+
+            return AssetTypesForThisProject.FirstOrDefault(Item => Item.QualifiedRuntimeTypeName.QualifiedType == qualified);
+        }
+
+        private AssetTypeInfo CreateAtiFor(ElementSave element)
         {
             if(element == null)
             {

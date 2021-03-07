@@ -258,6 +258,8 @@ namespace FlatRedBall.Glue.Plugins
 
         public Action<NamedObjectSave, NamedObjectSave> ReactToCreateCollisionRelationshipsBetween { get; protected set; }
 
+        public Func<TreeNode, bool> TryHandleTreeNodeDoubleClicked { get; protected set; }
+
         #endregion
 
         #region Methods

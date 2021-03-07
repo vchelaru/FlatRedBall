@@ -89,21 +89,25 @@ namespace GumPluginCore.Managers
                         else if(extension == GumProjectSave.ComponentExtension)
                         {
                             ComponentSave component = null;
-                            GlueCommands.Self.TryMultipleTimes(() => component = FileManager.XmlDeserialize<ComponentSave>(fileName));
-                            component.Initialize(component.DefaultState);
-
-                            // since the gum project didn't change, it should be here
-                            var oldComponent = gumProject.Components.FirstOrDefault(item => item.Name == component.Name);
-
-                            if (oldComponent != null)
+                            if(System.IO.File.Exists(fileName))
                             {
-                                var oldIndex = gumProject.Components.IndexOf(oldComponent);
+                                GlueCommands.Self.TryMultipleTimes(() => component = FileManager.XmlDeserialize<ComponentSave>(fileName));
+                                component.Initialize(component.DefaultState);
 
-                                if (oldIndex != -1)
+                                // since the gum project didn't change, it should be here
+                                var oldComponent = gumProject.Components.FirstOrDefault(item => item.Name == component.Name);
+
+                                if (oldComponent != null)
                                 {
-                                    gumProject.Components[oldIndex] = component;
+                                    var oldIndex = gumProject.Components.IndexOf(oldComponent);
+
+                                    if (oldIndex != -1)
+                                    {
+                                        gumProject.Components[oldIndex] = component;
+                                    }
                                 }
                             }
+
                         }
                         else if(extension == GumProjectSave.StandardExtension)
                         {

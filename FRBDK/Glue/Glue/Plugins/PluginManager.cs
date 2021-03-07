@@ -2196,6 +2196,25 @@ namespace FlatRedBall.Glue.Plugins
             return toReturn;
         }
 
+        public static bool TryHandleTreeNodeDoubleClicked(TreeNode treeNode)
+        {
+            bool handled = false;
+
+            CallMethodOnPlugin(
+                (plugin) =>
+                {
+                    if(plugin.TryHandleTreeNodeDoubleClicked(treeNode))
+                    {
+                        handled = true;
+                    }
+                },
+                nameof(TryHandleTreeNodeDoubleClicked),
+                plugin => plugin.TryHandleTreeNodeDoubleClicked != null);
+
+
+            return handled;
+        }
+
         #endregion
 
         public static void CallPluginMethod(string pluginFriendlyName, string methodName)

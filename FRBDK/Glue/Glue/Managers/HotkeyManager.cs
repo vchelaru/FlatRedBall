@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Navigation;
+using FlatRedBall.Glue.Plugins;
 using Glue;
 using System;
 using System.Collections.Generic;
@@ -45,6 +46,12 @@ namespace FlatRedBall.Glue.Managers
                     {
                         return false;
                     }
+                case Keys.F5:
+                    PluginManager.CallPluginMethod(
+                        "Glue Compiler",
+                        "BuildAndRun");
+                    return true;
+                    break;
                 default:
                     return false;
             }

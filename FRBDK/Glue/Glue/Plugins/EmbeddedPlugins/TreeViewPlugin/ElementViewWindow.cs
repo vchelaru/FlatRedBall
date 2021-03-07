@@ -847,127 +847,132 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 string text = selectedNode.Text;
 
-                #region Double-clicked a file
-                string extension = FileManager.GetExtension(text);
+                var handledByPlugin = PluginManager.TryHandleTreeNodeDoubleClicked(selectedNode);
+
+                if(handledByPlugin == false)
+                {
+                    #region Double-clicked a file
+                    string extension = FileManager.GetExtension(text);
                 
-                if (EditorLogic.CurrentReferencedFile != null && !string.IsNullOrEmpty(extension))
-                {
-                    HandleFileTreeNodeDoubleClick(text);
-                }
-
-                #endregion
-
-                #region Double-clicked a named object
-
-                else if (selectedNode.IsNamedObjectNode())
-                {
-                    NamedObjectSave nos = selectedNode.Tag as NamedObjectSave;
-
-                    if (nos.SourceType == SourceType.Entity)
+                    if (EditorLogic.CurrentReferencedFile != null && !string.IsNullOrEmpty(extension))
                     {
-                        TreeNode entityNode = GlueState.Self.Find.EntityTreeNode(nos.SourceClassType);
-
-                        SelectedNode = entityNode;
-
+                        HandleFileTreeNodeDoubleClick(text);
                     }
-                    else if (nos.SourceType == SourceType.FlatRedBallType && nos.IsGenericType)
-                    {
-                        // Is this an entity?
-                        EntitySave genericEntityType = ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType);
 
-                        if (genericEntityType != null)
+                    #endregion
+
+                    #region Double-clicked a named object
+
+                    else if (selectedNode.IsNamedObjectNode())
+                    {
+                        NamedObjectSave nos = selectedNode.Tag as NamedObjectSave;
+
+                        if (nos.SourceType == SourceType.Entity)
                         {
-                            SelectedNode = GlueState.Self.Find.EntityTreeNode(genericEntityType);
+                            TreeNode entityNode = GlueState.Self.Find.EntityTreeNode(nos.SourceClassType);
+
+                            SelectedNode = entityNode;
+
+                        }
+                        else if (nos.SourceType == SourceType.FlatRedBallType && nos.IsGenericType)
+                        {
+                            // Is this an entity?
+                            EntitySave genericEntityType = ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType);
+
+                            if (genericEntityType != null)
+                            {
+                                SelectedNode = GlueState.Self.Find.EntityTreeNode(genericEntityType);
+                            }
+
+                        }
+                        else if (nos.SourceType == SourceType.File && !string.IsNullOrEmpty(nos.SourceFile))
+                        {
+                            ReferencedFileSave rfs = nos.GetContainer().GetReferencedFileSave(nos.SourceFile);
+                            TreeNode treeNode = GlueState.Self.Find.ReferencedFileSaveTreeNode(rfs);
+
+                            SelectedNode = treeNode;
+                        }
+                    }
+
+                    #endregion
+
+                    #region Double-clicked a CustomVariable
+                    else if (selectedNode.IsCustomVariable())
+                    {
+                        CustomVariable customVariable = EditorLogic.CurrentCustomVariable;
+
+                        if (!string.IsNullOrEmpty(customVariable.SourceObject))
+                        {
+                            NamedObjectSave namedObjectSave = EditorLogic.CurrentElement.GetNamedObjectRecursively(customVariable.SourceObject);
+
+                            if (namedObjectSave != null)
+                            {
+                                SelectedNode = GlueState.Self.Find.NamedObjectTreeNode(namedObjectSave);
+                            }
+
+                        }
+                    }
+
+                    #endregion
+
+                    #region Double-click an Event
+
+                    else if (selectedNode.IsEventResponseTreeNode())
+                    {
+                        EventResponseSave ers = EditorLogic.CurrentEventResponseSave;
+
+                        if (!string.IsNullOrEmpty(ers.SourceObject))
+                        {
+                            NamedObjectSave namedObjectSave = EditorLogic.CurrentElement.GetNamedObjectRecursively(ers.SourceObject);
+
+                            if (namedObjectSave != null)
+                            {
+                                SelectedNode = GlueState.Self.Find.NamedObjectTreeNode(namedObjectSave);
+                            }
+                        }
+                    }
+
+
+                    #endregion
+
+                    #region Double-click an Enity/Screen
+
+                    else if (selectedNode.IsElementNode())
+                    {
+                        IElement element = selectedNode.Tag as IElement;
+
+                        string baseObject = element.BaseElement;
+
+                        if (!string.IsNullOrEmpty(baseObject))
+                        {
+                            IElement baseElement = ObjectFinder.Self.GetIElement(baseObject);
+
+                            SelectedNode = GlueState.Self.Find.ElementTreeNode(baseElement);
+                        }
+                    }
+
+                    #endregion
+
+                    #region Code
+
+                    else if(selectedNode.IsCodeNode())
+                    {
+                        var fileName = selectedNode.Text;
+
+                        var absolute = GlueState.Self.CurrentGlueProjectDirectory + fileName;
+
+                        if(System.IO.File.Exists(absolute))
+                        {
+                            var startInfo = new ProcessStartInfo();
+                            startInfo.FileName = absolute;
+                            startInfo.UseShellExecute = true;
+                            System.Diagnostics.Process.Start(startInfo);
                         }
 
                     }
-                    else if (nos.SourceType == SourceType.File && !string.IsNullOrEmpty(nos.SourceFile))
-                    {
-                        ReferencedFileSave rfs = nos.GetContainer().GetReferencedFileSave(nos.SourceFile);
-                        TreeNode treeNode = GlueState.Self.Find.ReferencedFileSaveTreeNode(rfs);
 
-                        SelectedNode = treeNode;
-                    }
+                    #endregion
                 }
-
-                #endregion
-
-                #region Double-clicked a CustomVariable
-                else if (selectedNode.IsCustomVariable())
-                {
-                    CustomVariable customVariable = EditorLogic.CurrentCustomVariable;
-
-                    if (!string.IsNullOrEmpty(customVariable.SourceObject))
-                    {
-                        NamedObjectSave namedObjectSave = EditorLogic.CurrentElement.GetNamedObjectRecursively(customVariable.SourceObject);
-
-                        if (namedObjectSave != null)
-                        {
-                            SelectedNode = GlueState.Self.Find.NamedObjectTreeNode(namedObjectSave);
-                        }
-
-                    }
-                }
-
-                #endregion
-
-                #region Double-click an Event
-
-                else if (selectedNode.IsEventResponseTreeNode())
-                {
-                    EventResponseSave ers = EditorLogic.CurrentEventResponseSave;
-
-                    if (!string.IsNullOrEmpty(ers.SourceObject))
-                    {
-                        NamedObjectSave namedObjectSave = EditorLogic.CurrentElement.GetNamedObjectRecursively(ers.SourceObject);
-
-                        if (namedObjectSave != null)
-                        {
-                            SelectedNode = GlueState.Self.Find.NamedObjectTreeNode(namedObjectSave);
-                        }
-                    }
-                }
-
-
-                #endregion
-
-                #region Double-click an Enity/Screen
-
-                else if (selectedNode.IsElementNode())
-                {
-                    IElement element = selectedNode.Tag as IElement;
-
-                    string baseObject = element.BaseElement;
-
-                    if (!string.IsNullOrEmpty(baseObject))
-                    {
-                        IElement baseElement = ObjectFinder.Self.GetIElement(baseObject);
-
-                        SelectedNode = GlueState.Self.Find.ElementTreeNode(baseElement);
-                    }
-                }
-
-                #endregion
-
-                #region Code
-
-                else if(selectedNode.IsCodeNode())
-                {
-                    var fileName = selectedNode.Text;
-
-                    var absolute = GlueState.Self.CurrentGlueProjectDirectory + fileName;
-
-                    if(System.IO.File.Exists(absolute))
-                    {
-                        var startInfo = new ProcessStartInfo();
-                        startInfo.FileName = absolute;
-                        startInfo.UseShellExecute = true;
-                        System.Diagnostics.Process.Start(startInfo);
-                    }
-
-                }
-
-                #endregion
             }
 
         }

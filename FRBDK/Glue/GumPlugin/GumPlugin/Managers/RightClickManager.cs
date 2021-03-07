@@ -10,6 +10,8 @@ using Gum.DataTypes;
 using System.Windows.Forms;
 using FlatRedBall.IO;
 using GumPlugin.CodeGeneration;
+using Gum.Managers;
+using FlatRedBall.Glue.ViewModels;
 
 namespace GumPlugin.Managers
 {
@@ -19,6 +21,8 @@ namespace GumPlugin.Managers
         public void HandleTreeViewRightClick(System.Windows.Forms.TreeNode rightClickedTreeNode, System.Windows.Forms.ContextMenuStrip menuToModify)
         {
             TryAddAddGumScreenItem(rightClickedTreeNode, menuToModify);
+
+            TryAddAddComponentForCurrentEntity(rightClickedTreeNode, menuToModify);
 
             TryAddRegenerateGumElement(rightClickedTreeNode, menuToModify);
         }
@@ -52,6 +56,68 @@ namespace GumPlugin.Managers
                     var fileName = GlueCommands.Self.GetAbsoluteFileName(file);
                     CodeGeneratorManager.Self.GenerateDueToFileChange(fileName);
 
+                };
+            }
+        }
+
+        private void TryAddAddComponentForCurrentEntity(TreeNode rightClickedTreeNode, ContextMenuStrip menuToModify)
+        {
+            var shouldContinue = true;
+            if(!rightClickedTreeNode.IsEntityNode())
+            {
+                shouldContinue = false;
+            }
+
+            if(shouldContinue && AppState.Self.GumProjectSave == null)
+            {
+                shouldContinue = false;
+            }
+
+            var entity = rightClickedTreeNode.Tag as EntitySave;
+            string gumComponentName = null;
+            if(shouldContinue)
+            {
+                gumComponentName = FileManager.RemovePath(entity.Name) + "Gum";
+                bool exists = AppState.Self.GumProjectSave.Components.Any(item => item.Name == gumComponentName);
+
+                if(exists)
+                {
+                    shouldContinue = false;
+                }
+            }
+
+            if (shouldContinue)
+            {
+
+                var newMenuitem = new ToolStripMenuItem($"Add Gum Component to {FileManager.RemovePath(entity.Name)}");
+                menuToModify.Items.Add(newMenuitem);
+                newMenuitem.Click += (not, used) =>
+                {
+                    var gumComponent = new ComponentSave();
+                    gumComponent.Initialize(StandardElementsManager.Self.GetDefaultStateFor("Component"));
+                    gumComponent.BaseType = "Container";
+                    gumComponent.Name = gumComponentName;
+
+                    string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
+
+                    AppCommands.Self.AddComponentToGumProject(gumComponent);
+
+                    AppCommands.Self.SaveGumx(saveAllElements: false);
+
+                    AppCommands.Self.SaveComponent(gumComponent);
+
+
+
+                    AssetTypeInfoManager.Self.RefreshProjectSpecificAtis();
+
+                    var ati = AssetTypeInfoManager.Self.GetAtiFor(gumComponent);
+
+                    var addObjectViewModel = new AddObjectViewModel();
+                    addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                    addObjectViewModel.SourceClassType = ati.QualifiedRuntimeTypeName.QualifiedType;
+                    addObjectViewModel.ObjectName = "GumObject";
+
+                    GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, entity);
                 };
             }
         }
