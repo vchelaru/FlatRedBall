@@ -38,6 +38,7 @@ using FlatRedBall.Glue.ViewModels;
 using Microsoft.Xna.Framework;
 using EditorObjects.IoC;
 using FlatRedBall.Glue.SetVariable;
+using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
 
 namespace FlatRedBall.Glue.FormHelpers
 {
@@ -138,7 +139,7 @@ namespace FlatRedBall.Glue.FormHelpers
         public static void PopulateRightClickItems(TreeNode targetNode, MenuShowingAction menuShowingAction = MenuShowingAction.RegularRightClick)
         {
 
-            MainGlueWindow.Self.ElementTreeView.SelectedNode = targetNode;
+            MainExplorerPlugin.Self.ElementTreeView.SelectedNode = targetNode;
             MainGlueWindow form = MainGlueWindow.Self;
 
             ContextMenuStrip menu = MainGlueWindow.Self.mElementContextMenu;
@@ -832,8 +833,8 @@ namespace FlatRedBall.Glue.FormHelpers
         static void OnAddEntityInstanceClick(object sender, EventArgs e)
         {
             ElementViewWindow.DragDropTreeNode(
-                MainGlueWindow.Self.ElementTreeView,
-                MainGlueWindow.Self.ElementTreeView.SelectedNode);
+                MainExplorerPlugin.Self.ElementTreeView,
+                MainExplorerPlugin.Self.ElementTreeView.SelectedNode);
 
 
             GlueCommands.Self.ProjectCommands.SaveProjects();
@@ -1835,7 +1836,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     foreach (EntitySave entitySave in allEntitySaves)
                     {
-                        MainGlueWindow.Self.ElementTreeView.SelectedNode = GlueState.Self.Find.ElementTreeNode(entitySave);
+                        MainExplorerPlugin.Self.ElementTreeView.SelectedNode = GlueState.Self.Find.ElementTreeNode(entitySave);
                         RemoveFromProjectOptionalSaveAndRegenerate(entitySave == allEntitySaves[allEntitySaves.Count - 1], false, false);
 
                     }
@@ -1847,7 +1848,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     foreach (ReferencedFileSave rfs in allReferencedFileSaves)
                     {
-                        MainGlueWindow.Self.ElementTreeView.SelectedNode = GlueState.Self.Find.ReferencedFileSaveTreeNode(rfs);
+                        MainExplorerPlugin.Self.ElementTreeView.SelectedNode = GlueState.Self.Find.ReferencedFileSaveTreeNode(rfs);
                         // I guess we won't ask to delete here, but maybe eventually we want to?
                         RemoveFromProjectOptionalSaveAndRegenerate(rfs == allReferencedFileSaves[allReferencedFileSaves.Count - 1], false, false);
                     }

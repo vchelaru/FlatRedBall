@@ -47,6 +47,7 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using System.Threading.Tasks;
 using FlatRedBall.Instructions.Reflection;
 using Microsoft.Xna.Framework.Audio;
+using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
 
 //using EnvDTE;
 
@@ -63,6 +64,9 @@ namespace Glue
         {
             get { return mSelf; }
         }
+
+        MainExplorerPlugin mainExplorerPlugin;
+
 
         public System.ComponentModel.IContainer Components => components;
 
@@ -192,9 +196,6 @@ namespace Glue
                 }
             }
 
-
-
-
             initializationWindow.SubMessage = "Initialize Error Reporting"; Application.DoEvents();
             ErrorReporter.Initialize(this);
 
@@ -207,15 +208,7 @@ namespace Glue
             initializationWindow.SubMessage = "Initializing TypeConverter"; Application.DoEvents();
             TypeConverterHelper.InitializeClasses();
 
-            initializationWindow.SubMessage = "Initializing SearchBar"; Application.DoEvents();
-            SearchBarHelper.Initialize(SearchTextbox);
             initializationWindow.SubMessage = "Initializing Navigation Stack"; Application.DoEvents();
-            TreeNodeStackManager.Self.Initialize(NavigateBackButton, NavigateForwardButton);
-
-
-
-
-
 
             initializationWindow.Message = "Loading Glue Settings"; Application.DoEvents();
             // We need to load the glue settings before loading the plugins so that we can 
@@ -243,6 +236,11 @@ namespace Glue
 
             PluginManager.SetTabs(tcTop, tcBottom, tcLeft, tcRight, MainTabControl, toolbarControl1);
 
+            // This plugin initialization needs to happen before LoadGlueSettings
+            // EVentually we can break this out
+            mainExplorerPlugin = new MainExplorerPlugin();
+            mainExplorerPlugin.Initialize();
+
             PluginManager.Initialize(true, pluginsToIgnore);
 
             ShareUiReferences(PluginCategories.All);
@@ -258,8 +256,7 @@ namespace Glue
 
                 initializationWindow.Message = "Loading Custom Type Info";
                 Application.DoEvents();
-                // InitializeElementViewWindow needs to happen before LoadGlueSettings
-                InitializeElementViewWindow();
+
 
                 Application.DoEvents();
                 // Gotta do this too before Loading Glue Settings
@@ -390,19 +387,6 @@ namespace Glue
             PluginManager.PrintPreInitializeOutput();
         }
 
-        private void InitializeElementViewWindow()
-        {
-            TreeNode entityNode = new TreeNode("Entities");
-            TreeNode screenNode = new TreeNode("Screens");
-            TreeNode globalContentNode = new TreeNode("Global Content Files");
-
-            ElementTreeView.Nodes.Add(entityNode);
-            ElementTreeView.Nodes.Add(screenNode);
-            ElementTreeView.Nodes.Add(globalContentNode);
-
-            ElementViewWindow.Initialize(ElementTreeView, entityNode, screenNode, globalContentNode);
-        }
-
         private void LoadGlueSettings(InitializationWindow initializationWindow)
         {
             string settingsFileLocation = GlueSettingsSave.SettingsFileName;
@@ -468,14 +452,6 @@ namespace Glue
             }
         }
 
-        private void mElementTreeView_MouseClick(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                RightClickHelper.PopulateRightClickItems(ElementTreeView.GetNodeAt(e.X, e.Y));
-            }
-        }
-
         private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
 
@@ -519,24 +495,6 @@ namespace Glue
             GlueCommands.Self.GluxCommands.SaveSettings();
         }
 
-        private void mElementTreeView_DoubleClick(object sender, EventArgs e)
-        {
-            Point point = new Point(Cursor.Position.X, Cursor.Position.Y);
-
-            Point topLeft = ElementTreeView.PointToScreen(new Point( 0, 0));
-
-            Point relative = new Point(point.X - topLeft.X, point.Y - topLeft.Y);
-
-            var node = this.ElementTreeView.GetNodeAt(relative);
-            var hitTestResult = ElementTreeView.HitTest(relative);
-            if (node != null && 
-                (hitTestResult.Location == TreeViewHitTestLocations.Image || 
-                hitTestResult.Location == TreeViewHitTestLocations.Label))
-            {
-                ElementViewWindow.ElementDoubleClicked();
-            }
-        }
-
         public static void CloseProject(bool shouldSave, bool isExiting)
         {
             // Let's set this to true so all tasks can end
@@ -578,27 +536,7 @@ namespace Glue
 
             ProjectManager.UnloadProject(isExiting);
 
-            #region Clear existing nodes and re-add base nodes
-            
-            // Select null so plugins deselect:
-            Self.ElementTreeView.SelectedNode = null;
-
-            // This only matters if we're not exiting the app:
-            if(isExiting == false)
-            {
-
-                ElementViewWindow.AfterSelect();
-
-                Self.ElementTreeView.Nodes.Clear();
-
-                Self.InitializeElementViewWindow();
-            }
-
-
-
-            #endregion
-
-
+            Self.mainExplorerPlugin.HandleProjectClose(isExiting);
 
             #region Clear PropertyGrid and Code window
             MainGlueWindow.Self.PropertyGrid.SelectedObject = null;
@@ -637,176 +575,14 @@ namespace Glue
 
         }
 
-        private void ElementTreeView_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            ElementViewWindow.AfterSelect();
-
-        }
-
-        private void ElementTreeView_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            // copy, paste, ctrl c, ctrl v, ctrl + c, ctrl + v, ctrl+c, ctrl+v
-            #region Copy ( (char)3 )
-
-            if (e.KeyChar == (char)3)
-            {
-                e.Handled = true;
-
-                if(GlueState.Self.CurrentNamedObjectSave != null)
-                {
-                    GlueState.Self.Clipboard.CopiedObject = GlueState.Self.CurrentNamedObjectSave;
-                }
-                else if (GlueState.Self.CurrentEntitySave != null && MainGlueWindow.Self.ElementTreeView.SelectedNode is EntityTreeNode)
-                {
-                    // copy ElementSave
-                    GlueState.Self.Clipboard.CopiedObject = GlueState.Self.CurrentEntitySave;
-                }
-                else if (GlueState.Self.CurrentScreenSave != null && MainGlueWindow.Self.ElementTreeView.SelectedNode is ScreenTreeNode)
-                {
-                    // copy ScreenSave
-                    GlueState.Self.Clipboard.CopiedObject = GlueState.Self.CurrentScreenSave;
-                }
-
-
-            }
-
-            #endregion
-
-            #region Paste ( (char)22 )
-
-            else if (e.KeyChar == (char)22)
-            {
-                e.Handled = true;
-
-                // Vic says: Currently pasting does NOT bring over any non-generated code.  This will
-                // need to be fixed eventually
-
-                // Paste CTRL+V stuff
-
-
-
-                if (GlueState.Self.Clipboard.CopiedEntity != null)
-                {
-                    MessageBox.Show("Pasted Entities will not copy any code that you have written in custom functions.");
-
-                    EntitySave newEntitySave = GlueState.Self.Clipboard.CopiedEntity.Clone();
-
-                    newEntitySave.Name += "Copy";
-
-                    string oldFile = newEntitySave.Name + ".cs";
-                    string oldGeneratedFile = newEntitySave.Name + ".Generated.cs";
-                    string newFile = newEntitySave.Name + "Copy.cs";
-                    string newGeneratedFile = newEntitySave.Name + "Copy.Generated.cs";
-
-                    // Not sure why we are adding here - the ProjectManager.AddEntity takes care of it.
-                    //ProjectManager.GlueProjectSave.Entities.Add(newEntitySave);
-                    GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(newEntitySave);
-
-                    GlueState.Self.Find.EntityTreeNode(newEntitySave).RefreshTreeNodes();
-                }
-                else if (GlueState.Self.Clipboard.CopiedScreen != null)
-                {
-                    MessageBox.Show("Pasted Screens will not copy any code that you have written in custom functions.");
-
-                    ScreenSave newScreenSave = GlueState.Self.Clipboard.CopiedScreen.Clone();
-
-                    newScreenSave.Name += "Copy";
-
-                    string oldFile = newScreenSave.Name + ".cs";
-                    string oldGeneratedFile = newScreenSave.Name + ".Generated.cs";
-                    string newFile = newScreenSave.Name + "Copy.cs";
-                    string newGeneratedFile = newScreenSave.Name + "Copy.Generated.cs";
-
-                    // Not sure why we are adding here - AddScreen takes care of it.
-
-                    GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(newScreenSave);
-
-                    GlueState.Self.Find.ScreenTreeNode(newScreenSave).RefreshTreeNodes();
-                }
-                else if(GlueState.Self.Clipboard.CopiedNamedObject != null)
-                {
-                    // todo: implement this, using duplicate
-                }
-            }
-
-            #endregion
-
-            else if (e.KeyChar == '\r')
-            {
-                // treat it like a double-click
-                e.Handled = true;
-            }
-
-        }
-
         private void Form1_Activated(object sender, EventArgs e)
         {
             int m = 3;
         }
 
-        private void ElementTreeView_MouseDown(object sender, MouseEventArgs e)
-        {
-
-        }
-
-        private void ElementTreeView_DragOver(object sender, DragEventArgs e)
-        {
-            ElementViewWindow.DragOver(sender, e);
-        }
-
-        private void ElementTreeView_DragDrop(object sender, DragEventArgs e)
-        {
-            ElementViewWindow.DragDrop(sender, e);
-        }
-
-        private void ElementTreeView_ItemDrag(object sender, ItemDragEventArgs e)
-        {
-            // Get the tree.
-            TreeView tree = (TreeView)sender;
-
-            // Get the node underneath the mouse.
-            TreeNode node = e.Item as TreeNode;
-            tree.SelectedNode = node;
-
-            // Start the drag-and-drop operation with a cloned copy of the node.
-            if (node != null)
-            {
-                ElementViewWindow.TreeNodeDraggedOff = node;
-
-                TreeNode targetNode = null;
-                targetNode = ElementTreeView.SelectedNode;
-                ElementViewWindow.ButtonUsed = e.Button;
-
-                //ElementTreeView_DragDrop(node, DragDropEffects.Move | DragDropEffects.Copy);
-                tree.DoDragDrop(node, DragDropEffects.Move | DragDropEffects.Copy);
-            }
-        }
-
-        private void ElementTreeView_MouseHover(object sender, EventArgs e)
-        {
-
-        }
-
         protected override void OnSizeChanged(EventArgs e)
         {
             base.OnSizeChanged(e);
-        }
-        
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-            SearchBarHelper.SearchBarTextChange();
-
-        }
-
-        private void SearchListBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            //SearchBarHelper.SearchListBoxIndexChanged();
-
-        }
-
-        private void SearchTextbox_KeyDown(object sender, KeyEventArgs e)
-        {
-            SearchBarHelper.TextBoxKeyDown(e);
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -818,24 +594,6 @@ namespace Glue
             else
             {
                 return base.ProcessCmdKey(ref msg, keyData);
-            }
-        }
-
-        private void ElementTreeView_KeyDown(object sender, KeyEventArgs e)
-        {
-
-            #region Delete key
-
-            if (e.KeyCode == Keys.Delete)
-            {
-                RightClickHelper.RemoveFromProjectToolStripMenuItem();
-            }
-            #endregion
-
-            else if (e.KeyCode == Keys.Enter)
-            {
-                ElementViewWindow.ElementDoubleClicked();
-                e.Handled = true;
             }
         }
 
@@ -913,52 +671,9 @@ namespace Glue
                 msProcesses.BeginInvoke(new EventHandler(delegate { msProcesses.Hide(); }));
         }
 
-        private void SearchListBox_Click(object sender, EventArgs e)
-        {
-            SearchBarHelper.SearchListBoxIndexChanged();
-        }
-
-        private void ElementTreeView_DragEnter(object sender, DragEventArgs e)
-        {
-            e.Effect = DragDropEffects.All;
-        }
-
         private void rightPanelContainer_SplitterMoved(object sender, SplitterEventArgs e)
         {
 
-        }
-
-        private void ElementTreeView_BeforeSelect(object sender, TreeViewCancelEventArgs e)
-        {
-            if (this.ElementTreeView.SelectedNode != null
-
-                // August 31 2019
-                // If the user drag+dropped off a tree node, then as they move over
-                // other nodes they will get selected. We don't want to record that as
-                // a movement.
-                // Actually this value doesn't get nulled out when dropping a node, so 
-                // can't use this now. Oh well, I won't bother with fixing this for now, 
-                // I thought it would be a quick fix...
-                // && ElementViewWindow.TreeNodeDraggedOff == null
-                )
-            {
-                TreeNodeStackManager.Self.Push(ElementTreeView.SelectedNode);
-            }
-        }
-
-        private void SearchTextbox_Leave(object sender, EventArgs e)
-        {
-            SearchBarHelper.TextBoxLeave(SearchTextbox);
-        }
-
-        private void NavigateBackButton_Click(object sender, EventArgs e)
-        {
-            TreeNodeStackManager.Self.GoBack();
-        }
-
-        private void NavigateForwardButton_Click(object sender, EventArgs e)
-        {
-            TreeNodeStackManager.Self.GoForward();
         }
     }
 }

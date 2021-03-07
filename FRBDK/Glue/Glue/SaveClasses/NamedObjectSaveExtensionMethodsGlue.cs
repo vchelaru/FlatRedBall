@@ -18,6 +18,7 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.ViewModels;
+using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -88,7 +89,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if (newNode != null)
             {
-                MainGlueWindow.Self.ElementTreeView.SelectedNode = newNode;
+                MainExplorerPlugin.Self.ElementTreeView.SelectedNode = newNode;
             }
         }
     }

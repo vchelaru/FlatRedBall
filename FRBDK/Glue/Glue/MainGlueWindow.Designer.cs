@@ -5,7 +5,7 @@
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		public System.ComponentModel.IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -33,20 +33,12 @@
             this.mElementContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ElementImages = new System.Windows.Forms.ImageList(this.components);
             this.mMenu = new System.Windows.Forms.MenuStrip();
-            this.ElementViewWindowToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.NavigateForwardButton = new System.Windows.Forms.Button();
-            this.NavigateBackButton = new System.Windows.Forms.Button();
             this.rightPanelContainer = new System.Windows.Forms.SplitContainer();
             this.MainTabControl = new FlatRedBall.Glue.Controls.TabControlEx();
             this.PropertiesTab = new FlatRedBall.Glue.Controls.PluginTab();
             this.CodeTab = new System.Windows.Forms.TabPage();
             this.CodePreviewTextBox = new System.Windows.Forms.RichTextBox();
             this.tcRight = new FlatRedBall.Glue.Controls.TabControlEx();
-            this.ExplorerTab = new FlatRedBall.Glue.Controls.PluginTab();
-            this.ElementTreeView = new System.Windows.Forms.TreeView();
-            this.SearchListBox = new System.Windows.Forms.ListBox();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.SearchTextbox = new System.Windows.Forms.TextBox();
             this.topPanelContainer = new System.Windows.Forms.SplitContainer();
             this.tcTop = new FlatRedBall.Glue.Controls.TabControlEx();
             this.leftPanelContainer = new System.Windows.Forms.SplitContainer();
@@ -65,8 +57,6 @@
             this.MainTabControl.SuspendLayout();
             this.CodeTab.SuspendLayout();
             this.tcRight.SuspendLayout();
-            this.ExplorerTab.SuspendLayout();
-            this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.topPanelContainer)).BeginInit();
             this.topPanelContainer.Panel1.SuspendLayout();
             this.topPanelContainer.Panel2.SuspendLayout();
@@ -120,30 +110,6 @@
             this.mMenu.Size = new System.Drawing.Size(764, 24);
             this.mMenu.TabIndex = 1;
             this.mMenu.Text = "menuStrip1";
-            // 
-            // NavigateForwardButton
-            // 
-            this.NavigateForwardButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.NavigateForwardButton.Location = new System.Drawing.Point(181, 0);
-            this.NavigateForwardButton.Name = "NavigateForwardButton";
-            this.NavigateForwardButton.Size = new System.Drawing.Size(22, 23);
-            this.NavigateForwardButton.TabIndex = 7;
-            this.NavigateForwardButton.Text = ">";
-            this.ElementViewWindowToolTip.SetToolTip(this.NavigateForwardButton, "Navigate Forward ( ALT + -> )");
-            this.NavigateForwardButton.UseVisualStyleBackColor = true;
-            this.NavigateForwardButton.Click += new System.EventHandler(this.NavigateForwardButton_Click);
-            // 
-            // NavigateBackButton
-            // 
-            this.NavigateBackButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.NavigateBackButton.Location = new System.Drawing.Point(160, 0);
-            this.NavigateBackButton.Name = "NavigateBackButton";
-            this.NavigateBackButton.Size = new System.Drawing.Size(22, 23);
-            this.NavigateBackButton.TabIndex = 6;
-            this.NavigateBackButton.Text = "<";
-            this.ElementViewWindowToolTip.SetToolTip(this.NavigateBackButton, "Navigate Back ( ALT + <- )");
-            this.NavigateBackButton.UseVisualStyleBackColor = true;
-            this.NavigateBackButton.Click += new System.EventHandler(this.NavigateBackButton_Click);
             // 
             // rightPanelContainer
             // 
@@ -206,7 +172,6 @@
             // tcRight
             // 
             this.tcRight.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
-            this.tcRight.Controls.Add(this.ExplorerTab);
             this.tcRight.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tcRight.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.tcRight.IgnoreFirst = false;
@@ -219,89 +184,6 @@
             this.tcRight.TabIndex = 2;
             this.tcRight.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.ControlAddedToRightView);
             this.tcRight.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.ControlRemovedFromRightView);
-            // 
-            // ExplorerTab
-            // 
-            this.ExplorerTab.Controls.Add(this.ElementTreeView);
-            this.ExplorerTab.Controls.Add(this.SearchListBox);
-            this.ExplorerTab.Controls.Add(this.panel1);
-            this.ExplorerTab.DrawX = false;
-            this.ExplorerTab.LastTabControl = this.tcRight;
-            this.ExplorerTab.LastTimeClicked = new System.DateTime(2016, 4, 23, 12, 13, 55, 981);
-            this.ExplorerTab.Location = new System.Drawing.Point(4, 23);
-            this.ExplorerTab.Margin = new System.Windows.Forms.Padding(0);
-            this.ExplorerTab.Name = "ExplorerTab";
-            this.ExplorerTab.Size = new System.Drawing.Size(202, 548);
-            this.ExplorerTab.TabIndex = 0;
-            this.ExplorerTab.Text = "Explorer";
-            this.ExplorerTab.UseVisualStyleBackColor = true;
-            // 
-            // ElementTreeView
-            // 
-            this.ElementTreeView.AllowDrop = true;
-            this.ElementTreeView.BackColor = System.Drawing.Color.Black;
-            this.ElementTreeView.ContextMenuStrip = this.mElementContextMenu;
-            this.ElementTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ElementTreeView.ForeColor = System.Drawing.Color.White;
-            this.ElementTreeView.HideSelection = false;
-            this.ElementTreeView.ImageIndex = 0;
-            this.ElementTreeView.ImageList = this.ElementImages;
-            this.ElementTreeView.Location = new System.Drawing.Point(0, 23);
-            this.ElementTreeView.Name = "ElementTreeView";
-            this.ElementTreeView.SelectedImageIndex = 0;
-            this.ElementTreeView.Size = new System.Drawing.Size(202, 525);
-            this.ElementTreeView.TabIndex = 0;
-            this.ElementTreeView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.ElementTreeView_ItemDrag);
-            this.ElementTreeView.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.ElementTreeView_BeforeSelect);
-            this.ElementTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.ElementTreeView_AfterSelect);
-            this.ElementTreeView.DragDrop += new System.Windows.Forms.DragEventHandler(this.ElementTreeView_DragDrop);
-            this.ElementTreeView.DragEnter += new System.Windows.Forms.DragEventHandler(this.ElementTreeView_DragEnter);
-            this.ElementTreeView.DragOver += new System.Windows.Forms.DragEventHandler(this.ElementTreeView_DragOver);
-            this.ElementTreeView.DoubleClick += new System.EventHandler(this.mElementTreeView_DoubleClick);
-            this.ElementTreeView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ElementTreeView_KeyDown);
-            this.ElementTreeView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ElementTreeView_KeyPress);
-            this.ElementTreeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.mElementTreeView_MouseClick);
-            this.ElementTreeView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ElementTreeView_MouseDown);
-            this.ElementTreeView.MouseHover += new System.EventHandler(this.ElementTreeView_MouseHover);
-            // 
-            // SearchListBox
-            // 
-            this.SearchListBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SearchListBox.FormattingEnabled = true;
-            this.SearchListBox.Location = new System.Drawing.Point(0, 23);
-            this.SearchListBox.Name = "SearchListBox";
-            this.SearchListBox.Size = new System.Drawing.Size(202, 525);
-            this.SearchListBox.TabIndex = 1;
-            this.SearchListBox.Visible = false;
-            this.SearchListBox.Click += new System.EventHandler(this.SearchListBox_Click);
-            this.SearchListBox.SelectedIndexChanged += new System.EventHandler(this.SearchListBox_SelectedIndexChanged);
-            // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.NavigateForwardButton);
-            this.panel1.Controls.Add(this.NavigateBackButton);
-            this.panel1.Controls.Add(this.SearchTextbox);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(202, 23);
-            this.panel1.TabIndex = 6;
-            // 
-            // SearchTextbox
-            // 
-            this.SearchTextbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.SearchTextbox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
-            this.SearchTextbox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
-            this.SearchTextbox.Location = new System.Drawing.Point(0, 2);
-            this.SearchTextbox.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            this.SearchTextbox.Name = "SearchTextbox";
-            this.SearchTextbox.Size = new System.Drawing.Size(160, 20);
-            this.SearchTextbox.TabIndex = 5;
-            this.SearchTextbox.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
-            this.SearchTextbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SearchTextbox_KeyDown);
-            this.SearchTextbox.Leave += new System.EventHandler(this.SearchTextbox_Leave);
             // 
             // topPanelContainer
             // 
@@ -455,9 +337,6 @@
             this.PropertiesTab.ResumeLayout(false);
             this.CodeTab.ResumeLayout(false);
             this.tcRight.ResumeLayout(false);
-            this.ExplorerTab.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             this.topPanelContainer.Panel1.ResumeLayout(false);
             this.topPanelContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.topPanelContainer)).EndInit();
@@ -478,19 +357,14 @@
 		#endregion
 
         private System.Windows.Forms.MenuStrip mMenu;
-        internal System.Windows.Forms.TreeView ElementTreeView;
         public System.Windows.Forms.RichTextBox CodePreviewTextBox;
         public System.Windows.Forms.ImageList ElementImages;
         internal System.Windows.Forms.ContextMenuStrip mElementContextMenu;
 
-        private System.Windows.Forms.ToolTip ElementViewWindowToolTip;
         public System.Windows.Forms.SplitContainer rightPanelContainer;
-        public System.Windows.Forms.TextBox SearchTextbox;
-        public System.Windows.Forms.ListBox SearchListBox;
         private System.Windows.Forms.SplitContainer topPanelContainer;
         private System.Windows.Forms.SplitContainer bottomPanelContainer;
         private System.Windows.Forms.SplitContainer leftPanelContainer;
-        private FlatRedBall.Glue.Controls.PluginTab ExplorerTab;
         private FlatRedBall.Glue.Controls.TabControlEx tcRight;
         private FlatRedBall.Glue.Controls.TabControlEx tcTop;
         private FlatRedBall.Glue.Controls.TabControlEx tcLeft;
@@ -499,9 +373,6 @@
         internal FlatRedBall.Glue.Controls.PluginTab PropertiesTab;
         internal System.Windows.Forms.TabPage CodeTab;
         internal FlatRedBall.Glue.Controls.TabControlEx MainTabControl;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button NavigateForwardButton;
-        private System.Windows.Forms.Button NavigateBackButton;
         private System.Windows.Forms.Integration.ElementHost elementHost2;
         private FlatRedBall.Glue.Controls.ToolbarControl toolbarControl1;
     }

@@ -13,7 +13,7 @@
     <ProjectReference Include="..\Glue\GlueFormsCore.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="3.7.0" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
   </ItemGroup>

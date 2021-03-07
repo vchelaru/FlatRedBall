@@ -9,6 +9,7 @@ using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
 
 namespace FlatRedBall.Glue
 {
@@ -42,7 +43,7 @@ namespace FlatRedBall.Glue
                 //This is needed because of designer issues.
                 if (MainGlueWindow.Self == null) return null;
                 
-                TreeNode treeNode = MainGlueWindow.Self.ElementTreeView.SelectedNode;
+                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
 
                 if (treeNode == null)
                 {
@@ -126,7 +127,7 @@ namespace FlatRedBall.Glue
         {
             get
             {
-                TreeNode treeNode = MainGlueWindow.Self.ElementTreeView.SelectedNode;
+                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
 
                 if (treeNode != null && treeNode.Tag != null && treeNode.Tag is ReferencedFileSave)
                 {
@@ -157,7 +158,7 @@ namespace FlatRedBall.Glue
 #if UNIT_TESTS
                 return null;
 #endif
-                TreeNode treeNode = MainGlueWindow.Self.ElementTreeView.SelectedNode;
+                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
 
                 while (treeNode != null)
                 {
@@ -183,7 +184,7 @@ namespace FlatRedBall.Glue
 #if UNIT_TESTS
                 return null;
 #endif
-                TreeNode treeNode = MainGlueWindow.Self.ElementTreeView.SelectedNode;
+                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
 
                 while (treeNode != null)
                 {
@@ -201,7 +202,7 @@ namespace FlatRedBall.Glue
             }
             set
             {
-                MainGlueWindow.Self.ElementTreeView.SelectedNode =
+                MainExplorerPlugin.Self.ElementTreeView.SelectedNode =
                     GlueState.Self.Find.ScreenTreeNode(value);
             }
         }
@@ -210,7 +211,7 @@ namespace FlatRedBall.Glue
         {
             get
             {
-                TreeNode treeNode = MainGlueWindow.Self.ElementTreeView.SelectedNode;
+                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
 
                 while (treeNode != null)
                 {
@@ -232,7 +233,7 @@ namespace FlatRedBall.Glue
         {
             get
             {
-                TreeNode treeNode = MainGlueWindow.Self.ElementTreeView.SelectedNode;
+                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
 
                 while (treeNode != null)
                 {
@@ -253,7 +254,7 @@ namespace FlatRedBall.Glue
         {
             get
             {
-                TreeNode treeNode = MainGlueWindow.Self.ElementTreeView.SelectedNode;
+                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
 
                 while (treeNode != null)
                 {
@@ -274,11 +275,11 @@ namespace FlatRedBall.Glue
 		{
 			get 
             { 
-                return MainGlueWindow.Self.ElementTreeView.SelectedNode; 
+                return MainExplorerPlugin.Self.ElementTreeView.SelectedNode; 
             }
             set
             {
-                MainGlueWindow.Self.ElementTreeView.SelectedNode = value;
+                MainExplorerPlugin.Self.ElementTreeView.SelectedNode = value;
             }
 		}
 
@@ -286,7 +287,7 @@ namespace FlatRedBall.Glue
         {
             get
             {
-                TreeNode treeNode = MainGlueWindow.Self.ElementTreeView.SelectedNode;
+                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
                 {
                     if (treeNode != null && treeNode.Text.EndsWith(".cs"))
                     {

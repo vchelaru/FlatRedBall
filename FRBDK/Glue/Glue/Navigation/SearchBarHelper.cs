@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using FlatRedBall.Glue.Events;
 using System.Runtime.InteropServices;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
 
 namespace FlatRedBall.Glue.Navigation
 {
@@ -34,24 +35,24 @@ namespace FlatRedBall.Glue.Navigation
 
         public static void SearchBarTextChange()
         {
-            string text = MainGlueWindow.Self.SearchTextbox.Text;
+            string text = MainExplorerPlugin.Self.SearchTextbox.Text;
 
             if (string.IsNullOrEmpty(text))
             {
-                MainGlueWindow.Self.SearchListBox.Visible = false;
+                MainExplorerPlugin.Self.SearchListBox.Visible = false;
 
             }
             else
             {
-                MainGlueWindow.Self.SearchListBox.Visible = true;
+                MainExplorerPlugin.Self.SearchListBox.Visible = true;
                 FillSearchBoxWithOptions(text);
-                if (MainGlueWindow.Self.SearchListBox.Items.Count > 0)
+                if (MainExplorerPlugin.Self.SearchListBox.Items.Count > 0)
                 {
-                    MainGlueWindow.Self.SearchListBox.SelectedIndex = 0;
+                    MainExplorerPlugin.Self.SearchListBox.SelectedIndex = 0;
                 }
             }
 
-            MainGlueWindow.Self.ElementTreeView.Visible = !MainGlueWindow.Self.SearchListBox.Visible;
+            MainExplorerPlugin.Self.ElementTreeView.Visible = !MainExplorerPlugin.Self.SearchListBox.Visible;
 
         }
 
@@ -80,7 +81,7 @@ namespace FlatRedBall.Glue.Navigation
 
             text = text.ToLower();
 
-            MainGlueWindow.Self.SearchListBox.Items.Clear();
+            MainExplorerPlugin.Self.SearchListBox.Items.Clear();
 
 
             bool showScreens;
@@ -354,7 +355,7 @@ namespace FlatRedBall.Glue.Navigation
             #endregion
 
 
-            MainGlueWindow.Self.SearchListBox.Items.AddRange(toAdd.ToArray());
+            MainExplorerPlugin.Self.SearchListBox.Items.AddRange(toAdd.ToArray());
         }
 
         private static string DetermineWhatIsShown(string text, out bool showScreens, out bool showEntities, out bool showObjects, out bool showFiles, out bool showStates, out bool showVariables, out bool showEvents, out bool showCategories)
@@ -480,10 +481,10 @@ namespace FlatRedBall.Glue.Navigation
         public static void SearchListBoxIndexChanged()
         {
 
-            Object selectedObject = MainGlueWindow.Self.SearchListBox.SelectedItem;
+            Object selectedObject = MainExplorerPlugin.Self.SearchListBox.SelectedItem;
 
             bool foundSomething = false;
-            if (MainGlueWindow.Self.SearchListBox.Visible)
+            if (MainExplorerPlugin.Self.SearchListBox.Visible)
             {
                 if (selectedObject is ScreenSave)
                 {
@@ -536,10 +537,10 @@ namespace FlatRedBall.Glue.Navigation
                 ElementViewWindow.SelectedNode = ElementViewWindow.SelectedNode;
             }
 
-            MainGlueWindow.Self.SearchListBox.Visible = false;
-            MainGlueWindow.Self.ElementTreeView.Visible = true;
+            MainExplorerPlugin.Self.SearchListBox.Visible = false;
+            MainExplorerPlugin.Self.ElementTreeView.Visible = true;
 
-            MainGlueWindow.Self.SearchTextbox.Text = null;
+            MainExplorerPlugin.Self.SearchTextbox.Text = null;
 
 
         }
@@ -553,25 +554,25 @@ namespace FlatRedBall.Glue.Navigation
                 e.Handled = true;
                 e.SuppressKeyPress = true;
 
-                MainGlueWindow.Self.SearchTextbox.Text = null;
+                MainExplorerPlugin.Self.SearchTextbox.Text = null;
 
-                MainGlueWindow.Self.SearchListBox.Visible = false;
-                MainGlueWindow.Self.ElementTreeView.Visible = true;
+                MainExplorerPlugin.Self.SearchListBox.Visible = false;
+                MainExplorerPlugin.Self.ElementTreeView.Visible = true;
 
-                TextBoxLeave(MainGlueWindow.Self.SearchTextbox);
+                TextBoxLeave(MainExplorerPlugin.Self.SearchTextbox);
             }
             else if (e.KeyCode == Keys.Up)
             {
-                if (MainGlueWindow.Self.SearchListBox.SelectedIndex > 0)
+                if (MainExplorerPlugin.Self.SearchListBox.SelectedIndex > 0)
                 {
-                    MainGlueWindow.Self.SearchListBox.SelectedIndex--;
+                    MainExplorerPlugin.Self.SearchListBox.SelectedIndex--;
                 }
             }
             else if (e.KeyCode == Keys.Down)
             {
-                if (MainGlueWindow.Self.SearchListBox.SelectedIndex < MainGlueWindow.Self.SearchListBox.Items.Count - 1)
+                if (MainExplorerPlugin.Self.SearchListBox.SelectedIndex < MainExplorerPlugin.Self.SearchListBox.Items.Count - 1)
                 {
-                    MainGlueWindow.Self.SearchListBox.SelectedIndex++;
+                    MainExplorerPlugin.Self.SearchListBox.SelectedIndex++;
                 }
             }
             else if (e.KeyCode == Keys.Enter)
@@ -580,8 +581,8 @@ namespace FlatRedBall.Glue.Navigation
                 e.Handled = true;
                 e.SuppressKeyPress = true;
 
-                MainGlueWindow.Self.ElementTreeView.Focus();
-                TextBoxLeave(MainGlueWindow.Self.SearchTextbox);
+                MainExplorerPlugin.Self.ElementTreeView.Focus();
+                TextBoxLeave(MainExplorerPlugin.Self.SearchTextbox);
 
             }
         }

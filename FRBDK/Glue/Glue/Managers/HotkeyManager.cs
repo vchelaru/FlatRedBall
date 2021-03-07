@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Plugins;
 using Glue;
+using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace FlatRedBall.Glue.Managers
             {
                 // CTRL+F, control f, search focus, ctrl f, ctrl + f
                 case Keys.Control | Keys.F:
-                    MainGlueWindow.Self.SearchTextbox.Focus();
+                    MainExplorerPlugin.Self.SearchTextbox.Focus();
                     return true;
                 case Keys.Alt | Keys.Left:
                     TreeNodeStackManager.Self.GoBack();
@@ -37,9 +38,9 @@ namespace FlatRedBall.Glue.Managers
                 case Keys.Alt | Keys.Shift | Keys.Up:
                     return RightClickHelper.MoveToTop();
                 case Keys.Escape:
-                    if (MainGlueWindow.Self.SearchTextbox.Focused)
+                    if (MainExplorerPlugin.Self.SearchTextbox.Focused)
                     {
-                        MainGlueWindow.Self.SearchTextbox.Focus();
+                        MainExplorerPlugin.Self.SearchTextbox.Focus();
                         return true;
                     }
                     else
@@ -51,7 +52,6 @@ namespace FlatRedBall.Glue.Managers
                         "Glue Compiler",
                         "BuildAndRun");
                     return true;
-                    break;
                 default:
                     return false;
             }

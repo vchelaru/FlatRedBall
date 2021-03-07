@@ -12,6 +12,7 @@ using FlatRedBall.IO;
 using FlatRedBall.Glue.Errors;
 using System.Linq;
 using FlatRedBall.Glue.IO;
+using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 {
@@ -129,7 +130,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             get
             {
 
-                TreeNode treeNode = MainGlueWindow.Self.ElementTreeView.SelectedNode;
+                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
 
                 if (treeNode == null)
                 {

@@ -28,6 +28,7 @@ using FlatRedBall.Performance.Measurement;
 using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.AutomatedGlue;
 using HQ.Util.Unmanaged;
+using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
 
 namespace FlatRedBall.Glue.FormHelpers
 {
@@ -169,11 +170,11 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             get
             {
-                return MainGlueWindow.Self.ElementTreeView.SelectedNode;
+                return MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
             }
             set
             {
-                MainGlueWindow.Self.ElementTreeView.SelectedNode = value;
+                MainExplorerPlugin.Self.ElementTreeView.SelectedNode = value;
             }
         }
 
@@ -512,13 +513,13 @@ namespace FlatRedBall.Glue.FormHelpers
 
             TreeNode parentTreeNode = entityTreeNode.Parent;
 
-            bool wasSelected = MainGlueWindow.Self.ElementTreeView.SelectedNode == entityTreeNode;
+            bool wasSelected = MainExplorerPlugin.Self.ElementTreeView.SelectedNode == entityTreeNode;
 
             parentTreeNode.Nodes.SortByTextConsideringDirectories();
 
             if (wasSelected)
             {
-                MainGlueWindow.Self.ElementTreeView.SelectedNode = entityTreeNode;
+                MainExplorerPlugin.Self.ElementTreeView.SelectedNode = entityTreeNode;
             }
         }
 
@@ -533,7 +534,7 @@ namespace FlatRedBall.Glue.FormHelpers
             }
             //////End Early Out///////////
 
-            bool wasSelected = MainGlueWindow.Self.ElementTreeView.SelectedNode == screenTreeNode;
+            bool wasSelected = MainExplorerPlugin.Self.ElementTreeView.SelectedNode == screenTreeNode;
 
             int desiredIndex = ProjectManager.GlueProjectSave.Screens.IndexOf(screenSave);
 
@@ -542,7 +543,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (wasSelected)
             {
-                MainGlueWindow.Self.ElementTreeView.SelectedNode = screenTreeNode;
+                MainExplorerPlugin.Self.ElementTreeView.SelectedNode = screenTreeNode;
             }
         }
 
@@ -764,6 +765,11 @@ namespace FlatRedBall.Glue.FormHelpers
 
         internal static void AddDirectoryNodes(string parentDirectory, TreeNode parentTreeNode)
         {
+            if(parentTreeNode == null)
+            {
+                throw new ArgumentNullException(nameof(parentTreeNode));
+            }
+
             if (Directory.Exists(parentDirectory))
             {
                 string[] directories = Directory.GetDirectories(parentDirectory);
