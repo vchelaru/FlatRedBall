@@ -42,7 +42,6 @@
             this.tcLeft = new FlatRedBall.Glue.Controls.TabControlEx();
             this.bottomPanelContainer = new System.Windows.Forms.SplitContainer();
             this.tcBottom = new FlatRedBall.Glue.Controls.TabControlEx();
-            this.elementHost2 = new System.Windows.Forms.Integration.ElementHost();
             this.toolbarControl1 = new FlatRedBall.Glue.Controls.ToolbarControl();
             this.mElementContextMenu.SuspendLayout();
             this.mMenu.SuspendLayout();
@@ -257,16 +256,6 @@
             this.tcBottom.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.tcPanel2_ControlAdded);
             this.tcBottom.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.tcPanel2_ControlRemoved);
             // 
-            // elementHost2
-            // 
-            this.elementHost2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.elementHost2.Location = new System.Drawing.Point(0, 24);
-            this.elementHost2.Name = "elementHost2";
-            this.elementHost2.Size = new System.Drawing.Size(764, 30);
-            this.elementHost2.TabIndex = 10;
-            this.elementHost2.Text = "elementHost2";
-            this.elementHost2.Child = this.toolbarControl1;
-            // 
             // MainGlueWindow
             // 
             this.AllowDrop = true;
@@ -274,7 +263,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(764, 633);
             this.Controls.Add(this.bottomPanelContainer);
-            this.Controls.Add(this.elementHost2);
             this.Controls.Add(this.mMenu);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.mMenu;
@@ -324,7 +312,6 @@
         private FlatRedBall.Glue.Controls.TabControlEx tcLeft;
         private FlatRedBall.Glue.Controls.TabControlEx tcBottom;
         internal FlatRedBall.Glue.Controls.TabControlEx MainTabControl;
-        private System.Windows.Forms.Integration.ElementHost elementHost2;
         private FlatRedBall.Glue.Controls.ToolbarControl toolbarControl1;
     }
 }
