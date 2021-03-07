@@ -234,7 +234,7 @@ namespace Glue
                 pluginsToIgnore = GlueState.Self.CurrentPluginSettings.PluginsToIgnore;
             }
 
-            PluginManager.SetTabs(tcTop, tcBottom, tcLeft, tcRight, MainTabControl, toolbarControl1);
+            PluginManager.SetToolbarTray(this.toolbarControl1);
 
             // This plugin initialization needs to happen before LoadGlueSettings
             // EVentually we can break this out
@@ -282,18 +282,8 @@ namespace Glue
 
                 EditorData.LoadGlueLayoutSettings();
 
-                rightPanelContainer.Panel2MinSize = 125;
-                try
-                {
-                    leftPanelContainer.SplitterDistance = EditorData.GlueLayoutSettings.LeftPanelSplitterPosition;
-                    topPanelContainer.SplitterDistance = EditorData.GlueLayoutSettings.TopPanelSplitterPosition;
-                    rightPanelContainer.SplitterDistance = EditorData.GlueLayoutSettings.RightPanelSplitterPosition;
-                    bottomPanelContainer.SplitterDistance = EditorData.GlueLayoutSettings.BottomPanelSplitterPosition;
-                }
-                catch
-                {
-                    // do nothing
-                }
+                MainPanelSplitContainer.UpdateSizesFromSettings();
+
                 if (EditorData.GlueLayoutSettings.Maximized)
                     WindowState = FormWindowState.Maximized;
 
@@ -376,11 +366,6 @@ namespace Glue
         private void ShareUiReferences(PluginCategories pluginCategories)
         {
             PluginManager.ShareMenuStripReference(mMenu, pluginCategories);
-            PluginManager.ShareTopTabReference(tcTop, pluginCategories);
-            PluginManager.ShareLeftTabReference(tcLeft, pluginCategories);
-            PluginManager.ShareBottomTabReference(tcBottom, pluginCategories);
-            PluginManager.ShareRightTabReference(tcRight, pluginCategories);
-            PluginManager.ShareCenterTabReference(MainTabControl, pluginCategories);
 
             PluginManager.PrintPreInitializeOutput();
         }
@@ -441,7 +426,6 @@ namespace Glue
                     // This used to be 0, b
                     this.Height = settingsSave.WindowHeight > 100 ? settingsSave.WindowHeight : 480;
                     this.Width = settingsSave.WindowWidth > 100 ? settingsSave.WindowWidth : 640;
-                    this.rightPanelContainer.SplitterDistance = settingsSave.MainSplitterDistance > 0 ? settingsSave.MainSplitterDistance : 450;
                 }
             }
             else
@@ -487,7 +471,6 @@ namespace Glue
             save.WindowTop = this.Top;
             save.WindowHeight = this.Height;
             save.WindowWidth = this.Width;
-            save.MainSplitterDistance = this.rightPanelContainer.SplitterDistance;
             save.StoredRecentFiles = this.NumberOfStoredRecentFiles;
 
             GlueCommands.Self.GluxCommands.SaveSettings();
@@ -552,10 +535,9 @@ namespace Glue
         private async void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             ProjectManager.WantsToClose = true;
-            EditorData.GlueLayoutSettings.LeftPanelSplitterPosition = leftPanelContainer.SplitterDistance;
-            EditorData.GlueLayoutSettings.TopPanelSplitterPosition = topPanelContainer.SplitterDistance;
-            EditorData.GlueLayoutSettings.RightPanelSplitterPosition = rightPanelContainer.SplitterDistance;
-            EditorData.GlueLayoutSettings.BottomPanelSplitterPosition = bottomPanelContainer.SplitterDistance;
+            MainPanelSplitContainer.ReactToFormClosing();
+            
+            EditorData.GlueLayoutSettings.BottomPanelSplitterPosition = MainPanelSplitContainer.SplitterDistance;
             EditorData.GlueLayoutSettings.Maximized = this.WindowState == FormWindowState.Maximized;
             EditorData.GlueLayoutSettings.SaveSettings();
 
@@ -580,68 +562,6 @@ namespace Glue
             {
                 return base.ProcessCmdKey(ref msg, keyData);
             }
-        }
-
-        private void ControlAddedToRightView(object sender, ControlEventArgs e)
-        {
-            SplitContainer parent = (SplitContainer)((Control)sender).Parent.Parent;
-
-            parent.Panel2Collapsed = false;
-
-
-        }
-
-        private void ControlRemovedFromRightView(object sender, ControlEventArgs e)
-        {
-            SplitContainer parent = (SplitContainer)((Control)sender).Parent.Parent;
-            TabControlEx tc = (TabControlEx)sender;
-            bool show = tc.TabCount > 1;
-
-            if (show)
-                parent.Panel2Collapsed = false;
-            else
-                parent.Panel2Collapsed = true;
-
-        }
-
-        private void tcPanel1_ControlAdded(object sender, ControlEventArgs e)
-        {
-            SplitContainer parent = (SplitContainer)((Control)sender).Parent.Parent;
-
-            parent.Panel1Collapsed = false;
-        }
-
-        private void tcPanel1_ControlRemoved(object sender, ControlEventArgs e)
-        {
-            SplitContainer parent = (SplitContainer)((Control)sender).Parent.Parent;
-            TabControlEx tc = (TabControlEx)sender;
-            bool show = tc.TabCount > 1;
-
-            if (show)
-                parent.Panel1Collapsed = false;
-            else
-                parent.Panel1Collapsed = true;
-
-        }
-
-        private void tcPanel2_ControlAdded(object sender, ControlEventArgs e)
-        {
-            SplitContainer parent = (SplitContainer)((Control)sender).Parent.Parent;
-
-            parent.Panel2Collapsed = false;
-        }
-
-        private void tcPanel2_ControlRemoved(object sender, ControlEventArgs e)
-        {
-            SplitContainer parent = (SplitContainer)((Control)sender).Parent.Parent;
-            TabControlEx tc = (TabControlEx)sender;
-            bool show = tc.TabCount > 1;
-
-            if (show)
-                parent.Panel2Collapsed = false;
-            else
-                parent.Panel2Collapsed = true;
-
         }
     }
 }

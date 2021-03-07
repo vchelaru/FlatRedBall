@@ -14,11 +14,10 @@ using System.Windows.Forms;
 
 namespace OfficialPlugins.PointEditingPlugin
 {
-    [Export(typeof(PluginBase)), Export(typeof(ICenterTab))]
-    public class MainPlugin : EmbeddedPlugin, ICenterTab
+    [Export(typeof(PluginBase))]
+    public class MainPlugin : EmbeddedPlugin
     {
         PointEditWindow mPointEditWindow; // This is the control we created
-        TabControl mContainer; // This is the tab control for all tabs on the left
         PluginTab mTab; // This is the tab that will hold our control
 
 
@@ -27,6 +26,8 @@ namespace OfficialPlugins.PointEditingPlugin
             this.ReactToItemSelectHandler += HandleItemSelected;
 
             this.ReactToChangedPropertyHandler += HandlePropertyChanged;
+
+            InitializeTab();
         }
 
         private void HandlePropertyChanged(string changedMember, object oldValue)
@@ -76,27 +77,28 @@ namespace OfficialPlugins.PointEditingPlugin
 
                 mPointEditWindow.Data = instructions.Value as List<Vector2>;
 
-                ShowTab();
+                base.ShowTab(mTab);
             }
             else
             {
-                HideTab();
+                base.RemoveTab(mTab);
             }
         }
 
-        public void InitializeTab(System.Windows.Forms.TabControl tabControl)
+        void InitializeTab()
         {
+
             mPointEditWindow = new PointEditWindow();
             mPointEditWindow.DataChanged += HandleDataChanged;
 
-            mTab = new PluginTab();
-            mContainer = tabControl;
+            mTab = this.AddToTab(PluginManager.CenterTab, mPointEditWindow, "Points");
 
             mTab.ClosedByUser += new PluginTab.ClosedByUserDelegate(OnClosedByUser);
 
-            mTab.Text = "  Points"; // add spaces to make room for the X to close the plugin
-            mTab.Controls.Add(mPointEditWindow);
             mPointEditWindow.Dock = DockStyle.Fill;
+
+            base.RemoveTab(mTab);
+
         }
 
         private void HandleDataChanged(object sender, EventArgs e)
@@ -105,23 +107,6 @@ namespace OfficialPlugins.PointEditingPlugin
             GlueCommands.Self.GluxCommands.SaveGlux();
         }
         
-        private void ShowTab()
-        {
-            if (mContainer.Controls.Contains(mTab) == false)
-            {
-                mContainer.Controls.Add(mTab);
-            }
-        }
-
-        private void HideTab()
-        {
-            if (mContainer.Controls.Contains(mTab))
-            {
-                mContainer.Controls.Remove(mTab);
-            }
-
-        }
-
         private void OnClosedByUser(object sender)
         {
             // No, don't shut it down, it's embedded

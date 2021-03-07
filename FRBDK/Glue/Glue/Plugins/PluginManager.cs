@@ -46,21 +46,6 @@ namespace FlatRedBall.Glue.Plugins
         public IEnumerable<IMenuStripPlugin> MenuStripPlugins { get; set; } = new List<IMenuStripPlugin>();
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<ITopTab> TopTabPlugins { get; set; } = new List<ITopTab>();
-
-        [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<ILeftTab> LeftTabPlugins { get; set; } = new List<ILeftTab>();
-
-        [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<IBottomTab> BottomTabPlugins { get; set; } = new List<IBottomTab>();
-
-        [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<IRightTab> RightTabPlugins { get; set; } = new List<IRightTab>();
-
-        [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<ICenterTab> CenterTabPlugins { get; set; } = new List<ICenterTab>();
-
-        [ImportMany(AllowRecomposition = true)]
         public IEnumerable<IGluxLoad> GluxLoadPlugins { get; set; } = new List<IGluxLoad>();
 
         [ImportMany(AllowRecomposition = true)]
@@ -170,7 +155,6 @@ namespace FlatRedBall.Glue.Plugins
             var allPlugins = new List<IEnumerable<IPlugin>>
             {
                 MenuStripPlugins,
-                TopTabPlugins, LeftTabPlugins, BottomTabPlugins, RightTabPlugins, CenterTabPlugins,
                 GluxLoadPlugins, CodeGeneratorPlugins,
                 ContentFileChangePlugins, CurrentElementPlugins
             };
@@ -228,11 +212,6 @@ namespace FlatRedBall.Glue.Plugins
         {
             ImportedPlugins = new List<PluginBase>();
             MenuStripPlugins = new List<IMenuStripPlugin>();
-            TopTabPlugins = new List<ITopTab>();
-            LeftTabPlugins = new List<ILeftTab>();
-            BottomTabPlugins = new List<IBottomTab>();
-            RightTabPlugins = new List<IRightTab>();
-            CenterTabPlugins = new List<ICenterTab>();
             GluxLoadPlugins = new List<IGluxLoad>();
             CurrentElementPlugins = new List<ICurrentElement>();
             CodeGeneratorPlugins = new List<ICodeGeneratorPlugin>();
@@ -762,8 +741,7 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
-        internal static void SetTabs(TabControl top, TabControl bottom, TabControl left, TabControl right, TabControl center, 
-            ToolbarControl toolbar)
+        internal static void SetTabs(TabControl top, TabControl bottom, TabControl left, TabControl right, TabControl center)
         {
             TopTab = top;
             LeftTab = left;
@@ -771,197 +749,12 @@ namespace FlatRedBall.Glue.Plugins
             BottomTab = bottom;
             CenterTab = center;
 
+        }
+
+        internal static void SetToolbarTray(ToolbarControl toolbar)
+        {
             ToolBarTray = toolbar.ToolBarTray;
-        }
 
-        internal static void ShareTopTabReference(TabControl tabControl, PluginCategories pluginCategories)
-        {
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                if (ShouldProcessPluginManager(pluginCategories, pluginManager))
-                {
-                    foreach (ITopTab plugin in pluginManager.TopTabPlugins)
-                    {
-                        PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                        if (container.IsEnabled)
-                        {
-                            ITopTab plugin1 = plugin;
-                            PluginCommand(() =>
-                                              {
-                                                  plugin1.InitializeTab(tabControl);
-                                              }, container, "Failed in InitializeTab");
-                        }
-                    }
-
-                    // Execute the new style plugins
-                    var plugins = pluginManager.ImportedPlugins.Where(x => x.InitializeTopTabHandler != null);
-                    foreach (var plugin in plugins)
-                    {
-                        var container = pluginManager.mPluginContainers[plugin];
-                        if (container.IsEnabled)
-                        {
-                            PluginBase plugin1 = plugin;
-                            PluginCommand(() =>
-                                              {
-                                                  plugin1.InitializeTopTabHandler(tabControl);
-                                              }, container, "Failed in InitializeTab");
-                        }
-                    }
-                }
-            }
-        }
-
-        internal static void ShareLeftTabReference(TabControl tabControl, PluginCategories pluginCategories)
-        {
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                if (ShouldProcessPluginManager(pluginCategories, pluginManager))
-                {
-                    foreach (ILeftTab plugin in pluginManager.LeftTabPlugins)
-                    {
-                        PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                        if (container.IsEnabled)
-                        {
-                            ILeftTab plugin1 = plugin;
-                            PluginCommand(() =>
-                                              {
-                                                  plugin1.InitializeTab(tabControl);
-                                              }, container, "Failed in InitializeTab");
-                        }
-                    }
-
-                    // Execute the new style plugins
-                    var plugins = pluginManager.ImportedPlugins.Where(x => x.InitializeLeftTabHandler != null);
-                    foreach (var plugin in plugins)
-                    {
-                        var container = pluginManager.mPluginContainers[plugin];
-                        if (container.IsEnabled)
-                        {
-                            PluginBase plugin1 = plugin;
-                            PluginCommand(() =>
-                                              {
-                                                  plugin1.InitializeLeftTabHandler(tabControl);
-                                              }, container, "Failed in InitializeTab");
-                        }
-                    }
-                }
-            }
-        }
-
-        internal static void ShareBottomTabReference(TabControl tabControl, PluginCategories pluginCategories)
-        {
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                if (ShouldProcessPluginManager(pluginCategories, pluginManager))
-                {
-                    foreach (IBottomTab plugin in pluginManager.BottomTabPlugins)
-                    {
-                        PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                        if (container.IsEnabled)
-                        {
-                            IBottomTab plugin1 = plugin;
-                            PluginCommand(() =>
-                                {
-                                    plugin1.InitializeTab(tabControl);
-                                }, container, "Failed in InitializeTab");
-                        }
-                    }
-
-                    // Execute the new style plugins
-                    var plugins = pluginManager.ImportedPlugins.Where(x => x.InitializeBottomTabHandler != null);
-                    foreach (var plugin in plugins)
-                    {
-                        var container = pluginManager.mPluginContainers[plugin];
-                        if (container.IsEnabled)
-                        {
-                            PluginBase plugin1 = plugin;
-                            PluginCommand(() =>
-                                {
-                                    plugin1.InitializeBottomTabHandler(tabControl);
-                                }, container, "Failed in InitializeTab");
-                        }
-                    }
-                }
-            }
-        }
-
-        internal static void ShareRightTabReference(TabControl tabControl, PluginCategories pluginCategories)
-        {
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                if (ShouldProcessPluginManager(pluginCategories, pluginManager))
-                {
-                    foreach (IRightTab plugin in pluginManager.RightTabPlugins)
-                    {
-                        PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                        if (container.IsEnabled)
-                        {
-                            IRightTab plugin1 = plugin;
-                            PluginCommand(() =>
-                            {
-                                plugin1.InitializeTab(tabControl);
-                            },container, "Failed in InitializeTab");
-                        }
-                    }
-
-                    // Execute the new style plugins
-                    var plugins = pluginManager.ImportedPlugins.Where(x => x.InitializeRightTabHandler != null);
-                    foreach (var plugin in plugins)
-                    {
-                        var container = pluginManager.mPluginContainers[plugin];
-                        if (container.IsEnabled)
-                        {
-                            PluginBase plugin1 = plugin;
-                            PluginCommand(() =>
-                                {
-                                    plugin1.InitializeRightTabHandler(tabControl);
-                                }, container, "Failed in InitializeTab");
-                        }
-                    }
-                }
-            }
-        }
-
-        internal static void ShareCenterTabReference(TabControl tabControl, PluginCategories pluginCategories)
-        {
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                if (ShouldProcessPluginManager(pluginCategories, pluginManager))
-                {
-                    foreach (ICenterTab plugin in pluginManager.CenterTabPlugins)
-                    {
-                        PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                        if (container.IsEnabled)
-                        {
-                            ICenterTab plugin1 = plugin;
-                            PluginCommand(() =>
-                                {
-                                    plugin1.InitializeTab(tabControl);
-                                }, container, "Failed in InitializeTab");
-                        }
-                    }
-
-                    // Execute the new style plugins
-                    var plugins = pluginManager.ImportedPlugins.Where(x => x.InitializeCenterTabHandler != null);
-                    foreach (var plugin in plugins)
-                    {
-                        var container = pluginManager.mPluginContainers[plugin];
-                        if (container.IsEnabled)
-                        {
-                            PluginBase plugin1 = plugin;
-                            PluginCommand(() =>
-                                {
-                                    plugin1.InitializeCenterTabHandler(tabControl);
-                                }, container, "Failed in InitializeTab");
-                        }
-                    }
-                }
-            }
         }
 
         internal static void ReactToTreeViewRightClick(TreeNode rightClickedTreeNode, ContextMenuStrip menuToModify)
@@ -1845,53 +1638,14 @@ namespace FlatRedBall.Glue.Plugins
             {
                 // Reinitialize the plugin interfaces
                 var plugin = pluginToReenable as PluginBase;
-                if (plugin.InitializeBottomTabHandler != null)
-                    plugin.InitializeBottomTabHandler(BottomTab);
-
-                if (plugin.InitializeCenterTabHandler != null)
-                    plugin.InitializeCenterTabHandler(CenterTab);
-
-                if (plugin.InitializeLeftTabHandler != null)
-                    plugin.InitializeLeftTabHandler(LeftTab);
 
                 if (plugin.InitializeMenuHandler != null)
                     plugin.InitializeMenuHandler(mMenuStrip);
-
-                if (plugin.InitializeRightTabHandler != null)
-                    plugin.InitializeRightTabHandler(RightTab);
-
-                if (plugin.InitializeTopTabHandler != null)
-                    plugin.InitializeTopTabHandler(TopTab);
             }
 
             if (pluginToReenable is IMenuStripPlugin)
             {
                 ((IMenuStripPlugin)pluginToReenable).InitializeMenu(mMenuStrip);
-            }
-
-            if (pluginToReenable is ITopTab)
-            {
-                ((ITopTab)pluginToReenable).InitializeTab(TopTab);
-            }
-
-            if (pluginToReenable is ILeftTab)
-            {
-                ((ILeftTab)pluginToReenable).InitializeTab(LeftTab);
-            }
-
-            if (pluginToReenable is IBottomTab)
-            {
-                ((IBottomTab)pluginToReenable).InitializeTab(BottomTab);
-            }
-
-            if (pluginToReenable is IRightTab)
-            {
-                ((IRightTab)pluginToReenable).InitializeTab(RightTab);
-            }
-
-            if (pluginToReenable is ICenterTab)
-            {
-                ((ICenterTab)pluginToReenable).InitializeTab(CenterTab);
             }
         }
 

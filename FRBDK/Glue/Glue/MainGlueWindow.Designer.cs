@@ -1,4 +1,6 @@
-﻿namespace Glue
+﻿using GlueFormsCore.Controls;
+
+namespace Glue
 {
 	partial class MainGlueWindow
 	{
@@ -33,41 +35,21 @@
             this.mElementContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ElementImages = new System.Windows.Forms.ImageList(this.components);
             this.mMenu = new System.Windows.Forms.MenuStrip();
-            this.rightPanelContainer = new System.Windows.Forms.SplitContainer();
-            this.MainTabControl = new FlatRedBall.Glue.Controls.TabControlEx();
-            this.tcRight = new FlatRedBall.Glue.Controls.TabControlEx();
-            this.topPanelContainer = new System.Windows.Forms.SplitContainer();
-            this.tcTop = new FlatRedBall.Glue.Controls.TabControlEx();
-            this.leftPanelContainer = new System.Windows.Forms.SplitContainer();
-            this.tcLeft = new FlatRedBall.Glue.Controls.TabControlEx();
-            this.bottomPanelContainer = new System.Windows.Forms.SplitContainer();
-            this.tcBottom = new FlatRedBall.Glue.Controls.TabControlEx();
+
+            this.MainPanelSplitContainer = new GlueFormsCore.Controls.WinformsSplitContainer();
             this.toolbarControl1 = new FlatRedBall.Glue.Controls.ToolbarControl();
             this.mElementContextMenu.SuspendLayout();
             this.mMenu.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.rightPanelContainer)).BeginInit();
-            this.rightPanelContainer.Panel1.SuspendLayout();
-            this.rightPanelContainer.Panel2.SuspendLayout();
-            this.rightPanelContainer.SuspendLayout();
-            this.MainTabControl.SuspendLayout();
-            this.tcRight.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.topPanelContainer)).BeginInit();
-            this.topPanelContainer.Panel1.SuspendLayout();
-            this.topPanelContainer.Panel2.SuspendLayout();
-            this.topPanelContainer.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.leftPanelContainer)).BeginInit();
-            this.leftPanelContainer.Panel1.SuspendLayout();
-            this.leftPanelContainer.Panel2.SuspendLayout();
-            this.leftPanelContainer.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.bottomPanelContainer)).BeginInit();
-            this.bottomPanelContainer.Panel1.SuspendLayout();
-            this.bottomPanelContainer.Panel2.SuspendLayout();
-            this.bottomPanelContainer.SuspendLayout();
+
+
+            ((System.ComponentModel.ISupportInitialize)(this.MainPanelSplitContainer)).BeginInit();
+            this.MainPanelSplitContainer.Panel1.SuspendLayout();
+            this.MainPanelSplitContainer.Panel2.SuspendLayout();
+            this.MainPanelSplitContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // mElementContextMenu
             // 
-            
             this.mElementContextMenu.Name = "mElementContextMenu";
             this.mElementContextMenu.Size = new System.Drawing.Size(187, 384);
             this.mElementContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
@@ -105,156 +87,15 @@
             this.mMenu.TabIndex = 1;
             this.mMenu.Text = "menuStrip1";
             // 
-            // rightPanelContainer
-            // 
-            this.rightPanelContainer.BackColor = System.Drawing.SystemColors.AppWorkspace;
-            this.rightPanelContainer.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.rightPanelContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rightPanelContainer.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
-            this.rightPanelContainer.Location = new System.Drawing.Point(0, 0);
-            this.rightPanelContainer.Margin = new System.Windows.Forms.Padding(0);
-            this.rightPanelContainer.Name = "rightPanelContainer";
-            // 
-            // rightPanelContainer.Panel1
-            // 
-            this.rightPanelContainer.Panel1.Controls.Add(this.MainTabControl);
-            // 
-            // rightPanelContainer.Panel2
-            // 
-            this.rightPanelContainer.Panel2.Controls.Add(this.tcRight);
-            this.rightPanelContainer.Size = new System.Drawing.Size(764, 579);
-            this.rightPanelContainer.SplitterDistance = 546;
-            this.rightPanelContainer.TabIndex = 4;
-            // 
-            // MainTabControl
-            // 
-            this.MainTabControl.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
-            this.MainTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MainTabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
-            this.MainTabControl.IgnoreFirst = false;
-            this.MainTabControl.Location = new System.Drawing.Point(0, 0);
-            this.MainTabControl.Name = "MainTabControl";
-            this.MainTabControl.SelectedIndex = 0;
-            this.MainTabControl.Size = new System.Drawing.Size(542, 575);
-            this.MainTabControl.TabIndex = 4;
-            // 
-            // tcRight
-            // 
-            this.tcRight.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
-            this.tcRight.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tcRight.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
-            this.tcRight.IgnoreFirst = false;
-            this.tcRight.Location = new System.Drawing.Point(0, 0);
-            this.tcRight.Margin = new System.Windows.Forms.Padding(0);
-            this.tcRight.Name = "tcRight";
-            this.tcRight.Padding = new System.Drawing.Point(6, 0);
-            this.tcRight.SelectedIndex = 0;
-            this.tcRight.Size = new System.Drawing.Size(210, 575);
-            this.tcRight.TabIndex = 2;
-            this.tcRight.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.ControlAddedToRightView);
-            this.tcRight.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.ControlRemovedFromRightView);
-            // 
-            // topPanelContainer
-            // 
-            this.topPanelContainer.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.topPanelContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.topPanelContainer.Location = new System.Drawing.Point(0, 0);
-            this.topPanelContainer.Name = "topPanelContainer";
-            this.topPanelContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // topPanelContainer.Panel1
-            // 
-            this.topPanelContainer.Panel1.Controls.Add(this.tcTop);
-            this.topPanelContainer.Panel1Collapsed = true;
-            // 
-            // topPanelContainer.Panel2
-            // 
-            this.topPanelContainer.Panel2.Controls.Add(this.leftPanelContainer);
-            this.topPanelContainer.Size = new System.Drawing.Size(764, 579);
-            this.topPanelContainer.SplitterDistance = 82;
-            this.topPanelContainer.TabIndex = 6;
-            // 
-            // tcTop
-            // 
-            this.tcTop.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
-            this.tcTop.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tcTop.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
-            this.tcTop.IgnoreFirst = false;
-            this.tcTop.Location = new System.Drawing.Point(0, 0);
-            this.tcTop.Name = "tcTop";
-            this.tcTop.SelectedIndex = 0;
-            this.tcTop.Size = new System.Drawing.Size(146, 78);
-            this.tcTop.TabIndex = 0;
-            this.tcTop.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.tcPanel1_ControlAdded);
-            this.tcTop.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.tcPanel1_ControlRemoved);
-            // 
-            // leftPanelContainer
-            // 
-            this.leftPanelContainer.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.leftPanelContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.leftPanelContainer.Location = new System.Drawing.Point(0, 0);
-            this.leftPanelContainer.Name = "leftPanelContainer";
-            // 
-            // leftPanelContainer.Panel1
-            // 
-            this.leftPanelContainer.Panel1.Controls.Add(this.tcLeft);
-            this.leftPanelContainer.Panel1Collapsed = true;
-            // 
-            // leftPanelContainer.Panel2
-            // 
-            this.leftPanelContainer.Panel2.Controls.Add(this.rightPanelContainer);
-            this.leftPanelContainer.Size = new System.Drawing.Size(764, 579);
-            this.leftPanelContainer.SplitterDistance = 138;
-            this.leftPanelContainer.TabIndex = 9;
-            // 
-            // tcLeft
-            // 
-            this.tcLeft.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
-            this.tcLeft.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tcLeft.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
-            this.tcLeft.IgnoreFirst = false;
-            this.tcLeft.Location = new System.Drawing.Point(0, 0);
-            this.tcLeft.Name = "tcLeft";
-            this.tcLeft.SelectedIndex = 0;
-            this.tcLeft.Size = new System.Drawing.Size(134, 96);
-            this.tcLeft.TabIndex = 1;
-            this.tcLeft.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.tcPanel1_ControlAdded);
-            this.tcLeft.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.tcPanel1_ControlRemoved);
-            // 
             // bottomPanelContainer
             // 
-            this.bottomPanelContainer.BackColor = System.Drawing.SystemColors.AppWorkspace;
-            this.bottomPanelContainer.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.bottomPanelContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.bottomPanelContainer.Location = new System.Drawing.Point(0, 54);
-            this.bottomPanelContainer.Name = "bottomPanelContainer";
-            this.bottomPanelContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // bottomPanelContainer.Panel1
-            // 
-            this.bottomPanelContainer.Panel1.Controls.Add(this.topPanelContainer);
-            // 
-            // bottomPanelContainer.Panel2
-            // 
-            this.bottomPanelContainer.Panel2.Controls.Add(this.tcBottom);
-            this.bottomPanelContainer.Panel2Collapsed = true;
-            this.bottomPanelContainer.Size = new System.Drawing.Size(764, 579);
-            this.bottomPanelContainer.SplitterDistance = 520;
-            this.bottomPanelContainer.TabIndex = 7;
-            // 
-            // tcBottom
-            // 
-            this.tcBottom.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
-            this.tcBottom.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tcBottom.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
-            this.tcBottom.IgnoreFirst = false;
-            this.tcBottom.Location = new System.Drawing.Point(0, 0);
-            this.tcBottom.Name = "tcBottom";
-            this.tcBottom.SelectedIndex = 0;
-            this.tcBottom.Size = new System.Drawing.Size(146, 42);
-            this.tcBottom.TabIndex = 1;
-            this.tcBottom.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.tcPanel2_ControlAdded);
-            this.tcBottom.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.tcPanel2_ControlRemoved);
+            this.MainPanelSplitContainer.BackColor = System.Drawing.SystemColors.AppWorkspace;
+            this.MainPanelSplitContainer.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.MainPanelSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MainPanelSplitContainer.Location = new System.Drawing.Point(0, 54);
+            this.MainPanelSplitContainer.Name = "bottomPanelContainer";
+            this.MainPanelSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+
             // 
             // MainGlueWindow
             // 
@@ -262,7 +103,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(764, 633);
-            this.Controls.Add(this.bottomPanelContainer);
+            this.Controls.Add(this.MainPanelSplitContainer);
             this.Controls.Add(this.mMenu);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.mMenu;
@@ -274,27 +115,12 @@
             this.mElementContextMenu.ResumeLayout(false);
             this.mMenu.ResumeLayout(false);
             this.mMenu.PerformLayout();
-            this.rightPanelContainer.Panel1.ResumeLayout(false);
-            this.rightPanelContainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.rightPanelContainer)).EndInit();
-            this.rightPanelContainer.ResumeLayout(false);
-            this.MainTabControl.ResumeLayout(false);
-            this.tcRight.ResumeLayout(false);
-            this.topPanelContainer.Panel1.ResumeLayout(false);
-            this.topPanelContainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.topPanelContainer)).EndInit();
-            this.topPanelContainer.ResumeLayout(false);
-            this.leftPanelContainer.Panel1.ResumeLayout(false);
-            this.leftPanelContainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.leftPanelContainer)).EndInit();
-            this.leftPanelContainer.ResumeLayout(false);
-            this.bottomPanelContainer.Panel1.ResumeLayout(false);
-            this.bottomPanelContainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.bottomPanelContainer)).EndInit();
-            this.bottomPanelContainer.ResumeLayout(false);
+            this.MainPanelSplitContainer.Panel1.ResumeLayout(false);
+            this.MainPanelSplitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.MainPanelSplitContainer)).EndInit();
+            this.MainPanelSplitContainer.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
-
 		}
 
 		#endregion
@@ -302,16 +128,7 @@
         private System.Windows.Forms.MenuStrip mMenu;
         public System.Windows.Forms.ImageList ElementImages;
         internal System.Windows.Forms.ContextMenuStrip mElementContextMenu;
-
-        public System.Windows.Forms.SplitContainer rightPanelContainer;
-        private System.Windows.Forms.SplitContainer topPanelContainer;
-        private System.Windows.Forms.SplitContainer bottomPanelContainer;
-        private System.Windows.Forms.SplitContainer leftPanelContainer;
-        private FlatRedBall.Glue.Controls.TabControlEx tcRight;
-        private FlatRedBall.Glue.Controls.TabControlEx tcTop;
-        private FlatRedBall.Glue.Controls.TabControlEx tcLeft;
-        private FlatRedBall.Glue.Controls.TabControlEx tcBottom;
-        internal FlatRedBall.Glue.Controls.TabControlEx MainTabControl;
+        private GlueFormsCore.Controls.WinformsSplitContainer MainPanelSplitContainer;
         private FlatRedBall.Glue.Controls.ToolbarControl toolbarControl1;
     }
 }
