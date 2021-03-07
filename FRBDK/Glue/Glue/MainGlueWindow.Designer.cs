@@ -35,8 +35,6 @@
             this.mMenu = new System.Windows.Forms.MenuStrip();
             this.rightPanelContainer = new System.Windows.Forms.SplitContainer();
             this.MainTabControl = new FlatRedBall.Glue.Controls.TabControlEx();
-            this.CodeTab = new System.Windows.Forms.TabPage();
-            this.CodePreviewTextBox = new System.Windows.Forms.RichTextBox();
             this.tcRight = new FlatRedBall.Glue.Controls.TabControlEx();
             this.topPanelContainer = new System.Windows.Forms.SplitContainer();
             this.tcTop = new FlatRedBall.Glue.Controls.TabControlEx();
@@ -54,7 +52,6 @@
             this.rightPanelContainer.Panel2.SuspendLayout();
             this.rightPanelContainer.SuspendLayout();
             this.MainTabControl.SuspendLayout();
-            this.CodeTab.SuspendLayout();
             this.tcRight.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.topPanelContainer)).BeginInit();
             this.topPanelContainer.Panel1.SuspendLayout();
@@ -135,7 +132,6 @@
             // MainTabControl
             // 
             this.MainTabControl.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
-            this.MainTabControl.Controls.Add(this.CodeTab);
             this.MainTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainTabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.MainTabControl.IgnoreFirst = false;
@@ -144,29 +140,6 @@
             this.MainTabControl.SelectedIndex = 0;
             this.MainTabControl.Size = new System.Drawing.Size(542, 575);
             this.MainTabControl.TabIndex = 4;
-            // 
-            // CodeTab
-            // 
-            this.CodeTab.Controls.Add(this.CodePreviewTextBox);
-            this.CodeTab.Location = new System.Drawing.Point(4, 25);
-            this.CodeTab.Name = "CodeTab";
-            this.CodeTab.Size = new System.Drawing.Size(534, 546);
-            this.CodeTab.TabIndex = 1;
-            this.CodeTab.Text = "Code";
-            this.CodeTab.UseVisualStyleBackColor = true;
-            // 
-            // CodePreviewTextBox
-            // 
-            this.CodePreviewTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CodePreviewTextBox.Location = new System.Drawing.Point(0, 0);
-            this.CodePreviewTextBox.Name = "CodePreviewTextBox";
-            this.CodePreviewTextBox.ReadOnly = true;
-            this.CodePreviewTextBox.Size = new System.Drawing.Size(534, 546);
-            this.CodePreviewTextBox.TabIndex = 3;
-            this.CodePreviewTextBox.Text = "";
-            this.CodePreviewTextBox.Visible = false;
-            this.CodePreviewTextBox.WordWrap = false;
-            this.CodePreviewTextBox.TextChanged += new System.EventHandler(this.richTextBox1_TextChanged);
             // 
             // tcRight
             // 
@@ -333,7 +306,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.rightPanelContainer)).EndInit();
             this.rightPanelContainer.ResumeLayout(false);
             this.MainTabControl.ResumeLayout(false);
-            this.CodeTab.ResumeLayout(false);
             this.tcRight.ResumeLayout(false);
             this.topPanelContainer.Panel1.ResumeLayout(false);
             this.topPanelContainer.Panel2.ResumeLayout(false);
@@ -355,7 +327,6 @@
 		#endregion
 
         private System.Windows.Forms.MenuStrip mMenu;
-        public System.Windows.Forms.RichTextBox CodePreviewTextBox;
         public System.Windows.Forms.ImageList ElementImages;
         internal System.Windows.Forms.ContextMenuStrip mElementContextMenu;
 
@@ -368,7 +339,6 @@
         private FlatRedBall.Glue.Controls.TabControlEx tcLeft;
         private FlatRedBall.Glue.Controls.TabControlEx tcBottom;
         public System.Windows.Forms.MenuStrip msProcesses;
-        internal System.Windows.Forms.TabPage CodeTab;
         internal FlatRedBall.Glue.Controls.TabControlEx MainTabControl;
         private System.Windows.Forms.Integration.ElementHost elementHost2;
         private FlatRedBall.Glue.Controls.ToolbarControl toolbarControl1;

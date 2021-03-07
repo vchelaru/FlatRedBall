@@ -18,7 +18,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         private void HandleLoadedGlux()
         {
-            VisibilityManager.ReactivelySetItemViewVisibility();
+            //VisibilityManager.ReactivelySetItemViewVisibility();
         }
     }
 }

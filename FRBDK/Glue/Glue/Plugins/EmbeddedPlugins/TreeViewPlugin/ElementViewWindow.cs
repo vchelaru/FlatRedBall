@@ -232,50 +232,11 @@ namespace FlatRedBall.Glue.FormHelpers
             // tree node click
             TreeNode node = SelectedNode;
 
-            bool isCode = !string.IsNullOrEmpty(EditorLogic.CurrentCodeFile);
-
-            #region Make translation info on this file if necessary
-
-            if (isCode)
-            {
-                ProjectManager.GlueProjectSave.CreateTranslatedFileSaveIfNecessary(
-                    EditorLogic.CurrentCodeFile);
-
-                MainGlueWindow.Self.PropertyGrid.SelectedObject = ProjectManager.GlueProjectSave.GetTranslatedFileSave(
-                    EditorLogic.CurrentCodeFile);
-            }
-
-            #endregion
-
             PropertyGridHelper.UpdateDisplayedPropertyGridProperties();
-
-            #region Show the appropriate preview
-
-            if (isCode)
-            {
-                if (FileManager.FileExists(EditorLogic.CurrentCodeFile))
-                {
-                    MainGlueWindow.Self.CodePreviewTextBox.Text = FileManager.FromFileText(EditorLogic.CurrentCodeFile);
-                }
-                else
-                {
-                    MessageBox.Show("Could not find the file\n\n" + EditorLogic.CurrentCodeFile);
-                    // This file no longer exists, so let's refresh the property grid
-                    EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
-                }
-            }
-            else
-            {
-                MainGlueWindow.Self.CodePreviewTextBox.Text = null;
-            }
-
-            #endregion
-
 
             EditorLogic.TakeSnapshot();
 
             bool wasFocused = mTreeView?.Focused == true;
-            VisibilityManager.ReactivelySetItemViewVisibility();
             if (!SuppressSelectionEvents)
             {
                 PluginManager.ReactToItemSelect(node);

@@ -268,8 +268,6 @@ namespace Glue
                 // LoadSettings before loading projects
                 EditorData.LoadPreferenceSettings();
 
-                VisibilityManager.ReactivelySetItemViewVisibility();
-
                 while (TaskManager.Self.AreAllAsyncTasksDone == false)
                 {
                     System.Threading.Thread.Sleep(100);
@@ -538,10 +536,7 @@ namespace Glue
 
             Self.mainExplorerPlugin.HandleProjectClose(isExiting);
 
-            #region Clear PropertyGrid and Code window
             MainGlueWindow.Self.PropertyGrid.SelectedObject = null;
-            MainGlueWindow.Self.CodePreviewTextBox.Clear();
-            #endregion
 
             MainGlueWindow.Self.Text = "FlatRedBall Glue";
             ProjectManager.WantsToClose = false;
@@ -568,11 +563,6 @@ namespace Glue
 
             PluginManager.ReactToGlueClose();
             CloseProject(true, true);
-        }
-
-        private void richTextBox1_TextChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void Form1_Activated(object sender, EventArgs e)

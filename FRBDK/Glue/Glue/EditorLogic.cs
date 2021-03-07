@@ -283,25 +283,6 @@ namespace FlatRedBall.Glue
             }
 		}
 
-        public static string CurrentCodeFile
-        {
-            get
-            {
-                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
-                {
-                    if (treeNode != null && treeNode.Text.EndsWith(".cs"))
-                    {
-                        return treeNode.Text;
-                    }
-                    else
-                    {
-                        return "";
-                    }
-                }
-            }
-        }
-
-
         [Obsolete("Use GlueState")]
         public static StateSave CurrentStateSave
         {

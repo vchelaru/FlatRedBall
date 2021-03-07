@@ -115,10 +115,6 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public List<CustomClassSave> CustomClasses = new List<CustomClassSave>();
 
-
-        public List<TranslatedFileSave> TranslatedFiles = new List<TranslatedFileSave>();
-
-
         public bool ApplyToFixedResolutionPlatforms = true;
 
 
@@ -280,32 +276,6 @@ namespace FlatRedBall.Glue.SaveClasses
                 }
             }
 
-            return null;
-        }
-
-        public void CreateTranslatedFileSaveIfNecessary(string fileName)
-        {
-            TranslatedFileSave tfs = GetTranslatedFileSave(fileName);
-
-            if (tfs == null)
-            {
-                tfs = new TranslatedFileSave();
-
-                tfs.FileName = fileName;
-
-                TranslatedFiles.Add(tfs);
-            }
-        }
-
-        public TranslatedFileSave GetTranslatedFileSave(string fileName)
-        {
-            for (int i = 0; i < TranslatedFiles.Count; i++)
-            {
-                if (TranslatedFiles[i].FileName == fileName)
-                {
-                    return TranslatedFiles[i];
-                }
-            }
             return null;
         }
 

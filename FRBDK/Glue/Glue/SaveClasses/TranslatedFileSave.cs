@@ -5,11 +5,6 @@ using System.Text;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
-    public enum TranslationStyle
-    {
-        PerformTranslate,
-        IgnoreTranslation
-    }
 
     public class TranslatedFileSave
     {
@@ -19,10 +14,5 @@ namespace FlatRedBall.Glue.SaveClasses
             set;
         }
 
-        public TranslationStyle TranslationStyle
-        {
-            get;
-            set;
-        }
     }
 }
