@@ -570,11 +570,6 @@ namespace Glue
             int m = 3;
         }
 
-        protected override void OnSizeChanged(EventArgs e)
-        {
-            base.OnSizeChanged(e);
-        }
-
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if(HotkeyManager.Self.TryHandleKeys(keyData))
@@ -646,23 +641,6 @@ namespace Glue
                 parent.Panel2Collapsed = false;
             else
                 parent.Panel2Collapsed = true;
-
-        }
-
-        private void MsProcessesItemAdded(object sender, ToolStripItemEventArgs e)
-        {
-            if (msProcesses.Items.Count > 0)
-                msProcesses.BeginInvoke(new EventHandler(delegate { msProcesses.Show(); }));
-        }
-
-        private void MsProcessesItemRemoved(object sender, ToolStripItemEventArgs e)
-        {
-            if (msProcesses.Items.Count <= 0)
-                msProcesses.BeginInvoke(new EventHandler(delegate { msProcesses.Hide(); }));
-        }
-
-        private void rightPanelContainer_SplitterMoved(object sender, SplitterEventArgs e)
-        {
 
         }
     }

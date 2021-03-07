@@ -42,7 +42,6 @@
             this.tcLeft = new FlatRedBall.Glue.Controls.TabControlEx();
             this.bottomPanelContainer = new System.Windows.Forms.SplitContainer();
             this.tcBottom = new FlatRedBall.Glue.Controls.TabControlEx();
-            this.msProcesses = new System.Windows.Forms.MenuStrip();
             this.elementHost2 = new System.Windows.Forms.Integration.ElementHost();
             this.toolbarControl1 = new FlatRedBall.Glue.Controls.ToolbarControl();
             this.mElementContextMenu.SuspendLayout();
@@ -127,7 +126,6 @@
             this.rightPanelContainer.Size = new System.Drawing.Size(764, 579);
             this.rightPanelContainer.SplitterDistance = 546;
             this.rightPanelContainer.TabIndex = 4;
-            this.rightPanelContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.rightPanelContainer_SplitterMoved);
             // 
             // MainTabControl
             // 
@@ -259,18 +257,6 @@
             this.tcBottom.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.tcPanel2_ControlAdded);
             this.tcBottom.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.tcPanel2_ControlRemoved);
             // 
-            // msProcesses
-            // 
-            this.msProcesses.AllowItemReorder = true;
-            this.msProcesses.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
-            this.msProcesses.Location = new System.Drawing.Point(0, 24);
-            this.msProcesses.Name = "msProcesses";
-            this.msProcesses.Size = new System.Drawing.Size(953, 23);
-            this.msProcesses.TabIndex = 8;
-            this.msProcesses.Visible = false;
-            this.msProcesses.ItemAdded += new System.Windows.Forms.ToolStripItemEventHandler(this.MsProcessesItemAdded);
-            this.msProcesses.ItemRemoved += new System.Windows.Forms.ToolStripItemEventHandler(this.MsProcessesItemRemoved);
-            // 
             // elementHost2
             // 
             this.elementHost2.Dock = System.Windows.Forms.DockStyle.Top;
@@ -288,7 +274,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(764, 633);
             this.Controls.Add(this.bottomPanelContainer);
-            this.Controls.Add(this.msProcesses);
             this.Controls.Add(this.elementHost2);
             this.Controls.Add(this.mMenu);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -338,7 +323,6 @@
         private FlatRedBall.Glue.Controls.TabControlEx tcTop;
         private FlatRedBall.Glue.Controls.TabControlEx tcLeft;
         private FlatRedBall.Glue.Controls.TabControlEx tcBottom;
-        public System.Windows.Forms.MenuStrip msProcesses;
         internal FlatRedBall.Glue.Controls.TabControlEx MainTabControl;
         private System.Windows.Forms.Integration.ElementHost elementHost2;
         private FlatRedBall.Glue.Controls.ToolbarControl toolbarControl1;

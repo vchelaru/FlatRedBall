@@ -2059,12 +2059,12 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static CustomVariable CreateAndAddNewVariable(CustomVariable newVariable, bool save = true)
         {
-            IElement currentElement = EditorLogic.CurrentElement;
+            IElement currentElement = GlueState.Self.CurrentElement;
 
 
             currentElement.CustomVariables.Add(newVariable);
 
-            CustomVariableHelper.SetDefaultValueFor(newVariable, EditorLogic.CurrentElement);
+            CustomVariableHelper.SetDefaultValueFor(newVariable, currentElement);
 
             if (EditorLogic.CurrentEntityTreeNode != null)
             {

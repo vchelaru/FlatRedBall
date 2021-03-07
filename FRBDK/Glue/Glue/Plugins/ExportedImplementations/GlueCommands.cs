@@ -33,8 +33,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public IGluxCommands GluxCommands { get; private set; }
 
-        public IOpenCommands OpenCommands { get; private set; }
-
         public IProjectCommands ProjectCommands { get; private set; }
 
         public IRefreshCommands RefreshCommands { get; private set; }
@@ -120,7 +118,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             mSelf = this;
             GenerateCodeCommands = new GenerateCodeCommands();
             GluxCommands = new GluxCommands();
-            OpenCommands = new OpenCommands();
             ProjectCommands = new ProjectCommands();
             RefreshCommands = new RefreshCommands();
             TreeNodeCommands = new TreeNodeCommands();

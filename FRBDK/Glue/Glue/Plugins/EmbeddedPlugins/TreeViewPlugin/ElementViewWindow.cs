@@ -1042,7 +1042,8 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
                 else
                 {
-                    ProcessManager.OpenProcess(applicationSetInGlue, fileName);
+                    MessageBox.Show("This functionality has been removed as of March 7, 2021. If you need it, please talk to Vic on Discord.");
+                    //ProcessManager.OpenProcess(applicationSetInGlue, fileName);
                 }
             }
         }

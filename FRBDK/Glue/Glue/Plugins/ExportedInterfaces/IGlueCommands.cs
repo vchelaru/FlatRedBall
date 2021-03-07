@@ -10,7 +10,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
     {
         IGenerateCodeCommands GenerateCodeCommands { get; }
         IGluxCommands GluxCommands { get; }
-        IOpenCommands OpenCommands { get; }
         IProjectCommands ProjectCommands { get; }
         IRefreshCommands RefreshCommands { get; }
         ITreeNodeCommands TreeNodeCommands { get; }
