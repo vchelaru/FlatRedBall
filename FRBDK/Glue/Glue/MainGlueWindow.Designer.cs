@@ -35,7 +35,6 @@
             this.mMenu = new System.Windows.Forms.MenuStrip();
             this.rightPanelContainer = new System.Windows.Forms.SplitContainer();
             this.MainTabControl = new FlatRedBall.Glue.Controls.TabControlEx();
-            this.PropertiesTab = new FlatRedBall.Glue.Controls.PluginTab();
             this.CodeTab = new System.Windows.Forms.TabPage();
             this.CodePreviewTextBox = new System.Windows.Forms.RichTextBox();
             this.tcRight = new FlatRedBall.Glue.Controls.TabControlEx();
@@ -334,7 +333,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.rightPanelContainer)).EndInit();
             this.rightPanelContainer.ResumeLayout(false);
             this.MainTabControl.ResumeLayout(false);
-            this.PropertiesTab.ResumeLayout(false);
             this.CodeTab.ResumeLayout(false);
             this.tcRight.ResumeLayout(false);
             this.topPanelContainer.Panel1.ResumeLayout(false);
@@ -370,7 +368,6 @@
         private FlatRedBall.Glue.Controls.TabControlEx tcLeft;
         private FlatRedBall.Glue.Controls.TabControlEx tcBottom;
         public System.Windows.Forms.MenuStrip msProcesses;
-        internal FlatRedBall.Glue.Controls.PluginTab PropertiesTab;
         internal System.Windows.Forms.TabPage CodeTab;
         internal FlatRedBall.Glue.Controls.TabControlEx MainTabControl;
         private System.Windows.Forms.Integration.ElementHost elementHost2;
