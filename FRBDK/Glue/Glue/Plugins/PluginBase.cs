@@ -83,8 +83,6 @@ namespace FlatRedBall.Glue.Plugins
         public AddNewFileOptionsDelegate AddNewFileOptionsHandler { get; protected set; }
         public CreateNewFileDelegate CreateNewFileHandler { get; protected set; }
 
-        public InitializeTabDelegate InitializeBottomTabHandler { get; protected set; }
-
         public InitializeMenuDelegate InitializeMenuHandler { get; protected set; }
 
         /// <summary>

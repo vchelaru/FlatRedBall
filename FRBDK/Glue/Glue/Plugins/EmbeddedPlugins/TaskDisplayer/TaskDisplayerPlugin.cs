@@ -16,17 +16,17 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
 
         public override void StartUp()
         {
-            this.InitializeBottomTabHandler += HandleInitializeBottomTab;
+            HandleInitializeBottomTab();
         }
 
-        private void HandleInitializeBottomTab(System.Windows.Forms.TabControl tabControl)
+        private void HandleInitializeBottomTab()
         {
             TaskDisplayerControl control = new TaskDisplayerControl();
 
             this.vm = new TaskDisplayerViewModel();
             control.DataContext = this.vm;
             this.vm.PropertyChanged += HandlePropertyChanged;
-            this.tab = base.AddToTab(tabControl, control, "Tasks");
+            this.tab = base.AddToTab(PluginManager.BottomTab, control, "Tasks");
         }
 
         private void HandlePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

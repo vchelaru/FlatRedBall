@@ -88,6 +88,8 @@ namespace Glue
 
             this.MainPanelSplitContainer = new GlueFormsCore.Controls.WinformsSplitContainer();
             this.Controls.Add(this.MainPanelSplitContainer);
+            // so docking works
+            this.Controls.SetChildIndex(this.MainPanelSplitContainer, 0);
 
 
             this.FileWatchTimer = new System.Windows.Forms.Timer(this.components);
