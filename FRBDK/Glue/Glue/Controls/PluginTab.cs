@@ -138,10 +138,6 @@ namespace FlatRedBall.Glue.Controls
 
         }
 
-
-
-        
-
         public void CloseTabByUser()
         {
             ClosedByUser?.Invoke(this);

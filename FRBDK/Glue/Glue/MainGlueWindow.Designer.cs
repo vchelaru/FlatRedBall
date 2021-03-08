@@ -36,16 +36,9 @@ namespace Glue
             this.ElementImages = new System.Windows.Forms.ImageList(this.components);
             this.mMenu = new System.Windows.Forms.MenuStrip();
 
-            this.MainPanelSplitContainer = new GlueFormsCore.Controls.WinformsSplitContainer();
             this.toolbarControl1 = new FlatRedBall.Glue.Controls.ToolbarControl();
             this.mElementContextMenu.SuspendLayout();
             this.mMenu.SuspendLayout();
-
-
-            ((System.ComponentModel.ISupportInitialize)(this.MainPanelSplitContainer)).BeginInit();
-            this.MainPanelSplitContainer.Panel1.SuspendLayout();
-            this.MainPanelSplitContainer.Panel2.SuspendLayout();
-            this.MainPanelSplitContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // mElementContextMenu
@@ -87,23 +80,12 @@ namespace Glue
             this.mMenu.TabIndex = 1;
             this.mMenu.Text = "menuStrip1";
             // 
-            // bottomPanelContainer
-            // 
-            this.MainPanelSplitContainer.BackColor = System.Drawing.SystemColors.AppWorkspace;
-            this.MainPanelSplitContainer.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.MainPanelSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MainPanelSplitContainer.Location = new System.Drawing.Point(0, 54);
-            this.MainPanelSplitContainer.Name = "bottomPanelContainer";
-            this.MainPanelSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
-
-            // 
             // MainGlueWindow
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(764, 633);
-            this.Controls.Add(this.MainPanelSplitContainer);
             this.Controls.Add(this.mMenu);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.mMenu;
@@ -115,10 +97,6 @@ namespace Glue
             this.mElementContextMenu.ResumeLayout(false);
             this.mMenu.ResumeLayout(false);
             this.mMenu.PerformLayout();
-            this.MainPanelSplitContainer.Panel1.ResumeLayout(false);
-            this.MainPanelSplitContainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.MainPanelSplitContainer)).EndInit();
-            this.MainPanelSplitContainer.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 		}
@@ -128,7 +106,6 @@ namespace Glue
         private System.Windows.Forms.MenuStrip mMenu;
         public System.Windows.Forms.ImageList ElementImages;
         internal System.Windows.Forms.ContextMenuStrip mElementContextMenu;
-        private GlueFormsCore.Controls.WinformsSplitContainer MainPanelSplitContainer;
         private FlatRedBall.Glue.Controls.ToolbarControl toolbarControl1;
     }
 }

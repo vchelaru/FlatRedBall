@@ -66,6 +66,8 @@ namespace Glue
         }
 
         MainExplorerPlugin mainExplorerPlugin;
+        private GlueFormsCore.Controls.WinformsSplitContainer MainPanelSplitContainer;
+
 
 
         public System.ComponentModel.IContainer Components => components;
@@ -83,6 +85,10 @@ namespace Glue
             mSelf = this;
 
             InitializeComponent();
+
+            this.MainPanelSplitContainer = new GlueFormsCore.Controls.WinformsSplitContainer();
+            this.Controls.Add(this.MainPanelSplitContainer);
+
 
             this.FileWatchTimer = new System.Windows.Forms.Timer(this.components);
 

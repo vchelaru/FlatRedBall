@@ -22,6 +22,11 @@ namespace GlueFormsCore.Controls
 
         public WinformsSplitContainer()
         {
+            this.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Name = "bottomPanelContainer";
+            this.Orientation = System.Windows.Forms.Orientation.Horizontal;
+
             this.topPanelContainer = new System.Windows.Forms.SplitContainer();
             this.tcCenter = new FlatRedBall.Glue.Controls.TabControlEx();
             this.tcRight = new FlatRedBall.Glue.Controls.TabControlEx();
