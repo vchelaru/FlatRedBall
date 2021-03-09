@@ -40,7 +40,7 @@ namespace OfficialPlugins.FilesPlugin
         }
 
 
-        PluginTabPage referencedFileTab;
+        PluginTab referencedFileTab;
         #endregion
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
@@ -75,19 +75,11 @@ namespace OfficialPlugins.FilesPlugin
                     referencedFileTab = CreateTab(control, "Referenced Files");
 
                 }
-                if(referencedFileTab.LastTabControl == null)
-                {
-                    ShowTab(referencedFileTab,  TabLocation.Center);
-                }
-                else
-                {
-                    ShowTab(referencedFileTab);
-                }
-
+                referencedFileTab.Show();
             }
             else
             {
-                base.RemoveTab(referencedFileTab);
+                referencedFileTab?.Hide();
             }
 
             if(viewModel != null)

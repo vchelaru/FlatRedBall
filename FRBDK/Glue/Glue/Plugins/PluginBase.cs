@@ -48,8 +48,8 @@ namespace FlatRedBall.Glue.Plugins
 
         public TabLocation SuggestedLocation
         {
-            get;set;
-        }
+            get; set;
+        } = TabLocation.Center;
 
         internal PluginTabPage Page
         {
@@ -58,21 +58,53 @@ namespace FlatRedBall.Glue.Plugins
 
         public void Hide()
         {
-
+            var tabContainer = Page.Parent as TabControl;
+            tabContainer?.TabPages.Remove(Page);
         }
 
         public void Show()
-        { 
+        {
+            if(Page.Parent == null)
+            {
+                TabControl tabControl = PluginBase.GetTabContainerFromLocation(SuggestedLocation);
+                tabControl.TabPages.Add(Page);
+            }
         }
 
         public void Focus()
         {
+            var tabContainer = Page.Parent as TabControl;
 
+            if(tabContainer != null)
+            {
+                tabContainer.SelectedTab = Page;
+            }
+            if (Page is PluginTabPage pluginTab)
+            {
+                pluginTab.LastTimeClicked = DateTime.Now;
+            }
+        }
+
+        public bool CanClose
+        {
+            get => Page.DrawX;
+            set => Page.DrawX = value;
         }
 
         public void ForceLocation(TabLocation tabLocation)
         {
+            TabControl desiredTabControl = PluginBase.GetTabContainerFromLocation(SuggestedLocation);
+            var parentTabControl = Page.Parent as TabControl;
 
+            if(desiredTabControl != parentTabControl)
+            {
+                if(parentTabControl != null)
+                {
+                    parentTabControl.TabPages.Remove(Page);
+                }
+
+                desiredTabControl.TabPages.Add(Page);
+            }
         }
     }
 
@@ -299,6 +331,8 @@ namespace FlatRedBall.Glue.Plugins
 
         public abstract bool ShutDown(PluginShutDownReason shutDownReason);
 
+        #region Menu items
+
         protected ToolStripMenuItem AddTopLevelMenuItem(string whatToAdd)
         {
             ToolStripMenuItem menuItem = new ToolStripMenuItem(whatToAdd);
@@ -337,6 +371,33 @@ namespace FlatRedBall.Glue.Plugins
             return menuItem;
         }
 
+        ToolStripMenuItem GetItem(string name)
+        {
+            foreach (ToolStripMenuItem item in GlueGui.MenuStrip.Items)
+            {
+                if (item.Text == name)
+                {
+                    return item;
+                }
+            }
+            return null;
+        }
+
+        public void RemoveAllMenuItems()
+        {
+            foreach (var kvp in toolStripItemsAndParents)
+            {
+                // need to invoke this on the main thread:
+
+                kvp.Value.DropDownItems.Remove(kvp.Key);
+            }
+
+        }
+
+        #endregion
+
+        #region Toolbar
+
         protected void AddToToolBar(System.Windows.Controls.UserControl control, string toolbarName)
         {
             var tray = PluginManager.ToolBarTray;
@@ -374,28 +435,9 @@ namespace FlatRedBall.Glue.Plugins
             return wasRemoved;
         }
 
-        ToolStripMenuItem GetItem(string name)
-        {
-            foreach (ToolStripMenuItem item in GlueGui.MenuStrip.Items)
-            {
-                if (item.Text == name)
-                {
-                    return item;
-                }
-            }
-            return null;
-        }
+        #endregion
 
-        public void RemoveAllMenuItems()
-        {
-            foreach (var kvp in toolStripItemsAndParents)
-            {
-                // need to invoke this on the main thread:
-
-                kvp.Value.DropDownItems.Remove(kvp.Key);
-            }
-
-        }
+        #region Code Generation
 
         public void RegisterCodeGenerator(ElementComponentCodeGenerator codeGenerator)
         {
@@ -419,6 +461,8 @@ namespace FlatRedBall.Glue.Plugins
             GameCodeGenerators.Clear();
         }
 
+        #endregion
+
         protected void AddErrorReporter(IErrorReporter errorReporter)
         {
             EditorObjects.IoC.Container.Get<List<IErrorReporter>>().Add(errorReporter);
@@ -426,25 +470,33 @@ namespace FlatRedBall.Glue.Plugins
 
         #region Tab Methods
 
-        protected PluginTabPage CreateTab(System.Windows.Controls.UserControl control, string tabName)
+        protected PluginTab CreateTab(System.Windows.Controls.UserControl control, string tabName)
         {
             System.Windows.Forms.Integration.ElementHost wpfHost;
             wpfHost = new System.Windows.Forms.Integration.ElementHost();
             wpfHost.Dock = DockStyle.Fill;
             wpfHost.Child = control;
 
-            var pluginTab = new PluginTabPage();
+            return CreateTab(wpfHost, tabName);
+        }
 
-            pluginTab.ClosedByUser += new PluginTabPage.ClosedByUserDelegate(OnClosedByUser);
+        protected PluginTab CreateTab(System.Windows.Forms.Control control, string tabName)
+        {
+            var page = new PluginTabPage();
 
-            pluginTab.Text = "  " + tabName;
-            pluginTab.Controls.Add(wpfHost);
-            wpfHost.Dock = DockStyle.Fill;
+            page.ClosedByUser += new PluginTabPage.ClosedByUserDelegate(OnClosedByUser);
+
+            page.Text = "  " + tabName;
+            page.Controls.Add(control);
+            control.Dock = DockStyle.Fill;
+
+            PluginTab pluginTab = new PluginTab();
+            pluginTab.Page = page;
 
             return pluginTab;
         }
 
-        private static TabControl GetTabContainerFromLocation(TabLocation tabLocation)
+        public static TabControl GetTabContainerFromLocation(TabLocation tabLocation)
         {
             System.Windows.Forms.TabControl tabContainer = null;
 

@@ -27,7 +27,7 @@ namespace OfficialPlugins.VariableDisplay
         VariableViewModel variableViewModel;
 
         PluginTabPage settingsTab;
-        PluginTabPage variableTab;
+        PluginTab variableTab;
 
         const bool showSettings = false;
 
@@ -74,7 +74,7 @@ namespace OfficialPlugins.VariableDisplay
             {
                 // For now we don't handle showing states, so let's hide it so the user doens't think
                 // they are editing states
-                RemoveTab(variableTab);
+                variableTab?.Hide();
             }
             else if(GlueState.Self.CurrentElement != null && 
                 (selectedTreeNode.IsRootCustomVariablesNode() 
@@ -87,7 +87,7 @@ namespace OfficialPlugins.VariableDisplay
             }
             else
             {
-                RemoveTab(variableTab);
+                variableTab?.Hide();
 
                 if (showSettings)
                 {
@@ -197,21 +197,17 @@ namespace OfficialPlugins.VariableDisplay
                 variableGrid.DataContext = variableViewModel;
 
                 variableTab = this.CreateTab(variableGrid, "Variables");
-                this.ShowTab(variableTab, TabLocation.Center);
                 
                 //variableTab = this.AddToTab(tabControl, variableGrid, "Variables");
-                variableTab.DrawX = false;
+                variableTab.CanClose = false;
 
                 // let's make this the first item and have it be focused:
                 //tabControl.SelectedTab = variableTab;
                 GlueCommands.Self.DialogCommands.FocusTab("Variables");
                 // This makes it the last tab clicked, which gives it priority:
-                variableTab.LastTimeClicked = DateTime.Now;
+                variableTab.Focus();
             }
-            else
-            {
-                this.ShowTab(variableTab);
-            }
+            variableTab.Show();
         }
     }
 }

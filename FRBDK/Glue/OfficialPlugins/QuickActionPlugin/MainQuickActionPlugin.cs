@@ -20,7 +20,7 @@ namespace OfficialPluginsCore.QuickActionPlugin
 
         public override Version Version => new Version(1, 0);
 
-        PluginTabPage pluginTab;
+        PluginTab pluginTab;
 
         MainView mainView;
 
@@ -50,9 +50,7 @@ namespace OfficialPluginsCore.QuickActionPlugin
             mainView.AnyButtonClicked += () => buttonVisibilityManager.UpdateVisibility();
 
             pluginTab = this.CreateTab(mainView, "Quick Actions");
-            pluginTab.LastTabControl = PluginManager.CenterTab;
-
-            ShowTab(pluginTab);
+            pluginTab.Show();
         }
 
         private void AssignEvents()

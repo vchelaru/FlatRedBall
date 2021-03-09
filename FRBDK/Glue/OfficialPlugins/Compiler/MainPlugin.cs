@@ -36,7 +36,7 @@ namespace OfficialPlugins.Compiler
         Runner runner;
         CompilerViewModel viewModel;
 
-        PluginTabPage buildTab;
+        PluginTab buildTab;
 
         Game1GlueControlGenerator game1GlueControlGenerator;
 
@@ -266,7 +266,8 @@ namespace OfficialPlugins.Compiler
             RefreshManager.Self.ViewModel = viewModel;
 
             buildTab = base.CreateTab(control, "Build");
-            ShowTab(buildTab, TabLocation.Bottom);
+            buildTab.SuggestedLocation = TabLocation.Bottom;
+            buildTab.Show();
 
             AssignControlEvents();
         }

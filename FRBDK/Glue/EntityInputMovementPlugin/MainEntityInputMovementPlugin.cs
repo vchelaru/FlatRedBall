@@ -22,7 +22,7 @@ namespace EntityInputMovementPlugin
         public override Version Version => new Version(1,0,0);
 
         Views.MainView mainView;
-        PluginTabPage mainTab;
+        PluginTab mainTab;
         MainViewModel mainViewModel;
 
         #endregion
@@ -127,13 +127,11 @@ namespace EntityInputMovementPlugin
                 if (mainView == null)
                 {
                     CreateMainView();
-                    this.ShowTab(mainTab, TabLocation.Center);
                 }
-                else
-                {
-                    this.ShowTab(mainTab);
-                }
+
+                mainTab.Show();
                 var currentEntity = GlueState.Self.CurrentEntitySave;
+
 
                 mainViewModel.GlueObject = currentEntity;
                 mainViewModel.UpdateFromGlueObject();
@@ -145,7 +143,7 @@ namespace EntityInputMovementPlugin
             }
             else
             {
-                this.RemoveTab(mainTab);
+                mainTab?.Hide();
             }
         }
 

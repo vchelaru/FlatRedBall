@@ -31,11 +31,11 @@ namespace OfficialPlugins.CollisionPlugin
 
         CollisionRelationshipViewModel relationshipViewModel;
         CollisionRelationshipView relationshipControl;
-        PluginTabPage relationshipPluginTab;
+        PluginTab relationshipPluginTab;
 
         CollidableNamedObjectRelationshipDisplay collidableDisplay;
         CollidableNamedObjectRelationshipViewModel collidableViewModel;
-        PluginTabPage collidableTab;
+        PluginTab collidableTab;
 
         public override string FriendlyName => "Collision Plugin";
 
@@ -199,17 +199,13 @@ namespace OfficialPlugins.CollisionPlugin
                 {
                     relationshipControl = new CollisionRelationshipView();
                     relationshipPluginTab = this.CreateTab(relationshipControl, "Collision");
-                    this.ShowTab(relationshipPluginTab, TabLocation.Center);
                     relationshipControl.DataContext = relationshipViewModel;
                 }
-                else
-                {
-                    this.ShowTab(relationshipPluginTab);
-                }
+                relationshipPluginTab.Show();
             }
             else
             {
-                this.RemoveTab(relationshipPluginTab);
+                relationshipPluginTab?.Hide();
             }
         }
 
@@ -227,13 +223,9 @@ namespace OfficialPlugins.CollisionPlugin
                 {
                     collidableDisplay = new CollidableNamedObjectRelationshipDisplay();
                     collidableTab = this.CreateTab(collidableDisplay, "Collision");
-                    this.ShowTab(collidableTab, TabLocation.Center);
                     collidableDisplay.DataContext = collidableViewModel;
                 }
-                else
-                {
-                    this.ShowTab(collidableTab);
-                }
+                collidableTab.Show();
 
                 // not sure why this is required:
                 collidableDisplay.DataContext = null;
@@ -241,7 +233,7 @@ namespace OfficialPlugins.CollisionPlugin
             }
             else
             {
-                this.RemoveTab(collidableTab);
+                collidableTab?.Hide();
             }
         }
 

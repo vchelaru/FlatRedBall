@@ -45,9 +45,9 @@ namespace TileGraphicsPlugin
 
         string mLastFile;
 
-        PluginTabPage collisionTab;
-        PluginTabPage nodeNetworkTab;
-        PluginTabPage levelTab;
+        PluginTab collisionTab;
+        PluginTab nodeNetworkTab;
+        PluginTab levelTab;
 
         TiledObjectTypeCreator tiledObjectTypeCreator;
         TiledToolbar tiledToolbar;
@@ -524,12 +524,12 @@ namespace TileGraphicsPlugin
                 TileShapeCollectionsPropertiesController.Self.RefreshViewModelTo(treeNode?.Tag as NamedObjectSave,
                     GlueState.Self.CurrentElement);
 
-                this.ShowTab(collisionTab, TabLocation.Center);
+                collisionTab.Show();
                 GlueCommands.Self.DialogCommands.FocusTab("TileShapeCollection Properties");
             }
             else if(collisionTab != null)
             {
-                base.RemoveTab(collisionTab);
+                collisionTab?.Hide();
             }
 
             if(TileNodeNetworkPropertiesController.Self.IsTileNodeNetwork(treeNode?.Tag as NamedObjectSave))
@@ -544,12 +544,12 @@ namespace TileGraphicsPlugin
                 TileNodeNetworkPropertiesController.Self.RefreshViewModelTo(treeNode?.Tag as NamedObjectSave,
                     GlueState.Self.CurrentElement);
 
-                this.ShowTab(nodeNetworkTab, TabLocation.Center);
+                nodeNetworkTab.Show();
                 GlueCommands.Self.DialogCommands.FocusTab("TileNodeNetwork Properties");
             }
             else if(nodeNetworkTab != null)
             {
-                base.RemoveTab(nodeNetworkTab);
+                nodeNetworkTab?.Hide();
             }
 
             if(LevelScreenController.Self.GetIfShouldShow())
@@ -562,14 +562,14 @@ namespace TileGraphicsPlugin
                 }
 
                 LevelScreenController.Self.RefreshViewModelTo(GlueState.Self.CurrentScreenSave);
-                this.ShowTab(levelTab, TabLocation.Center);
 
+                levelTab.Show();
                 LevelScreenController.Self.HandleTabShown();
                 // prob don't focus it, it's rare the user needs to mess with this
             }
             else if(levelTab != null)
             {
-                RemoveTab(levelTab);
+                levelTab?.Hide();
             }
         }
 
