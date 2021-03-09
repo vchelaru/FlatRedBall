@@ -18,7 +18,7 @@ namespace OfficialPlugins.PointEditingPlugin
     public class MainPlugin : EmbeddedPlugin
     {
         PointEditWindow mPointEditWindow; // This is the control we created
-        PluginTabPage mTab; // This is the tab that will hold our control
+        PluginTab mTab; // This is the tab that will hold our control
 
 
         public override void StartUp()
@@ -77,11 +77,11 @@ namespace OfficialPlugins.PointEditingPlugin
 
                 mPointEditWindow.Data = instructions.Value as List<Vector2>;
 
-                base.ShowTab(mTab);
+                mTab.Show();
             }
             else
             {
-                base.RemoveTab(mTab);
+                mTab?.Hide();
             }
         }
 
@@ -91,13 +91,10 @@ namespace OfficialPlugins.PointEditingPlugin
             mPointEditWindow = new PointEditWindow();
             mPointEditWindow.DataChanged += HandleDataChanged;
 
-            mTab = this.AddToTab(PluginManager.CenterTab, mPointEditWindow, "Points");
-
-            mTab.ClosedByUser += new PluginTabPage.ClosedByUserDelegate(OnClosedByUser);
+            mTab = this.CreateTab(mPointEditWindow, "Points");
 
             mPointEditWindow.Dock = DockStyle.Fill;
 
-            base.RemoveTab(mTab);
 
         }
 
@@ -106,11 +103,6 @@ namespace OfficialPlugins.PointEditingPlugin
             GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
             GlueCommands.Self.GluxCommands.SaveGlux();
         }
-        
-        private void OnClosedByUser(object sender)
-        {
-            // No, don't shut it down, it's embedded
-            //PluginManager.ShutDownPlugin(this);
-        }
+
     }
 }

@@ -12,6 +12,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.UnreferencedFiles
     public class UnreferencedFilesPlugin : EmbeddedPlugin
     {
         UnreferencedFilesView view;
+        PluginTab tab;
 
         public override void StartUp()
         {
@@ -28,19 +29,16 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.UnreferencedFiles
 
                 view.DataContext = viewModel;
 
-                AddToTab(PluginManager.LeftTab, view, "Unreferenced Files");
+                tab = CreateTab(view, "Unreferenced Files");
+                tab.SuggestedLocation = TabLocation.Left;
 
                 // It refreshes itself when the radio button is set when the view is created,
                 // so we don't need to:
                 //viewModel.Refresh();
 
             }
-            else
-            {
-                AddTab();
-            }
-
-            base.FocusTab();
+            tab.Show();
+            tab.Focus();
         }
     }
 }

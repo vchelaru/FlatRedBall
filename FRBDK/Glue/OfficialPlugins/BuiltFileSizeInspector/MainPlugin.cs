@@ -14,7 +14,7 @@ namespace OfficialPlugins.BuiltFileSizeInspector
     public class MainPlugin : PluginBase
     {
         SizeInspectorControl mainControl;
-
+        PluginTab tab;
 
         public override string FriendlyName
         {
@@ -38,12 +38,10 @@ namespace OfficialPlugins.BuiltFileSizeInspector
                 mainControl = new SizeInspectorControl();
                 mainControl.DataContext = new BuiltFileSizeViewModel();
 
-                this.AddToTab(PluginManager.LeftTab, mainControl, "Built File Size");
+                tab = this.CreateTab(mainControl, "Built File Size");
+                tab.SuggestedLocation = TabLocation.Left;
             }
-            else
-            {
-                base.AddTab();
-            }
+            tab.Show();
         }
 
         public override bool ShutDown(FlatRedBall.Glue.Plugins.Interfaces.PluginShutDownReason shutDownReason)

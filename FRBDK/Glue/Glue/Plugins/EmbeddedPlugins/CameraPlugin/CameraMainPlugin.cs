@@ -19,6 +19,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
     {
         CameraSettingsControl control;
         DisplaySettingsViewModel viewModel = new DisplaySettingsViewModel();
+        PluginTab tab;
             
         public static CameraMainPlugin Self { get; private set; }
 
@@ -124,12 +125,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
                     if(control == null)
                     {
                         control = new CameraSettingsControl();
-                        base.AddToTab(PluginManager.LeftTab, control, "Display Settings");
+                        tab = base.CreateTab(control, "Display Settings");
+                        tab.SuggestedLocation = TabLocation.Left;
                     }
-                    else
-                    {
-                        base.AddTab();
-                    }
+                    tab.Show();
 
                     respondToViewModelChanges = false;
                     {

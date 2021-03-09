@@ -14,6 +14,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
     public class MainPlugin : EmbeddedPlugin
     {
         SyncedProjectsControl control;
+        PluginTab tab;
         ToolbarControl toolbarControl;
 
         public override void StartUp()
@@ -44,12 +45,12 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
             viewModel.CurrentProject = GlueState.Self.CurrentMainProject;
             viewModel.SyncedProjects = GlueState.Self.SyncedProjects;
 
-            var control = new SyncedProjectsControl();
+            control = new SyncedProjectsControl();
             control.DataContext = viewModel;
 
             var defaultTab = PluginManager.LeftTab;
 
-            this.AddToTab(defaultTab, control, "Projects");
+            tab = CreateAndAddTab(control, "Projects", TabLocation.Left);
             this.ReactToLoadedGlux += delegate
             {
                 viewModel.CurrentProject = GlueState.Self.CurrentMainProject;
@@ -81,13 +82,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
             {
                 AddControl();
             }
-            else
-            {
-                AddTab();
-            }
-
-            FocusTab();
-
+            tab.Show();
+            tab.Focus();
         }
     }
 }

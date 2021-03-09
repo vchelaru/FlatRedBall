@@ -50,6 +50,8 @@ namespace GumPlugin
 
         bool raiseViewModelEvents = true;
 
+        PluginTab tab;
+
         #endregion
 
         #region Properties
@@ -556,12 +558,9 @@ namespace GumPlugin
                     viewModel.PropertyChanged += HandleViewModelPropertyChanged;
                     control.DataContext = viewModel;
 
-                    this.AddToTab(PluginManager.CenterTab, control, "Gum Properties");
+                    tab = this.CreateTab(control, "Gum Properties");
                 }
-                else
-                {
-                    AddTab();
-                }
+                tab.Show();
                 raiseViewModelEvents = false;
                 viewModel.SetFrom(AppState.Self.GumProjectSave, selectedTreeNode.Tag as ReferencedFileSave);
                 raiseViewModelEvents = true;
@@ -569,7 +568,7 @@ namespace GumPlugin
             }
             else
             {
-                RemoveTab();
+                tab?.Hide();
             }
         }
 
@@ -712,7 +711,7 @@ namespace GumPlugin
                 EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
 
                 // show the tab for the new file:
-                this.FocusTab();
+                tab.Focus();
 
                 TaskManager.Self.Add(
                     () =>

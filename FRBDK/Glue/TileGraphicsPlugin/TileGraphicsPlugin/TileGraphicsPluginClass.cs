@@ -509,7 +509,9 @@ namespace TileGraphicsPlugin
 
             if (shouldRemove)
             {
-                RemoveTab();
+                collisionTab?.Hide();
+                levelTab?.Hide();
+                nodeNetworkTab?.Hide();
             }
 
             if(TileShapeCollectionsPropertiesController.Self.IsTileShapeCollection(treeNode?.Tag as NamedObjectSave))

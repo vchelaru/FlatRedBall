@@ -20,7 +20,7 @@ namespace OfficialPlugins.StateDataPlugin
     public class MainStateDataPlugin : PluginBase
     {
         StateDataControl control;
-
+        PluginTab tab;
         public override string FriendlyName { get { return "State Data Plugin"; } }
 
         // 0.1.0 - Initial creation
@@ -55,7 +55,7 @@ namespace OfficialPlugins.StateDataPlugin
 
         private void HideCategoryUi()
         {
-            this.RemoveTab();
+            tab?.Hide();
         }
 
         private void ShowCategory(StateSaveCategory currentStateSaveCategory)
@@ -67,12 +67,9 @@ namespace OfficialPlugins.StateDataPlugin
                 // continue here by either creating a new VM or modifying the existing
                 // to have columns set from the element's variables
 
-                this.AddToTab(PluginManager.CenterTab, control, "State Data");
+                tab = this.CreateTab(control, "State Data");
             }
-            else
-            {
-                this.AddTab();
-            }
+            tab.Show();
 
             var viewModel = new StateCategoryViewModel(currentStateSaveCategory, GlueState.Self.CurrentElement);
 

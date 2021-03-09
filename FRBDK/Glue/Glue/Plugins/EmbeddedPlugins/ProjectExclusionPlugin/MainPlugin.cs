@@ -12,7 +12,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
     public class MainPlugin : EmbeddedPlugin
     {
         ExclusionControl control;
-        PluginTabPage pluginTab;
+        PluginTab pluginTab;
 
         public override void StartUp()
         {
@@ -44,19 +44,16 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
 
             if (file == null)
             {
-                base.RemoveTab();
+                pluginTab?.Hide();
             }
             else if(GlueState.Self.SyncedProjects.Count() != 0)
             {
                 if (control == null)
                 {
                     control = new ExclusionControl();
-                    pluginTab = base.AddToTab(PluginManager.CenterTab, control, "Platform Inclusions");
+                    pluginTab = base.CreateTab(control, "Platform Inclusions");
                 }
-                else
-                {
-                    base.AddTab();
-                }
+                pluginTab.Show();
 
                 FileExclusionViewModel viewModel = new FileExclusionViewModel();
                 viewModel.PropertyChanged += HandlePropertyChanged;
@@ -84,11 +81,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
 
             if (count == 0)
             {
-                pluginTab.Text = "Platform Inclusions";
+                pluginTab.Title = "Platform Inclusions";
             }
             else
             {
-                pluginTab.Text = "Excluded from " + count + " platforms";
+                pluginTab.Title = "Excluded from " + count + " platforms";
             }
         }
     }

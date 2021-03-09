@@ -10,6 +10,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
     public class MainPlugin : EmbeddedPlugins.EmbeddedPlugin
     {
         ReferenceCopierControl control;
+        PluginTab tab;
 
         public override void StartUp()
         {
@@ -21,17 +22,12 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
             if (control == null)
             {
                 control = new ReferenceCopierControl();
-                this.AddToTab(PluginManager.LeftTab, control, "Reference Sharing");
+                tab = CreateAndAddTab(control, "Reference Sharing", TabLocation.Left);
 
                 var viewModel = new ReferenceCopierViewModel();
                 control.DataContext = viewModel;
             }
-            else
-            {
-                AddTab();
-            }
-
-            
+            tab.Show();
         }   
     }
 }

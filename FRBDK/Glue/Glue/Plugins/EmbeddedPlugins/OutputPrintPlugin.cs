@@ -13,11 +13,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins
     public class OutputPrintPlugin : EmbeddedPlugin
     {
         OutputWindow mOutputWindow; // This is the control we created
-
+        PluginTab tab;
         public override void StartUp()
         {
             mOutputWindow = new OutputWindow();
-            this.AddToTab(PluginManager.BottomTab, mOutputWindow, "Output");
+            tab = base.CreateAndAddTab(mOutputWindow, "Output", TabLocation.Bottom);
 
             this.OnOutputHandler += OnOutput;
             this.OnErrorOutputHandler += OnErrorOutput;

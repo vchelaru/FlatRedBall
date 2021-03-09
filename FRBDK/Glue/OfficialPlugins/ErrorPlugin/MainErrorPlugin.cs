@@ -29,7 +29,7 @@ namespace OfficialPlugins.ErrorPlugin
         public override Version Version => new Version(1, 0);
 
         ErrorListViewModel errorListViewModel;
-        PluginTabPage tab;
+        PluginTab tab;
         ErrorWindow control;
 
         public bool HasErrors => errorListViewModel?.Errors.Count > 0;
@@ -47,7 +47,7 @@ namespace OfficialPlugins.ErrorPlugin
                 .Add(new ErrorCreateRemoveLogic());
 
             control = new ErrorWindow();
-            tab = AddToTab(PluginManager.BottomTab, control, "Errors");
+            tab = CreateAndAddTab(control, "Errors", TabLocation.Bottom);
 
             errorListViewModel = GlueState.Self.ErrorList;
             errorListViewModel.Errors.CollectionChanged += HandleErrorsCollectionChanged;
@@ -79,7 +79,7 @@ namespace OfficialPlugins.ErrorPlugin
 
                 if(e.NewItems?.Count > 0)
                 {
-                    FocusTab();
+                    tab.Focus();
                 }
             });
 
@@ -109,9 +109,9 @@ namespace OfficialPlugins.ErrorPlugin
             var numberOfErrors = errorListViewModel.Errors.Count;
             var tabText = $"Errors ({numberOfErrors})";
 
-            if(tab.Text != tabText)
+            if(tab.Title != tabText)
             {
-                tab.Text = tabText;
+                tab.Title = tabText;
             }
         }
 

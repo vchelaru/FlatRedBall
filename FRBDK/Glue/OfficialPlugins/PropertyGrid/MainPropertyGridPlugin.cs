@@ -26,7 +26,7 @@ namespace OfficialPlugins.VariableDisplay
 
         VariableViewModel variableViewModel;
 
-        PluginTabPage settingsTab;
+        PluginTab settingsTab;
         PluginTab variableTab;
 
         const bool showSettings = false;
@@ -91,7 +91,7 @@ namespace OfficialPlugins.VariableDisplay
 
                 if (showSettings)
                 {
-                    RemoveTab(settingsTab);
+                    settingsTab?.Hide();
                 }
             }
         }
@@ -178,13 +178,10 @@ namespace OfficialPlugins.VariableDisplay
             {
 
                 settingsGrid = new DataUiGrid();
-                settingsTab = this.AddToTab(PluginManager.CenterTab, settingsGrid, "Settings");
-                settingsTab.DrawX = false;
+                settingsTab = this.CreateTab(settingsGrid, "Settings");
+                settingsTab.CanClose = false;
             }
-            else
-            {
-                this.ShowTab(settingsTab);
-            }
+            settingsTab.Show();
         }
 
         private void AddOrShowVariableGrid()

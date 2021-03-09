@@ -35,6 +35,8 @@ namespace EntityPerformancePlugin
 
         ProjectManagementValues model;
 
+        PluginTab tab;
+
         public override string FriendlyName
         {
             get { return "Entity Performance Plugin"; }
@@ -350,17 +352,14 @@ namespace EntityPerformancePlugin
                 if(mainControl == null)
                 {
                     mainControl = new MainControl();
-                    this.AddToTab(PluginManager.CenterTab, mainControl, "Entity Performance");
+                    tab = this.CreateTab(mainControl, "Entity Performance");
                 }
-                else
-                {
-                    this.AddTab();
-                }
+                tab.Show();
                 RefreshView();
             }
             else
             {
-                this.RemoveTab(); 
+                tab?.Hide();
             }
 
         }

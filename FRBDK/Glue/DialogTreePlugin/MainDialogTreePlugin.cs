@@ -26,6 +26,8 @@ namespace DialogTreePlugin
 
         MainControl mainControl;
 
+        PluginTab tab;
+
         public override string FriendlyName => "Dialog Tree Plugin";
 
         //v1.1.0 The string keys are no longer editable.
@@ -116,18 +118,15 @@ namespace DialogTreePlugin
                 if (mainControl == null)
                 {
                     mainControl = TabConroller.Self.GetControl();
-                    this.AddToTab(PluginManager.CenterTab, mainControl, "Dialog Tree");
+                    var tab = this.CreateTab(mainControl, "Dialog Tree");
                 }
-                else
-                {
-                    this.AddTab();
-                }
+                tab.Focus();
 
                 TabConroller.Self.UpdateTo(GlueState.Self.CurrentReferencedFileSave);
             }
             else
             {
-                this.RemoveTab();
+                tab?.Hide();
             }
         }
         private void HandleNewFile(ReferencedFileSave newFile)

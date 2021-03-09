@@ -23,14 +23,14 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.CodePreviewPlugin
     [Export(typeof(PluginBase))]
     class MainCodePreviewPlugin : EmbeddedPlugin
     {
-        internal PluginTabPage CodeTab;
+        internal PluginTab CodeTab;
         public System.Windows.Forms.RichTextBox CodePreviewTextBox;
 
         public override void StartUp()
         {
             this.CodePreviewTextBox = new System.Windows.Forms.RichTextBox();
 
-            CodeTab = AddToTab(PluginManager.CenterTab, CodePreviewTextBox, "Code");
+            CodeTab = CreateAndAddTab(CodePreviewTextBox, "Code");
             // 
             // CodePreviewTextBox
             // 
@@ -41,7 +41,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.CodePreviewPlugin
 
             this.ReactToItemSelectHandler += HandleItemSelected;
 
-            this.RemoveTab(CodeTab);
+            CodeTab.Hide();
 
         }
 

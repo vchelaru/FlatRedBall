@@ -14,6 +14,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
     [Export(typeof(PluginBase))]
     class MainPlugin : EmbeddedPlugin
     {
+        PluginTab tab;
         MainControl mainControl;
 
         public override void StartUp()
@@ -27,13 +28,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
             {
                 mainControl = new MainControl();
 
-                this.AddToTab(PluginManager.LeftTab, mainControl, "Plugins");
+                tab = CreateAndAddTab(mainControl, "Plugins", TabLocation.Left);
             }
             else
             {
-                this.AddTab();
                 mainControl.RefreshCheckboxes();
             }
+            tab.Show();
         }
 
         private void HandleFinishedDownloading(AllFeed allFeed, DownloadState state)

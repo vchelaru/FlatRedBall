@@ -112,17 +112,6 @@ namespace FlatRedBall.Glue.Plugins
     {
         Dictionary<ToolStripMenuItem, ToolStripMenuItem> toolStripItemsAndParents = new Dictionary<ToolStripMenuItem, ToolStripMenuItem>();
 
-        List<ElementComponentCodeGenerator> CodeGenerators
-        {
-            get;
-            set;
-        } = new List<ElementComponentCodeGenerator>();
-
-        List<Game1CodeGenerator> GameCodeGenerators
-        {
-            get;
-            set;
-        } = new List<Game1CodeGenerator>();
 
         #region Properties
 
@@ -137,13 +126,6 @@ namespace FlatRedBall.Glue.Plugins
 
 
         protected PluginTabPage PluginTab { get; private set; } // This is the tab that will hold our control
-
-
-        #endregion
-
-        #region Tab related fields
-
-        TabControl mTabContainer; // This is the tab control for all tabs
 
 
         #endregion
@@ -439,6 +421,17 @@ namespace FlatRedBall.Glue.Plugins
 
         #region Code Generation
 
+        List<ElementComponentCodeGenerator> CodeGenerators
+        {
+            get;
+            set;
+        } = new List<ElementComponentCodeGenerator>();
+        List<Game1CodeGenerator> GameCodeGenerators
+        {
+            get;
+            set;
+        } = new List<Game1CodeGenerator>();
+
         public void RegisterCodeGenerator(ElementComponentCodeGenerator codeGenerator)
         {
             CodeGenerators.Add(codeGenerator);
@@ -512,45 +505,20 @@ namespace FlatRedBall.Glue.Plugins
             return tabContainer;
         }
 
-        protected PluginTabPage AddToTab(System.Windows.Forms.TabControl tabContainer, System.Windows.Forms.Control control, string tabName)
+        protected PluginTab CreateAndAddTab(System.Windows.Forms.Control control, string tabName, TabLocation tabLocation = TabLocation.Center)
         {
-            mTabContainer = tabContainer;
-
-            PluginTab = new PluginTabPage();
-
-            PluginTab.ClosedByUser += new PluginTabPage.ClosedByUserDelegate(OnClosedByUser);
-
-            PluginTab.Text = "  " + tabName;
-            PluginTab.Controls.Add(control);
-            control.Dock = DockStyle.Fill;
-
-            mTabContainer.Controls.Add(PluginTab);
-
-            return PluginTab;
-        }
-        [Obsolete("Use CreateTab and then call ShowTab/RemoveTab to hide/show the tab")]
-        protected PluginTabPage AddToTab(System.Windows.Forms.TabControl tabContainer,
-            System.Windows.Controls.UserControl control, string tabName)
-        {
-            System.Windows.Forms.Integration.ElementHost wpfHost;
-            wpfHost = new System.Windows.Forms.Integration.ElementHost();
-            wpfHost.Dock = DockStyle.Fill;
-            wpfHost.Child = control;
-
-            return AddToTab(tabContainer, wpfHost, tabName);
+            var tab = CreateTab(control, tabName);
+            tab.SuggestedLocation = tabLocation;
+            tab.Show();
+            return tab;
         }
 
-        protected void RemoveTab(PluginTabPage pluginTab)
+        protected PluginTab CreateAndAddTab(System.Windows.Controls.UserControl control, string tabName, TabLocation tabLocation = TabLocation.Center)
         {
-            if (pluginTab != null && pluginTab.Parent != null)
-            {
-                pluginTab.Parent.Controls.Remove(pluginTab);
-            }
-        }
-
-        protected void RemoveTab()
-        {
-            RemoveTab(PluginTab);
+            var tab = CreateTab(control, tabName);
+            tab.SuggestedLocation = tabLocation;
+            tab.Show();
+            return tab;
         }
 
         void OnClosedByUser(object sender)
@@ -558,66 +526,6 @@ namespace FlatRedBall.Glue.Plugins
             PluginManager.ShutDownPlugin(this);
         }
 
-        protected void AddTab()
-        {
-            if (PluginTab == null)
-            {
-                throw new Exception("You must call AddToTab first");
-            }
-            var container = mTabContainer;
-
-            ShowTab(PluginTab);
-        }
-        protected void ShowTab(PluginTabPage pluginTab)
-        {
-            var container = mTabContainer;
-
-            if (pluginTab.LastTabControl != null)
-            {
-                container = pluginTab.LastTabControl;
-            }
-
-            if (container == null)
-            {
-                // default to showing the plugin in the leftmost tab
-                container = GetTabContainerFromLocation(TabLocation.Left);
-            }
-
-            if (container.Controls.Contains(pluginTab) == false)
-            {
-                container.Controls.Add(pluginTab);
-            }
-        }
-
-        protected void ShowTab(PluginTabPage pluginTab, TabLocation? tabLocation = null)
-        {
-            TabControl container = null;
-            if (tabLocation == null)
-            {
-                if (pluginTab.LastTabControl != null)
-                {
-                    container = pluginTab.LastTabControl;
-                }
-                else
-                {
-                    container = GetTabContainerFromLocation(TabLocation.Left);
-                }
-            }
-            else
-            {
-                container = GetTabContainerFromLocation(tabLocation.Value);
-            }
-
-            if (container.Controls.Contains(pluginTab) == false)
-            {
-                container.Controls.Add(pluginTab);
-            }
-        }
-
-        protected void FocusTab()
-        {
-            mTabContainer?.SelectTab(PluginTab);
-        }
 
         #endregion
 

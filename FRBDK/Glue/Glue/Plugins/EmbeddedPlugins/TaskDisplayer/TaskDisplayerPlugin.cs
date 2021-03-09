@@ -11,7 +11,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
     [Export(typeof(PluginBase))]
     class TaskDisplayerPlugin : EmbeddedPlugin
     {
-        PluginTabPage tab;
+        PluginTab tab;
         TaskDisplayerViewModel vm;
 
         public override void StartUp()
@@ -26,7 +26,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
             this.vm = new TaskDisplayerViewModel();
             control.DataContext = this.vm;
             this.vm.PropertyChanged += HandlePropertyChanged;
-            this.tab = base.AddToTab(PluginManager.BottomTab, control, "Tasks");
+            this.tab = CreateAndAddTab(control, "Tasks", TabLocation.Bottom);
         }
 
         private void HandlePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -34,9 +34,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
             TaskManager.Self.OnUiThread(() =>
                 {
                     string desiredText = " " + vm.StatusText;
-                    if (tab.Text != desiredText)
+                    if (tab.Title != desiredText)
                     {
-                        tab.Text = desiredText;
+                        tab.Title = desiredText;
                     }
                 }
             );

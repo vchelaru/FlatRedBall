@@ -16,7 +16,7 @@ namespace OfficialPlugins.ProjectCopier
     public class ProjectCopierMainPlugin : PluginBase
     {
         CopyToProjectControl mControl;
-        PluginTabPage mTab;
+        PluginTab mTab;
 
 
         CopyManager copyManager;
@@ -62,7 +62,7 @@ namespace OfficialPlugins.ProjectCopier
             mControl.Click += mControl_Click;
             mControl.Dock = DockStyle.Fill;
 
-            this.AddToTab(PluginManager.BottomTab, mControl, "Copy Project");
+            mTab = this.CreateAndAddTab(mControl, "Copy Project", TabLocation.Bottom);
         }
 
         void mControl_Click(object sender, EventArgs e)
@@ -86,10 +86,7 @@ namespace OfficialPlugins.ProjectCopier
         {
             RemoveAllMenuItems();
 
-            if (mTab != null)
-            {
-                RemoveTab(mTab);
-            }
+            mTab?.Hide();
             mTab = null;
             mControl = null;
 

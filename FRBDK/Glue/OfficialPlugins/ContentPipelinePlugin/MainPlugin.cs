@@ -33,7 +33,7 @@ namespace OfficialPlugins.MonoGameContent
         ContentPipelineController controller;
 
         IGlueState GlueState => Container.Get<IGlueState>();
-
+        PluginTab tab;
 
         public override string FriendlyName
         {
@@ -188,13 +188,10 @@ namespace OfficialPlugins.MonoGameContent
                 controller.SetViewModel(viewModel);
                 control.RefreshClicked += controller.HandleRefreshClicked;
 
-                AddToTab(PluginManager.LeftTab, control, "Content Pipeline");
-
+                tab = base.CreateTab(control, "Content Pipeline");
+                tab.SuggestedLocation = TabLocation.Left;
             }
-            else
-            {
-                AddTab();
-            }
+            tab.Show();
         }
 
         private void HandleReferencedFileValueChanged(string memberName, object oldValue)

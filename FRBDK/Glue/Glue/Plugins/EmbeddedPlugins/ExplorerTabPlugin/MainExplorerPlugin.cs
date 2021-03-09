@@ -24,7 +24,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
         {
             get; private set;
         }
-        PluginTabPage ExplorerTab;
+        PluginTab ExplorerTab;
 
         private System.Windows.Forms.Panel searchControlPanel;
         public System.Windows.Forms.ListBox SearchListBox;
@@ -147,10 +147,9 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
 
             var mainPanel = new Panel();
             mainPanel.Dock = DockStyle.Fill;
-            ExplorerTab = this.AddToTab(PluginManager.RightTab,
-                mainPanel, "Explorer");
+            ExplorerTab = this.CreateAndAddTab(mainPanel, "Explorer", TabLocation.Right);
 
-            ExplorerTab.DrawX = false;
+            ExplorerTab.CanClose = false;
 
 
             mainPanel.Controls.Add(this.ElementTreeView);

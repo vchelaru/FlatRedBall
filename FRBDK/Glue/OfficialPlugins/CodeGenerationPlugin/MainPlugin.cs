@@ -13,7 +13,7 @@ namespace OfficialPlugins.CodeGenerationPlugin
     public class MainPlugin : PluginBase
     {
         CodeGenerationControl control;
-
+        PluginTab tab;
 
         public override string FriendlyName
         {
@@ -51,12 +51,10 @@ namespace OfficialPlugins.CodeGenerationPlugin
             if (control == null)
             {
                 control = new CodeGenerationControl();
-                base.AddToTab(PluginManager.BottomTab, control, "Code Generation");
+                tab = base.CreateTab(control, "Code Generation");
+                tab.SuggestedLocation = TabLocation.Bottom;
             }
-            else
-            {
-                base.AddTab();
-            }
+            tab.Show();
         }
     }
 }
