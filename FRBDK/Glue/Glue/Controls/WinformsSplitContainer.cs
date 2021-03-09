@@ -24,6 +24,8 @@ namespace GlueFormsCore.Controls
         {
             this.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Location = new System.Drawing.Point(0, 24);
+
             this.Name = "bottomPanelContainer";
             this.Orientation = System.Windows.Forms.Orientation.Horizontal;
 

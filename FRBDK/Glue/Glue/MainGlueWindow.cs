@@ -48,6 +48,7 @@ using System.Threading.Tasks;
 using FlatRedBall.Instructions.Reflection;
 using Microsoft.Xna.Framework.Audio;
 using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
+using System.Windows.Forms.Integration;
 
 //using EnvDTE;
 
@@ -57,6 +58,9 @@ namespace Glue
     {
         public bool HasErrorOccurred = false;
         private System.Windows.Forms.Timer FileWatchTimer;
+
+        private FlatRedBall.Glue.Controls.ToolbarControl toolbarControl1;
+
 
         private static MainGlueWindow mSelf;
 
@@ -88,9 +92,17 @@ namespace Glue
 
             this.MainPanelSplitContainer = new GlueFormsCore.Controls.WinformsSplitContainer();
             this.Controls.Add(this.MainPanelSplitContainer);
+            this.PerformLayout();
             // so docking works
-            this.Controls.SetChildIndex(this.MainPanelSplitContainer, 0);
-
+            //this.Controls.SetChildIndex(this.MainPanelSplitContainer, 0);
+            toolbarControl1 = new ToolbarControl();
+            var container = new ElementHost();
+            container.Child = toolbarControl1;
+            container.Dock = DockStyle.Top;
+            container.Height = 26;
+            container.BackColor = System.Drawing.Color.Transparent;
+            this.Controls.Add(container);
+            this.Controls.Add(this.mMenu);
 
             this.FileWatchTimer = new System.Windows.Forms.Timer(this.components);
 
