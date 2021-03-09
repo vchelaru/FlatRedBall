@@ -22,7 +22,7 @@ namespace EntityInputMovementPlugin
         public override Version Version => new Version(1,0,0);
 
         Views.MainView mainView;
-        PluginTab mainTab;
+        PluginTabPage mainTab;
         MainViewModel mainViewModel;
 
         #endregion

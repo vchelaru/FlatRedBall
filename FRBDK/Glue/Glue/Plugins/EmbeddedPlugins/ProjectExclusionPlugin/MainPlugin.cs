@@ -12,7 +12,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
     public class MainPlugin : EmbeddedPlugin
     {
         ExclusionControl control;
-        PluginTab pluginTab;
+        PluginTabPage pluginTab;
 
         public override void StartUp()
         {

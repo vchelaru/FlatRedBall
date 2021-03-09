@@ -31,11 +31,11 @@ namespace OfficialPlugins.CollisionPlugin
 
         CollisionRelationshipViewModel relationshipViewModel;
         CollisionRelationshipView relationshipControl;
-        PluginTab relationshipPluginTab;
+        PluginTabPage relationshipPluginTab;
 
         CollidableNamedObjectRelationshipDisplay collidableDisplay;
         CollidableNamedObjectRelationshipViewModel collidableViewModel;
-        PluginTab collidableTab;
+        PluginTabPage collidableTab;
 
         public override string FriendlyName => "Collision Plugin";
 

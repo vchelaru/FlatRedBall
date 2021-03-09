@@ -28,9 +28,9 @@ namespace FlatRedBall.Glue.Controls
         private void HandleControlAdded(object sender, ControlEventArgs e)
         {
 
-            if(e.Control is PluginTab)
+            if(e.Control is PluginTabPage)
             {
-                var pluginTab = e.Control as PluginTab;
+                var pluginTab = e.Control as PluginTabPage;
 
                 pluginTab.LastTabControl = this;
                 pluginTab.RightClickCloseClicked += HandleTabRightClickClose;
@@ -40,7 +40,7 @@ namespace FlatRedBall.Glue.Controls
 
         private void HandleTabRightClickClose(object sender, EventArgs e)
         {
-            var control = sender as PluginTab;
+            var control = sender as PluginTabPage;
 
             var index = TabPages.IndexOf(control);
 
@@ -55,9 +55,9 @@ namespace FlatRedBall.Glue.Controls
             TabPage tabPage = this.TabPages[e.Index];
 
             bool shouldDrawX = false;
-            if (tabPage is PluginTab)
+            if (tabPage is PluginTabPage)
             {
-                shouldDrawX = ((PluginTab)tabPage).DrawX;
+                shouldDrawX = ((PluginTabPage)tabPage).DrawX;
             }
 
             Rectangle boundsRectangle = e.Bounds;
@@ -98,9 +98,9 @@ namespace FlatRedBall.Glue.Controls
             {
                 TabPage tabPage = this.TabPages[i];
 
-                if (tabPage is PluginTab)
+                if (tabPage is PluginTabPage)
                 {
-                    var pluginTab = tabPage as PluginTab;
+                    var pluginTab = tabPage as PluginTabPage;
 
                     var tabRect = GetTabRect(i);
 
@@ -111,7 +111,7 @@ namespace FlatRedBall.Glue.Controls
                         pluginTab.LastTimeClicked = DateTime.Now;
                     }
 
-                    bool shouldDrawX = ((PluginTab)tabPage).DrawX;
+                    bool shouldDrawX = ((PluginTabPage)tabPage).DrawX;
                     if (shouldDrawX)
                     {
                         if (e.Button == MouseButtons.Left)
@@ -159,8 +159,8 @@ namespace FlatRedBall.Glue.Controls
 
             TabPages.Remove(tab);
 
-            if (tab is PluginTab)
-                ((PluginTab)tab).CloseTabByUser();
+            if (tab is PluginTabPage)
+                ((PluginTabPage)tab).CloseTabByUser();
         }
     }
 }

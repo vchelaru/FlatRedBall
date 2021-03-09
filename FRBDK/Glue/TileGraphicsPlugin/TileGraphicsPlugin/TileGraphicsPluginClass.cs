@@ -45,9 +45,9 @@ namespace TileGraphicsPlugin
 
         string mLastFile;
 
-        PluginTab collisionTab;
-        PluginTab nodeNetworkTab;
-        PluginTab levelTab;
+        PluginTabPage collisionTab;
+        PluginTabPage nodeNetworkTab;
+        PluginTabPage levelTab;
 
         TiledObjectTypeCreator tiledObjectTypeCreator;
         TiledToolbar tiledToolbar;

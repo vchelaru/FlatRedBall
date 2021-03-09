@@ -23,7 +23,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.CodePreviewPlugin
     [Export(typeof(PluginBase))]
     class MainCodePreviewPlugin : EmbeddedPlugin
     {
-        internal PluginTab CodeTab;
+        internal PluginTabPage CodeTab;
         public System.Windows.Forms.RichTextBox CodePreviewTextBox;
 
         public override void StartUp()

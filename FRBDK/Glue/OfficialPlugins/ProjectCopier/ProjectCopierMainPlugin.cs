@@ -16,7 +16,7 @@ namespace OfficialPlugins.ProjectCopier
     public class ProjectCopierMainPlugin : PluginBase
     {
         CopyToProjectControl mControl;
-        PluginTab mTab;
+        PluginTabPage mTab;
 
 
         CopyManager copyManager;

@@ -11,7 +11,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
     [Export(typeof(PluginBase))]
     class TaskDisplayerPlugin : EmbeddedPlugin
     {
-        PluginTab tab;
+        PluginTabPage tab;
         TaskDisplayerViewModel vm;
 
         public override void StartUp()

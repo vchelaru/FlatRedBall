@@ -18,7 +18,7 @@ namespace OfficialPlugins.PointEditingPlugin
     public class MainPlugin : EmbeddedPlugin
     {
         PointEditWindow mPointEditWindow; // This is the control we created
-        PluginTab mTab; // This is the tab that will hold our control
+        PluginTabPage mTab; // This is the tab that will hold our control
 
 
         public override void StartUp()
@@ -93,7 +93,7 @@ namespace OfficialPlugins.PointEditingPlugin
 
             mTab = this.AddToTab(PluginManager.CenterTab, mPointEditWindow, "Points");
 
-            mTab.ClosedByUser += new PluginTab.ClosedByUserDelegate(OnClosedByUser);
+            mTab.ClosedByUser += new PluginTabPage.ClosedByUserDelegate(OnClosedByUser);
 
             mPointEditWindow.Dock = DockStyle.Fill;
 

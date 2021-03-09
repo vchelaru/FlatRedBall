@@ -25,7 +25,7 @@ namespace OfficialPlugins.SongPlugin
 
         MainSongControlViewModel viewModel;
         MainSongControl control;
-        PluginTab pluginTab;
+        PluginTabPage pluginTab;
 
 
         public override string FriendlyName

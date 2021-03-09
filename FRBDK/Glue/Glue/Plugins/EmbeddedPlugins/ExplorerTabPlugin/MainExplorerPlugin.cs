@@ -24,7 +24,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
         {
             get; private set;
         }
-        PluginTab ExplorerTab;
+        PluginTabPage ExplorerTab;
 
         private System.Windows.Forms.Panel searchControlPanel;
         public System.Windows.Forms.ListBox SearchListBox;

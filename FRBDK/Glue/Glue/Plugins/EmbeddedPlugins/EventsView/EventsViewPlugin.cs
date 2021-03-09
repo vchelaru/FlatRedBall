@@ -21,7 +21,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.EventsView
 
         private System.Windows.Forms.Integration.ElementHost mWpfHost;
         TabControl mContainer; // This is the tab control for all tabs on the left
-        PluginTab mTab; // This is the tab that will hold our control
+        PluginTabPage mTab; // This is the tab that will hold our control
         EventItemList mEventItemList;
 
         public override void StartUp()
@@ -67,7 +67,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.EventsView
         private void HandleTabInitialize(System.Windows.Forms.TabControl tabControl)
         {
             mContainer = tabControl;
-            mTab = new PluginTab();
+            mTab = new PluginTabPage();
             mWpfHost = new System.Windows.Forms.Integration.ElementHost();
             mWpfHost.Dock = System.Windows.Forms.DockStyle.Fill;
             mWpfHost.Name = "EventsWpfHost";

@@ -36,7 +36,7 @@ namespace OfficialPlugins.Compiler
         Runner runner;
         CompilerViewModel viewModel;
 
-        PluginTab buildTab;
+        PluginTabPage buildTab;
 
         Game1GlueControlGenerator game1GlueControlGenerator;
 

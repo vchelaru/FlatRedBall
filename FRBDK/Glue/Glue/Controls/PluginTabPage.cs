@@ -8,7 +8,7 @@ using FlatRedBall.Glue.Plugins;
 
 namespace FlatRedBall.Glue.Controls
 {
-    public class PluginTab : TabPage
+    public class PluginTabPage : TabPage
     {
         public delegate void ClosedByUserDelegate(object sender);
         public event ClosedByUserDelegate ClosedByUser;
@@ -44,7 +44,7 @@ namespace FlatRedBall.Glue.Controls
         }
 
 
-        public PluginTab() : base()
+        public PluginTabPage() : base()
         {
             this.ContextMenu = new ContextMenu();
 

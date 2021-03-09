@@ -26,8 +26,8 @@ namespace OfficialPlugins.VariableDisplay
 
         VariableViewModel variableViewModel;
 
-        PluginTab settingsTab;
-        PluginTab variableTab;
+        PluginTabPage settingsTab;
+        PluginTabPage variableTab;
 
         const bool showSettings = false;
 

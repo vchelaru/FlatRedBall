@@ -40,7 +40,7 @@ namespace OfficialPlugins.FilesPlugin
         }
 
 
-        PluginTab referencedFileTab;
+        PluginTabPage referencedFileTab;
         #endregion
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)

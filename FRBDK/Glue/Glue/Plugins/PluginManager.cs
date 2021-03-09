@@ -1115,14 +1115,14 @@ namespace FlatRedBall.Glue.Plugins
         {
             if (tabControl.TabPages.Count > 1)
             {
-                List<PluginTab> tabs = new List<PluginTab>();
+                List<PluginTabPage> tabs = new List<PluginTabPage>();
                 foreach (TabPage tab in tabControl.TabPages)
                 {
                     // If it's not a plugin tab, then it's not able to
                     // report its last usage time
-                    if (tab is PluginTab)
+                    if (tab is PluginTabPage)
                     {
-                        tabs.Add(((object)tab) as PluginTab);
+                        tabs.Add(((object)tab) as PluginTabPage);
                     }
                 }
 

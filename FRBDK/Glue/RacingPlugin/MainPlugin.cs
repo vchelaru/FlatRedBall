@@ -32,7 +32,7 @@ namespace RacingPlugin
         // view here
         MainEntityView control;
 
-        PluginTab pluginTab;
+        PluginTabPage pluginTab;
 
         #endregion
 

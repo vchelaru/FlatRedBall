@@ -19,7 +19,7 @@ namespace OfficialPluginsCore.PropertiesTabOldPlugin
     [Export(typeof(PluginBase))]
     public class MainPropertiesTabOldPlugin : EmbeddedPlugin
     {
-        PluginTab pluginTab;
+        PluginTabPage pluginTab;
         public System.Windows.Forms.PropertyGrid PropertyGrid;
         private System.Windows.Forms.ContextMenuStrip PropertyGridContextMenu;
 

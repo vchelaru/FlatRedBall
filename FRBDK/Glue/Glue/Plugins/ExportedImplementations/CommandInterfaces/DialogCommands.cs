@@ -641,7 +641,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     if (tabPage.Text?.Trim() == dialogTitle)
                     {
                         control.SelectedTab = tabPage;
-                        if(tabPage is PluginTab pluginTab)
+                        if(tabPage is PluginTabPage pluginTab)
                         {
                             pluginTab.LastTimeClicked = DateTime.Now;
                         }

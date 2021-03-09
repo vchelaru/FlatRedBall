@@ -29,7 +29,7 @@ namespace OfficialPlugins.ErrorPlugin
         public override Version Version => new Version(1, 0);
 
         ErrorListViewModel errorListViewModel;
-        PluginTab tab;
+        PluginTabPage tab;
         ErrorWindow control;
 
         public bool HasErrors => errorListViewModel?.Errors.Count > 0;

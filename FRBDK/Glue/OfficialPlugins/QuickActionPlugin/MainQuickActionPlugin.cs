@@ -20,7 +20,7 @@ namespace OfficialPluginsCore.QuickActionPlugin
 
         public override Version Version => new Version(1, 0);
 
-        PluginTab pluginTab;
+        PluginTabPage pluginTab;
 
         MainView mainView;
 
