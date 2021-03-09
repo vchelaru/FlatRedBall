@@ -122,6 +122,9 @@ namespace OfficialPlugins.VariableDisplay
 
                 };
 
+                instanceMember.IsDefault = element.GetCustomVariable(name)?.DefaultValue == null;
+
+                // Assing the IsDefaultSet event setting IsDefault *after* 
                 instanceMember.IsDefaultSet += (owner, args) =>
                 {
                     
@@ -135,8 +138,6 @@ namespace OfficialPlugins.VariableDisplay
                     GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
                 };
-
-                instanceMember.IsDefault = element.GetCustomVariable(name)?.DefaultValue == null;
 
                 instanceMember.SetValueError = (newValue) =>
                 {
