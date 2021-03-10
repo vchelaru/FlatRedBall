@@ -82,6 +82,11 @@ namespace Npc
 
         async void HandleMakeMyProjectClicked(object sender, RoutedEventArgs args)
         {
+            await BeginMakingProject();
+        }
+
+        private async Task BeginMakingProject()
+        {
             string whyIsntValid = ViewModel.GetWhyIsntValid();
 
             if (!string.IsNullOrEmpty(whyIsntValid))
@@ -104,6 +109,14 @@ namespace Npc
                 {
                     this.Close();
                 }
+            }
+        }
+
+        private async void TextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+            {
+                await BeginMakingProject();
             }
         }
     }

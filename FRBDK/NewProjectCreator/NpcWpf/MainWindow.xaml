@@ -5,67 +5,97 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NpcWpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="250" Width="600">
-    <Grid Margin="8">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition Width="5"></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-        </Grid.ColumnDefinitions>
+        Title="Create new project" ResizeMode="NoResize" SizeToContent="Height" Width="400">
+    <Window.Resources>
+        <Style x:Key="myStyle" TargetType="Button">
+            <Setter Property="Background" Value="#71AA34" />
+            
+        </Style>
+    </Window.Resources>
+    <Grid Margin="12,24,12,12">
         <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
-            <StackPanel Visibility="Collapsed">
-                <RadioButton IsChecked="True" >Online Templates</RadioButton>
-                <RadioButton>Local Templates</RadioButton>
-            </StackPanel>
-            <TextBlock>Select a platform:</TextBlock>
-            <ListBox ItemsSource="{Binding AvailableProjects, Mode=OneWay}" 
-                     SelectedItem="{Binding SelectedProject}" Grid.Row="1">
 
-            </ListBox>
-        </Grid>
+            <TextBlock FontWeight="Bold" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,10" >Project Name:</TextBlock>
+            <TextBox Height="20" VerticalAlignment="Top" Grid.Column="1" Text="{Binding ProjectName, UpdateSourceTrigger=PropertyChanged}" KeyDown="TextBox_KeyDown"></TextBox>
 
-        <GridSplitter Grid.Column="1">
+            <TextBlock FontWeight="Bold" Grid.Column="0" Grid.Row="1" Margin="0,0,16,10" >Platform:</TextBlock>
+            <ComboBox VerticalAlignment="Top"  ItemsSource="{Binding AvailableProjects, Mode=OneWay}" 
+                     SelectedItem="{Binding SelectedProject}" Grid.Column="1" Grid.Row="1"></ComboBox>
 
-        </GridSplitter>
-
-        <Grid Grid.Column="2" >
-            <Grid.RowDefinitions>
-                <RowDefinition></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-            </Grid.RowDefinitions>
-
-            <StackPanel x:Name="RightSide">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"></ColumnDefinition>
-                        <ColumnDefinition></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" VerticalAlignment="Center" >Project Name:</TextBlock>
-                    <TextBox Grid.Column="1" Text="{Binding ProjectName}"></TextBox>
-                </Grid>
-
-                <CheckBox IsChecked="{Binding IsDifferentNamespaceChecked}">Use Different Namespace</CheckBox>
+            <TextBlock FontWeight="Bold" Grid.Column="0" Grid.Row="2" Margin="0,0,16,10" >Custom Namespace:</TextBlock>
+            <StackPanel Grid.Column="1" Grid.Row="2" VerticalAlignment="Top">
+                <CheckBox  IsChecked="{Binding IsDifferentNamespaceChecked}">
+                    <CheckBox.LayoutTransform>
+                        <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                    </CheckBox.LayoutTransform>
+                </CheckBox>
                 <TextBox Visibility="{Binding DifferentNamespaceTextBoxVisibility}" Text="{Binding DifferentNamespace}" Margin="0,0,0,0"></TextBox>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"></ColumnDefinition>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                        <ColumnDefinition Width="Auto"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock VerticalAlignment="Center" Grid.Column="0" >Location:</TextBlock>
-                    <TextBox Grid.Column="1" Text="{Binding ProjectLocation}"></TextBox>
-                    <Button Grid.Column="2" Click="SelectLocationClicked">...</Button>
-                </Grid>
-                <CheckBox IsChecked="{Binding IsCreateProjectDirectoryChecked}">Create Project Directory</CheckBox>
-                <TextBlock>Solution (.sln) will be located in:</TextBlock>
-                <TextBlock Text="{Binding FinalDirectory}" TextWrapping="Wrap" Margin="15,0,0,0"></TextBlock>
             </StackPanel>
-            <Button HorizontalAlignment="Stretch" Grid.Row="1" Click="HandleMakeMyProjectClicked">Make my project!</Button>
+
+            <TextBlock FontWeight="Bold" Grid.Row="3" VerticalAlignment="Center" Grid.Column="0" Margin="0,0,16,10" >Location:</TextBlock>
+            <Grid Grid.Row="3" Grid.Column="1" VerticalAlignment="Top" Margin="0,5,0,10" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <TextBox Height="20" VerticalAlignment="Top"  Grid.Column="0" Text="{Binding ProjectLocation}"></TextBox>
+                <Button Grid.Column="1" Width="18" VerticalAlignment="Top" Click="SelectLocationClicked">...</Button>
+            </Grid>
+
+            <TextBlock FontWeight="Bold" Grid.Row="4" Margin="0,0,16,10" >Create Project Directory:</TextBlock>
+            <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding IsCreateProjectDirectoryChecked}">
+                <CheckBox.LayoutTransform>
+                    <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                </CheckBox.LayoutTransform>
+            </CheckBox>
+
+            <StackPanel Grid.Row="5" Grid.ColumnSpan="2">
+                <TextBlock FontStyle="Italic" FontSize="10">Solution (.sln) will be located in:</TextBlock>
+                <TextBlock FontStyle="Italic" FontSize="10" Text="{Binding FinalDirectory}" TextWrapping="Wrap" Margin="15,0,0,0"></TextBlock>
+            </StackPanel>
+
+            <Button 
+                Margin="0,16,0,16"
+                Style="{StaticResource myStyle}"
+                Grid.Row="6" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Click="HandleMakeMyProjectClicked" Height="48">
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <ContentControl>
+                            <Border Name="innerborder" BorderBrush="Gray" BorderThickness="0" Background="{TemplateBinding Background}" CornerRadius="12">
+                                <Grid>
+                                    <TextBlock HorizontalAlignment="Stretch" 
+                                               FontWeight="DemiBold"
+                                               FontSize="26" VerticalAlignment="Center" 
+                                               TextAlignment="Center" Text="Create Project!"></TextBlock>
+                                </Grid>
+                            </Border>
+                        </ContentControl>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Button.IsMouseOver" Value="True" >
+                                <Setter TargetName="innerborder" Property="Background" Value="#7CB538" />
+                            </Trigger>
+                            <Trigger Property="Button.IsPressed" Value="True" >
+                                <Setter TargetName="innerborder" Property="Background" Value="#567F27" />
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
         </Grid>
     </Grid>
 </Window>

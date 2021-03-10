@@ -35,42 +35,15 @@ namespace FlatRedBall.Glue.Projects
                 // are both now XNA4 tools, so we're going to look in the same directory as Glue.
                 // Update - actually moved it down below one level so its files don't interfere with Glue
                 FileManager.GetDirectory(Application.ExecutablePath);
-
-            List<string> files = FileManager.GetAllFilesInDirectory(
-                directory, "exe");
-
-            string newProjectCreatorFile = null;
-
-            foreach (string file in files)
-            {
-                if (file.Contains("NewProjectCreator.exe"))
-                {
-                    newProjectCreatorFile = file;
-                    break;
-                }
-            }
-
-            if(newProjectCreatorFile == null)
-            {
-                FilePath possibleFile = directory + "NewProjectCreator/NewProjectCreator.exe";
-                if(possibleFile.Exists())
-                {
-                    newProjectCreatorFile = possibleFile.FullPath;
-                }
-            }
-
-            const string newProjectCreatorLocation = @"..\..\..\..\..\..\NewProjectCreator\NewProjectCreator\bin\x86\Debug\NewProjectCreator.exe";
-            if (newProjectCreatorFile == null)
-            {
-                newProjectCreatorFile = newProjectCreatorLocation;
-            }
-
+            List<string> files;
+            string newProjectCreatorFile, newProjectCreatorLocation;
+            GetNewProjectCreatorFileLocation(directory, out files, out newProjectCreatorFile, out newProjectCreatorLocation);
 
             if (!File.Exists(newProjectCreatorFile))
             {
                 var result = MessageBox.Show("Could not find new project creator. Would you like to search for it on disk?", "", MessageBoxButtons.YesNo);
 
-                if(result == DialogResult.Yes)
+                if (result == DialogResult.Yes)
                 {
                     OpenFileDialog openFileDialog = new OpenFileDialog();
 
@@ -127,7 +100,7 @@ namespace FlatRedBall.Glue.Projects
                     processStartInfo.Arguments += " openedby=glue";
                 }
 
-                if(creatingSyncedProject)
+                if (creatingSyncedProject)
                 {
                     processStartInfo.Arguments += " emptyprojects";
                 }
@@ -135,6 +108,47 @@ namespace FlatRedBall.Glue.Projects
                 Process process = Process.Start(processStartInfo);
 
                 return process;
+            }
+        }
+
+        private static void GetNewProjectCreatorFileLocation(string directory, out List<string> files, out string newProjectCreatorFile, out string newProjectCreatorLocation)
+        {
+            files = FileManager.GetAllFilesInDirectory(
+                            directory, "exe");
+            newProjectCreatorFile = null;
+            foreach (string file in files)
+            {
+                if (file.Contains("NpcWpf.exe"))
+                {
+                    newProjectCreatorFile = file;
+                    break;
+                }
+            }
+
+            if (newProjectCreatorFile == null)
+            {
+                foreach (string file in files)
+                {
+                    if (file.Contains("NewProjectCreator.exe"))
+                    {
+                        newProjectCreatorFile = file;
+                        break;
+                    }
+                }
+            }
+
+            if (newProjectCreatorFile == null)
+            {
+                FilePath possibleFile = directory + "NewProjectCreator/NewProjectCreator.exe";
+                if (possibleFile.Exists())
+                {
+                    newProjectCreatorFile = possibleFile.FullPath;
+                }
+            }
+            newProjectCreatorLocation = @"..\..\..\..\..\..\NewProjectCreator\NpcWpf\bin\Debug\netcoreapp3.1\NpcWpf.exe";
+            if (newProjectCreatorFile == null)
+            {
+                newProjectCreatorFile = newProjectCreatorLocation;
             }
         }
 

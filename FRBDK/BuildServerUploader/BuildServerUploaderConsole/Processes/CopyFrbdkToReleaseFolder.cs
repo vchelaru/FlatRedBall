@@ -38,6 +38,7 @@ namespace BuildServerUploaderConsole.Processes
         {
             @"AnimationEditor\PreviewProject\bin\Debug",
             @"NewProjectCreator\NewProjectCreator\bin\x86\Debug",
+            @"NewProjectCreator\NpcWpf\bin\Debug\netcoreapp3.0\",
             // This is removed because FRB XNA is dying.
             //@"SplineEditor\SplineEditor\bin\x86\Debug",
 

@@ -91,12 +91,12 @@ namespace Npc
                 }
             }
 
-            string unpackDirectory = viewModel.ProjectLocation;
+            string unpackDirectory = viewModel.FinalDirectory;
 
             if (succeeded)
             {
 
-                bool isFileNameValid = await GetIfFileNameIsValid(viewModel, unpackDirectory);
+                bool isFileNameValid = GetIfFileNameIsValid(viewModel, unpackDirectory);
                 unpackDirectory = viewModel.CombinedProjectDirectory;
 
                 if (!isFileNameValid)
@@ -155,7 +155,10 @@ namespace Npc
 
                         if (viewModel.OpenSlnFolderAfterCreation)
                         {
-                            Process.Start(unpackDirectory);
+                            // according to ...
+                            // https://stackoverflow.com/questions/35031856/access-is-denied-exception-when-using-process-start-to-open-folder
+                            System.Diagnostics.Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", unpackDirectory);
+                            //Process.Start(unpackDirectory);
                         }
 
                         System.Console.Out.WriteLine(unpackDirectory);
@@ -181,7 +184,7 @@ namespace Npc
                     newProjectName);
             }
 
-            var newNamespace = viewModel.DifferentNamespace;
+            var newNamespace = viewModel.DifferentNamespace ?? viewModel.ProjectName;
             if(stringToReplace != newNamespace)
             {
                 UpdateNamespaces(unpackDirectory, stringToReplace,
@@ -264,7 +267,7 @@ namespace Npc
             }
         }
 */
-        private static async Task<bool> GetIfFileNameIsValid(NewProjectViewModel viewModel, string unpackDirectory)
+        private static bool GetIfFileNameIsValid(NewProjectViewModel viewModel, string unpackDirectory)
         {
             string whyIsInvalid = null;
 
