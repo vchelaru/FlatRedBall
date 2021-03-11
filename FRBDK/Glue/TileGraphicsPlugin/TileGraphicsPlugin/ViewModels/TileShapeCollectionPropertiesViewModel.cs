@@ -22,10 +22,18 @@ namespace TileGraphicsPlugin.ViewModels
         FromLayer
     }
 
+    public enum BorderOutlineType
+    {
+        NumberOfTiles,
+        InnerSize
+    }
+
     #endregion
 
     public class TileShapeCollectionPropertiesViewModel : PropertyListContainerViewModel
     {
+        #region Empty
+
         [SyncedProperty]
         // Vic asks - shouldn't the default value be (int)?
         [DefaultValue(CollisionCreationOptions.Empty)]
@@ -48,6 +56,10 @@ namespace TileGraphicsPlugin.ViewModels
             }
         }
 
+        #endregion
+
+        #region Fill
+
         [DependsOn(nameof(CollisionCreationOptions))]
         public bool IsFillCompletelyChecked
         {
@@ -65,6 +77,48 @@ namespace TileGraphicsPlugin.ViewModels
         public Visibility FillDimensionsVisibility => CollisionCreationOptions == CollisionCreationOptions.FillCompletely ?
                   Visibility.Visible :
                   Visibility.Collapsed;
+
+        [SyncedProperty]
+        [DefaultValue(16.0f)]
+        public float CollisionTileSize
+        {
+            get => Get<float>();
+            set => SetAndPersist(value);
+        }
+
+        [SyncedProperty]
+        public float CollisionFillLeft
+        {
+            get => Get<float>();
+            set => SetAndPersist(value);
+        }
+
+        [SyncedProperty]
+        public float CollisionFillTop
+        {
+            get => Get<float>();
+            set => SetAndPersist(value);
+        }
+
+        [SyncedProperty]
+        [DefaultValue(32)]
+        public int CollisionFillWidth
+        {
+            get => Get<int>();
+            set => SetAndPersist(value);
+        }
+
+        [SyncedProperty]
+        [DefaultValue(1)]
+        public int CollisionFillHeight
+        {
+            get => Get<int>();
+            set => SetAndPersist(value);
+        }
+
+        #endregion
+
+        #region Border Outline
 
         [DependsOn(nameof(CollisionCreationOptions))]
         public bool IsBorderChecked
@@ -90,6 +144,66 @@ namespace TileGraphicsPlugin.ViewModels
             }
         }
 
+        // outline uses fill properties if using # of tiles
+
+        [SyncedProperty]
+        public BorderOutlineType BorderOutlineType
+        {
+            get => (BorderOutlineType)Get<int>();
+            set => SetAndPersist((int)value);
+        }
+
+        [DependsOn(nameof(BorderOutlineType))]
+        public bool IsNumberOfTilesBorderOutlineChecked
+        {
+            get => BorderOutlineType == BorderOutlineType.NumberOfTiles;
+            set
+            {
+                if(value)
+                {
+                    BorderOutlineType = BorderOutlineType.NumberOfTiles;
+                }
+            }
+        }
+
+        [DependsOn(nameof(BorderOutlineType))]
+        public bool IsInnerSizeBorderOutlineChecked
+        {
+            get => BorderOutlineType == BorderOutlineType.InnerSize;
+            set
+            {
+                if(value)
+                {
+                    BorderOutlineType = BorderOutlineType.InnerSize;
+                }
+            }
+        }
+
+        [DependsOn(nameof(IsNumberOfTilesBorderOutlineChecked))]
+        public Visibility BorderNumberOfTilesUiVisibility => IsNumberOfTilesBorderOutlineChecked.ToVisibility();
+
+        [DependsOn(nameof(IsInnerSizeBorderOutlineChecked))]
+        public Visibility BorderInnerSizeUiVisibility => IsInnerSizeBorderOutlineChecked.ToVisibility();
+
+        [SyncedProperty]
+        [DefaultValue(800f)]
+        public float InnerSizeWidth
+        {
+            get => Get<float>();
+            set => SetAndPersist(value);
+        }
+
+        [SyncedProperty]
+        [DefaultValue(600f)]
+        public float InnerSizeHeight
+        {
+            get => Get<float>();
+            set => SetAndPersist(value);
+        }
+        #endregion
+
+        #region From Properties
+
         [DependsOn(nameof(CollisionCreationOptions))]
         public bool IsFromPropertiesChecked
         {
@@ -108,6 +222,18 @@ namespace TileGraphicsPlugin.ViewModels
                       Visibility.Visible :
                       Visibility.Collapsed;
 
+        // for now a single string, eventually a list?
+        [SyncedProperty]
+        public string CollisionPropertyName
+        {
+            get => Get<string>(); 
+            set => SetAndPersist(value); 
+        }
+
+        #endregion
+
+        #region From Type
+
         [DependsOn(nameof(CollisionCreationOptions))]
         public bool IsFromTypeChecked
         {
@@ -125,6 +251,16 @@ namespace TileGraphicsPlugin.ViewModels
         public Visibility FromTypeVisibility => CollisionCreationOptions == CollisionCreationOptions.FromType ?
                     Visibility.Visible :
                     Visibility.Collapsed;
+
+        public ObservableCollection<string> AvailableTypes
+        {
+            get => Get<ObservableCollection<string>>(); 
+            set => Set(value); 
+        } 
+
+        #endregion
+
+        #region From Layer
 
         [DependsOn(nameof(CollisionCreationOptions))]
         public bool IsFromLayerChecked
@@ -158,6 +294,9 @@ namespace TileGraphicsPlugin.ViewModels
             set => SetAndPersist(value); 
         }
 
+
+        #endregion
+
         [SyncedProperty]
         public bool IsCollisionMerged
         {
@@ -171,50 +310,6 @@ namespace TileGraphicsPlugin.ViewModels
             set => Set(value);
         }
 
-        public ObservableCollection<string> AvailableTypes
-        {
-            get => Get<ObservableCollection<string>>(); 
-            set => Set(value); 
-        } 
-
-        [SyncedProperty]
-        [DefaultValue(16.0f)]
-        public float CollisionTileSize
-        {
-            get => Get<float>(); 
-            set => SetAndPersist(value); 
-        }
-
-        [SyncedProperty]
-        public float CollisionFillLeft
-        {
-            get => Get<float>(); 
-            set => SetAndPersist(value); 
-        }
-
-        [SyncedProperty]
-        public float CollisionFillTop
-        {
-            get => Get<float>(); 
-            set => SetAndPersist(value);
-        }
-
-        [SyncedProperty]
-        [DefaultValue(32)]
-        public int CollisionFillWidth
-        {
-            get => Get<int>(); 
-            set => SetAndPersist(value); 
-        }
-
-        [SyncedProperty]
-        [DefaultValue(1)]
-        public int CollisionFillHeight
-        {
-            get => Get<int>(); 
-            set => SetAndPersist(value); 
-        }
-
         [SyncedProperty]
         public string SourceTmxName
         {
@@ -222,13 +317,6 @@ namespace TileGraphicsPlugin.ViewModels
             set => SetAndPersist(value); 
         }
 
-        // for now a single string, eventually a list?
-        [SyncedProperty]
-        public string CollisionPropertyName
-        {
-            get => Get<string>(); 
-            set => SetAndPersist(value); 
-        }
 
         [SyncedProperty]
         public string CollisionTileTypeName

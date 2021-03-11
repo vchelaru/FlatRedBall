@@ -53,31 +53,48 @@
                 <StackPanel Margin="10, 0, 0, 0" Visibility="{Binding BorderOutlineVisibility}">
 
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Width="60">Tile Size:</TextBlock>
+                        <TextBlock Width="90">Tile Size:</TextBlock>
                         <TextBox Width="100" Text="{Binding CollisionTileSize}"
                                  KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
-                        <TextBlock Width="40">Left:</TextBlock>
+                        <TextBlock Width="90">Left Outer Edge:</TextBlock>
                         <TextBox Width="100" Text="{Binding CollisionFillLeft}"
                                  KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Width="40">Top:</TextBlock>
+                        <TextBlock Width="90">Top Outer Edge:</TextBlock>
                         <TextBox Width="100" Text="{Binding CollisionFillTop}"
                                  KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
-                        <TextBlock Width="60">Tiles Wide:</TextBlock>
-                        <TextBox Width="100" Text="{Binding CollisionFillWidth}"
-                                 KeyUp="TextBox_KeyEnterUpdate"></TextBox>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Width="60">Tiles High:</TextBlock>
-                        <TextBox Width="100" Text="{Binding CollisionFillHeight}"
-                                 KeyUp="TextBox_KeyEnterUpdate"></TextBox>
-                    </StackPanel>
+                    <GroupBox Header="Border Dimensions">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton IsChecked="{Binding IsNumberOfTilesBorderOutlineChecked}"># Tiles</RadioButton>
+                                <RadioButton IsChecked="{Binding IsInnerSizeBorderOutlineChecked}" Margin="30,0,0,0">Inner Size</RadioButton>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
+                                <TextBlock Width="50">Width:</TextBlock>
+                                <TextBox Width="100" Text="{Binding CollisionFillWidth}"
+                                         Visibility="{Binding BorderNumberOfTilesUiVisibility}"
+                                         KeyUp="TextBox_KeyEnterUpdate"></TextBox>
+                                <TextBox Width="100" Text="{Binding InnerSizeWidth}"
+                                         Visibility="{Binding BorderInnerSizeUiVisibility}"
+                                         KeyUp="TextBox_KeyEnterUpdate"></TextBox>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Width="50">Height:</TextBlock>
+                                <TextBox Width="100" Text="{Binding CollisionFillHeight}"
+                                         Visibility="{Binding BorderNumberOfTilesUiVisibility}"
+                                         KeyUp="TextBox_KeyEnterUpdate"></TextBox>
+                                <TextBox Width="100" Text="{Binding InnerSizeHeight}"
+                                         Visibility="{Binding BorderInnerSizeUiVisibility}"
+                                         KeyUp="TextBox_KeyEnterUpdate"></TextBox>
+                            </StackPanel>
+                            
+                        </StackPanel>
+                    </GroupBox>
                 </StackPanel>
 
                 <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"

@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Plugins.ICollidablePlugins;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Math;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -246,8 +247,8 @@ namespace TileGraphicsPlugin.CodeGeneration
             var topFill = Get<float>(nameof(TileShapeCollectionPropertiesViewModel.CollisionFillTop));
             var topFillString = FloatString(topFill);
 
-            var widthFill = Get<int>(nameof(TileShapeCollectionPropertiesViewModel.CollisionFillWidth));
-            var heightFill = Get<int>(nameof(TileShapeCollectionPropertiesViewModel.CollisionFillHeight));
+            var borderOutlineType = (BorderOutlineType)Get<int>(
+                nameof(TileShapeCollectionPropertiesViewModel.BorderOutlineType));
 
             var remainderX = leftFill % tileSize;
             var remainderY = topFill % tileSize;
@@ -263,6 +264,25 @@ namespace TileGraphicsPlugin.CodeGeneration
             codeBlock.Line($"{instanceName}.SortAxis = FlatRedBall.Math.Axis.X;");
             //TileShapeCollectionInstance.SortAxis = FlatRedBall.Math.Axis.X;
 
+            var widthFill = Get<int>(nameof(TileShapeCollectionPropertiesViewModel.CollisionFillWidth));
+            var heightFill = Get<int>(nameof(TileShapeCollectionPropertiesViewModel.CollisionFillHeight));
+
+            if(borderOutlineType == BorderOutlineType.InnerSize)
+            {
+                var innerWidth = Get<float>(
+                    nameof(TileShapeCollectionPropertiesViewModel.InnerSizeWidth));
+
+                var innerHeight = Get<float>(
+                    nameof(TileShapeCollectionPropertiesViewModel.InnerSizeHeight));
+
+                var additionalWidth = 2 * tileSize;
+                var additionalHeight = 2 * tileSize;
+
+                widthFill = MathFunctions.RoundToInt( (innerWidth + additionalWidth)/tileSize);
+                heightFill = MathFunctions.RoundToInt((innerHeight + additionalHeight) / tileSize);
+
+
+            }
             var xFor = codeBlock.For($"int x = 0; x < {widthFill}; x++");
             //int(int x = 0; x < width; x++)
             //{
