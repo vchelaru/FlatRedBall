@@ -506,7 +506,9 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
                     RefreshIfIsPlatformer(element, viewModel);
 
-                    if(TryFixMassesForTileShapeCollisionRelationship(element, nos))
+                    RefreshPartitioningIcons(element, viewModel);
+
+                    if (TryFixMassesForTileShapeCollisionRelationship(element, nos))
                     {
                         viewModel.UpdateFromGlueObject();
                     }

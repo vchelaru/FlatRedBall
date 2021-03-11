@@ -29,12 +29,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
 
         #region Level Screen
 
-        public bool CanAddLevelScreen
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
+        
         [DependsOn(nameof(AddScreenType))]
         public bool IsLevelScreen
         {
@@ -50,6 +45,9 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
 
         [DependsOn(nameof(HasGameScreen))]
         public Visibility LevelScreenOptionUiVisibility => HasGameScreen.ToVisibility();
+
+        [DependsOn(nameof(HasGameScreen))]
+        public Visibility GameScreenOptionUiVisibility => (!HasGameScreen).ToVisibility();
 
 
         [DependsOn(nameof(AddScreenType))]
@@ -79,11 +77,8 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
 
         #region Base Level Screen
 
-        public bool CanAddBaseLevelScreen
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
+        [DependsOn(nameof(HasGameScreen))]
+        public bool CanAddBaseLevelScreen => !HasGameScreen;
 
         [DependsOn(nameof(AddScreenType))]
         public bool IsBaseLevelScreen

@@ -37,14 +37,10 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             var optionsView = new AddScreenOptionsView();
 
             var viewModel = new ViewModels.AddScreenViewModel();
-            viewModel.CanAddBaseLevelScreen = true;
-            viewModel.CanAddLevelScreen = true;
 
             var gameScreen =
                 ObjectFinder.Self.GetScreenSaveUnqualified("GameScreen");
             var hasGameScreen = gameScreen != null;
-                
-
             viewModel.HasGameScreen = hasGameScreen;
 
             if(hasGameScreen)

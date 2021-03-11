@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.ViewModels;
 using OfficialPlugins.CollisionPlugin.Managers;
@@ -147,6 +148,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             var addObjectModel = new AddObjectViewModel();
 
             var firstNos = container.GetNamedObjectRecursively(firstNosName);
+            var secondNos = container.GetNamedObjectRecursively(secondNosName);
 
             if(firstNos == null)
             {
@@ -174,17 +176,61 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             //    needToInvert = 
             //}
 
+            string effectiveSecondCollisionName;
+            NamedObjectSave effectiveFirstNos;
             if (needToInvert)
             {
                 newNos.SetFirstCollidableObjectName(secondNosName);
                 newNos.SetSecondCollidableObjectName(firstNosName);
+                effectiveFirstNos = secondNos;
+                effectiveSecondCollisionName = firstNosName;
             }
             else
             {
                 newNos.SetFirstCollidableObjectName(firstNosName);
                 newNos.SetSecondCollidableObjectName(secondNosName);
+                effectiveFirstNos = firstNos;
+                effectiveSecondCollisionName = secondNosName;
             }
 
+            if(effectiveSecondCollisionName == "SolidCollision")
+            {
+                EntitySave firstEntityType = null;
+                if(effectiveFirstNos.SourceType == SourceType.Entity)
+                {
+                    firstEntityType = ObjectFinder.Self.GetEntitySave(effectiveFirstNos.SourceClassType);
+                }
+                else if(effectiveFirstNos.IsList)
+                {
+                    firstEntityType = ObjectFinder.Self.GetEntitySave(effectiveFirstNos.SourceClassGenericType);
+                }
+
+                bool isPlatformer = false;
+                if (firstEntityType != null)
+                {
+                    isPlatformer = firstEntityType.Properties.GetValue<bool>("IsPlatformer");
+                }
+
+                if(isPlatformer)
+                {
+                    newNos.Properties.SetValue(
+                        nameof(CollisionRelationshipViewModel.CollisionType),
+                        (int)CollisionType.PlatformerSolidCollision);
+
+                }
+                else
+                {
+
+                    newNos.Properties.SetValue(
+                        nameof(CollisionRelationshipViewModel.CollisionType),
+                        (int)CollisionType.BounceCollision);
+
+
+                    newNos.Properties.SetValue(
+                        nameof(CollisionRelationshipViewModel.CollisionElasticity),
+                        0.0f);
+                }
+            }
 
             CollisionRelationshipViewModelController.TryFixSourceClassType(newNos);
 
