@@ -211,6 +211,16 @@ namespace GumPlugin.Managers
             else
             {
                 var message = "Could not find the file for the Gum screen " + screenName + $"\nSearched in:\n{fullFileName}";
+
+                if (AppState.Self.GumProjectSave == null)
+                {
+                    message += "\nThis is probably happening because the Gum project is null";
+                }
+                else if(string.IsNullOrWhiteSpace(AppState.Self.GumProjectFolder))
+                {
+                    message += "\nThe project does have a Gum project loaded, but it does not have an associated filename";
+                }
+
                 MessageBox.Show(message);
             }
         }

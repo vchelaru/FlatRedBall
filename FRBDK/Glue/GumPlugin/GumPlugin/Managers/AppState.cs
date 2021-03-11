@@ -55,7 +55,6 @@ namespace GumPlugin.Managers
             }
         }
 
-
         public string GumProjectFolder
         {
             get
@@ -95,7 +94,6 @@ namespace GumPlugin.Managers
             return null;
 
         }
-
 
         public ScreenSave GetScreen(string screenName)
         {
@@ -153,13 +151,6 @@ namespace GumPlugin.Managers
 
             return null;
         }
-
-
-
-
-
-
-
 
     }
 }
