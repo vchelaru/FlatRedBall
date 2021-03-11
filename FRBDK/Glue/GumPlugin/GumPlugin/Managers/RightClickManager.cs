@@ -210,7 +210,8 @@ namespace GumPlugin.Managers
             }
             else
             {
-                MessageBox.Show("Could not find the file for the Gum screen " + screenName);
+                var message = "Could not find the file for the Gum screen " + screenName + $"\nSearched in:\n{fullFileName}";
+                MessageBox.Show(message);
             }
         }
     }

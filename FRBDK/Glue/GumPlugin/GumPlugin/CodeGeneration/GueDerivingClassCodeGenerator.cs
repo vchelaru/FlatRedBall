@@ -324,6 +324,16 @@ namespace GumPlugin.CodeGeneration
 
         private void GenerateExposedVariableProperty(ElementSave elementSave, ICodeBlock currentBlock, VariableSave variable)
         {
+            var instance = elementSave.GetInstance(variable.SourceObject);
+
+            /////////////////////Early Out/////////////////////////////
+            var isMissingInstance = instance == null && !string.IsNullOrEmpty(variable.SourceObject);
+            if(isMissingInstance)
+            {
+                return;
+            }
+            //////////////////End Early Out///////////////////////////
+
             string variableType = variable.Type;
 
             ModifyVariableTypeForProperty(ref variableType, variable, elementSave);
@@ -336,7 +346,6 @@ namespace GumPlugin.CodeGeneration
 
             // If this is an exposed property on a standard element, then we just need to kill all spaces and replace
             // them with nothing
-            var instance = elementSave.GetInstance(variable.SourceObject);
 
             if (instance != null)
             {
