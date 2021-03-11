@@ -58,7 +58,7 @@ namespace GumPlugin.Managers
 
                 gumxDirectory = FileManager.GetDirectory(gumProjectFileName);
 
-                FileReferenceTracker.Self.LoadGumxIfNecessaryFromDirectory(gumxDirectory, true);
+                FileReferenceTracker.Self.LoadGumxIfNecessaryFromDirectory(gumxDirectory, force:true);
             }
             else
             {

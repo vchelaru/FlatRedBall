@@ -21,12 +21,14 @@
             <CheckBox x:Name="MakeInstancesPublicCheckBox" VerticalAlignment="Center"
                   Content="Make Generated Code Instances Public" IsChecked="{Binding MakeGumInstancesPublic}"></CheckBox>
             <Button Margin="7,5,0,0" Width="220" HorizontalAlignment="Left" Click="RegenerateFontsClicked">Re-generate Fonts</Button>
-            <GroupBox Header="Core Gum Addition">
+            <GroupBox Header="Core Gum Addition" Visibility="{Binding GumCoreFileUiVisibility}">
                 <StackPanel >
                     <RadioButton GroupName="AdditionType" x:Name="IncludeNoFilesRadio" 
                              VerticalContentAlignment="Center" Content="Include No Files (use linked .dlls or source)" IsChecked="{Binding IncludeNoFiles, FallbackValue=true, Mode=TwoWay}"/>
                     <RadioButton GroupName="AdditionType" x:Name="EmbedCodeFilesRadio" 
-                             VerticalContentAlignment="Center" Content="Embed Code Files (legacy)" IsChecked="{Binding EmbedCodeFiles, Mode=TwoWay}" />
+                             VerticalContentAlignment="Center" Content="Embed Code Files (legacy)" 
+                             IsEnabled="{Binding IsEmbedCodeFilesEnabled}"
+                             IsChecked="{Binding EmbedCodeFiles, Mode=TwoWay}" />
                 </StackPanel>
 
             </GroupBox>

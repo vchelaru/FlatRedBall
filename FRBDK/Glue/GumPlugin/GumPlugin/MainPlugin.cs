@@ -779,7 +779,7 @@ namespace GumPlugin
                 var behavior = GetBehavior(gumRfs);
 
                 // todo: Removing a file should cause this to get called, but I don't think Gum lets us subscribe to that yet.
-                TaskManager.Self.AddSync(() =>
+                TaskManager.Self.Add(() =>
                 {
                     EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
 

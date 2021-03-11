@@ -117,7 +117,16 @@ namespace GumPlugin.ViewModels
                 }
             }
         }
-        
+
+        public Visibility GumCoreFileUiVisibility =>
+            IsEmbedCodeFilesEnabled.ToVisibility();
+
+        bool IsEmbedCodeFilesEnabled => GlueState.Self.CurrentGlueProject != null &&
+            GlueState.Self.CurrentGlueProject.FileVersion < 
+            // There is no version explicitly for when we embedded .dlls, but it should have been set by this point
+            (int)GlueProjectSave.GluxVersions.GumGueHasGetAnimation;
+
+
         public bool IncludeFormsInComponents
         {
             get { return Get<bool>(); }

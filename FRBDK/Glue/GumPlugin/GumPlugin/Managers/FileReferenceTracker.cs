@@ -625,6 +625,12 @@ namespace GumPlugin.Managers
 
                         Gum.Managers.ObjectFinder.Self.GumProjectSave =
                             GumProjectSave.Load(gumxFile, out result);
+
+                        if(!string.IsNullOrWhiteSpace(result?.ErrorMessage))
+                        {
+                            GlueCommands.Self.PrintError(result.ErrorMessage);
+                        }
+
                     }
                     if(Gum.Managers.ObjectFinder.Self.GumProjectSave != null)
                     {
