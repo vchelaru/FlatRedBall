@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OfficialPluginsCore.Wizard.Views"
         mc:Ignorable="d"
-        Title="Project Setup Wizard" Height="450" Width="500">
+        Title="Project Setup Wizard" Height="550" Width="500">
     <Grid Margin="16">
         <Grid x:Name="PleaseWaitGrid" Visibility="Collapsed">
             <local:ActivitySpinner></local:ActivitySpinner>

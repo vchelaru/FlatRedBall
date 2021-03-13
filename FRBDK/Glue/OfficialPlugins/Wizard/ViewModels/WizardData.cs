@@ -11,6 +11,14 @@ namespace OfficialPluginsCore.Wizard.Models
         Topdown,
         None
     }
+
+    public enum CollisionType
+    {
+        Rectangle,
+        Circle,
+        None
+    }
+
     public class WizardData : ViewModel
     {
 
@@ -50,6 +58,13 @@ namespace OfficialPluginsCore.Wizard.Models
             get => Get<GameType>();
             set => Set(value);
         }
+
+        public CollisionType PlayerCollisionType
+        {
+            get => Get<CollisionType>();
+            set => Set(value);
+        }
+
         public bool AddPlayerListToGameScreen
         {
             get => Get<bool>();

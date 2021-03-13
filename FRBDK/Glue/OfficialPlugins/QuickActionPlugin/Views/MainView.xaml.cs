@@ -122,7 +122,8 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             var gameScreen = GlueState.Self.CurrentGlueProject.GetScreenSave(GameScreenName);
             var newNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(viewModel, gameScreen, null);
 
-            GlueState.Self.CurrentNamedObjectSave = newNos;
+            // Vic says - why do we do this? It interrupts flow...
+            //GlueState.Self.CurrentNamedObjectSave = newNos;
 
             AnyButtonClicked();
         }

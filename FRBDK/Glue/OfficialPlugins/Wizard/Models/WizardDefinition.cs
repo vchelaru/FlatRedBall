@@ -62,6 +62,11 @@ namespace OfficialPluginsCore.Wizard.Models
                     .Add("Platformer", GameType.Platformer)
                     .Add("None (controls be added later)", GameType.None);
 
+                formsData.AddOptions("What kind of collision will the Player have?", nameof(ViewModel.PlayerCollisionType), nameof(ViewModel.AddPlayerEntity))
+                    .Add("Rectangle", CollisionType.Rectangle)
+                    .Add("Circle", CollisionType.Circle)
+                    .Add("None (will still be an ICollidable)", CollisionType.None);
+
                 formsData.AddBoolValue("Add Player list to GameScreen", nameof(ViewModel.AddPlayerListToGameScreen), nameof(ViewModel.AddPlayerEntity));
                 formsData.AddBoolValue("Add Player instance to list", nameof(ViewModel.AddPlayerToList), nameof(ViewModel.AddPlayerEntity));
 

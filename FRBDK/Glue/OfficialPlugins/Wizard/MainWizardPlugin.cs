@@ -78,20 +78,34 @@ namespace OfficialPluginsCore.Wizard
 
                 if(vm.AddSolidCollision)
                 {
-                    solidCollisionNos = MainAddScreenPlugin.AddCollision(gameScreen, "SolidCollision");
+                    solidCollisionNos = MainAddScreenPlugin.AddCollision(gameScreen, "SolidCollision", 
+                        setFromMapObject:vm.AddTiledMap);
                 }
                 if(vm.AddCloudCollision)
                 {
-                    cloudCollisionNos = MainAddScreenPlugin.AddCollision(gameScreen, "CloudCollision");
+                    cloudCollisionNos = MainAddScreenPlugin.AddCollision(gameScreen, "CloudCollision",
+                        setFromMapObject: vm.AddTiledMap);
                 }
             }
 
-            if(vm.AddPlayerEntity)
+            if (vm.AddPlayerEntity)
             {
                 var addEntityVm = new AddEntityViewModel();
                 addEntityVm.Name = "Player";
-                // todo - ask what kind of collision the user wants...
-                addEntityVm.IsAxisAlignedRectangleChecked = true;
+
+                if (vm.PlayerCollisionType == CollisionType.Rectangle)
+                {
+                    addEntityVm.IsAxisAlignedRectangleChecked = true;
+                }
+                else if (vm.PlayerCollisionType == CollisionType.Circle)
+                {
+                    addEntityVm.IsCircleChecked = true;
+                }
+                else
+                {
+                    // none are checked, but we'll still have it be ICollidable
+                }
+
                 addEntityVm.IsICollidableChecked = true;
 
                 var playerEntity = GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(addEntityVm);

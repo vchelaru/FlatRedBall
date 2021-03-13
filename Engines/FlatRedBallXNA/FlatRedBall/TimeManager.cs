@@ -5,6 +5,7 @@ using System.Text;
 
 using System.Threading;
 using FlatRedBall.IO;
+using System;
 
 namespace FlatRedBall
 {
@@ -56,7 +57,6 @@ namespace FlatRedBall
         /// This value can be used to uniquely identify a frame.
         /// </remarks>
         public static double CurrentTime;
-
 
         static double mLastCurrentTime;
 
@@ -169,18 +169,12 @@ namespace FlatRedBall
             }
         }
 
-
-        // This was made a Field for performance reasons
-        //public static double CurrentTime
-        //{
-        //    get { return mCurrentTime; }
-        //}
-
         public static Dictionary<string, double> SumSectionDictionary
         {
             get { return mSumSections; }
         }
 
+        [Obsolete("Use CurrentSystemTime as that name is more consistent and this will eventually be removed.")]
         public static double SystemCurrentTime
         {
             get 
@@ -189,6 +183,8 @@ namespace FlatRedBall
             }
 
         }
+
+        public static double CurrentSystemTime => stopWatch.Elapsed.TotalSeconds; 
 
 
         public static int TimedSectionCount
@@ -562,12 +558,10 @@ namespace FlatRedBall
             return Screens.ScreenManager.CurrentScreen.PauseAdjustedSecondsSince(time);
         }
 
-        #region XML Docs
         /// <summary>
         /// Performs every-frame logic to update timing values such as CurrentTime and SecondDifference.  If this method is not called, CurrentTime will not advance.
         /// </summary>
-        /// <param name="time">The GameTime value provided by the XNA Game class.</param>
-        #endregion
+        /// <param name="time">The GameTime value provided by the MonoGame Game class.</param>
         public static void Update(GameTime time)
         {
             mLastUpdateGameTime = time;
@@ -588,9 +582,6 @@ namespace FlatRedBall
 
             mLastSecondDifference = mSecondDifference;
             mLastCurrentTime = CurrentTime;
-
-#if !SILVERLIGHT
-
 
             const bool useSystemCurrentTime = false;
 
@@ -629,9 +620,6 @@ namespace FlatRedBall
                 {
                     elapsedTime = MaxFrameTime;
                 }
-
-
-
             }
 
             mSecondDifference = (float)(elapsedTime);
@@ -641,9 +629,6 @@ namespace FlatRedBall
 
             mSecondDifferenceSquaredDividedByTwo = (mSecondDifference * mSecondDifference) / 2.0f;
             mCurrentTimeForTimedSections = currentSystemTime;
-#else
-            
-#endif
         }
 
         #endregion

@@ -149,5 +149,55 @@ namespace GumPlugin.Controls
 
             }
         }
+
+        public void RemoveOrphanCustomCodeClicked(object sender, RoutedEventArgs e)
+        {
+            var codeProject = GlueState.Self.CurrentMainProject.CodeProject;
+
+            List<Microsoft.Build.Evaluation.ProjectItem> itemsToRemove = 
+                new List<Microsoft.Build.Evaluation.ProjectItem>();
+
+            foreach(var item in codeProject.EvaluatedItems)
+            {
+                var name = item.EvaluatedInclude?.ToLowerInvariant();
+                // continue here:
+                var shouldRemove = !string.IsNullOrEmpty(name) &&
+                    name.StartsWith("gumruntimes\\") &&
+                    name.EndsWith("runtime.cs");
+
+                if(shouldRemove)
+                {
+                    // see if there is a matching generated file
+                    var nameToLookFor = item.EvaluatedInclude.Substring(0, item.EvaluatedInclude.Length - ".cs".Length) +
+                        ".Generated.cs";
+
+                    nameToLookFor = nameToLookFor.ToLowerInvariant();
+
+                    var matching = codeProject.EvaluatedItems.Any(item => item.EvaluatedInclude?.ToLowerInvariant() == nameToLookFor);
+
+                    shouldRemove = matching == false;
+
+                    if(shouldRemove)
+                    {
+                        int m = 3;
+                    }
+                }
+
+                if(shouldRemove)
+                {
+                    itemsToRemove.Add(item);
+                }
+            }
+
+            if(itemsToRemove.Count > 0)
+            {
+                foreach(var item in itemsToRemove)
+                {
+                    codeProject.RemoveItem(item);
+                }
+                GlueCommands.Self.ProjectCommands.SaveProjects();
+            }
+
+        }
     }
 }

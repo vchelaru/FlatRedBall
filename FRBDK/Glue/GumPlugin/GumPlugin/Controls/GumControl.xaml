@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GumPlugin.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="330" d:DesignWidth="300">
+             d:DesignHeight="360" d:DesignWidth="300">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel>
             <TextBlock HorizontalAlignment="Center" FontSize="16" Text="Gum Project Properties"></TextBlock>
@@ -21,6 +21,7 @@
             <CheckBox x:Name="MakeInstancesPublicCheckBox" VerticalAlignment="Center"
                   Content="Make Generated Code Instances Public" IsChecked="{Binding MakeGumInstancesPublic}"></CheckBox>
             <Button Margin="7,5,0,0" Width="220" HorizontalAlignment="Left" Click="RegenerateFontsClicked">Re-generate Fonts</Button>
+            <Button Margin="7,5,0,0" Width="220" HorizontalAlignment="Left" Click="RemoveOrphanCustomCodeClicked" >Remove Orphaned Custom Runtime Files</Button>
             <GroupBox Header="Core Gum Addition" Visibility="{Binding GumCoreFileUiVisibility}">
                 <StackPanel >
                     <RadioButton GroupName="AdditionType" x:Name="IncludeNoFilesRadio" 

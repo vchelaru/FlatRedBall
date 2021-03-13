@@ -87,7 +87,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             }
         }
 
-        public static NamedObjectSave AddCollision(ScreenSave screen, string name)
+        public static NamedObjectSave AddCollision(ScreenSave screen, string name, bool setFromMapObject = true)
         {
             var addObjectViewModel = new AddObjectViewModel();
             addObjectViewModel.ForcedElementToAddTo = screen;
@@ -98,11 +98,14 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             var nos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, screen, null);
             nos.SetByDerived = true;
 
-            const int FromType = 4;
-            nos.Properties.SetValue("CollisionCreationOptions", FromType);
-            nos.Properties.SetValue("SourceTmxName", "Map");
-            nos.Properties.SetValue("CollisionTileTypeName", name);
+            if(setFromMapObject)
+            {
 
+                const int FromType = 4;
+                nos.Properties.SetValue("CollisionCreationOptions", FromType);
+                nos.Properties.SetValue("SourceTmxName", "Map");
+                nos.Properties.SetValue("CollisionTileTypeName", name);
+            }
             return nos;
         }
         private void ApplyViewModelToScreen(ScreenSave newScreen, AddScreenViewModel viewModel)
