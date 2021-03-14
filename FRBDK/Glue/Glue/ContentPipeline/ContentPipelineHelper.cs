@@ -23,7 +23,7 @@ namespace FlatRedBall.Glue.ContentPipeline
        
         public static void ReactToUseContentPipelineChange(ReferencedFileSave rfs)
         {
-            TaskManager.Self.AddSync(() =>
+            TaskManager.Self.Add(() =>
             {
                 List<string> filesInModifiedRfs = new List<string>();
                 bool shouldRemoveAndAdd = false;

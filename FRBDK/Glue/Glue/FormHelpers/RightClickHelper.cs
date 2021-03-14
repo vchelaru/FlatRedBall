@@ -2383,6 +2383,8 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     UnreferencedFilesManager.Self.RefreshUnreferencedFiles(false);
                 }
+
+                PluginManager.ReactToFileBuildCommand(rfs);
             }
         }
 

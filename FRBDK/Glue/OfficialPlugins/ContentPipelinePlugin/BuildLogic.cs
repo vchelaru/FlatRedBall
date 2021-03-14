@@ -407,7 +407,9 @@ namespace OfficialPlugins.MonoGameContent
 
         public static bool IsBuiltByContentPipeline(ReferencedFileSave file, bool forcePngsToContentPipeline)
         {
-            return IsBuiltByContentPipeline(file.Name, file.UseContentPipeline, forcePngsToContentPipeline);
+            var ati = file.GetAssetTypeInfo();
+
+            return IsBuiltByContentPipeline(file.Name, file.UseContentPipeline || ati?.MustBeAddedToContentPipeline == true, forcePngsToContentPipeline);
         }
 
         private static bool IsBuiltByContentPipeline(string fileName, bool rfsUseContentPipeline, bool forcePngsToContentPipeline)

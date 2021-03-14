@@ -307,6 +307,8 @@ namespace FlatRedBall.Glue.Plugins
 
         public Func<TreeNode, bool> TryHandleTreeNodeDoubleClicked { get; protected set; }
 
+        public Action<ReferencedFileSave> ReactToFileBuildCommand { get; protected set; }
+
         #endregion
 
         public abstract void StartUp();

@@ -125,6 +125,12 @@ namespace OfficialPlugins.MonoGameContent
             this.ReactToFileRemoved += HandleFileRemoved;
             this.GetIfUsesContentPipeline += HandleGetIfUsesContentPipeline;
             this.ReactToTreeViewRightClickHandler += HandleTreeViewRightClick;
+            this.ReactToFileBuildCommand += HandleReactToFileBuildCommand;
+        }
+
+        private void HandleReactToFileBuildCommand(ReferencedFileSave rfs)
+        {
+            HandleRfsChange(rfs);
         }
 
         #endregion

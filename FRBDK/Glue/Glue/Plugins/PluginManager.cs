@@ -1969,6 +1969,15 @@ namespace FlatRedBall.Glue.Plugins
             return handled;
         }
 
+        public static void ReactToFileBuildCommand(ReferencedFileSave rfs)
+        {
+            CallMethodOnPlugin((plugin) =>
+            {
+                plugin.ReactToFileBuildCommand(rfs);
+            }, nameof(ReactToFileBuildCommand),
+            (plugin) => plugin.ReactToFileBuildCommand != null);
+        }
+
         #endregion
 
         public static void CallPluginMethod(string pluginFriendlyName, string methodName)
