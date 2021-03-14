@@ -95,7 +95,10 @@ namespace GumCoreShared.FlatRedBall.Embedded
             GumParent.X = screenX / zoom;
             GumParent.Y = screenY / zoom;
 
-            GumParent.Rotation = Microsoft.Xna.Framework.MathHelper.ToDegrees(this.FrbObject.RotationZ);
+            if(this.ParentRotationChangesRotation)
+            {
+                GumParent.Rotation = Microsoft.Xna.Framework.MathHelper.ToDegrees(this.FrbObject.RotationZ);
+            }
 
             if (frbObjectAsScalable != null)
             {
