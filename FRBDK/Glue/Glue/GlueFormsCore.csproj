@@ -133,7 +133,8 @@
     <PackageReference Include="CompareNETObjects" Version="4.72.0" />
     <PackageReference Include="DotNetZip" Version="1.15.0" />
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.2" />
-    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="16.4.0" />
+    <PackageReference Include="Microsoft.Build" Version="16.9.0" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="16.9.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="SharpSerializer" Version="3.0.1" />
     <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
