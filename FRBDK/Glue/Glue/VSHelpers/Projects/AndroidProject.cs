@@ -96,7 +96,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         {
             List<string> toReturn = new List<string>();
 
-            foreach(var buildItem in this)
+            foreach(var buildItem in EvaluatedItems)
             {
                 var link = buildItem.GetLink();
 

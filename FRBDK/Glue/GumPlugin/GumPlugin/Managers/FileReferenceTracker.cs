@@ -713,9 +713,10 @@ namespace GumPlugin.Managers
                 bool wasAnythingChanged = RemoveUnreferencedFilesFromProjects(gumProject, codeProject, contentProject);
                 shouldSave |= wasAnythingChanged;
 
-                foreach(var syncedProject in GlueState.Self.SyncedProjects)
+                foreach(VisualStudioProject syncedProject in GlueState.Self.SyncedProjects)
                 {
-                    wasAnythingChanged = RemoveUnreferencedFilesFromProjects(gumProject, syncedProject, syncedProject.ContentProject);
+                    wasAnythingChanged = RemoveUnreferencedFilesFromProjects(gumProject, syncedProject,
+                        (VisualStudioProject)syncedProject.ContentProject);
                     shouldSave |= wasAnythingChanged;
                 }
 
@@ -727,7 +728,7 @@ namespace GumPlugin.Managers
             }
         }
 
-        private static bool RemoveUnreferencedFilesFromProjects(GumProjectSave gumProject, ProjectBase codeProject, ProjectBase contentProject)
+        private static bool RemoveUnreferencedFilesFromProjects(GumProjectSave gumProject, VisualStudioProject codeProject, VisualStudioProject contentProject)
         {
             List<ProjectItem> toRemove = new List<ProjectItem>();
 
@@ -758,7 +759,7 @@ namespace GumPlugin.Managers
             return wasAnythingChanged;
         }
         
-        private static void FillWithCodeBuildItemsToRemove(GumProjectSave gumProject, List<ProjectItem> toRemove, ProjectBase project)
+        private static void FillWithCodeBuildItemsToRemove(GumProjectSave gumProject, List<ProjectItem> toRemove, VisualStudioProject project)
         {
 
             var allElements = gumProject.Components.OfType<ElementSave>().Concat(
@@ -768,7 +769,7 @@ namespace GumPlugin.Managers
 
             var runtimeFolder = GlueState.Self.CurrentGlueProjectDirectory + "GumRuntimes/";
 
-            foreach (var buildItem in project)
+            foreach (var buildItem in project.EvaluatedItems)
             {
                 bool isRuntimeGenerated = buildItem.UnevaluatedInclude != null && buildItem.UnevaluatedInclude.ToLower().EndsWith("runtime.generated.cs");
                 string includeDirectory = null;
@@ -814,7 +815,7 @@ namespace GumPlugin.Managers
         /// <param name="gumProject">The Gum project to check.</param>
         /// <param name="toRemove">A list of which files to remove. The method populates this.</param>
         /// <param name="contentProject">The content project to check inside of for orphan references.</param>
-        private static void FillWithContentBuildItemsToRemove(GumProjectSave gumProject, List<ProjectItem> toRemove, ProjectBase contentProject)
+        private static void FillWithContentBuildItemsToRemove(GumProjectSave gumProject, List<ProjectItem> toRemove, VisualStudioProject contentProject)
 
         {
             string fontCacheFolder = FileManager.GetDirectory(gumProject.FullFileName) + "FontCache/";
@@ -845,7 +846,7 @@ namespace GumPlugin.Managers
 
                 bool isGumProjectInOwnFolder = glueContentFolder != gumProjectFolder && FileManager.MakeRelative(gumProjectFolder, glueContentFolder).Contains("..") == false;
 
-                foreach (var buildItem in contentProject.ToList())
+                foreach (var buildItem in contentProject.EvaluatedItems)
                 {
 
                     bool shouldRemove = GetIfShouldRemoveFontFile(toRemove, buildItem, fontCacheFolder, contentProject, referencedGumFiles);

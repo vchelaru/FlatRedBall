@@ -105,28 +105,28 @@ namespace FlatRedBall.Glue.Controls.ProjectSync
 
             if(ProjectBase != null)
             {
-                foreach(var item in ProjectBase)
+                foreach(var item in ((VisualStudioProject)ProjectBase).EvaluatedItems)
                 {
                     if(BuildItemViewModel.IsOrphaned(item, ProjectBase))
                     {
                         Orphans.Add(new BuildItemViewModel
                         {
                             BuildItem = item,
-                            Owner = ProjectBase
+                            Owner = (VisualStudioProject) ProjectBase
                         });
                     }
                 }
 
                 if(ProjectBase.ContentProject != ProjectBase && ProjectBase.ContentProject != null)
                 {
-                    foreach (var item in ProjectBase.ContentProject)
+                    foreach (var item in ((VisualStudioProject)ProjectBase.ContentProject).EvaluatedItems)
                     {
                         if (BuildItemViewModel.IsOrphaned(item, ProjectBase))
                         {
                             Orphans.Add(new BuildItemViewModel
                             {
                                 BuildItem = item,
-                                Owner = ProjectBase
+                                Owner = (VisualStudioProject)ProjectBase
                             });
                         }
                     }

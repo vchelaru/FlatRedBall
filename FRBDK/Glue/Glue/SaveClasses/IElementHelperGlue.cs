@@ -13,6 +13,7 @@ using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.VSHelpers.Projects;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -213,7 +214,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
                         ProjectManager.ProjectBase.RenameItem(relativeOld, relativeNew);
 
-                        foreach(var syncedProject in GlueState.Self.SyncedProjects)
+                        foreach(VisualStudioProject syncedProject in GlueState.Self.SyncedProjects)
                         {
                             string syncedRelativeOld = FileManager.MakeRelative(absoluteOldFile, syncedProject.Directory);
                             string syncedRelativeNew = FileManager.MakeRelative(absoluteNewFile, syncedProject.Directory);

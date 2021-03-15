@@ -234,7 +234,7 @@ namespace FlatRedBall.Glue.IO
             // Can't foreach because TryHandleSpecificProjectFileChange may modify it.
             for (int i = 0; i < ProjectManager.SyncedProjects.Count; i++)
             {
-                project = ProjectManager.SyncedProjects[i];
+                project = (VisualStudioProject)ProjectManager.SyncedProjects[i];
                 if (handled)
                 {
                     break;

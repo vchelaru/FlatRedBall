@@ -158,7 +158,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 foreach (ProjectSpecificFile projectSpecificFile in referencedFileSave.ProjectSpecificFiles)
                 {
-                    wasAnythingAdded |= UpdateFileMembershipInProject(ProjectManager.GetProjectByName(projectSpecificFile.ProjectName), projectSpecificFile.FilePath, useContentPipeline, true);
+                    VisualStudioProject foundProject = (VisualStudioProject)ProjectManager.GetProjectByName(projectSpecificFile.ProjectName);
+                    wasAnythingAdded |= UpdateFileMembershipInProject(foundProject, projectSpecificFile.FilePath, useContentPipeline, true);
                 }
                 if (wasAnythingAdded)
                 {
@@ -178,7 +179,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         /// <param name="shouldLink"></param>
         /// <param name="parentFile"></param>
         /// <returns>Whether the project was modified.</returns>
-        public bool UpdateFileMembershipInProject(ProjectBase project, string fileName, bool useContentPipeline, bool shouldLink, string parentFile = null, bool recursive = true, List<string> alreadyReferencedFiles = null)
+        public bool UpdateFileMembershipInProject(VisualStudioProject project, string fileName, bool useContentPipeline, bool shouldLink, string parentFile = null, bool recursive = true, List<string> alreadyReferencedFiles = null)
         {
             bool wasProjectModified = false;
             ///////////////////Early Out/////////////////////
@@ -231,7 +232,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (!isFileAlreadyPartOfProject)
                 {
-                    var buildItem = project.ContentProject.GetItem(fileRelativeToContent);
+                    var buildItem = ((VisualStudioProject)project.ContentProject).GetItem(fileRelativeToContent);
                     if (buildItem != null)
                     {
                         // The item is here but it's using the wrong build types.  Let's
@@ -253,7 +254,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             if (shouldRemoveFile)
             {
                 // It's using content pipeline, so we use XNBs not PNGs
-                var buildItem = project.ContentProject.GetItem(fileRelativeToContent);
+                var buildItem = ((VisualStudioProject)project.ContentProject).GetItem(fileRelativeToContent);
                 if (buildItem != null)
                 {
                     // The item is here but it's using the wrong build types.  Let's
@@ -410,7 +411,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             else
             {
-                project.ContentProject.AddContentBuildItem(
+                ((VisualStudioProject)project.ContentProject).AddContentBuildItem(
                     fileToAddAbsolute,
                     shouldLink ? SyncedProjectRelativeType.Linked : SyncedProjectRelativeType.Contained,
                     useContentPipeline);
@@ -464,7 +465,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (mainProject.CodeProject.IsFilePartOfProject(filePath.FullPath) == false)
             {
-                added = mainProject.CodeProject.AddCodeBuildItem(filePath.FullPath);
+                added = ((VisualStudioProject)mainProject.CodeProject).AddCodeBuildItem(filePath.FullPath);
 
                 if(save)
                 {
@@ -481,7 +482,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             var mainProject = GlueState.Self.CurrentMainProject;
             if (mainProject.CodeProject.IsFilePartOfProject(codeFilePath.FullPath) == false)
             {
-                mainProject.CodeProject.AddCodeBuildItem(codeFilePath.FullPath);
+                ((VisualStudioProject)mainProject.CodeProject).AddCodeBuildItem(codeFilePath.FullPath);
                 wasAdded = true;
             }
             return wasAdded;
@@ -680,7 +681,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         {
                             ProjectManager.ProjectBase.MakeBuildItemNested(bi, whatToNestUnder);
 
-                            foreach (ProjectBase project in ProjectManager.SyncedProjects)
+                            foreach (VisualStudioProject project in ProjectManager.SyncedProjects)
                             {
                                 var associatedBuildItem = project.GetItem(ProjectManager.MakeAbsolute(biInclude));
                                 if (associatedBuildItem != null)

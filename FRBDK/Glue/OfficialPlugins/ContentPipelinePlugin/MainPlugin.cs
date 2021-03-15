@@ -160,13 +160,13 @@ namespace OfficialPlugins.MonoGameContent
             BuildLogic.TryRemoveXnbReferences(GlueState.CurrentMainProject, file, save: false);
             BuildLogic.TryDeleteBuiltXnbFor(GlueState.CurrentMainProject, file, viewModel.UseContentPipelineOnPngs);
 
-            foreach(var syncedProject in GlueState.SyncedProjects)
+            foreach(VisualStudioProject syncedProject in GlueState.SyncedProjects)
             {
                 BuildLogic.TryRemoveXnbReferences(syncedProject, file, save: false);
                 BuildLogic.TryDeleteBuiltXnbFor(syncedProject, file, viewModel.UseContentPipelineOnPngs);
             }
 
-            TaskManager.Self.AddSync(Container.Get<IGlueCommands>().ProjectCommands.SaveProjects, "Save projects after removing XNBs");
+            TaskManager.Self.Add(Container.Get<IGlueCommands>().ProjectCommands.SaveProjects, "Save projects after removing XNBs");
         }
 
         private void HandleGluxUnloaded()
@@ -226,7 +226,7 @@ namespace OfficialPlugins.MonoGameContent
         {
             BuildLogic.Self.UpdateFileMembershipAndBuildReferencedFile(GlueState.CurrentMainProject, rfs, viewModel.UseContentPipelineOnPngs);
 
-            foreach (var syncedProject in GlueState.SyncedProjects)
+            foreach (VisualStudioProject syncedProject in GlueState.SyncedProjects)
             {
                 BuildLogic.Self.UpdateFileMembershipAndBuildReferencedFile(syncedProject, rfs, viewModel.UseContentPipelineOnPngs);
             }
@@ -239,7 +239,7 @@ namespace OfficialPlugins.MonoGameContent
             {
                 BuildLogic.Self.UpdateFileMembershipAndBuildReferencedFile(GlueState.CurrentMainProject, newFile, viewModel.UseContentPipelineOnPngs);
             }
-            foreach(var project in GlueState.SyncedProjects)
+            foreach(VisualStudioProject project in GlueState.SyncedProjects)
             {
                 if(BuildLogic.GetIfNeedsMonoGameFilesBuilt( project ))
                 {
@@ -259,7 +259,7 @@ namespace OfficialPlugins.MonoGameContent
 
         private void HandleLoadedSyncedProject(ProjectBase project)
         {
-            BuildLogic.Self.RefreshBuiltFilesFor(project, viewModel.UseContentPipelineOnPngs);
+            BuildLogic.Self.RefreshBuiltFilesFor((VisualStudioProject)project, viewModel.UseContentPipelineOnPngs);
         }
 
         private void HandleFileChanged(string fileName)
@@ -290,7 +290,7 @@ namespace OfficialPlugins.MonoGameContent
                 {
                     BuildLogic.Self.TryHandleReferencedFile(GlueState.CurrentMainProject, fileName, viewModel.UseContentPipelineOnPngs);
 
-                    foreach (var syncedProject in GlueState.SyncedProjects)
+                    foreach (VisualStudioProject syncedProject in GlueState.SyncedProjects)
                     {
                         BuildLogic.Self.TryHandleReferencedFile(syncedProject, fileName, viewModel.UseContentPipelineOnPngs);
                     }

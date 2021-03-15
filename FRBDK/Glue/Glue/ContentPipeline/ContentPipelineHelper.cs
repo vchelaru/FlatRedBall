@@ -29,7 +29,7 @@ namespace FlatRedBall.Glue.ContentPipeline
                 bool shouldRemoveAndAdd = false;
      
      
-                ProjectBase projectBase = ProjectManager.ContentProject;
+                var projectBase = ProjectManager.ContentProject;
                 if (projectBase == null)
                 {
                     projectBase = ProjectManager.ProjectBase;
@@ -50,7 +50,7 @@ namespace FlatRedBall.Glue.ContentPipeline
             }, "Reacting to changing UseContentPipeline");
         }
         
-        private static void AddAndRemoveModifiedRfsFiles(List<ReferencedFileSave> rfses, List<string> filesInModifiedRfs, ProjectBase projectBase, bool usesContentPipeline)
+        private static void AddAndRemoveModifiedRfsFiles(List<ReferencedFileSave> rfses, List<string> filesInModifiedRfs, VisualStudioProject projectBase, bool usesContentPipeline)
         {
 
             if (filesInModifiedRfs.Count != 0)
@@ -120,12 +120,12 @@ namespace FlatRedBall.Glue.ContentPipeline
                         {
                             projectBase.AddContentBuildItem(absoluteFileName, SyncedProjectRelativeType.Contained, false);
                         }
-                        foreach (ProjectBase syncedProject in ProjectManager.SyncedProjects)
+                        foreach (VisualStudioProject syncedProject in ProjectManager.SyncedProjects)
                         {
-                            ProjectBase syncedContentProjectBase = syncedProject;
+                            VisualStudioProject syncedContentProjectBase = syncedProject;
                             if (syncedProject.ContentProject != null)
                             {
-                                syncedContentProjectBase = syncedProject.ContentProject;
+                                syncedContentProjectBase = (VisualStudioProject) syncedProject.ContentProject;
                             }
 
                             if (!projectsAlreadyModified.Contains(syncedContentProjectBase))
@@ -154,7 +154,7 @@ namespace FlatRedBall.Glue.ContentPipeline
 
         }
 
-        private static void AddOrRemoveIndividualRfs(ReferencedFileSave rfs, List<string> filesInModifiedRfs, ref bool shouldRemoveAndAdd, ProjectBase projectBase)
+        private static void AddOrRemoveIndividualRfs(ReferencedFileSave rfs, List<string> filesInModifiedRfs, ref bool shouldRemoveAndAdd, VisualStudioProject projectBase)
         {
 
             List<ProjectBase> projectsAlreadyModified = new List<ProjectBase>();
@@ -182,13 +182,13 @@ namespace FlatRedBall.Glue.ContentPipeline
 
                     #region Loop through all synced projects and add or remove the file referenced by the RFS
 
-                    foreach (ProjectBase syncedProject in ProjectManager.SyncedProjects)
+                    foreach (VisualStudioProject syncedProject in ProjectManager.SyncedProjects)
                     {
 
-                        ProjectBase syncedContentProjectBase = syncedProject;
+                        VisualStudioProject syncedContentProjectBase = syncedProject;
                         if (syncedProject.ContentProject != null)
                         {
-                            syncedContentProjectBase = syncedProject.ContentProject;
+                            syncedContentProjectBase = (VisualStudioProject) syncedProject.ContentProject;
                         }
 
                         if (!projectsAlreadyModified.Contains(syncedContentProjectBase))
@@ -241,7 +241,7 @@ namespace FlatRedBall.Glue.ContentPipeline
 
 
 
-            ProjectBase projectBase = ProjectManager.ContentProject;
+            var projectBase = ProjectManager.ContentProject;
 
             if (projectBase == null)
             {
@@ -263,10 +263,10 @@ namespace FlatRedBall.Glue.ContentPipeline
                 item.SetMetadataValue(parameterTag, valueToSet);
             }
 
-            foreach (ProjectBase syncedProject in ProjectManager.SyncedProjects)
+            foreach (VisualStudioProject syncedProject in ProjectManager.SyncedProjects)
             {
                 // Since this is a content file, we want the content project.
-                ProjectBase syncedProjectBaseToUse = syncedProject.ContentProject;
+                var syncedProjectBaseToUse = syncedProject.ContentProject as VisualStudioProject;
 
                 if (syncedProjectBaseToUse == null)
                 {

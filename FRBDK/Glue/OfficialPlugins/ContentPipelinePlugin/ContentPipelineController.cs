@@ -96,7 +96,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
                 RemoveXnbs();
             }
 
-            TaskManager.Self.AddSync(() =>
+            TaskManager.Self.Add(() =>
             {
                 RefreshAllFileMembership(useContentPipeline);
             }, "Refreshing file memberships");
@@ -111,7 +111,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
 
         private static void AddSaveTasks()
         {
-            TaskManager.Self.AddSync(() =>
+            TaskManager.Self.Add(() =>
             {
                 GlueCommands.ProjectCommands.SaveProjects();
                 GlueCommands.GluxCommands.SaveGlux();
@@ -130,7 +130,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
             {
                 BuildLogic.Self.TryAddXnbReferencesAndBuild(referencedPng, mainProject, saveProjectAfterAdd: false);
 
-                foreach (var project in syncedProjects)
+                foreach (VisualStudioProject project in syncedProjects)
                 {
                     BuildLogic.Self.TryAddXnbReferencesAndBuild(referencedPng, project, saveProjectAfterAdd: false);
                 }
@@ -142,13 +142,13 @@ namespace OfficialPlugins.ContentPipelinePlugin
             var referencedPngs = GetReferencedPngs();
 
             var mainProject = GlueState.CurrentMainProject;
-            ProjectBase[] syncedProjects = GlueState.SyncedProjects.ToArray();
+            var syncedProjects = GlueState.SyncedProjects.ToArray();
 
             foreach (var referencedPng in referencedPngs)
             {
                 BuildLogic.TryRemoveXnbReferences(mainProject, referencedPng, save: false);
                 
-                foreach (var project in syncedProjects)
+                foreach (VisualStudioProject project in syncedProjects)
                 {
                     BuildLogic.TryRemoveXnbReferences(project, referencedPng, save: false);
                 }
@@ -195,7 +195,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
             {
                 projectCommands.UpdateFileMembershipInProject(mainProject, referencedPng, useContentPipeline: useContentPipeline, shouldLink: false);
 
-                foreach(var project in GlueState.SyncedProjects)
+                foreach(VisualStudioProject project in GlueState.SyncedProjects)
                 {
                     projectCommands.UpdateFileMembershipInProject(
                         project, referencedPng, useContentPipeline: useContentPipeline, shouldLink: true);

@@ -103,72 +103,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Glue\Events\EventResponseSave.cs">
-      <Link>Models\EventResponseSave.cs</Link>
-    </Compile>
     <Compile Include="..\Glue\Events\EventSave.cs">
       <Link>Models\EventSave.cs</Link>
-    </Compile>
-    <Compile Include="..\Glue\Events\IEventContainer.cs">
-      <Link>Models\Interfaces\IEventContainer.cs</Link>
-    </Compile>
-    <Compile Include="..\Glue\SaveClasses\CustomClassSave.cs">
-      <Link>Models\CustomClassSave.cs</Link>
-    </Compile>
-    <Compile Include="..\Glue\SaveClasses\EntitySave.cs">
-      <Link>Models\EntitySave.cs</Link>
-    </Compile>
-    <Compile Include="..\Glue\SaveClasses\GlobalContentSettingsSave.cs">
-      <Link>Models\GlobalContentSettingsSave.cs</Link>
-    </Compile>
-    <Compile Include="..\Glue\SaveClasses\GlueProjectSave.cs">
-      <Link>Models\GlueProjectSave.cs</Link>
-    </Compile>
-    <Compile Include="..\Glue\SaveClasses\IElement.cs">
-      <Link>Models\Interfaces\IElement.cs</Link>
-    </Compile>
-    <Compile Include="..\Glue\SaveClasses\IFileReferencer.cs">
-      <Link>Models\Interfaces\IFileReferencer.cs</Link>
-    </Compile>
-    <Compile Include="..\Glue\SaveClasses\INamedObjectContainer.cs">
-      <Link>Models\Interfaces\INamedObjectContainer.cs</Link>
     </Compile>
     <Compile Include="..\Glue\SaveClasses\NamedObjectPropertyOverride.cs">
       <Link>NamedObjectPropertyOverride.cs</Link>
     </Compile>
-    <Compile Include="..\Glue\SaveClasses\PerformanceSettingsSave.cs">
-      <Link>PerformanceSettingsSave.cs</Link>
-    </Compile>
-    <Compile Include="..\Glue\SaveClasses\ReferencedFileSave.cs">
-      <Link>ReferencedFileSave.cs</Link>
-    </Compile>
-    <Compile Include="..\Glue\SaveClasses\ScreenSave.cs">
-      <Link>ScreenSave.cs</Link>
-    </Compile>
-    <Compile Include="..\Glue\SaveClasses\StateSaveCategory.cs">
-      <Link>StateSaveCategory.cs</Link>
-    </Compile>
     <Compile Include="..\Glue\SaveClasses\TranslatedFileSave.cs">
       <Link>TranslatedFileSave.cs</Link>
     </Compile>
-    <Compile Include="Models\DisplaySettings.cs" />
     <Compile Include="ExtensionMethods\GlueProjectSaveExtensions.cs" />
-    <Compile Include="Models\GlueElement.cs" />
-    <Compile Include="Models\Interfaces\ITaggable.cs" />
-    <Compile Include="Models\GluxPluginData.cs" />
     <Compile Include="Models\TypeConverters\IConverter.cs" />
     <Compile Include="Models\TypeConverters\InverterConverter.cs" />
-    <Compile Include="PluginRequirement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj">
       <Project>{26dd17aa-55ae-46ab-9394-a2319728869a}</Project>
       <Name>FlatRedBallStandard</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj">
-      <Project>{e1d670b6-ad42-4b84-aff8-d568097be03d}</Project>
-      <Name>EditorObjectsXna4</Name>
     </ProjectReference>
     <ProjectReference Include="..\GlueCommon\GlueCommon.csproj">
       <Project>{9403b27a-6e3a-4083-8a42-0eb62b699246}</Project>

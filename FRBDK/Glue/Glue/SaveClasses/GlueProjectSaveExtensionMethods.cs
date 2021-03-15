@@ -16,6 +16,7 @@ using FlatRedBall.Glue.FormHelpers;
 using EditorObjects.IoC;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using Newtonsoft.Json;
+using FlatRedBall.Glue.VSHelpers.Projects;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -470,7 +471,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if (ProjectManager.ProjectBase.GetItem(absoluteCodeFile) == null)
             {
-                ProjectManager.ProjectBase.CodeProject.AddCodeBuildItem(absoluteCodeFile);
+                ((VisualStudioProject)ProjectManager.ProjectBase.CodeProject).AddCodeBuildItem(absoluteCodeFile);
             }
         }
 

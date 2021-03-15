@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 using System.Text;
 using FlatRedBall.IO;
+using System.Windows;
 
 using FlatRedBall.Utilities;
 
@@ -10,20 +11,45 @@ using FlatRedBall.Utilities;
 using FlatRedBall.Content;
 using FlatRedBall.Content.Math.Geometry;
 using FlatRedBall.Content.Particle;
-//using FlatRedBall.Content.SpriteRig;
 using FlatRedBall.Content.AI.Pathfinding;
 using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Content.Math.Splines;
-//using FlatRedBall.Content.Model.WMELoader;
+using System.IO;
+using System.Reflection;
+using FlatRedBall.Math;
+using FlatRedBall.Instructions.Reflection;
+using FlatRedBall;
+using FlatRedBall.Graphics;
+using FlatRedBall.Content.Scene;
 
-namespace FlatRedBall.Glue.Parsing
+using FlatRedBall.Content.SpriteFrame;
+using SourceReferencingFile = FlatRedBall.Glue.Content.SourceReferencingFile;
+
+using Color = Microsoft.Xna.Framework.Color;
+
+namespace EditorObjects.Parsing
 {
+    public enum ErrorBehavior
+    {
+        ThrowException,
+        ContinueSilently
+    }
+
+    public enum TopLevelOrRecursive
+    {
+        TopLevel,
+        Recursive
+    }
+
+
     public static class ContentParser
     {
-        public static List<string> GetNamedObjectsIn(string fileName)
+        public static bool GetNamedObjectsIn(string fileName, List<string> listToAddTo)
         {
+            bool toReturn = true;
+
             string extension = FileManager.GetExtension(fileName);
-            List<string> listToReturn = new List<string>();
+
             switch (extension)
             {
                 #region case Scene (scnx)
@@ -31,29 +57,24 @@ namespace FlatRedBall.Glue.Parsing
 
                     SpriteEditorScene ses = SpriteEditorScene.FromFile(fileName);
 
-                    for (int i = 0; i < ses.PositionedModelSaveList.Count; i++)
-                    {
-                        listToReturn.Add(ses.PositionedModelSaveList[i].Name + " (PositionedModel)");
-                    }
-
                     for(int i = 0; i < ses.SpriteFrameSaveList.Count; i++)
                     {
-                        listToReturn.Add(ses.SpriteFrameSaveList[i].ParentSprite.Name + " (SpriteFrame)");
+                        listToAddTo.Add(ses.SpriteFrameSaveList[i].ParentSprite.Name + " (SpriteFrame)");
                     }
 
                     for(int i = 0; i < ses.SpriteGridList.Count; i++)
                     {
-                        listToReturn.Add(ses.SpriteGridList[i].Name + " (SpriteGrid)");
+                        listToAddTo.Add(ses.SpriteGridList[i].Name + " (SpriteGrid)");
                     }
 
                     for(int i = 0; i < ses.SpriteList.Count; i++)
                     {
-                        listToReturn.Add(ses.SpriteList[i].Name + " (Sprite)");
+                        listToAddTo.Add(ses.SpriteList[i].Name + " (Sprite)");
                     }
 
                     for(int i = 0; i < ses.TextSaveList.Count; i++)
                     {
-                        listToReturn.Add(ses.TextSaveList[i].Name + " (Text)");
+                        listToAddTo.Add(ses.TextSaveList[i].Name + " (Text)");
                     }
                     break;
                 #endregion
@@ -65,23 +86,23 @@ namespace FlatRedBall.Glue.Parsing
 
                     for (int i = 0; i < scs.AxisAlignedCubeSaves.Count; i++)
                     {
-                        listToReturn.Add(scs.AxisAlignedCubeSaves[i].Name + " (AxisAlignedCube)");
+                        listToAddTo.Add(scs.AxisAlignedCubeSaves[i].Name + " (AxisAlignedCube)");
                     }
                     for (int i = 0; i < scs.AxisAlignedRectangleSaves.Count; i++)
                     {
-                        listToReturn.Add(scs.AxisAlignedRectangleSaves[i].Name + " (AxisAlignedRectangle)");
+                        listToAddTo.Add(scs.AxisAlignedRectangleSaves[i].Name + " (AxisAlignedRectangle)");
                     }
                     for (int i = 0; i < scs.CircleSaves.Count; i++)
                     {
-                        listToReturn.Add(scs.CircleSaves[i].Name + " (Circle)");
+                        listToAddTo.Add(scs.CircleSaves[i].Name + " (Circle)");
                     }
                     for (int i = 0; i < scs.PolygonSaves.Count; i++)
                     {
-                        listToReturn.Add(scs.PolygonSaves[i].Name + " (Polygon)");
+                        listToAddTo.Add(scs.PolygonSaves[i].Name + " (Polygon)");
                     }
                     for (int i = 0; i < scs.SphereSaves.Count; i++)
                     {
-                        listToReturn.Add(scs.SphereSaves[i].Name + " (Sphere)");
+                        listToAddTo.Add(scs.SphereSaves[i].Name + " (Sphere)");
                     }
                     break;
 
@@ -93,7 +114,7 @@ namespace FlatRedBall.Glue.Parsing
 
 					for (int i = 0; i < nns.PositionedNodes.Count; i++)
 					{
-						listToReturn.Add(nns.PositionedNodes[i].Name + " (PositionedNode)");
+                        listToAddTo.Add(nns.PositionedNodes[i].Name + " (PositionedNode)");
 					}
 
 					break;
@@ -105,7 +126,7 @@ namespace FlatRedBall.Glue.Parsing
 
                     for (int i = 0; i < esl.emitters.Count; i++)
                     {
-                        listToReturn.Add(esl.emitters[i].Name + " (Emitter)");
+                        listToAddTo.Add(esl.emitters[i].Name + " (Emitter)");
                     }
 
                     break;
@@ -119,7 +140,7 @@ namespace FlatRedBall.Glue.Parsing
 
 					for (int i = 0; i < acls.AnimationChains.Count; i++)
 					{
-						listToReturn.Add(acls.AnimationChains[i].Name + " (AnimationChain)");
+                        listToAddTo.Add(acls.AnimationChains[i].Name + " (AnimationChain)");
 					}
 					break;
 				#endregion
@@ -130,137 +151,298 @@ namespace FlatRedBall.Glue.Parsing
 
 					for (int i = 0; i < ssl.Splines.Count; i++)
 					{
-						listToReturn.Add(ssl.Splines[i].Name + " (Spline)");
+                        listToAddTo.Add(ssl.Splines[i].Name + " (Spline)");
 					}
 
 					break;
 
 				#endregion
+
+                default:
+                    toReturn = false;
+                    break;
 			}
 
-            return listToReturn;
+            return toReturn;
         }
 
-		public static List<string> GetFilesReferencedByAsset(string file)
-		{
+        public static List<SourceReferencingFile> GetSourceReferencingFilesReferencedByAsset(string fileName)
+        {
+            return GetSourceReferencingFilesReferencedByAsset(fileName, TopLevelOrRecursive.TopLevel);
+        }
 
-			return GetFilesReferencedByAsset(file, readRecursively: false);
-		}
+        public static List<SourceReferencingFile> GetSourceReferencingFilesReferencedByAsset(string fileName, TopLevelOrRecursive topLevelOrRecursive)
+        {
+            string throwAwayString = "";
+            string throwawayVerboseString = "";
 
-		public static List<string> GetFilesReferencedByAsset(string file, bool readRecursively)
-		{
-			string fileExtension = FileManager.GetExtension(file);
+            return GetSourceReferencingFilesReferencedByAsset(fileName, topLevelOrRecursive, ErrorBehavior.ThrowException, ref throwAwayString, ref throwawayVerboseString);
+        }
 
-			List<string> referencedFiles = null;// = new List<string>();
+        public static List<SourceReferencingFile> GetSourceReferencingFilesReferencedByAsset(string fileName, TopLevelOrRecursive topLevelOrRecursive, ErrorBehavior errorBehavior, ref string error, ref string verboseError)
+        {
+            string fileExtension = FileManager.GetExtension(fileName);
 
-			switch (fileExtension)
+            List<SourceReferencingFile> referencedFiles = null;
+
+            switch (fileExtension)
             {
-                #region Scene (.scnx)
+                //case "scnx":
+                //    try
+                //    {
+                //        SpriteEditorScene ses = SpriteEditorScene.FromFile(fileName);
 
-                case "scnx":
-
-					SpriteEditorScene ses = SpriteEditorScene.FromFile(file);
-					referencedFiles = ses.GetReferencedFiles(RelativeType.Absolute);
-					break;
-
-                #endregion
-
-                #region Emitter List (.emix)
-
-                case "emix":
-					EmitterSaveList esl = EmitterSaveList.FromFile(file);
-					referencedFiles = esl.GetReferencedFiles(RelativeType.Absolute);
-					break;
-
-                #endregion
-
-                #region SpriteRig (.srgx)
-
-                case "srgx":
-                    SpriteRigSave srs = SpriteRigSave.FromFile(file);
-                    referencedFiles = srs.GetReferencedFiles(RelativeType.Absolute);
-                    break;
-
-                #endregion
-
-                #region AnimationChain List
-
-                case "achx":
-					AnimationChainListSave acls = AnimationChainListSave.FromFile(file);
-					referencedFiles = acls.GetReferencedFiles(RelativeType.Absolute);
-					break;
-
-                #endregion
-
-                #region Bitmap Font Generator Config File (.bmfc)
-
-                case "bmfc":
-
-                    referencedFiles = new List<string>();
-
-                    // These are only referenced IF they actually exist
-                    string referencedFileToAdd = FileManager.RemoveExtension(file) + ".png";
-                    if (FileManager.FileExists(referencedFileToAdd))
-                    {
-                        referencedFiles.Add(referencedFileToAdd);
-                    }
-
-                    referencedFileToAdd = FileManager.RemoveExtension(file) + ".fnt";
-                    if (FileManager.FileExists(referencedFileToAdd))
-                    {
-                        referencedFiles.Add(referencedFileToAdd);
-                    }
-                    break;
-
-                #endregion
-
-                #region X File (.x)
-
-                case "x":
-					referencedFiles = GetTextureReferencesInX(file);
-					break;
-
-                #endregion
-
-                #region WME File (.wme)
-                case "wme":
-                    referencedFiles = new List<string>();
-                    WMELoader.GetReferencedFiles(file, referencedFiles, RelativeType.Absolute);
-
-                    break;
-
-                #endregion
-
-                #region Spline List (.slpx) - falls to default
-
-                case "splx":
-
-                #endregion
-                default:
-					referencedFiles = new List<string>();
-					break;
-			}
-
-			if (readRecursively)
-			{
-				for (int i = referencedFiles.Count - 1; i > -1; i--)
-				{
-					referencedFiles.AddRange(GetFilesReferencedByAsset(referencedFiles[i], true));
-				}
-
-			}
-
-            // Files may include "../", so let's get rid of that stuff
-            for (int i = 0; i < referencedFiles.Count; i++)
-            {
-                referencedFiles[i] = FileManager.Standardize(referencedFiles[i], "", false);
+                //        referencedFiles = ses.GetSourceReferencingReferencedFiles(RelativeType.Absolute);
+                //    }
+                //    catch (Exception e)
+                //    {
+                //        error = "Error loading file " + fileName + ": " + e.Message;
+                //        referencedFiles = new List<SourceReferencingFile>();
+                //        verboseError = e.ToString();
+                //    }
+                //    break;
+                //default:
+                //    referencedFiles = new List<SourceReferencingFile>();
+                //    break;
             }
+/**/
+            if (topLevelOrRecursive == TopLevelOrRecursive.Recursive)
+            {
+                //First we need to get a list of all referenced files
+                List<string> filesToSearch = new List<string>();
+
+                try
+                {
+                    // GetFilesReferencedByAsset can throw an error if the file doesn't
+                    // exist.  But we don't really care if it's missing if it can't reference
+                    // others.  I mean, sure we care, but it's not relevant here.  Other systems
+                    // can check for that.
+                    if (CanFileReferenceOtherFiles(fileName))
+                    {
+                        GetFilesReferencedByAsset(fileName, topLevelOrRecursive, filesToSearch);
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (errorBehavior == ErrorBehavior.ThrowException)
+                    {
+                        throw e;
+                    }
+                    else
+                    {
+                        error += e.Message + "\n";
+                    }
+                }
 
 
-			return referencedFiles;
+
+                if (filesToSearch != null)
+                {
+                    for (int i = filesToSearch.Count - 1; i > -1; i--)
+                    {
+                        string errorForThisFile = "";
+                        string verboseErrorForThisFile = "";
+                        List<SourceReferencingFile> subReferencedFiles = GetSourceReferencingFilesReferencedByAsset(filesToSearch[i], topLevelOrRecursive,
+                            errorBehavior, ref errorForThisFile, ref verboseErrorForThisFile);
+                        // error may have already been set.  If it has already been set, we don't want to dump more errors (which may just be duplicates anyway)
+                        if (string.IsNullOrEmpty(error))
+                        {
+                            error += errorForThisFile;
+                        }
+
+                        if (subReferencedFiles != null)
+                        {
+                            referencedFiles.AddRange(subReferencedFiles);
+                        }
+                    }
+                }
+            }
+/**/
+            return referencedFiles;
+
+        }
+
+        public static List<string> GetFilesReferencedByAsset(string fileName)
+		{
+
+            return GetFilesReferencedByAsset(fileName, TopLevelOrRecursive.TopLevel);
 		}
 
-        internal static string GetMemberNameForList(string extension, string memberType)
+        public static List<string> GetFilesReferencedByAsset(string fileName, TopLevelOrRecursive topLevelOrRecursive)
+		{
+            List<string> referencedFiles = new List<string>();
+
+            GetFilesReferencedByAsset(fileName, topLevelOrRecursive, referencedFiles);
+
+            return referencedFiles.Distinct().ToList();
+        }
+
+        public static void GetFilesReferencedByAsset(string fileName, TopLevelOrRecursive topLevelOrRecursive, List<string> referencedFiles)
+        {
+            List<string> newReferencedFiles = new List<string>();
+            if (!CanFileReferenceOtherFiles(fileName))
+            {
+                return;
+            }
+            else if (!FileManager.FileExists(fileName))
+            {
+                // We used to throw an error here but now we just let the error window handle it:
+                //throw new FileNotFoundException("Could not find file " + fileName, fileName);
+
+            }
+            else
+            {
+
+                string fileExtension = FileManager.GetExtension(fileName);
+
+                switch (fileExtension)
+                {
+                    #region Scene (.scnx)
+
+                    case "scnx":
+
+                        SceneSave ses = SceneSave.FromFile(fileName);
+                        newReferencedFiles = ses.GetReferencedFiles(RelativeType.Absolute);
+
+                        break;
+
+                    #endregion
+
+                    #region Emitter List (.emix)
+
+                    case "emix":
+                        EmitterSaveList esl = EmitterSaveList.FromFile(fileName);
+                        newReferencedFiles = esl.GetReferencedFiles(RelativeType.Absolute);
+                        break;
+
+                    #endregion
+
+                    #region AnimationChain List
+
+                    case "achx":
+
+                        AnimationChainListSave acls = null;
+                        acls = AnimationChainListSave.FromFile(fileName);
+                        newReferencedFiles = acls.GetReferencedFiles(RelativeType.Absolute);
+
+                        break;
+
+                    #endregion
+
+                    #region X File (.x)
+
+                    case "x":
+                        newReferencedFiles = GetTextureReferencesInX(fileName);
+                        break;
+
+                    #endregion
+
+                    #region Spline List (.slpx) - falls to default
+
+                    case "splx":
+
+                    #endregion
+
+                    #region Font File (.fnt)
+                    case "fnt":
+                        newReferencedFiles = GetTextureReferencesInFnt(fileName);
+
+                        break;
+                    #endregion
+                    default:
+                        
+                        break;
+                }
+
+                // We still want to construct as good of a reference structure as possible
+                // even if there are missing files.  Therefore, we'll just keep track of errors and report them 
+                // at the end of the method
+                bool didErrorOccur = false;
+                string errorMessage = "";
+                if (topLevelOrRecursive == TopLevelOrRecursive.Recursive)
+                {
+                    for (int i = newReferencedFiles.Count - 1; i > -1; i--)
+                    {
+                        // If this file can't reference other files, no need to even do a file check or throw errors. 
+                        if (CanFileReferenceOtherFiles(newReferencedFiles[i]) == true)
+                        {
+                            if (File.Exists(newReferencedFiles[i]))
+                            {
+
+                                try
+                                {
+                                    GetFilesReferencedByAsset(newReferencedFiles[i], topLevelOrRecursive, newReferencedFiles);
+                                }
+                                catch (Exception e)
+                                {
+                                    didErrorOccur = true;
+                                    errorMessage += e.Message;
+                                }
+                            }
+                            else
+                            {
+                                didErrorOccur = true;
+                                errorMessage += "Could not find the file " + newReferencedFiles[i] + 
+                                    " which is referenced in the file " + fileName + "\n";
+                            }
+                        }
+                    }
+
+                }
+
+                // Files may include "../", so let's get rid of that stuff
+                for (int i = 0; i < newReferencedFiles.Count; i++)
+                {
+                    newReferencedFiles[i] = FileManager.Standardize(newReferencedFiles[i], "", false);
+                }
+
+                referencedFiles.AddRange(newReferencedFiles);
+
+                if (didErrorOccur)
+                {
+                    throw new Exception(errorMessage);
+                }
+
+            }
+		}
+
+        private static bool CanFileReferenceOtherFiles(string fileName)
+        {
+            if(string.IsNullOrEmpty(fileName))
+            {
+                return false;
+            }
+            else
+            {
+                string extension = FileManager.GetExtension(fileName);
+
+                if(extension == "png" || extension == "bmp" || extension == "jpg" || extension == "gif" || 
+                    extension == "dds" || extension == "tga" ||
+                    extension == "cs")
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+
+        private static List<string> GetTextureReferencesInFnt(string fileName)
+        {
+            List<string> referencedFiles = new List<string>();
+            string contents = FileManager.FromFileText(fileName);
+            referencedFiles = new List<string>(BitmapFont.GetSourceTextures(contents));
+            for(int x = 0; x < referencedFiles.Count; ++x)
+            {
+                string referencedFileName = referencedFiles[x];
+                referencedFiles[x] = FileManager.GetDirectory(fileName) + referencedFileName;
+            }
+            return referencedFiles;
+        }
+
+        public static string GetMemberNameForList(string extension, string memberType)
         {
             switch (extension)
             {
@@ -279,6 +461,8 @@ namespace FlatRedBall.Glue.Parsing
 							// break;
                         case "PositionedModel":
                             return "PositionedModels";
+                        case "SpriteGrid":
+                            return "SpriteGrids";
 						case "Scene":
 							return "";
                     }
@@ -296,24 +480,32 @@ namespace FlatRedBall.Glue.Parsing
                     switch (memberType)
                     {
                         case "AxisAlignedRectangle":
+                        case "FlatRedBall.Math.Geometry.AxisAlignedRectangle":
                             return "AxisAlignedRectangles";
                             //break;
                         case "AxisAlignedCube":
+                        case "FlatRedBall.Math.Geometry.AxisAlignedCube":
                             return "AxisAlignedCubes";
                             //break;
                         case "Circle":
+                        case "FlatRedBall.Math.Geometry.Circle":
                             return "Circles";
                             // break;
                         case "Line":
+                        case "FlatRedBall.Math.Geometry.Line":
                             return "Lines";
-                            break;
+                            //break;
                         case "Polygon":
+                        case "FlatRedBall.Math.Geometry.Polygon":
                             return "Polygons";
                             // break;
 						case "ShapeCollection":
-							return "";
+                        case "FlatRedBall.Math.Geometry.ShapeCollection":
+
+                            return "";
 							// break;
                         case "Sphere":
+                        case "FlatRedBall.Math.Geometry.Sphere":
                             return "Spheres";
                             //break;
                     }
@@ -363,7 +555,7 @@ namespace FlatRedBall.Glue.Parsing
 
 					return "";
 
-					break;
+					//break;
 
 				#endregion
 
@@ -371,7 +563,7 @@ namespace FlatRedBall.Glue.Parsing
 				case "nntx":
 					return "";
 
-					break;
+					//break;
 
 				#endregion
 
@@ -380,7 +572,7 @@ namespace FlatRedBall.Glue.Parsing
                 case "bmp":
                 case "tga":
                     return "";
-                    break;
+                    //break;
 
 			}
 
@@ -396,7 +588,7 @@ namespace FlatRedBall.Glue.Parsing
 			string contents = FileManager.FromFileText(fileName);
 
 			int currentIndex = 0;
-			bool useCamel = false;
+			//bool useCamel = false;
 			const string TextureFileNameString = "TextureFilename {";
 			string fileDirectory = FileManager.GetDirectory(fileName);
 
@@ -442,5 +634,265 @@ namespace FlatRedBall.Glue.Parsing
 
 			return referencedFiles;
 		}
+
+        public static void EliminateDuplicateSourceReferencingFiles(List<SourceReferencingFile> sourceReferencingFileList)
+        {
+            for (int i = sourceReferencingFileList.Count - 1; i > -1; i--)
+            {
+//                bool hasFoundDuplicate = false;
+
+                SourceReferencingFile firstSrf = sourceReferencingFileList[i];
+
+                for (int j = i - 1; j > -1; j--)
+                {
+                    SourceReferencingFile otherSrf = sourceReferencingFileList[j];
+
+                    if (otherSrf.HasTheSameFilesAs(firstSrf))
+                    {
+                        sourceReferencingFileList.RemoveAt(i);
+                        break;
+                    }
+                }
+            }
+        }
+
+        public static object GetValueForProperty(string fileName, string objectName, string propertyName)
+        {
+            string extension = FileManager.GetExtension(fileName);
+
+            switch (extension)
+            {
+                #region case Scene (scnx)
+                case "scnx":
+
+                    SpriteEditorScene ses = SpriteEditorScene.FromFile(fileName);
+
+                    string oldRelative = FileManager.RelativeDirectory;
+                    FileManager.RelativeDirectory = FileManager.GetDirectory(fileName);
+
+                    object returnValue = GetValueForPropertyInScene(ses, objectName, propertyName);
+
+                    FileManager.RelativeDirectory = oldRelative;
+
+                    return returnValue;
+
+                    //break;
+                #endregion
+
+                #region case ShapeCollection (shcx)
+
+                case "shcx":
+                    ShapeCollectionSave scs = ShapeCollectionSave.FromFile(fileName);
+                    return GetValueForPropertyInShapeCollection(scs, objectName, propertyName);
+                    //break;
+
+                #endregion
+            }
+            return null;
+        }
+
+        static object GetValueForPropertyInScene(SpriteEditorScene scene, string objectName, string property)
+        {
+            for (int i = 0; i < scene.SpriteFrameSaveList.Count; i++)
+            {
+                if (scene.SpriteFrameSaveList[i].ParentSprite.Name == objectName)
+                {
+                    return GetValueForPropertyOnObject(scene.SpriteFrameSaveList[i], property);
+                }
+            }
+
+            for (int i = 0; i < scene.SpriteGridList.Count; i++)
+            {
+                if (scene.SpriteGridList[i].Name == objectName)
+                {
+                    return GetValueForPropertyOnObject(scene.SpriteGridList[i], property);
+                }
+            }
+
+            for (int i = 0; i < scene.SpriteList.Count; i++)
+            {
+                if (scene.SpriteList[i].Name == objectName)
+                {
+                    return GetValueForPropertyOnObject(scene.SpriteList[i], property);
+                }
+            }
+
+            for (int i = 0; i < scene.TextSaveList.Count; i++)
+            {
+                if (scene.TextSaveList[i].Name == objectName)
+                {
+                    return GetValueForPropertyOnObject(scene.TextSaveList[i], property);
+                }
+            }
+
+            return null;
+        }
+
+        static object GetValueForPropertyInShapeCollection(ShapeCollectionSave shapeCollection, string objectName, string property)
+        {
+            for (int i = 0; i < shapeCollection.AxisAlignedCubeSaves.Count; i++)
+            {
+                if (shapeCollection.AxisAlignedCubeSaves[i].Name == objectName)
+                {
+                    return GetValueForPropertyOnObject(shapeCollection.AxisAlignedCubeSaves[i], property);
+                }
+            }
+            for (int i = 0; i < shapeCollection.AxisAlignedRectangleSaves.Count; i++)
+            {
+                if (shapeCollection.AxisAlignedRectangleSaves[i].Name == objectName)
+                {
+                    return GetValueForPropertyOnObject(shapeCollection.AxisAlignedRectangleSaves[i], property);
+                }
+            }
+            for (int i = 0; i < shapeCollection.CircleSaves.Count; i++)
+            {
+                if (shapeCollection.CircleSaves[i].Name == objectName)
+                {
+                    return GetValueForPropertyOnObject(shapeCollection.CircleSaves[i], property);
+                }
+            }
+            for (int i = 0; i < shapeCollection.PolygonSaves.Count; i++)
+            {
+                if (shapeCollection.PolygonSaves[i].Name == objectName)
+                {
+                    return GetValueForPropertyOnObject(shapeCollection.PolygonSaves[i], property);
+                }
+            }
+            for (int i = 0; i < shapeCollection.SphereSaves.Count; i++)
+            {
+                if (shapeCollection.SphereSaves[i].Name == objectName)
+                {
+                    return GetValueForPropertyOnObject(shapeCollection.SphereSaves[i], property);
+                }
+            }
+            return null;
+        }
+
+
+        static object GetValueForPropertyOnObject(AxisAlignedRectangleSave rectangle, string fieldOrProperty)
+        {
+            if (fieldOrProperty == "Color")
+            {
+                // See if there are any matches
+                Dictionary<string, Color> allColors = GetAllDefaultColors();
+                int alphaAsInt = MathFunctions.RoundToInt(rectangle.Alpha * 255);
+                int redAsInt = MathFunctions.RoundToInt(rectangle.Red * 255);
+                int greenAsInt = MathFunctions.RoundToInt(rectangle.Green * 255);
+                int blueAsInt = MathFunctions.RoundToInt(rectangle.Blue * 255);
+
+                foreach(KeyValuePair<string, Color> kvp in allColors)
+                {
+                    Color color = kvp.Value;
+
+                    if (color.A == alphaAsInt &&
+                        color.R == redAsInt &&
+                        color.G == greenAsInt &&
+                        color.B == blueAsInt)
+                    {
+                        return kvp.Key;
+                    }
+                }
+
+                return null;
+            }
+
+            return GetValueForPropertyOnObject<AxisAlignedRectangleSave>(rectangle, fieldOrProperty);
+        }
+
+        static object GetValueForPropertyOnObject(SpriteSave sprite, string fieldOrProperty)
+        {
+            if (fieldOrProperty == "Alpha")
+            {
+                float valueToDivideBy = 255 / GraphicalEnumerations.MaxColorComponentValue;
+
+                return (255 - sprite.Fade) / valueToDivideBy;
+            }
+            else if (fieldOrProperty == "PixelSize")
+            {
+                return sprite.ConstantPixelSize;
+            }
+            else if (fieldOrProperty == "CurrentChainName")
+            {
+                // This thing should use an AnimationChain
+                string animationChainRelative = sprite.AnimationChainsFile;
+
+                string animationChainFile = FileManager.RelativeDirectory + sprite.AnimationChainsFile;
+
+                AnimationChainListSave acls = AnimationChainListSave.FromFile(animationChainFile);
+
+                int index = sprite.CurrentChain;
+
+                if (index < acls.AnimationChains.Count)
+                {
+                    return acls.AnimationChains[index].Name;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            return GetValueForPropertyOnObject<SpriteSave>(sprite, fieldOrProperty);
+
+        }
+
+        static object GetValueForPropertyOnObject(SpriteFrameSave spriteFrameSave, string fieldOrProperty)
+        {
+            object returnValue = GetValueForPropertyOnObject<SpriteFrameSave>(spriteFrameSave, fieldOrProperty);
+
+            // Many of the properties on the SpriteFrame are actually on the Sprite itself.
+            if (returnValue == null)
+            {
+                returnValue = GetValueForPropertyOnObject(spriteFrameSave.ParentSprite, fieldOrProperty);
+            }
+
+            return returnValue;
+        }
+
+        static object GetValueForPropertyOnObject<T>(T objectToGetValueFrom, string fieldOrProperty)
+        {
+            Type type = typeof(T);
+
+            PropertyInfo[] properties = type.GetProperties();
+
+            for (int i = 0; i < properties.Length; i++)
+            {
+                if (properties[i].Name == fieldOrProperty)
+                {
+                    return properties[i].GetValue(objectToGetValueFrom, null);
+                }
+            }
+
+            FieldInfo[] fields = type.GetFields();
+
+            for (int i = 0; i < fields.Length; i++)
+            {
+                if (fields[i].Name == fieldOrProperty)
+                {
+                    return fields[i].GetValue(objectToGetValueFrom);
+                }
+            }
+
+            return null;
+        }
+
+        static Dictionary<string, Color> GetAllDefaultColors()
+        {
+            Dictionary<string, Color> toReturn = new Dictionary<string, Color>();
+
+            Type colorType = typeof(Color);
+
+            PropertyInfo[] properties = colorType.GetProperties();
+
+            foreach (PropertyInfo property in properties)
+            {
+                if (property.PropertyType == colorType)
+                {
+                    toReturn.Add(property.Name, (Color)property.GetValue(null, null));
+                }
+            }
+
+            return toReturn;
+        }
     }
 }

@@ -10,7 +10,7 @@ using FlatRedBall.Utilities;
 
 namespace FlatRedBall
 {
-    public partial class Sprite : PositionedObject, IAnimationChainAnimatable, IScalable, IVisible
+    public partial class Sprite : PositionedObject, IAnimationChainAnimatable, IScalable, IVisible, IAnimatable
     {
         #region Fields
 
@@ -110,11 +110,9 @@ namespace FlatRedBall
             set { mAnimationSpeed = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets the current animationChain - retrieved through the CurrentChainIndex property.
         /// </summary>
-        #endregion
         public AnimationChain CurrentChain
         {
             get
@@ -160,7 +158,6 @@ namespace FlatRedBall
         /// Setting this value will search the Sprite's AnimationChains for an animation with a matching name. If the argument differs from the current
         /// animation, the animation is set and played from the beginning. If the current animation matches the assigned value, no logic is performed.
         /// </summary>
-        [ExportOrder(5)]
         public string CurrentChainName
         {
             get
@@ -846,6 +843,7 @@ namespace FlatRedBall
 
         }
 
+
         #endregion
 
 
@@ -875,6 +873,41 @@ namespace FlatRedBall
             get;
             set;
         }
+
+        #endregion
+
+        #region IAnimatable implementation
+
+
+        void IAnimatable.PlayAnimation(string animationName)
+        {
+            this.CurrentChainName = animationName;
+            Animate = true;
+        }
+
+        bool IAnimatable.HasAnimation(string animationName)
+        {
+            if (AnimationChains == null)
+            {
+                return false;
+            }
+
+            for(int i = 0; i < AnimationChains.Count; i++)
+            {
+                if(AnimationChains[i].Name == animationName)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        bool IAnimatable.IsPlayingAnimation(string animationName)
+        {
+            return this.Animate && CurrentChainName == animationName;
+        }
+
+        bool IAnimatable.DidAnimationFinishOrLoop => JustCycled;
 
         #endregion
     }

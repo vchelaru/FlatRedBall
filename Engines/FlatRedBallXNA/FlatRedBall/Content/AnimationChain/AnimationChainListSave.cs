@@ -48,6 +48,12 @@ namespace FlatRedBall.Content.AnimationChain
 
         #region Properties
 
+        /// <summary>
+        /// The relative master project file that this is a part of. For exxample, the Glue (.glux) file.
+        /// This can be used by tools to provide additional functionality.
+        /// </summary>
+        public string ProjectFile { get; set; }
+
         [XmlIgnore]
         public List<string> ToRuntimeErrors
         {

@@ -81,7 +81,7 @@ namespace FlatRedBall.Glue.Projects
         /// <param name="fileToAddAbsolute">The file to add.</param>
         /// <returns>Whether the file was added.  This may be false if the file really is not a code file
         /// or if the file has already been added to the project.</returns>
-        public bool AddFileToCodeProjectIfNotAlreadyAdded(ProjectBase project, string fileToAddAbsolute)
+        public bool AddFileToCodeProjectIfNotAlreadyAdded(VisualStudioProject project, string fileToAddAbsolute)
         {
             if(project == null)
             {
@@ -99,7 +99,7 @@ namespace FlatRedBall.Glue.Projects
             return wasAdded;
         }
 
-        public bool AddFileToCodeProject(ProjectBase project, string fileToAddAbsolute)
+        public bool AddFileToCodeProject(VisualStudioProject project, string fileToAddAbsolute)
         {
             bool wasAdded = false;
 
@@ -111,7 +111,7 @@ namespace FlatRedBall.Glue.Projects
             if (fileToAddAbsolute.EndsWith(".cs"))
             {
                 // This should be a code item
-                project.CodeProject.AddCodeBuildItem(relativeFileName);
+                ((VisualStudioProject)project.CodeProject).AddCodeBuildItem(relativeFileName);
 
                 wasAdded = true;
             }

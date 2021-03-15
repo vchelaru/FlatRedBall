@@ -10,7 +10,7 @@ namespace FlatRedBall.Graphics.Animation
     {
         #region Fields/Properties
 
-        public IAnimationChainAnimatable AnimatedObject { get; set; }
+        public IAnimatable AnimatedObject { get; set; }
 
         public ObservableCollection<AnimationLayer> Layers
         {
@@ -26,7 +26,7 @@ namespace FlatRedBall.Graphics.Animation
             Layers.CollectionChanged += CollectionChanged;
         }
 
-        public AnimationController(IAnimationChainAnimatable animatable)
+        public AnimationController(IAnimatable animatable)
         {
             Layers.CollectionChanged += CollectionChanged;
             this.AnimatedObject = animatable;
@@ -87,7 +87,7 @@ namespace FlatRedBall.Graphics.Animation
                 }
             }
 
-            AnimatedObject.CurrentChainName = animationToSet;
+            AnimatedObject.PlayAnimation(animationToSet);
         }
     }
 

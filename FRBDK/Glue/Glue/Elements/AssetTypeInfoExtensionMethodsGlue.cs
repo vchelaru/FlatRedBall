@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FlatRedBall.IO;
-using ModelEditor.SaveClasses;
 using FlatRedBall.Glue.Managers;
 
 namespace FlatRedBall.Glue.Elements
@@ -20,18 +19,18 @@ namespace FlatRedBall.Glue.Elements
 
             switch (extension)
             {
-                case "shcx":
-                    EditorObjects.EditorSettings.PolygonEditorSettings pes = new EditorObjects.EditorSettings.PolygonEditorSettings();
-                    if (set2D)
-                    {
-                        pes.UsePixelCoordinates = true;
-                    }
+                //case "shcx":
+                //    EditorObjects.EditorSettings.PolygonEditorSettings pes = new EditorObjects.EditorSettings.PolygonEditorSettings();
+                //    if (set2D)
+                //    {
+                //        pes.UsePixelCoordinates = true;
+                //    }
 
-                    settingsFile += ".pesix";
+                //    settingsFile += ".pesix";
 
-                    FileManager.XmlSerialize(pes, settingsFile);
+                //    FileManager.XmlSerialize(pes, settingsFile);
 
-                    break;
+                //    break;
                 //case "splx":
                 //    {
                 //        EditorObjects.EditorSettings.SplineEditorSettingsSave ses =

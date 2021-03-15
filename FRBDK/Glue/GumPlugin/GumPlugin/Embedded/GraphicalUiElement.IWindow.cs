@@ -16,7 +16,7 @@ namespace Gum.Wireframe
     {
         public object OldBindingContext { get; set; }
     }
-    public partial class GraphicalUiElement : FlatRedBall.Gui.Controls.IControl
+    public partial class GraphicalUiElement : FlatRedBall.Gui.Controls.IControl, FlatRedBall.Graphics.Animation.IAnimatable
     {
         class HandledActions
         {
@@ -736,6 +736,29 @@ namespace Gum.Wireframe
         {
             return null;
         }
+
+        FlatRedBall.Gum.Animation.GumAnimation currentAnimation;
+
+        void global::FlatRedBall.Graphics.Animation.IAnimatable.PlayAnimation(string animationName)
+        {
+            currentAnimation = GetAnimation(animationName);
+
+            currentAnimation?.Play();
+        }
+
+        bool FlatRedBall.Graphics.Animation.IAnimatable.HasAnimation(string animationName)
+        {
+            return GetAnimation(animationName) != null;
+        }
+
+        bool FlatRedBall.Graphics.Animation.IAnimatable.IsPlayingAnimation(string animationName)
+        {
+            return currentAnimation != null &&
+                currentAnimation.IsPlaying() == true;
+        }
+
+
+        bool FlatRedBall.Graphics.Animation.IAnimatable.DidAnimationFinishOrLoop => currentAnimation?.LastScreenTimeAnimationEnd == FlatRedBall.TimeManager.CurrentScreenTime;
 
         public FlatRedBall.Glue.StateInterpolation.Tweener InterpolateTo(Gum.DataTypes.Variables.StateSave first, Gum.DataTypes.Variables.StateSave second, double secondsToTake, FlatRedBall.Glue.StateInterpolation.InterpolationType interpolationType, FlatRedBall.Glue.StateInterpolation.Easing easing)
         {

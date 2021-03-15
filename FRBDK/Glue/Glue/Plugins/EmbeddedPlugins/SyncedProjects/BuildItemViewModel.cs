@@ -13,7 +13,7 @@ namespace FlatRedBall.Glue.Controls.ProjectSync
     public class BuildItemViewModel
     {
         public ProjectItem BuildItem { get; set; }
-        public ProjectBase Owner { get; set; }
+        public VisualStudioProject Owner { get; set; }
 
         public string DisplayString
         {

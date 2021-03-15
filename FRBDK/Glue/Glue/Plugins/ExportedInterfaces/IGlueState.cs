@@ -27,11 +27,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
         {
             get;
         }
-        ProjectBase CurrentMainProject
+        VisualStudioProject CurrentMainProject
         {
             get;
         }
-        ProjectBase CurrentMainContentProject { get; }
+        VisualStudioProject CurrentMainContentProject { get; }
 
         IEnumerable<ProjectBase> SyncedProjects { get; }
 
@@ -179,7 +179,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
             set;
         }
 
-        public ProjectBase CurrentMainProject
+        public VisualStudioProject CurrentMainProject
         {
             get;
             set;
@@ -187,7 +187,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
 
         public IEnumerable<ProjectBase> SyncedProjects { get; set; }
 
-        public ProjectBase CurrentMainContentProject
+        public VisualStudioProject CurrentMainContentProject
         {
             get;
             set;

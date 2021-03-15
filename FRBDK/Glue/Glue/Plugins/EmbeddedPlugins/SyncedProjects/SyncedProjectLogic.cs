@@ -15,10 +15,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 {
     public class SyncedProjectLogic : Singleton<SyncedProjectLogic>
     {
-        public void SyncContentFromTo(ProjectBase from, VisualStudioProject to)
+        public void SyncContentFromTo(VisualStudioProject from, VisualStudioProject to)
         {
             var contentItemsToSync =
-                from.ContentProject.EvaluatedItems.Where(item => IsContentFile(item, from.ContentProject, to))
+                ((VisualStudioProject)from.ContentProject).EvaluatedItems.Where(item => IsContentFile(item, from.ContentProject, to))
                 .ToList();
 
             foreach (var bi in contentItemsToSync)

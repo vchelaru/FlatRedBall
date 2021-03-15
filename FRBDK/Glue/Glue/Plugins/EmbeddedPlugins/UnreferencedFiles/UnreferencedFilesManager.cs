@@ -154,7 +154,7 @@ namespace FlatRedBall.Glue.Managers
 
                         // Added this here to make it easier to debug. This isn't necessary for function, as
                         // internally it does a IsContent check
-                        var contentItems = project.ContentProject.EvaluatedItems
+                        var contentItems = ((VisualStudioProject)project.ContentProject).EvaluatedItems
                             .Where(item => ProjectManager.IsContent(item.UnevaluatedInclude.ToLower().Replace(@"\", @"/")))
                             .ToList();
 
@@ -175,7 +175,7 @@ namespace FlatRedBall.Glue.Managers
 
                         foreach (var syncedProject in syncedProjectCopy)
                         {
-                            var cloned = syncedProject.ContentProject.EvaluatedItems;
+                            var cloned = ((VisualStudioProject)syncedProject.ContentProject).EvaluatedItems;
                             foreach (var evaluatedItem in cloned)
                             {
                                 AddIfUnreferenced(evaluatedItem, syncedProject, referencedFiles, mUnreferencedFiles);

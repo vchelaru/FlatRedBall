@@ -92,7 +92,7 @@ namespace FlatRedBall.Glue.IO
             SetInitWindowText("Loading code project");
 
             var result = ProjectCreator.CreateProject(projectFileName);
-            ProjectManager.ProjectBase = result.Project;
+            ProjectManager.ProjectBase = (VisualStudioProject)result.Project;
 
             bool shouldLoad = result.Project != null;
             if (shouldLoad && result.ShouldTryToLoadProject)
@@ -856,14 +856,14 @@ namespace FlatRedBall.Glue.IO
         {
             bool shouldSave = false;
 
-            ProjectBase contentProjectBase = null;
+            VisualStudioProject contentProjectBase = null;
             if (ProjectManager.ProjectBase != null)
             {
                 contentProjectBase = ProjectManager.ProjectBase;
 
                 if (ProjectManager.ProjectBase.ContentProject != null)
                 {
-                    contentProjectBase = ProjectManager.ProjectBase.ContentProject;
+                    contentProjectBase = (VisualStudioProject) ProjectManager.ProjectBase.ContentProject;
                 }
             }
 
@@ -893,7 +893,7 @@ namespace FlatRedBall.Glue.IO
 
         }
 
-        private bool FixContentPipelineProjectValues(List<ReferencedFileSave> rfsList, ProjectBase contentProjectBase)
+        private bool FixContentPipelineProjectValues(List<ReferencedFileSave> rfsList, VisualStudioProject contentProjectBase)
         {
             bool hasMadeChanges = false;
 

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
-    <ProjectReference Include="..\..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj" />
     <ProjectReference Include="..\..\GlueCommon\GlueCommon.csproj" />
     <ProjectReference Include="..\..\GlueSaveClasses\GlueSaveClasses.csproj" />
     <ProjectReference Include="..\..\Glue\GlueFormsCore.csproj" />

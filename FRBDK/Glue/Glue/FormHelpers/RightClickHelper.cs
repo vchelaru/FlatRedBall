@@ -2043,11 +2043,11 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
 
 
-                foreach (ProjectBase project in ProjectManager.SyncedProjects)
+                foreach (VisualStudioProject project in ProjectManager.SyncedProjects)
                 {
                     project.ClearPendingTranslations();
 
-                    project.CodeProject.AddCodeBuildItem(EditorLogic.CurrentTreeNode.Text);
+                    ((VisualStudioProject)project.CodeProject).AddCodeBuildItem(EditorLogic.CurrentTreeNode.Text);
 
                     project.PerformPendingTranslations();
                 }

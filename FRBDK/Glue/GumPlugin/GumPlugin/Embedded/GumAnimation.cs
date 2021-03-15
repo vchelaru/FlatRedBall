@@ -123,6 +123,11 @@ namespace FlatRedBall.Gum.Animation
             private set;
         }
 
+        public double LastScreenTimeAnimationEnd
+        {
+            get; private set;
+        } = -1;
+
         public float Length
         {
             get;
@@ -281,11 +286,16 @@ namespace FlatRedBall.Gum.Animation
             {
                 if(this.Length == 0)
                 {
+                    LastScreenTimeAnimationEnd = FlatRedBall.TimeManager.CurrentScreenTime;
                     EndReached?.Invoke();
                 }
                 else
                 {
-                    Action endReachedAction = () => EndReached?.Invoke();
+                    Action endReachedAction = () =>
+                    {
+                        LastScreenTimeAnimationEnd = FlatRedBall.TimeManager.CurrentScreenTime;
+                        EndReached?.Invoke();
+                    };
                     var endInstruction = new DelegateInstruction(endReachedAction);
                     endInstruction.TimeToExecute = TimeManager.CurrentTime + this.Length / AnimationSpeed;
                     endInstruction.Target = this;

@@ -97,7 +97,7 @@ namespace FlatRedBall.Glue.Managers
             bool errorFound = false;
 
             #region  Loop through every .Generated.cs file to see if it has an associated object
-            foreach (var buildItem in ProjectManager.ProjectBase)
+            foreach (var buildItem in ProjectManager.ProjectBase.EvaluatedItems)
             {
                 if (buildItem.UnevaluatedInclude.ToLower().Contains(".generated.cs"))
                 {

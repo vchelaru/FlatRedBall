@@ -218,9 +218,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
-        public ProjectBase CurrentMainProject { get { return ProjectManager.ProjectBase; } }
+        public VisualStudioProject CurrentMainProject { get { return ProjectManager.ProjectBase; } }
 
-        public ProjectBase CurrentMainContentProject { get { return ProjectManager.ContentProject; } }
+        public VisualStudioProject CurrentMainContentProject { get { return ProjectManager.ContentProject; } }
 
         public FilePath CurrentSlnFileName
         {

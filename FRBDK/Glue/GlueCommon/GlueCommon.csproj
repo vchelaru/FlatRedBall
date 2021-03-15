@@ -6,17 +6,29 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Build" Version="16.4.0" />
-    <PackageReference Include="Microsoft.Build.Framework" Version="16.4.0" />
+    <Compile Remove="Plugins\**" />
+    <EmbeddedResource Remove="Plugins\**" />
+    <None Remove="Plugins\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Glue\Events\EventResponseSave.cs" Link="SaveClasses\EventResponseSave.cs" />
+    <Compile Include="..\Glue\Events\IEventContainer.cs" Link="SaveClasses\Interfaces\IEventContainer.cs" />
+    <Compile Include="..\Glue\SaveClasses\CustomClassSave.cs" Link="SaveClasses\CustomClassSave.cs" />
+    <Compile Include="..\Glue\SaveClasses\EntitySave.cs" Link="SaveClasses\EntitySave.cs" />
+    <Compile Include="..\Glue\SaveClasses\GlobalContentSettingsSave.cs" Link="SaveClasses\GlobalContentSettingsSave.cs" />
+    <Compile Include="..\Glue\SaveClasses\GlueProjectSave.cs" Link="SaveClasses\GlueProjectSave.cs" />
+    <Compile Include="..\Glue\SaveClasses\IElement.cs" Link="SaveClasses\Interfaces\IElement.cs" />
+    <Compile Include="..\Glue\SaveClasses\IFileReferencer.cs" Link="SaveClasses\Interfaces\IFileReferencer.cs" />
+    <Compile Include="..\Glue\SaveClasses\INamedObjectContainer.cs" Link="SaveClasses\Interfaces\INamedObjectContainer.cs" />
+    <Compile Include="..\Glue\SaveClasses\PerformanceSettingsSave.cs" Link="SaveClasses\PerformanceSettingsSave.cs" />
+    <Compile Include="..\Glue\SaveClasses\ReferencedFileSave.cs" Link="SaveClasses\ReferencedFileSave.cs" />
+    <Compile Include="..\Glue\SaveClasses\ScreenSave.cs" Link="SaveClasses\ScreenSave.cs" />
+    <Compile Include="..\Glue\SaveClasses\StateSaveCategory.cs" Link="SaveClasses\StateSaveCategory.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
-    <ProjectReference Include="..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Plugins\ExportedInterfaces\" />
   </ItemGroup>
 
 </Project>

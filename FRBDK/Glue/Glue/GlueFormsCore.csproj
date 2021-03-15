@@ -37,7 +37,6 @@
     <Compile Remove="Events\IEventContainer.cs" />
     <Compile Remove="FormHelpers\ParameterPropertyDescriptor.cs" />
     <Compile Remove="IO\FilePath.cs" />
-    <Compile Remove="Parsing\ContentParser.cs" />
     <Compile Remove="Plugins\AvailableMessages.cs" />
     <Compile Remove="Plugins\EmbeddedPlugins\SyncedProjects\Controls\ToolbarControl.cs" />
     <Compile Remove="Plugins\ExportedImplementations\CommandInterfaces\GlueViewCommands.cs" />
@@ -117,7 +116,6 @@
     <ProjectReference Include="..\..\..\..\Gum\ToolsUtilities\ToolsUtilitiesStandard.csproj" />
     <ProjectReference Include="..\..\..\..\Gum\WpfDataUi\WpfDataUi.csproj" />
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
-    <ProjectReference Include="..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj" />
     <ProjectReference Include="..\FlatRedBall.Plugin\FlatRedBall.PluginCore.csproj" />
     <ProjectReference Include="..\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj" />
     <ProjectReference Include="..\GlueCommon\GlueCommon.csproj" />

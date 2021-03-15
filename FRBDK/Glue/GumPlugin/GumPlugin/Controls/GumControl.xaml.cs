@@ -152,7 +152,7 @@ namespace GumPlugin.Controls
 
         public void RemoveOrphanCustomCodeClicked(object sender, RoutedEventArgs e)
         {
-            var codeProject = GlueState.Self.CurrentMainProject.CodeProject;
+            var codeProject = (VisualStudioProject) GlueState.Self.CurrentMainProject.CodeProject;
 
             List<Microsoft.Build.Evaluation.ProjectItem> itemsToRemove = 
                 new List<Microsoft.Build.Evaluation.ProjectItem>();

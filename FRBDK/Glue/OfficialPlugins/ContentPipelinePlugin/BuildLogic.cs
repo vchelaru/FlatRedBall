@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FlatRedBall.Glue.VSHelpers.Projects;
 
 namespace OfficialPlugins.MonoGameContent
 {
@@ -22,7 +23,7 @@ namespace OfficialPlugins.MonoGameContent
         const string commandLineBuildExe =
             @"C:\Program Files (x86)\MSBuild\MonoGame\v3.0\Tools\MGCB.exe";
 
-        public void RefreshBuiltFilesFor(ProjectBase project, bool forcePngsToContentPipeline)
+        public void RefreshBuiltFilesFor(VisualStudioProject project, bool forcePngsToContentPipeline)
         {
 
 
@@ -68,7 +69,7 @@ namespace OfficialPlugins.MonoGameContent
         }
 
 
-        public void UpdateFileMembershipAndBuildReferencedFile(ProjectBase project, ReferencedFileSave referencedFile, bool forcePngsToContentPipeline)
+        public void UpdateFileMembershipAndBuildReferencedFile(VisualStudioProject project, ReferencedFileSave referencedFile, bool forcePngsToContentPipeline)
         {
             bool isBuilt = IsBuiltByContentPipeline(referencedFile, forcePngsToContentPipeline);
 
@@ -83,7 +84,7 @@ namespace OfficialPlugins.MonoGameContent
             }
         }
 
-        public void TryHandleReferencedFile(ProjectBase project, string absoluteFile, bool forcePngsToContentPipeline)
+        public void TryHandleReferencedFile(VisualStudioProject project, string absoluteFile, bool forcePngsToContentPipeline)
         {
             bool isBuilt = IsBuiltByContentPipeline(absoluteFile, false, forcePngsToContentPipeline);
 
@@ -99,13 +100,13 @@ namespace OfficialPlugins.MonoGameContent
         }
 
 
-        public static void TryRemoveXnbReferences(ProjectBase project, ReferencedFileSave referencedFile, bool save = true)
+        public static void TryRemoveXnbReferences(VisualStudioProject project, ReferencedFileSave referencedFile, bool save = true)
         {
             var fullFileName = GlueCommands.FileCommands.GetFullFileName(referencedFile);
             TryRemoveXnbReferences(project, fullFileName, save);
         }
 
-        public static void TryRemoveXnbReferences(ProjectBase project, string fullFileName, bool save = true)
+        public static void TryRemoveXnbReferences(VisualStudioProject project, string fullFileName, bool save = true)
         {
             string destinationDirectory = GetDestinationDirectory(fullFileName, project);
 
@@ -118,7 +119,7 @@ namespace OfficialPlugins.MonoGameContent
             {
 
 
-                TaskManager.Self.AddSync(() =>
+                TaskManager.Self.Add(() =>
                 {
 
                     bool didRemove = false;
@@ -285,7 +286,7 @@ namespace OfficialPlugins.MonoGameContent
             return destinationDirectory;
         }
 
-        private void TryAddXnbReferencesAndBuild(ReferencedFileSave referencedFile, ProjectBase project, bool save)
+        private void TryAddXnbReferencesAndBuild(ReferencedFileSave referencedFile, VisualStudioProject project, bool save)
         {
             var fullFileName = GlueCommands.FileCommands.GetFullFileName(referencedFile);
 
@@ -293,7 +294,7 @@ namespace OfficialPlugins.MonoGameContent
 
         }
 
-        public void TryAddXnbReferencesAndBuild(string fullFileName, ProjectBase project, bool saveProjectAfterAdd, bool rebuild = false)
+        public void TryAddXnbReferencesAndBuild(string fullFileName, VisualStudioProject project, bool saveProjectAfterAdd, bool rebuild = false)
         {
             var contentDirectory = GlueState.ContentDirectory;
 
@@ -445,7 +446,7 @@ namespace OfficialPlugins.MonoGameContent
             return false;
         }
 
-        private void AddFileToProject(ProjectBase project, string absoluteFile, string link, bool saveProjectAfterAdd)
+        private void AddFileToProject(VisualStudioProject project, string absoluteFile, string link, bool saveProjectAfterAdd)
         {
             //project.AddContentBuildItem(file, SyncedProjectRelativeType.Linked, false);
 

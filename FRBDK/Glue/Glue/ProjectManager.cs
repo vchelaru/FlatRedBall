@@ -188,15 +188,15 @@ namespace FlatRedBall.Glue
             }
         }
 
-        public static ProjectBase ProjectBase
+        public static VisualStudioProject ProjectBase
         {
-            get => mProjectBase; 
-            set => mProjectBase = value;
+            get => mProjectBase as VisualStudioProject; 
+            set => mProjectBase = (VisualStudioProject)value;
         }
 
-        public static ProjectBase ContentProject
+        public static VisualStudioProject ContentProject
         {
-            get => mProjectBase?.ContentProject;
+            get => mProjectBase?.ContentProject as VisualStudioProject;
         }
 
         string IVsProjectState.DefaultNamespace
@@ -793,7 +793,7 @@ namespace FlatRedBall.Glue
         /// <param name="parentFile"></param>
         /// <returns>Whether the file was added.</returns>
         [Obsolete("Use GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject")]
-        public static bool UpdateFileMembershipInProject(ProjectBase project, string fileRelativeToProject, bool useContentPipeline, bool shouldLink, string parentFile = null)
+        public static bool UpdateFileMembershipInProject(VisualStudioProject project, string fileRelativeToProject, bool useContentPipeline, bool shouldLink, string parentFile = null)
         {
             return GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(project, fileRelativeToProject, useContentPipeline, shouldLink, parentFile);
         }
@@ -804,11 +804,11 @@ namespace FlatRedBall.Glue
 
         internal static void FindGameClass()
         {
-            mGameClass = FindGameClass(mProjectBase);
+            mGameClass = FindGameClass((VisualStudioProject)mProjectBase);
 
         }
 
-        internal static string FindGameClass(ProjectBase projectBase)
+        internal static string FindGameClass(VisualStudioProject projectBase)
         {
             foreach (var bi in projectBase.EvaluatedItems)
             {

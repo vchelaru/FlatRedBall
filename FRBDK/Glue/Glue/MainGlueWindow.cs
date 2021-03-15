@@ -19,7 +19,6 @@ using FlatRedBall.Utilities;
 using EditorObjects.Parsing;
 using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Glue.Events;
-using EditorObjects.Cleaners;
 using FlatRedBall.Glue.FormHelpers.PropertyGrids;
 using FlatRedBall.Instructions;
 using FlatRedBall.Glue.ContentPipeline;

@@ -4,6 +4,8 @@ using System.Text;
 
 namespace FlatRedBall.Graphics.Animation
 {
+    #region Enums
+
     enum PlayingMode
     {
         NotPlaying,
@@ -12,6 +14,7 @@ namespace FlatRedBall.Graphics.Animation
         Duration,
         Forever
     }
+    #endregion
 
     public class AnimationLayer
     {
@@ -104,7 +107,7 @@ namespace FlatRedBall.Graphics.Animation
                     case PlayingMode.Loop:
                         cachedChainName = lastPlayCallAnimation;
                         
-                        if(Container.AnimatedObject.JustCycled)
+                        if(Container.AnimatedObject.DidAnimationFinishOrLoop)
                         {
                             loopsLeft--;
 
@@ -120,7 +123,7 @@ namespace FlatRedBall.Graphics.Animation
                         break;
                     case PlayingMode.Once:
                         cachedChainName = lastPlayCallAnimation;
-                        if (Container.AnimatedObject.JustCycled)
+                        if (Container.AnimatedObject.DidAnimationFinishOrLoop)
                         {
                             cachedChainName = null;
                             playingMode = PlayingMode.NotPlaying;

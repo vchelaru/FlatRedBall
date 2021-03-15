@@ -31,9 +31,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
 
         private void HandleLoadedSyncedProject(ProjectBase project)
         {
+
             if (NeedsXnbs(project))
             {
-                AddXnbsToProject(project);
+                AddXnbsToProject((VisualStudioProject)project);
             }
         }
 
@@ -57,7 +58,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
         {
             bool wereAnyProjectsFound = false;
 
-            foreach (ProjectBase project in ProjectManager.SyncedProjects.Where(NeedsXnbs))
+            foreach (VisualStudioProject project in ProjectManager.SyncedProjects.Where(NeedsXnbs))
             {
                 AddXnbsToProject(project);
                 wereAnyProjectsFound = true;
@@ -69,14 +70,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
             }
         }
 
-        private void AddXnbsToProject(ProjectBase project)
+        private void AddXnbsToProject(VisualStudioProject project)
         {
             bool wasAnythingChanged = false;
 
             // We need to loop through all of the items in the 
             // base project, see if they are audio files (this is all
             // we look at for now) then add them.
-            IEnumerable<ProjectItem> items = ProjectManager.ProjectBase.ContentProject.EvaluatedItems;
+            IEnumerable<ProjectItem> items = ((VisualStudioProject) ProjectManager.ProjectBase.ContentProject).EvaluatedItems;
             foreach (var buildItem in items.Where((item)=>
                 ShouldAssociatedXnbBeCopied(item.UnevaluatedInclude, project)))
             {
@@ -109,7 +110,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
             }
         }
 
-        private static bool AddAudioBuildItemToProject(ProjectBase project, ProjectItem buildItem)
+        private static bool AddAudioBuildItemToProject(VisualStudioProject project, ProjectItem buildItem)
         {
             bool wasAnythingChanged = false;
             // This item needs an associated entry in the project
