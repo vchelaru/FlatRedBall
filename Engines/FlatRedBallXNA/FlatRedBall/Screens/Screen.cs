@@ -575,11 +575,11 @@ namespace FlatRedBall.Screens
             var beforeDot = variableName.Substring(0, indexOfDot);
             afterDot = variableName.Substring(indexOfDot + 1);
             instance = null;
-            if (instance == null && beforeDot == "this")
+            if (container == null && beforeDot == "this")
             {
                 instance = this;
             }
-            else if(instance == null)
+            else if(container == null)
             {
                 // Doesnt start with "this" so it's a static variable
                 var ownerType = ScreenManager.MainAssembly.GetTypes()
