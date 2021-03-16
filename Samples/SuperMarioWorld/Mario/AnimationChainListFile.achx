@@ -12,6 +12,7 @@
       <RightCoordinate>17</RightCoordinate>
       <TopCoordinate>1</TopCoordinate>
       <BottomCoordinate>25</BottomCoordinate>
+      <RelativeY>12</RelativeY>
     </Frame>
   </AnimationChain>
   <AnimationChain>
@@ -23,6 +24,7 @@
       <RightCoordinate>85</RightCoordinate>
       <TopCoordinate>1</TopCoordinate>
       <BottomCoordinate>25</BottomCoordinate>
+      <RelativeY>12</RelativeY>
     </Frame>
     <Frame>
       <TextureName>marioanims.png</TextureName>
@@ -31,6 +33,7 @@
       <RightCoordinate>102</RightCoordinate>
       <TopCoordinate>1</TopCoordinate>
       <BottomCoordinate>25</BottomCoordinate>
+      <RelativeY>12</RelativeY>
     </Frame>
   </AnimationChain>
   <AnimationChain>
@@ -42,6 +45,7 @@
       <RightCoordinate>136</RightCoordinate>
       <TopCoordinate>1</TopCoordinate>
       <BottomCoordinate>25</BottomCoordinate>
+      <RelativeY>12</RelativeY>
     </Frame>
     <Frame>
       <TextureName>marioanims.png</TextureName>
@@ -50,6 +54,7 @@
       <RightCoordinate>153</RightCoordinate>
       <TopCoordinate>1</TopCoordinate>
       <BottomCoordinate>25</BottomCoordinate>
+      <RelativeY>12</RelativeY>
     </Frame>
   </AnimationChain>
   <AnimationChain>
@@ -61,6 +66,7 @@
       <RightCoordinate>34</RightCoordinate>
       <TopCoordinate>31</TopCoordinate>
       <BottomCoordinate>55</BottomCoordinate>
+      <RelativeY>12</RelativeY>
     </Frame>
   </AnimationChain>
   <AnimationChain>
@@ -72,6 +78,7 @@
       <RightCoordinate>51</RightCoordinate>
       <TopCoordinate>31</TopCoordinate>
       <BottomCoordinate>55</BottomCoordinate>
+      <RelativeY>12</RelativeY>
     </Frame>
   </AnimationChain>
   <AnimationChain>
@@ -83,6 +90,7 @@
       <RightCoordinate>68</RightCoordinate>
       <TopCoordinate>31</TopCoordinate>
       <BottomCoordinate>55</BottomCoordinate>
+      <RelativeY>12</RelativeY>
     </Frame>
   </AnimationChain>
   <AnimationChain>
@@ -94,6 +102,7 @@
       <RightCoordinate>51</RightCoordinate>
       <TopCoordinate>1</TopCoordinate>
       <BottomCoordinate>25</BottomCoordinate>
+      <RelativeY>12</RelativeY>
     </Frame>
   </AnimationChain>
   <AnimationChain>
@@ -105,6 +114,7 @@
       <RightCoordinate>34</RightCoordinate>
       <TopCoordinate>1</TopCoordinate>
       <BottomCoordinate>25</BottomCoordinate>
+      <RelativeY>12</RelativeY>
     </Frame>
   </AnimationChain>
   <AnimationChain>
@@ -116,6 +126,7 @@
       <RightCoordinate>201</RightCoordinate>
       <TopCoordinate>1</TopCoordinate>
       <BottomCoordinate>25</BottomCoordinate>
+      <RelativeY>12</RelativeY>
     </Frame>
   </AnimationChain>
   <AnimationChain>
@@ -128,6 +139,7 @@
       <RightCoordinate>17</RightCoordinate>
       <TopCoordinate>1</TopCoordinate>
       <BottomCoordinate>25</BottomCoordinate>
+      <RelativeY>12</RelativeY>
     </Frame>
   </AnimationChain>
   <AnimationChain>
@@ -140,6 +152,7 @@
       <RightCoordinate>85</RightCoordinate>
       <TopCoordinate>1</TopCoordinate>
       <BottomCoordinate>25</BottomCoordinate>
+      <RelativeY>12</RelativeY>
     </Frame>
     <Frame>
       <FlipHorizontal>true</FlipHorizontal>
@@ -149,6 +162,7 @@
       <RightCoordinate>102</RightCoordinate>
       <TopCoordinate>1</TopCoordinate>
       <BottomCoordinate>25</BottomCoordinate>
+      <RelativeY>12</RelativeY>
     </Frame>
   </AnimationChain>
   <AnimationChain>
@@ -161,6 +175,7 @@
       <RightCoordinate>136</RightCoordinate>
       <TopCoordinate>1</TopCoordinate>
       <BottomCoordinate>25</BottomCoordinate>
+      <RelativeY>12</RelativeY>
     </Frame>
     <Frame>
       <FlipHorizontal>true</FlipHorizontal>
@@ -170,6 +185,7 @@
       <RightCoordinate>153</RightCoordinate>
       <TopCoordinate>1</TopCoordinate>
       <BottomCoordinate>25</BottomCoordinate>
+      <RelativeY>12</RelativeY>
     </Frame>
   </AnimationChain>
   <AnimationChain>
@@ -182,6 +198,7 @@
       <RightCoordinate>34</RightCoordinate>
       <TopCoordinate>31</TopCoordinate>
       <BottomCoordinate>55</BottomCoordinate>
+      <RelativeY>12</RelativeY>
     </Frame>
   </AnimationChain>
   <AnimationChain>
@@ -194,6 +211,7 @@
       <RightCoordinate>51</RightCoordinate>
       <TopCoordinate>31</TopCoordinate>
       <BottomCoordinate>55</BottomCoordinate>
+      <RelativeY>12</RelativeY>
     </Frame>
   </AnimationChain>
   <AnimationChain>
@@ -206,6 +224,7 @@
       <RightCoordinate>68</RightCoordinate>
       <TopCoordinate>31</TopCoordinate>
       <BottomCoordinate>55</BottomCoordinate>
+      <RelativeY>12</RelativeY>
     </Frame>
   </AnimationChain>
   <AnimationChain>
@@ -218,6 +237,7 @@
       <RightCoordinate>51</RightCoordinate>
       <TopCoordinate>1</TopCoordinate>
       <BottomCoordinate>25</BottomCoordinate>
+      <RelativeY>12</RelativeY>
     </Frame>
   </AnimationChain>
   <AnimationChain>
@@ -230,6 +250,7 @@
       <RightCoordinate>34</RightCoordinate>
       <TopCoordinate>1</TopCoordinate>
       <BottomCoordinate>25</BottomCoordinate>
+      <RelativeY>12</RelativeY>
     </Frame>
   </AnimationChain>
   <AnimationChain>
@@ -242,6 +263,7 @@
       <RightCoordinate>201</RightCoordinate>
       <TopCoordinate>1</TopCoordinate>
       <BottomCoordinate>25</BottomCoordinate>
+      <RelativeY>12</RelativeY>
     </Frame>
   </AnimationChain>
   <ProjectFile>../../../supermarioworldtutorial.glux</ProjectFile>
