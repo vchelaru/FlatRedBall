@@ -523,6 +523,8 @@ namespace FlatRedBall.Gui
         /// The number of pixels between the left of the screen and the cursor. Note that this does not consider
         /// the camera's position, orientation, or perspective - it will always return 0 at the left-edge of the screen.
         /// </summary>
+        /// <remarks>This can be set if the cursor is using an input device which modifies the position incrementally (such as an XboxGamePad).
+        /// If using an input device which sets the position in absolute coordiantes (such as a Mouse), this value will be overwritten every frame.</remarks>
         public int ScreenX
         {
 
@@ -536,6 +538,8 @@ namespace FlatRedBall.Gui
         /// the camera's position, orientation, or perspective - it will always return 0 at the top-edge of the screen. This value
         /// increases downward.
         /// </summary>
+        /// <remarks>This can be set if the cursor is using an input device which modifies the position incrementally (such as an XboxGamePad).
+        /// If using an input device which sets the position in absolute coordiantes (such as a Mouse), this value will be overwritten every frame.</remarks>
         public int ScreenY
         {
             get { return mScreenY; }

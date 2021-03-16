@@ -12,6 +12,10 @@ namespace FlatRedBall.Graphics.Animation
 
         public IAnimatable AnimatedObject { get; set; }
 
+        /// <summary>
+        /// The AnimationLayers which will be checked when Activity is called (usually every frame). The first layers in the list have the lowest priority, so 
+        /// aniatmions should be added in order of least -> most.
+        /// </summary>
         public ObservableCollection<AnimationLayer> Layers
         {
             get; private set;
