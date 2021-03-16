@@ -2392,7 +2392,7 @@ namespace FlatRedBall.Glue.Plugins
             if (mOldRelativeDirectories.Count == 0)
             {
                 FileManager.RelativeDirectory = FileManager.GetDirectory(
-                    FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self.CurrentGlueProjectFileName);
+                    FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self.CurrentCodeProjectFileName);
             }
             else
             {

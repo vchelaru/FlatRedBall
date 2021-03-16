@@ -1,4 +1,6 @@
-﻿using FlatRedBall.Glue.Plugins;
+﻿using FlatRedBall.Content.AnimationChain;
+using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
@@ -7,6 +9,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Text;
 using System.Windows.Navigation;
+using FileManager = ToolsUtilities.FileManager;
 
 namespace OfficialPluginsCore.AnimationChainPlugin
 {
@@ -37,7 +40,17 @@ namespace OfficialPluginsCore.AnimationChainPlugin
             var extension = FileManager.GetExtension(newFile.Name);
             if(extension == "achx")
             {
+                var file = GlueCommands.Self.GetAbsoluteFilePath(newFile);
 
+                if(file.Exists())
+                {
+                    // load it and set the project file
+                    var achx = AnimationChainListSave.FromFile(file.FullPath);
+
+                    achx.ProjectFile = FileManager.MakeRelative(GlueState.Self.GlueProjectFileName, file.GetDirectoryContainingThis().FullPath);
+
+                    achx.Save(file.FullPath);
+                }
             }
         }
     }

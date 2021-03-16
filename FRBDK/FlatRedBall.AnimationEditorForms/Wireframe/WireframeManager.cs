@@ -462,29 +462,7 @@ namespace FlatRedBall.AnimationEditorForms
             {
                 case nameof(WireframeEditControlsViewModel.SelectedTextureFilePath):
 
-                    RecordCameraPosition();
-                    
-                    // update the texture before updating the frame (and calling refresh)
-                    UpdateToSelectedAnimationTextureFile(WireframeEditControlsViewModel.SelectedTextureFilePath);
-
-                    UpdateToSavedCameraPosition();
-
-                    if(SelectedState.Self.SelectedFrame != null && WireframeEditControlsViewModel.SelectedTextureFilePath != null)
-                    {
-                        var achxFolder = FileManager.GetDirectory(SelectedState.Self.SelectedChain.Name);
-                        achxFolder = FileManager.GetDirectory(ProjectManager.Self.FileName);
-
-                        string relativeFileName = FileManager.MakeRelative(WireframeEditControlsViewModel.SelectedTextureFilePath.FullPath, achxFolder);
-
-                        SelectedState.Self.SelectedFrame.TextureName = relativeFileName;
-
-                        AnimationFrameChange?.Invoke(this, null);
-
-                        PropertyGridManager.Self.Refresh();
-
-                        RefreshAll();
-                    }
-
+                    UpdateSelectedFrameToSelectedTexture();
 
                     break;
                 case nameof(WireframeEditControlsViewModel.IsMagicWandSelected):
@@ -493,6 +471,34 @@ namespace FlatRedBall.AnimationEditorForms
                 case nameof(WireframeEditControlsViewModel.IsSnapToGridChecked):
                     ReactToSnapToGridChecedChange();
                     break;
+            }
+        }
+
+        public void UpdateSelectedFrameToSelectedTexture()
+        {
+            RecordCameraPosition();
+
+            // update the texture before updating the frame (and calling refresh)
+            UpdateToSelectedAnimationTextureFile(WireframeEditControlsViewModel.SelectedTextureFilePath);
+
+            UpdateToSavedCameraPosition();
+
+            if (SelectedState.Self.SelectedFrame != null && WireframeEditControlsViewModel.SelectedTextureFilePath != null)
+            {
+                var achxFolder = FileManager.GetDirectory(SelectedState.Self.SelectedChain.Name);
+                achxFolder = FileManager.GetDirectory(ProjectManager.Self.FileName);
+
+                string relativeFileName = FileManager.MakeRelative(WireframeEditControlsViewModel.SelectedTextureFilePath.FullPath, achxFolder);
+
+                SelectedState.Self.SelectedFrame.TextureName = relativeFileName;
+
+                AnimationFrameChange?.Invoke(this, null);
+
+                PropertyGridManager.Self.Refresh();
+
+                RefreshAll();
+
+                TreeViewManager.Self.RefreshTreeNode(SelectedState.Self.SelectedFrame);
             }
         }
 
@@ -873,6 +879,7 @@ namespace FlatRedBall.AnimationEditorForms
                 var filePaths = frames
                     .Where(item => !string.IsNullOrEmpty(item.TextureName))
                     .Select(item => new ToolsUtilities.FilePath(folder + item.TextureName))
+                    .Union(ProjectManager.Self.ReferencedPngs)
                     .Distinct()
                     .ToList();
 

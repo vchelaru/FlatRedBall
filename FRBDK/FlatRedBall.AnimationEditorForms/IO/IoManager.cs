@@ -12,16 +12,16 @@ namespace FlatRedBall.AnimationEditorForms.IO
 {
     public class IoManager : Singleton<IoManager>
     {
-        string GetCompanionFileFor(string fileName)
+        FilePath GetCompanionFileFor(FilePath fileName)
         {
 
             string extension = "aeproperties";
 
-            string location = FileManager.RemoveExtension(fileName) + "." + extension;
+            string location = fileName.RemoveExtension() + "." + extension;
             return location;
         }
 
-        public void SaveCompanionFileFor(string fileName)
+        public void SaveCompanionFileFor(FilePath fileName)
         {
             AESettingsSave settingsSave = new AESettingsSave();
             settingsSave.OffsetMultiplier = PreviewManager.Self.OffsetMultiplier;
@@ -32,11 +32,11 @@ namespace FlatRedBall.AnimationEditorForms.IO
             settingsSave.ExpandedNodes.Clear();
             settingsSave.ExpandedNodes.AddRange(TreeViewManager.Self.GetExpandedNodeAnimationChainNames());
             settingsSave.UnitType = ApplicationState.Self.UnitType;
-            string locationToSave = GetCompanionFileFor(fileName);
+            var locationToSave = GetCompanionFileFor(fileName);
 
             try
             {
-                FileManager.XmlSerialize(settingsSave, locationToSave);
+                FileManager.XmlSerialize(settingsSave, locationToSave.FullPath);
             }
             catch(Exception e)
             {
@@ -46,17 +46,17 @@ namespace FlatRedBall.AnimationEditorForms.IO
 
         public void LoadAndApplyCompanionFileFor(string achxFile)
         {
-            string fileToLoad = GetCompanionFileFor(achxFile);
+            var fileToLoad = GetCompanionFileFor(achxFile);
 
             bool succeeded = false;
             AESettingsSave loadedInstance = null;
 
-            if (System.IO.File.Exists(fileToLoad))
+            if (fileToLoad.Exists())
             {
                 try
                 {
                     loadedInstance = 
-                        FileManager.XmlDeserialize<AESettingsSave>(fileToLoad);
+                        FileManager.XmlDeserialize<AESettingsSave>(fileToLoad.FullPath);
 
                     succeeded = true;
                 }

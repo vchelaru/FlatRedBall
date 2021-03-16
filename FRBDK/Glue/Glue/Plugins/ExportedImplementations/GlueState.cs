@@ -200,13 +200,16 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
-        public string CurrentGlueProjectFileName { get { return ProjectManager.ProjectBase?.FullFileName; } }
+        /// <summary>
+        /// Returns the current Glue code project file name
+        /// </summary>
+        public string CurrentCodeProjectFileName { get { return ProjectManager.ProjectBase?.FullFileName; } }
 
         public string CurrentGlueProjectDirectory
         {
             get
             {
-                var currentGlueProjectFileName = CurrentGlueProjectFileName;
+                var currentGlueProjectFileName = CurrentCodeProjectFileName;
                 if(!string.IsNullOrEmpty(currentGlueProjectFileName))
                 {
                     return FlatRedBall.IO.FileManager.GetDirectory(currentGlueProjectFileName);
@@ -226,7 +229,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         {
             get
             {
-                return VSHelpers.ProjectSyncer.LocateSolution(CurrentGlueProjectFileName);
+                return VSHelpers.ProjectSyncer.LocateSolution(CurrentCodeProjectFileName);
             }
         }
 
@@ -239,6 +242,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         }
 
+        /// <summary>
+        /// The file name of the GLUX
+        /// </summary>
         public string GlueProjectFileName
         {
             get

@@ -596,6 +596,8 @@ namespace FlatRedBall.AnimationEditorForms
 
                 SelectedState.Self.SelectedFrame = afs;
 
+                WireframeManager.Self.UpdateSelectedFrameToSelectedTexture();
+
                 CallAnimationChainsChange();
             }
         }

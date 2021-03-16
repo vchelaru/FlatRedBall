@@ -518,7 +518,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         private static void CopyToBuildFolder(string absoluteSource, string debugPath)
         {
-            string buildFolder = FileManager.GetDirectory(GlueState.Self.CurrentGlueProjectFileName) + debugPath + "Content/";
+            string buildFolder = FileManager.GetDirectory(GlueState.Self.CurrentCodeProjectFileName) + debugPath + "Content/";
             string destination = buildFolder + FileManager.MakeRelative(absoluteSource, ProjectManager.ContentDirectory);
 
             string destinationFolder = FileManager.GetDirectory(destination);
@@ -529,7 +529,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // with this file:
             if (System.IO.Directory.Exists(destinationFolder))
             {
-                string projectName = FileManager.RemovePath(FileManager.RemoveExtension(GlueState.Self.CurrentGlueProjectFileName));
+                string projectName = FileManager.RemovePath(FileManager.RemoveExtension(GlueState.Self.CurrentCodeProjectFileName));
 
                 try
                 {

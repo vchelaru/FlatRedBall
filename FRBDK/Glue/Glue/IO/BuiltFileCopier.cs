@@ -125,7 +125,7 @@ namespace FlatRedBall.Glue.IO
             if(GlueState.Self.CurrentGlueProject != null)
             {
 
-                string projectDirectory = FileManager.GetDirectory(GlueState.Self.CurrentGlueProjectFileName);
+                string projectDirectory = FileManager.GetDirectory(GlueState.Self.CurrentCodeProjectFileName);
                 string destinationDirectory = FileManager.GetDirectory(fileName);
                 destinationDirectory = FileManager.MakeRelative(destinationDirectory, projectDirectory);
                 // look for the first instance of "/content/" which is in the root of the bin folder on PC

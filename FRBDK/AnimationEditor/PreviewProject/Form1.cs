@@ -14,6 +14,7 @@ using ToolsUtilities;
 using Newtonsoft.Json;
 using FlatRedBall.AnimationEditor.Models;
 using FilePath = global::ToolsUtilities.FilePath;
+using FlatRedBall.AnimationEditorForms.CommandsAndState;
 
 namespace PreviewProject
 {
@@ -48,6 +49,21 @@ namespace PreviewProject
 
             mMainControl.XnaInitialize += new Action(HandleXnaInitialize);
 
+            ApplicationEvents.Self.AchxLoaded += HandleAchxLoaded;
+
+        }
+
+        private void HandleAchxLoaded(string fileName)
+        {
+            mMainControl.LoadAnimationChain(fileName);
+
+            appSettings.AddFile(fileName);
+
+            SaveSettingsfile();
+
+            RefreshRecentFiles();
+
+            SetFormTextToLoadedFile();
         }
 
         private void LoadSettingsFile()
@@ -167,16 +183,9 @@ namespace PreviewProject
         {
             if (!string.IsNullOrEmpty(fileName))
             {
-                mMainControl.LoadAnimationChain(fileName);
-
-                appSettings.AddFile(fileName);
-
-                SaveSettingsfile();
-
-                RefreshRecentFiles();
+                ApplicationEvents.Self.CallAchxLoaded(fileName);
             }
 
-            SetFormTextToLoadedFile();
         }
 
         private void HandleSaveClick(object sender, EventArgs e)

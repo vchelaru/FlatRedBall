@@ -22,6 +22,7 @@ using FlatRedBall.AnimationEditorForms.ViewModels;
 using FlatRedBall.SpecializedXnaControls.Scrolling;
 using FlatRedBall.AnimationEditorForms.Content;
 using RenderingLibrary.Content;
+using FilePath = ToolsUtilities.FilePath;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -92,7 +93,7 @@ namespace FlatRedBall.AnimationEditorForms
             this.imageRegionSelectionControl1 = new FlatRedBall.SpecializedXnaControls.ImageRegionSelectionControl();
             mScrollBarControlLogic = new ScrollBarControlLogic(PreviewSplitContainer.Panel1, imageRegionSelectionControl1);
 
-            ApplicationEvents.Self.WireframePanning += delegate { mScrollBarControlLogic.UpdateScrollBars(); };
+            ApplicationEvents.Self.WireframePanning += ()=> mScrollBarControlLogic.UpdateScrollBars(); 
             ApplicationEvents.Self.WireframeTextureChange += ScrollBarHandleTextureChange;
             ApplicationEvents.Self.AfterZoomChange += delegate
             {
@@ -305,7 +306,7 @@ namespace FlatRedBall.AnimationEditorForms
             SaveCurrentAnimationChain(ProjectManager.Self.FileName);
         }
 
-        public void SaveCurrentAnimationChain(string fileName)
+        public void SaveCurrentAnimationChain(FilePath fileName)
         {
             // If it's null, we probably want to make one, right?
 
@@ -324,7 +325,7 @@ namespace FlatRedBall.AnimationEditorForms
                 {
                     try
                     {
-                        whatToSave.Save(fileName);
+                        whatToSave.Save(fileName.FullPath);
                         break;
                     }
                     catch ( Exception e)
@@ -341,7 +342,7 @@ namespace FlatRedBall.AnimationEditorForms
                     MessageBox.Show("Error saving:\n\n" + failure.ToString());
                 }
 
-                ProjectManager.Self.FileName = fileName;
+                ProjectManager.Self.FileName = fileName.FullPath;
 
                 IoManager.Self.SaveCompanionFileFor(fileName);
             }

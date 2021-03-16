@@ -13,6 +13,8 @@
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -93,9 +95,6 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="Puzzle.SyntaxBox.NET3.5">
-      <HintPath>..\Glue\Alsing.SyntaxBox\obj\Debug\Puzzle.SyntaxBox.NET3.5.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Design" />
@@ -294,6 +293,10 @@
     <ProjectReference Include="..\FlatRedBall.SpecializedXnaControls\FlatRedBall.SpecializedXnaControls.csproj">
       <Project>{8C80BA7B-1CBA-4579-9382-D9DC6C365070}</Project>
       <Name>FlatRedBall.SpecializedXnaControls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Glue\GlueCommon\GlueCommon.csproj">
+      <Project>{bddab7de-db12-4bfe-ad4c-f607f3b7af43}</Project>
+      <Name>GlueCommon</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

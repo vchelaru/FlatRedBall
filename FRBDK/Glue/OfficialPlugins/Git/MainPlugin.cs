@@ -71,7 +71,7 @@ namespace OfficialPlugins.Git
         {
             
             string gameName = 
-                FileManager.RemovePath(FileManager.RemoveExtension(GlueState.Self.CurrentGlueProjectFileName));
+                FileManager.RemovePath(FileManager.RemoveExtension(GlueState.Self.CurrentCodeProjectFileName));
 
             yield return "*.user";
 

@@ -42,7 +42,7 @@ namespace GumPlugin.Managers
         {
             get
             {
-                var currentGlueProjectFileName = FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self.CurrentGlueProjectFileName;
+                var currentGlueProjectFileName = FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self.CurrentCodeProjectFileName;
                 if(string.IsNullOrEmpty(currentGlueProjectFileName))
                 {
                     return null;
@@ -50,7 +50,7 @@ namespace GumPlugin.Managers
                 else
                 {
                     return FileManager.GetDirectory(
-                        FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self.CurrentGlueProjectFileName);
+                        FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self.CurrentCodeProjectFileName);
                 }
             }
         }

@@ -138,7 +138,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (MainGlueWindow.Self.HasErrorOccurred)
                 {
-                    string projectName = FileManager.RemovePath(FileManager.RemoveExtension(ProjectManager.GlueProjectFileName));
+                    string projectName = FileManager.RemovePath(FileManager.RemoveExtension(GlueState.Self.GlueProjectFileName));
 
                     GlueCommands.Self.DialogCommands.ShowMessageBox("STOP RIGHT THERE!!!!  There was an error in Glue at some point.  To prevent " +
                         "corruption in the GLUX file, Glue will no longer save any changes that you make to the project.  " +
@@ -147,7 +147,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         );
 
 
-                    ProjectManager.GlueProjectSave.Save("GLUE", ProjectManager.GlueProjectFileName + "ERROR");
+                    ProjectManager.GlueProjectSave.Save("GLUE", GlueState.Self.GlueProjectFileName + "ERROR");
                 }
                 else
                 {

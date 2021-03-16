@@ -10,6 +10,9 @@ namespace FlatRedBall.AnimationEditorForms.CommandsAndState
         public event Action AfterZoomChange;
         public event Action WireframePanning;
         public event Action WireframeTextureChange;
+        public event Action<string> AchxLoaded;
+
+        public void CallAchxLoaded(string newFileName) => AchxLoaded?.Invoke(newFileName);
 
         public void CallAfterZoomChange()
         {

@@ -67,7 +67,7 @@ namespace PreviewProject.IO
 
         private static bool PerformCopyFileRelativeLogic(string newDirectory, string projectDirectory, bool shouldSave, AnimationChainListSave achs, List<string> files)
         {
-            MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
+            var mbmb = new MultiButtonMessageBox();
             mbmb.MessageText = "What would you like to do with files referenced by the .achx?";
 
             mbmb.AddButton("Copy them relative", DialogResult.Yes);

@@ -38,7 +38,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
 
         private void HandleGluxLoaded()
         {
-            var currentFile = GlueState.Self.CurrentGlueProjectFileName;
+            var currentFile = GlueState.Self.CurrentCodeProjectFileName;
 
             var standardized = FileManager.Standardize(currentFile).ToLowerInvariant();
 
