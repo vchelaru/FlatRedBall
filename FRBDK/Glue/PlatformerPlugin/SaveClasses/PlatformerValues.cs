@@ -21,6 +21,10 @@ namespace FlatRedBall.PlatformerPlugin.SaveClasses
         public bool CanFallThroughCloudPlatforms { get; set; }
         public float CloudFallThroughDistance { get; set; }
 
+        public bool IsUsingCustomDeceleration { get; set; } = false;
+        public float CustomDecelerationValue { get; set; } = 100;
+
+
         public bool MoveSameSpeedOnSlopes { get; set; }
 
         public decimal UphillFullSpeedSlope { get; set; }

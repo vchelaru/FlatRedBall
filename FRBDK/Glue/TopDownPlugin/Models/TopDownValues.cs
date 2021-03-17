@@ -25,7 +25,6 @@ namespace TopDownPlugin.Models
         public bool UpdateDirectionFromInput { get; set; } = false;
 
         public bool IsUsingCustomDeceleration { get; set; } = false;
-
         public float CustomDecelerationValue { get; set; } = 100;
 
         public int InheritOrOverwriteAsInt { get; set; }

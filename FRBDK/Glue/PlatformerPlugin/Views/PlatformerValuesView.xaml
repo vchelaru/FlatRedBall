@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:FlatRedBall.PlatformerPlugin.Views"
              xmlns:b="clr-namespace:FlatRedBall.PlatformerPlugin.WpfBehaviors"
              mc:Ignorable="d" 
-             d:DesignHeight="230" d:DesignWidth="905">
+             d:DesignHeight="250" d:DesignWidth="1055">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -68,7 +68,20 @@
                          b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
 
             </StackPanel>
-            
+
+
+            <CheckBox VerticalContentAlignment="Center" Margin="0,10,0,0" IsChecked="{Binding IsCustomDecelerationChecked}">
+                <CheckBox.ToolTip>
+                    Whether to use a custom deceleration value when moving above max speed. If false, then the Slow Down Time will be used to calculate a deceleration value. If true, a custom value will be used. This value shoudl be true for movement values with a Max Speed of 0.
+                </CheckBox.ToolTip>
+                Custom deceleration above max speed
+            </CheckBox>
+            <TextBox Width="70" HorizontalAlignment="Left" IsEnabled="{Binding IsCustomDecelerationValueEnabled}" Text="{Binding CustomDecelerationValue}">
+                <TextBox.ToolTip>
+                    The deceleration value to apply to the entity if it is moving above its max speed.
+                </TextBox.ToolTip>
+            </TextBox>
+
         </StackPanel>
 
         <!--Slope Movement -->
@@ -138,11 +151,16 @@
         <TextBlock Grid.Column="4" FontSize="16" HorizontalAlignment="Left" Margin="3">Falling</TextBlock>
         <StackPanel Grid.Column="4" Grid.Row="1" Margin="12,3,8,3">
             <TextBlock>Gravity:</TextBlock>
-            <TextBox HorizontalAlignment="Left" Width="70" Text="{Binding Gravity}" Margin="0,0,0,5" 
+            <TextBox HorizontalAlignment="Left" Width="70" Text="{Binding Gravity}" 
                      b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
+            <TextBlock HorizontalAlignment="Left" MaxWidth="150" Margin="0,0,0,5" FontSize="9" Foreground="Red" TextWrapping="Wrap" Visibility="{Binding Gravity0WarningVisibility}">
+                If these values are used for ground movement with 0 or negative gravity, the entity may have its OnGround set to false every other frame.</TextBlock>
             <TextBlock>Max Falling Speed:</TextBlock>
             <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding MaxFallSpeed}"
                      b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
+            <TextBlock HorizontalAlignment="Left" MaxWidth="150" Margin="0,0,0,5" FontSize="9" Foreground="Red" TextWrapping="Wrap" Visibility="{Binding MaxFallingSpeed0WarningVisibility}">
+                If these values are used for ground movement with 0 or negative Max Falling Speed, the entity may have its OnGround set to false every other frame.</TextBlock>
+
         </StackPanel>
 
 

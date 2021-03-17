@@ -122,38 +122,60 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
 
         public float AccelerationTimeX
         {
-            get { return Get<float>(); }
-            set { Set(value); }
+            get => Get<float>(); 
+            set => Set(value); 
         }
 
         public float DecelerationTimeX
         {
-            get { return Get<float>(); }
-            set { Set(value); }
+            get => Get<float>();
+            set => Set(value);
+        }
+
+        public bool IsCustomDecelerationChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(IsCustomDecelerationChecked))]
+        public bool IsCustomDecelerationValueEnabled => IsCustomDecelerationChecked;
+
+        public float CustomDecelerationValue
+        {
+            get => Get<float>();
+            set => Set(value);
         }
 
         public float Gravity
         {
-            get { return Get<float>(); }
-            set { Set(value); }
+            get => Get<float>();
+            set => Set(value);
         }
+
+        [DependsOn(nameof(Gravity))]
+        public Visibility Gravity0WarningVisibility => (Gravity <= 0).ToVisibility();
+
 
         public float MaxFallSpeed
         {
-            get { return Get<float>(); }
-            set { Set(value); }
+            get => Get<float>();
+            set => Set(value);
         }
+
+        [DependsOn(nameof(MaxFallSpeed))]
+        public Visibility MaxFallingSpeed0WarningVisibility => (MaxFallSpeed <= 0).ToVisibility();
 
         public float JumpVelocity
         {
-            get { return Get<float>(); }
-            set { Set(value); }
+            get => Get<float>();
+            set => Set(value);
         }
 
         public float JumpApplyLength
         {
-            get { return Get<float>(); }
-            set { Set(value); }
+            get => Get<float>();
+            set => Set(value);
         }
 
         public bool JumpApplyByButtonHold
@@ -260,6 +282,9 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
             CanFallThroughCloudPlatforms = values.CanFallThroughCloudPlatforms;
             CloudFallThroughDistance = values.CloudFallThroughDistance;
 
+            this.IsCustomDecelerationChecked = values.IsUsingCustomDeceleration;
+            this.CustomDecelerationValue = values.CustomDecelerationValue;
+
             MoveSameSpeedOnSlopes = values.MoveSameSpeedOnSlopes;
             UphillFullSpeedSlope = values.UphillFullSpeedSlope;
             UphillStopSpeedSlope = values.UphillStopSpeedSlope;
@@ -321,6 +346,9 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
             toReturn.DownhillFullSpeedSlope = DownhillFullSpeedSlope;
             toReturn.DownhillMaxSpeedSlope = DownhillMaxSpeedSlope;
             toReturn.DownhillMaxSpeedBoostPercentage = DownhillMaxSpeedBoostPercentage;
+
+            toReturn.IsUsingCustomDeceleration = this.IsCustomDecelerationChecked;
+            toReturn.CustomDecelerationValue = this.CustomDecelerationValue;
 
             return toReturn;
         }

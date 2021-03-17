@@ -270,7 +270,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
             viewModel.IsPlatformer = currentEntitySave.Properties.GetValue<bool>(nameof(viewModel.IsPlatformer));
 
-            var csvValues = GetCsvValues(currentEntitySave);
+            GetCsvValues(currentEntitySave, out Dictionary<string, PlatformerValues> csvValues);
 
             viewModel.PlatformerValues.Clear();
 
@@ -293,16 +293,17 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
         }
 
-        private static Dictionary<string, PlatformerValues> GetCsvValues(EntitySave currentEntitySave)
+        private static void GetCsvValues(EntitySave currentEntitySave,
+            out Dictionary<string, PlatformerValues> csvValues)
         {
-            Dictionary<string, PlatformerValues> csvValues = new Dictionary<string, PlatformerValues>();
-            var csvFile = CsvGenerator.Self.CsvFileFor(currentEntitySave);
+            csvValues = new Dictionary<string, PlatformerValues>();
+            var filePath = CsvGenerator.Self.CsvFileFor(currentEntitySave);
 
-            if (csvFile.Exists())
+            if (filePath.Exists())
             {
                 try
                 {
-                    CsvFileManager.CsvDeserializeDictionary<string, PlatformerValues>(csvFile.FullPath, csvValues);
+                    CsvFileManager.CsvDeserializeDictionary<string, PlatformerValues>(filePath.FullPath, csvValues);
                 }
                 catch(Exception e)
                 {
@@ -310,7 +311,6 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
                 }
             }
 
-            return csvValues;
         }
 
         static bool GetIfIsPlatformer(IElement element)

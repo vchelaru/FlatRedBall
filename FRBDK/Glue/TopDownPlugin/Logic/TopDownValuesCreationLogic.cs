@@ -130,8 +130,6 @@ namespace TopDownPlugin.Logic
                         csvValues.Add(values[i].Name, values[i]);
 
                     }
-
-                    //CsvFileManager.CsvDeserializeDictionary<string, TopDownValues>(filePath.FullPath, csvValues);
                 }
                 catch (Exception e)
                 {

@@ -383,6 +383,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             float horizontalRatio = HorizontalRatio;
 
 #if DEBUG
+            // Vic asks - TopDown doesn't crash here. Should platformer?
             if(CurrentMovement == null)
             {
                 throw new InvalidOperationException(""You must set CurrentMovement variable (can be done in Glue)"");
@@ -421,7 +422,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 }
             }
 
-            if (this.CurrentMovement.AccelerationTimeX <= 0 || this.CurrentMovement.UsesAcceleration == false)
+            if ((this.CurrentMovement.AccelerationTimeX <= 0 && this.CurrentMovement.IsUsingCustomDeceleration == false)|| this.CurrentMovement.UsesAcceleration == false)
             {
                 this.XVelocity = horizontalRatio * maxSpeed;
             }
@@ -436,36 +437,39 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 
                 var absoluteValueVelocityDifference = System.Math.Abs(desiredSpeed - XVelocity);
                 
-                float acceleration = 0;
+                float accelerationMagnitude = 0;
                 
                 if(isSpeedingUp)
                 {
-                    acceleration = maxSpeed / CurrentMovement.AccelerationTimeX;
+                    accelerationMagnitude = maxSpeed / CurrentMovement.AccelerationTimeX;
                 }
                 else
                 {
-                    // if slowing down and max speed is 0, use the last max speed
-                    if(maxSpeed == 0)
+                     
+                    if(System.Math.Abs(XVelocity) > this.CurrentMovement.MaxSpeedX && this.CurrentMovement.IsUsingCustomDeceleration)
                     {
-                        acceleration = lastNonZeroPlatformerHorizontalMaxSpeed / CurrentMovement.DecelerationTimeX;
+                        accelerationMagnitude = this.CurrentMovement.CustomDecelerationValue;
+                    }
+                    // if slowing down and max speed is 0, use the last max speed
+                    else if(maxSpeed == 0)
+                    {
+                        accelerationMagnitude = lastNonZeroPlatformerHorizontalMaxSpeed / CurrentMovement.DecelerationTimeX;
                     }
                     else
                     {
-                        acceleration = maxSpeed / CurrentMovement.DecelerationTimeX;
+                        accelerationMagnitude = maxSpeed / CurrentMovement.DecelerationTimeX;
                     }
                 }
                 
-                var perFrameVelocityChange = acceleration * TimeManager.SecondDifference;
+                var perFrameVelocityChange = accelerationMagnitude * TimeManager.SecondDifference;
                 
                 if(perFrameVelocityChange > absoluteValueVelocityDifference)
                 {
                     // make sure we don't overshoot:
-                    acceleration = absoluteValueVelocityDifference * (1 / TimeManager.SecondDifference);
+                    accelerationMagnitude = absoluteValueVelocityDifference * (1 / TimeManager.SecondDifference);
                 }
                 
-                acceleration *= System.Math.Sign(desiredSpeed - XVelocity);
-                
-                this.XAcceleration = acceleration;
+                this.XAcceleration = accelerationMagnitude * System.Math.Sign(desiredSpeed - XVelocity);
             }
         }
 
