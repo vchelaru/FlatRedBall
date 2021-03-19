@@ -64,6 +64,15 @@ namespace OfficialPluginsCore.Wizard.Models
             set => Set(value);
         }
 
+        [DependsOn(nameof(PlayerControlType))]
+        public bool ShowOffsetPositionUi => PlayerControlType == GameType.Platformer;
+
+        public bool OffsetPlayerPosition
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public CollisionType PlayerCollisionType
         {
             get => Get<CollisionType>();
@@ -176,6 +185,7 @@ namespace OfficialPluginsCore.Wizard.Models
             CollideAgainstCloudCollision = true;
 
             AddPlayerSprite = true;
+            OffsetPlayerPosition = true;
 
             CreateLevels = true;
             NumberOfLevels = 2;

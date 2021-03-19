@@ -217,6 +217,17 @@ namespace OfficialPluginsCore.Wizard.Models
 
                     stackPanel.Children.Add(checkBox);
 
+                    if(!string.IsNullOrEmpty(dataItem.Subtext))
+                    {
+                        var subTextBlock = new TextBlock();
+                        subTextBlock.Text = dataItem.Subtext;
+                        subTextBlock.TextWrapping = TextWrapping.Wrap;
+                        subTextBlock.FontSize = 9;
+                        TryBindVisibility(subTextBlock);
+
+                        stackPanel.Children.Add(subTextBlock);
+                    }
+
                     break;
                 case ViewType.Group:
                     var group = new GroupBox();

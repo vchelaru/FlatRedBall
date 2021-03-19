@@ -62,6 +62,9 @@ namespace OfficialPluginsCore.Wizard.Models
                     .Add("Platformer", GameType.Platformer)
                     .Add("None (controls be added later)", GameType.None);
 
+                formsData.AddBoolValue("Offset Player on Map", nameof(ViewModel.OffsetPlayerPosition), nameof(ViewModel.ShowOffsetPositionUi))
+                    .Subtext = "Recommended - offsets the player so it lands on the map at the start of the game";
+
                 formsData.AddOptions("What kind of collision will the Player have?", nameof(ViewModel.PlayerCollisionType), nameof(ViewModel.AddPlayerEntity))
                     .Add("Rectangle", CollisionType.Rectangle)
                     .Add("Circle", CollisionType.Circle)

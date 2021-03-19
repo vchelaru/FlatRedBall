@@ -213,6 +213,11 @@ namespace OfficialPluginsCore.Wizard
 
             var playerEntity = GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(addEntityVm);
 
+            if(vm.OffsetPlayerPosition && vm.PlayerControlType == GameType.Platformer)
+            {
+                playerEntity.SetCustomVariable("X", 64.0f);
+            }
+
             // requires the current entity be set:
             GlueState.Self.CurrentElement = playerEntity;
 
