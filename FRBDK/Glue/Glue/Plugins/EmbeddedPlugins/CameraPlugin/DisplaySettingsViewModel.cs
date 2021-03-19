@@ -11,6 +11,12 @@ using System.Windows;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 {
+    public enum Perspective
+    {
+        Perspective2D,
+        Perspective3D
+    }
+
     public class DisplaySettingsViewModel : ViewModel
     {
         public bool GenerateDisplayCode
@@ -28,6 +34,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
                 else return Visibility.Collapsed;
             }
         }
+
+        #region Filtering
 
         public TextureFilter TextureFilter
         {
@@ -61,11 +69,41 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             }
         }
 
-        public bool Is2D
+        #endregion
+
+        #region Perspective
+
+        public Perspective Perspective
         {
-            get => Get<bool>();
+            get => Get<Perspective>();
             set => Set(value);
         }
+
+        public bool Is2D
+        {
+            get => Perspective == Perspective.Perspective2D;
+            set
+            {
+                if(value)
+                {
+                    Perspective = Perspective.Perspective2D;
+                }
+            }
+        }
+
+        public bool Is3D
+        {
+            get => Perspective == Perspective.Perspective3D;
+            set
+            {
+                if(value)
+                {
+                    Perspective = Perspective.Perspective3D;
+                }
+            }
+        }
+
+        #endregion
 
         public int ResolutionWidth
         {

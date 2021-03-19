@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin"
              mc:Ignorable="d" 
              
-             Width="230">
+             d:Width="250">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel>
             <Grid Margin="2">
@@ -26,17 +26,19 @@
             </Grid>
             <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding GenerateDisplayCode}">Generate Display Code</CheckBox>
             <StackPanel Visibility="{Binding AllPropertiesVisibility}">
-                <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding Is2D}">Is 2D</CheckBox>
                 <GroupBox Header="Resolution">
                     <StackPanel>
-                        <StackPanel Height="24" Orientation="Horizontal">
-                            <Label Width="50" Content="Width"/>
-                            <TextBox Width="40" Height="18" Text="{Binding ResolutionWidth}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"/>
-                        </StackPanel>
-                        <StackPanel Height="24" Orientation="Horizontal">
-                            <Label Width="50" Content="Height"/>
-                            <TextBox Width="40" Height="18" Text="{Binding ResolutionHeight}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"/>
-                        </StackPanel>
+                        <WrapPanel>
+                            <StackPanel Height="24" Orientation="Horizontal" Margin="3">
+                                <Label Width="50" Content="Width"/>
+                                <TextBox Width="40" Height="18" Text="{Binding ResolutionWidth}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"/>
+                            </StackPanel>
+                            <StackPanel Height="24" Orientation="Horizontal" Margin="3">
+                                <Label Width="50" Content="Height"/>
+                                <TextBox Width="40" Height="18" Text="{Binding ResolutionHeight}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"/>
+                            </StackPanel>
+                            
+                        </WrapPanel>
                         <CheckBox VerticalContentAlignment="Center" Margin="0,3,0,0" Content="Fixed Aspect Ratio" IsChecked="{Binding FixedAspectRatio}"/>
                         <StackPanel Orientation="Horizontal" Margin="19,0,0,0" Visibility="{Binding AspectRatioValuesVisibility}">
                             <TextBox Height="18" Width="40" Text="{Binding AspectRatioWidth}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"/>
@@ -55,22 +57,39 @@
                             
                     </StackPanel>
                 </GroupBox>
+                
+                <GroupBox Header="Perspective">
+                    <WrapPanel>
+                        <RadioButton VerticalContentAlignment="Center" IsChecked="{Binding Is2D}" Margin="6">
+                            <StackPanel>
+                                <Image Source="/Plugins/EmbeddedPlugins/CameraPlugin/Icons/2DIcon.png" MaxWidth="40"></Image>
+                                <TextBlock HorizontalAlignment="Center">2D</TextBlock>
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton VerticalContentAlignment="Center" IsChecked="{Binding Is3D}" Margin="6">
+                            <StackPanel>
+                                <Image Source="/Plugins/EmbeddedPlugins/CameraPlugin/Icons/3DIcon.png" MaxWidth="40"></Image>
+                                <TextBlock HorizontalAlignment="Center">3D</TextBlock>
+                            </StackPanel>
+                        </RadioButton>
+                    </WrapPanel>
+                </GroupBox>
 
                 <GroupBox Header="Texture Filter">
-                    <StackPanel>
-                        <RadioButton GroupName="Filter" IsChecked="{Binding IsPointFilter}" VerticalContentAlignment="Center" Margin="0,0,0,20">
+                    <WrapPanel>
+                        <RadioButton GroupName="Filter" IsChecked="{Binding IsPointFilter}" VerticalContentAlignment="Center" Margin="10">
                             <StackPanel>
                                 <Image Source="/Plugins/EmbeddedPlugins/CameraPlugin/Icons/PointFilter.png" MaxWidth="80"></Image>
                                 <TextBlock>Point</TextBlock>
                             </StackPanel>
                         </RadioButton>
-                        <RadioButton GroupName="Filter" IsChecked="{Binding IsLinearFilter}" VerticalContentAlignment="Center">
+                        <RadioButton GroupName="Filter" IsChecked="{Binding IsLinearFilter}" VerticalContentAlignment="Center" Margin="10">
                             <StackPanel>
                                 <Image Source="/Plugins/EmbeddedPlugins/CameraPlugin/Icons/LinearFilter.png" MaxWidth="80"></Image>
                                 <TextBlock>Linear</TextBlock>
                             </StackPanel>
                         </RadioButton>
-                    </StackPanel>
+                    </WrapPanel>
                 </GroupBox>
 
                 <GroupBox Header="Desktop">
@@ -100,7 +119,7 @@
                         </StackPanel>
                         
                         <GroupBox Header="On Resize:" Visibility="{Binding OnResizeUiVisibility}">
-                            <StackPanel>
+                            <WrapPanel>
                                 <RadioButton GroupName="1" 
                                              Margin="18,0,0,0" IsChecked="{Binding UseStretchResizeBehavior}" 
                                              VerticalContentAlignment="Center" >
@@ -112,7 +131,7 @@
                                             Stretch="None" 
                                             MediaEnded="HandleMediaEnded"
                                             Source="pack://siteoforigin:,,,/Plugins/EmbeddedPlugins/CameraPlugin/StretchArea.gif"/>
-                                        <TextBlock>Preserve (Stretch) Visible Area</TextBlock>
+                                        <TextBlock  TextAlignment="Center">Preserve<LineBreak/>(Stretch) Area</TextBlock>
                                     </StackPanel>
                                 </RadioButton>
 
@@ -130,15 +149,15 @@
                                             Stretch="None" 
                                             MediaEnded="HandleMediaEnded"
                                             Source="pack://siteoforigin:,,,/Plugins/EmbeddedPlugins/CameraPlugin/IncreaseArea.gif"/>
-                                        <TextBlock>Increase Visible Area</TextBlock>
+                                        <TextBlock TextAlignment="Center">Increase<LineBreak/>Visible Area</TextBlock>
                                     </StackPanel>
                                 </RadioButton>
-                            </StackPanel>
+                            </WrapPanel>
                         </GroupBox>
                         
                         <!--Gum controls-->
                         <GroupBox Header="On Resize (Gum):" Visibility="{Binding OnResizeGumUiVisibility}">
-                            <StackPanel>
+                            <WrapPanel>
                                 <RadioButton Margin="18,0,0,0" IsChecked="{Binding UseStretchResizeGumBehavior}" 
                                              VerticalContentAlignment="Center" >
                                     <StackPanel>
@@ -148,7 +167,7 @@
                                             LoadedBehavior="Play" Stretch="None" 
                                             MediaEnded="HandleMediaEnded"
                                             Source="pack://siteoforigin:,,,/Plugins/EmbeddedPlugins/CameraPlugin/StretchAreaGum.gif"/>
-                                        <TextBlock>Preserve (Stretch) Visible Area</TextBlock>
+                                        <TextBlock TextAlignment="Center">Preserve<LineBreak/>(Stretch)  Area</TextBlock>
                                     </StackPanel>
                                 </RadioButton>
                                 <RadioButton Margin="18,0,0,0" IsChecked="{Binding UseIncreaseVisibleResizeGumBehavior}" 
@@ -160,10 +179,10 @@
                                             LoadedBehavior="Play" Stretch="None" 
                                             MediaEnded="HandleMediaEnded"
                                             Source="pack://siteoforigin:,,,/Plugins/EmbeddedPlugins/CameraPlugin/IncreaseAreaGum.gif"/>
-                                        <TextBlock>Increase Visible Area</TextBlock>
+                                        <TextBlock  TextAlignment="Center">Increase<LineBreak/>Area</TextBlock>
                                     </StackPanel>
                                 </RadioButton>
-                            </StackPanel>
+                            </WrapPanel>
                         </GroupBox>
 
                     </StackPanel>
