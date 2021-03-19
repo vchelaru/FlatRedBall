@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.SaveClasses;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -25,6 +26,38 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             {
                 if (GenerateDisplayCode) return Visibility.Visible;
                 else return Visibility.Collapsed;
+            }
+        }
+
+        public TextureFilter TextureFilter
+        {
+            get => Get<TextureFilter>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(TextureFilter))]
+        public bool IsPointFilter
+        {
+            get => TextureFilter == TextureFilter.Point;
+            set
+            {
+                if(value)
+                {
+                    TextureFilter = TextureFilter.Point;
+                }
+            }
+        }
+
+        [DependsOn(nameof(TextureFilter))]
+        public bool IsLinearFilter
+        {
+            get => TextureFilter == TextureFilter.Linear;
+            set
+            {
+                if(value)
+                {
+                    TextureFilter = TextureFilter.Linear;
+                }
             }
         }
 
@@ -331,6 +364,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 
             this.AllowWindowResizing = displaySettings.AllowWindowResizing;
 
+            this.TextureFilter = (TextureFilter)displaySettings.TextureFilter;
+
             this.Scale = displaySettings.Scale;
             this.ScaleGum = displaySettings.ScaleGum;
 
@@ -365,6 +400,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             toReturn.SupportPortrait = this.SupportPortrait;
 
             toReturn.RunInFullScreen = this.RunInFullScreen;
+
+            toReturn.TextureFilter = (int)this.TextureFilter;
 
             toReturn.AllowWindowResizing = this.AllowWindowResizing;
 

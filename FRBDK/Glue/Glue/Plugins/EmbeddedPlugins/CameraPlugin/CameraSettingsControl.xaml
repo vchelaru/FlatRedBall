@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin"
              mc:Ignorable="d" 
              
-             d:DesignHeight="900" Width="230">
+             Width="230">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel>
             <Grid Margin="2">
@@ -56,6 +56,22 @@
                     </StackPanel>
                 </GroupBox>
 
+                <GroupBox Header="Texture Filter">
+                    <StackPanel>
+                        <RadioButton GroupName="Filter" IsChecked="{Binding IsPointFilter}" VerticalContentAlignment="Center" Margin="0,0,0,20">
+                            <StackPanel>
+                                <Image Source="/Plugins/EmbeddedPlugins/CameraPlugin/Icons/PointFilter.png" MaxWidth="80"></Image>
+                                <TextBlock>Point</TextBlock>
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton GroupName="Filter" IsChecked="{Binding IsLinearFilter}" VerticalContentAlignment="Center">
+                            <StackPanel>
+                                <Image Source="/Plugins/EmbeddedPlugins/CameraPlugin/Icons/LinearFilter.png" MaxWidth="80"></Image>
+                                <TextBlock>Linear</TextBlock>
+                            </StackPanel>
+                        </RadioButton>
+                    </StackPanel>
+                </GroupBox>
 
                 <GroupBox Header="Desktop">
                     <StackPanel>

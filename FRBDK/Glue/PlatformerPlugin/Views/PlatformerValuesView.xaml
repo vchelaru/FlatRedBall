@@ -67,20 +67,20 @@
                 <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding DecelerationTimeX}"
                          b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
 
+
+                <CheckBox VerticalContentAlignment="Center" Margin="0,10,0,0" IsChecked="{Binding IsCustomDecelerationChecked}">
+                    <CheckBox.ToolTip>
+                        Whether to use a custom deceleration value when moving above max speed. If false, then the Slow Down Time will be used to calculate a deceleration value. If true, a custom value will be used. This value shoudl be true for movement values with a Max Speed of 0.
+                    </CheckBox.ToolTip>
+                    Custom deceleration above max speed
+                </CheckBox>
+                <TextBox Width="70" HorizontalAlignment="Left" IsEnabled="{Binding IsCustomDecelerationValueEnabled}" Text="{Binding CustomDecelerationValue}">
+                    <TextBox.ToolTip>
+                        The deceleration value to apply to the entity if it is moving above its max speed.
+                    </TextBox.ToolTip>
+                </TextBox>
             </StackPanel>
 
-
-            <CheckBox VerticalContentAlignment="Center" Margin="0,10,0,0" IsChecked="{Binding IsCustomDecelerationChecked}">
-                <CheckBox.ToolTip>
-                    Whether to use a custom deceleration value when moving above max speed. If false, then the Slow Down Time will be used to calculate a deceleration value. If true, a custom value will be used. This value shoudl be true for movement values with a Max Speed of 0.
-                </CheckBox.ToolTip>
-                Custom deceleration above max speed
-            </CheckBox>
-            <TextBox Width="70" HorizontalAlignment="Left" IsEnabled="{Binding IsCustomDecelerationValueEnabled}" Text="{Binding CustomDecelerationValue}">
-                <TextBox.ToolTip>
-                    The deceleration value to apply to the entity if it is moving above its max speed.
-                </TextBox.ToolTip>
-            </TextBox>
 
         </StackPanel>
 

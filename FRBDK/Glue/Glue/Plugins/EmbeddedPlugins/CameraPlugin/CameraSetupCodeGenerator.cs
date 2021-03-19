@@ -12,6 +12,7 @@ using System.Globalization;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -379,6 +380,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             block.Line($"IsFullScreen = {displaySettings.RunInFullScreen.ToString().ToLowerInvariant()},");
             block.Line($"AllowWidowResizing = {displaySettings.AllowWindowResizing.ToString().ToLowerInvariant()},");
+            block.Line($"TextureFilter = Microsoft.Xna.Framework.Graphics.TextureFilter.{(TextureFilter)displaySettings.TextureFilter},");
             block.Line($"ResizeBehavior = ResizeBehavior.{displaySettings.ResizeBehavior},");
 
             if(GetIfHasGumProject())
@@ -406,6 +408,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             classBlock.AutoProperty("public ResizeBehavior", "ResizeBehavior");
             classBlock.AutoProperty("public ResizeBehavior", "ResizeBehaviorGum");
             classBlock.AutoProperty("public WidthOrHeight", "DominantInternalCoordinates");
+            classBlock.AutoProperty("public Microsoft.Xna.Framework.Graphics.TextureFilter", "TextureFilter");
 
 
 
@@ -541,6 +544,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             if (generateDisplayCode)
             {
                 methodContents.Line("CameraSetup.graphicsDeviceManager = graphicsDeviceManager;");
+                methodContents.Line("FlatRedBall.FlatRedBallServices.GraphicsOptions.TextureFilter = Data.TextureFilter;");
                 methodContents.Line("ResetWindow();");
                 methodContents.Line("ResetCamera(cameraToSetUp);");
 
@@ -713,7 +717,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             fileContents = CodeWriter.ReplaceNamespace(fileContents, ProjectManager.ProjectNamespace);
 
 
-            GenerateSetupCameraMethod(classContents);
+            GenerateSetupCameraMethodOld(classContents);
             GenerateResetCameraMethod(classContents);
 
             StringFunctions.ReplaceLine(ref fileContents, "// Generated Code:", classContents.ToString());
@@ -754,7 +758,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         }
 
-        private static void GenerateSetupCameraMethod(ICodeBlock classContents)
+        private static void GenerateSetupCameraMethodOld(ICodeBlock classContents)
         {
             //internal static void SetupCamera(Camera cameraToSetUp, GraphicsDeviceManager graphicsDeviceManager)
 

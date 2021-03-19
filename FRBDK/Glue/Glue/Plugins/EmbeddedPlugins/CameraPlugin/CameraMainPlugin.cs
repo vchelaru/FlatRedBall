@@ -11,6 +11,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.VSHelpers.Projects;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 {
@@ -91,7 +92,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         {
             DisplaySettings settings = new DisplaySettings();
 
-
+            settings.TextureFilter = (int)TextureFilter.Point;
             settings.AllowWindowResizing = false;
             settings.AspectRatioHeight = 9;
             settings.AspectRatioWidth = 16;

@@ -95,7 +95,7 @@ namespace Microsoft.Xna.Framework
             }
         }
 
-        public static Vector3 RotatedBy(this Vector3 vector3, float angleToRotateBy)
+        public static Vector3 RotatedBy(this Vector3 vector3, float radiansToRotateBy)
         {
             if(vector3.X == 0 && vector3.Y == 0)
             {
@@ -105,16 +105,16 @@ namespace Microsoft.Xna.Framework
             {
                 vector3 = vector3 * -1;
                 var existingAngle = vector3.Angle().Value;
-                var newAngle = existingAngle + angleToRotateBy;
+                var newAngle = existingAngle + radiansToRotateBy;
                 return FromAngle(newAngle);
             }
         }
 
-        public static Vector3 FromAngle(float angle)
+        public static Vector3 FromAngle(float radians)
         {
             return new Vector3(
-                (float)Math.Cos(angle),
-                (float)Math.Sin(angle),
+                (float)Math.Cos(radians),
+                (float)Math.Sin(radians),
                 0
                 );
         }

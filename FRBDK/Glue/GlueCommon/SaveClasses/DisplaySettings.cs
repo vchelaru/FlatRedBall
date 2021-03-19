@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -44,6 +45,8 @@ namespace FlatRedBall.Glue.SaveClasses
         public ResizeBehavior ResizeBehavior { get; set; }
         public ResizeBehavior ResizeBehaviorGum { get; set; }
         public WidthOrHeight DominantInternalCoordinates { get; set; } = WidthOrHeight.Height;
+
+        public int TextureFilter { get; set; } = (int)Microsoft.Xna.Framework.Graphics.TextureFilter.Linear;
 
         public override string ToString()
         {

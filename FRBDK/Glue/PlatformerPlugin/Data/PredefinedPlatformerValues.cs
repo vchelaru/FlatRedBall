@@ -17,6 +17,10 @@ namespace FlatRedBall.PlatformerPlugin.Data
                 var unnamed = new PlatformerValuesViewModel
                 {
                     Name = "Unnamed",
+                    // Even though this is empty, we still want to apply gravity and max fall speed. Otherwise, this
+                    // set of values could result in weird flickering between on ground and not on ground.
+                    Gravity = 900,
+                    MaxFallSpeed = 500,
                 };
                 platformerValues.Add(unnamed.Name, unnamed);
             }
