@@ -21,6 +21,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
     public class WizardData : ViewModel
     {
+        #region GameScreen
 
         public bool AddGameScreen
         {
@@ -46,6 +47,10 @@ namespace OfficialPluginsCore.Wizard.Models
             get => Get<bool>();
             set => Set(value);
         }
+
+        #endregion
+
+        #region Player Entity
 
         public bool AddPlayerEntity
         {
@@ -87,6 +92,16 @@ namespace OfficialPluginsCore.Wizard.Models
             set => Set(value);
         }
 
+        public bool AddPlayerSprite
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        #endregion
+
+        #region Levels
+
         public bool CreateLevels
         {
             get => Get<bool>();
@@ -108,6 +123,10 @@ namespace OfficialPluginsCore.Wizard.Models
             set => Set(value);
         }
 
+        #endregion
+
+        #region Gum/UI
+
         public bool AddGum {
             get => Get<bool>();
             set => Set(value);
@@ -117,6 +136,10 @@ namespace OfficialPluginsCore.Wizard.Models
             get => Get<bool>();
             set => Set(value);
         }
+
+        #endregion
+
+        #region Camera
 
         public bool AddCameraController
         {
@@ -134,6 +157,7 @@ namespace OfficialPluginsCore.Wizard.Models
             set => Set(value);
         }
 
+        #endregion
 
         public WizardData()
         {
@@ -150,6 +174,8 @@ namespace OfficialPluginsCore.Wizard.Models
 
             CollideAgainstSolidCollision = true;
             CollideAgainstCloudCollision = true;
+
+            AddPlayerSprite = true;
 
             CreateLevels = true;
             NumberOfLevels = 2;

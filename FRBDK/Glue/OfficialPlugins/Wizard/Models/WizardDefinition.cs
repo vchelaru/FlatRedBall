@@ -73,6 +73,8 @@ namespace OfficialPluginsCore.Wizard.Models
                 formsData.AddBoolValue("Add Player vs. solid collision", nameof(ViewModel.CollideAgainstSolidCollision), nameof(ViewModel.AddPlayerEntity));
                 formsData.AddBoolValue("Add Player vs. cloud collision", nameof(ViewModel.CollideAgainstCloudCollision), nameof(ViewModel.AddPlayerEntity));
 
+                formsData.AddBoolValue("Add Sprite to Player Entitty", nameof(ViewModel.AddPlayerSprite), nameof(ViewModel.AddPlayerEntity));
+
                 FormsDataList.Add(formsData);
             }
 

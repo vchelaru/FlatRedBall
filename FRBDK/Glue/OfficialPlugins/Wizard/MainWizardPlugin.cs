@@ -90,110 +90,11 @@ namespace OfficialPluginsCore.Wizard
 
             if (vm.AddPlayerEntity)
             {
-                var addEntityVm = new AddEntityViewModel();
-                addEntityVm.Name = "Player";
-
-                if (vm.PlayerCollisionType == CollisionType.Rectangle)
-                {
-                    addEntityVm.IsAxisAlignedRectangleChecked = true;
-                }
-                else if (vm.PlayerCollisionType == CollisionType.Circle)
-                {
-                    addEntityVm.IsCircleChecked = true;
-                }
-                else
-                {
-                    // none are checked, but we'll still have it be ICollidable
-                }
-
-                addEntityVm.IsICollidableChecked = true;
-
-                var playerEntity = GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(addEntityVm);
-
-                // requires the current entity be set:
-                GlueState.Self.CurrentElement = playerEntity;
-
-                if(vm.PlayerControlType == GameType.Platformer)
-                {
-                    // mark as platformer
-                    PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeCurrentEntityPlatformer" );
-
-                }
-                else if(vm.PlayerControlType == GameType.Topdown)
-                {
-                    // mark as top down
-                    PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeCurrentEntityTopDown");
-                }
-
-                NamedObjectSave playerList = null;
-                if(vm.AddGameScreen && vm.AddPlayerListToGameScreen)
-                {
-                    {
-                        AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                        addObjectViewModel.ForcedElementToAddTo = gameScreen;
-                        addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                        addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.PositionedObjectList;
-                        addObjectViewModel.SourceClassGenericType = playerEntity.Name;
-                        addObjectViewModel.ObjectName = $"{playerEntity.GetStrippedName()}List";
-
-                        playerList = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, gameScreen, null);
-                    }
-
-                    if(vm.AddPlayerToList)
-                    {
-                        AddObjectViewModel addPlayerVm = new AddObjectViewModel();
-
-                        addPlayerVm.SourceType = SourceType.Entity;
-                        addPlayerVm.SourceClassType = playerEntity.Name;
-                        addPlayerVm.ObjectName = "Player1";
-
-                        GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addPlayerVm, gameScreen, playerList);
-                    }
-                }
-
-                if(vm.AddGameScreen && vm.AddPlayerListToGameScreen)
-                {
-                    if(vm.CollideAgainstSolidCollision)
-                    {
-                        PluginManager.ReactToCreateCollisionRelationshipsBetween(playerList, solidCollisionNos);
-
-                        var nos = gameScreen.GetNamedObject("PlayerListVsSolidCollision");
-
-                        // move is 1
-                        // bounce is 2
-                        // PlatformerSolid is 3
-                        // PlatformerCloud is 4
-
-                        if(vm.PlayerControlType == GameType.Platformer)
-                        {
-                            nos.Properties.SetValue("CollisionType", 3);
-                        }
-                        else
-                        { 
-                            nos.Properties.SetValue("CollisionType", 2);
-                            nos.Properties.SetValue("FirstCollisionMass", 0.0f);
-                            nos.Properties.SetValue("SecondCollisionMass", 1.0f);
-                            nos.Properties.SetValue("CollisionElasticity", 0.0f);
-
-                        }
-
-                    }
-                    if(vm.CollideAgainstCloudCollision)
-                    {
-                        PluginManager.ReactToCreateCollisionRelationshipsBetween(playerList, cloudCollisionNos);
-
-                        var nos = gameScreen.GetNamedObject("PlayerListVsCloudCollision");
-
-                        if(vm.PlayerControlType == GameType.Platformer)
-                        {
-                            nos.Properties.SetValue("CollisionType", 4);
-                        }
-                    }
-                }
+                HandleAddPlayerEntity(vm, gameScreen, solidCollisionNos, cloudCollisionNos);
 
             }
 
-            if(vm.CreateLevels)
+            if (vm.CreateLevels)
             {
                 for(int i= 0; i < vm.NumberOfLevels; i++)
                 {
@@ -286,6 +187,112 @@ namespace OfficialPluginsCore.Wizard
                 }
             } while (didWait);
 
+        }
+
+        private static void HandleAddPlayerEntity(WizardData vm, ScreenSave gameScreen, NamedObjectSave solidCollisionNos, NamedObjectSave cloudCollisionNos)
+        {
+            var addEntityVm = new AddEntityViewModel();
+            addEntityVm.Name = "Player";
+
+            if (vm.PlayerCollisionType == CollisionType.Rectangle)
+            {
+                addEntityVm.IsAxisAlignedRectangleChecked = true;
+            }
+            else if (vm.PlayerCollisionType == CollisionType.Circle)
+            {
+                addEntityVm.IsCircleChecked = true;
+            }
+            else
+            {
+                // none are checked, but we'll still have it be ICollidable
+            }
+
+            addEntityVm.IsICollidableChecked = true;
+
+            addEntityVm.IsSpriteChecked = vm.AddPlayerSprite;
+
+            var playerEntity = GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(addEntityVm);
+
+            // requires the current entity be set:
+            GlueState.Self.CurrentElement = playerEntity;
+
+            if (vm.PlayerControlType == GameType.Platformer)
+            {
+                // mark as platformer
+                PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeCurrentEntityPlatformer");
+
+            }
+            else if (vm.PlayerControlType == GameType.Topdown)
+            {
+                // mark as top down
+                PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeCurrentEntityTopDown");
+            }
+
+            NamedObjectSave playerList = null;
+            if (vm.AddGameScreen && vm.AddPlayerListToGameScreen)
+            {
+                {
+                    AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                    addObjectViewModel.ForcedElementToAddTo = gameScreen;
+                    addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                    addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.PositionedObjectList;
+                    addObjectViewModel.SourceClassGenericType = playerEntity.Name;
+                    addObjectViewModel.ObjectName = $"{playerEntity.GetStrippedName()}List";
+
+                    playerList = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, gameScreen, null);
+                }
+
+                if (vm.AddPlayerToList)
+                {
+                    AddObjectViewModel addPlayerVm = new AddObjectViewModel();
+
+                    addPlayerVm.SourceType = SourceType.Entity;
+                    addPlayerVm.SourceClassType = playerEntity.Name;
+                    addPlayerVm.ObjectName = "Player1";
+
+                    GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addPlayerVm, gameScreen, playerList);
+                }
+            }
+
+            if (vm.AddGameScreen && vm.AddPlayerListToGameScreen)
+            {
+                if (vm.CollideAgainstSolidCollision)
+                {
+                    PluginManager.ReactToCreateCollisionRelationshipsBetween(playerList, solidCollisionNos);
+
+                    var nos = gameScreen.GetNamedObject("PlayerListVsSolidCollision");
+
+                    // move is 1
+                    // bounce is 2
+                    // PlatformerSolid is 3
+                    // PlatformerCloud is 4
+
+                    if (vm.PlayerControlType == GameType.Platformer)
+                    {
+                        nos.Properties.SetValue("CollisionType", 3);
+                    }
+                    else
+                    {
+                        nos.Properties.SetValue("CollisionType", 2);
+                        nos.Properties.SetValue("FirstCollisionMass", 0.0f);
+                        nos.Properties.SetValue("SecondCollisionMass", 1.0f);
+                        nos.Properties.SetValue("CollisionElasticity", 0.0f);
+
+                    }
+
+                }
+                if (vm.CollideAgainstCloudCollision)
+                {
+                    PluginManager.ReactToCreateCollisionRelationshipsBetween(playerList, cloudCollisionNos);
+
+                    var nos = gameScreen.GetNamedObject("PlayerListVsCloudCollision");
+
+                    if (vm.PlayerControlType == GameType.Platformer)
+                    {
+                        nos.Properties.SetValue("CollisionType", 4);
+                    }
+                }
+            }
         }
     }
 }
