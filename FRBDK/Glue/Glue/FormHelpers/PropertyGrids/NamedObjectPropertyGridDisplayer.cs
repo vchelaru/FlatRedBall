@@ -221,33 +221,6 @@ namespace FlatRedBall.Glue.GuiDisplay
             }
             return false;
         }
-        
-        public static void SetVariableOn(NamedObjectSave nos, string memberName, Type memberType, object value)
-        {
-            bool shouldConvertValue = false;
-
-
-            if (memberType != null &&
-                value is string &&
-                memberType != typeof(Microsoft.Xna.Framework.Color) &&
-                !CustomVariableExtensionMethods.GetIsFile(memberType) && // If it's a file, we just want to set the string value and have the underlying system do the loading                         
-                !CustomVariableExtensionMethods.GetIsObjectType(memberType.FullName)
-                )
-            {
-                bool isCsv = NamedObjectPropertyGridDisplayer.GetIfIsCsv(nos, memberName);
-                shouldConvertValue = !isCsv &&
-                    memberType != typeof(object) &&
-                    // variable could be an object
-                    memberType != typeof(PositionedObject);
-                // If the MemberType is object, then it's something we can't convert to - it's likely a state
-            }
-
-            if (shouldConvertValue)
-            {
-                value = PropertyValuePair.ConvertStringToType((string)value, memberType);
-            }
-            nos.SetPropertyValue(memberName, value);
-        }
 
         private Type ConvertListTypes(Type memberType)
         {

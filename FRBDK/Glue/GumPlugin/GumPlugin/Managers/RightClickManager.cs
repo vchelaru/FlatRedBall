@@ -204,7 +204,7 @@ namespace GumPlugin.Managers
                         GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element);
 
                     GlueCommands.Self.GluxCommands.SaveGlux();
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
                 }
             }

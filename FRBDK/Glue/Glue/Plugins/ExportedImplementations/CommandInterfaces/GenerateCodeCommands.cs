@@ -41,29 +41,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 );
         }
 
-        public void GenerateCurrentElementCodeTask()
-        {
-            var element = GlueState.CurrentElement;
-            TaskManager.Self.Add(()  =>
-            {
-
-                if (element != null)
-                {
-                    CodeWriter.
-                    GenerateCode(element);
-                }
-            }, $"Generating element {element}", TaskExecutionPreference.AddOrMoveToEnd);
-        }
-
         public void GenerateCurrentElementCode()
         {
             var element = GlueState.CurrentElement;
-
             if (element != null)
             {
-                TaskManager.Self.AddOrRunIfTasked(() =>
+                TaskManager.Self.AddOrRunIfTasked(()  =>
                 {
-                        CodeWriter.GenerateCode(element);
+                    CodeWriter.GenerateCode(element);
                 }, $"Generating element {element}", TaskExecutionPreference.AddOrMoveToEnd);
             }
         }

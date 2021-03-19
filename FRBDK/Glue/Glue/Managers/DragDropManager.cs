@@ -1179,55 +1179,18 @@ namespace FlatRedBall.Glue.Managers
 
         private static GeneralResponse HandleDroppingFileOnObjectInSameElement(TreeNode targetNode, ReferencedFileSave referencedFileSave)
         {
-            // Dropping the file on an object. If the object's type matches the named object's
-            // entire file, ask the user if they want to make the object come from the file...
-            var rfsAti = referencedFileSave.GetAssetTypeInfo();
             var namedObject = ((NamedObjectSave)targetNode.Tag);
-            var namedObjectAti = namedObject.GetAssetTypeInfo();
 
             var response = GeneralResponse.SuccessfulResponse;
 
-            var shouldAskAboutChangingObjectToBeFromFile =
-                rfsAti == namedObjectAti && rfsAti != null;
+            var handled = TrySetNosToBeCreatedFromFile(referencedFileSave, namedObject);
 
-
-            if (shouldAskAboutChangingObjectToBeFromFile)
+            if(!handled)
             {
-                var dialogResult = MessageBox.Show(
-                    $"Would you like to set the object {namedObject.InstanceName} to be created from the file {referencedFileSave.Name}?",
-                    $"Set {namedObject.InstanceName} to be from file?",
-                    MessageBoxButtons.YesNo);
-
-                if (dialogResult == DialogResult.Yes)
-                {
-                    namedObject.SourceType = SourceType.File;
-                    namedObject.SourceFile = referencedFileSave.Name;
-                    namedObject.SourceName = $"Entire File ({rfsAti.RuntimeTypeName})";
-
-                    // This might be the case if the base is SetbyDerived. 
-                    if (namedObject.Instantiate == false)
-                    {
-                        // If an entire object is dropped on this, it's likely that the user wants to create (aka instantiate)
-                        // the object using the entire file. The user may not realize that the object is set to not initialize,
-                        // so let's ask them and offer to set Initialize to true
-                        string message = $"The object {namedObject.InstanceName} has its 'Instantiate' variable set to 'false'. " +
-                            $"This needs to be set to 'true' for the object to be created from the file. Set it to true?";
-
-                        var setToTrueResponse = MessageBox.Show(message,
-                            "Set Instantiate to true?",
-                            MessageBoxButtons.YesNo);
-
-                        if (setToTrueResponse == DialogResult.Yes)
-                        {
-                            namedObject.Instantiate = true;
-                        }
-                    }
-
-                    GlueCommands.Self.GluxCommands.SaveGlux();
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
-                }
+                handled = TrySetVariableOnNos(referencedFileSave, namedObject);
             }
-            else
+
+            if(!handled)
             {
                 response.Fail(
                     $"The object {namedObject.InstanceName} cannot be entirely set from {referencedFileSave.Name}." +
@@ -1235,6 +1198,97 @@ namespace FlatRedBall.Glue.Managers
             }
 
             return response;
+        }
+
+        private static bool TrySetVariableOnNos(ReferencedFileSave referencedFileSave, NamedObjectSave namedObject)
+        {
+            var nosAti = namedObject.GetAssetTypeInfo();
+            var fileAti = referencedFileSave.GetAssetTypeInfo();
+
+            ////////////Early Out/////////////
+            if(nosAti == null || fileAti == null)
+            {
+                return false;
+            }
+            //////////End Early Out////////////
+
+            var availableVariables = nosAti.VariableDefinitions;
+
+            var matchingVariable = availableVariables.FirstOrDefault(item => item.Type == fileAti.QualifiedRuntimeTypeName.QualifiedType);
+
+            if(matchingVariable == null)
+            {
+                matchingVariable = availableVariables.FirstOrDefault(item => item.Type == fileAti.RuntimeTypeName);
+            }
+
+            if(matchingVariable != null)
+            {
+                GlueCommands.Self.GluxCommands.SetVariableOn(namedObject, matchingVariable.Name, FileManager.RemovePath(FileManager.RemoveExtension( referencedFileSave.Name)) );
+
+
+                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool TrySetNosToBeCreatedFromFile(ReferencedFileSave referencedFileSave, NamedObjectSave namedObject)
+        {
+            // Dropping the file on an object. If the object's type matches the named object's
+            // entire file, ask the user if they want to make the object come from the file...
+            var namedObjectAti = namedObject.GetAssetTypeInfo();
+            AssetTypeInfo rfsAti = referencedFileSave.GetAssetTypeInfo();
+
+
+            var doFileAndNamedObjectHaveMatchingTypes =
+                rfsAti == namedObjectAti && rfsAti != null;
+
+            /////////////////Early Out////////////////////////
+            ///
+            if(!doFileAndNamedObjectHaveMatchingTypes)
+            {
+                return false;
+            }
+            //////////////End Early Out///////////////////////
+
+            var dialogResult = MessageBox.Show(
+                                $"Would you like to set the object {namedObject.InstanceName} to be created from the file {referencedFileSave.Name}?",
+                                $"Set {namedObject.InstanceName} to be from file?",
+                                MessageBoxButtons.YesNo);
+
+            if (dialogResult == DialogResult.Yes)
+            {
+                namedObject.SourceType = SourceType.File;
+                namedObject.SourceFile = referencedFileSave.Name;
+                namedObject.SourceName = $"Entire File ({rfsAti.RuntimeTypeName})";
+
+                // This might be the case if the base is SetbyDerived. 
+                if (namedObject.Instantiate == false)
+                {
+                    // If an entire object is dropped on this, it's likely that the user wants to create (aka instantiate)
+                    // the object using the entire file. The user may not realize that the object is set to not initialize,
+                    // so let's ask them and offer to set Initialize to true
+                    string message = $"The object {namedObject.InstanceName} has its 'Instantiate' variable set to 'false'. " +
+                        $"This needs to be set to 'true' for the object to be created from the file. Set it to true?";
+
+                    var setToTrueResponse = MessageBox.Show(message,
+                        "Set Instantiate to true?",
+                        MessageBoxButtons.YesNo);
+
+                    if (setToTrueResponse == DialogResult.Yes)
+                    {
+                        namedObject.Instantiate = true;
+                    }
+                }
+
+                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+            }
+
+            return true;
         }
 
         #endregion

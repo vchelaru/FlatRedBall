@@ -385,7 +385,7 @@ namespace TopDownPlugin.Controllers
 
             SaveCurrentEntitySaveAnimationDataTask();
 
-            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
+            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
         }
 
         private void SaveCurrentEntitySaveAnimationDataTask()

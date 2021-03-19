@@ -138,7 +138,7 @@ namespace EntityPerformancePlugin
                 {
                     RefreshView();
 
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
                 }
             }
         }
@@ -292,7 +292,7 @@ namespace EntityPerformancePlugin
 
             if(shouldRegenerateSelectedEntity)
             {
-                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
+                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
             }
             if(shouldSaveGlux)
             {

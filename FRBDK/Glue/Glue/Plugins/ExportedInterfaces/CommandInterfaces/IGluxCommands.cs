@@ -93,6 +93,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         void RemoveScreen(ScreenSave screenToRemove, List<string> filesThatCouldBeRemoved = null);
 
+        #region Named Objects
+
+        [Obsolete("I don't think we need the typed version anymore. Use the untyped version")]
         void SetVariableOn(NamedObjectSave nos, string memberName, Type memberType, object value);
+
+        void SetVariableOn(NamedObjectSave nos, string memberName, object value);
+
+        #endregion
     }
 }

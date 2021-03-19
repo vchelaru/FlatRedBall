@@ -465,7 +465,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             if (changedAny)
             {
                 GlueCommands.Self.GluxCommands.SaveGlux();
-                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
+                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
             }
         }
 
@@ -651,7 +651,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             if(didMakeChange)
             {
-                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
+                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
                 GlueCommands.Self.GluxCommands.SaveGlux();
             }
 

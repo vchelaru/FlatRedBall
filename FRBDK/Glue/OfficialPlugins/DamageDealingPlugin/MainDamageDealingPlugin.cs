@@ -155,7 +155,7 @@ namespace OfficialPluginsCore.DamageDealingPlugin
                 if(wereVariablesAddedOrRemoved)
                 {
                     GlueCommands.Self.GluxCommands.SaveGlux();
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
                     GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
                 }
             }

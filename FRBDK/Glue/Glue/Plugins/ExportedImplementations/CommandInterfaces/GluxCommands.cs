@@ -1574,7 +1574,32 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 oldValue = instruction.Value;
             }
-            NamedObjectPropertyGridDisplayer.SetVariableOn(nos, memberName, memberType, value);
+            //SetVariableOn(nos, memberName, memberType, value);
+
+            bool shouldConvertValue = false;
+
+
+            if (memberType != null &&
+                value is string &&
+                memberType != typeof(Microsoft.Xna.Framework.Color) &&
+                !CustomVariableExtensionMethods.GetIsFile(memberType) && // If it's a file, we just want to set the string value and have the underlying system do the loading                         
+                !CustomVariableExtensionMethods.GetIsObjectType(memberType.FullName)
+                )
+            {
+                bool isCsv = NamedObjectPropertyGridDisplayer.GetIfIsCsv(nos, memberName);
+                shouldConvertValue = !isCsv &&
+                    memberType != typeof(object) &&
+                    // variable could be an object
+                    memberType != typeof(PositionedObject);
+                // If the MemberType is object, then it's something we can't convert to - it's likely a state
+            }
+
+            if (shouldConvertValue)
+            {
+                value = PropertyValuePair.ConvertStringToType((string)value, memberType);
+            }
+            nos.SetPropertyValue(memberName, value);
+
 
             EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
                 memberName, nos.InstanceName, oldValue);
@@ -1582,6 +1607,57 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             PluginManager.ReactToChangedProperty(memberName, oldValue);
         }
+
+        public void SetVariableOn(NamedObjectSave nos, string memberName, object value)
+        {
+            object oldValue = null;
+
+            var instruction = nos.GetInstructionFromMember(memberName);
+
+            if (instruction != null)
+            {
+                oldValue = instruction.Value;
+            }
+            //SetVariableOn(nos, memberName, memberType, value);
+
+            bool shouldConvertValue = false;
+
+            var variableDefinition = nos.GetAssetTypeInfo()?.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);
+            if(variableDefinition == null)
+            {
+                throw new InvalidOperationException($"Could not find a VariableDefinition on object {nos} with name {memberName}");
+            }
+
+            if (value is string &&
+                variableDefinition.Type != "Microsoft.Xna.Framework.Color" &&
+                variableDefinition.Type != "Color" &&
+                !CustomVariableExtensionMethods.GetIsFile(variableDefinition.Type) && // If it's a file, we just want to set the string value and have the underlying system do the loading                         
+                !CustomVariableExtensionMethods.GetIsObjectType(variableDefinition.Type)
+                )
+            {
+                bool isCsv = NamedObjectPropertyGridDisplayer.GetIfIsCsv(nos, memberName);
+                shouldConvertValue = !isCsv &&
+                    variableDefinition.Name != "object" &&
+                    // variable could be an object
+                    (value is PositionedObject) == false;
+                // If the MemberType is object, then it's something we can't convert to - it's likely a state
+            }
+
+            if (shouldConvertValue)
+            {
+                value = PropertyValuePair.ConvertStringToType((string)value, variableDefinition.Type);
+            }
+            nos.SetPropertyValue(memberName, value);
+
+
+            EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
+                memberName, nos.InstanceName, oldValue);
+
+
+            PluginManager.ReactToChangedProperty(memberName, oldValue);
+        }
+
+
 
         public void SaveSettings()
         {

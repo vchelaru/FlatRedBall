@@ -187,6 +187,11 @@ namespace FlatRedBall.Instructions.Reflection
             return (T)ConvertStringToType(value, typeof(T));
         }
 
+        public static object ConvertStringToType(string value, string qualifiedTypeName)
+        {
+            return ConvertStringValueToValueOfType(value, qualifiedTypeName, null, FlatRedBallServices.GlobalContentManager, trimQuotes:false);
+        }
+
         public static object ConvertStringToType(string value, Type typeToConvertTo)
         {
 #if FRB_RAW

@@ -219,7 +219,7 @@ namespace OfficialPlugins.VariableDisplay
 
                     GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
 
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
                 };
 
                 instanceMember.CustomGetEvent += (instance) =>
