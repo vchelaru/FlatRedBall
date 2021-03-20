@@ -73,8 +73,8 @@ namespace OfficialPluginsCore.Wizard.Models
                 formsData.AddBoolValue("Add Player list to GameScreen", nameof(ViewModel.AddPlayerListToGameScreen), nameof(ViewModel.AddPlayerEntity));
                 formsData.AddBoolValue("Add Player instance to list", nameof(ViewModel.AddPlayerToList), nameof(ViewModel.AddPlayerEntity));
 
-                formsData.AddBoolValue("Add Player vs. solid collision", nameof(ViewModel.CollideAgainstSolidCollision), nameof(ViewModel.AddPlayerEntity));
-                formsData.AddBoolValue("Add Player vs. cloud collision", nameof(ViewModel.CollideAgainstCloudCollision), nameof(ViewModel.AddPlayerEntity));
+                formsData.AddBoolValue("Add Player vs. solid collision", nameof(ViewModel.CollideAgainstSolidCollision), nameof(ViewModel.ShowPlayerVsSolidCollision));
+                formsData.AddBoolValue("Add Player vs. cloud collision", nameof(ViewModel.CollideAgainstCloudCollision), nameof(ViewModel.ShowPlayerVsCloudCollision));
 
                 formsData.AddBoolValue("Add Sprite to Player Entitty", nameof(ViewModel.AddPlayerSprite), nameof(ViewModel.AddPlayerEntity));
 

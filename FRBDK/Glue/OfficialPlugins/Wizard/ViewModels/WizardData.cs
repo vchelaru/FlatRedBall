@@ -58,6 +58,15 @@ namespace OfficialPluginsCore.Wizard.Models
             set => Set(value);
         }
 
+        [DependsOn(nameof(AddPlayerEntity))]
+        [DependsOn(nameof(AddCloudCollision))]
+        [DependsOn(nameof(PlayerControlType))]
+        public bool ShowPlayerVsCloudCollision => AddPlayerEntity && AddCloudCollision && PlayerControlType == GameType.Platformer;
+
+        [DependsOn(nameof(AddPlayerEntity))]
+        [DependsOn(nameof(AddSolidCollision))]
+        public bool ShowPlayerVsSolidCollision => AddPlayerEntity && AddSolidCollision;
+
         public GameType PlayerControlType
         {
             get => Get<GameType>();
