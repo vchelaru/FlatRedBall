@@ -26,6 +26,7 @@
             </Grid>
             <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding GenerateDisplayCode}">Generate Display Code</CheckBox>
             <StackPanel Visibility="{Binding AllPropertiesVisibility}">
+                
                 <GroupBox Header="Resolution">
                     <StackPanel>
                         <WrapPanel>

@@ -23,6 +23,11 @@ namespace FlatRedBall
     {
         #region Fields
 
+        /// <summary>
+        /// A Vector3 representing the "Up" orientation. The camera will adjust its rotation so that this vector
+        /// is up. This enables 3D games (such as first person shooters) to rotate the camera yet still have a natural-feeling
+        /// up vector. 
+        /// </summary>
         public Vector3 UpVector = new Vector3(0, 1, 0);
 
         static int sCreatedCount = 0;
@@ -87,8 +92,6 @@ namespace FlatRedBall
         bool mClearsTargetDefaultRenderMode = true;
 #endif
 
-
-
         BoundingFrustum mBoundingFrustum;
 
         CameraCullMode mCameraCullMode;
@@ -114,12 +117,9 @@ namespace FlatRedBall
         List<Layer> mLayers = new List<Layer>();
         ReadOnlyCollection<Layer> mLayersReadOnly;
 
-
-
         //internal SpriteList mSpritesToBillBoard = new SpriteList();
 
         string mContentManager;
-
 
         #region XML Docs
         /// <summary>

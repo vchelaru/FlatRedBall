@@ -520,28 +520,7 @@ namespace GumPlugin
 
             if(createGumScreen && AppState.Self.GumProjectSave != null)
             {
-                string gumScreenName = FileManager.RemovePath( newGlueScreen.Name ) + "Gum";
-
-                bool exists = AppState.Self.GumProjectSave.Screens.Any(item => item.Name == gumScreenName);
-                if (!exists)
-                {
-                    Gum.DataTypes.ScreenSave gumScreen = new Gum.DataTypes.ScreenSave();
-                    gumScreen.Initialize(StandardElementsManager.Self.GetDefaultStateFor("Screen"));
-                    gumScreen.Name = gumScreenName;
-
-                    string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
-
-                    AppCommands.Self.AddScreenToGumProject(gumScreen);
-
-                    AppCommands.Self.SaveGumx(saveAllElements: false);
-
-                    AppCommands.Self.SaveScreen(gumScreen);
-
-                }
-                // Select the screen to add the file to this
-                GlueState.Self.CurrentScreenSave = newGlueScreen;
-
-                RightClickManager.Self.AddScreenByName(gumScreenName, newGlueScreen);
+                AppCommands.Self.AddScreenForGlueScreen(newGlueScreen);
             }
         }
 

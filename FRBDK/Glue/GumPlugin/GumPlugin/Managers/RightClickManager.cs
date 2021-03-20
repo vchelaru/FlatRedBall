@@ -24,6 +24,8 @@ namespace GumPlugin.Managers
 
             TryAddAddComponentForCurrentEntity(rightClickedTreeNode, menuToModify);
 
+            TryAddAddNewScreenForCurrentScreen(rightClickedTreeNode, menuToModify);
+
             TryAddRegenerateGumElement(rightClickedTreeNode, menuToModify);
         }
 
@@ -57,6 +59,39 @@ namespace GumPlugin.Managers
                     CodeGeneratorManager.Self.GenerateDueToFileChange(fileName);
 
                 };
+            }
+        }
+
+        private void TryAddAddNewScreenForCurrentScreen(TreeNode rightClickedTreeNode, ContextMenuStrip menuToModify)
+        {
+            var shouldContinue = true;
+            if (!rightClickedTreeNode.IsScreenNode())
+            {
+                shouldContinue = false;
+            }
+
+            if (shouldContinue && AppState.Self.GumProjectSave == null)
+            {
+                shouldContinue = false;
+            }
+
+            var screen = rightClickedTreeNode.Tag as FlatRedBall.Glue.SaveClasses.ScreenSave;
+
+            if(shouldContinue)
+            {
+                var alreadyHasScreen = screen.ReferencedFiles.Any(item => FileManager.GetExtension(item.Name) == "gusx");
+
+                if(alreadyHasScreen)
+                {
+                    shouldContinue = false;
+                }
+            }
+
+            if(shouldContinue)
+            {
+                var newMenuItem = new ToolStripMenuItem($"Create New Gum Screen for {FileManager.RemovePath(screen.Name)}");
+                menuToModify.Items.Add(newMenuItem);
+                newMenuItem.Click += (not, used) => AppCommands.Self.AddScreenForGlueScreen(screen);
             }
         }
 

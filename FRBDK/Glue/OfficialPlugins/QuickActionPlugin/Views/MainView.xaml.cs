@@ -76,7 +76,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
 
         private void AddGumButton_Clicked(object sender, RoutedEventArgs args)
         {
-            PluginManager.CallPluginMethod("Gum Plugin", "CreateGumProject");
+            PluginManager.CallPluginMethod("Gum Plugin", "AskToCreateGumProject");
         }
 
         private void AddObjectButton_Clicked(object sender, RoutedEventArgs e)
