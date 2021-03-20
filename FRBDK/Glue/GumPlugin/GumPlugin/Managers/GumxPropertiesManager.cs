@@ -79,6 +79,10 @@ namespace GumPlugin.Managers
                         CodeGeneratorManager.Self.GenerateDerivedGueRuntimes,
                         $"Regenerating Gum derived runtimes because of changed {propertyChanged}");
                 }
+                else if(propertyChanged == nameof(GumViewModel.IsMatchGameResolutionInGumChecked))
+                {
+                    AppCommands.Self.UpdateGumToGlueResolution();
+                }
                 GlueCommands.Self.GluxCommands.SaveGlux();
             }
         }

@@ -968,6 +968,16 @@ namespace FlatRedBall.Glue.Plugins
             plugin => plugin.NewScreenCreatedWithUi != null);
         }
 
+        internal static void ReactToResolutionChanged()
+        {
+            CallMethodOnPlugin((plugin) =>
+            {
+                plugin.ResolutionChanged();
+            },
+            nameof(ReactToResolutionChanged),
+            plugin => plugin.ResolutionChanged != null);
+        }
+
         internal static void ReactToNewEntityCreatedWithUi(EntitySave entitySave, AddEntityWindow window)
         {
             CallMethodOnPlugin((plugin) =>

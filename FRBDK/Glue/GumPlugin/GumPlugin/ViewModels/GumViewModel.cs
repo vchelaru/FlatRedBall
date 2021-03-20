@@ -23,80 +23,48 @@ namespace GumPlugin.ViewModels
 
     #endregion
 
-    class GumViewModel : ViewModel
+    // This got converted to a PropertyListContainerViewModel i nMarch 2021. Properties here could get updated 
+    class GumViewModel : PropertyListContainerViewModel
     {
         GumProjectSave backingGumProject;
         ReferencedFileSave backingRfs;
             
         bool shouldRaiseEvents = true;
 
-        bool useAtlases;
+        [SyncedProperty]
         public bool UseAtlases
         {
-            get
-            {
-                return useAtlases;
-            }
-            set
-            {
-                if (useAtlases != value)
-                {
-                    useAtlases = value;
-
-                    backingRfs.Properties.SetValue(
-                        nameof(UseAtlases), value);
-
-                    base.NotifyPropertyChanged(nameof(UseAtlases));
-                }
-            }
+            get => Get<bool>();
+            set => SetAndPersist(value);
         }
 
-        bool autoCreateGumScreens;
+        [SyncedProperty]
+        public bool IsMatchGameResolutionInGumChecked
+        {
+            get => Get<bool>();
+            set => SetAndPersist(value);
+        }
+
+        [SyncedProperty]
         public bool AutoCreateGumScreens
         {
-            get
-            {
-                return autoCreateGumScreens;
-            }
-            set
-            {
-                if(autoCreateGumScreens != value)
-                {
-                    autoCreateGumScreens = value;
-
-                    backingRfs.Properties.SetValue(
-                        nameof(AutoCreateGumScreens), value);
-
-                    base.NotifyPropertyChanged(nameof(AutoCreateGumScreens));
-                }
-            }
+            get => Get<bool>();
+            set => SetAndPersist(value);
         }
 
+
+        [SyncedProperty]
         public bool ShowMouse
         {
             get => Get<bool>();
-            set
-            {
-                if(Set(value))
-                {
-                    backingRfs.Properties.SetValue(
-                        nameof(ShowMouse), value);
-                }
-            }
+            set => SetAndPersist(value);
         }
 
+        [SyncedProperty]
         public bool MakeGumInstancesPublic
         {
             get => Get<bool>();
-            set
-            {
-                if(Set(value))
-                {
-                    backingRfs.Properties.SetValue(
-                        nameof(MakeGumInstancesPublic), value);
-                }
-
-            }
+            set => SetAndPersist(value);
         }
 
         // We don't use this to adjust the data (ReferencedFileSave, settings file), but it's here
@@ -127,27 +95,18 @@ namespace GumPlugin.ViewModels
             (int)GlueProjectSave.GluxVersions.GumGueHasGetAnimation;
 
 
+        [SyncedProperty]
         public bool IncludeFormsInComponents
         {
-            get { return Get<bool>(); }
-            set
-            {
-                backingRfs.Properties.SetValue(
-                    nameof(IncludeFormsInComponents), value);
-
-                Set(value);
-            }
+            get => Get<bool>();
+            set => SetAndPersist(value);
         }
 
+        [SyncedProperty]
         public bool IncludeComponentToFormsAssociation
         {
-            get { return Get<bool>(); }
-            set
-            {
-                backingRfs.Properties.SetValue(
-                    nameof(IncludeComponentToFormsAssociation), value);
-                Set(value);
-            }
+            get => Get<bool>();
+            set => SetAndPersist(value);
         }
 
         public bool IncludeNoFiles
@@ -164,25 +123,17 @@ namespace GumPlugin.ViewModels
             }
         }
 
+        [SyncedProperty]
         public bool ShowDottedOutlines
         {
-            get
-            {
-                return Get<bool>();
-            }
-            set
-            {
-                backingRfs.Properties.SetValue(
-                    nameof(ShowDottedOutlines), value);
-
-                Set(value);
-            }
+            get => Get<bool>();
+            set => SetAndPersist(value);
         }
 
         public bool ShowAdvanced
         {
-            get { return Get<bool>(); }
-            set { Set(value); }
+            get => Get<bool>();
+            set => Set(value); 
         }
 
         [DependsOn(nameof(ShowAdvanced))]
@@ -195,6 +146,9 @@ namespace GumPlugin.ViewModels
             backingGumProject = gumProjectSave;
             backingRfs = referencedFileSave;
 
+            GlueObject = referencedFileSave;
+
+
             UseAtlases = backingRfs.Properties.GetValue<bool>(nameof(UseAtlases));
             AutoCreateGumScreens = backingRfs.Properties.GetValue<bool>(nameof(AutoCreateGumScreens));
             ShowDottedOutlines = backingRfs.Properties.GetValue<bool>(nameof(ShowDottedOutlines));
@@ -206,6 +160,7 @@ namespace GumPlugin.ViewModels
             IncludeComponentToFormsAssociation = backingRfs.Properties.GetValue<bool>(nameof(IncludeComponentToFormsAssociation));
 
             ShowMouse = backingRfs.Properties.GetValue<bool>(nameof(ShowMouse));
+            UpdateFromGlueObject();
         }
 
 

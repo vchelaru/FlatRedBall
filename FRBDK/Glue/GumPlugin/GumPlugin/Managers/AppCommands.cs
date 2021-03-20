@@ -203,5 +203,31 @@ namespace GumPlugin.Managers
 
             RightClickManager.Self.AddScreenByName(gumScreenName, glueScreen);
         }
+
+        internal void UpdateGumToGlueResolution()
+        {
+            TaskManager.Self.AddOrRunIfTasked(() =>
+            {
+                var displaySettings = GlueState.Self.CurrentGlueProject?.DisplaySettings;
+
+                if (displaySettings != null && AppState.Self.GumProjectSave != null)
+                {
+                    var gumProject = AppState.Self.GumProjectSave;
+
+                    if(gumProject.DefaultCanvasWidth != displaySettings.ResolutionWidth ||
+                        gumProject.DefaultCanvasHeight != displaySettings.ResolutionHeight)
+                    {
+                        gumProject.DefaultCanvasWidth = displaySettings.ResolutionWidth;
+                        gumProject.DefaultCanvasHeight = displaySettings.ResolutionHeight;
+
+                        AppCommands.Self.SaveGumx();
+                    }
+
+                }
+            }, "Setting Gum Resolution");
+
+
+        }
+
     }
 }

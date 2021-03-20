@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GumPlugin.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="360" d:DesignWidth="300">
+             d:DesignHeight="400" d:DesignWidth="310">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel>
             <TextBlock HorizontalAlignment="Center" FontSize="16" Text="Gum Project Properties"></TextBlock>
@@ -14,14 +14,23 @@
             <CheckBox VerticalContentAlignment="Center" 
                       Content="Show Mouse" IsChecked="{Binding ShowMouse}" ></CheckBox>
 
-            <CheckBox x:Name="AutoCreateGumScreens" VerticalContentAlignment="Center" 
-                  Content="Automatically Create Gum Screens for Glue Screens" IsChecked="{Binding AutoCreateGumScreens}"></CheckBox>
             <CheckBox x:Name="UseAtlasesCheckBox" VerticalContentAlignment="Center" 
                   Content="Use Atlases" IsChecked="{Binding UseAtlases}"></CheckBox>
             <CheckBox x:Name="MakeInstancesPublicCheckBox" VerticalAlignment="Center"
                   Content="Make Generated Code Instances Public" IsChecked="{Binding MakeGumInstancesPublic}"></CheckBox>
             <Button Margin="7,5,0,0" Width="220" HorizontalAlignment="Left" Click="RegenerateFontsClicked">Re-generate Fonts</Button>
             <Button Margin="7,5,0,0" Width="220" HorizontalAlignment="Left" Click="RemoveOrphanCustomCodeClicked" >Remove Orphaned Custom Runtime Files</Button>
+
+            <GroupBox Header="Gum Project Management">
+                <StackPanel>
+                    <CheckBox x:Name="AutoCreateGumScreens" VerticalContentAlignment="Center" 
+                          Content="Automatically Create Gum Screens for Glue Screens" 
+                              IsChecked="{Binding AutoCreateGumScreens}"></CheckBox>
+                    <CheckBox Content="Match Game Resolution in Gum" 
+                              IsChecked="{Binding IsMatchGameResolutionInGumChecked}"/>
+                </StackPanel>
+            </GroupBox>
+
             <GroupBox Header="Core Gum Addition" Visibility="{Binding GumCoreFileUiVisibility}">
                 <StackPanel >
                     <RadioButton GroupName="AdditionType" x:Name="IncludeNoFilesRadio" 

@@ -368,7 +368,19 @@ namespace GumPlugin
             this.ReactToFileRemoved += HandleFileRemoved;
 
             this.TryHandleTreeNodeDoubleClicked += HandleTreeNodeDoubleClicked;
+
+            this.ResolutionChanged += HandleResolutionChanged;
         }
+
+        private void HandleResolutionChanged()
+        {
+            if(viewModel?.IsMatchGameResolutionInGumChecked == true)
+            {
+                AppCommands.Self.UpdateGumToGlueResolution();
+            }
+        }
+
+
 
         private bool HandleTreeNodeDoubleClicked(TreeNode arg)
         {
@@ -774,6 +786,8 @@ namespace GumPlugin
                     GlueCommands.Self.ProjectCommands.SaveProjects();
 
                 }, "Gum plugin reacting to glux load");
+
+                AppCommands.Self.UpdateGumToGlueResolution();
             }
         }
 

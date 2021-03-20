@@ -253,7 +253,7 @@ namespace FlatRedBall.Glue.Plugins
 
         public Action<string, List<string>> GetFilesNeededOnDiskBy { get; protected set; }
 
-
+        public Action ResolutionChanged { get; protected set; }
 
         /// <summary>
         /// Responsible for returning whether the argument file can return content.  The file shouldn't be opened

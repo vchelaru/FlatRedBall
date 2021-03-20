@@ -62,6 +62,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         {
             if (respondToViewModelChanges)
             {
+
                 var glueProject = GlueState.Self.CurrentGlueProject;
 
                 if(glueProject != null)
@@ -78,6 +79,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
                     CameraSetupCodeGenerator.GenerateCallInGame1(ProjectManager.GameClassFileName, true);
 
                     CameraAtiUpdateLogic.UpdateAtiTo(viewModel);
+                }
+
+                var propertyName = e.PropertyName;
+                if(propertyName == nameof(viewModel.ResolutionWidth) ||
+                    propertyName == nameof(viewModel.ResolutionHeight))
+                {
+                    PluginManager.ReactToResolutionChanged();
                 }
             }
         } 
