@@ -22,9 +22,13 @@ namespace OfficialPluginsCore.Wizard
     [Export(typeof(PluginBase))]
     public class MainWizardPlugin : PluginBase
     {
+        #region Fields/Properties
+
         public override string FriendlyName => "New Project Wizard";
 
         public override Version Version => new Version(1, 1);
+
+        #endregion
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
@@ -55,37 +59,12 @@ namespace OfficialPluginsCore.Wizard
             // Add Gum before adding a GameScreen, so the GameScreen gets its Gum screen
             if (vm.AddGum)
             {
-                if (vm.AddFlatRedBallForms)
-                {
-                    PluginManager.CallPluginMethod("Gum Plugin", "CreateGumProjectWithForms");
-                }
-                else
-                {
-                    PluginManager.CallPluginMethod("Gum Plugin", "CreateGumProjectNoForms");
-                }
-
-                await FlatRedBall.Glue.Managers.TaskManager.Self.WaitForAllTasksFinished();
+                await HandleAddGum(vm);
             }
 
             if (vm.AddGameScreen)
             {
-                gameScreen = GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("GameScreen");
-
-                if(vm.AddTiledMap)
-                {
-                    MainAddScreenPlugin.AddMapObject(gameScreen);
-                }
-
-                if(vm.AddSolidCollision)
-                {
-                    solidCollisionNos = MainAddScreenPlugin.AddCollision(gameScreen, "SolidCollision", 
-                        setFromMapObject:vm.AddTiledMap);
-                }
-                if(vm.AddCloudCollision)
-                {
-                    cloudCollisionNos = MainAddScreenPlugin.AddCollision(gameScreen, "CloudCollision",
-                        setFromMapObject: vm.AddTiledMap);
-                }
+                gameScreen = HandleAddGameScreen(vm, ref solidCollisionNos, ref cloudCollisionNos);
             }
 
             if (vm.AddPlayerEntity)
@@ -189,6 +168,42 @@ namespace OfficialPluginsCore.Wizard
 
         }
 
+        private static ScreenSave HandleAddGameScreen(WizardData vm, ref NamedObjectSave solidCollisionNos, ref NamedObjectSave cloudCollisionNos)
+        {
+            ScreenSave gameScreen = GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("GameScreen");
+            if (vm.AddTiledMap)
+            {
+                MainAddScreenPlugin.AddMapObject(gameScreen);
+            }
+
+            if (vm.AddSolidCollision)
+            {
+                solidCollisionNos = MainAddScreenPlugin.AddCollision(gameScreen, "SolidCollision",
+                    setFromMapObject: vm.AddTiledMap);
+            }
+            if (vm.AddCloudCollision)
+            {
+                cloudCollisionNos = MainAddScreenPlugin.AddCollision(gameScreen, "CloudCollision",
+                    setFromMapObject: vm.AddTiledMap);
+            }
+
+            return gameScreen;
+        }
+
+        private static async Task HandleAddGum(WizardData vm)
+        {
+            if (vm.AddFlatRedBallForms)
+            {
+                PluginManager.CallPluginMethod("Gum Plugin", "CreateGumProjectWithForms");
+            }
+            else
+            {
+                PluginManager.CallPluginMethod("Gum Plugin", "CreateGumProjectNoForms");
+            }
+
+            await FlatRedBall.Glue.Managers.TaskManager.Self.WaitForAllTasksFinished();
+        }
+
         private static void HandleAddPlayerEntity(WizardData vm, ScreenSave gameScreen, NamedObjectSave solidCollisionNos, NamedObjectSave cloudCollisionNos)
         {
             var addEntityVm = new AddEntityViewModel();
@@ -285,6 +300,7 @@ namespace OfficialPluginsCore.Wizard
 
                     }
 
+                    PluginManager.CallPluginMethod("Collision Plugin", "FixNamedObjectCollisionType", nos);
                 }
                 if (vm.CollideAgainstCloudCollision)
                 {
@@ -296,6 +312,8 @@ namespace OfficialPluginsCore.Wizard
                     {
                         nos.Properties.SetValue("CollisionType", 4);
                     }
+
+                    PluginManager.CallPluginMethod("Collision Plugin", "FixNamedObjectCollisionType", nos);
                 }
             }
         }
