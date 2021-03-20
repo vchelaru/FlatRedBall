@@ -302,7 +302,7 @@ namespace OfficialPluginsCore.Wizard
 
                     PluginManager.CallPluginMethod("Collision Plugin", "FixNamedObjectCollisionType", nos);
                 }
-                if (vm.CollideAgainstCloudCollision)
+                if (vm.CollideAgainstCloudCollision && vm.AddCloudCollision)
                 {
                     PluginManager.ReactToCreateCollisionRelationshipsBetween(playerList, cloudCollisionNos);
 
