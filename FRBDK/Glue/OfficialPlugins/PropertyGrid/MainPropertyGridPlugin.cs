@@ -194,6 +194,21 @@ namespace OfficialPlugins.VariableDisplay
                 variableGrid.DataContext = variableViewModel;
 
                 variableTab = this.CreateTab(variableGrid, "Variables");
+
+                variableTab.TabShown += () =>
+                {
+                    var currentElement = GlueState.Self.CurrentElement;
+                    var nos = GlueState.Self.CurrentNamedObjectSave;
+                    if(nos != null)
+                    {
+                        HandleNamedObjectSelect(nos);
+                    }
+                    else if(currentElement != null)
+                    {
+                        ElementVariableShowingLogic.UpdateShownVariables(variableGrid.DataUiGrid, currentElement);
+                    }
+
+                };
                 
                 //variableTab = this.AddToTab(tabControl, variableGrid, "Variables");
                 variableTab.CanClose = false;

@@ -15,6 +15,9 @@ namespace FlatRedBall.Glue.Controls
 
         public event EventHandler RightClickCloseClicked;
 
+        public Action TabSelected;
+
+
         bool mDrawX = true;
 
         MenuItem moveToMenuItem;

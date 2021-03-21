@@ -51,10 +51,23 @@ namespace FlatRedBall.Glue.Plugins
             get; set;
         } = TabLocation.Center;
 
+        PluginTabPage page;
         internal PluginTabPage Page
         {
-            get; set;
+            get => page;
+            set
+            {
+                if (page != value)
+                {
+                    page = value;
+                    page.TabSelected = RaiseTabShown;
+                }
+            }
         }
+
+        public void RaiseTabShown() => TabShown?.Invoke();
+
+        public event Action TabShown;
 
         public void Hide()
         {

@@ -32,6 +32,7 @@ using FlatRedBall.Content.Instructions;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
+using Microsoft.Build.Framework;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -749,6 +750,20 @@ namespace FlatRedBall.Glue.Plugins
             BottomTab = bottom;
             CenterTab = center;
 
+            SetEvent(TopTab);
+            SetEvent(LeftTab);
+            SetEvent(RightTab);
+            SetEvent(BottomTab);
+            SetEvent(CenterTab);
+
+            void SetEvent(TabControl control)
+            {
+                control.SelectedIndexChanged += (not, used) =>
+                {
+                    var selectedTab = (control.SelectedTab as PluginTabPage);
+                    selectedTab?.TabSelected?.Invoke();
+                };
+            }
         }
 
         internal static void SetToolbarTray(ToolbarControl toolbar)
