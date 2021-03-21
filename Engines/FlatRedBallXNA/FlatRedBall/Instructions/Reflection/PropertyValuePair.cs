@@ -76,17 +76,17 @@ namespace FlatRedBall.Instructions.Reflection
 
             if (typeToConvertTo == typeof(float) || typeToConvertTo == typeof(Single))
             {
-                return ((float)value).ToString();
+                return ((float)value).ToString(CultureInfo.InvariantCulture);
             }
 
             if (typeToConvertTo == typeof(double))
             {
-                return ((double)value).ToString();
+                return ((double)value).ToString(CultureInfo.InvariantCulture);
             }
 
             if(typeToConvertTo == typeof(decimal))
             {
-                return ((decimal)value).ToString();
+                return ((decimal)value).ToString(CultureInfo.InvariantCulture);
             }
 
             if (typeToConvertTo == typeof(string))

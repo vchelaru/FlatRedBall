@@ -238,8 +238,6 @@ namespace FlatRedBall.IO.Csv
             
             itemType = typeof(T);
 
-
-
             List<CsvHeader> headers = new List<CsvHeader>();
 
             List<FieldInfo> fieldList;
@@ -290,11 +288,8 @@ namespace FlatRedBall.IO.Csv
                 {
                     numberOfRows = System.Math.Max((value as IList).Count, numberOfRows);
                 }
-
-                
-
-
             }
+
             foreach (PropertyInfo property in propertyList)
             {
                 object valueBeforeToString = property.GetValue(item, null);
