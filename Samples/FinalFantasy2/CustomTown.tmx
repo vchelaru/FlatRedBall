@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.4" tiledversion="1.4.3" orientation="orthogonal" renderorder="right-down" width="32" height="31" tilewidth="16" tileheight="16" infinite="0" nextlayerid="2" nextobjectid="1">
- <tileset firstgid="1" name="tiles" tilewidth="16" tileheight="16" tilecount="90" columns="10">
-  <image source="tiles.png" width="160" height="144"/>
- </tileset>
+ <tileset firstgid="1" source="FinalFantasyTileset.tsx"/>
  <layer id="1" name="layer" width="32" height="31">
   <data>
    <tile gid="1"/>

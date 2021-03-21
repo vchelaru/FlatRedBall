@@ -96,8 +96,11 @@ namespace GumPlugin.Managers
 
         private void GenerateDueToFileChangeTask(ElementSave element)
         {
-            TaskManager.Self.Add(() => GenerateDueToFileChange(element),
-                $"Generating Gum {element}", TaskExecutionPreference.AddOrMoveToEnd);
+            if(AppState.Self.GumProjectSave != null)
+            {
+                TaskManager.Self.Add(() => GenerateDueToFileChange(element),
+                    $"Generating Gum {element}", TaskExecutionPreference.AddOrMoveToEnd);
+            }
         }
 
         private void GenerateDueToFileChange(ElementSave changedElement)

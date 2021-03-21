@@ -34,11 +34,19 @@ namespace GumPluginCore.Managers
 
         public static FilePath GetAnimationFile(ElementSave elementSave)
         {
-            string gumFolder = FileManager.GetDirectory(AppState.Self.GumProjectSave.FullFileName);
+            var gumProjectName = AppState.Self.GumProjectSave.FullFileName;
+            if(!string.IsNullOrEmpty(gumProjectName))
+            {
+                string gumFolder = FileManager.GetDirectory(AppState.Self.GumProjectSave.FullFileName);
 
-            string fullAnimationName = null;
-            fullAnimationName = gumFolder + elementSave.Subfolder + "/" + elementSave.Name + "Animations.ganx";
-            return fullAnimationName;
+                string fullAnimationName = null;
+                fullAnimationName = gumFolder + elementSave.Subfolder + "/" + elementSave.Name + "Animations.ganx";
+                return fullAnimationName;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

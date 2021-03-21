@@ -164,24 +164,31 @@ namespace GumPlugin.Managers
             var fileName = rfs.Name;
 
             var gumxRfs = GumProjectManager.Self.GetRfsForGumProject();
-            var gumRfsfolder = FileManager.GetDirectory(gumxRfs.Name, RelativeType.Relative);
+            if(gumxRfs != null)
+            {
+                var gumRfsfolder = FileManager.GetDirectory(gumxRfs.Name, RelativeType.Relative);
             
 
-            var gumScreensFolder = $"{gumRfsfolder}screens/".ToLowerInvariant();
-            var gumComponentFolder = $"{gumRfsfolder}components/".ToLowerInvariant();
+                var gumScreensFolder = $"{gumRfsfolder}screens/".ToLowerInvariant();
+                var gumComponentFolder = $"{gumRfsfolder}components/".ToLowerInvariant();
 
-            var strippedName = fileName;
-            if (fileName.ToLowerInvariant().StartsWith(gumScreensFolder))
-            {
-                strippedName = fileName.Substring(gumScreensFolder.Length);
-            }
-            else if(fileName.ToLowerInvariant().StartsWith(gumComponentFolder))
-            {
-                strippedName = fileName.Substring(gumComponentFolder.Length);
-            }
+                var strippedName = fileName;
+                if (fileName.ToLowerInvariant().StartsWith(gumScreensFolder))
+                {
+                    strippedName = fileName.Substring(gumScreensFolder.Length);
+                }
+                else if(fileName.ToLowerInvariant().StartsWith(gumComponentFolder))
+                {
+                    strippedName = fileName.Substring(gumComponentFolder.Length);
+                }
 
-            strippedName = FileManager.RemoveExtension(strippedName);
-            return strippedName;
+                strippedName = FileManager.RemoveExtension(strippedName);
+                return strippedName;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public AssetTypeInfo ScreenIdbAti
