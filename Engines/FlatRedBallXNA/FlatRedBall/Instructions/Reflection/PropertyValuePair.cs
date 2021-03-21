@@ -189,7 +189,8 @@ namespace FlatRedBall.Instructions.Reflection
 
         public static object ConvertStringToType(string value, string qualifiedTypeName)
         {
-            return ConvertStringValueToValueOfType(value, qualifiedTypeName, null, FlatRedBallServices.GlobalContentManager, trimQuotes:false);
+            // use "Global" so this file can be used outside of FRB proper
+            return ConvertStringValueToValueOfType(value, qualifiedTypeName, null, "Global", trimQuotes:false);
         }
 
         public static object ConvertStringToType(string value, Type typeToConvertTo)
