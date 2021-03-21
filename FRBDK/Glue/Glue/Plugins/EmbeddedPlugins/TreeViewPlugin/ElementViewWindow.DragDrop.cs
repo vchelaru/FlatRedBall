@@ -340,7 +340,19 @@ namespace FlatRedBall.Glue.FormHelpers
             else if (targetNode is ScreenTreeNode || targetNode is EntityTreeNode)
             {
                 bool any = false;
-                foreach (var fileName in (string[])e.Data.GetData("FileDrop"))
+
+                var filesToAdd = ((string[])e.Data.GetData("FileDrop"))
+                    .Select(item => new FilePath(item));
+
+                // gather all dependencies
+                // reverse loop and we'll add at the end
+                foreach(var file in filesToAdd)
+                {
+
+                }
+
+
+                foreach (var fileName in filesToAdd)
                 {
                     // First select the entity
                     ElementViewWindow.SelectedNode = targetNode;
@@ -353,9 +365,9 @@ namespace FlatRedBall.Glue.FormHelpers
                     }
             
 
-                    FlatRedBall.Glue.Managers.TaskManager.Self.AddSync(() =>
+                    FlatRedBall.Glue.Managers.TaskManager.Self.Add(() =>
                         {
-                            var newRfs = AddExistingFileManager.Self.AddSingleFile(fileName, ref userCancelled, element, directoryPath);
+                            var newRfs = AddExistingFileManager.Self.AddSingleFile(fileName.FullPath, ref userCancelled, element, directoryPath);
 
                             GlueCommands.Self.DoOnUiThread(() => GlueCommands.Self.SelectCommands.Select(newRfs));
                         },
@@ -364,11 +376,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
                 if (any)
                 {
-                    FlatRedBall.Glue.Managers.TaskManager.Self.AddSync(() =>
-                    {
-                        GluxCommands.Self.SaveGlux();
-                    },
-                    "Save .glux");
+                    GluxCommands.Self.SaveGlux();
                 }
             }
         }

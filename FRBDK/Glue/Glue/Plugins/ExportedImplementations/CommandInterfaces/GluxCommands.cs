@@ -509,7 +509,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
 
         private ReferencedFileSave CreateReferencedFileSaveForExistingFile(IElement containerForFile, string directoryInsideContainer, string absoluteFileName,
-            PromptHandleEnum unknownTypeHandle, AssetTypeInfo ati, out string creationReport, out string errorMessage)
+            PromptHandleEnum unknownTypeHandle, AssetTypeInfo ati, out string creationReport, out string errorMessage, bool selectFileAfterCreation = true)
         {
             creationReport = "";
             errorMessage = null;
@@ -627,6 +627,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
+            if (referencedFileSaveToReturn != null)
+            {
+                //ApplyOptions(toReturn, options);
+
+                if (selectFileAfterCreation)
+                {
+                    TaskManager.Self.Add(() =>
+                       TaskManager.Self.OnUiThread(() =>
+                          GlueState.Self.CurrentReferencedFileSave = referencedFileSaveToReturn), "Select new file");
+                }
+            }
+
             return referencedFileSaveToReturn;
         }
 
@@ -684,22 +696,32 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     var nos = container.NamedObjects[i];
                     if (nos.SourceType == SourceType.File && nos.SourceFile == referencedFileToRemove.Name)
                     {
-                        MainGlueWindow.Self.Invoke(() =>
+                        if(nos.DefinedByBase)
                         {
-                            // Ask the user what to do here - remove it?  Keep it and not compile?
-                            MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
-                            mbmb.MessageText = "The object\n" + nos.ToString() + "\nreferences the file\n" + referencedFileToRemove.Name +
-                                "\nWhat would you like to do?";
-                            mbmb.AddButton("Remove this object", DialogResult.Yes);
-                            mbmb.AddButton("Keep it (object will not be valid until changed)", DialogResult.No);
-
-                            var result = mbmb.ShowDialog();
-
-                            if (result == DialogResult.Yes)
+                            // don't remove it, just tell the user that the object will be broken until fixed
+                            GlueCommands.Self.DialogCommands.ShowMessageBox($"The object {nos} is using the file {referencedFileToRemove}\n\n" +
+                                $"The project may be broken until this object is fixed");
+                        }
+                        else
+                        {
+                            MainGlueWindow.Self.Invoke(() =>
                             {
-                                container.NamedObjects.RemoveAt(i);
-                            }
-                        });
+                                // Ask the user what to do here - remove it?  Keep it and not compile?
+                                var mbmb = new MultiButtonMessageBoxWpf();
+                                mbmb.MessageText = "The object\n" + nos.ToString() + "\nreferences the file\n" + referencedFileToRemove.Name +
+                                    "\nWhat would you like to do?";
+                                mbmb.AddButton("Remove this object", DialogResult.Yes);
+                                mbmb.AddButton("Keep it (object will not be valid until changed)", DialogResult.No);
+
+                                var result = mbmb.ShowDialog();
+
+                                if (result == true && mbmb.ClickedResult is DialogResult dialogResult && dialogResult == DialogResult.Yes)
+                                {
+                                    container.NamedObjects.RemoveAt(i);
+                                }
+                            });
+                        }
+
                     }
                     nos.ResetVariablesReferencing(referencedFileToRemove);
                 }

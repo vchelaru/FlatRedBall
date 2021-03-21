@@ -176,11 +176,6 @@ namespace GumPlugin.Controls
                     var matching = codeProject.EvaluatedItems.Any(item => item.EvaluatedInclude?.ToLowerInvariant() == nameToLookFor);
 
                     shouldRemove = matching == false;
-
-                    if(shouldRemove)
-                    {
-                        int m = 3;
-                    }
                 }
 
                 if(shouldRemove)
@@ -191,8 +186,11 @@ namespace GumPlugin.Controls
 
             if(itemsToRemove.Count > 0)
             {
+                GlueCommands.Self.DialogCommands.FocusTab("Output");
                 foreach(var item in itemsToRemove)
                 {
+                    GlueCommands.Self.PrintOutput("Removed " + item.EvaluatedInclude);
+
                     codeProject.RemoveItem(item);
                 }
                 GlueCommands.Self.ProjectCommands.SaveProjects();
