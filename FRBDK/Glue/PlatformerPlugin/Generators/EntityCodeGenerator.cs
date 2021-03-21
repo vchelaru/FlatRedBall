@@ -514,6 +514,11 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
                 if (CurrentMovementType == MovementType.Air)
                 {
+                    if(AfterDoubleJump == null)
+                    {
+                        throw new InvalidOperationException(""The player is attempting to perform a double-jump, "" +
+                            ""but the AfterDoubleJump variable is not set. If you are using glue, select this entity and change the After Double Jump variable."");
+                    }
                     mHasDoubleJumped = true ;
                 }
             }
