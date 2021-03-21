@@ -220,16 +220,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj">
-      <Project>{26dd17aa-55ae-46ab-9394-a2319728869a}</Project>
-      <Name>FlatRedBallStandard</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NewProjectCreator.Logic\NewProjectCreator.Logic.csproj">
-      <Project>{60217569-9c37-4074-ae6c-de3b5a3f0e5a}</Project>
-      <Name>NewProjectCreator.Logic</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Page Include="Views\MainControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
