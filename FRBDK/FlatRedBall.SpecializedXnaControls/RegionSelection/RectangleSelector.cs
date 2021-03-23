@@ -654,8 +654,10 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
             }
         }
 
-        private void PushActivity(Cursor cursor)
+        private bool PushActivity(Cursor cursor)
         {
+            var didActivity = false;
+
             if (cursor.PrimaryPush)
             {
                 cursorScreenXPushed = cursor.X;
@@ -676,8 +678,10 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
                 if (mSideGrabbed != ResizeSide.None && this.Pushed != null)
                 {
                     Pushed(this, null);
+                    didActivity = true;
                 }
             }
+            return didActivity;
         }
 
 

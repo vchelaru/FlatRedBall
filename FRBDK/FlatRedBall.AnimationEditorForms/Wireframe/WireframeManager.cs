@@ -424,7 +424,7 @@ namespace FlatRedBall.AnimationEditorForms
 
             mWireframeControl = wireframeControl;
 
-            mControl.RegionChanged += new EventHandler(HandleRegionChanged);
+            mControl.RegionChanged += HandleRegionChanged;
 
             mControl.MouseWheelZoom += new EventHandler(HandleMouseWheelZoom);
             mControl.AvailableZoomLevels = mWireframeControl.AvailableZoomLevels;
@@ -646,6 +646,22 @@ namespace FlatRedBall.AnimationEditorForms
 
         void HandleRegionChanged(object sender, EventArgs e)
         {
+            // This can get raised multiple times if the cursor is over multiple rectangle selectors.
+            // This can happen if multiple frames overlap - such as if the user selects two AnimationChains
+            // which use the same textures, but which are flipped:
+            // Walk Right
+            // Walk Left
+            // If we run this code for every instance that the cursor is over, objects may get moved multiple
+            // times per frame. Therefore, let's only do this for the one grabbed instance:
+            ///////////////////////////Early Out//////////////////////////
+            if(sender != mPushedRegion)
+            {
+                return;
+            }
+            /////////////////////////End Early Out////////////////////////
+
+            var senderRectangleSelector = sender as RectangleSelector;
+
             AnimationFrameSave frame = SelectedState.Self.SelectedFrame;
 
             if (frame != null)
@@ -659,7 +675,7 @@ namespace FlatRedBall.AnimationEditorForms
 
                 TreeViewManager.Self.RefreshTreeNode(frame);
             }
-            else if (SelectedState.Self.SelectedChain != null)
+            else if (SelectedState.Self.SelectedChains?.Count > 0 || SelectedState.Self.SelectedChain != null)
             {
                 if (mPushedRegion != null)
                 {
@@ -871,7 +887,8 @@ namespace FlatRedBall.AnimationEditorForms
             string folder = FlatRedBall.IO.FileManager.GetDirectory(SelectedState.Self.AnimationChainListSave.FileName);
             var textureFilePath = new ToolsUtilities.FilePath(texture.Name);
 
-            var framesOnThisTexture = SelectedState.Self.SelectedChain.Frames
+            var framesOnThisTexture = SelectedState.Self.SelectedChains
+                .SelectMany(item => item.Frames)
                 .Where(item => new ToolsUtilities.FilePath(folder + item.TextureName) == textureFilePath)
                 .ToList();
 

@@ -324,8 +324,8 @@ namespace FlatRedBall.SpecializedXnaControls
             var newSelector = new RectangleSelector(mManagers);
             newSelector.AddToManagers(mManagers);
             newSelector.Visible = false;
-            newSelector.RegionChanged += new EventHandler(RegionChangedInternal);
-            newSelector.EndRegionChanged += EndRegionChangedInternal;
+            newSelector.RegionChanged += (not, used) => RegionChanged?.Invoke(newSelector, null);
+            newSelector.EndRegionChanged += (not, used) => EndRegionChanged?.Invoke(newSelector, null); 
             newSelector.SnappingGridSize = snappingGridSize;
             newSelector.RoundToUnitCoordinates = mRoundRectangleSelectorToUnit;
 
@@ -342,15 +342,6 @@ namespace FlatRedBall.SpecializedXnaControls
             }
         }
 
-        void RegionChangedInternal(object sender, EventArgs e)
-        {
-            RegionChanged?.Invoke(this, null);
-        }
-
-        void EndRegionChangedInternal(object sender, EventArgs e)
-        {
-            EndRegionChanged?.Invoke(this, null);
-        }
 
         void PerformActivity()
         {
