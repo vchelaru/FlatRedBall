@@ -25,6 +25,7 @@ using System.ComponentModel;
 using ToolsUtilities;
 using FileManager = ToolsUtilities.FileManager;
 using FilePath = global::ToolsUtilities.FilePath;
+using FlatRedBall.AnimationEditorForms.Managers;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -32,7 +33,6 @@ namespace FlatRedBall.AnimationEditorForms
     {
         #region Fields
 
-        System.Windows.Forms.Cursor addCursor;
 
         static WireframeManager mSelf;
 
@@ -408,7 +408,9 @@ namespace FlatRedBall.AnimationEditorForms
         public void Initialize(ImageRegionSelectionControl control, SystemManagers managers, 
             WireframeEditControls wireframeControl, WireframeEditControlsViewModel wireframeEditControlsViewModel)
         {
-            addCursor = new System.Windows.Forms.Cursor(this.GetType(), "Content.AddCursor.cur");
+            var addCursor = new System.Windows.Forms.Cursor(this.GetType(), "Content.AddCursor.cur");
+
+            WinformsCursorManager.Self.Initialize(addCursor);
 
             mManagers = managers;
             mManagers.Renderer.SamplerState = SamplerState.PointClamp;
@@ -632,36 +634,8 @@ namespace FlatRedBall.AnimationEditorForms
 
         private void PerformCursorUpdateLogic()
         {
-            System.Windows.Forms.Cursor cursorToAssign = Cursors.Arrow;
-
-            bool isCtrlDown =
-                keyboard.KeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl) ||
-                keyboard.KeyDown(Microsoft.Xna.Framework.Input.Keys.RightControl); 
-
-            if (isCtrlDown && WireframeEditControlsViewModel.IsMagicWandSelected && 
-                SelectedState.Self.SelectedChain != null)
-            {
-                cursorToAssign = addCursor;
-            }
-            else if(isCtrlDown && WireframeEditControlsViewModel.IsSnapToGridChecked &&
-                SelectedState.Self.SelectedChain != null)
-            {
-                cursorToAssign = addCursor;
-            }
-            else
-            {
-                foreach (var selector in mControl.RectangleSelectors)
-                {
-                    var cursorFromRect = selector.GetCursorToSet(mControl.XnaCursor);
-
-                    if (cursorFromRect != null)
-                    {
-                        cursorToAssign = cursorFromRect;
-                        break;
-                    }
-                }
-            }
-
+            var cursorToAssign = WinformsCursorManager.Self.PerformCursorUpdateLogic(
+                keyboard, mControl.XnaCursor, WireframeEditControlsViewModel, mControl.RectangleSelectors);
 
             if (System.Windows.Forms.Cursor.Current != cursorToAssign)
             {

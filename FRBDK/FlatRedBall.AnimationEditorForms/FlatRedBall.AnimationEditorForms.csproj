@@ -189,6 +189,7 @@
     <Compile Include="IO\ImageHeader.cs" />
     <Compile Include="IO\IoManager.cs" />
     <Compile Include="Managers\HotkeyManager.cs" />
+    <Compile Include="Managers\WinformsCursorManager.cs" />
     <Compile Include="Preview\CameraController.cs" />
     <Compile Include="Preview\PreviewManager.cs" />
     <Compile Include="PropertyGrids\AnimationChainDisplayer.cs" />
@@ -222,8 +223,8 @@
     </Compile>
     <Compile Include="Textures\InspectableTexture.cs" />
     <Compile Include="TimeManager.cs" />
-    <Compile Include="TreeViewManager.cs" />
-    <Compile Include="TreeViewManager.RightClick.cs" />
+    <Compile Include="Managers\TreeViewManager.cs" />
+    <Compile Include="Managers\TreeViewManager.RightClick.cs" />
     <Compile Include="ViewModels\ViewModel.cs" />
     <Compile Include="ViewModels\WireframeEditControlsViewModel.cs" />
     <Compile Include="Wireframe\Ruler.cs" />
