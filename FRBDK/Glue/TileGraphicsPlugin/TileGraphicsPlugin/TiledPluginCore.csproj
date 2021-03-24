@@ -65,7 +65,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\Gum\WpfDataUi\WpfDataUi.csproj" />
     <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
     <ProjectReference Include="..\..\..\..\Tiled\TMXGlueLib\TMXGlueLibCore.csproj" />
     <ProjectReference Include="..\..\GlueCommon\GlueCommon.csproj" />

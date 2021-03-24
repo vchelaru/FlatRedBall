@@ -118,7 +118,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Gum\ToolsUtilities\ToolsUtilitiesStandard.csproj" />
-    <ProjectReference Include="..\..\..\..\Gum\WpfDataUi\WpfDataUi.csproj" />
+    <ProjectReference Include="..\..\..\..\Gum\WpfDataUiCore\WpfDataUiCore.csproj" />
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
     <ProjectReference Include="..\FlatRedBall.Plugin\FlatRedBall.PluginCore.csproj" />
     <ProjectReference Include="..\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj" />
