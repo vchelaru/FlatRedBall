@@ -821,6 +821,12 @@ namespace FlatRedBall.AnimationEditorForms
 
                 if (SelectedState.Self.AnimationChainListSave != null && SelectedState.Self.SelectedChain != null) 
                 {
+                    if(string.IsNullOrEmpty(SelectedState.Self.AnimationChainListSave.FileName))
+                    {
+                        throw new InvalidOperationException("The current AnimationChainListSave has an empty file name." +
+                            "This should not happen, since the AnimationEditor should force saving the file before getting to this point.");
+                    }
+
                     folder = FlatRedBall.IO.FileManager.GetDirectory(SelectedState.Self.AnimationChainListSave.FileName);
 
                     doAnyFramesUseThisTexture =

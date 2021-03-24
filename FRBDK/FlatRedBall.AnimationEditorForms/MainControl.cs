@@ -344,6 +344,11 @@ namespace FlatRedBall.AnimationEditorForms
 
                 ProjectManager.Self.FileName = fileName.FullPath;
 
+                if(failure == null)
+                {
+                    ProjectManager.Self.AnimationChainListSave.FileName = fileName.FullPath;
+                }
+
                 IoManager.Self.SaveCompanionFileFor(fileName);
             }
         }
