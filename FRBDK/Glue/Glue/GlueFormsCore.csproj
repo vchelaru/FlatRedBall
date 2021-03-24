@@ -124,7 +124,6 @@
     <ProjectReference Include="..\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj" />
     <ProjectReference Include="..\GlueCommon\GlueCommon.csproj" />
     <ProjectReference Include="..\GlueSaveClasses\GlueSaveClasses.csproj" />
-    <ProjectReference Include="..\WpfApplication1\GlueControls.csproj" />
   </ItemGroup>
 
   <ItemGroup>
