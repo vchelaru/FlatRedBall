@@ -116,18 +116,12 @@ namespace FlatRedBall.Glue.Controls
                 {
                     mGeneratedCodeFile = new TreeNode(value);
 
-                    ElementViewWindow.Invoke((MethodInvoker)(() =>
-                    {
-                        mCodeTreeNode.Nodes.Add(mGeneratedCodeFile);
-                    }));
+                    mCodeTreeNode.Nodes.Add(mGeneratedCodeFile);
                 }
                 else if (mGeneratedCodeFile.Text != value)
                 {
 
-                    ElementViewWindow.Invoke((MethodInvoker)(() =>
-                    {
-                        mGeneratedCodeFile.Text = value;
-                    }));
+                    mGeneratedCodeFile.Text = value;
                 }
             }
         }

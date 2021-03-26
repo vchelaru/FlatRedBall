@@ -144,7 +144,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                     .Line("return mCurrentMovement;");
 
             codeBlock.Line("/// <summary>");
-            codeBlock.Line("/// Which direciton the character is facing.");
+            codeBlock.Line("/// Which direction the character is facing.");
             codeBlock.Line("/// </summary>");
             codeBlock.Property("public HorizontalDirection", "DirectionFacing")
                 .Get()

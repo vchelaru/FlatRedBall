@@ -28,139 +28,139 @@ namespace FlatRedBall.Glue.Controls
         private void HandleControlAdded(object sender, ControlEventArgs e)
         {
 
-            if(e.Control is PluginTabPage)
-            {
-                var pluginTab = e.Control as PluginTabPage;
+            //if(e.Control is PluginTabPage)
+            //{
+            //    var pluginTab = e.Control as PluginTabPage;
 
-                pluginTab.LastTabControl = this;
-                pluginTab.RightClickCloseClicked += HandleTabRightClickClose;
+            //    pluginTab.LastTabControl = this;
+            //    pluginTab.RightClickCloseClicked += HandleTabRightClickClose;
 
-            }
+            //}
         }
 
         private void HandleTabRightClickClose(object sender, EventArgs e)
         {
-            var control = sender as PluginTabPage;
+            //var control = sender as PluginTabPage;
 
-            var index = TabPages.IndexOf(control);
+            //var index = TabPages.IndexOf(control);
 
-            if(index > -1)
-            {
-                CloseTab(index);
-            }
+            //if(index > -1)
+            //{
+            //    CloseTab(index);
+            //}
         }
 
         protected override void OnDrawItem(DrawItemEventArgs e)
         {
-            TabPage tabPage = this.TabPages[e.Index];
+            //TabPage tabPage = this.TabPages[e.Index];
 
-            bool shouldDrawX = false;
-            if (tabPage is PluginTabPage)
-            {
-                shouldDrawX = ((PluginTabPage)tabPage).DrawX;
-            }
+            //bool shouldDrawX = false;
+            //if (tabPage is PluginTabPage)
+            //{
+            //    shouldDrawX = ((PluginTabPage)tabPage).DrawX;
+            //}
 
-            Rectangle boundsRectangle = e.Bounds;
-            boundsRectangle = GetTabRect(e.Index);
-            boundsRectangle.Offset(2, 2);
-            boundsRectangle.Width = 5;
-            boundsRectangle.Height = 5;
+            //Rectangle boundsRectangle = e.Bounds;
+            //boundsRectangle = GetTabRect(e.Index);
+            //boundsRectangle.Offset(2, 2);
+            //boundsRectangle.Width = 5;
+            //boundsRectangle.Height = 5;
 
-            Brush blackBrush = new SolidBrush(Color.Black);            
+            //Brush blackBrush = new SolidBrush(Color.Black);            
             
-            if (shouldDrawX)
-            {
+            //if (shouldDrawX)
+            //{
 
 
-                if (e.Index != 0 || !IgnoreFirst)
-                {
-                    Pen p = new Pen(blackBrush);
-                    e.Graphics.DrawLine(p, boundsRectangle.X, boundsRectangle.Y, boundsRectangle.X + boundsRectangle.Width, boundsRectangle.Y + boundsRectangle.Height);
-                    e.Graphics.DrawLine(p, boundsRectangle.X + boundsRectangle.Width, boundsRectangle.Y, boundsRectangle.X, boundsRectangle.Y + boundsRectangle.Height);
-                }
-            }
+            //    if (e.Index != 0 || !IgnoreFirst)
+            //    {
+            //        Pen p = new Pen(blackBrush);
+            //        e.Graphics.DrawLine(p, boundsRectangle.X, boundsRectangle.Y, boundsRectangle.X + boundsRectangle.Width, boundsRectangle.Y + boundsRectangle.Height);
+            //        e.Graphics.DrawLine(p, boundsRectangle.X + boundsRectangle.Width, boundsRectangle.Y, boundsRectangle.X, boundsRectangle.Y + boundsRectangle.Height);
+            //    }
+            //}
 
-            string titel = this.TabPages[e.Index].Text;
-            Font f = this.Font;
-            e.Graphics.DrawString(titel, f, blackBrush, new PointF(boundsRectangle.X, boundsRectangle.Y));
+            //string titel = this.TabPages[e.Index].Text;
+            //Font f = this.Font;
+            //e.Graphics.DrawString(titel, f, blackBrush, new PointF(boundsRectangle.X, boundsRectangle.Y));
         }
         protected override void OnMouseClick(MouseEventArgs e)
         {
-            Point p = e.Location;
-            int start;
+            //Point p = e.Location;
+            //int start;
 
-            if (IgnoreFirst)
-                start = 1;
-            else
-                start = 0;
+            //if (IgnoreFirst)
+            //    start = 1;
+            //else
+            //    start = 0;
 
-            for (int i = start; i < TabCount; i++)
-            {
-                TabPage tabPage = this.TabPages[i];
+            //for (int i = start; i < TabCount; i++)
+            //{
+            //    TabPage tabPage = this.TabPages[i];
 
-                if (tabPage is PluginTabPage)
-                {
-                    var pluginTab = tabPage as PluginTabPage;
+            //    if (tabPage is PluginTabPage)
+            //    {
+            //        var pluginTab = tabPage as PluginTabPage;
 
-                    var tabRect = GetTabRect(i);
+            //        var tabRect = GetTabRect(i);
 
-                    bool clickedTab = tabRect.Contains(p);
+            //        bool clickedTab = tabRect.Contains(p);
 
-                    if(e.Button == System.Windows.Forms.MouseButtons.Left && clickedTab)
-                    {
-                        pluginTab.LastTimeClicked = DateTime.Now;
-                    }
+            //        if(e.Button == System.Windows.Forms.MouseButtons.Left && clickedTab)
+            //        {
+            //            pluginTab.LastTimeClicked = DateTime.Now;
+            //        }
 
-                    bool shouldDrawX = ((PluginTabPage)tabPage).DrawX;
-                    if (shouldDrawX)
-                    {
-                        if (e.Button == MouseButtons.Left)
-                        {
-                            Rectangle r = GetTabRect(i);
-                            r.Offset(2, 2);
-                            r.Width = 5;
-                            r.Height = 5;
-                            if (r.Contains(p))
-                            {
-                                CloseTab(i);
-                            }
-                        }
-                        else if (e.Button == MouseButtons.Middle)
-                        {
-                            CloseTab(i);
-                        }
+            //        bool shouldDrawX = ((PluginTabPage)tabPage).DrawX;
+            //        if (shouldDrawX)
+            //        {
+            //            if (e.Button == MouseButtons.Left)
+            //            {
+            //                Rectangle r = GetTabRect(i);
+            //                r.Offset(2, 2);
+            //                r.Width = 5;
+            //                r.Height = 5;
+            //                if (r.Contains(p))
+            //                {
+            //                    CloseTab(i);
+            //                }
+            //            }
+            //            else if (e.Button == MouseButtons.Middle)
+            //            {
+            //                CloseTab(i);
+            //            }
 
-                    }
-                    if (e.Button == System.Windows.Forms.MouseButtons.Right)
-                    {
-                        if (clickedTab)
-                        {
-                            this.SelectedIndex = i;
-                            pluginTab.RefreshRightClickCommands();
-                            // not sure why we have to subtract the height, but if we don't then the menu
-                            // seems to be offset by the height of the tab
-                            pluginTab.ContextMenu.Show(pluginTab, new Point(e.X, e.Y - tabRect.Height));
-                        }
-                    }
-                }
-            }
+            //        }
+            //        if (e.Button == System.Windows.Forms.MouseButtons.Right)
+            //        {
+            //            if (clickedTab)
+            //            {
+            //                this.SelectedIndex = i;
+            //                pluginTab.RefreshRightClickCommands();
+            //                // not sure why we have to subtract the height, but if we don't then the menu
+            //                // seems to be offset by the height of the tab
+            //                pluginTab.ContextMenu.Show(pluginTab, new Point(e.X, e.Y - tabRect.Height));
+            //            }
+            //        }
+            //    }
+            //}
         }
 
         private void CloseTab(int i)
         {
-            if (PreRemoveTabPage != null)
-            {
-                bool closeIt = PreRemoveTabPage(i);
-                if (!closeIt)
-                    return;
-            }
+            //if (PreRemoveTabPage != null)
+            //{
+            //    bool closeIt = PreRemoveTabPage(i);
+            //    if (!closeIt)
+            //        return;
+            //}
 
-            TabPage tab = TabPages[i];
+            //TabPage tab = TabPages[i];
 
-            TabPages.Remove(tab);
+            //TabPages.Remove(tab);
 
-            if (tab is PluginTabPage)
-                ((PluginTabPage)tab).CloseTabByUser();
+            //if (tab is PluginTabPage)
+            //    ((PluginTabPage)tab).CloseTabByUser();
         }
     }
 }

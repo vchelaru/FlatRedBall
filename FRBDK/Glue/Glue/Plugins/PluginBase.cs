@@ -22,6 +22,7 @@ using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.CodeGeneration.Game1;
 using FlatRedBall.IO;
 using System.Windows;
+using System.Collections.ObjectModel;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -42,8 +43,8 @@ namespace FlatRedBall.Glue.Plugins
     {
         public string Title
         {
-            get => Page.Text;
-            set => Page.Text = value;
+            get => Page.Title;
+            set => Page.Title = value;
         }
 
         public TabLocation SuggestedLocation
@@ -71,31 +72,26 @@ namespace FlatRedBall.Glue.Plugins
 
         public void Hide()
         {
-            var tabContainer = Page.Parent as TabControl;
-            tabContainer?.TabPages.Remove(Page);
+            var items = Page.ParentTabControl as ObservableCollection<PluginTabPage>;
+            items?.Remove(Page);
+            Page.ParentTabControl = null;
+
         }
 
         public void Show()
         {
-            if(Page.Parent == null)
+            if(Page.ParentTabControl == null)
             {
-                TabControl tabControl = PluginBase.GetTabContainerFromLocation(SuggestedLocation);
-                tabControl.TabPages.Add(Page);
+                var items = PluginBase.GetTabContainerFromLocation(SuggestedLocation);
+                items.Add(Page);
+                Page.ParentTabControl = items;
             }
         }
 
         public void Focus()
         {
-            var tabContainer = Page.Parent as TabControl;
-
-            if(tabContainer != null)
-            {
-                tabContainer.SelectedTab = Page;
-            }
-            if (Page is PluginTabPage pluginTab)
-            {
-                pluginTab.LastTimeClicked = DateTime.Now;
-            }
+            Page.Focus();
+            Page.LastTimeClicked = DateTime.Now;
         }
 
         public bool CanClose
@@ -106,17 +102,18 @@ namespace FlatRedBall.Glue.Plugins
 
         public void ForceLocation(TabLocation tabLocation)
         {
-            TabControl desiredTabControl = PluginBase.GetTabContainerFromLocation(SuggestedLocation);
-            var parentTabControl = Page.Parent as TabControl;
+            var desiredTabControl = PluginBase.GetTabContainerFromLocation(SuggestedLocation);
+            var parentTabControl = Page.ParentTabControl as ObservableCollection<PluginTabPage>;
 
             if(desiredTabControl != parentTabControl)
             {
                 if(parentTabControl != null)
                 {
-                    parentTabControl.TabPages.Remove(Page);
+                    desiredTabControl.Remove(Page);
                 }
 
-                desiredTabControl.TabPages.Add(Page);
+                parentTabControl.Add(Page);
+                Page.ParentTabControl = desiredTabControl;
             }
         }
     }
@@ -478,43 +475,53 @@ namespace FlatRedBall.Glue.Plugins
 
         #region Tab Methods
 
-        protected PluginTab CreateTab(System.Windows.Controls.UserControl control, string tabName)
+        protected PluginTab CreateTab(System.Windows.FrameworkElement control, string tabName)
         {
-            System.Windows.Forms.Integration.ElementHost wpfHost;
-            wpfHost = new System.Windows.Forms.Integration.ElementHost();
-            wpfHost.Dock = DockStyle.Fill;
-            wpfHost.Child = control;
+            //System.Windows.Forms.Integration.ElementHost wpfHost;
+            //wpfHost = new System.Windows.Forms.Integration.ElementHost();
+            //wpfHost.Dock = DockStyle.Fill;
+            //wpfHost.Child = control;
 
-            return CreateTab(wpfHost, tabName);
-        }
-
-        protected PluginTab CreateTab(System.Windows.Forms.Control control, string tabName)
-        {
+            //return CreateTab(wpfHost, tabName);
             var page = new PluginTabPage();
 
-            page.ClosedByUser += new PluginTabPage.ClosedByUserDelegate(OnClosedByUser);
 
-            page.Text = "  " + tabName;
-            page.Controls.Add(control);
-            control.Dock = DockStyle.Fill;
+            page.Title = tabName;
+            page.Content = control;
 
             PluginTab pluginTab = new PluginTab();
             pluginTab.Page = page;
 
+            page.ClosedByUser += (sender) =>
+            {
+                pluginTab.Hide();
+                //OnClosedByUser(sender);
+            };
+
             return pluginTab;
+
         }
 
-        public static TabControl GetTabContainerFromLocation(TabLocation tabLocation)
+        protected PluginTab CreateTab(System.Windows.Forms.Control control, string tabName)
         {
-            System.Windows.Forms.TabControl tabContainer = null;
+            var host = new System.Windows.Forms.Integration.WindowsFormsHost();
+
+            host.Child = control;
+
+            return CreateTab(host, tabName);
+        }
+
+        public static ObservableCollection<PluginTabPage> GetTabContainerFromLocation(TabLocation tabLocation)
+        {
+            ObservableCollection<PluginTabPage> tabContainer = null;
 
             switch (tabLocation)
             {
-                case TabLocation.Top: tabContainer = PluginManager.TopTab; break;
-                case TabLocation.Left: tabContainer = PluginManager.LeftTab; break;
-                case TabLocation.Center: tabContainer = PluginManager.CenterTab; break;
-                case TabLocation.Right: tabContainer = PluginManager.RightTab; break;
-                case TabLocation.Bottom: tabContainer = PluginManager.BottomTab; break;
+                case TabLocation.Top: tabContainer = PluginManager.TabControlViewModel.TopTabItems; break;
+                case TabLocation.Left: tabContainer = PluginManager.TabControlViewModel.LeftTabItems; break;
+                case TabLocation.Center: tabContainer = PluginManager.TabControlViewModel.CenterTabItems; break;
+                case TabLocation.Right: tabContainer = PluginManager.TabControlViewModel.RightTabItems; break;
+                case TabLocation.Bottom: tabContainer = PluginManager.TabControlViewModel.BottomTabItems; break;
             }
 
             return tabContainer;

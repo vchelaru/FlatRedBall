@@ -48,6 +48,7 @@ using FlatRedBall.Instructions.Reflection;
 using Microsoft.Xna.Framework.Audio;
 using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
 using System.Windows.Forms.Integration;
+using GlueFormsCore.Controls;
 
 //using EnvDTE;
 
@@ -55,11 +56,13 @@ namespace Glue
 {
     public partial class MainGlueWindow : Form
     {
+        #region Fields/Properties
+
         public bool HasErrorOccurred = false;
+
         private System.Windows.Forms.Timer FileWatchTimer;
 
         private FlatRedBall.Glue.Controls.ToolbarControl toolbarControl1;
-
 
         private static MainGlueWindow mSelf;
 
@@ -69,7 +72,7 @@ namespace Glue
         }
 
         MainExplorerPlugin mainExplorerPlugin;
-        private GlueFormsCore.Controls.WinformsSplitContainer MainPanelSplitContainer;
+        //private GlueFormsCore.Controls.WinformsSplitContainer MainPanelSplitContainer;
 
 
 
@@ -83,14 +86,20 @@ namespace Glue
             set;
         }
 
+        #endregion
+
         public MainGlueWindow()
         {
             mSelf = this;
 
             InitializeComponent();
 
-            this.MainPanelSplitContainer = new GlueFormsCore.Controls.WinformsSplitContainer();
-            this.Controls.Add(this.MainPanelSplitContainer);
+            //this.MainPanelSplitContainer = new GlueFormsCore.Controls.WinformsSplitContainer();
+            //this.Controls.Add(this.MainPanelSplitContainer);
+            var wpfHost = new ElementHost();
+            wpfHost.Dock = DockStyle.Fill;
+            wpfHost.Child = new MainPanelControl();
+            this.Controls.Add(wpfHost);
             this.PerformLayout();
             // so docking works
             //this.Controls.SetChildIndex(this.MainPanelSplitContainer, 0);
@@ -137,11 +146,6 @@ namespace Glue
 
         }
 
-        public async Task LoadProject(string projectFileName, InitializationWindow initializationWindow)
-        {
-            await ProjectLoader.Self.LoadProject(projectFileName, initializationWindow);
-        }
-
         private void Form1_Load(object sender, EventArgs e)
         {
             try
@@ -164,7 +168,7 @@ namespace Glue
             }
         }
 
-        internal void StartUpGlue()
+        internal async void StartUpGlue()
         {
             // Some stuff can be parallelized.  We're going to run stuff
             // that can be parallelized in parallel, and then block to wait for
@@ -191,9 +195,6 @@ namespace Glue
 
             // Async stuff
             {
-
-                initializationWindow.SubMessage = "Initializing WCF"; Application.DoEvents();
-                //TaskManager.Self.AddAsyncTask(() => WcfManager.Self.Initialize(), "Initializing WCF");
 
                 initializationWindow.SubMessage = "Initializing EventManager"; Application.DoEvents();
                 TaskManager.Self.Add(() => EventManager.Initialize(), "Initializing EventManager");
@@ -291,7 +292,7 @@ namespace Glue
                 {
                     System.Threading.Thread.Sleep(100);
                 }
-                LoadProjectConsideringSettingsAndArgs(initializationWindow);
+                await LoadProjectConsideringSettingsAndArgs(initializationWindow);
 
                 // This needs to happen after loading the project:
                 ShareUiReferences(PluginCategories.ProjectSpecific);
@@ -301,7 +302,7 @@ namespace Glue
 
                 EditorData.LoadGlueLayoutSettings();
 
-                MainPanelSplitContainer.UpdateSizesFromSettings();
+                //MainPanelSplitContainer.UpdateSizesFromSettings();
 
                 if (EditorData.GlueLayoutSettings.Maximized)
                     WindowState = FormWindowState.Maximized;
@@ -366,7 +367,7 @@ namespace Glue
             EditorObjects.IoC.Container.Set<List<IErrorReporter>>(new List<IErrorReporter>());
         }
 
-        private void LoadProjectConsideringSettingsAndArgs(InitializationWindow initializationWindow)
+        private async Task LoadProjectConsideringSettingsAndArgs(InitializationWindow initializationWindow)
         {
             // This must be called after setting the GlueSettingsSave
             string csprojToLoad;
@@ -378,7 +379,8 @@ namespace Glue
                 {
                     initializationWindow.Message = "Loading " + csprojToLoad;
                 }
-                LoadProject(csprojToLoad, initializationWindow);
+
+                await ProjectLoader.Self.LoadProject(csprojToLoad, initializationWindow);
             }
         }
 
@@ -554,9 +556,9 @@ namespace Glue
         private async void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             ProjectManager.WantsToClose = true;
-            MainPanelSplitContainer.ReactToFormClosing();
+            //MainPanelSplitContainer.ReactToFormClosing();
             
-            EditorData.GlueLayoutSettings.BottomPanelSplitterPosition = MainPanelSplitContainer.SplitterDistance;
+            //EditorData.GlueLayoutSettings.BottomPanelSplitterPosition = MainPanelSplitContainer.SplitterDistance;
             EditorData.GlueLayoutSettings.Maximized = this.WindowState == FormWindowState.Maximized;
             EditorData.GlueLayoutSettings.SaveSettings();
 

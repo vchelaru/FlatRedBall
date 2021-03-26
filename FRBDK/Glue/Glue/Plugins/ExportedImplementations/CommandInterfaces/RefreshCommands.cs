@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows.Forms;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.FormHelpers;
@@ -22,6 +23,25 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 MainGlueWindow.Self.BeginInvoke(
                     new EventHandler(delegate { EditorLogic.CurrentElementTreeNode.RefreshTreeNodes(); }));
             
+        }
+
+        public void RefreshTreeNodes()
+        {
+            var project = GlueState.Self.CurrentGlueProject;
+            var entities = project.Entities.ToArray();
+            var screens = project.Screens.ToArray();
+
+            foreach(var entity in entities)
+            {
+                RefreshTreeNodeFor(entity);
+            }
+
+            foreach(var screen in screens)
+            {
+                RefreshTreeNodeFor(screen);
+            }
+
+            RefreshGlobalContent();
         }
 
         public void RefreshTreeNodeFor(IElement element)

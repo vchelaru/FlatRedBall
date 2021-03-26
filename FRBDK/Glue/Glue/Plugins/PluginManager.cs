@@ -34,6 +34,9 @@ using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using Microsoft.Build.Framework;
 
+using WpfTabControl = System.Windows.Controls.TabControl;
+using GlueFormsCore.Controls;
+
 namespace FlatRedBall.Glue.Plugins
 {
     public class PluginManager : PluginManagerBase
@@ -68,11 +71,20 @@ namespace FlatRedBall.Glue.Plugins
         // we want to make it easier to get access to them instead
         // of having to explicitly define plugin types tied to certain
         // sides:
-        public static TabControl TopTab { get; private set; }
-        public static TabControl LeftTab { get; private set; }
-        public static TabControl BottomTab { get; private set; }
-        public static TabControl RightTab { get; private set; }
-        public static TabControl CenterTab { get; private set; }
+        //public static TabControl TopTab { get; private set; }
+        //public static TabControl LeftTab { get; private set; }
+        //public static TabControl BottomTab { get; private set; }
+        //public static TabControl RightTab { get; private set; }
+        //public static TabControl CenterTab { get; private set; }
+
+        //public static WpfTabControl TopTabControl { get; private set; }
+        //public static WpfTabControl BottomTabControl { get; private set; }
+        //public static WpfTabControl LeftTabControl { get; private set; }
+        //public static WpfTabControl RightTabControl { get; private set; }
+        //public static WpfTabControl CenterTabControl { get; private set; }
+
+        public static TabControlViewModel TabControlViewModel { get; private set; }
+
         public static System.Windows.Controls.ToolBarTray ToolBarTray
         {
             get;
@@ -742,28 +754,35 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
-        internal static void SetTabs(TabControl top, TabControl bottom, TabControl left, TabControl right, TabControl center)
+        //internal static void SetTabs(TabControl top, TabControl bottom, TabControl left, TabControl right, TabControl center)
+        //{
+        //    TopTab = top;
+        //    LeftTab = left;
+        //    RightTab = right;
+        //    BottomTab = bottom;
+        //    CenterTab = center;
+
+        //    SetEvent(TopTab);
+        //    SetEvent(LeftTab);
+        //    SetEvent(RightTab);
+        //    SetEvent(BottomTab);
+        //    SetEvent(CenterTab);
+
+        //    void SetEvent(TabControl control)
+        //    {
+        //        control.SelectedIndexChanged += (not, used) =>
+        //        {
+        //            var selectedTab = (control.SelectedTab as PluginTabPage);
+        //            selectedTab?.TabSelected?.Invoke();
+        //        };
+        //    }
+        //}
+
+        internal static void SetTabs(TabControlViewModel tabControlViewModel)
         {
-            TopTab = top;
-            LeftTab = left;
-            RightTab = right;
-            BottomTab = bottom;
-            CenterTab = center;
+            TabControlViewModel = tabControlViewModel;
 
-            SetEvent(TopTab);
-            SetEvent(LeftTab);
-            SetEvent(RightTab);
-            SetEvent(BottomTab);
-            SetEvent(CenterTab);
-
-            void SetEvent(TabControl control)
-            {
-                control.SelectedIndexChanged += (not, used) =>
-                {
-                    var selectedTab = (control.SelectedTab as PluginTabPage);
-                    selectedTab?.TabSelected?.Invoke();
-                };
-            }
+            // todo - do we need to subscribe to something to raise the tab event?
         }
 
         internal static void SetToolbarTray(ToolbarControl toolbar)
@@ -1107,7 +1126,7 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToItemSelect(TreeNode selectedTreeNode)
         {
-            CenterTab.SuspendLayout();
+            //CenterTab.SuspendLayout();
 
             foreach (PluginManager pluginManager in mInstances)
             {
@@ -1126,41 +1145,34 @@ namespace FlatRedBall.Glue.Plugins
                 }
             }
 
-            ShowMostRecentTabFor(TopTab);
-            ShowMostRecentTabFor(LeftTab);
-            ShowMostRecentTabFor(RightTab);
-            ShowMostRecentTabFor(BottomTab);
-            ShowMostRecentTabFor(CenterTab);
+            ShowMostRecentTabFor(TabControlViewModel.TopTabItems, 
+                (item) => TabControlViewModel.TopSelectedTab = item);
 
-            CenterTab.ResumeLayout();
+            ShowMostRecentTabFor(TabControlViewModel.BottomTabItems, 
+                (item) => TabControlViewModel.BottomSelectedTab = item);
+
+            ShowMostRecentTabFor(TabControlViewModel.LeftTabItems,
+                (item) => TabControlViewModel.LeftSelectedTab = item);
+
+            ShowMostRecentTabFor(TabControlViewModel.CenterTabItems,
+                (item) => TabControlViewModel.CenterSelectedTab = item);
+
+            ShowMostRecentTabFor(TabControlViewModel.RightTabItems,
+                (item) => TabControlViewModel.RightSelectedTab = item);
+
+            //CenterTab.ResumeLayout();
 
         }
 
-        private static void ShowMostRecentTabFor(TabControl tabControl)
+        private static void ShowMostRecentTabFor(IEnumerable<PluginTabPage> items, Action<PluginTabPage> action)
         {
-            if (tabControl.TabPages.Count > 1)
+            if (items.Count() > 1)
             {
-                List<PluginTabPage> tabs = new List<PluginTabPage>();
-                foreach (TabPage tab in tabControl.TabPages)
+                var ordered = items.OrderByDescending(item => item.LastTimeClicked).ToList();
+
+                if (ordered[0].LastTimeClicked != ordered[1].LastTimeClicked)
                 {
-                    // If it's not a plugin tab, then it's not able to
-                    // report its last usage time
-                    if (tab is PluginTabPage)
-                    {
-                        tabs.Add(((object)tab) as PluginTabPage);
-                    }
-                }
-
-                var ordered = tabs.OrderByDescending(item => item.LastTimeClicked).ToList();
-
-                if (ordered.Count > 1)
-                {
-
-                    if (ordered[0].LastTimeClicked != ordered[1].LastTimeClicked &&
-                        tabControl.SelectedIndex != tabControl.TabPages.IndexOf(ordered[0]))
-                    {
-                        tabControl.SelectedTab = ordered[0];
-                    }
+                    action(ordered[0]);
                 }
             }
 

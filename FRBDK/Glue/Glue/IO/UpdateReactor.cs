@@ -170,7 +170,7 @@ namespace FlatRedBall.Glue.IO
 
                     if (FileManager.GetExtension(changedFile) == "")
                     {
-                        ElementViewWindow.Invoke((MethodInvoker)delegate
+                        MainGlueWindow.Self.Invoke((MethodInvoker)delegate
                         {
                             try
                             {

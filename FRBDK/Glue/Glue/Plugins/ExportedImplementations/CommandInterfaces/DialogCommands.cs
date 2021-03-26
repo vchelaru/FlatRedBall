@@ -634,16 +634,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void FocusTab(string dialogTitle)
         {
-            bool TryFocus(TabControl control )
+            bool TryFocus(IEnumerable<PluginTabPage> items)
             {
-                foreach(TabPage tabPage in control.TabPages)
+                foreach(var tabPage in items)
                 {
-                    if (tabPage.Text?.Trim() == dialogTitle)
+                    if ((tabPage.Header as string)?.Trim() == dialogTitle)
                     {
-                        control.SelectedTab = tabPage;
-                        if(tabPage is PluginTabPage pluginTab)
+                        tabPage.IsSelected = true;
+                        //control.SelectedTab = tabPage;
+                        //if(tabPage is PluginTabPage)
                         {
-                            pluginTab.LastTimeClicked = DateTime.Now;
+                            tabPage.LastTimeClicked = DateTime.Now;
                         }
                         return true;
                     }
@@ -651,12 +652,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 return false;
             }
 
-            var focused = TryFocus(PluginManager.TopTab);
+            var focused = TryFocus(PluginManager.TabControlViewModel.TopTabItems);
 
-            if (!focused) focused = TryFocus(PluginManager.BottomTab);
-            if (!focused) focused = TryFocus(PluginManager.LeftTab);
-            if (!focused) focused = TryFocus(PluginManager.CenterTab);
-            if (!focused) focused = TryFocus(PluginManager.RightTab);
+            if (!focused) focused = TryFocus(PluginManager.TabControlViewModel.BottomTabItems);
+            if (!focused) focused = TryFocus(PluginManager.TabControlViewModel.LeftTabItems);
+            if (!focused) focused = TryFocus(PluginManager.TabControlViewModel.RightTabItems);
+            if (!focused) focused = TryFocus(PluginManager.TabControlViewModel.CenterTabItems);
         }
 
         public void SetFormOwner(Form form)

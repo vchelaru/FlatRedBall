@@ -372,7 +372,7 @@ namespace FlatRedBall.Glue.IO
                 SetInitWindowText("Creating project view...");
                 
 
-                AddEmptyTreeItems();
+                //AddEmptyTreeItems();
 
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("RefreshSourceFileCache");
@@ -405,11 +405,11 @@ namespace FlatRedBall.Glue.IO
 
                 Section.GetAndStartContextAndTime("Screens");
                 SetInitWindowText("Creating tree nodes...");
-                CreateScreenTreeNodes();
+                //CreateScreenTreeNodes();
                 Section.EndContextAndTime();
 
                 Section.GetAndStartContextAndTime("Entities");
-                CreateEntityTreeNodes();
+                //CreateEntityTreeNodes();
                 Section.EndContextAndTime();
 
                 var allReferencedFileSaves = ObjectFinder.Self.GetAllReferencedFiles();
@@ -436,7 +436,7 @@ namespace FlatRedBall.Glue.IO
                 Section.GetAndStartContextAndTime("SortEntities");
 
 
-
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodes();
                 ElementViewWindow.SortEntities();
 
                 Section.EndContextAndTime();
@@ -549,32 +549,6 @@ namespace FlatRedBall.Glue.IO
             }
         }
 
-
-        private static void AddEmptyTreeItems()
-        {
-            #region Add the build items to the project - this generates UI for them
-            // We need a project to be loaded so that we can investigate it for
-            // what is a Screen/Entity in case there is no generated code already
-            // present.
-            // Update - I don't think this matters anymore, we should base it off of the
-            // glux below
-
-            Section.GetAndStartContextAndTime("Screens");
-            foreach (ScreenSave screen in ProjectManager.GlueProjectSave.Screens)
-            {
-                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screen);
-
-            }
-            Section.EndContextAndTime();
-            Section.GetAndStartContextAndTime("Entities");
-            foreach (EntitySave entity in ProjectManager.GlueProjectSave.Entities)
-            {
-                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(entity);
-            }
-            ElementViewWindow.ResumeLayout();
-            Section.EndContextAndTime();
-            #endregion
-        }
 
         private static void IdentifyAdditionalAssetTypes()
         {

@@ -9,6 +9,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// </summary>
         void RefreshUiForSelectedElement();
 
+        void RefreshTreeNodes();
+
         /// <summary>
         /// Refreshes the tree node for the selected element.
         /// This may add or remove tree nodes depending on whether

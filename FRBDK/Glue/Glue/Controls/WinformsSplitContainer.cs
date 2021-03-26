@@ -11,6 +11,7 @@ namespace GlueFormsCore.Controls
     class WinformsSplitContainer : System.Windows.Forms.SplitContainer
     {
         private System.Windows.Forms.SplitContainer topPanelContainer;
+
         private FlatRedBall.Glue.Controls.TabControlEx tcRight;
         private FlatRedBall.Glue.Controls.TabControlEx tcTop;
         private FlatRedBall.Glue.Controls.TabControlEx tcLeft;
@@ -22,6 +23,8 @@ namespace GlueFormsCore.Controls
 
         public WinformsSplitContainer()
         {
+
+
             this.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Location = new System.Drawing.Point(0, 24);
@@ -187,10 +190,11 @@ namespace GlueFormsCore.Controls
             this.leftPanelContainer.TabIndex = 9;
 
 
-            PluginManager.SetTabs(tcTop, tcBottom, tcLeft, tcRight, tcCenter);
+            //PluginManager.SetTabs(tcTop, tcBottom, tcLeft, tcRight, tcCenter);
 
         }
 
+        
         internal void UpdateSizesFromSettings()
         {
             rightPanelContainer.Panel2MinSize = 125;
