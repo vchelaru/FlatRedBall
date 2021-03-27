@@ -10,6 +10,7 @@ using System.Windows.Media;
 using FlatRedBall.Glue.MVVM;
 //using System.Windows.Forms;
 using FlatRedBall.Glue.Plugins;
+using GlueFormsCore.Controls;
 
 namespace FlatRedBall.Glue.Controls
 {
@@ -37,22 +38,6 @@ namespace FlatRedBall.Glue.Controls
             get; set;
         }
 
-        bool mDrawX = true;
-
-        //MenuItem moveToMenuItem;
-
-        //MenuItem closeMenuItem;
-
-        //public TabControl LastTabControl { get; set; }
-
-        //TabControl ParentTabControl
-        //{
-        //    get
-        //    {
-        //        return Parent as TabControl;
-        //    }
-        //}
-
         public DateTime LastTimeClicked
         {
             get;
@@ -65,9 +50,18 @@ namespace FlatRedBall.Glue.Controls
             set => closeButton.Visibility = value.ToVisibility();
         }
 
-
         public PluginTabPage() : base()
         {
+            this.Resources = MainPanelControl.ResourceDictionary;
+            //var backgroundBrush = MainPanelControl.ResourceDictionary["BlackBrush"];
+            //this.Background = (System.Windows.Media.Brush)backgroundBrush;
+
+            Style style = this.TryFindResource("TabItemStyle") as Style;
+            if(style != null)
+            {
+                this.Style = style;
+            }
+
             var stackPanel = new StackPanel();
             stackPanel.Orientation = Orientation.Horizontal;
             stackPanel.MouseDown += HandleMouseDown;
@@ -94,6 +88,7 @@ namespace FlatRedBall.Glue.Controls
 
             //closeMenuItem = new MenuItem("Close");
             //closeMenuItem.Click += (not, used) => RightClickCloseClicked?.Invoke(this, null);
+
         }
 
         private void HandleMouseDown(object sender, MouseButtonEventArgs e)

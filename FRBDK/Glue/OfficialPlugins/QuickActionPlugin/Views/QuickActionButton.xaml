@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="OfficialPluginsCore.QuickActionPlugin.Views.QuickActionButton"
+﻿<UserControl Style="{DynamicResource UserControlStyleDark}" x:Class="OfficialPluginsCore.QuickActionPlugin.Views.QuickActionButton"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 

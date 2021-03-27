@@ -23,6 +23,7 @@ using FlatRedBall.Glue.CodeGeneration.Game1;
 using FlatRedBall.IO;
 using System.Windows;
 using System.Collections.ObjectModel;
+using GlueFormsCore.Controls;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -484,10 +485,11 @@ namespace FlatRedBall.Glue.Plugins
 
             //return CreateTab(wpfHost, tabName);
             var page = new PluginTabPage();
-
+            page.Resources = MainPanelControl.ResourceDictionary;
 
             page.Title = tabName;
             page.Content = control;
+            control.Resources = MainPanelControl.ResourceDictionary;
 
             PluginTab pluginTab = new PluginTab();
             pluginTab.Page = page;

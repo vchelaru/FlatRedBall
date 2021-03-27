@@ -17,6 +17,8 @@ using System.Windows.Shapes;
 
 namespace GlueFormsCore.Controls
 {
+
+    #region TabControlViewModel - migrate this to its own file?
     public class TabControlViewModel : ViewModel
     {
         public ObservableCollection<PluginTabPage> TopTabItems { get; private set; } = new ObservableCollection<PluginTabPage>();
@@ -196,14 +198,31 @@ namespace GlueFormsCore.Controls
         }
     }
 
+    #endregion
+
     /// <summary>
     /// Interaction logic for MainPanelControl.xaml
     /// </summary>
     public partial class MainPanelControl : UserControl
     {
+        public static string AppTheme = "Dark";
+        public static ResourceDictionary ResourceDictionary { get; private set; }
+
         public MainPanelControl()
         {
             InitializeComponent();
+
+            //this.Resources.MergedDictionaries[0].Source =
+            //    new Uri($"/Themes/{AppTheme}.xaml", UriKind.Relative);
+
+
+            //Style style = this.TryFindResource("UserControlStyle") as Style;
+            //if(style != null)
+            //{
+            //    this.Style = style;
+            //}
+
+            ResourceDictionary = Resources;
 
             var viewModel = new TabControlViewModel();
             this.DataContext = viewModel;

@@ -13,6 +13,7 @@ using WpfDataUi.DataTypes;
 using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Elements;
+using GlueFormsCore.Controls;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -28,10 +29,19 @@ namespace OfficialPlugins.VariableDisplay
 
             CreateInstanceMembersForVariables(element, categories);
 
+            var dictionary = MainPanelControl.ResourceDictionary;
+            const byte brightness = 227;
+            var color = Color.FromRgb(brightness, brightness, brightness);
+            if (dictionary.Contains("BlackSelected"))
+            {
+                color = (Color)MainPanelControl.ResourceDictionary["BlackSelected"];
+            }
+
             foreach (var category in categories)
             {
-                const byte brightness = 227;
-                category.SetAlternatingColors(new SolidColorBrush(Color.FromRgb(brightness, brightness, brightness)), Brushes.Transparent);
+                category.SetAlternatingColors(
+                    new SolidColorBrush(color), 
+                    Brushes.Transparent);
 
                 grid.Categories.Add(category);
             }

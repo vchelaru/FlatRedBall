@@ -29,7 +29,7 @@
                       HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                       SelectedItem="{Binding CurrentGameSpeed}"></ComboBox>
         </StackPanel>
-        <Button Margin="0,0,6,0" MinWidth="22"
+        <Button Style="{DynamicResource ButtonStyleDark}" Margin="0,0,6,0" MinWidth="22"
                 Visibility="{Binding UnpauseButtonVisibility}"
                 Click="HandleUnpauseClicked"
             >
