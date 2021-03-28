@@ -25,8 +25,8 @@ namespace OfficialPlugins.VariableDisplay
 
             List<MemberCategory> categories = new List<MemberCategory>();
             var categoryName = "Variables";
-            MemberCategory defaultCategory = CreateAndAddCategory(categories, categoryName);
 
+            CreateAndAddCategory(categories, categoryName);
             CreateInstanceMembersForVariables(element, categories);
 
             var dictionary = MainPanelControl.ResourceDictionary;

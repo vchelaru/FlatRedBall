@@ -205,22 +205,22 @@ namespace GlueFormsCore.Controls
     /// </summary>
     public partial class MainPanelControl : UserControl
     {
-        public static string AppTheme = "Dark";
+        public static string AppTheme = "Light";
         public static ResourceDictionary ResourceDictionary { get; private set; }
 
         public MainPanelControl()
         {
             InitializeComponent();
 
-            //this.Resources.MergedDictionaries[0].Source =
-            //    new Uri($"/Themes/{AppTheme}.xaml", UriKind.Relative);
+            this.Resources.MergedDictionaries[0].Source =
+                new Uri($"/Themes/{AppTheme}.xaml", UriKind.Relative);
 
 
-            //Style style = this.TryFindResource("UserControlStyle") as Style;
-            //if(style != null)
-            //{
-            //    this.Style = style;
-            //}
+            Style style = this.TryFindResource("UserControlStyle") as Style;
+            if (style != null)
+            {
+                this.Style = style;
+            }
 
             ResourceDictionary = Resources;
 
