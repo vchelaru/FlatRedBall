@@ -44,7 +44,7 @@ namespace FlatRedBall.Glue.Events
                 if (container != null)
                 {
                     NamedObjectSave nos = container.GetNamedObjectRecursively(instance.SourceObject);
-#if GLUE
+
                     string type = null;
                     string args = null;
 
@@ -58,7 +58,7 @@ namespace FlatRedBall.Glue.Events
                         toReturn.Arguments = args;
                         toReturn.DelegateType = type;
                     }
-#endif
+
                     if (toReturn == null && nos != null && nos.SourceType == SourceType.Entity)
                     {
 

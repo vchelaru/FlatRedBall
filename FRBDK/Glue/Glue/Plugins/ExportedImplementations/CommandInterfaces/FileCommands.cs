@@ -59,11 +59,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public IEnumerable<string> GetFilesReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
         {
-#if GLUE
             return FileReferenceManager.Self.GetFilesReferencedBy(absoluteName, topLevelOrRecursive);
-#else
-            throw new NotImplementedException();
-#endif
         }
 
         public IEnumerable<FilePath> GetFilePathsReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
@@ -73,11 +69,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void ClearFileCache(string absoluteName)
         {
-#if GLUE
             FileReferenceManager.Self.ClearFileCache(absoluteName);
-#else
-
-#endif
         }
 
         public IEnumerable<string> GetAllFilesNeededOnDisk()
@@ -166,8 +158,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (File.Exists(absoluteFileName))
                 {
-#if GLUE
-
                     List<string> referencedFiles = null;
 
                     if (projectOrFile == ProjectOrDisk.Project)
@@ -179,11 +169,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         referencedFiles = FlatRedBall.Glue.Managers.FileReferenceManager.Self.GetFilesNeededOnDiskBy(absoluteFileName, topLevelOrRecursive);
 
                     }
-#else
-                    List<string> referencedFiles = 
-                            ContentParser.GetFilesReferencedByAsset(absoluteFileName, topLevelOrRecursive);
 
-#endif
                     // 12/14/2010
                     // The referencedFiles
                     // instance may be null
@@ -240,9 +226,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void IgnoreNextChangeOnFile(string absoluteFileName)
         {
-#if GLUE
             IO.FileWatchManager.IgnoreNextChangeOnFile(absoluteFileName);
-#endif
         }
 
         public string GetFullFileName(ReferencedFileSave rfs)

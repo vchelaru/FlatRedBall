@@ -5,9 +5,6 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel;
 using System.Xml.Serialization;
-#if GLUE
-using FlatRedBall.Glue.Controls;
-#endif
 using FlatRedBall.IO;
 using FlatRedBall.Content;
 //using FlatRedBall.Gui;

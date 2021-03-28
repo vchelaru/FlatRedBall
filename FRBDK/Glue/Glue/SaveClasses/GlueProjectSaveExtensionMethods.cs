@@ -371,7 +371,6 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-#if GLUE
         public static ComparisonResult ReloadUsingComparison(this GlueProjectSave instance, string fileName, out GlueProjectSave otherGlueProjectSave)
         {
             bool succeeded = true;
@@ -475,10 +474,8 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-#endif
         private static void SearchForDuplicateNamedObjects(this GlueProjectSave instance)
         {
-#if GLUE
             List<string> names = new List<string>();
             foreach (EntitySave entitySave in instance.Entities)
             {
@@ -516,7 +513,6 @@ namespace FlatRedBall.Glue.SaveClasses
                     }
                 }
             }
-#endif
         }
 
         public static void FixNamedObjects(this GlueProjectSave instance)

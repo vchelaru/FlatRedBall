@@ -14,10 +14,6 @@ using System.ComponentModel;
 using GlueSaveClasses;
 using System.Diagnostics;
 
-#if GLUE_VIEW
-using PluginManager = GlueView.Plugin.PluginManager;
-using GlueView.Plugin;
-#else
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins.ViewModels;
 using FlatRedBall.Glue.Managers;
 using Glue;
@@ -25,7 +21,7 @@ using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using FlatRedBall.Glue.Plugins.Rss;
 using System.Threading;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
-#endif
+
 namespace FlatRedBall.Glue.Controls
 {
 
@@ -78,7 +74,6 @@ namespace FlatRedBall.Glue.Controls
             }
         }
 
-#if !GLUE_VIEW
         PluginViewModel lastPluginViewModel;
         PluginViewModel SelectedPluginViewModel
         {
@@ -108,7 +103,6 @@ namespace FlatRedBall.Glue.Controls
                 return toReturn;
             }
         }
-#endif
 
         RssItem SelectedRssItem
         {
@@ -116,7 +110,7 @@ namespace FlatRedBall.Glue.Controls
             set;
         }
 
-#endregion
+        #endregion
 
         #region Constructor
 
@@ -200,9 +194,6 @@ namespace FlatRedBall.Glue.Controls
 
                     if (result == System.Windows.Forms.DialogResult.Yes)
                     {
-#if GLUE_VIEW
-                        MessageBox.Show("Re-enabling plugins is not supported in GlueView yet.");
-#else
                         container.IsEnabled = true;
                         try
                         {
@@ -214,7 +205,6 @@ namespace FlatRedBall.Glue.Controls
                             container.Fail(exception, "Failed in StartUp");
                             RefreshCheckBoxes();
                         }
-#endif
                     }
                     else
                     {
@@ -397,7 +387,6 @@ namespace FlatRedBall.Glue.Controls
         {
             string pluginFolder = FileManager.GetDirectory(SelectedPlugin.AssemblyLocation);
 
-#if GLUE
             var pluginSettings = GlueState.Self.CurrentPluginSettings;
             bool shouldSave = false;
             if (shouldBeLoaded && !IsLoadedOnStartup(pluginContainer))
@@ -426,7 +415,6 @@ namespace FlatRedBall.Glue.Controls
             {
                 GlueState.Self.CurrentPluginSettings.Save(FileManager.GetDirectory(ProjectManager.GlueProjectFileName));
             }
-#endif
         }
 
 
@@ -444,9 +432,6 @@ namespace FlatRedBall.Glue.Controls
 
         private bool IsLoadedOnStartup(PluginContainer container)
         {
-#if GLUE
-
-
             var plugin = SelectedPlugin.Plugin;
 
             if (plugin is NotLoadedPlugin)
@@ -468,9 +453,6 @@ namespace FlatRedBall.Glue.Controls
 
                 return GlueState.Self.CurrentPluginSettings.PluginsToIgnore.Contains(pluginFolder) == false;
             }
-#else
-            return true;
-#endif
         }
 
         private bool IsRequiredByProject(PluginContainer selectedPlugin)
@@ -503,8 +485,6 @@ namespace FlatRedBall.Glue.Controls
                 if (SelectedRssItem != null && !string.IsNullOrEmpty(SelectedRssItem.DirectLink))
                 {
 
-                    // I wrote this for Glue, didn't realize it was also being used by GlueView
-#if GLUE
                     try
                     {
                         EditorObjects.IoC.Container.Get<PluginUpdater>().StartDownload(SelectedRssItem.DirectLink, AfterDownload);
@@ -513,7 +493,6 @@ namespace FlatRedBall.Glue.Controls
                     {
                         MessageBox.Show("Failed to download plugin\n\n" + exc);
                     }
-#endif
                 }
             }
             catch(Exception exception)

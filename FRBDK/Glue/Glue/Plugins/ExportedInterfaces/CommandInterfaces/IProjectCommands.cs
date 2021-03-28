@@ -50,9 +50,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void CopyToBuildFolder(ReferencedFileSave rfs);
         void CopyToBuildFolder(string absoluteSource);
 
-#if GLUE
         void AddDirectory(string folderName, System.Windows.Forms.TreeNode treeNodeToAddTo);
-#endif
 
         string MakeAbsolute(string relativeFileName, bool forceAsContent);
 

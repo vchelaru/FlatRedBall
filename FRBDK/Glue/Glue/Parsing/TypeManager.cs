@@ -10,11 +10,9 @@ using FlatRedBall.Math;
 using FlatRedBall.Glue.Elements;
 
 
-#if GLUE
 using FlatRedBall.Math;
 using System.Security.Policy;
 
-#endif
 
 namespace FlatRedBall.Glue.Parsing
 {
@@ -129,13 +127,9 @@ namespace FlatRedBall.Glue.Parsing
                     }
                     catch(Exception exception)
                     {
-#if GLUE
                         System.Windows.Forms.MessageBox.Show("Error making a generic type out of " + baseType.Name + "<" + genericType.Name + ">" +
                             "\n This is probably because your game hasn't been rebuilt since you've made a critical change");
                         return null;
-#else
-                        throw exception;
-#endif
                     }
                 }
             }
@@ -331,7 +325,6 @@ namespace FlatRedBall.Glue.Parsing
                     }
                 }
 
-#if GLUE
 
                 if(typeToReturn == null && isFullyQualified)
                 {
@@ -341,8 +334,6 @@ namespace FlatRedBall.Glue.Parsing
                         typeToReturn = foundPluginType;
                     }
                 }
-
-#endif
                 
                 foreach (AssetTypeInfo ati in AvailableAssetTypes.Self.AllAssetTypes)
                 {
@@ -457,12 +448,8 @@ namespace FlatRedBall.Glue.Parsing
             }
             catch (ReflectionTypeLoadException reflectionException)
             {
-#if GLUE
                 System.Windows.Forms.MessageBox.Show("Encountered exception while trying to load " + assembly.FullName +
                     "\nThis is likely because the assembly is using a different version of the .NET framework.");
-#else
-                throw reflectionException;
-#endif
             }
             catch (TypeLoadException ex)
             {
@@ -540,7 +527,7 @@ namespace FlatRedBall.Glue.Parsing
 #endif
 
 
-#region Common Types
+                #region Common Types
 
                     mCommonTypes = new Dictionary<string, Type>();
 
@@ -564,7 +551,6 @@ namespace FlatRedBall.Glue.Parsing
 
                 }
 
-#if GLUE
                 if(pluginTypes == null)
                 {
                     var listOfTypesInAllPlugins = new List<Type>();
@@ -606,7 +592,6 @@ namespace FlatRedBall.Glue.Parsing
 
                     pluginTypes = listOfTypesInAllPlugins.ToArray();
                 }
-#endif
             }
         }
 

@@ -645,7 +645,6 @@ namespace FlatRedBall.Glue.SetVariable
                 {
                     EntitySave entitySave = ObjectFinder.Self.GetEntitySave(namedObjectSave.SourceClassType);
 
-#if GLUE
                     // If the EntitySave is null then that probably means that the Entity has been renamed and this hasn't
                     // been pushed to the project yet.
                     if (entitySave != null && ProjectManager.VerifyReferenceGraph(entitySave) == ProjectManager.CheckResult.Failed)
@@ -653,7 +652,6 @@ namespace FlatRedBall.Glue.SetVariable
                         namedObjectSave.SourceClassType = (string)oldValue;
                     }
                     else
-#endif
                     {
                         namedObjectSave.UpdateCustomProperties();
                     }

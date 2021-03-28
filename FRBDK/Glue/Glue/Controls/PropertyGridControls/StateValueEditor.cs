@@ -15,12 +15,7 @@ using FlatRedBall.Glue.FormHelpers.PropertyGrids;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 
-#if GLUE
 using FlatRedBall.Glue.SaveClasses.Helpers;
-#else
-using GluePropertyGridClasses;
-using GluePropertyGridClasses.Resources;
-#endif
 
 namespace FlatRedBall.Glue.Controls.PropertyGridControls
 {

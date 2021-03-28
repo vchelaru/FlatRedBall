@@ -627,10 +627,8 @@ namespace FlatRedBall.Glue.SaveClasses
         // other types of events, so we don't
         // need this explicitly defined anymore.
 //        [Browsable(false)]
-//#if GLUE
 //        [BroadcastAttribute(BroadcastStaticOrInstance.Instance)]
 //        [TypeConverter(typeof(BroadcastAutofillTypeConverter))]
-//#endif
 
 //        [CategoryAttribute("Active Events")]
 //        public string ClickEvent

@@ -408,11 +408,7 @@ namespace FlatRedBall.Glue.Managers
 
         public void OnUiThread(Action action)
         {
-#if GLUE
             global::Glue.MainGlueWindow.Self.Invoke(action);
-#else
-            action();
-#endif
         }
 
         public void AddOrRunIfTasked(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo)

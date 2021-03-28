@@ -8,10 +8,6 @@ using System.IO;
 using FlatRedBall.Glue.Elements;
 
 
-#if GLUE
-using FlatRedBall.Glue.FormHelpers;
-using FlatRedBall.Glue.Controls;
-#endif
 
 namespace FlatRedBall.Glue.SaveClasses
 {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using FlatRedBall.IO;
-#if GLUE
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.IO;
 using EditorObjects.Parsing;
@@ -10,7 +9,6 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.Utilities;
-#endif
 
 using System.Text;
 using System.Linq;
@@ -143,9 +141,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             /////////////////////////Early Out////////////////////////////
             string extension = FileManager.GetExtension(absoluteFile);
             var rfs = Container.Get<IGlueCommands>().FileCommands.GetReferencedFile(absoluteFile);
-
-
-#if GLUE
 
             bool handledByContentPipelinePlugin = Plugins.EmbeddedPlugins.SyncedProjects.SyncedProjectLogic.Self
                 .GetIfHandledByContentPipelinePlugin(this, extension, rfs);
@@ -299,10 +294,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 return buildItem;
             }
 
-#else
-
-            throw new NotImplementedException();
-#endif
         }
 
         public bool IsCodeItem(ProjectItem buildItem)
@@ -528,8 +519,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         private bool ResolveDuplicateProjectEntry(bool wasChanged, ProjectItem buildItem)
         {
-#if GLUE
-
             var mbmb = new MultiButtonMessageBoxWpf();
 
             mbmb.MessageText = "The item " + buildItem.UnevaluatedInclude + " is part of " +
@@ -570,7 +559,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             }
             else
-#endif
             {
                 //mProject.EvaluatedItems.RemoveItemAt(i);
                 mProject.RemoveItem(buildItem);
@@ -648,7 +636,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             return AddCodeBuildItem(fileName, false, "");
         }
 
-#if GLUE
         public override void UpdateContentFile(string sourceFileName)
         {
             string relativeFileName = FileManager.MakeRelative(sourceFileName, this.Directory);
@@ -691,7 +678,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 }
             }
         }
-#endif
 
         public void MakeBuildItemNested(ProjectItem item, string parent)
         {
@@ -820,7 +806,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public override void SyncTo(ProjectBase projectBase, bool performTranslation)
         {
-#if GLUE
             Load(FullFileName);
 
             AddCodeBuildItems(projectBase);
@@ -834,7 +819,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
 
             Save(FullFileName);
-#endif
         }
 
         protected ProjectItem AddCodeBuildItem(string fileName, bool isSyncedProject, string nameRelativeToThisProject)

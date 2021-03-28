@@ -12,13 +12,6 @@ using System.IO;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.Interfaces;
 
-#if GLUE
-using Microsoft.Build.BuildEngine;
-using FlatRedBall.Glue.FormHelpers.PropertyGrids;
-using FlatRedBall.Glue.FormHelpers.StringConverters;
-using FlatRedBall.Glue.FormHelpers;
-using FlatRedBall.Glue.GuiDisplay;
-#endif
 namespace FlatRedBall.Glue.SaveClasses
 {
     #region Enums

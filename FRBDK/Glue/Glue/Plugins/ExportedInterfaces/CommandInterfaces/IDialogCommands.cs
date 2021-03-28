@@ -18,7 +18,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         void FocusTab(string dialogTitle);
 
-#if GLUE
         NamedObjectSave ShowAddNewObjectDialog(FlatRedBall.Glue.ViewModels.AddObjectViewModel addObjectViewModel = null);
 
         void ShowAddNewVariableDialog(Controls.CustomVariableType variableType = Controls.CustomVariableType.Exposed, 
@@ -28,6 +27,5 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         void SetFormOwner(System.Windows.Forms.Form form);
         void ShowCreateDerivedScreenDialog(ScreenSave baseScreen);
-#endif
     }
 }

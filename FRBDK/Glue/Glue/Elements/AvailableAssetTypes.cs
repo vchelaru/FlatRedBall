@@ -72,14 +72,10 @@ namespace FlatRedBall.Glue.Elements
         {
             get
             {
-#if GLUE
                 string projectFileName = ProjectManager.GlueProjectFileName;
                 string directory = FileManager.GetDirectory(projectFileName);
 
                 return directory + @"GlueSettings\";
-#else
-                throw new NotImplementedException();
-#endif
             }
         }
 
@@ -214,9 +210,7 @@ namespace FlatRedBall.Glue.Elements
             {
 
                 mCustomAssetTypes.Remove(ati);
-#if GLUE
                 PluginManager.ReceiveOutput("Removing known content type: " + ati);
-#endif
             }
 
             mProjectSpecificAssetTypes.Clear();
@@ -241,9 +235,7 @@ namespace FlatRedBall.Glue.Elements
 
                 if (mProjectSpecificAssetTypes.Count != 0)
                 {
-#if GLUE
                     PluginManager.ReceiveOutput("Adding " + mProjectSpecificAssetTypes.Count + " content types");
-#endif
                     this.mCustomAssetTypes.AddRange(mProjectSpecificAssetTypes);
                 }
             }
@@ -275,10 +267,8 @@ namespace FlatRedBall.Glue.Elements
 
                 if (tolerateFailure)
                 {
-#if GLUE
                     // let's report it:
                     PluginManager.ReceiveError("Error loading CSV: " + fullFileName + "\n" + e.ToString());
-#endif
                 }
                 else
                 {
@@ -287,9 +277,7 @@ namespace FlatRedBall.Glue.Elements
             }
             if (succeeded)
             {
-#if GLUE
                 PluginManager.ReceiveOutput("Loading content types from " + fullFileName + " and found " + newTypes.Count + " types");
-#endif
                 listToFill.AddRange(newTypes);
             }
             return succeeded;

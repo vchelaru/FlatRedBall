@@ -15,10 +15,8 @@ using FlatRedBall.Graphics;
 using System.Windows.Forms;
 using FlatRedBall.Glue.SaveClasses;
 
-#if GLUE
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.AutomatedGlue;
-#endif
 using System.Collections.ObjectModel;
 using FlatRedBall.Utilities;
 using FlatRedBall.Instructions.Reflection;
@@ -96,12 +94,7 @@ namespace FlatRedBall.Glue.Reflection
             }
             catch (Exception e)
             {
-#if GLUE
                 GlueGui.ShowMessageBox("Error in ExposedVariableManager " + e.ToString(), "Error");
-#else
-                MessageBox.Show("Error in ExposedVariableManager " + e.ToString(), "Error");
-
-#endif
                 throw new Exception("Error in ExposedVariableManager.Initialize", e);
             }
         }
@@ -568,9 +561,7 @@ namespace FlatRedBall.Glue.Reflection
             }
             else
             {
-#if GLUE
                 GlueCommands.Self.PrintError($"Could not identify the variable type for {variableName} in {namedObject}");
-#endif
                 return null;
             }
         }

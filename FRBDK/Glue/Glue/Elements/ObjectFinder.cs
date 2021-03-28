@@ -66,9 +66,7 @@ namespace FlatRedBall.Glue.Elements
             }
         }
 
-#if GLUE
         [Obsolete("Use GluxCommands.GetReferencedFileSaveFromFile")]
-#endif
         public ReferencedFileSave GetReferencedFileSaveFromFile(string fileName)
         {
             ////////////////Early Out//////////////////////////////////
@@ -179,10 +177,6 @@ namespace FlatRedBall.Glue.Elements
 
             return toReturn;
         }
-
-#if GLUE
-        
-#endif
 
         public ReferencedFileSave GetFirstCsvUsingClass(string className)
         {

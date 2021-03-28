@@ -128,7 +128,6 @@ https://docs.microsoft.com/en-us/xamarin/android/get-started/installation/window
                 projectBase = CreatePlatformSpecificProject(coreVisualStudioProject, fileName);
             }
 
-#if GLUE
             // It may be null if the project is of an unknown type.  
             // We'll handle that problem outside of this function.
             if (projectBase != null)
@@ -137,7 +136,6 @@ https://docs.microsoft.com/en-us/xamarin/android/get-started/installation/window
                 // Saving seems to cause 2 file changes, so we're going to ignore 2, what a hack!
                 projectBase.Saving += FlatRedBall.Glue.IO.FileWatchManager.IgnoreNextChangeOnFile;
             }
-#endif
 
             result.Project = projectBase;
             return result;

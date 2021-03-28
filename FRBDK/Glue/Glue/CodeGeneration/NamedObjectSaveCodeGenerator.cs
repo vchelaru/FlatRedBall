@@ -1198,7 +1198,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-#if GLUE
+
         static string GetQualifiedClassType(NamedObjectSave instance)
         {
             if (instance.SourceType == SourceType.FlatRedBallType && !string.IsNullOrEmpty(instance.InstanceType) &&
@@ -1257,7 +1257,6 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
 
         }
-#endif
 
         private static void CreateVariableResetField(NamedObjectSave namedObjectSave, string typeName, ICodeBlock codeBlock)
         {

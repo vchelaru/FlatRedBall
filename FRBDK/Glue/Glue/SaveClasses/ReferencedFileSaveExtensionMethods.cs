@@ -9,7 +9,6 @@ using GluePropertyGridClasses.Interfaces;
 
 using SourceReferencingFile = FlatRedBall.Glue.Content.SourceReferencingFile;
 
-#if GLUE
 
 using FlatRedBall.Glue.Facades;
 using EditorObjects.Parsing;
@@ -18,7 +17,6 @@ using System.Windows.Forms;
 using EditorObjects.SaveClasses;
 using System.IO;
 using FlatRedBall.Glue.Plugins;
-#endif
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -186,7 +184,6 @@ namespace FlatRedBall.Glue.SaveClasses
                 return true;
             }
 
-#if GLUE
             var buildToolAssociation = instance.GetBuildToolAssociation();
 
             if (buildToolAssociation != null)
@@ -203,7 +200,7 @@ namespace FlatRedBall.Glue.SaveClasses
                     }
                 }
             }
-#endif
+
             return false;
             
         }

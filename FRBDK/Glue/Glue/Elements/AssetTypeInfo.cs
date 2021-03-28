@@ -11,10 +11,8 @@ using FlatRedBall.Instructions.Reflection;
 using System.Xml.Serialization;
 using FlatRedBall.Glue.SaveClasses;
 
-#if !GLUE
 using FlatRedBall.Instructions;
 using FlatRedBall.Instructions.Reflection;
-#endif
 
 namespace FlatRedBall.Glue.Elements
 {

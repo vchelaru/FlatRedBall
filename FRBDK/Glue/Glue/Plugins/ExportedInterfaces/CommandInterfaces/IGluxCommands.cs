@@ -56,15 +56,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         ReferencedFileSave GetReferencedFileSaveFromFile(string fileName);
 
-#if GLUE
         ReferencedFileSave AddSingleFileTo(string fileName, string rfsName, string extraCommandLineArguments,
             EditorObjects.SaveClasses.BuildToolAssociation buildToolAssociation, bool isBuiltFile, object options, 
             IElement sourceElement, string directoryOfTreeNode, bool selectFileAfterCreation = true);
-#endif
 
         #endregion
         
-#if GLUE
         // SourceType sourceType, string sourceClassType, string sourceFile, string objectName, string sourceNameInFile, string sourceClassGenericType
         NamedObjectSave AddNewNamedObjectToSelectedElement(ViewModels.AddObjectViewModel addObjectViewModel);
         NamedObjectSave AddNewNamedObjectTo(ViewModels.AddObjectViewModel addObjectViewModel, IElement element, NamedObjectSave listToAddTo = null);
@@ -72,7 +69,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         bool SetPluginRequirement(Interfaces.IPlugin plugin, bool requiredByProject);
         bool SetPluginRequirement(string name, bool requiredByProject, Version version);
         bool GetPluginRequirement(Interfaces.IPlugin plugin);
-#endif
 
         #region Entity
 

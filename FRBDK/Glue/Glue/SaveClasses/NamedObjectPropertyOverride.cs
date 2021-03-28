@@ -4,12 +4,6 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel;
 
-#if GLUE
-using FlatRedBall.Glue.FormHelpers;
-using FlatRedBall.Glue.Elements;
-using FlatRedBall.Glue.GuiDisplay;
-#endif
-
 namespace FlatRedBall.Glue.SaveClasses
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
@@ -67,6 +61,7 @@ namespace FlatRedBall.Glue.SaveClasses
             }
             set
             {
+                // Vic asks - do we want this here? It got removed when we moved to a core project.
 #if GLUE
                 if (ObjectFinder.Self.GetElementContaining(this) == null)
                 {
@@ -79,9 +74,9 @@ namespace FlatRedBall.Glue.SaveClasses
 
         // If adding new properties, modify the IsNulledOut property and add a buffer above ^^^^^
 
-        #endregion
+#endregion
 
-        #region Methods
+#region Methods
 
         public NamedObjectPropertyOverride Clone()
         {
@@ -93,6 +88,6 @@ namespace FlatRedBall.Glue.SaveClasses
             return Name;
         }
 
-        #endregion
+#endregion
     }
 }

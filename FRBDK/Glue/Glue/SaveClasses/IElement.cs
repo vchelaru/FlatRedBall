@@ -10,14 +10,6 @@ using System.ComponentModel;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.Interfaces;
 
-#if GLUE
-using FlatRedBall.Glue.FormHelpers.PropertyGrids;
-using FlatRedBall.Glue.FormHelpers;
-using System.Windows.Forms;
-using FlatRedBall.Glue.Controls;
-using FlatRedBall.Glue.Elements;
-#endif
-
 namespace FlatRedBall.Glue.SaveClasses
 {
     #region Enums

@@ -93,15 +93,11 @@ namespace FlatRedBall.Glue.FormHelpers
             }
 
 
-#if GLUE
             // We'll have "entire file" be first, then alphabetize the rest:
             List<string> tempList = new List<string>();
             PluginManager.TryAddContainedObjects(referencedFile, tempList);
             tempList.Sort();
             listOfObjectsToReturn.AddRange(tempList);
-#else
-                //ContentParser.GetNamedObjectsIn(referencedFile, stringToReturn);
-#endif
         } 
 
 

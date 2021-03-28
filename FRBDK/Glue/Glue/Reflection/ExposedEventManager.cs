@@ -203,9 +203,7 @@ namespace FlatRedBall.Glue.Reflection
                         break;
                 }
 
-#if GLUE
                 PluginManager.AddEventsForObject(namedObjectSave, returnValues);
-#endif
 
             }
             if (parent != null)

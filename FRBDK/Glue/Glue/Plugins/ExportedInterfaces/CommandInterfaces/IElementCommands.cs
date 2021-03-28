@@ -9,12 +9,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
     public interface IElementCommands
     {
-#if GLUE
         ReferencedFileSave CreateReferencedFileSaveForExistingFile(IElement element, string directoryPath, string absoluteFileName,
             StandardTypes.PromptHandleEnum unknownTypeHandle,
             Elements.AssetTypeInfo ati,
             out string creationReport, out string errorMessage);
-#endif
+
         SaveClasses.EntitySave AddEntity(string entityName, bool is2D = false);
 
         SaveClasses.EntitySave AddEntity(AddEntityViewModel viewModel, string directory = null);

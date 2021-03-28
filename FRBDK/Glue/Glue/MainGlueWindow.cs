@@ -239,12 +239,9 @@ namespace Glue
             // Initialize before loading GlueSettings;
             // Also initialize before loading plugins so that plugins
             // can access the standard ATIs
-#if GLUE
             string startupPath =
                 FileManager.GetDirectory(System.Reflection.Assembly.GetExecutingAssembly().Location);
-#else
-                string startupPath = FileManager.StartupPath;
-#endif
+
             AvailableAssetTypes.Self.Initialize(startupPath);
 
             initializationWindow.Message = "Loading Plugins"; Application.DoEvents();

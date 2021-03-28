@@ -8,11 +8,6 @@ using FlatRedBall.Utilities;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Events;
 
-#if GLUE
-using FlatRedBall.Glue.FormHelpers.StringConverters;
-using FlatRedBall.Glue.FormHelpers.PropertyGrids;
-#endif
-
 namespace FlatRedBall.Glue.SaveClasses
 {
     public class ScreenSave : GlueElement, IEventContainer, ITaggable
@@ -39,9 +34,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         // Broadcasting has been removed
 //        [Browsable(false)]
-//#if GLUE
 //        [BroadcastAttribute(BroadcastStaticOrInstance.Internal)]
-//#endif
 //        public string InitializeBroadcast
 //        {
 //            get;
@@ -50,9 +43,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
 //        // Broadcasting has been removed 
 //        [Browsable(false)]
-//#if GLUE
 //        [BroadcastAttribute(BroadcastStaticOrInstance.Internal)]
-//#endif
 //        public string DestroyBroadcast
 //        {
 //            get;

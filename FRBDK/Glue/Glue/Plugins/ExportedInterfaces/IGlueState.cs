@@ -14,14 +14,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
             get;
         }
 
-#if GLUE
         System.Windows.Forms.TreeNode CurrentTreeNode
         {
             get;
         }
 
         Managers.IFindManager Find { get; }
-#endif
 
         EntitySave CurrentEntitySave
         {
@@ -109,14 +107,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
             set;
         }
 
-#if GLUE
         public System.Windows.Forms.TreeNode CurrentTreeNode
         {
             get;
             set;
         }
         public Managers.IFindManager Find { get; }
-#endif
 
 
         public EntitySave CurrentEntitySave
@@ -214,9 +210,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
         {
             this.CurrentElement = glueState.CurrentElement;
 
-#if GLUE
             this.CurrentTreeNode = glueState.CurrentTreeNode;
-#endif
 
             this.CurrentEntitySave = glueState.CurrentEntitySave;
 

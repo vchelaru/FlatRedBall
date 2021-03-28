@@ -27,7 +27,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 throw new ArgumentNullException(nameof(stateSave));
             }
-#if GLUE
+
             if (variableName.Contains(" set in "))
             {
                 string withoutSpace = variableName.Substring(0, variableName.IndexOf(' '));
@@ -40,7 +40,7 @@ namespace FlatRedBall.Glue.SaveClasses
                     variableName = withoutSpace;
                 }
             }
-#endif
+
             bool wasFound = false;
 
             // See if there is an instructionD

@@ -7,9 +7,7 @@ using System.ComponentModel;
 
 using System.IO;
 using FlatRedBall.Glue.SaveClasses;
-#if GLUE
 using FlatRedBall.IO;
-#endif
 
 namespace FlatRedBall.Glue.Events
 {

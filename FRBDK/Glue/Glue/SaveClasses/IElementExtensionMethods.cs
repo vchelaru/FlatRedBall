@@ -207,7 +207,7 @@ namespace FlatRedBall.Glue.SaveClasses
             referencedFileSave.IsSharedStatic = true;
 
             referencedFileSave.SetNameNoCall(fileName);
-#if GLUE
+
             if (ati != null && !string.IsNullOrEmpty(ati.CustomBuildToolName) && bta != null)
             {
                 referencedFileSave.BuildTool = ati.CustomBuildToolName;
@@ -219,7 +219,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
                 referencedFileSave.SetNameNoCall(newName);
             }
-#endif
+
             instance.ReferencedFiles.Add(referencedFileSave);
 
 

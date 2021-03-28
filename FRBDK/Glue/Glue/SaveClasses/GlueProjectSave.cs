@@ -7,18 +7,7 @@ using System.Xml.Serialization;
 using GlueSaveClasses;
 
 //using System.Windows.Forms;
-#if GLUE
-using FlatRedBall.Glue.Controls;
-using FlatRedBall.Glue.Elements;
-using FlatRedBall.Glue.IO;
-using FlatRedBall.Glue.IO.Zip;
-using FlatRedBall.Glue.StandardTypes;
-using FlatRedBall.Glue.VSHelpers;
-using Microsoft.Build.BuildEngine;
-using KellermanSoftware.CompareNetObjects;
-using FlatRedBall.Glue.Plugins.ExportedImplementations;
-using FlatRedBall.Glue.Plugins;
-#endif
+
 using System.Collections;
 
 

@@ -6,16 +6,6 @@ using FlatRedBall.Content.Instructions;
 using System.ComponentModel;
 using System.Xml.Serialization;
 
-
-#if GLUE
-using FlatRedBall.Glue.FormHelpers;
-using FlatRedBall.Glue.Controls.PropertyGridControls;
-using FlatRedBall.Glue.Controls;
-using System.Windows.Forms;
-using FlatRedBall.Instructions.Reflection;
-using FlatRedBall.Glue.GuiDisplay;
-#endif
-
 namespace FlatRedBall.Glue.SaveClasses
 {
 
