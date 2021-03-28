@@ -44,15 +44,13 @@ namespace BuildServerUploaderConsole.Processes
             //ModifyVersionInfo(engineDirectory + @"\FlatRedBallXNA\FlatRedBall.Content\Properties\AssemblyInfo.cs", VersionString);
             //Results.WriteMessage("XNA content assembly version updated to " + VersionString);
 
-            //ModifyVersionInfo(engineDirectory + @"\FlatRedBallMDX\AssemblyInfo.cs", VersionString);
-            //Results.WriteMessage("MDX assembly version updated to " + VersionString);
-
-            //ModifyVersionInfo(engineDirectory + @"\FlatSilverBall\FlatSilverBall\Properties\AssemblyInfo.cs", VersionString);
-            //Results.WriteMessage("FlatSilverBall assembly version updated to " + VersionString);
 
             //ModifyAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"\Glue\Glue\Properties\AssemblyInfo.cs", VersionString);
             ModifyCsprojAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"Glue\Glue\GlueFormsCore.csproj", VersionString);
             ModifyAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"Glue\GlueSaveClasses\Properties\AssemblyInfo.cs", VersionString);
+
+            ModifyCsprojAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"AnimationEditor\PreviewProject\AnimationEditor.csproj", VersionString);
+
 
             Results.WriteMessage("Glue assembly versions updated to " + VersionString);
 
