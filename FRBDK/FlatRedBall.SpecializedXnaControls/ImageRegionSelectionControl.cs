@@ -249,6 +249,7 @@ namespace FlatRedBall.SpecializedXnaControls
 
         public new event EventHandler RegionChanged;
         public event EventHandler EndRegionChanged;
+        public Action<RectangleSelector> NewSelectorCreated;
 
         public event EventHandler MouseWheelZoom;
         public event Action Panning;
@@ -330,6 +331,8 @@ namespace FlatRedBall.SpecializedXnaControls
             newSelector.RoundToUnitCoordinates = mRoundRectangleSelectorToUnit;
 
             mRectangleSelectors.Add(newSelector);
+
+            NewSelectorCreated?.Invoke(newSelector);
 
             return newSelector;
         }

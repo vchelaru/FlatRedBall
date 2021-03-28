@@ -416,6 +416,7 @@ namespace FlatRedBall.AnimationEditorForms
             mManagers.Renderer.SamplerState = SamplerState.PointClamp;
 
             mControl = control;
+            mControl.NewSelectorCreated += HandleNewSelectorCreated;
 
             keyboard = new Keyboard();
             keyboard.Initialize(control);
@@ -456,6 +457,18 @@ namespace FlatRedBall.AnimationEditorForms
 
             WireframeEditControlsViewModel = wireframeEditControlsViewModel;
             WireframeEditControlsViewModel.PropertyChanged += HandleWireframePropertyChanged;
+        }
+
+        private void HandleNewSelectorCreated(RectangleSelector newSelector)
+        {
+
+
+            newSelector.Pushed += HandleSelectorPushed;
+        }
+
+        private void HandleSelectorPushed(object sender, EventArgs e)
+        {
+            this.mPushedRegion = sender as RectangleSelector;
         }
 
         private void HandleWireframePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -925,17 +938,11 @@ namespace FlatRedBall.AnimationEditorForms
                         rectangleSelector.ShowHandles = false;
                         rectangleSelector.RoundToUnitCoordinates = true;
                         rectangleSelector.AllowMoveWithoutHandles = true;
-                        rectangleSelector.Pushed += HandleRegionPushed;
                         // Only the first cursor will reset back to the arrow, otherwise the others shouldn't
                         rectangleSelector.ResetsCursorIfNotOver = i == 0;
                     }
                 }
             }
-        }
-
-        private void HandleRegionPushed(object sender, EventArgs e)
-        {
-            this.mPushedRegion = sender as RectangleSelector;
         }
 
         private void UpdateToSelectedFrame()
