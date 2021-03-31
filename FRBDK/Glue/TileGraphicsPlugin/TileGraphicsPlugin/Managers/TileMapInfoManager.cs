@@ -45,8 +45,11 @@ namespace TileGraphicsPlugin.Managers
                 wasAnythingAdded = true;
             }
 
+            // Feb 2020
             // force it to eliminate any old AnimationFrameSaveBase
-            if (TryAdd("EmbeddedAnimation", "System.Collections.Generic.List<FlatRedBall.Content.AnimationChain.AnimationFrameSave>", null, tileMapInfoClass, forceAdd:true))
+            // March 30 2021
+            // This is noisy and always saves the project. Vic is trying to figure out why Glue always reloads on .NET Core, so removing this
+            if (TryAdd("EmbeddedAnimation", "System.Collections.Generic.List<FlatRedBall.Content.AnimationChain.AnimationFrameSave>", null, tileMapInfoClass))
             {
                 wasAnythingAdded = true;
             }

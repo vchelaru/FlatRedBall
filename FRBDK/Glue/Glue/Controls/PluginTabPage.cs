@@ -94,7 +94,8 @@ namespace FlatRedBall.Glue.Controls
         private void HandleMouseDown(object sender, MouseButtonEventArgs e)
         {
             if(e.ChangedButton == MouseButton.Middle && 
-                e.ButtonState == MouseButtonState.Pressed)
+                e.ButtonState == MouseButtonState.Pressed &&
+                DrawX)
             {
                 ClosedByUser?.Invoke(this);
             }

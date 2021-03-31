@@ -4,8 +4,6 @@ using FlatRedBall.IO;
 
 namespace BuildServerUploaderConsole.Processes
 {
-
-
     public class CopyFrbdkToReleaseFolder : ProcessStep
     {
         #region Fields
@@ -23,13 +21,11 @@ namespace BuildServerUploaderConsole.Processes
             @"PrebuiltTools\SpriteEditor",
         };
 
-        List<string> mXna4_0Tools = new List<string>
-        {
-            // Any tool that uses Glue should come before Glue
-
-            @"Glue\Glue\bin\x86\Debug\netcoreapp3.0",
-
-        };
+        string GlueRegularBuildDestinationFolder =
+            @"Glue\Glue\bin\x86\Debug\netcoreapp3.0\";
+        // This is the output from: dotnet publish GlueFormsCore.csproj -r win-x86 -c DEBUG
+        string GluePublishDestinationFolder =
+            @"Glue\Glue\bin\DEBUG\netcoreapp3.0\win-x86\publish\";
 
         // I'd like to have all the tools sit in their own directories, but
         // this is a big change so I'm going to do it incrementally by moving
@@ -45,9 +41,7 @@ namespace BuildServerUploaderConsole.Processes
 
         };
 
-
         #endregion
-
 
         public CopyFrbdkToReleaseFolder(IResults results)
             : base(
@@ -75,12 +69,10 @@ namespace BuildServerUploaderConsole.Processes
 
             _destDirectory = frbdkForZipDirectory;
 
-            string frbdkDirectory = 
-                FileManager.MakeAbsolute("../../../../../");
 
             foreach (var xna3_1tool in mXna3_1Tools)
             {
-                CopyDirectory(frbdkDirectory + xna3_1tool, "Copied " + xna3_1tool);
+                CopyDirectory(DirectoryHelper.FrbdkDirectory + xna3_1tool, "Copied " + xna3_1tool);
             }
 
             //XNA 4 TOOLS
@@ -97,13 +89,12 @@ namespace BuildServerUploaderConsole.Processes
             {
                 string subdirectory = xna4_0tool.Substring(0, xna4_0tool.IndexOf("\\")) + "\\";
 
-                CopyDirectory(frbdkDirectory + xna4_0tool, "Copied " + xna4_0tool, subdirectory);
+                CopyDirectory(DirectoryHelper.FrbdkDirectory + xna4_0tool, "Copied " + xna4_0tool, subdirectory);
             }
 
-            foreach (var xna4_0tool in mXna4_0Tools)
-            {
-                CopyDirectory(frbdkDirectory + xna4_0tool, "Copied " + xna4_0tool);
-            }
+
+            CopyDirectory(DirectoryHelper.FrbdkDirectory + GluePublishDestinationFolder, "Copied " + GluePublishDestinationFolder);
+            CopyDirectory(DirectoryHelper.FrbdkDirectory + GlueRegularBuildDestinationFolder + @"Plugins\", "Copied plugins to Glue", @"\Plugins\");
 
             FileManager.CopyDirectory(frbdkForZipDirectory + @"\Assets", frbdkForZipDirectory + @"\Xna 4 Tools\Assets", false, _excludeFiles, _excludedDirs);
 

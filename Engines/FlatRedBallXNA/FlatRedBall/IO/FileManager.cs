@@ -2086,9 +2086,7 @@ namespace FlatRedBall.IO
 
 #endif
 
-#if WINDOWS_8
-            XmlSerializeWindows8(type, objectToSerialize, fileName);
-#elif IOS
+#if IOS
             // The "AllOtherPlatforms" method worked on iOS, but
             // only once. After that, files could not be written to - 
             // I'd get an unauthorized exception.

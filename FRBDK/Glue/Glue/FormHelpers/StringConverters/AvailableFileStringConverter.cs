@@ -77,21 +77,10 @@ namespace FlatRedBall.Glue.GuiDisplay
         {
             stringToReturn.Clear();
 
-            bool isNamedObjectPropertyOverride = context != null && context.Instance is NamedObjectPropertyOverride;
-
-
             if(IncludeNoneOption)
             {
                 // 
-                if (isNamedObjectPropertyOverride)
-                {
-                    stringToReturn.Add(UseDefaultString);
-                }
-                else
-                {
-                    stringToReturn.Add("<NONE>");
-                }
-
+                stringToReturn.Add("<NONE>");
             }
             else
             {
