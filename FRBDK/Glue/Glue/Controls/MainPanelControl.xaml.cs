@@ -243,8 +243,9 @@ namespace GlueFormsCore.Controls
             CenterTabControl.SetBinding(TabControl.SelectedItemProperty, nameof(viewModel.CenterSelectedTab));
 
             PluginManager.SetTabs(viewModel);
+            PluginManager.SetToolbarTray(ToolbarControl);
 
-           
+
             //TopTabControl
         }
     }

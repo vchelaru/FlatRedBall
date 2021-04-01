@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:GlueFormsCore.Controls"
+             xmlns:controls="clr-namespace:FlatRedBall.Glue.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -20,6 +20,7 @@
     <Grid>
         
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="{Binding TopPanelHeight}"></RowDefinition>
 
             <RowDefinition Height="{Binding TopSplitterHeight}"></RowDefinition>
@@ -31,11 +32,13 @@
             <RowDefinition Height="{Binding BottomPanelHeight}"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TabControl x:Name="TopTabControl"></TabControl>
+        <controls:ToolbarControl x:Name="ToolbarControl"></controls:ToolbarControl>
 
-        <GridSplitter Height="4" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" ></GridSplitter>
+        <TabControl x:Name="TopTabControl" Grid.Row="1"></TabControl>
+
+        <GridSplitter Height="4" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" ></GridSplitter>
         
-        <Grid Grid.Row="2" x:Name="CenterGrid">
+        <Grid Grid.Row="3" x:Name="CenterGrid">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="{Binding LeftPanelWidth}" ></ColumnDefinition>
                 <ColumnDefinition Width="{Binding LeftSplitterWidth}"></ColumnDefinition>
@@ -50,9 +53,9 @@
             <TabControl x:Name="RightTabControl" Grid.Column="4"></TabControl>
         </Grid>
 
-        <GridSplitter Height="4" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Row="3"></GridSplitter>
+        <GridSplitter Height="4" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Row="4"></GridSplitter>
 
-        <TabControl Grid.Row="4" x:Name="BottomTabControl"></TabControl>
+        <TabControl Grid.Row="5" x:Name="BottomTabControl"></TabControl>
         
     </Grid>
 </UserControl>
