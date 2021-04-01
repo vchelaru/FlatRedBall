@@ -114,17 +114,7 @@ echo Copying FRBDKUpdater.exe to "$(SolutionDir)..\Glue\Glue\Plugins\FRBDKUpdate
 copy "$(TargetDir)FRBDKUpdater.exe" "$(SolutionDir)..\Glue\Glue\Plugins\FRBDKUpdater\"
 
 echo Copying Ionic.zip.dll to "$(SolutionDir)..\Glue\Glue\Plugins\FRBDKUpdater\"
-copy "$(TargetDir)Ionic.Zip.dll" "$(SolutionDir)..\Glue\Glue\Plugins\FRBDKUpdater\"
-
-
-echo Copying FlatRedBall.Tools.dll to NewProjectCreator
-copy "$(TargetDir)FlatRedBall.Tools.dll" "$(SolutionDir)..\NewProjectCreator\NewProjectCreator\Libraries\"
-
-echo Copying FRBDKUpdater.exe to NewProjectCreator
-copy "$(TargetDir)FRBDKUpdater.exe" "$(SolutionDir)..\NewProjectCreator\NewProjectCreator\Libraries\"
-
-echo Copying Ionic.zip.dll to NewProjectCreator
-copy "$(TargetDir)Ionic.Zip.dll" "$(SolutionDir)..\NewProjectCreator\NewProjectCreator\Libraries\"</PostBuildEvent>
+copy "$(TargetDir)Ionic.Zip.dll" "$(SolutionDir)..\Glue\Glue\Plugins\FRBDKUpdater\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
