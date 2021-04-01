@@ -139,7 +139,9 @@ namespace FlatRedBall.Glue.Projects
 
             if (newProjectCreatorFile == null)
             {
-                FilePath possibleFile = directory + "NewProjectCreator/NewProjectCreator.exe";
+                // Now it's in the same folder as Glue
+                //FilePath possibleFile = directory + "NewProjectCreator/NewProjectCreator.exe";
+                FilePath possibleFile = directory + "NpcWpf.exe";
                 if (possibleFile.Exists())
                 {
                     newProjectCreatorFile = possibleFile.FullPath;

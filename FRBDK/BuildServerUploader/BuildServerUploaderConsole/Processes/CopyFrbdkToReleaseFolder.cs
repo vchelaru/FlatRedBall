@@ -33,11 +33,13 @@ namespace BuildServerUploaderConsole.Processes
         List<string> mXna4_0ToolsInOwnDirectories = new List<string>
         {
             @"AnimationEditor\PreviewProject\bin\Debug",
-            @"NewProjectCreator\NewProjectCreator\bin\x86\Debug",
-            @"NewProjectCreator\NpcWpf\bin\Debug\netcoreapp3.0\",
             // This is removed because FRB XNA is dying.
             //@"SplineEditor\SplineEditor\bin\x86\Debug",
+        };
 
+        List<string> toolsInSameFolderAsGlue = new List<string>
+        {
+            @"NewProjectCreator\NpcWpf\bin\Debug\netcoreapp3.0\",
 
         };
 
@@ -84,6 +86,11 @@ namespace BuildServerUploaderConsole.Processes
             }
 
             _destDirectory = xna4ToolsDirectory;
+
+            foreach (var tool in toolsInSameFolderAsGlue)
+            {
+                CopyDirectory(DirectoryHelper.FrbdkDirectory + tool, "Copied " + tool);
+            }
 
             foreach (var xna4_0tool in mXna4_0ToolsInOwnDirectories)
             {
