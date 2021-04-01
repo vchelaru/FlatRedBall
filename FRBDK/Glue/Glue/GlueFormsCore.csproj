@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -10,12 +10,12 @@
     <ApplicationIcon>Glue.ico</ApplicationIcon>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <DefineConstants>TRACE;GLUE</DefineConstants>
     <OutputPath></OutputPath>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <DefineConstants>TRACE;GLUE</DefineConstants>
   </PropertyGroup>
 
@@ -124,10 +124,10 @@
     <ProjectReference Include="..\..\..\..\Gum\ToolsUtilities\ToolsUtilitiesStandard.csproj" />
     <ProjectReference Include="..\..\..\..\Gum\WpfDataUiCore\WpfDataUiCore.csproj" />
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
+    <ProjectReference Include="..\..\NewProjectCreator\NpcWpf\NpcWpf.csproj" />
     <ProjectReference Include="..\FlatRedBall.Plugin\FlatRedBall.PluginCore.csproj" />
     <ProjectReference Include="..\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj" />
     <ProjectReference Include="..\GlueCommon\GlueCommon.csproj" />
-    <ProjectReference Include="..\GlueSaveClasses\GlueSaveClasses.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -145,7 +145,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="SharpSerializer" Version="3.0.1" />
     <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.1" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
     <PackageReference Include="System.Runtime" Version="4.3.1" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
   </ItemGroup>

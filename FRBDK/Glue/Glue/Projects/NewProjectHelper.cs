@@ -15,100 +15,110 @@ using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Controls;
+using Npc.ViewModels;
 
 namespace FlatRedBall.Glue.Projects
 {
     public static class NewProjectHelper
     {
 
-        public static Process RunNewProjectCreator()
+        public static NewProjectViewModel RunNewProjectCreator()
         {
             return RunNewProjectCreator(null, null, false);
         }
 
-        public static Process RunNewProjectCreator(FilePath directoryForNewProject, string namespaceForNewProject, bool creatingSyncedProject)
+        public static NewProjectViewModel RunNewProjectCreator(FilePath directoryForNewProject, string namespaceForNewProject, bool creatingSyncedProject)
         {
 
-            string directory =
-                //FileManager.GetDirectory(FileManager.GetDirectory(Application.ExecutablePath));
-                // This causes Glue to look one directory above where the .exe is.  Glue and NewProjectCreator
-                // are both now XNA4 tools, so we're going to look in the same directory as Glue.
-                // Update - actually moved it down below one level so its files don't interfere with Glue
-                FileManager.GetDirectory(Application.ExecutablePath);
-            List<string> files;
-            string newProjectCreatorFile, newProjectCreatorLocation;
-            GetNewProjectCreatorFileLocation(directory, out files, out newProjectCreatorFile, out newProjectCreatorLocation);
+            //string directory =
+            //    //FileManager.GetDirectory(FileManager.GetDirectory(Application.ExecutablePath));
+            //    // This causes Glue to look one directory above where the .exe is.  Glue and NewProjectCreator
+            //    // are both now XNA4 tools, so we're going to look in the same directory as Glue.
+            //    // Update - actually moved it down below one level so its files don't interfere with Glue
+            //    FileManager.GetDirectory(Application.ExecutablePath);
+            //List<string> files;
+            //string newProjectCreatorFile, newProjectCreatorLocation;
+            //GetNewProjectCreatorFileLocation(directory, out files, out newProjectCreatorFile, out newProjectCreatorLocation);
 
-            if (!File.Exists(newProjectCreatorFile))
+            //if (!File.Exists(newProjectCreatorFile))
+            //{
+            //    var result = MessageBox.Show("Could not find new project creator. Would you like to search for it on disk?", "", MessageBoxButtons.YesNo);
+
+            //    if (result == DialogResult.Yes)
+            //    {
+            //        OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            //        openFileDialog.Multiselect = false;
+
+            //        if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            //        {
+            //            newProjectCreatorFile = openFileDialog.FileName;
+            //        }
+            //    }
+            //}
+
+
+            //if (!File.Exists(newProjectCreatorFile))
+            //{
+            //    string message = "Could not find the new project creator in this directory:\n" +
+            //        directory +
+            //        "\nAlso looked in:\n" +
+            //        newProjectCreatorLocation +
+            //        "\nBut we did find these files: ";
+
+
+            //    foreach (string file in files)
+            //    {
+            //        message += "\n" + file;
+
+            //    }
+
+            //    System.Windows.Forms.MessageBox.Show(message);
+
+            //    return null;
+            //}
+            //else
+            //{
+
+                //ProcessStartInfo processStartInfo = new ProcessStartInfo(newProjectCreatorFile);
+
+                //processStartInfo.RedirectStandardOutput = true;
+                //processStartInfo.UseShellExecute = false;
+            string commandLineArguments = null;
+            if (directoryForNewProject != null)
             {
-                var result = MessageBox.Show("Could not find new project creator. Would you like to search for it on disk?", "", MessageBoxButtons.YesNo);
 
-                if (result == DialogResult.Yes)
-                {
-                    OpenFileDialog openFileDialog = new OpenFileDialog();
-
-                    openFileDialog.Multiselect = false;
-
-                    if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                    {
-                        newProjectCreatorFile = openFileDialog.FileName;
-                    }
-                }
+                commandLineArguments = "directory=\"" + directoryForNewProject.FullPath + "\"" +
+                " namespace=" + namespaceForNewProject;
             }
 
-
-            if (!File.Exists(newProjectCreatorFile))
+            if (string.IsNullOrEmpty(commandLineArguments))
             {
-                string message = "Could not find the new project creator in this directory:\n" +
-                    directory +
-                    "\nAlso looked in:\n" +
-                    newProjectCreatorLocation +
-                    "\nBut we did find these files: ";
-
-
-                foreach (string file in files)
-                {
-                    message += "\n" + file;
-
-                }
-
-                System.Windows.Forms.MessageBox.Show(message);
-
-                return null;
+                commandLineArguments = "openedby=glue";
             }
             else
             {
-
-                ProcessStartInfo processStartInfo = new ProcessStartInfo(newProjectCreatorFile);
-
-                processStartInfo.RedirectStandardOutput = true;
-                processStartInfo.UseShellExecute = false;
-
-                if (directoryForNewProject != null)
-                {
-
-                    processStartInfo.Arguments = "directory=\"" + directoryForNewProject.FullPath + "\"" +
-                        " namespace=" + namespaceForNewProject;
-                }
-
-                if (string.IsNullOrEmpty(processStartInfo.Arguments))
-                {
-                    processStartInfo.Arguments = "openedby=glue";
-                }
-                else
-                {
-                    processStartInfo.Arguments += " openedby=glue";
-                }
-
-                if (creatingSyncedProject)
-                {
-                    processStartInfo.Arguments += " emptyprojects";
-                }
-
-                Process process = Process.Start(processStartInfo);
-
-                return process;
+                commandLineArguments += " openedby=glue";
             }
+
+            if (creatingSyncedProject)
+            {
+                commandLineArguments += " emptyprojects";
+            }
+
+            //Process process = Process.Start(processStartInfo);
+
+            //return process;
+
+            var window = new Npc.MainWindow();
+            window.ProcessCommandLineArguments(commandLineArguments);
+            NewProjectViewModel viewModelToReturn = null;
+
+            if(window.ShowDialog() == true)
+            {
+                viewModelToReturn = window.ViewModel;
+            }
+            return viewModelToReturn;
         }
 
         private static void GetNewProjectCreatorFileLocation(string directory, out List<string> files, out string newProjectCreatorFile, out string newProjectCreatorLocation)
@@ -139,7 +149,9 @@ namespace FlatRedBall.Glue.Projects
 
             if (newProjectCreatorFile == null)
             {
-                FilePath possibleFile = directory + "NewProjectCreator/NewProjectCreator.exe";
+                // Now it's in the same folder as Glue
+                //FilePath possibleFile = directory + "NewProjectCreator/NewProjectCreator.exe";
+                FilePath possibleFile = directory + "NpcWpf.exe";
                 if (possibleFile.Exists())
                 {
                     newProjectCreatorFile = possibleFile.FullPath;
@@ -158,20 +170,14 @@ namespace FlatRedBall.Glue.Projects
             // Run the new project creator
             // First see if the NewProjectCreator is in this directory
 
-            Process process = NewProjectHelper.RunNewProjectCreator();
+            var viewModel = NewProjectHelper.RunNewProjectCreator();
 
-            if(process == null)
+            string createdProject = null;
+
+            if(viewModel != null)
             {
-                MessageBox.Show(@"Unable to create new project because the New Project Creator could not be run.");
-                return;
+                createdProject = viewModel.FinalDirectory + "\\" + viewModel.ProjectName + "\\" + viewModel.ProjectName + ".csproj";
             }
-
-            while (!process.HasExited)
-            {
-                Thread.Sleep(300);
-            }
-
-            string createdProject = GetCreatedProjectName(process);
 
             if (!String.IsNullOrEmpty(createdProject))
             {
@@ -204,17 +210,17 @@ namespace FlatRedBall.Glue.Projects
             // Gotta find the .sln of this project so we can put the synced project in there
             var directory = GlueState.Self.CurrentSlnFileName?.GetDirectoryContainingThis();
 
-            Process process = NewProjectHelper.RunNewProjectCreator(directory, 
+            var viewModel = NewProjectHelper.RunNewProjectCreator(directory, 
                 GlueState.Self.ProjectNamespace, creatingSyncedProject:true);
 
-            if (process != null)
+            if (viewModel != null)
             {
-                while (!process.HasExited)
-                {
-                    Thread.Sleep(100);
-                }
+                string createdProject = null;
 
-                string createdProject = GetCreatedProjectName(process);
+                if (viewModel != null)
+                {
+                    createdProject = viewModel.FinalDirectory + "\\" + viewModel.ProjectName + "\\" + viewModel.ProjectName + ".csproj";
+                }
 
                 ProjectBase newProjectBase = null;
 

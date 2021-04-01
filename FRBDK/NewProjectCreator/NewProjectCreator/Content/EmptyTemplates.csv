@@ -1,7 +1,0 @@
-"FriendlyName (System.String, required)",Namespace (System.String),ZipName (System.String),Url (System.String),SupportedInGlue (bool)
-"Desktop GL (Windows, Mac, Linux)",FlatRedBallDesktopGlTemplate,FlatRedBallDesktopGL.zip,http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallDesktopGlTemplate.zip,TRUE
-"Android (Phone, Tablet, Fire TV)",FlatRedBallAndroidTemplate,FlatRedBallAndroidTemplate.zip,http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallAndroidTemplate.zip,TRUE
-"iOS (iPhone, iPad, iPod Touch)",FlatRedBalliOSTemplate,FlatRedBalliOSTemplate.zip,http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBalliOSTemplate.zip,TRUE
-Windows RT,Windows8Template,Windows8Template.zip,http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/Windows8Template.zip,TRUE
-"Winows UWP (Windows Desktop, Xbox One, Tablet, Windows Phone)",FlatRedBallUwpTemplate,FlatRedBallUwpTemplate.zip,http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallUwpTemplate.zip,TRUE
-"Desktop XNA (Windows, requires XNA install)",FlatRedBallXna4Template,FlatRedBallXna4Template.zip,http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallXna4Template.zip,TRUE

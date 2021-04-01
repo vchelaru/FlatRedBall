@@ -103,18 +103,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Glue\Events\EventSave.cs">
-      <Link>Models\EventSave.cs</Link>
-    </Compile>
-    <Compile Include="..\Glue\SaveClasses\NamedObjectPropertyOverride.cs">
-      <Link>NamedObjectPropertyOverride.cs</Link>
-    </Compile>
-    <Compile Include="..\Glue\SaveClasses\TranslatedFileSave.cs">
-      <Link>TranslatedFileSave.cs</Link>
-    </Compile>
-    <Compile Include="ExtensionMethods\GlueProjectSaveExtensions.cs" />
-    <Compile Include="Models\TypeConverters\IConverter.cs" />
-    <Compile Include="Models\TypeConverters\InverterConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -128,7 +116,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="ExtensionMethods\" />
     <Folder Include="Interfaces\" />
+    <Folder Include="Models\TypeConverters\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MonoGame.Framework.DesktopGL.Core">

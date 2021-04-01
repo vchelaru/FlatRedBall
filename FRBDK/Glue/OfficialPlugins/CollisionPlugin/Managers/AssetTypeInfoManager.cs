@@ -131,12 +131,24 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                         {
                             relationshipType = $"FlatRedBall.Math.Collision.DelegateListVsSingleRelationship<{firstType}, {secondType}>";
                         }
+                        else if(isSecondList)
+                        {
+                            relationshipType = $"FlatRedBall.Math.Collision.DelegateSingleVsListRelationship<{firstType}, {secondType}>";
+                        }
                     }
                     else if (collisionType == CollisionType.DelegateCollision)
                     {
                         if (isFirstList && isSecondList)
                         {
                             relationshipType = $"FlatRedBall.Math.Collision.DelegateListVsListRelationship";
+                        }
+                        else if(isFirstList)
+                        {
+                            relationshipType = $"FlatRedBall.Math.Collision.DelegateListVsSingleRelationship";
+                        }
+                        else if(isSecondList)
+                        {
+                            relationshipType = $"FlatRedBall.Math.Collision.DelegateSingleVsListRelationship";
                         }
                         else
                         {

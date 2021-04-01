@@ -36,7 +36,6 @@ namespace Glue
             this.ElementImages = new System.Windows.Forms.ImageList(this.components);
             this.mMenu = new System.Windows.Forms.MenuStrip();
 
-            this.toolbarControl1 = new FlatRedBall.Glue.Controls.ToolbarControl();
             this.mElementContextMenu.SuspendLayout();
             this.mMenu.SuspendLayout();
             this.SuspendLayout();

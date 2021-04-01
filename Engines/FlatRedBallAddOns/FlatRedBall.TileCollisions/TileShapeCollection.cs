@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using AARect = FlatRedBall.Math.Geometry.AxisAlignedRectangle;
 
 namespace FlatRedBall.TileCollisions
 {
@@ -729,10 +730,52 @@ namespace FlatRedBall.TileCollisions
             float belowY = positionedObject.Position.Y - GridSize;
             float middleY = positionedObject.Position.Y;
 
-            AxisAlignedRectangle rectangleLeftOf = GetRectangleAtPosition(leftOfX, middleY, rectanglesBeforeIndex, rectanglesAfterIndex);
-            AxisAlignedRectangle rectangleRightOf = GetRectangleAtPosition(rightOfX, middleY, rectanglesBeforeIndex, rectanglesAfterIndex);
-            AxisAlignedRectangle rectangleAbove = GetRectangleAtPosition(middleX, aboveY, rectanglesBeforeIndex, rectanglesAfterIndex);
-            AxisAlignedRectangle rectangleBelow = GetRectangleAtPosition(middleX, belowY, rectanglesBeforeIndex, rectanglesAfterIndex);
+            var rectangleLeftOf = GetRectangleAtPosition(leftOfX, middleY, rectanglesBeforeIndex, rectanglesAfterIndex);
+            var rectangleRightOf = GetRectangleAtPosition(rightOfX, middleY, rectanglesBeforeIndex, rectanglesAfterIndex);
+            var rectangleAbove = GetRectangleAtPosition(middleX, aboveY, rectanglesBeforeIndex, rectanglesAfterIndex);
+            var rectangleBelow = GetRectangleAtPosition(middleX, belowY, rectanglesBeforeIndex, rectanglesAfterIndex);
+
+            // how do we do this recursively?
+            var rectangleUpLeft = GetRectangleAtPosition(leftOfX, aboveY, rectanglesBeforeIndex, rectanglesAfterIndex);
+            var rectangleUpRight = GetRectangleAtPosition(rightOfX, aboveY, rectanglesBeforeIndex, rectanglesAfterIndex);
+            var rectangleDownLeft = GetRectangleAtPosition(leftOfX, belowY, rectanglesBeforeIndex, rectanglesAfterIndex);
+            var rectangleDownRight = GetRectangleAtPosition(rightOfX, belowY, rectanglesBeforeIndex, rectanglesAfterIndex);
+
+            void UpdateLShaped(AARect center)
+            {
+                if(center != null)
+                {
+                    var left = GetRectangleAtPosition(center.X - GridSize, center.Y);
+                    var upLeft = GetRectangleAtPosition(center.X - GridSize, center.Y + GridSize);
+                    var up = GetRectangleAtPosition(center.X, center.Y + GridSize);
+                    var upRight = GetRectangleAtPosition(center.X + GridSize, center.Y + GridSize);
+                    var right = GetRectangleAtPosition(center.X + GridSize, center.Y);
+                    var downRight = GetRectangleAtPosition(center.X + GridSize, center.Y - GridSize);
+                    var down = GetRectangleAtPosition(center.X, center.Y - GridSize);
+                    var downLeft = GetRectangleAtPosition(center.X - GridSize, center.Y - GridSize);
+
+                    UpdateLShapedPassNeighbors(center, left, upLeft, up, upRight, right, downRight, down, downLeft);
+                }
+            }
+
+            void UpdateLShapedPassNeighbors(AARect center, AARect left, AARect upLeft, AARect up, AARect upRight, AARect right, AARect downRight, AARect down, AARect downLeft)
+            {
+                center.RepositionHalfSize =
+                    left != null && up != null && upLeft == null ||
+                    up != null && right != null && upRight == null ||
+                    right != null && down != null && downRight == null ||
+                    down != null && left != null && downLeft == null;
+            }
+
+            UpdateLShapedPassNeighbors(positionedObject as AARect, rectangleLeftOf, rectangleUpLeft, rectangleAbove, rectangleUpRight, rectangleRightOf, rectangleDownRight, rectangleBelow, rectangleDownLeft);
+            UpdateLShaped(rectangleLeftOf);
+            UpdateLShaped(rectangleUpLeft);
+            UpdateLShaped(rectangleAbove);
+            UpdateLShaped(rectangleUpRight);
+            UpdateLShaped(rectangleRightOf);
+            UpdateLShaped(rectangleDownRight);
+            UpdateLShaped(rectangleBelow);
+            UpdateLShaped(rectangleDownLeft);
 
             RepositionDirections directions = RepositionDirections.All;
             if (rectangleLeftOf != null)

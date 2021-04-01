@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <Compile Include="..\Glue\Events\EventResponseSave.cs" Link="SaveClasses\EventResponseSave.cs" />
+    <Compile Include="..\Glue\Events\EventSave.cs" Link="SaveClasses\EventSave.cs" />
     <Compile Include="..\Glue\Events\IEventContainer.cs" Link="SaveClasses\Interfaces\IEventContainer.cs" />
     <Compile Include="..\Glue\SaveClasses\CustomClassSave.cs" Link="SaveClasses\CustomClassSave.cs" />
     <Compile Include="..\Glue\SaveClasses\EntitySave.cs" Link="SaveClasses\EntitySave.cs" />

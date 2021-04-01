@@ -508,9 +508,10 @@ namespace FlatRedBall.Glue.CodeGeneration
 
 
         private static void WriteCopyToAbsoluteInInitializeCode(NamedObjectSave namedObject, ICodeBlock codeBlock, 
+            IElement container,
             Dictionary<string, string> referencedFilesAlreadyUsingFullFile, AssetTypeInfo ati, string objectName, ReferencedFileSave rfs)
         {
-            bool canWriteAbsoluteInitialize = GetIfCanAttach(namedObject, ati);
+            bool canWriteAbsoluteInitialize = GetIfCanAttach(namedObject, ati, container);
 
             if (canWriteAbsoluteInitialize)
             {
@@ -547,7 +548,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static bool GetIfCanAttach(NamedObjectSave namedObject, AssetTypeInfo ati)
+        private static bool GetIfCanAttach(NamedObjectSave namedObject, AssetTypeInfo ati, IElement container)
         {
             var canWriteAbsoluteInitialize =
                 (ati != null && ati.ShouldAttach) ||
@@ -557,7 +558,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if (canWriteAbsoluteInitialize && namedObject.DefinedByBase)
             {
-                var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(namedObject.GetContainer());
+                var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(container);
 
                 var isContainerFromBase = baseElements
                     .SelectMany(item => item.AllNamedObjects)
@@ -2367,7 +2368,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             string objectName = namedObject.FieldName;
             AssetTypeInfo ati = namedObject.GetAssetTypeInfo();
 
-            bool canAttach = GetIfCanAttach(namedObject, ati);
+            bool canAttach = GetIfCanAttach(namedObject, ati, container);
 
 
             if (canAttach && 
@@ -2410,7 +2411,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     // make attachments happen first so that attachment
                     // happens right away - then the user can always write
                     // scripts using relative values.
-                    WriteCopyToAbsoluteInInitializeCode(namedObject, currentBlock, referencedFilesAlreadyUsingFullFile, ati, objectName, rfs);
+                    WriteCopyToAbsoluteInInitializeCode(namedObject, currentBlock, container, referencedFilesAlreadyUsingFullFile, ati, objectName, rfs);
 
                     // March 27, 2012
                     // We used to attach

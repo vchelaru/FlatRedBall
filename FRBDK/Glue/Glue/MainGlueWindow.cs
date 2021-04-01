@@ -62,8 +62,6 @@ namespace Glue
 
         private System.Windows.Forms.Timer FileWatchTimer;
 
-        private FlatRedBall.Glue.Controls.ToolbarControl toolbarControl1;
-
         private static MainGlueWindow mSelf;
 
         public static MainGlueWindow Self
@@ -103,13 +101,6 @@ namespace Glue
             this.PerformLayout();
             // so docking works
             //this.Controls.SetChildIndex(this.MainPanelSplitContainer, 0);
-            toolbarControl1 = new ToolbarControl();
-            var container = new ElementHost();
-            container.Child = toolbarControl1;
-            container.Dock = DockStyle.Top;
-            container.Height = 26;
-            container.BackColor = System.Drawing.Color.Transparent;
-            this.Controls.Add(container);
             this.Controls.Add(this.mMenu);
 
             this.FileWatchTimer = new System.Windows.Forms.Timer(this.components);
@@ -250,8 +241,6 @@ namespace Glue
             {
                 pluginsToIgnore = GlueState.Self.CurrentPluginSettings.PluginsToIgnore;
             }
-
-            PluginManager.SetToolbarTray(this.toolbarControl1);
 
             // This plugin initialization needs to happen before LoadGlueSettings
             // EVentually we can break this out

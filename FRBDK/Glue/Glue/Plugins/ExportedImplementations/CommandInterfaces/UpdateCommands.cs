@@ -48,9 +48,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 var propertyTo = itemTo.GetType().GetProperty(propertyFrom.Name);
 
-                if (propertyTo != null)
+                if (propertyTo != null && propertyTo.CanWrite)
                 {
-                    propertyTo.SetValue(itemTo, propertyFrom.GetValue(itemFrom, null), null);
+                    try
+                    {
+                        propertyTo.SetValue(itemTo, propertyFrom.GetValue(itemFrom, null), null);
+                    }
+                    catch (System.ArgumentException argumentException)
+                    {
+                        throw new ArgumentException($"Error trying to set {propertyTo.PropertyType} {propertyTo.Name} " +
+                            $"to {itemTo}", argumentException);
+                    }
                 }
             }
         }

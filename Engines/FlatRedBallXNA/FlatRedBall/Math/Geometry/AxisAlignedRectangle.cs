@@ -30,11 +30,11 @@ namespace FlatRedBall.Math.Geometry
 
         internal Vector2 mLastMoveCollisionReposition;
         
-        // Why was this public?
-        //public
         internal Color mColor;
 
         internal Layer mLayerBelongingTo;
+
+        public bool RepositionHalfSize;
 
         #endregion
 
@@ -42,26 +42,26 @@ namespace FlatRedBall.Math.Geometry
 
         public float Left
         {
-            get { return Position.X - mScaleX; }
-            set { Position.X = value + mScaleX; }
+            get => Position.X - mScaleX; 
+            set => Position.X = value + mScaleX; 
         }
 
         public float Right
         {
-            get { return Position.X + mScaleX; }
-            set { Position.X = value - mScaleX; }
+            get => Position.X + mScaleX; 
+            set => Position.X = value - mScaleX; 
         }
 
         public float Top
         {
-            get { return Position.Y + mScaleY; }
-            set { Position.Y = value - mScaleY; }
+            get => Position.Y + mScaleY; 
+            set => Position.Y = value - mScaleY; 
         }
 
         public float Bottom
         {
-            get { return Position.Y - mScaleY; }
-            set { Position.Y = value + mScaleY; }
+            get => Position.Y - mScaleY; 
+            set => Position.Y = value + mScaleY; 
         }
 
         public float RelativeLeft
@@ -687,7 +687,7 @@ namespace FlatRedBall.Math.Geometry
 
                 if ((this.RepositionDirections & Geometry.RepositionDirections.Right) == Geometry.RepositionDirections.Right &&
                     (rectangle.RepositionDirections & Geometry.RepositionDirections.Left) == Geometry.RepositionDirections.Left)
-                    {
+                {
                     smallest = System.Math.Abs(X + mScaleX - (rectangle.X - rectangle.mScaleX));
                 }
 
@@ -735,22 +735,37 @@ namespace FlatRedBall.Math.Geometry
                 // that always pushes out. But that's a bigger change that requires modifying the RepositionDirections to have
                 // an extra value for whether it's a full or half movement, and then modifying the tile shape collection reposition
                 // assigning code.
+                // Update March 31, 2021
+                // Determining if a collision is "l-shaped" based on just RepositionDirection is not sufficient. The reason is that there
+                // can be identical reposition directions where one should be L shaped and one shouldn't. For example, consider collision X:
+                // OO
+                // XO
+                // OO
+                // This would have a reposition of Left, and that would not be L Shaped
+                // However, if we remove the top right block, then X becomes L-Shaped:
+                // O
+                // XO
+                // OO
+                // However, its reposition direction remains only Left. Therefore, to accurately determine if collision is L-shaped, we need the
+                // context of surrounding collision rather than just the RepositionDirections of the collisioni itself. Therefore, we will promote
+                // isLShaped to a RepositionHalfSize property
 
-                var isLShaped =
-                    this.RepositionDirections == (RepositionDirections.Left | RepositionDirections.Up) ||
-                    this.RepositionDirections == (RepositionDirections.Right | RepositionDirections.Up) ||
+                //var isLShaped =
+                //    this.RepositionDirections == (RepositionDirections.Left | RepositionDirections.Up) ||
+                //    this.RepositionDirections == (RepositionDirections.Right | RepositionDirections.Up) ||
 
-                    this.RepositionDirections == (RepositionDirections.Left | RepositionDirections.Down) ||
-                    this.RepositionDirections == (RepositionDirections.Right | RepositionDirections.Down) ||
+                //    this.RepositionDirections == (RepositionDirections.Left | RepositionDirections.Down) ||
+                //    this.RepositionDirections == (RepositionDirections.Right | RepositionDirections.Down) ||
 
-                    rectangle.RepositionDirections == (RepositionDirections.Left | RepositionDirections.Up) ||
-                    rectangle.RepositionDirections == (RepositionDirections.Right | RepositionDirections.Up) ||
+                //    rectangle.RepositionDirections == (RepositionDirections.Left | RepositionDirections.Up) ||
+                //    rectangle.RepositionDirections == (RepositionDirections.Right | RepositionDirections.Up) ||
 
-                    rectangle.RepositionDirections == (RepositionDirections.Left | RepositionDirections.Down) ||
-                    rectangle.RepositionDirections == (RepositionDirections.Right | RepositionDirections.Down);
+                //    rectangle.RepositionDirections == (RepositionDirections.Left | RepositionDirections.Down) ||
+                //    rectangle.RepositionDirections == (RepositionDirections.Right | RepositionDirections.Down);
 
 
-                if(isLShaped)
+                //if(isLShaped)
+                if(RepositionHalfSize || rectangle.RepositionHalfSize)
                 {
                     if (side == Side.Left || side == Side.Right)
                     {
