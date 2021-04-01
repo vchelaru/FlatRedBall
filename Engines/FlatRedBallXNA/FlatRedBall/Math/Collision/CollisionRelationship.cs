@@ -736,6 +736,57 @@ namespace FlatRedBall.Math.Collision
 
     #endregion
 
+    #region Delegate-based Single vs List
+
+    public class DelegateSingleVsListRelationship<First, SecondCollidableT> : CollisionRelationship 
+        where SecondCollidableT : PositionedObject
+    {
+        First singleObject;
+        PositionedObjectList<SecondCollidableT> list;
+
+        public Func<First, SecondCollidableT, bool> CollisionFunction { get; set; }
+
+        public override object FirstAsObject => singleObject;
+        public override object SecondAsObject => list;
+
+        public Action<First, SecondCollidableT> CollisionOccurred;
+
+        public DelegateSingleVsListRelationship(First first, PositionedObjectList<SecondCollidableT> second)
+        {
+            this.singleObject = first;
+            this.list = second;
+        }
+
+        public override bool DoCollisions()
+        {
+            bool didCollisionOccur = false;
+            if(skippedFrames < FrameSkip)
+            {
+                skippedFrames++;
+            }
+            else if(list.Count > 0)
+            {
+                skippedFrames = 0;
+                for (int i = list.Count - 1; i > -1; i--)
+                {
+                    var atI = list[i];
+
+
+                    if (CollisionFunction(singleObject, atI))
+                    {
+                        CollisionOccurred?.Invoke(singleObject, atI);
+                        didCollisionOccur = true;
+                        // Collision Limit doesn't do anything here
+                    }
+                }
+            }
+
+            return didCollisionOccur;
+        }
+    }
+
+    #endregion
+
     #region Delegate-based List vs Single
 
     public class DelegateListVsSingleRelationship<FirstCollidableT, Second> : CollisionRelationship
@@ -768,8 +819,8 @@ namespace FlatRedBall.Math.Collision
             else if (list.Count > 0)
             {
                 skippedFrames = 0;
-                int startInclusive;
-                int endExclusive;
+                //int startInclusive;
+                //int endExclusive;
 
                 //GetCollisionStartAndInt(out startInclusive, out endExclusive);
 

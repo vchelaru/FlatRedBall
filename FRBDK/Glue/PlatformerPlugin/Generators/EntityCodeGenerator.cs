@@ -594,6 +594,14 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 @"
 
         /// <summary>
+        /// Performs a standard solid collision against an ICollidable.
+        /// </summary>
+        public bool CollideAgainst(FlatRedBall.Math.Geometry.ICollidable collidable, bool isCloudCollision = false)
+        {
+            return CollideAgainst(collidable.Collision, isCloudCollision);
+        }
+
+        /// <summary>
         /// Performs a standard solid collision against a ShapeCollection.
         /// </summary>
         /// <param name=""shapeCollection""></param>

@@ -123,6 +123,11 @@ namespace OfficialPlugins.CollisionPlugin
                     codeBlock.Line($"{instanceName} = new FlatRedBall.Math.Collision.DelegateListVsSingleRelationship<{firstType}, {secondType}>(" +
                         $"{firstCollidable}, {secondCollidable});");
                 }
+                else if(isSecondList)
+                {
+                    codeBlock.Line($"{instanceName} = new FlatRedBall.Math.Collision.DelegateSingleVsListRelationship<{firstType}, {secondType}>(" +
+                        $"{firstCollidable}, {secondCollidable});");
+                }
                 else
                 {
                     codeBlock.Line($"{instanceName} = new FlatRedBall.Math.Collision.DelegateCollisionRelationshipBase<{firstType}, {secondType}>(" +
@@ -168,7 +173,14 @@ namespace OfficialPlugins.CollisionPlugin
             if(isFirstList && isSecondList)
             {
                 codeBlock.Line($"{instanceName}.CollisionLimit = FlatRedBall.Math.Collision.CollisionLimit.{collisionLimit};");
-                codeBlock.Line($"{instanceName}.ListVsListLoopingMode = FlatRedBall.Math.Collision.ListVsListLoopingMode.{listVsListLoopingMode};");
+
+                // currently list vs list delegate collision doesn't support the looping mode:
+                var supportsLoopingMode = collisionType != CollisionType.PlatformerSolidCollision &&
+                    collisionType != CollisionType.PlatformerCloudCollision;
+                if(supportsLoopingMode)
+                {
+                    codeBlock.Line($"{instanceName}.ListVsListLoopingMode = FlatRedBall.Math.Collision.ListVsListLoopingMode.{listVsListLoopingMode};");
+                }
             }
 
             codeBlock.Line($"{instanceName}.Name = \"{instanceName}\";");
@@ -228,6 +240,10 @@ namespace OfficialPlugins.CollisionPlugin
             {
                 relationshipType = $"FlatRedBall.Math.Collision.DelegateListVsSingleRelationship<{firstType}, {secondType}>";
             }
+            else if(isSecondList)
+            {
+                relationshipType = $"FlatRedBall.Math.Collision.DelegateSingleVsListRelationship<{firstType}, {secondType}>";
+            }
 
             block.Line($"var temp = new {relationshipType}({firstCollidable}, {secondCollidable});");
             block.Line($"var isCloud = {(collisionType == CollisionType.PlatformerCloudCollision).ToString().ToLowerInvariant()};");
@@ -236,16 +252,11 @@ namespace OfficialPlugins.CollisionPlugin
 
             string whatToCollideAgainst = "second";
 
-            if( isSecondList)
+            if( !isFirstList && isSecondList)
             {
                 if(collisionType == CollisionType.PlatformerCloudCollision || collisionType == CollisionType.PlatformerSolidCollision)
                 {
-                    // list vs list is not handled, so we need a loop
-                    block.Line("var didCollide = false;");
-                    var foreachBlock = block.ForEach($"var collidableItem in {whatToCollideAgainst}");
-                    foreachBlock.Line("var collidedInternal = first.CollideAgainst(collidableItem.Collision, isCloud);");
-                    foreachBlock.Line("didCollide = didCollide || collidedInternal;");
-                    block.Line("return didCollide;");
+                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, isCloud);");
                 }
                 else
                 {
