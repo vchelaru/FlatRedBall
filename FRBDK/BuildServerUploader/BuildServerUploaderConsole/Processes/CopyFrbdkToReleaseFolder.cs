@@ -37,12 +37,6 @@ namespace BuildServerUploaderConsole.Processes
             //@"SplineEditor\SplineEditor\bin\x86\Debug",
         };
 
-        List<string> toolsInSameFolderAsGlue = new List<string>
-        {
-            @"NewProjectCreator\NpcWpf\bin\Debug\netcoreapp3.0\",
-
-        };
-
         #endregion
 
         public CopyFrbdkToReleaseFolder(IResults results)
@@ -86,11 +80,6 @@ namespace BuildServerUploaderConsole.Processes
             }
 
             _destDirectory = xna4ToolsDirectory;
-
-            foreach (var tool in toolsInSameFolderAsGlue)
-            {
-                CopyDirectory(DirectoryHelper.FrbdkDirectory + tool, "Copied " + tool);
-            }
 
             foreach (var xna4_0tool in mXna4_0ToolsInOwnDirectories)
             {
