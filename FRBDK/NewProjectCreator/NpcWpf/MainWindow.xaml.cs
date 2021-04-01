@@ -42,12 +42,12 @@ namespace Npc
             string folderName = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\FlatRedBallProjects\";
             ViewModel.ProjectLocation = folderName;
 
-            ProcessCommandLineArguments();
+            //ProcessCommandLineArguments();
 
             this.DataContext = ViewModel;
         }
 
-        private void ProcessCommandLineArguments()
+        public void ProcessCommandLineArguments(string arguments)
         {
             CommandLineManager.Self.ProcessCommandLineArguments();
 
@@ -107,6 +107,7 @@ namespace Npc
 
                 if (succeeded)
                 {
+                    this.DialogResult = true;
                     this.Close();
                 }
             }
