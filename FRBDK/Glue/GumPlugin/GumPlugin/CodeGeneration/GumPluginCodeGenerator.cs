@@ -59,7 +59,7 @@ namespace GumPlugin.CodeGeneration
             var gumScreenRfs =
                 element.ReferencedFiles.FirstOrDefault(item => item.Name.EndsWith(".gusx"));
 
-            bool hasForms = gumScreenRfs != null;
+            bool hasForms = gumScreenRfs != null && GlueState.Self.CurrentGlueProject.FileVersion > (int)GlueProjectSave.GluxVersions.HasFormsObject;
 
             if (isGlueScreen && !hasGumScreen && GetIfHasGumProject())
             {
