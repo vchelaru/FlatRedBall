@@ -1,11 +1,13 @@
 ﻿using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using Glue;
+using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin.Views;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -26,15 +28,11 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
         }
         PluginTab ExplorerTab;
 
-        private System.Windows.Forms.Panel searchControlPanel;
-        public System.Windows.Forms.ListBox SearchListBox;
+        public System.Windows.Controls.ListBox SearchListBox;
         public System.Windows.Forms.TreeView ElementTreeView;
-
-        private System.Windows.Forms.Button NavigateForwardButton;
-        private System.Windows.Forms.Button NavigateBackButton;
-
+        public System.Windows.FrameworkElement ElementTreeViewContainer;
         private System.Windows.Forms.ToolTip ElementViewWindowToolTip;
-        public System.Windows.Forms.TextBox SearchTextbox;
+        public System.Windows.Controls.TextBox SearchTextbox;
 
 
 
@@ -46,55 +44,9 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
         public void Initialize()
         {
             Self = this;
+            //InitializeWinforms();
+
             this.ElementTreeView = new System.Windows.Forms.TreeView();
-            this.SearchListBox = new System.Windows.Forms.ListBox();
-            this.searchControlPanel = new System.Windows.Forms.Panel();
-            this.NavigateForwardButton = new System.Windows.Forms.Button();
-            this.NavigateBackButton = new System.Windows.Forms.Button();
-            this.ElementViewWindowToolTip = new System.Windows.Forms.ToolTip(MainGlueWindow.Self.components);
-            this.SearchTextbox = new System.Windows.Forms.TextBox();
-
-            // 
-            // NavigateForwardButton
-            // 
-            this.NavigateForwardButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.NavigateForwardButton.Location = new System.Drawing.Point(181, 0);
-            this.NavigateForwardButton.Name = "NavigateForwardButton";
-            this.NavigateForwardButton.Size = new System.Drawing.Size(22, 23);
-            this.NavigateForwardButton.TabIndex = 7;
-            this.NavigateForwardButton.Text = ">";
-            this.ElementViewWindowToolTip.SetToolTip(this.NavigateForwardButton, "Navigate Forward ( ALT + -> )");
-            this.NavigateForwardButton.UseVisualStyleBackColor = true;
-            this.NavigateForwardButton.Click += new System.EventHandler(this.NavigateForwardButton_Click);
-            // 
-            // NavigateBackButton
-            // 
-            this.NavigateBackButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.NavigateBackButton.Location = new System.Drawing.Point(160, 0);
-            this.NavigateBackButton.Name = "NavigateBackButton";
-            this.NavigateBackButton.Size = new System.Drawing.Size(22, 23);
-            this.NavigateBackButton.TabIndex = 6;
-            this.NavigateBackButton.Text = "<";
-            this.ElementViewWindowToolTip.SetToolTip(this.NavigateBackButton, "Navigate Back ( ALT + <- )");
-            this.NavigateBackButton.UseVisualStyleBackColor = true;
-            this.NavigateBackButton.Click += new System.EventHandler(this.NavigateBackButton_Click);
-
-            // 
-            // SearchTextbox
-            // 
-            this.SearchTextbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.SearchTextbox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
-            this.SearchTextbox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
-            this.SearchTextbox.Location = new System.Drawing.Point(0, 2);
-            this.SearchTextbox.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            this.SearchTextbox.Name = "SearchTextbox";
-            this.SearchTextbox.Size = new System.Drawing.Size(160, 20);
-            this.SearchTextbox.TabIndex = 5;
-            this.SearchTextbox.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
-            this.SearchTextbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SearchTextbox_KeyDown);
-            this.SearchTextbox.Leave += new System.EventHandler(this.SearchTextbox_Leave);
-
             // 
             // ElementTreeView
             // 
@@ -117,49 +69,50 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
             this.ElementTreeView.DragEnter += new System.Windows.Forms.DragEventHandler(this.ElementTreeView_DragEnter);
             this.ElementTreeView.DragOver += new System.Windows.Forms.DragEventHandler(this.ElementTreeView_DragOver);
             this.ElementTreeView.DoubleClick += new System.EventHandler(this.mElementTreeView_DoubleClick);
-            this.ElementTreeView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ElementTreeView_KeyDown);
-            this.ElementTreeView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ElementTreeView_KeyPress);
+
+            this.ElementTreeView.KeyDown += this.ElementTreeView_KeyDown;
+            this.ElementTreeView.KeyPress += this.ElementTreeView_KeyPress;
+
             this.ElementTreeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.mElementTreeView_MouseClick);
-            // 
-            // SearchListBox
-            // 
-            this.SearchListBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SearchListBox.FormattingEnabled = true;
-            this.SearchListBox.Location = new System.Drawing.Point(0, 23);
-            this.SearchListBox.Name = "SearchListBox";
-            this.SearchListBox.Size = new System.Drawing.Size(202, 525);
-            this.SearchListBox.TabIndex = 1;
-            this.SearchListBox.Visible = false;
-            this.SearchListBox.Click += new System.EventHandler(this.SearchListBox_Click);
-            // 
-            // panel1
-            // 
-            this.searchControlPanel.Controls.Add(this.NavigateForwardButton);
-            this.searchControlPanel.Controls.Add(this.NavigateBackButton);
-            this.searchControlPanel.Controls.Add(this.SearchTextbox);
-            this.searchControlPanel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.searchControlPanel.Location = new System.Drawing.Point(0, 0);
-            this.searchControlPanel.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            this.searchControlPanel.Name = "panel1";
-            this.searchControlPanel.Size = new System.Drawing.Size(202, 23);
-            this.searchControlPanel.TabIndex = 6;
 
+            InitializeWpf();
 
-            var mainPanel = new Panel();
-            mainPanel.Dock = DockStyle.Fill;
-            ExplorerTab = this.CreateAndAddTab(mainPanel, "Explorer", TabLocation.Right);
+        }
+
+        private void InitializeWpf()
+        {
+            var window = new ExplorerView();
+
+            ExplorerTab = this.CreateAndAddTab(window, "Explorer", TabLocation.Right);
 
             ExplorerTab.CanClose = false;
 
+            window.TreeViewHost.Child = this.ElementTreeView;
+            ElementTreeViewContainer = window.TreeViewHost;
 
-            mainPanel.Controls.Add(this.ElementTreeView);
-            mainPanel.Controls.Add(this.SearchListBox);
-            mainPanel.Controls.Add(this.searchControlPanel);
+            SearchTextbox = window.SearchTextBox;
+
+            SearchListBox = window.SearchResultListBox;
+            SearchListBox.SelectionChanged += (not, used) =>
+            {
+                if(!SearchTextbox.IsFocused)
+                {
+                    SearchBarHelper.SearchListBoxIndexChanged();
+                }
+            };
+
+            window.BackButton.Click += (not, used) => NavigateBackButton_Click(this, null);
+            window.ForwardButton.Click += (not, used) => NavigateForwardButton_Click(this, null);
+
+            var textBox = window.SearchTextBox;
+            textBox.TextChanged += (not, used) => SearchBarHelper.SearchBarTextChange(textBox.Text); 
+            textBox.PreviewKeyDown += (not, args) => SearchBarHelper.TextBoxKeyDown(args); 
+            //textBox.LostFocus += SearchBarHelper.TextBoxLeave(SearchTextbox); 
 
 
-            TreeNodeStackManager.Self.Initialize(NavigateBackButton, NavigateForwardButton);
+            TreeNodeStackManager.Self.Initialize(window.BackButton, window.ForwardButton);
 
-            SearchBarHelper.Initialize(SearchTextbox);
+            //SearchBarHelper.Initialize(SearchTextbox);
 
             InitializeElementViewWindow();
         }
@@ -313,7 +266,6 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
                 // treat it like a double-click
                 e.Handled = true;
             }
-
         }
 
         private void ElementTreeView_ItemDrag(object sender, ItemDragEventArgs e)
@@ -389,7 +341,6 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
 
         private void ElementTreeView_KeyDown(object sender, KeyEventArgs e)
         {
-
             #region Delete key
 
             if (e.KeyCode == Keys.Delete)
@@ -403,6 +354,16 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
                 ElementViewWindow.ElementDoubleClicked();
                 e.Handled = true;
             }
+
+            if(!e.Handled)
+            {
+                if(HotkeyManager.Self.TryHandleKeys(e.KeyData))
+                {
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
+                }
+            }
+            System.Diagnostics.Debug.WriteLine("-------------------------------" + e.KeyCode);
         }
 
         private void SearchListBox_Click(object sender, EventArgs e)
@@ -412,12 +373,12 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            SearchBarHelper.SearchBarTextChange();
+            //SearchBarHelper.SearchBarTextChange();
         }
 
         private void SearchTextbox_Leave(object sender, EventArgs e)
         {
-            SearchBarHelper.TextBoxLeave(SearchTextbox);
+            //SearchBarHelper.TextBoxLeave(SearchTextbox);
         }
 
         private void SearchTextbox_KeyDown(object sender, KeyEventArgs e)

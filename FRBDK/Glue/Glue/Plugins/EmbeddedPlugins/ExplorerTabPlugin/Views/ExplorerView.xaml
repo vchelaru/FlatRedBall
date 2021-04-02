@@ -17,13 +17,13 @@
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBox></TextBox>
-            <Button Width="20" Grid.Column="1">&lt;</Button>
-            <Button Width="20" Grid.Column="2">&gt;</Button>
+            <TextBox x:Name="SearchTextBox"></TextBox>
+            <Button Width="20" Grid.Column="1" x:Name="BackButton">&lt;</Button>
+            <Button Width="20" Grid.Column="2" x:Name="ForwardButton">&gt;</Button>
     
         </Grid>
 
         <ListBox Grid.Row="1" x:Name="SearchResultListBox"></ListBox>
-        <WindowsFormsHost x:Name="TreeViewHost"></WindowsFormsHost>
+        <WindowsFormsHost x:Name="TreeViewHost" Grid.Row="1"></WindowsFormsHost>
     </Grid>
 </UserControl>

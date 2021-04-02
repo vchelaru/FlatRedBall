@@ -38,16 +38,6 @@ namespace FlatRedBall.Glue.Managers
                     return RightClickHelper.MoveToBottom();
                 case Keys.Alt | Keys.Shift | Keys.Up:
                     return RightClickHelper.MoveToTop();
-                case Keys.Escape:
-                    if (MainExplorerPlugin.Self.SearchTextbox.Focused)
-                    {
-                        MainExplorerPlugin.Self.SearchTextbox.Focus();
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
                 case Keys.F5:
                     PluginManager.CallPluginMethod(
                         "Glue Compiler",
@@ -118,16 +108,6 @@ namespace FlatRedBall.Glue.Managers
                         return true;
                     }
                     break;
-                case Key.Escape:
-                    if (MainExplorerPlugin.Self.SearchTextbox.Focused)
-                    {
-                        MainExplorerPlugin.Self.SearchTextbox.Focus();
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
                 case Key.F5:
                     PluginManager.CallPluginMethod(
                         "Glue Compiler",

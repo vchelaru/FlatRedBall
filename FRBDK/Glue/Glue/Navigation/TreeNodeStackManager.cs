@@ -14,25 +14,28 @@ namespace FlatRedBall.Glue.Navigation
     public class TreeNodeStackManager : Singleton<TreeNodeStackManager>
     {
         TreeNode mCurentTreeNode;
-        Button mBackButton;
-        Button mForwardButton;
+        //Button mBackButton;
+        //Button mForwardButton;
+
+        System.Windows.Controls.Button BackButton;
+        System.Windows.Controls.Button ForwardButton;
 
         Stack<TreeNode> mTreeNodeStack = new Stack<TreeNode>();
         Stack<TreeNode> mForwardNodeStack = new Stack<TreeNode>();
         bool mIgnoreNextForwardClear;
 
-        public void Initialize(Button backButton, Button forwardButton)
+        public void Initialize(System.Windows.Controls.Button backButton, System.Windows.Controls.Button forwardButton)
         {
-            mBackButton = backButton;
-            mForwardButton = forwardButton;
+            BackButton = backButton;
+            ForwardButton = forwardButton;
 
             UpdateNavigateButtons();
         }
 
         private void UpdateNavigateButtons()
         {
-            mBackButton.Enabled = mTreeNodeStack.Count > 0;
-            mForwardButton.Enabled = mForwardNodeStack.Count > 0;
+            BackButton.IsEnabled = mTreeNodeStack.Count > 0;
+            ForwardButton.IsEnabled = mForwardNodeStack.Count > 0;
         }
 
         public void Push(TreeNode treeNode)

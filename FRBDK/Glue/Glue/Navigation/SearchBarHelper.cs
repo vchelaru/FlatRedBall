@@ -10,6 +10,7 @@ using FlatRedBall.Glue.Events;
 using System.Runtime.InteropServices;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
+using System.Windows.Input;
 
 namespace FlatRedBall.Glue.Navigation
 {
@@ -33,18 +34,21 @@ namespace FlatRedBall.Glue.Navigation
 
 
 
-        public static void SearchBarTextChange()
+        public static void SearchBarTextChange(string text)
         {
-            string text = MainExplorerPlugin.Self.SearchTextbox.Text;
 
             if (string.IsNullOrEmpty(text))
             {
-                MainExplorerPlugin.Self.SearchListBox.Visible = false;
+                MainExplorerPlugin.Self.SearchListBox.Visibility = System.Windows.Visibility.Collapsed;
+                MainExplorerPlugin.Self.ElementTreeViewContainer.Visibility = System.Windows.Visibility.Visible;
 
             }
             else
             {
-                MainExplorerPlugin.Self.SearchListBox.Visible = true;
+                MainExplorerPlugin.Self.SearchListBox.Visibility = System.Windows.Visibility.Visible;
+                //MainExplorerPlugin.Self.ElementTreeView.Visible = false;
+                MainExplorerPlugin.Self.ElementTreeViewContainer.Visibility = System.Windows.Visibility.Collapsed;
+
                 FillSearchBoxWithOptions(text);
                 if (MainExplorerPlugin.Self.SearchListBox.Items.Count > 0)
                 {
@@ -52,7 +56,6 @@ namespace FlatRedBall.Glue.Navigation
                 }
             }
 
-            MainExplorerPlugin.Self.ElementTreeView.Visible = !MainExplorerPlugin.Self.SearchListBox.Visible;
 
         }
 
@@ -246,7 +249,6 @@ namespace FlatRedBall.Glue.Navigation
 
             #endregion
 
-                        
             #region Add State Categories
 
             if (showCategories)
@@ -280,12 +282,6 @@ namespace FlatRedBall.Glue.Navigation
             }
 
             #endregion
-
-
-
-
-
-
 
             #region Add Variables
 
@@ -354,9 +350,14 @@ namespace FlatRedBall.Glue.Navigation
             }
             #endregion
 
+            foreach(var item in toAdd.ToArray())
+            {
+                MainExplorerPlugin.Self.SearchListBox.Items.Add(item);
 
-            MainExplorerPlugin.Self.SearchListBox.Items.AddRange(toAdd.ToArray());
+            }
         }
+
+
 
         private static string DetermineWhatIsShown(string text, out bool showScreens, out bool showEntities, out bool showObjects, out bool showFiles, out bool showStates, out bool showVariables, out bool showEvents, out bool showCategories)
         {
@@ -484,7 +485,7 @@ namespace FlatRedBall.Glue.Navigation
             Object selectedObject = MainExplorerPlugin.Self.SearchListBox.SelectedItem;
 
             bool foundSomething = false;
-            if (MainExplorerPlugin.Self.SearchListBox.Visible)
+            if (MainExplorerPlugin.Self.SearchListBox.Visibility == System.Windows.Visibility.Visible)
             {
                 if (selectedObject is ScreenSave)
                 {
@@ -537,15 +538,75 @@ namespace FlatRedBall.Glue.Navigation
                 ElementViewWindow.SelectedNode = ElementViewWindow.SelectedNode;
             }
 
-            MainExplorerPlugin.Self.SearchListBox.Visible = false;
-            MainExplorerPlugin.Self.ElementTreeView.Visible = true;
+            MainExplorerPlugin.Self.SearchListBox.Visibility = System.Windows.Visibility.Collapsed;
+            //MainExplorerPlugin.Self.ElementTreeView.Visible = true;
+            MainExplorerPlugin.Self.ElementTreeViewContainer.Visibility = System.Windows.Visibility.Visible;
 
             MainExplorerPlugin.Self.SearchTextbox.Text = null;
 
 
         }
 
+        internal static void TextBoxKeyDown(System.Windows.Input.KeyEventArgs args)
+        {
+            if (args.Key == System.Windows.Input.Key.Escape)
+            {
+                args.Handled = true;
+                LoseTextBoxFocus();
 
+                //TextBoxLeave(MainExplorerPlugin.Self.SearchTextbox);
+            }
+            else if (args.Key == System.Windows.Input.Key.Up)
+            {
+                if (MainExplorerPlugin.Self.SearchListBox.SelectedIndex > 0)
+                {
+                    args.Handled = true;
+                    MainExplorerPlugin.Self.SearchListBox.SelectedIndex--;
+                }
+            }
+            else if (args.Key == System.Windows.Input.Key.Down)
+            {
+                if (MainExplorerPlugin.Self.SearchListBox.SelectedIndex < MainExplorerPlugin.Self.SearchListBox.Items.Count - 1)
+                {
+                    args.Handled = true;
+                    MainExplorerPlugin.Self.SearchListBox.SelectedIndex++;
+                }
+            }
+            else if (args.Key == System.Windows.Input.Key.Enter)
+            {
+                args.Handled = true;
+                SearchListBoxIndexChanged();
+                //TextBoxLeave(MainExplorerPlugin.Self.SearchTextbox);
+                LoseTextBoxFocus();
+            }
+
+            void LoseTextBoxFocus()
+            {
+                // Apr 2, 2021
+                // It seems like this
+                // only returns focus to 
+                // the treeview if the text
+                // box is empty when this is 
+                // called. I don't know why, I
+                // suspect it has to do with the 
+                // treeview still being winforms.
+                // I did burn quite a bit of time investigating
+                // and decided to not waste more time and instead
+                // log my findings. Eventually this will get revisited
+                // when the tree view becomes wpf.
+
+                Keyboard.ClearFocus();
+                MainExplorerPlugin.Self.SearchTextbox.Text = null;
+
+                MainExplorerPlugin.Self.SearchListBox.Visibility = System.Windows.Visibility.Collapsed;
+                MainExplorerPlugin.Self.ElementTreeViewContainer.Visibility = System.Windows.Visibility.Visible;
+
+                Keyboard.Focus(MainExplorerPlugin.Self.ElementTreeViewContainer);
+
+                MainExplorerPlugin.Self.ElementTreeViewContainer.Focus();
+                MainExplorerPlugin.Self.ElementTreeView.Focus();
+            }
+        }
 
         internal static void TextBoxKeyDown(System.Windows.Forms.KeyEventArgs e)
         {
@@ -556,10 +617,11 @@ namespace FlatRedBall.Glue.Navigation
 
                 MainExplorerPlugin.Self.SearchTextbox.Text = null;
 
-                MainExplorerPlugin.Self.SearchListBox.Visible = false;
-                MainExplorerPlugin.Self.ElementTreeView.Visible = true;
+                MainExplorerPlugin.Self.SearchListBox.Visibility = System.Windows.Visibility.Collapsed;
+                //MainExplorerPlugin.Self.ElementTreeView.Visible = true;
+                MainExplorerPlugin.Self.ElementTreeViewContainer.Visibility = System.Windows.Visibility.Visible;
 
-                TextBoxLeave(MainExplorerPlugin.Self.SearchTextbox);
+                //TextBoxLeave(MainExplorerPlugin.Self.SearchTextbox);
             }
             else if (e.KeyCode == Keys.Up)
             {
@@ -582,14 +644,9 @@ namespace FlatRedBall.Glue.Navigation
                 e.SuppressKeyPress = true;
 
                 MainExplorerPlugin.Self.ElementTreeView.Focus();
-                TextBoxLeave(MainExplorerPlugin.Self.SearchTextbox);
+                //TextBoxLeave(MainExplorerPlugin.Self.SearchTextbox);
 
             }
-        }
-
-        internal static void TextBoxLeave(TextBox textBox)
-        {
-
         }
     }
 }
