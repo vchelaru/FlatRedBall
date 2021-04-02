@@ -638,7 +638,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 foreach(var tabPage in items)
                 {
-                    if ((tabPage.Header as string)?.Trim() == dialogTitle)
+                    if (tabPage.Title == dialogTitle)
                     {
                         tabPage.IsSelected = true;
                         //control.SelectedTab = tabPage;

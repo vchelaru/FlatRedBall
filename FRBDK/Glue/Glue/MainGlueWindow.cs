@@ -558,17 +558,5 @@ namespace Glue
         {
             int m = 3;
         }
-
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            if(HotkeyManager.Self.TryHandleKeys(keyData))
-            {
-                return true;
-            }
-            else
-            {
-                return base.ProcessCmdKey(ref msg, keyData);
-            }
-        }
     }
 }

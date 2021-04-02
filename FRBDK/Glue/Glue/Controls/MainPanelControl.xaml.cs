@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins;
 using System;
@@ -247,6 +248,14 @@ namespace GlueFormsCore.Controls
 
 
             //TopTabControl
+        }
+
+        private void UserControl_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (HotkeyManager.Self.TryHandleKeys(e))
+            {
+                e.Handled = true;
+            }
         }
     }
 }
