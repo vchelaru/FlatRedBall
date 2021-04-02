@@ -152,6 +152,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Input\IInputDevice.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\IInputReceiverKeyboard.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\IMouseOver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\InputDeviceBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Keyboard.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\KeyboardStateProcessor.cs" />

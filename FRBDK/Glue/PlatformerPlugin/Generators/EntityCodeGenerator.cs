@@ -370,6 +370,13 @@ namespace FlatRedBall.PlatformerPlugin.Generators
         /// </summary>
         private void ApplyInput()
         {
+#if DEBUG
+            if(InputDevice == null)
+            {
+                throw new NullReferenceException(""The InputDevice must be set before activity is performed on this entity. This can be set in Glue or manually in code"");
+            }
+#endif
+
             ApplyHorizontalInput();
 
             ApplyJumpInput();
