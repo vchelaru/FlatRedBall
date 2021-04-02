@@ -200,7 +200,7 @@ namespace TMXGlueLib
 
             foreach(var layer in this.Layers)
             {
-                // Vic says: This wans't doing anything, do we need it?
+                // Vic says: This wasn't doing anything, do we need it?
                 //foreach(var dataItem in layer.data)
                 //{
 
