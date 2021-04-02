@@ -47,6 +47,12 @@ namespace FlatRedBall.Math.Collision
 
         #endregion
 
+        #region Events/Delegates
+
+        public Action BeforeCollision { get; set; }
+
+        #endregion
+
         #region Constructor/Init
 
         static CollisionManager()
@@ -166,6 +172,8 @@ namespace FlatRedBall.Math.Collision
                     partition.Sort();
                 }
             }
+
+            BeforeCollision?.Invoke();
 
             foreach (var relationship in Relationships)
             {

@@ -17,8 +17,6 @@ namespace FlatRedBall.Glue.Events
     {
         public string EventName;
 
-        public string InstanceMethod;
-
         public string ConditionCode;
 
         public string Arguments;

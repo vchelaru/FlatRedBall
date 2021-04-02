@@ -127,6 +127,10 @@ namespace FlatRedBall.Glue.Reflection
 
         static void GetExposableEventsFor(IElement element, List<ExposableEvent> listToFill)
         {
+            if(element is ScreenSave)
+            {
+                listToFill.Add(new ExposableEvent("BeforeCollision"));
+            }
             // We always want to have the BackPushed and StartPushed available:
             // Update June 4, 2013:
             // Not supplying StartPushed 

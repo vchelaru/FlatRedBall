@@ -1,15 +1,16 @@
-EventName (required),DelegateType,CreatesEventMember (bool),ConditionCode,Arguments,IncludeInClass,IncludeInInstance,ExternalEvent
-BackPushed,Action,TRUE,(FlatRedBall.Input.InputManager.Xbox360GamePads[0].ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.Back) || FlatRedBall.Input.InputManager.Keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.Back)),,TRUE,TRUE,
-Click,FlatRedBall.Gui.WindowEvent,FALSE,,FlatRedBall.Gui.IWindow callingWindow,TRUE,TRUE,
-ClickNoSlide,FlatRedBall.Gui.WindowEvent,FALSE,,FlatRedBall.Gui.IWindow callingWindow,TRUE,TRUE,
-SlideOnClick,FlatRedBall.Gui.WindowEvent,FALSE,,FlatRedBall.Gui.IWindow callingWindow,TRUE,TRUE,
-Push,FlatRedBall.Gui.WindowEvent,FALSE,,FlatRedBall.Gui.IWindow callingWindow,TRUE,TRUE,
-DragOver,FlatRedBall.Gui.WindowEvent,FALSE,,FlatRedBall.Gui.IWindow callingWindow,TRUE,TRUE,
-RollOn,FlatRedBall.Gui.WindowEvent,FALSE,,FlatRedBall.Gui.IWindow callingWindow,TRUE,TRUE,
-RollOff,FlatRedBall.Gui.WindowEvent,FALSE,,FlatRedBall.Gui.IWindow callingWindow,TRUE,TRUE,
-LosePush,FlatRedBall.Gui.WindowEvent,FALSE,,FlatRedBall.Gui.IWindow callingWindow,TRUE,TRUE,
-AfterVisibleSet,,FALSE,,"object sender, EventArgs e",TRUE,TRUE,
-BeforeVisibleSet,,FALSE,,"object sender, EventArgs e",TRUE,TRUE,
-CollectionChanged,System.Collections.Specialized.NotifyCollectionChangedEventHandler,,,"object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e",TRUE,TRUE,
-ResolutionOrOrientationChanged,System.EventHandler,FALSE,,"object sender, EventArgs e",TRUE,TRUE,FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged
-InitializeEvent,System.EventHandler,TRUE,,"object sender, EventArgs e",TRUE,TRUE,
+EventName (required),DelegateType,CreatesEventMember (bool),ConditionCode,Arguments,ExternalEvent
+BackPushed,Action,TRUE,(FlatRedBall.Input.InputManager.Xbox360GamePads[0].ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.Back) || FlatRedBall.Input.InputManager.Keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.Back)),,
+Click,FlatRedBall.Gui.WindowEvent,FALSE,,FlatRedBall.Gui.IWindow callingWindow,
+ClickNoSlide,FlatRedBall.Gui.WindowEvent,FALSE,,FlatRedBall.Gui.IWindow callingWindow,
+SlideOnClick,FlatRedBall.Gui.WindowEvent,FALSE,,FlatRedBall.Gui.IWindow callingWindow,
+Push,FlatRedBall.Gui.WindowEvent,FALSE,,FlatRedBall.Gui.IWindow callingWindow,
+DragOver,FlatRedBall.Gui.WindowEvent,FALSE,,FlatRedBall.Gui.IWindow callingWindow,
+RollOn,FlatRedBall.Gui.WindowEvent,FALSE,,FlatRedBall.Gui.IWindow callingWindow,
+RollOff,FlatRedBall.Gui.WindowEvent,FALSE,,FlatRedBall.Gui.IWindow callingWindow,
+LosePush,FlatRedBall.Gui.WindowEvent,FALSE,,FlatRedBall.Gui.IWindow callingWindow,
+AfterVisibleSet,,FALSE,,"object sender, EventArgs e",
+BeforeVisibleSet,,FALSE,,"object sender, EventArgs e",
+CollectionChanged,System.Collections.Specialized.NotifyCollectionChangedEventHandler,,,"object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e",
+ResolutionOrOrientationChanged,System.EventHandler,FALSE,,"object sender, EventArgs e",FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged
+InitializeEvent,System.EventHandler,TRUE,,"object sender, EventArgs e",
+BeforeCollision,Action,FALSE,,,FlatRedBall.Math.Collision.CollisionManager.Self.BeforeCollision
