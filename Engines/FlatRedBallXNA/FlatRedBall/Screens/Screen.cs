@@ -534,9 +534,21 @@ namespace FlatRedBall.Screens
 
                 if (instance is IList asIList)
                 {
-                    foreach (var item in asIList)
+                    for(int i = 0; i < asIList.Count; i++)
                     {
-                        ApplyVariable(afterDot, value, item);
+                        var instanceInList = asIList[i];
+
+                        var effectiveValue = value;
+
+                        if(value is IList valueList)
+                        {
+                            if(i < valueList.Count)
+                            {
+                                effectiveValue = valueList[i];
+                            }
+                        }
+
+                        ApplyVariable(afterDot, effectiveValue, instanceInList);
                     }
                 }
                 else if(instance != null) // the instance may be null if the chain of assignments doesn't have a value
@@ -652,13 +664,27 @@ namespace FlatRedBall.Screens
 
         private object GetValueForVariableName(string variableName, object container = null)
         {
-            if(variableName.Contains("."))
+            if (variableName.Contains("."))
             {
                 string afterDot;
                 object instance;
                 GetInstance(variableName, container, out afterDot, out instance);
 
-                return GetValueForVariableName(afterDot, instance);
+                if (instance is IList asList)
+                {
+                    List<object> toReturn = new List<object>();
+
+                    foreach (var item in asList)
+                    {
+                        var itemValue = GetValueForVariableName(afterDot, item);
+                        toReturn.Add(itemValue);
+                    }
+                    return toReturn;
+                }
+                else
+                {
+                    return GetValueForVariableName(afterDot, instance);
+                }
             }
             else
             {
