@@ -177,12 +177,12 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
         private static void GenerateCsv(EntitySave entity, PlatformerEntityViewModel viewModel)
         {
-            TaskManager.Self.AddAsyncTask(
+            TaskManager.Self.Add(
                             () => CsvGenerator.Self.GenerateFor(entity, GetIfInheritsFromPlatformer(entity), viewModel),
                             "Generating Platformer CSV for " + entity.Name);
 
 
-            TaskManager.Self.AddAsyncTask(
+            TaskManager.Self.Add(
                 () =>
                 {
                     string rfsName = entity.Name.Replace("\\", "/") + "/" + CsvGenerator.RelativeCsvFile;

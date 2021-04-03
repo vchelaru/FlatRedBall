@@ -856,7 +856,7 @@ namespace FlatRedBall.TileGraphics
                 {
                     // This makes all shapes have the same Z as the index layer, which is useful if instantiating objects, so they're layered properly
                     shapeCollection.Shift(new Microsoft.Xna.Framework.Vector3(0, 0, indexInAllLayers));
-
+                    shapeCollection.UpdateDependencies(-1);
                     shapeCollection.Name = mapObjectgroup.Name;
                     layeredTileMap.ShapeCollections.Add(shapeCollection);
                 }
