@@ -337,15 +337,29 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                     mCurrentMovement = AirMovement;
                     break;
                 case MovementType.AfterDoubleJump:
-                    mCurrentMovement = AfterDoubleJump;
+
+                    // The user could have double-jumped into a set of movement values that no longer support double jump.
+                    // For example, double jump is supported in water, but once the user moves out of water, AfterDoubleJump
+                    // might be set to null
+                    if(AfterDoubleJump == null)
+                    {
+                        mCurrentMovement = AirMovement;
+                    }
+                    else
+                    {
+                        mCurrentMovement = AfterDoubleJump;
+                    }
+
                     break;
             }
 
             if(CurrentMovement != null)
+            {
                 this.YAcceleration = -CurrentMovement.Gravity;
-
-
+            }
         }
+
+
         #region Platformer Methods
 
 
