@@ -64,7 +64,7 @@ namespace GumPlugin.Controls
         private void HandleAddAllForms(object sender, RoutedEventArgs e)
         {
             var project = GlueState.Self.CurrentMainProject;
-            var response = GetWhyAddingMonoGameIsNotSupported(project);
+            var response = GetWhyAddingFormsIsNotSupported(project);
 
             if(!string.IsNullOrEmpty(response.Message))
             {
@@ -84,7 +84,7 @@ namespace GumPlugin.Controls
 
         private void HandleGenerateBehaviors(object sender, RoutedEventArgs args) => FormsAddManager.GenerateBehaviors();
 
-        private GeneralResponse GetWhyAddingMonoGameIsNotSupported(ProjectBase project)
+        private GeneralResponse GetWhyAddingFormsIsNotSupported(ProjectBase project)
         {
             GeneralResponse response = GeneralResponse.SuccessfulResponse;
 

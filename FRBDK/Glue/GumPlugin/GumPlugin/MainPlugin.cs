@@ -720,14 +720,20 @@ namespace GumPlugin
                     },
                     "Adding Gum referenced files to project");
 
-                GlueCommands.Self.GluxCommands.SaveGlux();
 
                 if (((bool)shouldAlsoAddForms) == true)
                 {
                     // add forms:
+
+                    //viewModel.IncludeFormsInComponents = true;
+                    gumRfs.SetProperty(nameof(GumViewModel.IncludeFormsInComponents), true);
+                    //viewModel.IncludeComponentToFormsAssociation = true;
+                    gumRfs.SetProperty(nameof(GumViewModel.IncludeComponentToFormsAssociation), true);
+
                     FormsAddManager.GenerateBehaviors();
                     FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
                 }
+                GlueCommands.Self.GluxCommands.SaveGlux();
             }
             propertiesManager.IsReactingToProperyChanges = true;
 
