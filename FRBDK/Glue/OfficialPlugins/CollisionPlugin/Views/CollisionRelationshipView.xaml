@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:OfficialPlugins.CollisionPlugin.Views"
              xmlns:VM="clr-namespace:OfficialPlugins.CollisionPlugin.ViewModels" xmlns:views="clr-namespace:OfficialPluginsCore.CollisionPlugin.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="550" d:DesignWidth="600">
+             d:DesignHeight="670" d:DesignWidth="600">
     <ScrollViewer>
         <StackPanel>
             <Grid>
@@ -64,8 +64,8 @@
                           ItemsSource="{Binding SecondSubCollisionItemsSource}"
                           
                           ></ComboBox>
-                
-                
+
+
             </Grid>
             <TextBlock Background="DarkRed" Foreground="Yellow" FontSize="15"
                        TextWrapping="WrapWithOverflow"
@@ -82,7 +82,7 @@
             <CheckBox VerticalContentAlignment="Center"
                       IsChecked="{Binding IsCollisionActive}"
                       Margin="0,8,0,0">Is Collision Active</CheckBox>
-            
+
             <TextBlock TextWrapping="WrapWithOverflow"
                        Visibility="{Binding InactiveMessageVisibility}"
                        Padding="4"
@@ -116,39 +116,53 @@
                         IsChecked="{Binding IsNoPhysicsChecked}">No Physics</RadioButton>
                     <RadioButton
                         IsChecked="{Binding IsMoveCollisionChecked}">Move Collision (separate overlapping objects)</RadioButton>
-                    <StackPanel Margin="10,0,0,0" 
+                    <Grid Margin="10,0,0,0" 
                                 Visibility="{Binding MoveCollisionVisibility}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Width="80">First Mass</TextBlock>
-                            <TextBox Width="80"
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Width="80" HorizontalAlignment="Left" 
+                                   Text="{Binding FirstMassText, FallbackValue=First Mass}"></TextBlock>
+                        <TextBox Grid.Row="1" Margin="10,0,10,0"
                                      Text="{Binding FirstCollisionMass}"></TextBox>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Width="80">Second Mass</TextBlock>
-                            <TextBox  Width="80"
+                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" 
+                                   Text="{Binding SecondMassText, FallbackValue=Second Mass}"></TextBlock>
+                        <TextBox  Grid.Row="1" Grid.Column="1" Margin="10,0,10,0"
                                      Text="{Binding SecondCollisionMass}"></TextBox>
-                        </StackPanel>
-                    </StackPanel>
+                    </Grid>
                     <RadioButton
                         IsChecked="{Binding IsBounceCollisionChecked}">Bounce Collision</RadioButton>
-                    <StackPanel Margin="10,0,0,0"
+                    <Grid Margin="10,0,0,0"
                                 Visibility="{Binding BounceCollisionVisibility}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Width="80">First Mass</TextBlock>
-                            <TextBox Width="80"
-                                     Text="{Binding FirstCollisionMass}"></TextBox>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Width="80">Second Mass</TextBlock>
-                            <TextBox  Width="80"
-                                     Text="{Binding SecondCollisionMass}"></TextBox>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock HorizontalAlignment="Left" Grid.Column="0"
+                                   Text="{Binding FirstMassText, FallbackValue=First Mass}"></TextBlock>
+                        <TextBox Margin="10,0,10,0" Grid.Row="1"
+                                    Text="{Binding FirstCollisionMass}"></TextBox>
+
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding SecondMassText, FallbackValue=Second Mass}"></TextBlock>
+                        <TextBox Grid.Column="1" Grid.Row="1" Margin="10,0,10,0"
+                                    Text="{Binding SecondCollisionMass}"></TextBox>
+                        <StackPanel Orientation="Horizontal" Grid.Row="2">
                             <TextBlock Width="80">Elasticity</TextBlock>
                             <TextBox  Width="80"
                                      Text="{Binding CollisionElasticity}"></TextBox>
                         </StackPanel>
-                    </StackPanel>
+                    </Grid>
                     <RadioButton
                         IsChecked="{Binding IsPlatformerSolidCollisionChecked}"
                         Visibility="{Binding PlatformerOptionsVisibility}">Platformer Solid Collision</RadioButton>
@@ -176,7 +190,7 @@
                     </ItemsControl>
                     <Button Margin="0,10,0,0" Click="AddEventButtonClicked" Visibility="{Binding AddEventButtonVisibility}">Add Event</Button>
                 </StackPanel>
-                
+
             </GroupBox>
         </StackPanel>
     </ScrollViewer>

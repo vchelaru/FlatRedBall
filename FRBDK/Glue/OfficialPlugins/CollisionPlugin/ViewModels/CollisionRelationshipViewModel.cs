@@ -48,6 +48,42 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             set => SetAndPersist(value); 
         }
 
+        [DependsOn(nameof(FirstCollisionName))]
+        [DependsOn(nameof(IsFirstList))]
+        public string FirstMassText
+        {
+            get
+            {
+                if(IsFirstList && FirstCollisionName?.EndsWith("List") == true)
+                {
+                    var withoutList =
+                        FirstCollisionName.Substring(0, FirstCollisionName.Length-4);
+                    return $"{withoutList} Mass";
+                }
+                else
+                {
+                    return $"{FirstCollisionName} Mass";
+                }
+            }
+        }
+
+        [DependsOn(nameof(SecondCollisionName))]
+        [DependsOn(nameof(IsSecondList))]
+        public string SecondMassText
+        {
+            get
+            {
+                if(IsSecondList && SecondCollisionName?.EndsWith("List") == true)
+                {
+                    return $"{SecondCollisionName.Substring(0, SecondCollisionName.Length-4)} Mass";
+                }
+                else
+                {
+                    return $"{SecondCollisionName} Mass";
+                }
+            }
+        }
+
         public string FirstIndividualType
         {
             get => Get<string>();
