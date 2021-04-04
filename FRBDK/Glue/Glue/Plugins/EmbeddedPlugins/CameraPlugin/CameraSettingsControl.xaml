@@ -38,6 +38,21 @@
                                 <Label Width="50" Content="Height"/>
                                 <TextBox Width="40" Height="18" Text="{Binding ResolutionHeight}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"/>
                             </StackPanel>
+                            <MenuItem Width="19" Height="22" Padding="0" Margin="0">
+                                <MenuItem.Icon>
+                                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                        <Button HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="-3,-3,0,-3" Click="PresetResolutionDropdownClick">
+                                            <Polygon HorizontalAlignment="Center" VerticalAlignment="Center" Points="0,0 10,0, 5,6" Stroke="Black" Fill="Black" />
+                                            
+                                        </Button>                                    
+                                    </Grid>
+                                </MenuItem.Icon>
+                                <MenuItem.ContextMenu>
+                                    <ContextMenu x:Name="ResolutionDropdown">
+
+                                    </ContextMenu>
+                                </MenuItem.ContextMenu>
+                            </MenuItem>
                             
                         </WrapPanel>
                         <CheckBox VerticalContentAlignment="Center" Margin="0,3,0,0" Content="Fixed Aspect Ratio" IsChecked="{Binding FixedAspectRatio}"/>

@@ -105,7 +105,7 @@ namespace OfficialPlugins.VariableDisplay
             }
 
             AddOrShowVariableGrid();
-            // we can always add new variables to entities....right?
+
             variableViewModel.CanAddVariable = true;
             variableGrid.DataUiGrid.Instance = GlueState.Self.CurrentElement;
             ElementVariableShowingLogic.UpdateShownVariables(variableGrid.DataUiGrid, GlueState.Self.CurrentElement);
@@ -215,9 +215,14 @@ namespace OfficialPlugins.VariableDisplay
 
                 // let's make this the first item and have it be focused:
                 //tabControl.SelectedTab = variableTab;
-                GlueCommands.Self.DialogCommands.FocusTab("Variables");
+                // Update May 4, 2021
+                // We now have lots of tabs
+                // that take priority over Variables, 
+                // like collision tabs. We should rely on
+                // the last clicked and not force this anymore:
+                //GlueCommands.Self.DialogCommands.FocusTab("Variables");
                 // This makes it the last tab clicked, which gives it priority:
-                variableTab.Focus();
+                //variableTab.Focus();
             }
             variableTab.Show();
         }

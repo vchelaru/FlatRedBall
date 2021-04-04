@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using GlueFormsCore.Plugins.EmbeddedPlugins.CameraPlugin.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -171,5 +172,34 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             }, "Removing Display Option");
         }
 
+        private void PresetResolutionDropdownClick(object sender, RoutedEventArgs e)
+        {
+            ResolutionDropdown.Items.Clear();
+
+            void Add(int width, int height)
+            {
+                var vm = new ResolutionDropDownViewModel(width, height);
+                var menuItem = new MenuItem();
+                menuItem.Header = vm;
+                menuItem.Click += (not, used) =>
+                {
+                    ViewModel.ResolutionWidth = width;
+                    ViewModel.ResolutionHeight = height;
+                };
+                ResolutionDropdown.Items.Add(menuItem);
+            }
+            Add(256, 224);
+
+            Add(360,240);
+            Add(480,360);
+            Add(640,480);
+            Add(800,600);
+            Add(1024,768);
+            Add(1920,1080);
+
+            ResolutionDropdown.IsOpen = true;
+
+
+        }
     }
 }
