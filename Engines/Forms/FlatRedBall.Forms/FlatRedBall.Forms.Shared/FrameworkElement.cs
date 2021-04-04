@@ -240,6 +240,7 @@ namespace FlatRedBall.Forms.Controls
                     {
                         // unsubscribe:
                         visual.BindingContextChanged -= HandleVisualBindingContextChanged;
+                        visual.EnabledChange -= HandleEnabledChanged;
                         ReactToVisualRemoved();
                     }
 
@@ -251,6 +252,7 @@ namespace FlatRedBall.Forms.Controls
                         UpdateAllUiPropertiesToVm();
 
                         visual.BindingContextChanged += HandleVisualBindingContextChanged;
+                        visual.EnabledChange += HandleEnabledChanged;
                     }
                 }
 
@@ -344,8 +346,6 @@ namespace FlatRedBall.Forms.Controls
         }
 
         #endregion
-
-
 
         public void AddChild(FrameworkElement child)
         {
@@ -562,6 +562,14 @@ namespace FlatRedBall.Forms.Controls
                     newAsPropertyChanged.PropertyChanged += HandleViewModelPropertyChanged;
                 }
 
+            }
+        }
+
+        void HandleEnabledChanged(IWindow window)
+        {
+            if(Visual != null)
+            {
+                this.IsEnabled = Visual.Enabled;
             }
         }
 
