@@ -769,23 +769,26 @@ namespace GumPlugin.Managers
 
             var runtimeFolder = GlueState.Self.CurrentGlueProjectDirectory + "GumRuntimes/";
 
-            foreach (var buildItem in project.EvaluatedItems)
+            bool IsGumRuntime(ProjectItem projectItem)
             {
-                bool isRuntimeGenerated = buildItem.UnevaluatedInclude != null && buildItem.UnevaluatedInclude.ToLower().EndsWith("runtime.generated.cs");
+                return projectItem.UnevaluatedInclude?.ToLower().EndsWith("runtime.generated.cs") == true ||
+                    projectItem.UnevaluatedInclude?.ToLower().EndsWith("runtime.cs") == true;
+            };
+
+            var codeItemsMadeForGumObjects = project.EvaluatedItems.Where(IsGumRuntime).ToArray();
+
+            foreach (var buildItem in codeItemsMadeForGumObjects)
+            {
                 string includeDirectory = null;
 
-                if(isRuntimeGenerated)
-                {
-                    includeDirectory = FileManager.GetDirectory(buildItem.UnevaluatedInclude);
-                }
+                includeDirectory = FileManager.GetDirectory(buildItem.UnevaluatedInclude);
                     
 
                 bool isInGumRuntimes = includeDirectory == runtimeFolder;
 
-                if ( isRuntimeGenerated && isInGumRuntimes)
+                if ( isInGumRuntimes)
                 {
                     // is there an element with this name?
-
 
                     var elementName = FileManager.RemoveExtension( FileManager.RemoveExtension( 
                         FileManager.RemovePath(buildItem.UnevaluatedInclude)));
@@ -850,11 +853,6 @@ namespace GumPlugin.Managers
                 {
 
                     bool shouldRemove = GetIfShouldRemoveFontFile(toRemove, buildItem, fontCacheFolder, contentProject, referencedGumFiles);
-
-                    if (shouldRemove)
-                    {
-                        toRemove.Add(buildItem);
-                    }
 
                     if(!shouldRemove && isGumProjectInOwnFolder)
                     {

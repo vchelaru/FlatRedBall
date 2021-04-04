@@ -32,7 +32,7 @@ namespace GumPlugin.Managers
 
     public class EventExportManager : Singleton<EventExportManager>
     {
-        public void HandleEventExportFile(string fileName)
+        public void HandleEventExportFileChanged(string fileName)
         {
             string contents = null;
             try

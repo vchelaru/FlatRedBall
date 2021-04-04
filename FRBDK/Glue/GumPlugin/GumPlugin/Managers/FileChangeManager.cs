@@ -169,7 +169,7 @@ namespace GumPluginCore.Managers
                 }
                 else if (extension == "json")
                 {
-                    GumPlugin.Managers.EventExportManager.Self.HandleEventExportFile(fileName);
+                    GumPlugin.Managers.EventExportManager.Self.HandleEventExportFileChanged(fileName);
                 }
             }
         }

@@ -35,7 +35,7 @@ namespace FlatRedBall.Scripting
     }
 
 
-    class ScreenScript<T> : FlatRedBall.Scripting.ScriptEngine, IScreenScriptIf, IScreenScriptDo
+    public class ScreenScript<T> : FlatRedBall.Scripting.ScriptEngine, IScreenScriptIf, IScreenScriptDo
         where T : FlatRedBall.Screens.Screen
     {
         protected T Screen
