@@ -83,7 +83,9 @@ namespace FlatRedBall.Glue.IO
             // close the project before turning off task processing...
             ClosePreviousProject(projectFileName);
 
-            await TaskManager.Self.WaitForAllTasksFinished();
+            // Vic says - do we really want to wait for this to finish?
+            // If we do this, we can't run everything on a separate thread
+            //await TaskManager.Self.WaitForAllTasksFinished();
 
             // turn off task processing while this is loading, so that no background tasks are running while plugins are starting up.
             // Do this *after* closing previous project, because closing previous project waits for all tasks to finish.
@@ -130,6 +132,10 @@ namespace FlatRedBall.Glue.IO
 
                 if (!FileManager.FileExists(glueProjectFile))
                 {
+                    if(!TaskManager.Self.IsInTask())
+                    {
+                        int m = 3;
+                    }
                     ProjectManager.GlueProjectSave = new GlueProjectSave();
 
                     ProjectManager.GlueProjectSave.FileVersion = GlueProjectSave.LatestVersion;
@@ -190,7 +196,7 @@ namespace FlatRedBall.Glue.IO
 
                 UnreferencedFilesManager.Self.RefreshUnreferencedFiles(true);
 
-                MainGlueWindow.Self.Text = "FlatRedBall Glue - " + projectFileName;
+                TaskManager.Self.OnUiThread(() => MainGlueWindow.Self.Text = "FlatRedBall Glue - " + projectFileName);
 
                 if (shouldSaveGlux)
                 {
@@ -587,7 +593,7 @@ namespace FlatRedBall.Glue.IO
 
                 if (GlueGui.ShowGui)
                 {
-                    mCurrentInitWindow.Show(MainGlueWindow.Self);
+                    TaskManager.Self.OnUiThread(() => mCurrentInitWindow.Show(MainGlueWindow.Self));
                 }
             }
             return closeInitWindow;
@@ -630,6 +636,10 @@ namespace FlatRedBall.Glue.IO
             bool succeeded = true;
             try
             {
+                if (!TaskManager.Self.IsInTask())
+                {
+                    int m = 3;
+                }
                 ProjectManager.GlueProjectSave = GlueProjectSaveExtensions.Load(glueProjectFile);
 
                 string errors;
@@ -764,8 +774,7 @@ namespace FlatRedBall.Glue.IO
 
         private void BuildAllOutOfDateFiles()
         {
-            // this can be done async
-            TaskManager.Self.AddAsyncTask(() =>
+            TaskManager.Self.Add(() =>
                 {
                     Parallel.ForEach(ProjectManager.GlueProjectSave.Screens, (screenSave) =>
                     //foreach (ScreenSave screenSave in ProjectManager.GlueProjectSave.Screens)

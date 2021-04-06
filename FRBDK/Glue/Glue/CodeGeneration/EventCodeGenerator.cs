@@ -295,11 +295,16 @@ namespace FlatRedBall.Glue.CodeGeneration
             //string fileName = EventManager.GetEventFileNameForElement(element);
             //string fullCustomFileName = ProjectManager.ProjectBase.Directory + fileName;
 
-            ////////////////// Early Out //////////////////////
+            var project = ProjectManager.ProjectBase;
 
+            ////////////////// Early Out //////////////////////
+            if(project == null)
+            {
+                return;
+            }
             ///////////////// End Early Out////////////////////
 
-            string projectDirectory = ProjectManager.ProjectBase.Directory;
+            string projectDirectory = project.Directory;
 
 
             string fullGeneratedFileName = projectDirectory + EventManager.GetGeneratedEventFileNameForElement(element);

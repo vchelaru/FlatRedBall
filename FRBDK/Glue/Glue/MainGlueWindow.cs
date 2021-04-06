@@ -49,6 +49,7 @@ using Microsoft.Xna.Framework.Audio;
 using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
 using System.Windows.Forms.Integration;
 using GlueFormsCore.Controls;
+using FlatRedBall.Glue.CodeGeneration;
 
 //using EnvDTE;
 
@@ -495,9 +496,10 @@ namespace Glue
                 // if the task is to reload, we can continue or else
                 // we'll have a deadlock
                 var canContinue = TaskManager.Self.CurrentTask == UpdateReactor.ReloadingProjectDescription ||
-                    TaskManager.Self.CurrentTask.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTask.EndsWith(".glux");
+                    (TaskManager.Self.CurrentTask.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTask.EndsWith(".glux")) ||
+                    TaskManager.Self.CurrentTask.StartsWith("Reloading glux due to file change on disk");
 
-                if(canContinue)
+                if (canContinue)
                 {
                     break;
                 }

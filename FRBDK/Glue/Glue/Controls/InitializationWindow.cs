@@ -15,8 +15,12 @@ namespace FlatRedBall.Glue.Controls
         {
             set
             {
-                this.TopLevelLabel.Text = value;
-                this.SubLabel.Text = "";
+                FlatRedBall.Glue.Managers.TaskManager.Self.OnUiThread(() =>
+                {
+                    this.TopLevelLabel.Text = value;
+                    this.SubLabel.Text = "";
+
+                });
 
             }
         }
@@ -25,8 +29,10 @@ namespace FlatRedBall.Glue.Controls
         {
             set
             {
-                this.SubLabel.Text = value;
-
+                FlatRedBall.Glue.Managers.TaskManager.Self.OnUiThread(() =>
+                {
+                    this.SubLabel.Text = value;
+                });
             }
         }
 

@@ -156,7 +156,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
             if (shouldGenerateEntity)
             {
-                TaskManager.Self.AddAsyncTask(
+                TaskManager.Self.Add(
                     () => GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity),
                     "Generating " + entity.Name);
 

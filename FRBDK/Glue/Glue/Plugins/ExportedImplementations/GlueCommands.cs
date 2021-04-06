@@ -70,11 +70,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             Process.GetCurrentProcess().Kill();
         }
 
-        public async void LoadProject(string fileName)
-        {
-            await IO.ProjectLoader.Self.LoadProject(fileName);
-        }
-
         public async Task LoadProjectAsync(string fileName)
         {
             await IO.ProjectLoader.Self.LoadProject(fileName);

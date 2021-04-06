@@ -45,7 +45,7 @@ namespace FlatRedBall.Glue.IO
                     var partialGluxRegex = new Regex(partialGlux);
                     if(!handled && ((changedFile.ToLower() == standardizedGlux) || partialGluxRegex.IsMatch(changedFile.ToLower())))
                     {
-                        TaskManager.Self.OnUiThread( ReloadGlux);
+                        TaskManager.Self.Add( () => TaskManager.Self.OnUiThread(ReloadGlux), "Reloading glux due to file change on disk");
                         handled = true;
                     }
 
@@ -266,9 +266,9 @@ namespace FlatRedBall.Glue.IO
                 {
                     TaskManager.Self.Add(() =>
                     {
-                        TaskManager.Self.OnUiThread(()=>
+                        TaskManager.Self.OnUiThread(async ()=>
                         {
-                            GlueCommands.Self.LoadProject(changedFile);
+                            await GlueCommands.Self.LoadProjectAsync(changedFile);
                         });
                     }, ReloadingProjectDescription);
                 }
@@ -319,14 +319,18 @@ namespace FlatRedBall.Glue.IO
             object selectedObject = null;
             IElement parentElement = null;
             PluginManager.ReceiveOutput("Reloading .glux");
-            if (GlueState.Self.CurrentTreeNode != null)
+
+            TaskManager.Self.OnUiThread(() =>
             {
-                selectedObject = GlueState.Self.CurrentTreeNode.Tag;
-                if (selectedObject is NamedObjectSave)
+                if (GlueState.Self.CurrentTreeNode != null)
                 {
-                    parentElement = ((NamedObjectSave)selectedObject).GetContainer();
+                    selectedObject = GlueState.Self.CurrentTreeNode.Tag;
+                    if (selectedObject is NamedObjectSave)
+                    {
+                        parentElement = ((NamedObjectSave)selectedObject).GetContainer();
+                    }
                 }
-            }
+            });
 
             bool usingQuickReload = true;
 

@@ -158,6 +158,7 @@ namespace FlatRedBall.Glue.Managers
         /// </summary>
         /// <param name="action">The action to perform.</param>
         /// <param name="details">The details of the task, to be displayed in the tasks window.</param>
+        [Obsolete]
         public void AddAsyncTask(Action action, string details)
         {
 
@@ -368,14 +369,19 @@ namespace FlatRedBall.Glue.Managers
 
             if (toProcess != null)
             {
+                taskHistory.Add(glueTask.DisplayInfo);
+                while(taskHistory.Count > 100)
+                {
+                    taskHistory.RemoveAt(0);
+                }
                 ThreadPool.QueueUserWorkItem(delegate
                 {
+                    SyncTaskThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
                     // This can be uncommented to get information about the task history
                     // to try to improve performance
                     //this.taskHistory.Add(glueTask?.DisplayInfo);
                     glueTask.TimeStarted = DateTime.Now;
                     TaskAddedOrRemoved?.Invoke(TaskEvent.Started, glueTask);
-                    SyncTaskThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
                     toProcess();
                     SyncTaskThreadId = null;
 
@@ -411,11 +417,11 @@ namespace FlatRedBall.Glue.Managers
             global::Glue.MainGlueWindow.Self.Invoke(action);
         }
 
+        public bool IsInTask() => TaskManager.Self.SyncTaskThreadId != null && System.Threading.Thread.CurrentThread.ManagedThreadId == TaskManager.Self.SyncTaskThreadId;
+
         public void AddOrRunIfTasked(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo)
         {
-            int threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
-
-            if (threadId == TaskManager.Self.SyncTaskThreadId)
+            if (IsInTask())
             {
                 // we're in a task:
                 action();

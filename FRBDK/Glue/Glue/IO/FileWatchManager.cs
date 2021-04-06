@@ -156,7 +156,7 @@ namespace FlatRedBall.Glue.IO
 
                         if(!skip)
                         {
-                            TaskManager.Self.AddSync(() =>
+                            TaskManager.Self.Add(() =>
                                 {
                                     if(ReactToChangedFile(file))
                                     {

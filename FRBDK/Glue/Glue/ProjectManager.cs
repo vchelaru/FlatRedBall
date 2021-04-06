@@ -647,8 +647,12 @@ namespace FlatRedBall.Glue
 
             GlueProjectSave = null;
 
+            if (!TaskManager.Self.IsInTask())
+            {
+                int m = 3;
+            }
 
-            foreach(var syncedProject in mSyncedProjects)
+            foreach (var syncedProject in mSyncedProjects)
             {
                 syncedProject.Unload();
             }

@@ -27,21 +27,28 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void RefreshTreeNodes()
         {
-            var project = GlueState.Self.CurrentGlueProject;
-            var entities = project.Entities.ToArray();
-            var screens = project.Screens.ToArray();
-
-            foreach(var entity in entities)
+            if(TaskManager.Self.IsInTask())
             {
-                RefreshTreeNodeFor(entity);
+                TaskManager.Self.OnUiThread(RefreshTreeNodes);
             }
-
-            foreach(var screen in screens)
+            else
             {
-                RefreshTreeNodeFor(screen);
-            }
+                var project = GlueState.Self.CurrentGlueProject;
+                var entities = project.Entities.ToArray();
+                var screens = project.Screens.ToArray();
 
-            RefreshGlobalContent();
+                foreach(var entity in entities)
+                {
+                    RefreshTreeNodeFor(entity);
+                }
+
+                foreach(var screen in screens)
+                {
+                    RefreshTreeNodeFor(screen);
+                }
+
+                RefreshGlobalContent();
+            }
         }
 
         public void RefreshTreeNodeFor(IElement element)

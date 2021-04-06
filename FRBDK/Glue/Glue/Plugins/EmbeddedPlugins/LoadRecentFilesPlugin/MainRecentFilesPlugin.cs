@@ -71,13 +71,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
             GlueCommands.Self.GluxCommands.SaveSettings();
         }
 
-        private void HandleRecentFileClicked(object sender, EventArgs e)
+        private async void HandleRecentFileClicked(object sender, EventArgs e)
         {
             var toolStripMenuItem = sender as ToolStripMenuItem;
 
             var fileToLoad = toolStripMenuItem.Text;
 
-            GlueCommands.Self.LoadProject(fileToLoad);
+            await GlueCommands.Self.LoadProjectAsync(fileToLoad);
         }
     }
 }

@@ -24,12 +24,14 @@ namespace Glue
 
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-            bool succeededToObtainMutex;
+            //bool succeededToObtainMutex;
 
             // Only open one instance of Glue
-            System.Threading.Mutex appMutex = new System.Threading.Mutex(true, Application.ProductName, out succeededToObtainMutex);
+            // Update Apr 5 2021
+            // No need to block it now. Glue is good enough about only saving on changes as needed
+            //System.Threading.Mutex appMutex = new System.Threading.Mutex(true, Application.ProductName, out succeededToObtainMutex);
             // Creates a Mutex, if it works, then we can go on and start Glue, if not...
-            if (succeededToObtainMutex)
+            //if (succeededToObtainMutex)
             {
                 try
                 {
@@ -39,18 +41,18 @@ namespace Glue
                 {
                     MessageBox.Show(e.ToString());
                 }
-                finally
-                {
-                    appMutex.ReleaseMutex();
+                //finally
+                //{
+                //    appMutex.ReleaseMutex();
 
-                }
+                //}
             }
-            else
-            {
-                //...We come here, and tell the user they already have Glue running.
-                string msg = String.Format("The Program \"{0}\" is already running", Application.ProductName);
-                MessageBox.Show(msg, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
+            //else
+            //{
+            //    //...We come here, and tell the user they already have Glue running.
+            //    string msg = String.Format("The Program \"{0}\" is already running", Application.ProductName);
+            //    MessageBox.Show(msg, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //}
          }
 
         private static void CreateExceptionHandlingEvents()
