@@ -94,7 +94,7 @@ namespace GumPlugin.Managers
             }
         }
 
-        private void GenerateDueToFileChangeTask(ElementSave element)
+        public void GenerateDueToFileChangeTask(ElementSave element)
         {
             if(AppState.Self.GumProjectSave != null)
             {

@@ -14,6 +14,7 @@ using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.VSHelpers.Projects;
+using GlueFormsCore.Managers;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -46,17 +47,17 @@ namespace FlatRedBall.Glue.SaveClasses
             else
             {
 
-                string oldName = elementToRename.Name;
-                string newName = oldName.Substring(0, oldName.Length - elementToRename.ClassName.Length) + value;
+                string oldNameFull = elementToRename.Name;
+                string newNameFull = oldNameFull.Substring(0, oldNameFull.Length - elementToRename.ClassName.Length) + value;
 
-                DialogResult result = ChangeClassNamesInCodeAndFileName(elementToRename, value, oldName, newName);
+                DialogResult result = ChangeClassNamesInCodeAndFileName(elementToRename, oldNameFull, newNameFull);
 
                 if(result == DialogResult.Yes)
                 {
                     // Set the name first because that's going
                     // to be used by code that follows to modify
                     // inheritance.
-                    elementToRename.Name = newName;
+                    elementToRename.Name = newNameFull;
 
 
                     if (elementToRename is EntitySave)
@@ -65,25 +66,25 @@ namespace FlatRedBall.Glue.SaveClasses
                         for (int i = 0; i < ProjectManager.GlueProjectSave.Entities.Count; i++)
                         {
                             EntitySave entitySave = ProjectManager.GlueProjectSave.Entities[i];
-                            if (entitySave.BaseEntity == oldName)
+                            if (entitySave.BaseEntity == oldNameFull)
                             {
-                                entitySave.BaseEntity = newName;
+                                entitySave.BaseEntity = newNameFull;
                             }
                         }
 
                         // Change any NamedObjects that use this as their type (whether in Entity, or as a generic class)
-                        List<NamedObjectSave> namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(oldName);
+                        List<NamedObjectSave> namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(oldNameFull);
 
                         foreach (NamedObjectSave nos in namedObjects)
                         {
-                            if (nos.SourceType == SourceType.Entity && nos.SourceClassType == oldName)
+                            if (nos.SourceType == SourceType.Entity && nos.SourceClassType == oldNameFull)
                             {
-                                nos.SourceClassType = newName;
+                                nos.SourceClassType = newNameFull;
                                 nos.UpdateCustomProperties();
                             }
-                            else if (nos.SourceType == SourceType.FlatRedBallType && nos.SourceClassGenericType == oldName)
+                            else if (nos.SourceType == SourceType.FlatRedBallType && nos.SourceClassGenericType == oldNameFull)
                             {
-                                nos.SourceClassGenericType = newName;
+                                nos.SourceClassGenericType = newNameFull;
                             }
                         }
                     }
@@ -93,15 +94,15 @@ namespace FlatRedBall.Glue.SaveClasses
                         for (int i = 0; i < ProjectManager.GlueProjectSave.Screens.Count; i++)
                         {
                             ScreenSave screenSave = ProjectManager.GlueProjectSave.Screens[i];
-                            if (screenSave.BaseScreen == oldName)
+                            if (screenSave.BaseScreen == oldNameFull)
                             {
-                                screenSave.BaseScreen = newName;
+                                screenSave.BaseScreen = newNameFull;
                             }
                         }
 
-                        if (ProjectManager.StartUpScreen == oldName)
+                        if (ProjectManager.StartUpScreen == oldNameFull)
                         {
-                            ProjectManager.StartUpScreen = newName;
+                            ProjectManager.StartUpScreen = newNameFull;
 
                         }
 
@@ -134,12 +135,12 @@ namespace FlatRedBall.Glue.SaveClasses
                         ProjectManager.SortAndUpdateUI(elementToRename as ScreenSave);
                     }
 
-                    PluginManager.ReactToElementRenamed(elementToRename, oldName);
+                    PluginManager.ReactToElementRenamed(elementToRename, oldNameFull);
                 }
             }
         }
 
-        private static DialogResult ChangeClassNamesInCodeAndFileName(IElement elementToRename, string value, string oldName, string newName)
+        private static DialogResult ChangeClassNamesInCodeAndFileName(IElement elementToRename, string oldName, string newName)
         {
             List<string> validFiles = CodeWriter.GetAllCodeFilesFor(elementToRename);
 
@@ -205,8 +206,11 @@ namespace FlatRedBall.Glue.SaveClasses
                         string fileContents = FileManager.FromFileText(absoluteNewFile);
                         // We call RemovePath because the name is going to be "Namespace/ClassName" and we want
                         // to find just "ClassName".
-                        fileContents = fileContents.Replace("partial class " + FileManager.RemovePath(oldName),
-                            "partial class " + value);
+                        RefactorManager.Self.RenameClassInCode(
+                            FileManager.RemovePath(oldName),
+                            newStrippedName,
+                            ref fileContents);
+
                         FileManager.SaveText(fileContents, absoluteNewFile);
 
                         string relativeOld = FileManager.MakeRelative(absoluteOldFile);

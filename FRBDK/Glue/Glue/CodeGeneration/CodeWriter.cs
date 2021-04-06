@@ -411,10 +411,7 @@ namespace FlatRedBallAddOns.Entities
 
             // This code will create and add above, but if the file already exists, the code above won't re-add it to the 
             // project. This is a last chance to add it if necessary:
-            if(GlueCommands.Self.ProjectCommands.TryAddCodeFileToProject(GetAbsoluteGeneratedCodeFileFor(element)))
-            {
-                GlueCommands.Self.ProjectCommands.SaveProjects();
-            }
+            GlueCommands.Self.ProjectCommands.TryAddCodeFileToProject(GetAbsoluteGeneratedCodeFileFor(element), saveOnAdd: true);
         }
 
         private static ICodeBlock GenerateClassHeader(IElement element, ICodeBlock namespaceBlock)

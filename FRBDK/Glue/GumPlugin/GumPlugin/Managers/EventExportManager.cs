@@ -1,5 +1,9 @@
-﻿using FlatRedBall.Glue.Managers;
+﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.IO;
+using GlueFormsCore.Managers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,6 +13,8 @@ using System.Threading.Tasks;
 
 namespace GumPlugin.Managers
 {
+    #region Events
+
     public enum GumEventTypes
     {
         ElementAdded,
@@ -21,17 +27,47 @@ namespace GumPlugin.Managers
         InstanceRenamed,
     }
 
+    #endregion
+
+    #region Classes
+
+    public class ExportedEventCollection
+    {
+        public Dictionary<string, List<ExportedEvent>> UserEvents { get; set; }
+    }
+
     public class ExportedEvent
     {
         public string NewName { get; set; }
-
         public string OldName { get; set; }
-
+        public string ElementType { get; set; }
         public GumEventTypes EventType { get; set; }
+        public DateTime TimestampUtc { get; set; }
     }
+
+    #endregion
 
     public class EventExportManager : Singleton<EventExportManager>
     {
+        public FilePath GumLastChangeFilePath
+        {
+            get
+            {
+                var glueProject = GlueState.Self.CurrentGlueProject;
+
+                if(glueProject == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return GlueState.Self.ContentDirectory + "\\GumLastChangeFilePath.txt";
+                }
+            }
+        }
+
+        DateTime? LastTimeChangesHandledUtc;
+
         public void HandleEventExportFileChanged(string fileName)
         {
             string contents = null;
@@ -46,39 +82,184 @@ namespace GumPlugin.Managers
 
             if(!string.IsNullOrEmpty(contents))
             {
-                var deserialized = 
-                    JsonConvert.DeserializeObject<ExportedEvent>(contents);
+                ExportedEventCollection deserialized = null;
+                try
+                {
+                    deserialized = 
+                        JsonConvert.DeserializeObject<ExportedEventCollection>(contents);
+                }
+                catch
+                {
+                    // oh well
+                }
 
-                ReactToExportedEvent(deserialized);
+                if(deserialized != null)
+                {
+                    var eventArray = deserialized.UserEvents
+                        .SelectMany(item => item.Value)
+                        .OrderBy(item => item.TimestampUtc)
+                        .ToArray();
+
+                    if(eventArray.Length > 0)
+                    {
+                        var file = GumLastChangeFilePath;
+                        if(LastTimeChangesHandledUtc == null)
+                        {
+                            try
+                            {
+                                if (file.Exists())
+                                {
+                                    var text = System.IO.File.ReadAllText(file.FullPath);
+                                    LastTimeChangesHandledUtc = DateTime.Parse(text, null, System.Globalization.DateTimeStyles.RoundtripKind);
+                                }
+                                else
+                                {
+                                    LastTimeChangesHandledUtc = DateTime.SpecifyKind(new DateTime(2000, 1, 1), DateTimeKind.Utc);
+                                }
+                            }
+                            catch { }// do nothing
+                        }
+
+                        foreach (var eventInstance in eventArray)
+                        {
+                            if(eventInstance.TimestampUtc > LastTimeChangesHandledUtc && !string.IsNullOrEmpty(eventInstance.ElementType))
+                            {
+                                ReactToExportedEvent(eventInstance);
+                            }
+                            // need to do timestamp checks
+                            //ReactToExportedEvent(deserialized);
+                        }
+
+                        System.IO.File.WriteAllText(file.FullPath, DateTime.UtcNow.ToString("O"));
+                    }
+                }
+
             }
         }
 
         private void ReactToExportedEvent(ExportedEvent deserialized)
         {
-            switch(deserialized.EventType)
+            switch (deserialized.EventType)
             {
                 case GumEventTypes.ElementDeleted:
-                    HandleElementDeleted(deserialized.OldName);
+                    HandleElementDeleted(deserialized);
+                    break;
+                case GumEventTypes.ElementRenamed:
+                    HandleElementRenamed(deserialized);
                     break;
             }
         }
 
-        private void HandleElementDeleted(string oldName)
+        private void HandleElementRenamed(ExportedEvent exportedEvent)
         {
-            var indexOfSlash = oldName.IndexOf("/");
-            var elementType = oldName.Substring(0, indexOfSlash);
+            var elementType = exportedEvent.ElementType;
+            
+            RemoveGumFilesFromProject(elementType, exportedEvent.OldName);
 
-            var strippedName = oldName.Substring(indexOfSlash + 1);
+            var newCodeFileName = GetCustomCodeFileFor(exportedEvent.NewName);
+            var oldCodeFileName = GetCustomCodeFileFor(exportedEvent.OldName);
 
-            switch(elementType)
+            if(Gum.Managers.ObjectFinder.Self.GumProjectSave != null)
+            {
+                var gumProject = Gum.Managers.ObjectFinder.Self.GumProjectSave;
+
+                Gum.DataTypes.ElementSave element = null;
+                if(exportedEvent.ElementType == "Screens")
+                {
+                    element = gumProject.Screens
+                        .FirstOrDefault(item => item.Name == exportedEvent.NewName);
+                }
+                else if(exportedEvent.ElementType == "Components")
+                {
+                    element = gumProject.Components
+                        .FirstOrDefault(item => item.Name == exportedEvent.NewName);
+                }
+
+                if(element != null)
+                {
+                    // make sure it's updated:
+                    CodeGeneratorManager.Self.GenerateDueToFileChangeTask(element);
+
+                    TaskManager.Self.Add(() =>
+                    {
+                        try
+                        {
+                            if(oldCodeFileName.Exists())
+                            {
+                                System.IO.File.Copy(oldCodeFileName.FullPath, newCodeFileName.FullPath, overwrite: true);
+
+                                var contents = System.IO.File.ReadAllText(newCodeFileName.FullPath);
+                                RefactorManager.Self.RenameClassInCode(
+                                    oldCodeFileName.NoPathNoExtension,
+                                    newCodeFileName.NoPathNoExtension,
+                                    ref contents);
+                                System.IO.File.WriteAllText(newCodeFileName.FullPath, contents);
+
+                                GlueCommands.Self.ProjectCommands.TryAddCodeFileToProject(newCodeFileName, saveOnAdd:true);
+                            }
+
+                            var allNoses = FlatRedBall.Glue.Elements.ObjectFinder.Self.GetAllNamedObjects().ToArray();
+
+                            var prefix = GlueState.Self.ProjectNamespace + ".GumRuntimes.";
+
+                            var oldQualifiedType = prefix + exportedEvent.OldName.Replace('\\', '.') + "Runtime";
+                            var newQualifiedType = prefix + exportedEvent.NewName.Replace('\\', '.') + "Runtime";
+
+                            HashSet<IElement> elementsToRegen = new HashSet<IElement>();
+
+                            foreach(var nos in allNoses)
+                            {
+                                if(nos.SourceClassType == oldQualifiedType || nos.SourceClassType == oldCodeFileName.NoPathNoExtension)
+                                {
+                                    // add this here:
+                                    nos.SourceClassType = newQualifiedType;
+                                    elementsToRegen.Add(ObjectFinder.Self.GetElementContaining(nos));
+                                }
+                            }
+
+                            foreach(var element in elementsToRegen)
+                            {
+                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+                            }
+
+                            if(elementsToRegen.Count > 0)
+                            {
+                                GlueCommands.Self.GluxCommands.SaveGlux();
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            GlueCommands.Self.PrintError($"Could not copy custom Gum file:\n{e}");
+                        }
+
+                    }, $"Copying {oldCodeFileName} to {newCodeFileName}");
+                
+
+                }
+
+            }
+        }
+
+        private void HandleElementDeleted(ExportedEvent exportedEvent)
+        {
+            var elementType = exportedEvent.ElementType;
+            var oldName = exportedEvent.OldName;
+            RemoveGumFilesFromProject(elementType, oldName);
+        }
+
+        static FilePath GetCustomCodeFileFor(string elementName) =>
+            $"{GlueState.Self.CurrentGlueProjectDirectory}GumRuntimes/{elementName}Runtime.cs";
+
+        private static void RemoveGumFilesFromProject(string elementType, string oldName)
+        {
+            switch (elementType)
             {
                 case "Screens":
                 case "Components":
-                    // screen was deleted, so remove the runtime:
-                    var customFileToRemove = 
-                        $"{GlueState.Self.CurrentGlueProjectDirectory}GumRuntimes/{strippedName}Runtime.cs";
-                    var generatedFile = 
-                        $"{GlueState.Self.CurrentGlueProjectDirectory}GumRuntimes/{strippedName}Runtime.Generated.cs";
+                    // screen/component was deleted, so remove the runtime:
+                    var customFileToRemove = GetCustomCodeFileFor(oldName);
+                    var generatedFile =
+                        $"{GlueState.Self.CurrentGlueProjectDirectory}GumRuntimes/{oldName}Runtime.Generated.cs";
 
                     TaskManager.Self.Add(() =>
                     {
@@ -86,7 +267,7 @@ namespace GumPlugin.Managers
                         GlueCommands.Self.ProjectCommands.RemoveFromProjects(generatedFile, true);
 
                     },
-                    $"Removing Gum object {strippedName}");
+                    $"Removing Gum object {oldName}");
 
                     break;
             }

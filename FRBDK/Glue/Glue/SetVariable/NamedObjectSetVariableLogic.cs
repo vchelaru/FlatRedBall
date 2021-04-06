@@ -786,7 +786,7 @@ namespace FlatRedBall.Glue.SetVariable
                     {
                         if (!string.IsNullOrEmpty(eventResponseSave.SourceObject) && eventResponseSave.SourceObject == oldValue)
                         {
-                            MessageBox.Show("Chaing the Event " + eventResponseSave.EventName + " so it uses " + namedObjectSave.InstanceName + " instead of " + oldValue);
+                            MessageBox.Show("Changing the Event " + eventResponseSave.EventName + " so it uses " + namedObjectSave.InstanceName + " instead of " + oldValue);
 
                             eventResponseSave.SourceObject = namedObjectSave.InstanceName;
                         }

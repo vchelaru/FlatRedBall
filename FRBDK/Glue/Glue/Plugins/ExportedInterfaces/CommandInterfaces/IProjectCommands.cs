@@ -45,7 +45,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
 
         void AddContentFileToProject(string absoluteFileName, bool saveProjects = true);
-        bool TryAddCodeFileToProject(FilePath codeFilePath);
+
+        /// <summary>
+        /// Adds the argument file to the current project if it is not already part of the project. 
+        /// </summary>
+        /// <param name="codeFilePath">The FilePath to the file.</param>
+        void TryAddCodeFileToProject(FilePath codeFilePath, bool saveOnAdd = false);
 
         void CopyToBuildFolder(ReferencedFileSave rfs);
         void CopyToBuildFolder(string absoluteSource);

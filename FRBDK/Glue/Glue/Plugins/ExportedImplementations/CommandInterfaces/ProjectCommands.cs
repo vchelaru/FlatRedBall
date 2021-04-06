@@ -476,16 +476,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return added;
         }
 
-        public bool TryAddCodeFileToProject(FilePath codeFilePath)
+        public void TryAddCodeFileToProject(FilePath codeFilePath, bool saveOnAdd = false)
         {
-            var wasAdded = false;
-            var mainProject = GlueState.Self.CurrentMainProject;
-            if (mainProject.CodeProject.IsFilePartOfProject(codeFilePath.FullPath) == false)
+            TaskManager.Self.AddOrRunIfTasked(() =>
             {
-                ((VisualStudioProject)mainProject.CodeProject).AddCodeBuildItem(codeFilePath.FullPath);
-                wasAdded = true;
-            }
-            return wasAdded;
+                var mainProject = GlueState.Self.CurrentMainProject;
+                if (mainProject.CodeProject.IsFilePartOfProject(codeFilePath.FullPath) == false)
+                {
+                    ((VisualStudioProject)mainProject.CodeProject).AddCodeBuildItem(codeFilePath.FullPath);
+
+                    SaveProjectsImmediately();
+                }
+            }, $"Adding {codeFilePath} to project");
         }
 
         public void CopyToBuildFolder(ReferencedFileSave rfs)
