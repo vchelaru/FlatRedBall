@@ -412,6 +412,11 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
+        public void OnUiThread(Func<Task> action)
+        {
+            global::Glue.MainGlueWindow.Self.Invoke(() => action.Invoke().Wait());
+        }
+
         public void OnUiThread(Action action)
         {
             global::Glue.MainGlueWindow.Self.Invoke(action);

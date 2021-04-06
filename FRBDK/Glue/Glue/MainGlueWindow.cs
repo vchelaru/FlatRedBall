@@ -489,6 +489,7 @@ namespace Glue
             // Let's set this to true so all tasks can end
             ProjectManager.WantsToClose = true;
 
+            long msWaited = 0;
             // But give them a chance to end...
             while (TaskManager.Self.AreAllAsyncTasksDone == false)
             {
@@ -497,6 +498,7 @@ namespace Glue
                 // we'll have a deadlock
                 var canContinue = TaskManager.Self.CurrentTask == UpdateReactor.ReloadingProjectDescription ||
                     (TaskManager.Self.CurrentTask.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTask.EndsWith(".glux")) ||
+                    (TaskManager.Self.CurrentTask.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTask.EndsWith(".csproj")) ||
                     TaskManager.Self.CurrentTask.StartsWith("Reloading glux due to file change on disk");
 
                 if (canContinue)
@@ -505,10 +507,19 @@ namespace Glue
                 }
                 else
                 {
-                    System.Threading.Thread.Sleep(50);
+                    const int sleepLength = 50;
+                    System.Threading.Thread.Sleep(sleepLength);
+                    msWaited += sleepLength;
 
                     // pump events
                     Application.DoEvents();
+
+                    // don't wait forever. This is mainly so we wait for any simultaneous tasks.
+                    // There shouldn't be any but just in case Vic messed up the code...
+                    if(msWaited > 3*1000)
+                    {
+                        break;
+                    }
                 }
 
             }

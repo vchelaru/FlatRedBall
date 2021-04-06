@@ -45,7 +45,7 @@ namespace FlatRedBall.Glue.IO
                     var partialGluxRegex = new Regex(partialGlux);
                     if(!handled && ((changedFile.ToLower() == standardizedGlux) || partialGluxRegex.IsMatch(changedFile.ToLower())))
                     {
-                        TaskManager.Self.Add( () => TaskManager.Self.OnUiThread(ReloadGlux), "Reloading glux due to file change on disk");
+                        TaskManager.Self.OnUiThread(ReloadGlux);
                         handled = true;
                     }
 
@@ -264,13 +264,10 @@ namespace FlatRedBall.Glue.IO
             {
                 if (project == ProjectManager.ProjectBase)
                 {
-                    TaskManager.Self.Add(() =>
+                    TaskManager.Self.OnUiThread(async ()=>
                     {
-                        TaskManager.Self.OnUiThread(async ()=>
-                        {
-                            await GlueCommands.Self.LoadProjectAsync(changedFile);
-                        });
-                    }, ReloadingProjectDescription);
+                        await GlueCommands.Self.LoadProjectAsync(changedFile);
+                    });
                 }
                 else
                 {
