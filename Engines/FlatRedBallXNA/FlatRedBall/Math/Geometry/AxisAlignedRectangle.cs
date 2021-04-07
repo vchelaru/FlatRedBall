@@ -670,7 +670,14 @@ namespace FlatRedBall.Math.Geometry
             return false;
         }
 
-
+        /// <summary>
+        /// Returns whether this AxisAlignedRectangle and the argument AxisAlignedRectangle overkap,
+        /// and reposition sthe two according ot their relative masses.
+        /// </summary>
+        /// <param name="rectangle">The other rectangle to collide against.</param>
+        /// <param name="thisMass">This mass relative to the other rectangle.</param>
+        /// <param name="otherMass">The other rectangle's mass relative to this.</param>
+        /// <returns>Whether collision has occurred.</returns>
         public bool CollideAgainstMove(AxisAlignedRectangle rectangle, float thisMass, float otherMass)
         {
 #if DEBUG
@@ -953,7 +960,20 @@ namespace FlatRedBall.Math.Geometry
 
         }
 
-
+        /// <summary>
+        /// Returns whether this AxisAlignedRectangle and the argument AxisAlignedRectangle overlap, 
+        /// and repositions the two according to their relative masses and the depth of the overlap.
+        /// The more overlap, the faster the two objects will separate.
+        /// </summary>
+        /// <param name="rectangle">The other rectangle to collide against.</param>
+        /// <param name="thisMass">This mass relative to the other rectangle.</param>
+        /// <param name="otherMass">The other rectangle's mass relative to this.</param>
+        /// <param name="separationVelocity">The separation velocity in units per second. This value is 
+        /// multiplied by the overlap amount to result in a velocity. For example, if separationVelocity is 2 and
+        /// the objects overlap by 100 units, then the total separation velocity will be 2*100 = 200. 
+        /// This total separation velocity will be applied proprotionally to this and the other rectangle according
+        /// to their relative masses. Increasing this value will make the separation happen more quickly.</param>
+        /// <returns>Whether collision has occurred.</returns>
         public bool CollideAgainstMoveSoft(AxisAlignedRectangle rectangle, float thisMass, float otherMass, float separationVelocity)
         {
 #if DEBUG
