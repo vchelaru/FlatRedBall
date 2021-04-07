@@ -131,6 +131,8 @@ namespace FlatRedBall.TileCollisions
             }
         }
 
+        public bool AdjustRepositionDirectionsOnAddAndRemove { get; set; } = true;
+
         #endregion
 
         public TileShapeCollection()
@@ -632,9 +634,12 @@ namespace FlatRedBall.TileCollisions
 
             mShapes.AxisAlignedRectangles.Insert(index, rectangle);
 
-            var directions = UpdateRepositionForNeighborsAndGetThisRepositionDirection(rectangle);
+            if(AdjustRepositionDirectionsOnAddAndRemove)
+            {
+                var directions = UpdateRepositionForNeighborsAndGetThisRepositionDirection(rectangle);
 
-            rectangle.RepositionDirections = directions;
+                rectangle.RepositionDirections = directions;
+            }
         }
 
         public void RemoveCollisionAtWorld(float x, float y)
@@ -652,77 +657,80 @@ namespace FlatRedBall.TileCollisions
         {
             ShapeManager.Remove(existing);
 
-            float keyValue = GetCoordinateValueForPartitioning(existing.X, existing.Y);
-
-            float keyValueBefore = keyValue - GridSize * 3 / 2.0f;
-            float keyValueAfter = keyValue + GridSize * 3 / 2.0f;
-
-            int rectanglesBeforeIndex = Rectangles.GetFirstAfter(keyValueBefore, mSortAxis, 0, Rectangles.Count);
-            int rectanglesAfterIndex = Rectangles.GetFirstAfter(keyValueAfter, mSortAxis, 0, Rectangles.Count);
-
-            float leftOfX = existing.Position.X - GridSize;
-            float rightOfX = existing.Position.X + GridSize;
-            float middleX = existing.Position.X;
-
-            float aboveY = existing.Position.Y + GridSize;
-            float belowY = existing.Position.Y - GridSize;
-            float middleY = existing.Position.Y;
-
-            var leftOf = GetRectangleAtPosition(leftOfX, existing.Y, rectanglesBeforeIndex, rectanglesAfterIndex);
-            var rightOf = GetRectangleAtPosition(rightOfX, existing.Y, rectanglesBeforeIndex, rectanglesAfterIndex);
-            var above = GetRectangleAtPosition(existing.X, aboveY, rectanglesBeforeIndex, rectanglesAfterIndex);
-            var below = GetRectangleAtPosition(existing.X, belowY, rectanglesBeforeIndex, rectanglesAfterIndex);
-
-            var rectangleUpLeft = GetRectangleAtPosition(leftOfX, aboveY, rectanglesBeforeIndex, rectanglesAfterIndex);
-            var rectangleUpRight = GetRectangleAtPosition(rightOfX, aboveY, rectanglesBeforeIndex, rectanglesAfterIndex);
-            var rectangleDownLeft = GetRectangleAtPosition(leftOfX, belowY, rectanglesBeforeIndex, rectanglesAfterIndex);
-            var rectangleDownRight = GetRectangleAtPosition(rightOfX, belowY, rectanglesBeforeIndex, rectanglesAfterIndex);
-
-            if (leftOf != null && (leftOf.RepositionDirections & RepositionDirections.Right) != RepositionDirections.Right)
+            if(AdjustRepositionDirectionsOnAddAndRemove)
             {
-                leftOf.RepositionDirections |= RepositionDirections.Right;
+                float keyValue = GetCoordinateValueForPartitioning(existing.X, existing.Y);
 
-            }
-            if (rightOf != null && (rightOf.RepositionDirections & RepositionDirections.Left) != RepositionDirections.Left)
-            {
-                rightOf.RepositionDirections |= RepositionDirections.Left;
-            }
+                float keyValueBefore = keyValue - GridSize * 3 / 2.0f;
+                float keyValueAfter = keyValue + GridSize * 3 / 2.0f;
 
-            if (above != null && (above.RepositionDirections & RepositionDirections.Down) != RepositionDirections.Down)
-            {
-                above.RepositionDirections |= RepositionDirections.Down;
-            }
+                int rectanglesBeforeIndex = Rectangles.GetFirstAfter(keyValueBefore, mSortAxis, 0, Rectangles.Count);
+                int rectanglesAfterIndex = Rectangles.GetFirstAfter(keyValueAfter, mSortAxis, 0, Rectangles.Count);
 
-            if (below != null && (below.RepositionDirections & RepositionDirections.Up) != RepositionDirections.Up)
-            {
-                below.RepositionDirections |= RepositionDirections.Up;
-            }
+                float leftOfX = existing.Position.X - GridSize;
+                float rightOfX = existing.Position.X + GridSize;
+                float middleX = existing.Position.X;
 
-            void UpdateLShaped(AARect center)
-            {
-                if (center != null)
+                float aboveY = existing.Position.Y + GridSize;
+                float belowY = existing.Position.Y - GridSize;
+                float middleY = existing.Position.Y;
+
+                var leftOf = GetRectangleAtPosition(leftOfX, existing.Y, rectanglesBeforeIndex, rectanglesAfterIndex);
+                var rightOf = GetRectangleAtPosition(rightOfX, existing.Y, rectanglesBeforeIndex, rectanglesAfterIndex);
+                var above = GetRectangleAtPosition(existing.X, aboveY, rectanglesBeforeIndex, rectanglesAfterIndex);
+                var below = GetRectangleAtPosition(existing.X, belowY, rectanglesBeforeIndex, rectanglesAfterIndex);
+
+                var rectangleUpLeft = GetRectangleAtPosition(leftOfX, aboveY, rectanglesBeforeIndex, rectanglesAfterIndex);
+                var rectangleUpRight = GetRectangleAtPosition(rightOfX, aboveY, rectanglesBeforeIndex, rectanglesAfterIndex);
+                var rectangleDownLeft = GetRectangleAtPosition(leftOfX, belowY, rectanglesBeforeIndex, rectanglesAfterIndex);
+                var rectangleDownRight = GetRectangleAtPosition(rightOfX, belowY, rectanglesBeforeIndex, rectanglesAfterIndex);
+
+                if (leftOf != null && (leftOf.RepositionDirections & RepositionDirections.Right) != RepositionDirections.Right)
                 {
-                    var left = GetRectangleAtPosition(center.X - GridSize, center.Y);
-                    var upLeft = GetRectangleAtPosition(center.X - GridSize, center.Y + GridSize);
-                    var up = GetRectangleAtPosition(center.X, center.Y + GridSize);
-                    var upRight = GetRectangleAtPosition(center.X + GridSize, center.Y + GridSize);
-                    var right = GetRectangleAtPosition(center.X + GridSize, center.Y);
-                    var downRight = GetRectangleAtPosition(center.X + GridSize, center.Y - GridSize);
-                    var down = GetRectangleAtPosition(center.X, center.Y - GridSize);
-                    var downLeft = GetRectangleAtPosition(center.X - GridSize, center.Y - GridSize);
+                    leftOf.RepositionDirections |= RepositionDirections.Right;
 
-                    UpdateLShapedPassNeighbors(center, left, upLeft, up, upRight, right, downRight, down, downLeft);
                 }
-            }
+                if (rightOf != null && (rightOf.RepositionDirections & RepositionDirections.Left) != RepositionDirections.Left)
+                {
+                    rightOf.RepositionDirections |= RepositionDirections.Left;
+                }
 
-            UpdateLShaped(leftOf);
-            UpdateLShaped(rectangleUpLeft);
-            UpdateLShaped(above);
-            UpdateLShaped(rectangleUpRight);
-            UpdateLShaped(rightOf);
-            UpdateLShaped(rectangleDownRight);
-            UpdateLShaped(below);
-            UpdateLShaped(rectangleDownLeft);
+                if (above != null && (above.RepositionDirections & RepositionDirections.Down) != RepositionDirections.Down)
+                {
+                    above.RepositionDirections |= RepositionDirections.Down;
+                }
+
+                if (below != null && (below.RepositionDirections & RepositionDirections.Up) != RepositionDirections.Up)
+                {
+                    below.RepositionDirections |= RepositionDirections.Up;
+                }
+
+                void UpdateLShaped(AARect center)
+                {
+                    if (center != null)
+                    {
+                        var left = GetRectangleAtPosition(center.X - GridSize, center.Y);
+                        var upLeft = GetRectangleAtPosition(center.X - GridSize, center.Y + GridSize);
+                        var up = GetRectangleAtPosition(center.X, center.Y + GridSize);
+                        var upRight = GetRectangleAtPosition(center.X + GridSize, center.Y + GridSize);
+                        var right = GetRectangleAtPosition(center.X + GridSize, center.Y);
+                        var downRight = GetRectangleAtPosition(center.X + GridSize, center.Y - GridSize);
+                        var down = GetRectangleAtPosition(center.X, center.Y - GridSize);
+                        var downLeft = GetRectangleAtPosition(center.X - GridSize, center.Y - GridSize);
+
+                        UpdateLShapedPassNeighbors(center, left, upLeft, up, upRight, right, downRight, down, downLeft);
+                    }
+                }
+
+                UpdateLShaped(leftOf);
+                UpdateLShaped(rectangleUpLeft);
+                UpdateLShaped(above);
+                UpdateLShaped(rectangleUpRight);
+                UpdateLShaped(rightOf);
+                UpdateLShaped(rectangleDownRight);
+                UpdateLShaped(below);
+                UpdateLShaped(rectangleDownLeft);
+            }
         }
 
         public void RemoveSurroundedCollision()
