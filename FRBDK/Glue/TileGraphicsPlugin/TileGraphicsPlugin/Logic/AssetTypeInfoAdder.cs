@@ -204,7 +204,11 @@ namespace TileGraphicsPlugin
             toReturn.FindByNameSyntax = $"Collisions.First(item => item.Name == \"OBJECTNAME\");";
 
             toReturn.GetObjectFromFileFunc = GetTileShapeCollectionObjectFromFileFunc;
-            toReturn.VariableDefinitions.Add(new VariableDefinition() { Name = "Visible", DefaultValue = "false", Type = "bool" });
+            toReturn.VariableDefinitions.Add(
+                new VariableDefinition() { Name = "Visible", DefaultValue = "false", Type = "bool" });
+            toReturn.VariableDefinitions.Add(
+                new VariableDefinition() { Name = "AdjustRepositionDirectionsOnAddAndRemove", DefaultValue = "true", Type = "bool" });
+
             toReturn.ConstructorFunc = GenerateTileShapeCollectionConstructionFunc;
             return toReturn;
         }

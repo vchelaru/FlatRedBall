@@ -21,7 +21,7 @@ namespace TileGraphicsPlugin.CodeGeneration
 
             foreach (var tileShapeCollection in tileShapeCollections)
             {
-                GenerateCodeFor(tileShapeCollection, codeBlock);
+                GenerateInitializeCodeFor(tileShapeCollection, codeBlock);
             }
 
             return codeBlock;
@@ -129,7 +129,7 @@ namespace TileGraphicsPlugin.CodeGeneration
 
         }
 
-        private void GenerateCodeFor(NamedObjectSave namedObjectSave, ICodeBlock codeBlock)
+        private void GenerateInitializeCodeFor(NamedObjectSave namedObjectSave, ICodeBlock codeBlock)
         {
             if(namedObjectSave.DefinedByBase == false)
             {
@@ -148,6 +148,8 @@ namespace TileGraphicsPlugin.CodeGeneration
                 var creationOptions = Get<CollisionCreationOptions>(
                     nameof(TileShapeCollectionPropertiesViewModel.CollisionCreationOptions));
 
+
+
                 var sourceType = namedObjectSave.SourceType;
 
                 if(sourceType == SourceType.File)
@@ -159,8 +161,10 @@ namespace TileGraphicsPlugin.CodeGeneration
                 }
 
                 var isVisible = namedObjectSave.GetCustomVariable("Visible")?.ValueAsBool == true;
+                
 
-                if(!isVisible)
+
+                if (!isVisible)
                 {
                     codeBlock.Line("// normally we wait to set variables until after the object is created, but in this case if the");
                     codeBlock.Line("// TileShapeCollection doesn't have its Visible set before creating the tiles, it can result in");
@@ -170,6 +174,17 @@ namespace TileGraphicsPlugin.CodeGeneration
                         ifBlock.Line($"{namedObjectSave.InstanceName}.Visible = false;");
                     }
 
+                }
+                bool adjustRepositionDirectionsOnAddAndRemove =
+                    namedObjectSave.GetCustomVariable("AdjustRepositionDirectionsOnAddAndRemove")?.ValueAsBool ?? true;
+                if(!adjustRepositionDirectionsOnAddAndRemove)
+                {
+                    codeBlock.Line("// normally we wait to set variables until after the object is created, in this case");
+                    codeBlock.Line("// we want the variable set before the object is instantiated");
+                    var ifBlock = codeBlock.If($"{namedObjectSave.InstanceName} != null");
+                    {
+                        ifBlock.Line($"{namedObjectSave.InstanceName}.AdjustRepositionDirectionsOnAddAndRemove = false;");
+                    }
                 }
 
                 switch(creationOptions)

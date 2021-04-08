@@ -3,6 +3,7 @@ using FlatRedBall.Math.Geometry;
 using FlatRedBall.TileGraphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using AARect = FlatRedBall.Math.Geometry.AxisAlignedRectangle;
@@ -639,6 +640,30 @@ namespace FlatRedBall.TileCollisions
                 var directions = UpdateRepositionForNeighborsAndGetThisRepositionDirection(rectangle);
 
                 rectangle.RepositionDirections = directions;
+            }
+        }
+
+        public void InsertShapes(TileShapeCollection source)
+        {
+            foreach(var rectangle in source.Rectangles)
+            {
+                this.InsertRectangle(rectangle);
+            }
+
+            if(source.Polygons.Count > 0)
+            {
+                throw new InvalidOperationException("Inserting does not currently support TileShapeCollections with polygons");
+            }
+        }
+
+        public void InsertCollidables(IList<FlatRedBall.Math.Geometry.ICollidable> collidables)
+        {
+            foreach(var collidable in collidables)
+            {
+                foreach(var rectangle in collidable.Collision.AxisAlignedRectangles)
+                {
+                    InsertRectangle(rectangle);
+                }
             }
         }
 
