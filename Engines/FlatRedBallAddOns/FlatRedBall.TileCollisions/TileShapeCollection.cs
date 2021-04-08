@@ -656,7 +656,7 @@ namespace FlatRedBall.TileCollisions
             }
         }
 
-        public void InsertCollidables(IList<FlatRedBall.Math.Geometry.ICollidable> collidables)
+        public void InsertCollidables<T>(IList<T> collidables) where T : FlatRedBall.Math.Geometry.ICollidable
         {
             foreach(var collidable in collidables)
             {
