@@ -662,6 +662,7 @@ namespace FlatRedBall.TileCollisions
             {
                 foreach(var rectangle in collidable.Collision.AxisAlignedRectangles)
                 {
+                    rectangle.ForceUpdateDependencies();
                     InsertRectangle(rectangle);
                 }
             }
