@@ -547,6 +547,14 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
             double secondsSincePush = CurrentTime - mTimeJumpPushed;
 
+            // This needs to be done before checking if the user can continue to apply jump to hold
+            if (mValuesJumpedWith != null && mValuesJumpedWith.JumpApplyByButtonHold &&
+				(!JumpInput.IsDown || mHitHead)
+                )
+            {
+                mCanContinueToApplyJumpToHold = false;
+            }
+
             if (mValuesJumpedWith != null && 
                 mCanContinueToApplyJumpToHold &&
                 secondsSincePush < mValuesJumpedWith.JumpApplyLength &&
@@ -556,13 +564,6 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 this.YVelocity = mValuesJumpedWith.JumpVelocity;
             }
             else
-            {
-                mCanContinueToApplyJumpToHold = false;
-            }
-
-            if (mValuesJumpedWith != null && mValuesJumpedWith.JumpApplyByButtonHold &&
-				(!JumpInput.IsDown || mHitHead)
-                )
             {
                 mCanContinueToApplyJumpToHold = false;
             }
