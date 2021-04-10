@@ -190,7 +190,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
                     if (!isAlreadyAdded)
                     {
-                        GlueCommands.Self.GluxCommands.AddSingleFileTo(
+                        var newCsvRfs = GlueCommands.Self.GluxCommands.AddSingleFileTo(
                             CsvGenerator.Self.CsvFileFor(entity).FullPath,
                             CsvGenerator.RelativeCsvFile,
                             "",
@@ -201,6 +201,8 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
                             null,
                             selectFileAfterCreation:false
                             );
+
+                        newCsvRfs.HasPublicProperty = true;
                     }
 
                     var rfs = entity.ReferencedFiles.FirstOrDefault(item => item.Name == rfsName);
