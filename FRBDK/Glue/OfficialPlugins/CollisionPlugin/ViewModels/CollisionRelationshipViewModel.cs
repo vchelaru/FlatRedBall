@@ -374,7 +374,7 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         }
 
         [DependsOn(nameof(IsFirstPlatformer))]
-        public Visibility PlatformerOptionsVisibility => IsFirstPlatformer ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility PlatformerOptionsVisibility => IsFirstPlatformer.ToVisibility();
 
         [DependsOn(nameof(CollisionType))]
         public bool IsPlatformerSolidCollisionChecked
@@ -388,6 +388,12 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
                 }
             }
         }
+
+        [DependsOn(nameof(IsFirstPlatformer))]
+        [DependsOn(nameof(IsPlatformerSolidCollisionChecked))]
+        public Visibility PlatformerMovementValuesVisibility =>
+            (IsFirstPlatformer).ToVisibility();
+
 
         [DependsOn(nameof(CollisionType))]
         public bool IsPlatformerCloudCollisionChecked
@@ -546,6 +552,45 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
                 : Visibility.Collapsed;
         }
 
+        public ObservableCollection<string> AvailablePlatformerVariableNames
+        {
+            get; private set;
+        } = new ObservableCollection<string>();
+
+        [DependsOn(nameof(FirstIndividualType))]
+        public string PlatformerValuesGroupHeader
+        {
+            get
+            {
+                string strippedName = FirstIndividualType;
+                if (FirstIndividualType?.Contains(".") == true)
+                {
+                    strippedName = FirstIndividualType.Substring(FirstIndividualType.LastIndexOf(".") + 1);
+                }
+                return $"{strippedName} Platformer Movement Values";
+            }
+        }
+
+        [SyncedProperty]
+        public string GroundPlatformerVariableName
+        {
+            get => Get<string>();
+            set => SetAndPersist(value);
+        }
+
+        [SyncedProperty]
+        public string AirPlatformerVariableName
+        {
+            get => Get<string>();
+            set => SetAndPersist(value);
+        }
+
+        [SyncedProperty]
+        public string AfterDoubleJumpPlatformerVariableName
+        {
+            get => Get<string>();
+            set => SetAndPersist(value);
+        }
         #endregion
 
         public CollisionRelationshipViewModel()

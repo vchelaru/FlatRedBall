@@ -192,7 +192,8 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             RefreshAvailableCollisionObjects(currentElement, viewModel);
             RefreshSubcollisionObjects(currentElement, viewModel);
-            RefreshIfIsPlatformer(currentElement, viewModel);
+            RefreshIfIsPlatformer(currentElement, viewModel, out IElement firstNosElementType);
+            RefreshPlatformerMovementValues(viewModel, firstNosElementType);
             RefreshPartitioningIcons(currentElement, viewModel);
         }
 
@@ -504,7 +505,9 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
                     TryApplyAutoName(element, namedObject);
 
-                    RefreshIfIsPlatformer(element, viewModel);
+                    RefreshIfIsPlatformer(element, viewModel, out IElement firstElementType);
+
+                    RefreshPlatformerMovementValues(viewModel, firstElementType);
 
                     RefreshPartitioningIcons(element, viewModel);
 
@@ -536,33 +539,51 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             }
         }
 
-        static void RefreshIfIsPlatformer(IElement element, CollisionRelationshipViewModel viewModel)
+        static void RefreshIfIsPlatformer(IElement collisionRelationshipOwner, CollisionRelationshipViewModel viewModel, out IElement firstNosElementType)
         {
+            firstNosElementType = null;
             var firstName = viewModel.FirstCollisionName;
 
-            var firstNos = element.GetNamedObject(firstName);
+            var firstNos = collisionRelationshipOwner.GetNamedObject(firstName);
 
             bool isPlatformer = false;
                        
             if (firstNos != null)
-            {
-                IElement nosElement = null;
-                
+            {                
                 if(firstNos.IsList)
                 {
                     var genericType = firstNos.SourceClassGenericType;
-                    nosElement = ObjectFinder.Self.GetEntitySave(genericType);
+                    firstNosElementType = ObjectFinder.Self.GetEntitySave(genericType);
 
                 }
                 else
                 {
-                    nosElement = firstNos.GetReferencedElement();
+                    firstNosElementType = firstNos.GetReferencedElement();
                 }
 
-                isPlatformer = nosElement?.Properties.GetValue<bool>("IsPlatformer") == true;
+                isPlatformer = firstNosElementType?.Properties.GetValue<bool>("IsPlatformer") == true;
             }
 
             viewModel.IsFirstPlatformer = isPlatformer;
+        }
+
+        static void RefreshPlatformerMovementValues(CollisionRelationshipViewModel viewModel, IElement firstNosElementType)
+        {
+            viewModel.AvailablePlatformerVariableNames.Clear();
+            
+            if(viewModel.IsFirstPlatformer && firstNosElementType != null)
+            {
+                var rfs = firstNosElementType.ReferencedFiles.FirstOrDefault(item => item.Name.EndsWith("PlatformerValuesStatic.csv"));
+                if(rfs != null)
+                {
+                    var platformerValues = FlatRedBall.Glue.GuiDisplay.AvailableSpreadsheetValueTypeConverter.GetAvailableValues(
+                        GlueCommands.Self.GetAbsoluteFileName(rfs), shouldAppendFileName: true);
+                    foreach (var platformerValue in platformerValues)
+                    {
+                        viewModel.AvailablePlatformerVariableNames.Add(platformerValue);
+                    }
+                }
+            }
         }
 
         public static void TryApplyAutoName(IElement element, NamedObjectSave namedObject)

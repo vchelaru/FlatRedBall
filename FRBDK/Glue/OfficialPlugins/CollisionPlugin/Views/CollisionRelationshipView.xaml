@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:OfficialPlugins.CollisionPlugin.Views"
              xmlns:VM="clr-namespace:OfficialPlugins.CollisionPlugin.ViewModels" xmlns:views="clr-namespace:OfficialPluginsCore.CollisionPlugin.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="670" d:DesignWidth="600">
+             d:DesignWidth="600">
     <ScrollViewer>
         <StackPanel>
             <Grid>
@@ -90,6 +90,7 @@
                        Text="Inactive collisions will not automatically raise events and perform physics, but can be called manually in code"
                        />
 
+            
             <GroupBox Header="Collision Limit" Visibility="{Binding CollisionLimitUiVisibility}">
                 <StackPanel>
                     <RadioButton
@@ -172,6 +173,36 @@
                     <RadioButton
                         IsChecked="{Binding IsDelegateCollisionChecked}">Delegate Collision (delegate assigned in code)</RadioButton>
                 </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="{Binding PlatformerValuesGroupHeader}" Visibility="{Binding PlatformerMovementValuesVisibility}" Margin="0,8,0,0">
+                <Grid  Margin="10,0,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock VerticalAlignment="Center">Ground Movement:</TextBlock>
+                    <ComboBox IsEditable="True" Grid.Column="1" Margin="2" 
+                              ItemsSource="{Binding AvailablePlatformerVariableNames}"
+                              SelectedItem="{Binding GroundPlatformerVariableName}"></ComboBox>
+
+                    <TextBlock VerticalAlignment="Center" Grid.Row="1">Air Movement:</TextBlock>
+                    <ComboBox IsEditable="True" Grid.Row="1" Grid.Column="1" Margin="2"  
+                              ItemsSource="{Binding AvailablePlatformerVariableNames}"
+                              SelectedItem="{Binding AirPlatformerVariableName}"></ComboBox>
+
+                    <TextBlock VerticalAlignment="Center" Grid.Row="2">After Double Jump:</TextBlock>
+                    <ComboBox IsEditable="True" Grid.Row="2" Grid.Column="1" Margin="2"  
+                              ItemsSource="{Binding AvailablePlatformerVariableNames}"
+                              SelectedItem="{Binding AfterDoubleJumpPlatformerVariableName}"></ComboBox>
+                </Grid>
+
             </GroupBox>
 
             <GroupBox Header="Events" Margin="0,8,0,0">

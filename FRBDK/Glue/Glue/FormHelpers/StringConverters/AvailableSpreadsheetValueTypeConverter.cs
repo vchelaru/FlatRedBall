@@ -127,10 +127,10 @@ namespace FlatRedBall.Glue.GuiDisplay
         }
 
 
-        public AvailableSpreadsheetValueTypeConverter(string absoluteFile, IElement container)
+        public AvailableSpreadsheetValueTypeConverter(FilePath filePath, IElement container)
         {
             this.mContainer = container;
-            this.mAbsoluteFile = absoluteFile;
+            this.mAbsoluteFile = filePath.FullPath;
         }
 
         public override TypeConverter.StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)

@@ -52,22 +52,24 @@ namespace OfficialPlugins.CollisionPlugin
 
             ///////////End Early Out///////////////////
 
-            var collisionType = (CollisionType)namedObject.Properties.GetValue<int>(
+            T Get<T>(string name) => namedObject.Properties.GetValue<T>(name);
+
+            var collisionType = (CollisionType)Get<int>(
                 nameof(CollisionRelationshipViewModel.CollisionType));
 
-            var firstMass = namedObject.Properties.GetValue<float>(
+            var firstMass = Get<float>(
                 nameof(CollisionRelationshipViewModel.FirstCollisionMass))
                 .ToString(CultureInfo.InvariantCulture) + "f";
 
-            var secondMass = namedObject.Properties.GetValue<float>(
+            var secondMass = Get<float>(
                 nameof(CollisionRelationshipViewModel.SecondCollisionMass))
                 .ToString(CultureInfo.InvariantCulture) + "f";
 
-            var elasticity = namedObject.Properties.GetValue<float>(
+            var elasticity = Get<float>(
                 nameof(CollisionRelationshipViewModel.CollisionElasticity))
                 .ToString(CultureInfo.InvariantCulture) + "f";
 
-            var firstSubCollision = namedObject.Properties.GetValue<string>(
+            var firstSubCollision = Get<string>(
                 nameof(CollisionRelationshipViewModel.FirstSubCollisionSelectedItem));
 
             if (firstSubCollision == "<Entire Object>")
@@ -75,7 +77,7 @@ namespace OfficialPlugins.CollisionPlugin
                 firstSubCollision = null;
             }
 
-            var secondSubCollision = namedObject.Properties.GetValue<string>(
+            var secondSubCollision = Get<string>(
                 nameof(CollisionRelationshipViewModel.SecondSubCollisionSelectedItem));
 
             if (secondSubCollision == "<Entire Object>")
@@ -83,14 +85,20 @@ namespace OfficialPlugins.CollisionPlugin
                 secondSubCollision = null;
             }
 
-            var isCollisionActive = namedObject.Properties.GetValue<bool>(
+            var isCollisionActive = Get<bool>(
                 nameof(CollisionRelationshipViewModel.IsCollisionActive));
 
-            var collisionLimit = (FlatRedBall.Math.Collision.CollisionLimit) namedObject.Properties.GetValue<int>(
+            var collisionLimit = (FlatRedBall.Math.Collision.CollisionLimit) Get<int>(
                 nameof(CollisionRelationshipViewModel.CollisionLimit));
 
-            var listVsListLoopingMode = (FlatRedBall.Math.Collision.ListVsListLoopingMode)namedObject.Properties.GetValue<int>(
+            var listVsListLoopingMode = (FlatRedBall.Math.Collision.ListVsListLoopingMode)Get<int>(
                 nameof(CollisionRelationshipViewModel.ListVsListLoopingMode));
+
+            var groupPlatformerVariableName = Get<string>(nameof(CollisionRelationshipViewModel.GroundPlatformerVariableName));
+            var airPlatformerVariableName = Get<string>(nameof(CollisionRelationshipViewModel.AirPlatformerVariableName));
+            var afterDoubleJumpPlatformerVariableName = Get<string>(nameof(CollisionRelationshipViewModel.AfterDoubleJumpPlatformerVariableName));
+
+            
 
             var instanceName = namedObject.InstanceName;
 
@@ -208,6 +216,46 @@ namespace OfficialPlugins.CollisionPlugin
                 codeBlock.Line(
                     $"{instanceName}.{nameof(FlatRedBall.Math.Collision.CollisionRelationship.IsActive)} = false;");
             }
+
+            if(!string.IsNullOrEmpty(groupPlatformerVariableName) ||
+                !string.IsNullOrEmpty(airPlatformerVariableName) ||
+                !string.IsNullOrEmpty(afterDoubleJumpPlatformerVariableName) )
+            {
+                string StrippedName(string nameWithCsv)
+                {
+                    if(nameWithCsv?.Contains(" in ") == true)
+                    {
+                        var index = nameWithCsv.IndexOf(" in ");
+                        return nameWithCsv.Substring(0, index);
+                    }
+                    else
+                    {
+                        return nameWithCsv;
+                    }
+                }
+                codeBlock.Line(
+                    $"{instanceName}.CollisionOccurred += (first, second) =>");
+                var eventBlock = codeBlock.Block();
+
+                if (!string.IsNullOrEmpty(groupPlatformerVariableName))
+                {
+                    eventBlock.Line(
+                        $"first.GroundMovement = {firstType}.PlatformerValuesStatic[\"{StrippedName(groupPlatformerVariableName)}\"];");
+                }
+                if(!string.IsNullOrEmpty(airPlatformerVariableName) )
+                {
+                    eventBlock.Line(
+                        $"first.AirMovement = {firstType}.PlatformerValuesStatic[\"{StrippedName(airPlatformerVariableName)}\"];");
+                }
+                if (!string.IsNullOrEmpty(afterDoubleJumpPlatformerVariableName))
+                {
+                    eventBlock.Line(
+                        $"first.AfterDoubleJump = {firstType}.PlatformerValuesStatic[\"{StrippedName(afterDoubleJumpPlatformerVariableName)}\"];");
+                }
+                codeBlock.Line(";");
+
+            }
+
         }
 
         private static void GeneratePlatformerCollision(ICodeBlock codeBlock, 
