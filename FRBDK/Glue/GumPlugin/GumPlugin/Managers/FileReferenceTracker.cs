@@ -710,12 +710,12 @@ namespace GumPlugin.Managers
                 var contentProject = GlueState.Self.CurrentMainContentProject;
                 bool shouldSave = false;
 
-                bool wasAnythingChanged = RemoveUnreferencedFilesFromProjects(gumProject, codeProject, contentProject);
+                bool wasAnythingChanged = RemoveUnreferencedCodeAndContentFilesFromProjects(gumProject, codeProject, contentProject);
                 shouldSave |= wasAnythingChanged;
 
                 foreach(VisualStudioProject syncedProject in GlueState.Self.SyncedProjects)
                 {
-                    wasAnythingChanged = RemoveUnreferencedFilesFromProjects(gumProject, syncedProject,
+                    wasAnythingChanged = RemoveUnreferencedCodeAndContentFilesFromProjects(gumProject, syncedProject,
                         (VisualStudioProject)syncedProject.ContentProject);
                     shouldSave |= wasAnythingChanged;
                 }
@@ -728,7 +728,7 @@ namespace GumPlugin.Managers
             }
         }
 
-        private static bool RemoveUnreferencedFilesFromProjects(GumProjectSave gumProject, VisualStudioProject codeProject, VisualStudioProject contentProject)
+        private static bool RemoveUnreferencedCodeAndContentFilesFromProjects(GumProjectSave gumProject, VisualStudioProject codeProject, VisualStudioProject contentProject)
         {
             List<ProjectItem> toRemove = new List<ProjectItem>();
 
@@ -767,41 +767,46 @@ namespace GumPlugin.Managers
                 gumProject.Screens.OfType<ElementSave>())
                 .ToArray();
 
-            var runtimeFolder = GlueState.Self.CurrentGlueProjectDirectory + "GumRuntimes/";
+            var runtimeFolder = new FilePath(GlueState.Self.CurrentGlueProjectDirectory + "GumRuntimes/");
+            var formsFolder = new FilePath( GlueState.Self.CurrentGlueProjectDirectory + "Forms/");
 
-            bool IsGumRuntime(ProjectItem projectItem)
+            bool IsFormsOrGumRuntime(ProjectItem projectItem)
             {
                 return projectItem.UnevaluatedInclude?.ToLower().EndsWith("runtime.generated.cs") == true ||
-                    projectItem.UnevaluatedInclude?.ToLower().EndsWith("runtime.cs") == true;
-            };
+                    projectItem.UnevaluatedInclude?.ToLower().EndsWith("runtime.cs") == true ||
+                    projectItem.UnevaluatedInclude?.ToLower().EndsWith("forms.generated.cs") == true ||
+                    projectItem.UnevaluatedInclude?.ToLower().EndsWith("forms.cs") == true;
+            }
 
-            var codeItemsMadeForGumObjects = project.EvaluatedItems.Where(IsGumRuntime).ToArray();
+            var codeItemsMadeForGumObjects = project.EvaluatedItems.Where(IsFormsOrGumRuntime).ToArray();
 
             foreach (var buildItem in codeItemsMadeForGumObjects)
             {
-                string includeDirectory = null;
-
-                includeDirectory = FileManager.GetDirectory(buildItem.UnevaluatedInclude);
+                var includeDirectory = new FilePath( FileManager.GetDirectory(buildItem.UnevaluatedInclude));
                     
-
                 bool isInGumRuntimes = includeDirectory == runtimeFolder;
+                bool isInForms = formsFolder.IsRootOf(includeDirectory);
 
-                if ( isInGumRuntimes)
+                ElementSave GetElement()
                 {
-                    // is there an element with this name?
-
-                    var elementName = FileManager.RemoveExtension( FileManager.RemoveExtension( 
+                    var elementName = FileManager.RemoveExtension(FileManager.RemoveExtension(
                         FileManager.RemovePath(buildItem.UnevaluatedInclude)));
 
                     // "elementName" will end with "Runtime"
                     elementName = elementName.Substring(0, elementName.Length - "Runtime".Length);
 
                     var foundElement = allElements.FirstOrDefault(item => item.Name == elementName);
+                    return foundElement;
+                }
 
-                    if (foundElement == null)
-                    {
-                        toRemove.Add(buildItem);
-                    }
+
+                if ( isInGumRuntimes && GetElement() == null)
+                {
+                    toRemove.Add(buildItem);
+                }
+                else if(isInForms && GetElement() == null)
+                {
+                    toRemove.Add(buildItem);
                 }
 
             }
