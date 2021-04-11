@@ -278,6 +278,8 @@ namespace FlatRedBall.Glue.Plugins
                     ShutDownPlugin(plugin, PluginShutDownReason.GlueShutDown);
                 }
                 
+
+
                 // Assembly loading only happens asynchronously when `Unload()` is called and all references
                 // to the context have been removed.  This means that they won't be fully cleaned up until the garbage
                 // collector runs.  Since we might end up re-loading a new version of the plugins that were previously
@@ -309,6 +311,15 @@ namespace FlatRedBall.Glue.Plugins
                 if (runnablePluginDirectory != null)
                 {
                     mProjectInstance.LoadPlugins(runnablePluginDirectory.FullPath);
+                }
+
+                foreach (var output in mProjectInstance.CompileOutput)
+                {
+                    ReceiveOutput(output);
+                }
+                foreach (var output in mProjectInstance.CompileErrors)
+                {
+                    ReceiveError(output);
                 }
             }
 

@@ -1260,13 +1260,11 @@ namespace FlatRedBall.IO
 #endregion
 
 
-#region XML Docs
         /// <summary>
         /// Returns the fileName without an extension, or makes no changes if fileName has no extension.
         /// </summary>
         /// <param name="fileName">The file name.</param>
         /// <returns>The file name with extension removed if an extension existed.</returns>
-#endregion
         public static string RemoveExtension(string fileName)
         {
             int extensionLength = GetExtension(fileName).Length;
@@ -1281,12 +1279,10 @@ namespace FlatRedBall.IO
 
         }
 
-#region XML Docs
         /// <summary>
         /// Modifies the fileName by removing its path, or makes no changes if the fileName has no path.
         /// </summary>
         /// <param name="fileName">The file name to change</param>
-#endregion
         public static void RemovePath(ref string fileName)
         {
             int indexOf1 = fileName.LastIndexOf('/', fileName.Length - 1, fileName.Length);
@@ -1308,13 +1304,11 @@ namespace FlatRedBall.IO
                 fileName = fileName.Remove(0, indexOf2 + 1);
         }
 
-#region XML Docs
         /// <summary>
         /// Returns the fileName without a path, or makes no changes if the fileName has no path.
         /// </summary>
         /// <param name="fileName">The file name.</param>
         /// <returns>The modified fileName if a path is found.</returns>
-#endregion
         public static string RemovePath(string fileName)
         {
             RemovePath(ref fileName);
@@ -1322,7 +1316,6 @@ namespace FlatRedBall.IO
             return fileName;
         }
 
-#region XML Docs
         /// <summary>
         /// Sets the relative directory to the current directory.
         /// </summary>
@@ -1331,14 +1324,9 @@ namespace FlatRedBall.IO
         /// .exe is called from a different location (such as the command line in a different folder),
         /// the current directory will differ.
         /// </remarks>
-#endregion
         public static void ResetRelativeToCurrentDirectory()
         {
-#if WINDOWS_8
-            throw new NotImplementedException();
-#else
             RelativeDirectory = (System.IO.Directory.GetCurrentDirectory() + "/").Replace("\\", "/");
-#endif
         }
 
 

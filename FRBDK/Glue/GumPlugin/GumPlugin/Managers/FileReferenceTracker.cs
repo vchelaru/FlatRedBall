@@ -767,7 +767,7 @@ namespace GumPlugin.Managers
                 gumProject.Screens.OfType<ElementSave>())
                 .ToArray();
 
-            var runtimeFolder = new FilePath(GlueState.Self.CurrentGlueProjectDirectory + "GumRuntimes/");
+            var gumRuntimeFolder = new FilePath(GlueState.Self.CurrentGlueProjectDirectory + "GumRuntimes/");
             var formsFolder = new FilePath( GlueState.Self.CurrentGlueProjectDirectory + "Forms/");
 
             bool IsFormsOrGumRuntime(ProjectItem projectItem)
@@ -784,16 +784,42 @@ namespace GumPlugin.Managers
             {
                 var includeDirectory = new FilePath( FileManager.GetDirectory(buildItem.UnevaluatedInclude));
                     
-                bool isInGumRuntimes = includeDirectory == runtimeFolder;
+                bool isInGumRuntimes = gumRuntimeFolder.IsRootOf(includeDirectory);
                 bool isInForms = formsFolder.IsRootOf(includeDirectory);
 
                 ElementSave GetElement()
                 {
-                    var elementName = FileManager.RemoveExtension(FileManager.RemoveExtension(
-                        FileManager.RemovePath(buildItem.UnevaluatedInclude)));
+                    // strip off forms
+                    var elementName = FileManager.RemoveExtension(buildItem.UnevaluatedInclude);
+                    if(elementName.EndsWith(".Generated"))
+                    {
+                        elementName = FileManager.RemoveExtension(elementName);
+                    }
+                    // strip off the element type:
+                    elementName = elementName.Replace("\\", "/");
 
-                    // "elementName" will end with "Runtime"
-                    elementName = elementName.Substring(0, elementName.Length - "Runtime".Length);
+                    string RemoveFirstDirectory(string path)
+                    {
+                        var firstDirectory = path.Split('/')[0];
+                        return FileManager.MakeRelative(path, firstDirectory);
+                    }
+
+                    if (isInForms)
+                    {
+                        // it's going to be in forms/component type
+                        // "elementName" will end with "Forms"
+                        elementName = RemoveFirstDirectory(elementName);
+                        // and the type
+                        elementName = RemoveFirstDirectory(elementName);
+
+                        elementName = elementName.Substring(0, elementName.Length - "Forms".Length);
+                    }
+                    else if(isInGumRuntimes)
+                    {
+                        // for gum runtimes we don't include the type directory (for now?)
+                        elementName = RemoveFirstDirectory(elementName);
+                        elementName = elementName.Substring(0, elementName.Length - "Runtime".Length);
+                    }
 
                     var foundElement = allElements.FirstOrDefault(item => item.Name == elementName);
                     return foundElement;
