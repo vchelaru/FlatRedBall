@@ -313,13 +313,20 @@ namespace FlatRedBall.Glue.Plugins
                     mProjectInstance.LoadPlugins(runnablePluginDirectory.FullPath);
                 }
 
-                foreach (var output in mProjectInstance.CompileOutput)
+                if(mProjectInstance.CompileOutput != null)
                 {
-                    ReceiveOutput(output);
+                    foreach (var output in mProjectInstance.CompileOutput)
+                    {
+                        ReceiveOutput(output);
+                    }
                 }
-                foreach (var output in mProjectInstance.CompileErrors)
+
+                if(mProjectInstance.CompileErrors != null)
                 {
-                    ReceiveError(output);
+                    foreach (var output in mProjectInstance.CompileErrors)
+                    {
+                        ReceiveError(output);
+                    }
                 }
             }
 
