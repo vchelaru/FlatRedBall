@@ -52,6 +52,9 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
                 }
             }
+
+            // allow the user to select "None" as the 2nd type:
+            viewModel.SecondCollisionItemSource.Add(CollisionRelationshipViewModel.AlwaysColliding);
         }
 
         internal static void HandleFirstCollisionPartitionClicked(CollisionRelationshipViewModel viewModel)
@@ -167,24 +170,20 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             return false;
         }
 
-        public static void RefreshViewModelTo(CollisionRelationshipViewModel viewModel, NamedObjectSave selectedNos)
+        public static void RefreshViewModelTo(CollisionRelationshipViewModel viewModel, NamedObjectSave collisionRelationship)
         {
             var currentElement = GlueState.Self.CurrentElement;
 
-            viewModel.GlueObject = selectedNos;
+            viewModel.GlueObject = collisionRelationship;
 
             viewModel.UpdateFromGlueObject();
 
-            viewModel.FirstIndividualType = AssetTypeInfoManager.GetFirstGenericType(selectedNos, out bool isFirstList);
-            viewModel.SecondIndividualType = AssetTypeInfoManager.GetSecondGenericType(selectedNos, out bool isSecondList);
-
-            viewModel.IsFirstList = isFirstList;
-            viewModel.IsSecondList = isSecondList;
+            RefreshFirstAndSecondTypes(viewModel, collisionRelationship);
 
             viewModel.Events.Clear();
-            foreach(var eventSave in currentElement.Events)
+            foreach (var eventSave in currentElement.Events)
             {
-                if(eventSave.SourceObject == selectedNos.InstanceName)
+                if (eventSave.SourceObject == collisionRelationship.InstanceName)
                 {
                     viewModel.Events.Add(eventSave);
                 }
@@ -195,6 +194,15 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             RefreshIfIsPlatformer(currentElement, viewModel, out IElement firstNosElementType);
             RefreshPlatformerMovementValues(viewModel, firstNosElementType);
             RefreshPartitioningIcons(currentElement, viewModel);
+        }
+
+        private static void RefreshFirstAndSecondTypes(CollisionRelationshipViewModel viewModel, NamedObjectSave collisionRelationship)
+        {
+            viewModel.FirstIndividualType = AssetTypeInfoManager.GetFirstGenericType(collisionRelationship, out bool isFirstList);
+            viewModel.SecondIndividualType = AssetTypeInfoManager.GetSecondGenericType(collisionRelationship, out bool isSecondList);
+
+            viewModel.IsFirstList = isFirstList;
+            viewModel.IsSecondList = isSecondList;
         }
 
         private static void RefreshPartitioningIcons(IElement element, CollisionRelationshipViewModel viewModel)
@@ -494,12 +502,14 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             var namedObject = GlueState.Self.CurrentNamedObjectSave;
 
             var element = GlueState.Self.CurrentElement;
-            var nos = viewModel.GlueObject as NamedObjectSave;
+            var relationshipNos = viewModel.GlueObject as NamedObjectSave;
             switch (e.PropertyName)
             {
                 case nameof(viewModel.FirstCollisionName):
                 case nameof(viewModel.SecondCollisionName):
-                    CollisionRelationshipViewModelController.TryFixSourceClassType(nos);
+                    CollisionRelationshipViewModelController.TryFixSourceClassType(relationshipNos);
+
+                    RefreshFirstAndSecondTypes(viewModel, relationshipNos);
 
                     RefreshSubcollisionObjects(element, viewModel);
 
@@ -511,7 +521,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
                     RefreshPartitioningIcons(element, viewModel);
 
-                    if (TryFixMassesForTileShapeCollisionRelationship(element, nos))
+                    if (TryFixMassesForTileShapeCollisionRelationship(element, relationshipNos))
                     {
                         viewModel.UpdateFromGlueObject();
                     }
@@ -530,8 +540,8 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                     break;
 
                 case nameof(viewModel.CollisionType):
-                    CollisionRelationshipViewModelController.TryFixSourceClassType(nos);
-                    if (TryFixMassesForTileShapeCollisionRelationship(element, nos))
+                    CollisionRelationshipViewModelController.TryFixSourceClassType(relationshipNos);
+                    if (TryFixMassesForTileShapeCollisionRelationship(element, relationshipNos))
                     {
                         viewModel.UpdateFromGlueObject();
                     }
@@ -700,7 +710,15 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 secondSub = null;
             }
 
-            return $"{firstName}{firstSub}Vs{secondName}{secondSub}";
+            // special case - always colliding
+            if(secondName == null)
+            {
+                return $"{firstName}AlwaysColliding";
+            }
+            else
+            {
+                return $"{firstName}{firstSub}Vs{secondName}{secondSub}";
+            }
         }
     }
 }

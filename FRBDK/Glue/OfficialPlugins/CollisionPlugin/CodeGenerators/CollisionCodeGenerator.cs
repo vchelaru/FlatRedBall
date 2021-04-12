@@ -44,7 +44,7 @@ namespace OfficialPlugins.CollisionPlugin
             var secondCollidable = namedObject.GetSecondCollidableObjectName();
 
             //////////////Early Out/////////////////////
-            if (string.IsNullOrEmpty(firstCollidable) || string.IsNullOrEmpty(secondCollidable))
+            if (string.IsNullOrEmpty(firstCollidable))
             {
                 return;
             }
@@ -114,7 +114,11 @@ namespace OfficialPlugins.CollisionPlugin
             var isFirstShapeCollection = firstType == "FlatRedBall.Math.Geometry.ShapeCollection";
             var isSecondShapeCollection = secondType == "FlatRedBall.Math.Geometry.ShapeCollection";
 
-            if(collisionType == CollisionType.PlatformerSolidCollision ||
+            var isAlwaysColliding = secondCollidable == null;
+
+            bool shouldManuallyAddToCollisionManager = false;
+
+            if (collisionType == CollisionType.PlatformerSolidCollision ||
                 collisionType == CollisionType.PlatformerCloudCollision)
             {
                 GeneratePlatformerCollision(codeBlock, firstCollidable, secondCollidable, firstSubCollision, collisionType, instanceName, isFirstList, firstType, isSecondList, secondType);
@@ -141,7 +145,9 @@ namespace OfficialPlugins.CollisionPlugin
                     codeBlock.Line($"{instanceName} = new FlatRedBall.Math.Collision.DelegateCollisionRelationshipBase<{firstType}, {secondType}>(" +
                         $"{firstCollidable}, {secondCollidable});");
                 }
-                codeBlock.Line($"FlatRedBall.Math.Collision.CollisionManager.Self.Relationships.Add({instanceName});");
+
+                shouldManuallyAddToCollisionManager = true;
+
             }
             else if(isSecondTileShapeCollection)
             {
@@ -151,6 +157,11 @@ namespace OfficialPlugins.CollisionPlugin
                     $"FlatRedBall.Math.Collision.CollisionManager.Self, " +
                     $"{firstCollidable}, {secondCollidable});");
 
+            }
+            else if(isAlwaysColliding)
+            {
+                codeBlock.Line($"{instanceName} = new FlatRedBall.Math.Collision.AlwaysCollidingListCollisionRelationship<{firstType}>({firstCollidable});");
+                shouldManuallyAddToCollisionManager = true;
             }
             //else if(isSecondShapeCollection)
             //{
@@ -163,7 +174,12 @@ namespace OfficialPlugins.CollisionPlugin
                     $"{firstCollidable}, {secondCollidable});");
             }
 
-            if(!string.IsNullOrEmpty(firstSubCollision) && 
+            if (shouldManuallyAddToCollisionManager)
+            {
+                codeBlock.Line($"FlatRedBall.Math.Collision.CollisionManager.Self.Relationships.Add({instanceName});");
+            }
+
+            if (!string.IsNullOrEmpty(firstSubCollision) && 
                 firstSubCollision != CollisionRelationshipViewModel.EntireObject &&
                 collisionType != CollisionType.PlatformerCloudCollision &&
                 collisionType != CollisionType.PlatformerSolidCollision)
@@ -233,24 +249,45 @@ namespace OfficialPlugins.CollisionPlugin
                         return nameWithCsv;
                     }
                 }
-                codeBlock.Line(
-                    $"{instanceName}.CollisionOccurred += (first, second) =>");
+
+                if(isAlwaysColliding)
+                {
+                    codeBlock.Line(
+                        $"{instanceName}.CollisionOccurred += (first) =>");
+                }
+                else
+                {
+                    codeBlock.Line(
+                        $"{instanceName}.CollisionOccurred += (first, second) =>");
+                }
                 var eventBlock = codeBlock.Block();
+
+                string GetRightSide(string variableName)
+                {
+                    if(variableName == "<NULL>")
+                    {
+                        return "null";
+                    }
+                    else
+                    {
+                        return $"{firstType}.PlatformerValuesStatic[\"{StrippedName(variableName)}\"]";
+                    }
+                }
 
                 if (!string.IsNullOrEmpty(groupPlatformerVariableName))
                 {
                     eventBlock.Line(
-                        $"first.GroundMovement = {firstType}.PlatformerValuesStatic[\"{StrippedName(groupPlatformerVariableName)}\"];");
+                        $"first.GroundMovement = {GetRightSide(groupPlatformerVariableName)};");
                 }
                 if(!string.IsNullOrEmpty(airPlatformerVariableName) )
                 {
                     eventBlock.Line(
-                        $"first.AirMovement = {firstType}.PlatformerValuesStatic[\"{StrippedName(airPlatformerVariableName)}\"];");
+                        $"first.AirMovement = {GetRightSide(airPlatformerVariableName)};");
                 }
                 if (!string.IsNullOrEmpty(afterDoubleJumpPlatformerVariableName))
                 {
                     eventBlock.Line(
-                        $"first.AfterDoubleJump = {firstType}.PlatformerValuesStatic[\"{StrippedName(afterDoubleJumpPlatformerVariableName)}\"];");
+                        $"first.AfterDoubleJump = {GetRightSide(afterDoubleJumpPlatformerVariableName)};");
                 }
                 codeBlock.Line(";");
 

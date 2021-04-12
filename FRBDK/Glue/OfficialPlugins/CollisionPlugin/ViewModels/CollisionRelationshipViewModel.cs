@@ -33,6 +33,7 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         #region Fields/Properties
 
         public const string EntireObject = "<Entire Object>";
+        public const string AlwaysColliding = "<Always Colliding>";
 
         [SyncedProperty]
         public string FirstCollisionName
@@ -44,9 +45,34 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         [SyncedProperty]
         public string SecondCollisionName
         {
-            get => Get<string>();
-            set => SetAndPersist(value); 
+            get
+            {
+                var toReturn = Get<string>(); 
+
+                if (string.IsNullOrEmpty(toReturn))
+                {
+                    return AlwaysColliding;
+                }
+                else
+                {
+                    return toReturn;
+                }
+            }
+            set
+            {
+                if (value == AlwaysColliding)
+                {
+                    SetAndPersist((string)null);
+                }
+                else
+                {
+                    SetAndPersist(value);
+                }
+            }
         }
+
+        [DependsOn(nameof(SecondCollisionName))]
+        public bool IsFirstAlwaysColliding => string.IsNullOrEmpty(SecondCollisionName) || SecondCollisionName == AlwaysColliding;
 
         [DependsOn(nameof(FirstCollisionName))]
         [DependsOn(nameof(IsFirstList))]
@@ -328,16 +354,14 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
 
         [DependsOn(nameof(IsFirstList))]
         [DependsOn(nameof(IsSecondList))]
-        public Visibility CollisionLimitUiVisibility => IsFirstList && IsSecondList
-            ? Visibility.Visible 
-            : Visibility.Collapsed;
+        public Visibility CollisionLimitUiVisibility => (IsFirstList && IsSecondList).ToVisibility();
 
+        [DependsOn(nameof(IsFirstAlwaysColliding))]
+        public Visibility CollisionPhysicsUiVisibility => (IsFirstAlwaysColliding == false).ToVisibility();
 
         [DependsOn(nameof(IsFirstList))]
         [DependsOn(nameof(IsSecondList))]
-        public Visibility ListVsListDuplicateVisibility => IsFirstList && IsSecondList
-            ? Visibility.Visible
-            : Visibility.Collapsed;
+        public Visibility ListVsListDuplicateVisibility => (IsFirstList && IsSecondList).ToVisibility();
 
         [SyncedProperty]
         public ListVsListLoopingMode ListVsListLoopingMode

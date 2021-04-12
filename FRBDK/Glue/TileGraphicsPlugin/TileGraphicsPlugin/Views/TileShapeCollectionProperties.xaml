@@ -16,8 +16,10 @@
         <GroupBox Header="Creation Options" Grid.Row="1" IsEnabled="{Binding IsEntireViewEnabled}">
             <StackPanel>
                 <RadioButton VerticalContentAlignment="Center"
+                             HorizontalAlignment="Left"
                              IsChecked="{Binding IsEmptyChecked}">Empty</RadioButton>
                 <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
+                             HorizontalAlignment="Left"
                              IsChecked="{Binding IsFillCompletelyChecked}">Fill Completely</RadioButton>
                 <StackPanel Margin="10, 0, 0, 0" Visibility="{Binding FillDimensionsVisibility}">
 
@@ -49,6 +51,7 @@
                     </StackPanel>
                 </StackPanel>
                 <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
+                             HorizontalAlignment="Left"
                              IsChecked="{Binding IsBorderChecked}">Border Outline</RadioButton>
                 <StackPanel Margin="10, 0, 0, 0" Visibility="{Binding BorderOutlineVisibility}">
 
@@ -98,6 +101,7 @@
                 </StackPanel>
 
                 <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
+                             HorizontalAlignment="Left"
                              IsChecked="{Binding IsFromTypeChecked}">From Type</RadioButton>
                 <StackPanel x:Name="Types" Margin="10, 0, 0, 0" 
                             Visibility="{Binding FromTypeVisibility}">
@@ -119,6 +123,7 @@
 
 
                 <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
+                             HorizontalAlignment="Left"
                              IsChecked="{Binding IsFromPropertiesChecked}">From Property</RadioButton>
                 <StackPanel x:Name="Properties" Margin="10, 0, 0, 0" 
                             Visibility="{Binding FromPropertiesVisibility}">
@@ -134,6 +139,7 @@
                 
                 
                 <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
+                             HorizontalAlignment="Left"
                              IsChecked="{Binding IsFromLayerChecked}">From Layer</RadioButton>
                 <StackPanel Margin="10,0,0,0" Visibility="{Binding FromLayerVisibility}">
                     <TextBlock>Source TMX File/Object:</TextBlock>

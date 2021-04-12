@@ -34,11 +34,22 @@ namespace OfficialPluginsCore.CollisionPlugin.Errors
             var firstCollidable = namedObject.GetFirstCollidableObjectName();
             var secondCollidable = namedObject.GetSecondCollidableObjectName();
 
+            bool isSecondNullInError()
+            {
+                if (string.IsNullOrWhiteSpace(secondCollidable))
+                {
+                    var isFirstList = container.GetNamedObject(firstCollidable).IsList;
+                    // As of this writing (Apr 11, 2021) only list vs "null" can create an Always collision
+                    return !isFirstList;
+                }
+                return false;
+            }
+
             if (string.IsNullOrWhiteSpace(firstCollidable))
             {
                 return $"CollisionRelationship {namedObject.InstanceName} has an empty first collidable in {container}";
             }
-            else if (string.IsNullOrWhiteSpace(secondCollidable))
+            else if (isSecondNullInError())
             {
                 return $"CollisionRelationship {namedObject.InstanceName} has an empty second collidable in {container}";
             }
@@ -46,7 +57,8 @@ namespace OfficialPluginsCore.CollisionPlugin.Errors
             {
                 return $"CollisionRelationship {namedObject.InstanceName} references missing object {firstCollidable} in {container}";
             }
-            else if (container.AllNamedObjects.Any(item => item.InstanceName == secondCollidable) == false)
+            // we handle null second collidables above
+            else if (!string.IsNullOrEmpty(secondCollidable) && container.AllNamedObjects.Any(item => item.InstanceName == secondCollidable) == false)
             {
                 return $"CollisionRelationship {namedObject.InstanceName} references missing object {secondCollidable} in {container}";
             }

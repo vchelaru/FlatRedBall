@@ -97,6 +97,8 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                     var isFirstShapeCollection = firstType == "FlatRedBall.Math.Geometry.ShapeCollection";
                     var isSecondShapeCollection = secondType == "FlatRedBall.Math.Geometry.ShapeCollection";
 
+                    var isSecondNull = string.IsNullOrEmpty(secondType);
+
                     // todo - single vs. shape collection
                     // todo - list vs. shape collection
 
@@ -188,6 +190,10 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                         {
                             relationshipType = "FlatRedBall.Math.Collision.ListVsShapeCollectionRelationship";
                         }
+                        else if(isSecondNull)
+                        {
+                            relationshipType = "FlatRedBall.Math.Collision.AlwaysCollidingListCollisionRelationship";
+                        }
                         else
                         {
                             relationshipType = "FlatRedBall.Math.Collision.ListVsPositionedObjectRelationship";
@@ -209,7 +215,7 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                     {
                         return relationshipType;
                     }
-                    else if (isSecondTileShapeCollection || isSecondShapeCollection)
+                    else if (isSecondTileShapeCollection || isSecondShapeCollection || isSecondNull)
                     {
                         // doesn't require 2nd type param:
                         return

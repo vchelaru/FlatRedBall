@@ -111,7 +111,7 @@
                 </StackPanel>
             </GroupBox>
 
-            <GroupBox Header="Collision Physics" Margin="0,8,0,0">
+            <GroupBox Header="Collision Physics" Margin="0,8,0,0" Visibility="{Binding CollisionPhysicsUiVisibility}">
                 <StackPanel>
                     <RadioButton
                         IsChecked="{Binding IsNoPhysicsChecked}">No Physics</RadioButton>

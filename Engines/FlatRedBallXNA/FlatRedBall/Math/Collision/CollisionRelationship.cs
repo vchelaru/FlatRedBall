@@ -1122,6 +1122,34 @@ namespace FlatRedBall.Math.Collision
 
     #endregion
 
+    #region List Always Colliding 
+    public class AlwaysCollidingListCollisionRelationship<FirstCollidableT> : CollisionRelationship
+        where FirstCollidableT : PositionedObject, ICollidable
+    {
+        PositionedObjectList<FirstCollidableT> list;
+        public override object FirstAsObject => list;
+
+        public override object SecondAsObject => null;
+
+        public Action<FirstCollidableT> CollisionOccurred;
+
+        public AlwaysCollidingListCollisionRelationship(PositionedObjectList<FirstCollidableT> list)
+        {
+            this.list = list;
+        }
+
+        public override bool DoCollisions()
+        {
+            for(int i = list.Count -1; i > -1; i--)
+            {
+                CollisionOccurred?.Invoke(list[i]);
+            }
+            return true;
+        }
+    }
+    #endregion
+
+
     #region List vs. List
 
     public enum ListVsListLoopingMode
