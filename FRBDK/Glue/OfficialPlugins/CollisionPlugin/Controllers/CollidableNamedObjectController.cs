@@ -92,41 +92,54 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             viewModel.NamedObjectPairs.Clear();
 
-            var name1 = thisNamedObject.InstanceName;
 
             var orderedCollidables = collidables.OrderBy(item => item.InstanceName);
 
-            foreach (var collidable in orderedCollidables)
+            if(thisNamedObject.IsList)
             {
-                var name2 = collidable.InstanceName;
-
-                var pairViewModel = new NamedObjectPairRelationshipViewModel();
-                pairViewModel.AddObjectClicked += (not, used) => HandleAddCollisionRelationshipAddClicked(pairViewModel);
-                pairViewModel.OtherObjectName = collidable.InstanceName;
-                pairViewModel.SelectedNamedObjectName = thisNamedObject.InstanceName;
-
-                var relationshipsForThisPair = relationships
-                    .Where(item =>
-                    {
-                        return (FirstCollidableIn(item) == name1 && SecondCollidableIn(item) == name2) ||
-                            (FirstCollidableIn(item) == name2 && SecondCollidableIn(item) == name1);
-                    })
-                    .ToArray();
-
-                foreach(var relationship in relationshipsForThisPair)
-                {
-                    var relationshipViewModel = new RelationshipListCellViewModel();
-                    relationshipViewModel.OwnerNamedObject = thisNamedObject;
-                    relationshipViewModel.OtherNamedObject = collidable;
-                    relationshipViewModel.CollisionRelationshipNamedObject = relationship;
-
-                    pairViewModel.Relationships.Add(relationshipViewModel);
-                }
-
-
-                viewModel.NamedObjectPairs.Add(pairViewModel);
+                AddRelationship(thisNamedObject, viewModel, relationships, null);
             }
 
+
+
+            foreach (var collidable in orderedCollidables)
+            {
+                AddRelationship(thisNamedObject, viewModel, relationships, collidable);
+            }
+
+        }
+
+        private static void AddRelationship(NamedObjectSave thisNamedObject, CollidableNamedObjectRelationshipViewModel viewModel, 
+            NamedObjectSave[] relationships, NamedObjectSave collidable)
+        {
+            var name1 = thisNamedObject.InstanceName;
+            var name2 = collidable?.InstanceName;
+
+            var pairViewModel = new NamedObjectPairRelationshipViewModel();
+            pairViewModel.AddObjectClicked += (not, used) => HandleAddCollisionRelationshipAddClicked(pairViewModel);
+            pairViewModel.OtherObjectName = name2;
+            pairViewModel.SelectedNamedObjectName = thisNamedObject.InstanceName;
+
+            var relationshipsForThisPair = relationships
+                .Where(item =>
+                {
+                    return (FirstCollidableIn(item) == name1 && SecondCollidableIn(item) == name2) ||
+                        (FirstCollidableIn(item) == name2 && SecondCollidableIn(item) == name1);
+                })
+                .ToArray();
+
+            foreach (var relationship in relationshipsForThisPair)
+            {
+                var relationshipViewModel = new RelationshipListCellViewModel();
+                relationshipViewModel.OwnerNamedObject = thisNamedObject;
+                relationshipViewModel.OtherNamedObject = collidable;
+                relationshipViewModel.CollisionRelationshipNamedObject = relationship;
+
+                pairViewModel.Relationships.Add(relationshipViewModel);
+            }
+
+
+            viewModel.NamedObjectPairs.Add(pairViewModel);
         }
 
         private static void HandleAddCollisionRelationshipAddClicked(NamedObjectPairRelationshipViewModel pairViewModel)

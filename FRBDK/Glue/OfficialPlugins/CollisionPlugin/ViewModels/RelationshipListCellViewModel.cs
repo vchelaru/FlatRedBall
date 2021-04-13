@@ -13,20 +13,20 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
     {
         public NamedObjectSave CollisionRelationshipNamedObject
         {
-            get { return Get<NamedObjectSave>(); }
-            set { Set(value); }
+            get => Get<NamedObjectSave>();
+            set => Set(value); 
         }
 
         public NamedObjectSave OwnerNamedObject
         {
-            get { return Get<NamedObjectSave>(); }
-            set { Set(value); }
+            get => Get<NamedObjectSave>();
+            set => Set(value);
         }
 
         public NamedObjectSave OtherNamedObject
         {
-            get { return Get<NamedObjectSave>(); }
-            set { Set(value); }
+            get => Get<NamedObjectSave>();
+            set => Set(value); 
         }
 
         [DependsOn(nameof(CollisionRelationshipNamedObject))]

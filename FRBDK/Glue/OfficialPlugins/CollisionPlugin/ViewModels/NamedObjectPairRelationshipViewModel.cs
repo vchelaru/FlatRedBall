@@ -16,6 +16,12 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             set => Set(value); 
         }
 
+        [DependsOn(nameof(OtherObjectName))]
+        public string ObjectObjectDisplayName
+        {
+            get => OtherObjectName ?? CollisionRelationshipViewModel.AlwaysColliding;
+        }
+
         public string SelectedNamedObjectName
         {
             get => Get<string>();

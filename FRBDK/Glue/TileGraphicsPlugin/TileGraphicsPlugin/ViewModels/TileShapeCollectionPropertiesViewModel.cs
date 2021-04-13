@@ -35,8 +35,7 @@ namespace TileGraphicsPlugin.ViewModels
         #region Empty
 
         [SyncedProperty]
-        // Vic asks - shouldn't the default value be (int)?
-        [DefaultValue(CollisionCreationOptions.Empty)]
+        [DefaultValue((int)CollisionCreationOptions.Empty)]
         public CollisionCreationOptions CollisionCreationOptions
         {
             get => (CollisionCreationOptions)Get<int>(); 

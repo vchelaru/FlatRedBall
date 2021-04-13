@@ -20,7 +20,7 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock Margin="0,4,0,4" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center" Text="{Binding OtherObjectName, FallbackValue=FallbackValue}"></TextBlock>
+            <TextBlock Margin="0,4,0,4" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center" Text="{Binding ObjectObjectDisplayName, FallbackValue=FallbackValue}"></TextBlock>
             <Button VerticalAlignment="Center" 
                     Grid.Column="1"
                     Click="AddClicked">
