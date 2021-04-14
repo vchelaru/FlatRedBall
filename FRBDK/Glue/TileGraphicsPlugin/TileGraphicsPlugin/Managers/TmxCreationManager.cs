@@ -38,22 +38,23 @@ namespace TiledPluginCore.Managers
 
             if (!string.IsNullOrWhiteSpace(creationOptions))
             {
-                var model = JsonConvert.DeserializeObject<NewTmxViewModel>(creationOptions);
+                var viewModel = JsonConvert.DeserializeObject<NewTmxViewModel>(creationOptions);
 
-                if(model != null)
+                if(viewModel != null)
                 {
-
-
-                    if(model.IncludeDefaultTileset)
+                    if(viewModel.IncludeDefaultTileset)
                     {
                         IncludeDefaultTilesetOn(newFile);
-
-
                     }
-                    if (model.IncludeGameplayLayer)
+                    if (viewModel.IncludeGameplayLayer)
                     {
                         IncludeGameplayLayerOn(newFile);
                     }
+                    if(viewModel.ShouldAddCollisionBorder)
+                    {
+                        AddCollisionBorderOn(newFile);
+                    }
+
                 }
             }
         }
@@ -144,6 +145,40 @@ namespace TiledPluginCore.Managers
             tileMapSave.Save(fullTmxFile.FullPath);
             Tileset.ShouldLoadValuesFromSource = old;
 
+        }
+
+        public void AddCollisionBorderOn(ReferencedFileSave newFile)
+        {
+            var old = Tileset.ShouldLoadValuesFromSource;
+            Tileset.ShouldLoadValuesFromSource = false;
+
+            var fullTmxFile = new FilePath(GlueCommands.Self.FileCommands.GetFullFileName(newFile));
+            var tileMapSave = TMXGlueLib.TiledMapSave.FromFile(fullTmxFile.FullPath);
+
+            var tiles = tileMapSave.Layers[0].data[0].tiles;
+
+            for(int y = 0; y < 32; y++)
+            {
+                for(int x = 0; x < 32; x++)
+                {
+                    if(x == 0 || y == 0 || x == 31 || y == 31)
+                    {
+                        var absoluteValue = x + 32 * y;
+
+                        tiles[absoluteValue] = 1;
+                    }
+                }
+            }
+
+            // let's just cheat:
+            // to do this we'd have to do all the data to gzip this. Worry about it later
+            tileMapSave.Layers[0].data[0].Value =
+                "\n   H4sIAAAAAAAACu3NsQ0AAAzCMPj/6X5RFkfK7Cbp+FV8Pp/P5/P5fD6fz+d/+ssPQZZTxQAQAAA=\n  ";
+
+            tileMapSave.Tilesets[0].Firstgid = 1;
+
+            tileMapSave.Save(fullTmxFile.FullPath);
+            Tileset.ShouldLoadValuesFromSource = old;
         }
     }
 }

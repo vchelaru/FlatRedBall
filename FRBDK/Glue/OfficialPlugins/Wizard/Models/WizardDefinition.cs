@@ -93,6 +93,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
                 formsData.AddBoolValue("Include standard tileset", nameof(ViewModel.IncludStandardTilesetInLevels), nameof(ViewModel.AddGameScreen));
                 formsData.AddBoolValue("Include gameplay layer", nameof(ViewModel.IncludeGameplayLayerInLevels), nameof(ViewModel.AddGameScreen));
+                formsData.AddBoolValue("Add Border Collision", nameof(ViewModel.IncludeCollisionBorderInLevels), nameof(ViewModel.ShowBorderCollisionCheckBox));
 
                 FormsDataList.Add(formsData);
 
@@ -120,6 +121,7 @@ namespace OfficialPluginsCore.Wizard.Models
                 formsData.AddBoolValue("Add Camera Controller", nameof(ViewModel.AddCameraController), nameof(ViewModel.AddGameScreen));
                 formsData.AddBoolValue("Follow Players with Camera", nameof(ViewModel.FollowPlayersWithCamera), nameof(ViewModel.AddGameScreen));
                 formsData.AddBoolValue("Keep Camera in Map bounds", nameof(ViewModel.KeepCameraInMap), nameof(ViewModel.AddGameScreen));
+                formsData.AddBoolValue("Keep Camera in Map bounds", nameof(ViewModel.KeepCameraInMap), nameof(ViewModel.ShowBorderCollisionCheckBox));
 
                 FormsDataList.Add(formsData);
             }

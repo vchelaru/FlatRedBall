@@ -10,11 +10,17 @@
         <GroupBox Header="TMX Creation Options">
             <StackPanel>
                 <CheckBox VerticalContentAlignment="Center"
-                    IsChecked="{Binding IncludeDefaultTileset}"
-                          >Include Default Tileset</CheckBox>
+                    IsChecked="{Binding IncludeDefaultTileset}">
+                        Include Default Tileset</CheckBox>
                 <CheckBox VerticalContentAlignment="Center"
-                    IsChecked="{Binding IncludeGameplayLayer}"
-                          >Include Gameplay Layer</CheckBox>
+                    IsChecked="{Binding IncludeGameplayLayer}">
+                        Include Gameplay Layer</CheckBox>
+                <CheckBox VerticalContentAlignment="Center"
+                          Visibility="{Binding SolidCollisionCheckBoxVisibility}"
+                          IsChecked="{Binding IsSolidCollisionBorderChecked}"
+                    >
+                    Include Solid Collision Border
+                </CheckBox>
             </StackPanel>
         </GroupBox>
     </Grid>

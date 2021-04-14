@@ -716,7 +716,7 @@ namespace TileGraphicsPlugin
         void HandleGluxLoad()
         {
             // Add the .cs files which include the map drawable batch classes
-            FlatRedBall.Glue.Managers.TaskManager.Self.AddSync( CodeItemAdderManager.Self.UpdateCodePresenceInProject,
+            FlatRedBall.Glue.Managers.TaskManager.Self.Add( CodeItemAdderManager.Self.UpdateCodePresenceInProject,
                 "Adding Tiled .cs files to the project");
 
             // Add the CSV entry so that Glue knows how to load a .scnx into the classes added above
@@ -753,6 +753,18 @@ namespace TileGraphicsPlugin
             if (rfsAti != null && IsTmx(rfsAti))
             {
                 TmxCreationManager.Self.IncludeGameplayLayerOn(rfs);
+            }
+        }
+
+        public void AddCollisionBorderToCurrentFile()
+        {
+            var rfs = GlueState.Self.CurrentReferencedFileSave;
+
+            var rfsAti = rfs?.GetAssetTypeInfo();
+
+            if (rfsAti != null && IsTmx(rfsAti))
+            {
+                TmxCreationManager.Self.AddCollisionBorderOn(rfs);
             }
         }
 

@@ -73,8 +73,12 @@ namespace OfficialPluginsCore.Wizard.Models
             set => Set(value);
         }
 
-        [DependsOn(nameof(PlayerControlType))]
-        public bool ShowOffsetPositionUi => PlayerControlType == GameType.Platformer;
+        [DependsOn(nameof(AddPlayerEntity))]
+        public bool ShowOffsetPositionUi =>
+            // Shouldn't be tied specifically to platformer, since borders can be added
+            // no matter what kind of movement we have.
+            AddPlayerEntity;
+        //PlayerControlType == GameType.Platformer;
 
         public bool OffsetPlayerPosition
         {
@@ -140,6 +144,15 @@ namespace OfficialPluginsCore.Wizard.Models
             get => Get<bool>();
             set => Set(value);
         }
+        public bool IncludeCollisionBorderInLevels
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+        [DependsOn(nameof(AddGameScreen))]
+        [DependsOn(nameof(IncludeGameplayLayerInLevels))]
+        [DependsOn(nameof(IncludStandardTilesetInLevels))]
+        public bool ShowBorderCollisionCheckBox => AddGameScreen && IncludeGameplayLayerInLevels && IncludStandardTilesetInLevels;
 
         #endregion
 
@@ -200,6 +213,7 @@ namespace OfficialPluginsCore.Wizard.Models
             NumberOfLevels = 2;
             IncludStandardTilesetInLevels = true;
             IncludeGameplayLayerInLevels = true;
+            IncludeCollisionBorderInLevels = true;
 
             AddGum = true;
             AddFlatRedBallForms = true;

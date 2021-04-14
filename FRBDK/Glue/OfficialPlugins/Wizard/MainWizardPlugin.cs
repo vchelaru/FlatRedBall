@@ -128,6 +128,12 @@ namespace OfficialPluginsCore.Wizard
                             PluginManager.CallPluginMethod("Tiled Plugin", "AddGameplayLayerToCurrentFile");
                         }
 
+                        if(vm.IncludeCollisionBorderInLevels)
+                        {
+                            SelectTmxRfs();
+                            PluginManager.CallPluginMethod("Tiled Plugin", "AddCollisionBorderToCurrentFile");
+                        }
+
                     }
                 }
             }
@@ -228,9 +234,10 @@ namespace OfficialPluginsCore.Wizard
 
             var playerEntity = GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(addEntityVm);
 
-            if(vm.OffsetPlayerPosition && vm.PlayerControlType == GameType.Platformer)
+            if(vm.OffsetPlayerPosition)
             {
                 playerEntity.SetCustomVariable("X", 64.0f);
+                playerEntity.SetCustomVariable("Y", -64.0f);
             }
 
             // requires the current entity be set:
