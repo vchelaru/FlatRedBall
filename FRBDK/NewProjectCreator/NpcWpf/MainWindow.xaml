@@ -25,6 +25,7 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
 
@@ -35,8 +36,15 @@
             <ComboBox VerticalAlignment="Top"  ItemsSource="{Binding AvailableProjects, Mode=OneWay}" 
                      SelectedItem="{Binding SelectedProject}" Grid.Column="1" Grid.Row="1"></ComboBox>
 
-            <TextBlock FontWeight="Bold" Grid.Column="0" Grid.Row="2" Margin="0,0,16,10" >Custom Namespace:</TextBlock>
-            <StackPanel Grid.Column="1" Grid.Row="2" VerticalAlignment="Top">
+            <TextBlock FontWeight="Bold" Grid.Column="0" Grid.Row="2" Margin="0,0,16,10">Use Local Copy if available:</TextBlock>
+            <CheckBox IsChecked="{Binding UseLocalCopy}" Grid.Column="1" Grid.Row="2">
+                <CheckBox.LayoutTransform>
+                    <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                </CheckBox.LayoutTransform>
+            </CheckBox>
+            
+            <TextBlock FontWeight="Bold" Grid.Column="0" Grid.Row="3" Margin="0,0,16,10" >Custom Namespace:</TextBlock>
+            <StackPanel Grid.Column="1" Grid.Row="3" VerticalAlignment="Top">
                 <CheckBox  IsChecked="{Binding IsDifferentNamespaceChecked}">
                     <CheckBox.LayoutTransform>
                         <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
@@ -45,8 +53,8 @@
                 <TextBox Visibility="{Binding DifferentNamespaceTextBoxVisibility}" Text="{Binding DifferentNamespace}" Margin="0,0,0,0"></TextBox>
             </StackPanel>
 
-            <TextBlock FontWeight="Bold" Grid.Row="3" VerticalAlignment="Center" Grid.Column="0" Margin="0,0,16,10" >Location:</TextBlock>
-            <Grid Grid.Row="3" Grid.Column="1" VerticalAlignment="Top" Margin="0,5,0,10" >
+            <TextBlock FontWeight="Bold" Grid.Row="4" VerticalAlignment="Center" Grid.Column="0" Margin="0,0,16,10" >Location:</TextBlock>
+            <Grid Grid.Row="4" Grid.Column="1" VerticalAlignment="Top" Margin="0,5,0,10" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -56,14 +64,14 @@
                 <Button Grid.Column="1" Width="18" VerticalAlignment="Top" Click="SelectLocationClicked">...</Button>
             </Grid>
 
-            <TextBlock FontWeight="Bold" Grid.Row="4" Margin="0,0,16,10" >Create Project Directory:</TextBlock>
-            <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding IsCreateProjectDirectoryChecked}">
+            <TextBlock FontWeight="Bold" Grid.Row="5" Margin="0,0,16,10" >Create Project Directory:</TextBlock>
+            <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding IsCreateProjectDirectoryChecked}">
                 <CheckBox.LayoutTransform>
                     <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
                 </CheckBox.LayoutTransform>
             </CheckBox>
 
-            <StackPanel Grid.Row="5" Grid.ColumnSpan="2">
+            <StackPanel Grid.Row="6" Grid.ColumnSpan="2">
                 <TextBlock FontStyle="Italic" FontSize="10">Solution (.sln) will be located in:</TextBlock>
                 <TextBlock FontStyle="Italic" FontSize="10" Text="{Binding FinalDirectory}" TextWrapping="Wrap" Margin="15,0,0,0"></TextBlock>
             </StackPanel>
@@ -71,7 +79,7 @@
             <Button 
                 Margin="0,16,0,16"
                 Style="{StaticResource myStyle}"
-                Grid.Row="6" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Click="HandleMakeMyProjectClicked" Height="48">
+                Grid.Row="7" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Click="HandleMakeMyProjectClicked" Height="48">
                 <Button.Template>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <ContentControl>

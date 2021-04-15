@@ -1194,10 +1194,12 @@ namespace FlatRedBall.Math.Geometry
             int startIndex;
             int endIndex;
 
-            #endregion
-            #region Get the boundStartPosition
+			#endregion
+			var positionBefore = shapeToCollideAgainstThis.Position;
 
-            float boundStartPosition = 0;
+			#region Get the boundStartPosition
+
+			float boundStartPosition = 0;
 
             switch (axisToUse)
             {
@@ -1346,9 +1348,11 @@ namespace FlatRedBall.Math.Geometry
                 }
             }
 
-            #endregion
+			#endregion
 
-            return returnValue;
+			shapeToCollideAgainstThis.mLastMoveCollisionReposition = (shapeToCollideAgainstThis.Position - positionBefore).ToVector2();
+
+			return returnValue;
 		}
 		internal static bool CollideShapeAgainstThisMove(ShapeCollection thisShapeCollection, Circle shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass)
 		{
@@ -1363,10 +1367,12 @@ namespace FlatRedBall.Math.Geometry
             int startIndex;
             int endIndex;
 
-            #endregion
-            #region Get the boundStartPosition
+			#endregion
+			var positionBefore = shapeToCollideAgainstThis.Position;
 
-            float boundStartPosition = 0;
+			#region Get the boundStartPosition
+
+			float boundStartPosition = 0;
 
             switch (axisToUse)
             {
@@ -1515,9 +1521,11 @@ namespace FlatRedBall.Math.Geometry
                 }
             }
 
-            #endregion
+			#endregion
 
-            return returnValue;
+			shapeToCollideAgainstThis.LastMoveCollisionReposition = (shapeToCollideAgainstThis.Position - positionBefore).ToVector2();
+
+			return returnValue;
 		}
 		internal static bool CollideShapeAgainstThisMove(ShapeCollection thisShapeCollection, Polygon shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass)
 		{
@@ -1532,10 +1540,12 @@ namespace FlatRedBall.Math.Geometry
             int startIndex;
             int endIndex;
 
-            #endregion
-            #region Get the boundStartPosition
+			#endregion
+			var positionBefore = shapeToCollideAgainstThis.Position;
 
-            float boundStartPosition = 0;
+			#region Get the boundStartPosition
+
+			float boundStartPosition = 0;
 
             switch (axisToUse)
             {
@@ -1657,11 +1667,12 @@ namespace FlatRedBall.Math.Geometry
                 }
             }
 
-            #endregion
+			#endregion
+			shapeToCollideAgainstThis.mLastMoveCollisionReposition = (shapeToCollideAgainstThis.Position - positionBefore);
 
-		    #region vs. Capsule2Ds
+			#region vs. Capsule2Ds
 
-		    GetStartAndEnd(
+			GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
@@ -2216,7 +2227,10 @@ namespace FlatRedBall.Math.Geometry
             int startIndex;
             int endIndex;
 
-            #endregion
+			#endregion
+
+			var positionBefore = shapeToCollideAgainstThis.Position;
+
             #region Get the boundStartPosition
 
             float boundStartPosition = 0;
@@ -2368,7 +2382,9 @@ namespace FlatRedBall.Math.Geometry
                 }
             }
 
-            #endregion
+			#endregion
+
+			shapeToCollideAgainstThis.mLastMoveCollisionReposition = (shapeToCollideAgainstThis.Position - positionBefore).ToVector2();
 
             return returnValue;
 		}
@@ -2385,10 +2401,13 @@ namespace FlatRedBall.Math.Geometry
             int startIndex;
             int endIndex;
 
-            #endregion
-            #region Get the boundStartPosition
+			#endregion
 
-            float boundStartPosition = 0;
+			var positionBefore = shapeToCollideAgainstThis.Position;
+
+			#region Get the boundStartPosition
+
+			float boundStartPosition = 0;
 
             switch (axisToUse)
             {
@@ -2537,9 +2556,11 @@ namespace FlatRedBall.Math.Geometry
                 }
             }
 
-            #endregion
+			#endregion
 
-            return returnValue;
+			shapeToCollideAgainstThis.LastMoveCollisionReposition = (shapeToCollideAgainstThis.Position - positionBefore).ToVector2();
+
+			return returnValue;
 		}
 		internal static bool CollideShapeAgainstThisBounce(ShapeCollection thisShapeCollection, Polygon shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass, float elasticity)
 		{
@@ -2554,10 +2575,13 @@ namespace FlatRedBall.Math.Geometry
             int startIndex;
             int endIndex;
 
-            #endregion
-            #region Get the boundStartPosition
+			#endregion
 
-            float boundStartPosition = 0;
+			var positionBefore = shapeToCollideAgainstThis.Position;
+
+			#region Get the boundStartPosition
+
+			float boundStartPosition = 0;
 
             switch (axisToUse)
             {
@@ -2706,9 +2730,11 @@ namespace FlatRedBall.Math.Geometry
                 }
             }
 
-            #endregion
+			#endregion
 
-            return returnValue;
+			shapeToCollideAgainstThis.mLastMoveCollisionReposition = (shapeToCollideAgainstThis.Position - positionBefore);
+
+			return returnValue;
 		}
 		internal static bool CollideShapeAgainstThisBounce(ShapeCollection thisShapeCollection, Line shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass, float elasticity)
 		{

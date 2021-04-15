@@ -195,7 +195,7 @@ namespace Npc
         
         private static string GetZipToUnpack(NewProjectViewModel viewModel, string fileToDownload, out bool shouldTryDownloading)
         {
-            bool checkOnline = viewModel.IsOnlineTemplatesChecked;
+            bool checkOnline = viewModel.UseLocalCopy == false ;
             string zipToUnpack = null;
             shouldTryDownloading = false;
             if (!string.IsNullOrEmpty(fileToDownload))
@@ -219,19 +219,8 @@ namespace Npc
             }
 
 
-            if (checkOnline)
-            {
-                //if (string.IsNullOrEmpty(fileToDownload))
-                //{
-                //    string message = "Couldn't find this project online.  What would you like to do?";
+            shouldTryDownloading = checkOnline;
 
-                //    ShowErrorMessageBox(ref hasUserCancelled, ref zipToUnpack, message);
-                //}
-                //else
-                //{
-                    shouldTryDownloading = true;
-                //}
-            }
             return zipToUnpack;
         }
         /*

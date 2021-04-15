@@ -18,11 +18,14 @@ namespace Npc.ViewModels
         //    ' ' 
         };
 
-        public bool IsOnlineTemplatesChecked
+        public bool UseLocalCopy
         {
             get => Get<bool>();
             set => Set(value);
         }
+
+        [DependsOn(nameof(UseLocalCopy))]
+        public bool IsOnlineTemplatesChecked => UseLocalCopy == false;
 
         public bool OpenSlnFolderAfterCreation
         {
@@ -117,7 +120,7 @@ namespace Npc.ViewModels
         public NewProjectViewModel()
         {
             ProjectName = "MyProject";
-            IsOnlineTemplatesChecked = true;
+            UseLocalCopy = false;
         }
 
         internal string GetWhyIsntValid()
