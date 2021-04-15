@@ -3339,6 +3339,7 @@ namespace FlatRedBall.Math.Geometry
 		}
 		internal static bool CollideShapeAgainstThisMove(ShapeCollection thisShapeCollection, ShapeCollection shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass)
 		{
+			thisShapeCollection.ClearLastCollisionLists();
 			thisShapeCollection.mSuppressLastCollisionClear = true;
             bool returnValue = false;
 
@@ -3397,6 +3398,7 @@ namespace FlatRedBall.Math.Geometry
 		}
 		internal static bool CollideShapeAgainstThisBounce(ShapeCollection thisShapeCollection, ShapeCollection shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass, float elasticity)
 		{
+			thisShapeCollection.ClearLastCollisionLists();
 			thisShapeCollection.mSuppressLastCollisionClear = true;
             bool returnValue = false;
 
