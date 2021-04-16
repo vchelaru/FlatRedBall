@@ -129,6 +129,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         }
 
+        public void RefreshVariables()
+        {
+            PluginManager.CallPluginMethod("Main Property Grid Plugin", "RefreshVariables");
+        }
+
 
         public void RefreshSelection()
         {

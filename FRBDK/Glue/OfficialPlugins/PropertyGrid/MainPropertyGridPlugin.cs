@@ -31,6 +31,8 @@ namespace OfficialPlugins.VariableDisplay
 
         const bool showSettings = false;
 
+        public override string FriendlyName => "Main Property Grid Plugin";
+
         #endregion
 
         public override void StartUp()
@@ -63,6 +65,19 @@ namespace OfficialPlugins.VariableDisplay
         //        VariableShowingLogic.RefreshGrid(variableGrid);
         //    }
         //}
+
+        public void RefreshVariables()
+        {
+            if(GlueState.Self.CurrentNamedObjectSave != null)
+            {
+                HandleNamedObjectSelect(GlueState.Self.CurrentNamedObjectSave);
+            }
+            else if(GlueState.Self.CurrentElement != null)
+            {
+                ShowVariablesForCurrentElement();
+            }
+            //RefreshLogic.RefreshGrid(variableGrid.DataUiGrid);
+        }
 
         private void HandleItemSelect(System.Windows.Forms.TreeNode selectedTreeNode)
         {

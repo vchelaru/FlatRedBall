@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.SaveClasses;
+using System.Security.Cryptography;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
@@ -38,6 +39,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// shown in the property grid has changed because the propertygrid does not automatically reflect the change.
         /// </summary>
         void RefreshPropertyGrid();
+
+        void RefreshVariables();
 
         void RefreshSelection();
 

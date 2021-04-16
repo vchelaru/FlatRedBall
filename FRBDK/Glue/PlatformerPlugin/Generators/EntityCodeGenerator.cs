@@ -213,7 +213,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             codeBlock.Line("/// </summary>");
             codeBlock.AutoProperty("public bool", "InputEnabled");
 
-
+            codeBlock.Line("float groundHorizontalVelocity = 0;");
 
             // This can be used to add anything else here without the complexity of CodeBlock calls
             codeBlock.Line(
@@ -445,14 +445,16 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
             if ((this.CurrentMovement.AccelerationTimeX <= 0 && this.CurrentMovement.IsUsingCustomDeceleration == false)|| this.CurrentMovement.UsesAcceleration == false)
             {
-                this.XVelocity = horizontalRatio * maxSpeed;
+                this.XVelocity = groundHorizontalVelocity + horizontalRatio * maxSpeed;
             }
             else
             {
-                var desiredSpeed = horizontalRatio * maxSpeed;
-                
+                var desiredSpeed = groundHorizontalVelocity + horizontalRatio * maxSpeed;
+
+                const float epsilon = .001f;
+
                 var isSpeedingUp = 
-                    XVelocity == 0 && desiredSpeed != 0 ||
+                    (Math.Abs(XVelocity - groundHorizontalVelocity) < epsilon && Math.Abs(desiredSpeed - groundHorizontalVelocity) > epsilon) ||
                     ((desiredSpeed > 0 && XVelocity < desiredSpeed && XVelocity > 0) ||
                     (desiredSpeed < 0 && XVelocity > desiredSpeed && XVelocity < 0));
                 
@@ -634,7 +636,11 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
         public bool CollideAgainst(FlatRedBall.Math.Geometry.AxisAlignedRectangle rectangle, bool isCloudCollision = false)
         {
-            return CollideAgainst(() => rectangle.CollideAgainstBounce(this.Collision, 1, 0, 0), isCloudCollision);
+            return CollideAgainst(() =>
+            {
+                var collided = rectangle.CollideAgainstBounce(this.Collision, 1, 0, 0);
+                return (collided, rectangle);
+            }, isCloudCollision);
         }
 
         /// <summary>
@@ -644,7 +650,16 @@ namespace FlatRedBall.PlatformerPlugin.Generators
         /// <param name=""isCloudCollision"">Whether to perform solid or cloud collisions.</param>
         public bool CollideAgainst(FlatRedBall.Math.Geometry.ShapeCollection shapeCollection, bool isCloudCollision)
         {
-            return CollideAgainst(() => shapeCollection.CollideAgainstBounce(this.Collision, 1, 0, 0), isCloudCollision);
+            return CollideAgainst(() =>
+            {
+                var collided = shapeCollection.CollideAgainstBounce(this.Collision, 1, 0, 0);
+                PositionedObject lastCollided = null;
+                if (shapeCollection.LastCollisionAxisAlignedRectangles.Count > 0) lastCollided = shapeCollection.LastCollisionAxisAlignedRectangles[0];
+                if (shapeCollection.LastCollisionCircles.Count > 0) lastCollided = shapeCollection.LastCollisionCircles[0];
+                if (shapeCollection.LastCollisionPolygons.Count > 0) lastCollided = shapeCollection.LastCollisionPolygons[0];
+                // do we care about other shapes?
+                return (collided, lastCollided);
+            }, isCloudCollision);
         }
 
         /// <summary>
@@ -655,7 +670,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
         /// </summary>
         /// <param name=""collisionFunction"">The collision function to execute.</param>
         /// <param name=""isCloudCollision"">Whether to perform cloud collision (only check when moving down)</param>
-        public bool CollideAgainst(System.Func<bool> collisionFunction, bool isCloudCollision)
+        public bool CollideAgainst(System.Func<(bool, PositionedObject)> collisionFunction, bool isCloudCollision)
         {
             Microsoft.Xna.Framework.Vector3 positionBeforeCollision = this.Position;
             Microsoft.Xna.Framework.Vector3 velocityBeforeCollision = this.Velocity;
@@ -666,6 +681,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
             if (isFirstCollisionOfTheFrame)
             {
+                groundHorizontalVelocity = 0;
                 wasOnGroundLastFrame = mIsOnGround;
                 mLastCollisionTime = FlatRedBall.TimeManager.CurrentTime;
                 PositionBeforeLastPlatformerCollision = this.Position;
@@ -702,7 +718,8 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             if (canCheckCollision)
             {
 
-                if (collisionFunction())
+                (bool didCollide, PositionedObject objectCollidedAgainst) = collisionFunction();
+                if (didCollide)
                 {
                     toReturn = true;
 
@@ -726,6 +743,8 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                                 LandedAction();
                             }
                             mIsOnGround = true;
+
+                            groundHorizontalVelocity = objectCollidedAgainst?.TopParent.XVelocity ?? 0;
                         }
                         if (this.Y < lastY)
                         {
@@ -769,7 +788,11 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             var velocityBefore = this.Velocity;
 
 
-            var collided = CollideAgainst(() => shapeCollection.CollideAgainstSolid(this), isCloudCollision);
+            var collided = CollideAgainst(() =>
+            {
+                var didCollideInternal = shapeCollection.CollideAgainstSolid(this);
+                return (didCollideInternal, null);
+            }, isCloudCollision);
 
             if(collided)
             {
@@ -892,7 +915,11 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
         public bool CollideAgainst(FlatRedBall.TileCollisions.TileShapeCollection shapeCollection, FlatRedBall.Math.Geometry.AxisAlignedRectangle thisCollision, bool isCloudCollision = false)
         {
-            return CollideAgainst(() => shapeCollection.CollideAgainstSolid(thisCollision), isCloudCollision);
+            return CollideAgainst(() =>
+            {
+                var didCollide = shapeCollection.CollideAgainstSolid(thisCollision);
+                return (didCollide, null);
+            }, isCloudCollision);
         }
 
 ");
