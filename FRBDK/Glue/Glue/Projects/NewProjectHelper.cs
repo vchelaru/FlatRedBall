@@ -56,7 +56,10 @@ namespace FlatRedBall.Glue.Projects
             //return process;
 
             var window = new Npc.MainWindow();
+            window.ViewModel.OpenSlnFolderAfterCreation = false;
             window.ProcessCommandLineArguments(commandLineArguments);
+
+
             NewProjectViewModel viewModelToReturn = null;
 
             GlueCommands.Self.DialogCommands.MoveToCursor(window);

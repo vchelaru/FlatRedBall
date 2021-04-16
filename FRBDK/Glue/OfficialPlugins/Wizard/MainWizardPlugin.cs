@@ -44,6 +44,8 @@ namespace OfficialPluginsCore.Wizard
         {
             var window = new WizardWindow();
 
+            GlueCommands.Self.DialogCommands.MoveToCursor(window);
+
             window.DoneClicked += () => Apply(window.WizardData);
 
             window.ShowDialog();

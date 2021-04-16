@@ -61,6 +61,10 @@ namespace FlatRedBall.Glue.Managers
 
                         }, $"Adding file {file}");
                     }
+                    else
+                    {
+                        GlueState.Self.CurrentReferencedFileSave = existingFile;
+                    }
                 }
             }
         }
