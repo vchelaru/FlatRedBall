@@ -75,70 +75,10 @@ namespace OfficialPluginsCore.Wizard
 
             if (vm.CreateLevels)
             {
-                for(int i= 0; i < vm.NumberOfLevels; i++)
-                {
-                    var levelName = "Level" + (i + 1);
-
-                    var levelScreen = GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(levelName);
-                    levelScreen.BaseScreen = gameScreen.Name;
-                    levelScreen.UpdateFromBaseType();
-                    GlueState.Self.CurrentScreenSave = levelScreen;
-
-
-                    if(i == 0)
-                    {
-                        GlueCommands.Self.GluxCommands.StartUpScreenName = levelScreen.Name;
-                    }
-
-                    if(vm.AddGameScreen && vm.AddTiledMap)
-                    {
-                        // add a regular TMX
-                        var addNewFileVm = new AddNewFileViewModel();
-
-                        var tmxAti =
-                            AvailableAssetTypes.Self.GetAssetTypeFromExtension("tmx");
-                        addNewFileVm.SelectedAssetTypeInfo = tmxAti;
-
-                        addNewFileVm.ForcedType = tmxAti;
-                        addNewFileVm.FileName = levelName + "Map";
-                        GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSave(addNewFileVm);
-
-                        var mapObject = levelScreen.NamedObjects.FirstOrDefault(item => item.InstanceName == "Map" && item.GetAssetTypeInfo().FriendlyName.StartsWith("LayeredTileMap"));
-                        if (mapObject != null)
-                        {
-                            mapObject.SourceType = SourceType.File;
-                            mapObject.SourceFile = "Screens/Level1/" +  levelName + "Map.tmx";
-                            mapObject.SourceName = "Entire File (LayeredTileMap)";
-                        }
-
-                        void SelectTmxRfs()
-                        {
-                            GlueState.Self.CurrentReferencedFileSave = levelScreen.ReferencedFiles
-                                .FirstOrDefault(Item => Item.GetAssetTypeInfo()?.Extension == "tmx");
-                        }
-
-                        if(vm.IncludStandardTilesetInLevels)
-                        {
-                            SelectTmxRfs();
-                            PluginManager.CallPluginMethod("Tiled Plugin", "AddStandardTilesetOnCurrentFile");
-                        }
-                        if(vm.IncludeGameplayLayerInLevels)
-                        {
-                            SelectTmxRfs();
-                            PluginManager.CallPluginMethod("Tiled Plugin", "AddGameplayLayerToCurrentFile");
-                        }
-
-                        if(vm.IncludeCollisionBorderInLevels)
-                        {
-                            SelectTmxRfs();
-                            PluginManager.CallPluginMethod("Tiled Plugin", "AddCollisionBorderToCurrentFile");
-                        }
-
-                    }
-                }
+                HandleCreateLevels(vm, gameScreen);
             }
 
-            if(vm.AddCameraController && vm.AddGameScreen)
+            if (vm.AddCameraController && vm.AddGameScreen)
             {
                 var addCameraControllerVm = new AddObjectViewModel();
                 addCameraControllerVm.ForcedElementToAddTo = gameScreen;
@@ -172,6 +112,71 @@ namespace OfficialPluginsCore.Wizard
                 }
             } while (didWait);
 
+        }
+
+        private static void HandleCreateLevels(WizardData vm, ScreenSave gameScreen)
+        {
+            for (int i = 0; i < vm.NumberOfLevels; i++)
+            {
+                var levelName = "Level" + (i + 1);
+
+                var levelScreen = GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(levelName);
+                levelScreen.BaseScreen = gameScreen.Name;
+                levelScreen.UpdateFromBaseType();
+                GlueState.Self.CurrentScreenSave = levelScreen;
+
+
+                if (i == 0)
+                {
+                    GlueCommands.Self.GluxCommands.StartUpScreenName = levelScreen.Name;
+                }
+
+                if (vm.AddGameScreen && vm.AddTiledMap)
+                {
+                    // add a regular TMX
+                    var addNewFileVm = new AddNewFileViewModel();
+
+                    var tmxAti =
+                        AvailableAssetTypes.Self.GetAssetTypeFromExtension("tmx");
+                    addNewFileVm.SelectedAssetTypeInfo = tmxAti;
+
+                    addNewFileVm.ForcedType = tmxAti;
+                    addNewFileVm.FileName = levelName + "Map";
+                    GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSave(addNewFileVm);
+
+                    var mapObject = levelScreen.NamedObjects.FirstOrDefault(item => item.InstanceName == "Map" && item.GetAssetTypeInfo().FriendlyName.StartsWith("LayeredTileMap"));
+                    if (mapObject != null)
+                    {
+                        mapObject.SourceType = SourceType.File;
+                        mapObject.SourceFile = $"Screens/{levelName}/{levelName}Map.tmx";
+                        mapObject.SourceName = "Entire File (LayeredTileMap)";
+                    }
+
+                    void SelectTmxRfs()
+                    {
+                        GlueState.Self.CurrentReferencedFileSave = levelScreen.ReferencedFiles
+                            .FirstOrDefault(Item => Item.GetAssetTypeInfo()?.Extension == "tmx");
+                    }
+
+                    if (vm.IncludStandardTilesetInLevels)
+                    {
+                        SelectTmxRfs();
+                        PluginManager.CallPluginMethod("Tiled Plugin", "AddStandardTilesetOnCurrentFile");
+                    }
+                    if (vm.IncludeGameplayLayerInLevels)
+                    {
+                        SelectTmxRfs();
+                        PluginManager.CallPluginMethod("Tiled Plugin", "AddGameplayLayerToCurrentFile");
+                    }
+
+                    if (vm.IncludeCollisionBorderInLevels)
+                    {
+                        SelectTmxRfs();
+                        PluginManager.CallPluginMethod("Tiled Plugin", "AddCollisionBorderToCurrentFile");
+                    }
+
+                }
+            }
         }
 
         private static ScreenSave HandleAddGameScreen(WizardData vm, ref NamedObjectSave solidCollisionNos, ref NamedObjectSave cloudCollisionNos)

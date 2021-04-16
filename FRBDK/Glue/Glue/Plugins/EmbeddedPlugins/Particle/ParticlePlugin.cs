@@ -21,8 +21,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Particle
             fileReferenceManager = new ParticleFileReferenceManager();
 
             this.CanFileReferenceContent = fileReferenceManager.CanFileReferenceContent;
-            this.GetFilesReferencedBy = fileReferenceManager.GetFilesReferencedBy;
-
+            this.FillWithReferencedFiles = fileReferenceManager.FillWithReferencedFiles;
         }
     }
 }

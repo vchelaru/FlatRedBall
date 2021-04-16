@@ -1159,7 +1159,7 @@ namespace FlatRedBall.IO
 
         public static bool IsUrl(string fileName)
         {
-            return fileName.IndexOf("http:") == 0;
+            return fileName.IndexOf("http:") == 0 || fileName.IndexOf("https:") == 0;
         }
 
 

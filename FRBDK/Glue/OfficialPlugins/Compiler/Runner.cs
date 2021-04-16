@@ -126,7 +126,7 @@ namespace OfficialPlugins.Compiler
             timer.Enabled = false;
             ViewModel.IsWaitingForGameToStart = true;
 
-            GeneralResponse toReturn = GeneralResponse.FailedResponse;
+            GeneralResponse toReturn = GeneralResponse.UnsuccessfulResponse;
 
             foundAlreadyRunningProcess = false;
             var projectFileName = GlueState.Self.CurrentMainProject.FullFileName;

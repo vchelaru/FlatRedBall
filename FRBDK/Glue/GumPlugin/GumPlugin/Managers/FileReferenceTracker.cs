@@ -69,12 +69,7 @@ namespace GumPlugin.Managers
             return shouldTrackDependencies;
         }
 
-        public void HandleGetFilesNeededOnDiskBy(GumProjectSave gumProjectSave, TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill)
-        {
-
-        }
-
-
+        
         private void GetFilesReferencedBy(GumProjectSave gumProjectSave, TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill, ProjectOrDisk projectOrDisk)
         {
             AppState.Self.GumProjectSave = gumProjectSave;
@@ -861,7 +856,7 @@ namespace GumPlugin.Managers
             try
             {
                 referencedGumFiles = GlueCommands.Self.FileCommands.GetFilesReferencedBy(gumProject.FullFileName, TopLevelOrRecursive.Recursive)
-                    .Select(item=>FileManager.Standardize(item).ToLowerInvariant())
+                    .Select(item=>FileManager.Standardize(item.FullPath).ToLowerInvariant())
                     .Distinct()
                     .ToArray();
             }

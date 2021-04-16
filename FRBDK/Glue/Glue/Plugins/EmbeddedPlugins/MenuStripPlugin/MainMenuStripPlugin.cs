@@ -147,7 +147,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
                     if (File.Exists(absoluteFileName))
                     {
-                        List<string> referencedFiles = null;
+                        List<FilePath> referencedFiles = null;
 
                         try
                         {
@@ -160,9 +160,9 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
                         if (referencedFiles != null)
                         {
-                            foreach (string referencedFile in referencedFiles)
+                            foreach (var referencedFile in referencedFiles)
                             {
-                                if (result == FileManager.RemovePath(referencedFile).ToLower())
+                                if (result == referencedFile.NoPath.ToLower())
                                 {
                                     matchingRegularFiles.Add(referencedFile + " in " + rfs.ToString() + "\n");
                                 }

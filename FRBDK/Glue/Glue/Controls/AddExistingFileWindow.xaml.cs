@@ -1,10 +1,17 @@
-﻿using FlatRedBall.Glue.FormHelpers;
+﻿using FlatRedBall.Glue.Errors;
+using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.ViewModels;
+using FlatRedBall.IO;
 using Glue;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,6 +32,8 @@ namespace FlatRedBall.Glue.Controls
     /// </summary>
     public partial class AddExistingFileWindow : Window
     {
+        #region Fields/Properties
+
         private AddExistingFileViewModel ViewModel
         {
             get
@@ -32,6 +41,8 @@ namespace FlatRedBall.Glue.Controls
                 return DataContext as AddExistingFileViewModel;
             }
         }
+
+        #endregion
 
         public AddExistingFileWindow()
         {
@@ -58,16 +69,151 @@ namespace FlatRedBall.Glue.Controls
                     string directoryOfTreeNode = EditorLogic.CurrentTreeNode.GetRelativePath();
 
                     ViewModel.Files.Clear();
-                    ViewModel.Files.AddRange(openFileDialog.FileNames);
+                    ViewModel.Files.AddRange(openFileDialog.FileNames.Select(item => new FilePath(item)));
                     this.DialogResult = true;
                 }
             }
         }
 
-        private void OkButtonClicked(object sender, RoutedEventArgs e)
+        private async void OkButtonClicked(object sender, RoutedEventArgs e)
         {
-            DoAcceptLogic();
+            if(ViewModel.FileLocationType == FileLocationType.Local)
+            {
+                DoAcceptLogic();
+            }
+            else
+            {
+                await HandleRemoteDownload();
+            }
         }
+
+        #region Download
+
+        private async Task HandleRemoteDownload()
+        {
+            var _httpClient = new HttpClient { Timeout = TimeSpan.FromDays(1), };
+
+            FilePath destinationFolder;
+            var currentElement = GlueState.Self.CurrentElement;
+            if(currentElement != null)
+            {
+                destinationFolder = GlueCommands.Self.FileCommands.GetContentFolder(currentElement);
+            }
+            else
+            {
+                destinationFolder = GlueCommands.Self.FileCommands.GetGlobalContentFolder();
+            }
+
+            FilePath destination = destinationFolder + FileManager.RemovePath(ViewModel.DownloadUrl);
+
+            var shouldDownload = true;
+            if(destination.Exists())
+            {
+                DialogResult result =
+                    System.Windows.Forms.MessageBox.Show("Do you want to download this file? It will ovewrite:\n" +
+                    destination.FullPath,
+                    "Download and Ovewrite?",
+                    MessageBoxButtons.YesNo);
+
+                shouldDownload = result == System.Windows.Forms.DialogResult.Yes;
+            }
+
+            var downloadResult = await DownloadUrl(_httpClient, ViewModel.DownloadUrl, destination, true);
+
+            if(downloadResult.Succeeded)
+            {
+                await DownloadReferencedFilesRecursively(_httpClient, destination, ViewModel.DownloadUrl);
+            }
+
+            if(downloadResult.Succeeded == false || ViewModel.DownloadedFilesList.Any(item => item.DownloadResponse?.Succeeded == false))
+            {
+                GlueCommands.Self.DialogCommands.ShowMessageBox("Error downloading files");
+            }
+            else
+            {
+                ViewModel.Files.Clear();
+                ViewModel.Files.Add(destination);
+                this.DialogResult = true;
+            }
+
+
+        }
+
+        private async Task DownloadReferencedFilesRecursively(HttpClient httpClient, FilePath destination, string urlForParentFile)
+        {
+            var referencedFiles = FileReferenceManager.Self.GetFilesReferencedBy(destination, EditorObjects.Parsing.TopLevelOrRecursive.TopLevel);
+
+            var destinationFolder = destination.GetDirectoryContainingThis();
+
+            foreach(var file in referencedFiles)
+            {
+                var relative = FileManager.MakeRelative(file.FullPath, destinationFolder.FullPath);
+                var fileToDownload = FileManager.GetDirectory(urlForParentFile) + relative;
+                var innerDownloadResult = await DownloadUrl(httpClient, fileToDownload, file, false);
+                if(innerDownloadResult.Succeeded)
+                {
+                    await DownloadReferencedFilesRecursively(httpClient, file, fileToDownload);
+                }
+            }
+        }
+
+        private async Task<GeneralResponse> DownloadUrl(HttpClient _httpClient, string url, FilePath destination, bool overwriteIfExists)
+        {
+            var generalResponse = GeneralResponse.SuccessfulResponse;
+            var vm = new IndividualFileAddDownloadViewModel();
+            vm.Url = url;
+            Action<long?, long> progressChanged = (a, b) => vm.DownloadedBytes = b;
+            ViewModel.DownloadedFilesList.Add(vm);
+
+            try
+            {
+                using var response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+                var totalBytes = response.Content.Headers.ContentLength;
+                vm.TotalLength = totalBytes;
+                using var contentStream = await response.Content.ReadAsStreamAsync();
+
+                using var destinationStream = System.IO.File.OpenWrite(destination.FullPath);
+                await ProcessContentStream(totalBytes, contentStream, destinationStream, progressChanged);
+            }
+            catch(Exception e)
+            {
+                generalResponse = GeneralResponse.UnsuccessfulWith(e.Message);
+            }
+            vm.DownloadResponse = generalResponse;
+            return generalResponse;
+
+        }
+
+        private async Task ProcessContentStream(long? totalDownloadSize, Stream contentStream, Stream destinationStream, Action<long?, long> progressChanged)
+        {
+            var totalBytesRead = 0L;
+            var readCount = 0L;
+            var buffer = new byte[8192];
+            var isMoreToRead = true;
+
+            do
+            {
+                var bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length);
+                if (bytesRead == 0)
+                {
+                    isMoreToRead = false;
+                    progressChanged(totalDownloadSize, totalBytesRead);
+                    continue;
+                }
+
+                await destinationStream.WriteAsync(buffer, 0, bytesRead);
+
+                totalBytesRead += bytesRead;
+                readCount += 1;
+
+                if (readCount % 100 == 0)
+                    progressChanged(totalDownloadSize, totalBytesRead);
+
+            }
+            while (isMoreToRead);
+        }
+
+        #endregion
 
         private void DoAcceptLogic()
         {

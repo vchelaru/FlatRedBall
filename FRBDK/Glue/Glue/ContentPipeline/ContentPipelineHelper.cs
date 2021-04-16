@@ -25,7 +25,7 @@ namespace FlatRedBall.Glue.ContentPipeline
         {
             TaskManager.Self.Add(() =>
             {
-                List<string> filesInModifiedRfs = new List<string>();
+                var filesInModifiedRfs = new List<FilePath>();
                 bool shouldRemoveAndAdd = false;
      
      
@@ -50,7 +50,7 @@ namespace FlatRedBall.Glue.ContentPipeline
             }, "Reacting to changing UseContentPipeline");
         }
         
-        private static void AddAndRemoveModifiedRfsFiles(List<ReferencedFileSave> rfses, List<string> filesInModifiedRfs, VisualStudioProject projectBase, bool usesContentPipeline)
+        private static void AddAndRemoveModifiedRfsFiles(List<ReferencedFileSave> rfses, List<FilePath> filesInModifiedRfs, VisualStudioProject projectBase, bool usesContentPipeline)
         {
 
             if (filesInModifiedRfs.Count != 0)
@@ -58,7 +58,7 @@ namespace FlatRedBall.Glue.ContentPipeline
 
                 for (int i = 0; i < filesInModifiedRfs.Count; i++)
                 {
-                    filesInModifiedRfs[i] = ProjectManager.MakeRelativeContent(filesInModifiedRfs[i]).ToLower();
+                    filesInModifiedRfs[i] = ProjectManager.MakeRelativeContent(filesInModifiedRfs[i].FullPath).ToLower();
                 }
 
                 List<ReferencedFileSave> allReferencedFiles = ObjectFinder.Self.GetAllReferencedFiles();
@@ -71,7 +71,7 @@ namespace FlatRedBall.Glue.ContentPipeline
 
                 #region Loop through all files to add/remove
 
-                foreach (string fileToAddOrRemove in filesInModifiedRfs)
+                foreach (var fileToAddOrRemove in filesInModifiedRfs)
                 {
 
                     List<ProjectBase> projectsAlreadyModified = new List<ProjectBase>();
@@ -80,7 +80,7 @@ namespace FlatRedBall.Glue.ContentPipeline
 
                     // If moving to content pipeline, remove the files from the project.
                     // If moving to copy if newer, add the files back to the project.
-                    string absoluteFileName = ProjectManager.MakeAbsolute(fileToAddOrRemove, true);
+                    string absoluteFileName = ProjectManager.MakeAbsolute(fileToAddOrRemove.FullPath, true);
 
                     projectsAlreadyModified.Add(projectBase);
 
@@ -154,7 +154,7 @@ namespace FlatRedBall.Glue.ContentPipeline
 
         }
 
-        private static void AddOrRemoveIndividualRfs(ReferencedFileSave rfs, List<string> filesInModifiedRfs, ref bool shouldRemoveAndAdd, VisualStudioProject projectBase)
+        private static void AddOrRemoveIndividualRfs(ReferencedFileSave rfs, List<FilePath> filesInModifiedRfs, ref bool shouldRemoveAndAdd, VisualStudioProject projectBase)
         {
 
             List<ProjectBase> projectsAlreadyModified = new List<ProjectBase>();
@@ -209,7 +209,7 @@ namespace FlatRedBall.Glue.ContentPipeline
                     }
                     #endregion
 
-                    List<string> filesReferencedByAsset = 
+                    var filesReferencedByAsset = 
                         FileReferenceManager.Self.GetFilesReferencedBy(absoluteName, EditorObjects.Parsing.TopLevelOrRecursive.Recursive);
 
                     for (int i = 0; i < filesReferencedByAsset.Count; i++)
@@ -281,7 +281,7 @@ namespace FlatRedBall.Glue.ContentPipeline
             }
         }
 
-        private static void RemoveFilesFromListReferencedByRfses(List<string> filesInModifiedRfs, List<ReferencedFileSave> allReferencedFiles)
+        private static void RemoveFilesFromListReferencedByRfses(List<FilePath> filesInModifiedRfs, List<ReferencedFileSave> allReferencedFiles)
         {
             foreach (ReferencedFileSave possibleReferencer in allReferencedFiles)
             {
@@ -298,16 +298,14 @@ namespace FlatRedBall.Glue.ContentPipeline
 
                     if (File.Exists(absoluteFileName))
                     {
-                        List<string> filesInPossibleReferencer =
+                        var filesInPossibleReferencer =
                             FileReferenceManager.Self.GetFilesReferencedBy(absoluteFileName, TopLevelOrRecursive.Recursive);
 
-                        foreach (string containedFile in filesInPossibleReferencer)
+                        foreach (var containedFile in filesInPossibleReferencer)
                         {
-                            string modifiedContainedFile = ProjectManager.MakeRelativeContent(containedFile).ToLower();
-
-                            if (filesInModifiedRfs.Contains(modifiedContainedFile))
+                            if (filesInModifiedRfs.Contains(containedFile))
                             {
-                                filesInModifiedRfs.Remove(modifiedContainedFile);
+                                filesInModifiedRfs.Remove(containedFile);
                             }
                         }
                     }

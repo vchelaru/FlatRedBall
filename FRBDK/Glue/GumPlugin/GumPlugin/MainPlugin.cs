@@ -339,8 +339,6 @@ namespace GumPlugin
 
             this.FillWithReferencedFiles += FileReferenceTracker.Self.HandleFillWithReferencedFiles;
 
-            this.GetFilesNeededOnDiskBy += FileReferenceTracker.Self.HandleGetFilesNeededOnDiskBy;
-
             this.ReactToFileChangeHandler += FileChangeManager.Self.HandleFileChange;
 
             this.ReactToLoadedGlux += HandleGluxLoad;

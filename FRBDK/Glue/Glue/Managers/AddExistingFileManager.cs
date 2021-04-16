@@ -37,12 +37,30 @@ namespace FlatRedBall.Glue.Managers
 
                 foreach(var file in viewModel.Files)
                 {
-
-                    TaskManager.Self.AddSync(() =>
+                    // If there is already an RFS for this file, no need to add it again.
+                    ReferencedFileSave existingFile = null;
+                    if(element != null)
                     {
-                        AddSingleFile(file, ref userCancelled, element, directoryOfTreeNode);
+                        existingFile = element.GetAllReferencedFileSavesRecursively()
+                            .FirstOrDefault(item =>
+                                GlueCommands.Self.FileCommands.GetFullFileName(item) == file);
+                    }
+                    else
+                    {
+                        // global content?
+                        existingFile = GlueState.Self.CurrentGlueProject.GlobalFiles
+                            .FirstOrDefault(item =>
+                                GlueCommands.Self.FileCommands.GetFullFileName(item) == file);
+                    }
 
-                    }, $"Adding file {file}");
+                    if(existingFile == null)
+                    {
+                        TaskManager.Self.Add(() =>
+                        {
+                            AddSingleFile(file, ref userCancelled, element, directoryOfTreeNode);
+
+                        }, $"Adding file {file}");
+                    }
                 }
             }
         }
@@ -75,35 +93,35 @@ namespace FlatRedBall.Glue.Managers
             viewModel.RefreshFilteredList();
         }
 
-        public ReferencedFileSave AddSingleFile(string fileName, ref bool userCancelled, object options = null, IElement elementToAddTo = null)
+        public ReferencedFileSave AddSingleFile(FilePath fileName, ref bool userCancelled, object options = null, IElement elementToAddTo = null)
         {
             var element = elementToAddTo ?? GlueState.Self.CurrentElement;
 
             return AddSingleFile(fileName, ref userCancelled, element, null, options);
         }
 
-        public ReferencedFileSave AddSingleFile(string fileName, ref bool userCancelled, IElement element, 
+        public ReferencedFileSave AddSingleFile(FilePath fileName, ref bool userCancelled, IElement element, 
             string directoryOfTreeNode, object options = null)
         {
             ReferencedFileSave toReturn = null;
 
             #region Find the BuildToolAssociation for the selected file
 
-            string rfsName = FileManager.RemoveExtension(FileManager.RemovePath(fileName));
+            string rfsName = fileName.NoPathNoExtension;
             string extraCommandLineArguments = null;
 
             BuildToolAssociation buildToolAssociation = null;
-            bool isBuiltFile = BuildToolAssociationManager.Self.GetIfIsBuiltFile(fileName);
+            bool isBuiltFile = BuildToolAssociationManager.Self.GetIfIsBuiltFile(fileName.FullPath);
             bool userPickedNone = false;
 
             if (isBuiltFile)
             {
-                buildToolAssociation = BuildToolAssociationManager.Self.GetBuildToolAssocationAndNameFor(fileName, out userCancelled, out userPickedNone, out rfsName, out extraCommandLineArguments);
+                buildToolAssociation = BuildToolAssociationManager.Self.GetBuildToolAssocationAndNameFor(fileName.FullPath, out userCancelled, out userPickedNone, out rfsName, out extraCommandLineArguments);
             }
 
             #endregion
 
-            string sourceExtension = FileManager.GetExtension(fileName);
+            string sourceExtension = fileName.Extension;
 
             if (userPickedNone)
             {
@@ -118,7 +136,7 @@ namespace FlatRedBall.Glue.Managers
             else if (!userCancelled)
             {
 
-                toReturn = GlueCommands.Self.GluxCommands.AddSingleFileTo(fileName, rfsName, extraCommandLineArguments, buildToolAssociation,
+                toReturn = GlueCommands.Self.GluxCommands.AddSingleFileTo(fileName.FullPath, rfsName, extraCommandLineArguments, buildToolAssociation,
                     isBuiltFile, options, element, directoryOfTreeNode);
             }
 

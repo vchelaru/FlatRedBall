@@ -18,21 +18,22 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
     {
         GeneralResponse GetLastParseResponse(FilePath file);
 
-        IEnumerable<string> GetFilesReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive);
+        IEnumerable<FilePath> GetFilesReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive);
         IEnumerable<FilePath> GetFilePathsReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive);
 
-        IEnumerable<string> GetFilesReferencedBy(ReferencedFileSave file, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive);
+        IEnumerable<FilePath> GetFilesReferencedBy(ReferencedFileSave file, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive);
 
-        IEnumerable<string> GetAllFilesNeededOnDisk();
+        IEnumerable<FilePath> GetAllFilesNeededOnDisk();
 
-        List<string> GetAllReferencedFileNames();
+        List<FilePath> GetAllReferencedFileNames();
         List<FilePath> GetAllReferencedFilePaths();
 
-        List<string> GetAllReferencedFileNames(TopLevelOrRecursive topLevelOrRecursive);
+        List<FilePath> GetAllReferencedFileNames(TopLevelOrRecursive topLevelOrRecursive);
 
         void ClearFileCache(string absoluteName);
 
         string GetContentFolder(IElement element);
+        FilePath GetGlobalContentFolder();
 
         void IgnoreNextChangeOnFile(string absoluteFileName);
 

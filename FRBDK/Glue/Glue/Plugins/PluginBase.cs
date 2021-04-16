@@ -256,13 +256,13 @@ namespace FlatRedBall.Glue.Plugins
 
         public AdjustDisplayedEntityDelegate AdjustDisplayedEntity { get; protected set; }
 
-        [Obsolete("Use FillWithReferencedFiles instead")]
+        [Obsolete("Use FillWithReferencedFiles instead", error:true)]
         public Action<string, EditorObjects.Parsing.TopLevelOrRecursive, List<string>> GetFilesReferencedBy { get; protected set; }
 
         public Func<FilePath, List<FilePath>, GeneralResponse> FillWithReferencedFiles { get; protected set; }
         public Action<FilePath, GeneralResponse> ReactToFileReadError { get; protected set; }
 
-        public Action<string, List<string>> GetFilesNeededOnDiskBy { get; protected set; }
+        public Action<string, List<FilePath>> GetFilesNeededOnDiskBy { get; protected set; }
 
         public Action ResolutionChanged { get; protected set; }
 

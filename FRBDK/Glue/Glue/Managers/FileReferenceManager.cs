@@ -16,7 +16,7 @@ namespace FlatRedBall.Glue.Managers
         class FileReferenceInformation
         {
             public DateTime LastWriteTime;
-            public List<string> References = new List<string>();
+            public List<FilePath> References = new List<FilePath>();
 
             public override string ToString()
             {
@@ -47,14 +47,14 @@ namespace FlatRedBall.Glue.Managers
         List<string> getFileReferenceCalls = new List<string>();
 
 
-        public List<string> GetFilesReferencedBy(string absoluteName)
+        public List<FilePath> GetFilesReferencedBy(FilePath absoluteName)
         {
             return GetFilesReferencedBy(absoluteName, TopLevelOrRecursive.Recursive);
         }
 
-        public List<string> GetFilesReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
+        public List<FilePath> GetFilesReferencedBy(FilePath absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
         {
-            List<string> toReturn = new List<string>();
+            var toReturn = new List<FilePath>();
 
             GetFilesReferencedBy(absoluteName, topLevelOrRecursive, listToFill: toReturn);
 
@@ -62,12 +62,12 @@ namespace FlatRedBall.Glue.Managers
             return toReturn;
         }
 
-        public void GetFilesReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill)
+        public void GetFilesReferencedBy(FilePath absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, List<FilePath> listToFill)
         { 
-            List<string> topLevelOnly = null;
+            List<FilePath> topLevelOnly = null;
             bool handledByCache = false;
 
-            string standardized = FileManager.Standardize(absoluteName);
+            string standardized = absoluteName.Standardized;
             if(fileReferences.ContainsKey(standardized))
             {
                 // compare dates:
@@ -105,14 +105,14 @@ namespace FlatRedBall.Glue.Managers
 
                 if (succeeded)
                 {
-                    var response = PluginManager.GetFilesReferencedBy(absoluteName, TopLevelOrRecursive.TopLevel, topLevelOnly);
+                    var response = PluginManager.GetFilesReferencedBy(absoluteName.FullPath, TopLevelOrRecursive.TopLevel, topLevelOnly);
 
                     if(response.Succeeded)
                     {
                         // let's remove ../ if we can:
                         for (int i = 0; i < topLevelOnly.Count; i++)
                         {
-                            topLevelOnly[i] = FlatRedBall.IO.FileManager.RemoveDotDotSlash(topLevelOnly[i]);
+                            topLevelOnly[i] = FlatRedBall.IO.FileManager.RemoveDotDotSlash(topLevelOnly[i].FullPath);
                         }
 
 
@@ -166,12 +166,12 @@ namespace FlatRedBall.Glue.Managers
         }
 
 
-        public List<string> GetFilesNeededOnDiskBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
+        public List<FilePath> GetFilesNeededOnDiskBy(FilePath absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
         {
-            List<string> topLevelOnly = null;
+            List<FilePath> topLevelOnly = null;
             bool handledByCache = false;
 
-            string standardized = FileManager.Standardize(absoluteName);
+            string standardized = absoluteName.Standardized;
             if (filesNeededOnDisk.ContainsKey(standardized))
             {
                 // compare dates:
@@ -191,12 +191,7 @@ namespace FlatRedBall.Glue.Managers
             {
                 // todo: do we want to change this to use 
                 topLevelOnly = ContentParser.GetFilesReferencedByAsset(absoluteName, TopLevelOrRecursive.TopLevel);
-                PluginManager.GetFilesNeededOnDiskBy(absoluteName, TopLevelOrRecursive.TopLevel, topLevelOnly);
-                // let's remove ../ if we can:
-                for (int i = 0; i < topLevelOnly.Count; i++)
-                {
-                    topLevelOnly[i] = FlatRedBall.IO.FileManager.RemoveDotDotSlash(topLevelOnly[i]);
-                }
+                PluginManager.GetFilesNeededOnDiskBy(absoluteName.FullPath, TopLevelOrRecursive.TopLevel, topLevelOnly);
 
                 filesNeededOnDisk[standardized] = new FileReferenceInformation
                 {
@@ -206,7 +201,7 @@ namespace FlatRedBall.Glue.Managers
             }
 
 
-            List<string> toReturn = new List<string>();
+            var toReturn = new List<FilePath>();
             toReturn.AddRange(topLevelOnly);
 
             if (topLevelOrRecursive == TopLevelOrRecursive.Recursive)

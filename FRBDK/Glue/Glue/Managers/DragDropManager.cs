@@ -1063,16 +1063,16 @@ namespace FlatRedBall.Glue.Managers
             // But I'm going to at least improve it a little bit by having the referenced
             // files get copied over.
             Dictionary<string, string> mOldNewDependencyFileDictionary = new Dictionary<string, string>();
-            List<string> referencedFiles = ContentParser.GetFilesReferencedByAsset(oldFileName, TopLevelOrRecursive.Recursive);
+            var referencedFiles = ContentParser.GetFilesReferencedByAsset(oldFileName, TopLevelOrRecursive.Recursive);
             string oldDirectoryFull = FileManager.GetDirectory(oldFileName);
 
-            foreach (string file in referencedFiles)
+            foreach (var file in referencedFiles)
             {
-                string relativeToRfs = FileManager.MakeRelative(file, FileManager.GetDirectory(oldFileName));
+                string relativeToRfs = FileManager.MakeRelative(file.FullPath, FileManager.GetDirectory(oldFileName));
 
                 string targetReferencedFileName = targetDirectory + relativeToRfs;
 
-                mOldNewDependencyFileDictionary.Add(file, targetReferencedFileName);
+                mOldNewDependencyFileDictionary.Add(file.FullPath, targetReferencedFileName);
 
                 if (!FileManager.IsRelativeTo(targetReferencedFileName, targetDirectory))
                 {

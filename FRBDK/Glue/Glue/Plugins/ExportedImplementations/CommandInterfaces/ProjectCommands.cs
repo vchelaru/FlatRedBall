@@ -284,8 +284,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // Glue is going to assume .cs files can't reference content:
             if (!fileToAddAbsolute.EndsWith(".cs"))
             {
-                FileReferenceManager.Self.GetFilesReferencedBy(fileToAddAbsolute, TopLevelOrRecursive.TopLevel, listOfReferencedFiles);
-
+                var inner = new List<FilePath>();
+                FileReferenceManager.Self.GetFilesReferencedBy(fileToAddAbsolute, TopLevelOrRecursive.TopLevel, inner);
+                listOfReferencedFiles.AddRange(inner.Select(item => item.Standardized));
                 if(alreadyReferencedFiles != null)
                 {
                     listOfReferencedFiles = listOfReferencedFiles.Except(alreadyReferencedFiles).ToList();

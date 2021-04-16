@@ -1,13 +1,21 @@
 ﻿using FlatRedBall.Glue.MVVM;
+using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace FlatRedBall.Glue.ViewModels
 {
+    public enum FileLocationType
+    {
+        Local,
+        Download
+    }
+
     public class AddExistingFileViewModel : ViewModel
     {
         public string SearchText
@@ -29,11 +37,57 @@ namespace FlatRedBall.Glue.ViewModels
             set => Set(value); 
         }
 
-        public List<string> Files
+        public FileLocationType FileLocationType
+        {
+            get => Get<FileLocationType>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(FileLocationType))]
+        public bool IsLocalFilesChecked
+        {
+            get => FileLocationType == FileLocationType.Local;
+            set
+            {
+                if(value)
+                {
+                    FileLocationType = FileLocationType.Local;
+                }
+            }
+        }
+
+        [DependsOn(nameof(FileLocationType))]
+        public bool IsDownloadFileChecked
+        {
+            get => FileLocationType == FileLocationType.Download;
+            set
+            {
+                if(value)
+                {
+                    FileLocationType = FileLocationType.Download;
+                }
+            }
+        }
+
+        [DependsOn(nameof(FileLocationType))]
+        public Visibility LocalUiVisibility =>
+            (FileLocationType == FileLocationType.Local).ToVisibility();
+
+        [DependsOn(nameof(FileLocationType))]
+        public Visibility DownloadFileVisibility =>
+            (FileLocationType == FileLocationType.Download).ToVisibility();
+
+        public string DownloadUrl
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public List<FilePath> Files
         {
             get;
             private set;
-        } = new List<string>();
+        } = new List<FilePath>();
 
         public List<string> UnfilteredFileList
         {
@@ -46,6 +100,11 @@ namespace FlatRedBall.Glue.ViewModels
             get;
             private set;
         } = new ObservableCollection<string>();
+
+        public ObservableCollection<IndividualFileAddDownloadViewModel> DownloadedFilesList
+        {
+            get; set;
+        } = new ObservableCollection<IndividualFileAddDownloadViewModel>();
 
         public string ContentFolder { get; internal set; }
 

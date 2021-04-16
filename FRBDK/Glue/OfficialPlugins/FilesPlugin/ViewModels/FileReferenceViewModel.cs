@@ -55,9 +55,9 @@ namespace OfficialPlugins.FilesPlugin.ViewModels
                    files = files
                        .Select(item =>
                        {
-                           if (FileManager.IsRelativeTo(item, contentDirectory))
+                           if (FileManager.IsRelativeTo(item.FullPath, contentDirectory))
                            {
-                               return FileManager.MakeRelative(item, contentDirectory);
+                               return FileManager.MakeRelative(item.FullPath, contentDirectory);
                            }
                            else
                            {
@@ -72,7 +72,7 @@ namespace OfficialPlugins.FilesPlugin.ViewModels
                   {
                       foreach (var file in files)
                       {
-                          ReferencedFiles.Add(file);
+                          ReferencedFiles.Add(file.FullPath);
                       }
                   });
                },

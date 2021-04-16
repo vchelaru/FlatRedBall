@@ -16,16 +16,16 @@ namespace FlatRedBall.Glue.IO.Zip
         {
             string absoluteFile = ProjectManager.MakeAbsolute(rfs.Name, true);
 
-            List<string> allFiles = FileReferenceManager.Self.GetFilesReferencedBy(
+            var allFiles = FileReferenceManager.Self.GetFilesReferencedBy(
                 absoluteFile, TopLevelOrRecursive.Recursive);
 
             #region Check for relative files
 
             string directoryOfMainFile = FileManager.GetDirectory(absoluteFile);
             bool areAnyFilesOutsideOfMainDirectory = false;
-            foreach (string referencedFile in allFiles)
+            foreach (var referencedFile in allFiles)
             {
-                if (!FileManager.IsRelativeTo(referencedFile, directoryOfMainFile))
+                if (!FileManager.IsRelativeTo(referencedFile.FullPath, directoryOfMainFile))
                 {
                     areAnyFilesOutsideOfMainDirectory = true;
                     break;
@@ -55,15 +55,15 @@ namespace FlatRedBall.Glue.IO.Zip
 
                 using (ZipFile zip = new ZipFile())
                 {
-                    foreach (string fileToAdd in allFiles)
+                    foreach (var fileToAdd in allFiles)
                     {
-                        string directory = FileManager.MakeRelative(FileManager.GetDirectory(fileToAdd), directoryOfMainFile);
+                        string directory = FileManager.MakeRelative(fileToAdd.GetDirectoryContainingThis().FullPath, directoryOfMainFile);
                         if (directory.EndsWith("/"))
                         {
                             directory = directory.Substring(0, directory.Length - 1);
                         }
 
-                        zip.AddFile(fileToAdd, directory);
+                        zip.AddFile(fileToAdd.FullPath, directory);
                     }
 
                     zip.Save(outputFile);

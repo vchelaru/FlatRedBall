@@ -646,7 +646,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             else
             {
-                List<string> listOfReferencedFiles;
+                List<FilePath> listOfReferencedFiles;
 
                 if (FileHelper.DoesFileReferenceContent(sourceFileName))
                 {
@@ -654,7 +654,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 }
                 else
                 {
-                    listOfReferencedFiles = new List<string>();
+                    listOfReferencedFiles = new List<FilePath>();
                 }
 
 
@@ -671,10 +671,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 relativeFile = FileManager.MakeRelative(sourceFileName, sourceDirectory);
                 CopyFileToProjectRelativeLocation(sourceFileName, relativeDirectory + relativeFile);
 
-                foreach (string file in listOfReferencedFiles)
+                foreach (var file in listOfReferencedFiles)
                 {
-                    relativeFile = FileManager.MakeRelative(file, sourceDirectory);
-                    UpdateContentFile(file);
+                    UpdateContentFile(file.FullPath);
                 }
             }
         }

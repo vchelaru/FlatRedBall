@@ -206,13 +206,13 @@ namespace OfficialPlugins.ContentPipelinePlugin
 
         public static string[] GetReferencedPngs()
         {
-            List<string> referencedFileNames = new List<string>();
+            var referencedFileNames = new List<FilePath>();
 
             var referencedFiles = EditorObjects.IoC.Container.Get<IGlueState>().GetAllReferencedFiles();
 
             foreach (var rfs in referencedFiles)
             {
-                string absolute = null;
+                FilePath absolute = null;
                 try
                 {
                     absolute = GlueCommands.GetAbsoluteFileName(rfs);
@@ -230,7 +230,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
                     }
                 }
 
-                if (referencedFileNames.Any(item => Match(item, absolute)) == false)
+                if (referencedFileNames.Any(item => item ==  absolute) == false)
                 {
                     referencedFileNames.Add(absolute);
                     AddReferencedFilesRecursively(absolute, referencedFileNames);
@@ -241,9 +241,9 @@ namespace OfficialPlugins.ContentPipelinePlugin
             if(GlueState.CurrentGlueProject != null)
             {
                 referencedPngs = referencedFileNames
-                    .Where(item => FileManager.GetExtension(item) == "png")
+                    .Where(item => item.Extension == "png")
                     .Distinct()
-                    .Select(item => FileManager.Standardize(item))
+                    .Select(item => item.Standardized)
                     // Alphabetize for debugging, can get rid of this once this feature works well and I don't need to look at the list anymore:
                     .OrderBy(item =>item)
                     .ToArray();
@@ -252,15 +252,15 @@ namespace OfficialPlugins.ContentPipelinePlugin
             return referencedPngs;
         }
 
-        private static void AddReferencedFilesRecursively(string absoluteFileName, List<string> referencedFileNames)
+        private static void AddReferencedFilesRecursively(FilePath absoluteFileName, List<FilePath> referencedFileNames)
         {
             var referencedFiles = 
-                EditorObjects.IoC.Container.Get<IGlueCommands>().FileCommands.GetFilesReferencedBy(absoluteFileName, EditorObjects.Parsing.TopLevelOrRecursive.TopLevel);
+                EditorObjects.IoC.Container.Get<IGlueCommands>().FileCommands.GetFilesReferencedBy(absoluteFileName.FullPath, EditorObjects.Parsing.TopLevelOrRecursive.TopLevel);
             
 
             foreach(var file in referencedFiles)
             {
-                if (referencedFileNames.Any(item => Match(item, file)) == false)
+                if (referencedFileNames.Any(item => item==file) == false)
                 {
                     referencedFileNames.Add(file);
                     AddReferencedFilesRecursively(file, referencedFileNames);

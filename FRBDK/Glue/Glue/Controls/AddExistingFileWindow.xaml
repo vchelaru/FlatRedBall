@@ -6,41 +6,92 @@
              xmlns:local="clr-namespace:FlatRedBall.Glue.Controls"
              WindowStartupLocation="Manual"
              mc:Ignorable="d" 
-             WindowStyle="ToolWindow" ResizeMode="CanResizeWithGrip"
-             Height="300" Width="450">
+             WindowStyle="ToolWindow" 
+             ResizeMode="CanResizeWithGrip"
+             Height="320" Width="450">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Grid.Row="0">
+            <RadioButton Margin="6" IsChecked="{Binding IsLocalFilesChecked}">Local Files</RadioButton>
+            <RadioButton Margin="16,6,6,6" IsChecked="{Binding IsDownloadFileChecked}">Download File</RadioButton>
+        </StackPanel>
+        
+        <Grid Visibility="{Binding LocalUiVisibility, FallbackValue=Collapsed}" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
 
-        <TextBox 
+            <TextBox 
                  x:Name="SearchTextBox"
                  Margin="5" 
                  KeyDown="TextBox_KeyDown"
                  PreviewKeyDown="TextBox_PreviewKeyDown"
                  Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-        <ListBox x:Name="ListBoxInstance"
+            <ListBox x:Name="ListBoxInstance"
                  Grid.Row="1" Margin="5,0,5,5" 
                  ItemsSource="{Binding FilteredFileList}"
                  SelectedItem="{Binding SelectedListBoxItem}"
                  SelectionChanged="ListBoxInstance_SelectionChanged"
                  ></ListBox>
-        <TextBlock FontSize="10" Margin="5,0,5,5" TextWrapping="Wrap" Grid.Row="2">
+            <TextBlock FontSize="10" Margin="5,0,5,5" TextWrapping="Wrap" Grid.Row="2">
             The list above shows all files in the game's content folder. <LineBreak></LineBreak>
             To add files from outside of the content folder, click the Browse button. Files from outside of the content folder will be copied to the content folder.</TextBlock>
-        <Grid Grid.Row="3" Margin="5,0,15,5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Button Click="HandleBrowseClicked">Browse...</Button>
-            <Button Grid.Column="2" Margin="0,0,5,0" Click="OkButtonClicked">OK</Button>
-            <Button Grid.Column="3" Click="CancelButtonClicked">Cancel</Button>
+            <Grid Grid.Row="3" Margin="5,0,15,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Button Click="HandleBrowseClicked">Browse...</Button>
+                <Button Grid.Column="2" Margin="0,0,5,0" Click="OkButtonClicked">OK</Button>
+                <Button Grid.Column="3" Click="CancelButtonClicked">Cancel</Button>
+            </Grid>
+        </Grid>
+
+        <Grid Visibility="{Binding DownloadFileVisibility}" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid Margin="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock VerticalAlignment="Center">Enter URL Name:</TextBlock>
+                <TextBox Grid.Column="1" Text="{Binding DownloadUrl}"></TextBox>
+            </Grid>
+            <ListBox Grid.Row="1" ItemsSource="{Binding DownloadedFilesList}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="4">
+                            <TextBlock Text="{Binding FullDetails}"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            
+            <TextBlock FontSize="10" Margin="5,0,5,5" TextWrapping="Wrap" Grid.Row="2">
+            Glue will download the file entered above along with any dependencies.
+            </TextBlock>
+            <Grid Grid.Row="3" Margin="5,0,15,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="1" Margin="0,0,5,0" Click="OkButtonClicked">OK</Button>
+                <Button Grid.Column="2" Click="CancelButtonClicked">Cancel</Button>
+            </Grid>
         </Grid>
     </Grid>
 </Window>

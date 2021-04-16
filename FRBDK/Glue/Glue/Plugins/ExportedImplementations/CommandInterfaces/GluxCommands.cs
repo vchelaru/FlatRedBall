@@ -812,8 +812,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // call to use the dependency tree:
             // replace:
 
-            List<string> referencedFiles =
-                GlueCommands.Self.FileCommands.GetAllReferencedFileNames().Select(item => item.ToLowerInvariant()).ToList();
+            var referencedFiles = GlueCommands.Self.FileCommands.GetAllReferencedFileNames();
 
             string absoluteToLower = GlueCommands.Self.GetAbsoluteFileName(referencedFileToRemove).ToLowerInvariant();
             string relativeToProject = FileManager.MakeRelative(absoluteToLower, GlueState.Self.ContentDirectory);
@@ -1479,16 +1478,16 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         private static void RemoveUnreferencedFiles(IElement element, List<string> filesThatCouldBeRemoved)
         {
-            List<string> allReferencedFiles = GlueCommands.Self.FileCommands.GetAllReferencedFileNames();
+            var allReferencedFiles = GlueCommands.Self.FileCommands.GetAllReferencedFileNames();
 
             for (int i = element.ReferencedFiles.Count - 1; i > -1; i--)
             {
                 ReferencedFileSave rfs = element.ReferencedFiles[i];
 
                 bool shouldRemove = true;
-                foreach (string file in allReferencedFiles)
+                foreach (var file in allReferencedFiles)
                 {
-                    if (file.ToLowerInvariant() == rfs.Name.ToLowerInvariant())
+                    if (file ==  GlueCommands.Self.GetAbsoluteFilePath(rfs))
                     {
                         shouldRemove = false;
                         break;

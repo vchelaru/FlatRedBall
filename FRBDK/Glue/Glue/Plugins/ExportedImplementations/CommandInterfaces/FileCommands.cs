@@ -43,7 +43,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        public IEnumerable<string> GetFilesReferencedBy(ReferencedFileSave file, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
+        public IEnumerable<FilePath> GetFilesReferencedBy(ReferencedFileSave file, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
         {
             var absolute = GlueCommands.GetAbsoluteFileName(file);
 
@@ -54,17 +54,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             var absolute = GlueCommands.GetAbsoluteFileName(file);
 
-            return GetFilesReferencedBy(absolute, topLevelOrRecursive).Select(item => new FilePath(item));
+            return GetFilesReferencedBy(absolute, topLevelOrRecursive);
         }
 
-        public IEnumerable<string> GetFilesReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
+        public IEnumerable<FilePath> GetFilesReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
         {
             return FileReferenceManager.Self.GetFilesReferencedBy(absoluteName, topLevelOrRecursive);
         }
 
         public IEnumerable<FilePath> GetFilePathsReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
         {
-            return GetFilesReferencedBy(absoluteName, topLevelOrRecursive).Select(item => new FilePath(item));
+            return GetFilesReferencedBy(absoluteName, topLevelOrRecursive);
         }
 
         public void ClearFileCache(string absoluteName)
@@ -72,27 +72,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             FileReferenceManager.Self.ClearFileCache(absoluteName);
         }
 
-        public IEnumerable<string> GetAllFilesNeededOnDisk()
+        public IEnumerable<FilePath> GetAllFilesNeededOnDisk()
         {
-            List<string> allFiles = new List<string>();
+            var allFiles = new List<FilePath>();
 
             var allRfses = GetAllRfses();
 
             FillAllFilesWithFilesInList(allFiles, allRfses, TopLevelOrRecursive.Recursive, ProjectOrDisk.Disk);
-
-            string contentProjectDirectory = GlueState.CurrentMainContentProject.ContentProject.GetAbsoluteContentFolder().ToLowerInvariant();
-
-            for (int i = 0; i < allFiles.Count; i++)
-            {
-                // This fixes slashes:
-                allFiles[i] = FileManager.Standardize(allFiles[i], contentProjectDirectory, makeAbsolute: false);
-
-                // This makes the files relative to the content project:
-                if (allFiles[i].ToLowerInvariant().StartsWith(contentProjectDirectory))
-                {
-                    allFiles[i] = allFiles[i].Substring(contentProjectDirectory.Length);
-                }
-            }
 
             return allFiles;
         }
@@ -108,48 +94,34 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return allRfses;
         }
 
-        public List<string> GetAllReferencedFileNames()
+        public List<FilePath> GetAllReferencedFileNames()
         {
             return GetAllReferencedFileNames(TopLevelOrRecursive.Recursive);
         }
 
         public List<FilePath> GetAllReferencedFilePaths()
         {
-            List<string> allFiles = new List<string>();
+            var allFiles = new List<FilePath>();
 
             var allRfses = GetAllRfses();
 
             FillAllFilesWithFilesInList(allFiles, allRfses, TopLevelOrRecursive.Recursive, ProjectOrDisk.Project);
 
-            return allFiles.Select(item => new FilePath(item)).ToList();
+            return allFiles;
         }
 
-        public List<string> GetAllReferencedFileNames(TopLevelOrRecursive topLevelOrRecursive)
+        public List<FilePath> GetAllReferencedFileNames(TopLevelOrRecursive topLevelOrRecursive)
         {
-            List<string> allFiles = new List<string>();
+            var allFiles = new List<FilePath>();
 
             var allRfses = GetAllRfses();
             
             FillAllFilesWithFilesInList(allFiles, allRfses, topLevelOrRecursive, ProjectOrDisk.Project);
 
-            string contentProjectDirectory = GlueState.CurrentMainContentProject.GetAbsoluteContentFolder().ToLowerInvariant();
-
-            for (int i = 0; i < allFiles.Count; i++)
-            {
-                // This fixes slashes:
-                allFiles[i] = FileManager.Standardize(allFiles[i], contentProjectDirectory, makeAbsolute: false);
-
-                // This makes the files relative to the content project:
-                if (allFiles[i].ToLowerInvariant().StartsWith(contentProjectDirectory))
-                {
-                    allFiles[i] = allFiles[i].Substring(contentProjectDirectory.Length);
-                }
-            }
-
             return allFiles.Distinct().ToList();
         }
 
-        private void AddFilesReferenced(string fileName, List<string> allFiles, TopLevelOrRecursive topLevelOrRecursive, ProjectOrDisk projectOrFile)
+        private void AddFilesReferenced(string fileName, List<FilePath> allFiles, TopLevelOrRecursive topLevelOrRecursive, ProjectOrDisk projectOrFile)
         {
             // The project may have been unloaded:
             if (GlueState.CurrentMainContentProject != null)
@@ -158,7 +130,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (File.Exists(absoluteFileName))
                 {
-                    List<string> referencedFiles = null;
+                    List<FilePath> referencedFiles = null;
 
                     if (projectOrFile == ProjectOrDisk.Project)
                     {
@@ -194,7 +166,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        private void FillAllFilesWithFilesInList(List<string> allFiles, ReferencedFileSave[] referencedFileList, 
+        private void FillAllFilesWithFilesInList(List<FilePath> allFiles, ReferencedFileSave[] referencedFileList, 
             TopLevelOrRecursive topLevelOrRecursive, ProjectOrDisk projectOrFile)
         {
             foreach(var rfs in referencedFileList)
@@ -223,6 +195,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             return contentFolder + relativeElementFolder;
         }
+
+        public FilePath GetGlobalContentFolder() =>
+            GlueState.Find.GlobalContentFilesPath;
+
 
         public void IgnoreNextChangeOnFile(string absoluteFileName)
         {

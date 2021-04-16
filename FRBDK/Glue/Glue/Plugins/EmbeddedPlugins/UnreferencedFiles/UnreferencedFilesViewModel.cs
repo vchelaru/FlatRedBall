@@ -280,7 +280,7 @@ namespace FlatRedBall.Glue.UnreferencedFiles
                var contentDirectory = GlueState.Self.ContentDirectory;
 
                var referencedFiles = GlueCommands.Self.FileCommands.GetAllFilesNeededOnDisk()
-                .Select(item=>FileManager.Standardize(item, contentDirectory).ToLowerInvariant())
+                .Select(item=>FileManager.Standardize(item.FullPath, contentDirectory).ToLowerInvariant())
                 .Distinct().ToList();
 
                var filesInContentFolder = GetAllFilesInContentFolder()

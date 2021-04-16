@@ -209,7 +209,7 @@ namespace EditorObjects.Parsing
             if (topLevelOrRecursive == TopLevelOrRecursive.Recursive)
             {
                 //First we need to get a list of all referenced files
-                List<string> filesToSearch = new List<string>();
+                List<FilePath> filesToSearch = new List<FilePath>();
 
                 try
                 {
@@ -242,7 +242,7 @@ namespace EditorObjects.Parsing
                     {
                         string errorForThisFile = "";
                         string verboseErrorForThisFile = "";
-                        List<SourceReferencingFile> subReferencedFiles = GetSourceReferencingFilesReferencedByAsset(filesToSearch[i], topLevelOrRecursive,
+                        List<SourceReferencingFile> subReferencedFiles = GetSourceReferencingFilesReferencedByAsset(filesToSearch[i].FullPath, topLevelOrRecursive,
                             errorBehavior, ref errorForThisFile, ref verboseErrorForThisFile);
                         // error may have already been set.  If it has already been set, we don't want to dump more errors (which may just be duplicates anyway)
                         if (string.IsNullOrEmpty(error))
@@ -262,29 +262,29 @@ namespace EditorObjects.Parsing
 
         }
 
-        public static List<string> GetFilesReferencedByAsset(string fileName)
+        public static List<FilePath> GetFilesReferencedByAsset(FilePath filePath)
 		{
 
-            return GetFilesReferencedByAsset(fileName, TopLevelOrRecursive.TopLevel);
+            return GetFilesReferencedByAsset(filePath, TopLevelOrRecursive.TopLevel);
 		}
 
-        public static List<string> GetFilesReferencedByAsset(string fileName, TopLevelOrRecursive topLevelOrRecursive)
+        public static List<FilePath> GetFilesReferencedByAsset(FilePath filePath, TopLevelOrRecursive topLevelOrRecursive)
 		{
-            List<string> referencedFiles = new List<string>();
+            var referencedFiles = new List<FilePath>();
 
-            GetFilesReferencedByAsset(fileName, topLevelOrRecursive, referencedFiles);
+            GetFilesReferencedByAsset(filePath, topLevelOrRecursive, referencedFiles);
 
             return referencedFiles.Distinct().ToList();
         }
 
-        public static void GetFilesReferencedByAsset(string fileName, TopLevelOrRecursive topLevelOrRecursive, List<string> referencedFiles)
+        public static void GetFilesReferencedByAsset(FilePath filePath, TopLevelOrRecursive topLevelOrRecursive, List<FilePath> referencedFiles)
         {
-            List<string> newReferencedFiles = new List<string>();
-            if (!CanFileReferenceOtherFiles(fileName))
+            var newReferencedFiles = new List<FilePath>();
+            if (!CanFileReferenceOtherFiles(filePath))
             {
                 return;
             }
-            else if (!FileManager.FileExists(fileName))
+            else if (!filePath.Exists())
             {
                 // We used to throw an error here but now we just let the error window handle it:
                 //throw new FileNotFoundException("Could not find file " + fileName, fileName);
@@ -293,7 +293,7 @@ namespace EditorObjects.Parsing
             else
             {
 
-                string fileExtension = FileManager.GetExtension(fileName);
+                string fileExtension = filePath.Extension;
 
                 switch (fileExtension)
                 {
@@ -301,8 +301,8 @@ namespace EditorObjects.Parsing
 
                     case "scnx":
 
-                        SceneSave ses = SceneSave.FromFile(fileName);
-                        newReferencedFiles = ses.GetReferencedFiles(RelativeType.Absolute);
+                        SceneSave ses = SceneSave.FromFile(filePath.FullPath);
+                        newReferencedFiles = ses.GetReferencedFiles(RelativeType.Absolute).Select(item => new FilePath(item)).ToList();
 
                         break;
 
@@ -311,8 +311,8 @@ namespace EditorObjects.Parsing
                     #region Emitter List (.emix)
 
                     case "emix":
-                        EmitterSaveList esl = EmitterSaveList.FromFile(fileName);
-                        newReferencedFiles = esl.GetReferencedFiles(RelativeType.Absolute);
+                        EmitterSaveList esl = EmitterSaveList.FromFile(filePath.FullPath);
+                        newReferencedFiles = esl.GetReferencedFiles(RelativeType.Absolute).Select(item => new FilePath(item)).ToList();
                         break;
 
                     #endregion
@@ -322,8 +322,8 @@ namespace EditorObjects.Parsing
                     case "achx":
 
                         AnimationChainListSave acls = null;
-                        acls = AnimationChainListSave.FromFile(fileName);
-                        newReferencedFiles = acls.GetReferencedFiles(RelativeType.Absolute);
+                        acls = AnimationChainListSave.FromFile(filePath.FullPath);
+                        newReferencedFiles = acls.GetReferencedFiles(RelativeType.Absolute).Select(item => new FilePath(item)).ToList();
 
                         break;
 
@@ -332,7 +332,7 @@ namespace EditorObjects.Parsing
                     #region X File (.x)
 
                     case "x":
-                        newReferencedFiles = GetTextureReferencesInX(fileName);
+                        newReferencedFiles = GetTextureReferencesInX(filePath.FullPath).Select(item => new FilePath(item)).ToList();
                         break;
 
                     #endregion
@@ -345,7 +345,7 @@ namespace EditorObjects.Parsing
 
                     #region Font File (.fnt)
                     case "fnt":
-                        newReferencedFiles = GetTextureReferencesInFnt(fileName);
+                        newReferencedFiles = GetTextureReferencesInFnt(filePath.FullPath).Select(item => new FilePath(item)).ToList();
 
                         break;
                     #endregion
@@ -366,7 +366,7 @@ namespace EditorObjects.Parsing
                         // If this file can't reference other files, no need to even do a file check or throw errors. 
                         if (CanFileReferenceOtherFiles(newReferencedFiles[i]) == true)
                         {
-                            if (File.Exists(newReferencedFiles[i]))
+                            if (newReferencedFiles[i].Exists())
                             {
 
                                 try
@@ -383,17 +383,11 @@ namespace EditorObjects.Parsing
                             {
                                 didErrorOccur = true;
                                 errorMessage += "Could not find the file " + newReferencedFiles[i] + 
-                                    " which is referenced in the file " + fileName + "\n";
+                                    " which is referenced in the file " + filePath + "\n";
                             }
                         }
                     }
 
-                }
-
-                // Files may include "../", so let's get rid of that stuff
-                for (int i = 0; i < newReferencedFiles.Count; i++)
-                {
-                    newReferencedFiles[i] = FileManager.Standardize(newReferencedFiles[i], "", false);
                 }
 
                 referencedFiles.AddRange(newReferencedFiles);
@@ -406,15 +400,15 @@ namespace EditorObjects.Parsing
             }
 		}
 
-        private static bool CanFileReferenceOtherFiles(string fileName)
+        private static bool CanFileReferenceOtherFiles(FilePath filePath)
         {
-            if(string.IsNullOrEmpty(fileName))
+            if(filePath == null)
             {
                 return false;
             }
             else
             {
-                string extension = FileManager.GetExtension(fileName);
+                string extension = filePath.Extension;
 
                 if(extension == "png" || extension == "bmp" || extension == "jpg" || extension == "gif" || 
                     extension == "dds" || extension == "tga" ||

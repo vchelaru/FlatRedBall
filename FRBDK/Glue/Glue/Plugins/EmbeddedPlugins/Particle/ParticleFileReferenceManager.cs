@@ -1,4 +1,5 @@
 ﻿using EditorObjects.Parsing;
+using FlatRedBall.Glue.Errors;
 using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Particle
 {
     class ParticleFileReferenceManager
     {
-        public void GetFilesReferencedBy(string file, EditorObjects.Parsing.TopLevelOrRecursive depth, List<string> listToFill)
+        public void GetFilesReferencedBy(string file, EditorObjects.Parsing.TopLevelOrRecursive depth, List<FilePath> listToFill)
         {
             if(CanFileReferenceContent(file))
             {
@@ -20,5 +21,16 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Particle
         }
 
         public bool CanFileReferenceContent(string file) => FileManager.GetExtension(file) == "emix";
+
+        internal GeneralResponse FillWithReferencedFiles(FilePath file, List<FilePath> referencedFiles)
+        {
+            if (CanFileReferenceContent(file.FullPath))
+            {
+                var referencedFilesInner = ContentParser.GetFilesReferencedByAsset(file.FullPath);
+                referencedFiles.AddRange(referencedFilesInner);
+
+            }
+            return GeneralResponse.SuccessfulResponse;
+        }
     }
 }

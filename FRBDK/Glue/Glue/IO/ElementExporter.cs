@@ -262,7 +262,7 @@ namespace FlatRedBall.Glue.IO
 
                 allFiles.Add(absoluteRfsName);
                 var extraToAdd = FileReferenceManager.Self.GetFilesReferencedBy(absoluteRfsName, TopLevelOrRecursive.Recursive);
-                allFiles.AddRange(extraToAdd);
+                allFiles.AddRange(extraToAdd.Select(item => item.Standardized));
             }
 
             // Don't preserve case here.  The code below
@@ -563,11 +563,11 @@ namespace FlatRedBall.Glue.IO
 
                 if (!referencedOutside)
                 {
-                    List<string> files = FileReferenceManager.Self.GetFilesReferencedBy(absolutePath, TopLevelOrRecursive.Recursive);
+                    var files = FileReferenceManager.Self.GetFilesReferencedBy(absolutePath, TopLevelOrRecursive.Recursive);
 
-                    foreach (string fileName in files)
+                    foreach (var fileName in files)
                     {
-                        if (!FileManager.IsRelativeTo(fileName, contentDirectory))
+                        if (!FileManager.IsRelativeTo(fileName.FullPath, contentDirectory))
                         {
                             if (filesAlreadyIncluded != null && filesAlreadyIncluded.Contains(absolutePath.ToLower()))
                             {

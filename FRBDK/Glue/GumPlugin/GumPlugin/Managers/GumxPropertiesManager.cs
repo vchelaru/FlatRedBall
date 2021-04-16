@@ -141,7 +141,7 @@ namespace GumPlugin.Managers
 
                 foreach (var file in gumFiles)
                 {
-                    GlueCommands.Self.FileCommands.ClearFileCache(file);
+                    GlueCommands.Self.FileCommands.ClearFileCache(file.FullPath);
                 }
 
                 if (useAtlases == false)

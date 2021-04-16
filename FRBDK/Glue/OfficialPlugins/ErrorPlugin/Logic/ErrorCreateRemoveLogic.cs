@@ -65,9 +65,9 @@ namespace OfficialPlugins.ErrorPlugin.Logic
             TryAddOutOfProjectFileErrors(errorList, file, absoluteFile, referenceStack);
         }
 
-        private static void TryAddIndirectMissingFileErrors(List<ErrorViewModel> errorList, ReferencedFileSave rootRfs, string absoluteFile, List<FilePath> referenceStack)
+        private static void TryAddIndirectMissingFileErrors(List<ErrorViewModel> errorList, ReferencedFileSave rootRfs, FilePath absoluteFile, List<FilePath> referenceStack)
         {
-            var referencedFiles = GlueCommands.Self.FileCommands.GetFilesReferencedBy(absoluteFile, EditorObjects.Parsing.TopLevelOrRecursive.TopLevel);
+            var referencedFiles = GlueCommands.Self.FileCommands.GetFilesReferencedBy(absoluteFile.FullPath, EditorObjects.Parsing.TopLevelOrRecursive.TopLevel);
 
             foreach(var referencedFile in referencedFiles)
             {
@@ -76,7 +76,7 @@ namespace OfficialPlugins.ErrorPlugin.Logic
 
                 if(!isAlreadyInStack)
                 {
-                    if(System.IO.File.Exists(referencedFile) == false)
+                    if(referencedFile.Exists() == false)
                     {
                         var newError = new IndirectMissingFileErrorViewModel(rootRfs, referenceStack.ToList(), referencedFile);
 
@@ -94,9 +94,9 @@ namespace OfficialPlugins.ErrorPlugin.Logic
             }
         }
 
-        private static void TryAddOutOfProjectFileErrors(List<ErrorViewModel> errorList, ReferencedFileSave rootRfs, string absoluteFile, List<FilePath> referenceStack)
+        private static void TryAddOutOfProjectFileErrors(List<ErrorViewModel> errorList, ReferencedFileSave rootRfs, FilePath absoluteFile, List<FilePath> referenceStack)
         {
-            var referencedFiles = GlueCommands.Self.FileCommands.GetFilesReferencedBy(absoluteFile, EditorObjects.Parsing.TopLevelOrRecursive.TopLevel);
+            var referencedFiles = GlueCommands.Self.FileCommands.GetFilesReferencedBy(absoluteFile.FullPath, EditorObjects.Parsing.TopLevelOrRecursive.TopLevel);
 
             var projectDirectory = GlueState.Self.CurrentGlueProjectDirectory;
 
@@ -107,7 +107,7 @@ namespace OfficialPlugins.ErrorPlugin.Logic
 
                 if (!isAlreadyInStack)
                 {
-                    if(FileManager.IsRelativeTo(referencedFile, projectDirectory) == false)
+                    if(FileManager.IsRelativeTo(referencedFile.FullPath, projectDirectory) == false)
                     {
                         var newError = new OutOfProjectErrorViewModel(rootRfs, referenceStack.ToList(), referencedFile);
 

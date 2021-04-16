@@ -2090,25 +2090,17 @@ namespace FlatRedBall.Glue.Plugins
 
         }
 
-        internal static GeneralResponse GetFilesReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill)
+        internal static GeneralResponse GetFilesReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, List<FilePath> listToFill)
         {
             GeneralResponse generalResponse =  GeneralResponse.SuccessfulResponse;
             SaveRelativeDirectory();
 
-            List<FilePath> filePaths = new List<FilePath>();
-
             CallMethodOnPluginNotUiThread(
                 delegate(PluginBase plugin)
                 {
-                    if (plugin.GetFilesReferencedBy != null)
-                    {
-                        plugin.GetFilesReferencedBy(absoluteName, topLevelOrRecursive, listToFill);
-
-                    }
-
                     if(plugin.FillWithReferencedFiles != null)
                     {
-                        var response = plugin.FillWithReferencedFiles(absoluteName, filePaths);
+                        var response = plugin.FillWithReferencedFiles(absoluteName, listToFill);
 
                         if(!response.Succeeded)
                         {
@@ -2116,16 +2108,14 @@ namespace FlatRedBall.Glue.Plugins
                         }
                     }
                 },
-                "GetFilesReferencedBy");
+                nameof(GetFilesReferencedBy));
 
             ResumeRelativeDirectory($"GetFilesReferencedBy for {absoluteName}");
-
-            listToFill.AddRange(filePaths.Select(item => item.Standardized));
 
             return generalResponse;
         }
 
-        internal static void GetFilesNeededOnDiskBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill)
+        internal static void GetFilesNeededOnDiskBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, List<FilePath> listToFill)
         {
             SaveRelativeDirectory();
             CallMethodOnPluginNotUiThread(
@@ -2135,15 +2125,17 @@ namespace FlatRedBall.Glue.Plugins
                     {
                         plugin.GetFilesNeededOnDiskBy(absoluteName, listToFill);
                     }
-                    else if (plugin.GetFilesReferencedBy != null)
+                    else if (plugin.FillWithReferencedFiles != null)
                     {
-                        plugin.GetFilesReferencedBy(absoluteName, topLevelOrRecursive, listToFill);
+                        List<FilePath> innerList = new List<FilePath>();
+                        plugin.FillWithReferencedFiles(absoluteName, innerList);
+                        listToFill.AddRange(innerList);
 
                     }
                 },
-                "GetFilesReferencedBy");
+                nameof(GetFilesNeededOnDiskBy));
 
-            ResumeRelativeDirectory("GetFilesReferencedBy");
+            ResumeRelativeDirectory(nameof(GetFilesNeededOnDiskBy));
         }
 
         internal static bool TryHandleException(Exception exception)
