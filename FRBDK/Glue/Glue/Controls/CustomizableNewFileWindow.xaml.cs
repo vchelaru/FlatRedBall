@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Utilities;
 using GlueFormsCore.Extensions;
 using GlueFormsCore.ViewModels;
@@ -65,20 +66,7 @@ namespace FlatRedBall.Glue.Controls
         public CustomizableNewFileWindow()
         {
             InitializeComponent();
-
-            //ListBox.ItemsSource = filteredOptions;
-
-            this.WindowStartupLocation = WindowStartupLocation.Manual;
-
-            // uses winforms:
-            System.Drawing.Point point = System.Windows.Forms.Control.MousePosition;
-            this.Left = point.X - this.Width / 2;
-            // not sure why this is so high
-            //this.Top = point.Y - this.Height/2;
-            this.Top = point.Y - 50;
-
-            this.ShiftWindowOntoScreen();
-
+            GlueCommands.Self.DialogCommands.MoveToCursor(this);
             SearchTermTextBox.Focus();
         }
 

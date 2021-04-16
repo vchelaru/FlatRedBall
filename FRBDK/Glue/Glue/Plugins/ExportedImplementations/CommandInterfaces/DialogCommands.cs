@@ -19,6 +19,7 @@ using FlatRedBall.Glue.FormHelpers.StringConverters;
 using GlueFormsCore.ViewModels;
 using GlueFormsCore.Controls;
 using FlatRedBall.Glue.VSHelpers;
+using GlueFormsCore.Extensions;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -295,21 +296,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     viewModel.SelectedBaseEntity = "<NONE>";
 
                     window.DataContext = viewModel;
-                    window.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
 
-                    double width = window.Width;
-                    if(double.IsNaN(width))
-                    {
-                        width = 0;
-                    }
-                    double height = window.Height;
-                    if(double.IsNaN(height))
-                    {
-                        height = 0;
-                    }
-
-                    window.Left = MainGlueWindow.MousePosition.X - width / 2;
-                    window.Top = MainGlueWindow.MousePosition.Y - height / 2;
+                    MoveToCursor(window);
 
                     PluginManager.ModifyAddEntityWindow(window);
 
@@ -320,7 +308,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         directory = EditorLogic.CurrentTreeNode.GetRelativePath();
                         directory = directory.Replace('/', '\\');
                     }
-                        
+
                     var result = window.ShowDialog();
 
                     if (result == true)
@@ -342,6 +330,27 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                 }
             }
+        }
+
+        public void MoveToCursor(System.Windows.Window window)
+        {
+            window.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
+
+            double width = window.Width;
+            if (double.IsNaN(width))
+            {
+                width = 0;
+            }
+            double height = window.Height;
+            if (double.IsNaN(height))
+            {
+                height = 0;
+            }
+
+            window.Left = MainGlueWindow.MousePosition.X - width / 2;
+            window.Top = MainGlueWindow.MousePosition.Y - height / 2;
+
+            window.ShiftWindowOntoScreen();
         }
 
         #endregion

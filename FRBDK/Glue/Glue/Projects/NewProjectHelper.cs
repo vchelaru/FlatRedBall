@@ -22,68 +22,13 @@ namespace FlatRedBall.Glue.Projects
     public static class NewProjectHelper
     {
 
-        public static NewProjectViewModel RunNewProjectCreator()
+        static NewProjectViewModel RunNewProjectCreator()
         {
             return RunNewProjectCreator(null, null, false);
         }
 
-        public static NewProjectViewModel RunNewProjectCreator(FilePath directoryForNewProject, string namespaceForNewProject, bool creatingSyncedProject)
+        static NewProjectViewModel RunNewProjectCreator(FilePath directoryForNewProject, string namespaceForNewProject, bool creatingSyncedProject)
         {
-
-            //string directory =
-            //    //FileManager.GetDirectory(FileManager.GetDirectory(Application.ExecutablePath));
-            //    // This causes Glue to look one directory above where the .exe is.  Glue and NewProjectCreator
-            //    // are both now XNA4 tools, so we're going to look in the same directory as Glue.
-            //    // Update - actually moved it down below one level so its files don't interfere with Glue
-            //    FileManager.GetDirectory(Application.ExecutablePath);
-            //List<string> files;
-            //string newProjectCreatorFile, newProjectCreatorLocation;
-            //GetNewProjectCreatorFileLocation(directory, out files, out newProjectCreatorFile, out newProjectCreatorLocation);
-
-            //if (!File.Exists(newProjectCreatorFile))
-            //{
-            //    var result = MessageBox.Show("Could not find new project creator. Would you like to search for it on disk?", "", MessageBoxButtons.YesNo);
-
-            //    if (result == DialogResult.Yes)
-            //    {
-            //        OpenFileDialog openFileDialog = new OpenFileDialog();
-
-            //        openFileDialog.Multiselect = false;
-
-            //        if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            //        {
-            //            newProjectCreatorFile = openFileDialog.FileName;
-            //        }
-            //    }
-            //}
-
-
-            //if (!File.Exists(newProjectCreatorFile))
-            //{
-            //    string message = "Could not find the new project creator in this directory:\n" +
-            //        directory +
-            //        "\nAlso looked in:\n" +
-            //        newProjectCreatorLocation +
-            //        "\nBut we did find these files: ";
-
-
-            //    foreach (string file in files)
-            //    {
-            //        message += "\n" + file;
-
-            //    }
-
-            //    System.Windows.Forms.MessageBox.Show(message);
-
-            //    return null;
-            //}
-            //else
-            //{
-
-                //ProcessStartInfo processStartInfo = new ProcessStartInfo(newProjectCreatorFile);
-
-                //processStartInfo.RedirectStandardOutput = true;
-                //processStartInfo.UseShellExecute = false;
             string commandLineArguments = null;
             if (directoryForNewProject != null)
             {
@@ -114,63 +59,21 @@ namespace FlatRedBall.Glue.Projects
             window.ProcessCommandLineArguments(commandLineArguments);
             NewProjectViewModel viewModelToReturn = null;
 
-            if(window.ShowDialog() == true)
+            GlueCommands.Self.DialogCommands.MoveToCursor(window);
+
+            if (window.ShowDialog() == true)
             {
                 viewModelToReturn = window.ViewModel;
             }
             return viewModelToReturn;
         }
 
-        private static void GetNewProjectCreatorFileLocation(string directory, out List<string> files, out string newProjectCreatorFile, out string newProjectCreatorLocation)
-        {
-            files = FileManager.GetAllFilesInDirectory(
-                            directory, "exe");
-            newProjectCreatorFile = null;
-            foreach (string file in files)
-            {
-                if (file.Contains("NpcWpf.exe"))
-                {
-                    newProjectCreatorFile = file;
-                    break;
-                }
-            }
-
-            if (newProjectCreatorFile == null)
-            {
-                foreach (string file in files)
-                {
-                    if (file.Contains("NewProjectCreator.exe"))
-                    {
-                        newProjectCreatorFile = file;
-                        break;
-                    }
-                }
-            }
-
-            if (newProjectCreatorFile == null)
-            {
-                // Now it's in the same folder as Glue
-                //FilePath possibleFile = directory + "NewProjectCreator/NewProjectCreator.exe";
-                FilePath possibleFile = directory + "NpcWpf.exe";
-                if (possibleFile.Exists())
-                {
-                    newProjectCreatorFile = possibleFile.FullPath;
-                }
-            }
-            newProjectCreatorLocation = @"..\..\..\..\..\..\NewProjectCreator\NpcWpf\bin\Debug\netcoreapp3.1\NpcWpf.exe";
-            if (newProjectCreatorFile == null)
-            {
-                newProjectCreatorFile = newProjectCreatorLocation;
-            }
-        }
-
         public async static void CreateNewProject()
         {
-
             // Run the new project creator
             // First see if the NewProjectCreator is in this directory
 
-            var viewModel = NewProjectHelper.RunNewProjectCreator();
+            var viewModel = RunNewProjectCreator();
 
             string createdProject = null;
 
@@ -264,46 +167,6 @@ namespace FlatRedBall.Glue.Projects
 
             }
 
-        }
-
-        private static string GetCreatedProjectName(Process process)
-        {
-            string output = process.StandardOutput.ReadToEnd();
-
-            output = output.Replace("\r\n", "");
-            string projectName = FileManager.RemovePath(output);
-
-            List<string> csProjFiles = FileManager.GetAllFilesInDirectory(output, "csproj");
-
-            if (csProjFiles.Count != 0)
-            {
-                // This may contain a synced project, which would have multiple .csproj files.
-                // to find which we want, let's find any .csproj that may have a matching name:
-                var fileName = csProjFiles.FirstOrDefault(item =>
-                {
-                    var name = FileManager.RemovePath(FileManager.RemoveExtension(item));
-
-                    return name == projectName;
-                });
-
-                if(string.IsNullOrEmpty(fileName))
-                {
-                    return csProjFiles[0];
-                }
-                else
-                {
-                    return fileName;
-                }
-            }
-            else
-            {
-                List<string> javaProjFiles = FileManager.GetAllFilesInDirectory(output, "project");
-                if (javaProjFiles.Count != 0)
-                {
-                    return javaProjFiles[0];
-                }
-                return String.Empty;
-            }
         }
 
         //private static void CopyInitializeContentsToNewProject(ProjectBase newProject)
