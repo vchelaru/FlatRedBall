@@ -13,14 +13,8 @@ namespace FlatRedBall.Input
             this.analogStick = analogStick;
         }
 
-        public float Value
-        {
-            get { return analogStick.Position.Y; }
-        }
+        public float Value => analogStick.Position.Y;
 
-        public float Velocity
-        {
-            get { return analogStick.Velocity.Y; }
-        }
+        public float Velocity => analogStick.Velocity.Y;
     }
 }

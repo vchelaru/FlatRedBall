@@ -36,7 +36,8 @@ namespace FlatRedBall.Glue.SaveClasses
             GumGueHasGetAnimation = 4,
             HasFormsObject = 4, // Not sure if this is exact, but it should be maybe around here. This will make old projects work
             CsvInheritanceSupport = 5,
-            NugetPackageInCsproj = 6
+            NugetPackageInCsproj = 6,
+
 
         }
 

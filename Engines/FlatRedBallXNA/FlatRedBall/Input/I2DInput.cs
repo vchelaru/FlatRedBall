@@ -158,6 +158,31 @@ namespace FlatRedBall.Input
                 return (float)System.Math.Atan2(instance.Y, instance.X);
             }
         }
+
+        /// <summary>
+        /// Creates a new 1DInput that returns the horizontal values from the argument
+        /// I2DInput.
+        /// </summary>
+        /// <param name="instance">The instance to use for the horizontal (X) values</param>
+        /// <returns>A new I1DInput which reflects the 2D horizontal values.</returns>
+        public static I1DInput CreateHorizontal(this I2DInput instance)
+        {
+            return new DelegateBased1DInput(
+                () => instance.X, () => instance.XVelocity);
+        }
+
+        /// <summary>
+        /// Creates a new 1DInput that returns the vertical value from the argument
+        /// I2DInput.
+        /// </summary>
+        /// <param name="instance">The instance to use for the vertical (Y) values</param>
+        /// <returns>A new I1DInput which reflects the 2D vertical values.</returns>
+        public static I1DInput CreateVertical(this I2DInput instance)
+        {
+            return new DelegateBased1DInput(
+                () => instance.Y, () => instance.YVelocity);
+
+        }
     }
 
     /// <summary>

@@ -1281,19 +1281,31 @@ namespace FlatRedBall.Input
         IPressableInput IInputDevice.DefaultRightPressable
         { get { return GetButton(Button.DPadRight).Or(LeftStick.RightAsButton); } }
 
+        I1DInput defaultHorizontalInput;
         I1DInput IInputDevice.DefaultHorizontalInput
         {
             get
             {
-                return this.LeftStick.Horizontal;
+                if(defaultHorizontalInput == null)
+                {
+                    defaultHorizontalInput = this.LeftStick.Horizontal.Or
+                        (this.DPad.CreateHorizontal());
+                }
+                return defaultHorizontalInput;
             }
         }
 
+        I1DInput defaultVerticalInput;
         I1DInput IInputDevice.DefaultVerticalInput
         {
             get
             {
-                return this.LeftStick.Vertical;
+                if(defaultVerticalInput == null)
+                {
+                    defaultVerticalInput = this.LeftStick.Vertical.Or
+                        (this.DPad.CreateVertical());
+                }
+                return defaultVerticalInput;
             }
         }
 
