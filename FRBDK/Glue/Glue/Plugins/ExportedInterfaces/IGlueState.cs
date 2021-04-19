@@ -9,7 +9,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
     {
         #region Properties
 
-        IElement CurrentElement
+        GlueElement CurrentElement
         {
             get;
         }
@@ -101,7 +101,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
 
     public class GlueStateSnapshot : IGlueState
     {
-        public IElement CurrentElement
+        public GlueElement CurrentElement
         {
             get;
             set;

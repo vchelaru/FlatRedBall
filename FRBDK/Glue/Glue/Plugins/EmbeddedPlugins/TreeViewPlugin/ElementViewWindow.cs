@@ -86,10 +86,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static TreeNode ScreensTreeNode
         {
-            get
-            {
-                return mScreenNode;
-            }
+            get => mScreenNode;
         }
 
         public static IEnumerable<ScreenTreeNode> AllScreens
@@ -362,31 +359,6 @@ namespace FlatRedBall.Glue.FormHelpers
             return treeNode;
         }
 
-        [Obsolete("Use RefreshCommands.RefreshTreeNodeFor")]
-        public static BaseElementTreeNode AddScreen(ScreenSave screenSave)
-        {
-            string screenFileName = screenSave.Name + ".cs";
-            string screenFileWithoutExtension = FileManager.RemoveExtension(screenFileName);
-
-            var screenTreeNode = new ScreenTreeNode(FileManager.RemovePath(screenFileWithoutExtension));
-            screenTreeNode.CodeFile = screenFileName;
-
-            mScreenNode.Nodes.Add(screenTreeNode);
-
-            string generatedFile = screenFileWithoutExtension + ".Generated.cs";
-            screenTreeNode.GeneratedCodeFile = generatedFile;
-
-            screenTreeNode.SaveObject = screenSave;
-
-            int desiredIndex = ProjectManager.GlueProjectSave.Screens.IndexOf(screenSave);
-            if(desiredIndex < mScreenNode.Nodes.Count && mScreenNode.Nodes[desiredIndex] != mScreenNode)
-            {
-                mScreenNode.Nodes.Remove(screenTreeNode);
-                mScreenNode.Nodes.Insert(desiredIndex, screenTreeNode);
-            }
-
-            return screenTreeNode;
-        }
 
      
         public static void GenerateSelectedElementCode()

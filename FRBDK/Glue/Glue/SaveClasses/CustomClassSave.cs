@@ -27,7 +27,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public override string ToString()
         {
-            return Name + " (" + RequiredProperties.Count + ")";
+            return $"{Name} ({RequiredProperties.Count} props)";
         }
 
     }

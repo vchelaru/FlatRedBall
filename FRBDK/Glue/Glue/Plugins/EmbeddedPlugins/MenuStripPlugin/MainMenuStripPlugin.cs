@@ -204,7 +204,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
             if (result == System.Windows.Forms.DialogResult.OK)
             {
-                ElementExporter.ExportGroup(groupExportForm.SelectedElements);
+                ElementExporter.ExportGroup(groupExportForm.SelectedElements, GlueState.Self.CurrentGlueProject);
             }
         }
 

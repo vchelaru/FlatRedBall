@@ -326,7 +326,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             glueProject.Entities.SortByName();
 
-            #region Create the Entity (not the generated version)
+            #region Create the Entity custom code file (not the generated version)
 
             var newItem = GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(fileName, false);
 

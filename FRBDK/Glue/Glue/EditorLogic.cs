@@ -148,7 +148,7 @@ namespace FlatRedBall.Glue
 		public static IElement CurrentElement
 		{
             get => GlueState.Self.CurrentElement;
-            set => GlueState.Self.CurrentElement = value;
+            set => GlueState.Self.CurrentElement = value as GlueElement;
 		}
 
         public static EntitySave CurrentEntitySave

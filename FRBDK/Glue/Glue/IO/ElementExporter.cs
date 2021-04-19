@@ -28,7 +28,7 @@ namespace FlatRedBall.Glue.IO
         static string mOldElementName;
 
         #endregion
-        public static void ExportGroup(IEnumerable<IElement> elementGroup)
+        public static void ExportGroup(IEnumerable<GlueElement> elementGroup, GlueProjectSave glueProjectSave)
         {
             string directoryToExportTo = FileManager.UserApplicationDataForThisApplication + "ExportTemp\\";
             bool succeeded = true;
@@ -69,7 +69,7 @@ namespace FlatRedBall.Glue.IO
 
             List<string> filesToEmbed = new List<string>();
 
-            foreach (IElement element in elementGroup)
+            foreach (var element in elementGroup)
             {
                 if(!succeeded)
                 {
@@ -79,7 +79,7 @@ namespace FlatRedBall.Glue.IO
 
                 string directoryForElement = directoryToExportTo + FileManager.GetDirectory(element.Name, RelativeType.Relative);
                 Directory.CreateDirectory(directoryForElement);
-                string outputFile = ExportElementToDirectory(element, directoryForElement, openDirectory, filesReferencedByElements, true);
+                string outputFile = ExportElementToDirectory(element, glueProjectSave, directoryForElement, openDirectory, filesReferencedByElements, true);
                 succeeded = !string.IsNullOrEmpty(outputFile);
                 if(succeeded)
                 {
@@ -96,9 +96,7 @@ namespace FlatRedBall.Glue.IO
 
                 if (result != DialogResult.Cancel)
                 {
-                    string whereToSaveFile = null;
-
-                    whereToSaveFile = fileDialog.FileName;
+                    FilePath whereToSaveFile = fileDialog.FileName;
                     using (ZipFile zip = new ZipFile())
                     {
                         foreach (string file in filesToEmbed)
@@ -107,19 +105,19 @@ namespace FlatRedBall.Glue.IO
                             zip.AddFile(file, directoryInZip);
                         }
 
-                        zip.Save(whereToSaveFile);
+                        zip.Save(whereToSaveFile.FullPath);
 
 
                     }
 
 
-                    string locationToShow = "\"" + whereToSaveFile + "\"";
+                    string locationToShow = "\"" + whereToSaveFile.FullPath + "\"";
                     locationToShow = locationToShow.Replace("/", "\\");
                     Process.Start("explorer.exe", "/select," + locationToShow);
                 }
             }
         }
-        public static void ExportElement(IElement element)
+        public static void ExportElement(GlueElement element, GlueProjectSave glueProjectSave)
         {
             bool shouldContinue = true;
 
@@ -162,7 +160,7 @@ namespace FlatRedBall.Glue.IO
 
                     string directory = folderBrowserDialog.SelectedPath + "\\";
 
-                    ExportElementToDirectory(element, directory, true, null, automaticOverwrite: false, copyExternalFiles: copyExternalFiles);
+                    ExportElementToDirectory(element, glueProjectSave, directory, true, null, automaticOverwrite: false, copyExternalFiles: copyExternalFiles);
                 }
             }
         }
@@ -176,7 +174,7 @@ namespace FlatRedBall.Glue.IO
         /// <param name="filesAlreadyAccountedFor"></param>
         /// <param name="automaticOverwrite"></param>
         /// <returns>The exported file name.</returns>
-        private static string ExportElementToDirectory(IElement element, string directory, bool openDirectory, List<string> filesAlreadyAccountedFor, 
+        private static string ExportElementToDirectory(GlueElement element, GlueProjectSave glueProjectSave, string directory, bool openDirectory, List<string> filesAlreadyAccountedFor, 
             bool automaticOverwrite = false, bool copyExternalFiles = false)
         {
             // The following steps are needed:
@@ -212,31 +210,28 @@ namespace FlatRedBall.Glue.IO
             }
             else if (dialogResult == DialogResult.Yes)
             {
-                PerformExport(element, openDirectory, absoluteXml, absoluteZip, copyExternalFiles);
+                PerformExport(element, glueProjectSave, openDirectory, absoluteXml, absoluteZip, copyExternalFiles);
                 exportedFile = absoluteZip;
             }
 
             return exportedFile;
         }
 
-        private static void PerformExport(IElement element, bool openDirectory, string absoluteXml, string absoluteZip, bool copyExternals)
+        private static void PerformExport(GlueElement element, GlueProjectSave glueProjectSave, bool openDirectory, string absoluteXml, string absoluteZip, bool copyExternals)
         {
+            AddCustomClasses(element, glueProjectSave);
+
             // This changes the name of the Element so that it doesn't
             // include any subdirectories.  The name is set back after 
             // the Element is serialized below in ReturnValuesBeforeModification.
             AdjustToPullFromDirectory(element);
 
-            if (element is EntitySave)
+            if (element is EntitySave asEntitySave)
             {
-                EntitySave asEntitySave = element as EntitySave;
-
-
                 FileManager.XmlSerialize(asEntitySave, absoluteXml);
             }
-            else if (element is ScreenSave)
+            else if (element is ScreenSave asScreenSave)
             {
-                ScreenSave asScreenSave = element as ScreenSave;
-
                 FileManager.XmlSerialize(asScreenSave, absoluteXml);
             }
 
@@ -304,7 +299,7 @@ namespace FlatRedBall.Glue.IO
 
                     bool isExternal = relativeDirectory.StartsWith("../");
 
-                    if(isExternal)
+                    if (isExternal)
                     {
                         string externalDirectory = "__external/";
 
@@ -335,6 +330,30 @@ namespace FlatRedBall.Glue.IO
                 Process.Start("explorer.exe", "/select," + locationToShow);
             }
 
+        }
+
+        private static void AddCustomClasses(GlueElement element, GlueProjectSave glueProjectSave)
+        {
+            element.CustomClassesForExport.Clear();
+            // See if there are any custom classes that are used by this:
+            foreach (var customClass in glueProjectSave.CustomClasses)
+            {
+                var isCustomClassUsed = false;
+                foreach (var csv in customClass.CsvFilesUsingThis)
+                {
+                    var foundCsvRfs = element.GetReferencedFileSave(csv);
+                    if (foundCsvRfs != null)
+                    {
+                        isCustomClassUsed = true;
+                        break;
+                    }
+                }
+
+                if (isCustomClassUsed)
+                {
+                    element.CustomClassesForExport.Add(customClass);
+                }
+            }
         }
 
         private static void GetExtensionsForExport(IElement element, out string extension, out string zipExtension)

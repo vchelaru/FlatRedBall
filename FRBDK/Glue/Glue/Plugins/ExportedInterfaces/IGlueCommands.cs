@@ -18,7 +18,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
         IFileCommands FileCommands { get; }
 
         void CloseGlue();
-
+        void DoOnUiThread(Action action);
         void TryMultipleTimes(Action action, int numberOfTimesToTry);
 
         void PrintOutput(string output);

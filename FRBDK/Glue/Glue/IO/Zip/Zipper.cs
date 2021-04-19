@@ -94,9 +94,9 @@ namespace FlatRedBall.Glue.IO.Zip
 
         }
 
-        public static void UnzipScreenOrEntityImport(string fileName, out string unpackDirectory, out List<string> filesToAddToContent, out List<string> codeFiles)
+        public static void UnzipScreenOrEntityImport(string fileName, out string unpackDirectory, out List<string> filesToAddToContent, out List<string> codeFilesInZip)
         {
-            codeFiles = new List<string>();
+            codeFilesInZip = new List<string>();
             unpackDirectory = FileManager.UserApplicationDataForThisApplication + "Unzip\\";
             if (System.IO.Directory.Exists(unpackDirectory))
             {
@@ -116,7 +116,7 @@ namespace FlatRedBall.Glue.IO.Zip
 
                     if (extension == "cs")
                     {
-                        codeFiles.Add(zipEntry.FileName);
+                        codeFilesInZip.Add(zipEntry.FileName);
                     }
                     else if (extension == "entx" || extension == "scrx")
                     {

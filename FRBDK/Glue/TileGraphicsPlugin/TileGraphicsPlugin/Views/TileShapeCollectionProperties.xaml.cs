@@ -29,11 +29,23 @@ namespace TileGraphicsPlugin.Views
         {
             if (e.Key == Key.Enter)
             {
-                TextBox tBox = (TextBox)sender;
-                DependencyProperty prop = TextBox.TextProperty;
+                DependencyProperty prop = null;
+                if ( sender is TextBox tbox)
+                {
+                    prop = TextBox.TextProperty;
 
-                BindingExpression binding = BindingOperations.GetBindingExpression(tBox, prop);
-                if (binding != null) { binding.UpdateSource(); }
+                }
+                else if(sender is ComboBox cbox)
+                {
+                    prop = ComboBox.TextProperty;
+                }
+
+                if(prop != null)
+                {
+                    BindingExpression binding = BindingOperations.GetBindingExpression(
+                        sender as DependencyObject, prop);
+                    if (binding != null) { binding.UpdateSource(); }
+                }
             }
         }
     }

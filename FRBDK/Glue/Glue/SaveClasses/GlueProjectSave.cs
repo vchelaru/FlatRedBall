@@ -83,22 +83,16 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public List<ReferencedFileSave> GlobalFiles = new List<ReferencedFileSave>();
 
-
         public GlobalContentSettingsSave GlobalContentSettingsSave = new GlobalContentSettingsSave();
-
 
         public List<string> SyncedProjects = new List<string>();
 
-
         public string StartUpScreen;
-
 
         public List<ResolutionValues> ResolutionPresets = new List<ResolutionValues>();
 
 
-        public PerformanceSettingsSave PerformanceSettingsSave =
-            new PerformanceSettingsSave();
-
+        public PerformanceSettingsSave PerformanceSettingsSave = new PerformanceSettingsSave();
 
         public List<string> IgnoredDirectories = new List<string>();
 
@@ -173,7 +167,6 @@ namespace FlatRedBall.Glue.SaveClasses
 
         }
 
-
         public IElement GetElement(string elementName)
         {
             IElement retval;
@@ -187,7 +180,6 @@ namespace FlatRedBall.Glue.SaveClasses
 
             return retval;
         }
-
 
         public ScreenSave GetScreenSave(string screenName)
         {
@@ -211,7 +203,6 @@ namespace FlatRedBall.Glue.SaveClasses
             return null;
         }
 
-
         public EntitySave GetEntitySave(string entityName)
         {
             if (!string.IsNullOrEmpty(entityName))
@@ -233,8 +224,6 @@ namespace FlatRedBall.Glue.SaveClasses
             }
             return null;
         }
-
-
 
         public CustomClassSave GetCustomClass(string customClassName)
         {

@@ -44,7 +44,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             private set;
         }
 
-        public IElement CurrentElement
+        public GlueElement CurrentElement
         {
             get 
             {

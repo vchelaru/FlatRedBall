@@ -23,13 +23,13 @@ namespace FlatRedBall.Glue.Controls
 
         #endregion
 
-        public IEnumerable<IElement> SelectedElements
+        public IEnumerable<GlueElement> SelectedElements
         {
             get
             {
                 foreach (TreeNode node in ToExportTreeView.Nodes)
                 {
-                    yield return node.Tag as IElement;
+                    yield return node.Tag as GlueElement;
 
                 }
             }

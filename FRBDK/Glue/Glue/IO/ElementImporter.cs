@@ -107,7 +107,7 @@ namespace FlatRedBall.Glue.IO
                 lock (FileWatchManager.LockObject)
                 {
                     string fileName = openFileDialog.FileName;
-                    ImportElementFromFile(fileName, true);
+                    TaskManager.Self.Add(() => ImportElementFromFile(fileName, true), $"Import Entity {fileName}");
                 }
             }
 
@@ -118,9 +118,9 @@ namespace FlatRedBall.Glue.IO
             string unpackDirectory;
 
             List<string> filesToAddToContent;
-            List<string> codeFiles;
+            List<string> codeFilesInZip;
 
-            Zipper.UnzipScreenOrEntityImport(fileName, out unpackDirectory, out filesToAddToContent, out codeFiles);
+            Zipper.UnzipScreenOrEntityImport(fileName, out unpackDirectory, out filesToAddToContent, out codeFilesInZip);
 
             string elementName = FileManager.RemovePath(FileManager.RemoveExtension(fileName));
             if (!string.IsNullOrEmpty(subDirectory))
@@ -144,16 +144,15 @@ namespace FlatRedBall.Glue.IO
             #endregion
 
             string desiredNamespace = "";
-            string targetCs;
-            IElement newElement = null;
+            GlueElement newElement = null;
             
             if (extension == "entx")
             {
-                targetCs = ImportEntity(unpackDirectory, filesToAddToContent, codeFiles, elementName, extension, moveToSelectedTreeNode, ref desiredNamespace, ref newElement);
+                ImportEntity(unpackDirectory, filesToAddToContent, codeFilesInZip, elementName, extension, moveToSelectedTreeNode, ref desiredNamespace, ref newElement);
             }
             else
             {
-                targetCs = ImportScreen(unpackDirectory, filesToAddToContent, codeFiles, elementName, extension, moveToSelectedTreeNode, ref desiredNamespace, ref newElement);
+                ImportScreen(unpackDirectory, filesToAddToContent, codeFilesInZip, elementName, extension, moveToSelectedTreeNode, ref desiredNamespace, ref newElement);
             }
 
             ResolveElementReferences(newElement);
@@ -162,9 +161,13 @@ namespace FlatRedBall.Glue.IO
 
             #region Refresh and save everything
 
-            ElementViewWindow.SelectedNode = GlueState.Self.Find.ElementTreeNode(newElement);
+            GlueCommands.Self.DoOnUiThread(() =>
+            {
+                GlueState.Self.CurrentElement = newElement;
 
-            GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
+                GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
+            });
+
             GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
             GlueCommands.Self.ProjectCommands.SaveProjects();
             GluxCommands.Self.SaveGlux();
@@ -173,21 +176,30 @@ namespace FlatRedBall.Glue.IO
         }
 
         private static string ImportScreen(string unpackDirectory, List<string> filesToAddToContent, 
-            List<string> codeFiles, string elementName, string extension, bool moveToSelectedFolderTreeNode, ref string desiredNamespace, ref IElement newElement)
+            List<string> codeFiles, string elementName, string extension, bool moveToSelectedFolderTreeNode, ref string desiredNamespace, ref GlueElement newElement)
         {
             return ImportElement<ScreenSave>(unpackDirectory, filesToAddToContent, codeFiles, elementName, extension, ref desiredNamespace, ref newElement);
         }
 
         private static string ImportEntity(string unpackDirectory, List<string> filesToAddToContent, 
-            List<string> codeFiles, string elementName, string extension, bool moveToSelectedFolderTreeNode, ref string desiredNamespace, ref IElement newElement)
+            List<string> codeFilesInZip, string elementName, string extension, bool moveToSelectedFolderTreeNode, ref string desiredNamespace, ref GlueElement newElement)
         {
-            string targetCs = ImportElement<EntitySave>(unpackDirectory, filesToAddToContent, codeFiles, elementName, extension, ref desiredNamespace, ref newElement);
+            string targetCs = ImportElement<EntitySave>(unpackDirectory, filesToAddToContent, codeFilesInZip, elementName, extension, ref desiredNamespace, ref newElement);
             EntitySave entitySave = (EntitySave)newElement;
 
-            if (moveToSelectedFolderTreeNode && EditorLogic.CurrentTreeNode != null && EditorLogic.CurrentTreeNode.IsFolderForEntities())
+            var shouldSave = false;
+            GlueCommands.Self.DoOnUiThread(() =>
             {
-                EntityTreeNode entityTreeNode = GlueState.Self.Find.EntityTreeNode(entitySave);
-                DragDropManager.Self.MoveEntityOn(entityTreeNode, EditorLogic.CurrentTreeNode);
+                if (moveToSelectedFolderTreeNode && EditorLogic.CurrentTreeNode != null && EditorLogic.CurrentTreeNode.IsFolderForEntities())
+                {
+                    EntityTreeNode entityTreeNode = GlueState.Self.Find.EntityTreeNode(entitySave);
+                    DragDropManager.Self.MoveEntityOn(entityTreeNode, EditorLogic.CurrentTreeNode);
+                    shouldSave = true;
+                }
+            });
+
+            if(shouldSave)
+            {
                 GluxCommands.Self.SaveGlux();
             }
 
@@ -195,10 +207,8 @@ namespace FlatRedBall.Glue.IO
         }
 
         private static string ImportElement<T>(string unpackDirectory, List<string> filesToAddToContent, 
-            List<string> codeFiles, string elementName, string extension, ref string desiredNamespace, ref IElement newElement) where T : IElement
+            List<string> codeFilesInZip, string elementName, string extension, ref string desiredNamespace, ref GlueElement newElement) where T : GlueElement
         {
-            string targetCs = null;
-
             var whatToDeserialize = unpackDirectory + FileManager.RemovePath(elementName) + "." + extension;
 
             newElement = FileManager.XmlDeserialize<T>(whatToDeserialize);
@@ -233,13 +243,16 @@ namespace FlatRedBall.Glue.IO
             Directory.CreateDirectory(contentDestinationDirectory);
             #endregion
 
-            targetCs = destinationDirectory + FileManager.RemovePath(elementName) + ".cs";
+            CreateNecessaryCustomClasses(newElement);
+
+
+            var targetCs = destinationDirectory + FileManager.RemovePath(elementName) + ".cs";
             desiredNamespace = ProjectManager.ProjectNamespace + "." + subdirectory.Substring(0, subdirectory.Length - 1).Replace("/", ".").Replace("\\", ".");
 
             string rootToReplace = null;
             string rootToReplaceWith = ProjectManager.ProjectNamespace;
 
-            foreach (string codeFile in codeFiles)
+            foreach (string codeFile in codeFilesInZip)
             {
                 string source = unpackDirectory + FileManager.RemovePath(codeFile);
                 string target = destinationDirectory + FileManager.RemovePath(codeFile);
@@ -357,6 +370,9 @@ namespace FlatRedBall.Glue.IO
 
             #endregion
 
+            string directory = FileManager.GetDirectory(newElement.Name);
+            AddAdditionalCodeFilesToProject(codeFilesInZip, directory);
+
             #region Add the Screen or Entity to the ProjectManager
 
             if (newElement is ScreenSave)
@@ -370,18 +386,52 @@ namespace FlatRedBall.Glue.IO
 
             #endregion
 
-            string directory = FileManager.GetDirectory(newElement.Name);
-
-            AddAdditionalCodeFilesToProject(codeFiles, directory);
-
-
             return targetCs;
         }
 
-        private static void AddAdditionalCodeFilesToProject(List<string> codeFiles, string directory)
+        private static void CreateNecessaryCustomClasses(GlueElement newElement)
+        {
+            var glueProject = GlueState.Self.CurrentGlueProject;
+            var projectCustomClasses = glueProject.CustomClasses;
+
+            // See if there are any custom classes here which don't exist on the project
+            if(newElement.CustomClassesForExport != null)
+            {
+                foreach (var customClassFromElement in newElement.CustomClassesForExport)
+                {
+                    var existingCustomClass = projectCustomClasses.FirstOrDefault(item => item.Name == customClassFromElement.Name);
+
+                    if(existingCustomClass == null)
+                    {
+                        // just add it directly:
+                        projectCustomClasses.Add(customClassFromElement);
+                    }
+                    else
+                    {
+                        // add any CSVs that reference it:
+                        foreach(var referencingCsvs in customClassFromElement.CsvFilesUsingThis)
+                        {
+                            if(
+                                // this is an RFS in this entity
+                                newElement.ReferencedFiles.Any(item => item.Name == referencingCsvs) && 
+                                // it's not already referenced (somehow) - so we don't get dupes
+                                existingCustomClass.CsvFilesUsingThis.Contains(referencingCsvs) == false)
+                            {
+                                existingCustomClass.CsvFilesUsingThis.Add(referencingCsvs);
+                            }
+
+                            // note - currently the entity import will not bring over other properties on the custom class, only
+                            // the CSV reference. As of Apr 18 2021 Vic doesn't know if we need to expand on this...
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void AddAdditionalCodeFilesToProject(List<string> codeFilesInZip, string directory)
         {
             var project = GlueState.Self.CurrentMainProject;
-            foreach (var relativeCodeFile in codeFiles)
+            foreach (var relativeCodeFile in codeFilesInZip)
             {
                 var codeFilePath = new FilePath(directory + relativeCodeFile);
 

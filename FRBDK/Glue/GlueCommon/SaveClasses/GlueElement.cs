@@ -228,5 +228,14 @@ namespace FlatRedBall.Glue.SaveClasses
             return null;
         }
 
+        /// <summary>
+        /// The custom classes contained in the project when the export occurred.
+        /// This is necessary because some CSVs use custom classes
+        /// </summary>
+        public List<CustomClassSave> CustomClassesForExport
+        {
+            get; set;
+        } = new List<CustomClassSave>();
+
     }
 }

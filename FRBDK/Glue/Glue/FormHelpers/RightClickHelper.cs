@@ -2525,7 +2525,7 @@ namespace FlatRedBall.Glue.FormHelpers
         static void ExportElementClick(object sender, EventArgs e)
         {
             // export screen, export entity, export element
-            ElementExporter.ExportElement(EditorLogic.CurrentElement);
+            ElementExporter.ExportElement(GlueState.Self.CurrentElement, GlueState.Self.CurrentGlueProject);
         }
 
         static void ImportElementClick(object sender, EventArgs e)

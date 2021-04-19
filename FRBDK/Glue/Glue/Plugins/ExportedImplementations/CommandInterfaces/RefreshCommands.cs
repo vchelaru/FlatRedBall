@@ -6,6 +6,7 @@ using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.IO;
 using Glue;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
@@ -55,44 +56,75 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             if (ProjectManager.ProjectBase != null)
             {
-                var elementTreeNode = GlueState.Self.Find.ElementTreeNode(element);
+                GlueCommands.Self.DoOnUiThread(() =>
+                {
+                    var elementTreeNode = GlueState.Self.Find.ElementTreeNode(element);
 
-                if(elementTreeNode == null)
-                {
-                    if(!element.IsHiddenInTreeView)
+                    if(elementTreeNode == null)
                     {
-                        if(element is ScreenSave screen)
+                        if(!element.IsHiddenInTreeView)
                         {
-                            elementTreeNode = ElementViewWindow.AddScreen(screen);
-                        }
-                        else if(element is EntitySave entitySave)
-                        {
-                            elementTreeNode = ElementViewWindow.AddEntity(entitySave);
-                        }
-                        elementTreeNode?.RefreshTreeNodes();
-                    }
-                }
-                else
-                {
-                    if(element.IsHiddenInTreeView)
-                    {
-                        // remove it!
-                        if (element is ScreenSave screen)
-                        {
-                            ElementViewWindow.RemoveScreen(screen);
-                        }
-                        else if (element is EntitySave entitySave)
-                        {
-                            ElementViewWindow.RemoveEntity(entitySave);
+                            if(element is ScreenSave screen)
+                            {
+                                elementTreeNode = AddScreenInternal(screen);
+                            }
+                            else if(element is EntitySave entitySave)
+                            {
+                                elementTreeNode = ElementViewWindow.AddEntity(entitySave);
+                            }
+                            elementTreeNode?.RefreshTreeNodes();
                         }
                     }
                     else
-                    { 
-                        elementTreeNode?.RefreshTreeNodes();
+                    {
+                        if(element.IsHiddenInTreeView)
+                        {
+                            // remove it!
+                            if (element is ScreenSave screen)
+                            {
+                                ElementViewWindow.RemoveScreen(screen);
+                            }
+                            else if (element is EntitySave entitySave)
+                            {
+                                ElementViewWindow.RemoveEntity(entitySave);
+                            }
+                        }
+                        else
+                        { 
+                            elementTreeNode?.RefreshTreeNodes();
+                        }
                     }
-                }
+
+                });
             }
         }
+
+        BaseElementTreeNode AddScreenInternal(ScreenSave screenSave)
+        {
+            string screenFileName = screenSave.Name + ".cs";
+            string screenFileWithoutExtension = FileManager.RemoveExtension(screenFileName);
+
+            var screenTreeNode = new ScreenTreeNode(FileManager.RemovePath(screenFileWithoutExtension));
+            screenTreeNode.CodeFile = screenFileName;
+
+            ElementViewWindow.ScreensTreeNode.Nodes.Add(screenTreeNode);
+
+            string generatedFile = screenFileWithoutExtension + ".Generated.cs";
+            screenTreeNode.GeneratedCodeFile = generatedFile;
+
+            screenTreeNode.SaveObject = screenSave;
+
+            int desiredIndex = ProjectManager.GlueProjectSave.Screens.IndexOf(screenSave);
+            if (desiredIndex < ElementViewWindow.ScreensTreeNode.Nodes.Count && 
+                ElementViewWindow.ScreensTreeNode.Nodes[desiredIndex] != ElementViewWindow.ScreensTreeNode)
+            {
+                ElementViewWindow.ScreensTreeNode.Nodes.Remove(screenTreeNode);
+                ElementViewWindow.ScreensTreeNode.Nodes.Insert(desiredIndex, screenTreeNode);
+            }
+
+            return screenTreeNode;
+        }
+
 
         public void RefreshUi(StateSaveCategory category)
         {

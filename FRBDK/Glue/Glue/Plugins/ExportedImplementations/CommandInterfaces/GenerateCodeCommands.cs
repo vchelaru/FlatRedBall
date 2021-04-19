@@ -43,7 +43,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void GenerateCurrentElementCode()
         {
-            var element = GlueState.CurrentElement;
+            IElement element = null;
+
+            GlueCommands.DoOnUiThread(() => element = GlueState.CurrentElement);
             if (element != null)
             {
                 TaskManager.Self.AddOrRunIfTasked(()  =>
