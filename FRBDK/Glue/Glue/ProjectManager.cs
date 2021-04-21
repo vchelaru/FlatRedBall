@@ -606,7 +606,8 @@ namespace FlatRedBall.Glue
         {
             mGlueProjectSave.Screens.SortByName();
 
-            ElementViewWindow.UpdateNodeToListIndex(screenSave);
+            //ElementViewWindow.UpdateNodeToListIndex(screenSave);
+            ElementViewWindow.ScreensTreeNode.Nodes.SortByTextConsideringDirectories();
         }
 
         public static CheckResult StatusCheck()
@@ -683,15 +684,15 @@ namespace FlatRedBall.Glue
 
         }
 
-        public static void UpdateAllDerivedElementFromBaseValues(bool regenerateCode)
+        public static void UpdateAllDerivedElementFromBaseValues(bool regenerateCode, GlueElement currentElement = null)
         {
-            var currentElement = GlueState.Self.CurrentElement;
+            currentElement = currentElement ?? GlueState.Self.CurrentElement;
 
-            if (EditorLogic.CurrentEntitySave != null)
+            if (currentElement is EntitySave currentEntity)
             {
-                List<EntitySave> derivedEntities = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(EditorLogic.CurrentEntitySave.Name);
+                List<EntitySave> derivedEntities = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(currentEntity.Name);
 
-                List<NamedObjectSave> nosList = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(EditorLogic.CurrentEntitySave.Name);
+                List<NamedObjectSave> nosList = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(currentEntity.Name);
 
                 for (int i = 0; i < derivedEntities.Count; i++)
                 {
@@ -724,9 +725,9 @@ namespace FlatRedBall.Glue
 
                 }
             }
-            else if (EditorLogic.CurrentScreenSave != null)
+            else if (currentElement is ScreenSave currentScreenSave)
             {
-                List<ScreenSave> derivedScreens = ObjectFinder.Self.GetAllScreensThatInheritFrom(EditorLogic.CurrentScreenSave.Name);
+                List<ScreenSave> derivedScreens = ObjectFinder.Self.GetAllScreensThatInheritFrom(currentScreenSave.Name);
 
                 for (int i = 0; i < derivedScreens.Count; i++)
                 {
@@ -740,14 +741,6 @@ namespace FlatRedBall.Glue
                     {
                         CodeWriter.GenerateCode(screenSave);
                     }
-                }
-            }
-            else
-            {
-                if (EditorLogic.CurrentNamedObject == null)
-                {
-                    // This means the value is being set on the Screen itself
-                    throw new NotImplementedException();
                 }
             }
         }

@@ -1,10 +1,14 @@
 ﻿using FlatRedBall.Glue.MVVM;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace OfficialPluginsCore.Wizard.Models
 {
+    #region Enums
+
     public enum GameType
     {
         Platformer,
@@ -19,8 +23,22 @@ namespace OfficialPluginsCore.Wizard.Models
         None
     }
 
+    #endregion
+
     public class WizardData : ViewModel
     {
+        #region Configuration
+
+        [JsonIgnore]
+        [XmlIgnore]
+        public string WizardConfiguration
+        {
+            get;
+            set;
+        }
+
+        #endregion
+
         #region GameScreen
 
         public bool AddGameScreen

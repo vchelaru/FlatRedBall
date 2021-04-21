@@ -245,77 +245,11 @@ namespace FlatRedBall.Glue.IO
 
             CreateNecessaryCustomClasses(newElement);
 
+            FixImportedCustomVariableTypes(newElement);
+            string targetCs;
+            ReplaceCodeFileNamespaces(unpackDirectory, codeFilesInZip, elementName, out desiredNamespace, subdirectory, destinationDirectory, out targetCs);
 
-            var targetCs = destinationDirectory + FileManager.RemovePath(elementName) + ".cs";
-            desiredNamespace = ProjectManager.ProjectNamespace + "." + subdirectory.Substring(0, subdirectory.Length - 1).Replace("/", ".").Replace("\\", ".");
-
-            string rootToReplace = null;
-            string rootToReplaceWith = ProjectManager.ProjectNamespace;
-
-            foreach (string codeFile in codeFilesInZip)
-            {
-                string source = unpackDirectory + FileManager.RemovePath(codeFile);
-                string target = destinationDirectory + FileManager.RemovePath(codeFile);
-                string contents = FileManager.FromFileText(source);
-                string replacedNamespace;
-
-                contents = CodeWriter.ReplaceNamespace(contents, desiredNamespace, out replacedNamespace);
-
-                if (string.IsNullOrEmpty(rootToReplace))
-                {
-                    if(replacedNamespace.Contains('.'))
-                    {
-                        replacedNamespace = replacedNamespace.Substring(0, replacedNamespace.IndexOf('.'));
-                    }
-                    rootToReplace = replacedNamespace;
-                }
-
-                // Let's look for using statements for this namespace and replace them
-                contents = contents.Replace("using " + rootToReplace, "using " + rootToReplaceWith);
-
-                FileManager.SaveText(contents, target);
-
-            }
-
-
-            #region Copy all files to the necessary folder - asking the user to overwrite if the file already exists
-
-            foreach (string fileToCopyUnmodified in filesToAddToContent)
-            {
-                string fileToCopy = fileToCopyUnmodified;
-
-                DialogResult dialogResult = DialogResult.Yes;
-
-                string destinationFolder = contentDestinationDirectory;
-
-                if(fileToCopy.StartsWith("__external/"))
-                {
-                    destinationFolder = FileManager.GetDirectory(ProjectManager.MakeAbsolute("a.scnx", true));
-                    int indexOfSlash = fileToCopy.IndexOf("/");
-                    fileToCopy = fileToCopy.Substring(indexOfSlash + 1);
-                }
-
-                if (File.Exists(destinationFolder + fileToCopy))
-                {
-                    dialogResult = MessageBox.Show("The following file already exists:\n\n" +
-                        destinationFolder + fileToCopy + "\n\nOverwrite this file?", "Overwrite file?",
-                        MessageBoxButtons.YesNo);
-                }
-
-                if (dialogResult == DialogResult.Yes)
-                {
-                    string directoryToCreate = FileManager.GetDirectory(destinationFolder + fileToCopy);
-
-                    Directory.CreateDirectory(directoryToCreate);
-
-                    File.Copy(unpackDirectory + fileToCopyUnmodified, destinationFolder + fileToCopy, true);
-                }
-            }
-
-            #endregion
-
-
-
+            CopyContentToDestinationFolder(unpackDirectory, filesToAddToContent, contentDestinationDirectory);
 
             int startOfName = ProjectManager.ProjectNamespace.Length + 1 + (ScreensOrEntities + ".").Length;
 
@@ -373,6 +307,11 @@ namespace FlatRedBall.Glue.IO
             string directory = FileManager.GetDirectory(newElement.Name);
             AddAdditionalCodeFilesToProject(codeFilesInZip, directory);
 
+            AddContentFilesToProject(newElement);
+
+            GlueCommands.Self.ProjectCommands.SaveProjects();
+
+
             #region Add the Screen or Entity to the ProjectManager
 
             if (newElement is ScreenSave)
@@ -387,6 +326,101 @@ namespace FlatRedBall.Glue.IO
             #endregion
 
             return targetCs;
+        }
+
+        private static void AddContentFilesToProject(GlueElement newElement)
+        {
+            foreach(var rfs in newElement.ReferencedFiles)
+            {
+                GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs);
+            }
+        }
+
+        private static void CopyContentToDestinationFolder(string unpackDirectory, List<string> filesToAddToContent, string contentDestinationDirectory)
+        {
+            foreach (string fileToCopyUnmodified in filesToAddToContent)
+            {
+                string fileToCopy = fileToCopyUnmodified;
+
+                DialogResult dialogResult = DialogResult.Yes;
+
+                string destinationFolder = contentDestinationDirectory;
+
+                if (fileToCopy.StartsWith("__external/"))
+                {
+                    destinationFolder = FileManager.GetDirectory(ProjectManager.MakeAbsolute("a.scnx", true));
+                    int indexOfSlash = fileToCopy.IndexOf("/");
+                    fileToCopy = fileToCopy.Substring(indexOfSlash + 1);
+                }
+
+                if (File.Exists(destinationFolder + fileToCopy))
+                {
+                    dialogResult = MessageBox.Show("The following file already exists:\n\n" +
+                        destinationFolder + fileToCopy + "\n\nOverwrite this file?", "Overwrite file?",
+                        MessageBoxButtons.YesNo);
+                }
+
+                if (dialogResult == DialogResult.Yes)
+                {
+                    string directoryToCreate = FileManager.GetDirectory(destinationFolder + fileToCopy);
+
+                    Directory.CreateDirectory(directoryToCreate);
+
+                    File.Copy(unpackDirectory + fileToCopyUnmodified, destinationFolder + fileToCopy, true);
+                }
+            }
+        }
+
+        private static void ReplaceCodeFileNamespaces(string unpackDirectory, List<string> codeFilesInZip, string elementName, out string desiredNamespace, string subdirectory, string destinationDirectory, out string targetCs)
+        {
+            targetCs = destinationDirectory + FileManager.RemovePath(elementName) + ".cs";
+            desiredNamespace = ProjectManager.ProjectNamespace + "." + subdirectory.Substring(0, subdirectory.Length - 1).Replace("/", ".").Replace("\\", ".");
+
+            string rootToReplace = null;
+            string rootToReplaceWith = ProjectManager.ProjectNamespace;
+
+            foreach (string codeFile in codeFilesInZip)
+            {
+                string source = unpackDirectory + FileManager.RemovePath(codeFile);
+                string target = destinationDirectory + FileManager.RemovePath(codeFile);
+                string contents = FileManager.FromFileText(source);
+                string replacedNamespace;
+
+                contents = CodeWriter.ReplaceNamespace(contents, desiredNamespace, out replacedNamespace);
+
+                if (string.IsNullOrEmpty(rootToReplace))
+                {
+                    if (replacedNamespace.Contains('.'))
+                    {
+                        replacedNamespace = replacedNamespace.Substring(0, replacedNamespace.IndexOf('.'));
+                    }
+                    rootToReplace = replacedNamespace;
+                }
+
+                // Let's look for using statements for this namespace and replace them
+                contents = contents.Replace("using " + rootToReplace, "using " + rootToReplaceWith);
+
+                FileManager.SaveText(contents, target);
+
+            }
+        }
+
+        private static void FixImportedCustomVariableTypes(GlueElement newElement)
+        {
+            var regularExpression = new System.Text.RegularExpressions.Regex(@".+\.DataTypes\..+");
+            foreach(var customVariable in newElement.CustomVariables)
+            {
+                var customVariableType = customVariable.Type;
+
+                var match = regularExpression.Match(customVariableType);
+                if (match?.Success == true)
+                {
+                    var firstDot = customVariableType.IndexOf('.');
+                    var newType = GlueState.Self.ProjectNamespace + customVariableType.Substring(firstDot);
+                    customVariable.Type = newType;
+                }
+
+            }
         }
 
         private static void CreateNecessaryCustomClasses(GlueElement newElement)
@@ -437,9 +471,6 @@ namespace FlatRedBall.Glue.IO
 
                 GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(codeFilePath, false);
             }
-
-
-            GlueCommands.Self.ProjectCommands.SaveProjects();
         }
 
         private static void ResolveElementReferences(IElement newElement)

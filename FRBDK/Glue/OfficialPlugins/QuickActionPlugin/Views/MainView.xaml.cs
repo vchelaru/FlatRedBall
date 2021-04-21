@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Elements;
+﻿using FlatRedBall.Glue;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
@@ -122,8 +123,11 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             var gameScreen = GlueState.Self.CurrentGlueProject.GetScreenSave(GameScreenName);
             var newNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(viewModel, gameScreen, null);
 
+            newNos.ExposedInDerived = true;
             // Vic says - why do we do this? It interrupts flow...
+            // Update - we have to because we have to set derived
             //GlueState.Self.CurrentNamedObjectSave = newNos;
+            ProjectManager.UpdateAllDerivedElementFromBaseValues(regenerateCode:false, gameScreen);
 
             AnyButtonClicked();
         }

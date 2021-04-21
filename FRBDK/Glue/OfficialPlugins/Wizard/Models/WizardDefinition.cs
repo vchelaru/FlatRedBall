@@ -1,7 +1,12 @@
-﻿using System;
+﻿using FlatRedBall.Instructions;
+using Newtonsoft.Json;
+using OfficialPluginsCore.Wizard.ViewModels;
+using OfficialPluginsCore.Wizard.Views;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace OfficialPluginsCore.Wizard.Models
@@ -13,6 +18,8 @@ namespace OfficialPluginsCore.Wizard.Models
         public List<FormsData> FormsDataList { get; private set; } = new List<FormsData>();
         public WizardData ViewModel { get; private set; }
 
+        public event Action GoToLast;
+
         #endregion
 
         public event Action DoneClicked;
@@ -21,13 +28,35 @@ namespace OfficialPluginsCore.Wizard.Models
         {
             ViewModel = new WizardData();
 
+            #region Welcome Page
             {
                 var formsData = new FormsData(ViewModel);
-                formsData.AddTitle("Welcome");
-                formsData.AddText("This wizard will help you set up a Glue project quickly. Let's get started!");
+                var page = new WizardWelcomePage();
+                var welcomePageViewModel = new WizardWelcomeViewModel();
+                page.DataContext = welcomePageViewModel;
+                page.StartFromScratch += () => formsData.CallNext();
+                page.StartWithConfiguration += () =>
+                {
+                    ViewModel = welcomePageViewModel.DeserializedObject;
+
+                    // just in case the user wants to go back:
+                    foreach(var innerFormsData in FormsDataList)
+                    {
+                        innerFormsData.ViewModel = ViewModel;
+                    }
+
+                    Show(FormsDataList.Last());
+                };
+
+                var item = formsData.AddView(page);
+                item.StackOrFill = StackOrFill.Fill;
+                formsData.HasNextButton = false;
+
                 FormsDataList.Add(formsData);
             }
+            #endregion
 
+            #region Game Screen
             {
                 var formsData = new FormsData(ViewModel);
 
@@ -47,7 +76,9 @@ namespace OfficialPluginsCore.Wizard.Models
 
                 FormsDataList.Add(formsData);
             }
+            #endregion
 
+            #region Player Entity
             {
                 var formsData = new FormsData(ViewModel);
                 formsData.AddTitle("Player Entity");
@@ -80,7 +111,9 @@ namespace OfficialPluginsCore.Wizard.Models
 
                 FormsDataList.Add(formsData);
             }
+            #endregion
 
+            #region Levels
             {
                 var formsData = new FormsData(ViewModel);
                 formsData.AddTitle("Levels");
@@ -98,7 +131,9 @@ namespace OfficialPluginsCore.Wizard.Models
                 FormsDataList.Add(formsData);
 
             }
+            #endregion
 
+            #region UI
             {
                 var formsData = new FormsData(ViewModel);
                 formsData.AddTitle("UI");
@@ -110,7 +145,9 @@ namespace OfficialPluginsCore.Wizard.Models
 
                 FormsDataList.Add(formsData);
             }
+            #endregion
 
+            #region Camera
             {
                 var formsData = new FormsData(ViewModel);
                 formsData.AddTitle("Camera");
@@ -124,56 +161,59 @@ namespace OfficialPluginsCore.Wizard.Models
 
                 FormsDataList.Add(formsData);
             }
+            #endregion
 
             {
                 var formsData = new FormsData(ViewModel);
                 formsData.AddText("All Done!");
                 formsData.AddText("Click the Done button to set up your project, or click the Back button to change settings");
+                formsData.AddAction("Copy Wizard Configuration to Clipboard", HandleCopyWizardSettings);
                 FormsDataList.Add(formsData);
             }
 
         }
+
+        private void HandleCopyWizardSettings()
+        {
+            var converted = JsonConvert.SerializeObject(ViewModel, Formatting.Indented);
+            Clipboard.SetText(converted);
+
+            // toast?
+        }
+        Grid grid;
         public void Start(Grid grid)
         {
+            this.grid = grid;
             var formsDataList = FormsDataList;
-            void Show(FormsData formsData)
+            Show(formsDataList.First());
+
+            //formsData.Fill(StackP)
+        }
+        void Show(FormsData formsData)
+        {
+            var index = FormsDataList.IndexOf(formsData);
+
+            var isLast =
+                index == FormsDataList.Count - 1;
+            grid.Children.Clear();
+            formsData.Fill(grid, 
+                showBack: index > 0,
+                isNextButtonDone:isLast);
+
+            if(isLast)
             {
-                var index = formsDataList.IndexOf(formsData);
-
-                var isLast =
-                    index == formsDataList.Count - 1;
-                formsData.Fill(grid, 
-                    showBack: index > 0,
-                    isNextButtonDone:isLast);
-
-                if(isLast)
+                formsData.NextClicked += () =>
                 {
-                    formsData.NextClicked += () =>
-                    {
-                        DoneClicked();
-                    };
-                }
-                else
+                    DoneClicked();
+                };
+            }
+            else
+            {
+                formsData.NextClicked += () =>
                 {
-                    formsData.NextClicked += () =>
+                    if (index < FormsDataList.Count - 1)
                     {
-                        grid.Children.Clear();
-                        if (index < formsDataList.Count - 1)
-                        {
-                            Show(formsDataList[index + 1]);
-                        }
-                        else
-                        {
-                            // do nothing, it's the end
-                        }
-                    };
-                }
-                formsData.BackClicked += () =>
-                {
-                    grid.Children.Clear();
-                    if (index > 0)
-                    {
-                        Show(formsDataList[index - 1]);
+                        Show(FormsDataList[index + 1]);
                     }
                     else
                     {
@@ -181,9 +221,17 @@ namespace OfficialPluginsCore.Wizard.Models
                     }
                 };
             }
-            Show(formsDataList.First());
-
-            //formsData.Fill(StackP)
+            formsData.BackClicked += () =>
+            {
+                if (index > 0)
+                {
+                    Show(FormsDataList[index - 1]);
+                }
+                else
+                {
+                    // do nothing, it's the end
+                }
+            };
         }
     }
 

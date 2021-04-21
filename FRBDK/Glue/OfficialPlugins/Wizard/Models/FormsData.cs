@@ -20,6 +20,14 @@ namespace OfficialPluginsCore.Wizard.Models
         CheckBox,
         Group,
         RadioButton,
+        Button,
+        View
+    }
+
+    public enum StackOrFill
+    {
+        Stack,
+        Fill
     }
 
     #endregion
@@ -29,6 +37,8 @@ namespace OfficialPluginsCore.Wizard.Models
     class DataItem
     {
         public ViewType ViewType { get; set; }
+
+        public StackOrFill StackOrFill { get; set; }
 
         public int? LabelFontSize { get; set; }
         public string LabelText { get; set; }
@@ -69,14 +79,16 @@ namespace OfficialPluginsCore.Wizard.Models
 
         List<DataItem> DataItems = new List<DataItem>();
 
-        object viewModel;
+        public object ViewModel { get; set; }
         public Func<bool> Predicate;
 
         public FormsData(object viewModel, Func<bool> predicate = null)
         {
-            this.viewModel = viewModel;
+            this.ViewModel = viewModel;
             this.Predicate = predicate;
         }
+
+        public bool HasNextButton { get; set; } = true;
 
         DataItem Add(DataItem item)
         {
@@ -103,6 +115,22 @@ namespace OfficialPluginsCore.Wizard.Models
             var dataItem = new DataItem { LabelText = text };
             dataItem.VisibilityBinding = visibilityBinding;
             Add(dataItem);
+        }
+
+        public void AddAction(string text, Action clickAction)
+        {
+            var dataItem = new DataItem { LabelText = text };
+            dataItem.ViewType = ViewType.Button;
+            dataItem.Value = clickAction;
+            Add(dataItem);
+        }
+
+        public DataItem AddView(UserControl userControl)
+        {
+            var dataItem = new DataItem();
+            dataItem.ViewType = ViewType.View;
+            dataItem.Value = userControl;
+            return Add(dataItem);
         }
 
         public DataItem AddIntValue(string label, string vmPropertyName = null, string visibilityBinding = null)
@@ -150,14 +178,14 @@ namespace OfficialPluginsCore.Wizard.Models
 
 
             var stackPanel = new StackPanel();
-            stackPanel.DataContext = viewModel;
+            stackPanel.DataContext = ViewModel;
             scrollView.Content = stackPanel;
 
             void AddRectangle() =>
                 stackPanel.Children.Add(new Rectangle() { Height = 12 });
             foreach (var dataItem in DataItems)
             {
-                AddItem(stackPanel, dataItem);
+                AddItem(stackPanel, grid, dataItem);
 
                 AddRectangle();
             }
@@ -175,27 +203,30 @@ namespace OfficialPluginsCore.Wizard.Models
                 grid.Children.Add(backButton);
             }
 
-            var nextButton = new Button();
-            nextButton.Content = isNextButtonDone ? "Done" : "Next >";
-            nextButton.VerticalAlignment = VerticalAlignment.Bottom;
-            nextButton.Width = 150;
-            nextButton.Height = 30;
-            nextButton.HorizontalAlignment = HorizontalAlignment.Right;
-            nextButton.Click += (not, used) => NextClicked();
-            Grid.SetRow(nextButton, 1);
-            grid.Children.Add(nextButton);
+            if(HasNextButton)
+            {
+                var nextButton = new Button();
+                nextButton.Content = isNextButtonDone ? "Done" : "Next >";
+                nextButton.VerticalAlignment = VerticalAlignment.Bottom;
+                nextButton.Width = 150;
+                nextButton.Height = 30;
+                nextButton.HorizontalAlignment = HorizontalAlignment.Right;
+                nextButton.Click += (not, used) => NextClicked();
+                Grid.SetRow(nextButton, 1);
+                grid.Children.Add(nextButton);
+            }
 
         }
 
-        private void AddItem(StackPanel stackPanel, DataItem dataItem)
+        private void AddItem(StackPanel stackPanel, Grid grid, DataItem dataItem)
         {
-            var vmType = viewModel.GetType();
+            var vmType = ViewModel.GetType();
             PropertyInfo vmProperty = null;
             if (!string.IsNullOrEmpty(dataItem.ViewModelProperty))
             {
                 vmProperty = vmType.GetProperty(dataItem.ViewModelProperty);
             }
-            var vmValue = vmProperty?.GetValue(viewModel);
+            var vmValue = vmProperty?.GetValue(ViewModel);
 
             void TryBindVisibility(FrameworkElement element)
             {
@@ -229,6 +260,16 @@ namespace OfficialPluginsCore.Wizard.Models
                     }
 
                     break;
+                case ViewType.Button:
+                    var button = new Button();
+                    button.Content = dataItem.LabelText;
+                    button.Click += (not, used) => ((Action)dataItem.Value)();
+                    button.HorizontalAlignment = HorizontalAlignment.Left;
+                    button.MinWidth = 200;
+                    button.MinHeight = 36;
+                    stackPanel.Children.Add(button);
+
+                    break;
                 case ViewType.Group:
                     var group = new GroupBox();
                     group.Header = dataItem.LabelText;
@@ -246,7 +287,7 @@ namespace OfficialPluginsCore.Wizard.Models
                         radioButton.IsChecked = vmValue?.Equals(child.OptionValue) == true;
                         radioButton.Content = child.OptionName;
                         var optionValue = child.OptionValue;
-                        radioButton.Click += (not, used) => vmProperty.SetValue(viewModel, optionValue);
+                        radioButton.Click += (not, used) => vmProperty.SetValue(ViewModel, optionValue);
                         innerStack.Children.Add(radioButton);
                     }
                     break;
@@ -297,8 +338,21 @@ namespace OfficialPluginsCore.Wizard.Models
                         stackPanel.Children.Add(textBox);
                     }
                     break;
+                case ViewType.View:
+                    var userControl = dataItem.Value as UserControl;
+                    if(dataItem.StackOrFill == StackOrFill.Stack)
+                    {
+                        stackPanel.Children.Add(userControl);
+                    }
+                    else
+                    {
+                        grid.Children.Add(userControl);
+                    }
+                    break;
             }
 
         }
+
+        public void CallNext() => NextClicked();
     }
 }

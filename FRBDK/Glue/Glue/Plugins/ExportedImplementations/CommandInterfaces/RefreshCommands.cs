@@ -47,6 +47,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     RefreshTreeNodeFor(screen);
                 }
+                GlueCommands.Self.DoOnUiThread(() =>
+
+                    ElementViewWindow.ScreensTreeNode.Nodes.SortByTextConsideringDirectories()
+                );
 
                 RefreshGlobalContent();
             }
@@ -108,19 +112,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             screenTreeNode.CodeFile = screenFileName;
 
             ElementViewWindow.ScreensTreeNode.Nodes.Add(screenTreeNode);
+            ElementViewWindow.ScreensTreeNode.Nodes.SortByTextConsideringDirectories();
 
             string generatedFile = screenFileWithoutExtension + ".Generated.cs";
             screenTreeNode.GeneratedCodeFile = generatedFile;
 
             screenTreeNode.SaveObject = screenSave;
-
-            int desiredIndex = ProjectManager.GlueProjectSave.Screens.IndexOf(screenSave);
-            if (desiredIndex < ElementViewWindow.ScreensTreeNode.Nodes.Count && 
-                ElementViewWindow.ScreensTreeNode.Nodes[desiredIndex] != ElementViewWindow.ScreensTreeNode)
-            {
-                ElementViewWindow.ScreensTreeNode.Nodes.Remove(screenTreeNode);
-                ElementViewWindow.ScreensTreeNode.Nodes.Insert(desiredIndex, screenTreeNode);
-            }
 
             return screenTreeNode;
         }

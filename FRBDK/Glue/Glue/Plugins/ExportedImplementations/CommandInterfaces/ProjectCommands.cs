@@ -161,10 +161,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     VisualStudioProject foundProject = (VisualStudioProject)ProjectManager.GetProjectByName(projectSpecificFile.ProjectName);
                     wasAnythingAdded |= UpdateFileMembershipInProject(foundProject, projectSpecificFile.FilePath, useContentPipeline, true);
                 }
-                if (wasAnythingAdded)
-                {
-                    int m = 3;
-                }
             }
             return wasAnythingAdded;
         }

@@ -1179,7 +1179,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         private static void DuplicateCurrentStateSave()
         {
-            StateSave stateSave = EditorLogic.CurrentStateSave;
+            var stateSave = GlueState.Self.CurrentStateSave;
 
             StateSave newStateSave = stateSave.Clone();
 
@@ -1214,7 +1214,7 @@ namespace FlatRedBall.Glue.FormHelpers
             }
 
             ElementViewWindow.UpdateCurrentObjectReferencedTreeNodes();
-            CodeWriter.GenerateCode(EditorLogic.CurrentElement);
+            CodeWriter.GenerateCode(GlueState.Self.CurrentElement);
             GlueCommands.Self.ProjectCommands.SaveProjects();
             GluxCommands.Self.SaveGlux();
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace FlatRedBall.Glue.FormHelpers
 {
@@ -63,6 +64,14 @@ namespace FlatRedBall.Glue.FormHelpers
 
         }
 
+        [DllImport("Shlwapi.dll", CharSet = CharSet.Unicode)]
+        private static extern int StrCmpLogicalW(string x, string y);
+
+        //public override int Compare(string x, string y)
+        //{
+        //    return StrCmpLogicalW(x, y);
+        //}
+
         private static int TreeNodeComparer(TreeNode first, TreeNode second)
         {
             bool isFirstDirectory = first.IsDirectoryNode();
@@ -78,7 +87,10 @@ namespace FlatRedBall.Glue.FormHelpers
             }
             else
             {
-                return first.Text.CompareTo(second.Text);
+
+                //return first.Text.CompareTo(second.Text);
+                // This will put Level9 before Level10
+                return StrCmpLogicalW(first.Text, second.Text);
             }
         }
 

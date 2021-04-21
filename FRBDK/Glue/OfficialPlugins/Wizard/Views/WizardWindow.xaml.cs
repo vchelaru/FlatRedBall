@@ -32,18 +32,18 @@ namespace OfficialPluginsCore.Wizard.Views
 
             definition.Start(GridInstance);
 
-            WizardData = definition.ViewModel;
-
             var hasClickedDone = false;
 
             definition.DoneClicked += async () =>
             {
                 if(!hasClickedDone)
                 {
+                    hasClickedDone = true;
                     GridInstance.Visibility = Visibility.Collapsed;
                     PleaseWaitGrid.Visibility = Visibility.Visible;
+                    // This could change:
+                    WizardData = definition.ViewModel;
                     // prevent double clicking
-                    hasClickedDone = true;
                     await DoneClicked();
 
                     this.DialogResult = true;
