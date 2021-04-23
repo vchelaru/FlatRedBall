@@ -63,6 +63,7 @@
     <None Remove="QuickActionPlugin\Views\Create Project v2.png" />
     <None Remove="QuickActionPlugin\Views\Create Screen.png" />
     <None Remove="QuickActionPlugin\Views\StartWizard.png" />
+    <None Remove="Wizard\Icons\CheckIcon.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -121,6 +122,7 @@
     <Resource Include="QuickActionPlugin\Views\Create Project v2.png" />
     <Resource Include="QuickActionPlugin\Views\Create Screen.png" />
     <Resource Include="QuickActionPlugin\Views\StartWizard.png" />
+    <Resource Include="Wizard\Icons\CheckIcon.png" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

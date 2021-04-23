@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
@@ -7,6 +8,7 @@ using FlatRedBall.Glue.ViewModels;
 using GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin;
 using GlueFormsCore.ViewModels;
 using OfficialPluginsCore.Wizard.Models;
+using OfficialPluginsCore.Wizard.ViewModels;
 using OfficialPluginsCore.Wizard.Views;
 using System;
 using System.Collections.Generic;
@@ -54,66 +56,147 @@ namespace OfficialPluginsCore.Wizard
 
         private async Task Apply(WizardData vm)
         {
+            var tasks = new List<TaskItemViewModel>();
+
+            void Add(string name, Func<Task> task)
+            {
+                var toAdd = new TaskItemViewModel();
+                toAdd.Description = name;
+                toAdd.Task = task;
+                tasks.Add(toAdd);
+            }
+
             ScreenSave gameScreen = null;
             NamedObjectSave solidCollisionNos = null;
             NamedObjectSave cloudCollisionNos = null;
 
+            List<Func<Task>> operations = new List<Func<Task>>();
+
             // Add Gum before adding a GameScreen, so the GameScreen gets its Gum screen
             if (vm.AddGum)
             {
-                await HandleAddGum(vm);
+                Add("Add Gum", async () =>
+                {
+                    await HandleAddGum(vm);
+                    await TaskManager.Self.WaitForAllTasksFinished();
+                });
             }
 
             if (vm.AddGameScreen)
             {
-                gameScreen = HandleAddGameScreen(vm, ref solidCollisionNos, ref cloudCollisionNos);
+                Add("Add GameScreen", async () =>
+                {
+                    gameScreen = HandleAddGameScreen(vm, ref solidCollisionNos, ref cloudCollisionNos);
+                    await TaskManager.Self.WaitForAllTasksFinished();
+                });
             }
 
             if (vm.AddPlayerEntity)
             {
-                HandleAddPlayerEntity(vm, gameScreen, solidCollisionNos, cloudCollisionNos);
-
+                Add("Add Player", async () =>
+                {
+                    HandleAddPlayerEntity(vm, gameScreen, solidCollisionNos, cloudCollisionNos);
+                    await TaskManager.Self.WaitForAllTasksFinished();
+                });
             }
 
             if (vm.CreateLevels)
             {
-                HandleCreateLevels(vm, gameScreen);
+                Add("Create Levels", async () =>
+                {
+                    HandleCreateLevels(vm, gameScreen);
+                    await TaskManager.Self.WaitForAllTasksFinished();
+                });
             }
 
             if (vm.AddCameraController && vm.AddGameScreen)
             {
-                var addCameraControllerVm = new AddObjectViewModel();
-                addCameraControllerVm.ForcedElementToAddTo = gameScreen;
-                addCameraControllerVm.SourceType = SourceType.FlatRedBallType;
-                addCameraControllerVm.SourceClassType = "FlatRedBall.Entities.CameraControllingEntity";
-                addCameraControllerVm.ObjectName = "CameraControllingEntityInstance";
-
-                var cameraNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addCameraControllerVm, gameScreen, null);
-
-                if(vm.FollowPlayersWithCamera && vm.AddPlayerListToGameScreen)
+                Add("Create Camera", async () =>
                 {
-                    cameraNos.SetVariableValue(nameof(FlatRedBall.Entities.CameraControllingEntity.Targets), "PlayerList");
-                }
-                if(vm.KeepCameraInMap && vm.AddTiledMap)
+                    ApplyCameraController(vm, gameScreen);
+                    await TaskManager.Self.WaitForAllTasksFinished();
+                });
+            }
+
+            Add("Flushing Files", async () =>
+            {
+                var didWait = false;
+
+                const int msToWaitEachTime = 2500;
+                await Task.Delay(msToWaitEachTime);
+                do
                 {
-                    cameraNos.SetVariableValue(nameof(FlatRedBall.Entities.CameraControllingEntity.Map), "Map");
+                    didWait = await FlatRedBall.Glue.Managers.TaskManager.Self.WaitForAllTasksFinished();
+
+                    if (didWait)
+                    {
+                        // Glue checks for file changes every 2 seconds, so let's wait 2.5 seconds
+                        // to make sure it's had enough time to look for file changes.
+                        await Task.Delay(msToWaitEachTime);
+                    }
+                } while (didWait);
+            });
+
+            vm.Tasks = tasks;
+
+            TaskItemViewModel currentTask = null;
+            double maxTaskCount = 0;
+            void UpdateCurrentTask(TaskEvent taskEvent, FlatRedBall.Glue.Tasks.GlueTask task)
+            {
+                var currentTaskCount = TaskManager.Self.TaskCount;
+                maxTaskCount = Math.Max(maxTaskCount, currentTaskCount);
+                var currentTaskInner = currentTask;
+                if(currentTaskCount != 0 && currentTaskInner != null)
+                {
+                    var percentageLeft = currentTaskCount / maxTaskCount;
+                    var newPercent = 100 * (1 - percentageLeft);
+                    if (currentTaskInner.ProgressPercentage == null)
+                    {
+                        currentTaskInner.ProgressPercentage = newPercent;
+                    }
+                    else
+                    {
+                        currentTaskInner.ProgressPercentage = Math.Max(
+                            currentTaskInner.ProgressPercentage.Value, newPercent);
+                    }
                 }
             }
 
-            var didWait = false;
-            do
+            TaskManager.Self.TaskAddedOrRemoved += UpdateCurrentTask;
+
+            foreach(var task in vm.Tasks)
             {
-                didWait = await FlatRedBall.Glue.Managers.TaskManager.Self.WaitForAllTasksFinished();
+                task.IsInProgress = true;
+                currentTask = task;
+                maxTaskCount = 0;
 
-                if (didWait)
-                {
-                    // Glue checks for file changes every 2 seconds, so let's wait 2.5 seconds
-                    // to make sure it's had enough time to look for file changes.
-                    var msToWaitEachTime = 2500;
-                    await Task.Delay(msToWaitEachTime);
-                }
-            } while (didWait);
+                await task.Task();
+                task.IsInProgress = false;
+                task.IsComplete = true;
+            }
 
+            TaskManager.Self.TaskAddedOrRemoved -= UpdateCurrentTask;
+
+        }
+
+        private static void ApplyCameraController(WizardData vm, ScreenSave gameScreen)
+        {
+            var addCameraControllerVm = new AddObjectViewModel();
+            addCameraControllerVm.ForcedElementToAddTo = gameScreen;
+            addCameraControllerVm.SourceType = SourceType.FlatRedBallType;
+            addCameraControllerVm.SourceClassType = "FlatRedBall.Entities.CameraControllingEntity";
+            addCameraControllerVm.ObjectName = "CameraControllingEntityInstance";
+
+            var cameraNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addCameraControllerVm, gameScreen, null);
+
+            if (vm.FollowPlayersWithCamera && vm.AddPlayerListToGameScreen)
+            {
+                cameraNos.SetVariableValue(nameof(FlatRedBall.Entities.CameraControllingEntity.Targets), "PlayerList");
+            }
+            if (vm.KeepCameraInMap && vm.AddTiledMap)
+            {
+                cameraNos.SetVariableValue(nameof(FlatRedBall.Entities.CameraControllingEntity.Map), "Map");
+            }
         }
 
         private static void HandleCreateLevels(WizardData vm, ScreenSave gameScreen)
@@ -199,6 +282,7 @@ namespace OfficialPluginsCore.Wizard
                 cloudCollisionNos = MainAddScreenPlugin.AddCollision(gameScreen, "CloudCollision",
                     setFromMapObject: vm.AddTiledMap);
             }
+
 
             return gameScreen;
         }

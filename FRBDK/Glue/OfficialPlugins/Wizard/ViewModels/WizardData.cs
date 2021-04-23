@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.SaveClasses;
 using Newtonsoft.Json;
+using OfficialPluginsCore.Wizard.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -28,7 +29,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
     public class WizardData : ViewModel
     {
-        #region Configuration
+        #region Runtime (ignored) stuff like Configuration
 
         [JsonIgnore]
         [XmlIgnore]
@@ -36,6 +37,13 @@ namespace OfficialPluginsCore.Wizard.Models
         {
             get;
             set;
+        }
+
+        [JsonIgnore]
+        public List<TaskItemViewModel> Tasks
+        {
+            get => Get<List<TaskItemViewModel>>();
+            set => Set(value);
         }
 
         #endregion

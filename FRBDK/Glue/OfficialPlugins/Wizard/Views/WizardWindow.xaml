@@ -8,10 +8,9 @@
         Title="Project Setup Wizard" Height="580" Width="500"
         PreviewKeyDown="Window_PreviewKeyDown">
     <Grid Margin="16">
-        <Grid x:Name="PleaseWaitGrid" Visibility="Collapsed">
-            <local:ActivitySpinner></local:ActivitySpinner>
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Margin="0,70,0,0">Please wait...</TextBlock>
-        </Grid>
+        <local:DownloadingProgress x:Name="PleaseWaitGrid" Visibility="Collapsed">
+            
+        </local:DownloadingProgress>
         <Grid x:Name="GridInstance" >
             
         </Grid>

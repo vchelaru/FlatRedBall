@@ -43,6 +43,7 @@ namespace OfficialPluginsCore.Wizard.Views
                     PleaseWaitGrid.Visibility = Visibility.Visible;
                     // This could change:
                     WizardData = definition.ViewModel;
+                    PleaseWaitGrid.DataContext = WizardData;
                     // prevent double clicking
                     await DoneClicked();
 
