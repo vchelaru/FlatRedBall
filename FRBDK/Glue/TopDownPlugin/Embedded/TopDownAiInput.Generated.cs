@@ -59,7 +59,7 @@ namespace $NAMESPACE$.TopDown
 
             public float YVelocity => throw new NotImplementedException();
 
-            public float Magnitude => throw new NotImplementedException();
+            public float Magnitude => (float)System.Math.Sqrt( (X*X) + (Y*Y));
         }
 
         #endregion

@@ -124,20 +124,14 @@ namespace FlatRedBall.Input
         /// 0 is to the right, Pi/2 is up, Pi is to the left, and 3*Pi/2 is down.
         /// If the analog stick's position is (0,0), the Angle returned is 0 (to the right).
         /// </summary>
-        public double Angle
-        {
-            get { return mAngle; }
-        }
+        public double Angle => mAngle;
 
-        #region XML Docs
         /// <summary>
-        /// Gets the distance from the center position of the analog stick.
+        /// Gets the distance from the center position of the analog stick. 
+        /// Value is between 0 and 1, where 0 is the neutral position.
         /// </summary>
-        #endregion
-        public double Magnitude
-        {
-            get { return mMagnitude; }
-        }
+        public double Magnitude => mMagnitude; 
+        
 
         #region XML Docs
         /// <summary>
@@ -311,7 +305,7 @@ namespace FlatRedBall.Input
             // Atan2 of (0,0) returns 0
             mAngle = System.Math.Atan2(mPosition.Y, mPosition.X);
             mAngle = MathFunctions.RegulateAngle(mAngle);
-            mMagnitude = mPosition.Length();
+            mMagnitude = System.Math.Min(1, mPosition.Length());
         }
 
         #endregion
@@ -337,10 +331,7 @@ namespace FlatRedBall.Input
         }
 
 
-        float I2DInput.Magnitude
-        {
-            get { return (float) this.mMagnitude; }
-        }
+        float I2DInput.Magnitude => (float) this.mMagnitude; 
 
         I1DInput horizontal;
         public I1DInput Horizontal
