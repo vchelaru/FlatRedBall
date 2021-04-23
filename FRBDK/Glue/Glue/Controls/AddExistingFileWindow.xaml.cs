@@ -24,6 +24,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ToolsUtilitiesStandard.Network;
 
 namespace FlatRedBall.Glue.Controls
 {
@@ -91,7 +92,6 @@ namespace FlatRedBall.Glue.Controls
 
         private async Task HandleRemoteDownload()
         {
-            var _httpClient = new HttpClient { Timeout = TimeSpan.FromDays(1), };
 
             FilePath destinationFolder;
             var currentElement = GlueState.Self.CurrentElement;
@@ -118,14 +118,22 @@ namespace FlatRedBall.Glue.Controls
                 shouldDownload = result == System.Windows.Forms.DialogResult.Yes;
             }
 
-            var downloadResult = await DownloadUrl(_httpClient, ViewModel.DownloadUrl, destination, true);
+            var innerVm = new IndividualFileAddDownloadViewModel();
+            innerVm.Url = ViewModel.DownloadUrl;
+            ViewModel.DownloadedFilesList.Add(innerVm);
+            Action<long?, long> progressChanged = (a, b) => { innerVm.TotalLength = a; innerVm.DownloadedBytes = b; };
 
-            if(downloadResult.Succeeded)
+            using var _httpClient = new HttpClient { Timeout = TimeSpan.FromDays(1), };
+            var downloadResponse = await NetworkManager.Self.DownloadWithProgress(
+                _httpClient, ViewModel.DownloadUrl, destination.FullPath, progressChanged);
+
+            innerVm.DownloadResponse = downloadResponse;
+            if(downloadResponse.Succeeded)
             {
                 await DownloadReferencedFilesRecursively(_httpClient, destination, ViewModel.DownloadUrl);
             }
 
-            if(downloadResult.Succeeded == false || ViewModel.DownloadedFilesList.Any(item => item.DownloadResponse?.Succeeded == false))
+            if(downloadResponse.Succeeded == false || ViewModel.DownloadedFilesList.Any(item => item.DownloadResponse?.Succeeded == false))
             {
                 GlueCommands.Self.DialogCommands.ShowMessageBox("Error downloading files");
             }
@@ -149,7 +157,15 @@ namespace FlatRedBall.Glue.Controls
             {
                 var relative = FileManager.MakeRelative(file.FullPath, destinationFolder.FullPath);
                 var fileToDownload = FileManager.GetDirectory(urlForParentFile) + relative;
-                var innerDownloadResult = await DownloadUrl(httpClient, fileToDownload, file, false);
+
+                var innerVm = new IndividualFileAddDownloadViewModel();
+                innerVm.Url = fileToDownload;
+                ViewModel.DownloadedFilesList.Add(innerVm);
+                Action<long?, long> progressChanged = (a, b) => { innerVm.TotalLength = a; innerVm.DownloadedBytes = b; };
+
+                var innerDownloadResult = await NetworkManager.Self.DownloadWithProgress(
+                    httpClient, fileToDownload, file.FullPath, progressChanged);
+                innerVm.DownloadResponse = innerDownloadResult;
                 if(innerDownloadResult.Succeeded)
                 {
                     await DownloadReferencedFilesRecursively(httpClient, file, fileToDownload);
@@ -157,61 +173,6 @@ namespace FlatRedBall.Glue.Controls
             }
         }
 
-        private async Task<GeneralResponse> DownloadUrl(HttpClient _httpClient, string url, FilePath destination, bool overwriteIfExists)
-        {
-            var generalResponse = GeneralResponse.SuccessfulResponse;
-            var vm = new IndividualFileAddDownloadViewModel();
-            vm.Url = url;
-            Action<long?, long> progressChanged = (a, b) => vm.DownloadedBytes = b;
-            ViewModel.DownloadedFilesList.Add(vm);
-
-            try
-            {
-                using var response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
-                var totalBytes = response.Content.Headers.ContentLength;
-                vm.TotalLength = totalBytes;
-                using var contentStream = await response.Content.ReadAsStreamAsync();
-
-                using var destinationStream = System.IO.File.OpenWrite(destination.FullPath);
-                await ProcessContentStream(totalBytes, contentStream, destinationStream, progressChanged);
-            }
-            catch(Exception e)
-            {
-                generalResponse = GeneralResponse.UnsuccessfulWith(e.Message);
-            }
-            vm.DownloadResponse = generalResponse;
-            return generalResponse;
-
-        }
-
-        private async Task ProcessContentStream(long? totalDownloadSize, Stream contentStream, Stream destinationStream, Action<long?, long> progressChanged)
-        {
-            var totalBytesRead = 0L;
-            var readCount = 0L;
-            var buffer = new byte[8192];
-            var isMoreToRead = true;
-
-            do
-            {
-                var bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length);
-                if (bytesRead == 0)
-                {
-                    isMoreToRead = false;
-                    progressChanged(totalDownloadSize, totalBytesRead);
-                    continue;
-                }
-
-                await destinationStream.WriteAsync(buffer, 0, bytesRead);
-
-                totalBytesRead += bytesRead;
-                readCount += 1;
-
-                if (readCount % 100 == 0)
-                    progressChanged(totalDownloadSize, totalBytesRead);
-
-            }
-            while (isMoreToRead);
-        }
 
         #endregion
 

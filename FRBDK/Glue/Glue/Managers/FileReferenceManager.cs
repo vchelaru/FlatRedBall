@@ -8,6 +8,7 @@ using FlatRedBall.IO;
 using System.IO;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Errors;
+using GeneralResponse = ToolsUtilities.GeneralResponse;
 
 namespace FlatRedBall.Glue.Managers
 {

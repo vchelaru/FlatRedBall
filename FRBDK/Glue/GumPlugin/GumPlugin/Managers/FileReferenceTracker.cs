@@ -17,6 +17,7 @@ using System.IO;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.IO;
 using RenderingLibrary.Graphics;
+using GeneralResponse = ToolsUtilities.GeneralResponse;
 
 namespace GumPlugin.Managers
 {

@@ -74,26 +74,25 @@ namespace Npc
         public static async Task<bool> MakeNewProject(NewProjectViewModel viewModel)
         {
             string stringToReplace;
-            string zipToUnpack;
-            GetDefaultZipLocationAndStringToReplace(viewModel.SelectedProject, out zipToUnpack, out stringToReplace);
+            GetDefaultZipLocationAndStringToReplace(viewModel.SelectedProject, out stringToReplace);
             string fileToDownload = GetFileToDownload(viewModel);
 
-            bool succeeded = true;
-
+            GeneralResponse generalResponse = GeneralResponse.SuccessfulResponse;
+            
             if (CommandLineManager.Self.OpenedBy != null && CommandLineManager.Self.OpenedBy.ToLower() == "glue")
             {
                 var ppi = viewModel.SelectedProject;
 
                 if (!ppi.SupportedInGlue)
                 {
-                    succeeded = false;
+                    generalResponse.Succeeded = false;
                     ShowMessageBox("This project type is not supported in Glue.  You must launch the New Project Creator manually");
                 }
             }
 
             string unpackDirectory = viewModel.FinalDirectory;
 
-            if (succeeded)
+            if (generalResponse.Succeeded)
             {
 
                 bool isFileNameValid = GetIfFileNameIsValid(viewModel, unpackDirectory);
@@ -101,30 +100,30 @@ namespace Npc
 
                 if (!isFileNameValid)
                 {
-                    succeeded = false;
+                    generalResponse.Succeeded = false;
+                    generalResponse.Message = "Invalid file name";
                 }
             }
 
-            if (succeeded)
+            if (generalResponse.Succeeded)
             {
-                bool hasUserCancelled = false;
 
                 bool shouldTryDownloading;
-                zipToUnpack = GetZipToUnpack(viewModel, fileToDownload, out shouldTryDownloading);
+                var zipToUnpack = GetZipToUnpack(viewModel, fileToDownload, out shouldTryDownloading);
 
                 if (shouldTryDownloading)
                 {
                     // Checks for a newer version and downloads it if necessary
-                    bool downloadSucceeded = DownloadFileSync(viewModel, zipToUnpack, fileToDownload);
+                    generalResponse = DownloadFileSync(viewModel, zipToUnpack, fileToDownload);
 
-                    if (!downloadSucceeded)
+                    if (!generalResponse.Succeeded)
                     {
-                        ShowMessageBox("Error downloading the file");
+                        ShowMessageBox("Error downloading the file:\n" + generalResponse.Message);
                     }
                 }
 
 
-                if (!hasUserCancelled)
+                if (generalResponse.Succeeded)
                 {
                     try
                     {
@@ -133,10 +132,10 @@ namespace Npc
                     catch (UnauthorizedAccessException)
                     {
                         ShowMessageBox("The program does not have permission to create a directory at\n\n" + unpackDirectory + "\n\nPlease run as administrator mode");
-                        succeeded = false;
+                        generalResponse.Succeeded = false;
                     }
 
-                    if (succeeded)
+                    if (generalResponse.Succeeded)
                     {
                         if (!File.Exists(zipToUnpack))
                         {
@@ -144,10 +143,10 @@ namespace Npc
                         }
 
 
-                        succeeded = await UnzipManager.UnzipFile(zipToUnpack, unpackDirectory);
+                        generalResponse.Succeeded = await UnzipManager.UnzipFile(zipToUnpack, unpackDirectory);
                     }
 
-                    if (succeeded)
+                    if (generalResponse.Succeeded)
                     {
                         RenameEverything(viewModel, stringToReplace, unpackDirectory);
 
@@ -167,7 +166,7 @@ namespace Npc
                 }
             }
 
-            return succeeded;
+            return generalResponse.Succeeded;
         }
 
         
@@ -197,7 +196,7 @@ namespace Npc
         {
             bool checkOnline = viewModel.UseLocalCopy == false ;
             string zipToUnpack = null;
-            shouldTryDownloading = false;
+
             if (!string.IsNullOrEmpty(fileToDownload))
             {
                 zipToUnpack = FileManager.UserApplicationDataForThisApplication + FileManager.RemovePath(fileToDownload);
@@ -293,51 +292,54 @@ namespace Npc
             return isFileNameValid;
         }
 
-        private static bool DownloadFileSync(NewProjectViewModel viewModel, string zipToUnpack, string fileToDownoad)
+        private static GeneralResponse DownloadFileSync(NewProjectViewModel viewModel, string zipToUnpack, string fileToDownoad)
         {
-            EmbeddedExecutableExtractor eee = EmbeddedExecutableExtractor.Self;
-
-            eee.ExtractFile("FlatRedBall.Tools.dll");
-            eee.ExtractFile("Ionic.Zip.dll");
-            eee.ExtractFile("Ionic.Zlib.dll");
-            string resultingLocation = eee.ExtractFile("FRBDKUpdater.exe");
-
-
             var urs = new UpdaterRuntimeSettings();
             urs.FileToDownload = fileToDownoad;
             urs.FormTitle = "Downloading " + viewModel.SelectedProject.FriendlyName;
 
-            if (string.IsNullOrEmpty(zipToUnpack))
-            {
-                throw new Exception("The zipToUnpack argument is null - it shouldn't be");
-            }
+            //if (string.IsNullOrEmpty(zipToUnpack))
+            //{
+            //    throw new Exception("The zipToUnpack argument is null - it shouldn't be");
+            //}
 
             urs.LocationToSaveFile = zipToUnpack;
 
             string whereToSaveSettings =
                 FileManager.UserApplicationDataForThisApplication + "DownloadInformation." + UpdaterRuntimeSettings.RuntimeSettingsExtension;
 
-            urs.Save(whereToSaveSettings);
 
-            ProcessStartInfo psi = new ProcessStartInfo();
-            psi.FileName = resultingLocation;
+            //ProcessStartInfo psi = new ProcessStartInfo();
+            //psi.FileName = resultingLocation;
 
-            // The username for the user may have a space in it
-            // so we need to have quotes around the path
+            //// The username for the user may have a space in it
+            //// so we need to have quotes around the path
 
-            psi.Arguments = "\"" + whereToSaveSettings + "\"";
+            //psi.Arguments = "\"" + whereToSaveSettings + "\"";
 
 
-            Process process = Process.Start(psi);
+            //Process process = Process.Start(psi);
 
-            while (!process.HasExited)
+            //while (!process.HasExited)
+            //{
+            //    System.Threading.Thread.Sleep(200);
+            //}
+            //bool succeeded = process.ExitCode == 0;
+
+
+            //return succeeded;
+
+            var window = new UpdaterWpf.Views.MainWindow(whereToSaveSettings, urs);
+            var result = window.ShowDialog();
+
+            if(result == null)
             {
-                System.Threading.Thread.Sleep(200);
+                return GeneralResponse.UnsuccessfulWith("Download Cancelled");
             }
-            bool succeeded = process.ExitCode == 0;
-
-
-            return succeeded;
+            else
+            {
+                return window.GeneralResponse ?? GeneralResponse.UnsuccessfulWith("Download Cancelled");
+            }
         }
 
         private static string GetFileToDownload(NewProjectViewModel viewModel)
@@ -639,9 +641,9 @@ namespace Npc
         /// </summary>
         /// <param name="zipToUnpack"></param>
         /// <param name="stringToReplace"></param>
-        public static void GetDefaultZipLocationAndStringToReplace(PlatformProjectInfo project, out string zipToUnpack, out string stringToReplace)
+        public static void GetDefaultZipLocationAndStringToReplace(PlatformProjectInfo project, out string stringToReplace)
         {
-              GetDefaultZipLocationAndStringToReplace(project,FileManager.UserApplicationDataForThisApplication, out zipToUnpack, out stringToReplace);
+              GetDefaultZipLocationAndStringToReplace(project,FileManager.UserApplicationDataForThisApplication, out string _, out stringToReplace);
         }
         public static void GetDefaultZipLocationAndStringToReplace(PlatformProjectInfo project, string templateLocation, out string zipToUnpack, out string stringToReplace)
         {

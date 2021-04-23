@@ -24,6 +24,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using static GumPlugin.DataGeneration.BehaviorGenerator;
+using GeneralResponse = ToolsUtilities.GeneralResponse;
 
 namespace GumPlugin.Controls
 {

@@ -17,6 +17,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GeneralResponse = ToolsUtilities.GeneralResponse;
 
 namespace OfficialPlugins.ErrorPlugin
 {

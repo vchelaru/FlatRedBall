@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.SaveClasses;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -205,6 +206,15 @@ namespace OfficialPluginsCore.Wizard.Models
             get => Get<bool>();
             set => Set(value);
         }
+
+        #endregion
+
+        #region Additional Entities
+
+        public List<EntitySave> Entities
+        {
+            get; set;
+        } = new List<EntitySave>();
 
         #endregion
 

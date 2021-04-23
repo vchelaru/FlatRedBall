@@ -12,6 +12,7 @@ using System.Text;
 //using TmxEditor;
 using TMXGlueLib;
 using TMXGlueLib.DataTypes;
+using GeneralResponse = ToolsUtilities.GeneralResponse;
 
 namespace TileGraphicsPlugin.Managers
 {
