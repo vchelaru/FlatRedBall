@@ -92,7 +92,7 @@ namespace FRBDKUpdater
 
             var networkManager = ToolsUtilitiesStandard.Network.NetworkManager.Self;
 
-            using var _httpClient = new HttpClient { Timeout = TimeSpan.FromDays(1), };
+            using var httpClient = new HttpClient { Timeout = TimeSpan.FromDays(1), };
 
             string saveFile;
             GetSaveInformation(out saveFile);
@@ -102,7 +102,7 @@ namespace FRBDKUpdater
                 ReportProgress?.Invoke(totalSize, downloadedSoFar);
             }
 
-            var downloadResponse = await networkManager.DownloadWithProgress(_httpClient, mSettings.Url, 
+            var downloadResponse = await networkManager.DownloadWithProgress(httpClient, mSettings.Url, 
                 saveFile, UpdateProgress, token);
 
             //DownloadComplete(null, new DownloaderCompleteEventArgs(!mHasErrorOccured));

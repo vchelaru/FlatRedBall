@@ -244,9 +244,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (GlueProject != null)
             {
-                foreach (ScreenSave screenSave in GlueProject.Screens)
+                foreach (ScreenSave screenSave in GlueProject.Screens.ToArray())
                 {
-                    foreach (ReferencedFileSave rfs in screenSave.ReferencedFiles)
+                    foreach (ReferencedFileSave rfs in screenSave.ReferencedFiles.ToArray())
                     {
                         string absoluteRfsFile = FileManager.Standardize(GlueCommands.GetAbsoluteFileName(rfs)).ToLower();
 
@@ -257,23 +257,20 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                 }
 
-                lock (GlueProject.Entities)
+                foreach (EntitySave entitySave in GlueProject.Entities.ToArray())
                 {
-                    foreach (EntitySave entitySave in GlueProject.Entities)
+                    foreach (ReferencedFileSave rfs in entitySave.ReferencedFiles.ToArray())
                     {
-                        foreach (ReferencedFileSave rfs in entitySave.ReferencedFiles)
-                        {
-                            string absoluteRfsFile = FileManager.Standardize(GlueCommands.GetAbsoluteFileName(rfs)).ToLower();
+                        string absoluteRfsFile = FileManager.Standardize(GlueCommands.GetAbsoluteFileName(rfs)).ToLower();
 
-                            if (absoluteRfsFile == fileName)
-                            {
-                                return rfs;
-                            }
+                        if (absoluteRfsFile == fileName)
+                        {
+                            return rfs;
                         }
                     }
                 }
 
-                foreach (ReferencedFileSave rfs in GlueProject.GlobalFiles)
+                foreach (ReferencedFileSave rfs in GlueProject.GlobalFiles.ToArray())
                 {
                     string absoluteRfsFile = FileManager.Standardize(GlueCommands.GetAbsoluteFileName(rfs)).ToLower();
 

@@ -77,6 +77,14 @@ namespace OfficialPluginsCore.Wizard.Models
         public event Action NextClicked;
         public event Action BackClicked;
 
+        Button nextButton;
+
+        public bool IsNextButtonEnabled
+        {
+            get => nextButton?.IsEnabled == true;
+            set => nextButton.IsEnabled = value;
+        }
+
         List<DataItem> DataItems = new List<DataItem>();
 
         public object ViewModel { get; set; }
@@ -205,7 +213,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
             if(HasNextButton)
             {
-                var nextButton = new Button();
+                nextButton = new Button();
                 nextButton.Content = isNextButtonDone ? "Done" : "Next >";
                 nextButton.VerticalAlignment = VerticalAlignment.Bottom;
                 nextButton.Width = 150;
@@ -340,6 +348,13 @@ namespace OfficialPluginsCore.Wizard.Models
                     break;
                 case ViewType.View:
                     var userControl = dataItem.Value as UserControl;
+                    var oldStackPanel = userControl.Parent as StackPanel;
+
+                    if(oldStackPanel != null)
+                    {
+                        oldStackPanel.Children.Remove(userControl);
+                    }
+
                     if(dataItem.StackOrFill == StackOrFill.Stack)
                     {
                         stackPanel.Children.Add(userControl);

@@ -113,7 +113,7 @@ namespace FlatRedBall.Glue.IO
 
         }
 
-        public static void ImportElementFromFile(string fileName, bool moveToSelectedTreeNode, string subDirectory = null)
+        public static void ImportElementFromFile(string fileName, bool moveToSelectedFolderTreeNode, string subDirectory = null)
         {
             string unpackDirectory;
 
@@ -148,11 +148,11 @@ namespace FlatRedBall.Glue.IO
             
             if (extension == "entx")
             {
-                ImportEntity(unpackDirectory, filesToAddToContent, codeFilesInZip, elementName, extension, moveToSelectedTreeNode, ref desiredNamespace, ref newElement);
+                ImportEntity(unpackDirectory, filesToAddToContent, codeFilesInZip, elementName, extension, moveToSelectedFolderTreeNode, ref desiredNamespace, ref newElement);
             }
             else
             {
-                ImportScreen(unpackDirectory, filesToAddToContent, codeFilesInZip, elementName, extension, moveToSelectedTreeNode, ref desiredNamespace, ref newElement);
+                ImportScreen(unpackDirectory, filesToAddToContent, codeFilesInZip, elementName, extension, moveToSelectedFolderTreeNode, ref desiredNamespace, ref newElement);
             }
 
             ResolveElementReferences(newElement);

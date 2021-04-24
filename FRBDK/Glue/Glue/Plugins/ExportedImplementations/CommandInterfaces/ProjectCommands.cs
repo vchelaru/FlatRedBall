@@ -504,7 +504,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             if (GlueState.Self.CurrentMainProject is VisualStudioProject)
             {
                 // This is the location when running from Visual Studio
-                var foundProperty = (GlueState.Self.CurrentMainProject as VisualStudioProject).Project.Properties.FirstOrDefault(item => item.Name == "OutputPath");
+                var foundProperty = (GlueState.Self.CurrentMainProject as VisualStudioProject).Project.Properties
+                    .ToArray()
+                    .FirstOrDefault(item => item.Name == "OutputPath");
 
                 if (foundProperty != null)
                 {

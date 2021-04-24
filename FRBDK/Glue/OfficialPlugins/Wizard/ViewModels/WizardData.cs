@@ -219,10 +219,10 @@ namespace OfficialPluginsCore.Wizard.Models
 
         #region Additional Entities
 
-        public List<EntitySave> Entities
+        public List<string> ElementImportUrls
         {
             get; set;
-        } = new List<EntitySave>();
+        } = new List<string>();
 
         #endregion
 

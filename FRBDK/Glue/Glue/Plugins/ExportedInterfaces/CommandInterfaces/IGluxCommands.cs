@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.SaveClasses;
 using System.Collections.Generic;
 using GlueFormsCore.ViewModels;
+using FlatRedBall.IO;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
@@ -77,17 +78,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void RemoveEntity(EntitySave entityToRemove, List<string> filesThatCouldBeRemoved = null);
 
         #endregion
-        // was:
 
         ValidationResponse AddNewCustomClass(string className, out CustomClassSave customClassSave);
 
         void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove);
         void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateCode);
 
-        void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSave = true, bool updateUi = true,
-            List<string> additionalFilesToRemove = null);
+
+        #region Screens
 
         void RemoveScreen(ScreenSave screenToRemove, List<string> filesThatCouldBeRemoved = null);
+
+        #endregion
 
         #region Named Objects
 
@@ -95,6 +97,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void SetVariableOn(NamedObjectSave nos, string memberName, Type memberType, object value);
 
         void SetVariableOn(NamedObjectSave nos, string memberName, object value);
+
+        void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSave = true, bool updateUi = true,
+            List<string> additionalFilesToRemove = null);
+        #endregion
+
+        #region Import
+
+        void ImportScreenOrEntityFromFile(FilePath filePath);
 
         #endregion
     }

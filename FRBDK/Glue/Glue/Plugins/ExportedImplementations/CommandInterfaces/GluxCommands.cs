@@ -1503,6 +1503,16 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #endregion
 
+        #region Import
+
+        public void ImportScreenOrEntityFromFile(FilePath filePath)
+        {
+            ElementImporter.ImportElementFromFile(filePath.FullPath, moveToSelectedFolderTreeNode: false);
+        }
+
+
+        #endregion
+
         #region Code Files
 
         private static bool GetIfFileIsFactory(EntitySave entitySave, string file)

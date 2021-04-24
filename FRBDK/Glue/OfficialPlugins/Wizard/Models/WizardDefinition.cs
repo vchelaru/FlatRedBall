@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Instructions;
 using Newtonsoft.Json;
+using OfficialPlugins.Compiler.CommandSending;
 using OfficialPluginsCore.Wizard.ViewModels;
 using OfficialPluginsCore.Wizard.Views;
 using System;
@@ -20,9 +21,15 @@ namespace OfficialPluginsCore.Wizard.Models
 
         public event Action GoToLast;
 
+        Grid grid;
+
         #endregion
 
+        #region Events
+
         public event Action DoneClicked;
+
+        #endregion
 
         public void CreatePages()
         {
@@ -163,6 +170,56 @@ namespace OfficialPluginsCore.Wizard.Models
             }
             #endregion
 
+            #region Additional Imports
+
+            {
+                // todo - apply from main view model
+                var formsData = new FormsData(ViewModel);
+
+                formsData.AddTitle("Download/Import Screens and Entities");
+
+                formsData.AddText("Additional Screens and Entities can be imported in your project.");
+
+                formsData.AddText("Enter the URLs for the screens and entities to import:");
+
+                var view = new ElementImportView();
+
+                var viewModel = new ElementImportViewModel();
+
+                // start with an empty one:
+                viewModel.Items.Add(new ElementImportItemViewModel());
+
+                //var welcomePageViewModel = new WizardWelcomeViewModel();
+                view.DataContext = viewModel;
+
+                var item = formsData.AddView(view);
+                item.StackOrFill = StackOrFill.Stack;
+
+                viewModel.PropertyChanged += (sender, args) =>
+                {
+                    if(args.PropertyName == nameof(viewModel.IsValid))
+                    {
+                        formsData.IsNextButtonEnabled = viewModel.IsValid;
+                    }
+                };
+
+                formsData.NextClicked += () =>
+                {
+                    ViewModel.ElementImportUrls.Clear();
+                    var toAdd = viewModel.Items
+                        .Where(item => !string.IsNullOrEmpty(item.Url))
+                        .Select(item => item.Url)
+                        .ToArray();
+                    ViewModel.ElementImportUrls.AddRange(toAdd);
+                };
+
+                FormsDataList.Add(formsData);
+            }
+
+
+            #endregion
+
+            #region All Done!
             {
                 var formsData = new FormsData(ViewModel);
                 formsData.AddText("All Done!");
@@ -170,6 +227,8 @@ namespace OfficialPluginsCore.Wizard.Models
                 formsData.AddAction("Copy Wizard Configuration to Clipboard", HandleCopyWizardSettings);
                 FormsDataList.Add(formsData);
             }
+
+            #endregion
 
         }
 
@@ -180,7 +239,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
             // toast?
         }
-        Grid grid;
+
         public void Start(Grid grid)
         {
             this.grid = grid;
@@ -189,6 +248,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
             //formsData.Fill(StackP)
         }
+
         void Show(FormsData formsData)
         {
             var index = FormsDataList.IndexOf(formsData);
