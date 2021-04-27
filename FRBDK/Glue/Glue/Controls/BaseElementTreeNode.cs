@@ -62,14 +62,14 @@ namespace FlatRedBall.Glue.Controls
 
         protected ReferencedFileListTreeNode mFilesTreeNode;
 
-        protected IElement mSaveObject;
+        protected GlueElement mSaveObject;
 
 
         #endregion
 
-        public IElement SaveObject
+        public GlueElement SaveObject
         {
-            get { return mSaveObject; }
+            get => mSaveObject; 
             set
             {
 

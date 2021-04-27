@@ -46,7 +46,7 @@ namespace OfficialPlugins.FilesPlugin.ViewModels
             ReferencedFiles.Clear();
             if (ReferencedFileSave != null)
             {
-               TaskManager.Self.AddAsyncTask(() =>
+               TaskManager.Self.Add(() =>
                {
                    var contentDirectory = GlueState.Self.ContentDirectory;
 
@@ -66,15 +66,15 @@ namespace OfficialPlugins.FilesPlugin.ViewModels
                        })
                         .Distinct()
 
-                       .OrderBy(item => item);
+                       .OrderBy(item => item.FullPath);
 
                    MainGlueWindow.Self.Invoke(() =>
-                  {
-                      foreach (var file in files)
-                      {
+                   {
+                       foreach (var file in files)
+                       {
                           ReferencedFiles.Add(file.FullPath);
-                      }
-                  });
+                       }
+                   });
                },
                "Refreshing unreferenced files");
             }

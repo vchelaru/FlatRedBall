@@ -362,7 +362,7 @@ namespace FlatRedBall.Glue.IO
                         int indexInOld = 0;
                         int indexInNew = 0;
                         IElement element = GetElementFromObjectString(comparison.PropertyName, ProjectManager.GlueProjectSave, out indexInOld);
-                        IElement replacement = GetElementFromObjectString(comparison.PropertyName, newGlueProjectSave, out indexInNew);
+                        GlueElement replacement = GetElementFromObjectString(comparison.PropertyName, newGlueProjectSave, out indexInNew);
 
                         if (element != null && replacement != null && indexInNew == indexInOld)
 						{
@@ -406,7 +406,6 @@ namespace FlatRedBall.Glue.IO
             {
                 await ProjectLoader.Self.LoadProject(ProjectManager.ProjectBase.FullFileName);
             }
-            PluginManager.RefreshGlux();
             
 
             // Now that everything is done we want to re-select the same object (if we can)
@@ -437,7 +436,7 @@ namespace FlatRedBall.Glue.IO
             }
         }
 
-        private static IElement GetElementFromObjectString(string element, GlueProjectSave glueProjectSave, out int index)
+        private static GlueElement GetElementFromObjectString(string element, GlueProjectSave glueProjectSave, out int index)
         {
             Regex regex = new Regex(@"(Screens)\[[0-9]+\]");
 

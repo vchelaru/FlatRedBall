@@ -496,25 +496,29 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void CopyToBuildFolder(string absoluteSource)
         {
-            // This is the location when running from Glue
-            // Maybe eventually I'll fix glue build to build to the same location as the project...
-            string debugPath = "bin/x86/debug/";
-            CopyToBuildFolder(absoluteSource, debugPath);
-
-            if (GlueState.Self.CurrentMainProject is VisualStudioProject)
+            TaskManager.Self.AddOrRunIfTasked(() =>
             {
-                // This is the location when running from Visual Studio
-                var foundProperty = (GlueState.Self.CurrentMainProject as VisualStudioProject).Project.Properties
-                    .ToArray()
-                    .FirstOrDefault(item => item.Name == "OutputPath");
+                // This is the location when running from Glue
+                // Maybe eventually I'll fix glue build to build to the same location as the project...
+                string debugPath = "bin/x86/debug/";
+                CopyToBuildFolder(absoluteSource, debugPath);
 
-                if (foundProperty != null)
+                if (GlueState.Self.CurrentMainProject is VisualStudioProject)
                 {
-                    debugPath = foundProperty.EvaluatedValue.Replace('\\', '/');
-                    CopyToBuildFolder(absoluteSource, debugPath);
+                    // This is the location when running from Visual Studio
+                    var foundProperty = (GlueState.Self.CurrentMainProject as VisualStudioProject).Project.Properties
+                        .ToArray()
+                        .FirstOrDefault(item => item.Name == "OutputPath");
+
+                    if (foundProperty != null)
+                    {
+                        debugPath = foundProperty.EvaluatedValue.Replace('\\', '/');
+                        CopyToBuildFolder(absoluteSource, debugPath);
+                    }
+
                 }
 
-            }
+            }, $"{nameof(CopyToBuildFolder)} {absoluteSource}");
         }
 
         private static void CopyToBuildFolder(string absoluteSource, string debugPath)

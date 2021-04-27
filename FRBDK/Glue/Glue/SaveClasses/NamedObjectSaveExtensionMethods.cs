@@ -225,8 +225,8 @@ namespace FlatRedBall.Glue.SaveClasses
             // that aren't part of its type - they may exist because
             // the user has switched from an old type and Glue is holding
             // on to those old values in case the user wants to switch back.
-            // Therefore, we shouldn't fill the instruction saves this way, intstead
-            // let's just have the instruction saves bee Added.
+            // Therefore, we shouldn't fill the instruction saves this way, instead
+            // let's just have the instruction saves be Added.
             newNamedObjectSave.InstructionSaves = new List<CustomVariableInNamedObject>();
 
             newNamedObjectSave.ContainedObjects = new List<NamedObjectSave>(instance.ContainedObjects.Count);

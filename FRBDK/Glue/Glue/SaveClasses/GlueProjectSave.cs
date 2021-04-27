@@ -344,7 +344,7 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        public IElement GetElementContaining(CustomVariable customVariable)
+        public GlueElement GetElementContaining(CustomVariable customVariable)
         {
             foreach (EntitySave entitySave in Entities)
             {

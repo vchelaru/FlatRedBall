@@ -3,9 +3,11 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.Glue.ViewModels;
 using GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin;
 using GlueFormsCore.ViewModels;
+using Newtonsoft.Json;
 using OfficialPluginsCore.Wizard.Models;
 using OfficialPluginsCore.Wizard.ViewModels;
 using System;
@@ -95,6 +97,15 @@ namespace OfficialPluginsCore.Wizard.Managers
                 });
             }
 
+            if(!string.IsNullOrEmpty(vm.NamedObjectSavesSerialized))
+            {
+                Add("Adding additional Objects", async () =>
+                {
+                    ImportAdditionalObjects(vm.NamedObjectSavesSerialized);
+                    await TaskManager.Self.WaitForAllTasksFinished();
+                });
+            }
+
 
             Add("Flushing Files", async () =>
             {
@@ -155,6 +166,109 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             TaskManager.Self.TaskAddedOrRemoved -= UpdateCurrentTask;
 
+            // just in case, refresh everything
+            GlueCommands.Self.RefreshCommands.RefreshTreeNodes();
+
+        }
+
+        class ElementAndNosList
+        {
+            public GlueElement Element { get; set; }
+            public List<NamedObjectSave> NosList { get; set; }
+        }
+
+        private void ImportAdditionalObjects(string namedObjectSavesSerialized)
+        {
+            Dictionary<string, List<NamedObjectSave>> deserialized = null;
+
+            Exception deserializeException = null;
+
+            try
+            {
+                deserialized = JsonConvert.DeserializeObject<Dictionary<string, List<NamedObjectSave>>>(namedObjectSavesSerialized);
+            }
+            catch(Exception e)
+            {
+                // we currently don't have error handling, we need it
+                deserializeException = e;
+            }
+
+            List<ElementAndNosList> imports = new List<ElementAndNosList>();
+
+            foreach(var kvp in deserialized)
+            {
+                var elementName = kvp.Key;
+                if(elementName.StartsWith("Screens\\"))
+                {
+                    var screen = ObjectFinder.Self.GetScreenSave(elementName);
+
+                    imports.Add(new ElementAndNosList
+                    {
+                        Element = screen,
+                        NosList = kvp.Value
+                    });
+
+                }
+                else if(elementName.StartsWith("Entities\\"))
+                {
+                    var entity = ObjectFinder.Self.GetEntitySave(elementName);
+
+                    imports.Add(new ElementAndNosList
+                    {
+                        Element = entity,
+                        NosList = kvp.Value
+                    });
+
+                }
+
+                // we want base implementations first, then derived
+                var sortedImports = imports.OrderBy(item => ObjectFinder.Self.GetHierarchyDepth(item.Element))
+                    .ToArray();
+
+                foreach (var elementAndNosList in sortedImports)
+                {
+                    AddNamedsObjectToElement(elementAndNosList.NosList, elementAndNosList.Element);
+                }
+            }
+
+            static void AddNamedsObjectToElement(List<NamedObjectSave> nosList, GlueElement glueElement)
+            {
+                if (glueElement != null)
+                {
+                    // lists come first, then everything else after
+                    var sortedNoses = nosList.OrderBy(item => !item.IsList)
+                        .ToArray();
+
+                    foreach (var nos in sortedNoses)
+                    {
+                        GlueCommands.Self.GluxCommands.AddNamedObjectTo(nos, glueElement);
+
+                        if(nos.ExposedInDerived)
+                        {
+                            EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
+                                nameof(nos.ExposedInDerived), 
+                                // pretend the value changed from false -> true
+                                false,
+                                namedObjectSave:nos);
+                        }
+
+                        // remove all children, and then re-add them through the GlueCommands so that all plugins are notified:
+                        if(nos.ContainedObjects.Count > 0)
+                        {
+                            var children = nos.ContainedObjects.ToArray();
+
+                            nos.ContainedObjects.Clear();
+
+                            foreach (var subNos in nos.ContainedObjects)
+                            {
+                                GlueCommands.Self.GluxCommands.AddNamedObjectTo(subNos, glueElement, nos);
+
+                            }
+
+                        }
+                    }
+                }
+            }
         }
 
         private static void ImportElements(WizardData vm)

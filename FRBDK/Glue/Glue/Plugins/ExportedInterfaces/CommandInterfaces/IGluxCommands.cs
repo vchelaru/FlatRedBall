@@ -30,7 +30,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <summary>
         /// Saves the glue project immediately if in a task, and adds a task if not
         /// </summary>
-        void SaveGlux(bool sendPluginRefreshCommand = true);
+        void SaveGlux();
 
         void SaveSettings();
 
@@ -63,9 +63,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #endregion
         
-        // SourceType sourceType, string sourceClassType, string sourceFile, string objectName, string sourceNameInFile, string sourceClassGenericType
-        NamedObjectSave AddNewNamedObjectToSelectedElement(ViewModels.AddObjectViewModel addObjectViewModel);
-        NamedObjectSave AddNewNamedObjectTo(ViewModels.AddObjectViewModel addObjectViewModel, IElement element, NamedObjectSave listToAddTo = null);
+
 
         bool SetPluginRequirement(Interfaces.IPlugin plugin, bool requiredByProject);
         bool SetPluginRequirement(string name, bool requiredByProject, Version version);
@@ -92,6 +90,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         #endregion
 
         #region Named Objects
+
+        // SourceType sourceType, string sourceClassType, string sourceFile, string objectName, string sourceNameInFile, string sourceClassGenericType
+        NamedObjectSave AddNewNamedObjectToSelectedElement(ViewModels.AddObjectViewModel addObjectViewModel);
+        NamedObjectSave AddNewNamedObjectTo(ViewModels.AddObjectViewModel addObjectViewModel, IElement element, NamedObjectSave listToAddTo = null);
+
+        void AddNamedObjectTo(NamedObjectSave newNos, IElement element, NamedObjectSave listToAddTo = null);
 
         [Obsolete("I don't think we need the typed version anymore. Use the untyped version")]
         void SetVariableOn(NamedObjectSave nos, string memberName, Type memberType, object value);

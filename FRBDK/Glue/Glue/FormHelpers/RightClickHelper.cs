@@ -1108,7 +1108,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #region Get the container
 
-            IElement container = null;
+            GlueElement container = null;
 
             if (parentTreeNode.IsRootNamedObjectNode() && parentTreeNode.Parent.IsEntityNode())
             {
@@ -1165,7 +1165,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if(newNamedObject.SetByDerived)
             {
-                Container.Get<NamedObjectSetVariableLogic>().ReactToChangedSetByDerived(newNamedObject);
+                Container.Get<NamedObjectSetVariableLogic>().ReactToChangedSetByDerived(newNamedObject, container);
             }
 
 

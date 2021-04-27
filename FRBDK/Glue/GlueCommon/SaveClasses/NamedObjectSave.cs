@@ -14,6 +14,7 @@ using FlatRedBall.Utilities;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using FlatRedBall.Glue.Interfaces;
+using Newtonsoft.Json;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -65,6 +66,7 @@ namespace FlatRedBall.Glue.SaveClasses
     {
         #region Fields
         [XmlIgnore]
+        [JsonIgnore]
         public static NamedObjectToString ToStringDelegate;
 
         public List<PropertySave> Properties
@@ -118,6 +120,7 @@ namespace FlatRedBall.Glue.SaveClasses
         /// you really know what you're doing.
         /// </summary>
         [XmlIgnore]
+        [JsonIgnore]
         [Browsable(false)]
         public List<TypedMemberBase> TypedMembers
         {
@@ -181,6 +184,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         [Browsable(false)]
         public string SourceNameWithoutParenthesis
         {
@@ -239,6 +243,7 @@ namespace FlatRedBall.Glue.SaveClasses
         /// file, entity, or FRB type.
         /// </summary>
         [XmlIgnore]
+        [JsonIgnore]
         [CategoryAttribute("\t\tInstance")]
         public string InstanceType
         {
@@ -291,6 +296,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         [Browsable(false)]
         string INameable.Name
         {
@@ -448,6 +454,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         [Browsable(false)]
         public string FieldName
         {
@@ -467,6 +474,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         [Browsable(false)]
         public bool IsGenericType
         {
@@ -477,6 +485,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         [Browsable(false)]
         public string ClassType
         {
@@ -534,6 +543,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         public bool IsNodeHidden
         {
             get
@@ -547,6 +557,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         [Browsable(false)]
         public bool IsEntireFile
         {
@@ -592,6 +603,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         [CategoryAttribute("Activity"), DefaultValue(false)]
         [XmlIgnore]
+        [JsonIgnore]
         public bool IsManuallyUpdated
         {
             get => Properties.GetValue<bool>(nameof(IsManuallyUpdated));
@@ -646,6 +658,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         [Browsable(false)]
         [XmlIgnore]
+        [JsonIgnore]
         public bool IsList
         {
             get
@@ -657,6 +670,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         [Browsable(false)]
         [XmlIgnore]
+        [JsonIgnore]
         public bool IsFullyDefined
         {
             get
@@ -718,6 +732,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         [CategoryAttribute("Creation"), DefaultValue(true)]
         [XmlIgnore]
+        [JsonIgnore]
         public bool AssociateWithFactory
         {
             get => Properties.GetValue<bool>(nameof(AssociateWithFactory));
@@ -757,6 +772,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         [Browsable(false)]
         [XmlIgnore]
+        [JsonIgnore]
         public bool IsLayer
         {
             get
@@ -803,6 +819,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
 
         [XmlIgnore]
+        [JsonIgnore]
         public GlueSaveClasses.FloatRectangle? DestinationRectangle
         {
             get
@@ -831,6 +848,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
 
         [XmlIgnore]
+        [JsonIgnore]
         [CategoryAttribute("Creation")]
         public bool IsContainer
         {

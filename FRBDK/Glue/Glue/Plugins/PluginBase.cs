@@ -41,6 +41,7 @@ namespace FlatRedBall.Glue.Plugins
 
     #endregion
 
+    #region PluginTab
     public class PluginTab
     {
         public string Title
@@ -119,6 +120,7 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
     }
+    #endregion
 
     public abstract class PluginBase : IPlugin
     {
@@ -320,6 +322,8 @@ namespace FlatRedBall.Glue.Plugins
         public Func<TreeNode, bool> TryHandleTreeNodeDoubleClicked { get; protected set; }
 
         public Action<ReferencedFileSave> ReactToFileBuildCommand { get; protected set; }
+
+        public Action<GlueElement> ReactToImportedElement { get; protected set; }
 
         #endregion
 

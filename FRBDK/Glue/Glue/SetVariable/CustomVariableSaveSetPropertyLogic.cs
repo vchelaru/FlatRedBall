@@ -17,6 +17,8 @@ namespace FlatRedBall.Glue.SetVariable
     {
         public void ReactToCustomVariableChangedValue(string changedMember, CustomVariable customVariable, object oldValue)
         {
+            var element = ObjectFinder.Self.GetElementContaining(customVariable);
+
             #region Name
 
             if (changedMember == nameof(CustomVariable.Name))
@@ -42,7 +44,7 @@ namespace FlatRedBall.Glue.SetVariable
                 }
                 else
                 {
-                    ProjectManager.UpdateAllDerivedElementFromBaseValues(true);
+                    ProjectManager.UpdateAllDerivedElementFromBaseValues(true, element);
                 }
             }
             #endregion

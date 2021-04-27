@@ -14,7 +14,7 @@ namespace FlatRedBall.Glue.GuiDisplay.Facades
             set;
         }
 
-        IElement GetIElement(string name);
+        GlueElement GetIElement(string name);
 
 
 

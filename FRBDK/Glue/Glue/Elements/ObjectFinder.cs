@@ -376,9 +376,9 @@ namespace FlatRedBall.Glue.Elements
             return null;
         }
 
-        public IElement GetIElement(string elementName)
+        public GlueElement GetIElement(string elementName)
         {
-            IElement retval;
+            GlueElement retval;
 
             retval = GetScreenSave(elementName);
 
@@ -500,7 +500,7 @@ namespace FlatRedBall.Glue.Elements
             return derivedElements;
         }
 
-        public IElement GetBaseElement(IElement derivedElement)
+        public GlueElement GetBaseElement(IElement derivedElement)
         {
             if (!string.IsNullOrEmpty(derivedElement?.BaseElement))
             {
@@ -662,7 +662,7 @@ namespace FlatRedBall.Glue.Elements
             return GlueProject.GetElementContaining(customVariable);
         }
 
-        public IElement GetElementContaining(NamedObjectSave namedObjectSave)
+        public GlueElement GetElementContaining(NamedObjectSave namedObjectSave)
         {
             for (int i = 0; i < ObjectFinder.Self.GlueProject.Screens.Count; i++)
             {
@@ -749,7 +749,7 @@ namespace FlatRedBall.Glue.Elements
             return GlueProject.GetElementContaining(stateSave);
         }
 
-        public IElement GetElementContaining(CustomVariable customVariable)
+        public GlueElement GetElementContaining(CustomVariable customVariable)
         {
             if (GlueProject != null)
             {
@@ -837,7 +837,19 @@ namespace FlatRedBall.Glue.Elements
             return toReturn;
         }
 
+        public int GetHierarchyDepth(GlueElement element)
+        {
+            var baseElement = GetBaseElement(element);
 
+            if(baseElement == null)
+            {
+                return 0;
+            }
+            else
+            {
+                return 1 + GetHierarchyDepth(baseElement);
+            }
+        }
     }
 
 

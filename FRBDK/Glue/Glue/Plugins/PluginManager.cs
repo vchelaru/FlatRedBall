@@ -50,9 +50,6 @@ namespace FlatRedBall.Glue.Plugins
         public IEnumerable<IMenuStripPlugin> MenuStripPlugins { get; set; } = new List<IMenuStripPlugin>();
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<IGluxLoad> GluxLoadPlugins { get; set; } = new List<IGluxLoad>();
-
-        [ImportMany(AllowRecomposition = true)]
         public IEnumerable<ICurrentElement> CurrentElementPlugins { get; set; } = new List<ICurrentElement>();
 
         [ImportMany(AllowRecomposition = true)]
@@ -168,7 +165,7 @@ namespace FlatRedBall.Glue.Plugins
             var allPlugins = new List<IEnumerable<IPlugin>>
             {
                 MenuStripPlugins,
-                GluxLoadPlugins, CodeGeneratorPlugins,
+                CodeGeneratorPlugins,
                 ContentFileChangePlugins, CurrentElementPlugins
             };
 
@@ -225,7 +222,6 @@ namespace FlatRedBall.Glue.Plugins
         {
             ImportedPlugins = new List<PluginBase>();
             MenuStripPlugins = new List<IMenuStripPlugin>();
-            GluxLoadPlugins = new List<IGluxLoad>();
             CurrentElementPlugins = new List<ICurrentElement>();
             CodeGeneratorPlugins = new List<ICodeGeneratorPlugin>();
             ContentFileChangePlugins = new List<IContentFileChange>();
@@ -1424,20 +1420,7 @@ namespace FlatRedBall.Glue.Plugins
 
             foreach (PluginManager pluginManager in mInstances)
             {
-                foreach (IGluxLoad plugin in pluginManager.GluxLoadPlugins)
-                {
-                    PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                    if (container.IsEnabled)
-                    {
-                        displayCurrentStatusMethod?.Invoke("Notifying " + container.Name + " of startup...");
-                        IGluxLoad plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToGluxLoad(glueProjectSave, fileName);
-                            },container, "Failed in ReactToGluxLoad");
-                    }
-                }
+                
 
                 // Execute the new style plugins
                 var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToLoadedGlux != null);
@@ -1569,43 +1552,10 @@ namespace FlatRedBall.Glue.Plugins
             (plugin) => plugin.ReactToChangedPropertyHandler != null);
         }
 
-        internal static void ReactToGluxSave()
-        {
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                foreach (IGluxLoad plugin in pluginManager.GluxLoadPlugins)
-                {
-                    PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                    if (container.IsEnabled)
-                    {
-                        IGluxLoad plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToGluxSave();
-                            },container, "Failed in ReactToGluxSave");
-                    }
-                }
-            }
-        }
-
         internal static void ReactToGluxUnload(bool isExiting)
         {
             foreach (PluginManager pluginManager in mInstances)
             {
-                foreach (IGluxLoad plugin in pluginManager.GluxLoadPlugins)
-                {
-                    PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                    if (container.IsEnabled)
-                    {
-                        IGluxLoad plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToGluxUnload(isExiting);
-                            },container, "Failed in ReactToGluxUnload");
-                    }
-                }
 
                 
                 // Execute the new style plugins
@@ -1620,26 +1570,6 @@ namespace FlatRedBall.Glue.Plugins
                         {
                             plugin1.ReactToUnloadedGlux();
                         }, container, "Failed in ReactToUnloadedGlux");
-                    }
-                }
-            }
-        }
-
-        internal static void RefreshGlux()
-        {
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                foreach (IGluxLoad plugin in pluginManager.GluxLoadPlugins)
-                {
-                    PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                    if (container.IsEnabled)
-                    {
-                        IGluxLoad plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.RefreshGlux();
-                            },container, "Failed in RefreshGlux");
                     }
                 }
             }
@@ -2031,6 +1961,13 @@ namespace FlatRedBall.Glue.Plugins
                 plugin.ReactToFileBuildCommand(rfs);
             }, nameof(ReactToFileBuildCommand),
             (plugin) => plugin.ReactToFileBuildCommand != null);
+        }
+
+        public static void ReactToImportedElement(GlueElement newElement)
+        {
+            CallMethodOnPlugin((plugin) => plugin.ReactToImportedElement(newElement),
+                nameof(ReactToImportedElement),
+                (plugin) => plugin.ReactToImportedElement != null);
         }
 
         #endregion

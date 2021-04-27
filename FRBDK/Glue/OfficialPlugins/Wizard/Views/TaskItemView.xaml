@@ -6,13 +6,13 @@
              xmlns:local="clr-namespace:OfficialPluginsCore.Wizard.Views"
              mc:Ignorable="d" 
              Width="360">
-    <Grid Margin="8">
+    <Grid Margin="8,0,8,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <Image Visibility="{Binding CheckVisibility}" Width="64" Source="/OfficialPluginsCore;component/Wizard/Icons/CheckIcon.png"></Image>
+        <Image Width="32" Visibility="{Binding CheckVisibility}"  Source="/OfficialPluginsCore;component/Wizard/Icons/CheckIcon.png"></Image>
         <local:ActivitySpinner Visibility="{Binding SpinnerVisibility}"></local:ActivitySpinner>
 
         <StackPanel Grid.Column="1" >

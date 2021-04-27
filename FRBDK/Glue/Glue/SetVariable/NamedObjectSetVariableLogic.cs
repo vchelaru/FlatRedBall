@@ -36,12 +36,20 @@ namespace FlatRedBall.Glue.SetVariable
         /// or updating inherited objects when changing SetByDerived.
         /// </summary>
         /// <param name="changedMember">The name of the variable that has changed.</param>
-        /// <param name="parent">The parent property containing this property, only relevant for embedded properties like X in a Rectangle. This will usually be null.</param>
         /// <param name="oldValue">The old value for the changed property.</param>
-        public void ReactToNamedObjectChangedValue(string changedMember, string parent, object oldValue)
+        /// <param name="parentPropertyName">The parent property containing this property, only relevant for embedded properties like X in a Rectangle. This will usually be null.</param>
+        public void ReactToNamedObjectChangedValue(string changedMember, object oldValue, string parentPropertyName = null, NamedObjectSave namedObjectSave = null)
         {
-            NamedObjectSave namedObjectSave = GlueState.Self.CurrentNamedObjectSave;
-            var element = GlueState.Self.CurrentElement;
+            GlueElement element = null;
+            if(namedObjectSave == null)
+            {
+                namedObjectSave = GlueState.Self.CurrentNamedObjectSave;
+                element = GlueState.Self.CurrentElement;
+            }
+            else
+            {
+                element = ObjectFinder.Self.GetElementContaining(namedObjectSave);
+            }
 
             if (PropertiesToMethods.ContainsKey(changedMember))
             {
@@ -130,7 +138,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             else if (changedMember ==nameof(NamedObjectSave.SetByDerived))
             {
-                ReactToChangedSetByDerived(namedObjectSave);
+                ReactToChangedSetByDerived(namedObjectSave, element);
             }
 
             #endregion
@@ -150,7 +158,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                 SetExposedByDerivedRecursively(namedObjectSave, oldValue);
 
-                ProjectManager.UpdateAllDerivedElementFromBaseValues(true);
+                ProjectManager.UpdateAllDerivedElementFromBaseValues(true, element);
             }
 
 
@@ -160,7 +168,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             else if (changedMember == nameof(NamedObjectSave.SourceClassGenericType))
             {
-                ReactToSourceClassGenericType(namedObjectSave, oldValue);
+                ReactToSourceClassGenericType(namedObjectSave, oldValue, element);
             }
 
             #endregion
@@ -318,7 +326,7 @@ namespace FlatRedBall.Glue.SetVariable
             #endregion
 
             #region DestinationRectangle.Y (for Layers)
-            else if (parent == nameof(NamedObjectSave.DestinationRectangle) && changedMember == "Y")
+            else if (parentPropertyName == nameof(NamedObjectSave.DestinationRectangle) && changedMember == "Y")
             {
                 // If the Y is odd, we should warn the user that it should be even
                 // or else text will draw incorrectly
@@ -363,7 +371,7 @@ namespace FlatRedBall.Glue.SetVariable
                 CustomVariableInNamedObject cvino = namedObjectSave.GetCustomVariable(changedMember);
                 object value = cvino.Value;
 
-                foreach (CustomVariable customVariable in EditorLogic.CurrentElement.CustomVariables)
+                foreach (CustomVariable customVariable in element.CustomVariables)
                 {
                     if (customVariable.SourceObject == namedObjectSave.InstanceName &&
                         customVariable.SourceObjectProperty == changedMember)
@@ -401,7 +409,7 @@ namespace FlatRedBall.Glue.SetVariable
             PluginManager.ReactToNamedObjectChangedValue(changedMember, oldValue);
         }
 
-        public void ReactToChangedSetByDerived(NamedObjectSave namedObjectSave)
+        public void ReactToChangedSetByDerived(NamedObjectSave namedObjectSave, GlueElement element)
         {
             if (namedObjectSave.SourceType == SourceType.Entity &&
                 !string.IsNullOrEmpty(namedObjectSave.SourceClassType))
@@ -435,11 +443,11 @@ namespace FlatRedBall.Glue.SetVariable
             }
             else
             {
-                ProjectManager.UpdateAllDerivedElementFromBaseValues(true);
+                ProjectManager.UpdateAllDerivedElementFromBaseValues(true, element);
             }
         }
 
-        private void ReactToSourceClassGenericType(NamedObjectSave namedObjectSave, object oldValue)
+        private void ReactToSourceClassGenericType(NamedObjectSave namedObjectSave, object oldValue, GlueElement element)
         {
             namedObjectSave.UpdateCustomProperties();
 
@@ -449,8 +457,7 @@ namespace FlatRedBall.Glue.SetVariable
             }
 
             var baseNos = namedObjectSave;
-            var element = EditorLogic.CurrentElement;
-
+            
             if (baseNos.SetByDerived)
             {
                 List<IElement> derivedElements = new List<IElement>();
@@ -474,7 +481,7 @@ namespace FlatRedBall.Glue.SetVariable
                 }
             }
 
-            ProjectManager.UpdateAllDerivedElementFromBaseValues(true);
+            ProjectManager.UpdateAllDerivedElementFromBaseValues(true, element);
         }
 
 

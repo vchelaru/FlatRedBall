@@ -6,7 +6,7 @@ using System.Text;
 
 namespace FlatRedBall.IO
 {
-    public class FilePath
+    public class FilePath : IComparable
     {
         #region Fields
 
@@ -223,6 +223,22 @@ namespace FlatRedBall.IO
             fileNameToFix = fileNameToFix.Replace("//", "/");
 
             return fileNameToFix;
+        }
+
+        public int CompareTo(object obj)
+        {
+            if(obj is FilePath otherAsFilePath)
+            {
+                return this.FullPath.CompareTo(otherAsFilePath?.FullPath);
+            }
+            else if(obj is string asString)
+            {
+                return this?.FullPath.CompareTo(asString) ?? 0;
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
 }

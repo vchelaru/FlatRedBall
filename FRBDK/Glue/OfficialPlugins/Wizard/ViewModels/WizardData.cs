@@ -226,6 +226,18 @@ namespace OfficialPluginsCore.Wizard.Models
 
         #endregion
 
+        //public Dictionary<string, NamedObjectSave> NamedObjectSaves
+        //{
+        //    get; set;
+        //} = new Dictionary<string, NamedObjectSave>();
+
+        // Deserializes to a Dictionary<string, NamedObjectSave> where the string key is the name of the screen
+        // that contains the NamedObject.
+        public string NamedObjectSavesSerialized
+        {
+            get; set;
+        }
+
         public WizardData()
         {
             AddGameScreen = true;

@@ -485,7 +485,7 @@ namespace FlatRedBall.Glue
         {
             // additionalFilesToRemove is added to keep this consistent with other remove methods
 
-            IElement element = ObjectFinder.Self.GetElementContaining(customVariable);
+            var element = ObjectFinder.Self.GetElementContaining(customVariable);
 
             if (element == null || !element.CustomVariables.Contains(customVariable))
             {
@@ -505,7 +505,7 @@ namespace FlatRedBall.Glue
             }
             UpdateCurrentTreeNodeAndCodeAndSave();
 
-            UpdateAllDerivedElementFromBaseValues(true);
+            UpdateAllDerivedElementFromBaseValues(true, element);
 
             PluginManager.ReactToVariableRemoved(customVariable);
         }

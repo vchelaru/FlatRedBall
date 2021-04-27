@@ -694,7 +694,7 @@ namespace OfficialPlugins.VariableDisplay
             //bool sendRefreshCommands = false;
             //GlueCommands.Self.GluxCommands.SaveGlux(sendRefreshCommands);
             //GlueCommands.Self.GlueViewCommands.SendRefreshVariablesCommand();
-            GlueCommands.Self.GluxCommands.SaveGlux(true);
+            GlueCommands.Self.GluxCommands.SaveGlux();
 
             MainGlueWindow.Self.PropertyGrid.Refresh();
         }

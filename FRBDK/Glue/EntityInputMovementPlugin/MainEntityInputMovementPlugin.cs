@@ -50,6 +50,7 @@ namespace EntityInputMovementPlugin
             this.ReactToElementRenamed += HandleElementRenamed;
             this.ModifyAddEntityWindow += TopDownPlugin.Logic.ModifyAddEntityWindowLogic.HandleModifyAddEntityWindow;
             this.NewEntityCreatedWithUi += HandleNewEntityCreatedWithUi;
+            this.ReactToImportedElement += HandleEntityImported;
         }
 
         #endregion
@@ -64,9 +65,42 @@ namespace EntityInputMovementPlugin
 
         private void HandleGluxLoaded()
         {
+            bool didChangeGlux = UpdateTopDownCodePresenceInProject();
+
+            UpdatePlatformerCodePresenceInProject();
+
+            if (didChangeGlux)
+            {
+                GlueCommands.Self.GluxCommands.SaveGlux();
+            }
+        }
+
+        private void HandleEntityImported(GlueElement newElement)
+        {
+            UpdateTopDownCodePresenceInProject();
+            UpdatePlatformerCodePresenceInProject();
+        }
+
+        private static void UpdatePlatformerCodePresenceInProject()
+        {
             var entities = GlueState.Self.CurrentGlueProject.Entities;
 
-            #region TopDownPlugin
+            var anyPlatformer = entities.Any(item =>
+            {
+                var properties = item.Properties;
+                return properties.GetValue<bool>("IsPlatformer");
+            });
+
+            if (anyPlatformer)
+            {
+                // just in case it's not there:
+                FlatRedBall.PlatformerPlugin.Generators.EnumFileGenerator.Self.GenerateAndSaveEnumFile();
+            }
+        }
+
+        private static bool UpdateTopDownCodePresenceInProject()
+        {
+            var entities = GlueState.Self.CurrentGlueProject.Entities;
 
             var anyTopDownEntities = entities.Any(item =>
             {
@@ -90,30 +124,8 @@ namespace EntityInputMovementPlugin
                 "Top Down Plugin",
                 false,
                 new Version(1, 0));
-            #endregion
-
-            #region Platformer
-
-            var anyPlatformer = entities.Any(item =>
-            {
-                var properties = item.Properties;
-                return properties.GetValue<bool>("IsPlatformer");
-            });
-
-            if (anyPlatformer)
-            {
-                // just in case it's not there:
-                FlatRedBall.PlatformerPlugin.Generators.EnumFileGenerator.Self.GenerateAndSaveEnumFile();
-            }
-
-            #endregion
-
-            if (didChangeGlux)
-            {
-                GlueCommands.Self.GluxCommands.SaveGlux();
-            }
+            return didChangeGlux;
         }
-
 
         private void HandleItemSelected(System.Windows.Forms.TreeNode selectedTreeNode)
         {

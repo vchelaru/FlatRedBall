@@ -257,21 +257,22 @@ namespace FlatRedBall.Glue
                 GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(absoluteFileName, save:false);
             }
 
-            if (succeeded)
-            {
-                string message;
-                if (rfs != null)
-                {
-                    message = "Generating class " + className + " from CSV " + rfs.Name + " to " + absoluteFileName;
-                }
-                else
-                {
-                    message = "Generating class " + className + " from Custom Class";
-                }
+            // 4/27/2021 - this is noisy. Do users really care?
+            //if (succeeded)
+            //{
+            //    string message;
+            //    if (rfs != null)
+            //    {
+            //        message = "Generating class " + className + " from CSV " + rfs.Name + " to " + absoluteFileName;
+            //    }
+            //    else
+            //    {
+            //        message = "Generating class " + className + " from Custom Class";
+            //    }
                 
 
-                Plugins.PluginManager.ReceiveOutput(message);
-            }
+            //    Plugins.PluginManager.ReceiveOutput(message);
+            //}
             return succeeded;
         }
 

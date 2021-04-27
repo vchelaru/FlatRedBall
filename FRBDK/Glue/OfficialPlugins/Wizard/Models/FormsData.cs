@@ -16,6 +16,7 @@ namespace OfficialPluginsCore.Wizard.Models
     {
         TextBlock,
         TextBox,
+        MultiLineTextBox,
         IntTextBox,
         CheckBox,
         Group,
@@ -168,6 +169,16 @@ namespace OfficialPluginsCore.Wizard.Models
         {
             var dataItem = new DataItem();
             dataItem.ViewType = ViewType.TextBox;
+            dataItem.LabelText = label;
+            dataItem.ViewModelProperty = vmPropertyName;
+
+            return Add(dataItem);
+        }
+
+        public DataItem AddMultiLineStringValue(string label, string vmPropertyName = null)
+        {
+            var dataItem = new DataItem();
+            dataItem.ViewType = ViewType.MultiLineTextBox;
             dataItem.LabelText = label;
             dataItem.ViewModelProperty = vmPropertyName;
 
@@ -332,6 +343,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
                     break;
                 case ViewType.TextBox:
+                case ViewType.MultiLineTextBox:
                     {
                         var label = new TextBlock();
                         label.Text = dataItem.LabelText;
@@ -343,6 +355,15 @@ namespace OfficialPluginsCore.Wizard.Models
                         textBox.MinWidth = 150;
                         textBox.HorizontalAlignment = HorizontalAlignment.Left;
                         TryBindVisibility(textBox);
+
+                        if(dataItem.ViewType == ViewType.MultiLineTextBox)
+                        {
+                            textBox.AcceptsReturn = true;
+                            textBox.HorizontalAlignment = HorizontalAlignment.Stretch;
+
+                            textBox.Height = 140;
+                        }
+
                         stackPanel.Children.Add(textBox);
                     }
                     break;

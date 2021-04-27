@@ -219,6 +219,22 @@ namespace OfficialPluginsCore.Wizard.Models
 
             #endregion
 
+            #region Named Objects
+
+            {
+                var formsData = new FormsData(ViewModel);
+
+                formsData.AddTitle("Additional Objects");
+
+                formsData.AddText("Additional object JSON can be added here. Typically this not hand-written, but pasted from another project.");
+
+                formsData.AddMultiLineStringValue("Enter object JSON", nameof(ViewModel.NamedObjectSavesSerialized));
+
+                FormsDataList.Add(formsData);
+            }
+
+            #endregion
+
             #region All Done!
             {
                 var formsData = new FormsData(ViewModel);
@@ -234,7 +250,11 @@ namespace OfficialPluginsCore.Wizard.Models
 
         private void HandleCopyWizardSettings()
         {
-            var converted = JsonConvert.SerializeObject(ViewModel, Formatting.Indented);
+            var settings = new JsonSerializerSettings();
+            settings.Formatting = Formatting.Indented;
+            settings.DefaultValueHandling = DefaultValueHandling.Ignore;
+
+            var converted = JsonConvert.SerializeObject(ViewModel, settings);
             Clipboard.SetText(converted);
 
             // toast?

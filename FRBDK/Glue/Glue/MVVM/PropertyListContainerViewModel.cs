@@ -246,7 +246,7 @@ namespace FlatRedBall.Glue.MVVM
                     {
                         TaskManager.Self.OnUiThread(() =>
                             EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
-                                propertyName, namedObject.InstanceName, oldValue));
+                                propertyName, oldValue));
                     },
                     "Restarting due to change " + namedObject.InstanceName + "." + propertyName, TaskExecutionPreference.AddOrMoveToEnd);
                 }
@@ -308,7 +308,14 @@ namespace FlatRedBall.Glue.MVVM
 
                     if (type == typeof(float))
                     {
-                        SetInternal<float>(modelValue, viewModelPropertyName, converter);
+                        if(modelValue is double)
+                        {
+                            SetInternal<float>( (float)((double)modelValue), viewModelPropertyName, converter);
+                        }
+                        else
+                        {
+                            SetInternal<float>(modelValue, viewModelPropertyName, converter);
+                        }
                     }
                     else if (type == typeof(double))
                     {
@@ -352,7 +359,20 @@ namespace FlatRedBall.Glue.MVVM
 
                         var genericMethod = method.MakeGenericMethod(type);
 
-                        genericMethod.Invoke(this, new object[] { modelValue, viewModelPropertyName, converter });
+                        if(type.IsEnum && modelValue is int valueAsInt)
+                        {
+                            var castedType = Enum.ToObject(type, valueAsInt);
+                            genericMethod.Invoke(this, new object[] { castedType, viewModelPropertyName, converter });
+                        }
+                        else if (type.IsEnum && modelValue is long valueAsLong)
+                        {
+                            var castedType = Enum.ToObject(type, valueAsLong);
+                            genericMethod.Invoke(this, new object[] { castedType, viewModelPropertyName, converter });
+                        }
+                        else
+                        {
+                            genericMethod.Invoke(this, new object[] { modelValue, viewModelPropertyName, converter });
+                        }
                     }
                 }
             }

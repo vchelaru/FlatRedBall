@@ -116,10 +116,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         /// <summary>
         /// Saves the glux if already in a task. Adds a glulx save task if not.
         /// </summary>
-        public void SaveGlux(bool sendPluginRefreshCommand = true)
+        public void SaveGlux()
         {
             TaskManager.Self.AddOrRunIfTasked(
-                () => SaveGluxImmediately(sendPluginRefreshCommand: sendPluginRefreshCommand),
+                () => SaveGluxImmediately(),
                 "Saving .glux", 
                 // asap because otherwise this may get added
                 // after a reload command
@@ -130,8 +130,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         /// Saves the current project immediately - this should not be called except in very rare circumstances as it will run right away and may result
         /// in multiple threads accessing the glux at the same time.
         /// </summary>
-        /// <param name="sendPluginRefreshCommand"></param>
-        public void SaveGluxImmediately(bool sendPluginRefreshCommand = true)
+        public void SaveGluxImmediately()
         {
             if (ProjectManager.GlueProjectSave != null)
             {
@@ -200,13 +199,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         if (!succeeded)
                         {
                             GlueCommands.Self.DialogCommands.ShowMessageBox("Error saving the .glux:\n" + lastException);
-                        }
-                        else
-                        {
-                            if (sendPluginRefreshCommand)
-                            {
-                                PluginManager.ReactToGluxSave();
-                            }
                         }
                     }
                 }
@@ -915,15 +907,24 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public NamedObjectSave AddNewNamedObjectTo(AddObjectViewModel addObjectViewModel, IElement element, NamedObjectSave listToAddTo = null)
         {
-            if(element == null)
+            if (element == null)
             {
                 throw new ArgumentNullException(nameof(element));
             }
             addObjectViewModel.ForcedElementToAddTo = element;
             MembershipInfo membershipInfo = NamedObjectSaveExtensionMethodsGlue.GetMemberMembershipInfo(addObjectViewModel.ObjectName);
 
-            var newNos = AddNewNamedObjectToInternal(addObjectViewModel.ObjectName,
-                membershipInfo, element, listToAddTo, false);
+            NamedObjectSave newNos = new NamedObjectSave();
+
+            if (GlueState.Self.CurrentGlueProject.FileVersion >=
+                (int)GlueProjectSave.GluxVersions.ListsHaveAssociateWithFactoryBool)
+            {
+                newNos.AssociateWithFactory = true;
+            }
+
+            newNos.InstanceName = addObjectViewModel.ObjectName;
+            newNos.DefinedByBase = membershipInfo == MembershipInfo.ContainedInBase;
+
 
             if (addObjectViewModel.SourceClassType != NoType && !string.IsNullOrEmpty(addObjectViewModel.SourceClassType))
             {
@@ -934,8 +935,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 newNos.SourceFile = addObjectViewModel.SelectedItem?.MainText;
                 newNos.SourceName = addObjectViewModel.SourceNameInFile;
                 newNos.UpdateCustomProperties();
-
-                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
             }
             else if (addObjectViewModel.SourceFile != null)
             {
@@ -943,14 +942,30 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 newNos.SourceFile = addObjectViewModel.SelectedItem?.MainText;
                 newNos.SourceName = addObjectViewModel.SourceNameInFile;
                 newNos.UpdateCustomProperties();
-
-                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
             }
 
             newNos.SourceClassGenericType = addObjectViewModel.SourceClassGenericType;
 
+            AddNamedObjectTo(newNos, element, listToAddTo);
+
+            GluxCommands.Self.SaveGlux();
+
+            return newNos;
+        }
+
+        public void AddNamedObjectTo(NamedObjectSave newNos, IElement element, NamedObjectSave listToAddTo = null)
+        {
             var ati = newNos.GetAssetTypeInfo();
 
+            if (listToAddTo != null)
+            {
+                NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToList(newNos, listToAddTo);
+
+            }
+            else if (element != null)
+            {
+                element.NamedObjects.Add(newNos);
+            }
             if (ati != null && ati.DefaultPublic)
             {
                 newNos.HasPublicProperty = true;
@@ -973,57 +988,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             MainGlueWindow.Self.PropertyGrid.Refresh();
             PropertyGridHelper.UpdateNamedObjectDisplay();
             GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-
-
-            GluxCommands.Self.SaveGlux();
-
-            return newNos;
-        }
-
-        private static NamedObjectSave AddNewNamedObjectToInternal(string objectName, MembershipInfo membershipInfo,
-            IElement element, NamedObjectSave listToAddTo, bool raisePluginResponse = true)
-        {
-            NamedObjectSave namedObject = new NamedObjectSave();
-
-            if (GlueState.Self.CurrentGlueProject.FileVersion >=
-                (int)GlueProjectSave.GluxVersions.ListsHaveAssociateWithFactoryBool)
-            {
-                namedObject.AssociateWithFactory = true;
-            }
-
-            namedObject.InstanceName = objectName;
-
-            namedObject.DefinedByBase = membershipInfo == MembershipInfo.ContainedInBase;
-
-            #region Adding to a NamedObject (PositionedObjectList)
-
-            if (listToAddTo != null)
-            {
-                NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToList(namedObject, listToAddTo);
-
-            }
-            #endregion
-
-            else if (element != null)
-            {
-                //AddExistingNamedObjectToElement(element, namedObject, true);
-                element.NamedObjects.Add(namedObject);
-                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
-                // eventually this method will die, but for now the caller is responsible
-                //PluginManager.ReactToNewObject(namedObject);
-                GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(element);
-            }
-
-
-            if (raisePluginResponse)
-            {
-                PluginManager.ReactToNewObject(namedObject);
-            }
-            MainGlueWindow.Self.PropertyGrid.Refresh();
-            ElementViewWindow.GenerateSelectedElementCode();
-            GluxCommands.Self.SaveGlux();
-
-            return namedObject;
+            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
         }
 
         public void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSave = true, 
@@ -1633,7 +1598,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
 
             EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
-                memberName, nos.InstanceName, oldValue);
+                memberName, oldValue);
 
 
             PluginManager.ReactToChangedProperty(memberName, oldValue);
@@ -1682,7 +1647,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
 
             EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
-                memberName, nos.InstanceName, oldValue);
+                memberName, oldValue);
 
 
             PluginManager.ReactToChangedProperty(memberName, oldValue);

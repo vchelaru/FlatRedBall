@@ -175,13 +175,16 @@ namespace FlatRedBall.Glue.IO
             #endregion
         }
 
-        private static string ImportScreen(string unpackDirectory, List<string> filesToAddToContent, 
+        private static void ImportScreen(string unpackDirectory, List<string> filesToAddToContent, 
             List<string> codeFiles, string elementName, string extension, bool moveToSelectedFolderTreeNode, ref string desiredNamespace, ref GlueElement newElement)
         {
-            return ImportElement<ScreenSave>(unpackDirectory, filesToAddToContent, codeFiles, elementName, extension, ref desiredNamespace, ref newElement);
+            ImportElement<ScreenSave>(unpackDirectory, filesToAddToContent, codeFiles, elementName, extension, ref desiredNamespace, ref newElement);
+
+            PluginManager.ReactToImportedElement(newElement);
+
         }
 
-        private static string ImportEntity(string unpackDirectory, List<string> filesToAddToContent, 
+        private static void ImportEntity(string unpackDirectory, List<string> filesToAddToContent, 
             List<string> codeFilesInZip, string elementName, string extension, bool moveToSelectedFolderTreeNode, ref string desiredNamespace, ref GlueElement newElement)
         {
             string targetCs = ImportElement<EntitySave>(unpackDirectory, filesToAddToContent, codeFilesInZip, elementName, extension, ref desiredNamespace, ref newElement);
@@ -198,12 +201,13 @@ namespace FlatRedBall.Glue.IO
                 }
             });
 
+            PluginManager.ReactToImportedElement(entitySave);
+
             if(shouldSave)
             {
                 GluxCommands.Self.SaveGlux();
             }
 
-            return targetCs;
         }
 
         private static string ImportElement<T>(string unpackDirectory, List<string> filesToAddToContent, 
