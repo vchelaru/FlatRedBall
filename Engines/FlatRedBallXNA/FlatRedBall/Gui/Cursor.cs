@@ -2399,12 +2399,12 @@ namespace FlatRedBall.Gui
             #endregion
         }
 
+        public float GamepadPixelsPerSecondMovementSpeed { get; set; } = 600;
+
         private void UpdateValuesFromJoystick(Xbox360GamePad gamepad)
         {
             if (gamepad != null)
             {
-                // should this use time? If so, should it use time factor?
-                const float maxMovementPerFrame = 10;
                 var xPosition = gamepad.LeftStick.Position.X;
                 var yPosition = gamepad.LeftStick.Position.Y;
 
@@ -2425,9 +2425,9 @@ namespace FlatRedBall.Gui
                     yPosition = -1;
                 }
 
-
-                mScreenX += (int)(xPosition * maxMovementPerFrame);
-                mScreenY -= (int)(yPosition * maxMovementPerFrame);
+                var thisFrameMultiplier = GamepadPixelsPerSecondMovementSpeed * TimeManager.SecondDifference;
+                mScreenX += (int)(xPosition * thisFrameMultiplier);
+                mScreenY -= (int)(yPosition * thisFrameMultiplier);
 
                 if(mScreenX < 0)
                 {
