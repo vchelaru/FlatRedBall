@@ -154,7 +154,7 @@ namespace FlatRedBall.Glue.Managers
             {
                 var allReferenced = GetFilesReferencedBy(filePathInProject, TopLevelOrRecursive.Recursive);
 
-                if (allFilePaths.Contains(filePath))
+                if (allReferenced.Contains(filePath))
                 {
                     return true;
                 }
