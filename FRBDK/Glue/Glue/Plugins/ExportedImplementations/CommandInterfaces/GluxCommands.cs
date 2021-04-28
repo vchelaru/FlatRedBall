@@ -642,12 +642,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        public void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove)
-        {
-            RemoveReferencedFile(referencedFileToRemove, additionalFilesToRemove, true);
-        }
-
-        public void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateCode)
+        public void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateCode = true)
         {
 
             var isContained = GlueState.Self.Find.IfReferencedFileSaveIsReferenced(referencedFileToRemove);
@@ -806,13 +801,21 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             var referencedFiles = GlueCommands.Self.FileCommands.GetAllReferencedFileNames();
 
-            string absoluteToLower = GlueCommands.Self.GetAbsoluteFileName(referencedFileToRemove).ToLowerInvariant();
+            var rfsFilePath = GlueCommands.Self.GetAbsoluteFilePath(referencedFileToRemove);
+            string absoluteToLower = rfsFilePath.FullPath.ToLowerInvariant();
             string relativeToProject = FileManager.MakeRelative(absoluteToLower, GlueState.Self.ContentDirectory);
 
-            bool isReferencedByOtherContent = referencedFiles.Contains(relativeToProject);
+            bool isReferencedDirectlyByGlue = referencedFiles.Contains(relativeToProject);
 
-            if (isReferencedByOtherContent == false)
+            var isFileReferenced = isReferencedDirectlyByGlue;
+
+            if (isFileReferenced == false)
             {
+                isFileReferenced = FileReferenceManager.Self.IsFileReferencedRecursively(rfsFilePath);
+            }
+
+            if(isFileReferenced == false)
+            { 
                 additionalFilesToRemove.Add(referencedFileToRemove.GetRelativePath());
 
                 string itemName = referencedFileToRemove.GetRelativePath();
@@ -829,11 +832,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-
-
             if (ProjectManager.IsContent(referencedFileToRemove.Name))
             {
-
                 UnreferencedFilesManager.Self.RefreshUnreferencedFiles(false);
                 foreach (var file in UnreferencedFilesManager.LastAddedUnreferencedFiles)
                 {
@@ -842,6 +842,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
 
             ReactToRemovalIfCsv(referencedFileToRemove, additionalFilesToRemove);
+
+            PluginManager.ReactToFileRemoved(container, referencedFileToRemove);
 
             GluxCommands.Self.SaveGlux();
         }
@@ -1144,6 +1146,100 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
+        public void SetVariableOn(NamedObjectSave nos, string memberName, Type memberType, object value)
+        {
+            object oldValue = null;
+
+            var instruction = nos.GetInstructionFromMember(memberName);
+
+            if (instruction != null)
+            {
+                oldValue = instruction.Value;
+            }
+            //SetVariableOn(nos, memberName, memberType, value);
+
+            bool shouldConvertValue = false;
+
+
+            if (memberType != null &&
+                value is string &&
+                memberType != typeof(Microsoft.Xna.Framework.Color) &&
+                !CustomVariableExtensionMethods.GetIsFile(memberType) && // If it's a file, we just want to set the string value and have the underlying system do the loading                         
+                !CustomVariableExtensionMethods.GetIsObjectType(memberType.FullName)
+                )
+            {
+                bool isCsv = NamedObjectPropertyGridDisplayer.GetIfIsCsv(nos, memberName);
+                shouldConvertValue = !isCsv &&
+                    memberType != typeof(object) &&
+                    // variable could be an object
+                    memberType != typeof(PositionedObject);
+                // If the MemberType is object, then it's something we can't convert to - it's likely a state
+            }
+
+            if (shouldConvertValue)
+            {
+                value = PropertyValuePair.ConvertStringToType((string)value, memberType);
+            }
+            nos.SetPropertyValue(memberName, value);
+
+
+            EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
+                memberName, oldValue);
+
+
+            PluginManager.ReactToChangedProperty(memberName, oldValue);
+        }
+
+        public void SetVariableOn(NamedObjectSave nos, string memberName, object value)
+        {
+            object oldValue = null;
+
+            var instruction = nos.GetInstructionFromMember(memberName);
+
+            if (instruction != null)
+            {
+                oldValue = instruction.Value;
+            }
+            //SetVariableOn(nos, memberName, memberType, value);
+
+            bool shouldConvertValue = false;
+
+            var variableDefinition = nos.GetAssetTypeInfo()?.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);
+            if(variableDefinition == null)
+            {
+                throw new InvalidOperationException($"Could not find a VariableDefinition on object {nos} with name {memberName}");
+            }
+
+            if (value is string &&
+                variableDefinition.Type != "Microsoft.Xna.Framework.Color" &&
+                variableDefinition.Type != "Color" &&
+                !CustomVariableExtensionMethods.GetIsFile(variableDefinition.Type) && // If it's a file, we just want to set the string value and have the underlying system do the loading                         
+                !CustomVariableExtensionMethods.GetIsObjectType(variableDefinition.Type)
+                )
+            {
+                bool isCsv = NamedObjectPropertyGridDisplayer.GetIfIsCsv(nos, memberName);
+                shouldConvertValue = !isCsv &&
+                    variableDefinition.Name != "object" &&
+                    // variable could be an object
+                    (value is PositionedObject) == false;
+                // If the MemberType is object, then it's something we can't convert to - it's likely a state
+            }
+
+            if (shouldConvertValue)
+            {
+                value = PropertyValuePair.ConvertStringToType((string)value, variableDefinition.Type);
+            }
+            nos.SetPropertyValue(memberName, value);
+
+
+            EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
+                memberName, oldValue);
+
+
+            PluginManager.ReactToChangedProperty(memberName, oldValue);
+        }
+
+
         #endregion
 
         #region Entity
@@ -1391,7 +1487,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             #endregion
 
-
             // remove all the files this references first before removing the Screen itself.
             // For more information see the RemoveEntity function
             for (int i = screenToRemove.ReferencedFiles.Count - 1; i > -1; i--)
@@ -1559,100 +1654,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
 
         #endregion
-
-        public void SetVariableOn(NamedObjectSave nos, string memberName, Type memberType, object value)
-        {
-            object oldValue = null;
-
-            var instruction = nos.GetInstructionFromMember(memberName);
-
-            if (instruction != null)
-            {
-                oldValue = instruction.Value;
-            }
-            //SetVariableOn(nos, memberName, memberType, value);
-
-            bool shouldConvertValue = false;
-
-
-            if (memberType != null &&
-                value is string &&
-                memberType != typeof(Microsoft.Xna.Framework.Color) &&
-                !CustomVariableExtensionMethods.GetIsFile(memberType) && // If it's a file, we just want to set the string value and have the underlying system do the loading                         
-                !CustomVariableExtensionMethods.GetIsObjectType(memberType.FullName)
-                )
-            {
-                bool isCsv = NamedObjectPropertyGridDisplayer.GetIfIsCsv(nos, memberName);
-                shouldConvertValue = !isCsv &&
-                    memberType != typeof(object) &&
-                    // variable could be an object
-                    memberType != typeof(PositionedObject);
-                // If the MemberType is object, then it's something we can't convert to - it's likely a state
-            }
-
-            if (shouldConvertValue)
-            {
-                value = PropertyValuePair.ConvertStringToType((string)value, memberType);
-            }
-            nos.SetPropertyValue(memberName, value);
-
-
-            EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
-                memberName, oldValue);
-
-
-            PluginManager.ReactToChangedProperty(memberName, oldValue);
-        }
-
-        public void SetVariableOn(NamedObjectSave nos, string memberName, object value)
-        {
-            object oldValue = null;
-
-            var instruction = nos.GetInstructionFromMember(memberName);
-
-            if (instruction != null)
-            {
-                oldValue = instruction.Value;
-            }
-            //SetVariableOn(nos, memberName, memberType, value);
-
-            bool shouldConvertValue = false;
-
-            var variableDefinition = nos.GetAssetTypeInfo()?.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);
-            if(variableDefinition == null)
-            {
-                throw new InvalidOperationException($"Could not find a VariableDefinition on object {nos} with name {memberName}");
-            }
-
-            if (value is string &&
-                variableDefinition.Type != "Microsoft.Xna.Framework.Color" &&
-                variableDefinition.Type != "Color" &&
-                !CustomVariableExtensionMethods.GetIsFile(variableDefinition.Type) && // If it's a file, we just want to set the string value and have the underlying system do the loading                         
-                !CustomVariableExtensionMethods.GetIsObjectType(variableDefinition.Type)
-                )
-            {
-                bool isCsv = NamedObjectPropertyGridDisplayer.GetIfIsCsv(nos, memberName);
-                shouldConvertValue = !isCsv &&
-                    variableDefinition.Name != "object" &&
-                    // variable could be an object
-                    (value is PositionedObject) == false;
-                // If the MemberType is object, then it's something we can't convert to - it's likely a state
-            }
-
-            if (shouldConvertValue)
-            {
-                value = PropertyValuePair.ConvertStringToType((string)value, variableDefinition.Type);
-            }
-            nos.SetPropertyValue(memberName, value);
-
-
-            EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
-                memberName, oldValue);
-
-
-            PluginManager.ReactToChangedProperty(memberName, oldValue);
-        }
-
 
 
         public void SaveSettings()

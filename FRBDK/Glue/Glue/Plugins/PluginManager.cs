@@ -894,45 +894,26 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToFileRemoved(IElement element, ReferencedFileSave file)
         {
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToFileRemoved != null);
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-                        PluginBase plugin1 = plugin;
-                        PluginCommand(() =>
-                        {
-                            plugin1.ReactToFileRemoved(element, file);
-                        }, container, "Failed in ReactToFileRemoved");
-                    }
-                }
-            }
+            CallMethodOnPlugin(
+                (plugin) => plugin.ReactToFileRemoved(element, file),
+                nameof(ReactToFileRemoved),
+                (plugin) => plugin.ReactToFileRemoved != null);
         }
 
         internal static void ReactToEntityRemoved(EntitySave entity, List<string> filesToRemove)
         {
-            CallMethodOnPlugin((plugin) =>
-            {
-                plugin.ReactToEntityRemoved(entity, filesToRemove);
-            },
-            nameof(ReactToEntityRemoved),
-            (plugin) => plugin.ReactToEntityRemoved != null);
+            CallMethodOnPlugin(
+                (plugin) => plugin.ReactToEntityRemoved(entity, filesToRemove),
+                nameof(ReactToEntityRemoved),
+                (plugin) => plugin.ReactToEntityRemoved != null);
         }
 
         internal static void ReactToScreenRemoved(ScreenSave screenSave, List<string> filesToRemove)
         {
-            CallMethodOnPlugin((plugin) =>
-            {
-                
-                plugin.ReactToScreenRemoved(screenSave, filesToRemove);
-                
-            },
-            nameof(ReactToScreenRemoved),
-            plugin => plugin.ReactToScreenRemoved != null);
-            
+            CallMethodOnPlugin(
+                (plugin) => plugin.ReactToScreenRemoved(screenSave, filesToRemove),
+                nameof(ReactToScreenRemoved),
+                plugin => plugin.ReactToScreenRemoved != null);
         }
 
         internal static void ReactToElementVariableChange(IElement element, CustomVariable variable)

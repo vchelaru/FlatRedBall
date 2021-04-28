@@ -9,11 +9,14 @@ using System.IO;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Errors;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.Managers
 {
     public class FileReferenceManager : Singleton<FileReferenceManager>
     {
+        #region FileReferenceInformation
+
         class FileReferenceInformation
         {
             public DateTime LastWriteTime;
@@ -25,40 +28,34 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
+        #endregion
 
-        Dictionary<string, FileReferenceInformation> fileReferences = new Dictionary<string, FileReferenceInformation>();
-        Dictionary<string, FileReferenceInformation> filesNeededOnDisk = new Dictionary<string, FileReferenceInformation>();
+        Dictionary<FilePath, FileReferenceInformation> fileReferences = new Dictionary<FilePath, FileReferenceInformation>();
+
+        Dictionary<FilePath, FileReferenceInformation> filesNeededOnDisk = new Dictionary<FilePath, FileReferenceInformation>();
+
         public Dictionary<FilePath, GeneralResponse> FilesWithFailedGetReferenceCalls { get; private set; } = new Dictionary<FilePath, GeneralResponse>();
-
-        internal void ClearFileCache(string absoluteName)
-        {
-            string standardized = FileManager.Standardize(absoluteName);
-
-            if (fileReferences.ContainsKey(standardized))
-            {
-                fileReferences.Remove(standardized);
-            }
-
-            if(filesNeededOnDisk.ContainsKey(standardized))
-            {
-                filesNeededOnDisk.Remove(standardized);
-            }
-        }
 
         List<string> getFileReferenceCalls = new List<string>();
 
-
-        public List<FilePath> GetFilesReferencedBy(FilePath absoluteName)
+        internal void ClearFileCache(FilePath absoluteName)
         {
-            return GetFilesReferencedBy(absoluteName, TopLevelOrRecursive.Recursive);
+            if (fileReferences.ContainsKey(absoluteName))
+            {
+                fileReferences.Remove(absoluteName);
+            }
+
+            if(filesNeededOnDisk.ContainsKey(absoluteName))
+            {
+                filesNeededOnDisk.Remove(absoluteName);
+            }
         }
 
-        public List<FilePath> GetFilesReferencedBy(FilePath absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
+        public List<FilePath> GetFilesReferencedBy(FilePath absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive = TopLevelOrRecursive.Recursive)
         {
             var toReturn = new List<FilePath>();
 
             GetFilesReferencedBy(absoluteName, topLevelOrRecursive, listToFill: toReturn);
-
 
             return toReturn;
         }
@@ -68,19 +65,18 @@ namespace FlatRedBall.Glue.Managers
             List<FilePath> topLevelOnly = null;
             bool handledByCache = false;
 
-            string standardized = absoluteName.Standardized;
-            if(fileReferences.ContainsKey(standardized))
+            if(fileReferences.ContainsKey(absoluteName))
             {
                 // compare dates:
-                bool isOutOfDate = File.Exists(standardized) && 
+                bool isOutOfDate = absoluteName.Exists() && 
                     //File.GetLastWriteTime(standardized) > fileReferences[standardized].LastWriteTime;
                     // Do a != in case the user reverts a file
-                    File.GetLastWriteTime(standardized) != fileReferences[standardized].LastWriteTime;
+                    File.GetLastWriteTime(absoluteName.FullPath) != fileReferences[absoluteName].LastWriteTime;
 
                 if(!isOutOfDate)
                 {
                     handledByCache = true;
-                    topLevelOnly = fileReferences[standardized].References;
+                    topLevelOnly = fileReferences[absoluteName].References;
                 }
             }
 
@@ -110,28 +106,14 @@ namespace FlatRedBall.Glue.Managers
 
                     if(response.Succeeded)
                     {
-                        // let's remove ../ if we can:
-                        for (int i = 0; i < topLevelOnly.Count; i++)
-                        {
-                            topLevelOnly[i] = FlatRedBall.IO.FileManager.RemoveDotDotSlash(topLevelOnly[i].FullPath);
-                        }
-
-
                         var referenceInfo = new FileReferenceInformation
                         {
-                            LastWriteTime = File.Exists(standardized) ? File.GetLastWriteTime(standardized) : DateTime.MinValue,
+                            LastWriteTime = absoluteName.Exists() ? File.GetLastWriteTime(absoluteName.FullPath) : DateTime.MinValue,
                             References = topLevelOnly
                         };
 
-                        try
-                        {
-                            fileReferences[standardized] = referenceInfo;
-                        }
-                        catch(Exception e)
-                        {
-                            int m = 3;
-                            throw e;
-                        }
+                        fileReferences[absoluteName] = referenceInfo;
+
                         if(FilesWithFailedGetReferenceCalls.ContainsKey(absoluteName))
                         {
                             FilesWithFailedGetReferenceCalls.Remove(absoluteName);
@@ -147,8 +129,6 @@ namespace FlatRedBall.Glue.Managers
 
                 }
             }
-
-            
             
             // topLevelOnly could be null if a file wasn't found
             if(topLevelOnly != null)
@@ -166,25 +146,39 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
+        public bool IsFileReferencedRecursively(FilePath filePath)
+        {
+            var allFilePaths = GlueCommands.Self.FileCommands.GetAllReferencedFilePaths();
+
+            foreach(var filePathInProject in allFilePaths)
+            {
+                var allReferenced = GetFilesReferencedBy(filePathInProject, TopLevelOrRecursive.Recursive);
+
+                if (allFilePaths.Contains(filePath))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         public List<FilePath> GetFilesNeededOnDiskBy(FilePath absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
         {
             List<FilePath> topLevelOnly = null;
             bool handledByCache = false;
 
-            string standardized = absoluteName.Standardized;
-            if (filesNeededOnDisk.ContainsKey(standardized))
+            if (filesNeededOnDisk.ContainsKey(absoluteName))
             {
                 // compare dates:
-                bool isOutOfDate = File.Exists(standardized) &&
+                bool isOutOfDate = absoluteName.Exists() &&
                     //File.GetLastWriteTime(standardized) > filesNeededOnDisk[standardized].LastWriteTime;
                     // Do a != in case the user reverts a file
-                    File.GetLastWriteTime(standardized) != filesNeededOnDisk[standardized].LastWriteTime;
+                    File.GetLastWriteTime(absoluteName.FullPath) != filesNeededOnDisk[absoluteName].LastWriteTime;
 
                 if (!isOutOfDate)
                 {
                     handledByCache = true;
-                    topLevelOnly = filesNeededOnDisk[standardized].References;
+                    topLevelOnly = filesNeededOnDisk[absoluteName].References;
                 }
             }
 
@@ -194,9 +188,9 @@ namespace FlatRedBall.Glue.Managers
                 topLevelOnly = ContentParser.GetFilesReferencedByAsset(absoluteName, TopLevelOrRecursive.TopLevel);
                 PluginManager.GetFilesNeededOnDiskBy(absoluteName.FullPath, TopLevelOrRecursive.TopLevel, topLevelOnly);
 
-                filesNeededOnDisk[standardized] = new FileReferenceInformation
+                filesNeededOnDisk[absoluteName] = new FileReferenceInformation
                 {
-                    LastWriteTime = File.Exists(standardized) ? File.GetLastWriteTime(standardized) : DateTime.MinValue,
+                    LastWriteTime = absoluteName.Exists() ? File.GetLastWriteTime(absoluteName.FullPath) : DateTime.MinValue,
                     References = topLevelOnly
                 };
             }
@@ -215,6 +209,5 @@ namespace FlatRedBall.Glue.Managers
 
             return toReturn;
         }
-
     }
 }

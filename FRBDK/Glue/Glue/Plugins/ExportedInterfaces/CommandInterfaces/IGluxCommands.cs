@@ -61,6 +61,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
             EditorObjects.SaveClasses.BuildToolAssociation buildToolAssociation, bool isBuiltFile, object options, 
             IElement sourceElement, string directoryOfTreeNode, bool selectFileAfterCreation = true);
 
+        void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateCode = true);
+
         #endregion
         
 
@@ -78,10 +80,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         #endregion
 
         ValidationResponse AddNewCustomClass(string className, out CustomClassSave customClassSave);
-
-        void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove);
-        void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateCode);
-
 
         #region Screens
 
