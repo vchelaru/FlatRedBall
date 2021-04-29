@@ -160,7 +160,7 @@ namespace TileGraphicsPlugin.CodeGeneration
                         $"SourceType to {SourceType.FlatRedBallType}");
                 }
 
-                var isVisible = namedObjectSave.GetCustomVariable("Visible")?.ValueAsBool == true;
+                var isVisible = namedObjectSave.GetCustomVariable("Visible")?.Value is bool asBool && asBool == true;
                 
 
 
@@ -176,7 +176,7 @@ namespace TileGraphicsPlugin.CodeGeneration
 
                 }
                 bool adjustRepositionDirectionsOnAddAndRemove =
-                    namedObjectSave.GetCustomVariable("AdjustRepositionDirectionsOnAddAndRemove")?.ValueAsBool ?? true;
+                    (namedObjectSave.GetCustomVariable("AdjustRepositionDirectionsOnAddAndRemove")?.Value as bool?) ?? true;
                 if(!adjustRepositionDirectionsOnAddAndRemove)
                 {
                     codeBlock.Line("// normally we wait to set variables until after the object is created, in this case");

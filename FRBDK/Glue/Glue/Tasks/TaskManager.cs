@@ -61,17 +61,7 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        public bool AreAllAsyncTasksDone
-        {
-            get
-            {
-                lock (mActiveAsyncTasks)
-                lock(mSyncLockObject)
-                {
-                    return mActiveAsyncTasks.Count == 0 && this.mSyncedActions.Count == 0;
-                }
-            }
-        }
+        public bool AreAllAsyncTasksDone => TaskCount == 0;
 
         public int TaskCount
         {
@@ -202,7 +192,7 @@ namespace FlatRedBall.Glue.Managers
             while (!AreAllAsyncTasksDone)
             {
                 didWait = true;
-                await Task.Delay(500);
+                await Task.Delay(250);
             }
             return didWait;
         }
@@ -241,6 +231,12 @@ namespace FlatRedBall.Glue.Managers
         {
             var glueTask = new GlueTask();
             glueTask.Action = action;
+            AddInternal(displayInfo, executionPreference, glueTask);
+
+        }
+
+        private void AddInternal(string displayInfo, TaskExecutionPreference executionPreference, GlueTask glueTask)
+        {
             glueTask.DisplayInfo = displayInfo;
 
             bool shouldProcess = false;
@@ -261,7 +257,7 @@ namespace FlatRedBall.Glue.Managers
                         mSyncedActions.Add(glueTask);
                     }
                 }
-                else if(executionPreference == TaskExecutionPreference.AddOrMoveToEnd)
+                else if (executionPreference == TaskExecutionPreference.AddOrMoveToEnd)
                 {
                     // There's a few possible situations:
                     // 1. This task is not present in the list at all. 
@@ -279,7 +275,7 @@ namespace FlatRedBall.Glue.Managers
                     GlueTask actionToRemove = null;
 
                     var shouldAddAtEnd = false;
-                    if(existingAction == null)
+                    if (existingAction == null)
                     {
                         // This is #1 from above
                         actionToRemove = null;
@@ -321,15 +317,15 @@ namespace FlatRedBall.Glue.Managers
                         }
                     }
 
-                    if(actionToRemove != null)
+                    if (actionToRemove != null)
                     {
                         mSyncedActions.Remove(actionToRemove);
                     }
-                    if(shouldAddAtEnd)
+                    if (shouldAddAtEnd)
                     {
                         mSyncedActions.Add(glueTask);
                     }
-                        
+
                     createdNew = (shouldAddAtEnd && actionToRemove == null);
 
                 }
@@ -340,7 +336,7 @@ namespace FlatRedBall.Glue.Managers
                 shouldProcess = createdNew && mSyncedActions.Count == 1 && IsTaskProcessingEnabled;
             }
             // process will take care of reporting it
-            if(createdNew)
+            if (createdNew)
             {
                 TaskAddedOrRemoved?.Invoke(TaskEvent.Created, glueTask);
             }
@@ -349,7 +345,6 @@ namespace FlatRedBall.Glue.Managers
             {
                 ProcessNextSync();
             }
-
         }
 
         private void ProcessNextSync()

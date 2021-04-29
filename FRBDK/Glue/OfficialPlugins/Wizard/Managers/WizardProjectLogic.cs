@@ -221,14 +221,15 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                 }
 
-                // we want base implementations first, then derived
-                var sortedImports = imports.OrderBy(item => ObjectFinder.Self.GetHierarchyDepth(item.Element))
-                    .ToArray();
+            }
 
-                foreach (var elementAndNosList in sortedImports)
-                {
-                    AddNamedsObjectToElement(elementAndNosList.NosList, elementAndNosList.Element);
-                }
+            // we want base implementations first, then derived
+            var sortedImports = imports.OrderBy(item => ObjectFinder.Self.GetHierarchyDepth(item.Element))
+                .ToArray();
+
+            foreach (var elementAndNosList in sortedImports)
+            {
+                AddNamedsObjectToElement(elementAndNosList.NosList, elementAndNosList.Element);
             }
 
             static void AddNamedsObjectToElement(List<NamedObjectSave> nosList, GlueElement glueElement)
@@ -241,7 +242,14 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                     foreach (var nos in sortedNoses)
                     {
-                        GlueCommands.Self.GluxCommands.AddNamedObjectTo(nos, glueElement);
+                        NamedObjectSave listToAddTo = null;
+                        if(nos.IsList == false)
+                        {
+                            // see if there are any lists in this object which have a shared type. Eventually we might care about inheritance, but not yet...
+                            listToAddTo = glueElement.NamedObjects.FirstOrDefault(item => item.IsList && item.SourceClassGenericType == nos.SourceClassType);
+                        }
+
+                        GlueCommands.Self.GluxCommands.AddNamedObjectTo(nos, glueElement, listToAddTo);
 
                         if(nos.ExposedInDerived)
                         {
@@ -278,11 +286,15 @@ namespace OfficialPluginsCore.Wizard.Managers
             foreach (var item in vm.ElementImportUrls)
             {
                 var destinationFileName = downloadFolder + FileManager.RemovePath(item);
-                TaskManager.Self.Add(async () =>
+                TaskManager.Self.Add(() =>
                 {
                     using var httpClient = new HttpClient { Timeout = TimeSpan.FromDays(1), };
-                    var result = await NetworkManager.Self.DownloadWithProgress(
+                    var downloadTask = NetworkManager.Self.DownloadWithProgress(
                         httpClient, item, destinationFileName, null);
+
+                    downloadTask.Wait();
+
+                    var result = downloadTask.Result;
 
                     if (result.Succeeded)
                     {

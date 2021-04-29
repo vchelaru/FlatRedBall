@@ -52,93 +52,6 @@ namespace FlatRedBall.Content.Instructions
         public double Time;
         #endregion
 
-
-        #region Properties
-        // These properties deserve some explanation.
-        // On the 360 Xml Attributes are ignored.  Therefore
-        // the public object Value up above is never set when
-        // deserializing (on the 360 only).  Since the name of
-        // the attributes being deserialized depends on the type
-        // the only way to pick them all up regardless of type is
-        // by making properties for each one.  However, this clutters
-        // the class and makes further serialization impossible.  So as
-        // a clever HACK I decided to put XmlIgnore attributes on each property.
-        // These are ignored on the PC but used on the 360.  Naughty naughty, but
-        // what can I do?
-
-        [XmlIgnore]
-        public string ValueAsString
-        {
-            set { Value = value; }
-            get { return "";}// throw new Exception("This is only so the Serializer functions.  Use the Value field."); }
-        }
-
-        [XmlIgnore]
-        public float ValueAsFloat
-        {
-            set { Value = value; }
-            get { return 0.0f;}// throw new Exception("This is only so the Serializer functions.  Use the Value field."); }
-        }
-
-        [XmlIgnore]
-        public int ValueAsInt
-        {
-            set { Value = value; }
-            get { return 0;}// throw new Exception("This is only so the Serializer functions works.  Use the Value field."); }
-        }
-
-        [XmlIgnore]
-        public byte ValueAsByte
-        {
-            set { Value = value; }
-            get { return 0;}// throw new Exception("This is only so the Serializer functions works.  Use the Value field."); }
-        }
-
-        [XmlIgnore]
-        public bool ValueAsBool
-        {
-            set { Value = value; }
-            get { return false;}// throw new Exception("This is only so the Serializer functions.  Use the Value field."); }
-        }
-
-        [XmlIgnore]
-        public long ValueAsLong
-        {
-            set { Value = value; }
-            get { return 0;}// throw new Exception("This is only so the Serializer functions.  Use the Value field."); }
-        }
-
-        [XmlIgnore]
-        public double ValueAsDouble
-        {
-            set { Value = value; }
-            get { return 0;}// throw new Exception("This is only so the Serializer functions.  Use the Value field."); }
-        }
-
-        [XmlIgnore]
-        public object ValueAsObject
-        {
-            set { Value = value; }
-            get { return null;}// throw new Exception("This is only so the Serializer functions.  Use the Value field."); }
-        }
-
-        [XmlIgnore]
-        public Vector3 ValueAsVector3
-        {
-            get { return new Vector3(); }
-            set { Value = value; }
-        }
-
-        [XmlIgnore]
-        public List<FlatRedBall.Math.Geometry.Point> ValueAsListOfPoints
-        {
-            get { return new List<FlatRedBall.Math.Geometry.Point>(); }
-            set { Value = value; }
-        }
-
-        #endregion
-
-
         #region Methods
 
 
@@ -245,7 +158,7 @@ namespace FlatRedBall.Content.Instructions
                 target.GetType(),
                 typeOfMember);
 
-#if WINDOWS_8 || UWP
+#if UWP
             ConstructorInfo ctor = t.GetConstructor(
                 new Type[] { target.GetType(), typeof(string), typeOfMember, typeof(double) });
 #else

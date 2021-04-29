@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows;
+using System.Windows.Media;
 
 namespace Npc.ViewModels
 {
@@ -101,6 +102,22 @@ namespace Npc.ViewModels
                 else
                 {
                     return ProjectLocation;
+                }
+            }
+        }
+
+        [DependsOn(nameof(FinalDirectory))]
+        public SolidColorBrush FinalDirectoryForeground
+        {
+            get
+            {
+                if(System.IO.Directory.Exists(FinalDirectory))
+                {
+                    return Brushes.Red;
+                }
+                else
+                {
+                    return Brushes.Black;
                 }
             }
         }

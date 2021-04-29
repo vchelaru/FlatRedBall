@@ -114,9 +114,11 @@ namespace OfficialPluginsCore.Wizard.Models
             return (OptionContainer)Add(item);
         }
 
-        public void AddTitle(string title)
+        public void AddTitle(string title, string visibilityBinding = null)
         {
-            Add(new DataItem { LabelText = title, LabelFontSize = 24 });
+            var dataItem = new DataItem { LabelText = title, LabelFontSize = 24 };
+            dataItem.VisibilityBinding = visibilityBinding;
+            Add(dataItem);
         }
 
         public void AddText(string text, string visibilityBinding = null)
@@ -200,13 +202,23 @@ namespace OfficialPluginsCore.Wizard.Models
             stackPanel.DataContext = ViewModel;
             scrollView.Content = stackPanel;
 
-            void AddRectangle() =>
-                stackPanel.Children.Add(new Rectangle() { Height = 12 });
+            void AddRectangle(DataItem dataItem)
+            {
+                var rectangle = new Rectangle() { Height = 12 };
+                stackPanel.Children.Add(rectangle);
+
+                if (!string.IsNullOrEmpty(dataItem.VisibilityBinding))
+                {
+                    var binding = new Binding(dataItem.VisibilityBinding) { Converter = new BooleanToVisibilityConverter() };
+                    rectangle.SetBinding(Rectangle.VisibilityProperty, binding);
+                }
+
+            }
             foreach (var dataItem in DataItems)
             {
                 AddItem(stackPanel, grid, dataItem);
 
-                AddRectangle();
+                AddRectangle(dataItem);
             }
 
             if (showBack)
@@ -361,7 +373,7 @@ namespace OfficialPluginsCore.Wizard.Models
                             textBox.AcceptsReturn = true;
                             textBox.HorizontalAlignment = HorizontalAlignment.Stretch;
 
-                            textBox.Height = 140;
+                            textBox.Height = 240;
                         }
 
                         stackPanel.Children.Add(textBox);

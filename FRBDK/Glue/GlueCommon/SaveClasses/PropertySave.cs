@@ -73,7 +73,19 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 if (propertySave.Name == nameToSearchFor)
                 {
-                    return (T)propertySave.Value;
+                    var uncastedValue = propertySave.Value;
+                    if(typeof(T) == typeof(int) && uncastedValue is long asLong)
+                    {
+                        return (T)((object)(int)asLong);
+                    }
+                    else if(typeof(T) == typeof(float) && uncastedValue is double asDouble)
+                    {
+                        return (T)((object)(float)asDouble);
+                    }
+                    else
+                    {
+                        return (T)propertySave.Value;
+                    }
                 }
             }
             return default(T);

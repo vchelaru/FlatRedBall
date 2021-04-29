@@ -218,7 +218,7 @@ namespace TiledPluginCore.CodeGeneration
                         $"SourceType to {SourceType.FlatRedBallType}");
                 }
 
-                var isVisible = namedObjectSave.GetCustomVariable("Visible")?.ValueAsBool == true;
+                var isVisible = namedObjectSave.GetCustomVariable("Visible")?.Value is bool asBool && asBool == true;
 
                 if (!isVisible)
                 {
