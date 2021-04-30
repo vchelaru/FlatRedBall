@@ -111,6 +111,12 @@ namespace OfficialPluginsCore.Wizard.Models
         public Visibility PlayerEntityImportUiVisibility =>
             (AddPlayerEntity && PlayerCreationType == PlayerCreationType.ImportEntity).ToVisibility();
 
+        public string PlayerEntityImportUrl
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         [DependsOn(nameof(AddPlayerEntity))]
         [DependsOn(nameof(AddCloudCollision))]
         [DependsOn(nameof(PlayerControlType))]
@@ -134,7 +140,7 @@ namespace OfficialPluginsCore.Wizard.Models
             // Shouldn't be tied specifically to platformer, since borders can be added
             // no matter what kind of movement we have.
             AddPlayerEntity;
-        //PlayerControlType == GameType.Platformer;
+        
 
         public bool OffsetPlayerPosition
         {

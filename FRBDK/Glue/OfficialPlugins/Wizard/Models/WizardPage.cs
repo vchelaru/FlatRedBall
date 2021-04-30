@@ -279,6 +279,8 @@ namespace OfficialPluginsCore.Wizard.Models
                 case ViewType.CheckBox:
                     var checkBox = new CheckBox();
                     checkBox.Content = dataItem.LabelText;
+                    checkBox.HorizontalAlignment = HorizontalAlignment.Left;
+                    checkBox.VerticalContentAlignment = VerticalAlignment.Center;
                     checkBox.SetBinding(CheckBox.IsCheckedProperty, dataItem.ViewModelProperty);
                         //IsChecked = vmValue is bool asBool && asBool;
 

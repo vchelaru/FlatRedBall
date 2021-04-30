@@ -36,11 +36,19 @@ namespace OfficialPluginsCore.Wizard.Managers
         {
             var tasks = new List<TaskItemViewModel>();
 
-            void Add(string name, Func<Task> task)
+            void AddTask(string name, Func<Task> task)
             {
                 var toAdd = new TaskItemViewModel();
                 toAdd.Description = name;
                 toAdd.Task = task;
+                tasks.Add(toAdd);
+            }
+
+            void Add(string name, Action action)
+            {
+                var toAdd = new TaskItemViewModel();
+                toAdd.Description = name;
+                toAdd.Action = action;
                 tasks.Add(toAdd);
             }
 
@@ -53,72 +61,52 @@ namespace OfficialPluginsCore.Wizard.Managers
             // Add Gum before adding a GameScreen, so the GameScreen gets its Gum screen
             if (vm.AddGum)
             {
-                Add("Add Gum", async () =>
-                {
-                    await HandleAddGum(vm);
-                    await TaskManager.Self.WaitForAllTasksFinished();
-                });
+                Add("Add Gum", () => HandleAddGum(vm));
             }
 
             if (vm.AddGameScreen)
             {
-                Add("Add GameScreen", async () =>
+                Add("Add GameScreen", () =>
                 {
                     gameScreen = HandleAddGameScreen(vm, ref solidCollisionNos, ref cloudCollisionNos);
-                    await TaskManager.Self.WaitForAllTasksFinished();
                 });
             }
 
             if (vm.AddPlayerEntity)
             {
-                Add("Add Player", async () =>
+                AddTask("Add Player", async () =>
                 {
-                    var playerEntity = HandleAddPlayerEntity(vm);
-
+                    var playerEntity = await HandleAddPlayerEntity(vm);
                     HandleAddPlayerInstance(vm, gameScreen, solidCollisionNos, cloudCollisionNos, playerEntity);
-
-                    await TaskManager.Self.WaitForAllTasksFinished();
                 });
             }
 
             if (vm.CreateLevels)
             {
-                Add("Create Levels", async () =>
-                {
-                    HandleCreateLevels(vm, gameScreen);
-                    await TaskManager.Self.WaitForAllTasksFinished();
-                });
+                Add("Create Levels", () =>
+                    HandleCreateLevels(vm, gameScreen));
             }
 
             if (vm.AddCameraController && vm.AddGameScreen)
             {
-                Add("Create Camera", async () =>
-                {
-                    ApplyCameraController(vm, gameScreen);
-                    await TaskManager.Self.WaitForAllTasksFinished();
-                });
+                Add("Create Camera", () =>
+                    ApplyCameraController(vm, gameScreen));
             }
 
             if(vm.ElementImportUrls.Count > 0)
             {
-                Add("Importing Screens/Entities", async () =>
-                {
-                    ImportElements(vm);
-                    await TaskManager.Self.WaitForAllTasksFinished();
-                });
+                Add("Importing Screens/Entities", () =>
+                    ImportElements(vm));
             }
 
             if(!string.IsNullOrEmpty(vm.NamedObjectSavesSerialized))
             {
-                Add("Adding additional Objects", async () =>
-                {
-                    ImportAdditionalObjects(vm.NamedObjectSavesSerialized);
-                    await TaskManager.Self.WaitForAllTasksFinished();
-                });
+                Add("Adding additional Objects", () =>
+                    ImportAdditionalObjects(vm.NamedObjectSavesSerialized));
             }
 
 
-            Add("Flushing Files", async () =>
+            AddTask("Flushing Files", async () =>
             {
                 var didWait = false;
 
@@ -170,7 +158,10 @@ namespace OfficialPluginsCore.Wizard.Managers
                 currentTask = task;
                 maxTaskCount = 0;
 
-                await task.Task();
+                if(task.Task != null) await task.Task();
+                if (task.Action != null) task.Action();
+
+                await TaskManager.Self.WaitForAllTasksFinished();
                 task.IsInProgress = false;
                 task.IsComplete = true;
             }
@@ -309,7 +300,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
         }
 
-        private static async Task HandleAddGum(WizardData vm)
+        private static void HandleAddGum(WizardData vm)
         {
             if (vm.AddFlatRedBallForms)
             {
@@ -319,8 +310,6 @@ namespace OfficialPluginsCore.Wizard.Managers
             {
                 PluginManager.CallPluginMethod("Gum Plugin", "CreateGumProjectNoForms");
             }
-
-            await FlatRedBall.Glue.Managers.TaskManager.Self.WaitForAllTasksFinished();
         }
 
         private static ScreenSave HandleAddGameScreen(WizardData vm, ref NamedObjectSave solidCollisionNos, ref NamedObjectSave cloudCollisionNos)
@@ -346,13 +335,13 @@ namespace OfficialPluginsCore.Wizard.Managers
             return gameScreen;
         }
 
-        private static EntitySave HandleAddPlayerEntity(WizardData vm)
+        private static async Task<EntitySave> HandleAddPlayerEntity(WizardData vm)
         {
             EntitySave playerEntity;
 
             if (vm.PlayerCreationType == PlayerCreationType.ImportEntity)
             {
-                playerEntity = ImportPlayerEntity(vm);
+                playerEntity = await ImportPlayerEntity(vm);
             }
             else // create from options
             {
@@ -387,28 +376,24 @@ namespace OfficialPluginsCore.Wizard.Managers
             return playerEntity;
         }
 
-        private static EntitySave ImportPlayerEntity(WizardData vm)
+        private static async Task<EntitySave> ImportPlayerEntity(WizardData vm)
         {
             EntitySave playerEntity = null;
             var downloadFolder = FileManager.UserApplicationDataForThisApplication + "ImportDownload\\";
 
-            foreach (var item in vm.ElementImportUrls)
-            {
-                var destinationFileName = downloadFolder + FileManager.RemovePath(item);
+            var playerUrl = vm.PlayerEntityImportUrl;
+
+            var destinationFileName = downloadFolder + FileManager.RemovePath(playerUrl);
                 
-                using var httpClient = new HttpClient { Timeout = TimeSpan.FromDays(1), };
-                var downloadTask = NetworkManager.Self.DownloadWithProgress(
-                    httpClient, item, destinationFileName, null);
+            using var httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(5), };
+            var result = await NetworkManager.Self.DownloadWithProgress(
+                httpClient, playerUrl, destinationFileName, null);
 
-                downloadTask.Wait();
-
-                var result = downloadTask.Result;
-
-                if (result.Succeeded)
-                {
-                    playerEntity = (EntitySave)GlueCommands.Self.GluxCommands.ImportScreenOrEntityFromFile(destinationFileName);
-                }
+            if (result.Succeeded)
+            {
+                playerEntity = (EntitySave)GlueCommands.Self.GluxCommands.ImportScreenOrEntityFromFile(destinationFileName);
             }
+
             return playerEntity;
         }
 
@@ -446,7 +431,8 @@ namespace OfficialPluginsCore.Wizard.Managers
             return playerEntity;
         }
 
-        private static void HandleAddPlayerInstance(WizardData vm, ScreenSave gameScreen, NamedObjectSave solidCollisionNos, NamedObjectSave cloudCollisionNos, EntitySave playerEntity)
+        private static void HandleAddPlayerInstance(WizardData vm, ScreenSave gameScreen, NamedObjectSave solidCollisionNos, 
+            NamedObjectSave cloudCollisionNos, EntitySave playerEntity)
         {
             NamedObjectSave playerList = null;
             if (vm.AddGameScreen && vm.AddPlayerListToGameScreen)
@@ -476,6 +462,10 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             if (vm.AddGameScreen && vm.AddPlayerListToGameScreen)
             {
+                // rely on the entity rather than the view model, because the entity could have been
+                // imported, so the view model doesn't know.
+                var isPlatformer = playerEntity.Properties.GetValue<bool>("IsPlatformer");
+
                 if (vm.CollideAgainstSolidCollision)
                 {
                     PluginManager.ReactToCreateCollisionRelationshipsBetween(playerList, solidCollisionNos);
@@ -487,7 +477,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                     // PlatformerSolid is 3
                     // PlatformerCloud is 4
 
-                    if (vm.PlayerControlType == GameType.Platformer)
+                    if (isPlatformer)
                     {
                         nos.Properties.SetValue("CollisionType", 3);
                     }
@@ -508,7 +498,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                     var nos = gameScreen.GetNamedObject("PlayerListVsCloudCollision");
 
-                    if (vm.PlayerControlType == GameType.Platformer)
+                    if (isPlatformer)
                     {
                         nos.Properties.SetValue("CollisionType", 4);
                     }

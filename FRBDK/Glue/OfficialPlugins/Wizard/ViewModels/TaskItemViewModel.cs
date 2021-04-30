@@ -51,5 +51,6 @@ namespace OfficialPluginsCore.Wizard.ViewModels
 
 
         public Func<Task> Task { get; set; }
+        public Action Action { get; set; }
     }
 }

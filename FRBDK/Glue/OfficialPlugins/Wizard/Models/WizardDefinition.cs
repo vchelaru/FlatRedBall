@@ -157,6 +157,11 @@ namespace OfficialPluginsCore.Wizard.Models
                     return null;
                 };
 
+                formsData.NextClicked += () =>
+                {
+                    ViewModel.PlayerEntityImportUrl = elementImportViewModel.Url;
+                };
+
                 FormsDataList.Add(formsData);
             }
             #endregion
