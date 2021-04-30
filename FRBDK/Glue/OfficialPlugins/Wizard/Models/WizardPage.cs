@@ -78,6 +78,7 @@ namespace OfficialPluginsCore.Wizard.Models
     {
         #region Events
 
+        public event Action Shown;
         public event Action NextClicked;
         public event Action BackClicked;
 
@@ -254,6 +255,7 @@ namespace OfficialPluginsCore.Wizard.Models
                 grid.Children.Add(nextButton);
             }
 
+            Shown?.Invoke();
         }
 
         private void AddItem(StackPanel stackPanel, Grid grid, DataItem dataItem)

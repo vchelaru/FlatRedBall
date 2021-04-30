@@ -88,7 +88,13 @@ namespace FlatRedBall.Input
                 Connected = connected;
             }
 
+            /// <summary>
+            /// The index of the gamepad which connected or disconnected. This is 0-based, so values are 0 to 3 inclusive.
+            /// </summary>
             public int PlayerIndex { get; set; }
+            /// <summary>
+            /// Whether the gamepad was connected. If false, the gamepad was disconnected.
+            /// </summary>
             public bool Connected { get; set; }
         }
 
