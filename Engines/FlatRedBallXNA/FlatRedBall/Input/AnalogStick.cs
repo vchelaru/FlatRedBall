@@ -310,6 +310,8 @@ namespace FlatRedBall.Input
 
         #endregion
 
+        #region I2DInput Implementation
+
         float I2DInput.X
         {
             get { return Position.X; }
@@ -331,7 +333,9 @@ namespace FlatRedBall.Input
         }
 
 
-        float I2DInput.Magnitude => (float) this.mMagnitude; 
+        float I2DInput.Magnitude => (float) this.mMagnitude;
+
+        #endregion
 
         I1DInput horizontal;
         public I1DInput Horizontal
@@ -360,5 +364,7 @@ namespace FlatRedBall.Input
                 return vertical;
             }
         }
+
+
     }
 }

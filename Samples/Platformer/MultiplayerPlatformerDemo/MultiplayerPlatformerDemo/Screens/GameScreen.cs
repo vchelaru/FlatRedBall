@@ -31,6 +31,7 @@ namespace MultiplayerPlatformerDemo.Screens
                 }
             }
 
+            // Offset the number of layers so players show up in front of the map
             Map.Z = -3;
 
         }
