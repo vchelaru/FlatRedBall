@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Shapes;
+using ToolsUtilities;
 
 namespace OfficialPluginsCore.Wizard.Models
 {
@@ -73,10 +74,16 @@ namespace OfficialPluginsCore.Wizard.Models
 
     #endregion
 
-    class FormsData
+    class WizardPage
     {
+        #region Events
+
         public event Action NextClicked;
         public event Action BackClicked;
+
+        public Func<GeneralResponse> Validate;
+
+        #endregion
 
         Button nextButton;
 
@@ -91,7 +98,7 @@ namespace OfficialPluginsCore.Wizard.Models
         public object ViewModel { get; set; }
         public Func<bool> Predicate;
 
-        public FormsData(object viewModel, Func<bool> predicate = null)
+        public WizardPage(object viewModel, Func<bool> predicate = null)
         {
             this.ViewModel = viewModel;
             this.Predicate = predicate;
@@ -136,7 +143,7 @@ namespace OfficialPluginsCore.Wizard.Models
             Add(dataItem);
         }
 
-        public DataItem AddView(UserControl userControl)
+        public DataItem AddView(FrameworkElement userControl)
         {
             var dataItem = new DataItem();
             dataItem.ViewType = ViewType.View;
@@ -242,7 +249,7 @@ namespace OfficialPluginsCore.Wizard.Models
                 nextButton.Width = 150;
                 nextButton.Height = 30;
                 nextButton.HorizontalAlignment = HorizontalAlignment.Right;
-                nextButton.Click += (not, used) => NextClicked();
+                nextButton.Click += (not, used) => CallNext();
                 Grid.SetRow(nextButton, 1);
                 grid.Children.Add(nextButton);
             }
@@ -380,7 +387,7 @@ namespace OfficialPluginsCore.Wizard.Models
                     }
                     break;
                 case ViewType.View:
-                    var userControl = dataItem.Value as UserControl;
+                    var userControl = dataItem.Value as FrameworkElement;
                     var oldStackPanel = userControl.Parent as StackPanel;
 
                     if(oldStackPanel != null)
@@ -401,6 +408,18 @@ namespace OfficialPluginsCore.Wizard.Models
 
         }
 
-        public void CallNext() => NextClicked();
+        public void CallNext()
+        {
+            var response = Validate?.Invoke() ??  GeneralResponse.SuccessfulResponse;
+
+            if(response.Succeeded == false)
+            {
+                MessageBox.Show(response.Message);
+            }
+            else
+            {
+                NextClicked();
+            }
+        }
     }
 }

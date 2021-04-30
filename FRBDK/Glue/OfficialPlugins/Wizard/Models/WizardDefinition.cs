@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using ToolsUtilities;
 
 namespace OfficialPluginsCore.Wizard.Models
 {
@@ -16,7 +17,7 @@ namespace OfficialPluginsCore.Wizard.Models
     {
         #region Fields/Properties
 
-        public List<FormsData> FormsDataList { get; private set; } = new List<FormsData>();
+        public List<WizardPage> FormsDataList { get; private set; } = new List<WizardPage>();
         public WizardData ViewModel { get; private set; }
 
         public event Action GoToLast;
@@ -37,7 +38,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
             #region Welcome Page
             {
-                var formsData = new FormsData(ViewModel);
+                var formsData = new WizardPage(ViewModel);
                 var page = new WizardWelcomePage();
                 var welcomePageViewModel = new WizardWelcomeViewModel();
                 page.DataContext = welcomePageViewModel;
@@ -65,7 +66,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
             #region Game Screen
             {
-                var formsData = new FormsData(ViewModel);
+                var formsData = new WizardPage(ViewModel);
 
                 formsData.AddTitle("GameScreen");
                 formsData.AddText("Most games have a GameScreen which is where the main gameplay happens. " +
@@ -87,7 +88,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
             #region Player Entity
             {
-                var formsData = new FormsData(ViewModel);
+                var formsData = new WizardPage(ViewModel);
                 formsData.AddTitle("Player Entity");
 
                 formsData.AddText("A Player Entity is controlled by the player. Examples include a " +
@@ -95,18 +96,32 @@ namespace OfficialPluginsCore.Wizard.Models
 
                 formsData.AddBoolValue("Add Player Entity", nameof(ViewModel.AddPlayerEntity));
 
-                formsData.AddOptions("What kind of control will the Player have?", nameof(ViewModel.PlayerControlType), nameof(ViewModel.AddPlayerEntity))
+                formsData.AddOptions("How would you like to create the player?", nameof(ViewModel.PlayerCreationType), nameof(ViewModel.AddPlayerEntity))
+                    .Add("Select Options", PlayerCreationType.SelectOptions)
+                    .Add("Import Entity", PlayerCreationType.ImportEntity);
+
+
+                var grid = new Grid();
+                grid.SetBinding(Grid.VisibilityProperty, nameof(ViewModel.PlayerEntityImportUiVisibility));
+                var elementImportItem = new ElementImportItem();
+                var elementImportViewModel = new ElementImportItemViewModel();
+                elementImportViewModel.HintText = "Enter Player Entity Import URL";
+                elementImportItem.DataContext = elementImportViewModel;
+                grid.Children.Add(elementImportItem);
+                formsData.AddView(grid);
+
+                formsData.AddOptions("What kind of control will the Player have?", nameof(ViewModel.PlayerControlType), nameof(ViewModel.IsPlayerCreationSelectingOptions))
                     .Add("Top-down", GameType.Topdown)
                     .Add("Platformer", GameType.Platformer)
                     .Add("None (controls be added later)", GameType.None);
 
 
-                formsData.AddOptions("What kind of collision will the Player have?", nameof(ViewModel.PlayerCollisionType), nameof(ViewModel.AddPlayerEntity))
+                formsData.AddOptions("What kind of collision will the Player have?", nameof(ViewModel.PlayerCollisionType), nameof(ViewModel.IsPlayerCreationSelectingOptions))
                     .Add("Rectangle", CollisionType.Rectangle)
                     .Add("Circle", CollisionType.Circle)
                     .Add("None (will still be an ICollidable)", CollisionType.None);
 
-                formsData.AddBoolValue("Add Sprite to Player Entity", nameof(ViewModel.AddPlayerSprite), nameof(ViewModel.AddPlayerEntity));
+                formsData.AddBoolValue("Add Sprite to Player Entity", nameof(ViewModel.AddPlayerSprite), nameof(ViewModel.IsPlayerCreationSelectingOptions));
 
                 formsData.AddTitle("Player Instance in GameScreen", nameof(ViewModel.AddPlayerEntity));
 
@@ -119,13 +134,36 @@ namespace OfficialPluginsCore.Wizard.Models
                 formsData.AddBoolValue("Offset Player Instance", nameof(ViewModel.OffsetPlayerPosition), nameof(ViewModel.ShowOffsetPositionUi))
                     .Subtext = "Recommended - offsets the player so it lands on the map at the start of the game";
 
+                formsData.Validate = () =>
+                {
+                    if(ViewModel.AddPlayerEntity && ViewModel.PlayerCreationType == PlayerCreationType.ImportEntity)
+                    {
+                        if(elementImportViewModel.UrlStatus == UrlStatus.Failed)
+                        {
+                            return GeneralResponse.UnsuccessfulWith($"The Player Entity could not be imported from {elementImportViewModel.Url}");
+                        }
+                        else if(elementImportViewModel.UrlStatus == UrlStatus.Unknown)
+                        {
+                            if(string.IsNullOrWhiteSpace( elementImportViewModel.Url))
+                            {
+                                return GeneralResponse.UnsuccessfulWith($"Player URL must be specified");
+                            }
+                            else
+                            {
+                                return GeneralResponse.UnsuccessfulWith($"Still determining whether Player Entity can be imported");
+                            }
+                        }
+                    }
+                    return null;
+                };
+
                 FormsDataList.Add(formsData);
             }
             #endregion
 
             #region Levels
             {
-                var formsData = new FormsData(ViewModel);
+                var formsData = new WizardPage(ViewModel);
                 formsData.AddTitle("Levels");
                 formsData.AddText("Games can have multiple levels. Usually each level is a separate Tiled file.");
 
@@ -145,7 +183,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
             #region UI
             {
-                var formsData = new FormsData(ViewModel);
+                var formsData = new WizardPage(ViewModel);
                 formsData.AddTitle("UI");
                 formsData.AddText("Gum can be used to create layout for UI and game HUD. FlatRedBall.Forms " +
                     "provides common UI controls like buttons, text boxes, and list boxes");
@@ -159,7 +197,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
             #region Camera
             {
-                var formsData = new FormsData(ViewModel);
+                var formsData = new WizardPage(ViewModel);
                 formsData.AddTitle("Camera");
                 formsData.AddText("The Camera Controller Entity can simplify code for following a player and staying within the bounds of a map.");
 
@@ -177,7 +215,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
             {
                 // todo - apply from main view model
-                var formsData = new FormsData(ViewModel);
+                var formsData = new WizardPage(ViewModel);
 
                 formsData.AddTitle("Download/Import Screens and Entities");
 
@@ -225,7 +263,7 @@ namespace OfficialPluginsCore.Wizard.Models
             #region Named Objects
 
             {
-                var formsData = new FormsData(ViewModel);
+                var formsData = new WizardPage(ViewModel);
 
                 formsData.AddTitle("Additional Objects");
 
@@ -240,7 +278,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
             #region All Done!
             {
-                var formsData = new FormsData(ViewModel);
+                var formsData = new WizardPage(ViewModel);
                 formsData.AddText("All Done!");
                 formsData.AddText("Click the Done button to set up your project, or click the Back button to change settings");
                 formsData.AddAction("Copy Wizard Configuration to Clipboard", HandleCopyWizardSettings);
@@ -272,7 +310,7 @@ namespace OfficialPluginsCore.Wizard.Models
             //formsData.Fill(StackP)
         }
 
-        void Show(FormsData formsData)
+        void Show(WizardPage formsData)
         {
             var index = FormsDataList.IndexOf(formsData);
 

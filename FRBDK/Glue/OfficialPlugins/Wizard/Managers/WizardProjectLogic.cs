@@ -24,6 +24,14 @@ namespace OfficialPluginsCore.Wizard.Managers
 {
     public class WizardProjectLogic : Singleton<WizardProjectLogic>
     {
+        #region Internal Classes
+        class ElementAndNosList
+        {
+            public GlueElement Element { get; set; }
+            public List<NamedObjectSave> NosList { get; set; }
+        }
+        #endregion
+
         public async Task Apply(WizardData vm)
         {
             var tasks = new List<TaskItemViewModel>();
@@ -65,7 +73,10 @@ namespace OfficialPluginsCore.Wizard.Managers
             {
                 Add("Add Player", async () =>
                 {
-                    HandleAddPlayerEntity(vm, gameScreen, solidCollisionNos, cloudCollisionNos);
+                    var playerEntity = HandleAddPlayerEntity(vm);
+
+                    HandleAddPlayerInstance(vm, gameScreen, solidCollisionNos, cloudCollisionNos, playerEntity);
+
                     await TaskManager.Self.WaitForAllTasksFinished();
                 });
             }
@@ -169,12 +180,6 @@ namespace OfficialPluginsCore.Wizard.Managers
             // just in case, refresh everything
             GlueCommands.Self.RefreshCommands.RefreshTreeNodes();
 
-        }
-
-        class ElementAndNosList
-        {
-            public GlueElement Element { get; set; }
-            public List<NamedObjectSave> NosList { get; set; }
         }
 
         private void ImportAdditionalObjects(string namedObjectSavesSerialized)
@@ -341,8 +346,75 @@ namespace OfficialPluginsCore.Wizard.Managers
             return gameScreen;
         }
 
-        private static void HandleAddPlayerEntity(WizardData vm, ScreenSave gameScreen, NamedObjectSave solidCollisionNos, NamedObjectSave cloudCollisionNos)
+        private static EntitySave HandleAddPlayerEntity(WizardData vm)
         {
+            EntitySave playerEntity;
+
+            if (vm.PlayerCreationType == PlayerCreationType.ImportEntity)
+            {
+                playerEntity = ImportPlayerEntity(vm);
+            }
+            else // create from options
+            {
+                playerEntity = CreatePlayerEntityFromOptions(vm);
+            }
+
+            if(playerEntity != null)
+            {
+                // If this is null, the download failed.
+                // If the download fails, what do we do?
+
+                // requires the current entity be set:
+                GlueState.Self.CurrentElement = playerEntity;
+
+                if(vm.PlayerCreationType == PlayerCreationType.SelectOptions)
+                {
+                    if (vm.PlayerControlType == GameType.Platformer)
+                    {
+                        // mark as platformer
+                        PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeCurrentEntityPlatformer");
+
+                    }
+                    else if (vm.PlayerControlType == GameType.Topdown)
+                    {
+                        // mark as top down
+                        PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeCurrentEntityTopDown");
+                    }
+                }
+
+            }
+
+            return playerEntity;
+        }
+
+        private static EntitySave ImportPlayerEntity(WizardData vm)
+        {
+            EntitySave playerEntity = null;
+            var downloadFolder = FileManager.UserApplicationDataForThisApplication + "ImportDownload\\";
+
+            foreach (var item in vm.ElementImportUrls)
+            {
+                var destinationFileName = downloadFolder + FileManager.RemovePath(item);
+                
+                using var httpClient = new HttpClient { Timeout = TimeSpan.FromDays(1), };
+                var downloadTask = NetworkManager.Self.DownloadWithProgress(
+                    httpClient, item, destinationFileName, null);
+
+                downloadTask.Wait();
+
+                var result = downloadTask.Result;
+
+                if (result.Succeeded)
+                {
+                    playerEntity = (EntitySave)GlueCommands.Self.GluxCommands.ImportScreenOrEntityFromFile(destinationFileName);
+                }
+            }
+            return playerEntity;
+        }
+
+        private static EntitySave CreatePlayerEntityFromOptions(WizardData vm)
+        {
+            EntitySave playerEntity;
             var addEntityVm = new AddEntityViewModel();
             addEntityVm.Name = "Player";
 
@@ -363,29 +435,19 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             addEntityVm.IsSpriteChecked = vm.AddPlayerSprite;
 
-            var playerEntity = GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(addEntityVm);
 
+            playerEntity = GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(addEntityVm);
             if (vm.OffsetPlayerPosition)
             {
                 playerEntity.SetCustomVariable("X", 64.0f);
                 playerEntity.SetCustomVariable("Y", -64.0f);
             }
 
-            // requires the current entity be set:
-            GlueState.Self.CurrentElement = playerEntity;
+            return playerEntity;
+        }
 
-            if (vm.PlayerControlType == GameType.Platformer)
-            {
-                // mark as platformer
-                PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeCurrentEntityPlatformer");
-
-            }
-            else if (vm.PlayerControlType == GameType.Topdown)
-            {
-                // mark as top down
-                PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeCurrentEntityTopDown");
-            }
-
+        private static void HandleAddPlayerInstance(WizardData vm, ScreenSave gameScreen, NamedObjectSave solidCollisionNos, NamedObjectSave cloudCollisionNos, EntitySave playerEntity)
+        {
             NamedObjectSave playerList = null;
             if (vm.AddGameScreen && vm.AddPlayerListToGameScreen)
             {

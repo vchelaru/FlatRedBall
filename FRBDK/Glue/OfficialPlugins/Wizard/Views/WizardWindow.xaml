@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OfficialPluginsCore.Wizard.Views"
         mc:Ignorable="d"
-        Title="Project Setup Wizard" Height="580" Width="500"
+        Title="Project Setup Wizard" Height="620" Width="500"
         PreviewKeyDown="Window_PreviewKeyDown">
     <Grid Margin="16">
         <local:DownloadingProgress x:Name="PleaseWaitGrid" Visibility="Collapsed">

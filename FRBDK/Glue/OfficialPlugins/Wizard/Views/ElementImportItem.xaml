@@ -18,7 +18,7 @@
         </Grid.RowDefinitions>
         <TextBox x:Name="UrlTextBox" Text="{Binding Url}" Height="22" >
         </TextBox>
-        <TextBlock IsHitTestVisible="False" Text="Enter Screen/Entity import url here" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="6,0,0,0" Foreground="DarkGray">
+        <TextBlock IsHitTestVisible="False" Text="{Binding HintText}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="6,0,0,0" Foreground="DarkGray">
             <TextBlock.Style>
                 <Style TargetType="{x:Type TextBlock}">
                     <Setter Property="Visibility" Value="Collapsed"/>

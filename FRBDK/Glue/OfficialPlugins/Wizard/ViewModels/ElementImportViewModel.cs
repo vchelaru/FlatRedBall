@@ -60,12 +60,22 @@ namespace OfficialPluginsCore.Wizard.ViewModels
         public Visibility ErrorVisibility =>
             (UrlStatus == UrlStatus.Failed).ToVisibility();
 
+        public string HintText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public string ErrorMessage
         {
             get => Get<string>();
             set => Set(value);
         }
 
+        public ElementImportItemViewModel()
+        {
+            HintText = "Enter Screen/Entity Import URL";
+        }
 
         public async void UpdateUrlStatus()
         {

@@ -1565,9 +1565,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region Import
 
-        public void ImportScreenOrEntityFromFile(FilePath filePath)
+        public GlueElement ImportScreenOrEntityFromFile(FilePath filePath)
         {
-            ElementImporter.ImportElementFromFile(filePath.FullPath, moveToSelectedFolderTreeNode: false);
+            return ElementImporter.ImportElementFromFile(filePath.FullPath, moveToSelectedFolderTreeNode: false);
         }
 
 

@@ -113,7 +113,7 @@ namespace FlatRedBall.Glue.IO
 
         }
 
-        public static void ImportElementFromFile(string fileName, bool moveToSelectedFolderTreeNode, string subDirectory = null)
+        public static GlueElement ImportElementFromFile(string fileName, bool moveToSelectedFolderTreeNode, string subDirectory = null)
         {
             string unpackDirectory;
 
@@ -157,8 +157,6 @@ namespace FlatRedBall.Glue.IO
 
             ResolveElementReferences(newElement);
 
-
-
             #region Refresh and save everything
 
             GlueCommands.Self.DoOnUiThread(() =>
@@ -173,6 +171,8 @@ namespace FlatRedBall.Glue.IO
             GluxCommands.Self.SaveGlux();
 
             #endregion
+
+            return newElement;
         }
 
         private static void ImportScreen(string unpackDirectory, List<string> filesToAddToContent, 

@@ -5,6 +5,7 @@ using OfficialPluginsCore.Wizard.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows;
 using System.Xml.Serialization;
 
 namespace OfficialPluginsCore.Wizard.Models
@@ -23,6 +24,12 @@ namespace OfficialPluginsCore.Wizard.Models
         Rectangle,
         Circle,
         None
+    }
+
+    public enum PlayerCreationType
+    {
+        SelectOptions,
+        ImportEntity
     }
 
     #endregion
@@ -85,10 +92,32 @@ namespace OfficialPluginsCore.Wizard.Models
             set => Set(value);
         }
 
+        public PlayerCreationType PlayerCreationType
+        {
+            get => Get<PlayerCreationType>();
+            set => Set(value);
+        }
+
+
+        [DependsOn(nameof(PlayerCreationType))]
+        [DependsOn(nameof(AddPlayerEntity))]
+        public bool IsPlayerCreationSelectingOptions => 
+            PlayerCreationType == PlayerCreationType.SelectOptions &&
+            AddPlayerEntity;
+
+
+        [DependsOn(nameof(AddPlayerEntity))]
+        [DependsOn(nameof(PlayerCreationType))]
+        public Visibility PlayerEntityImportUiVisibility =>
+            (AddPlayerEntity && PlayerCreationType == PlayerCreationType.ImportEntity).ToVisibility();
+
         [DependsOn(nameof(AddPlayerEntity))]
         [DependsOn(nameof(AddCloudCollision))]
         [DependsOn(nameof(PlayerControlType))]
-        public bool ShowPlayerVsCloudCollision => AddPlayerEntity && AddCloudCollision && PlayerControlType == GameType.Platformer;
+        [DependsOn(nameof(PlayerCreationType))]
+        public bool ShowPlayerVsCloudCollision => 
+            AddPlayerEntity && 
+            (AddCloudCollision && PlayerControlType == GameType.Platformer || PlayerCreationType == PlayerCreationType.ImportEntity);
 
         [DependsOn(nameof(AddPlayerEntity))]
         [DependsOn(nameof(AddSolidCollision))]
