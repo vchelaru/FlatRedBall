@@ -69,6 +69,13 @@ namespace FlatRedBall.Forms.Controls.Games
 
         public event EventHandler PageAdvanced;
 
+        /// <summary>
+        /// If not null, this predicate is used to determine if input
+        /// has been pressed to advance the input. If null, the default 
+        /// page-advancing logic will be performed.
+        /// </summary>
+        public Func<bool> AdvancePageInputPredicate;
+
         #endregion
 
         #region Initialize
@@ -358,16 +365,26 @@ namespace FlatRedBall.Forms.Controls.Games
 
         public void OnFocusUpdate()
         {
-            var gamepads = GuiManager.GamePadsForUiControl;
-            for (int i = 0; i < gamepads.Count; i++)
+            if(AdvancePageInputPredicate != null)
             {
-                var gamepad = gamepads[i];
-
-                var inputDevice = gamepad as IInputDevice;
-
-                if(inputDevice.DefaultPrimaryActionInput.WasJustPressed)
+                if(AdvancePageInputPredicate())
                 {
                     ReactToInput();
+                }
+            }
+            else
+            {
+                var gamepads = GuiManager.GamePadsForUiControl;
+                for (int i = 0; i < gamepads.Count; i++)
+                {
+                    var gamepad = gamepads[i];
+
+                    var inputDevice = gamepad as IInputDevice;
+
+                    if(inputDevice.DefaultPrimaryActionInput.WasJustPressed)
+                    {
+                        ReactToInput();
+                    }
                 }
             }
 

@@ -1858,7 +1858,18 @@ namespace FlatRedBall.Gui
         /// Sets the cursor to be controlled by the joystick rather than the mouse.
         /// </summary>
         /// <param name="gamePad">Refernce to the Xbox360GamePad that will control the cursor.</param>
+        [Obsolete("Use SetControllingGamepad")]
         public void SetJoystickControl(Xbox360GamePad gamePad)
+        {
+            devicesControllingCursor.Clear();
+            devicesControllingCursor.Add(gamePad);
+        }
+
+        /// <summary>
+        /// Clears all input devices and sets the cursor to be controlled by the gamepad.
+        /// </summary>
+        /// <param name="gamePad"></param>
+        public void SetControllingGamepad(Xbox360GamePad gamePad)
         {
             devicesControllingCursor.Clear();
             devicesControllingCursor.Add(gamePad);

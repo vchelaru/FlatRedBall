@@ -144,11 +144,13 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                     .Line("return mCurrentMovement;");
 
             codeBlock.Line("/// <summary>");
-            codeBlock.Line("/// Which direction the character is facing.");
+            codeBlock.Line("/// Which direction the character is facing. This can be explicity set in code, but may get overridden by the current InputDevice.");
             codeBlock.Line("/// </summary>");
             codeBlock.Property("public HorizontalDirection", "DirectionFacing")
                 .Get()
-                    .Line("return mDirectionFacing;");
+                    .Line("return mDirectionFacing;").End()
+                .Set()
+                    .Line("mDirectionFacing = value;");
 
             codeBlock.Line("/// <summary>");
             codeBlock.Line("/// The input object which controls whether the jump was pressed.");
