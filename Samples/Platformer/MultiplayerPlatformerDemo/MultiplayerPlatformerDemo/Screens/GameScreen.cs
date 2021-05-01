@@ -17,7 +17,11 @@ namespace MultiplayerPlatformerDemo.Screens
 {
     public partial class GameScreen
     {
-        public static IndividualJoinComponentRuntime.JoinCategory[] PlayerJoinStates { get; private set; } = new IndividualJoinComponentRuntime.JoinCategory[4];
+        public static IndividualJoinComponentRuntime.JoinCategory[] PlayerJoinStates 
+        { 
+            get; 
+            private set; 
+        } = new IndividualJoinComponentRuntime.JoinCategory[4];
 
         void CustomInitialize()
         {
