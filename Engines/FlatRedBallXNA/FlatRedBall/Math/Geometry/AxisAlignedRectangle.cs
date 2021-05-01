@@ -15,7 +15,8 @@ using Color = Microsoft.Xna.Framework.Color;
 
 namespace FlatRedBall.Math.Geometry
 {
-    public class AxisAlignedRectangle : PositionedObject, IScalable, IEquatable<AxisAlignedRectangle>, IMouseOver, IVisible
+    public class AxisAlignedRectangle : PositionedObject, 
+        IPositionedSizedObject, IScalable, IEquatable<AxisAlignedRectangle>, IMouseOver, IVisible
     {
         #region Fields
         internal float mScaleX;

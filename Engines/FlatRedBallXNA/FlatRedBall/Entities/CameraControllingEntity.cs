@@ -122,11 +122,11 @@ namespace FlatRedBall.Entities
 
             if (Map != null)
             {
-                var mapLeft = Map.X + ExtraMapPadding;
-                var mapRight = Map.X + Map.Width - ExtraMapPadding;
+                var mapLeft = Map.Left + ExtraMapPadding;
+                var mapRight = Map.Left + Map.Width - ExtraMapPadding;
 
-                var mapBottom = Map.Y - Map.Height + ExtraMapPadding;
-                var mapTop = Map.Y - ExtraMapPadding;
+                var mapBottom = Map.Top - Map.Height + ExtraMapPadding;
+                var mapTop = Map.Top - ExtraMapPadding;
 
                 if (Camera.Main.OrthogonalWidth > Map.Width)
                 {
