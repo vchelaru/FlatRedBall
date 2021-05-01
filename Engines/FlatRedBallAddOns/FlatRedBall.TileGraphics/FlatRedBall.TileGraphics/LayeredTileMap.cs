@@ -29,6 +29,19 @@ namespace FlatRedBall.TileGraphics
         #endregion
 
         #region Properties
+
+        public float Left
+        {
+            get => X;
+            set => X = value;
+        }
+
+        public float Top
+        {
+            get => Y;
+            set => Y = value;
+        }
+
         public int? NumberTilesWide { get; private set; }
         public int? NumberTilesTall { get; private set; }
         public float? WidthPerTile { get; private set; }
