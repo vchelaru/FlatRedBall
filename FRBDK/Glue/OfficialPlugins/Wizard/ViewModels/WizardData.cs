@@ -111,7 +111,7 @@ namespace OfficialPluginsCore.Wizard.Models
         public Visibility PlayerEntityImportUiVisibility =>
             (AddPlayerEntity && PlayerCreationType == PlayerCreationType.ImportEntity).ToVisibility();
 
-        public string PlayerEntityImportUrl
+        public string PlayerEntityImportUrlOrFile
         {
             get => Get<string>();
             set => Set(value);

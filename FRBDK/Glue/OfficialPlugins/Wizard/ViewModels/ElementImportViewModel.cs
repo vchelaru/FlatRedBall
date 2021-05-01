@@ -27,7 +27,7 @@ namespace OfficialPluginsCore.Wizard.ViewModels
             get => Get<UrlStatus>();
             set => Set(value);
         }
-        public string Url
+        public string UrlOrLocalFile
         {
             get => Get<string>();
             set
@@ -48,9 +48,15 @@ namespace OfficialPluginsCore.Wizard.ViewModels
             }
         }
 
-        [DependsOn(nameof(Url))]
+        public bool SupportsLocalFile
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(UrlOrLocalFile))]
         public Visibility XButtonVisibility => 
-            (!string.IsNullOrEmpty(Url)).ToVisibility();
+            (!string.IsNullOrEmpty(UrlOrLocalFile)).ToVisibility();
 
         [DependsOn(nameof(UrlStatus))]
         public Visibility CheckVisibility => 
@@ -81,9 +87,9 @@ namespace OfficialPluginsCore.Wizard.ViewModels
         {
             UrlStatus = UrlStatus.Unknown;
 
-            if(!string.IsNullOrEmpty(Url))
+            if(!string.IsNullOrEmpty(UrlOrLocalFile))
             {
-                var extension = FileManager.GetExtension(Url);
+                var extension = FileManager.GetExtension(UrlOrLocalFile);
                 var isValidExtension = extension == "entz" || extension == "scrz";
 
                 if(!isValidExtension)
@@ -93,7 +99,15 @@ namespace OfficialPluginsCore.Wizard.ViewModels
                 }
                 else
                 {
-                    var succeeded = await RemoteFileExists(Url);
+                    bool succeeded;
+                    if(SupportsLocalFile && !FileManager.IsUrl(UrlOrLocalFile))
+                    {
+                        succeeded = System.IO.File.Exists(UrlOrLocalFile);
+                    }
+                    else
+                    {
+                        succeeded = await RemoteFileExists(UrlOrLocalFile);
+                    }
 
                     if(succeeded)
                     {
@@ -177,13 +191,13 @@ namespace OfficialPluginsCore.Wizard.ViewModels
 
         private void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == nameof(ElementImportItemViewModel.Url))
+            if(e.PropertyName == nameof(ElementImportItemViewModel.UrlOrLocalFile))
             {
                 var itemViewModel = sender as ElementImportItemViewModel;
                 var itemViewModelIndex = Items.IndexOf(itemViewModel);
                 var isLast = itemViewModelIndex == Items.Count - 1;
 
-                var newUrl = itemViewModel.Url;
+                var newUrl = itemViewModel.UrlOrLocalFile;
 
                 if(string.IsNullOrEmpty( newUrl ))
                 {
@@ -212,7 +226,7 @@ namespace OfficialPluginsCore.Wizard.ViewModels
         {
             IsValid = Items.All(item =>
             {
-                return string.IsNullOrEmpty(item.Url) || item.UrlStatus == UrlStatus.Succeeded;
+                return string.IsNullOrEmpty(item.UrlOrLocalFile) || item.UrlStatus == UrlStatus.Succeeded;
             });
         }
     }

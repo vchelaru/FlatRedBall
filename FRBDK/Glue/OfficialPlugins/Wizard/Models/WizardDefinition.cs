@@ -105,7 +105,8 @@ namespace OfficialPluginsCore.Wizard.Models
                 grid.SetBinding(Grid.VisibilityProperty, nameof(ViewModel.PlayerEntityImportUiVisibility));
                 var elementImportItem = new ElementImportItem();
                 var elementImportViewModel = new ElementImportItemViewModel();
-                elementImportViewModel.HintText = "Enter Player Entity Import URL";
+                elementImportViewModel.HintText = "Enter Player URL or File Name";
+                elementImportViewModel.SupportsLocalFile = true;
                 elementImportItem.DataContext = elementImportViewModel;
                 grid.Children.Add(elementImportItem);
                 formsData.AddView(grid);
@@ -140,11 +141,11 @@ namespace OfficialPluginsCore.Wizard.Models
                     {
                         if(elementImportViewModel.UrlStatus == UrlStatus.Failed)
                         {
-                            return GeneralResponse.UnsuccessfulWith($"The Player Entity could not be imported from {elementImportViewModel.Url}");
+                            return GeneralResponse.UnsuccessfulWith($"The Player Entity could not be imported from {elementImportViewModel.UrlOrLocalFile}");
                         }
                         else if(elementImportViewModel.UrlStatus == UrlStatus.Unknown)
                         {
-                            if(string.IsNullOrWhiteSpace( elementImportViewModel.Url))
+                            if(string.IsNullOrWhiteSpace( elementImportViewModel.UrlOrLocalFile))
                             {
                                 return GeneralResponse.UnsuccessfulWith($"Player URL must be specified");
                             }
@@ -159,12 +160,12 @@ namespace OfficialPluginsCore.Wizard.Models
 
                 formsData.NextClicked += () =>
                 {
-                    ViewModel.PlayerEntityImportUrl = elementImportViewModel.Url;
+                    ViewModel.PlayerEntityImportUrlOrFile = elementImportViewModel.UrlOrLocalFile;
                 };
 
                 formsData.Shown += () =>
                 {
-                    elementImportViewModel.Url = ViewModel.PlayerEntityImportUrl;
+                    elementImportViewModel.UrlOrLocalFile = ViewModel.PlayerEntityImportUrlOrFile;
                 };
 
                 FormsDataList.Add(formsData);
@@ -258,8 +259,8 @@ namespace OfficialPluginsCore.Wizard.Models
                 {
                     ViewModel.ElementImportUrls.Clear();
                     var toAdd = viewModel.Items
-                        .Where(item => !string.IsNullOrEmpty(item.Url))
-                        .Select(item => item.Url)
+                        .Where(item => !string.IsNullOrEmpty(item.UrlOrLocalFile))
+                        .Select(item => item.UrlOrLocalFile)
                         .ToArray();
                     ViewModel.ElementImportUrls.AddRange(toAdd);
                 };

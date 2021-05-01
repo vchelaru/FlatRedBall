@@ -127,7 +127,7 @@ namespace FlatRedBall.Forms.Controls.Games
             }
         }
 
-        public async Task ShowAsync(IEnumerable<string> pages)
+        public async Task ShowAsync(IEnumerable<string> pages, FlatRedBall.Graphics.Layer frbLayer = null)
         {
             base.Show();
 
@@ -142,9 +142,9 @@ namespace FlatRedBall.Forms.Controls.Games
             }
         }
 
-        public async Task ShowAsync(IEnumerable<DialogPageTask> pageTasks)
+        public async Task ShowAsync(IEnumerable<DialogPageTask> pageTasks, FlatRedBall.Graphics.Layer frbLayer = null)
         {
-            base.Show();
+            base.Show(frbLayer);
 
             showNextPageOnDismissedPage = false;
             if (pageTasks.Any())
@@ -152,6 +152,46 @@ namespace FlatRedBall.Forms.Controls.Games
                 this.Pages.AddRange(pageTasks);
                 await ShowNextPageAsync();
             }
+        }
+
+        public async Task<bool?> ShowDialog(IEnumerable<string> pageTasks, FlatRedBall.Graphics.Layer frbLayer = null)
+        {
+#if DEBUG
+            if (Visual == null)
+            {
+                throw new InvalidOperationException("Visual must be set before calling Show");
+            }
+#endif
+            await ShowAsync(pageTasks, frbLayer);
+
+            this.Close();
+
+            return null;
+        }
+
+        public async Task<bool?> ShowDialog(IEnumerable<DialogPageTask> pageTasks, FlatRedBall.Graphics.Layer frbLayer = null)
+        {
+#if DEBUG
+            if (Visual == null)
+            {
+                throw new InvalidOperationException("Visual must be set before calling Show");
+            }
+#endif
+            var semaphoreSlim = new SemaphoreSlim(1);
+
+            void HandleRemovedFromManagers(object sender, EventArgs args) => semaphoreSlim.Release();
+            Visual.RemovedFromGuiManager += HandleRemovedFromManagers;
+
+            semaphoreSlim.Wait();
+            await ShowAsync(pageTasks, frbLayer);
+            await semaphoreSlim.WaitAsync();
+
+            Visual.RemovedFromGuiManager -= HandleRemovedFromManagers;
+            // for now, return null, todo add dialog results
+
+            semaphoreSlim.Dispose();
+
+            return null;
         }
 
         private void ShowNextPage()

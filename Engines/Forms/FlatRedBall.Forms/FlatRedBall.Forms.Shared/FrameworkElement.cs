@@ -406,6 +406,14 @@ namespace FlatRedBall.Forms.Controls
             Visual.RemoveFromManagers();
         }
 
+        /// <summary>
+        /// Displays this element visually and adds it to the underlying managers for Cursor interaction.
+        /// </summary>
+        /// <remarks>
+        /// This is typically only called if the element is instantiated in code. Elements added
+        /// to a Gum screen in Gum will automatically be displayed when the Screen is created, and calling
+        /// this will result in the object being added twice.</remarks>
+        /// <param name="frbLayer">The FlatRedBall Layer to be used to display this element.</param>
         public void Show(FlatRedBall.Graphics.Layer frbLayer = null)
         {
 #if DEBUG
@@ -442,12 +450,13 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        public Task<bool?> ShowDialog()
-        {
-            return ShowDialog(null);
-        }
-
-        public async Task<bool?> ShowDialog(FlatRedBall.Graphics.Layer frbLayer)
+        /// <summary>
+        /// Displays this visual element (calls Show), and returns a task which completes once
+        /// the dialog is removed.
+        /// </summary>
+        /// <param name="frbLayer">The FlatRedBall Layer to be used to display the element.</param>
+        /// <returns>A task which will complete once this element is removed from managers.</returns>
+        public async Task<bool?> ShowDialog(FlatRedBall.Graphics.Layer frbLayer = null)
         {
 #if DEBUG
             if (Visual == null)

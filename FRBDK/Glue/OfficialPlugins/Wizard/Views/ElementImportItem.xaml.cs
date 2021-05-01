@@ -25,7 +25,7 @@ namespace OfficialPluginsCore.Wizard.Views
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            (this.DataContext as ViewModels.ElementImportItemViewModel).Url = null;
+            (this.DataContext as ViewModels.ElementImportItemViewModel).UrlOrLocalFile = null;
         }
     }
 }

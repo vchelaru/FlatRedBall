@@ -16,7 +16,7 @@
             <RowDefinition></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <TextBox x:Name="UrlTextBox" Text="{Binding Url}" Height="22" >
+        <TextBox x:Name="UrlTextBox" Text="{Binding UrlOrLocalFile}" Height="22" >
         </TextBox>
         <TextBlock IsHitTestVisible="False" Text="{Binding HintText}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="6,0,0,0" Foreground="DarkGray">
             <TextBlock.Style>

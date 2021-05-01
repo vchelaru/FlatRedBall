@@ -77,6 +77,10 @@ namespace OfficialPluginsCore.Wizard.Managers
                 AddTask("Add Player", async () =>
                 {
                     var playerEntity = await HandleAddPlayerEntity(vm);
+                    if(playerEntity == null)
+                    {
+                        throw new InvalidOperationException("Need to specify playerEntity");
+                    }
                     HandleAddPlayerInstance(vm, gameScreen, solidCollisionNos, cloudCollisionNos, playerEntity);
                 });
             }
@@ -381,17 +385,24 @@ namespace OfficialPluginsCore.Wizard.Managers
             EntitySave playerEntity = null;
             var downloadFolder = FileManager.UserApplicationDataForThisApplication + "ImportDownload\\";
 
-            var playerUrl = vm.PlayerEntityImportUrl;
-
-            var destinationFileName = downloadFolder + FileManager.RemovePath(playerUrl);
-                
-            using var httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(5), };
-            var result = await NetworkManager.Self.DownloadWithProgress(
-                httpClient, playerUrl, destinationFileName, null);
-
-            if (result.Succeeded)
+            if(FileManager.IsUrl(vm.PlayerEntityImportUrlOrFile) == false)
             {
-                playerEntity = (EntitySave)GlueCommands.Self.GluxCommands.ImportScreenOrEntityFromFile(destinationFileName);
+                playerEntity = (EntitySave)GlueCommands.Self.GluxCommands.ImportScreenOrEntityFromFile(vm.PlayerEntityImportUrlOrFile);
+            }
+            else
+            {
+                var playerUrl = vm.PlayerEntityImportUrlOrFile;
+
+                var destinationFileName = downloadFolder + FileManager.RemovePath(playerUrl);
+                
+                using var httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(5), };
+                var result = await NetworkManager.Self.DownloadWithProgress(
+                    httpClient, playerUrl, destinationFileName, null);
+
+                if (result.Succeeded)
+                {
+                    playerEntity = (EntitySave)GlueCommands.Self.GluxCommands.ImportScreenOrEntityFromFile(destinationFileName);
+                }
             }
 
             return playerEntity;
