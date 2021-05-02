@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objecttypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <objecttype name="Npc">
+    <property name="GroundMovement" type="DialogBoxDemo.DataTypes.PlatformerValues" default="Ground in PlatformerValuesStatic.csv" />
+    <property name="AirMovement" type="DialogBoxDemo.DataTypes.PlatformerValues" default="Air in PlatformerValuesStatic.csv" />
+    <property name="AfterDoubleJump" type="DialogBoxDemo.DataTypes.PlatformerValues" />
+    <property name="AnimationChains" type="AnimationChainList" />
+    <property name="DialogId" type="string" />
+  </objecttype>
+  <objecttype name="Player">
+    <property name="GroundMovement" type="DialogBoxDemo.DataTypes.PlatformerValues" default="Ground in PlatformerValuesStatic.csv" />
+    <property name="AirMovement" type="DialogBoxDemo.DataTypes.PlatformerValues" default="Air in PlatformerValuesStatic.csv" />
+    <property name="AfterDoubleJump" type="DialogBoxDemo.DataTypes.PlatformerValues" />
+  </objecttype>
+</objecttypes>
