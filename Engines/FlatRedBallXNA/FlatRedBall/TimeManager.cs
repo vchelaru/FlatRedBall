@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using FlatRedBall.IO;
 using System;
+using System.Threading.Tasks;
 
 namespace FlatRedBall
 {
@@ -41,6 +42,15 @@ namespace FlatRedBall
     /// </summary>
     public static class TimeManager
     {
+        #region Classes
+
+        struct VoidTaskResult { }
+
+
+
+        #endregion
+
+
         #region Fields
 
         static float mSecondDifference;
@@ -556,6 +566,26 @@ namespace FlatRedBall
         public static double CurrentScreenSecondsSince(double time)
         {
             return Screens.ScreenManager.CurrentScreen.PauseAdjustedSecondsSince(time);
+        }
+
+        public static Task Delay(TimeSpan timeSpan)
+        {
+            return DelaySeconds(timeSpan.TotalSeconds);
+        }
+
+        public static Task DelaySeconds(double seconds)
+        {
+            var time = CurrentScreenTime + seconds;
+            return Task.Run(() =>
+            {
+                while(CurrentScreenTime < time)
+                {
+                    System.Threading.Thread.Sleep(1);
+                }
+
+                return true;
+            });
+
         }
 
         /// <summary>

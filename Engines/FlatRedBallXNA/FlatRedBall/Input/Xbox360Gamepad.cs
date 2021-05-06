@@ -1272,14 +1272,57 @@ namespace FlatRedBall.Input
             }
         }
 
+        IPressableInput defaultUpPressable;
         IPressableInput IInputDevice.DefaultUpPressable
-        { get { return GetButton(Button.DPadUp).Or(LeftStick.UpAsButton); } }
+        { 
+            get 
+            { 
+                if(defaultUpPressable == null)
+                {
+                    defaultUpPressable = GetButton(Button.DPadUp).Or(LeftStick.UpAsButton); 
+                }
+                return defaultUpPressable;
+            } 
+        }
+
+        IPressableInput defaultDownPressable;
         IPressableInput IInputDevice.DefaultDownPressable
-        { get { return GetButton(Button.DPadDown).Or(LeftStick.DownAsButton); } }
+        { 
+            get 
+            {
+                if(defaultDownPressable == null)
+                {
+                    defaultDownPressable = GetButton(Button.DPadDown).Or(LeftStick.DownAsButton); ;
+                }
+                return defaultDownPressable;
+            } 
+        }
+
+        IPressableInput defaultLeftPressable;
         IPressableInput IInputDevice.DefaultLeftPressable
-        { get { return GetButton(Button.DPadLeft).Or(LeftStick.LeftAsButton); } }
+        { 
+            get 
+            { 
+                if(defaultLeftPressable == null)
+                {
+                    defaultLeftPressable = GetButton(Button.DPadLeft).Or(LeftStick.LeftAsButton); 
+                }
+                return defaultLeftPressable;
+            } 
+        }
+
+        IPressableInput defaultRightPressable;
         IPressableInput IInputDevice.DefaultRightPressable
-        { get { return GetButton(Button.DPadRight).Or(LeftStick.RightAsButton); } }
+        { 
+            get 
+            { 
+                if(defaultRightPressable == null)
+                {
+                    return GetButton(Button.DPadRight).Or(LeftStick.RightAsButton); 
+                }
+                return defaultRightPressable;
+            } 
+        }
 
         I1DInput defaultHorizontalInput;
         I1DInput IInputDevice.DefaultHorizontalInput

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Gum.Animation
 {
@@ -303,6 +304,12 @@ namespace FlatRedBall.Gum.Animation
                 }
             }
 
+        }
+
+        public Task PlayAsync(object whatStartedPlayingThis = null)
+        {
+            Play(whatStartedPlayingThis);
+            return TimeManager.DelaySeconds(this.Length);
         }
 
         public bool IsPlaying()
