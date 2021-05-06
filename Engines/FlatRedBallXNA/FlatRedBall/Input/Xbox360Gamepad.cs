@@ -1239,7 +1239,7 @@ namespace FlatRedBall.Input
 
 #endregion
 
-#region Internal Methods
+        #region Internal Methods
 
         internal void Update()
         {
@@ -1258,9 +1258,9 @@ namespace FlatRedBall.Input
         }
 
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
 
         #region IInputDevice Explicit Implementation
 

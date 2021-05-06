@@ -35,7 +35,6 @@ namespace DialogBoxDemo.Entities
 
         private void CustomActivity()
         {
-            animationController.Activity();
 
 
         }
