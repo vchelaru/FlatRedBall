@@ -34,6 +34,9 @@ namespace FlatRedBall.PlatformerPlugin.SaveClasses
         public decimal DownhillMaxSpeedSlope { get; set; }
         public decimal DownhillMaxSpeedBoostPercentage { get; set; }
 
+        public bool CanClimb { get; set; }
+        public float MaxClimbingSpeed { get; set; }
+
 
     }
 }

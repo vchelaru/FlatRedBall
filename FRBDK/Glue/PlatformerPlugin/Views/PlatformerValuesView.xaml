@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:FlatRedBall.PlatformerPlugin.Views"
              xmlns:b="clr-namespace:FlatRedBall.PlatformerPlugin.WpfBehaviors"
              mc:Ignorable="d" 
-             d:DesignHeight="250" d:DesignWidth="1055">
+             
+             d:DesignHeight="250">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -18,27 +19,29 @@
             <ColumnDefinition Width="Auto"></ColumnDefinition>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <Button Grid.Column="5" Width="24" Click="HandleXClick">X</Button>
 
-        <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="4" VerticalAlignment="Stretch" Fill="LightGray" />
+        <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="5" VerticalAlignment="Stretch" Fill="LightGray" />
         <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" HorizontalAlignment="Left" Width="1" Fill="Gray" />
         <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Left" Width="1" Fill="Gray" />
         <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" HorizontalAlignment="Left" Width="1" Fill="Gray" />
         <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" HorizontalAlignment="Left" Width="1" Fill="Gray" />
         <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="4" HorizontalAlignment="Left" Width="1" Fill="Gray" />
-        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="5" HorizontalAlignment="Right" Width="1" Fill="Gray" />
+        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="5" HorizontalAlignment="Left" Width="1" Fill="Gray" />
+        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="6" HorizontalAlignment="Left" Width="1" Fill="Gray" />
+        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="6" HorizontalAlignment="Right" Width="1" Fill="Gray" />
 
 
-        <Rectangle Grid.Row="0" Grid.ColumnSpan="6" VerticalAlignment="Top" Height="1" Fill="Black" />
-        <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="4" VerticalAlignment="Bottom" Height="1" Fill="Gray" />
+        <Rectangle Grid.Row="0" Grid.ColumnSpan="7" VerticalAlignment="Top" Height="1" Fill="Black" />
+        <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="5" VerticalAlignment="Bottom" Height="1" Fill="Gray" />
 
 
 
-        <Rectangle Grid.Row="1" Grid.ColumnSpan="6" Grid.Column="0" VerticalAlignment="Bottom" Height="1" Fill="Gray" />
+        <Rectangle Grid.Row="1" Grid.ColumnSpan="7" Grid.Column="0" VerticalAlignment="Bottom" Height="1" Fill="Gray" />
 
 
         <!--Name-->
@@ -162,6 +165,22 @@
                 If these values are used for ground movement with 0 or negative Max Falling Speed, the entity may have its OnGround set to false every other frame.</TextBlock>
 
         </StackPanel>
+
+        <TextBlock Grid.Column="5" FontSize="16" HorizontalAlignment="Left" Margin="3">Climbing</TextBlock>
+        <StackPanel Grid.Column="5" Grid.Row="1" Margin="12,3,8,3">
+            <CheckBox VerticalContentAlignment="Center" Margin="0,10,0,0" IsChecked="{Binding CanClimb}">
+                <CheckBox.ToolTip>
+                    Whether pressing up and down puts the player in a climbing state. When climbing, there is no gravity and up/down input directly sets the player's velocity.
+                </CheckBox.ToolTip>
+                Can Climb
+            </CheckBox>
+            <TextBlock Margin="0,5,0,0" Visibility="{Binding ClimbingUiVisibility}" >Climbing Speed:</TextBlock>
+            <TextBox HorizontalAlignment="Left" Width="70" Text="{Binding MaxClimbingSpeed}"  Visibility="{Binding ClimbingUiVisibility}"
+                     b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
+            
+        </StackPanel>
+
+        <Button Grid.Column="6" Width="24" Click="HandleXClick">X</Button>
 
 
     </Grid>

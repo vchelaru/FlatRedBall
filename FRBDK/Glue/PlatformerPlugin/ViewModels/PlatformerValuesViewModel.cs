@@ -42,44 +42,30 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
             set { Set(value); }
         }
 
-        bool isImmediate = true;
         public bool IsImmediate
         {
-            get { return isImmediate; }
+            get => Get<bool>();
             set
             {
-                base.ChangeAndNotify(ref isImmediate, value);
-                NotifyPropertyChanged(nameof(UsesAcceleration));
-                NotifyPropertyChanged(nameof(AccelerationValuesVisibility));
+                if (Set(value))
+                {
+                    NotifyPropertyChanged(nameof(UsesAcceleration));
+                }
             }
         }
 
         // Can't use DependsOn because I think it's a circular refernece. Would have to update the VM to handle that...
         public bool UsesAcceleration
         {
-            get { return !isImmediate; }
+            get { return !IsImmediate; }
             set
             {
-                base.ChangeAndNotify(ref isImmediate, !value);
-                NotifyPropertyChanged(nameof(IsImmediate));
-                NotifyPropertyChanged(nameof(AccelerationValuesVisibility));
+                Set(!value, nameof(IsImmediate));
             }
         }
 
-        public Visibility AccelerationValuesVisibility
-        {
-            get
-            {
-                if (isImmediate)
-                {
-                    return Visibility.Collapsed;
-                }
-                else
-                {
-                    return Visibility.Visible;
-                }
-            }
-        }
+        [DependsOn(nameof(IsImmediate))]
+        public Visibility AccelerationValuesVisibility => (!IsImmediate).ToVisibility();
 
         bool moveSameSpeedOnSlopes;
         public bool MoveSameSpeedOnSlopes
@@ -202,33 +188,34 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
             set { Set(value); }
         }
 
-
         public decimal DownhillMaxSpeedSlope
         {
-            get { return Get<decimal>(); }
-            set { Set(value); }
+            get => Get<decimal>(); 
+            set => Set(value); 
         }
 
         public decimal DownhillMaxSpeedBoostPercentage
         {
-            get { return Get<decimal>(); }
-            set { Set(value); }
+            get => Get<decimal>(); 
+            set => Set(value); 
         }
 
         [DependsOn(nameof(JumpApplyByButtonHold))]
-        public Visibility JumpHoldTimeVisibility
+        public Visibility JumpHoldTimeVisibility => JumpApplyByButtonHold.ToVisibility();
+
+        public bool CanClimb
         {
-            get
-            {
-                if (JumpApplyByButtonHold)
-                {
-                    return Visibility.Visible;
-                }
-                else
-                {
-                    return Visibility.Collapsed;
-                }
-            }
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(CanClimb))]
+        public Visibility ClimbingUiVisibility => CanClimb.ToVisibility();
+
+        public float MaxClimbingSpeed
+        {
+            get => Get<float>();
+            set => Set(value);
         }
 
         #endregion
@@ -291,6 +278,9 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
             DownhillFullSpeedSlope = values.DownhillFullSpeedSlope;
             DownhillMaxSpeedSlope = values.DownhillMaxSpeedSlope;
             DownhillMaxSpeedBoostPercentage = values.DownhillMaxSpeedBoostPercentage;
+
+            CanClimb = values.CanClimb;
+            MaxClimbingSpeed = values.MaxClimbingSpeed;
         }
 
         private void ClampUphillValues()
@@ -349,6 +339,9 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
 
             toReturn.IsUsingCustomDeceleration = this.IsCustomDecelerationChecked;
             toReturn.CustomDecelerationValue = this.CustomDecelerationValue;
+
+            toReturn.CanClimb = this.CanClimb;
+            toReturn.MaxClimbingSpeed = this.MaxClimbingSpeed;
 
             return toReturn;
         }

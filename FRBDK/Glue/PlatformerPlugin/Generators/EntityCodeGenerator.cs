@@ -193,7 +193,6 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                     .Line("return mIsOnGround;");
 
 
-
             codeBlock.Line("/// <summary>");
             codeBlock.Line("/// The current movement type. This is set by the default platformer logic and");
             codeBlock.Line("/// is used to assign the mCurrentMovement variable.");
@@ -357,7 +356,14 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
             if(CurrentMovement != null)
             {
-                this.YAcceleration = -CurrentMovement.Gravity;
+                if(CurrentMovement.CanClimb)
+                {
+                    this.YAcceleration = 0;
+                }
+                else
+                {
+                    this.YAcceleration = -CurrentMovement.Gravity;
+                }
             }
         }
 
@@ -394,6 +400,8 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 #endif
 
             ApplyHorizontalInput();
+
+            ApplyClimbingInput();
 
             ApplyJumpInput();
         }
@@ -498,6 +506,17 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             }
         }
 
+        private void ApplyClimbingInput()
+        {
+            if(CurrentMovement.CanClimb)
+            {
+                var verticalInputValue = VerticalInput?.Value ?? 0;
+                this.YVelocity = verticalInputValue * CurrentMovement.MaxClimbingSpeed;
+            }
+
+        }
+
+
         /// <summary>
         /// Applies the jump input to control vertical velocity and state.
         /// </summary>
@@ -516,6 +535,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 CurrentMovement.JumpVelocity > 0 &&
                 (
                     mIsOnGround || 
+                    CurrentMovement.CanClimb ||
                     AfterDoubleJump == null || 
 				    (AfterDoubleJump != null && mHasDoubleJumped == false) ||
 				    (AfterDoubleJump != null && AfterDoubleJump.JumpVelocity > 0)
@@ -545,6 +565,11 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                             ""but the AfterDoubleJump variable is not set. If you are using glue, select this entity and change the After Double Jump variable."");
                     }
                     mHasDoubleJumped = true ;
+                }
+                if(CurrentMovementType == MovementType.Ground && CurrentMovement.CanClimb)
+                {
+                    // the user jumped off a vine. Force the user into air mode:
+                    CurrentMovementType = MovementType.Air;
                 }
             }
 
@@ -594,7 +619,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             }
             else
             {
-                if (CurrentMovementType == MovementType.Ground)
+                if (CurrentMovementType == MovementType.Ground && !CurrentMovement.CanClimb)
                 {
                     CurrentMovementType = MovementType.Air;
                 }
