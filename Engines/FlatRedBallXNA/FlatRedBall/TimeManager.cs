@@ -580,7 +580,11 @@ namespace FlatRedBall
             {
                 while(CurrentScreenTime < time)
                 {
+#if UWP
+                    Task.Delay(1).Wait();
+#else
                     System.Threading.Thread.Sleep(1);
+#endif
                 }
 
                 return true;
@@ -661,7 +665,7 @@ namespace FlatRedBall
             mCurrentTimeForTimedSections = currentSystemTime;
         }
 
-        #endregion
+#endregion
     }
 }
 
