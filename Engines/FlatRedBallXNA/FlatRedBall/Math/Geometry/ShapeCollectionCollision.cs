@@ -3253,6 +3253,7 @@ namespace FlatRedBall.Math.Geometry
 
 		internal static bool CollideShapeAgainstThis(ShapeCollection thisShapeCollection, ShapeCollection shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse)
 		{
+			thisShapeCollection.ClearLastCollisionLists();
 			shapeToCollideAgainstThis.ClearLastCollisionLists();
 			thisShapeCollection.mSuppressLastCollisionClear = true;
             bool returnValue = false;
