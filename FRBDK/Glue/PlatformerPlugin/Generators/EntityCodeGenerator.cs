@@ -226,6 +226,9 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             /// cloud (by pressing down direction + jump), then this value is set. 
             /// </summary>
             private float? cloudCollisionFallThroughY = null;
+
+            public float? TopOfLadderY { get; set; }
+
 ");
 
 
@@ -512,6 +515,16 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             {
                 var verticalInputValue = VerticalInput?.Value ?? 0;
                 this.YVelocity = verticalInputValue * CurrentMovement.MaxClimbingSpeed;
+
+                if(this.Y > TopOfLadderY)
+                {
+                    this.Y = TopOfLadderY.Value;
+                    if(this.YVelocity > 0)
+                    {
+                        this.YVelocity = 0;
+                    }
+                }
+
             }
 
         }
