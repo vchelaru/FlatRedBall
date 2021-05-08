@@ -142,7 +142,6 @@ namespace LadderDemo.Entities
             {
                 if (this.CurrentMovement.CanClimb)
                 {
-
                     if(this.YVelocity == 0)
                     {
                         return "CharacterClimbRearIdle";
@@ -171,8 +170,6 @@ namespace LadderDemo.Entities
 
         private void CustomActivity()
         {
-            // default to this, the animation controller can set it to false
-            this.SpriteInstance.Animate = true;
             animationController.Activity();
 
             if(!CurrentMovement.CanClimb)
