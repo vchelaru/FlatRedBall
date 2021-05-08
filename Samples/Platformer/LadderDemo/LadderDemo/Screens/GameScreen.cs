@@ -38,7 +38,7 @@ namespace LadderDemo.Screens
             {
                 player.LastCollisionLadderRectange = null;
             }
-            // Then we do the collision which sets IsCollidingWithLadder if a collision happens
+            // Then we do the collision which sets LastCollisionLadderRectange if a collision happens
             PlayerListVsLadderCollision.DoCollisions();
         }
 
