@@ -207,7 +207,8 @@
                 <GroupBox Header="Mobile">
                     <StackPanel>
                         <TextBlock Visibility="{Binding SupportedOrientationsLinkVisibility}" TextWrapping="Wrap" >           
-                            <Hyperlink NavigateUri="http://flatredball.com/documentation/api/microsoft-xna-framework/graphicsdevicemanager/supportedorientations/" RequestNavigate="Hyperlink_RequestNavigate">
+                            <Hyperlink NavigateUri="http://flatredball.com/documentation/api/microsoft-xna-framework/graphicsdevicemanager/supportedorientations/" 
+                                       RequestNavigate="Hyperlink_RequestNavigate">
                                 <Run>See the SupportedOrientations documentation for controlling mobile orientations.</Run>
                             </Hyperlink>
                         </TextBlock>
