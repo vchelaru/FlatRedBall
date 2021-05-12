@@ -120,12 +120,20 @@ namespace GumPlugin.Managers
                     nameof(GumViewModel.MakeGumInstancesPublic),
                     true);
 
+
+                rfs.Properties.SetValue(
+                    nameof(GumViewModel.IsMatchGameResolutionInGumChecked),
+                    true);
+
                 added = !userCancelled;
 
                 if(added)
                 {
                     GlueState.Self.CurrentReferencedFileSave = rfs;
                     ReloadGumProject();
+
+                    AppCommands.Self.UpdateGumToGlueResolution();
+
                 }
             }
 
