@@ -625,10 +625,22 @@ namespace GumPlugin
             {
                 string componentName = FileManager.RemovePath(FileManager.RemoveExtension(newFile.Name));
 
-                var componentType = Gum.Managers.ObjectFinder.Self.GetComponent(componentName);
                 var componentTypeWithRuntime = componentName + "Runtime";
 
                 var ati = AssetTypeInfoManager.Self.GetAtisForDerivedGues().FirstOrDefault(item => item.RuntimeTypeName == componentTypeWithRuntime);
+
+                if (ati != null)
+                {
+                    newFile.RuntimeType = ati.QualifiedRuntimeTypeName.QualifiedType;
+                }
+            }
+            else if(extension == GumProjectSave.ScreenExtension)
+            {
+                string screenName = FileManager.RemovePath(FileManager.RemoveExtension(newFile.Name));
+
+                var screenTypeWithRuntime = screenName + "Runtime";
+
+                var ati = AssetTypeInfoManager.Self.GetAtisForDerivedGues().FirstOrDefault(item => item.RuntimeTypeName == screenTypeWithRuntime);
 
                 if (ati != null)
                 {

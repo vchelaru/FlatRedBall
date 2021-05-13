@@ -573,22 +573,26 @@ namespace FlatRedBall
             return DelaySeconds(timeSpan.TotalSeconds);
         }
 
-        public static Task DelaySeconds(double seconds)
+        public static async Task DelaySeconds(double seconds)
         {
             var time = CurrentScreenTime + seconds;
-            return Task.Run(() =>
+            while(CurrentScreenTime < time)
             {
-                while(CurrentScreenTime < time)
-                {
-#if UWP
-                    Task.Delay(1).Wait();
-#else
-                    System.Threading.Thread.Sleep(1);
-#endif
-                }
-
-                return true;
-            });
+                //await Task.Delay(1);
+                await Task.Yield();
+            }
+//            return Task.Run(async() =>
+//            {
+//                while (CurrentScreenTime < time)
+//                {
+//                    await Task.Delay(1);
+////#if UWP
+////                    Task.Delay(1).Wait();
+////#else
+////                    System.Threading.Thread.Sleep(1);
+////#endif
+//                }
+//            });
 
         }
 
