@@ -215,6 +215,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             codeBlock.AutoProperty("public bool", "InputEnabled");
 
             codeBlock.Line("float groundHorizontalVelocity = 0;");
+            codeBlock.Line("public float GroundHorizontalVelocity => groundHorizontalVelocity;");
 
             // This can be used to add anything else here without the complexity of CodeBlock calls
             codeBlock.Line(
@@ -475,7 +476,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 
                 float accelerationMagnitude = 0;
                 
-                if(isSpeedingUp)
+                if(isSpeedingUp && CurrentMovement.AccelerationTimeX != 0)
                 {
                     accelerationMagnitude = maxSpeed / CurrentMovement.AccelerationTimeX;
                 }
