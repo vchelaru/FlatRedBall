@@ -553,7 +553,7 @@ namespace FlatRedBallAddOns.Entities
         {
             string fileName = saveObject.Name + ".Generated.cs";
 
-            string absoluteFileName = fileName;
+            FilePath absoluteFileName = fileName;
 
             if (FileManager.IsRelative(fileName))
             {
@@ -2229,17 +2229,18 @@ namespace FlatRedBallAddOns.Entities
             }
         }
 
-        internal static List<string> GetAllCodeFilesFor(IElement element)
+        internal static List<FilePath> GetAllCodeFilesFor(IElement element)
         {
             string directory = FileManager.GetDirectory(ProjectManager.MakeAbsolute(element.Name));
 
 
-            List<string> foundCsFiles = FileManager.GetAllFilesInDirectory(directory, "cs");
+            List<FilePath> foundCsFiles = FileManager.GetAllFilesInDirectory(directory, "cs")
+                .Select(item => new FilePath(item)).ToList();
 
             for (int i = foundCsFiles.Count - 1; i > -1; i--)
             {
-                string file = foundCsFiles[i];
-                string relativeFile = FileManager.MakeRelative(file).Replace('/', '\\');
+                var file = foundCsFiles[i];
+                string relativeFile = FileManager.MakeRelative(file.Original).Replace('/', '\\');
                 bool isValid = relativeFile.StartsWith(element.Name) && relativeFile[element.Name.Length] == '.';
 
                 if (!isValid)

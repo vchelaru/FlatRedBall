@@ -237,11 +237,11 @@ namespace FlatRedBall.Glue.IO
 
             ReturnValuesBeforeModification(element);
 
-            List<string> codeFiles = CodeWriter.GetAllCodeFilesFor(element);
+            var codeFiles = CodeWriter.GetAllCodeFilesFor(element);
 
             for (int i = codeFiles.Count - 1; i > -1; i--)
             {
-                if (codeFiles[i].ToLowerInvariant().Contains(".generated."))
+                if (codeFiles[i].Standardized.Contains(".generated."))
                 {
                     codeFiles.RemoveAt(i);
                 }
@@ -282,7 +282,7 @@ namespace FlatRedBall.Glue.IO
             {
                 foreach (var codeFile in codeFiles)
                 {
-                    zip.AddFile(codeFile, "");
+                    zip.AddFile(codeFile.FullPath, "");
                 }
                 zip.AddFile(absoluteXml, "");
 

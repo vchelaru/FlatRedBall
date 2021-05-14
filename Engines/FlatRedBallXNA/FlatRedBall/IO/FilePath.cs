@@ -240,5 +240,10 @@ namespace FlatRedBall.IO
                 return 0;
             }
         }
+
+        public string RelativeTo(FilePath otherFilePath)
+        {
+            return FileManager.MakeRelative(this.FullPath, otherFilePath.FullPath);
+        }
     }
 }

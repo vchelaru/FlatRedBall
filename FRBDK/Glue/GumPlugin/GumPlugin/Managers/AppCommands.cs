@@ -18,10 +18,13 @@ namespace GumPlugin.Managers
     {
         public void SaveGumx(bool saveAllElements = false)
         {
-            string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
+            TaskManager.Self.AddOrRunIfTasked(() =>
+            {
+                string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
 
-            GlueCommands.Self.FileCommands.IgnoreNextChangeOnFile(gumProjectFileName);
-            AppState.Self.GumProjectSave.Save(gumProjectFileName, saveAllElements);
+                GlueCommands.Self.FileCommands.IgnoreNextChangeOnFile(gumProjectFileName);
+                AppState.Self.GumProjectSave.Save(gumProjectFileName, saveAllElements);
+            }, "Saving gum projects");
         }
 
         internal void AddComponent(FilePath filePath)

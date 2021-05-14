@@ -1249,18 +1249,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             var allFiles = CodeWriter.GetAllCodeFilesFor(entitySave);
             string newNamespace = GlueCommands.Self.GenerateCodeCommands.GetNamespaceForElement(entitySave);
 
-            foreach (string file in allFiles)
+            foreach (var file in allFiles)
             {
-                bool doesFileExist = System.IO.File.Exists(file);
-                bool isFactory = GetIfFileIsFactory(entitySave, file);
+                bool doesFileExist = file.Exists();
+                bool isFactory = GetIfFileIsFactory(entitySave, file.FullPath);
 
                 if (doesFileExist && !isFactory)
                 {
-                    string contents = FileManager.FromFileText(file);
+                    string contents = FileManager.FromFileText(file.FullPath);
 
                     contents = CodeWriter.ReplaceNamespace(contents, newNamespace);
 
-                    FileManager.SaveText(contents, file);
+                    FileManager.SaveText(contents, file.FullPath);
 
 
                 }
@@ -1274,18 +1274,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             bool succeeded = true;
 
             var allFiles = CodeWriter.GetAllCodeFilesFor(entitySave);
-            foreach (string file in allFiles)
+            foreach (var file in allFiles)
             {
-                bool isFactory = GetIfFileIsFactory(entitySave, file);
+                bool isFactory = GetIfFileIsFactory(entitySave, file.FullPath);
 
                 if (!succeeded)
                 {
                     break;
                 }
 
-                if (File.Exists(file) && !isFactory)
+                if (file.Exists() && !isFactory)
                 {
-                    string relative = FileManager.MakeRelative(file);
+                    string relative = FileManager.MakeRelative(file.FullPath);
                     succeeded = MoveSingleCodeFileToDirectory(relative, targetDirectory);
                 }
             }

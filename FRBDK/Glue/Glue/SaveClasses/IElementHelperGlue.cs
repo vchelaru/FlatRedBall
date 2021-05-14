@@ -142,7 +142,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         private static DialogResult ChangeClassNamesInCodeAndFileName(IElement elementToRename, string oldName, string newName)
         {
-            List<string> validFiles = CodeWriter.GetAllCodeFilesFor(elementToRename);
+            var validFiles = CodeWriter.GetAllCodeFilesFor(elementToRename);
 
             string oldStrippedName = FileManager.RemovePath(oldName);
             string newStrippedName = FileManager.RemovePath(newName);
@@ -151,9 +151,9 @@ namespace FlatRedBall.Glue.SaveClasses
             bool wasAnythingFound = false;
             List<Tuple<string, string>> oldNewAbsoluteFiles = new List<Tuple<string, string>>();
 
-            foreach (string file in validFiles)
+            foreach (var file in validFiles)
             {
-                string newFile = file.Replace(oldName.Replace("\\", "/"), newName.Replace("\\", "/"));
+                string newFile = file.FullPath.Replace(oldName.Replace("\\", "/"), newName.Replace("\\", "/"));
 
                 // replace it if it's a factory:
                 if(newFile.Contains("/Factories/"))
@@ -161,7 +161,7 @@ namespace FlatRedBall.Glue.SaveClasses
                     newFile = newFile.Replace($"/Factories/{oldStrippedName}Factory.Generated.cs", $"/Factories/{newStrippedName}Factory.Generated.cs");
                 }
 
-                oldNewAbsoluteFiles.Add(new Tuple<string, string>(file, newFile));
+                oldNewAbsoluteFiles.Add(new Tuple<string, string>(file.FullPath, newFile));
 
                 if (File.Exists(newFile))
                 {

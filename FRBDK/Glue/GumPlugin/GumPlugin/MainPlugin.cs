@@ -378,8 +378,6 @@ namespace GumPlugin
             }
         }
 
-
-
         private bool HandleTreeNodeDoubleClicked(TreeNode arg)
         {
             var nos = arg.Tag as NamedObjectSave;
@@ -803,7 +801,35 @@ namespace GumPlugin
 
                 }, "Gum plugin reacting to glux load");
 
+                UpdateGumParentProject();
+
                 AppCommands.Self.UpdateGumToGlueResolution();
+            }
+        }
+
+        private void UpdateGumParentProject()
+        {
+            var gumProject = AppState.Self.GumProjectSave;
+
+            if (gumProject != null)
+            {
+                FilePath gumProjectParentRoot = null;
+                var needsToSetRoot = string.IsNullOrWhiteSpace(gumProject.ParentProjectRoot);
+                if (!needsToSetRoot)
+                {
+                    gumProjectParentRoot = new FilePath(AppState.Self.GlueProjectFolder + gumProject.ParentProjectRoot);
+
+                    if(gumProjectParentRoot != GlueState.Self.CurrentGlueProjectDirectory)
+                    {
+                        needsToSetRoot = true;
+                    }
+                }
+                if(needsToSetRoot)
+                {
+                    gumProject.ParentProjectRoot = new FilePath(GlueState.Self.CurrentGlueProjectDirectory).RelativeTo(AppState.Self.GumProjectFolder);
+
+                    AppCommands.Self.SaveGumx();
+                }
             }
         }
 

@@ -417,13 +417,13 @@ namespace FlatRedBall.Glue.Controls
         {
             mCodeTreeNode.Nodes.Clear();
 
-            List<string> files = CodeWriter.GetAllCodeFilesFor(SaveObject);
+            var files = CodeWriter.GetAllCodeFilesFor(SaveObject);
 
-            foreach (string file in files)
+            foreach (var file in files)
             {
                 // See if there is already a tree node for this
                 TreeNode foundTreeNode = null;
-                string text = FileManager.MakeRelative(file);
+                string text = FileManager.MakeRelative(file.FullPath);
                 foreach (TreeNode treeNode in mCodeTreeNode.Nodes)
                 {
                     if (treeNode.Text == text)
