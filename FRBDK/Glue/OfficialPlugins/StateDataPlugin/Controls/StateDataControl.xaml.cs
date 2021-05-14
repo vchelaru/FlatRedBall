@@ -190,7 +190,14 @@ namespace OfficialPlugins.StateDataPlugin.Controls
 
         private void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
+            if(e.OldValue is StateCategoryViewModel oldVm)
+            {
+                oldVm.PropertyChanged -= HandleViewModelPropertyChanged;
+            }
+            if (ViewModel != null)
+            {
+                ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
+            }
         }
 
         private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
