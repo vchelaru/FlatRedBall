@@ -25,18 +25,16 @@ namespace GumPlugin.CodeGeneration
 
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
         {
-            bool isGlueScreen = element is FlatRedBall.Glue.SaveClasses.ScreenSave;
-            bool hasGumScreen = GetIfContainsAnyGumScreenFiles(element);
-            // technically all FRB projects now have forms, so let's just default that to true
-            bool hasForms = true; // okay older projects may not but.....that's a pain in the butto handle.
+            bool isGlueScreen, hasGumScreen, hasForms;
+            bool needsGumIdb = NeedsGumIdb(element, out isGlueScreen, out hasGumScreen, out hasForms);
 
-            if(isGlueScreen && !hasGumScreen && GetIfHasGumProject())
+            if (needsGumIdb)
             {
                 // Create a generic Gum IDB to support in-code creation of Gum objects:
                 codeBlock.Line("FlatRedBall.Gum.GumIdb gumIdb;");
             }
 
-            if(isGlueScreen && hasGumScreen && hasForms)
+            if (isGlueScreen && hasGumScreen && hasForms)
             {
                 var rfs = GetGumScreenRfs(element);
 
@@ -51,17 +49,29 @@ namespace GumPlugin.CodeGeneration
             return codeBlock;
         }
 
+        private bool NeedsGumIdb(IElement element, out bool isGlueScreen, out bool hasGumScreen, out bool hasForms)
+        {
+            isGlueScreen = element is FlatRedBall.Glue.SaveClasses.ScreenSave;
+            hasGumScreen = GetIfContainsAnyGumScreenFiles(element);
+            // technically all FRB projects now have forms, so let's just default that to true
+            hasForms = true;
+            // if it's derived, then the base will take care of it.
+            var isDerivedScreen = !string.IsNullOrEmpty(element.BaseElement);
+
+            return isGlueScreen && !hasGumScreen && !isDerivedScreen && GetIfHasGumProject();
+        }
+
         public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
         {
-            bool isGlueScreen = element is FlatRedBall.Glue.SaveClasses.ScreenSave;
-            bool hasGumScreen = GetIfContainsAnyGumScreenFiles(element);
-
+            
             var gumScreenRfs =
                 element.ReferencedFiles.FirstOrDefault(item => item.Name.EndsWith(".gusx"));
 
-            bool hasForms = gumScreenRfs != null && GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.HasFormsObject;
+            
+            bool needsGumIdb = NeedsGumIdb(element, out bool isGlueScreen, out bool hasGumScreen, out bool hasForms);
 
-            if (isGlueScreen && !hasGumScreen && GetIfHasGumProject())
+
+            if (needsGumIdb)
             {
                 // Create a generic Gum IDB to support in-code creation of Gum objects:
                 codeBlock.Line("gumIdb = new FlatRedBall.Gum.GumIdb();");
@@ -88,10 +98,9 @@ namespace GumPlugin.CodeGeneration
 
         public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
         {
-            bool isGlueScreen = element is FlatRedBall.Glue.SaveClasses.ScreenSave;
-            bool hasGumScreen = GetIfContainsAnyGumScreenFiles(element);
+            var needsGumIdb = NeedsGumIdb(element, out bool _, out bool _, out bool _);
 
-            if (isGlueScreen && !hasGumScreen && GetIfHasGumProject())
+            if (needsGumIdb)
             {
                 // Create a generic Gum IDB to support in-code creation of Gum objects:
                 codeBlock.Line("FlatRedBall.SpriteManager.AddDrawableBatch(gumIdb);");
@@ -102,10 +111,9 @@ namespace GumPlugin.CodeGeneration
 
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
         {
-            bool isGlueScreen = element is FlatRedBall.Glue.SaveClasses.ScreenSave;
-            bool hasGumScreen = GetIfContainsAnyGumScreenFiles(element);
+            var needsGumIdb = NeedsGumIdb(element, out bool _, out bool _, out bool _);
 
-            if (isGlueScreen && !hasGumScreen && GetIfHasGumProject())
+            if (needsGumIdb)
             {
                 codeBlock.Line("FlatRedBall.SpriteManager.RemoveDrawableBatch(gumIdb);");
             }
