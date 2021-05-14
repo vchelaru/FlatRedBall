@@ -1,16 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildVerifier", "BuildVerifier\BuildVerifier.csproj", "{08048A3E-EE22-4FC4-A8D2-62D09BDAB4D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBallXna4", "..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj", "{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}"
-EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{e1cb7d7b-e2ec-4deb-92e2-6ef0b76f40f0}*SharedItemsImports = 4
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug Docs|x86 = Debug Docs|x86
 		Debug|x86 = Debug|x86
@@ -38,24 +33,11 @@ Global
 		{08048A3E-EE22-4FC4-A8D2-62D09BDAB4D2}.Submission|x86.Build.0 = Release|x86
 		{08048A3E-EE22-4FC4-A8D2-62D09BDAB4D2}.UnitTests|x86.ActiveCfg = Release|x86
 		{08048A3E-EE22-4FC4-A8D2-62D09BDAB4D2}.UnitTests|x86.Build.0 = Release|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Debug Docs|x86.ActiveCfg = Debug Docs|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Debug Docs|x86.Build.0 = Debug Docs|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Debug|x86.ActiveCfg = Debug|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Debug|x86.Build.0 = Debug|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.DebugProfile|x86.ActiveCfg = DebugProfile|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.DebugProfile|x86.Build.0 = DebugProfile|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Profile|x86.ActiveCfg = Profile|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Profile|x86.Build.0 = Profile|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Release|x86.ActiveCfg = Release|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Release|x86.Build.0 = Release|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Submission Phone|x86.ActiveCfg = Submission Phone|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Submission Phone|x86.Build.0 = Submission Phone|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Submission|x86.ActiveCfg = Submission|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Submission|x86.Build.0 = Submission|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.UnitTests|x86.ActiveCfg = UnitTests|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.UnitTests|x86.Build.0 = UnitTests|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4C1880FC-69EA-4811-BC13-7195B5DB0F13}
 	EndGlobalSection
 EndGlobal
