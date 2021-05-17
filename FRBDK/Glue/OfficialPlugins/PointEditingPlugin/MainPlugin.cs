@@ -5,6 +5,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
 using Microsoft.Xna.Framework;
+using OfficialPluginsCore.PointEditingPlugin;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -17,7 +18,7 @@ namespace OfficialPlugins.PointEditingPlugin
     [Export(typeof(PluginBase))]
     public class MainPlugin : EmbeddedPlugin
     {
-        PointEditWindow mPointEditWindow; // This is the control we created
+        PointEditControl pointEditControl; // This is the control we created
         PluginTab mTab; // This is the tab that will hold our control
 
 
@@ -75,7 +76,7 @@ namespace OfficialPlugins.PointEditingPlugin
                     namedObjectSave.InstructionSaves.Add(instructions);
                 }
 
-                mPointEditWindow.Data = instructions.Value as List<Vector2>;
+                pointEditControl.Data = instructions.Value as List<Vector2>;
 
                 mTab.Show();
             }
@@ -88,13 +89,10 @@ namespace OfficialPlugins.PointEditingPlugin
         void InitializeTab()
         {
 
-            mPointEditWindow = new PointEditWindow();
-            mPointEditWindow.DataChanged += HandleDataChanged;
+            pointEditControl = new PointEditControl();
+            pointEditControl.DataChanged += HandleDataChanged;
 
-            mTab = this.CreateTab(mPointEditWindow, "Points");
-
-            mPointEditWindow.Dock = DockStyle.Fill;
-
+            mTab = this.CreateTab(pointEditControl, "Points");
 
         }
 

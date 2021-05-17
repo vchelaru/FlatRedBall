@@ -12,10 +12,6 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace OfficialPlugins.PointEditingPlugin
 {
-
-
-
-
     public partial class PointEditWindow : UserControl
     {
         #region Fields
@@ -103,8 +99,6 @@ namespace OfficialPlugins.PointEditingPlugin
 
         private void AddPointButton_Click(object sender, EventArgs e)
         {
-            InstantiatePointListOnPolygonIfNecessary();
-
             if (Data != null)
             {
                 Data.Add(new Vector2());
@@ -116,12 +110,6 @@ namespace OfficialPlugins.PointEditingPlugin
 
                 CallDataChanged();
             }
-
-        }
-
-        private void InstantiatePointListOnPolygonIfNecessary()
-        {
-            
 
         }
 

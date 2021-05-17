@@ -5,6 +5,21 @@ using System.Text;
 
 namespace FlatRedBall.Input
 {
+    /// <summary>
+    /// Base class for creating customizable input. This class provides default implementations
+    /// for all IInputDevice properties. Games can freely implement properties as needed
+    /// by overriding the virtual Get methods.
+    /// </summary>
+    /// <remarks>
+    /// The overridable methods will only be read one time per frame, and only if the InputDeviceBase
+    /// is asked for any of its default values. In other words, if the Default2DInput value is checked multiple
+    /// times in a frame, the GetDefault2DInputX and GetDefault2DInputY values will only be read one time per frame.
+    /// This guarantees input consistency across a frame, similar to how input hardware (like a Keyboard) behaves.
+    /// 
+    /// The InputDeviceBase includes Get functions for bool input values like primary action, secondary action, confirm, and join.
+    /// Only the current-frame value is controlled by the Get functions. Internally, the InputDeviceBase keeps track of the values returned
+    /// last frame, and will properly report WasJustPressed and WasJustReleased appropriately.
+    /// </remarks>
     public class InputDeviceBase : IInputDevice
     {
         double lastUpdate;
@@ -330,6 +345,10 @@ namespace FlatRedBall.Input
         protected virtual float GetHorizontalValue() => 0;
         protected virtual float GetVerticalValue() => 0;
 
+        /// <summary>
+        /// Returns whether the primary action input is pressed this frame. 
+        /// </summary>
+        /// <returns>Whether the primary action input is pressed this frame.</returns>
         protected virtual bool GetPrimaryActionPressed() => false;
         protected virtual bool GetSecondaryActionPressed() => false;
         protected virtual bool GetConfirmPressed() => false;
