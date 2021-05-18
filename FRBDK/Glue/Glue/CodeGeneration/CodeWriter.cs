@@ -510,8 +510,14 @@ namespace FlatRedBallAddOns.Entities
         }
 
 
-        public static bool SaveFileContents(string fileContents, string fileName, bool tryAgain)
+        public static bool SaveFileContents(string fileContents, string fileName, bool tryAgain, bool standardizeNewlines = true)
         {
+            if(standardizeNewlines && !string.IsNullOrEmpty(fileContents))
+            {
+                // from: https://stackoverflow.com/questions/31053/regex-c-replace-n-with-r-n
+                // for: https://github.com/vchelaru/FlatRedBall/issues/103
+                fileContents = System.Text.RegularExpressions.Regex.Replace(fileContents, "(?<!\r)\n", "\r\n");
+            }
 
             bool isReadOnly = System.IO.File.Exists(fileName) && new FileInfo(fileName).IsReadOnly;
 
@@ -521,11 +527,6 @@ namespace FlatRedBallAddOns.Entities
             }
             else
             {
-
-
-                const int numberOfSavesToTry = 5;
-                int numberOfTries = 0;
-
                 FileWatchManager.IgnoreNextChangeOnFile(fileName);
                 if (!tryAgain)
                 {
@@ -535,7 +536,7 @@ namespace FlatRedBallAddOns.Entities
                 {
                     try
                     {
-                        GlueCommands.Self.TryMultipleTimes(() =>FileManager.SaveText(fileContents, fileName), 10);
+                        GlueCommands.Self.TryMultipleTimes(() =>FileManager.SaveText(fileContents, fileName), numberOfTimesToTry:10);
                     }
                     catch(Exception e)
                     {
