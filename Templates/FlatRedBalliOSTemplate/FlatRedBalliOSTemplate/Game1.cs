@@ -78,12 +78,14 @@ namespace FlatRedBalliOSTemplate
                 }
             }
 
+            // Call this before starting the screens, so that plugins can initialize their systems.
+            GeneratedInitialize();
+
             if (startScreenType != null)
             {
                 FlatRedBall.Screens.ScreenManager.Start(startScreenType);
             }
 
-            GeneratedInitialize();
 
             base.Initialize();
         }
@@ -95,7 +97,7 @@ namespace FlatRedBalliOSTemplate
 
             FlatRedBall.Screens.ScreenManager.Activity();
 
-            GeneratedDraw(gameTime);
+            GeneratedUpdate(gameTime);
 
             base.Update(gameTime);
         }

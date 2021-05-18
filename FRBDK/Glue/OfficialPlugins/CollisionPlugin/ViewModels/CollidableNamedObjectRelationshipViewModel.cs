@@ -39,7 +39,7 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         public Visibility PartitioningUiVisibility => PerformCollisionPartitioning.ToVisibility();
 
         [SyncedProperty]
-        [DefaultValue(Axis.X)]
+        [DefaultValue((int)Axis.X)]
         public Axis SortAxis
         {
             get => (Axis)Get<int>();

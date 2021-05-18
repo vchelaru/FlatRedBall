@@ -78,12 +78,14 @@ namespace FlatRedBallXna4Template
                 }
             }
 
+            // Call this before starting the screens, so that plugins can initialize their systems.
+            GeneratedInitialize();
+
             if (startScreenType != null)
             {
                 FlatRedBall.Screens.ScreenManager.Start(startScreenType);
             }
 
-            GeneratedInitialize();
 
             base.Initialize();
         }
@@ -95,7 +97,7 @@ namespace FlatRedBallXna4Template
 
             FlatRedBall.Screens.ScreenManager.Activity();
 
-            GeneratedDraw(gameTime);
+            GeneratedUpdate(gameTime);
 
             base.Update(gameTime);
         }
