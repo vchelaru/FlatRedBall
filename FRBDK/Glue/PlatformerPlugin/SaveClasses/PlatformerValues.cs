@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GlueCommon.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -37,6 +38,9 @@ namespace FlatRedBall.PlatformerPlugin.SaveClasses
         public bool CanClimb { get; set; }
         public float MaxClimbingSpeed { get; set; }
 
+        public int InheritOrOverwriteAsInt { get; set; }
+
+        public InheritOrOverwrite InheritOrOverwrite => (InheritOrOverwrite)InheritOrOverwriteAsInt;
 
     }
 }

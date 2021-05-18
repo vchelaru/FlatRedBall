@@ -21,7 +21,6 @@
             <ColumnDefinition Width="Auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <Button Grid.Column="4" Width="24" Click="HandleXClick" Visibility="{Binding DeleteButtonVisibility}" >X</Button>
 
         <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="3" VerticalAlignment="Stretch" Fill="LightGray" />
 
@@ -154,5 +153,8 @@
 
         <TextBlock Grid.Column="3" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3">Add'l Props </TextBlock>
         <wpfdataui:DataUiGrid x:Name="DataGrid" Grid.Row="1" Grid.Column="3"  IsEnabled="{Binding IsEditable}"></wpfdataui:DataUiGrid>
+
+        <Button Grid.Column="4" Width="24" Click="HandleXClick" Visibility="{Binding DeleteButtonVisibility}" >X</Button>
+
     </Grid>
 </UserControl>

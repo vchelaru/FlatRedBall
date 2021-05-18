@@ -15,6 +15,8 @@ using FlatRedBall.PlatformerPlugin.Generators;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.PlatformerPlugin.Data;
+using PlatformerPluginCore.Logic;
+using GlueCommon.Models;
 
 namespace FlatRedBall.PlatformerPlugin.Controllers
 {
@@ -271,23 +273,85 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             ignoresPropertyChanges = true;
 
             viewModel.IsPlatformer = currentEntitySave.Properties.GetValue<bool>(nameof(viewModel.IsPlatformer));
+            var inheritsFromPlatformerEntity = GetIfInheritsFromPlatformer(currentEntitySave);
+            viewModel.InheritsFromPlatformer = inheritsFromPlatformerEntity;
 
-            GetCsvValues(currentEntitySave, out Dictionary<string, PlatformerValues> csvValues);
+            RefreshPlatformerValues(currentEntitySave);
+
+            ignoresPropertyChanges = false;
+        }
+
+        private void RefreshPlatformerValues(EntitySave currentEntitySave)
+        {
+            PlatformerValuesCreationLogic.GetCsvValues(currentEntitySave,
+                out Dictionary<string, PlatformerValues> csvValues);
+
+            var basePlatformerEntities = ObjectFinder.Self
+                .GetAllBaseElementsRecursively(currentEntitySave)
+                .Where(item => item.Properties.GetValue<bool>(nameof(viewModel.IsPlatformer)))
+                .ToArray();
 
             viewModel.PlatformerValues.Clear();
 
+            var inheritsFromPlatformer = basePlatformerEntities.Length > 0;
+
+            if(inheritsFromPlatformer)
+            {
+                foreach(EntitySave entity in basePlatformerEntities)
+                {
+                    PlatformerValuesCreationLogic.GetCsvValues(entity,
+                        out Dictionary<string, PlatformerValues> baseCsvValues);
+
+                    foreach(var value in baseCsvValues.Values)
+                    {
+                        PlatformerValuesViewModel platformerValuesViewModel = null;
+
+                        var existing = viewModel.PlatformerValues.FirstOrDefault(item => item.Name == value.Name);
+                        if(existing != null)
+                        {
+                            platformerValuesViewModel = existing;
+                        }
+                        else
+                        {
+                            platformerValuesViewModel = new PlatformerValuesViewModel();
+                            viewModel.PlatformerValues.Add(platformerValuesViewModel);
+                        }
+                        platformerValuesViewModel.SetFrom(value, inheritsFromPlatformer);
+                        // since it's coming from a derived, force it as "inherits"
+                        platformerValuesViewModel.InheritOrOverwrite = InheritOrOverwrite.Inherit;
+                    }
+                }
+            }
+
             foreach (var value in csvValues.Values)
             {
-                var platformerValuesViewModel = new PlatformerValuesViewModel();
+                var existing = viewModel.PlatformerValues.FirstOrDefault(item => item.Name == value.Name);
 
-                platformerValuesViewModel.PropertyChanged += HandlePlatformerValuesChanged;
+                if(existing == null || value.InheritOrOverwrite == InheritOrOverwrite.Overwrite)
+                {
+                    var platformerValuesViewModel = new PlatformerValuesViewModel();
 
-                platformerValuesViewModel.SetFrom(value);
+                    platformerValuesViewModel.SetFrom(value, inheritsFromPlatformer);
 
-                viewModel.PlatformerValues.Add(platformerValuesViewModel);
+                    if(existing != null)
+                    {
+                        var index = viewModel.PlatformerValues.IndexOf(existing);
+                        viewModel.PlatformerValues.RemoveAt(index);
+                        viewModel.PlatformerValues.Insert(index, platformerValuesViewModel);
+                    }
+                    else
+                    {
+                        viewModel.PlatformerValues.Add(platformerValuesViewModel);
+                    }
+
+                }
             }
-            
-            ignoresPropertyChanges = false;
+
+            // now that they've all been set, += their property change
+            foreach (var platformerValuesViewModel in viewModel.PlatformerValues)
+            {
+                platformerValuesViewModel.PropertyChanged += HandlePlatformerValuesChanged;
+            }
         }
 
         private void HandlePlatformerValuesChanged(object sender, PropertyChangedEventArgs e)
@@ -295,25 +359,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
         }
 
-        private static void GetCsvValues(EntitySave currentEntitySave,
-            out Dictionary<string, PlatformerValues> csvValues)
-        {
-            csvValues = new Dictionary<string, PlatformerValues>();
-            var filePath = CsvGenerator.Self.CsvFileFor(currentEntitySave);
 
-            if (filePath.Exists())
-            {
-                try
-                {
-                    CsvFileManager.CsvDeserializeDictionary<string, PlatformerValues>(filePath.FullPath, csvValues);
-                }
-                catch(Exception e)
-                {
-                    PluginManager.ReceiveError("Error trying to load platformer csv:\n" + e.ToString());
-                }
-            }
-
-        }
 
         static bool GetIfIsPlatformer(IElement element)
         {

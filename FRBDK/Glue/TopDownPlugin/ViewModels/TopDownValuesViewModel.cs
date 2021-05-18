@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.MVVM;
+using GlueCommon.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

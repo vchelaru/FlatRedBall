@@ -183,10 +183,10 @@ namespace EntityInputMovementPlugin.ViewModels
                 case nameof(PlatformerEntityViewModel.IsPlatformer):
                     RefreshRadioButtonValues();
                     break;
-                    // todo - support inheritance
-                //case nameof(TopDownEntityViewModel.InheritsFromTopDown):
-                //    RefreshRadioButtonValues();
-                //    break;
+                // todo - support inheritance
+                case nameof(TopDownEntityViewModel.InheritsFromTopDown):
+                    RefreshRadioButtonValues();
+                    break;
             }
 
 
@@ -199,14 +199,15 @@ namespace EntityInputMovementPlugin.ViewModels
 
         public void RefreshRadioButtonValues()
         {
-            IsNoneRadioChecked = !TopDownViewModel.InheritsFromTopDown && !TopDownViewModel.IsTopDown 
-                && !PlatformerViewModel.IsPlatformer // add inheritance eventually
+            IsNoneRadioChecked = 
+                !TopDownViewModel.InheritsFromTopDown && !TopDownViewModel.IsTopDown && 
+                !PlatformerViewModel.InheritsFromPlatformer && !PlatformerViewModel.IsPlatformer;
 
-                ;
             IsTopDownRadioChecked = TopDownViewModel.InheritsFromTopDown || TopDownViewModel.IsTopDown;
-            IsPlatformerRadioChecked = PlatformerViewModel.IsPlatformer ; // eventually add inheritance
+            IsPlatformerRadioChecked = PlatformerViewModel.InheritsFromPlatformer || PlatformerViewModel.IsPlatformer ; 
 
-            CanUserSelectMovementType = TopDownViewModel.InheritsFromTopDown == false; // eventually add inheritance for platformer
+            CanUserSelectMovementType = 
+                TopDownViewModel.InheritsFromTopDown == false && PlatformerViewModel.InheritsFromPlatformer == false;
 
         }
 

@@ -11,6 +11,7 @@ using FlatRedBall.IO;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.IO.Csv;
 using FlatRedBall.PlatformerPlugin.SaveClasses;
+using GlueCommon.Models;
 
 namespace FlatRedBall.PlatformerPlugin.Generators
 {
@@ -64,8 +65,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 var platformerValues = valuesViewModel.ToValues();
 
                 var shouldInclude = inheritsFromPlatformer == false
-                    //|| platformerValues.InheritOrOverwrite == InheritOrOverwrite.Overwrite
-                    ;
+                    || platformerValues.InheritOrOverwrite == InheritOrOverwrite.Overwrite;
 
                 if (shouldInclude)
                 {

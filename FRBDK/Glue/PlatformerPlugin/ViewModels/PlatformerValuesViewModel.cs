@@ -7,6 +7,7 @@ using FlatRedBall.PlatformerPlugin.SaveClasses;
 using FlatRedBall.Glue.MVVM;
 using System.Windows;
 using System.ComponentModel;
+using GlueCommon.Models;
 
 namespace FlatRedBall.PlatformerPlugin.ViewModels
 {
@@ -218,6 +219,61 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
             set => Set(value);
         }
 
+        public InheritOrOverwrite InheritOrOverwrite
+        {
+            get => Get<InheritOrOverwrite>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(InheritOrOverwrite))]
+        public bool InheritMovementValues
+        {
+            get => InheritOrOverwrite == InheritOrOverwrite.Inherit;
+            set
+            {
+                Set(value);
+                if (value)
+                {
+                    InheritOrOverwrite = InheritOrOverwrite.Inherit;
+                }
+            }
+        }
+
+        [DependsOn(nameof(InheritOrOverwrite))]
+        public bool OverwriteMovementValues
+        {
+            get => InheritOrOverwrite == InheritOrOverwrite.Overwrite;
+            set
+            {
+                Set(value);
+                if (value)
+                {
+                    InheritOrOverwrite = InheritOrOverwrite.Overwrite;
+                }
+            }
+        }
+
+        public bool IsInDerivedPlatformerEntity
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(IsInDerivedPlatformerEntity))]
+        public Visibility InheritBoxVisibility => IsInDerivedPlatformerEntity.ToVisibility();
+
+        [DependsOn(nameof(IsInDerivedPlatformerEntity))]
+        public Visibility DeleteButtonVisibility => (IsInDerivedPlatformerEntity == false).ToVisibility();
+
+        [DependsOn(nameof(InheritOrOverwrite))]
+        [DependsOn(nameof(IsInDerivedPlatformerEntity))]
+        public bool IsEditable => InheritOrOverwrite == InheritOrOverwrite.Overwrite || IsInDerivedPlatformerEntity == false;
+
+        [DependsOn(nameof(IsInDerivedPlatformerEntity))]
+        public bool IsNameEditable => IsInDerivedPlatformerEntity == false;
+
+
+
         #endregion
 
         #region Constructor/Clone
@@ -254,7 +310,7 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
             }
         }
 
-        internal void SetFrom(PlatformerValues values)
+        internal void SetFrom(PlatformerValues values, bool isInDerivedPlatformer)
         {
             Name = values.Name;
             MaxSpeedX = values.MaxSpeedX;
@@ -281,6 +337,9 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
 
             CanClimb = values.CanClimb;
             MaxClimbingSpeed = values.MaxClimbingSpeed;
+
+            this.InheritOrOverwrite = values.InheritOrOverwrite;
+            this.IsInDerivedPlatformerEntity = isInDerivedPlatformer;
         }
 
         private void ClampUphillValues()
@@ -342,6 +401,8 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
 
             toReturn.CanClimb = this.CanClimb;
             toReturn.MaxClimbingSpeed = this.MaxClimbingSpeed;
+
+            toReturn.InheritOrOverwriteAsInt = (int)this.InheritOrOverwrite;
 
             return toReturn;
         }

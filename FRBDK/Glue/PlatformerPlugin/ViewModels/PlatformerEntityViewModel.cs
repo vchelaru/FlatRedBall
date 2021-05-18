@@ -21,21 +21,23 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
             set => Set(value);
         }
 
-        [DependsOn(nameof(IsPlatformer))]
-        public Visibility PlatformerUiVisibility
+        public bool InheritsFromPlatformer
         {
-            get
-            {
-                if(IsPlatformer)
-                {
-                    return Visibility.Visible;
-                }
-                else
-                {
-                    return Visibility.Collapsed;
-                }
-            }
+            get => Get<bool>();
+            set => Set(value);
         }
+
+        [DependsOn(nameof(IsPlatformer))]
+        [DependsOn(nameof(InheritsFromPlatformer))]
+        public bool IsEffectivelyPlatformer => IsPlatformer || InheritsFromPlatformer;
+
+        [DependsOn(nameof(IsEffectivelyPlatformer))]
+        public Visibility PlatformerUiVisibility => IsEffectivelyPlatformer.ToVisibility();
+
+        [DependsOn(nameof(InheritsFromPlatformer))]
+        public Visibility InheritanceLabelVisibility => InheritsFromPlatformer.ToVisibility();
+
+
 
         public PlatformerEntityViewModel()
         {

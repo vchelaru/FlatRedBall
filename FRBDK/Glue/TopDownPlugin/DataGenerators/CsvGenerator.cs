@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using FlatRedBall.IO.Csv;
+using GlueCommon.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -6,6 +6,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using FlatRedBall.IO.Csv;
+using GlueCommon.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -458,18 +459,6 @@ namespace TopDownPlugin.Controllers
                 out List<Type> additionalValueTypes,
                 out CsvHeader[] csvHeaders);
 
-            // Here we read the headers from the CSV. It's possible that the CSV
-            // somehow got malformed, or is an old CSV, and is missing some of the
-            // headers. We want to make sure we include required properties from the type
-            // These are (as of July 7, 2020)
-            //string Name
-
-            //bool UsesAcceleration { get; set; } = true;
-
-            //float MaxSpeed { get; set; }
-            //float AccelerationTime { get; set; }
-            //float DecelerationTime { get; set; }
-            //bool UpdateDirectionFromVelocity { get; set; } = true;
 
             List<CsvHeader> tempList = csvHeaders?.ToList() ?? new List<CsvHeader>();
             //bool ContainsHeader(string name)
@@ -553,7 +542,6 @@ namespace TopDownPlugin.Controllers
             foreach(var topDownValuesViewModel in viewModel.TopDownValues)
             {
                 topDownValuesViewModel.PropertyChanged += HandleTopDownValuesViewModelChanged;
-
             }
         }
 

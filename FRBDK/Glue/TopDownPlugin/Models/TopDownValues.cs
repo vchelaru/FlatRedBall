@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GlueCommon.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,11 +7,7 @@ using System.Threading.Tasks;
 
 namespace TopDownPlugin.Models
 {
-    public enum InheritOrOverwrite
-    {
-        Inherit,
-        Overwrite
-    }
+
 
     public class TopDownValues
     {

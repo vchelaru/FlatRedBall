@@ -47,13 +47,31 @@
         <!--Name-->
         <StackPanel Grid.Row="1" Margin="3">
             <TextBlock HorizontalAlignment="Center" Margin="3">Movement Type</TextBlock>
-            <TextBox Text="{Binding Name}" Width="90" VerticalAlignment="Top" b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
-            
+            <TextBox Text="{Binding Name}" Width="90" VerticalAlignment="Top" 
+                     b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"
+                     IsEnabled="{Binding IsNameEditable}"
+                     ></TextBox>
+            <GroupBox Header="Inheritance" Visibility="{Binding InheritBoxVisibility}">
+                <StackPanel>
+                    <RadioButton VerticalContentAlignment="Center" IsChecked="{Binding InheritMovementValues}">
+                        <RadioButton.ToolTip>
+                            If inherited, this entity will use this value as defined in the base entity.
+                        </RadioButton.ToolTip>
+                        Inherit Values
+                    </RadioButton>
+                    <RadioButton VerticalContentAlignment="Center" IsChecked="{Binding OverwriteMovementValues}">
+                        <RadioButton.ToolTip>
+                            If overwriting, this entity's values for these movement values will be used instead of the base entity.
+                        </RadioButton.ToolTip>
+                        Overwrite Values
+                    </RadioButton>
+                </StackPanel>
+            </GroupBox>
         </StackPanel>
 
         <!--Horizontal Movement-->
         <TextBlock Grid.Column="1" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3">Horizontal Movement</TextBlock>
-        <StackPanel Grid.Row="1" Grid.Column="1" Margin="12,3,8,3">
+        <StackPanel Grid.Row="1" Grid.Column="1" Margin="12,3,8,3"  IsEnabled="{Binding IsEditable}">
 
             <TextBlock>Max Speed:</TextBlock>
             <TextBox Text="{Binding MaxSpeedX}" HorizontalAlignment="Left" Width="70" Margin="0,0,0,5"
@@ -89,7 +107,7 @@
 
         <!--Slope Movement -->
         <TextBlock Grid.Column="2" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3">Slope Movement</TextBlock>
-        <StackPanel Grid.Row="1" Grid.Column="2" Margin="12,3,8,3">
+        <StackPanel Grid.Row="1" Grid.Column="2" Margin="12,3,8,3"  IsEnabled="{Binding IsEditable}">
             <RadioButton IsChecked="{Binding MoveSameSpeedOnSlopes}" VerticalContentAlignment="Center">Move the same speed</RadioButton>
             <RadioButton IsChecked="{Binding AdjustSpeedOnSlopes}" VerticalContentAlignment="Center">Slopes change speed</RadioButton>
             <StackPanel Margin="10,0,0,0" Visibility="{Binding SlopeMovementSpeedUiVisibility}">
@@ -130,7 +148,7 @@
 
         <!--Jumping-->
         <TextBlock Grid.Column="3" FontSize="16" HorizontalAlignment="Left" Margin="3">Jumping</TextBlock>
-        <StackPanel Grid.Column="3" Grid.Row="1" Margin="12,3,8,3">
+        <StackPanel Grid.Column="3" Grid.Row="1" Margin="12,3,8,3"  IsEnabled="{Binding IsEditable}">
             <TextBlock>Jump Speed:</TextBlock>
             <TextBox HorizontalAlignment="Left" Width="70"  Text="{Binding JumpVelocity}" Margin="1,0,-1,5"
                      b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
@@ -152,7 +170,7 @@
 
         <!--Falling-->
         <TextBlock Grid.Column="4" FontSize="16" HorizontalAlignment="Left" Margin="3">Falling</TextBlock>
-        <StackPanel Grid.Column="4" Grid.Row="1" Margin="12,3,8,3">
+        <StackPanel Grid.Column="4" Grid.Row="1" Margin="12,3,8,3"  IsEnabled="{Binding IsEditable}">
             <TextBlock>Gravity:</TextBlock>
             <TextBox HorizontalAlignment="Left" Width="70" Text="{Binding Gravity}" 
                      b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
@@ -167,7 +185,7 @@
         </StackPanel>
 
         <TextBlock Grid.Column="5" FontSize="16" HorizontalAlignment="Left" Margin="3">Climbing</TextBlock>
-        <StackPanel Grid.Column="5" Grid.Row="1" Margin="12,3,8,3">
+        <StackPanel Grid.Column="5" Grid.Row="1" Margin="12,3,8,3"  IsEnabled="{Binding IsEditable}">
             <CheckBox VerticalContentAlignment="Center" Margin="0,10,0,0" IsChecked="{Binding CanClimb}">
                 <CheckBox.ToolTip>
                     Whether pressing up and down puts the player in a climbing state. When climbing, there is no gravity and up/down input directly sets the player's velocity.
@@ -180,7 +198,7 @@
             
         </StackPanel>
 
-        <Button Grid.Column="6" Width="24" Click="HandleXClick">X</Button>
+        <Button Grid.Column="6" Width="24" Click="HandleXClick" Visibility="{Binding DeleteButtonVisibility}" >X</Button>
 
 
     </Grid>
