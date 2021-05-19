@@ -60,11 +60,6 @@ namespace BuildServerUploaderConsole.Processes
 
                 ZipHelper.CreateZip(Results, ZipDirectory, DirectoryHelper.TemplateDirectory + zipProcess.ZipDirectory, zipProcess.ZipFileName);
             }
-
-
-
-
-
         }
 
         private void RemoveBinRecursiveFrom(string directories)
