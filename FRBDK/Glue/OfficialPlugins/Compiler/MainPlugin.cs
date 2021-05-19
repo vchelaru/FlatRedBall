@@ -226,28 +226,31 @@ namespace OfficialPlugins.Compiler
 
         public async Task BuildAndRun()
         {
-            GlueCommands.Self.DialogCommands.FocusTab("Build");
-            var succeeded = await Compile();
-
-            if (succeeded)
+            if(viewModel.IsToolbarPlayButtonEnabled)
             {
-                bool hasErrors = GetIfHasErrors();
-                if (hasErrors)
-                {
-                    var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
+                GlueCommands.Self.DialogCommands.FocusTab("Build");
+                var succeeded = await Compile();
 
-                    GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, async () => await runner.Run(preventFocus: false));
+                if (succeeded)
+                {
+                    bool hasErrors = GetIfHasErrors();
+                    if (hasErrors)
+                    {
+                        var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
+
+                        GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, async () => await runner.Run(preventFocus: false));
+                    }
+                    else
+                    {
+                        PluginManager.ReceiveOutput("Building succeeded. Running project...");
+
+                        await runner.Run(preventFocus: false);
+                    }
                 }
                 else
                 {
-                    PluginManager.ReceiveOutput("Building succeeded. Running project...");
-
-                    await runner.Run(preventFocus: false);
+                    PluginManager.ReceiveError("Building failed. See \"Build\" tab for more information.");
                 }
-            }
-            else
-            {
-                PluginManager.ReceiveError("Building failed. See \"Build\" tab for more information.");
             }
         }
 
