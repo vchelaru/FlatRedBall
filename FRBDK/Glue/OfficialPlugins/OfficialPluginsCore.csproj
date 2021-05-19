@@ -62,6 +62,7 @@
     <None Remove="QuickActionPlugin\Views\Create Factory for Entity v2.png" />
     <None Remove="QuickActionPlugin\Views\Create Project v2.png" />
     <None Remove="QuickActionPlugin\Views\Create Screen.png" />
+    <None Remove="QuickActionPlugin\Views\Open Project.png" />
     <None Remove="QuickActionPlugin\Views\StartWizard.png" />
     <None Remove="Wizard\Icons\CheckIcon.png" />
     <None Remove="Wizard\Icons\Error.png" />
@@ -122,6 +123,7 @@
     <Resource Include="QuickActionPlugin\Views\Create Factory for Entity v2.png" />
     <Resource Include="QuickActionPlugin\Views\Create Project v2.png" />
     <Resource Include="QuickActionPlugin\Views\Create Screen.png" />
+    <Resource Include="QuickActionPlugin\Views\Open Project.png" />
     <Resource Include="QuickActionPlugin\Views\StartWizard.png" />
     <Resource Include="Wizard\Icons\CheckIcon.png" />
     <Resource Include="Wizard\Icons\Error.png" />

@@ -73,7 +73,18 @@
                         x:Name="CreateNewProjectButton"
                         Title="Create New Project"
                         Details="Usually new projects target Desktop GL."
-                        Clicked="CreateNewProjectButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Views/Create Project v2.png"
+                        Clicked="CreateNewProjectButton_Clicked" 
+                        Image="/OfficialPluginsCore;component/QuickActionPlugin/Views/Create Project v2.png"
+                        >
+
+                    </local:QuickActionButton>
+
+                    <local:QuickActionButton
+                        x:Name="OpenProjectButton"
+                        Title="Open Project"
+                        Details="Load an existing project from disk."
+                        Clicked="OpenProjectButton_Clicked" 
+                        Image="/OfficialPluginsCore;component/QuickActionPlugin/Views/Open Project.png"
                         >
 
                     </local:QuickActionButton>

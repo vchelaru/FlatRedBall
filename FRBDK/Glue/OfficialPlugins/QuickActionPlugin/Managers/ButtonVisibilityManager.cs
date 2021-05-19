@@ -66,6 +66,13 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
 
             #endregion
 
+            #region Open Project
+
+            mainView.OpenProjectButton.Visibility = ToVisibility(
+                glueProject == null);
+
+            #endregion
+
             #region Add Gum Project
 
             mainView.AddGumProject.Visibility = ToVisibility(!hasGumProject && glueProject != null);

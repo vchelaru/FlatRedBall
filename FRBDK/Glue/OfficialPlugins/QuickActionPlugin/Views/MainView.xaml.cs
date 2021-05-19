@@ -41,6 +41,12 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             AnyButtonClicked();
         }
 
+        private void OpenProjectButton_Clicked(object sender, RoutedEventArgs e)
+        {
+            GlueCommands.Self.DialogCommands.ShowLoadProjectDialog();
+            AnyButtonClicked();
+        }
+
         private void AddLevelButton_Clicked(object sender, RoutedEventArgs e)
         {
             var gameScreen = GlueState.Self.CurrentGlueProject.Screens.FirstOrDefault(
