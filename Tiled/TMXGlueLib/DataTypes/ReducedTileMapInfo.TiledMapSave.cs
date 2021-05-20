@@ -117,7 +117,7 @@ namespace TMXGlueLib.DataTypes
                         firstGid = mapLayer.data[0].tiles.FirstOrDefault(item => item != 0);
                     }
                 }
-                else
+                else if (tiledLayer is mapObjectgroup)
                 {
                     var objectLayer = tiledLayer as mapObjectgroup;
 
@@ -126,6 +126,12 @@ namespace TMXGlueLib.DataTypes
                     var firstObjectWithTexture = objectLayer.@object?.FirstOrDefault(item => item.gid > 0);
 
                     firstGid = firstObjectWithTexture?.gid;
+                }
+                else
+                {
+                    //Image layers and any other future layer types in Tiled are not supported at
+                    //this time. Just move onto the next layer and ignore this one.
+                    continue;
                 }
 
                 if (firstGid > 0)
