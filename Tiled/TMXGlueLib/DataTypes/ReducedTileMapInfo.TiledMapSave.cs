@@ -168,6 +168,8 @@ namespace TMXGlueLib.DataTypes
                     Name = tiledLayer.Name,
                     TileWidth = tileWidth,
                     TileHeight = tileHeight,
+                    ParallaxMultiplierX = tiledLayer.ParallaxX,
+                    ParallaxMultiplierY = tiledLayer.ParallaxY,
                 };
 
                 reducedTileMapInfo.Layers.Add(reducedLayerInfo);
