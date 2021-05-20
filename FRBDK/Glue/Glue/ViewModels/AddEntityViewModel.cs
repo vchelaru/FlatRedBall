@@ -133,6 +133,15 @@ namespace GlueFormsCore.ViewModels
         public Visibility InterfaceVisibility =>
             (HasInheritance == false).ToVisibility();
 
+        [DependsOn(nameof(SelectedBaseEntity))]
+        public Visibility VisualsVisibility =>
+            (HasInheritance == false).ToVisibility();
+
+        [DependsOn(nameof(SelectedBaseEntity))]
+        public Visibility CollisionsVisibility =>
+            (HasInheritance == false).ToVisibility();
+
+
         bool hasExplicitlyUncheckedICollidable;
 
         public bool IsICollidableChecked

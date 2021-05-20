@@ -22,13 +22,13 @@
             <TextBlock VerticalAlignment="Center">Base Entity:</TextBlock>
             <ComboBox Grid.Column="1" Margin="2,0,2,0" ItemsSource="{Binding BaseEntityOptions}" SelectedItem="{Binding SelectedBaseEntity}"></ComboBox>
         </Grid>
-        <GroupBox Header="Visuals">
+        <GroupBox Header="Visuals" Visibility="{Binding VisualsVisibility}">
             <StackPanel>
                 <CheckBox x:Name="SpriteCheckBox" IsChecked="{Binding IsSpriteChecked}">Sprite</CheckBox>
                 <CheckBox x:Name="TextCheckBox" IsChecked="{Binding IsTextChecked}">Text</CheckBox>
             </StackPanel>
         </GroupBox>
-        <GroupBox Header="Collisions">
+        <GroupBox Header="Collisions" Visibility="{Binding CollisionsVisibility}">
             <StackPanel>
                 <CheckBox x:Name="CircleCheckBox" IsChecked="{Binding IsCircleChecked}">Circle</CheckBox>
                 <CheckBox x:Name="AxisAlignedRectangleCheckBox" IsChecked="{Binding IsAxisAlignedRectangleChecked}">AxisAlignedRectangle</CheckBox>
