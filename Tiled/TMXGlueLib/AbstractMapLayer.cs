@@ -11,6 +11,9 @@ namespace TMXGlueLib
     [XmlInclude(typeof (mapObjectgroup))]
     public abstract class AbstractMapLayer
     {
+        private float _offsetX;
+        private float _offsetY;
+
         [XmlAttribute("name")]
         public string Name { get; set; }
 
@@ -56,6 +59,20 @@ namespace TMXGlueLib
             {
                 this.parallaxyField = value;
             }
+        }
+
+        [XmlAttribute("offsetx")]
+        public float OffsetX
+        {
+            get { return _offsetX; }
+            set { _offsetX = value; }
+        }
+
+        [XmlAttribute("offsety")]
+        public float OffsetY
+        {
+            get { return _offsetY; }
+            set { _offsetY = value; }
         }
     }
 }
