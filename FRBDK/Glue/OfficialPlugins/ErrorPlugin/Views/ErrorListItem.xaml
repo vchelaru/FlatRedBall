@@ -18,5 +18,10 @@
         <Grid.InputBindings>
             <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding DoubleClickCommand}" />
         </Grid.InputBindings>
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Go to Object" Command="{Binding DoubleClickCommand}"/>
+            </ContextMenu>
+        </Grid.ContextMenu>
     </Grid>
 </UserControl>

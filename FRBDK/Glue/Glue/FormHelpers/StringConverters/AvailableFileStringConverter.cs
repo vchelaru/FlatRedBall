@@ -7,6 +7,7 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.FormHelpers.StringConverters;
+using System.Runtime.InteropServices;
 
 namespace FlatRedBall.Glue.GuiDisplay
 {
@@ -71,6 +72,10 @@ namespace FlatRedBall.Glue.GuiDisplay
             return true;
         }
 
+        [DllImport("Shlwapi.dll", CharSet = CharSet.Unicode)]
+        private static extern int StrCmpLogicalW(string x, string y);
+
+
         List<string> stringToReturn = new List<string>();
         public override StandardValuesCollection
                      GetStandardValues(ITypeDescriptorContext context)
@@ -89,6 +94,8 @@ namespace FlatRedBall.Glue.GuiDisplay
 
             IElement currentElementSave = CurrentElement;
 
+            List<string> listToSort = new List<string>();
+
             if (currentElementSave != null)
             {
                 // Let's use 
@@ -103,15 +110,19 @@ namespace FlatRedBall.Glue.GuiDisplay
                     {
                         if (RemovePathAndExtension)
                         {
-                            stringToReturn.Add(FileManager.RemovePath(FileManager.RemoveExtension(rfs.Name)));
+                            listToSort.Add(FileManager.RemovePath(FileManager.RemoveExtension(rfs.Name)));
                         }
                         else
                         {
-                            stringToReturn.Add(rfs.Name);
+                            listToSort.Add(rfs.Name);
                         }
                     }
                 }
             }
+
+            listToSort.Sort(StrCmpLogicalW);
+
+            stringToReturn.AddRange(listToSort);
             return new StandardValuesCollection(stringToReturn);
         }
 
