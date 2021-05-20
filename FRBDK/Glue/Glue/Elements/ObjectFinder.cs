@@ -594,33 +594,58 @@ namespace FlatRedBall.Glue.Elements
 
             foreach (EntitySave entitySave in GlueProject.Entities)
             {
-                GetAllNamedObjectsThatUseElement(entitySave.NamedObjects, namedObjects, baseEntity, SourceType.Entity);
+                GetAllNamedObjectsThatUseElement(entitySave.NamedObjects, namedObjects, baseEntity, SourceType.Entity, entitySave);
             }
 
 
             foreach (ScreenSave screenSave in GlueProject.Screens)
             {
-                GetAllNamedObjectsThatUseElement(screenSave.NamedObjects, namedObjects, baseEntity, SourceType.Entity);
+                GetAllNamedObjectsThatUseElement(screenSave.NamedObjects, namedObjects, baseEntity, SourceType.Entity, screenSave);
             }
 
             return namedObjects;
         }
 
 
-        private void GetAllNamedObjectsThatUseElement(List<NamedObjectSave> sourceList, List<NamedObjectSave> listToAddTo, string name, SourceType sourceType)
+        private void GetAllNamedObjectsThatUseElement(List<NamedObjectSave> sourceList, List<NamedObjectSave> listToAddTo, string name, SourceType sourceType, GlueElement parentGlueElement)
         {
-            foreach (NamedObjectSave nos in sourceList)
+            bool DoesNosMatchType(NamedObjectSave nos)
             {
-                if (nos.SourceType == sourceType && nos.SourceClassType == name)
+                if(nos == null)
                 {
-                    listToAddTo.Add(nos);
+                    return false;
+                }
+                else if (nos.SourceType == sourceType && nos.SourceClassType == name)
+                {
+                    return true;
                 }
                 else if (nos.SourceType == SourceType.FlatRedBallType && nos.IsList && nos.SourceClassGenericType == name)
                 {
+                    return true;
+                }
+                return false;
+            }
+            foreach (NamedObjectSave nos in sourceList)
+            {
+                if (DoesNosMatchType(nos))
+                {
                     listToAddTo.Add(nos);
                 }
+                else if(nos.IsCollisionRelationship())
+                {
+                    var firstItem = nos.Properties.GetValue<string>("FirstCollisionName");
+                    var secondItem = nos.Properties.GetValue<string>("SecondCollisionName");
 
-                GetAllNamedObjectsThatUseElement(nos.ContainedObjects, listToAddTo, name, sourceType);
+                    var firstNos = parentGlueElement.GetNamedObjectRecursively(firstItem);
+                    var secondNos = parentGlueElement.GetNamedObjectRecursively(secondItem);
+
+                    if(DoesNosMatchType(firstNos) || DoesNosMatchType(secondNos))
+                    {
+                        listToAddTo.Add(nos);
+                    }
+                }
+
+                GetAllNamedObjectsThatUseElement(nos.ContainedObjects, listToAddTo, name, sourceType, parentGlueElement);
             }
 
         }
