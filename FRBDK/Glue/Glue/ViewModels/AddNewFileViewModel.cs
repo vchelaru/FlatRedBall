@@ -109,7 +109,14 @@ namespace GlueFormsCore.ViewModels
                 }
             }
 
-            SelectedAssetTypeInfo = selected;
+            if(FilteredOptions.Contains(selected))
+            {
+                SelectedAssetTypeInfo = selected;
+            }
+            else
+            {
+                SelectedAssetTypeInfo = FilteredOptions.FirstOrDefault();
+            }
 
         }
     }
