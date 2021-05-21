@@ -54,7 +54,7 @@ namespace FlatRedBall.Glue.Events
             set;
         }
 
-        public static string GetEventFileNameForElement(IElement element)
+        public static string GetCustomEventFileNameForElement(IElement element)
         {
             string fileName = element.Name + ".Event.cs";
             return fileName;
@@ -63,7 +63,7 @@ namespace FlatRedBall.Glue.Events
         public static string GetSharedCodeFullFileName(IElement container, string baseProjectDirectory)
         {
 
-            string fileName = GetEventFileNameForElement(container);
+            string fileName = GetCustomEventFileNameForElement(container);
             return baseProjectDirectory + fileName;
         
         }

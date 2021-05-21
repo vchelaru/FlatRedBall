@@ -7,6 +7,7 @@ using FlatRedBall.Glue.GuiDisplay.Facades;
 using System.IO;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Parsing;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.Events
 {
@@ -28,7 +29,7 @@ namespace FlatRedBall.Glue.Events
                 {
                     // Is there a non-Generated.Event.cs file?
                     string fileToLookFor = FileManager.RelativeDirectory +
-                        EventResponseSave.GetEventFileNameForElement(element);
+                        EventResponseSave.GetCustomEventFileNameForElement(element);
 
                     if (File.Exists(fileToLookFor))
                     {
@@ -50,12 +51,12 @@ namespace FlatRedBall.Glue.Events
             return textToAssign;
         }
 
-        public static string GetSharedCodeFullFileName(this EventResponseSave instance)
+        public static string GetCustomEventFullFileName(this EventResponseSave instance)
         {
             var container = instance.GetContainer();
             if (container != null)
             {
-                return FileManager.GetDirectory(ProjectManager.GlueProjectFileName) + EventResponseSave.GetEventFileNameForElement(instance.GetContainer());
+                return GlueState.Self.CurrentGlueProjectDirectory + EventResponseSave.GetCustomEventFileNameForElement(instance.GetContainer());
             }
             else
             {
@@ -65,7 +66,7 @@ namespace FlatRedBall.Glue.Events
 
         public static ParsedMethod GetParsedMethodFromAssociatedFile(this EventResponseSave instance)
         {
-            string fullFileName = instance.GetSharedCodeFullFileName();
+            string fullFileName = instance.GetCustomEventFullFileName();
 
             return EventResponseSaveExtensionMethods.GetParsedMethodFromAssociatedFile(fullFileName, instance);
         }
