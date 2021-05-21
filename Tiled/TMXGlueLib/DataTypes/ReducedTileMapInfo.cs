@@ -206,7 +206,8 @@ namespace TMXGlueLib.DataTypes
         // Added:
         //  int NumberCellsWide;
         //  int NumberCellsTall;
-        public int VersionNumber = 2;
+        // Version 3 added parallax
+        public int VersionNumber = 3;
 
         public int NumberCellsWide;
         public int NumberCellsTall;
