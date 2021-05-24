@@ -1127,6 +1127,18 @@ namespace FlatRedBall.TileCollisions
             }
         }
 
+        public void UpdateShapesForCloudCollision()
+        {
+            var count = this.mShapes.AxisAlignedRectangles.Count;
+            for (int i = 0; i < count; i++)
+            {
+                var rectangle = this.mShapes.AxisAlignedRectangles[i];
+
+                rectangle.RepositionHalfSize = true;
+
+                rectangle.RepositionDirections = RepositionDirections.Up;
+            }
+        }
 
         public override string ToString()
         {
