@@ -1,0 +1,51 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Create FRBDK deliverables
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ $default-branch, NetStandard ]
+  pull_request:
+    branches: [ $default-branch, NetStandard ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  # https://github.blog/changelog/2020-07-06-github-actions-manual-triggers-with-workflow_dispatch/
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+  
+    strategy:
+      matrix:
+        configuration: [Debug] #, Release]
+
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.2
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v1.0.5
+
+      - name: Restore NuGet Packages
+        run: nuget restore "FRBDK\Glue\Glue with All.sln"
+
+      - name: Build and Publish Web App
+        run: msbuild "FRBDK\Glue\Glue with All.sln" /p:Configuration=$env:Configuration
+        #  /p:DeployOnBuild=true /p:PublishProfile=FolderProfile
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v1.0.0
+        with:
+          name: published_webapp
+          path: bin\Release\Publish
