@@ -1676,8 +1676,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     // Eventually I want to move this to a plugin but plugins need to be able to override how
                     // variables are generated.  Then they can add custom code and suppress FRB from doing it.
-                    if (ati != null && ati.QualifiedRuntimeTypeName.QualifiedType == typeof(Polygon).FullName &&
-                        namedObject.SourceType == SourceType.FlatRedBallType && namedObject.SourceClassType == "Polygon")
+                    if (ati == AvailableAssetTypes.CommonAtis.Polygon)
                     {
                         string internalPoints = null;
 
