@@ -13,6 +13,12 @@ namespace OfficialPlugins.VariableDisplay
 
         TypeConverter typeConverter;
 
+        bool? isExplicitlyReadOnly;
+        public override bool IsReadOnly
+        {
+            get => isExplicitlyReadOnly ?? base.IsReadOnly;
+        }
+
         public TypeConverter TypeConverter
         {
             get
@@ -79,6 +85,11 @@ namespace OfficialPlugins.VariableDisplay
                     CustomOptions.Add(item);
                 }
             }
+        }
+
+        public void MakeReadOnly()
+        {
+            isExplicitlyReadOnly = true;
         }
     }
 }

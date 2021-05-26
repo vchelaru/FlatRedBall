@@ -45,7 +45,7 @@ namespace FlatRedBall.Glue.SetVariable
             // We'll "cheat" by setting the name to the old
             // one and getting the contents, then switching it
             // back to the new:
-            string fullFileName = ers.GetSharedCodeFullFileName();
+            string fullFileName = ers.GetCustomEventFullFileName();
             if (!System.IO.File.Exists(fullFileName))
             {
                 PluginManager.ReceiveError("Could not find the file " + fullFileName);

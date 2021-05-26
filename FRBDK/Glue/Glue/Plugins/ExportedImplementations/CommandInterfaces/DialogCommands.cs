@@ -20,6 +20,7 @@ using GlueFormsCore.ViewModels;
 using GlueFormsCore.Controls;
 using FlatRedBall.Glue.VSHelpers;
 using GlueFormsCore.Extensions;
+using System.Runtime.InteropServices;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -347,8 +348,22 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 height = 0;
             }
 
-            window.Left = MainGlueWindow.MousePosition.X - width / 2;
-            window.Top = MainGlueWindow.MousePosition.Y - height / 2;
+            var scaledX = MainGlueWindow.Self.LogicalToDeviceUnits(MainGlueWindow.MousePosition.X);
+
+            var source = System.Windows.PresentationSource.FromVisual(MainGlueWindow.MainWpfControl);
+
+
+            double mousePositionX = MainGlueWindow.MousePosition.X;
+            double mousePositionY = MainGlueWindow.MousePosition.Y;
+
+            if (source != null)
+            {
+                mousePositionX /= source.CompositionTarget.TransformToDevice.M11;
+                mousePositionY /= source.CompositionTarget.TransformToDevice.M22;
+            }
+
+            window.Left = mousePositionX - width / 2;
+            window.Top = mousePositionY - height / 2;
 
             window.ShiftWindowOntoScreen();
         }

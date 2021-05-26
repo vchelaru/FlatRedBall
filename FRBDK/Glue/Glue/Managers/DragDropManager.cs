@@ -183,22 +183,26 @@ namespace FlatRedBall.Glue.Managers
             {
                 string message = "Move to list or create collision relationship?";
 
-                var mbmb = new MultiButtonMessageBox();
+                var mbmb = new MultiButtonMessageBoxWpf();
                 mbmb.MessageText = message;
                 mbmb.AddButton("Move to List", DialogResult.Yes);
                 mbmb.AddButton("Create Collision Relationship", DialogResult.No);
 
-                var result = mbmb.ShowDialog();
+                var dialogResult = mbmb.ShowDialog();
 
-                if (result == DialogResult.Yes)
+                if(dialogResult == true)
                 {
-                    canBeMovedInList = true;
-                    canBeCollidable = false;
-                }
-                else if (result == DialogResult.No)
-                {
-                    canBeCollidable = true;
-                    canBeMovedInList = false;
+                    var result = (DialogResult)mbmb.ClickedResult;
+                    if ( result == DialogResult.Yes)
+                    {
+                        canBeMovedInList = true;
+                        canBeCollidable = false;
+                    }
+                    else if (result == DialogResult.No)
+                    {
+                        canBeCollidable = true;
+                        canBeMovedInList = false;
+                    }
                 }
             }
 

@@ -280,6 +280,11 @@ namespace OfficialPlugins.VariableDisplay
             // this gets updated in the CustomSetEvent below
             string oldValue = instance.InstanceName;
 
+            if(instance.DefinedByBase)
+            {
+                instanceMember.MakeReadOnly();
+            }
+
             instanceMember.CustomSetEvent += (throwaway, value) =>
             {
                 instanceMember.IsDefault = false;

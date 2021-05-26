@@ -85,7 +85,9 @@ namespace FlatRedBall.Glue.Events
                 indexToInsertAt--;
             }
 
-            while(startOfLine && indexToInsertAt > 0 && fullFileContents[indexToInsertAt-1] == '\t')
+            while(startOfLine && indexToInsertAt > 0 &&  
+                // don't do char.IsWhitespace because that causes it to climb up a line and append to the previous line. No good
+                (fullFileContents[indexToInsertAt-1] == '\t' || fullFileContents[indexToInsertAt - 1] == ' '))
             {
                 indexToInsertAt--;
 

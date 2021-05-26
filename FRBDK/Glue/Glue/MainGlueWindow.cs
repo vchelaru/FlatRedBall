@@ -65,6 +65,8 @@ namespace Glue
 
         private static MainGlueWindow mSelf;
 
+        public static MainPanelControl MainWpfControl { get; private set; }
+
         public static MainGlueWindow Self
         {
             get { return mSelf; }
@@ -97,7 +99,8 @@ namespace Glue
             //this.Controls.Add(this.MainPanelSplitContainer);
             var wpfHost = new ElementHost();
             wpfHost.Dock = DockStyle.Fill;
-            wpfHost.Child = new MainPanelControl();
+            MainWpfControl = new MainPanelControl();
+            wpfHost.Child = MainWpfControl;
             this.Controls.Add(wpfHost);
             this.PerformLayout();
             // so docking works

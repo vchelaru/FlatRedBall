@@ -228,7 +228,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
             ////////EARLY OUT/////////
             
-            string file = element.Events[0].GetSharedCodeFullFileName();
+            var file = element.Events[0].GetCustomEventFullFileName();
 
             if (File.Exists(file))
             {
@@ -556,7 +556,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 eventResponseSave.GetParsedMethodFromAssociatedFile();
 
 
-            string fullFileName = eventResponseSave.GetSharedCodeFullFileName();
+            var fullFileName = eventResponseSave.GetCustomEventFullFileName();
 
             bool forceRegenerate = false;
 

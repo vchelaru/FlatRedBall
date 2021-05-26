@@ -222,9 +222,10 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 @"
 
             /// <summary>
-            /// Stores the value that the entity must fall down to before cloud collision is enabled.
-            /// If this value is null, then cloud collision is enabled. When the entity falls through a
-            /// cloud (by pressing down direction + jump), then this value is set. 
+            /// Stores the value that the entity must fall down to before cloud collision is re-enabled.
+            /// If this value is null, then the player should perform normal cloud collision.
+            /// When the entity falls through a
+            /// cloud (by pressing down direction + jump), then this value is set to a non-null value. 
             /// </summary>
             private float? cloudCollisionFallThroughY = null;
 
