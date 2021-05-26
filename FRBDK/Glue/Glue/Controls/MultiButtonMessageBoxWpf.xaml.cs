@@ -1,4 +1,5 @@
-﻿using Glue;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using Glue;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,24 +48,7 @@ namespace FlatRedBall.Glue.Controls
 
             this.KeyDown += HandleKeyDown;
 
-            // Can this be done in the constructor?
-            this.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
-
-            double width = this.Width;
-            if (double.IsNaN(width))
-            {
-                width = 0;
-            }
-            double height = this.Height;
-            if (double.IsNaN(height))
-            {
-                height = 0;
-            }
-
-            this.Left = System.Math.Max(0, MainGlueWindow.MousePosition.X - width / 2);
-            this.Top = MainGlueWindow.MousePosition.Y - height / 2;
-
-
+            GlueCommands.Self.DialogCommands.MoveToCursor(this);
         }
 
         private void HandleKeyDown(object sender, KeyEventArgs e)
