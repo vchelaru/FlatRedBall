@@ -197,7 +197,12 @@ namespace LadderDemo.Entities
                 }
             }
 
-            if(InputDevice.DefaultUpPressable.WasJustPressed && LastCollisionLadderRectange != null)
+            // Even if we are colliding with it, we want to see if the player's "body" is over
+            // the ladder. We can do this by checking the center.
+            var isOverLadder = LastCollisionLadderRectange != null && 
+                X < LastCollisionLadderRectange.Right && X > LastCollisionLadderRectange.Left;
+
+            if (InputDevice.DefaultUpPressable.WasJustPressed && LastCollisionLadderRectange != null)
             {
                 this.GroundMovement = PlatformerValuesStatic["Climbing"];
                 // snap the player's position to the center of the ladder
@@ -208,6 +213,12 @@ namespace LadderDemo.Entities
                     // force the player on ground:
                     CurrentMovementType = MovementType.Ground;
                 }
+            }
+
+            if(isOverLadder == false && CurrentMovement.CanClimb)
+            {
+                // fall off the ladder...
+                CurrentMovementType = MovementType.Air;
             }
         }
 
