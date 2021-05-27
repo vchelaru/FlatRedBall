@@ -56,6 +56,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void AddReferencedFileToElement(ReferencedFileSave rfs, IElement element);
 
         ReferencedFileSave GetReferencedFileSaveFromFile(string fileName);
+        ReferencedFileSave GetReferencedFileSaveFromFile(FilePath filePath);
 
         ReferencedFileSave AddSingleFileTo(string fileName, string rfsName, string extraCommandLineArguments,
             EditorObjects.SaveClasses.BuildToolAssociation buildToolAssociation, bool isBuiltFile, object options, 

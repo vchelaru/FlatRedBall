@@ -234,7 +234,7 @@ namespace FlatRedBall.Glue.Plugins
                 MoveInstalledPluginsToPluginDirectory();
                 UninstallPlugins();
 
-                EditorObjects.IoC.Container.Get<List<IErrorReporter>>()
+                EditorObjects.IoC.Container.Get<GlueErrorManager>()
                     .Add(new PluginErrors.PluginErrorReporter());
             }
 

@@ -609,6 +609,9 @@ namespace FlatRedBall.TileGraphics
                 toReturn.RegisterName(quad.Name, tileIndex);
             }
 
+            toReturn.ParallaxMultiplierX = reducedLayerInfo.ParallaxMultiplierX;
+            toReturn.ParallaxMultiplierY = reducedLayerInfo.ParallaxMultiplierY;
+
             return toReturn;
         }
 

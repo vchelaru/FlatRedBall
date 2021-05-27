@@ -11,6 +11,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.VSHelpers.Projects;
+using FlatRedBall.Glue.Errors;
+using FlatRedBall.Glue.Elements;
 
 namespace OfficialPlugins.MonoGameContent
 {
@@ -20,15 +22,15 @@ namespace OfficialPlugins.MonoGameContent
         static IGlueCommands GlueCommands => EditorObjects.IoC.Container.Get<IGlueCommands>();
 
 
-        const string commandLineBuildExe =
-            @"C:\Program Files (x86)\MSBuild\MonoGame\v3.0\Tools\MGCB.exe";
+        static FilePath commandLineBuildExe =
+            @"C:\Program Files (x86)\MSBuild\MonoGame\v3.0\Tools\MGCB_GLAFOO.exe";
 
         public void RefreshBuiltFilesFor(VisualStudioProject project, bool forcePngsToContentPipeline)
         {
 
 
             /////////////Early Out///////////////////
-            bool builderExists = System.IO.File.Exists(commandLineBuildExe);
+            bool builderExists = commandLineBuildExe.Exists();
             if (builderExists == false)
             {
                 // error? output?
@@ -294,16 +296,40 @@ namespace OfficialPlugins.MonoGameContent
 
         }
 
-        public void TryAddXnbReferencesAndBuild(string fullFileName, VisualStudioProject project, bool saveProjectAfterAdd, bool rebuild = false)
+        public void TryAddXnbReferencesAndBuild(FilePath rfsFilePath, VisualStudioProject project, bool saveProjectAfterAdd, bool rebuild = false)
         {
+            //////////////EARLY OUT////////////////////////
+            if(!commandLineBuildExe.Exists())
+            {
+                GlueCommands.PrintError($"Could not find Monogame Builder Tool. Looking for {commandLineBuildExe.FullPath}.\n\nTry installing MonoGame");
+
+                var viewModel = new DelegateBasedErrorViewModel();
+                viewModel.UniqueId = "Missing Monogame Builder for " + rfsFilePath.Standardized;
+                viewModel.Details = 
+                    $"Could not build {rfsFilePath.FullPath} because the Monogame Builder Tool could not be found at {commandLineBuildExe.FullPath}";
+                // double click command?
+                viewModel.IfIsFixedDelegate = () =>
+                {
+                    return rfsFilePath.Exists() == false ||
+                        commandLineBuildExe.Exists() == true ||
+                        GlueCommands.GluxCommands.GetReferencedFileSaveFromFile(rfsFilePath.FullPath) == null;
+                };
+
+                EditorObjects.IoC.Container.Get<GlueErrorManager>().Add(viewModel);
+
+                return;
+            }
+            ////////////END EARLY OUT//////////////////////
+
+
             var contentDirectory = GlueState.ContentDirectory;
 
-            var relativeToContent = FileManager.MakeRelative(fullFileName, contentDirectory);
+            var relativeToContent = FileManager.MakeRelative(rfsFilePath.FullPath, contentDirectory);
 
             ContentItem contentItem;
-            contentItem = GetContentItem(fullFileName, project, createEvenIfProjectTypeNotSupported: false);
+            contentItem = GetContentItem(rfsFilePath.FullPath, project, createEvenIfProjectTypeNotSupported: false);
 
-            string destinationDirectory = GetDestinationDirectory(fullFileName, project);
+            string destinationDirectory = GetDestinationDirectory(rfsFilePath.FullPath, project);
 
             // The monogame content builder seems to be doing an incremental build - 
             // it's being told to do so through the command line params, and it's not replacing
@@ -338,7 +364,7 @@ namespace OfficialPlugins.MonoGameContent
                         }
                     }
                 },
-                "Building MonoGame Content " + fullFileName);
+                "Building MonoGame Content " + rfsFilePath);
             }
         }
 
@@ -352,7 +378,7 @@ namespace OfficialPlugins.MonoGameContent
 
             process.StartInfo.Arguments = commandLine;
             process.StartInfo.UseShellExecute = false;
-            process.StartInfo.FileName = commandLineBuildExe;
+            process.StartInfo.FileName = commandLineBuildExe.FullPath;
             process.StartInfo.WorkingDirectory = contentDirectory;
             process.StartInfo.RedirectStandardError = true;
             process.StartInfo.RedirectStandardInput = true;

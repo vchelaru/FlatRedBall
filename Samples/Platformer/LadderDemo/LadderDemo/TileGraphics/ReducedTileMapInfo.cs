@@ -105,6 +105,13 @@ namespace TMXGlueLib.DataTypes
         // Version 2:
         public int TextureId;
 
+        // Version 3:
+        public float ParallaxMultiplierX = 1f;
+        public float ParallaxMultiplierY = 1f;
+
+        public float CameraOffsetX = 0f;
+        public float CameraOffsetY = 0f;
+
 
         public static ReducedLayerInfo ReadFrom(BinaryReader reader, int version)
         {
@@ -126,6 +133,15 @@ namespace TMXGlueLib.DataTypes
             if(version >= 2)
             {
                 toReturn.TextureId = reader.ReadInt32();
+            }
+
+            if (version >= 3)
+            {
+                toReturn.ParallaxMultiplierX = reader.ReadSingle();
+                toReturn.ParallaxMultiplierY = reader.ReadSingle();
+
+                toReturn.CameraOffsetX = reader.ReadSingle();
+                toReturn.CameraOffsetY = reader.ReadSingle();
             }
 
             return toReturn;
@@ -150,6 +166,15 @@ namespace TMXGlueLib.DataTypes
             if (version >= 2)
             {
                 writer.Write(TextureId);
+            }
+
+            if (version >= 3)
+            {
+                writer.Write(ParallaxMultiplierX);
+                writer.Write(ParallaxMultiplierY);
+
+                writer.Write(CameraOffsetX);
+                writer.Write(CameraOffsetY);
             }
         }
 
@@ -181,7 +206,8 @@ namespace TMXGlueLib.DataTypes
         // Added:
         //  int NumberCellsWide;
         //  int NumberCellsTall;
-        public int VersionNumber = 2;
+        // Version 3 added parallax
+        public int VersionNumber = 3;
 
         public int NumberCellsWide;
         public int NumberCellsTall;

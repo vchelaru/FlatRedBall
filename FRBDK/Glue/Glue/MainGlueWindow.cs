@@ -332,7 +332,7 @@ namespace Glue
 
         private void AddErrorReporters()
         {
-            EditorObjects.IoC.Container.Get<List<IErrorReporter>>()
+            EditorObjects.IoC.Container.Get<GlueErrorManager>()
                 .Add(new CsvErrorReporter());
 
         }
@@ -354,7 +354,7 @@ namespace Glue
             EditorObjects.IoC.Container.Set<IGlueState>(GlueState.Self);
             EditorObjects.IoC.Container.Set<IGlueCommands>(GlueCommands.Self);
 
-            EditorObjects.IoC.Container.Set<List<IErrorReporter>>(new List<IErrorReporter>());
+            EditorObjects.IoC.Container.Set<GlueErrorManager>(new GlueErrorManager());
         }
 
         private async Task LoadProjectConsideringSettingsAndArgs(InitializationWindow initializationWindow)

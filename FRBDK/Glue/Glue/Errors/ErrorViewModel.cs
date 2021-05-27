@@ -12,6 +12,12 @@ namespace FlatRedBall.Glue.Errors
 {
     public class ErrorViewModel : ViewModel
     {
+        public string UniqueId
+        {
+            get; set;
+        }
+
+
         public string Details
         {
             get { return Get<string>(); }

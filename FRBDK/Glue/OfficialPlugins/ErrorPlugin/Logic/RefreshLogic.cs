@@ -24,7 +24,10 @@ namespace OfficialPlugins.ErrorPlugin.Logic
                 {
                     errorListViewModel.Errors.Clear();
                 }
-                var reporters = Container.Get<List<IErrorReporter>>();
+
+                var errorManager = Container.Get<GlueErrorManager>();
+
+                var reporters = errorManager.ErrorReporters;
                 foreach (var reporter in reporters)
                 {
                     var errors = reporter.GetAllErrors();
@@ -38,6 +41,14 @@ namespace OfficialPlugins.ErrorPlugin.Logic
                                errorListViewModel.Errors.Add(error);
                            }
                         }
+                    }
+                }
+                errorManager.ClearFixedErrors();
+                foreach (var error in errorManager.Errors)
+                {
+                    lock (GlueState.ErrorListSyncLock)
+                    {
+                        errorListViewModel.Errors.Add(error);
                     }
                 }
             }

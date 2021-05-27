@@ -476,7 +476,7 @@ namespace FlatRedBall.Glue.Plugins
 
         protected void AddErrorReporter(IErrorReporter errorReporter)
         {
-            EditorObjects.IoC.Container.Get<List<IErrorReporter>>().Add(errorReporter);
+            EditorObjects.IoC.Container.Get<GlueErrorManager>().Add(errorReporter);
         }
 
         #region Tab Methods

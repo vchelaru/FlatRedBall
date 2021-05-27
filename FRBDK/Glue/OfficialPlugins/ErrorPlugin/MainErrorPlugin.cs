@@ -44,7 +44,7 @@ namespace OfficialPlugins.ErrorPlugin
 
         public override void StartUp()
         {
-            EditorObjects.IoC.Container.Get<List<IErrorReporter>>()
+            EditorObjects.IoC.Container.Get<GlueErrorManager>()
                 .Add(new ErrorCreateRemoveLogic());
 
             control = new ErrorWindow();
@@ -65,6 +65,8 @@ namespace OfficialPlugins.ErrorPlugin
 
             RefreshCommands.RefreshErrorsAction = () => RefreshLogic.RefreshAllErrors(errorListViewModel);
         }
+
+        public void RefreshErrors() => RefreshLogic.RefreshAllErrors(errorListViewModel);
 
         private void HandleRefreshClicked(object sender, EventArgs e)
         {

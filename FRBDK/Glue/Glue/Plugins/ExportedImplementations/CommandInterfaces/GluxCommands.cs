@@ -887,7 +887,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public ReferencedFileSave GetReferencedFileSaveFromFile(string fileName)
         {
             return FlatRedBall.Glue.Elements.ObjectFinder.Self.GetReferencedFileSaveFromFile(fileName);
+        }
 
+        public ReferencedFileSave GetReferencedFileSaveFromFile(FilePath filePath)
+        {
+            return FlatRedBall.Glue.Elements.ObjectFinder.Self.GetReferencedFileSaveFromFile(filePath.FullPath);
         }
 
         public void AddReferencedFileToElement(ReferencedFileSave rfs, IElement element)
