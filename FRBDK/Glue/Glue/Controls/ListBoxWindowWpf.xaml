@@ -1,0 +1,21 @@
+﻿<Window x:Class="FlatRedBall.Glue.Controls.ListBoxWindowWpf"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GlueFormsCore.Controls"
+        mc:Ignorable="d"
+        Title="" SizeToContent="Height" Width="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <TextBlock x:Name="DisplayTextLabel" TextWrapping="Wrap">This is the top row with information. Below is the list box, then the button stack</TextBlock>
+        <ListBox x:Name="ListBoxInstance" Grid.Row="1" MinHeight="120">
+        </ListBox>
+        <StackPanel MinHeight="20" x:Name="ButtonStackPanel" Grid.Row="2">
+        </StackPanel>
+    </Grid>
+</Window>

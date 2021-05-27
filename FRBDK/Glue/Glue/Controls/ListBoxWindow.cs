@@ -13,30 +13,10 @@ namespace FlatRedBall.Glue.Controls
     {
         List<Button> mButtons = new List<Button>();
 
-        public bool ShowCheckBoxes
-        {
-            get { return TreeView.CheckBoxes; }
-            set { TreeView.CheckBoxes = value; }
-        }
-
         public string Message
         {
             get { return DisplayTextLabel.Text; }
             set { DisplayTextLabel.Text = value; }
-        }
-
-        public IEnumerable<TreeNode> CheckedTreeNodes
-        {
-            get
-            {
-                foreach (TreeNode treeNode in TreeView.Nodes)
-                {
-                    if (treeNode.Checked)
-                    {
-                        yield return treeNode;
-                    }
-                }
-            }
         }
 
         public ListBoxWindow()

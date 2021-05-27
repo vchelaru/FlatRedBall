@@ -1434,7 +1434,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                             StringFunctions.RemoveDuplicates(filesToRemove, true);
 
-                            ListBoxWindow lbw = new ListBoxWindow();
+                            var lbw = new ListBoxWindowWpf();
                             
                             string messageString = "What would you like to do with the following files:\n";
                             lbw.Message = messageString;
@@ -1449,8 +1449,8 @@ namespace FlatRedBall.Glue.FormHelpers
                             lbw.AddButton("Remove them from the project but keep the files", DialogResult.OK);
                             lbw.AddButton("Remove and delete the files", DialogResult.Yes);
 
-
-                            DialogResult result = lbw.ShowDialog();
+                            var dialogShowResult = lbw.ShowDialog();
+                            DialogResult result = (DialogResult)lbw.ClickedOption;
 
                             if (result == DialogResult.OK || result == DialogResult.Yes)
                             {
