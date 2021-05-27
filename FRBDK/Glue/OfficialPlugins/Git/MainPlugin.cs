@@ -82,6 +82,7 @@ namespace OfficialPlugins.Git
             yield return "*.tmp";
 
             yield return "*.Generated.cs";
+            yield return "*.Generated.Event.cs";
 
             yield return "*.cachefile";
 
