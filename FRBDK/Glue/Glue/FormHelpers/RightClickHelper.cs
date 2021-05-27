@@ -88,7 +88,6 @@ namespace FlatRedBall.Glue.FormHelpers
         static ToolStripMenuItem mRebuildFile;
 
         static ToolStripMenuItem mViewSourceInExplorer;
-        static ToolStripMenuItem mRecreateCompanionFiles;
 
         static ToolStripMenuItem mViewCodeFolderInExplorer;
         static ToolStripMenuItem mViewContentFilesInExplorer;
@@ -366,7 +365,6 @@ namespace FlatRedBall.Glue.FormHelpers
                 menu.Items.Add("-");
 
                 menu.Items.Add(mCreateZipPackage);
-                menu.Items.Add(mRecreateCompanionFiles);
 
                 menu.Items.Add("-");
 
@@ -695,9 +693,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
             mViewSourceInExplorer = new ToolStripMenuItem("View source file in explorer");
             mViewSourceInExplorer.Click += new EventHandler(ViewSourceInExplorerClick);
-
-            mRecreateCompanionFiles = new ToolStripMenuItem("Re-create companion files");
-            mRecreateCompanionFiles.Click += new EventHandler(RecreateCompanionFilesClick);
 
             mFindAllReferences = new ToolStripMenuItem("Find all references to this");
             mFindAllReferences.Click += new EventHandler(FindAllReferencesClick);
@@ -1242,18 +1237,6 @@ namespace FlatRedBall.Glue.FormHelpers
             else
             {
                 erlw.PopulateWithReferencesToElement(GlueState.Self.CurrentElement);
-            }
-        }
-
-        static void RecreateCompanionFilesClick(object sender, EventArgs e)
-        {
-            ReferencedFileSave rfs = EditorLogic.CurrentReferencedFile;
-
-            if (EditorLogic.CurrentReferencedFile != null)
-            {
-                AssetTypeInfoExtensionMethodsGlue.CreateCompanionSettingsFile(
-                    ProjectManager.MakeAbsolute(rfs.Name, true), false);
-
             }
         }
 

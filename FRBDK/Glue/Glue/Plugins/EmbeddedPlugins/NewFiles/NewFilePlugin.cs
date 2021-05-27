@@ -165,15 +165,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
             if (assetTypeInfo != null)
             {
                 string createdFile = GetCreatedFileTarget(assetTypeInfo, directory, name);
-
-
                 SaveNewFileAtLocation(assetTypeInfo, createdFile);
-
-                bool make2D = extraData is bool && (bool)extraData;
-
-                AssetTypeInfoExtensionMethodsGlue.CreateCompanionSettingsFile(createdFile, make2D);
                 resultingName = createdFile;
-
                 return true;
             }
             return false;
