@@ -31,6 +31,7 @@ namespace FlatRedBall.Glue.Parsing
             // This needs to be before the base.Destroy(); call so that the derived class can make itself unused before the base class get a chance
             if (element is EntitySave && (element as EntitySave).CreatedByOtherEntities)
             {
+                codeBlock.Line("var wasUsed = this.Used;");
                 codeBlock
                     .If("Used")
                         .Line(string.Format("Factories.{0}Factory.MakeUnused(this, false);", FileManager.RemovePath(element.Name)));
