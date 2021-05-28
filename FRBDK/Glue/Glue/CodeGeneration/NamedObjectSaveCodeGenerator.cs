@@ -1259,6 +1259,20 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         }
 
+        // todo - this should probably move somewhere else?
+        public static string ToCSharpTypeString(Type t)
+        {
+            if (!t.IsGenericType)
+                return t.FullName;
+            string genericTypeName = t.GetGenericTypeDefinition().Name;
+            genericTypeName = genericTypeName.Substring(0,
+                genericTypeName.IndexOf('`'));
+            string genericArgs = string.Join(",",
+                t.GetGenericArguments()
+                    .Select(ta => ToCSharpTypeString(ta)).ToArray());
+            return genericTypeName + "<" + genericArgs + ">";
+        }
+
         private static void CreateVariableResetField(NamedObjectSave namedObjectSave, string typeName, ICodeBlock codeBlock)
         {
             for (int i = 0; i < namedObjectSave.VariablesToReset.Count; i++)
@@ -1286,7 +1300,10 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     if (memberInfo is PropertyInfo)
                     {
-                        typeOfResetVariable = TypeManager.ConvertToCommonType(((PropertyInfo)memberInfo).PropertyType.ToString());
+                        var memberInfoPropertyType = ((PropertyInfo)memberInfo).PropertyType;
+                        var memberInfoPropertyTypeString = ToCSharpTypeString( memberInfoPropertyType);
+                        
+                        typeOfResetVariable = TypeManager.ConvertToCommonType(memberInfoPropertyTypeString);
                     }
                     else
                     {
