@@ -22,6 +22,7 @@ using GlueFormsCore.ViewModels;
 using FlatRedBall.Glue.ViewModels;
 using Microsoft.Xna.Framework;
 using Glue;
+using FlatRedBall.Glue.SetVariable;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -184,6 +185,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             if(viewModel.HasInheritance)
             {
                 newElement.BaseEntity = viewModel.SelectedBaseEntity;
+
+                EditorObjects.IoC.Container.Get<SetPropertyManager>().ReactToPropertyChanged(
+                    nameof(newElement.BaseEntity), false, nameof(newElement.BaseEntity), null);
+
                 hasInheritance = true;
             }
 
