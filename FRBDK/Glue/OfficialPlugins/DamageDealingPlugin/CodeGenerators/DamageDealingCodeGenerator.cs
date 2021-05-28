@@ -50,6 +50,26 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
             return codeBlock;
         }
 
+        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
+        {
+            if (element is EntitySave entity)
+            {
+                if (ImplementsIDamageArea(entity))
+                {
+                    codeBlock.Line("Destroyed?.Invoke();");
+
+                    if (entity.CreatedByOtherEntities)
+                    {
+                        codeBlock
+                            .If("wasUsed")
+                                .Line("Destroyed = null;");
+                    }
+                }
+            }
+
+            return codeBlock;
+        }
+
         public static bool ImplementsIDamageArea(EntitySave entity)
         {
             return entity.Properties.GetValue<bool>("ImplementsIDamageArea");
