@@ -275,6 +275,7 @@ namespace TileGraphicsPlugin
                 tiledObjectTypeCreator.RefreshFile();
             };
 
+            // Adds all objects contained within a file (like TMX)
             this.TryAddContainedObjects += HandleTryAddContainedObjects;
 
             this.AdjustDisplayedReferencedFile += HandleAdjustDisplayedReferencedFile;

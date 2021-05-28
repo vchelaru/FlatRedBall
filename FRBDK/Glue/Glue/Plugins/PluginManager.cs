@@ -2171,6 +2171,7 @@ namespace FlatRedBall.Glue.Plugins
         {
 
             SaveRelativeDirectory();
+
             bool wasAddHandled = false;
 
             foreach (PluginManager pluginManager in mInstances)

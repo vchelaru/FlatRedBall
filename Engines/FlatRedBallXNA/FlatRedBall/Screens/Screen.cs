@@ -473,8 +473,18 @@ namespace FlatRedBall.Screens
             return PauseAdjustedCurrentTime - time;
         }
 
-
-        public void RestartScreen(bool reloadContent, bool applyRestartVariables = true)
+        /// <summary>
+        /// Destroys and re-creates this screen.
+        /// </summary>
+        /// <remarks>
+        /// This can be used to begin a level from the beginning or to reload a screen for debugging.
+        /// </remarks>
+        /// <param name="reloadContent">Whether content should be reloaded. If true, then any content that belongs
+        /// to this Screen's content manager will be reloaded. Global content will not be reloaded.</param>
+        /// <param name="applyRestartVariables">Whether to apply restart variables. If true, then any restart variables
+        /// will be applied, which is useful when iterating on a game. This should be false if restarting
+        /// due to gameplay events such as a player dying.</param>
+        public void RestartScreen(bool reloadContent = true, bool applyRestartVariables = true)
         {
             if (reloadContent == false)
             {
