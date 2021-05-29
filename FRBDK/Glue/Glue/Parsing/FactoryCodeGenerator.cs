@@ -122,19 +122,23 @@ namespace FlatRedBall.Glue.Parsing
                     // Find all factories of this type, or of derived type
                     EntitySave listEntityType = ObjectFinder.Self.GetEntitySave(listNos.SourceClassGenericType);
 
-                    var factoryTypesToCallAddListOn = allEntitiesWithFactories.Where(item =>
+                    if(listEntityType != null)
                     {
-                        return item == listEntityType || item.InheritsFrom(listEntityType.Name);
-                    });
+                        var factoryTypesToCallAddListOn = allEntitiesWithFactories.Where(item =>
+                        {
+                            return item == listEntityType || item.InheritsFrom(listEntityType.Name);
+                        });
 
-                    // find any lists of entities that are of this type, or of a derived type.
-                    foreach (var factoryEntityType in factoryTypesToCallAddListOn)
-                    {
-                        string entityClassName = FileManager.RemovePath(factoryEntityType.Name);
+                        // find any lists of entities that are of this type, or of a derived type.
+                        foreach (var factoryEntityType in factoryTypesToCallAddListOn)
+                        {
+                            string entityClassName = FileManager.RemovePath(factoryEntityType.Name);
 
-                        string factoryName = $"Factories.{entityClassName}Factory";
-                        codeBlock.Line($"{factoryName}.AddList({listNos.FieldName});");
-                    }
+                            string factoryName = $"Factories.{entityClassName}Factory";
+                            codeBlock.Line($"{factoryName}.AddList({listNos.FieldName});");
+                        }
+
+                    }    
                 }
 
             }
@@ -186,15 +190,19 @@ namespace FlatRedBall.Glue.Parsing
                     // Find all factories of this type, or of derived type
                     EntitySave listEntityType = ObjectFinder.Self.GetEntitySave(listNos.SourceClassGenericType);
 
-                    var factoryTypesToCallAddListOn = allEntitiesWithFactories.Where(item =>
+                    if(listEntityType != null)
                     {
-                        return item == listEntityType || item.InheritsFrom(listEntityType.Name);
-                    });
 
-                    // find any lists of entities that are of this type, or of a derived type.
-                    foreach (var factoryEntityType in factoryTypesToCallAddListOn)
-                    {
-                        entityFactoriesToDestroy.Add(factoryEntityType);
+                        var factoryTypesToCallAddListOn = allEntitiesWithFactories.Where(item =>
+                        {
+                            return item == listEntityType || item.InheritsFrom(listEntityType.Name);
+                        });
+
+                        // find any lists of entities that are of this type, or of a derived type.
+                        foreach (var factoryEntityType in factoryTypesToCallAddListOn)
+                        {
+                            entityFactoriesToDestroy.Add(factoryEntityType);
+                        }
                     }
                 }
 

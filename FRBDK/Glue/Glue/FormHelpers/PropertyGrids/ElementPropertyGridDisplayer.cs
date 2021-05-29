@@ -87,7 +87,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                         " to use a global content manager will result in the following Entities being " +
                         " loaded with a global content manager.  What would you like to do?";
 
-                    ListBoxWindow lbw = new ListBoxWindow();
+                    var lbw = new ListBoxWindowWpf();
                     lbw.Message = message;
 
                     foreach (var item in elementsToMakeGlobal)
@@ -98,15 +98,20 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                     lbw.ClearButtons();
                     lbw.AddButton("Set all to use global content", System.Windows.Forms.DialogResult.Yes);
                     lbw.AddButton("Nothing - this may result in runtime errors", System.Windows.Forms.DialogResult.No);
-                    var result = lbw.ShowDialog();
+                    var dialogResult = lbw.ShowDialog();
 
-                    if (result == System.Windows.Forms.DialogResult.Yes)
+                    if(dialogResult == true)
                     {
-                        foreach (IElement toMakeGlobal in elementsToMakeGlobal)
+                        var result = (System.Windows.Forms.DialogResult)lbw.ClickedOption;
+                        if (result == System.Windows.Forms.DialogResult.Yes)
                         {
-                            toMakeGlobal.UseGlobalContent = true;
-                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(toMakeGlobal);
+                            foreach (IElement toMakeGlobal in elementsToMakeGlobal)
+                            {
+                                toMakeGlobal.UseGlobalContent = true;
+                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(toMakeGlobal);
+                            }
                         }
+
                     }
                 }
             }
