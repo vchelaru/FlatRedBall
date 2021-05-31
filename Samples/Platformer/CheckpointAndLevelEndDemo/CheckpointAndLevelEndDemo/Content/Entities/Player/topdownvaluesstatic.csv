@@ -1,0 +1,2 @@
+"Name (string, required)",UsesAcceleration (System.Boolean),MaxSpeed (System.Single),AccelerationTime (System.Single),DecelerationTime (System.Single),UpdateDirectionFromVelocity (System.Boolean),UpdateDirectionFromInput (System.Boolean),IsUsingCustomDeceleration (System.Boolean),CustomDecelerationValue (System.Single),InheritOrOverwriteAsInt (System.Int32)
+Default,True,300,0.5,0.25,False,True,False,0,0

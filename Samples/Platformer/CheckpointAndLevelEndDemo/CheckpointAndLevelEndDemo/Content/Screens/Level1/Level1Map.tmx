@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.4" tiledversion="1.4.3" orientation="orthogonal" renderorder="right-down" width="128" height="16" tilewidth="16" tileheight="16" infinite="0" nextlayerid="8" nextobjectid="5">
+ <tileset firstgid="1" source="../../StandardTileset.tsx"/>
+ <tileset firstgid="1025" source="FRBPlatformerTileset.tsx"/>
+ <layer id="2" name="Sky" width="128" height="16">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACu3DMQkAAAwDsH7zUf8iq2OQQHpJVVVVVVVVVdXXBxCQGEsAIAAA
+  </data>
+ </layer>
+ <layer id="3" name="CloudLayer" width="128" height="16">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACu2YbQ7CIAyG+QPq/e8wdfMc+DHPMT2GNK6RLFsoSEfEPsniLymlb1+6KSUIgiDUSqOV2hql9u73pPliwPoHpvXXpGM8pxIYV/uzfj8bwxPDurWP7nkSzg31yHHGTQYN9sQ8pnEhJ+wzyh6wZ7jOAgAt38baQ33uTHGGiLVRjxxaTKldDqz+9Bg1N78vL0x7jomxloeDVnaGT4shcnjEFNDdY8yLmtvg/YdLs723p1AMu6DdrvC93mXWZc/og78Maniqk1Keiliif/0r/nzPPUuUmIvRJ2vq2Zx3bcrsMQf67FKNS/tATeBcFvK0UE0AvOPbsf7XRF2Jz64HzsCpM9kcoIP2ixou3f8CjYbQq7HEvitTdSXkh+O7Bnp7TbNPrZT+riEIsbwAHRsUoAAgAAA=
+  </data>
+ </layer>
+ <layer id="4" name="BushesLayer" width="128" height="16">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACuVZSY7CQAzMJf9/SRh4CNtDgPCDSSQseUrlpZeEw7RkCUTirrbLWzMM/3Odx2F4L3Ix5LbIYZGf0dczfZ5b5Q7v4/eMvgizhRf3QTyWHDrgqlnTF/bU67HsfTJsonlxdTBOSRtfkvoymJ8O7qwciY7bzv44f2FPhqHFX5n3jx+fibw6nPcBOks5oXOTfq+FmyVLx81ee3oYPN95/mL+nzvGe8nSuWEe/3LvBJ81Pn2GreNRamXvuliD465sZMVO5LsoH0f82WLp3CB7P+DzSeE774CX+Z3lpBoeTAXvWfxjuEpsYdWBVm7r3rJnfAhHXuD/TK6qwZSpkzX5UsfxjeDCHjPq+dF32d4/qiO1NaDUN617RGfGmpnF5PXatbZi9XtW5xC/6Bgs6Z+j+M/2/tk8ovMY49V13CYfoG8sDrDzlvQLWdtnOLj+XpJTUK+ukQxPi++xz8rUAMxjTPd13K5Xy3AA7f0u4DbuFfEAcwDesVg2qsktDE9m5md9o7YH2svSaXEJ6xQ7cy8OMAwaL/4uHG/pFb2aoM9Vc8ciGFF/1gee/wX3+gzO4doeyCtLZ0ltZGdjfU/JsuwreK28X7ufXlYOxzjyZjRLMF5EJ7t3FBwSc5m5L8t93Wt7z9Te32T47S3LB6LLq7MWD6KZLOqb9TnE1jVxwrBK/cC5oNWOmSXcY31c9j7ak57+FxvhfcGT4LTyNcOTyec9c6VlQzYXiGx1B8J6l9L/a/byP8YM+74Km7kYnuyszHpK6z+2HrLH/WxtD7PHWax+PFNzvWfQj9G85vWU2VnvHWD6lv9LZ9VIrDxcc5Zfn+ENGQAgAAA=
+  </data>
+ </layer>
+ <objectgroup id="6" name="PitCollision">
+  <object id="1" x="0" y="288" width="2048" height="64"/>
+ </objectgroup>
+ <objectgroup id="7" name="GameplayObjectLayer" visible="0">
+  <object id="2" name="Midpoint" gid="69" x="796" y="176" width="16" height="16"/>
+  <object id="3" name="LevelStart" gid="69" x="32" y="240" width="16" height="16">
+   <properties>
+    <property name="IsSpriteVisible" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="4" gid="65" x="1968" y="120" width="16" height="16">
+   <properties>
+    <property name="NextLevel" value="Level2"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <layer id="1" name="GameplayLayer" width="128" height="16" visible="0">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACu2XQQrAIAwEI/3/n3sovZRKLW6My+5ALoKimURIi4jmkA6jif1rY//a2L829q+N/Wtj/9pU+j86UQXLTOz5H8tddyw5YfG/U2+PYP9coN+VnTeUmxX+R3q3ur9Rfnr/v7J/BOj6eN4128+usPhHY/8XGf5Xxuxb/uzNzt/buV9rs6B9nCPsVaAAIAAA
+  </data>
+ </layer>
+ <layer id="5" name="ForegroundLayer" width="128" height="16">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACu1XbQ7CIAz1D1fRc4BeZH4cRI0HYXpQWQJam5p12m0s7UteMhZCoY++hq1bGZSiSdofTH+1MP11w/TXDdNfN0x/3TD9daPT/2H6q8Wc9b92NOeCT7FDYkzcVlwT3T7bvNcWfAfGd8ws45P5/+vebXI+9pXnpMl7lOJYZ62ptjloJsiJBJai/9goPhgBoccN9XCY1yPwTuih0FOHru8d7c0USywqxn0C/Tm1O3d999UB915T/r9LvPTwOvC8Z8aanBhLqX/p++FRPUjpT61XsycuRX9p4LeK6S9D2Ota99lDAxgHxPKOwHPxHDjG/ayvJ5YYHfFb5Vf9PbG/6N7ej3Py7fzUWTj//oWk/rfEJ32urRkAIAAA
+  </data>
+ </layer>
+</map>
