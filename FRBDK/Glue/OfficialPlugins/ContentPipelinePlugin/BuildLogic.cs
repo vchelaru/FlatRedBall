@@ -23,7 +23,7 @@ namespace OfficialPlugins.MonoGameContent
 
 
         static FilePath commandLineBuildExe =
-            @"C:\Program Files (x86)\MSBuild\MonoGame\v3.0\Tools\MGCB_GLAFOO.exe";
+            @"C:\Program Files (x86)\MSBuild\MonoGame\v3.0\Tools\MGCB.exe";
 
         public void RefreshBuiltFilesFor(VisualStudioProject project, bool forcePngsToContentPipeline)
         {
