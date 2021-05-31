@@ -26,11 +26,20 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
                 var fullFile = GlueState.Self.CurrentGlueProjectDirectory + relativeDirectory;
 
-                GlueCommands.Self.TryMultipleTimes(() =>
-                    System.IO.File.WriteAllText(fullFile, contents));
+
+                try
+                {
+                    GlueCommands.Self.TryMultipleTimes(() =>
+                        System.IO.File.WriteAllText(fullFile, contents));
+                }
+                catch(Exception e)
+                {
+                    GlueCommands.Self.PrintError(e.ToString());
+                }
 
                 FilePath oldFile = GlueState.Self.CurrentGlueProjectDirectory +
                     "Platformer/Enums.cs";
+
                 GlueCommands.Self.ProjectCommands.RemoveFromProjects(
                     oldFile, saveAfterRemoving: true);
 
