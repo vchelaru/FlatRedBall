@@ -57,6 +57,7 @@
                             SelectionChanged="FileTypeComboBox_SelectionChanged"
                             SelectedItem="{Binding SelectedAssetTypeInfo}"
                             ItemsSource="{Binding FilteredOptions}"
+                            MouseDoubleClick="ListBox_MouseDoubleClick"
                     >
                 
                 </ListBox>

@@ -248,6 +248,13 @@ namespace FlatRedBall.Glue.Controls
             }
         }
 
+        private void ListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if(ViewModel.SelectedAssetTypeInfo != null)
+            {
+                DialogResult = true;
+            }
+        }
     }
 
 }
