@@ -823,10 +823,8 @@
               <ValueAsString>bool</ValueAsString>
             </PropertySave>
           </Properties>
-          <Name>IsSpriteVisible</Name>
+          <Name>Visible</Name>
           <DefaultValue xsi:type="xsd:boolean">true</DefaultValue>
-          <SourceObject>SpriteInstance</SourceObject>
-          <SourceObjectProperty>Visible</SourceObjectProperty>
         </CustomVariable>
       </CustomVariables>
       <Properties>
@@ -849,7 +847,7 @@
           <CustomProperty>
             <Type>string</Type>
             <Member>CurrentChainName</Member>
-            <ValueAsString>CheckpointOff</ValueAsString>
+            <ValueAsString>CheckpointPole</ValueAsString>
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
@@ -869,7 +867,61 @@
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile>Sprite</SourceFile>
           <SourceClassType>FlatRedBall.Sprite</SourceClassType>
-          <InstanceName>SpriteInstance</InstanceName>
+          <InstanceName>PoleSprite</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>false</IndependentOfCamera>
+        </NamedObjectSave>
+        <NamedObjectSave>
+          <CustomProperty>
+            <Type>FlatRedBall.Graphics.Animation.AnimationChainList</Type>
+            <Member>AnimationChains</Member>
+            <ValueAsString>AnimationChainListFile</ValueAsString>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>string</Type>
+            <Member>CurrentChainName</Member>
+            <ValueAsString>CheckpointFlag</ValueAsString>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>TextureScale</Member>
+            <ValueAsFloat>1</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>X</Member>
+            <ValueAsFloat>8</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>Y</Member>
+            <ValueAsFloat>8</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>bool</Type>
+            <Member>UseAnimationRelativePosition</Member>
+            <ValueAsBool>false</ValueAsBool>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>bool</Type>
+            <Member>Visible</Member>
+            <ValueAsBool>false</ValueAsBool>
+          </CustomProperty>
+          <Properties>
+            <PropertySave>
+              <Name>AssociateWithFactory</Name>
+              <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+            <PropertySave>
+              <Name>SourceType</Name>
+              <ValueAsObject xsi:type="SourceType">FlatRedBallType</ValueAsObject>
+            </PropertySave>
+          </Properties>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile>Sprite</SourceFile>
+          <SourceClassType>FlatRedBall.Sprite</SourceClassType>
+          <InstanceName>FlagSprite</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>false</IndependentOfCamera>
@@ -881,14 +933,14 @@
             <ValueAsFloat>16</ValueAsFloat>
           </CustomProperty>
           <CustomProperty>
-            <Type>float</Type>
-            <Member>Width</Member>
-            <ValueAsFloat>16</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
             <Type>bool</Type>
             <Member>Visible</Member>
             <ValueAsBool>false</ValueAsBool>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>Width</Member>
+            <ValueAsFloat>16</ValueAsFloat>
           </CustomProperty>
           <Properties>
             <PropertySave>
@@ -912,6 +964,7 @@
       </NamedObjects>
       <Name>Entities\Checkpoint</Name>
       <CustomClassesForExport />
+      <ImplementsIVisible>true</ImplementsIVisible>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <CreatedByOtherEntities>true</CreatedByOtherEntities>
       <Is2D>true</Is2D>
@@ -982,11 +1035,6 @@
       <NamedObjects>
         <NamedObjectSave>
           <CustomProperty>
-            <Type>float</Type>
-            <Member>TextureScale</Member>
-            <ValueAsFloat>1</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
             <Type>FlatRedBall.Graphics.Animation.AnimationChainList</Type>
             <Member>AnimationChains</Member>
             <ValueAsString>AnimationChainListFile</ValueAsString>
@@ -995,6 +1043,11 @@
             <Type>string</Type>
             <Member>CurrentChainName</Member>
             <ValueAsString>DoorClosed</ValueAsString>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>TextureScale</Member>
+            <ValueAsFloat>1</ValueAsFloat>
           </CustomProperty>
           <Properties>
             <PropertySave>
@@ -1017,13 +1070,18 @@
         <NamedObjectSave>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Width</Member>
+            <Member>Height</Member>
             <ValueAsFloat>32</ValueAsFloat>
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Height</Member>
+            <Member>Width</Member>
             <ValueAsFloat>32</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>bool</Type>
+            <Member>Visible</Member>
+            <ValueAsBool>false</ValueAsBool>
           </CustomProperty>
           <Properties>
             <PropertySave>

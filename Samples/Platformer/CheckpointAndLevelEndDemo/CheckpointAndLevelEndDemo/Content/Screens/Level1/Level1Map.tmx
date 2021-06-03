@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.3" orientation="orthogonal" renderorder="right-down" width="128" height="16" tilewidth="16" tileheight="16" infinite="0" nextlayerid="8" nextobjectid="5">
+<map version="1.5" tiledversion="1.5.0" orientation="orthogonal" renderorder="right-down" width="128" height="16" tilewidth="16" tileheight="16" infinite="0" nextlayerid="8" nextobjectid="5">
  <tileset firstgid="1" source="../../StandardTileset.tsx"/>
  <tileset firstgid="1025" source="FRBPlatformerTileset.tsx"/>
  <layer id="2" name="Sky" width="128" height="16">
@@ -20,11 +20,11 @@
  <objectgroup id="6" name="PitCollision">
   <object id="1" x="0" y="288" width="2048" height="64"/>
  </objectgroup>
- <objectgroup id="7" name="GameplayObjectLayer" visible="0">
+ <objectgroup id="7" name="GameplayObjectLayer">
   <object id="2" name="Midpoint" gid="69" x="796" y="176" width="16" height="16"/>
   <object id="3" name="LevelStart" gid="69" x="32" y="240" width="16" height="16">
    <properties>
-    <property name="IsSpriteVisible" type="bool" value="false"/>
+    <property name="Visible" type="bool" value="false"/>
    </properties>
   </object>
   <object id="4" gid="65" x="1968" y="120" width="16" height="16">

@@ -26,7 +26,7 @@ namespace CheckpointAndLevelEndDemo.Entities
 
         public void MarkAsChecked()
         {
-            this.SpriteInstance.CurrentChainName = "CheckpointOn";
+            this.FlagSprite.Visible = true;
         }
 
         private void CustomActivity()

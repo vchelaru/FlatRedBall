@@ -18,7 +18,7 @@ namespace CheckpointAndLevelEndDemo.Screens
         }
         void OnPlayerListVsCheckpointListCollisionOccurred (Entities.Player first, Entities.Checkpoint checkpoint) 
         {
-            if(checkpoint.IsSpriteVisible)
+            if(checkpoint.Visible)
             {
                 // This is a checkpoint that you can actually touch and "turn on"
                 checkpoint.MarkAsChecked();

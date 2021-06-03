@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <objecttypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <objecttype name="Checkpoint">
-    <property name="IsSpriteVisible" type="bool" default="true" />
+    <property name="Visible" type="bool" default="true" />
   </objecttype>
   <objecttype name="EndOfLevel">
     <property name="NextLevel" type="string" />
