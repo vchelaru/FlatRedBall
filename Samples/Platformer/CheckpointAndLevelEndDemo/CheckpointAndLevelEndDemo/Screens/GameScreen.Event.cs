@@ -15,7 +15,6 @@ namespace CheckpointAndLevelEndDemo.Screens
         void OnPlayerListVsPitCollisionCollisionOccurred (Entities.Player first, FlatRedBall.Math.Geometry.ShapeCollection second) 
         {
             this.RestartScreen(reloadContent:false);
-
         }
         void OnPlayerListVsCheckpointListCollisionOccurred (Entities.Player first, Entities.Checkpoint checkpoint) 
         {

@@ -25,8 +25,8 @@ using FlatRedBall.Math.Splines;
 using FlatRedBall.Content.Math.Splines;
 using System.Threading;
 
-#if MONOGAME
 using Microsoft.Xna.Framework.Media;
+#if MONOGAME
 using Microsoft.Xna.Framework.Audio;
 #endif
 
