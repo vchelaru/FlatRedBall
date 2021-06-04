@@ -22,7 +22,7 @@
                 RunClicked="HandleRunClick"
                 >
             </views:WhileStoppedView>
-            <views:WhileRunningView  Height="25"
+            <views:WhileRunningView  Height="Auto"
                 Visibility="{Binding WhileRunningViewVisibility}"
                 StopClicked="WhileRunningView_StopClicked"
                 RestartGameClicked="WhileRunningView_RestartGameClicked"

@@ -5,10 +5,16 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPlugins.Compiler.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="20" d:DesignWidth="800">
+             Height="60" d:DesignWidth="800">
     <StackPanel Orientation="Horizontal">
 
-        <Button Margin="0,0,6,0" MinWidth="22" 
+        <GroupBox Header="Running Mode" VerticalAlignment="Top">
+            <StackPanel>
+                <RadioButton IsChecked="{Binding IsPlayChecked}">Play</RadioButton>
+                <RadioButton IsChecked="{Binding IsEditChecked}">Edit</RadioButton>
+            </StackPanel>
+        </GroupBox>
+        <Button Width="24" Height="24" VerticalAlignment="Top" Margin="0,0,6,0" MinWidth="22" 
                 Visibility="{Binding PauseButtonVisibility}"
                 Click="HandlePauseClicked"
             >
@@ -23,13 +29,13 @@
             </Button.ToolTip>
 
         </Button>
-        <StackPanel Orientation="Horizontal" Margin="8,0,8,0" Visibility="{Binding PauseButtonVisibility}">
-            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/SlowMotion.png"></Image>
+        <StackPanel Height="24" VerticalAlignment="Top" Orientation="Horizontal" Margin="8,0,8,0" Visibility="{Binding PauseButtonVisibility}">
+            <Image  Source="/OfficialPluginsCore;component/Compiler/Icons/SlowMotion.png"></Image>
             <ComboBox Width="70" ItemsSource="{Binding GameSpeedList}" 
                       HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                       SelectedItem="{Binding CurrentGameSpeed}"></ComboBox>
         </StackPanel>
-        <Button Style="{DynamicResource ButtonStyleDark}" Margin="0,0,6,0" MinWidth="22"
+        <Button Height="24" VerticalAlignment="Top" Style="{DynamicResource ButtonStyleDark}" Margin="0,0,6,0" MinWidth="22"
                 Visibility="{Binding UnpauseButtonVisibility}"
                 Click="HandleUnpauseClicked"
             >
@@ -44,7 +50,7 @@
             </Button.ToolTip>
         </Button>
 
-        <Button Margin="0,0,6,0" MinWidth="22"
+        <Button Height="24" VerticalAlignment="Top" Margin="0,0,6,0" MinWidth="22"
                 Visibility="{Binding UnpauseButtonVisibility}"
                 Click="HandleAdvanceOneFrameClicked"
         >
@@ -58,7 +64,7 @@
                 </ToolTip>
             </Button.ToolTip>
         </Button>
-        <Button Margin="0,0,6,0" Click="HandleStopClicked">
+        <Button Height="24" VerticalAlignment="Top" Margin="0,0,6,0" Click="HandleStopClicked">
             <Image Source="/OfficialPluginsCore;component/Compiler/Icons/stop.png"></Image>
             <Button.ToolTip>
                 <ToolTip>
@@ -82,7 +88,7 @@
             </Button.ToolTip>
         </Button>-->
 
-        <Button Margin="0,0,6,0" Click="HandleRestartGameCurrentScreenClicked"
+        <Button Height="24" VerticalAlignment="Top" Margin="0,0,6,0" Click="HandleRestartGameCurrentScreenClicked"
                 Visibility="{Binding GlueControlDependentVisibility}">
             <Image Source="/OfficialPluginsCore;component/Compiler/Icons/RestartGameOnCurrentScreen.png"></Image>
             <Button.ToolTip>
@@ -96,7 +102,7 @@
         </Button>
 
 
-        <Button Margin="0,0,6,0" Click="HandleRestartScreenClicked"
+        <Button Height="24" VerticalAlignment="Top"  Margin="0,0,6,0" Click="HandleRestartScreenClicked"
                 Visibility="{Binding GlueControlDependentVisibility}">
             <Image Source="/OfficialPluginsCore;component/Compiler/Icons/RestartScreen.png"></Image>
             <Button.ToolTip>
@@ -109,12 +115,12 @@
             </Button.ToolTip>
         </Button>
 
-        <CheckBox Margin="8,0,8,0" 
+        <CheckBox VerticalAlignment="Top" Margin="8,0,8,0" 
+                  Height="24"
                   IsChecked="{Binding IsRebuildAndRestartEnabled}"
                   Visibility="{Binding RebuildRestartCheckBoxVisiblity}"
-                  VerticalAlignment="Center" 
                   VerticalContentAlignment="Center">
-            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/HotReload.png"  Margin="0,0,6,0">
+            <Image Height="24" Source="/OfficialPluginsCore;component/Compiler/Icons/HotReload.png" >
             </Image>
             <CheckBox.ToolTip>
                 <StackPanel>

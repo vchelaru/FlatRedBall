@@ -37,13 +37,14 @@ namespace FlatRedBall.Glue.SaveClasses
             HasFormsObject = 4, // Not sure if this is exact, but it should be maybe around here. This will make old projects work
             CsvInheritanceSupport = 5,
             NugetPackageInCsproj = 6,
+            SupportsEditMode = 7
                 
 
         }
 
         #region Fields / Properties
 
-        public const int LatestVersion = (int)GluxVersions.NugetPackageInCsproj;
+        public const int LatestVersion = (int)GluxVersions.SupportsEditMode;
 
         public int FileVersion { get; set; }
 

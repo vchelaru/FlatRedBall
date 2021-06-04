@@ -1,9 +1,11 @@
 ﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ToolsUtilities;
 
 namespace OfficialPlugins.Compiler.CodeGeneration
 {
@@ -13,227 +15,26 @@ namespace OfficialPlugins.Compiler.CodeGeneration
 
         public static string GetStringContents(bool generateFull)
         {
+            var byteArray = FileManager.GetByteArrayFromEmbeddedResource(
+                typeof(GlueControlCodeGenerator).Assembly,
+                "OfficialPluginsCore.Compiler.Embedded.GlueControlManager.Generated.cs");
 
-            var handleSetVariable =
-@"
-            public void HandleSetVariable(string data)
-            {
-";
+            var asString = System.Text.Encoding.UTF8.GetString(byteArray);
+
+            asString = asString.Replace("{ProjectNamespace}", GlueState.Self.ProjectNamespace);
+
+            var compilerDirectives = String.Empty;
             if(generateFull)
             {
-
-                handleSetVariable +=
-                    @"
-                    var screen =
-                        FlatRedBall.Screens.ScreenManager.CurrentScreen;
-
-                    var deserialized = Newtonsoft.Json.JsonConvert.DeserializeObject<GlueVariableSetData>(data);
-
-                    object variableValue = deserialized.Value;
-
-                    switch(deserialized.Type)
-                    {
-                        case ""float"":
-                            variableValue = float.Parse(deserialized.Value);
-                            break;
-                        case ""int"":
-                            variableValue = int.Parse(deserialized.Value);
-                            break;
-                        case ""bool"":
-                            variableValue = bool.Parse(deserialized.Value);
-                            break;
-                        case ""double"":
-                            variableValue = double.Parse(deserialized.Value);
-                            break;
-                        case ""Microsoft.Xna.Framework.Color"":
-                            variableValue = typeof(Microsoft.Xna.Framework.Color).GetProperty(deserialized.Value).GetValue(null);
-                            break;
-                    }
-
-                    screen.ApplyVariable(deserialized.VariableName, variableValue);
-    ";
+                compilerDirectives += "#define IncudeSetVariable\r\n";
             }
-
-            handleSetVariable +=
-                @"
-            }
-";
-
-
-            var toReturn = @"
-using System.IO;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-
-namespace " + GlueState.Self.ProjectNamespace + @"
-{
-
-    public class GlueVariableSetData
-    {
-        public string VariableName { get; set; }
-        public string Value { get; set; }
-        public string Type { get; set; }
-    }
-
-
-    public class GlueControlManager
-    {
-        bool isRunning;
-        private TcpListener listener;
-
-        public GlueControlManager(int port)
-        {
-            listener = new TcpListener(IPAddress.Any, port);
-        }
-
-        public void Start()
-        {
-            Thread serverThread = new Thread(new ThreadStart(Run));
-
-            serverThread.Start();
-        }
-
-        private void Run()
-        {
-            isRunning = true;
-
-            listener.Start();
-
-            while (isRunning)
+            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode)
             {
-                try
-                {
-                    TcpClient client = listener.AcceptTcpClient();
-                    HandleClient(client);
-
-                    client.Close();
-                }
-                catch(System.Exception e)
-                {
-                    if(isRunning)
-                    {
-                        throw e;
-                    }
-                }
+                compilerDirectives += "#define SupportsEditMode\r\n";
             }
+            asString = asString.Replace("{CompilerDirectives}", compilerDirectives);
 
-            isRunning = false;
-
-            listener.Stop();
-        }
-
-        public void Kill()
-        {
-            isRunning = false;
-            listener.Stop();
-
-        }
-
-        private void HandleClient(TcpClient client)
-        {
-            StreamReader reader = new StreamReader(client.GetStream());
-            var stringBuilder = new StringBuilder();
-            while (reader.Peek() != -1)
-            {
-                stringBuilder.AppendLine(reader.ReadLine());
-            }
-
-            var response = ProcessMessage(stringBuilder.ToString()?.Trim());
-            if(response == null)
-            {
-                response = ""true"";
-            }
-            byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(response);
-            client.GetStream().Write(messageAsBytes, 0, messageAsBytes.Length);
-
-        }
-
-        private string ProcessMessage(string message)
-        {
-            var screen =
-                FlatRedBall.Screens.ScreenManager.CurrentScreen;
-            bool handledImmediately = false;
-
-            string data = null;
-
-            if(message.Contains("":""))
-            {
-                data = message.Substring(message.IndexOf("":"") + 1);
-                message = message.Substring(0, message.IndexOf("":""));
-            }
-
-            switch (message)
-            {
-                case ""GetCurrentScreen"":
-                    handledImmediately = true;
-                    return screen.GetType().FullName;
-            }
-
-            if(!handledImmediately)
-            {
-                FlatRedBall.Instructions.InstructionManager.AddSafe(() =>
-                {
-                    switch (message)
-                    {
-                        case ""RestartScreen"":
-                            screen.RestartScreen(true);
-                            break;
-                        case ""ReloadGlobal"":
-                            GlobalContent.Reload(GlobalContent.GetFile(data));
-                            break;
-                        case ""TogglePause"":
-
-                            if (screen.IsPaused)
-                            {
-                                screen.UnpauseThisScreen();
-                            }
-                            else
-                            {
-                                screen.PauseThisScreen();
-                            }
-
-                            break;
-
-                        case ""AdvanceOneFrame"":
-                            screen.UnpauseThisScreen();
-                            var delegateInstruction = new FlatRedBall.Instructions.DelegateInstruction(() =>
-                            {
-                                screen.PauseThisScreen();
-                            });
-                            delegateInstruction.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + .001;
-
-                            FlatRedBall.Instructions.InstructionManager.Instructions.Add(delegateInstruction);
-                            break;
-
-                        case ""SetSpeed"":
-                            var timeFactor = int.Parse(data);
-                            FlatRedBall.TimeManager.TimeFactor = timeFactor / 100.0f;
-                            break;
-
-                        case ""SetVariable"":
-
-                            HandleSetVariable(data);
-
-                            break;
-
-
-                        }       
-                    });
-                }
-
-                return ""true"";
-            }" + 
-            handleSetVariable
- + 
-@"
-
-
-        }
-}
-";
-            return toReturn;
+            return asString;
         }
     }
 }

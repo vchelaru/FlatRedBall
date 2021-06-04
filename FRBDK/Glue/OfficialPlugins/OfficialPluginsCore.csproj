@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Compiler\Embedded\GlueControlManager.Generated.cs" />
     <Compile Remove="ProfilePlugin\EmbeddedCodeFiles\ProfileManagerBase.cs" />
   </ItemGroup>
 
@@ -69,6 +70,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Compiler\Embedded\GlueControlManager.Generated.cs" />
     <EmbeddedResource Include="ProfilePlugin\EmbeddedCodeFiles\ProfileManagerBase.cs" />
   </ItemGroup>
 

@@ -9,6 +9,12 @@ using System.Windows;
 
 namespace OfficialPlugins.Compiler.ViewModels
 {
+    public enum PlayOrEdit
+    {
+        Play,
+        Edit
+    }
+
     public class CompilerViewModel : ViewModel
     {
         #region Fields/Properties
@@ -20,7 +26,7 @@ namespace OfficialPlugins.Compiler.ViewModels
         }
 
         [DependsOn(nameof(HasLoadedGlux))]
-        public Visibility EntireUiVisibility => HasLoadedGlux ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility EntireUiVisibility => HasLoadedGlux.ToVisibility();
 
         public bool AutoBuildContent { get; set; }
 
@@ -70,12 +76,10 @@ namespace OfficialPlugins.Compiler.ViewModels
             HasLoadedGlux;
 
         [DependsOn(nameof(IsHotReloadAvailable))]
-        public Visibility ReloadVisibility => IsHotReloadAvailable ?
-            Visibility.Visible : Visibility.Collapsed;
+        public Visibility ReloadVisibility => IsHotReloadAvailable.ToVisibility();
 
         [DependsOn(nameof(IsRunning))]
-        public Visibility WhileRunningViewVisibility => IsRunning ? 
-            Visibility.Visible : Visibility.Collapsed;
+        public Visibility WhileRunningViewVisibility => IsRunning.ToVisibility();
 
         [DependsOn(nameof(IsRunning))]
         [DependsOn(nameof(IsCompiling))]
@@ -102,13 +106,11 @@ namespace OfficialPlugins.Compiler.ViewModels
         }
 
         [DependsOn(nameof(IsGluxVersionNewEnoughForGlueControlGeneration))]
-        public Visibility GlueControlDependentVisibility => IsGluxVersionNewEnoughForGlueControlGeneration ?
-            Visibility.Visible : Visibility.Collapsed;
+        public Visibility GlueControlDependentVisibility => IsGluxVersionNewEnoughForGlueControlGeneration.ToVisibility();
 
         [DependsOn(nameof(IsPaused))]
         [DependsOn(nameof(IsGluxVersionNewEnoughForGlueControlGeneration))]
-        public Visibility PauseButtonVisibility => IsPaused || !IsGluxVersionNewEnoughForGlueControlGeneration ?
-            Visibility.Collapsed : Visibility.Visible;
+        public Visibility PauseButtonVisibility => (IsPaused || !IsGluxVersionNewEnoughForGlueControlGeneration).ToVisibility();
 
         public bool IsRebuildAndRestartEnabled
         {
@@ -182,6 +184,38 @@ namespace OfficialPlugins.Compiler.ViewModels
         {
             get => Get<string>();
             set => Set(value);
+        }
+
+        public PlayOrEdit PlayOrEdit
+        {
+            get => Get<PlayOrEdit>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(PlayOrEdit))]
+        public bool IsPlayChecked
+        {
+            get => PlayOrEdit == PlayOrEdit.Play;
+            set
+            {
+                if(value)
+                {
+                    PlayOrEdit = PlayOrEdit.Play;
+                }
+            }
+        }
+
+        [DependsOn(nameof(PlayOrEdit))]
+        public bool IsEditChecked
+        {
+            get => PlayOrEdit == PlayOrEdit.Edit;
+            set
+            {
+                if (value)
+                {
+                    PlayOrEdit = PlayOrEdit.Edit;
+                }
+            }
         }
 
         #endregion

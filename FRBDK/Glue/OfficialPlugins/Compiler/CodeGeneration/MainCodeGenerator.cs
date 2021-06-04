@@ -14,10 +14,10 @@ namespace OfficialPlugins.Compiler.CodeGeneration
         public static void GenerateAll(bool fullyGenerate)
         {
             var glueControlManagerCode = GlueControlCodeGenerator.GetStringContents(fullyGenerate);
-            FilePath filePath = GlueState.Self.CurrentGlueProjectDirectory + 
-                "GlueControl/GlueControlManager.Generated.cs";
-            GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(filePath);
-            GlueCommands.Self.TryMultipleTimes(() => System.IO.File.WriteAllText(filePath.FullPath, glueControlManagerCode));
+            var glueControlFolder = GlueState.Self.CurrentGlueProjectDirectory + "GlueControl/";
+            FilePath glueControlManagerFilePath = glueControlFolder + "GlueControlManager.Generated.cs";
+            GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(glueControlManagerFilePath);
+            GlueCommands.Self.TryMultipleTimes(() => System.IO.File.WriteAllText(glueControlManagerFilePath.FullPath, glueControlManagerCode));
         }
     }
 }

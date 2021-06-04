@@ -22,6 +22,10 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using OfficialPluginsCore.Compiler.ViewModels;
 using OfficialPluginsCore.Compiler.Managers;
+using System.Diagnostics;
+using System.Timers;
+using Glue;
+using OfficialPluginsCore.Compiler.CommandReceiving;
 
 namespace OfficialPlugins.Compiler
 {
@@ -64,6 +68,8 @@ namespace OfficialPlugins.Compiler
 
         bool ignoreViewModelChanges = false;
 
+        Timer timer;
+
         #endregion
 
         public override void StartUp()
@@ -81,6 +87,22 @@ namespace OfficialPlugins.Compiler
 
             game1GlueControlGenerator = new Game1GlueControlGenerator();
             this.RegisterCodeGenerator(game1GlueControlGenerator);
+
+            timer = new Timer(500);
+            timer.Elapsed += HandleTimerElapsed;
+            timer.SynchronizingObject = MainGlueWindow.Self;
+            timer.Start();
+        }
+
+        private async void HandleTimerElapsed(object sender, ElapsedEventArgs e)
+        {
+            var gameToGlueCommandsAsString = await CommandSending.CommandSender
+                .SendCommand("GetCommands", viewModel.PortNumber);
+
+            if(!string.IsNullOrEmpty(gameToGlueCommandsAsString))
+            {
+                CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString);
+            }
         }
 
         private void AssignEvents()
@@ -328,6 +350,10 @@ namespace OfficialPlugins.Compiler
                     break;
                 case nameof(CompilerViewModel.IsToolbarPlayButtonEnabled):
                     ToolbarController.Self.SetEnabled(viewModel.IsToolbarPlayButtonEnabled);
+                    break;
+                case nameof(CompilerViewModel.PlayOrEdit):
+                    var isEditMode = viewModel.PlayOrEdit == PlayOrEdit.Edit;
+                    await DoCommandSendingLogic($"SetEditMode:{isEditMode.ToString().ToLowerInvariant()}");
                     break;
             }
         }

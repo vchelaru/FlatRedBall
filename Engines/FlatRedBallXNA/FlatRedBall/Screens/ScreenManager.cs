@@ -54,6 +54,8 @@ namespace FlatRedBall.Screens
 
         private static Action<Screen> nextCallback;
 
+        public static bool IsInEditMode { get; set; }
+
         #endregion
 
         #region Properties
@@ -138,7 +140,9 @@ namespace FlatRedBall.Screens
         #endregion
         public static void Activity()
         {
-            if (mCurrentScreen == null) return;
+            /////////////////Early Out///////////////////////////
+            if (mCurrentScreen == null || IsInEditMode) return;
+            //////////////End Early Out//////////////////////////
 
             mCurrentScreen.Activity(mCurrentScreen.ActivityCallCount == 0);
 
