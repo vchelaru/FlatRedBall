@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EditorObjects.IoC;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.Glue.ViewModels;
 using FlatRedBall.IO;
 using TileGraphicsPlugin.ViewModels;
@@ -48,9 +50,14 @@ namespace TileGraphicsPlugin.Logic
                                 addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.PositionedObjectList;
                                 addObjectViewModel.SourceClassGenericType = newEntity.Name;
                                 addObjectViewModel.ObjectName = $"{newEntity.GetStrippedName()}List";
+                                
 
-                                GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(
+                                var newNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(
                                     addObjectViewModel, screen, listToAddTo:null);
+                                newNos.ExposedInDerived = true;
+
+                                Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(nameof(newNos.ExposedInDerived), false,
+                                    namedObjectSave: newNos);
 
                                 GlueCommands.Self.PrintOutput(
                                     $"Tiled Plugin added {addObjectViewModel.ObjectName} to {screen}");

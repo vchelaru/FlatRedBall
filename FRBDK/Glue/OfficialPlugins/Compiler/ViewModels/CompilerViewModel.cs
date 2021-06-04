@@ -110,7 +110,7 @@ namespace OfficialPlugins.Compiler.ViewModels
 
         [DependsOn(nameof(IsPaused))]
         [DependsOn(nameof(IsGluxVersionNewEnoughForGlueControlGeneration))]
-        public Visibility PauseButtonVisibility => (IsPaused || !IsGluxVersionNewEnoughForGlueControlGeneration).ToVisibility();
+        public Visibility PauseButtonVisibility => (!IsPaused && IsGluxVersionNewEnoughForGlueControlGeneration).ToVisibility();
 
         public bool IsRebuildAndRestartEnabled
         {
@@ -162,11 +162,10 @@ namespace OfficialPlugins.Compiler.ViewModels
 
         public string Configuration { get; set; }
 
-        Visibility compileContentButtonVisibility;
         public Visibility CompileContentButtonVisibility
         {
-            get { return compileContentButtonVisibility; }
-            set { base.ChangeAndNotify(ref compileContentButtonVisibility, value); }
+            get => Get<Visibility>();
+            set => Set(value);
         }
 
         public List<string> GameSpeedList { get; set; } =
