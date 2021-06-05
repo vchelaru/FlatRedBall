@@ -124,6 +124,8 @@ namespace FlatRedBall.Screens
 			get;
 			set;
 		}
+
+        public static event Action<Screen> ScreenLoaded;
 		
         #endregion
 
@@ -454,6 +456,8 @@ namespace FlatRedBall.Screens
                         FlatRedBallServices.Game.IsFixedTimeStep = mWasFixedTimeStep.Value;
                         TimeManager.TimeFactor = mLastTimeFactor.Value;
                     }
+
+                    ScreenLoaded?.Invoke(mCurrentScreen);
                 }
 
             }
