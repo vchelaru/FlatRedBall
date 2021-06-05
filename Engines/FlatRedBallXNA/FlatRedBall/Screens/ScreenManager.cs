@@ -141,12 +141,15 @@ namespace FlatRedBall.Screens
         public static void Activity()
         {
             /////////////////Early Out///////////////////////////
-            if (mCurrentScreen == null || IsInEditMode) return;
+            if (mCurrentScreen == null) return;
             //////////////End Early Out//////////////////////////
 
-            mCurrentScreen.Activity(mCurrentScreen.ActivityCallCount == 0);
+            if(!IsInEditMode)
+            {
+                mCurrentScreen.Activity(mCurrentScreen.ActivityCallCount == 0);
 
-            mCurrentScreen.ActivityCallCount++;
+                mCurrentScreen.ActivityCallCount++;
+            }
 
             if (mCurrentScreen.ActivityCallCount == 1 && mWasFixedTimeStep.HasValue)
             {
@@ -412,13 +415,23 @@ namespace FlatRedBall.Screens
                     TimeManager.SetNextFrameTimeTo0 = true;
 
                     newScreen.ApplyRestartVariables();
+
+                    if(IsInEditMode)
+                    {
+                        // stop everything:
+                        foreach(var item in SpriteManager.ManagedPositionedObjects)
+                        {
+                            item.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
+                            item.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
+                        }
+                    }
                 }
                 mSuppressStatePush = false;
 
                 nextCallback?.Invoke(newScreen);
                 nextCallback = null;
 
-                if(addToManagers && makeCurrentScreen)
+                if (addToManagers && makeCurrentScreen)
                 {
                     // Dec 28, 2020
                     // I thought we called
@@ -428,11 +441,15 @@ namespace FlatRedBall.Screens
                     // then a single frame will pass
                     // without activity, and objects may
                     // not be positioned correclty.
-                    mCurrentScreen.Activity(mCurrentScreen.ActivityCallCount == 0);
+                    if (!IsInEditMode)
+                    {
+                        mCurrentScreen.Activity(mCurrentScreen.ActivityCallCount == 0);
 
-                    mCurrentScreen.ActivityCallCount++;
+                        mCurrentScreen.ActivityCallCount++;
+                    }
 
-                    if (mCurrentScreen.ActivityCallCount == 1 && mWasFixedTimeStep.HasValue)
+                    // We want to set time factor back to non-zero if in edit mode so objects can move and update
+                    if (IsInEditMode || ( mCurrentScreen.ActivityCallCount == 1 && mWasFixedTimeStep.HasValue))
                     {
                         FlatRedBallServices.Game.IsFixedTimeStep = mWasFixedTimeStep.Value;
                         TimeManager.TimeFactor = mLastTimeFactor.Value;
