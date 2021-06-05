@@ -227,10 +227,11 @@ namespace FlatRedBall.Glue.Managers
             Add(action, displayInfo, executionPreference);
         }
 
-        public void Add(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo)
+        public void Add(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
         {
             var glueTask = new GlueTask();
             glueTask.Action = action;
+            glueTask.DoOnUiThread = doOnUiThread;
             AddInternal(displayInfo, executionPreference, glueTask);
 
         }
@@ -377,7 +378,15 @@ namespace FlatRedBall.Glue.Managers
                     //this.taskHistory.Add(glueTask?.DisplayInfo);
                     glueTask.TimeStarted = DateTime.Now;
                     TaskAddedOrRemoved?.Invoke(TaskEvent.Started, glueTask);
-                    toProcess();
+                    if(glueTask.DoOnUiThread)
+                    {
+                        global::Glue.MainGlueWindow.Self.Invoke(toProcess);
+                    }
+                    else
+                    {
+                        toProcess();
+
+                    }
                     SyncTaskThreadId = null;
 
                     glueTask.TimeEnded = DateTime.Now;

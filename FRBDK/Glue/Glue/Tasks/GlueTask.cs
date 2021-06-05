@@ -27,5 +27,7 @@ namespace FlatRedBall.Glue.Tasks
             get;
             set;
         }
+
+        public bool DoOnUiThread { get; set; }
     }
 }

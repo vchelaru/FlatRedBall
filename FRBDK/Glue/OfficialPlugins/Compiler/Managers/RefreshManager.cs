@@ -199,6 +199,11 @@ namespace OfficialPlugins.Compiler.Managers
         internal void HandleNamedObjectValueChanged(string changedMember, object oldValue)
         {
             var nos = GlueState.Self.CurrentNamedObjectSave;
+            HandleNamedObjectValueChanged(changedMember, oldValue, nos);
+        }
+
+        public void HandleNamedObjectValueChanged(string changedMember, object oldValue, NamedObjectSave nos)
+        { 
 
             var instruction = nos?.GetInstructionFromMember(changedMember);
             if (instruction != null || changedMember == nameof(NamedObjectSave.InstanceName))
