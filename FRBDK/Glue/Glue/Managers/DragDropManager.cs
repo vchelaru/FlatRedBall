@@ -582,6 +582,9 @@ namespace FlatRedBall.Glue.Managers
                         }
 
                         ElementViewWindow.GenerateSelectedElementCode();
+
+                        PluginManager.ReactToNewObject(namedObject);
+
                         // Don't save the Glux, the caller of this method will take care of it
                         // GluxCommands.Self.SaveGlux();
                     }

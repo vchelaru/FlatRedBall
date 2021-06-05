@@ -158,7 +158,7 @@ namespace FlatRedBall.Math.Collision
         public void Update()
         {
             ////////early out////////////
-            if(IsPausedByScreen)
+            if(IsPausedByScreen || Screens.ScreenManager.IsInEditMode)
             {
                 return;
             }

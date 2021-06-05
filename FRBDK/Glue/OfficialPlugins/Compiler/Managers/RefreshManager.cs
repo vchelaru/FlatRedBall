@@ -162,11 +162,13 @@ namespace OfficialPlugins.Compiler.Managers
         #endregion
 
 
-        internal void HandleNewObjectCreated(NamedObjectSave newNamedObject)
+        internal async void HandleNewObjectCreated(NamedObjectSave newNamedObject)
         {
-            if (ShouldRestartOnChange)
+            if (ViewModel.IsRunning)
             {
-                StopAndRestartTask($"Object {newNamedObject} created");
+                var serialized = JsonConvert.SerializeObject(newNamedObject);
+
+                await CommandSender.SendCommand($"AddObject:{serialized}", PortNumber);
             }
         }
 

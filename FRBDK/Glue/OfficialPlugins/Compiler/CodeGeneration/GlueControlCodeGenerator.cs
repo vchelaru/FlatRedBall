@@ -26,7 +26,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             var compilerDirectives = String.Empty;
             if(generateFull)
             {
-                compilerDirectives += "#define IncudeSetVariable\r\n";
+                compilerDirectives += "#define IncludeSetVariable\r\n";
             }
             if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode)
             {
