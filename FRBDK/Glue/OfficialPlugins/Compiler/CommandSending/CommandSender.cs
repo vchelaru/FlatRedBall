@@ -78,5 +78,21 @@ namespace OfficialPlugins.Compiler.CommandSending
             return response;
             //Console.ReadLine();
         }
+
+        internal static async Task<string> GetScreenName(int portNumber)
+        {
+            string screenName = null;
+
+            try
+            {
+                screenName = await CommandSending.CommandSender.SendCommand("GetCurrentScreen", portNumber);
+            }
+            catch (SocketException)
+            {
+                // do nothing, may not have been able to communicate, just output
+                //control.PrintOutput("Could not get the game's screen, restarting game from startup screen");
+            }
+            return screenName;
+        }
     }
 }

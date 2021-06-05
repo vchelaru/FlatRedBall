@@ -657,16 +657,30 @@ namespace FlatRedBall.Instructions.Reflection
         {
             if (!mPropertyGet.ContainsKey(propertyName))
             {
-
+                Type type = mType;
 #if WINDOWS_8 || UWP
                 PropertyInfo propertyInfo = mType.GetProperty(propertyName);
 #else
                 PropertyInfo propertyInfo = mType.GetProperty(propertyName, mGetterBindingFlags);
+
+                var baseType = mType.BaseType;
+                while(baseType != null && propertyInfo == null)
+                {
+                    propertyInfo = baseType.GetProperty(propertyName, mGetterBindingFlags);
+                    if(propertyInfo != null)
+                    {
+                        type = baseType;
+                    }
+                    else
+                    {
+                        baseType = baseType.BaseType;
+                    }
+                }
 #endif
                 if (propertyInfo != null)
                 {
 
-                    mPropertyGet.Add(propertyName, DynamicMethodCompiler.CreateGetHandler(mType, propertyInfo));
+                    mPropertyGet.Add(propertyName, DynamicMethodCompiler.CreateGetHandler(type, propertyInfo));
                 }
             }
         }

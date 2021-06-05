@@ -664,6 +664,17 @@ namespace FlatRedBall.Screens
                     {
                         instance = null;
                     }
+
+                    // names can change and not match the original instance name, so let's verify that
+                    if(instance is INameable nameable && nameable.Name != beforeDot)
+                    {
+                        instance = null;
+                    }
+
+                    if(instance == null && container is Screen)
+                    {
+                        instance = SpriteManager.ManagedPositionedObjects.FirstOrDefault(item => item.Name == beforeDot);
+                    }
                 }
             }
             else

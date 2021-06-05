@@ -6,12 +6,16 @@ using FlatRedBall.Gui;
 
 namespace FlatRedBall.Forms.Controls
 {
+    #region Enums
+
     public enum ScrollBarVisibility
     {
         Auto = 1,
         Hidden = 2,
         Visible = 3
     }
+
+    #endregion
 
     public class ScrollViewer : FrameworkElement
     {

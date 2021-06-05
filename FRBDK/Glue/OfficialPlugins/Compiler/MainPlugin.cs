@@ -96,12 +96,20 @@ namespace OfficialPlugins.Compiler
 
         private async void HandleTimerElapsed(object sender, ElapsedEventArgs e)
         {
-            var gameToGlueCommandsAsString = await CommandSending.CommandSender
-                .SendCommand("GetCommands", viewModel.PortNumber);
-
-            if(!string.IsNullOrEmpty(gameToGlueCommandsAsString))
+            try
             {
-                CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString);
+                var gameToGlueCommandsAsString = await CommandSending.CommandSender
+                    .SendCommand("GetCommands", viewModel.PortNumber);
+
+                if(!string.IsNullOrEmpty(gameToGlueCommandsAsString))
+                {
+                    await CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString, viewModel.PortNumber);
+                }
+
+            }
+            catch
+            {
+                // it's okay
             }
         }
 
@@ -383,17 +391,8 @@ namespace OfficialPlugins.Compiler
 
             control.RestartGameCurrentScreenClicked += async (not, used) =>
             {
-                string screenName = null;
+                var screenName = await CommandSending.CommandSender.GetScreenName(viewModel.PortNumber);
 
-                try
-                {
-                    screenName = await CommandSending.CommandSender.SendCommand("GetCurrentScreen", viewModel.PortNumber);
-                }
-                catch(SocketException)
-                {
-                    // do nothing, may not have been able to communicate, just output
-                    control.PrintOutput("Could not get the game's screen, restarting game from startup screen");
-                }
                 viewModel.IsPaused = false;
                 runner.Stop();
                 var succeeded = await Compile();

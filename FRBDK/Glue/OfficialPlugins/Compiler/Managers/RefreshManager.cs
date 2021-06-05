@@ -201,13 +201,26 @@ namespace OfficialPlugins.Compiler.Managers
             var nos = GlueState.Self.CurrentNamedObjectSave;
 
             var instruction = nos?.GetInstructionFromMember(changedMember);
-            if (instruction != null)
+            if (instruction != null || changedMember == nameof(NamedObjectSave.InstanceName))
             {
                 var screen = GlueState.Self.CurrentScreenSave;
                 var entity = GlueState.Self.CurrentEntitySave;
                 var nosName = nos.InstanceName;
-                var type = instruction.Type;
-                var value = instruction.Value?.ToString();
+                string type;
+                string value;
+
+                if(changedMember == nameof(NamedObjectSave.InstanceName))
+                {
+                    type = "string";
+                    value = nos.InstanceName;
+                    changedMember = "Name";
+                    nosName = (string)oldValue;
+                }
+                else
+                {
+                    type = instruction.Type;
+                    value = instruction.Value?.ToString();
+                }
                 TaskManager.Self.Add(async () =>
                 {
                     try
@@ -228,13 +241,13 @@ namespace OfficialPlugins.Compiler.Managers
 
         private async Task TryPushVariableOrRestart(string variableOwningNosName, string rawMemberName, string type, string value, ScreenSave currentGlueScreen, EntitySave currentEntitySave)
         {
-            if (ShouldRestartOnChange)
+            if (ViewModel.IsRunning)
             {
-                string currentInGameScreen = null;
+                string currentInGameScreenName = null;
 
                 try
                 {
-                    currentInGameScreen = await CommandSending.CommandSender
+                    currentInGameScreenName = await CommandSending.CommandSender
                     .SendCommand("GetCurrentScreen", PortNumber);
                 }
                 catch
@@ -254,7 +267,21 @@ namespace OfficialPlugins.Compiler.Managers
                 }
                 else if(currentGlueScreen != null)
                 {
-                    var areSame = currentInGameScreen == GlueState.Self.ProjectNamespace + "." + currentGlueScreen?.Name.Replace("\\", ".");
+                    var areSame = currentInGameScreenName == GlueState.Self.ProjectNamespace + "." + currentGlueScreen?.Name.Replace("\\", ".");
+
+                    if(!areSame)
+                    {
+                        var currentInGameScreenNameWithoutNamespace = currentInGameScreenName
+                            .Substring((GlueState.Self.ProjectNamespace + ".").Length)
+                            .Replace(".", "\\");
+                        var currentInGameScreen = ObjectFinder.Self.GetScreenSave(currentInGameScreenNameWithoutNamespace);
+
+                        if(ObjectFinder.Self.GetIfInherits(currentInGameScreen, currentGlueScreen))
+                        {
+                            areSame = true;
+                        }
+                        // there could be inheritance
+                    }
 
                     if (areSame)
                     {
@@ -280,7 +307,7 @@ namespace OfficialPlugins.Compiler.Managers
                 {
                     var screens = GlueState.Self.CurrentGlueProject.Screens.ToArray();
 
-                    var matchingScreen = screens.FirstOrDefault(item => GlueState.Self.ProjectNamespace + "." + item.Name.Replace("\\", ".") == currentInGameScreen);
+                    var matchingScreen = screens.FirstOrDefault(item => GlueState.Self.ProjectNamespace + "." + item.Name.Replace("\\", ".") == currentInGameScreenName);
 
                     if(matchingScreen != null)
                     {

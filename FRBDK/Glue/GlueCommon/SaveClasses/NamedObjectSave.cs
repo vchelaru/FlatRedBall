@@ -32,11 +32,6 @@ namespace FlatRedBall.Glue.SaveClasses
         File,
         Entity,
         FlatRedBallType,
-        // October 7, 2012
-        // Decided to permanently
-        // remove the Screen option
-        // for objects.
-        //Screen
         CustomType
     }
 

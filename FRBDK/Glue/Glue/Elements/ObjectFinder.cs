@@ -338,6 +338,7 @@ namespace FlatRedBall.Glue.Elements
 
         public ScreenSave GetScreenSave(string screenName)
         {
+            // try to get qualified first...
             if (screenName != null)
             {
                 screenName = screenName.Replace('/', '\\');
@@ -353,8 +354,22 @@ namespace FlatRedBall.Glue.Elements
                             return screenSave;
                         }
                     }
+
+                    for (int i = 0; i < GlueProject.Screens.Count; i++)
+                    {
+                        ScreenSave screenSave = GlueProject.Screens[i];
+
+                        if (screenSave.ClassName == screenName)
+                        {
+                            return screenSave;
+                        }
+                    }
+
+
                 }
             }
+
+
             return null;
         }
 
@@ -498,6 +513,13 @@ namespace FlatRedBall.Glue.Elements
             }
 
             return derivedElements;
+        }
+
+        public bool GetIfInherits(GlueElement derivedElement, GlueElement baseElement)
+        {
+            var allDerived = GetAllElementsThatInheritFrom(baseElement);
+
+            return allDerived.Contains(derivedElement);
         }
 
         public GlueElement GetBaseElement(IElement derivedElement)

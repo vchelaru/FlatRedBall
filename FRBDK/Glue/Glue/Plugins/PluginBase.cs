@@ -186,6 +186,10 @@ namespace FlatRedBall.Glue.Plugins
         /// Delegate called when the user creates a new ReferencedFileSave (adds a new file to the Glue project)
         /// </summary>
         public ReactToNewFileDelegate ReactToNewFileHandler { get; protected set; }
+
+        /// <summary>
+        /// Delegate called whenever a new NamedObjectSave is added.
+        /// </summary>
         public ReactToNewObjectDelegate ReactToNewObjectHandler { get; protected set; }
         public Action<IElement, NamedObjectSave> ReactToObjectRemoved { get; protected set; }
 
