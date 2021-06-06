@@ -129,12 +129,12 @@ namespace OfficialPlugins.Compiler
             this.ReactToScreenRemoved += ToolbarController.Self.HandleScreenRemoved;
             // todo - handle startup changed...
             this.ReactToNewObjectHandler += RefreshManager.Self.HandleNewObjectCreated;
-            this.ReactToObjectRemoved += RefreshManager.Self.HandleObjectRemoved;
+            this.ReactToObjectRemoved += async(owner,nos) =>
+                await RefreshManager.Self.HandleObjectRemoved(owner, nos);
             this.ReactToElementVariableChange += RefreshManager.Self.HandleVariableChanged;
             this.ReactToNamedObjectChangedValue += RefreshManager.Self.HandleNamedObjectValueChanged;
             this.ReactToChangedStartupScreen += ToolbarController.Self.ReactToChangedStartupScreen;
         }
-
 
         private void HandleGluxUnloaded()
         {
@@ -164,7 +164,6 @@ namespace OfficialPlugins.Compiler
             return compilerSettings;
         }
 
-        
 
         private void HandleGluxLoaded()
         {

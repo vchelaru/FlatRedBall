@@ -1164,10 +1164,12 @@ namespace FlatRedBall.Glue.FormHelpers
             }
 
 
+
             ElementViewWindow.UpdateCurrentObjectReferencedTreeNodes();
 
-            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+            PluginManager.ReactToNewObject(newNamedObject);
 
+            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
             GlueCommands.Self.ProjectCommands.SaveProjects();
             GluxCommands.Self.SaveGlux();
         }

@@ -283,6 +283,9 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
+        /// <summary>
+        /// The name of the object in Glue.
+        /// </summary>
         [CategoryAttribute("\t\tInstance")]
         public string InstanceName
         {
@@ -448,6 +451,9 @@ namespace FlatRedBall.Glue.SaveClasses
             set;
         }
 
+        /// <summary>
+        /// The name of the field in generated code.
+        /// </summary>
         [XmlIgnore]
         [JsonIgnore]
         [Browsable(false)]

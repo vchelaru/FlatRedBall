@@ -8,6 +8,7 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using Newtonsoft.Json;
 using OfficialPlugins.Compiler.CommandSending;
+using OfficialPlugins.Compiler.Dtos;
 using OfficialPlugins.Compiler.ViewModels;
 using OfficialPluginsCore.Compiler.CommandSending;
 using System;
@@ -395,11 +396,14 @@ namespace OfficialPlugins.Compiler.Managers
             }
         }
 
-        internal void HandleObjectRemoved(IElement arg1, NamedObjectSave arg2)
+        internal async Task HandleObjectRemoved(IElement owner, NamedObjectSave nos)
         {
-            if (ShouldRestartOnChange)
+            if (ViewModel.IsRunning)
             {
-                StopAndRestartTask($"Object {arg2} removed");
+                var dto = new RemoveObjectDto();
+                dto.ElementName = owner.Name;
+                dto.ObjectName = nos.InstanceName;
+                await CommandSender.Send(dto, ViewModel.PortNumber);
             }
         }
 

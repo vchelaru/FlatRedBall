@@ -6,6 +6,7 @@
     <UseWPF>true</UseWPF>
     <Platforms>x86</Platforms>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <RootNamespace>OfficialPlugins</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Compiler\Embedded\GlueControlManager.Generated.cs" />
+    <Compile Remove="Compiler\Embedded\GlueControlManager.cs" />
     <Compile Remove="ProfilePlugin\EmbeddedCodeFiles\ProfileManagerBase.cs" />
   </ItemGroup>
 
@@ -70,7 +71,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Compiler\Embedded\GlueControlManager.Generated.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\GlueControlManager.cs" />
     <EmbeddedResource Include="ProfilePlugin\EmbeddedCodeFiles\ProfileManagerBase.cs" />
   </ItemGroup>
 

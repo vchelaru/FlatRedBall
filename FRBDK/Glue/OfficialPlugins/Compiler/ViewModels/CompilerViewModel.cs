@@ -46,6 +46,7 @@ namespace OfficialPlugins.Compiler.ViewModels
                     // If the game either stops or restarts, no longer paused
                     IsPaused = false;
                     CurrentGameSpeed = "100%";
+                    PlayOrEdit = PlayOrEdit.Play;
                 }
             }
         }

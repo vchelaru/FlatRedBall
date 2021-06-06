@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,6 +13,15 @@ namespace OfficialPlugins.Compiler.CommandSending
 
     public static class CommandSender
     {
+        public static async Task<string> Send(object dto, int port)
+        {
+            var dtoTypeName = dto.GetType().Name;
+
+            var serialized = JsonConvert.SerializeObject(dto);
+
+            return await SendCommand($"{dtoTypeName}:{serialized}", port);
+        }
+
         public static async Task<string> SendCommand(string text, int port)
         {
 

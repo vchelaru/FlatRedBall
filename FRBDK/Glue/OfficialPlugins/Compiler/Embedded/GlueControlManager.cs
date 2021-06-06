@@ -1,9 +1,14 @@
 ﻿{CompilerDirectives}
 
 
+using EditModeProject.GlueControl.Dtos;
+using FlatRedBall;
+using FlatRedBall.Graphics;
 using FlatRedBall.Screens;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -204,6 +209,16 @@ namespace {ProjectNamespace}
                             HandleAddObject(data);
                             GlueToGameCommands.Enqueue(message);
                             break;
+#if SupportsEditMode
+
+                        case nameof(GlueControl.Dtos.RemoveObjectDto):
+
+                            HandleRemoveObject(
+                                Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.RemoveObjectDto>(data));
+                            GlueToGameCommands.Enqueue(message);
+                            break;
+#endif
+
                         case "SetEditMode":
                             HandleSetEditMode(data);
                             break;
@@ -215,11 +230,54 @@ namespace {ProjectNamespace}
             return "true";
         }
 
+        private void HandleRemoveObject(RemoveObjectDto removeObjectDto)
+        {
+            var ownerTypeNamme = "{ProjectNamespace}." + removeObjectDto.ElementName.Replace("\\", ".");
+
+            var ownerType = GetType().Assembly.GetType(ownerTypeNamme);
+         
+            var currentScreen = ScreenManager.CurrentScreen;
+
+            var currentScreenType = currentScreen.GetType();
+
+            bool removedByReflection = false;
+
+            if(currentScreenType == ownerType || ownerType.IsAssignableFrom(currentScreenType))
+            {
+                var bindingFlags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public;
+                // yes, remove it
+                var propertyInfo = ownerType.GetProperty(removeObjectDto.ObjectName, bindingFlags);
+                if(propertyInfo != null)
+                {
+                    var objectToRemove = propertyInfo.GetValue(currentScreen) as IDestroyable;
+                    objectToRemove?.Destroy();
+                    removedByReflection = true;
+                }
+                else
+                {
+                    // it's null, so try the field
+                    var fieldInfo = ownerType.GetField(removeObjectDto.ObjectName, bindingFlags);
+                    if(fieldInfo != null)
+                    {
+                        var objectToRemove = fieldInfo.GetValue(currentScreen) as IDestroyable;
+                        objectToRemove?.Destroy();
+                        removedByReflection = true;
+                    }
+                }
+
+                if(!removedByReflection)
+                {
+                    var foundObject = SpriteManager.ManagedPositionedObjects
+                        .FirstOrDefault(item => item.Name == removeObjectDto.ObjectName) as IDestroyable;
+                    foundObject?.Destroy();
+                }
+            }
+        }
 
 
         private void HandleSetEditMode(string data)
         {
-        var value = bool.Parse(data);
+            var value = bool.Parse(data);
 #if SupportsEditMode
             FlatRedBall.Screens.ScreenManager.IsInEditMode = value;
             if(value)
@@ -241,7 +299,7 @@ namespace {ProjectNamespace}
                 screen?.RestartScreen(reloadContent: true, applyRestartVariables:true);
             }
 #endif
-    }
+        }
 
         public void HandleSetVariable(string data)
         {
@@ -279,7 +337,6 @@ namespace {ProjectNamespace}
 
         public void HandleAddObject(string data)
         {
-            need to make this added to the repository despite codegen
 #if IncludeSetVariable
             var deserialized = Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Models.NamedObjectSave>(data);
             if(deserialized.SourceType == GlueControl.Models.SourceType.Entity)

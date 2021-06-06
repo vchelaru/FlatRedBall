@@ -17,7 +17,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration
         {
             var byteArray = FileManager.GetByteArrayFromEmbeddedResource(
                 typeof(GlueControlCodeGenerator).Assembly,
-                "OfficialPluginsCore.Compiler.Embedded.GlueControlManager.Generated.cs");
+                "OfficialPlugins.Compiler.Embedded.GlueControlManager.cs");
 
             var asString = System.Text.Encoding.UTF8.GetString(byteArray);
 
