@@ -11,13 +11,22 @@ namespace OfficialPlugins.Compiler.CodeGeneration
 {
     public static class MainCodeGenerator
     {
+        static string glueControlFolder => GlueState.Self.CurrentGlueProjectDirectory + "GlueControl/";
+
         public static void GenerateAll(bool fullyGenerate)
         {
-            var glueControlManagerCode = GlueControlCodeGenerator.GetStringContents(fullyGenerate);
-            var glueControlFolder = GlueState.Self.CurrentGlueProjectDirectory + "GlueControl/";
-            FilePath glueControlManagerFilePath = glueControlFolder + "GlueControlManager.Generated.cs";
-            GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(glueControlManagerFilePath);
-            GlueCommands.Self.TryMultipleTimes(() => System.IO.File.WriteAllText(glueControlManagerFilePath.FullPath, glueControlManagerCode));
+            var glueControlManagerCode = GlueControlCodeGenerator.GetGlueControlManagerContents(fullyGenerate);
+            SaveEmbeddedFile(glueControlManagerCode, "GlueControlManager.Generated.cs");
+
+            var editingManagerCode = GlueControlCodeGenerator.GetEditingManagerContents(fullyGenerate);
+            SaveEmbeddedFile(editingManagerCode, "Editing/EditingManager.Generated.cs");
+        }
+
+        private static void SaveEmbeddedFile(string glueControlManagerCode, string relativeDestinationFilePath)
+        {
+            FilePath destinationFilePath = glueControlFolder + relativeDestinationFilePath;
+            GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(destinationFilePath);
+            GlueCommands.Self.TryMultipleTimes(() => System.IO.File.WriteAllText(destinationFilePath.FullPath, glueControlManagerCode));
         }
     }
 }
