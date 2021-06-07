@@ -15,11 +15,17 @@ namespace OfficialPlugins.Compiler.CodeGeneration
 
         public static void GenerateAll(bool fullyGenerate)
         {
-            var glueControlManagerCode = GlueControlCodeGenerator.GetGlueControlManagerContents(fullyGenerate);
-            SaveEmbeddedFile(glueControlManagerCode, "GlueControlManager.Generated.cs");
+            SaveEmbeddedFile(GlueControlCodeGenerator.GetGlueControlManagerContents(fullyGenerate), 
+                "GlueControlManager.Generated.cs");
 
-            var editingManagerCode = GlueControlCodeGenerator.GetEditingManagerContents(fullyGenerate);
-            SaveEmbeddedFile(editingManagerCode, "Editing/EditingManager.Generated.cs");
+            SaveEmbeddedFile(GlueControlCodeGenerator.GetEditingManagerContents(fullyGenerate), 
+                "Editing/EditingManager.Generated.cs");
+
+            SaveEmbeddedFile(GlueControlCodeGenerator.GetSelectionLogicContents(fullyGenerate),
+                "Editing/SelectionLogic.Generated.cs");
+
+            SaveEmbeddedFile(GlueControlCodeGenerator.GetSelectionMarkerContents(fullyGenerate),
+                "Editing/SelectionMarker.Generated.cs");
         }
 
         private static void SaveEmbeddedFile(string glueControlManagerCode, string relativeDestinationFilePath)

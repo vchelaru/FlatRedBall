@@ -15,21 +15,28 @@ namespace OfficialPlugins.Compiler.CodeGeneration
 
         public static string GetGlueControlManagerContents(bool generateFull)
         {
-            var embeddedLocation = "OfficialPlugins.Compiler.Embedded.GlueControlManager.cs";
-
-            string asString = GetEmbeddedStringContents(generateFull, embeddedLocation);
-
-            return asString;
+            return GetEmbeddedStringContents(generateFull, 
+                "OfficialPlugins.Compiler.Embedded.GlueControlManager.cs");
         }
 
         public static string GetEditingManagerContents(bool generateFull)
         {
-            var embeddedLocation = "OfficialPlugins.Compiler.Embedded.Editing.EditingManager.cs";
-
-            string asString = GetEmbeddedStringContents(generateFull, embeddedLocation);
-
-            return asString;
+            return GetEmbeddedStringContents(generateFull, 
+                "OfficialPlugins.Compiler.Embedded.Editing.EditingManager.cs");
         }
+
+        public static string GetSelectionLogicContents(bool generateFull)
+        {
+            return GetEmbeddedStringContents(generateFull,
+                "OfficialPlugins.Compiler.Embedded.Editing.SelectionLogic.cs");
+        }
+
+        public static string GetSelectionMarkerContents(bool generateFull)
+        {
+            return GetEmbeddedStringContents(generateFull,
+                "OfficialPlugins.Compiler.Embedded.Editing.SelectionMarker.cs");
+        }
+
 
         private static string GetEmbeddedStringContents(bool generateFull, string embeddedLocation)
         {
