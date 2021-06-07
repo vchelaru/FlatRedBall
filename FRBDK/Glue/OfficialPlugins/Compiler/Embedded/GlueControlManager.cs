@@ -374,7 +374,7 @@ namespace {ProjectNamespace}
             GameToGlueCommands.Enqueue(message);
 
             var fromGlueDto = new GlueVariableSetData();
-            fromGlueDto.VariableName = $"this.{propertyName}";
+            fromGlueDto.VariableName = $"this.{item.Name}.{propertyName}";
             fromGlueDto.Value = value.ToString();
             fromGlueDto.Type = "float";
             var glueToGameCommand = $"SetVariable:{Newtonsoft.Json.JsonConvert.SerializeObject(fromGlueDto)}";

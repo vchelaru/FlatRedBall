@@ -115,13 +115,17 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         private static void HandleSetVariable(int gamePortNumber, SetVariableDto setVariableDto)
         {
+            if(setVariableDto.VariableValue == null)
+            {
+                int m = 3;
+            }
             TaskManager.Self.Add(() =>
             {
                 ScreenSave screen = GetCurrentInGameScreen(gamePortNumber);
 
                 var nos = screen.GetNamedObjectRecursively(setVariableDto.ObjectName);
 
-                object value = setVariableDto.PropertyValue;
+                object value = setVariableDto.VariableValue;
 
                 var floatConverter =
                     TypeDescriptor.GetConverter(typeof(float));

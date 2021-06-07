@@ -8,7 +8,7 @@ namespace OfficialPlugins.Compiler.Dtos
     {
         public string ObjectName { get; set; }
         public string VariableName { get; set; }
-        public object PropertyValue { get; set; }
+        public object VariableValue { get; set; }
         public string Type { get; set; }
 
     }
