@@ -5,6 +5,7 @@ using EditModeProject.GlueControl.Dtos;
 using FlatRedBall;
 using FlatRedBall.Graphics;
 using FlatRedBall.Screens;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -28,7 +29,9 @@ namespace {ProjectNamespace}
     {
         bool isRunning;
         private TcpListener listener;
-        private Queue<string> GameToGlueCommands = new Queue<string>();
+        private ConcurrentQueue<string> GameToGlueCommands = new ConcurrentQueue<string>();
+        private GlueControl.Editing.EditingManager EditingManager; 
+
         
         public static GlueControlManager Self { get; private set; }
         
@@ -41,6 +44,9 @@ namespace {ProjectNamespace}
         public GlueControlManager(int port)
         {
             Self = this;
+            EditingManager = new GlueControl.Editing.EditingManager();
+            FlatRedBallServices.AddManager(EditingManager);
+            EditingManager.PropertyChanged += HandlePropertyChanged;
             listener = new TcpListener(IPAddress.Any, port);
         }
 
@@ -153,9 +159,13 @@ namespace {ProjectNamespace}
                     {
                         lock (GameToGlueCommands)
                         {
-                            toReturn = Newtonsoft.Json.JsonConvert.SerializeObject(GameToGlueCommands.ToArray());
-                            GameToGlueCommands.Clear();
-                        }
+                            List<string> tempList = new List<string>();
+                            while (GameToGlueCommands.TryDequeue(out string tempString))
+                            {
+                                tempList.Add(tempString);
+                            }
+                            toReturn = Newtonsoft.Json.JsonConvert.SerializeObject(tempList.ToArray());
+                    }
                     }
                     return toReturn;
             }
@@ -351,6 +361,25 @@ namespace {ProjectNamespace}
 
     }
 
+        private void HandlePropertyChanged(PositionedObject item, string propertyName, object value)
+        {
+#if SupportsEditMode
 
+            var dto = new SetVariableDto();
+            dto.ObjectName = item.Name;
+            dto.VariableName = propertyName;
+            dto.VariableValue = value;
+            var message = $"{nameof(SetVariableDto)}:{Newtonsoft.Json.JsonConvert.SerializeObject(dto)}";
+
+            GameToGlueCommands.Enqueue(message);
+
+            var fromGlueDto = new GlueVariableSetData();
+            fromGlueDto.VariableName = $"this.{propertyName}";
+            fromGlueDto.Value = value.ToString();
+            fromGlueDto.Type = "float";
+            var glueToGameCommand = $"SetVariable:{Newtonsoft.Json.JsonConvert.SerializeObject(fromGlueDto)}";
+            GlueToGameCommands.Enqueue(glueToGameCommand);
+#endif
+    }
 }
 }

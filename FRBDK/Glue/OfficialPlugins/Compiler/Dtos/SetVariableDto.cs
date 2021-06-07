@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace OfficialPluginsCore.Compiler.CommandSending
+namespace OfficialPlugins.Compiler.Dtos
 {
-    public class GlueVariableSetData
+    public class SetVariableDto
     {
+        public string ObjectName { get; set; }
         public string VariableName { get; set; }
-        public string PropertyValue { get; set; }
+        public object PropertyValue { get; set; }
         public string Type { get; set; }
+
     }
 }
