@@ -22,10 +22,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Compiler\Embedded\Dtos.cs" />
     <Compile Remove="Compiler\Embedded\Editing\EditingManager.cs" />
     <Compile Remove="Compiler\Embedded\Editing\SelectionLogic.cs" />
     <Compile Remove="Compiler\Embedded\Editing\SelectionMarker.cs" />
+    <Compile Remove="Compiler\Embedded\Forms\ObjectCreationWindow.cs" />
     <Compile Remove="Compiler\Embedded\GlueControlManager.cs" />
+    <Compile Remove="Compiler\Embedded\InstanceLogic.cs" />
+    <Compile Remove="Compiler\Embedded\Models\NamedObjectSave.cs" />
     <Compile Remove="ProfilePlugin\EmbeddedCodeFiles\ProfileManagerBase.cs" />
   </ItemGroup>
 
@@ -74,10 +78,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Compiler\Embedded\Dtos.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\EditingManager.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\SelectionLogic.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\SelectionMarker.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Forms\ObjectCreationWindow.cs" />
     <EmbeddedResource Include="Compiler\Embedded\GlueControlManager.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\InstanceLogic.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Models\NamedObjectSave.cs" />
     <EmbeddedResource Include="ProfilePlugin\EmbeddedCodeFiles\ProfileManagerBase.cs" />
   </ItemGroup>
 

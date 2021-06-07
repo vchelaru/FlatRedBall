@@ -266,7 +266,7 @@ namespace OfficialPlugins.Compiler.Managers
                 {
                     var data = new GlueVariableSetData();
                     data.Type = type;
-                    data.PropertyValue = value;
+                    data.VariableValue = value;
                     data.VariableName = rawMemberName;
 
                     var serialized = JsonConvert.SerializeObject(data);
@@ -295,7 +295,7 @@ namespace OfficialPlugins.Compiler.Managers
                     {
                         var data = new GlueVariableSetData();
                         data.Type = type;
-                        data.PropertyValue = value;
+                        data.VariableValue = value;
                         data.VariableName = rawMemberName;
                         if(!string.IsNullOrEmpty(variableOwningNosName))
                         {
@@ -344,7 +344,7 @@ namespace OfficialPlugins.Compiler.Managers
                                 {
                                     var data = new GlueVariableSetData();
                                     data.Type = type;
-                                    data.PropertyValue = value;
+                                    data.VariableValue = value;
 
                                     string variableName = rawMemberName;
 

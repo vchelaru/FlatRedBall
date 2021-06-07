@@ -21,7 +21,7 @@ namespace {ProjectNamespace}
     public class GlueVariableSetData
     {
         public string VariableName { get; set; }
-        public string Value { get; set; }
+        public string VariableValue { get; set; }
         public string Type { get; set; }
     }
 
@@ -320,32 +320,32 @@ namespace {ProjectNamespace}
 
             var deserialized = Newtonsoft.Json.JsonConvert.DeserializeObject<GlueVariableSetData>(data);
 
-            object variableValue = deserialized.Value;
+            object variableValue = deserialized.VariableValue;
 
             switch (deserialized.Type)
             {
                 case "float":
-                    variableValue = float.Parse(deserialized.Value);
+                    variableValue = float.Parse(deserialized.VariableValue);
                     break;
                 case "int":
-                    variableValue = int.Parse(deserialized.Value);
+                    variableValue = int.Parse(deserialized.VariableValue);
                     break;
                 case "bool":
-                    variableValue = bool.Parse(deserialized.Value);
+                    variableValue = bool.Parse(deserialized.VariableValue);
                     break;
                 case "double":
-                    variableValue = double.Parse(deserialized.Value);
+                    variableValue = double.Parse(deserialized.VariableValue);
                     break;
                 case "Microsoft.Xna.Framework.Color":
-                    variableValue = typeof(Microsoft.Xna.Framework.Color).GetProperty(deserialized.Value).GetValue(null);
+                    variableValue = typeof(Microsoft.Xna.Framework.Color).GetProperty(deserialized.VariableValue).GetValue(null);
                     break;
             }
 
             screen.ApplyVariable(deserialized.VariableName, variableValue);
 #endif
-        }
+    }
 
-        public void HandleAddObject(string data)
+    public void HandleAddObject(string data)
         {
 #if IncludeSetVariable
             var deserialized = Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Models.NamedObjectSave>(data);
@@ -375,7 +375,7 @@ namespace {ProjectNamespace}
 
             var fromGlueDto = new GlueVariableSetData();
             fromGlueDto.VariableName = $"this.{item.Name}.{propertyName}";
-            fromGlueDto.Value = value.ToString();
+            fromGlueDto.VariableValue = value.ToString();
             fromGlueDto.Type = "float";
             var glueToGameCommand = $"SetVariable:{Newtonsoft.Json.JsonConvert.SerializeObject(fromGlueDto)}";
             GlueToGameCommands.Enqueue(glueToGameCommand);

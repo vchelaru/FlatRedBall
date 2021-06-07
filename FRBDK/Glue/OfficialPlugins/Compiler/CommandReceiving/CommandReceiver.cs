@@ -100,7 +100,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                     var data = new GlueVariableSetData();
                     data.Type = "string";
-                    data.PropertyValue = newName;
+                    data.VariableValue = newName;
                     data.VariableName = "this." + oldName + ".Name";
 
                     var serialized = JsonConvert.SerializeObject(data);

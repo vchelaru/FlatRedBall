@@ -9,36 +9,48 @@ using ToolsUtilities;
 
 namespace OfficialPlugins.Compiler.CodeGeneration
 {
-    public class GlueControlCodeGenerator
+    public static class GlueControlCodeGenerator
     {
+        public static bool GenerateFull { get; set; }
 
-
-        public static string GetGlueControlManagerContents(bool generateFull)
+        public static string GetGlueControlManagerContents()
         {
-            return GetEmbeddedStringContents(generateFull, 
+            return GetEmbeddedStringContents( 
                 "OfficialPlugins.Compiler.Embedded.GlueControlManager.cs");
         }
 
-        public static string GetEditingManagerContents(bool generateFull)
+        public static string GetEditingManagerContents()
         {
-            return GetEmbeddedStringContents(generateFull, 
+            return GetEmbeddedStringContents( 
                 "OfficialPlugins.Compiler.Embedded.Editing.EditingManager.cs");
         }
 
-        public static string GetSelectionLogicContents(bool generateFull)
+        public static string GetSelectionLogicContents()
         {
-            return GetEmbeddedStringContents(generateFull,
+            return GetEmbeddedStringContents(
                 "OfficialPlugins.Compiler.Embedded.Editing.SelectionLogic.cs");
         }
 
-        public static string GetSelectionMarkerContents(bool generateFull)
+        public static string GetSelectionMarkerContents()
         {
-            return GetEmbeddedStringContents(generateFull,
+            return GetEmbeddedStringContents(
                 "OfficialPlugins.Compiler.Embedded.Editing.SelectionMarker.cs");
         }
 
+        internal static string GetDtosContents()
+        {
+            return GetEmbeddedStringContents(
+                "OfficialPlugins.Compiler.Embedded.Dtos.cs");
+        }
 
-        private static string GetEmbeddedStringContents(bool generateFull, string embeddedLocation)
+        internal static string GetInstanceLogicContents()
+        {
+
+            return GetEmbeddedStringContents(
+                "OfficialPlugins.Compiler.Embedded.InstanceLogic.cs");
+        }
+
+        public static string GetEmbeddedStringContents(string embeddedLocation)
         {
             var byteArray = FileManager.GetByteArrayFromEmbeddedResource(
                 typeof(GlueControlCodeGenerator).Assembly,
@@ -49,7 +61,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             asString = asString.Replace("{ProjectNamespace}", GlueState.Self.ProjectNamespace);
 
             var compilerDirectives = String.Empty;
-            if (generateFull)
+            if (GenerateFull)
             {
                 compilerDirectives += "#define IncludeSetVariable\r\n";
             }
