@@ -270,8 +270,10 @@ namespace {ProjectNamespace}
                         ScreenManager.ScreenLoaded -= AssignSelection;
                     }
 
-                    ScreenManager.ScreenLoaded += AssignSelection;
-                    ScreenManager.CurrentScreen.MoveToScreen(ownerType);
+                    if(!string.IsNullOrEmpty(selectObjectDto.ObjectName))
+                    {
+                        ScreenManager.ScreenLoaded += AssignSelection;
+                    }
                 }
             }
         }

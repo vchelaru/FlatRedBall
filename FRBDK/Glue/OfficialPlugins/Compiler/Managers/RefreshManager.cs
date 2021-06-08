@@ -163,6 +163,13 @@ namespace OfficialPlugins.Compiler.Managers
 
                 await CommandSender.Send(dto, ViewModel.PortNumber);
             }
+            else if(element != null)
+            {
+                dto.ObjectName = String.Empty;
+                dto.ElementName = element.Name;
+
+                await CommandSender.Send(dto, ViewModel.PortNumber);
+            }
 
         }
 
