@@ -27,7 +27,7 @@ namespace {ProjectNamespace}
 
     public class GlueControlManager
     {
-        bool isRunning;
+bool isRunning;
         private TcpListener listener;
         private ConcurrentQueue<string> GameToGlueCommands = new ConcurrentQueue<string>();
         private GlueControl.Editing.EditingManager EditingManager; 
@@ -100,6 +100,13 @@ namespace {ProjectNamespace}
             {
                 GameToGlueCommands.Enqueue(command);
             }
+        }
+
+        public void SendToGlue(object dto)
+        {
+            var type = dto.GetType().Name;
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(dto);
+            SendCommandToGlue($"{type}:{json}");
         }
 
         private void HandleClient(TcpClient client)

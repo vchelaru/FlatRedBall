@@ -1,4 +1,5 @@
 ﻿using FlatRedBall;
+using FlatRedBall.Graphics;
 using FlatRedBall.Gui;
 using FlatRedBall.Math.Geometry;
 using System;
@@ -11,6 +12,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
 {
     public static class SelectionLogic
     {
+        static List<PositionedObject> tempPunchThroughList = new List<PositionedObject>();
+
         public static PositionedObject GetEntityOver(PositionedObject currentEntity, bool punchThrough)
         {
             PositionedObject entityOver = null;
@@ -33,7 +36,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 {
                     var objectAtI = SpriteManager.ManagedPositionedObjects[i] as PositionedObject;
 
-                    if (IsCursorOver(objectAtI))
+                    if (IsSelectable(objectAtI) && IsCursorOver(objectAtI))
                     {
                         if(punchThrough)
                         {
@@ -79,34 +82,24 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
             return entityOver;
         }
+
+        private static bool IsSelectable(PositionedObject objectAtI)
+        {
+            return objectAtI is IDestroyable;
+        }
+
         private static bool IsCursorOver(PositionedObject objectAtI)
         {
             var cursor = GuiManager.Cursor;
             var worldX = cursor.WorldX;
             var worldY = cursor.WorldY;
 
-            if (objectAtI is IScalable asScalable)
-            {
-                if (worldX >= objectAtI.X - asScalable.ScaleX &&
-                    worldX <= objectAtI.X + asScalable.ScaleX &&
-                    worldY >= objectAtI.Y - asScalable.ScaleY &&
-                    worldY <= objectAtI.Y + asScalable.ScaleY
-                    )
-                {
-                    return true;
-                }
-            }
+            GetDimensionsFor(objectAtI, out float minX, out float maxX, out float minY, out float maxY);
 
-            for (int i = 0; i < objectAtI.Children.Count; i++)
-            {
-                var isOverChild = IsCursorOver(objectAtI.Children[i]);
-                if (isOverChild)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return worldX >= minX &&
+                    worldX <= maxX &&
+                    worldY >= minY &&
+                    worldY <= maxY;
         }
 
         internal static void GetDimensionsFor(PositionedObject itemOver,
@@ -117,6 +110,23 @@ namespace {ProjectNamespace}.GlueControl.Editing
             minY = itemOver.Y;
             maxY = itemOver.Y;
             GetDimensionsForInner(itemOver, ref minX, ref maxX, ref minY, ref maxY);
+
+            const float minDimension = 16;
+            if(maxX - minX < minDimension)
+            {
+                var extraToAdd = minDimension - (maxX - minX);
+
+                minX -= extraToAdd / 2.0f;
+                maxX += extraToAdd / 2.0f;
+            }
+
+            if(maxY - minY < minDimension)
+            {
+                var extraToAdd = minDimension - (maxY - minY);
+
+                minY -= extraToAdd / 2.0f;
+                maxY += extraToAdd / 2.0f;
+            }
         }
 
         private static void GetDimensionsForInner(PositionedObject itemOver,

@@ -12,6 +12,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
 {
     public class SelectionMarker : IScalable
     {
+        #region Fields/Properties
+
         AxisAlignedRectangle rectangle;
 
         public Color BrightColor
@@ -57,6 +59,10 @@ namespace {ProjectNamespace}.GlueControl.Editing
             set => rectangle.Visible = value;
         }
 
+        public double FadingSeed { get; set; } = 0;
+
+        #endregion
+
         public SelectionMarker()
         {
             rectangle = new AxisAlignedRectangle();
@@ -69,7 +75,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         internal void Update()
         {
-            var value = (float)(1 + System.Math.Sin(TimeManager.CurrentTime * 5)) / 2;
+            var value = (float)(1 + System.Math.Sin((TimeManager.CurrentTime - FadingSeed) * 5)) / 2;
 
             rectangle.Red = value * BrightColor.R/255.0f;
             rectangle.Green = value * BrightColor.G / 255.0f;

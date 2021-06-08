@@ -13,6 +13,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
 {
     class EditingManager : IManager
     {
+        #region Fields/Properties
+
         SelectionMarker HighlightMarker;
         SelectionMarker SelectedMarker;
 
@@ -26,6 +28,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
         public Action<PositionedObject, string, object> PropertyChanged;
         public Action<PositionedObject> ObjectSelected;
 
+        #endregion
+
         public EditingManager()
         {
             HighlightMarker = new SelectionMarker();
@@ -34,20 +38,17 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
             SelectedMarker = new SelectionMarker();
             SelectedMarker.MakePersistent();
-
         }
 
         public void Update()
         {
             var isInEditMode = ScreenManager.IsInEditMode;
 
-            HighlightMarker.Visible = isInEditMode;
-
             if (isInEditMode)
             {
+                var itemBefore = ItemOver;
                 ItemOver = SelectionLogic.GetEntityOver(ItemSelected, GuiManager.Cursor.PrimaryDoublePush);
-
-                HighlightMarker.Update();
+                var didChangeItemOver = itemBefore != ItemOver;
 
                 DoGrabLogic();
 
@@ -55,17 +56,29 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
                 DoReleaseLogic();
 
-                UpdateMarkers();
+                DoHotkeyLogic();
+
+                UpdateMarkers(didChangeItemOver);
+            }
+            else
+            {
+                HighlightMarker.Visible = true;
+
             }
 
         }
 
-        private void UpdateMarkers()
+        private void UpdateMarkers(bool didChangeItemOver)
         {
             {
                 var marker = HighlightMarker;
                 var extraPadding = 4;
                 var item = ItemOver;
+
+                if(didChangeItemOver)
+                {
+                    marker.FadingSeed = TimeManager.CurrentTime;
+                }
 
                 UpdateMarker(marker, extraPadding, item);
             }
@@ -77,6 +90,9 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
                 UpdateMarker(marker, extraPadding, item);
             }
+
+            HighlightMarker.Update();
+
         }
 
         private static void UpdateMarker(SelectionMarker marker, int extraPadding, PositionedObject item)
@@ -147,6 +163,20 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 }
 
                 ItemGrabbed = null;
+            }
+        }
+
+        private void DoHotkeyLogic()
+        {
+            var keyboard = FlatRedBall.Input.InputManager.Keyboard;
+
+            if(keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.Delete))
+            {
+                if(ItemSelected != null)
+                {
+                    InstanceLogic.Self.DeleteInstanceByGame(ItemSelected);
+                    ItemSelected = null;
+                }
             }
         }
 

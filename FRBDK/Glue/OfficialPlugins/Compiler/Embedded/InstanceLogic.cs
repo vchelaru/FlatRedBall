@@ -23,13 +23,8 @@ namespace {ProjectNamespace}.GlueControl
             }
         }
 
-        public void Update()
-        {
 
-        }
-
-
-        public FlatRedBall.PositionedObject CreateEntity(string entityType, float x, float y)
+        public FlatRedBall.PositionedObject CreateInstanceByGame(string entityType, float x, float y)
         {
             var newName = $"{entityType}Auto{TimeManager.CurrentTime.ToString().Replace(".", "_")}";
 
@@ -60,6 +55,16 @@ namespace {ProjectNamespace}.GlueControl
             GlueControlManager.Self.SendCommandToGlue($"AddObject:{Newtonsoft.Json.JsonConvert.SerializeObject(nos)}");
 
             return toReturn;
+        }
+
+        public void DeleteInstanceByGame(PositionedObject positionedObject)
+        {
+            var name = positionedObject.Name;
+
+            var dto = new Dtos.RemoveObjectDto();
+            dto.ObjectName = positionedObject.Name;
+
+            GlueControlManager.Self.SendToGlue(dto);
         }
     }
 }

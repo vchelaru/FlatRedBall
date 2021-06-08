@@ -19,7 +19,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 {
     static class CommandReceiver
     {
-        public static async Task HandleCommandsFromGame(string commandAsString, int gamePortNumber)
+        public static void HandleCommandsFromGame(string commandAsString, int gamePortNumber)
         {
             var commandArray = JsonConvert.DeserializeObject<string[]>(commandAsString);
 
@@ -53,10 +53,27 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     case nameof(SelectObjectDto):
                         HandleSelectObject(gamePortNumber, JsonConvert.DeserializeObject<SelectObjectDto>(data));
                         break;
+                    case nameof(RemoveObjectDto):
+                        HandleRemoveObject(gamePortNumber, JsonConvert.DeserializeObject<RemoveObjectDto>(data));
+                        break;
                 }
             }
         }
 
+        private static void HandleRemoveObject(int gamePortNumber, RemoveObjectDto removeObjectDto)
+        {
+            TaskManager.Self.Add(() =>
+            {
+                ScreenSave screen = GetCurrentInGameScreen(gamePortNumber);
+
+                var nos = screen.GetNamedObjectRecursively(removeObjectDto.ObjectName);
+
+                if (nos != null)
+                {
+                    GlueCommands.Self.GluxCommands.RemoveNamedObject(nos);
+                }
+            }, "Handling removing object from screen");
+        }
 
         private static void HandleAddObject(int gamePortNumber, string data)
         {
@@ -118,44 +135,44 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         private static void HandleSetVariable(int gamePortNumber, SetVariableDto setVariableDto)
         {
-            if(setVariableDto.VariableValue == null)
-            {
-                int m = 3;
-            }
             TaskManager.Self.Add(() =>
             {
                 ScreenSave screen = GetCurrentInGameScreen(gamePortNumber);
 
                 var nos = screen.GetNamedObjectRecursively(setVariableDto.ObjectName);
 
-                object value = setVariableDto.VariableValue;
-
-                var floatConverter =
-                    TypeDescriptor.GetConverter(typeof(float));
-
-                var convertToFloat = setVariableDto.VariableName == "X" ||
-                    setVariableDto.VariableName == "Y" ||
-                    setVariableDto.VariableName == "Z";
-                if(convertToFloat)
+                if(nos != null)
                 {
-                    if(value is double asDouble)
+                    object value = setVariableDto.VariableValue;
+
+                    var floatConverter =
+                        TypeDescriptor.GetConverter(typeof(float));
+
+                    var convertToFloat = setVariableDto.VariableName == "X" ||
+                        setVariableDto.VariableName == "Y" ||
+                        setVariableDto.VariableName == "Z";
+                    if(convertToFloat)
                     {
-                        value = (float)(double)asDouble;
+                        if(value is double asDouble)
+                        {
+                            value = (float)(double)asDouble;
+                        }
+                        else
+                        {
+                            value = floatConverter.ConvertFrom(value);
+                        }
                     }
-                    else
-                    {
-                        value = floatConverter.ConvertFrom(value);
-                    }
+
+                    nos.SetVariableValue(setVariableDto.VariableName, value);
+
+                    // this may not be the current screen:
+                    var nosParent = ObjectFinder.Self.GetElementContaining(nos);
+
+                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.DoOnUiThread(GlueCommands.Self.RefreshCommands.RefreshVariables);
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(nosParent);
+
                 }
-
-                nos.SetVariableValue(setVariableDto.VariableName, value);
-
-                // this may not be the current screen:
-                var nosParent = ObjectFinder.Self.GetElementContaining(nos);
-
-                GlueCommands.Self.GluxCommands.SaveGlux();
-                GlueCommands.Self.DoOnUiThread(GlueCommands.Self.RefreshCommands.RefreshVariables);
-                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(nosParent);
             }, "Handling set variable from game");
         }
 

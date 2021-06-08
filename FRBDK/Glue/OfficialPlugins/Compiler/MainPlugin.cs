@@ -104,7 +104,7 @@ namespace OfficialPlugins.Compiler
 
                 if(!string.IsNullOrEmpty(gameToGlueCommandsAsString))
                 {
-                    await CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString, viewModel.PortNumber);
+                    CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString, viewModel.PortNumber);
                 }
 
             }

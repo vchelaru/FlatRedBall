@@ -100,7 +100,7 @@ namespace {ProjectNamespace}.GlueControl.Forms
                 var factoryName = factory.GetType().Name;
                 var name = factoryName.Substring(0, factoryName.Length - "Factory".Length);
                 var button = AddButton();
-                button.Click += (not, used) => InstanceLogic.Self.CreateEntity(
+                button.Click += (not, used) => InstanceLogic.Self.CreateInstanceByGame(
                     name, Camera.Main.X, Camera.Main.Y);
                 button.Text = name;
             }
