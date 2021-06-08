@@ -30,8 +30,10 @@ namespace {ProjectNamespace}.GlueControl.Editing
         {
             HighlightMarker = new SelectionMarker();
             HighlightMarker.BrightColor = Color.LightGreen;
+            HighlightMarker.MakePersistent();l
 
             SelectedMarker = new SelectionMarker();
+            SelectedMarker.MakePersistent();
 
         }
 
@@ -159,10 +161,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
         {
             var foundObject = SpriteManager.ManagedPositionedObjects.FirstOrDefault(item => item.Name == objectName);
 
-            if(foundObject != null)
-            {
-                ItemSelected = foundObject;
-            }
+            ItemSelected = foundObject;
         }
     }
 }

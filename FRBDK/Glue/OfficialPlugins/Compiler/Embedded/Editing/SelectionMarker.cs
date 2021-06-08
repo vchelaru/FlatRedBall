@@ -61,6 +61,12 @@ namespace {ProjectNamespace}.GlueControl.Editing
         {
             rectangle = new AxisAlignedRectangle();
         }
+
+        public void MakePersistent()
+        {
+            FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Add(rectangle);
+        }
+
         internal void Update()
         {
             var value = (float)(1 + System.Math.Sin(TimeManager.CurrentTime * 5)) / 2;

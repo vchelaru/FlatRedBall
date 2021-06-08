@@ -254,7 +254,25 @@ namespace {ProjectNamespace}
             if(matchesCurrentScreen)
             {
                 EditingManager.Select(selectObjectDto.ObjectName);
+            }
+            else
+            {
+                // it's a different screen. See if we can select that screen:
+                var ownerTypeName = "EditModeProject." + selectObjectDto.ElementName.Replace("\\", ".");
 
+                ownerType = GetType().Assembly.GetType(ownerTypeName);
+
+                if(ownerType != null && typeof(Screen).IsAssignableFrom(ownerType))
+                {
+                    void AssignSelection(Screen screen)
+                    {
+                        EditingManager.Select(selectObjectDto.ObjectName);
+                        ScreenManager.ScreenLoaded -= AssignSelection;
+                    }
+
+                    ScreenManager.ScreenLoaded += AssignSelection;
+                    ScreenManager.CurrentScreen.MoveToScreen(ownerType);
+                }
             }
         }
 

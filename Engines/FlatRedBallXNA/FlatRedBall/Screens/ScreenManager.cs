@@ -107,6 +107,11 @@ namespace FlatRedBall.Screens
             get; private set;
         } = new List<IWindow>();
 
+        public static PositionedObjectList<AxisAlignedRectangle> PersistentAxisAlignedRectangles
+        {
+            get; private set;
+        } = new PositionedObjectList<AxisAlignedRectangle>();
+
         public static bool WarnIfNotEmptyBetweenScreens
         {
             get { return mWarnIfNotEmptyBetweenScreens; }
@@ -742,8 +747,20 @@ namespace FlatRedBall.Screens
 
                 if (ShapeManager.VisibleRectangles.Count != 0)
                 {
-                    messages.Add("There are " + ShapeManager.VisibleRectangles.Count +
-                        " visible AxisAlignedRectangles in the VisibleRectangles.  See \"FlatRedBall.Math.Geometry.ShapeManager.VisibleRectangles\"");
+                    var rectangleCount = ShapeManager.VisibleRectangles.Count;
+                    foreach(var rectangle in PersistentAxisAlignedRectangles)
+                    {
+                        if(ShapeManager.VisibleRectangles.Contains(rectangle))
+                        {
+                            rectangleCount--;
+                        }
+                    }
+                    if(rectangleCount != 0)
+                    {
+                        messages.Add($"There are {rectangleCount}" +
+                            " visible AxisAlignedRectangles in the VisibleRectangles.  See \"FlatRedBall.Math.Geometry.ShapeManager.VisibleRectangles\"");
+
+                    }
                 }
                 #endregion
 
