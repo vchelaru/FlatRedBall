@@ -11,21 +11,74 @@ namespace {ProjectNamespace}.GlueControl.Editing
 {
     public static class SelectionLogic
     {
-        public static PositionedObject GetEntityOver()
+        public static PositionedObject GetEntityOver(PositionedObject currentEntity, bool punchThrough)
         {
-            for (int i = 0; i < SpriteManager.ManagedPositionedObjects.Count; i++)
+            PositionedObject entityOver = null;
+            if(currentEntity != null && punchThrough == false)
             {
-                var objectAtI = SpriteManager.ManagedPositionedObjects[i] as PositionedObject;
-
-                if (IsCursorOver(objectAtI))
+                if(IsCursorOver(currentEntity))
                 {
-                    return objectAtI;
+                    entityOver = currentEntity;
                 }
             }
 
-            return null;
-        }
+            if(punchThrough)
+            {
+                tempPunchThroughList.Clear();
+            }
 
+            if(entityOver == null)
+            {
+                for (int i = 0; i < SpriteManager.ManagedPositionedObjects.Count; i++)
+                {
+                    var objectAtI = SpriteManager.ManagedPositionedObjects[i] as PositionedObject;
+
+                    if (IsCursorOver(objectAtI))
+                    {
+                        if(punchThrough)
+                        {
+                            tempPunchThroughList.Add(objectAtI);
+                        }
+                        else
+                        {
+                            entityOver = objectAtI;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if(punchThrough)
+            {
+                if(tempPunchThroughList.Count == 0)
+                {
+                    entityOver = null;
+                }
+                else if(tempPunchThroughList.Count == 1)
+                {
+                    entityOver = tempPunchThroughList[0];
+                }
+                else if(tempPunchThroughList.Contains(currentEntity) == false)
+                {
+                    // just pick the first
+                    entityOver = tempPunchThroughList[0];
+                }
+                else
+                {
+                    var index = tempPunchThroughList.IndexOf(currentEntity);
+                    if(index < tempPunchThroughList.Count - 1)
+                    {
+                        entityOver = tempPunchThroughList[index + 1];
+                    }
+                    else
+                    {
+                        entityOver = tempPunchThroughList[0];
+                    }
+                }
+            }
+
+            return entityOver;
+        }
         private static bool IsCursorOver(PositionedObject objectAtI)
         {
             var cursor = GuiManager.Cursor;

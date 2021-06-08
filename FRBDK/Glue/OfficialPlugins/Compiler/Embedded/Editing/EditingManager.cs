@@ -30,7 +30,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
         {
             HighlightMarker = new SelectionMarker();
             HighlightMarker.BrightColor = Color.LightGreen;
-            HighlightMarker.MakePersistent();l
+            HighlightMarker.MakePersistent();
 
             SelectedMarker = new SelectionMarker();
             SelectedMarker.MakePersistent();
@@ -45,7 +45,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
             if (isInEditMode)
             {
-                ItemOver = SelectionLogic.GetEntityOver();
+                ItemOver = SelectionLogic.GetEntityOver(ItemSelected, GuiManager.Cursor.PrimaryDoublePush);
 
                 HighlightMarker.Update();
 
