@@ -47,6 +47,7 @@ namespace {ProjectNamespace}
             EditingManager = new GlueControl.Editing.EditingManager();
             FlatRedBallServices.AddManager(EditingManager);
             EditingManager.PropertyChanged += HandlePropertyChanged;
+            EditingManager.ObjectSelected += HandleObjectSelected;
             listener = new TcpListener(IPAddress.Any, port);
         }
 
@@ -227,6 +228,11 @@ namespace {ProjectNamespace}
                                 Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.RemoveObjectDto>(data));
                             GlueToGameCommands.Enqueue(message);
                             break;
+
+                        case nameof(GlueControl.Dtos.SelectObjectDto):
+                            HandleSelectObjectCommand(
+                                Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.SelectObjectDto>(data));
+                            break;
 #endif
 
                         case "SetEditMode":
@@ -240,24 +246,30 @@ namespace {ProjectNamespace}
             return "true";
         }
 
+        private void HandleSelectObjectCommand(SelectObjectDto selectObjectDto)
+        {
+            bool matchesCurrentScreen =
+                GetIfMatchesCurrentScreen(selectObjectDto.ElementName, out System.Type ownerType, out Screen currentScreen);
+
+            if(matchesCurrentScreen)
+            {
+                EditingManager.Select(selectObjectDto.ObjectName);
+
+            }
+        }
+
         private void HandleRemoveObject(RemoveObjectDto removeObjectDto)
         {
-            var ownerTypeNamme = "{ProjectNamespace}." + removeObjectDto.ElementName.Replace("\\", ".");
+            bool matchesCurrentScreen = 
+                GetIfMatchesCurrentScreen(removeObjectDto.ElementName, out System.Type ownerType, out Screen currentScreen);
 
-            var ownerType = GetType().Assembly.GetType(ownerTypeNamme);
-         
-            var currentScreen = ScreenManager.CurrentScreen;
-
-            var currentScreenType = currentScreen.GetType();
-
-            bool removedByReflection = false;
-
-            if(currentScreenType == ownerType || ownerType.IsAssignableFrom(currentScreenType))
+            if (matchesCurrentScreen)
             {
+                bool removedByReflection = false;
                 var bindingFlags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public;
                 // yes, remove it
                 var propertyInfo = ownerType.GetProperty(removeObjectDto.ObjectName, bindingFlags);
-                if(propertyInfo != null)
+                if (propertyInfo != null)
                 {
                     var objectToRemove = propertyInfo.GetValue(currentScreen) as IDestroyable;
                     objectToRemove?.Destroy();
@@ -267,7 +279,7 @@ namespace {ProjectNamespace}
                 {
                     // it's null, so try the field
                     var fieldInfo = ownerType.GetField(removeObjectDto.ObjectName, bindingFlags);
-                    if(fieldInfo != null)
+                    if (fieldInfo != null)
                     {
                         var objectToRemove = fieldInfo.GetValue(currentScreen) as IDestroyable;
                         objectToRemove?.Destroy();
@@ -275,7 +287,7 @@ namespace {ProjectNamespace}
                     }
                 }
 
-                if(!removedByReflection)
+                if (!removedByReflection)
                 {
                     var foundObject = SpriteManager.ManagedPositionedObjects
                         .FirstOrDefault(item => item.Name == removeObjectDto.ObjectName) as IDestroyable;
@@ -284,6 +296,16 @@ namespace {ProjectNamespace}
             }
         }
 
+        private bool GetIfMatchesCurrentScreen(string elementName, out System.Type ownerType, out Screen currentScreen)
+        {
+            var ownerTypeName = "EditModeProject." + elementName.Replace("\\", ".");
+
+            ownerType = GetType().Assembly.GetType(ownerTypeName);
+            currentScreen = ScreenManager.CurrentScreen;
+            var currentScreenType = currentScreen.GetType();
+
+            return currentScreenType == ownerType || ownerType.IsAssignableFrom(currentScreenType);
+        }
 
         private void HandleSetEditMode(string data)
         {
@@ -345,7 +367,7 @@ namespace {ProjectNamespace}
 #endif
     }
 
-    public void HandleAddObject(string data)
+        public void HandleAddObject(string data)
         {
 #if IncludeSetVariable
             var deserialized = Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Models.NamedObjectSave>(data);
@@ -380,6 +402,17 @@ namespace {ProjectNamespace}
             var glueToGameCommand = $"SetVariable:{Newtonsoft.Json.JsonConvert.SerializeObject(fromGlueDto)}";
             GlueToGameCommands.Enqueue(glueToGameCommand);
 #endif
+        }
+
+        private void HandleObjectSelected(PositionedObject item)
+        {
+            var dto = new SelectObjectDto();
+            dto.ObjectName = item.Name;
+            
+
+            var message = $"{nameof(SelectObjectDto)}:{Newtonsoft.Json.JsonConvert.SerializeObject(dto)}";
+            GameToGlueCommands.Enqueue(message);
+        }
+
     }
-}
 }

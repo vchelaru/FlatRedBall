@@ -7,11 +7,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace {ProjectNamespace}.GlueControl.Editing
 {
     public class SelectionMarker : IScalable
     {
         AxisAlignedRectangle rectangle;
+
+        public Color BrightColor
+        {
+            get; set;
+        } = Color.White;
 
         public float ScaleX
         {
@@ -59,10 +65,9 @@ namespace {ProjectNamespace}.GlueControl.Editing
         {
             var value = (float)(1 + System.Math.Sin(TimeManager.CurrentTime * 5)) / 2;
 
-            rectangle.Red = value;
-            rectangle.Green = value;
-            rectangle.Blue = value;
+            rectangle.Red = value * BrightColor.R/255.0f;
+            rectangle.Green = value * BrightColor.G / 255.0f;
+            rectangle.Blue = value * BrightColor.B / 255.0f;
         }
-
     }
 }

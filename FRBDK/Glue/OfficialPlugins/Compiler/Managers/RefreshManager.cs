@@ -17,6 +17,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace OfficialPlugins.Compiler.Managers
@@ -146,6 +147,23 @@ namespace OfficialPlugins.Compiler.Managers
 
 
             return true;
+        }
+
+        internal async void HandleItemSelected(TreeNode selectedTreeNode)
+        {
+            var dto = new SelectObjectDto();
+
+            var nos = GlueState.Self.CurrentNamedObjectSave;
+            var element = GlueState.Self.CurrentElement;
+
+            if(nos != null)
+            {
+                dto.ObjectName = nos.InstanceName;
+                dto.ElementName = element.Name;
+
+                await CommandSender.Send(dto, ViewModel.PortNumber);
+            }
+
         }
 
         #endregion
@@ -400,7 +418,7 @@ namespace OfficialPlugins.Compiler.Managers
         {
             if (ViewModel.IsRunning)
             {
-                var dto = new RemoveObjectDto();
+                var dto = new Dtos.RemoveObjectDto();
                 dto.ElementName = owner.Name;
                 dto.ObjectName = nos.InstanceName;
                 await CommandSender.Send(dto, ViewModel.PortNumber);

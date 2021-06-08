@@ -88,7 +88,8 @@ namespace OfficialPlugins.Compiler
             game1GlueControlGenerator = new Game1GlueControlGenerator();
             this.RegisterCodeGenerator(game1GlueControlGenerator);
 
-            timer = new Timer(500);
+            var timerFrequency = 400; // ms
+            timer = new Timer(timerFrequency);
             timer.Elapsed += HandleTimerElapsed;
             timer.SynchronizingObject = MainGlueWindow.Self;
             timer.Start();
@@ -134,6 +135,7 @@ namespace OfficialPlugins.Compiler
             this.ReactToElementVariableChange += RefreshManager.Self.HandleVariableChanged;
             this.ReactToNamedObjectChangedValue += RefreshManager.Self.HandleNamedObjectValueChanged;
             this.ReactToChangedStartupScreen += ToolbarController.Self.ReactToChangedStartupScreen;
+            this.ReactToItemSelectHandler += RefreshManager.Self.HandleItemSelected;
         }
 
         private void HandleGluxUnloaded()

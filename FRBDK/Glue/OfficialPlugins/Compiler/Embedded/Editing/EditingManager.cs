@@ -13,72 +13,105 @@ namespace {ProjectNamespace}.GlueControl.Editing
 {
     class EditingManager : IManager
     {
-        SelectionMarker SelectionMarker;
+        SelectionMarker HighlightMarker;
+        SelectionMarker SelectedMarker;
+
 
         PositionedObject ItemOver;
         PositionedObject ItemGrabbed;
+        PositionedObject ItemSelected;
 
         Vector3 GrabbedPosition;
 
         public Action<PositionedObject, string, object> PropertyChanged;
+        public Action<PositionedObject> ObjectSelected;
 
         public EditingManager()
         {
-            SelectionMarker = new SelectionMarker();
+            HighlightMarker = new SelectionMarker();
+            HighlightMarker.BrightColor = Color.LightGreen;
+
+            SelectedMarker = new SelectionMarker();
+
         }
 
         public void Update()
         {
             var isInEditMode = ScreenManager.IsInEditMode;
 
-            SelectionMarker.Visible = isInEditMode;
+            HighlightMarker.Visible = isInEditMode;
 
             if (isInEditMode)
             {
                 ItemOver = SelectionLogic.GetEntityOver();
 
-                HighlightItemOver();
-
-                SelectionMarker.Update();
+                HighlightMarker.Update();
 
                 DoGrabLogic();
 
                 DoMoveLogic();
 
                 DoReleaseLogic();
+
+                UpdateMarkers();
             }
 
         }
 
-        private void HighlightItemOver()
+        private void UpdateMarkers()
         {
-
-            SelectionMarker.Visible = ItemOver != null;
-            if (ItemOver != null)
             {
-                SelectionLogic.GetDimensionsFor(ItemOver,
+                var marker = HighlightMarker;
+                var extraPadding = 4;
+                var item = ItemOver;
+
+                UpdateMarker(marker, extraPadding, item);
+            }
+
+            {
+                var marker = SelectedMarker;
+                var extraPadding = 2;
+                var item = ItemSelected;
+
+                UpdateMarker(marker, extraPadding, item);
+            }
+        }
+
+        private static void UpdateMarker(SelectionMarker marker, int extraPadding, PositionedObject item)
+        {
+            marker.Visible = item != null;
+            if(item != null)
+            {
+                SelectionLogic.GetDimensionsFor(item,
                     out float minX, out float maxX,
                     out float minY, out float maxY);
 
                 var newPosition = new Vector3();
                 newPosition.X = (maxX + minX) / 2.0f;
                 newPosition.Y = (maxY + minY) / 2.0f;
-                newPosition.Z = ItemOver.Z;
+                newPosition.Z = item.Z;
 
-                SelectionMarker.Position = newPosition;
+                marker.Position = newPosition;
 
-                SelectionMarker.ScaleX = 2 + (maxX - minX) / 2.0f;
-                SelectionMarker.ScaleY = 2 + (maxY - minY) / 2.0f;
+                marker.ScaleX = extraPadding + (maxX - minX) / 2.0f;
+                marker.ScaleY = extraPadding + (maxY - minY) / 2.0f;
             }
         }
+
         private void DoGrabLogic()
         {
             var cursor = GuiManager.Cursor;
 
+
             if (cursor.PrimaryPush)
             {
                 ItemGrabbed = ItemOver;
-                GrabbedPosition = ItemGrabbed.Position;
+                ItemSelected = ItemOver;
+                if(ItemGrabbed != null)
+                {
+                    GrabbedPosition = ItemGrabbed.Position;
+                    ObjectSelected(ItemGrabbed);
+                }
             }
         }
 
@@ -99,13 +132,16 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
             if (cursor.PrimaryClick)
             {
-                if (ItemGrabbed.X != GrabbedPosition.X)
+                if(ItemGrabbed != null)
                 {
-                    Notify(nameof(ItemGrabbed.X), ItemGrabbed.X);
-                }
-                if (ItemGrabbed.Y != GrabbedPosition.Y)
-                {
-                    Notify(nameof(ItemGrabbed.Y), ItemGrabbed.Y);
+                    if (ItemGrabbed.X != GrabbedPosition.X)
+                    {
+                        Notify(nameof(ItemGrabbed.X), ItemGrabbed.X);
+                    }
+                    if (ItemGrabbed.Y != GrabbedPosition.Y)
+                    {
+                        Notify(nameof(ItemGrabbed.Y), ItemGrabbed.Y);
+                    }
                 }
 
                 ItemGrabbed = null;
@@ -117,6 +153,16 @@ namespace {ProjectNamespace}.GlueControl.Editing
         public void UpdateDependencies()
         {
 
+        }
+
+        internal void Select(string objectName)
+        {
+            var foundObject = SpriteManager.ManagedPositionedObjects.FirstOrDefault(item => item.Name == objectName);
+
+            if(foundObject != null)
+            {
+                ItemSelected = foundObject;
+            }
         }
     }
 }

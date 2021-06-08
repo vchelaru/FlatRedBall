@@ -25,11 +25,11 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
             foreach (var command in commandArray)
             {
-                await HandleIndividualCommand(command, gamePortNumber);
+                HandleIndividualCommand(command, gamePortNumber);
             }
         }
 
-        private static async Task HandleIndividualCommand(string command, int gamePortNumber)
+        private static void HandleIndividualCommand(string command, int gamePortNumber)
         {
             var firstColon = command.IndexOf(":");
             if(firstColon == -1)
@@ -49,6 +49,9 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                         break;
                     case nameof(SetVariableDto):
                         HandleSetVariable(gamePortNumber, JsonConvert.DeserializeObject<SetVariableDto>(data));
+                        break;
+                    case nameof(SelectObjectDto):
+                        HandleSelectObject(gamePortNumber, JsonConvert.DeserializeObject<SelectObjectDto>(data));
                         break;
                 }
             }
@@ -159,14 +162,40 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         private static ScreenSave GetCurrentInGameScreen(int gamePortNumber)
         {
             var screenNameTask = CommandSender.GetScreenName(gamePortNumber);
-            screenNameTask.Wait();
+            screenNameTask.Wait(6000);
             var screenName = screenNameTask.Result; 
 
-            // remove prefix:
-            var screensDotStart = screenName.IndexOf("Screens.");
-            screenName = screenName.Substring(screensDotStart).Replace(".", "\\");
-            var screen = ObjectFinder.Self.GetScreenSave(screenName);
-            return screen;
+            if(!string.IsNullOrEmpty(screenName))
+            {
+                // remove prefix:
+                var screensDotStart = screenName.IndexOf("Screens.");
+                screenName = screenName.Substring(screensDotStart).Replace(".", "\\");
+                var screen = ObjectFinder.Self.GetScreenSave(screenName);
+                return screen;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private static void HandleSelectObject(int gamePortNumber, SelectObjectDto selectObjectDto)
+        {
+
+            TaskManager.Self.Add(() =>
+            {
+                var screen = GetCurrentInGameScreen(gamePortNumber);
+                var nos = screen.GetNamedObjectRecursively(selectObjectDto.ObjectName);
+
+                if(nos != null)
+                {
+                    GlueCommands.Self.DoOnUiThread(() =>
+                    {
+                        GlueState.Self.CurrentNamedObjectSave = nos;
+                        GlueCommands.Self.DialogCommands.FocusTab("Variables");
+                    });
+                }
+            }, "Selecting object from game command");
         }
     }
 }
