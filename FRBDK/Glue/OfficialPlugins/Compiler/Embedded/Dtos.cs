@@ -12,6 +12,8 @@ namespace {ProjectNamespace}.GlueControl.Dtos
 
     class SetVariableDto
     {
+        public string InstanceOwner { get; set; }
+
         public string ObjectName { get; set; }
         public string VariableName { get; set; }
         public object VariableValue { get; set; }

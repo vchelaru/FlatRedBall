@@ -136,9 +136,11 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         {
             TaskManager.Self.Add(() =>
             {
-                ScreenSave screen = GetCurrentInGameScreen(gamePortNumber);
+                var type = string.Join('\\', setVariableDto.InstanceOwner.Split('.').Skip(1));
 
-                var nos = screen.GetNamedObjectRecursively(setVariableDto.ObjectName);
+                var element = ObjectFinder.Self.GetIElement(type);
+
+                var nos = element.GetNamedObjectRecursively(setVariableDto.ObjectName);
 
                 if(nos != null)
                 {

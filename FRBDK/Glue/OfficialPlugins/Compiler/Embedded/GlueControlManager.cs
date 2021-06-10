@@ -488,7 +488,15 @@ namespace {ProjectNamespace}
         {
 #if SupportsEditMode
 
+            var screen = ScreenManager.CurrentScreen;
+            var isEditingEntity =
+                screen.GetType() == typeof(Screens.EntityViewingScreen);
+            var ownerType = isEditingEntity
+                ? SpriteManager.ManagedPositionedObjects[0].GetType().FullName
+                : screen.GetType().FullName;
+
             var dto = new SetVariableDto();
+            dto.InstanceOwner = ownerType;
             dto.ObjectName = item.Name;
             dto.VariableName = propertyName;
             dto.VariableValue = value;
@@ -497,16 +505,7 @@ namespace {ProjectNamespace}
             GameToGlueCommands.Enqueue(message);
 
             var fromGlueDto = new GlueVariableSetData();
-            var screen = ScreenManager.CurrentScreen;
-            if(screen.GetType() == typeof(Screens.EntityViewingScreen))
-            {
-                // it's a global change, need to modify this...
-                throw new System.NotImplementedException();
-            }
-            else
-            {
-                fromGlueDto.InstanceOwner = screen.GetType().FullName;
-            }
+            fromGlueDto.InstanceOwner = ownerType;
             fromGlueDto.VariableName = $"this.{item.Name}.{propertyName}";
             fromGlueDto.VariableValue = value.ToString();
             fromGlueDto.Type = "float";
