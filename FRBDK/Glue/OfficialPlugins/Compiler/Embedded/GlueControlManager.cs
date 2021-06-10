@@ -18,13 +18,6 @@ using System.Threading;
 namespace {ProjectNamespace}
 {
 
-    public class GlueVariableSetData
-    {
-        public string VariableName { get; set; }
-        public string VariableValue { get; set; }
-        public string Type { get; set; }
-    }
-
     public class GlueControlManager
     {
 bool isRunning;
@@ -257,17 +250,21 @@ bool isRunning;
         {
             bool matchesCurrentScreen =
                 GetIfMatchesCurrentScreen(selectObjectDto.ElementName, out System.Type ownerType, out Screen currentScreen);
+            
+            var ownerTypeName = "EditModeProject." + selectObjectDto.ElementName.Replace("\\", ".");
+            ownerType = GetType().Assembly.GetType(ownerTypeName);
+
+            bool isOwnerScreen = false;
 
             if(matchesCurrentScreen)
             {
                 EditingManager.Select(selectObjectDto.ObjectName);
+                isOwnerScreen = true;
             }
             else
             {
                 // it's a different screen. See if we can select that screen:
-                var ownerTypeName = "EditModeProject." + selectObjectDto.ElementName.Replace("\\", ".");
 
-                ownerType = GetType().Assembly.GetType(ownerTypeName);
 
                 if(ownerType != null && typeof(Screen).IsAssignableFrom(ownerType))
                 {
@@ -276,11 +273,42 @@ bool isRunning;
                         EditingManager.Select(selectObjectDto.ObjectName);
                         ScreenManager.ScreenLoaded -= AssignSelection;
                     }
-
                     if(!string.IsNullOrEmpty(selectObjectDto.ObjectName))
                     {
                         ScreenManager.ScreenLoaded += AssignSelection;
                     }
+
+                    ScreenManager.CurrentScreen.MoveToScreen(ownerType);
+
+                    isOwnerScreen = true;
+
+                }
+            }
+
+            if(!isOwnerScreen)
+            {
+                var isEntity = typeof(PositionedObject).IsAssignableFrom(ownerType);
+
+                if (isEntity)
+                {
+                    void CreateEntityInstance(Screen screen)
+                    {
+                        var instance = ownerType.GetConstructor(new System.Type[0]).Invoke(new object[0]) as IDestroyable;
+                        (screen as Screens.EntityViewingScreen).CurrentEntity = instance;
+                        var instanceAsPositionedObject = (PositionedObject)instance;
+                        instanceAsPositionedObject.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
+                        instanceAsPositionedObject.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
+                        ScreenManager.ScreenLoaded -= CreateEntityInstance;
+
+                    
+                        Camera.Main.X = 0;
+                        Camera.Main.Y = 0;
+                        Camera.Main.Detach();
+
+                    }
+                    ScreenManager.ScreenLoaded += CreateEntityInstance;
+
+                    ScreenManager.CurrentScreen.MoveToScreen(typeof(Screens.EntityViewingScreen));
                 }
             }
         }
@@ -440,6 +468,5 @@ bool isRunning;
             var message = $"{nameof(SelectObjectDto)}:{Newtonsoft.Json.JsonConvert.SerializeObject(dto)}";
             GameToGlueCommands.Enqueue(message);
         }
-
     }
 }

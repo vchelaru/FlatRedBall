@@ -1,32 +1,15 @@
 using System;// Test comment
-using System.Collections.Generic;//One more
-using System.Text;
-
+using System.Collections.Generic;
 using FlatRedBall.Math;
-
-#if FRB_MDX
-using Microsoft.DirectX;
-#else//if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 using Matrix = Microsoft.Xna.Framework.Matrix;
-using GameTime = Microsoft.Xna.Framework.GameTime;
 using Microsoft.Xna.Framework;
-
-#endif
-
-using Math = System.Math;
-
-
-
 using FlatRedBall.Instructions;
 using System.Collections;
 using System.ComponentModel;
 
-
-
 namespace FlatRedBall
 {
-    #region XML Docs
     /// <summary>
     /// Represents an object with position, rotation, ability to 
     /// store instructions, and attachment abilities.
@@ -36,13 +19,12 @@ namespace FlatRedBall
     /// for a number of FlatRedBall classes including Sprites, Texts, SpriteFrames, PositionedModels,
     /// and all Shapes.
     /// <para>
-    /// The PositionedObject class is also used as the base class when creating custom Entitiy objects.
+    /// The PositionedObject class is also used as the base class for Glue entities.
     /// </para>
     /// <para>
     /// PositionedObjects can be automatically managed by being added to the SpriteManager.
     /// </para>
     /// </remarks>
-    #endregion
     public partial class PositionedObject : IAttachable, IPositionable, IRotatable, IInstructable, IEquatable<PositionedObject>
     {
         #region Fields
@@ -365,11 +347,9 @@ namespace FlatRedBall
             set { mName = value; this.Children.Name = value + " Children"; }
         }
 
-        #region XML docs
         /// <summary>
         /// The PositionedObject that this instance is attached to.
         /// </summary>
-        #endregion
         public PositionedObject Parent
         {
             get { return mParent; }
@@ -1274,15 +1254,22 @@ namespace FlatRedBall
             set { mDrag = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// The list of Instructions that this instance owns.  These instructions usually
         /// will execute on this instance; however, this is not a requirement.
         /// </summary>
-        #endregion
         public InstructionList Instructions
         {
             get { return mInstructions; }
+        }
+
+        /// <summary>
+        /// Where the PositionedObject was created. This can be Glue, Tiled, or other tools. It is used
+        /// when the game is in edit mode to determine if the PositionedObject can be edited.
+        /// </summary>
+        public string CreationSource
+        {
+            get;set;
         }
 
         #endregion

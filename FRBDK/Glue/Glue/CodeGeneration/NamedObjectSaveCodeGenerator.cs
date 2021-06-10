@@ -437,14 +437,19 @@ namespace FlatRedBall.Glue.CodeGeneration
                     if (namedObject.IsLayer || 
                         namedObject.SourceType == SourceType.FlatRedBallType)
                     {
-                        codeBlock.Line(string.Format("{0}.Name = \"{1}\";", objectName, objectName));
+                        codeBlock.Line($"{objectName}.Name = \"{objectName}\";");
+
+                        if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode &&
+                            !namedObject.IsLayer && 
+                            !namedObject.IsList)
+                        {
+                            codeBlock.Line($"{objectName}.CreationSource = \"Glue\";");
+                        }
                     }
                 }
 
 
             }
-
-
 
             #region else if SourceType is Entity
 
@@ -454,12 +459,17 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 codeBlock.Line(string.Format("{0} = new {1}(ContentManagerName, false);", objectName,
                                              GetQualifiedTypeName(namedObject)));
-                codeBlock.Line(string.Format("{0}.Name = \"{1}\";", objectName, objectName));
-                // If it's an Entity List that references a List that can be created by Entities, then the Screen should register this list with the factory
+                codeBlock.Line($"{objectName}.Name = \"{objectName}\";");
 
+                if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode)
+                {
+                    codeBlock.Line($"{objectName}.CreationSource = \"Glue\";");
+                }
             }
 
             #endregion
+
+
             return succeeded;
         }
 
