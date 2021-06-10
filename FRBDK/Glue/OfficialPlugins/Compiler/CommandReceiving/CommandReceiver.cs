@@ -201,8 +201,30 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
             TaskManager.Self.Add(() =>
             {
+                NamedObjectSave nos = null;
                 var screen = GetCurrentInGameScreen(gamePortNumber);
-                var nos = screen.GetNamedObjectRecursively(selectObjectDto.ObjectName);
+
+                if(screen == null)
+                {
+                    var entityName = selectObjectDto.ElementName;
+                    var split = entityName.Split('.').ToList().Skip(1);
+                    entityName = string.Join('\\', split);
+                    EntitySave currentEntity = ObjectFinder.Self.GetEntitySave(entityName);
+                    
+                    if(currentEntity != null)
+                    {
+                        nos = currentEntity.GetNamedObjectRecursively(selectObjectDto.ObjectName);
+                        if(nos == null && 
+                            selectObjectDto.ObjectName?.StartsWith('m') == true && selectObjectDto.ObjectName.Length > 1)
+                        {
+                            nos = currentEntity.GetNamedObjectRecursively(selectObjectDto.ObjectName[1..]);
+                        }
+                    }
+                }
+                else
+                {
+                    nos = screen.GetNamedObjectRecursively(selectObjectDto.ObjectName);
+                }
 
                 if(nos != null)
                 {
