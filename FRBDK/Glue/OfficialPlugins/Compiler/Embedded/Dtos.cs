@@ -26,6 +26,7 @@ namespace {ProjectNamespace}.GlueControl.Dtos
 
     public class GlueVariableSetData
     {
+        public string InstanceOwner { get; set; }
         public string VariableName { get; set; }
         public string VariableValue { get; set; }
         public string Type { get; set; }

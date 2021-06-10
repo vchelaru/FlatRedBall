@@ -32,9 +32,14 @@ namespace {ProjectNamespace}
         
     
         /// <summary>
-        /// Stores all commands that have been sent from Glue to game so they can be re-run when a Screen is re-loaded.
+        /// Stores all commands that have been sent from Glue to game 
+        /// which should always be re-run.
         /// </summary>
-        private Queue<string> GlueToGameCommands = new Queue<string>();
+        
+        private Queue<string> GlobalGlueToGameCommands = new Queue<string>();
+        private Dictionary<string, Queue<string>> ScreenSpecificGlueToGameCommands =
+            new Dictionary<string, Queue<string>>();
+
         #endregion
 
         #region Init/Start/Stop
@@ -90,15 +95,6 @@ namespace {ProjectNamespace}
             listener.Stop();
 
         }
-        #endregion
-
-        public void SendCommandToGlue(string command)
-        {
-            lock(GameToGlueCommands)
-            {
-                GameToGlueCommands.Enqueue(command);
-            }
-        }
 
         private void HandleClient(TcpClient client)
         {
@@ -118,6 +114,7 @@ namespace {ProjectNamespace}
             client.GetStream().Write(messageAsBytes, 0, messageAsBytes.Length);
 
         }
+        #endregion
 
         #region Glue -> Game
 
@@ -203,12 +200,29 @@ namespace {ProjectNamespace}
                             break;
 
                         case "SetVariable":
-                            HandleSetVariable(data);
-                            GlueToGameCommands.Enqueue(message);
+                            var owner = HandleSetVariable(data);
+                            if(string.IsNullOrEmpty(owner))
+                            {
+                                GlobalGlueToGameCommands.Enqueue(message);
+                            }
+                            else
+                            {
+                                var ownerType = typeof(GlueControlManager).Assembly.GetType(owner);
+                                var isEntity = typeof(PositionedObject).IsAssignableFrom(ownerType);
+                                if(isEntity)
+                                {
+                                    // If it's on an entity, then it needs to be applied globally
+                                    GlobalGlueToGameCommands.Enqueue(message);
+                                }
+                                else
+                                {
+                                    EnqueueMessage(owner, message);
+                                }
+                            }
                             break;
                         case "AddObject":
                             HandleAddObject(data);
-                            GlueToGameCommands.Enqueue(message);
+                            GlobalGlueToGameCommands.Enqueue(message);
                             break;
 #if SupportsEditMode
 
@@ -216,7 +230,7 @@ namespace {ProjectNamespace}
 
                             HandleRemoveObject(
                                 Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.RemoveObjectDto>(data));
-                            GlueToGameCommands.Enqueue(message);
+                            GlobalGlueToGameCommands.Enqueue(message);
                             break;
 
                         case nameof(GlueControl.Dtos.SelectObjectDto):
@@ -236,13 +250,45 @@ namespace {ProjectNamespace}
             return "true";
         }
 
+        private void EnqueueMessage(string owner, string message)
+        {
+            Queue<string> queue = null;
+            if(ScreenSpecificGlueToGameCommands.ContainsKey(owner))
+            {
+                queue = ScreenSpecificGlueToGameCommands[owner];
+            }
+            else
+            {
+                queue = new Queue<string>();
+                ScreenSpecificGlueToGameCommands.Add(owner, queue);
+            }
+            queue.Enqueue(message);
+        }
+
         public void ReRunAllGlueToGameCommands()
         {
-            var toProcess = GlueToGameCommands.ToArray();
-            GlueToGameCommands.Clear();
+            var toProcess = GlobalGlueToGameCommands.ToArray();
+            GlobalGlueToGameCommands.Clear();
             foreach (var message in toProcess)
             {
                 ProcessMessage(message);
+            }
+
+            var assembly = typeof(GlueControlManager).Assembly;
+            var currentScreenType = ScreenManager.CurrentScreen.GetType();
+
+            foreach(var kvp in ScreenSpecificGlueToGameCommands)
+            {
+                var type = assembly.GetType(kvp.Key);
+                if(type != null && type.IsAssignableFrom(currentScreenType))
+                {
+                    toProcess = kvp.Value.ToArray();
+                    kvp.Value.Clear();
+                    foreach(var message in toProcess)
+                    {
+                        ProcessMessage(message);
+                    }
+                }
             }
         }
 
@@ -271,13 +317,14 @@ namespace {ProjectNamespace}
                 {
                     void AssignSelection(Screen screen)
                     {
-                        EditingManager.Select(selectObjectDto.ObjectName);
+                        if(!string.IsNullOrEmpty(selectObjectDto.ObjectName))
+                        {
+                            EditingManager.Select(selectObjectDto.ObjectName);
+                        }
+                        ReRunAllGlueToGameCommands();
                         ScreenManager.ScreenLoaded -= AssignSelection;
                     }
-                    if(!string.IsNullOrEmpty(selectObjectDto.ObjectName))
-                    {
-                        ScreenManager.ScreenLoaded += AssignSelection;
-                    }
+                    ScreenManager.ScreenLoaded += AssignSelection;
 
                     ScreenManager.CurrentScreen.MoveToScreen(ownerType);
 
@@ -313,6 +360,8 @@ namespace {ProjectNamespace}
                             Camera.Main.X = 0;
                             Camera.Main.Y = 0;
                             Camera.Main.Detach();
+
+                            ReRunAllGlueToGameCommands();
 
                             EditingManager.Select(selectObjectDto.ObjectName);
                         }
@@ -354,52 +403,17 @@ namespace {ProjectNamespace}
 #endif
         }
 
-        public void HandleSetVariable(string data)
+        private string HandleSetVariable(string data)
         {
+            string valueToReturn = null;
 #if IncludeSetVariable
-
-            var screen =
-                FlatRedBall.Screens.ScreenManager.CurrentScreen;
-
             var deserialized = Newtonsoft.Json.JsonConvert.DeserializeObject<GlueVariableSetData>(data);
-
-            object variableValue = deserialized.VariableValue;
-
-            switch (deserialized.Type)
-            {
-                case "float":
-                    variableValue = float.Parse(deserialized.VariableValue);
-                    break;
-                case "int":
-                    variableValue = int.Parse(deserialized.VariableValue);
-                    break;
-                case "bool":
-                    variableValue = bool.Parse(deserialized.VariableValue);
-                    break;
-                case "double":
-                    variableValue = double.Parse(deserialized.VariableValue);
-                    break;
-                case "Microsoft.Xna.Framework.Color":
-                    variableValue = typeof(Microsoft.Xna.Framework.Color).GetProperty(deserialized.VariableValue).GetValue(null);
-                    break;
-            }
-
-            if(screen.GetType().Name == "EntityViewingScreen")
-            {
-                if(SpriteManager.ManagedPositionedObjects.Count > 0)
-                {
-                    // remove "this."
-                    var variableName = deserialized.VariableName.Substring("this.".Length);
-                    var instance = SpriteManager.ManagedPositionedObjects[0];
-                    screen.ApplyVariable(variableName, variableValue, instance);
-                }
-            }
-            else
-            {
-                screen.ApplyVariable(deserialized.VariableName, variableValue);
-            }
+            GlueControl.Editing.VariableAssignmentLogic.SetVariable(deserialized);
+            valueToReturn = deserialized.InstanceOwner;
 #endif
-    }
+
+            return valueToReturn;
+        }
 
         public void HandleAddObject(string data)
         {
@@ -483,11 +497,21 @@ namespace {ProjectNamespace}
             GameToGlueCommands.Enqueue(message);
 
             var fromGlueDto = new GlueVariableSetData();
+            var screen = ScreenManager.CurrentScreen;
+            if(screen.GetType() == typeof(Screens.EntityViewingScreen))
+            {
+                // it's a global change, need to modify this...
+                throw new System.NotImplementedException();
+            }
+            else
+            {
+                fromGlueDto.InstanceOwner = screen.GetType().FullName;
+            }
             fromGlueDto.VariableName = $"this.{item.Name}.{propertyName}";
             fromGlueDto.VariableValue = value.ToString();
             fromGlueDto.Type = "float";
             var glueToGameCommand = $"SetVariable:{Newtonsoft.Json.JsonConvert.SerializeObject(fromGlueDto)}";
-            GlueToGameCommands.Enqueue(glueToGameCommand);
+            GlobalGlueToGameCommands.Enqueue(glueToGameCommand);
 #endif
         }
 
@@ -514,6 +538,14 @@ namespace {ProjectNamespace}
             var type = dto.GetType().Name;
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(dto);
             SendCommandToGlue($"{type}:{json}");
+        }
+
+        public void SendCommandToGlue(string command)
+        {
+            lock(GameToGlueCommands)
+            {
+                GameToGlueCommands.Enqueue(command);
+            }
         }
 
         #endregion

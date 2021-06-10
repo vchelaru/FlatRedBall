@@ -83,7 +83,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
             }
             else
             {
-                HighlightMarker.Visible = true;
+                HighlightMarker.Visible = false;
+                SelectedMarker.Visible = false;
 
             }
 
