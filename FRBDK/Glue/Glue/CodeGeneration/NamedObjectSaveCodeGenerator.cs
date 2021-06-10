@@ -437,7 +437,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     if (namedObject.IsLayer || 
                         namedObject.SourceType == SourceType.FlatRedBallType)
                     {
-                        codeBlock.Line($"{objectName}.Name = \"{objectName}\";");
+                        codeBlock.Line($"{objectName}.Name = \"{namedObject.InstanceName}\";");
 
                         if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode &&
                             !namedObject.IsLayer && 
@@ -459,7 +459,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 codeBlock.Line(string.Format("{0} = new {1}(ContentManagerName, false);", objectName,
                                              GetQualifiedTypeName(namedObject)));
-                codeBlock.Line($"{objectName}.Name = \"{objectName}\";");
+                codeBlock.Line($"{objectName}.Name = \"{namedObject.InstanceName}\";");
 
                 if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode)
                 {

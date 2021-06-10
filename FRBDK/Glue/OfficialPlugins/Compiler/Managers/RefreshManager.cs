@@ -344,77 +344,101 @@ namespace OfficialPlugins.Compiler.Managers
 
                     if(matchingScreen != null)
                     {
-                        // we want to update even if it's defined in a base class, so let's get all the screens that inherit
-                        var screensToLoopThrough = ObjectFinder.Self.GetAllBaseElementsRecursively(matchingScreen);
-                        screensToLoopThrough.Add(matchingScreen);
-
-                        var possibleEntities = ObjectFinder.Self.GetAllBaseElementsRecursively(currentEntitySave);
-                        possibleEntities.Add(currentEntitySave);
-
-                        foreach(var screen in screensToLoopThrough)
+                        await PushNosChangeInEntityToCurrentScreen(variableOwningNosName, rawMemberName, type, value, currentEntitySave, matchingScreen);
+                    }
+                    else if (currentInGameScreenName?.EndsWith(".Screens.EntityViewingScreen") == true)
+                    {
+                        var data = new GlueVariableSetData();
+                        data.Type = type;
+                        data.VariableValue = value;
+                        data.VariableName = rawMemberName;
+                        if (!string.IsNullOrEmpty(variableOwningNosName))
                         {
-                            // don't do "all" here, just do top-level which will catch all lists:
-                            foreach (var nos in screen.NamedObjects)
-                            {
-                                var managedAtThisInheritanceLevel = nos.DefinedByBase == false;
-
-                                var needsToBeUpdated = false;
-
-                                if (managedAtThisInheritanceLevel && nos.IsList)
-                                {
-                                    needsToBeUpdated = possibleEntities.Any(item => item.Name == nos.SourceClassGenericType);
-                                }
-
-                                if(needsToBeUpdated)
-                                {
-                                    var data = new GlueVariableSetData();
-                                    data.Type = type;
-                                    data.VariableValue = value;
-
-                                    string variableName = rawMemberName;
-
-                                    bool shouldAttach = false;
-
-                                    if(nos.IsList && !string.IsNullOrEmpty(nos.SourceClassGenericType) &&
-                                        ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType) != null)
-                                    {
-                                        shouldAttach = true;
-                                    }
-                                    else
-                                    {
-                                        AssetTypeInfo ati = null;
-                                        if (nos.IsList)
-                                        {
-                                            ati = nos.GetContainedListItemAssetTypeInfo();
-                                        }
-                                        else
-                                        {
-                                            ati = nos.GetAssetTypeInfo();
-                                        }
-                                        if(ati != null)
-                                        {
-                                            shouldAttach = ati.ShouldAttach;
-                                        }
-                                    }
-                                    
-
-                                    if (shouldAttach && 
-                                        // What if it ignores parent attachment? Need to consider that here...
-                                        (rawMemberName == "X" || rawMemberName == "Y" || rawMemberName == "Z" ||
-                                        rawMemberName == "RotationX" || rawMemberName == "RotationY" || rawMemberName == "RotationZ"))
-                                    {
-                                        variableName = "Relative" + rawMemberName;
-                                    }
-
-                                    data.VariableName = $"this.{nos.InstanceName}.{variableOwningNosName}.{variableName}";
-
-                                    var serialized = JsonConvert.SerializeObject(data);
-
-                                    await CommandSender.SendCommand($"SetVariable:{serialized}", PortNumber);
-                                }
-                            }
-
+                            data.VariableName = "this." + variableOwningNosName + "." + data.VariableName;
                         }
+                        else
+                        {
+                            data.VariableName = "this." + data.VariableName;
+                        }
+
+                        var serialized = JsonConvert.SerializeObject(data);
+
+                        await CommandSender.SendCommand($"SetVariable:{serialized}", PortNumber);
+                    }
+                }
+
+            }
+        }
+
+        private async Task PushNosChangeInEntityToCurrentScreen(string variableOwningNosName, string rawMemberName, string type, string value, EntitySave currentEntitySave, ScreenSave matchingScreen)
+        {
+            // we want to update even if it's defined in a base class, so let's get all the screens that inherit
+            var screensToLoopThrough = ObjectFinder.Self.GetAllBaseElementsRecursively(matchingScreen);
+            screensToLoopThrough.Add(matchingScreen);
+
+            var possibleEntities = ObjectFinder.Self.GetAllBaseElementsRecursively(currentEntitySave);
+            possibleEntities.Add(currentEntitySave);
+
+            foreach (var screen in screensToLoopThrough)
+            {
+                // don't do "all" here, just do top-level which will catch all lists:
+                foreach (var nos in screen.NamedObjects)
+                {
+                    var managedAtThisInheritanceLevel = nos.DefinedByBase == false;
+
+                    var needsToBeUpdated = false;
+
+                    if (managedAtThisInheritanceLevel && nos.IsList)
+                    {
+                        needsToBeUpdated = possibleEntities.Any(item => item.Name == nos.SourceClassGenericType);
+                    }
+
+                    if (needsToBeUpdated)
+                    {
+                        var data = new GlueVariableSetData();
+                        data.Type = type;
+                        data.VariableValue = value;
+
+                        string variableName = rawMemberName;
+
+                        bool shouldAttach = false;
+
+                        if (nos.IsList && !string.IsNullOrEmpty(nos.SourceClassGenericType) &&
+                            ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType) != null)
+                        {
+                            shouldAttach = true;
+                        }
+                        else
+                        {
+                            AssetTypeInfo ati = null;
+                            if (nos.IsList)
+                            {
+                                ati = nos.GetContainedListItemAssetTypeInfo();
+                            }
+                            else
+                            {
+                                ati = nos.GetAssetTypeInfo();
+                            }
+                            if (ati != null)
+                            {
+                                shouldAttach = ati.ShouldAttach;
+                            }
+                        }
+
+
+                        if (shouldAttach &&
+                            // What if it ignores parent attachment? Need to consider that here...
+                            (rawMemberName == "X" || rawMemberName == "Y" || rawMemberName == "Z" ||
+                            rawMemberName == "RotationX" || rawMemberName == "RotationY" || rawMemberName == "RotationZ"))
+                        {
+                            variableName = "Relative" + rawMemberName;
+                        }
+
+                        data.VariableName = $"this.{nos.InstanceName}.{variableOwningNosName}.{variableName}";
+
+                        var serialized = JsonConvert.SerializeObject(data);
+
+                        await CommandSender.SendCommand($"SetVariable:{serialized}", PortNumber);
                     }
                 }
 

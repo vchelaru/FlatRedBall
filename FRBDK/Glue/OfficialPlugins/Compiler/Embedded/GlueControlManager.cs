@@ -20,7 +20,9 @@ namespace {ProjectNamespace}
 
     public class GlueControlManager
     {
-bool isRunning;
+        #region Fields/Properties
+
+        bool isRunning;
         private TcpListener listener;
         private ConcurrentQueue<string> GameToGlueCommands = new ConcurrentQueue<string>();
         private GlueControl.Editing.EditingManager EditingManager; 
@@ -33,7 +35,9 @@ bool isRunning;
         /// Stores all commands that have been sent from Glue to game so they can be re-run when a Screen is re-loaded.
         /// </summary>
         private Queue<string> GlueToGameCommands = new Queue<string>();
+        #endregion
 
+        #region Init/Start/Stop
         public GlueControlManager(int port)
         {
             Self = this;
@@ -86,6 +90,7 @@ bool isRunning;
             listener.Stop();
 
         }
+        #endregion
 
         public void SendCommandToGlue(string command)
         {
@@ -93,13 +98,6 @@ bool isRunning;
             {
                 GameToGlueCommands.Enqueue(command);
             }
-        }
-
-        public void SendToGlue(object dto)
-        {
-            var type = dto.GetType().Name;
-            var json = Newtonsoft.Json.JsonConvert.SerializeObject(dto);
-            SendCommandToGlue($"{type}:{json}");
         }
 
         private void HandleClient(TcpClient client)
@@ -121,15 +119,7 @@ bool isRunning;
 
         }
 
-        public void ReRunAllGlueToGameCommands()
-        {
-            var toProcess = GlueToGameCommands.ToArray();
-            GlueToGameCommands.Clear();
-            foreach (var message in toProcess)
-            {
-                ProcessMessage(message);
-            }
-        }
+        #region Glue -> Game
 
         private string ProcessMessage(string message)
         {
@@ -246,6 +236,16 @@ bool isRunning;
             return "true";
         }
 
+        public void ReRunAllGlueToGameCommands()
+        {
+            var toProcess = GlueToGameCommands.ToArray();
+            GlueToGameCommands.Clear();
+            foreach (var message in toProcess)
+            {
+                ProcessMessage(message);
+            }
+        }
+
         private void HandleSelectObjectCommand(SelectObjectDto selectObjectDto)
         {
             bool matchesCurrentScreen =
@@ -259,6 +259,7 @@ bool isRunning;
             if(matchesCurrentScreen)
             {
                 EditingManager.Select(selectObjectDto.ObjectName);
+                EditingManager.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingScreen;
                 isOwnerScreen = true;
             }
             else
@@ -281,6 +282,7 @@ bool isRunning;
                     ScreenManager.CurrentScreen.MoveToScreen(ownerType);
 
                     isOwnerScreen = true;
+                    EditingManager.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingScreen;
 
                 }
             }
@@ -291,75 +293,39 @@ bool isRunning;
 
                 if (isEntity)
                 {
-                    void CreateEntityInstance(Screen screen)
+                    var isAlreadyViewingThisEntity = ScreenManager.CurrentScreen.GetType().Name == "EntityViewingScreen" &&
+                        SpriteManager.ManagedPositionedObjects.Count > 0 &&
+                        SpriteManager.ManagedPositionedObjects[0].GetType() == ownerType;
+
+                    if(!isAlreadyViewingThisEntity)
                     {
-                        var instance = ownerType.GetConstructor(new System.Type[0]).Invoke(new object[0]) as IDestroyable;
-                        (screen as Screens.EntityViewingScreen).CurrentEntity = instance;
-                        var instanceAsPositionedObject = (PositionedObject)instance;
-                        instanceAsPositionedObject.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
-                        instanceAsPositionedObject.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
-                        ScreenManager.ScreenLoaded -= CreateEntityInstance;
+                        void CreateEntityInstance(Screen screen)
+                        {
+                            var instance = ownerType.GetConstructor(new System.Type[0]).Invoke(new object[0]) as IDestroyable;
+                            (screen as Screens.EntityViewingScreen).CurrentEntity = instance;
+                            var instanceAsPositionedObject = (PositionedObject)instance;
+                            instanceAsPositionedObject.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
+                            instanceAsPositionedObject.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
+                            ScreenManager.ScreenLoaded -= CreateEntityInstance;
 
-                    
-                        Camera.Main.X = 0;
-                        Camera.Main.Y = 0;
-                        Camera.Main.Detach();
+                            EditingManager.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingEntity;
 
+                            Camera.Main.X = 0;
+                            Camera.Main.Y = 0;
+                            Camera.Main.Detach();
+
+                            EditingManager.Select(selectObjectDto.ObjectName);
+                        }
+                        ScreenManager.ScreenLoaded += CreateEntityInstance;
+
+                        ScreenManager.CurrentScreen.MoveToScreen(typeof(Screens.EntityViewingScreen));
                     }
-                    ScreenManager.ScreenLoaded += CreateEntityInstance;
-
-                    ScreenManager.CurrentScreen.MoveToScreen(typeof(Screens.EntityViewingScreen));
-                }
-            }
-        }
-
-        private void HandleRemoveObject(RemoveObjectDto removeObjectDto)
-        {
-            bool matchesCurrentScreen = 
-                GetIfMatchesCurrentScreen(removeObjectDto.ElementName, out System.Type ownerType, out Screen currentScreen);
-
-            if (matchesCurrentScreen)
-            {
-                bool removedByReflection = false;
-                var bindingFlags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public;
-                // yes, remove it
-                var propertyInfo = ownerType.GetProperty(removeObjectDto.ObjectName, bindingFlags);
-                if (propertyInfo != null)
-                {
-                    var objectToRemove = propertyInfo.GetValue(currentScreen) as IDestroyable;
-                    objectToRemove?.Destroy();
-                    removedByReflection = true;
-                }
-                else
-                {
-                    // it's null, so try the field
-                    var fieldInfo = ownerType.GetField(removeObjectDto.ObjectName, bindingFlags);
-                    if (fieldInfo != null)
+                    else
                     {
-                        var objectToRemove = fieldInfo.GetValue(currentScreen) as IDestroyable;
-                        objectToRemove?.Destroy();
-                        removedByReflection = true;
+                        EditingManager.Select(selectObjectDto.ObjectName);
                     }
                 }
-
-                if (!removedByReflection)
-                {
-                    var foundObject = SpriteManager.ManagedPositionedObjects
-                        .FirstOrDefault(item => item.Name == removeObjectDto.ObjectName) as IDestroyable;
-                    foundObject?.Destroy();
-                }
             }
-        }
-
-        private bool GetIfMatchesCurrentScreen(string elementName, out System.Type ownerType, out Screen currentScreen)
-        {
-            var ownerTypeName = "EditModeProject." + elementName.Replace("\\", ".");
-
-            ownerType = GetType().Assembly.GetType(ownerTypeName);
-            currentScreen = ScreenManager.CurrentScreen;
-            var currentScreenType = currentScreen.GetType();
-
-            return currentScreenType == ownerType || ownerType.IsAssignableFrom(currentScreenType);
         }
 
         private void HandleSetEditMode(string data)
@@ -418,7 +384,20 @@ bool isRunning;
                     break;
             }
 
-            screen.ApplyVariable(deserialized.VariableName, variableValue);
+            if(screen.GetType().Name == "EntityViewingScreen")
+            {
+                if(SpriteManager.ManagedPositionedObjects.Count > 0)
+                {
+                    // remove "this."
+                    var variableName = deserialized.VariableName.Substring("this.".Length);
+                    var instance = SpriteManager.ManagedPositionedObjects[0];
+                    screen.ApplyVariable(variableName, variableValue, instance);
+                }
+            }
+            else
+            {
+                screen.ApplyVariable(deserialized.VariableName, variableValue);
+            }
 #endif
     }
 
@@ -437,6 +416,59 @@ bool isRunning;
 #endif
 
     }
+
+        private void HandleRemoveObject(RemoveObjectDto removeObjectDto)
+        {
+            bool matchesCurrentScreen = 
+                GetIfMatchesCurrentScreen(removeObjectDto.ElementName, out System.Type ownerType, out Screen currentScreen);
+
+            if (matchesCurrentScreen)
+            {
+                bool removedByReflection = false;
+                var bindingFlags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public;
+                // yes, remove it
+                var propertyInfo = ownerType.GetProperty(removeObjectDto.ObjectName, bindingFlags);
+                if (propertyInfo != null)
+                {
+                    var objectToRemove = propertyInfo.GetValue(currentScreen) as IDestroyable;
+                    objectToRemove?.Destroy();
+                    removedByReflection = true;
+                }
+                else
+                {
+                    // it's null, so try the field
+                    var fieldInfo = ownerType.GetField(removeObjectDto.ObjectName, bindingFlags);
+                    if (fieldInfo != null)
+                    {
+                        var objectToRemove = fieldInfo.GetValue(currentScreen) as IDestroyable;
+                        objectToRemove?.Destroy();
+                        removedByReflection = true;
+                    }
+                }
+
+                if (!removedByReflection)
+                {
+                    var foundObject = SpriteManager.ManagedPositionedObjects
+                        .FirstOrDefault(item => item.Name == removeObjectDto.ObjectName) as IDestroyable;
+                    foundObject?.Destroy();
+                }
+            }
+        }
+
+        private bool GetIfMatchesCurrentScreen(string elementName, out System.Type ownerType, out Screen currentScreen)
+        {
+            var ownerTypeName = "EditModeProject." + elementName.Replace("\\", ".");
+
+            ownerType = GetType().Assembly.GetType(ownerTypeName);
+            currentScreen = ScreenManager.CurrentScreen;
+            var currentScreenType = currentScreen.GetType();
+
+            return currentScreenType == ownerType || ownerType.IsAssignableFrom(currentScreenType);
+        }
+
+        #endregion
+
+        #region Game -> Glue
 
         private void HandlePropertyChanged(PositionedObject item, string propertyName, object value)
         {
@@ -463,10 +495,27 @@ bool isRunning;
         {
             var dto = new SelectObjectDto();
             dto.ObjectName = item.Name;
-            
+
+            if(ScreenManager.CurrentScreen.GetType().Name == "EntityViewingScreen")
+            {
+                dto.ElementName = SpriteManager.ManagedPositionedObjects[0].GetType().FullName;
+            }
+            else
+            {
+                dto.ElementName = ScreenManager.CurrentScreen.GetType().Name;
+            }
 
             var message = $"{nameof(SelectObjectDto)}:{Newtonsoft.Json.JsonConvert.SerializeObject(dto)}";
             GameToGlueCommands.Enqueue(message);
         }
+
+        public void SendToGlue(object dto)
+        {
+            var type = dto.GetType().Name;
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(dto);
+            SendCommandToGlue($"{type}:{json}");
+        }
+
+        #endregion
     }
 }

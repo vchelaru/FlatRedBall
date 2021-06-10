@@ -14,7 +14,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
     {
         static List<PositionedObject> tempPunchThroughList = new List<PositionedObject>();
 
-        public static PositionedObject GetEntityOver(PositionedObject currentEntity, bool punchThrough)
+        public static PositionedObject GetEntityOver(PositionedObject currentEntity, bool punchThrough, ElementEditingMode elementEditingMode)
         {
             PositionedObject entityOver = null;
             if(currentEntity != null && punchThrough == false)
@@ -32,20 +32,37 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
             if(entityOver == null)
             {
-                for (int i = 0; i < SpriteManager.ManagedPositionedObjects.Count; i++)
-                {
-                    var objectAtI = SpriteManager.ManagedPositionedObjects[i] as PositionedObject;
+                IList<PositionedObject> list = null;
 
-                    if (IsSelectable(objectAtI) && IsCursorOver(objectAtI))
+                if(elementEditingMode == ElementEditingMode.EditingScreen)
+                {
+                    list = SpriteManager.ManagedPositionedObjects;
+                }
+                else if(elementEditingMode == ElementEditingMode.EditingEntity)
+                {
+                    if(SpriteManager.ManagedPositionedObjects.Count > 0)
                     {
-                        if(punchThrough)
+                        list = SpriteManager.ManagedPositionedObjects[0].Children;
+                    }
+                }
+
+                if(list != null)
+                {
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        var objectAtI = list[i] as PositionedObject;
+
+                        if (IsSelectable(objectAtI) && IsCursorOver(objectAtI))
                         {
-                            tempPunchThroughList.Add(objectAtI);
-                        }
-                        else
-                        {
-                            entityOver = objectAtI;
-                            break;
+                            if (punchThrough)
+                            {
+                                tempPunchThroughList.Add(objectAtI);
+                            }
+                            else
+                            {
+                                entityOver = objectAtI;
+                                break;
+                            }
                         }
                     }
                 }
@@ -85,7 +102,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         private static bool IsSelectable(PositionedObject objectAtI)
         {
-            return objectAtI is IDestroyable;
+            return objectAtI.CreationSource == "Glue";
         }
 
         private static bool IsCursorOver(PositionedObject objectAtI)

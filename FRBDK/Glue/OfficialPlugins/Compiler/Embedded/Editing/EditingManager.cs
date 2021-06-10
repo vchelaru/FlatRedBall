@@ -11,6 +11,16 @@ using System.Threading.Tasks;
 
 namespace {ProjectNamespace}.GlueControl.Editing
 {
+    #region Enums
+
+    public enum ElementEditingMode
+    {
+        EditingScreen,
+        EditingEntity
+    }
+
+    #endregion
+
     class EditingManager : IManager
     {
         #region Fields/Properties
@@ -25,10 +35,19 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         Vector3 GrabbedPosition;
 
+        public ElementEditingMode ElementEditingMode { get; set; }
+
+
+        #endregion
+
+        #region Properties
+
         public Action<PositionedObject, string, object> PropertyChanged;
         public Action<PositionedObject> ObjectSelected;
 
         #endregion
+
+        #region Constructor
 
         public EditingManager()
         {
@@ -40,6 +59,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
             SelectedMarker.MakePersistent();
         }
 
+        #endregion
+
         public void Update()
         {
             var isInEditMode = ScreenManager.IsInEditMode;
@@ -47,7 +68,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             if (isInEditMode)
             {
                 var itemBefore = ItemOver;
-                ItemOver = SelectionLogic.GetEntityOver(ItemSelected, GuiManager.Cursor.PrimaryDoublePush);
+                ItemOver = SelectionLogic.GetEntityOver(ItemSelected, GuiManager.Cursor.PrimaryDoublePush, ElementEditingMode);
                 var didChangeItemOver = itemBefore != ItemOver;
 
                 DoGrabLogic();
@@ -67,6 +88,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
             }
 
         }
+
+        #region Markers
 
         private void UpdateMarkers(bool didChangeItemOver)
         {
@@ -116,6 +139,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
             }
         }
 
+        #endregion
+
         private void DoGrabLogic()
         {
             var cursor = GuiManager.Cursor;
@@ -139,8 +164,17 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
             if (ItemGrabbed != null)
             {
-                ItemGrabbed.X += cursor.WorldXChangeAt(ItemGrabbed.Z);
-                ItemGrabbed.Y += cursor.WorldYChangeAt(ItemGrabbed.Z);
+                if(ItemGrabbed.Parent == null)
+                {
+                    ItemGrabbed.X += cursor.WorldXChangeAt(ItemGrabbed.Z);
+                    ItemGrabbed.Y += cursor.WorldYChangeAt(ItemGrabbed.Z);
+                }
+                else
+                {
+                    ItemGrabbed.RelativeX += cursor.WorldXChangeAt(ItemGrabbed.Z);
+                    ItemGrabbed.RelativeY += cursor.WorldYChangeAt(ItemGrabbed.Z);
+
+                }
             }
         }
 
@@ -189,7 +223,16 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         internal void Select(string objectName)
         {
-            var foundObject = SpriteManager.ManagedPositionedObjects.FirstOrDefault(item => item.Name == objectName);
+            PositionedObject foundObject = null;
+            if(ScreenManager.CurrentScreen.GetType().Name == "EntityViewingScreen" && SpriteManager.ManagedPositionedObjects.Count > 0)
+            {
+                foundObject = SpriteManager.ManagedPositionedObjects[0].Children.FirstOrDefault(item => item.Name == objectName);
+            }
+            else
+            {
+                foundObject = SpriteManager.ManagedPositionedObjects.FirstOrDefault(item => item.Name == objectName);
+
+            }
 
             ItemSelected = foundObject;
         }
