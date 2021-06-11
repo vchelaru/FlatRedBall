@@ -407,6 +407,12 @@ namespace FlatRedBall.Gui
             get { return active; }
         }
 
+        /// <summary>
+        /// Whether the game window must be in focus to perform cursor logic. If false, then
+        /// clicks will be processed even if the Window isn't in focus.
+        /// </summary>
+        public bool RequiresGameWindowInFocus { get; set; } = true;
+
         public Camera Camera
         {
             get { return mCamera; }
@@ -2209,7 +2215,10 @@ namespace FlatRedBall.Gui
 
             shouldEarlyOut = !Active;
 #if !UNIT_TESTS
-            shouldEarlyOut |= !FlatRedBallServices.Game.IsActive;
+            if(RequiresGameWindowInFocus)
+            {
+                shouldEarlyOut |= !FlatRedBallServices.Game.IsActive;
+            }
 
             // If the game isn't active we may be debugging.  This can cause clicks to happen every frame, and we don't want that
             PrimaryClick = false;
@@ -2236,10 +2245,7 @@ namespace FlatRedBall.Gui
 
             #region Record the "last" variables
 
-#if !FRB_MDX && !SILVERLIGHT
             mLastRay = GetRay();
-#endif
-
 
 			mLastPrimaryDown = PrimaryDown;
 			mLastSecondaryDown = SecondaryDown;

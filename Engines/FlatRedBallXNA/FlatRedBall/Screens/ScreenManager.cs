@@ -463,6 +463,17 @@ namespace FlatRedBall.Screens
                     }
 
                     ScreenLoaded?.Invoke(mCurrentScreen);
+
+                    if (IsInEditMode)
+                    {
+                        // stop everything:
+                        foreach (var item in SpriteManager.ManagedPositionedObjects)
+                        {
+                            // this prevents flickering due to the upate dependencies call
+                            // having been run earlier in the frame.
+                            item.ForceUpdateDependenciesDeep();
+                        }
+                    }
                 }
 
             }

@@ -118,11 +118,11 @@ namespace {ProjectNamespace}
 
         #region Glue -> Game
 
-        private string ProcessMessage(string message)
+        private string ProcessMessage(string message, bool runSetImmediately = false)
         {
             var screen =
                 FlatRedBall.Screens.ScreenManager.CurrentScreen;
-            bool handledImmediately = false;
+            bool isGet = false;
 
             string data = null;
 
@@ -137,11 +137,11 @@ namespace {ProjectNamespace}
             switch (action)
             {
                 case "GetCurrentScreen":
-                    handledImmediately = true;
+                    isGet = true;
                     return screen.GetType().FullName;
 
                 case "GetCommands":
-                    handledImmediately = true;
+                    isGet = true;
                     string toReturn = string.Empty;
                     if (GameToGlueCommands.Count != 0)
                     {
@@ -158,96 +158,108 @@ namespace {ProjectNamespace}
                     return toReturn;
             }
 
-            if (!handledImmediately)
+            if (!isGet)
             {
-                FlatRedBall.Instructions.InstructionManager.AddSafe(() =>
+                if(runSetImmediately)
                 {
-                    switch (action)
+                    ApplySetMessage(message, screen, data, action);
+                }
+                else
+                {
+                    FlatRedBall.Instructions.InstructionManager.AddSafe(() =>
                     {
-                        case "RestartScreen":
-                            screen.RestartScreen(true);
-                            break;
-                        case "ReloadGlobal":
-                            GlobalContent.Reload(GlobalContent.GetFile(data));
-                            break;
-                        case "TogglePause":
-
-                            if (screen.IsPaused)
-                            {
-                                screen.UnpauseThisScreen();
-                            }
-                            else
-                            {
-                                screen.PauseThisScreen();
-                            }
-
-                            break;
-
-                        case "AdvanceOneFrame":
-                            screen.UnpauseThisScreen();
-                            var delegateInstruction = new FlatRedBall.Instructions.DelegateInstruction(() =>
-                            {
-                                screen.PauseThisScreen();
-                            });
-                            delegateInstruction.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + .001;
-
-                            FlatRedBall.Instructions.InstructionManager.Instructions.Add(delegateInstruction);
-                            break;
-
-                        case "SetSpeed":
-                            var timeFactor = int.Parse(data);
-                            FlatRedBall.TimeManager.TimeFactor = timeFactor / 100.0f;
-                            break;
-
-                        case "SetVariable":
-                            var owner = HandleSetVariable(data);
-                            if(string.IsNullOrEmpty(owner))
-                            {
-                                GlobalGlueToGameCommands.Enqueue(message);
-                            }
-                            else
-                            {
-                                var ownerType = typeof(GlueControlManager).Assembly.GetType(owner);
-                                var isEntity = typeof(PositionedObject).IsAssignableFrom(ownerType);
-                                if(isEntity)
-                                {
-                                    // If it's on an entity, then it needs to be applied globally
-                                    GlobalGlueToGameCommands.Enqueue(message);
-                                }
-                                else
-                                {
-                                    EnqueueMessage(owner, message);
-                                }
-                            }
-                            break;
-                        case "AddObject":
-                            HandleAddObject(data);
-                            GlobalGlueToGameCommands.Enqueue(message);
-                            break;
-#if SupportsEditMode
-
-                        case nameof(GlueControl.Dtos.RemoveObjectDto):
-
-                            HandleRemoveObject(
-                                Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.RemoveObjectDto>(data));
-                            GlobalGlueToGameCommands.Enqueue(message);
-                            break;
-
-                        case nameof(GlueControl.Dtos.SelectObjectDto):
-                            HandleSelectObjectCommand(
-                                Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.SelectObjectDto>(data));
-                            break;
-#endif
-
-                        case "SetEditMode":
-                            HandleSetEditMode(data);
-                            break;
-
-                    }
-                });
+                        ApplySetMessage(message, screen, data, action);
+                    });
+                }
             }
 
             return "true";
+        }
+
+        private void ApplySetMessage(string message, Screen screen, string data, string action)
+        {
+            switch (action)
+            {
+                case "RestartScreen":
+                    screen.RestartScreen(true);
+                    break;
+                case "ReloadGlobal":
+                    GlobalContent.Reload(GlobalContent.GetFile(data));
+                    break;
+                case "TogglePause":
+
+                    if (screen.IsPaused)
+                    {
+                        screen.UnpauseThisScreen();
+                    }
+                    else
+                    {
+                        screen.PauseThisScreen();
+                    }
+
+                    break;
+
+                case "AdvanceOneFrame":
+                    screen.UnpauseThisScreen();
+                    var delegateInstruction = new FlatRedBall.Instructions.DelegateInstruction(() =>
+                    {
+                        screen.PauseThisScreen();
+                    });
+                    delegateInstruction.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + .001;
+
+                    FlatRedBall.Instructions.InstructionManager.Instructions.Add(delegateInstruction);
+                    break;
+
+                case "SetSpeed":
+                    var timeFactor = int.Parse(data);
+                    FlatRedBall.TimeManager.TimeFactor = timeFactor / 100.0f;
+                    break;
+
+                case "SetVariable":
+                    var owner = HandleSetVariable(data);
+                    if (string.IsNullOrEmpty(owner))
+                    {
+                        GlobalGlueToGameCommands.Enqueue(message);
+                    }
+                    else
+                    {
+                        var ownerType = typeof(GlueControlManager).Assembly.GetType(owner);
+                        var isEntity = typeof(PositionedObject).IsAssignableFrom(ownerType);
+                        if (isEntity)
+                        {
+                            // If it's on an entity, then it needs to be applied globally
+                            GlobalGlueToGameCommands.Enqueue(message);
+                        }
+                        else
+                        {
+                            EnqueueMessage(owner, message);
+                        }
+                    }
+                    break;
+                case "AddObject":
+                    HandleAddObject(data);
+                    GlobalGlueToGameCommands.Enqueue(message);
+                    break;
+#if SupportsEditMode
+
+                case nameof(GlueControl.Dtos.RemoveObjectDto):
+
+                    HandleRemoveObject(
+                        Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.RemoveObjectDto>(data));
+                    GlobalGlueToGameCommands.Enqueue(message);
+                    break;
+
+                case nameof(GlueControl.Dtos.SelectObjectDto):
+                    HandleSelectObjectCommand(
+                        Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.SelectObjectDto>(data));
+                    break;
+#endif
+
+                case "SetEditMode":
+                    HandleSetEditMode(data);
+                    break;
+
+            }
         }
 
         private void EnqueueMessage(string owner, string message)
@@ -271,7 +283,7 @@ namespace {ProjectNamespace}
             GlobalGlueToGameCommands.Clear();
             foreach (var message in toProcess)
             {
-                ProcessMessage(message);
+                ProcessMessage(message, true);
             }
 
             var assembly = typeof(GlueControlManager).Assembly;
@@ -286,7 +298,7 @@ namespace {ProjectNamespace}
                     kvp.Value.Clear();
                     foreach(var message in toProcess)
                     {
-                        ProcessMessage(message);
+                        ProcessMessage(message, true);
                     }
                 }
             }
@@ -380,6 +392,8 @@ namespace {ProjectNamespace}
             var value = bool.Parse(data);
 #if SupportsEditMode
             FlatRedBall.Screens.ScreenManager.IsInEditMode = value;
+            FlatRedBall.Gui.GuiManager.Cursor.RequiresGameWindowInFocus = !value;
+
             if(value)
             {
                 var screen =
@@ -399,9 +413,9 @@ namespace {ProjectNamespace}
                 screen?.RestartScreen(reloadContent: true, applyRestartVariables:true);
             }
 #endif
-        }
+    }
 
-        private string HandleSetVariable(string data)
+    private string HandleSetVariable(string data)
         {
             string valueToReturn = null;
 #if IncludeSetVariable

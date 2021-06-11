@@ -76,6 +76,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         #endregion
 
+        #region Constructor/Init
+
         public SelectionMarker()
         {
             rectangle = new AxisAlignedRectangle();
@@ -85,6 +87,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
         {
             FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Add(rectangle);
         }
+
+        #endregion
 
         internal void Update(PositionedObject item)
         {
@@ -96,7 +100,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
 
-            if(CanMoveItem && cursor.PrimaryDown)
+            if(CanMoveItem && cursor.PrimaryDown && 
+                (cursor.ScreenXChange != 0 || cursor.ScreenYChange != 0))
             {
                 if (item != null)
                 {
