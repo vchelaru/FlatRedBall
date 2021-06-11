@@ -54,9 +54,11 @@ namespace {ProjectNamespace}.GlueControl.Editing
             HighlightMarker = new SelectionMarker();
             HighlightMarker.BrightColor = Color.LightGreen;
             HighlightMarker.MakePersistent();
+            HighlightMarker.Name = nameof(HighlightMarker);
 
             SelectedMarker = new SelectionMarker();
             SelectedMarker.MakePersistent();
+            SelectedMarker.Name = nameof(SelectedMarker);
         }
 
         #endregion
@@ -237,5 +239,6 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
             ItemSelected = foundObject;
         }
+    }
     }
 }

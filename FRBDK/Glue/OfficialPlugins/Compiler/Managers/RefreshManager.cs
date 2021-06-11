@@ -237,6 +237,12 @@ namespace OfficialPlugins.Compiler.Managers
                 string type;
                 string value;
 
+                if(currentElement is EntitySave && nos.AttachToContainer && 
+                    (changedMember == "X" || changedMember == "Y" || changedMember == "Z"))
+                {
+                    changedMember = $"Relative{changedMember}";
+                }
+
                 if(changedMember == nameof(NamedObjectSave.InstanceName))
                 {
                     type = "string";
@@ -271,17 +277,6 @@ namespace OfficialPlugins.Compiler.Managers
         {
             if (ViewModel.IsRunning)
             {
-                string currentInGameScreenName = null;
-
-                try
-                {
-                    currentInGameScreenName = await CommandSending.CommandSender
-                    .SendCommand("GetCurrentScreen", PortNumber);
-                }
-                catch
-                {
-                    // do nothing, maybe not connected
-                }
                 if(currentElement != null)
                 {
                     var data = new GlueVariableSetData();

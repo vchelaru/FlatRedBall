@@ -317,10 +317,8 @@ namespace {ProjectNamespace}
                 {
                     void AssignSelection(Screen screen)
                     {
-                        if(!string.IsNullOrEmpty(selectObjectDto.ObjectName))
-                        {
-                            EditingManager.Select(selectObjectDto.ObjectName);
-                        }
+                        // Select this even if it's null so the EditingManager deselects 
+                        EditingManager.Select(selectObjectDto.ObjectName);
                         ReRunAllGlueToGameCommands();
                         ScreenManager.ScreenLoaded -= AssignSelection;
                     }

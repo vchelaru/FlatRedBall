@@ -61,6 +61,17 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         public double FadingSeed { get; set; } = 0;
 
+        string name;
+        public string Name
+        {
+            get => name;
+            set
+            {
+                name = value;
+                rectangle.Name = $"{name}Rectangle";
+            }
+        }
+
         #endregion
 
         public SelectionMarker()
