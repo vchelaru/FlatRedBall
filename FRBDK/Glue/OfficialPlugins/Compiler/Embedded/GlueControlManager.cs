@@ -522,7 +522,16 @@ namespace {ProjectNamespace}
             fromGlueDto.VariableValue = value.ToString();
             fromGlueDto.Type = "float";
             var glueToGameCommand = $"SetVariable:{Newtonsoft.Json.JsonConvert.SerializeObject(fromGlueDto)}";
-            GlobalGlueToGameCommands.Enqueue(glueToGameCommand);
+
+            if(isEditingEntity)
+            {
+                GlobalGlueToGameCommands.Enqueue(glueToGameCommand);
+            }
+            else
+            {
+                
+                EnqueueMessage(screen.GetType().FullName, message);
+            }
 #endif
         }
 
