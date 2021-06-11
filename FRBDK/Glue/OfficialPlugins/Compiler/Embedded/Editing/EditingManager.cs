@@ -240,5 +240,4 @@ namespace {ProjectNamespace}.GlueControl.Editing
             ItemSelected = foundObject;
         }
     }
-    }
 }

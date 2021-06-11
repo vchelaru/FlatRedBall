@@ -28,6 +28,10 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile(GlueControlCodeGenerator.GetSelectionMarkerContents(),
                 "Editing/SelectionMarker.Generated.cs");
 
+            SaveEmbeddedFile(GlueControlCodeGenerator.GetEmbeddedStringContents(
+                "OfficialPlugins.Compiler.Embedded.Editing.VariableAssignmentLogic.cs"),
+                "Editing/VariableAssignmentLogic.Generated.cs");
+
             SaveEmbeddedFile(GlueControlCodeGenerator.GetDtosContents(),
                 "Dtos.Generated.cs");
 
@@ -41,6 +45,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile(GlueControlCodeGenerator.GetEmbeddedStringContents(
                 "OfficialPlugins.Compiler.Embedded.Models.NamedObjectSave.cs"),
                 "Models/NamedObjectSave.Generated.cs");
+
         }
 
         private static void SaveEmbeddedFile(string glueControlManagerCode, string relativeDestinationFilePath)
