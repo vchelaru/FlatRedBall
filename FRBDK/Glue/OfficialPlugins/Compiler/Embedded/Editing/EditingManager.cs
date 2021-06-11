@@ -95,52 +95,10 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         private void UpdateMarkers(bool didChangeItemOver)
         {
-            {
-                var marker = HighlightMarker;
-                var extraPadding = 4;
-                var item = ItemOver;
-
-                if(didChangeItemOver)
-                {
-                    marker.FadingSeed = TimeManager.CurrentTime;
-                }
-
-                UpdateMarker(marker, extraPadding, item);
-            }
-
-            {
-                var marker = SelectedMarker;
-                var extraPadding = 2;
-                var item = ItemSelected;
-
-                UpdateMarker(marker, extraPadding, item);
-            }
-
-            HighlightMarker.Update(ItemOver);
-            SelectedMarker.Update(ItemSelected);
-
+            HighlightMarker.Update(ItemOver, extraPadding:4);
+            SelectedMarker.Update(ItemSelected, extraPadding:2);
         }
 
-        private static void UpdateMarker(SelectionMarker marker, int extraPadding, PositionedObject item)
-        {
-            marker.Visible = item != null;
-            if(item != null)
-            {
-                SelectionLogic.GetDimensionsFor(item,
-                    out float minX, out float maxX,
-                    out float minY, out float maxY);
-
-                var newPosition = new Vector3();
-                newPosition.X = (maxX + minX) / 2.0f;
-                newPosition.Y = (maxY + minY) / 2.0f;
-                newPosition.Z = item.Z;
-
-                marker.Position = newPosition;
-
-                marker.ScaleX = extraPadding + (maxX - minX) / 2.0f;
-                marker.ScaleY = extraPadding + (maxY - minY) / 2.0f;
-            }
-        }
 
         #endregion
 

@@ -10,11 +10,31 @@ using System.Threading.Tasks;
 
 namespace {ProjectNamespace}.GlueControl.Editing
 {
+    #region Enums
+
+    public enum ResizeSide
+    {
+        None = -1,
+        TopLeft,
+        Top,
+        TopRight,
+        Right,
+        BottomRight,
+        Bottom,
+        BottomLeft,
+        Left
+    }
+
+    #endregion
+
     public class SelectionMarker : IScalable
     {
         #region Fields/Properties
 
         AxisAlignedRectangle rectangle;
+
+        AxisAlignedRectangle[] handles = new AxisAlignedRectangle[8];
+
 
         public Color BrightColor
         {
@@ -56,7 +76,14 @@ namespace {ProjectNamespace}.GlueControl.Editing
         public bool Visible
         {
             get => rectangle.Visible;
-            set => rectangle.Visible = value;
+            set
+            {
+                if(value != rectangle.Visible)
+                {
+                    rectangle.Visible = value;
+                    UpdateHandles();
+                }
+            }
         }
 
         public double FadingSeed { get; set; } = 0;
@@ -74,6 +101,22 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         public bool CanMoveItem { get; set; }
 
+        ResizeMode resizeMode;
+        public ResizeMode ResizeMode
+        {
+            get => resizeMode;
+            set
+            {
+                if(value != resizeMode)
+                {
+                    resizeMode = value;
+                    UpdateHandles();
+                }
+            }
+        }
+
+        const int handleDimension = 6;
+
         #endregion
 
         #region Constructor/Init
@@ -81,17 +124,54 @@ namespace {ProjectNamespace}.GlueControl.Editing
         public SelectionMarker()
         {
             rectangle = new AxisAlignedRectangle();
+
+            for(int i = 0; i < handles.Length; i++)
+            {
+                handles[i] = new AxisAlignedRectangle();
+                handles[i].Width = handleDimension;
+                handles[i].Height = handleDimension;
+
+            }
         }
 
         public void MakePersistent()
         {
             FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Add(rectangle);
+
+            for(int i = 0; i < handles.Length; i++)
+            {
+                FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Add(handles[i]);
+            }
         }
 
         #endregion
 
-        internal void Update(PositionedObject item)
+        internal void Update(PositionedObject item, float extraPadding)
         {
+            Visible = item != null;
+            
+            foreach(var handle in handles)
+            {
+                handle.Visible = Visible;
+            }
+
+            if (item != null)
+            {
+                SelectionLogic.GetDimensionsFor(item,
+                    out float minX, out float maxX,
+                    out float minY, out float maxY);
+
+                var newPosition = new Vector3();
+                newPosition.X = (maxX + minX) / 2.0f;
+                newPosition.Y = (maxY + minY) / 2.0f;
+                newPosition.Z = item.Z;
+
+                Position = newPosition;
+
+                ScaleX = extraPadding + (maxX - minX) / 2.0f;
+                ScaleY = extraPadding + (maxY - minY) / 2.0f;
+            }
+
             var value = (float)(1 + System.Math.Sin((TimeManager.CurrentTime - FadingSeed) * 5)) / 2;
 
             rectangle.Red = value * BrightColor.R/255.0f;
@@ -117,6 +197,64 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     }
                 }
             }
+
+            UpdateHandles();
+        }
+
+        void UpdateHandles()
+        {
+            var handle = handles[0];
+            handle.X = -rectangle.Width / 2 - handle.Width / 2;
+            handle.Y = rectangle.Height / 2 + handle.Height / 2;
+
+            handle = handles[1];
+            handle.X = 0;
+            handle.Y = rectangle.Height / 2 + handle.Height / 2;
+
+            handle = handles[2];
+            handle.X = rectangle.Width / 2 + handle.Width / 2;
+            handle.Y = rectangle.Height / 2 + handle.Height / 2;
+
+            handle = handles[3];
+            handle.X = rectangle.Width / 2 + handle.Width / 2;
+            handle.Y = 0;
+
+            handle = handles[4];
+            handle.X = +rectangle.Width / 2 + handle.Width / 2;
+            handle.Y = -rectangle.Height / 2 - handle.Height / 2;
+
+            handle = handles[5];
+            handle.X = 0;
+            handle.Y = -rectangle.Height / 2 - handle.Height / 2;
+
+            handle = handles[6];
+            handle.X = -rectangle.Width / 2 - handle.Width / 2;
+            handle.Y = -rectangle.Height / 2 - handle.Height / 2;
+
+            handle = handles[7];
+            handle.X = -rectangle.Width / 2 - handle.Width / 2;
+            handle.Y = 0;
+
+            foreach(var handle2 in handles)
+            {
+                handle2.Position += this.Position;
+            }
+
+        }
+
+        ResizeSide GetSideOver(float x, float y)
+        {
+            for (int i = 0; i < this.handles.Length; i++)
+            {
+                var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+                
+                if (cursor.IsOn3D(handles[i]))
+                {
+                    return (ResizeSide)i;
+                }
+            }
+
+            return ResizeSide.None;
         }
     }
 }
