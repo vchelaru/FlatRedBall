@@ -24,6 +24,7 @@
   <ItemGroup>
     <Compile Remove="Compiler\Embedded\Dtos.cs" />
     <Compile Remove="Compiler\Embedded\Editing\EditingManager.cs" />
+    <Compile Remove="Compiler\Embedded\Editing\Markers\SelectionMarker.cs" />
     <Compile Remove="Compiler\Embedded\Editing\SelectionLogic.cs" />
     <Compile Remove="Compiler\Embedded\Editing\SelectionMarker.cs" />
     <Compile Remove="Compiler\Embedded\Editing\VariableAssignmentLogic.cs" />
@@ -81,8 +82,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Compiler\Embedded\Dtos.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\EditingManager.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Editing\Markers\SelectionMarker.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\SelectionLogic.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Editing\SelectionMarker.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\VariableAssignmentLogic.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Forms\ObjectCreationWindow.cs" />
     <EmbeddedResource Include="Compiler\Embedded\GlueControlManager.cs" />

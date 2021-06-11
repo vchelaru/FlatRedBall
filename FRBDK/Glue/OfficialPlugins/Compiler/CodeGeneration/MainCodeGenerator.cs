@@ -25,8 +25,9 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile(GlueControlCodeGenerator.GetSelectionLogicContents(),
                 "Editing/SelectionLogic.Generated.cs");
 
-            SaveEmbeddedFile(GlueControlCodeGenerator.GetSelectionMarkerContents(),
-                "Editing/SelectionMarker.Generated.cs");
+            SaveEmbeddedFile(GlueControlCodeGenerator.GetEmbeddedStringContents(
+                "OfficialPlugins.Compiler.Embedded.Editing.Markers.SelectionMarker.cs"),
+                "Editing/Markers/SelectionMarker.Generated.cs");
 
             SaveEmbeddedFile(GlueControlCodeGenerator.GetEmbeddedStringContents(
                 "OfficialPlugins.Compiler.Embedded.Editing.VariableAssignmentLogic.cs"),

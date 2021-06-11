@@ -31,12 +31,6 @@ namespace OfficialPlugins.Compiler.CodeGeneration
                 "OfficialPlugins.Compiler.Embedded.Editing.SelectionLogic.cs");
         }
 
-        public static string GetSelectionMarkerContents()
-        {
-            return GetEmbeddedStringContents(
-                "OfficialPlugins.Compiler.Embedded.Editing.SelectionMarker.cs");
-        }
-
         internal static string GetDtosContents()
         {
             return GetEmbeddedStringContents(

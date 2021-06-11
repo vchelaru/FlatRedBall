@@ -72,6 +72,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
             }
         }
 
+        public bool CanMoveItem { get; set; }
+
         #endregion
 
         public SelectionMarker()
@@ -84,13 +86,32 @@ namespace {ProjectNamespace}.GlueControl.Editing
             FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Add(rectangle);
         }
 
-        internal void Update()
+        internal void Update(PositionedObject item)
         {
             var value = (float)(1 + System.Math.Sin((TimeManager.CurrentTime - FadingSeed) * 5)) / 2;
 
             rectangle.Red = value * BrightColor.R/255.0f;
             rectangle.Green = value * BrightColor.G / 255.0f;
             rectangle.Blue = value * BrightColor.B / 255.0f;
+
+            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+
+            if(CanMoveItem && cursor.PrimaryDown)
+            {
+                if (item != null)
+                {
+                    if (item.Parent == null)
+                    {
+                        item.X += cursor.WorldXChangeAt(item.Z);
+                        item.Y += cursor.WorldYChangeAt(item.Z);
+                    }
+                    else
+                    {
+                        item.RelativeX += cursor.WorldXChangeAt(item.Z);
+                        item.RelativeY += cursor.WorldYChangeAt(item.Z);
+                    }
+                }
+            }
         }
     }
 }

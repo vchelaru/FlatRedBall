@@ -59,6 +59,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             SelectedMarker = new SelectionMarker();
             SelectedMarker.MakePersistent();
             SelectedMarker.Name = nameof(SelectedMarker);
+            SelectedMarker.CanMoveItem = true;
         }
 
         #endregion
@@ -74,8 +75,6 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 var didChangeItemOver = itemBefore != ItemOver;
 
                 DoGrabLogic();
-
-                DoMoveLogic();
 
                 DoReleaseLogic();
 
@@ -117,7 +116,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 UpdateMarker(marker, extraPadding, item);
             }
 
-            HighlightMarker.Update();
+            HighlightMarker.Update(ItemOver);
+            SelectedMarker.Update(ItemSelected);
 
         }
 
@@ -157,26 +157,6 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 {
                     GrabbedPosition = ItemGrabbed.Position;
                     ObjectSelected(ItemGrabbed);
-                }
-            }
-        }
-
-        private void DoMoveLogic()
-        {
-            var cursor = GuiManager.Cursor;
-
-            if (ItemGrabbed != null)
-            {
-                if(ItemGrabbed.Parent == null)
-                {
-                    ItemGrabbed.X += cursor.WorldXChangeAt(ItemGrabbed.Z);
-                    ItemGrabbed.Y += cursor.WorldYChangeAt(ItemGrabbed.Z);
-                }
-                else
-                {
-                    ItemGrabbed.RelativeX += cursor.WorldXChangeAt(ItemGrabbed.Z);
-                    ItemGrabbed.RelativeY += cursor.WorldYChangeAt(ItemGrabbed.Z);
-
                 }
             }
         }
