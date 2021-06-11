@@ -216,6 +216,7 @@ namespace {ProjectNamespace}
                     break;
 
                 case "SetVariable":
+                case "GlueVariableSetData":
                     var owner = HandleSetVariable(data);
                     if (string.IsNullOrEmpty(owner))
                     {
@@ -521,16 +522,16 @@ namespace {ProjectNamespace}
             fromGlueDto.VariableName = $"this.{item.Name}.{propertyName}";
             fromGlueDto.VariableValue = value.ToString();
             fromGlueDto.Type = "float";
-            var glueToGameCommand = $"SetVariable:{Newtonsoft.Json.JsonConvert.SerializeObject(fromGlueDto)}";
+            var simulatedGlueToGameCommand = $"SetVariable:{Newtonsoft.Json.JsonConvert.SerializeObject(fromGlueDto)}";
 
             if(isEditingEntity)
             {
-                GlobalGlueToGameCommands.Enqueue(glueToGameCommand);
+                GlobalGlueToGameCommands.Enqueue(simulatedGlueToGameCommand);
             }
             else
             {
                 
-                EnqueueMessage(screen.GetType().FullName, message);
+                EnqueueMessage(screen.GetType().FullName, simulatedGlueToGameCommand);
             }
 #endif
         }
