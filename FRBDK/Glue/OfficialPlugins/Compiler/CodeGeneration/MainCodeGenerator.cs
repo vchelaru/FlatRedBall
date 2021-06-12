@@ -47,6 +47,9 @@ namespace OfficialPlugins.Compiler.CodeGeneration
                 "OfficialPlugins.Compiler.Embedded.Models.NamedObjectSave.cs"),
                 "Models/NamedObjectSave.Generated.cs");
 
+            SaveEmbeddedFile(GlueControlCodeGenerator.GetEmbeddedStringContents(
+                "OfficialPlugins.Compiler.Embedded.Editing.Guides.cs"),
+                "Editing/Guides.Generated.cs");
         }
 
         private static void SaveEmbeddedFile(string glueControlManagerCode, string relativeDestinationFilePath)

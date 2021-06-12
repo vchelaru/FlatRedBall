@@ -23,7 +23,7 @@ namespace GumPlugin.Managers
                 string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
 
                 GlueCommands.Self.FileCommands.IgnoreNextChangeOnFile(gumProjectFileName);
-                AppState.Self.GumProjectSave.Save(gumProjectFileName, saveAllElements);
+                GlueCommands.Self.TryMultipleTimes(() => AppState.Self.GumProjectSave.Save(gumProjectFileName, saveAllElements));
             }, "Saving gum projects");
         }
 
