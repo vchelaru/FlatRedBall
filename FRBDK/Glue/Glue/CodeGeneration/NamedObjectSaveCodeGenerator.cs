@@ -52,6 +52,22 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
+        public override ICodeBlock GenerateConstructor(ICodeBlock codeBlock, SaveClasses.IElement element)
+        {
+            var constructorSortedNamedObjects = element.NamedObjects
+                // never make collision relationships in the constructor
+                .Where(item => item.IsCollisionRelationship() == false)
+                // entire files first
+                .OrderBy(item => item.IsEntireFile == false);
+
+            foreach (var nos in constructorSortedNamedObjects)
+            {
+                WriteCodeForNamedObjectInitialize(nos, element, codeBlock, null, inConstructor: true);
+            }
+
+            return codeBlock;
+        }
+
         public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
 
@@ -259,7 +275,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
         public static void WriteCodeForNamedObjectInitialize(NamedObjectSave namedObject, IElement saveObject,
-            ICodeBlock codeBlock, string overridingContainerName)
+            ICodeBlock codeBlock, string overridingContainerName, bool inConstructor = false)
         {
             var referencedFilesAlreadyUsingFullFile = ReusableEntireFileRfses;
 
@@ -277,12 +293,16 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             AddIfConditionalSymbolIfNecesssary(codeBlock, namedObject);
 
+            bool instantiateInConstructor = namedObject.ShouldInstantiateInConstructor();
 
             bool succeeded = true;
 
             #region Perform instantiation
 
-            if (!namedObject.InstantiatedByBase)
+            // Ensure that the nos is only instantiated where it should be. Since this method
+            // can be called for the constructor or Initialize() method, we need to check that
+            // we're in the proper place for generating the instantiation code.
+            if (!namedObject.InstantiatedByBase && inConstructor == instantiateInConstructor)
             {
                 succeeded = GenerateInstantiationOrAssignment(
                     namedObject, saveObject, codeBlock, overridingContainerName, referencedFilesAlreadyUsingFullFile);
@@ -310,14 +330,18 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 #endregion
 
-
-                WriteTextSpecificInitialization(namedObject, saveObject, codeBlock, referencedFilesAlreadyUsingFullFile);
-
-                foreach (NamedObjectSave containedNos in namedObject.ContainedObjects)
+                if (!inConstructor)
                 {
-                    WriteCodeForNamedObjectInitialize(containedNos, saveObject, codeBlock, null);
-                }
+                    // Text specific initialization and contained object initialization should only
+                    // take place in the regular Initialize() method and never in the constructor.
 
+                    WriteTextSpecificInitialization(namedObject, saveObject, codeBlock, referencedFilesAlreadyUsingFullFile);
+
+                    foreach (NamedObjectSave containedNos in namedObject.ContainedObjects)
+                    {
+                        WriteCodeForNamedObjectInitialize(containedNos, saveObject, codeBlock, null);
+                    }
+                }
             }
 
             AddEndIfIfNecessary(codeBlock, namedObject);
