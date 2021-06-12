@@ -25,6 +25,13 @@ namespace {ProjectNamespace}.GlueControl.Editing
         Left
     }
 
+    public enum ResizeMode
+    {
+        None,
+        EightWay,
+        Cardinal
+    }
+
     #endregion
 
     public class SelectionMarker : IScalable
@@ -106,7 +113,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             get; set;
         }
 
-        const int handleDimension = 8;
+        const int handleDimension = 10;
 
         #endregion
 
@@ -137,7 +144,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         #endregion
 
-        internal void Update(PositionedObject item, float extraPadding)
+        internal void Update(PositionedObject item, ResizeSide sideGrabbed, float extraPadding)
         {
             Visible = item != null;
 
@@ -156,8 +163,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             {
                 if (item != null)
                 {
-                    var sideOver = GetSideOver();
-                    if (sideOver == ResizeSide.None)
+                    if (sideGrabbed == ResizeSide.None)
                     {
 
                         float xChange = cursor.WorldXChangeAt(item.Z);
@@ -167,7 +173,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     }
                     else
                     {
-                        UpdateResize(item, sideOver, cursor.WorldXChangeAt(item.Z), cursor.WorldYChangeAt(0));
+                        UpdateResize(item, sideGrabbed, cursor.WorldXChangeAt(item.Z), cursor.WorldYChangeAt(0));
                     }
                 }
             }
@@ -199,30 +205,30 @@ namespace {ProjectNamespace}.GlueControl.Editing
             switch(sideOver)
             {
                 case ResizeSide.TopLeft:
-                    xPositionMultiple = 1;
+                    xPositionMultiple = 1/2.0f;
                     widthMultiple = -1;
                     
-                    yPositionMultiple = 1;
+                    yPositionMultiple = 1/2.0f;
                     heightMultiple = 1;
                     break;
                 case ResizeSide.Top:
                     xPositionMultiple = 0;
                     widthMultiple = 0;
 
-                    yPositionMultiple = 1;
+                    yPositionMultiple = 1 / 2.0f;
                     heightMultiple = 1;
                     break;
                 case ResizeSide.TopRight:
-                    xPositionMultiple = 0;
+                    xPositionMultiple = 1/2.0f;
                     widthMultiple = 1;
 
 
-                    yPositionMultiple = 1;
+                    yPositionMultiple = 1 / 2.0f;
                     heightMultiple = 1;
 
                     break;
                 case ResizeSide.Right:
-                    xPositionMultiple = 0;
+                    xPositionMultiple = 1/2.0f;
                     widthMultiple = 1;
 
                     yPositionMultiple = 0;
@@ -230,10 +236,10 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     break;
 
                 case ResizeSide.BottomRight:
-                    xPositionMultiple = 0;
-                    widthMultiple = 0;
+                    xPositionMultiple = 1/2.0f;
+                    widthMultiple = 1;
 
-                    yPositionMultiple = 0;
+                    yPositionMultiple = 1/2.0f;
                     heightMultiple = -1;
 
                     break;
@@ -242,19 +248,19 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     xPositionMultiple = 0;
                     widthMultiple = 0;
 
-                    yPositionMultiple = 0;
+                    yPositionMultiple = 1/2.0f;
                     heightMultiple = -1;
 
                     break;
                 case ResizeSide.BottomLeft:
-                    xPositionMultiple = 1;
+                    xPositionMultiple = 1/2.0f;
                     widthMultiple = -1;
 
-                    yPositionMultiple = 0;
+                    yPositionMultiple = 1/2.0f;
                     heightMultiple = -1;
                     break;
                 case ResizeSide.Left:
-                    xPositionMultiple = 1;
+                    xPositionMultiple = 1/2.0f;
                     widthMultiple = -1;
 
                     yPositionMultiple = 0;
@@ -273,8 +279,13 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
             var scalable = item as IScalable;
 
-            scalable.ScaleX += cursor.WorldXChangeAt(item.Z) * widthMultiple / 2.0f;
-            scalable.ScaleY += cursor.WorldYChangeAt(item.Z) * heightMultiple / 2.0f;
+            var newScaleX = scalable.ScaleX + cursor.WorldXChangeAt(item.Z) * widthMultiple / 2.0f;
+            newScaleX = Math.Max(0, newScaleX);
+            scalable.ScaleX = newScaleX;
+
+            var newScaleY = scalable.ScaleY + cursor.WorldYChangeAt(item.Z) * heightMultiple / 2.0f;
+            newScaleY = Math.Max(0, newScaleY);
+            scalable.ScaleY = newScaleY;
         }
 
         private void UpdateMainRectangleSize(PositionedObject item, float extraPadding)
@@ -367,7 +378,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             return false;
         }
 
-        ResizeSide GetSideOver()
+        public ResizeSide GetSideOver()
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
                 

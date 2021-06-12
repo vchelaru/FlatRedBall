@@ -31,9 +31,12 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         PositionedObject ItemOver;
         PositionedObject ItemGrabbed;
+        ResizeSide SideGrabbed = ResizeSide.None;
+
         PositionedObject ItemSelected;
 
         Vector3 GrabbedPosition;
+        Vector2 GrabbedWidthAndHeight;
 
         public ElementEditingMode ElementEditingMode { get; set; }
 
@@ -60,7 +63,6 @@ namespace {ProjectNamespace}.GlueControl.Editing
             SelectedMarker.MakePersistent();
             SelectedMarker.Name = nameof(SelectedMarker);
             SelectedMarker.CanMoveItem = true;
-            SelectedMarker.ResizeMode = ResizeMode.EightWay;
         }
 
         #endregion
@@ -96,8 +98,17 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         private void UpdateMarkers(bool didChangeItemOver)
         {
-            HighlightMarker.Update(ItemOver, extraPadding:4);
-            SelectedMarker.Update(ItemSelected, extraPadding:2);
+            HighlightMarker.Update(ItemOver, SideGrabbed, extraPadding:4);
+            SelectedMarker.Update(ItemSelected, SideGrabbed, extraPadding: 2);
+
+            if(ItemSelected is FlatRedBall.Math.Geometry.IScalable)
+            {
+                SelectedMarker.ResizeMode = ResizeMode.EightWay;
+            }
+            else
+            {
+                SelectedMarker.ResizeMode = ResizeMode.None;
+            }
         }
 
 
@@ -115,6 +126,11 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 if(ItemGrabbed != null)
                 {
                     GrabbedPosition = ItemGrabbed.Position;
+                    if (ItemGrabbed is FlatRedBall.Math.Geometry.IScalable itemGrabbedAsScalable)
+                    {
+                        GrabbedWidthAndHeight = new Vector2(itemGrabbedAsScalable.ScaleX * 2, itemGrabbedAsScalable.ScaleY * 2);
+                    }
+                    SideGrabbed = SelectedMarker.GetSideOver();
                     ObjectSelected(ItemGrabbed);
                 }
             }
@@ -130,11 +146,29 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 {
                     if (ItemGrabbed.X != GrabbedPosition.X)
                     {
-                        Notify(nameof(ItemGrabbed.X), ItemGrabbed.X);
+                        var value = ItemGrabbed.Parent == null
+                            ? ItemGrabbed.X
+                            : ItemGrabbed.RelativeX;
+                        Notify(nameof(ItemGrabbed.X), value);
                     }
                     if (ItemGrabbed.Y != GrabbedPosition.Y)
                     {
-                        Notify(nameof(ItemGrabbed.Y), ItemGrabbed.Y);
+                        var value = ItemGrabbed.Parent == null
+                            ? ItemGrabbed.Y
+                            : ItemGrabbed.RelativeY;
+                        Notify(nameof(ItemGrabbed.Y), value);
+                    }
+
+                    if(ItemGrabbed is FlatRedBall.Math.Geometry.IScalable asScalable)
+                    {
+                        if(GrabbedWidthAndHeight.X != asScalable.ScaleX * 2)
+                        {
+                            Notify("Width", asScalable.ScaleX*2);
+                        }
+                        if(GrabbedWidthAndHeight.Y != asScalable.ScaleY * 2)
+                        {
+                            Notify("Height", asScalable.ScaleY * 2);
+                        }
                     }
                 }
 
