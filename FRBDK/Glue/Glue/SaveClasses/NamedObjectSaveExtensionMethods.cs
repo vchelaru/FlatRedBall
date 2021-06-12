@@ -903,7 +903,7 @@ namespace FlatRedBall.Glue.SaveClasses
         public static bool ShouldInstantiateInConstructor(this NamedObjectSave namedObjectSave)
         {
             return
-                namedObjectSave.SourceClassType?.StartsWith("FlatRedBall.Math.PositionedObjectList<") == true &&
+                namedObjectSave.IsList &&
                 namedObjectSave.Instantiate &&
                 !namedObjectSave.InstantiatedByBase;
         }
