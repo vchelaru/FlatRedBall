@@ -25,9 +25,10 @@ namespace {ProjectNamespace}.GlueControl.Editing
     {
         #region Fields/Properties
 
-        SelectionMarker HighlightMarker;
-        SelectionMarker SelectedMarker;
+        Guides Guides;
 
+        SelectionMarker SelectedMarker;
+        SelectionMarker HighlightMarker;
 
         PositionedObject ItemOver;
         PositionedObject ItemGrabbed;
@@ -43,7 +44,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         #endregion
 
-        #region Properties
+        #region Delegates/Events
 
         public Action<PositionedObject, string, object> PropertyChanged;
         public Action<PositionedObject> ObjectSelected;
@@ -63,6 +64,9 @@ namespace {ProjectNamespace}.GlueControl.Editing
             SelectedMarker.MakePersistent();
             SelectedMarker.Name = nameof(SelectedMarker);
             SelectedMarker.CanMoveItem = true;
+            SelectedMarker.ResizeMode = ResizeMode.EightWay;
+
+            Guides = new Guides();
         }
 
         #endregion
@@ -70,6 +74,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
         public void Update()
         {
             var isInEditMode = ScreenManager.IsInEditMode;
+
+            Guides.Visible = isInEditMode;
 
             if (isInEditMode)
             {

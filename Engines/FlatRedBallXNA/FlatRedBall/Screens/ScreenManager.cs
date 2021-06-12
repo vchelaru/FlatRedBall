@@ -112,6 +112,11 @@ namespace FlatRedBall.Screens
             get; private set;
         } = new PositionedObjectList<AxisAlignedRectangle>();
 
+        public static PositionedObjectList<Line> PersistentLines
+        {
+            get; private set;
+        } = new PositionedObjectList<Line>();
+
         public static bool WarnIfNotEmptyBetweenScreens
         {
             get { return mWarnIfNotEmptyBetweenScreens; }
@@ -788,8 +793,19 @@ namespace FlatRedBall.Screens
 
                 if (ShapeManager.VisibleLines.Count != 0)
                 {
-                    messages.Add("There are " + ShapeManager.VisibleLines.Count +
-                        " visible Lines in the ShapeManager.  See \"FlatRedBall.Math.Geometry.ShapeManager.VisibleLines\"");
+                    var lineCount = ShapeManager.VisibleLines.Count;
+                    foreach(var line in PersistentLines)
+                    {
+                        if(ShapeManager.VisibleLines.Contains(line))
+                        {
+                            lineCount--;
+                        }
+                    }
+                    if(lineCount != 0)
+                    {
+                        messages.Add("There are " + lineCount +
+                            " visible Lines in the ShapeManager.  See \"FlatRedBall.Math.Geometry.ShapeManager.VisibleLines\"");
+                    }
                 }
                 #endregion
 
