@@ -60,6 +60,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             SelectedMarker.MakePersistent();
             SelectedMarker.Name = nameof(SelectedMarker);
             SelectedMarker.CanMoveItem = true;
+            SelectedMarker.ResizeMode = ResizeMode.EightWay;
         }
 
         #endregion
@@ -71,7 +72,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             if (isInEditMode)
             {
                 var itemBefore = ItemOver;
-                ItemOver = SelectionLogic.GetEntityOver(ItemSelected, GuiManager.Cursor.PrimaryDoublePush, ElementEditingMode);
+                ItemOver = SelectionLogic.GetEntityOver(ItemSelected, SelectedMarker, GuiManager.Cursor.PrimaryDoublePush, ElementEditingMode);
                 var didChangeItemOver = itemBefore != ItemOver;
 
                 DoGrabLogic();

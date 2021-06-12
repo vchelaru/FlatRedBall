@@ -101,21 +101,12 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         public bool CanMoveItem { get; set; }
 
-        ResizeMode resizeMode;
         public ResizeMode ResizeMode
         {
-            get => resizeMode;
-            set
-            {
-                if(value != resizeMode)
-                {
-                    resizeMode = value;
-                    UpdateHandles();
-                }
-            }
+            get; set;
         }
 
-        const int handleDimension = 6;
+        const int handleDimension = 8;
 
         #endregion
 
@@ -149,12 +140,145 @@ namespace {ProjectNamespace}.GlueControl.Editing
         internal void Update(PositionedObject item, float extraPadding)
         {
             Visible = item != null;
-            
-            foreach(var handle in handles)
+
+            UpdateMainRectangleSize(item, extraPadding);
+
+            var value = (float)(1 + System.Math.Sin((TimeManager.CurrentTime - FadingSeed) * 5)) / 2;
+
+            rectangle.Red = value * BrightColor.R / 255.0f;
+            rectangle.Green = value * BrightColor.G / 255.0f;
+            rectangle.Blue = value * BrightColor.B / 255.0f;
+
+            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+
+            if (CanMoveItem && cursor.PrimaryDown &&
+                (cursor.ScreenXChange != 0 || cursor.ScreenYChange != 0))
             {
-                handle.Visible = Visible;
+                if (item != null)
+                {
+                    var sideOver = GetSideOver();
+                    if (sideOver == ResizeSide.None)
+                    {
+
+                        float xChange = cursor.WorldXChangeAt(item.Z);
+                        float yChange = cursor.WorldYChangeAt(item.Z);
+
+                        UpdatePositionBy(item, xChange, yChange);
+                    }
+                    else
+                    {
+                        UpdateResize(item, sideOver, cursor.WorldXChangeAt(item.Z), cursor.WorldYChangeAt(0));
+                    }
+                }
             }
 
+            UpdateHandles();
+        }
+
+        private static void UpdatePositionBy(PositionedObject item, float xChange, float yChange)
+        {
+            if (item.Parent == null)
+            {
+                item.X += xChange;
+                item.Y += yChange;
+            }
+            else
+            {
+                item.RelativeX += xChange;
+                item.RelativeY += yChange;
+            }
+        }
+
+        private void UpdateResize(PositionedObject item, ResizeSide sideOver, float v1, float v2)
+        {
+            float xPositionMultiple = 0;
+            float yPositionMultiple = 0;
+            float widthMultiple = 0;
+            float heightMultiple = 0;
+
+            switch(sideOver)
+            {
+                case ResizeSide.TopLeft:
+                    xPositionMultiple = 1;
+                    widthMultiple = -1;
+                    
+                    yPositionMultiple = 1;
+                    heightMultiple = 1;
+                    break;
+                case ResizeSide.Top:
+                    xPositionMultiple = 0;
+                    widthMultiple = 0;
+
+                    yPositionMultiple = 1;
+                    heightMultiple = 1;
+                    break;
+                case ResizeSide.TopRight:
+                    xPositionMultiple = 0;
+                    widthMultiple = 1;
+
+
+                    yPositionMultiple = 1;
+                    heightMultiple = 1;
+
+                    break;
+                case ResizeSide.Right:
+                    xPositionMultiple = 0;
+                    widthMultiple = 1;
+
+                    yPositionMultiple = 0;
+                    heightMultiple = 0;
+                    break;
+
+                case ResizeSide.BottomRight:
+                    xPositionMultiple = 0;
+                    widthMultiple = 0;
+
+                    yPositionMultiple = 0;
+                    heightMultiple = -1;
+
+                    break;
+
+                case ResizeSide.Bottom:
+                    xPositionMultiple = 0;
+                    widthMultiple = 0;
+
+                    yPositionMultiple = 0;
+                    heightMultiple = -1;
+
+                    break;
+                case ResizeSide.BottomLeft:
+                    xPositionMultiple = 1;
+                    widthMultiple = -1;
+
+                    yPositionMultiple = 0;
+                    heightMultiple = -1;
+                    break;
+                case ResizeSide.Left:
+                    xPositionMultiple = 1;
+                    widthMultiple = -1;
+
+                    yPositionMultiple = 0;
+                    heightMultiple = 0;
+
+                    break;
+            }
+
+            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+
+
+            float xChange = xPositionMultiple * cursor.WorldXChangeAt(item.Z);
+            float yChange = yPositionMultiple * cursor.WorldYChangeAt(item.Z);
+
+            UpdatePositionBy(item, xChange, yChange);
+
+            var scalable = item as IScalable;
+
+            scalable.ScaleX += cursor.WorldXChangeAt(item.Z) * widthMultiple / 2.0f;
+            scalable.ScaleY += cursor.WorldYChangeAt(item.Z) * heightMultiple / 2.0f;
+        }
+
+        private void UpdateMainRectangleSize(PositionedObject item, float extraPadding)
+        {
             if (item != null)
             {
                 SelectionLogic.GetDimensionsFor(item,
@@ -171,37 +295,27 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 ScaleX = extraPadding + (maxX - minX) / 2.0f;
                 ScaleY = extraPadding + (maxY - minY) / 2.0f;
             }
-
-            var value = (float)(1 + System.Math.Sin((TimeManager.CurrentTime - FadingSeed) * 5)) / 2;
-
-            rectangle.Red = value * BrightColor.R/255.0f;
-            rectangle.Green = value * BrightColor.G / 255.0f;
-            rectangle.Blue = value * BrightColor.B / 255.0f;
-
-            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
-
-            if(CanMoveItem && cursor.PrimaryDown && 
-                (cursor.ScreenXChange != 0 || cursor.ScreenYChange != 0))
-            {
-                if (item != null)
-                {
-                    if (item.Parent == null)
-                    {
-                        item.X += cursor.WorldXChangeAt(item.Z);
-                        item.Y += cursor.WorldYChangeAt(item.Z);
-                    }
-                    else
-                    {
-                        item.RelativeX += cursor.WorldXChangeAt(item.Z);
-                        item.RelativeY += cursor.WorldYChangeAt(item.Z);
-                    }
-                }
-            }
-
-            UpdateHandles();
         }
 
         void UpdateHandles()
+        {
+            foreach(var handle in handles)
+            {
+                handle.Visible = Visible && ResizeMode == ResizeMode.EightWay;
+            }
+
+            if(Visible)
+            {
+                UpdateHandleRelativePositions();
+
+                foreach(var handle in handles)
+                {
+                    handle.Position += this.Position;
+                }
+            }
+        }
+
+        private void UpdateHandleRelativePositions()
         {
             var handle = handles[0];
             handle.X = -rectangle.Width / 2 - handle.Width / 2;
@@ -235,19 +349,30 @@ namespace {ProjectNamespace}.GlueControl.Editing
             handle.X = -rectangle.Width / 2 - handle.Width / 2;
             handle.Y = 0;
 
-            foreach(var handle2 in handles)
-            {
-                handle2.Position += this.Position;
-            }
-
         }
 
-        ResizeSide GetSideOver(float x, float y)
+        public bool IsCursorOverThis()
         {
+            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+            if(cursor.IsOn3D(rectangle))
+            {
+                return true;
+            }
+
+            if(GetSideOver() != ResizeSide.None)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        ResizeSide GetSideOver()
+        {
+            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+                
             for (int i = 0; i < this.handles.Length; i++)
             {
-                var cursor = FlatRedBall.Gui.GuiManager.Cursor;
-                
                 if (cursor.IsOn3D(handles[i]))
                 {
                     return (ResizeSide)i;

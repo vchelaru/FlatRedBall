@@ -14,12 +14,13 @@ namespace {ProjectNamespace}.GlueControl.Editing
     {
         static List<PositionedObject> tempPunchThroughList = new List<PositionedObject>();
 
-        public static PositionedObject GetEntityOver(PositionedObject currentEntity, bool punchThrough, ElementEditingMode elementEditingMode)
+        public static PositionedObject GetEntityOver(PositionedObject currentEntity, SelectionMarker selectionMarker,
+            bool punchThrough, ElementEditingMode elementEditingMode)
         {
             PositionedObject entityOver = null;
             if(currentEntity != null && punchThrough == false)
             {
-                if(IsCursorOver(currentEntity))
+                if(IsCursorOver(currentEntity) || selectionMarker.IsCursorOverThis())
                 {
                     entityOver = currentEntity;
                 }
