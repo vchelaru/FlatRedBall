@@ -20,6 +20,11 @@ namespace {ProjectNamespace}.GlueControl.Dtos
         public string Type { get; set; }
     }
 
+    class SetEditMode
+    {
+        public bool IsInEditMode { get; set; }
+    }
+
     class SelectObjectDto
     {
         public string ObjectName { get; set; }

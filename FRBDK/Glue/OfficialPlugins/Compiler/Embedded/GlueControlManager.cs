@@ -254,11 +254,12 @@ namespace {ProjectNamespace}
                     HandleSelectObjectCommand(
                         Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.SelectObjectDto>(data));
                     break;
+                case nameof(GlueControl.Dtos.SetEditMode):
+                    HandleSetEditMode(
+                        Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.SetEditMode>(data));
+                    break;
 #endif
 
-                case "SetEditMode":
-                    HandleSetEditMode(data);
-                    break;
 
             }
         }
@@ -310,7 +311,7 @@ namespace {ProjectNamespace}
             bool matchesCurrentScreen =
                 GetIfMatchesCurrentScreen(selectObjectDto.ElementName, out System.Type ownerType, out Screen currentScreen);
             
-            var ownerTypeName = "EditModeProject." + selectObjectDto.ElementName.Replace("\\", ".");
+            var ownerTypeName = "{ProjectNamespace}." + selectObjectDto.ElementName.Replace("\\", ".");
             ownerType = GetType().Assembly.GetType(ownerTypeName);
 
             bool isOwnerScreen = false;
@@ -388,9 +389,9 @@ namespace {ProjectNamespace}
             }
         }
 
-        private void HandleSetEditMode(string data)
+        private void HandleSetEditMode(GlueControl.Dtos.SetEditMode setEditMode)
         {
-            var value = bool.Parse(data);
+            var value = setEditMode.IsInEditMode;
 #if SupportsEditMode
             FlatRedBall.Screens.ScreenManager.IsInEditMode = value;
             FlatRedBall.Gui.GuiManager.Cursor.RequiresGameWindowInFocus = !value;

@@ -361,8 +361,9 @@ namespace OfficialPlugins.Compiler
                     ToolbarController.Self.SetEnabled(viewModel.IsToolbarPlayButtonEnabled);
                     break;
                 case nameof(CompilerViewModel.PlayOrEdit):
-                    var isEditMode = viewModel.PlayOrEdit == PlayOrEdit.Edit;
-                    await DoCommandSendingLogic($"SetEditMode:{isEditMode.ToString().ToLowerInvariant()}");
+                    await CommandSending.CommandSender.Send(
+                        new Dtos.SetEditMode { IsInEditMode = viewModel.PlayOrEdit == PlayOrEdit.Edit },
+                        viewModel.PortNumber);
                     break;
             }
         }
