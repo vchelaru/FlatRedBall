@@ -134,6 +134,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         private static void HandleSetVariable(int gamePortNumber, SetVariableDto setVariableDto)
         {
+            // push back to the game so the game can re-run this whenever the screen changes.
+
             TaskManager.Self.Add(() =>
             {
                 var type = string.Join('\\', setVariableDto.InstanceOwner.Split('.').Skip(1));
@@ -166,6 +168,9 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                     nos.SetVariableValue(setVariableDto.VariableName, value);
 
+                    GlueCommands.Self.DoOnUiThread(() =>
+                        RefreshManager.Self.HandleNamedObjectValueChanged(setVariableDto.VariableName, null, nos)
+                    );
                     // this may not be the current screen:
                     var nosParent = ObjectFinder.Self.GetElementContaining(nos);
 

@@ -26,6 +26,7 @@ using System.Diagnostics;
 using System.Timers;
 using Glue;
 using OfficialPluginsCore.Compiler.CommandReceiving;
+using FlatRedBall.Glue.Elements;
 
 namespace OfficialPlugins.Compiler
 {
@@ -361,9 +362,30 @@ namespace OfficialPlugins.Compiler
                     ToolbarController.Self.SetEnabled(viewModel.IsToolbarPlayButtonEnabled);
                     break;
                 case nameof(CompilerViewModel.PlayOrEdit):
+
+                    var inEditMode = viewModel.PlayOrEdit == PlayOrEdit.Edit;
                     await CommandSending.CommandSender.Send(
-                        new Dtos.SetEditMode { IsInEditMode = viewModel.PlayOrEdit == PlayOrEdit.Edit },
+                        new Dtos.SetEditMode { IsInEditMode = inEditMode },
                         viewModel.PortNumber);
+
+                    if(inEditMode)
+                    {
+                        var screenName = await CommandSending.CommandSender.GetScreenName(viewModel.PortNumber);
+
+                        if(!string.IsNullOrEmpty(screenName))
+                        {
+                            var glueScreenName =
+                                string.Join('\\', screenName.Split('.').Skip(1).ToArray());
+
+                            var screen = ObjectFinder.Self.GetScreenSave(glueScreenName);
+
+                            if (screen != null)
+                            {
+                                GlueState.Self.CurrentElement = screen;
+                            }
+                        }
+                    }
+
                     break;
             }
         }
@@ -394,6 +416,7 @@ namespace OfficialPlugins.Compiler
             control.RestartGameCurrentScreenClicked += async (not, used) =>
             {
                 var screenName = await CommandSending.CommandSender.GetScreenName(viewModel.PortNumber);
+
 
                 viewModel.IsPaused = false;
                 runner.Stop();

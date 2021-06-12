@@ -66,6 +66,30 @@ namespace OfficialPlugins.Compiler.Managers
 
         #endregion
 
+        internal async void HandleItemSelected(TreeNode selectedTreeNode)
+        {
+            if(ViewModel.IsEditChecked)
+            {
+                var dto = new SelectObjectDto();
+
+                var nos = GlueState.Self.CurrentNamedObjectSave;
+                var element = GlueState.Self.CurrentElement;
+
+                if(nos != null)
+                {
+                    dto.ObjectName = nos.InstanceName;
+                    dto.ElementName = element.Name;
+
+                    await CommandSender.Send(dto, ViewModel.PortNumber);
+                }
+                else if(element != null)
+                {
+                    await HandleElementSelected(dto, element);
+                }
+            }
+
+        }
+
         #region File
 
         public async void HandleFileChanged(FilePath fileName)
@@ -148,29 +172,6 @@ namespace OfficialPlugins.Compiler.Managers
             return true;
         }
 
-        internal async void HandleItemSelected(TreeNode selectedTreeNode)
-        {
-            var dto = new SelectObjectDto();
-
-            var nos = GlueState.Self.CurrentNamedObjectSave;
-            var element = GlueState.Self.CurrentElement;
-
-            if(nos != null)
-            {
-                dto.ObjectName = nos.InstanceName;
-                dto.ElementName = element.Name;
-
-                await CommandSender.Send(dto, ViewModel.PortNumber);
-            }
-            else if(element != null)
-            {
-                dto.ObjectName = String.Empty;
-                dto.ElementName = element.Name;
-
-                await CommandSender.Send(dto, ViewModel.PortNumber);
-            }
-
-        }
 
         #endregion
 
@@ -186,6 +187,17 @@ namespace OfficialPlugins.Compiler.Managers
 
         #endregion
 
+        #region Glue Element
+
+        private async Task HandleElementSelected(SelectObjectDto dto, GlueElement element)
+        {
+            dto.ObjectName = String.Empty;
+            dto.ElementName = element.Name;
+
+            await CommandSender.Send(dto, ViewModel.PortNumber);
+        }
+
+        #endregion
 
         internal async void HandleNewObjectCreated(NamedObjectSave newNamedObject)
         {
@@ -212,7 +224,7 @@ namespace OfficialPlugins.Compiler.Managers
                 {
                     name = "this." + variable.Name;
                 }
-                await TryPushVariableOrRestart(null, name, type, value, GlueState.Self.CurrentElement);
+                await TryPushVariable(null, name, type, value, GlueState.Self.CurrentElement);
             }
             else
             {
@@ -259,7 +271,7 @@ namespace OfficialPlugins.Compiler.Managers
                 {
                     try
                     {
-                        await TryPushVariableOrRestart(nosName, changedMember, type, value, currentElement);
+                        await TryPushVariable(nosName, changedMember, type, value, currentElement);
                     }
                     catch
                     {
@@ -273,7 +285,7 @@ namespace OfficialPlugins.Compiler.Managers
             }
         }
 
-        private async Task TryPushVariableOrRestart(string variableOwningNosName, string rawMemberName, string type, string value, GlueElement currentElement)
+        private async Task TryPushVariable(string variableOwningNosName, string rawMemberName, string type, string value, GlueElement currentElement)
         {
             if (ViewModel.IsRunning)
             {
@@ -431,9 +443,7 @@ namespace OfficialPlugins.Compiler.Managers
                 {
                     try
                     {
-                        screenToRestartOn = CommandSending.CommandSender
-                            .SendCommand("GetCurrentScreen", portNumber)
-                            .Result;
+                        screenToRestartOn = await CommandSending.CommandSender.GetScreenName(portNumber);
                     }
                     catch (AggregateException)
                     {

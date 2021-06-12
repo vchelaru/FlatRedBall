@@ -20,11 +20,20 @@ namespace {ProjectNamespace}
 
     public class GlueControlManager
     {
+        #region Classes
+
+        class GameToGlueCommand
+        {
+            public string Command { get; set; }
+        }
+
+        #endregion
+
         #region Fields/Properties
 
         bool isRunning;
         private TcpListener listener;
-        private ConcurrentQueue<string> GameToGlueCommands = new ConcurrentQueue<string>();
+        private ConcurrentQueue<GameToGlueCommand> GameToGlueCommands = new ConcurrentQueue<GameToGlueCommand>();
         private GlueControl.Editing.EditingManager EditingManager; 
 
         
@@ -145,15 +154,12 @@ namespace {ProjectNamespace}
                     string toReturn = string.Empty;
                     if (GameToGlueCommands.Count != 0)
                     {
-                        lock (GameToGlueCommands)
+                        List<string> tempList = new List<string>();
+                        while (GameToGlueCommands.TryDequeue(out GameToGlueCommand gameToGlueCommand))
                         {
-                            List<string> tempList = new List<string>();
-                            while (GameToGlueCommands.TryDequeue(out string tempString))
-                            {
-                                tempList.Add(tempString);
-                            }
-                            toReturn = Newtonsoft.Json.JsonConvert.SerializeObject(tempList.ToArray());
-                    }
+                            tempList.Add(gameToGlueCommand.Command);
+                        }
+                        toReturn = Newtonsoft.Json.JsonConvert.SerializeObject(tempList.ToArray());
                     }
                     return toReturn;
             }
@@ -311,7 +317,7 @@ namespace {ProjectNamespace}
             bool matchesCurrentScreen =
                 GetIfMatchesCurrentScreen(selectObjectDto.ElementName, out System.Type ownerType, out Screen currentScreen);
             
-            var ownerTypeName = "{ProjectNamespace}." + selectObjectDto.ElementName.Replace("\\", ".");
+            var ownerTypeName = "EditModeProject." + selectObjectDto.ElementName.Replace("\\", ".");
             ownerType = GetType().Assembly.GetType(ownerTypeName);
 
             bool isOwnerScreen = false;
@@ -516,24 +522,26 @@ namespace {ProjectNamespace}
             dto.VariableValue = value;
             var message = $"{nameof(SetVariableDto)}:{Newtonsoft.Json.JsonConvert.SerializeObject(dto)}";
 
-            GameToGlueCommands.Enqueue(message);
+            SendCommandToGlue(message);
 
-            var fromGlueDto = new GlueVariableSetData();
-            fromGlueDto.InstanceOwner = ownerType;
-            fromGlueDto.VariableName = $"this.{item.Name}.{propertyName}";
-            fromGlueDto.VariableValue = value.ToString();
-            fromGlueDto.Type = "float";
-            var simulatedGlueToGameCommand = $"SetVariable:{Newtonsoft.Json.JsonConvert.SerializeObject(fromGlueDto)}";
+            // the game used to set this itself, but the game doesn't know which screen defines an object
+            // so let Glue hande that
+            //var fromGlueDto = new GlueVariableSetData();
+            //fromGlueDto.InstanceOwner = ownerType;
+            //fromGlueDto.VariableName = $"this.{item.Name}.{propertyName}";
+            //fromGlueDto.VariableValue = value.ToString();
+            //fromGlueDto.Type = "float";
+            //var simulatedGlueToGameCommand = $"SetVariable:{Newtonsoft.Json.JsonConvert.SerializeObject(fromGlueDto)}";
 
-            if(isEditingEntity)
-            {
-                GlobalGlueToGameCommands.Enqueue(simulatedGlueToGameCommand);
-            }
-            else
-            {
+            //if(isEditingEntity)
+            //{
+            //    GlobalGlueToGameCommands.Enqueue(simulatedGlueToGameCommand);
+            //}
+            //else
+            //{
                 
-                EnqueueMessage(screen.GetType().FullName, simulatedGlueToGameCommand);
-            }
+            //    EnqueueMessage(screen.GetType().FullName, simulatedGlueToGameCommand);
+            //}
 #endif
         }
 
@@ -552,7 +560,7 @@ namespace {ProjectNamespace}
             }
 
             var message = $"{nameof(SelectObjectDto)}:{Newtonsoft.Json.JsonConvert.SerializeObject(dto)}";
-            GameToGlueCommands.Enqueue(message);
+            SendCommandToGlue(message);
         }
 
         public void SendToGlue(object dto)
@@ -564,10 +572,7 @@ namespace {ProjectNamespace}
 
         public void SendCommandToGlue(string command)
         {
-            lock(GameToGlueCommands)
-            {
-                GameToGlueCommands.Enqueue(command);
-            }
+            GameToGlueCommands.Enqueue(new GameToGlueCommand { Command = command });
         }
 
         #endregion
