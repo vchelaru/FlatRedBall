@@ -299,13 +299,23 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             #region Perform instantiation
 
-            // Ensure that the nos is only instantiated where it should be. Since this method
-            // can be called for the constructor or Initialize() method, we need to check that
-            // we're in the proper place for generating the instantiation code.
-            if (!namedObject.InstantiatedByBase && inConstructor == instantiateInConstructor)
+            if (!namedObject.InstantiatedByBase)
             {
-                succeeded = GenerateInstantiationOrAssignment(
-                    namedObject, saveObject, codeBlock, overridingContainerName, referencedFilesAlreadyUsingFullFile);
+                // Ensure that the nos is only instantiated where it should be. Since this method
+                // can be called for the constructor or Initialize() method, we need to check that
+                // we're in the proper place for generating the instantiation code.
+                if (inConstructor == instantiateInConstructor)
+                {
+                    succeeded = GenerateInstantiationOrAssignment(
+                        namedObject, saveObject, codeBlock, overridingContainerName, referencedFilesAlreadyUsingFullFile);
+                }
+                // If the nos is a list, was instantiated in the constructor, and we aren't in the
+                // constructor, then we should clear any items out of it before anything new is
+                // added in. This isn't necessary for scenes, but it's needed for pooled entities.
+                if (namedObject.IsList && instantiateInConstructor && !inConstructor)
+                {
+                    codeBlock.Line($"{namedObject.FieldName}.Clear();");
+                }
             }
             #endregion
 
