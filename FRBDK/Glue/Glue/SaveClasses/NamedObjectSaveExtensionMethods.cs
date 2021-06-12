@@ -899,6 +899,14 @@ namespace FlatRedBall.Glue.SaveClasses
 
                 namedObjectSave.SourceClassType?.StartsWith("CollisionRelationship<") == true;
         }
+
+        public static bool ShouldInstantiateInConstructor(this NamedObjectSave namedObjectSave)
+        {
+            return
+                namedObjectSave.IsList &&
+                namedObjectSave.Instantiate &&
+                !namedObjectSave.InstantiatedByBase;
+        }
     }
 
 
