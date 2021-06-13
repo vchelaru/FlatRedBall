@@ -548,7 +548,9 @@ namespace OfficialPlugins.VariableDisplay
 
                 instanceMember.CustomSetEvent += (owner, value) =>
                 {
-                    NamedObjectVariableChangeLogic.ReactToValueSet(instance, typedMember, value, instanceMember, memberType);
+                    NamedObjectVariableChangeLogic.ReactToValueSet(instance, typedMember.MemberName, value, out bool makeDefault);
+
+                    instanceMember.IsDefault = makeDefault;
                 };
 
                 instanceMember.IsDefaultSet += (owner, args) =>

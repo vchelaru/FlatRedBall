@@ -65,12 +65,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateCode = true);
 
         #endregion
-        
 
+        #region Plugin Requirements
 
         bool SetPluginRequirement(Interfaces.IPlugin plugin, bool requiredByProject);
         bool SetPluginRequirement(string name, bool requiredByProject, Version version);
         bool GetPluginRequirement(Interfaces.IPlugin plugin);
+
+        #endregion
 
         #region Entity
 
@@ -95,9 +97,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         NamedObjectSave AddNewNamedObjectTo(ViewModels.AddObjectViewModel addObjectViewModel, IElement element, NamedObjectSave listToAddTo = null);
 
         void AddNamedObjectTo(NamedObjectSave newNos, IElement element, NamedObjectSave listToAddTo = null);
-
-        [Obsolete("I don't think we need the typed version anymore. Use the untyped version")]
-        void SetVariableOn(NamedObjectSave nos, string memberName, Type memberType, object value);
 
         void SetVariableOn(NamedObjectSave nos, string memberName, object value);
 

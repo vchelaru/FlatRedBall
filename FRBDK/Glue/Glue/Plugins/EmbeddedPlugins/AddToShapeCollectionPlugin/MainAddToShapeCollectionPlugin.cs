@@ -75,7 +75,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.AddToShapeCollectionPlugin
             points.Add(new Vector2(-16, -16));
             points.Add(new Vector2(-16, 16));
 
-            GlueCommands.Self.GluxCommands.SetVariableOn(namedObjectSave, "Points", typeof(List<Vector2>), points);
+            GlueCommands.Self.GluxCommands.SetVariableOn(namedObjectSave, "Points", points);
 
             //instructions.Value = points;
 

@@ -201,11 +201,13 @@ namespace OfficialPlugins.Compiler.Managers
 
         internal async void HandleNewObjectCreated(NamedObjectSave newNamedObject)
         {
-            if (ViewModel.IsRunning)
+            if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
                 var serialized = JsonConvert.SerializeObject(newNamedObject);
 
                 await CommandSender.SendCommand($"AddObject:{serialized}", PortNumber);
+
+
             }
         }
 

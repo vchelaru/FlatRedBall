@@ -13,30 +13,30 @@ namespace OfficialPlugins.VariableDisplay
 {
     class NamedObjectVariableChangeLogic
     {
-        public static void ReactToValueSet(NamedObjectSave instance, TypedMemberBase typedMember, object value, DataGridItem instanceMember, Type memberType)
+        public static void ReactToValueSet(NamedObjectSave instance, string memberName, object value, out bool makeDefault)
         {
-            instanceMember.IsDefault = false;
+            TryAdjustingValue(instance, memberName, ref value, out makeDefault);
 
-            TryAdjustingValue(instance, typedMember, ref value, instanceMember);
-
-            PerformStandardVariableAssignments(instance, typedMember, value, instanceMember, memberType);
+            PerformStandardVariableAssignments(instance, memberName, value);
 
         }
 
-        private static void TryAdjustingValue(NamedObjectSave instance, TypedMemberBase typedMember, ref object value, DataGridItem instanceMember)
+        private static void TryAdjustingValue(NamedObjectSave instance, string memberName, ref object value, out bool makeDefault)
         {
-            if(typedMember.MemberType == typeof(AnimationChainList))
+            makeDefault = false;
+            var ati = instance.GetAssetTypeInfo();
+            var foundVariable = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);
+            if(foundVariable?.Type == nameof(AnimationChainList))
             {
                 if(value is string && ((string)value) == "<NONE>")
                 {
                     value = null;
-                    instanceMember.IsDefault = true;
+                    makeDefault = true;
 
                     // Let's also set the CurrentChainName to null
                     GlueCommands.Self.GluxCommands.SetVariableOn(
                         instance,
                         "CurrentChainName",
-                        typeof(string),
                         null);
                 }
             }
@@ -47,15 +47,14 @@ namespace OfficialPlugins.VariableDisplay
             }
         }
 
-        private static void PerformStandardVariableAssignments(NamedObjectSave instance, TypedMemberBase typedMember, object value, DataGridItem instanceMember, Type memberType)
+        private static void PerformStandardVariableAssignments(NamedObjectSave instance, string memberName, object value)
         {
             // If we ignore the next refresh, then AnimationChains won't update when the user
             // picks an AnimationChainList from a combo box:
             //RefreshLogic.IgnoreNextRefresh();
             GlueCommands.Self.GluxCommands.SetVariableOn(
                 instance,
-                typedMember.MemberName,
-                memberType,
+                memberName,
                 value);
 
 
