@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using ToolsUtilities;
 
 namespace OfficialPluginsCore.QuickActionPlugin.Managers
 {
@@ -101,7 +102,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
 
             #endregion
 
-            #region Add Object to Screen/Entity
+            #region Add Object to Screen/Entity/List
 
             mainView.AddObjectToEntityButton.Visibility = ToVisibility(
                 GlueState.Self.CurrentEntitySave != null
@@ -114,6 +115,28 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
                 );
             mainView.AddObjectToScreenButton.Title = $"Add Object to {GlueState.Self.CurrentElement?.GetStrippedName()}";
             mainView.AddObjectToScreenButton.Details = "Common screen object types include entity lists, layers, and collision relationships.";
+
+            NamedObjectSave nosList = null;
+
+            if(GlueState.Self.CurrentScreenSave != null &&
+                GlueState.Self.CurrentNamedObjectSave?.IsList == true)
+            {
+                nosList = GlueState.Self.CurrentNamedObjectSave;
+            }
+            if(nosList == null && GlueState.Self.CurrentScreenSave != null &&
+                GlueState.Self.CurrentNamedObjectSave != null)
+            {
+                nosList = GlueState.Self.CurrentElement.NamedObjects
+                    .FirstOrDefault(item => item.ContainedObjects.Contains(GlueState.Self.CurrentNamedObjectSave));
+            }
+            mainView.AddObjectToListButton.Visibility = ToVisibility(nosList != null);
+            var listType = nosList?.SourceClassGenericType;
+            if(listType?.Contains('\\') == true)
+            {
+                listType = FileManager.RemovePath(listType);
+            }
+
+            mainView.AddObjectToListButton.Title = $"Add a new {listType} to {nosList?.InstanceName}";
 
 
             #endregion

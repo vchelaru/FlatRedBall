@@ -18,6 +18,16 @@
                         Details="Set the AddObject details here, depending on if it's a Screen or entity."
                         Clicked="AddObjectButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Views/Add Object v4.png">
                     </local:QuickActionButton>
+
+                    <local:QuickActionButton
+                        x:Name="AddObjectToListButton"
+                        Title="Add XXXX to XXXXList"
+                        Details="Adds a new instance to the selected list."
+                        Clicked="AddObjectToListButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Views/Add Object v4.png">
+                    </local:QuickActionButton>
+
+                    
+
                 </WrapPanel>
             </glue:StyledGroupBox>
             <glue:StyledGroupBox Header="Current Entity">

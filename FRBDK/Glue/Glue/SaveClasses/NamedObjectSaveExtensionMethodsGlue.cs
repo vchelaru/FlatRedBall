@@ -46,13 +46,6 @@ namespace FlatRedBall.Glue.SaveClasses
             return MembershipInfo.NotContained;
         }
 
-        public static void AddNamedObjectToCurrentNamedObjectList(NamedObjectSave namedObject)
-        {
-            NamedObjectSave namedObjectList = GlueState.Self.CurrentNamedObjectSave;
-
-            AddNamedObjectToList(namedObject, namedObjectList);
-        }
-
         public static void AddNamedObjectToList(NamedObjectSave namedObject, NamedObjectSave namedObjectList)
         {
             namedObject.AddToManagers = true;

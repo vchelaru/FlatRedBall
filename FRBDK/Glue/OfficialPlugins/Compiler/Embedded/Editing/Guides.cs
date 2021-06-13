@@ -32,10 +32,15 @@ namespace {ProjectNamespace}.GlueControl.Editing
             HorizontalLine.SetFromAbsoluteEndpoints(
                 new Microsoft.Xna.Framework.Vector3(-10_0000, 0, 0),
                 new Microsoft.Xna.Framework.Vector3(10_000, 0, 0));
+            HorizontalLine.Color = new Microsoft.Xna.Framework.Color(new Microsoft.Xna.Framework.Vector4
+                (.5f, .5f, .5f, .5f));
             VerticalLine = new Line();
             VerticalLine.SetFromAbsoluteEndpoints(
                 new Microsoft.Xna.Framework.Vector3(0, -10_0000, 0),
                 new Microsoft.Xna.Framework.Vector3(0, 10_000, 0));
+            VerticalLine.Color = new Microsoft.Xna.Framework.Color(new Microsoft.Xna.Framework.Vector4
+                (.5f, .5f, .5f, .5f));
+
             ScreenManager.PersistentLines.Add(HorizontalLine);
             ScreenManager.PersistentLines.Add(VerticalLine);
         }

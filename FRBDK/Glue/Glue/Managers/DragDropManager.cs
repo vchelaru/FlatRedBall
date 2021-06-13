@@ -553,7 +553,7 @@ namespace FlatRedBall.Glue.Managers
                     }
                     else
                     {
-                        NamedObjectSave namedObject = new NamedObjectSave();
+                        var namedObject = new NamedObjectSave();
 
                         if(GlueState.Self.CurrentGlueProject.FileVersion >= 
                             (int)GlueProjectSave.GluxVersions.ListsHaveAssociateWithFactoryBool)
@@ -573,7 +573,9 @@ namespace FlatRedBall.Glue.Managers
                         // make sure that the target list is the current
                         GlueState.Self.CurrentNamedObjectSave = targetNamedObjectSave;
 
-                        NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToCurrentNamedObjectList(namedObject);
+                        var currentNosList = GlueState.Self.CurrentNamedObjectSave;
+                        NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToList(namedObject, 
+                            currentNosList);
 
                         if(namedObject.SourceClassType != entity.Name)
                         {

@@ -18,6 +18,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using FileManager = ToolsUtilities.FileManager;
+using StringFunctions = ToolsUtilities.StringFunctions;
 
 namespace OfficialPluginsCore.QuickActionPlugin.Views
 {
@@ -88,10 +90,15 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
 
         private void AddObjectButton_Clicked(object sender, RoutedEventArgs e)
         {
+            // before deselecting the object, store off the element
+            var element = GlueState.Self.CurrentElement;
             // deselect the currently selected named object
-            if(GlueState.Self.CurrentNamedObjectSave != null)
+            if (GlueState.Self.CurrentNamedObjectSave != null)
             {
                 GlueState.Self.CurrentNamedObjectSave = null;
+
+                //re-select the element since deselecting the NOS will deselect everything
+                GlueState.Self.CurrentElement = element;
             }
             if(GlueState.Self.CurrentElement != null)
             {
@@ -148,6 +155,53 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
                 nameof(entity.CreatedByOtherEntities), false, nameof(entity.CreatedByOtherEntities), null);
 
             GlueCommands.Self.GluxCommands.SaveGlux();
+
+            AnyButtonClicked();
+        }
+
+        private void AddObjectToListButton_Clicked(object sender, RoutedEventArgs e)
+        {
+            var namedObject = new NamedObjectSave();
+            var targetList = GlueState.Self.CurrentNamedObjectSave;
+            if(!targetList.IsList)
+            {
+                targetList = GlueState.Self.CurrentElement.NamedObjects
+                    .FirstOrDefault(item => item.ContainedObjects.Contains(GlueState.Self.CurrentNamedObjectSave));
+            }
+
+            //////////////////Early Out//////////////////
+            if(targetList == null)
+            {
+                return;
+            }
+            ////////////////End Early Out////////////////
+
+
+
+            var desiredType = targetList?.SourceClassGenericType;
+
+            namedObject.InstanceName =
+                FileManager.RemovePath(desiredType) + "1";
+
+            FlatRedBall.Utilities.StringFunctions.MakeNameUnique<NamedObjectSave>(
+                namedObject, targetList.ContainedObjects);
+
+            // Not sure if we need to set this or not, but I think 
+            // any instance added to a list will not be defined by base
+            namedObject.DefinedByBase = false;
+
+            NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToList(namedObject,
+                targetList);
+
+            if (namedObject.SourceClassType != desiredType)
+            {
+                namedObject.SourceClassType = desiredType;
+                namedObject.UpdateCustomProperties();
+            }
+
+            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+
+            PluginManager.ReactToNewObject(namedObject);
 
             AnyButtonClicked();
         }

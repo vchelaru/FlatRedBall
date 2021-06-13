@@ -946,7 +946,7 @@ namespace FlatRedBall.Glue.Plugins
             plugin => plugin.ReactToElementRenamed != null);
         }
 
-        internal static void ReactToNewObject(NamedObjectSave newObject)
+        public static void ReactToNewObject(NamedObjectSave newObject)
         {
             CallMethodOnPlugin((plugin) =>
             {
