@@ -43,10 +43,6 @@ namespace {ProjectNamespace}.GlueControl.Editing
         AxisAlignedRectangle[] handles = new AxisAlignedRectangle[8];
 
 
-        public Color BrightColor
-        {
-            get; set;
-        } = Color.White;
 
         public float ScaleX
         {
@@ -88,12 +84,17 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 if(value != rectangle.Visible)
                 {
                     rectangle.Visible = value;
-                    UpdateHandles();
+                    UpdateHandlesVisibilityAndPosition();
                 }
             }
         }
 
         public double FadingSeed { get; set; } = 0;
+        public Color BrightColor
+        {
+            get; set;
+        } = Color.White;
+        public bool IsFadingInAndOut { get; set; } = true;
 
         string name;
         public string Name
@@ -148,13 +149,9 @@ namespace {ProjectNamespace}.GlueControl.Editing
         {
             Visible = item != null;
 
-            UpdateMainRectangleSize(item, extraPadding);
+            UpdateMainRectangleSizeToItem(item, extraPadding);
 
-            var value = (float)(1 + System.Math.Sin((TimeManager.CurrentTime - FadingSeed) * 5)) / 2;
-
-            rectangle.Red = value * BrightColor.R / 255.0f;
-            rectangle.Green = value * BrightColor.G / 255.0f;
-            rectangle.Blue = value * BrightColor.B / 255.0f;
+            UpdateColor();
 
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
 
@@ -169,19 +166,107 @@ namespace {ProjectNamespace}.GlueControl.Editing
                         float xChange = cursor.WorldXChangeAt(item.Z);
                         float yChange = cursor.WorldYChangeAt(item.Z);
 
-                        UpdatePositionBy(item, xChange, yChange);
+                        ChangePositionBy(item, xChange, yChange);
                     }
                     else
                     {
-                        UpdateResize(item, sideGrabbed, cursor.WorldXChangeAt(item.Z), cursor.WorldYChangeAt(0));
+                        ChangeSizeBy(item, sideGrabbed, cursor.WorldXChangeAt(item.Z), cursor.WorldYChangeAt(0));
                     }
                 }
             }
 
-            UpdateHandles();
+            UpdateHandlesVisibilityAndPosition();
         }
 
-        private static void UpdatePositionBy(PositionedObject item, float xChange, float yChange)
+        private void UpdateColor()
+        {
+            if(IsFadingInAndOut)
+            {
+                var value = (float)(1 + System.Math.Sin((TimeManager.CurrentTime - FadingSeed) * 5)) / 2;
+
+                rectangle.Red = value * BrightColor.R / 255.0f;
+                rectangle.Green = value * BrightColor.G / 255.0f;
+                rectangle.Blue = value * BrightColor.B / 255.0f;
+            }
+        }
+
+        private void UpdateMainRectangleSizeToItem(PositionedObject item, float extraPadding)
+        {
+            if (item != null)
+            {
+                SelectionLogic.GetDimensionsFor(item,
+                    out float minX, out float maxX,
+                    out float minY, out float maxY);
+
+                var newPosition = new Vector3();
+                newPosition.X = (maxX + minX) / 2.0f;
+                newPosition.Y = (maxY + minY) / 2.0f;
+                newPosition.Z = item.Z;
+
+                Position = newPosition;
+
+                ScaleX = extraPadding + (maxX - minX) / 2.0f;
+                ScaleY = extraPadding + (maxY - minY) / 2.0f;
+            }
+        }
+
+        void UpdateHandlesVisibilityAndPosition()
+        {
+            foreach(var handle in handles)
+            {
+                handle.Visible = Visible && ResizeMode == ResizeMode.EightWay;
+            }
+
+            if(Visible)
+            {
+                UpdateHandleRelativePositions();
+
+                foreach(var handle in handles)
+                {
+                    handle.Position += this.Position;
+                }
+            }
+        }
+
+        private void UpdateHandleRelativePositions()
+        {
+            var handle = handles[0];
+            handle.X = -rectangle.Width / 2 - handle.Width / 2;
+            handle.Y = rectangle.Height / 2 + handle.Height / 2;
+
+            handle = handles[1];
+            handle.X = 0;
+            handle.Y = rectangle.Height / 2 + handle.Height / 2;
+
+            handle = handles[2];
+            handle.X = rectangle.Width / 2 + handle.Width / 2;
+            handle.Y = rectangle.Height / 2 + handle.Height / 2;
+
+            handle = handles[3];
+            handle.X = rectangle.Width / 2 + handle.Width / 2;
+            handle.Y = 0;
+
+            handle = handles[4];
+            handle.X = +rectangle.Width / 2 + handle.Width / 2;
+            handle.Y = -rectangle.Height / 2 - handle.Height / 2;
+
+            handle = handles[5];
+            handle.X = 0;
+            handle.Y = -rectangle.Height / 2 - handle.Height / 2;
+
+            handle = handles[6];
+            handle.X = -rectangle.Width / 2 - handle.Width / 2;
+            handle.Y = -rectangle.Height / 2 - handle.Height / 2;
+
+            handle = handles[7];
+            handle.X = -rectangle.Width / 2 - handle.Width / 2;
+            handle.Y = 0;
+
+        }
+
+        #region Drag to move/resize
+
+        private static void ChangePositionBy(PositionedObject item, float xChange, float yChange)
         {
             if (item.Parent == null)
             {
@@ -195,7 +280,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             }
         }
 
-        private void UpdateResize(PositionedObject item, ResizeSide sideOver, float v1, float v2)
+        private void ChangeSizeBy(PositionedObject item, ResizeSide sideOver, float v1, float v2)
         {
             float xPositionMultiple = 0;
             float yPositionMultiple = 0;
@@ -275,7 +360,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             float xChange = xPositionMultiple * cursor.WorldXChangeAt(item.Z);
             float yChange = yPositionMultiple * cursor.WorldYChangeAt(item.Z);
 
-            UpdatePositionBy(item, xChange, yChange);
+            ChangePositionBy(item, xChange, yChange);
 
             var scalable = item as IScalable;
 
@@ -288,79 +373,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             scalable.ScaleY = newScaleY;
         }
 
-        private void UpdateMainRectangleSize(PositionedObject item, float extraPadding)
-        {
-            if (item != null)
-            {
-                SelectionLogic.GetDimensionsFor(item,
-                    out float minX, out float maxX,
-                    out float minY, out float maxY);
-
-                var newPosition = new Vector3();
-                newPosition.X = (maxX + minX) / 2.0f;
-                newPosition.Y = (maxY + minY) / 2.0f;
-                newPosition.Z = item.Z;
-
-                Position = newPosition;
-
-                ScaleX = extraPadding + (maxX - minX) / 2.0f;
-                ScaleY = extraPadding + (maxY - minY) / 2.0f;
-            }
-        }
-
-        void UpdateHandles()
-        {
-            foreach(var handle in handles)
-            {
-                handle.Visible = Visible && ResizeMode == ResizeMode.EightWay;
-            }
-
-            if(Visible)
-            {
-                UpdateHandleRelativePositions();
-
-                foreach(var handle in handles)
-                {
-                    handle.Position += this.Position;
-                }
-            }
-        }
-
-        private void UpdateHandleRelativePositions()
-        {
-            var handle = handles[0];
-            handle.X = -rectangle.Width / 2 - handle.Width / 2;
-            handle.Y = rectangle.Height / 2 + handle.Height / 2;
-
-            handle = handles[1];
-            handle.X = 0;
-            handle.Y = rectangle.Height / 2 + handle.Height / 2;
-
-            handle = handles[2];
-            handle.X = rectangle.Width / 2 + handle.Width / 2;
-            handle.Y = rectangle.Height / 2 + handle.Height / 2;
-
-            handle = handles[3];
-            handle.X = rectangle.Width / 2 + handle.Width / 2;
-            handle.Y = 0;
-
-            handle = handles[4];
-            handle.X = +rectangle.Width / 2 + handle.Width / 2;
-            handle.Y = -rectangle.Height / 2 - handle.Height / 2;
-
-            handle = handles[5];
-            handle.X = 0;
-            handle.Y = -rectangle.Height / 2 - handle.Height / 2;
-
-            handle = handles[6];
-            handle.X = -rectangle.Width / 2 - handle.Width / 2;
-            handle.Y = -rectangle.Height / 2 - handle.Height / 2;
-
-            handle = handles[7];
-            handle.X = -rectangle.Width / 2 - handle.Width / 2;
-            handle.Y = 0;
-
-        }
+        #endregion
 
         public bool IsCursorOverThis()
         {

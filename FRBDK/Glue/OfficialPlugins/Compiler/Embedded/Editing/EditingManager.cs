@@ -76,6 +76,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             var isInEditMode = ScreenManager.IsInEditMode;
 
             Guides.Visible = isInEditMode;
+            Guides.UpdateGridLines();
 
             if (isInEditMode)
             {
