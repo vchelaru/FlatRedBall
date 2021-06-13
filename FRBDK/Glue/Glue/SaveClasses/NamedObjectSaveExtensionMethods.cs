@@ -579,7 +579,7 @@ namespace FlatRedBall.Glue.SaveClasses
         [Obsolete("This is confusingly named SetPropertyValue. You probably want to do thisObject.Properties.SetValue")]
         public static InstructionSave SetPropertyValue(this NamedObjectSave instance, string propertyName, object valueToSet)
         {
-            InstructionSave instruction = instance.GetInstructionFromMember(propertyName);
+            var instruction = instance.GetCustomVariable(propertyName);
 
             if (instruction == null)
             {
@@ -753,17 +753,6 @@ namespace FlatRedBall.Glue.SaveClasses
             return message;
         }
 
-        public static CustomVariableInNamedObject GetCustomVariable(this NamedObjectSave namedObject, string variableName)
-        {
-            foreach (var variable in namedObject.InstructionSaves)
-            {
-                if (variable.Member == variableName)
-                {
-                    return variable;
-                }
-            }
-            return null;
-        }
 
         public static void ResetVariablesReferencing(this NamedObjectSave namedObject, ReferencedFileSave rfs)
         {

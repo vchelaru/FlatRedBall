@@ -925,9 +925,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #endregion
 
-
-
-        public CustomVariableInNamedObject GetInstructionFromMember(string memberName)
+        public CustomVariableInNamedObject GetCustomVariable(string memberName)
         {
             for (int i = 0; i < InstructionSaves.Count; i++)
             {
@@ -962,7 +960,7 @@ namespace FlatRedBall.Glue.SaveClasses
         [Obsolete("This confusingly is named GetProperties, but it actually searches the Instructions (variables) on the object. You might want to use thisObject.Properties.GetValue instead")]
         public object GetPropertyValue(string propertyName)
         {
-            InstructionSave instruction = GetInstructionFromMember(propertyName);
+            InstructionSave instruction = GetCustomVariable(propertyName);
             if (instruction == null)
             {
                 return null;
@@ -986,17 +984,7 @@ namespace FlatRedBall.Glue.SaveClasses
         //    return null;
         //}
 
-        public CustomVariableInNamedObject GetCustomVariable(string name)
-        {
-            foreach (CustomVariableInNamedObject customVariable in this.InstructionSaves)
-            {
-                if (customVariable.Member == name)
-                {
-                    return customVariable;
-                }
-            }
-            return null;
-        }
+
 
         /// <summary>
         /// Returns whether this instance has the argument variable. This controls whether the variable should appear in the property grid.

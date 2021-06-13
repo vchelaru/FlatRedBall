@@ -15,14 +15,9 @@ namespace OfficialPlugins.VariableDisplay
     {
         public static void ReactToValueSet(NamedObjectSave instance, string memberName, object value, out bool makeDefault)
         {
-            TryAdjustingValue(instance, memberName, ref value, out makeDefault);
-
-            PerformStandardVariableAssignments(instance, memberName, value);
-
-        }
-
-        private static void TryAdjustingValue(NamedObjectSave instance, string memberName, ref object value, out bool makeDefault)
-        {
+            // If setting AnimationChianList to null then also null out the CurrentChainName to prevent
+            // runtime errors.
+            //
             makeDefault = false;
             var ati = instance.GetAssetTypeInfo();
             var foundVariable = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);
@@ -40,11 +35,10 @@ namespace OfficialPlugins.VariableDisplay
                         null);
                 }
             }
-            // XML serialization doesn't like enums
-            else if(value?.GetType().IsEnum() == true)
-            {
-                value = (int)value;
-            }
+
+
+            PerformStandardVariableAssignments(instance, memberName, value);
+
         }
 
         private static void PerformStandardVariableAssignments(NamedObjectSave instance, string memberName, object value)

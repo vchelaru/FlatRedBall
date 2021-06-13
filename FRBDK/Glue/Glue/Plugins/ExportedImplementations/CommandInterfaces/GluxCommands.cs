@@ -1154,7 +1154,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             object oldValue = null;
 
-            var instruction = nos.GetInstructionFromMember(memberName);
+            var instruction = nos.GetCustomVariable(memberName);
 
             if (instruction != null)
             {
@@ -1196,9 +1196,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void SetVariableOn(NamedObjectSave nos, string memberName, object value)
         {
+            // XML serialization doesn't like enums
+            if (value?.GetType().IsEnum() == true)
+            {
+                value = (int)value;
+            }
+
             object oldValue = null;
 
-            var instruction = nos.GetInstructionFromMember(memberName);
+            var instruction = nos.GetCustomVariable(memberName);
 
             if (instruction != null)
             {

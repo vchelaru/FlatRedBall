@@ -501,14 +501,14 @@ namespace OfficialPlugins.VariableDisplay
                 instanceMember.CustomGetTypeEvent += (throwaway) => memberType;
 
 
-                instanceMember.IsDefault = instance.GetInstructionFromMember(typedMember.MemberName) == null;
+                instanceMember.IsDefault = instance.GetCustomVariable(typedMember.MemberName) == null;
 
 
 
                 instanceMember.CustomGetEvent += (throwaway) =>
                 {
 
-                    var instruction = instance.GetInstructionFromMember(typedMember.MemberName);
+                    var instruction = instance.GetCustomVariable(typedMember.MemberName);
 
                     if (instruction == null)
                     {

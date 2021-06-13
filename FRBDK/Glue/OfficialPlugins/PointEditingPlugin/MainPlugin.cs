@@ -65,7 +65,7 @@ namespace OfficialPlugins.PointEditingPlugin
 
             if (shouldShow)
             {
-                var instructions = namedObjectSave.GetInstructionFromMember("Points");
+                var instructions = namedObjectSave.GetCustomVariable("Points");
 
                 if (instructions == null)
                 {

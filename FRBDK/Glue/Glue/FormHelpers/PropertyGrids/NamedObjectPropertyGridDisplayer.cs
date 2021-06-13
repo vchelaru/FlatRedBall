@@ -189,7 +189,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             float textureScale = 0;
             NamedObjectSave nos = Instance as NamedObjectSave;
 
-            var instruction = nos.GetInstructionFromMember("TextureScale");
+            var instruction = nos.GetCustomVariable("TextureScale");
             if (instruction != null && instruction.Value != null)
             {
                 if (instruction.Value is int)

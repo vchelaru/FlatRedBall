@@ -196,7 +196,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             // If the acls is null that means that it hasn't been set by custom variables, but the NOS itself may have a value set right on the Sprite for the current AnimationChain
             if (foundAcls == null)
             {
-                var instruction = referencedNos.GetInstructionFromMember("AnimationChains");
+                var instruction = referencedNos.GetCustomVariable("AnimationChains");
                 if (instruction != null)
                 {
                     foundAcls = LoadAnimationChainListSave(element, (string)instruction.Value);

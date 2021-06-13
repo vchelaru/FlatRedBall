@@ -243,7 +243,7 @@ namespace OfficialPlugins.Compiler.Managers
         public void HandleNamedObjectValueChanged(string changedMember, object oldValue, NamedObjectSave nos)
         { 
 
-            var instruction = nos?.GetInstructionFromMember(changedMember);
+            var instruction = nos?.GetCustomVariable(changedMember);
             if (instruction != null || changedMember == nameof(NamedObjectSave.InstanceName))
             {
                 var currentElement = GlueState.Self.CurrentElement;
