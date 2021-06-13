@@ -38,4 +38,16 @@ namespace {ProjectNamespace}.GlueControl.Dtos
         public string VariableValue { get; set; }
         public string Type { get; set; }
     }
+
+    public class GetCameraPosition
+    {
+        // no members I think...
+    }
+
+    public class GetCameraPositionResponse
+    {
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Z { get; set; }
+    }
 }

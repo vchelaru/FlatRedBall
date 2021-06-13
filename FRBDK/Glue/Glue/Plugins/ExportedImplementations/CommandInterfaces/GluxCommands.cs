@@ -1215,29 +1215,29 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             bool shouldConvertValue = false;
 
             var variableDefinition = nos.GetAssetTypeInfo()?.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);
-            if(variableDefinition == null)
-            {
-                throw new InvalidOperationException($"Could not find a VariableDefinition on object {nos} with name {memberName}");
-            }
 
-            if (value is string &&
-                variableDefinition.Type != "Microsoft.Xna.Framework.Color" &&
-                variableDefinition.Type != "Color" &&
-                !CustomVariableExtensionMethods.GetIsFile(variableDefinition.Type) && // If it's a file, we just want to set the string value and have the underlying system do the loading                         
-                !CustomVariableExtensionMethods.GetIsObjectType(variableDefinition.Type)
-                )
+            if (variableDefinition != null)
             {
-                bool isCsv = NamedObjectPropertyGridDisplayer.GetIfIsCsv(nos, memberName);
-                shouldConvertValue = !isCsv &&
-                    variableDefinition.Name != "object" &&
-                    // variable could be an object
-                    (value is PositionedObject) == false;
-                // If the MemberType is object, then it's something we can't convert to - it's likely a state
-            }
 
-            if (shouldConvertValue)
-            {
-                value = PropertyValuePair.ConvertStringToType((string)value, variableDefinition.Type);
+                if (value is string &&
+                    variableDefinition.Type != "Microsoft.Xna.Framework.Color" &&
+                    variableDefinition.Type != "Color" &&
+                    !CustomVariableExtensionMethods.GetIsFile(variableDefinition.Type) && // If it's a file, we just want to set the string value and have the underlying system do the loading                         
+                    !CustomVariableExtensionMethods.GetIsObjectType(variableDefinition.Type)
+                    )
+                {
+                    bool isCsv = NamedObjectPropertyGridDisplayer.GetIfIsCsv(nos, memberName);
+                    shouldConvertValue = !isCsv &&
+                        variableDefinition.Name != "object" &&
+                        // variable could be an object
+                        (value is PositionedObject) == false;
+                    // If the MemberType is object, then it's something we can't convert to - it's likely a state
+                }
+
+                if (shouldConvertValue)
+                {
+                    value = PropertyValuePair.ConvertStringToType((string)value, variableDefinition.Type);
+                }
             }
             nos.SetPropertyValue(memberName, value);
 

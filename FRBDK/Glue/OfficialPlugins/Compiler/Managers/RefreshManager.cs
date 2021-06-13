@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -207,7 +208,71 @@ namespace OfficialPlugins.Compiler.Managers
 
                 await CommandSender.SendCommand($"AddObject:{serialized}", PortNumber);
 
+                if(GlueState.Self.CurrentScreenSave != null)
+                {
+                    // If it's in a screen, then we position the object on the camera:
+                
+                    var cameraPosition = await CommandSender.GetCameraPosition(PortNumber);
 
+                    var gluxCommands = GlueCommands.Self.GluxCommands;
+
+                    bool didSetValue = false;
+
+                    Vector2 newPosition = new Vector2(cameraPosition.X, cameraPosition.Y);
+
+                    var list = GlueState.Self.CurrentElement.NamedObjects.FirstOrDefault(item =>
+                        item.ContainedObjects.Contains(newNamedObject));
+
+                    var shouldIncreasePosition = false;
+                    do
+                    {
+                        shouldIncreasePosition = false;
+                        foreach (var item in list.ContainedObjects)
+                        {
+                            if (item != newNamedObject)
+                            {
+                                Vector2 itemPosition = new Vector2(
+                                    (item.GetCustomVariable("X")?.Value as float?) ?? 0,
+                                    (item.GetCustomVariable("Y")?.Value as float?) ?? 0);
+
+                                var distance = (itemPosition - newPosition).Length();
+
+                                if (distance < 3)
+                                {
+                                    shouldIncreasePosition = true;
+                                    break;
+                                }
+
+                            }
+                        }
+                        if (shouldIncreasePosition)
+                        {
+                            newPosition.X += 16;
+                        }
+
+                    } while (shouldIncreasePosition);
+
+                    if(newPosition.X != 0)
+                    {
+                        gluxCommands.SetVariableOn(newNamedObject, "X", newPosition.X);
+                        didSetValue = true;
+                    }
+                    if(newPosition.Y != 0)
+                    {
+                        gluxCommands.SetVariableOn(newNamedObject, "Y", newPosition.Y);
+
+                        didSetValue = true;
+                    }
+
+
+
+                    if(didSetValue)
+                    {
+                        GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                        GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
+                        GlueCommands.Self.GluxCommands.SaveGlux();
+                    }
+                }
             }
         }
 
@@ -281,10 +346,12 @@ namespace OfficialPlugins.Compiler.Managers
                     }
                 }, "Pushing variable to game", TaskExecutionPreference.Asap);
             }
-            else
-            {
-                StopAndRestartTask($"Object variable {changedMember} changed");
-            }
+            // Vic says - I don't think we want to restart anymore because there could be stray variables
+            // assigned by plugins. Instead we should try to make everything work through hotreload
+            //else
+            //{
+            //    StopAndRestartTask($"Object variable {changedMember} changed");
+            //}
         }
 
         private async Task TryPushVariable(string variableOwningNosName, string rawMemberName, string type, string value, GlueElement currentElement)

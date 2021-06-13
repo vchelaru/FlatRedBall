@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -103,6 +104,32 @@ namespace OfficialPlugins.Compiler.CommandSending
                 //control.PrintOutput("Could not get the game's screen, restarting game from startup screen");
             }
             return screenName;
+        }
+
+        internal static async Task<Vector3> GetCameraPosition(int portNumber)
+        {
+            string cameraPositionAsString = null;
+
+            try
+            {
+                cameraPositionAsString = await CommandSending.CommandSender.Send(new Dtos.GetCameraPosition(), portNumber);
+            }
+            catch (SocketException)
+            {
+                // do nothing, may not have been able to communicate, just output
+                //control.PrintOutput("Could not get the game's screen, restarting game from startup screen");
+            }
+
+            if(string.IsNullOrEmpty(cameraPositionAsString))
+            {
+                return Vector3.Zero;
+            }
+            else
+            {
+                var response = JsonConvert.DeserializeObject<Dtos.GetCameraPositionResponse>(cameraPositionAsString);
+                return new Vector3(response.X, response.Y, response.Z);
+
+            }
         }
     }
 }

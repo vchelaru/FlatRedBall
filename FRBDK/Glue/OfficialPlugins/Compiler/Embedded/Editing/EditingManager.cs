@@ -104,6 +104,10 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         private void UpdateMarkers(bool didChangeItemOver)
         {
+            if(didChangeItemOver)
+            {
+                HighlightMarker.FadingSeed = TimeManager.CurrentTime;
+            }
             HighlightMarker.Update(ItemOver, SideGrabbed, extraPadding:4);
             SelectedMarker.Update(ItemSelected, SideGrabbed, extraPadding: 2);
 

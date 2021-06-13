@@ -149,6 +149,7 @@ namespace {ProjectNamespace}
                     isGet = true;
                     return screen.GetType().FullName;
 
+#if SupportsEditMode
                 case "GetCommands":
                     isGet = true;
                     string toReturn = string.Empty;
@@ -162,6 +163,16 @@ namespace {ProjectNamespace}
                         toReturn = Newtonsoft.Json.JsonConvert.SerializeObject(tempList.ToArray());
                     }
                     return toReturn;
+                case nameof(GlueControl.Dtos.GetCameraPosition):
+                    isGet = true;
+                    var getCameraPositionResponse = new GlueControl.Dtos.GetCameraPositionResponse();
+                    getCameraPositionResponse.X = Camera.Main.X;
+                    getCameraPositionResponse.Y = Camera.Main.Y;
+                    getCameraPositionResponse.Z = Camera.Main.Z;
+                    toReturn = Newtonsoft.Json.JsonConvert.SerializeObject(getCameraPositionResponse);
+                    return toReturn;
+                    break;
+#endif
             }
 
             if (!isGet)
@@ -446,12 +457,13 @@ namespace {ProjectNamespace}
                 instance.Name = deserialized.InstanceName;
                 instance.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
                 instance.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
+                instance.CreationSource = "Glue"; // Glue did make this, so do this so the game can select it
             }
 #endif
 
     }
 
-        private void HandleRemoveObject(RemoveObjectDto removeObjectDto)
+    private void HandleRemoveObject(RemoveObjectDto removeObjectDto)
         {
             bool matchesCurrentScreen = 
                 GetIfMatchesCurrentScreen(removeObjectDto.ElementName, out System.Type ownerType, out Screen currentScreen);
@@ -500,9 +512,9 @@ namespace {ProjectNamespace}
             return currentScreenType == ownerType || ownerType.IsAssignableFrom(currentScreenType);
         }
 
-        #endregion
+#endregion
 
-        #region Game -> Glue
+#region Game -> Glue
 
         private void HandlePropertyChanged(PositionedObject item, string propertyName, object value)
         {
@@ -575,6 +587,6 @@ namespace {ProjectNamespace}
             GameToGlueCommands.Enqueue(new GameToGlueCommand { Command = command });
         }
 
-        #endregion
+#endregion
     }
 }
