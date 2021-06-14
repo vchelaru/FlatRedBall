@@ -12,6 +12,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
 {
     class Guides
     {
+        #region Fields/Properties
+
         Line HorizontalLine;
         Line VerticalLine;
 
@@ -39,9 +41,15 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     {
                         line.Visible = value;
                     }
+                    foreach (var line in verticalLines)
+                    {
+                        line.Visible = value;
+                    }
                 }
             }
         }
+
+        #endregion
 
         public Guides()
         {
@@ -69,9 +77,43 @@ namespace {ProjectNamespace}.GlueControl.Editing
             var leftmost = MathFunctions.RoundFloat( camera.AbsoluteLeftXEdge, spacing);
             var rightMost = MathFunctions.RoundFloat(camera.AbsoluteRightXEdge, spacing);
 
-            var numberOfLines = MathFunctions.RoundToInt((rightMost - leftmost) / spacing);
+            var numberOfVerticalLines = MathFunctions.RoundToInt((rightMost - leftmost) / spacing);
 
-            while(horizontalLines.Count < numberOfLines)
+            while(verticalLines.Count < numberOfVerticalLines)
+            {
+                var line = new Line();
+                ScreenManager.PersistentLines.Add(line);
+
+                line.Color = smallGridLineColor;
+                verticalLines.Add(line);
+            }
+            while(verticalLines.Count > numberOfVerticalLines)
+            {
+                var lineToRemove = verticalLines.Last();
+                lineToRemove.Visible = false;
+                verticalLines.Remove(lineToRemove);
+                ScreenManager.PersistentLines.Remove(lineToRemove);
+            }
+
+            var currentX = leftmost;
+
+            foreach(var line in verticalLines)
+            {
+                line.SetFromAbsoluteEndpoints(
+                    new Vector3(currentX, 1_000_000, 0),
+                    new Vector3(currentX, -1_000_000, 0)
+                    );
+                currentX += spacing;
+            }
+
+            // ---------------------------------------------------------------------------------
+
+            var bottomMost = MathFunctions.RoundFloat(camera.AbsoluteBottomYEdge, spacing);
+            var topmost = MathFunctions.RoundFloat(camera.AbsoluteTopYEdge, spacing);
+
+            var numberOfHorizontalLines = MathFunctions.RoundToInt((topmost - bottomMost) / spacing);
+
+            while(horizontalLines.Count < numberOfHorizontalLines)
             {
                 var line = new Line();
                 ScreenManager.PersistentLines.Add(line);
@@ -79,24 +121,23 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 line.Color = smallGridLineColor;
                 horizontalLines.Add(line);
             }
-            while(horizontalLines.Count > numberOfLines)
+            while(horizontalLines.Count > numberOfHorizontalLines)
             {
                 var lineToRemove = horizontalLines.Last();
                 lineToRemove.Visible = false;
                 horizontalLines.Remove(lineToRemove);
                 ScreenManager.PersistentLines.Remove(lineToRemove);
-
             }
 
-            var currentX = leftmost;
+            var currentY = bottomMost;
 
             foreach(var line in horizontalLines)
             {
                 line.SetFromAbsoluteEndpoints(
-                    new Vector3(currentX, 1_000_000, 0),
-                    new Vector3(currentX, -1_000_000, 0)
+                    new Vector3(1_000_000, currentY, 0),
+                    new Vector3(-1_000_000, currentY, 0)
                     );
-                currentX += spacing;
+                currentY += spacing;
             }
         }
     }
