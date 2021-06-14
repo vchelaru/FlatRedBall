@@ -151,12 +151,19 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     var floatConverter =
                         TypeDescriptor.GetConverter(typeof(float));
 
-                    var convertToFloat = setVariableDto.VariableName == "X" ||
-                        setVariableDto.VariableName == "Y" ||
-                        setVariableDto.VariableName == "Z" ||
-                        setVariableDto.VariableName == "Width" ||
-                        setVariableDto.VariableName == "Height" ||
-                        setVariableDto.VariableName == "TextureScale";
+                    HashSet<string> floatVariables = new HashSet<string>
+                    {
+                        "X",
+                        "Y",
+                        "Z",
+                        "Width",
+                        "Height",
+                        "TextureScale"
+                    };
+
+                    var convertToFloat = floatVariables.Contains(
+                        setVariableDto.VariableName);
+
                     if (convertToFloat)
                     {
                         if(value is double asDouble)

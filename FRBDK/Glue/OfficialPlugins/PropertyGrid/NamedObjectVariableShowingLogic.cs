@@ -19,6 +19,7 @@ using OfficialPlugins.VariableDisplay.Data;
 using GluePropertyGridClasses.StringConverters;
 using FlatRedBall.Glue.Managers;
 using WpfDataUi.Controls;
+using FlatRedBall.Graphics.Animation;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -548,7 +549,64 @@ namespace OfficialPlugins.VariableDisplay
 
                 instanceMember.CustomSetEvent += (owner, value) =>
                 {
-                    NamedObjectVariableChangeLogic.ReactToValueSet(instance, typedMember.MemberName, value, out bool makeDefault);
+                    //NamedObjectVariableChangeLogic.ReactToValueSet(instance, typedMember.MemberName, value, out bool makeDefault);
+
+                    //static void ReactToValueSet(NamedObjectSave instance, string memberName, object value, out bool makeDefault)
+                    //{
+                    // If setting AnimationChianList to null then also null out the CurrentChainName to prevent
+                    // runtime errors.
+                    //
+                    bool makeDefault = false;
+                    var ati = instance.GetAssetTypeInfo();
+                    var foundVariable = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
+                    if (foundVariable?.Type == nameof(AnimationChainList))
+                    {
+                        if (value is string && ((string)value) == "<NONE>")
+                        {
+                            value = null;
+                            makeDefault = true;
+
+                            // Let's also set the CurrentChainName to null
+                            GlueCommands.Self.GluxCommands.SetVariableOn(
+                                instance,
+                                "CurrentChainName",
+                                null);
+                        }
+                    }
+                    instanceMember.IsDefault = makeDefault;
+
+
+                    PerformStandardVariableAssignments(instance, typedMember.MemberName, value);
+
+                    static void PerformStandardVariableAssignments(NamedObjectSave instance, string memberName, object value)
+                    {
+                        // If we ignore the next refresh, then AnimationChains won't update when the user
+                        // picks an AnimationChainList from a combo box:
+                        //RefreshLogic.IgnoreNextRefresh();
+                        GlueCommands.Self.GluxCommands.SetVariableOn(
+                            instance,
+                            memberName,
+                            value);
+
+
+                        GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
+
+                        // let's make the UI faster:
+
+                        // Get this on the UI thread, but use it in the async call below
+                        var currentElement = GlueState.Self.CurrentElement;
+
+                        GlueCommands.Self.GluxCommands.SaveGlux();
+
+                        if (currentElement != null)
+                        {
+                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(currentElement);
+                        }
+                    }
+
+
+
+
 
                     instanceMember.IsDefault = makeDefault;
                 };

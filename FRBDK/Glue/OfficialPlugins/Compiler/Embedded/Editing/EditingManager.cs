@@ -38,6 +38,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         Vector3 GrabbedPosition;
         Vector2 GrabbedWidthAndHeight;
+        float GrabbedRadius;
 
         public ElementEditingMode ElementEditingMode { get; set; }
 
@@ -122,6 +123,10 @@ namespace {ProjectNamespace}.GlueControl.Editing
             {
                 SelectedMarker.ResizeMode = ResizeMode.Cardinal;
             }
+            else if(ItemSelected is FlatRedBall.Math.Geometry.Circle)
+            {
+                SelectedMarker.ResizeMode = ResizeMode.Cardinal;
+            }
             else if(ItemSelected is FlatRedBall.Math.Geometry.IScalable)
             {
                 SelectedMarker.ResizeMode = ResizeMode.EightWay;
@@ -165,6 +170,10 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     if (ItemGrabbed is FlatRedBall.Math.Geometry.IScalable itemGrabbedAsScalable)
                     {
                         GrabbedWidthAndHeight = new Vector2(itemGrabbedAsScalable.ScaleX * 2, itemGrabbedAsScalable.ScaleY * 2);
+                    }
+                    else if(ItemGrabbed is FlatRedBall.Math.Geometry.Circle circle)
+                    {
+                        GrabbedRadius = circle.Radius;
                     }
                     SideGrabbed = SelectedMarker.GetSideOver();
                     ObjectSelected(ItemGrabbed);
@@ -214,6 +223,10 @@ namespace {ProjectNamespace}.GlueControl.Editing
                                 Notify("Height", asScalable.ScaleY * 2);
                             }
                         }
+                    }
+                    else if(ItemGrabbed is FlatRedBall.Math.Geometry.Circle circle)
+                    {
+                        Notify(nameof(circle.Radius), circle.Radius);
                     }
                 }
 

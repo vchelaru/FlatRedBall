@@ -1150,50 +1150,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        public void SetVariableOn(NamedObjectSave nos, string memberName, Type memberType, object value)
-        {
-            object oldValue = null;
-
-            var instruction = nos.GetCustomVariable(memberName);
-
-            if (instruction != null)
-            {
-                oldValue = instruction.Value;
-            }
-            //SetVariableOn(nos, memberName, memberType, value);
-
-            bool shouldConvertValue = false;
-
-
-            if (memberType != null &&
-                value is string &&
-                memberType != typeof(Microsoft.Xna.Framework.Color) &&
-                !CustomVariableExtensionMethods.GetIsFile(memberType) && // If it's a file, we just want to set the string value and have the underlying system do the loading                         
-                !CustomVariableExtensionMethods.GetIsObjectType(memberType.FullName)
-                )
-            {
-                bool isCsv = NamedObjectPropertyGridDisplayer.GetIfIsCsv(nos, memberName);
-                shouldConvertValue = !isCsv &&
-                    memberType != typeof(object) &&
-                    // variable could be an object
-                    memberType != typeof(PositionedObject);
-                // If the MemberType is object, then it's something we can't convert to - it's likely a state
-            }
-
-            if (shouldConvertValue)
-            {
-                value = PropertyValuePair.ConvertStringToType((string)value, memberType);
-            }
-            nos.SetPropertyValue(memberName, value);
-
-
-            EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
-                memberName, oldValue);
-
-
-            PluginManager.ReactToChangedProperty(memberName, oldValue);
-        }
-
         public void SetVariableOn(NamedObjectSave nos, string memberName, object value)
         {
             // XML serialization doesn't like enums

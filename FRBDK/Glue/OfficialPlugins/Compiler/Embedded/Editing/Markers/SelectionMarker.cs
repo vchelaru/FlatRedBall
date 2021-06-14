@@ -472,6 +472,21 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     asSprite.TextureScale *= newRatio;
                 }
             }
+            else if(item is Circle asCircle)
+            {
+                if (cursorXChange != 0 && widthMultiple != 0)
+                {
+                    var newRadius = asCircle.Radius + cursorXChange * widthMultiple/2.0f;
+                    newRadius = Math.Max(0, newRadius);
+                    asCircle.Radius = newRadius;
+                }
+                else if (cursorYChange != 0 && heightMultiple != 0)
+                {
+                    var newRadius = asCircle.Radius + cursorYChange * heightMultiple/2.0f;
+                    newRadius = Math.Max(0, newRadius);
+                    asCircle.Radius = newRadius;
+                }
+            }
             else
             {
                 var newScaleX = scalable.ScaleX + cursorXChange * widthMultiple / 2.0f;

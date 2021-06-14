@@ -158,6 +158,14 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 minY = Math.Min(minY, itemOver.Y - asScalable.ScaleY);
                 maxY = Math.Max(maxY, itemOver.Y + asScalable.ScaleY);
             }
+            else if(itemOver is Circle asCircle)
+            {
+                minX = Math.Min(minX, itemOver.X - asCircle.Radius);
+                maxX = Math.Max(maxX, itemOver.X + asCircle.Radius);
+
+                minY = Math.Min(minY, itemOver.Y - asCircle.Radius);
+                maxY = Math.Max(maxY, itemOver.Y + asCircle.Radius);
+            }
             else
             {
                 for (int i = 0; i < itemOver.Children.Count; i++)
