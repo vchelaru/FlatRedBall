@@ -86,12 +86,13 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 ItemOver = SelectionLogic.GetEntityOver(ItemSelected, SelectedMarker, GuiManager.Cursor.PrimaryDoublePush, ElementEditingMode);
                 var didChangeItemOver = itemOverBefore != ItemOver;
 
-
                 DoGrabLogic();
 
                 DoReleaseLogic();
 
                 DoHotkeyLogic();
+
+                DoCameraControllingLogic();
 
                 UpdateMarkers(didChangeItemOver);
             }
@@ -103,7 +104,6 @@ namespace {ProjectNamespace}.GlueControl.Editing
             }
 
         }
-
 
         #region Markers
 
@@ -131,6 +131,17 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
 
         #endregion
+
+        private void DoCameraControllingLogic()
+        {
+            var cursor = GuiManager.Cursor;
+            if(cursor.MiddleDown)
+            {
+                var camera = Camera.Main;
+                camera.X -= cursor.WorldXChangeAt(0);
+                camera.Y -= cursor.WorldYChangeAt(0);
+            }
+        }
 
         private void DoGrabLogic()
         {

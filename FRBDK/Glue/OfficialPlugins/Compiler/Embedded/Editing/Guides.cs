@@ -77,7 +77,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             var leftmost = MathFunctions.RoundFloat( camera.AbsoluteLeftXEdge, spacing);
             var rightMost = MathFunctions.RoundFloat(camera.AbsoluteRightXEdge, spacing);
 
-            var numberOfVerticalLines = MathFunctions.RoundToInt((rightMost - leftmost) / spacing);
+            var numberOfVerticalLines = 1 + MathFunctions.RoundToInt((rightMost - leftmost) / spacing);
 
             while(verticalLines.Count < numberOfVerticalLines)
             {
@@ -111,7 +111,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             var bottomMost = MathFunctions.RoundFloat(camera.AbsoluteBottomYEdge, spacing);
             var topmost = MathFunctions.RoundFloat(camera.AbsoluteTopYEdge, spacing);
 
-            var numberOfHorizontalLines = MathFunctions.RoundToInt((topmost - bottomMost) / spacing);
+            var numberOfHorizontalLines = 1 + MathFunctions.RoundToInt((topmost - bottomMost) / spacing);
 
             while(horizontalLines.Count < numberOfHorizontalLines)
             {
