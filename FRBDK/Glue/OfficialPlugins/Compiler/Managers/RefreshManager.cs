@@ -309,43 +309,56 @@ namespace OfficialPlugins.Compiler.Managers
         { 
 
             var instruction = nos?.GetCustomVariable(changedMember);
-            if (instruction != null || changedMember == nameof(NamedObjectSave.InstanceName))
+            var currentElement = GlueState.Self.CurrentElement;
+            var nosName = nos.InstanceName;
+            var ati = nos.GetAssetTypeInfo();
+            string type;
+            string value;
+
+            var originalMemberName = changedMember;
+
+            if(currentElement is EntitySave && nos.AttachToContainer && 
+                (changedMember == "X" || changedMember == "Y" || changedMember == "Z"))
             {
-                var currentElement = GlueState.Self.CurrentElement;
-                var nosName = nos.InstanceName;
-                string type;
-                string value;
-
-                if(currentElement is EntitySave && nos.AttachToContainer && 
-                    (changedMember == "X" || changedMember == "Y" || changedMember == "Z"))
-                {
-                    changedMember = $"Relative{changedMember}";
-                }
-
-                if(changedMember == nameof(NamedObjectSave.InstanceName))
-                {
-                    type = "string";
-                    value = nos.InstanceName;
-                    changedMember = "Name";
-                    nosName = (string)oldValue;
-                }
-                else
-                {
-                    type = instruction.Type ?? instruction.Value?.GetType().Name;
-                    value = instruction.Value?.ToString();
-                }
-                TaskManager.Self.Add(async () =>
-                {
-                    try
-                    {
-                        await TryPushVariable(nosName, changedMember, type, value, currentElement);
-                    }
-                    catch
-                    {
-                        // no biggie...
-                    }
-                }, "Pushing variable to game", TaskExecutionPreference.Asap);
+                changedMember = $"Relative{changedMember}";
             }
+
+            if(changedMember == nameof(NamedObjectSave.InstanceName))
+            {
+                type = "string";
+                value = nos.InstanceName;
+                changedMember = "Name";
+                nosName = (string)oldValue;
+            }
+            else if(ati?.VariableDefinitions.Any(item => item.Name == originalMemberName) == true)
+            {
+                var variableDefinition = ati.VariableDefinitions.First(item => item.Name == originalMemberName);
+                type = variableDefinition.Type;
+                value = instruction?.Value.ToString();
+                if(value == null)
+                {
+                    if(type == "float" || type == "int" || type == "long" || type == "double")
+                    {
+                        value = "0";
+                    }
+                }
+            }
+            else
+            {
+                type = instruction?.Type ?? instruction.Value?.GetType().Name;
+                value = instruction?.Value?.ToString();
+            }
+            TaskManager.Self.Add(async () =>
+            {
+                try
+                {
+                    await TryPushVariable(nosName, changedMember, type, value, currentElement);
+                }
+                catch
+                {
+                    // no biggie...
+                }
+            }, "Pushing variable to game", TaskExecutionPreference.Asap);
             // Vic says - I don't think we want to restart anymore because there could be stray variables
             // assigned by plugins. Instead we should try to make everything work through hotreload
             //else

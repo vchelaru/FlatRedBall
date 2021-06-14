@@ -202,16 +202,23 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             // This way if an error is introduced by some plugin that sets the type to something invalid
             // the user can still remove it through this option and recover the type later.
             //currentNamedObject.SetPropertyValue(variableToSet, null);
+            object oldValue = currentNamedObject.InstructionSaves
+                .FirstOrDefault(item => item.Member == variableToSet)?.Value;
+
+
             currentNamedObject.InstructionSaves.RemoveAll(item => item.Member == variableToSet);
 
-            if (currentNamedObject.GetCustomVariable(variableToSet) != null)
+            var foundCustomVariable = currentNamedObject.GetCustomVariable(variableToSet);
+            if (foundCustomVariable != null)
             {
+                oldValue = oldValue ?? foundCustomVariable?.Value;
                 // See if this variable is tunneled into in this element.
                 // If so, set that value too.
                 CustomVariableInNamedObject cvino = currentNamedObject.GetCustomVariable(variableToSet);
                 object value = cvino.Value;
 
-                foreach (CustomVariable customVariable in EditorLogic.CurrentElement.CustomVariables)
+                var currentElement = GlueState.Self.CurrentElement;
+                foreach (CustomVariable customVariable in currentElement.CustomVariables)
                 {
                     if (customVariable.SourceObject == currentNamedObject.InstanceName &&
                         customVariable.SourceObjectProperty == variableToSet)
@@ -223,6 +230,9 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
                 GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
             }
+
+            PluginManager.ReactToNamedObjectChangedValue(variableToSet, oldValue);
+
         }
 
         private static void ExposeVariableClick(object sender, EventArgs e)
