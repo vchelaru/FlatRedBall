@@ -84,6 +84,8 @@ namespace OfficialPlugins.Git
             yield return "*.Generated.cs";
             yield return "*.Generated.Event.cs";
 
+            yield return "TiledObjects.Generated.xml";
+
             yield return "*.cachefile";
 
             yield return "*.csvSettings";
