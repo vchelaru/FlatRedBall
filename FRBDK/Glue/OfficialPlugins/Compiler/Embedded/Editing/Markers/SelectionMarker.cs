@@ -42,7 +42,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         AxisAlignedRectangle[] handles = new AxisAlignedRectangle[8];
 
-
+        public float ExtraPadding { get; set; } = 2;
 
         public float ScaleX
         {
@@ -145,11 +145,11 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         #endregion
 
-        internal void Update(PositionedObject item, ResizeSide sideGrabbed, float extraPadding)
+        internal void Update(PositionedObject item, ResizeSide sideGrabbed)
         {
             Visible = item != null;
 
-            UpdateMainRectangleSizeToItem(item, extraPadding);
+            UpdateMainRectangleSizeToItem(item);
 
             UpdateColor();
 
@@ -190,7 +190,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             }
         }
 
-        private void UpdateMainRectangleSizeToItem(PositionedObject item, float extraPadding)
+        private void UpdateMainRectangleSizeToItem(PositionedObject item)
         {
             if (item != null)
             {
@@ -205,8 +205,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
                 Position = newPosition;
 
-                ScaleX = extraPadding + (maxX - minX) / 2.0f;
-                ScaleY = extraPadding + (maxY - minY) / 2.0f;
+                ScaleX = ExtraPadding + (maxX - minX) / 2.0f;
+                ScaleY = ExtraPadding + (maxY - minY) / 2.0f;
             }
         }
 
