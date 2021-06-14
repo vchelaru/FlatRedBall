@@ -41,7 +41,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         public ElementEditingMode ElementEditingMode { get; set; }
 
-
+        const float SelectedItemExtraPadding = 2;
         #endregion
 
         #region Delegates/Events
@@ -80,9 +80,12 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
             if (isInEditMode)
             {
-                var itemBefore = ItemOver;
+                var itemOverBefore = ItemOver;
+                var itemSelectedBefore = ItemSelected;
+
                 ItemOver = SelectionLogic.GetEntityOver(ItemSelected, SelectedMarker, GuiManager.Cursor.PrimaryDoublePush, ElementEditingMode);
-                var didChangeItemOver = itemBefore != ItemOver;
+                var didChangeItemOver = itemOverBefore != ItemOver;
+
 
                 DoGrabLogic();
 
@@ -101,6 +104,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         }
 
+
         #region Markers
 
         private void UpdateMarkers(bool didChangeItemOver)
@@ -109,8 +113,11 @@ namespace {ProjectNamespace}.GlueControl.Editing
             {
                 HighlightMarker.FadingSeed = TimeManager.CurrentTime;
             }
-            HighlightMarker.Update(ItemOver, SideGrabbed, extraPadding:4);
-            SelectedMarker.Update(ItemSelected, SideGrabbed, extraPadding: 2);
+
+            HighlightMarker.ExtraPadding = 4;
+            HighlightMarker.Update(ItemOver, SideGrabbed);
+
+            SelectedMarker.Update(ItemSelected, SideGrabbed);
 
             if(ItemSelected is FlatRedBall.Math.Geometry.IScalable)
             {
@@ -133,7 +140,11 @@ namespace {ProjectNamespace}.GlueControl.Editing
             if (cursor.PrimaryPush)
             {
                 ItemGrabbed = ItemOver;
-                ItemSelected = ItemOver;
+                if(ItemOver != ItemSelected)
+                {
+                    ItemSelected = ItemOver;
+                    SelectedMarker.PlayBumpAnimation(SelectedItemExtraPadding);
+                }
                 if(ItemGrabbed != null)
                 {
                     GrabbedPosition = ItemGrabbed.Position;
@@ -221,7 +232,11 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
             }
 
-            ItemSelected = foundObject;
+            if(ItemSelected != foundObject)
+            {
+                ItemSelected = foundObject;
+                SelectedMarker.PlayBumpAnimation(SelectedItemExtraPadding);
+            }
         }
     }
 }

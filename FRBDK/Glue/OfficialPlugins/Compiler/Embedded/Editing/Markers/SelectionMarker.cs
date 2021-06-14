@@ -145,6 +145,33 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         #endregion
 
+
+        public void PlayBumpAnimation(float endingExtraPadding)
+        {
+            TweenerManager.Self.StopAllTweenersOwnedBy(rectangle);
+
+            IsFadingInAndOut = false;
+            ExtraPadding = 0;
+            const float growTime = 0.25f;
+            var tweener = rectangle.Tween((newValue) => this.ExtraPadding = newValue, this.ExtraPadding, 10, growTime,
+                FlatRedBall.Glue.StateInterpolation.InterpolationType.Quadratic,
+                FlatRedBall.Glue.StateInterpolation.Easing.Out);
+
+            tweener.Ended += () =>
+            {
+                var shrinkTime = growTime;
+                var tweener2 = rectangle.Tween((newValue) => this.ExtraPadding = newValue, this.ExtraPadding, endingExtraPadding, shrinkTime,
+                    FlatRedBall.Glue.StateInterpolation.InterpolationType.Quadratic,
+                    FlatRedBall.Glue.StateInterpolation.Easing.InOut);
+
+                tweener2.Ended += () =>
+                {
+                    IsFadingInAndOut = true;
+                    FadingSeed = TimeManager.CurrentTime;
+                };
+            };
+        }
+
         internal void Update(PositionedObject item, ResizeSide sideGrabbed)
         {
             Visible = item != null;
@@ -180,14 +207,15 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         private void UpdateColor()
         {
+            float value = 1;
             if(IsFadingInAndOut)
             {
-                var value = (float)(1 + System.Math.Sin((TimeManager.CurrentTime - FadingSeed) * 5)) / 2;
-
-                rectangle.Red = value * BrightColor.R / 255.0f;
-                rectangle.Green = value * BrightColor.G / 255.0f;
-                rectangle.Blue = value * BrightColor.B / 255.0f;
+                value = (float)(1 + System.Math.Sin((TimeManager.CurrentTime - FadingSeed) * 5)) / 2;
             }
+
+            rectangle.Red = value * BrightColor.R / 255.0f;
+            rectangle.Green = value * BrightColor.G / 255.0f;
+            rectangle.Blue = value * BrightColor.B / 255.0f;
         }
 
         private void UpdateMainRectangleSizeToItem(PositionedObject item)
