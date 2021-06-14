@@ -116,6 +116,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         const int handleDimension = 10;
 
+        Microsoft.Xna.Framework.Point ScreenPointPushed;
+
         #endregion
 
         #region Constructor/Init
@@ -176,16 +178,38 @@ namespace {ProjectNamespace}.GlueControl.Editing
         {
             Visible = item != null;
 
+            UpdateScreenPointPushed();
+
             UpdateMainRectangleSizeToItem(item);
 
             UpdateColor();
 
+            ApplyPrimaryDownDragEditing(item, sideGrabbed);
+
+            UpdateHandlesVisibilityAndPosition();
+        }
+
+        private void UpdateScreenPointPushed()
+        {
+            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+
+            if(cursor.PrimaryPush)
+            {
+                ScreenPointPushed = new Microsoft.Xna.Framework.Point(cursor.ScreenX, cursor.ScreenY);
+            }
+        }
+
+        private void ApplyPrimaryDownDragEditing(PositionedObject item, ResizeSide sideGrabbed)
+        {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
 
             if (CanMoveItem && cursor.PrimaryDown &&
                 (cursor.ScreenXChange != 0 || cursor.ScreenYChange != 0))
             {
-                if (item != null)
+                var hasMovedEnough = Math.Abs(ScreenPointPushed.X - cursor.ScreenX) > 4 || 
+                    Math.Abs(ScreenPointPushed.Y - cursor.ScreenY) > 4;
+
+                if (item != null && hasMovedEnough)
                 {
                     if (sideGrabbed == ResizeSide.None)
                     {
@@ -201,8 +225,6 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     }
                 }
             }
-
-            UpdateHandlesVisibilityAndPosition();
         }
 
         private void UpdateColor()
