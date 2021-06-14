@@ -1,12 +1,14 @@
 ﻿using FlatRedBall;
+using FlatRedBall.Instructions;
+using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 using Microsoft.Xna.Framework;
+using StateInterpolationPlugin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 
 namespace {ProjectNamespace}.GlueControl.Editing
 {
@@ -117,6 +119,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
         const int handleDimension = 10;
 
         Microsoft.Xna.Framework.Point ScreenPointPushed;
+        Vector3 unsnappedItemPosition;
 
         #endregion
 
@@ -146,7 +149,6 @@ namespace {ProjectNamespace}.GlueControl.Editing
         }
 
         #endregion
-
 
         public void PlayBumpAnimation(float endingExtraPadding)
         {
@@ -178,7 +180,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
         {
             Visible = item != null;
 
-            UpdateScreenPointPushed();
+            UpdateScreenPointPushed(item);
 
             UpdateMainRectangleSizeToItem(item);
 
@@ -189,39 +191,22 @@ namespace {ProjectNamespace}.GlueControl.Editing
             UpdateHandlesVisibilityAndPosition();
         }
 
-        private void UpdateScreenPointPushed()
+        private void UpdateScreenPointPushed(PositionedObject item)
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
 
             if(cursor.PrimaryPush)
             {
                 ScreenPointPushed = new Microsoft.Xna.Framework.Point(cursor.ScreenX, cursor.ScreenY);
-            }
-        }
-
-        private void ApplyPrimaryDownDragEditing(PositionedObject item, ResizeSide sideGrabbed)
-        {
-            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
-
-            if (CanMoveItem && cursor.PrimaryDown &&
-                (cursor.ScreenXChange != 0 || cursor.ScreenYChange != 0))
-            {
-                var hasMovedEnough = Math.Abs(ScreenPointPushed.X - cursor.ScreenX) > 4 || 
-                    Math.Abs(ScreenPointPushed.Y - cursor.ScreenY) > 4;
-
-                if (item != null && hasMovedEnough)
+                if (item != null)
                 {
-                    if (sideGrabbed == ResizeSide.None)
+                    if(item.Parent == null)
                     {
-
-                        float xChange = cursor.WorldXChangeAt(item.Z);
-                        float yChange = cursor.WorldYChangeAt(item.Z);
-
-                        ChangePositionBy(item, xChange, yChange);
+                        unsnappedItemPosition = item.Position;
                     }
                     else
                     {
-                        ChangeSizeBy(item, sideGrabbed, cursor.WorldXChangeAt(item.Z), cursor.WorldYChangeAt(0));
+                        unsnappedItemPosition = item.RelativePosition;
                     }
                 }
             }
@@ -316,17 +301,50 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         #region Drag to move/resize
 
-        private static void ChangePositionBy(PositionedObject item, float xChange, float yChange)
+        private void ApplyPrimaryDownDragEditing(PositionedObject item, ResizeSide sideGrabbed)
         {
+            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+
+            if (CanMoveItem && cursor.PrimaryDown &&
+                (cursor.ScreenXChange != 0 || cursor.ScreenYChange != 0))
+            {
+                var hasMovedEnough = Math.Abs(ScreenPointPushed.X - cursor.ScreenX) > 4 || 
+                    Math.Abs(ScreenPointPushed.Y - cursor.ScreenY) > 4;
+
+                if (item != null && hasMovedEnough)
+                {
+                    if (sideGrabbed == ResizeSide.None)
+                    {
+
+                        float xChange = cursor.WorldXChangeAt(item.Z);
+                        float yChange = cursor.WorldYChangeAt(item.Z);
+
+                        ChangePositionBy(item, xChange, yChange);
+                    }
+                    else
+                    {
+                        ChangeSizeBy(item, sideGrabbed, cursor.WorldXChangeAt(item.Z), cursor.WorldYChangeAt(0));
+                    }
+                }
+            }
+        }
+
+
+        private void ChangePositionBy(PositionedObject item, float xChange, float yChange)
+        {
+            unsnappedItemPosition.X += xChange;
+            unsnappedItemPosition.Y += yChange;
+
             if (item.Parent == null)
             {
-                item.X += xChange;
-                item.Y += yChange;
+                const float snappingSize = 8;
+                item.X = MathFunctions.RoundFloat(unsnappedItemPosition.X, snappingSize);
+                item.Y = MathFunctions.RoundFloat(unsnappedItemPosition.Y, snappingSize);
             }
             else
             {
-                item.RelativeX += xChange;
-                item.RelativeY += yChange;
+                item.RelativeX = unsnappedItemPosition.X;
+                item.RelativeY = unsnappedItemPosition.Y;
             }
         }
 
