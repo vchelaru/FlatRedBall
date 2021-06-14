@@ -144,7 +144,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                 var nos = element.GetNamedObjectRecursively(setVariableDto.ObjectName);
 
-                if(nos != null)
+                if (nos != null)
                 {
                     object value = setVariableDto.VariableValue;
 
@@ -153,8 +153,11 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                     var convertToFloat = setVariableDto.VariableName == "X" ||
                         setVariableDto.VariableName == "Y" ||
-                        setVariableDto.VariableName == "Z";
-                    if(convertToFloat)
+                        setVariableDto.VariableName == "Z" ||
+                        setVariableDto.VariableName == "Width" ||
+                        setVariableDto.VariableName == "Height" ||
+                        setVariableDto.VariableName == "TextureScale";
+                    if (convertToFloat)
                     {
                         if(value is double asDouble)
                         {

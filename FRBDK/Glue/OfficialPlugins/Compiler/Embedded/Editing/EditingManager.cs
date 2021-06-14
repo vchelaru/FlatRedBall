@@ -64,7 +64,6 @@ namespace {ProjectNamespace}.GlueControl.Editing
             SelectedMarker.MakePersistent();
             SelectedMarker.Name = nameof(SelectedMarker);
             SelectedMarker.CanMoveItem = true;
-            SelectedMarker.ResizeMode = ResizeMode.EightWay;
 
             Guides = new Guides();
         }
@@ -119,7 +118,11 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
             SelectedMarker.Update(ItemSelected, SideGrabbed);
 
-            if(ItemSelected is FlatRedBall.Math.Geometry.IScalable)
+            if(ItemSelected is Sprite asSprite && asSprite.TextureScale > 0)
+            {
+                SelectedMarker.ResizeMode = ResizeMode.Cardinal;
+            }
+            else if(ItemSelected is FlatRedBall.Math.Geometry.IScalable)
             {
                 SelectedMarker.ResizeMode = ResizeMode.EightWay;
             }
@@ -194,13 +197,22 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
                     if(ItemGrabbed is FlatRedBall.Math.Geometry.IScalable asScalable)
                     {
-                        if(GrabbedWidthAndHeight.X != asScalable.ScaleX * 2)
+                        var didChangeWidth = GrabbedWidthAndHeight.X != asScalable.ScaleX * 2;
+                        var didChangeHeight = GrabbedWidthAndHeight.Y != asScalable.ScaleY * 2;
+                        if(ItemGrabbed is Sprite asSprite && asSprite.TextureScale > 0)
                         {
-                            Notify("Width", asScalable.ScaleX*2);
+                            Notify(nameof(asSprite.TextureScale), asSprite.TextureScale);
                         }
-                        if(GrabbedWidthAndHeight.Y != asScalable.ScaleY * 2)
+                        else
                         {
-                            Notify("Height", asScalable.ScaleY * 2);
+                            if (didChangeWidth)
+                            {
+                                Notify("Width", asScalable.ScaleX*2);
+                            }
+                            if(didChangeWidth)
+                            {
+                                Notify("Height", asScalable.ScaleY * 2);
+                            }
                         }
                     }
                 }

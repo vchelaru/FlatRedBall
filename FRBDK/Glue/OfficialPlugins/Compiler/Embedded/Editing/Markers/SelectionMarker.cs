@@ -247,9 +247,28 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         void UpdateHandlesVisibilityAndPosition()
         {
-            foreach(var handle in handles)
+            if(ResizeMode == ResizeMode.EightWay)
             {
-                handle.Visible = Visible && ResizeMode == ResizeMode.EightWay;
+                foreach(var handle in handles)
+                {
+                    handle.Visible = Visible;
+                }
+            }
+            else if(ResizeMode == ResizeMode.Cardinal)
+            {
+                for(int i = 0; i < handles.Length; i++)
+                {
+                    var handle = handles[i];
+                    // every other one, starting with index 1
+                    handle.Visible = Visible && (i%2) == 1;
+                }
+            }
+            else
+            {
+                foreach (var handle in handles)
+                {
+                    handle.Visible = false;
+                }
             }
 
             if(Visible)
@@ -432,13 +451,37 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
             var scalable = item as IScalable;
 
-            var newScaleX = scalable.ScaleX + cursor.WorldXChangeAt(item.Z) * widthMultiple / 2.0f;
-            newScaleX = Math.Max(0, newScaleX);
-            scalable.ScaleX = newScaleX;
+            var cursorXChange = cursor.WorldXChangeAt(item.Z);
+            var cursorYChange = cursor.WorldYChangeAt(item.Z);
 
-            var newScaleY = scalable.ScaleY + cursor.WorldYChangeAt(item.Z) * heightMultiple / 2.0f;
-            newScaleY = Math.Max(0, newScaleY);
-            scalable.ScaleY = newScaleY;
+            if (scalable is Sprite asSprite && asSprite.TextureScale > 0 && asSprite.Texture != null)
+            {
+                var currentScaleX = asSprite.ScaleX;
+                var currentScaleY = asSprite.ScaleY;
+
+                if(cursorXChange != 0 && asSprite.ScaleX != 0 && widthMultiple != 0)
+                {
+                    var newRatio = (currentScaleX + 0.5f * cursorXChange * widthMultiple)/currentScaleX;
+
+                    asSprite.TextureScale *= newRatio;
+                }
+                else if(cursorYChange != 0 && asSprite.ScaleY != 0 && heightMultiple != 0)
+                {
+                    var newRatio = (currentScaleY + 0.5f * cursorYChange * heightMultiple) / currentScaleY;
+
+                    asSprite.TextureScale *= newRatio;
+                }
+            }
+            else
+            {
+                var newScaleX = scalable.ScaleX + cursorXChange * widthMultiple / 2.0f;
+                newScaleX = Math.Max(0, newScaleX);
+                scalable.ScaleX = newScaleX;
+
+                var newScaleY = scalable.ScaleY + cursorYChange * heightMultiple / 2.0f;
+                newScaleY = Math.Max(0, newScaleY);
+                scalable.ScaleY = newScaleY;
+            }
         }
 
         #endregion
@@ -465,7 +508,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 
             for (int i = 0; i < this.handles.Length; i++)
             {
-                if (cursor.IsOn3D(handles[i]))
+                if (handles[i].Visible && cursor.IsOn3D(handles[i]))
                 {
                     return (ResizeSide)i;
                 }
