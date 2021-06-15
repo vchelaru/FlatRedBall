@@ -327,7 +327,15 @@ namespace GumPlugin.Managers
                 }
                 else
                 {
-                    var existingText = File.ReadAllText(generatedSaveLocation.FullPath);
+                    string existingText = null;
+                    try
+                    {
+                        existingText = File.ReadAllText(generatedSaveLocation.FullPath);
+                    }
+                    catch
+                    {
+                        // no biggie, we'll just re-generate it
+                    }
 
                     resultToReturn.DidSaveGeneratedGumRuntime = existingText != generatedGumRuntimeCode;
                 }
