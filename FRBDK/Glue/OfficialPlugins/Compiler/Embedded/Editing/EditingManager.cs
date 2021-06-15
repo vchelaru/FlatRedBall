@@ -73,6 +73,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         public void Update()
         {
+#if SupportsEditMode
+
             var isInEditMode = ScreenManager.IsInEditMode;
 
             Guides.Visible = isInEditMode;
@@ -102,10 +104,10 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 SelectedMarker.Visible = false;
 
             }
-
+#endif
         }
 
-        #region Markers
+#region Markers
 
         private void UpdateMarkers(bool didChangeItemOver)
         {
@@ -138,7 +140,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
         }
 
 
-        #endregion
+#endregion
 
         private void DoCameraControllingLogic()
         {

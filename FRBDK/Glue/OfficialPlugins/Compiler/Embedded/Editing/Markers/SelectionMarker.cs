@@ -140,12 +140,15 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         public void MakePersistent()
         {
+#if SupportsEditMode
+
             FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Add(rectangle);
 
             for(int i = 0; i < handles.Length; i++)
             {
                 FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Add(handles[i]);
             }
+#endif
         }
 
         #endregion

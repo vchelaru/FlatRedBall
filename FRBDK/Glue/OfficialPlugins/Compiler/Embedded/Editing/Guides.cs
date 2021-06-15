@@ -66,9 +66,11 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 new Microsoft.Xna.Framework.Vector3(0, 10_000, 0));
             VerticalLine.Color = centerLineColor;
 
+#if SupportsEditMode
+
             ScreenManager.PersistentLines.Add(HorizontalLine);
             ScreenManager.PersistentLines.Add(VerticalLine);
-
+#endif
         }
 
         public void UpdateGridLines()
@@ -78,6 +80,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
             var rightMost = MathFunctions.RoundFloat(camera.AbsoluteRightXEdge, spacing);
 
             var numberOfVerticalLines = 1 + MathFunctions.RoundToInt((rightMost - leftmost) / spacing);
+
+#if SupportsEditMode
 
             while(verticalLines.Count < numberOfVerticalLines)
             {
@@ -139,6 +143,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     );
                 currentY += spacing;
             }
+#endif
         }
     }
 }

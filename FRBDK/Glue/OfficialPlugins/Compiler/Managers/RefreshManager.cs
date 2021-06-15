@@ -334,7 +334,7 @@ namespace OfficialPlugins.Compiler.Managers
             {
                 var variableDefinition = ati.VariableDefinitions.First(item => item.Name == originalMemberName);
                 type = variableDefinition.Type;
-                value = instruction?.Value.ToString();
+                value = instruction?.Value?.ToString();
                 if(value == null)
                 {
                     if(type == "float" || type == "int" || type == "long" || type == "double")

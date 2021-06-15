@@ -103,7 +103,12 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         private static bool IsSelectable(PositionedObject objectAtI)
         {
+#if SupportsEditMode
+
             return objectAtI.CreationSource == "Glue";
+#else
+            return false;
+#endif
         }
 
         private static bool IsCursorOver(PositionedObject objectAtI)

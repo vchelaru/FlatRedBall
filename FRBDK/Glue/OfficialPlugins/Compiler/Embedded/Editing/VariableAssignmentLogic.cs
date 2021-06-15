@@ -1,4 +1,4 @@
-﻿using EditModeProject.GlueControl.Dtos;
+﻿using {ProjectNamespace}.GlueControl.Dtos;
 using FlatRedBall;
 using System;
 using System.Collections.Generic;

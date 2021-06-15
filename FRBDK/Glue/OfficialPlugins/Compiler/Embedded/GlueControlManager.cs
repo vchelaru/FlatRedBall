@@ -1,7 +1,7 @@
 ﻿{CompilerDirectives}
 
 
-using EditModeProject.GlueControl.Dtos;
+using {ProjectNamespace}.GlueControl.Dtos;
 using FlatRedBall;
 using FlatRedBall.Graphics;
 using FlatRedBall.Screens;
@@ -346,6 +346,8 @@ namespace {ProjectNamespace}
 
                 if(ownerType != null && typeof(Screen).IsAssignableFrom(ownerType))
                 {
+#if SupportsEditMode
+
                     void AssignSelection(Screen screen)
                     {
                         // Select this even if it's null so the EditingManager deselects 
@@ -359,7 +361,7 @@ namespace {ProjectNamespace}
 
                     isOwnerScreen = true;
                     EditingManager.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingScreen;
-
+#endif
                 }
             }
 
@@ -375,6 +377,8 @@ namespace {ProjectNamespace}
 
                     if(!isAlreadyViewingThisEntity)
                     {
+#if SupportsEditMode
+
                         void CreateEntityInstance(Screen screen)
                         {
                             var instance = ownerType.GetConstructor(new System.Type[0]).Invoke(new object[0]) as IDestroyable;
@@ -397,6 +401,7 @@ namespace {ProjectNamespace}
                         ScreenManager.ScreenLoaded += CreateEntityInstance;
 
                         ScreenManager.CurrentScreen.MoveToScreen(typeof(Screens.EntityViewingScreen));
+#endif
                     }
                     else
                     {
