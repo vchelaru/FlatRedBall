@@ -33,6 +33,11 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
 
         }
+        public virtual ICodeBlock GenerateConstructor(ICodeBlock codeBlock, IElement element)
+        {
+            return codeBlock;
+
+        }
         public virtual ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
         {
             return codeBlock;

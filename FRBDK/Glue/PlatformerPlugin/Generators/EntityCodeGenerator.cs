@@ -369,6 +369,11 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 {
                     this.YAcceleration = -CurrentMovement.Gravity;
                 }
+
+                if(!CurrentMovement.UsesAcceleration)
+                {
+                    this.XAcceleration = 0;
+                }
             }
         }
 

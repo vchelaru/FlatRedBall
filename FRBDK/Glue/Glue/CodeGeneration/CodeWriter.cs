@@ -430,6 +430,8 @@ namespace FlatRedBallAddOns.Entities
 
         private static void GenerateConstructors(IElement element, ICodeBlock codeBlock)
         {
+            ICodeBlock constructor;
+
             var whatToInheritFrom = GetInheritance(element);
 
             var elementName = FileManager.RemovePath(element.Name);
@@ -440,7 +442,7 @@ namespace FlatRedBallAddOns.Entities
 
                 codeBlock.Constructor("public", elementName, "string contentManagerName", "this(contentManagerName, true)");
 
-                var constructor = codeBlock.Constructor("public", elementName, "string contentManagerName, bool addToManagers", "base()");
+                constructor = codeBlock.Constructor("public", elementName, "string contentManagerName, bool addToManagers", "base()");
                 constructor.Line("ContentManagerName = contentManagerName;");
 
                 // The base will handle this
@@ -462,7 +464,20 @@ namespace FlatRedBallAddOns.Entities
                     contentManagerName = "\"Global\"";
                 }
 
-                codeBlock.Constructor("public", elementName, "", $"base ({contentManagerName})");
+                constructor = codeBlock.Constructor("public", elementName, "", $"base ({contentManagerName})");
+            }
+
+            foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators)
+            {
+                try
+                {
+                    codeGenerator.GenerateConstructor(constructor, element);
+                }
+                catch (Exception e)
+                {
+                    GlueCommands.Self.PrintError(
+                        $"Error calling GenerateConstructor on {codeGenerator.GetType()}:\n{e}");
+                }
             }
         }
 

@@ -52,6 +52,22 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
+        public override ICodeBlock GenerateConstructor(ICodeBlock codeBlock, SaveClasses.IElement element)
+        {
+            var constructorSortedNamedObjects = element.NamedObjects
+                // never make collision relationships in the constructor
+                .Where(item => item.IsCollisionRelationship() == false)
+                // entire files first
+                .OrderBy(item => item.IsEntireFile == false);
+
+            foreach (var nos in constructorSortedNamedObjects)
+            {
+                WriteCodeForNamedObjectInitialize(nos, element, codeBlock, null, inConstructor: true);
+            }
+
+            return codeBlock;
+        }
+
         public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
 
@@ -259,7 +275,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
         public static void WriteCodeForNamedObjectInitialize(NamedObjectSave namedObject, IElement saveObject,
-            ICodeBlock codeBlock, string overridingContainerName)
+            ICodeBlock codeBlock, string overridingContainerName, bool inConstructor = false)
         {
             var referencedFilesAlreadyUsingFullFile = ReusableEntireFileRfses;
 
@@ -277,6 +293,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             AddIfConditionalSymbolIfNecesssary(codeBlock, namedObject);
 
+            bool instantiateInConstructor = namedObject.ShouldInstantiateInConstructor();
 
             bool succeeded = true;
 
@@ -284,8 +301,21 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if (!namedObject.InstantiatedByBase)
             {
-                succeeded = GenerateInstantiationOrAssignment(
-                    namedObject, saveObject, codeBlock, overridingContainerName, referencedFilesAlreadyUsingFullFile);
+                // Ensure that the nos is only instantiated where it should be. Since this method
+                // can be called for the constructor or Initialize() method, we need to check that
+                // we're in the proper place for generating the instantiation code.
+                if (inConstructor == instantiateInConstructor)
+                {
+                    succeeded = GenerateInstantiationOrAssignment(
+                        namedObject, saveObject, codeBlock, overridingContainerName, referencedFilesAlreadyUsingFullFile);
+                }
+                // If the nos is a list, was instantiated in the constructor, and we aren't in the
+                // constructor, then we should clear any items out of it before anything new is
+                // added in. This isn't necessary for scenes, but it's needed for pooled entities.
+                if (namedObject.IsList && instantiateInConstructor && !inConstructor)
+                {
+                    codeBlock.Line($"{namedObject.FieldName}.Clear();");
+                }
             }
             #endregion
 
@@ -310,14 +340,18 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 #endregion
 
-
-                WriteTextSpecificInitialization(namedObject, saveObject, codeBlock, referencedFilesAlreadyUsingFullFile);
-
-                foreach (NamedObjectSave containedNos in namedObject.ContainedObjects)
+                if (!inConstructor)
                 {
-                    WriteCodeForNamedObjectInitialize(containedNos, saveObject, codeBlock, null);
-                }
+                    // Text specific initialization and contained object initialization should only
+                    // take place in the regular Initialize() method and never in the constructor.
 
+                    WriteTextSpecificInitialization(namedObject, saveObject, codeBlock, referencedFilesAlreadyUsingFullFile);
+
+                    foreach (NamedObjectSave containedNos in namedObject.ContainedObjects)
+                    {
+                        WriteCodeForNamedObjectInitialize(containedNos, saveObject, codeBlock, null);
+                    }
+                }
             }
 
             AddEndIfIfNecessary(codeBlock, namedObject);
