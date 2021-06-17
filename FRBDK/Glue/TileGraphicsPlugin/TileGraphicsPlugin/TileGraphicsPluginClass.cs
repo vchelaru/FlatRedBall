@@ -254,6 +254,8 @@ namespace TileGraphicsPlugin
 
             AddEvents();
 
+            this.AddErrorReporter(new ErrorReporter());
+
             CreateToolbar();
 
             SaveTemplateTmx();
@@ -597,18 +599,23 @@ namespace TileGraphicsPlugin
         {
             string extension = FileManager.GetExtension(fileName);
 
+            var shouldRefreshErrors = false;
+            if(extension == "tmx")
+            {
+                shouldRefreshErrors = true;
+            }
+
             if(extension == "tsx")
             {
                 // oh boy, the user changed a shared tile set.  Time to rebuild everything that uses this tileset
                 var allReferencedFileSaves = FileReferenceManager.Self.GetReferencedFileSavesReferencingTsx(fileName);
-
-                var toListForDebug = allReferencedFileSaves.ToList();
 
                 // build em!
                 foreach(var file in allReferencedFileSaves)
                 {
                     file.PerformExternalBuild(runAsync:true);
                 }
+                shouldRefreshErrors = true;
             }
 
             // If a png changes, it may be resized. Tiled changes IDs of tiles when a PNG resizes if
@@ -636,6 +643,11 @@ namespace TileGraphicsPlugin
                 {
                     changesToIgnore--;
                 }
+            }
+
+            if(shouldRefreshErrors)
+            {
+                GlueCommands.Self.RefreshCommands.RefreshErrors();
             }
         }
 

@@ -20,8 +20,8 @@ namespace FlatRedBall.Glue.Errors
 
         public string Details
         {
-            get { return Get<string>(); }
-            set { Set(value); }
+            get => Get<string>(); 
+            set => Set(value); 
         }
 
         public ErrorViewModel()
