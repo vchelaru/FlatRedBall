@@ -1,4 +1,6 @@
-﻿using {ProjectNamespace}.Performance;
+﻿{CompilerDirectives}
+
+using {ProjectNamespace}.Performance;
 using FlatRedBall;
 using FlatRedBall.Forms.Controls;
 using Gum.Wireframe;

@@ -1,4 +1,6 @@
-﻿using FlatRedBall;
+﻿{CompilerDirectives}
+
+using FlatRedBall;
 using FlatRedBall.Gui;
 using FlatRedBall.Managers;
 using FlatRedBall.Screens;

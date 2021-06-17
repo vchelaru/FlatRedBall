@@ -1,4 +1,6 @@
-﻿using FlatRedBall.Content.Instructions;
+﻿{CompilerDirectives}
+
+using FlatRedBall.Content.Instructions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

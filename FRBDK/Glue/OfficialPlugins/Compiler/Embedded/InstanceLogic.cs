@@ -1,4 +1,5 @@
-﻿using FlatRedBall;
+﻿{CompilerDirectives}
+using FlatRedBall;
 using FlatRedBall.Gui;
 using System;
 using System.Collections.Generic;

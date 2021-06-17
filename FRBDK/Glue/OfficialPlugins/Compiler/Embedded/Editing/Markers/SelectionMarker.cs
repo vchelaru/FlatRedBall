@@ -1,4 +1,6 @@
-﻿using FlatRedBall;
+﻿{CompilerDirectives}
+
+using FlatRedBall;
 using FlatRedBall.Instructions;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
@@ -442,6 +444,22 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     heightMultiple = 0;
 
                     break;
+            }
+
+            // If we're resizing a rectangle on an object, we may not want to move on resize, so let's change the position
+            // values to 0 and double the dimension values
+            if(item.Parent != null)
+            {
+                if(item.RelativeX == 0)
+                {
+                    xPositionMultiple = 0;
+                    widthMultiple *= 2;
+                }
+                if(item.RelativeY == 0)
+                {
+                    yPositionMultiple = 0;
+                    heightMultiple *= 2;
+                }
             }
 
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;

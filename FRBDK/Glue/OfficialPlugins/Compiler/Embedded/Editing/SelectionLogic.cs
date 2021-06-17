@@ -1,4 +1,6 @@
-﻿using FlatRedBall;
+﻿{CompilerDirectives}
+
+using FlatRedBall;
 using FlatRedBall.Graphics;
 using FlatRedBall.Gui;
 using FlatRedBall.Math.Geometry;
