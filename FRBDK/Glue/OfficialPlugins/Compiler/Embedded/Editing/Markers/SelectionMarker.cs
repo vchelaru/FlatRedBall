@@ -46,7 +46,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         AxisAlignedRectangle[] handles = new AxisAlignedRectangle[8];
 
-        public float ExtraPadding { get; set; } = 2;
+        public float ExtraPaddingInPixels { get; set; } = 2;
 
         public float ScaleX
         {
@@ -118,7 +118,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             get; set;
         }
 
-        const int handleDimension = 10;
+        const int DefaultHandleDimension = 10;
 
         Microsoft.Xna.Framework.Point ScreenPointPushed;
         Vector3 unsnappedItemPosition;
@@ -137,8 +137,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
             for(int i = 0; i < handles.Length; i++)
             {
                 handles[i] = new AxisAlignedRectangle();
-                handles[i].Width = handleDimension;
-                handles[i].Height = handleDimension;
+                handles[i].Width = DefaultHandleDimension;
+                handles[i].Height = DefaultHandleDimension;
 
             }
         }
@@ -158,21 +158,24 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         #endregion
 
-        public void PlayBumpAnimation(float endingExtraPadding)
+        public void PlayBumpAnimation(float endingExtraPaddingBeforeZoom)
         {
+            var endingExtraPadding = endingExtraPaddingBeforeZoom;
             TweenerManager.Self.StopAllTweenersOwnedBy(rectangle);
 
             IsFadingInAndOut = false;
-            ExtraPadding = 0;
+            ExtraPaddingInPixels = 0;
             const float growTime = 0.25f;
-            var tweener = rectangle.Tween((newValue) => this.ExtraPadding = newValue, this.ExtraPadding, 10, growTime,
+            float extraPaddingFromBump = 10;
+
+            var tweener = rectangle.Tween((newValue) => this.ExtraPaddingInPixels = newValue, this.ExtraPaddingInPixels, extraPaddingFromBump, growTime,
                 FlatRedBall.Glue.StateInterpolation.InterpolationType.Quadratic,
                 FlatRedBall.Glue.StateInterpolation.Easing.Out);
 
             tweener.Ended += () =>
             {
                 var shrinkTime = growTime;
-                var tweener2 = rectangle.Tween((newValue) => this.ExtraPadding = newValue, this.ExtraPadding, endingExtraPadding, shrinkTime,
+                var tweener2 = rectangle.Tween((newValue) => this.ExtraPaddingInPixels = newValue, this.ExtraPaddingInPixels, endingExtraPadding, shrinkTime,
                     FlatRedBall.Glue.StateInterpolation.InterpolationType.Quadratic,
                     FlatRedBall.Glue.StateInterpolation.Easing.InOut);
 
@@ -253,8 +256,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
                 Position = newPosition;
 
-                ScaleX = ExtraPadding + (maxX - minX) / 2.0f;
-                ScaleY = ExtraPadding + (maxY - minY) / 2.0f;
+                ScaleX = ExtraPaddingInPixels/CameraLogic.CurrentZoomRatio + (maxX - minX) / 2.0f;
+                ScaleY = ExtraPaddingInPixels / CameraLogic.CurrentZoomRatio + (maxY - minY) / 2.0f;
             }
         }
 
@@ -291,6 +294,9 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 foreach(var handle in handles)
                 {
                     handle.Position += this.Position;
+
+                    handle.Width = DefaultHandleDimension / CameraLogic.CurrentZoomRatio;
+                    handle.Height = DefaultHandleDimension / CameraLogic.CurrentZoomRatio;
                 }
             }
         }

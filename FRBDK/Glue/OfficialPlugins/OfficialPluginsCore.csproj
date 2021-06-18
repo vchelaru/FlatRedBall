@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Compile Remove="Compiler\Embedded\Dtos.cs" />
+    <Compile Remove="Compiler\Embedded\Editing\CameraLogic.cs" />
     <Compile Remove="Compiler\Embedded\Editing\EditingManager.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Guides.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Markers\SelectionMarker.cs" />
@@ -82,6 +83,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Compiler\Embedded\Dtos.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Editing\CameraLogic.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\EditingManager.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Guides.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Markers\SelectionMarker.cs" />

@@ -16,44 +16,44 @@ namespace OfficialPlugins.Compiler.CodeGeneration
         public static void GenerateAll(bool fullyGenerate)
         {
             GlueControlCodeGenerator.GenerateFull = fullyGenerate;
-            SaveEmbeddedFile(GlueControlCodeGenerator.GetGlueControlManagerContents(), 
+
+            SaveEmbeddedFile("OfficialPlugins.Compiler.Embedded.GlueControlManager.cs", 
                 "GlueControlManager.Generated.cs");
 
-            SaveEmbeddedFile(GlueControlCodeGenerator.GetEditingManagerContents(), 
+            SaveEmbeddedFile("OfficialPlugins.Compiler.Embedded.Editing.EditingManager.cs",
                 "Editing/EditingManager.Generated.cs");
 
-            SaveEmbeddedFile(GlueControlCodeGenerator.GetSelectionLogicContents(),
+            SaveEmbeddedFile("OfficialPlugins.Compiler.Embedded.Editing.SelectionLogic.cs",
                 "Editing/SelectionLogic.Generated.cs");
 
-            SaveEmbeddedFile(GlueControlCodeGenerator.GetEmbeddedStringContents(
-                "OfficialPlugins.Compiler.Embedded.Editing.Markers.SelectionMarker.cs"),
+            SaveEmbeddedFile("OfficialPlugins.Compiler.Embedded.Editing.Markers.SelectionMarker.cs",
                 "Editing/Markers/SelectionMarker.Generated.cs");
 
-            SaveEmbeddedFile(GlueControlCodeGenerator.GetEmbeddedStringContents(
-                "OfficialPlugins.Compiler.Embedded.Editing.VariableAssignmentLogic.cs"),
+            SaveEmbeddedFile("OfficialPlugins.Compiler.Embedded.Editing.VariableAssignmentLogic.cs",
                 "Editing/VariableAssignmentLogic.Generated.cs");
 
-            SaveEmbeddedFile(GlueControlCodeGenerator.GetDtosContents(),
+            SaveEmbeddedFile("OfficialPlugins.Compiler.Embedded.Dtos.cs",
                 "Dtos.Generated.cs");
 
-            SaveEmbeddedFile(GlueControlCodeGenerator.GetInstanceLogicContents(),
+            SaveEmbeddedFile("OfficialPlugins.Compiler.Embedded.InstanceLogic.cs",
                 "InstanceLogic.Generated.cs");
 
-            SaveEmbeddedFile(GlueControlCodeGenerator.GetEmbeddedStringContents(
-                "OfficialPlugins.Compiler.Embedded.Forms.ObjectCreationWindow.cs"),
+            SaveEmbeddedFile("OfficialPlugins.Compiler.Embedded.Forms.ObjectCreationWindow.cs",
                 "Forms/ObjectCreationWindow.Generated.cs");
 
-            SaveEmbeddedFile(GlueControlCodeGenerator.GetEmbeddedStringContents(
-                "OfficialPlugins.Compiler.Embedded.Models.NamedObjectSave.cs"),
+            SaveEmbeddedFile("OfficialPlugins.Compiler.Embedded.Models.NamedObjectSave.cs",
                 "Models/NamedObjectSave.Generated.cs");
 
-            SaveEmbeddedFile(GlueControlCodeGenerator.GetEmbeddedStringContents(
-                "OfficialPlugins.Compiler.Embedded.Editing.Guides.cs"),
+            SaveEmbeddedFile("OfficialPlugins.Compiler.Embedded.Editing.Guides.cs",
                 "Editing/Guides.Generated.cs");
+
+            SaveEmbeddedFile("OfficialPlugins.Compiler.Embedded.Editing.CameraLogic.cs",
+                "Editing/CameraLogic.Generated.cs");
         }
 
-        private static void SaveEmbeddedFile(string glueControlManagerCode, string relativeDestinationFilePath)
+        private static void SaveEmbeddedFile(string resourcePath, string relativeDestinationFilePath)
         {
+            string glueControlManagerCode = GlueControlCodeGenerator.GetEmbeddedStringContents(resourcePath);
             FilePath destinationFilePath = glueControlFolder + relativeDestinationFilePath;
             GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(destinationFilePath);
             GlueCommands.Self.TryMultipleTimes(() => System.IO.File.WriteAllText(destinationFilePath.FullPath, glueControlManagerCode));

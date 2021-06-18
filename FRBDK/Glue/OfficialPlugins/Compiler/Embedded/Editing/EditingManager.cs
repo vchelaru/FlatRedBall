@@ -80,10 +80,11 @@ namespace {ProjectNamespace}.GlueControl.Editing
             var isInEditMode = ScreenManager.IsInEditMode;
 
             Guides.Visible = isInEditMode;
-            Guides.UpdateGridLines();
 
             if (isInEditMode)
             {
+                Guides.UpdateGridLines();
+                
                 var itemOverBefore = ItemOver;
                 var itemSelectedBefore = ItemSelected;
 
@@ -96,7 +97,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
                 DoHotkeyLogic();
 
-                DoCameraControllingLogic();
+                CameraLogic.DoCursorCameraControllingLogic();
 
                 UpdateMarkers(didChangeItemOver);
             }
@@ -118,7 +119,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 HighlightMarker.FadingSeed = TimeManager.CurrentTime;
             }
 
-            HighlightMarker.ExtraPadding = 4;
+            HighlightMarker.ExtraPaddingInPixels = 4;
             HighlightMarker.Update(ItemOver, SideGrabbed);
 
             SelectedMarker.Update(ItemSelected, SideGrabbed);
@@ -143,16 +144,6 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         #endregion
 
-        private void DoCameraControllingLogic()
-        {
-            var cursor = GuiManager.Cursor;
-            if(cursor.MiddleDown)
-            {
-                var camera = Camera.Main;
-                camera.X -= cursor.WorldXChangeAt(0);
-                camera.Y -= cursor.WorldYChangeAt(0);
-            }
-        }
 
         private void DoGrabLogic()
         {

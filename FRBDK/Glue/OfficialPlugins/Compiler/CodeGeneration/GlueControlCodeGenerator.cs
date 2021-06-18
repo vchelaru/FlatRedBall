@@ -13,38 +13,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration
     {
         public static bool GenerateFull { get; set; }
 
-        public static string GetGlueControlManagerContents()
-        {
-            return GetEmbeddedStringContents( 
-                "OfficialPlugins.Compiler.Embedded.GlueControlManager.cs");
-        }
-
-        public static string GetEditingManagerContents()
-        {
-            return GetEmbeddedStringContents( 
-                "OfficialPlugins.Compiler.Embedded.Editing.EditingManager.cs");
-        }
-
-        public static string GetSelectionLogicContents()
-        {
-            return GetEmbeddedStringContents(
-                "OfficialPlugins.Compiler.Embedded.Editing.SelectionLogic.cs");
-        }
-
-        internal static string GetDtosContents()
-        {
-            return GetEmbeddedStringContents(
-                "OfficialPlugins.Compiler.Embedded.Dtos.cs");
-        }
-
-        internal static string GetInstanceLogicContents()
-        {
-
-            return GetEmbeddedStringContents(
-                "OfficialPlugins.Compiler.Embedded.InstanceLogic.cs");
-        }
-
-        public static string GetEmbeddedStringContents(string embeddedLocation)
+                public static string GetEmbeddedStringContents(string embeddedLocation)
         {
             var byteArray = FileManager.GetByteArrayFromEmbeddedResource(
                 typeof(GlueControlCodeGenerator).Assembly,

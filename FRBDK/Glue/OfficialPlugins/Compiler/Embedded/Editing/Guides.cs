@@ -89,7 +89,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             {
                 var line = new Line();
                 ScreenManager.PersistentLines.Add(line);
-
+                line.Visible = true;
                 line.Color = smallGridLineColor;
                 verticalLines.Add(line);
             }
@@ -123,7 +123,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             {
                 var line = new Line();
                 ScreenManager.PersistentLines.Add(line);
-
+                line.Visible = true;
                 line.Color = smallGridLineColor;
                 horizontalLines.Add(line);
             }
