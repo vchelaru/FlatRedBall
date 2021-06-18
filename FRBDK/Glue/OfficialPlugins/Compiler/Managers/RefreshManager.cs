@@ -227,7 +227,12 @@ namespace OfficialPlugins.Compiler.Managers
                     do
                     {
                         shouldIncreasePosition = false;
-                        foreach (var item in list.ContainedObjects)
+
+                        var listToLoopThrough = list?.ContainedObjects ?? GlueState.Self.CurrentElement.NamedObjects;
+
+                        const int incrementForNewObject = 16;
+                        const int minimumDistanceForObjects = 3;
+                        foreach (var item in listToLoopThrough)
                         {
                             if (item != newNamedObject)
                             {
@@ -237,7 +242,8 @@ namespace OfficialPlugins.Compiler.Managers
 
                                 var distance = (itemPosition - newPosition).Length();
 
-                                if (distance < 3)
+
+                                if (distance < minimumDistanceForObjects)
                                 {
                                     shouldIncreasePosition = true;
                                     break;
@@ -247,7 +253,7 @@ namespace OfficialPlugins.Compiler.Managers
                         }
                         if (shouldIncreasePosition)
                         {
-                            newPosition.X += 16;
+                            newPosition.X += incrementForNewObject;
                         }
 
                     } while (shouldIncreasePosition);
@@ -345,7 +351,7 @@ namespace OfficialPlugins.Compiler.Managers
             }
             else
             {
-                type = instruction?.Type ?? instruction.Value?.GetType().Name;
+                type = instruction?.Type ?? instruction?.Value?.GetType().Name;
                 value = instruction?.Value?.ToString();
             }
             TaskManager.Self.Add(async () =>

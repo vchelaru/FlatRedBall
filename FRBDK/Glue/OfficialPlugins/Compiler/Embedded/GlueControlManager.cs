@@ -455,10 +455,32 @@ namespace {ProjectNamespace}
         {
 #if IncludeSetVariable
             var deserialized = Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Models.NamedObjectSave>(data);
+
+            PositionedObject instance = null;
+
             if(deserialized.SourceType == GlueControl.Models.SourceType.Entity)
             {
                 var factory = FlatRedBall.TileEntities.TileEntityInstantiator.GetFactory(deserialized.SourceClassType);
-                var instance = factory?.CreateNew() as FlatRedBall.PositionedObject;
+                instance = factory?.CreateNew() as FlatRedBall.PositionedObject;
+            }
+            else if(deserialized.SourceType == GlueControl.Models.SourceType.FlatRedBallType)
+            {
+                switch(deserialized.SourceClassType)
+                {
+                    case "FlatRedBall.Math.Geometry.AxisAlignedRectangle":
+                        instance = new FlatRedBall.Math.Geometry.AxisAlignedRectangle();
+
+                        break;
+                    case "FlatRedBall.Math.Geometry.Circle":
+                        instance = new FlatRedBall.Math.Geometry.Circle();
+                        break;
+                    case "FlatRedBall.Math.Geometry.Polygon":
+                        instance = new FlatRedBall.Math.Geometry.Polygon();
+                        break;
+                }
+            }
+            if(instance != null)
+            {
                 instance.Name = deserialized.InstanceName;
                 instance.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
                 instance.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
@@ -519,7 +541,7 @@ namespace {ProjectNamespace}
 
 #endregion
 
-#region Game -> Glue
+        #region Game -> Glue
 
         private void HandlePropertyChanged(PositionedObject item, string propertyName, object value)
         {
