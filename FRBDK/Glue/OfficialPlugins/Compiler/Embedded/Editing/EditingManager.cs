@@ -87,7 +87,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 var itemOverBefore = ItemOver;
                 var itemSelectedBefore = ItemSelected;
 
-                ItemOver = SelectionLogic.GetEntityOver(ItemSelected, SelectedMarker, GuiManager.Cursor.PrimaryDoublePush, ElementEditingMode);
+                ItemOver = SelectionLogic.GetInstanceOver(ItemSelected, SelectedMarker, GuiManager.Cursor.PrimaryDoublePush, ElementEditingMode);
                 var didChangeItemOver = itemOverBefore != ItemOver;
 
                 DoGrabLogic();
@@ -109,7 +109,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 #endif
         }
 
-#region Markers
+        #region Markers
 
         private void UpdateMarkers(bool didChangeItemOver)
         {
@@ -141,8 +141,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             }
         }
 
-
-#endregion
+        #endregion
 
         private void DoCameraControllingLogic()
         {
@@ -282,21 +281,17 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         internal void Select(string objectName)
         {
-            PositionedObject foundObject = null;
-            if(ScreenManager.CurrentScreen.GetType().Name == "EntityViewingScreen" && SpriteManager.ManagedPositionedObjects.Count > 0)
-            {
-                foundObject = SpriteManager.ManagedPositionedObjects[0].Children.FirstOrDefault(item => item.Name == objectName);
-            }
-            else
-            {
-                foundObject = SpriteManager.ManagedPositionedObjects.FirstOrDefault(item => item.Name == objectName);
+            PositionedObject foundObject = SelectionLogic.GetAvailableObjects(ElementEditingMode)
+                ?.FirstOrDefault(item => item.Name == objectName);
 
-            }
-
-            if(ItemSelected != foundObject)
+            if (ItemSelected != foundObject)
             {
                 ItemSelected = foundObject;
                 SelectedMarker.PlayBumpAnimation(SelectedItemExtraPadding);
+
+                // do this right away so the handles don't pop out of existance when changing selection
+                UpdateMarkers(didChangeItemOver:true);
+
             }
         }
     }

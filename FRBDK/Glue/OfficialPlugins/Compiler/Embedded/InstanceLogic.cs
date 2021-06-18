@@ -37,7 +37,7 @@ namespace {ProjectNamespace}.GlueControl
             }
         }
 
-        ShapeCollection ShapesToDestroy = new ShapeCollection();
+        public ShapeCollection ShapesAddedAtRuntime = new ShapeCollection();
 
         #endregion
 
@@ -60,7 +60,7 @@ namespace {ProjectNamespace}.GlueControl
                         if (deserialized.AddToManagers)
                         {
                             ShapeManager.AddAxisAlignedRectangle(aaRect);
-                            ShapesToDestroy.Add(aaRect);
+                            ShapesAddedAtRuntime.Add(aaRect);
                         }
                         instance = aaRect;
 
@@ -70,7 +70,7 @@ namespace {ProjectNamespace}.GlueControl
                         if (deserialized.AddToManagers)
                         {
                             ShapeManager.AddCircle(circle);
-                            ShapesToDestroy.Add(circle);
+                            ShapesAddedAtRuntime.Add(circle);
                         }
                         instance = circle;
                         break;
@@ -79,7 +79,7 @@ namespace {ProjectNamespace}.GlueControl
                         if (deserialized.AddToManagers)
                         {
                             ShapeManager.AddPolygon(polygon);
-                            ShapesToDestroy.Add(polygon);
+                            ShapesAddedAtRuntime.Add(polygon);
                         }
                         instance = polygon;
                         break;
@@ -167,19 +167,19 @@ namespace {ProjectNamespace}.GlueControl
 
         public void DestroyShapes()
         {
-            for(int i = ShapesToDestroy.AxisAlignedRectangles.Count-1; i > -1; i--)
+            for(int i = ShapesAddedAtRuntime.AxisAlignedRectangles.Count-1; i > -1; i--)
             {
-                ShapeManager.Remove(ShapesToDestroy.AxisAlignedRectangles[i]);
+                ShapeManager.Remove(ShapesAddedAtRuntime.AxisAlignedRectangles[i]);
             }
 
-            for (int i = ShapesToDestroy.Circles.Count - 1; i > -1; i--)
+            for (int i = ShapesAddedAtRuntime.Circles.Count - 1; i > -1; i--)
             {
-                ShapeManager.Remove(ShapesToDestroy.Circles[i]);
+                ShapeManager.Remove(ShapesAddedAtRuntime.Circles[i]);
             }
 
-            for (int i = ShapesToDestroy.Polygons.Count - 1; i > -1; i--)
+            for (int i = ShapesAddedAtRuntime.Polygons.Count - 1; i > -1; i--)
             {
-                ShapeManager.Remove(ShapesToDestroy.Polygons[i]);
+                ShapeManager.Remove(ShapesAddedAtRuntime.Polygons[i]);
             }
         }
 

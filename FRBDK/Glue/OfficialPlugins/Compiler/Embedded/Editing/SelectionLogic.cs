@@ -16,7 +16,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
     {
         static List<PositionedObject> tempPunchThroughList = new List<PositionedObject>();
 
-        public static PositionedObject GetEntityOver(PositionedObject currentEntity, SelectionMarker selectionMarker,
+        public static PositionedObject GetInstanceOver(PositionedObject currentEntity, SelectionMarker selectionMarker,
             bool punchThrough, ElementEditingMode elementEditingMode)
         {
             PositionedObject entityOver = null;
@@ -35,26 +35,12 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
             if(entityOver == null)
             {
-                IList<PositionedObject> list = null;
+                IEnumerable<PositionedObject> availableItems = GetAvailableObjects(elementEditingMode);
 
-                if(elementEditingMode == ElementEditingMode.EditingScreen)
+                if (availableItems != null)
                 {
-                    list = SpriteManager.ManagedPositionedObjects;
-                }
-                else if(elementEditingMode == ElementEditingMode.EditingEntity)
-                {
-                    if(SpriteManager.ManagedPositionedObjects.Count > 0)
+                    foreach (PositionedObject objectAtI in availableItems)
                     {
-                        list = SpriteManager.ManagedPositionedObjects[0].Children;
-                    }
-                }
-
-                if(list != null)
-                {
-                    for (int i = 0; i < list.Count; i++)
-                    {
-                        var objectAtI = list[i] as PositionedObject;
-
                         if (IsSelectable(objectAtI) && IsCursorOver(objectAtI))
                         {
                             if (punchThrough)
@@ -71,7 +57,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 }
             }
 
-            if(punchThrough)
+            if (punchThrough)
             {
                 if(tempPunchThroughList.Count == 0)
                 {
@@ -101,6 +87,31 @@ namespace {ProjectNamespace}.GlueControl.Editing
             }
 
             return entityOver;
+        }
+
+        public static IEnumerable<PositionedObject> GetAvailableObjects(ElementEditingMode elementEditingMode)
+        {
+            IEnumerable<PositionedObject> availableItems = null;
+
+            if (elementEditingMode == ElementEditingMode.EditingScreen)
+            {
+                // is it slow to do this every frame?
+                availableItems = SpriteManager.ManagedPositionedObjects
+                    .Concat(ShapeManager.VisibleRectangles.Where(item => item.Parent == null))
+                    .Concat(ShapeManager.VisibleCircles.Where(item => item.Parent == null))
+                    .Concat(ShapeManager.VisiblePolygons.Where(item => item.Parent == null))
+
+                    ;
+            }
+            else if (elementEditingMode == ElementEditingMode.EditingEntity)
+            {
+                if (SpriteManager.ManagedPositionedObjects.Count > 0)
+                {
+                    availableItems = SpriteManager.ManagedPositionedObjects[0].Children;
+                }
+            }
+
+            return availableItems;
         }
 
         private static bool IsSelectable(PositionedObject objectAtI)

@@ -460,7 +460,7 @@ namespace {ProjectNamespace}
 #endif
     }
 
-    private string HandleSetVariable(string data)
+        private string HandleSetVariable(string data)
         {
             string valueToReturn = null;
 #if IncludeSetVariable
@@ -487,38 +487,36 @@ namespace {ProjectNamespace}
 
         private void HandleRemoveObject(RemoveObjectDto removeObjectDto)
         {
+
             bool matchesCurrentScreen = 
                 GetIfMatchesCurrentScreen(removeObjectDto.ElementName, out System.Type ownerType, out Screen currentScreen);
 
             if (matchesCurrentScreen)
             {
-                bool removedByReflection = false;
-                var bindingFlags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public;
-                // yes, remove it
-                var propertyInfo = ownerType.GetProperty(removeObjectDto.ObjectName, bindingFlags);
-                if (propertyInfo != null)
-                {
-                    var objectToRemove = propertyInfo.GetValue(currentScreen) as IDestroyable;
-                    objectToRemove?.Destroy();
-                    removedByReflection = true;
-                }
-                else
-                {
-                    // it's null, so try the field
-                    var fieldInfo = ownerType.GetField(removeObjectDto.ObjectName, bindingFlags);
-                    if (fieldInfo != null)
-                    {
-                        var objectToRemove = fieldInfo.GetValue(currentScreen) as IDestroyable;
-                        objectToRemove?.Destroy();
-                        removedByReflection = true;
-                    }
-                }
+                var isEditingEntity =
+                    ScreenManager.CurrentScreen?.GetType() == typeof(Screens.EntityViewingScreen);
+                var editingMode = isEditingEntity 
+                    ? GlueControl.Editing.ElementEditingMode.EditingEntity 
+                    : GlueControl.Editing.ElementEditingMode.EditingScreen;
 
-                if (!removedByReflection)
+                var available = GlueControl.Editing.SelectionLogic.GetAvailableObjects(editingMode)
+                        .FirstOrDefault(item => item.Name == removeObjectDto.ObjectName);
+
+                if(available is IDestroyable asDestroyable)
                 {
-                    var foundObject = SpriteManager.ManagedPositionedObjects
-                        .FirstOrDefault(item => item.Name == removeObjectDto.ObjectName) as IDestroyable;
-                    foundObject?.Destroy();
+                    asDestroyable.Destroy();
+                }
+                else if(available is AxisAlignedRectangle rectangle)
+                {
+                    ShapeManager.Remove(rectangle);
+                }
+                else if(available is Circle circle)
+                {
+                    ShapeManager.Remove(circle);
+                }
+                else if(available is Polygon polygon)
+                {
+                    ShapeManager.Remove(polygon);
                 }
             }
         }
