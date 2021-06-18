@@ -74,6 +74,31 @@ namespace {ProjectNamespace}.GlueControl.Editing
                         handled = true;
                     }
 
+                    if(!handled)
+                    {
+                        var circle = ShapeManager.VisibleCircles.FirstOrDefault(item =>
+                            item.Parent == null &&
+                            item.Name == splitVariable[1]);
+                        if (circle != null)
+                        {
+                            screen.ApplyVariable(splitVariable[2], variableValue, circle);
+                            handled = true;
+                        }
+                    }
+
+                    if(!handled)
+                    {
+                        var polygon = ShapeManager.VisiblePolygons.FirstOrDefault(item =>
+                            item.Parent == null &&
+                            item.Name == splitVariable[1]);
+
+                        if(polygon != null)
+                        {
+                            screen.ApplyVariable(splitVariable[2], variableValue, polygon);
+                            handled = true;
+                        }
+                    }
+
                 }
                 if(!handled)
                 {
@@ -81,6 +106,5 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 }
             }
         }
-
     }
 }

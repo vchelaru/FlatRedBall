@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace {ProjectNamespace}.GlueControl
 {
     public class InstanceLogic
@@ -21,7 +22,8 @@ namespace {ProjectNamespace}.GlueControl
             "Z",
             "Width",
             "Height",
-            "TextureScale"
+            "TextureScale",
+            "Radius"
         };
 
         static InstanceLogic self;
