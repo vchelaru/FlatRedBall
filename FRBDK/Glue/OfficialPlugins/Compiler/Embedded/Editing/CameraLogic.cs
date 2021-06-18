@@ -67,7 +67,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             }
         }
 
-        private static void UpdateToZoomLevel()
+        private static void UpdateToZoomLevel(bool zoomAroundCursorPosition = true)
         {
             var cursor = GuiManager.Cursor;
             var worldXBefore = cursor.WorldX;
@@ -75,11 +75,49 @@ namespace {ProjectNamespace}.GlueControl.Editing
             Camera.Main.OrthogonalHeight = (CameraSetup.Data.Scale / 100.0f) * CameraSetup.Data.ResolutionHeight/ (zoomLevels[currentZoomLevelIndex] / 100.0f);
             Camera.Main.FixAspectRatioYConstant();
 
-            var worldXAfterZoom = cursor.WorldX;
-            var worldYAfterZoom = cursor.WorldY;
+            if(zoomAroundCursorPosition)
+            {
+                var worldXAfterZoom = cursor.WorldX;
+                var worldYAfterZoom = cursor.WorldY;
 
-            Camera.Main.X -= worldXAfterZoom - worldXBefore;
-            Camera.Main.Y -= worldYAfterZoom - worldYBefore;
+                Camera.Main.X -= worldXAfterZoom - worldXBefore;
+                Camera.Main.Y -= worldYAfterZoom - worldYBefore;
+            }
+        }
+
+        internal static void DoHotkeyLogic()
+        {
+            const int movePerPush = 16;
+            var keyboard = FlatRedBall.Input.InputManager.Keyboard;
+            if (keyboard.IsCtrlDown)
+            {
+                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.Up))
+                {
+                    Camera.Main.Y += movePerPush;
+                }
+                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.Down))
+                {
+                    Camera.Main.Y -= movePerPush;
+                }
+                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.Left))
+                {
+                    Camera.Main.X -= movePerPush;
+                }
+                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.Right))
+                {
+                    Camera.Main.X += movePerPush;
+                }
+                if(keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.OemPlus))
+                {
+                    currentZoomLevelIndex = Math.Max(currentZoomLevelIndex - 1, 0);
+                    UpdateToZoomLevel(zoomAroundCursorPosition:false);
+                }
+                if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.OemMinus))
+                {
+                    currentZoomLevelIndex = Math.Min(currentZoomLevelIndex + 1, zoomLevels.Length - 1);
+                    UpdateToZoomLevel(zoomAroundCursorPosition: false);
+                }
+            }
         }
     }
 }

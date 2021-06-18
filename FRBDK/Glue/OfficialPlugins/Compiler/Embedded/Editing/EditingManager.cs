@@ -241,26 +241,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 }
             }
 
-            const int movePerPush = 16;
-            if(keyboard.IsCtrlDown)
-            {
-                if(keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.Up))
-                {
-                    Camera.Main.Y += movePerPush;
-                }
-                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.Down))
-                {
-                    Camera.Main.Y -= movePerPush;
-                }
-                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.Left))
-                {
-                    Camera.Main.X -= movePerPush;
-                }
-                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.Right))
-                {
-                    Camera.Main.X += movePerPush;
-                }
-            }
+            CameraLogic.DoHotkeyLogic();
+            
         }
 
         void Notify(string propertyName, object value) => PropertyChanged(ItemGrabbed, propertyName, value);
