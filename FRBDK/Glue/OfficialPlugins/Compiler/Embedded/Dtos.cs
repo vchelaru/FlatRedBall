@@ -52,4 +52,9 @@ namespace {ProjectNamespace}.GlueControl.Dtos
         public float Y { get; set; }
         public float Z { get; set; }
     }
+
+    public class AddObjectDto : GlueControl.Models.NamedObjectSave
+{
+        public string ElementName { get; set; }
+    }
 }

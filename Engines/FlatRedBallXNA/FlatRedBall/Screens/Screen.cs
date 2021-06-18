@@ -131,6 +131,10 @@ namespace FlatRedBall.Screens
             get { return TimeManager.CurrentTime - mAccumulatedPausedTime; }
         }
 
+        /// <summary>
+        /// Action raised when this screen is destroyed. This can be used to create flow objects or for top-level
+        /// debugging/game editors.
+        /// </summary>
         public Action ScreenDestroy { get; set; }
 
         public int ActivityCallCount

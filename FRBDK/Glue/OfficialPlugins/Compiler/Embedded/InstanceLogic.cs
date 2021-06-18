@@ -1,6 +1,7 @@
 ﻿{CompilerDirectives}
 using FlatRedBall;
 using FlatRedBall.Gui;
+using FlatRedBall.Math.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,18 @@ namespace {ProjectNamespace}.GlueControl
 {
     public class InstanceLogic
     {
+        #region Fields/Properties
+
+        static HashSet<string> floatVariables = new HashSet<string>
+        {
+            "X",
+            "Y",
+            "Z",
+            "Width",
+            "Height",
+            "TextureScale"
+        };
+
         static InstanceLogic self;
         public static InstanceLogic Self
         {
@@ -24,6 +37,71 @@ namespace {ProjectNamespace}.GlueControl
             }
         }
 
+        ShapeCollection ShapesToDestroy = new ShapeCollection();
+
+        #endregion
+
+        public void HandleCreateInstanceCommandFromGlue(Models.NamedObjectSave deserialized)
+        {
+
+            PositionedObject instance = null;
+
+            if (deserialized.SourceType == GlueControl.Models.SourceType.Entity)
+            {
+                var factory = FlatRedBall.TileEntities.TileEntityInstantiator.GetFactory(deserialized.SourceClassType);
+                instance = factory?.CreateNew() as FlatRedBall.PositionedObject;
+            }
+            else if (deserialized.SourceType == GlueControl.Models.SourceType.FlatRedBallType)
+            {
+                switch (deserialized.SourceClassType)
+                {
+                    case "FlatRedBall.Math.Geometry.AxisAlignedRectangle":
+                        var aaRect = new FlatRedBall.Math.Geometry.AxisAlignedRectangle();
+                        if (deserialized.AddToManagers)
+                        {
+                            ShapeManager.AddAxisAlignedRectangle(aaRect);
+                            ShapesToDestroy.Add(aaRect);
+                        }
+                        instance = aaRect;
+
+                        break;
+                    case "FlatRedBall.Math.Geometry.Circle":
+                        var circle = new FlatRedBall.Math.Geometry.Circle();
+                        if (deserialized.AddToManagers)
+                        {
+                            ShapeManager.AddCircle(circle);
+                            ShapesToDestroy.Add(circle);
+                        }
+                        instance = circle;
+                        break;
+                    case "FlatRedBall.Math.Geometry.Polygon":
+                        var polygon = new FlatRedBall.Math.Geometry.Polygon();
+                        if (deserialized.AddToManagers)
+                        {
+                            ShapeManager.AddPolygon(polygon);
+                            ShapesToDestroy.Add(polygon);
+                        }
+                        instance = polygon;
+                        break;
+                }
+            }
+            if (instance != null)
+            {
+                instance.Name = deserialized.InstanceName;
+                instance.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
+                instance.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
+                instance.CreationSource = "Glue"; // Glue did make this, so do this so the game can select it
+
+                foreach (var instruction in deserialized.InstructionSaves)
+                {
+                    var variableName = instruction.Member;
+                    var variableValue = instruction.Value;
+
+                    AssignVariable(instance, variableName, variableValue);
+
+                }
+            }
+        }
 
         public FlatRedBall.PositionedObject CreateInstanceByGame(string entityType, float x, float y)
         {
@@ -67,5 +145,43 @@ namespace {ProjectNamespace}.GlueControl
 
             GlueControlManager.Self.SendToGlue(dto);
         }
+
+        private void AssignVariable(PositionedObject instance, string variableName, object variableValue)
+        {
+            var shouldBeFloat = floatVariables.Contains(variableName);
+
+            if (shouldBeFloat)
+            {
+                if (variableValue is int asInt)
+                {
+                    variableValue = (float)asInt;
+                }
+                else if (variableValue is double asDouble)
+                {
+                    variableValue = (float)asDouble;
+                }
+            }
+
+            FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(instance, variableName, variableValue);
+        }
+
+        public void DestroyShapes()
+        {
+            for(int i = ShapesToDestroy.AxisAlignedRectangles.Count-1; i > -1; i--)
+            {
+                ShapeManager.Remove(ShapesToDestroy.AxisAlignedRectangles[i]);
+            }
+
+            for (int i = ShapesToDestroy.Circles.Count - 1; i > -1; i--)
+            {
+                ShapeManager.Remove(ShapesToDestroy.Circles[i]);
+            }
+
+            for (int i = ShapesToDestroy.Polygons.Count - 1; i > -1; i--)
+            {
+                ShapeManager.Remove(ShapesToDestroy.Polygons[i]);
+            }
+        }
+
     }
 }

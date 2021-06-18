@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlatRedBall.Glue.SaveClasses;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -51,5 +52,9 @@ namespace OfficialPlugins.Compiler.Dtos
         public float Z { get; set; }
     }
 
+    public class AddObjectDto : NamedObjectSave
+    {
+        public string ElementName { get; set; }
+    }
 
 }

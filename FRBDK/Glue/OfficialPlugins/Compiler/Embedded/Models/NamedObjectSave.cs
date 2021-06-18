@@ -18,7 +18,7 @@ namespace {ProjectNamespace}.GlueControl.Models
     }
 
 
-    class NamedObjectSave
+    public class NamedObjectSave
     {
         public SourceType SourceType
         {
@@ -37,6 +37,12 @@ namespace {ProjectNamespace}.GlueControl.Models
             get;
             set;
         }
+
+        public bool AddToManagers
+        {
+            get; set;
+        } = true; // true is the default and won't serialize if true
+
 
         public List<InstructionSave> InstructionSaves = new List<InstructionSave>();
 

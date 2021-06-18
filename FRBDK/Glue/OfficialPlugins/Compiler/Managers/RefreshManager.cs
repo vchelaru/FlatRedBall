@@ -204,15 +204,26 @@ namespace OfficialPlugins.Compiler.Managers
         {
             if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
-                var serialized = JsonConvert.SerializeObject(newNamedObject);
+                var tempSerialized = JsonConvert.SerializeObject(newNamedObject);
+                var tempDeserialized = JsonConvert.DeserializeObject<AddObjectDto>(tempSerialized);
+                var containerElement = ObjectFinder.Self.GetElementContaining(newNamedObject);
+                if(containerElement != null)
+                {
+                    tempDeserialized.ElementName =
+                        GlueState.Self.ProjectNamespace + "." + containerElement.Name.Replace("\\", ".");
+
+                }
+                var serialized = JsonConvert.SerializeObject(tempDeserialized);
 
                 await CommandSender.SendCommand($"AddObject:{serialized}", PortNumber);
 
                 if(GlueState.Self.CurrentScreenSave != null)
                 {
                     // If it's in a screen, then we position the object on the camera:
-                
-                    var cameraPosition = await CommandSender.GetCameraPosition(PortNumber);
+
+                    var cameraPosition = Microsoft.Xna.Framework.Vector3.Zero;
+
+                    cameraPosition = await CommandSender.GetCameraPosition(PortNumber);
 
                     var gluxCommands = GlueCommands.Self.GluxCommands;
 

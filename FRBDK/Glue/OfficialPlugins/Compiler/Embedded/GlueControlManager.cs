@@ -4,6 +4,7 @@
 using {ProjectNamespace}.GlueControl.Dtos;
 using FlatRedBall;
 using FlatRedBall.Graphics;
+using FlatRedBall.Math.Geometry;
 using FlatRedBall.Screens;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -48,6 +49,8 @@ namespace {ProjectNamespace}
         private Queue<string> GlobalGlueToGameCommands = new Queue<string>();
         private Dictionary<string, Queue<string>> ScreenSpecificGlueToGameCommands =
             new Dictionary<string, Queue<string>>();
+
+
 
         #endregion
 
@@ -234,29 +237,17 @@ namespace {ProjectNamespace}
 
                 case "SetVariable":
                 case "GlueVariableSetData":
-                    var owner = HandleSetVariable(data);
-                    if (string.IsNullOrEmpty(owner))
                     {
-                        GlobalGlueToGameCommands.Enqueue(message);
-                    }
-                    else
-                    {
-                        var ownerType = typeof(GlueControlManager).Assembly.GetType(owner);
-                        var isEntity = typeof(PositionedObject).IsAssignableFrom(ownerType);
-                        if (isEntity)
-                        {
-                            // If it's on an entity, then it needs to be applied globally
-                            GlobalGlueToGameCommands.Enqueue(message);
-                        }
-                        else
-                        {
-                            EnqueueMessage(owner, message);
-                        }
+                        var owner = HandleSetVariable(data);
+                        EnqueueToOwner(message, owner);
                     }
                     break;
                 case "AddObject":
-                    HandleAddObject(data);
-                    GlobalGlueToGameCommands.Enqueue(message);
+                    {
+                        var owner = HandleAddObject(data);
+
+                        EnqueueToOwner(message, owner);
+                    }
                     break;
 #if SupportsEditMode
 
@@ -278,6 +269,28 @@ namespace {ProjectNamespace}
 #endif
 
 
+            }
+        }
+
+        private void EnqueueToOwner(string message, string owner)
+        {
+            if (string.IsNullOrEmpty(owner))
+            {
+                GlobalGlueToGameCommands.Enqueue(message);
+            }
+            else
+            {
+                var ownerType = typeof(GlueControlManager).Assembly.GetType(owner);
+                var isEntity = typeof(PositionedObject).IsAssignableFrom(ownerType);
+                if (isEntity)
+                {
+                    // If it's on an entity, then it needs to be applied globally
+                    GlobalGlueToGameCommands.Enqueue(message);
+                }
+                else
+                {
+                    EnqueueMessage(owner, message);
+                }
             }
         }
 
@@ -353,6 +366,7 @@ namespace {ProjectNamespace}
                         // Select this even if it's null so the EditingManager deselects 
                         EditingManager.Select(selectObjectDto.ObjectName);
                         ReRunAllGlueToGameCommands();
+                        screen.ScreenDestroy += HandleScreenDestroy;
                         ScreenManager.ScreenLoaded -= AssignSelection;
                     }
                     ScreenManager.ScreenLoaded += AssignSelection;
@@ -395,6 +409,7 @@ namespace {ProjectNamespace}
                             Camera.Main.Detach();
 
                             ReRunAllGlueToGameCommands();
+                            screen.ScreenDestroy += HandleScreenDestroy;
 
                             EditingManager.Select(selectObjectDto.ObjectName);
                         }
@@ -411,6 +426,11 @@ namespace {ProjectNamespace}
             }
         }
 
+        private void HandleScreenDestroy()
+        {
+            GlueControl.InstanceLogic.Self.DestroyShapes();
+        }
+
         private void HandleSetEditMode(GlueControl.Dtos.SetEditMode setEditMode)
         {
             var value = setEditMode.IsInEditMode;
@@ -425,9 +445,10 @@ namespace {ProjectNamespace}
                 // user may go into edit mode after moving through a level and wouldn't want it to restart fully....or would they? What if they
                 // want to change the Player start location. Need to think that through...
 
-                void HandleScreenLoaded(Screen _)
+                void HandleScreenLoaded(Screen newScreen)
                 {
                     ReRunAllGlueToGameCommands();
+                    newScreen.ScreenDestroy += HandleScreenDestroy;
 
                     FlatRedBall.Screens.ScreenManager.ScreenLoaded -= HandleScreenLoaded;
                 }
@@ -451,46 +472,20 @@ namespace {ProjectNamespace}
             return valueToReturn;
         }
 
-        public void HandleAddObject(string data)
+        public string HandleAddObject(string data)
         {
+            string valueToReturn = null;
 #if IncludeSetVariable
-            var deserialized = Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Models.NamedObjectSave>(data);
+            var deserialized = Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.AddObjectDto>(data);
 
-            PositionedObject instance = null;
+            valueToReturn = deserialized.ElementName;
 
-            if(deserialized.SourceType == GlueControl.Models.SourceType.Entity)
-            {
-                var factory = FlatRedBall.TileEntities.TileEntityInstantiator.GetFactory(deserialized.SourceClassType);
-                instance = factory?.CreateNew() as FlatRedBall.PositionedObject;
-            }
-            else if(deserialized.SourceType == GlueControl.Models.SourceType.FlatRedBallType)
-            {
-                switch(deserialized.SourceClassType)
-                {
-                    case "FlatRedBall.Math.Geometry.AxisAlignedRectangle":
-                        instance = new FlatRedBall.Math.Geometry.AxisAlignedRectangle();
-
-                        break;
-                    case "FlatRedBall.Math.Geometry.Circle":
-                        instance = new FlatRedBall.Math.Geometry.Circle();
-                        break;
-                    case "FlatRedBall.Math.Geometry.Polygon":
-                        instance = new FlatRedBall.Math.Geometry.Polygon();
-                        break;
-                }
-            }
-            if(instance != null)
-            {
-                instance.Name = deserialized.InstanceName;
-                instance.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
-                instance.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
-                instance.CreationSource = "Glue"; // Glue did make this, so do this so the game can select it
-            }
+            GlueControl.InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(deserialized);
 #endif
+            return valueToReturn;
+        }
 
-    }
-
-    private void HandleRemoveObject(RemoveObjectDto removeObjectDto)
+        private void HandleRemoveObject(RemoveObjectDto removeObjectDto)
         {
             bool matchesCurrentScreen = 
                 GetIfMatchesCurrentScreen(removeObjectDto.ElementName, out System.Type ownerType, out Screen currentScreen);
