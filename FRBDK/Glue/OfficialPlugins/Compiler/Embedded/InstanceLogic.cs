@@ -43,15 +43,16 @@ namespace {ProjectNamespace}.GlueControl
 
         #endregion
 
-        public void HandleCreateInstanceCommandFromGlue(Models.NamedObjectSave deserialized)
+        public object HandleCreateInstanceCommandFromGlue(Models.NamedObjectSave deserialized)
         {
 
-            PositionedObject instance = null;
+            PositionedObject newPositionedObject = null;
+            object newObject = null;
 
             if (deserialized.SourceType == GlueControl.Models.SourceType.Entity)
             {
                 var factory = FlatRedBall.TileEntities.TileEntityInstantiator.GetFactory(deserialized.SourceClassType);
-                instance = factory?.CreateNew() as FlatRedBall.PositionedObject;
+                newPositionedObject = factory?.CreateNew() as FlatRedBall.PositionedObject;
             }
             else if (deserialized.SourceType == GlueControl.Models.SourceType.FlatRedBallType)
             {
@@ -64,7 +65,7 @@ namespace {ProjectNamespace}.GlueControl
                             ShapeManager.AddAxisAlignedRectangle(aaRect);
                             ShapesAddedAtRuntime.Add(aaRect);
                         }
-                        instance = aaRect;
+                        newPositionedObject = aaRect;
 
                         break;
                     case "FlatRedBall.Math.Geometry.Circle":
@@ -74,7 +75,7 @@ namespace {ProjectNamespace}.GlueControl
                             ShapeManager.AddCircle(circle);
                             ShapesAddedAtRuntime.Add(circle);
                         }
-                        instance = circle;
+                        newPositionedObject = circle;
                         break;
                     case "FlatRedBall.Math.Geometry.Polygon":
                         var polygon = new FlatRedBall.Math.Geometry.Polygon();
@@ -83,26 +84,30 @@ namespace {ProjectNamespace}.GlueControl
                             ShapeManager.AddPolygon(polygon);
                             ShapesAddedAtRuntime.Add(polygon);
                         }
-                        instance = polygon;
+                        newPositionedObject = polygon;
                         break;
                 }
             }
-            if (instance != null)
+            if (newPositionedObject != null)
             {
-                instance.Name = deserialized.InstanceName;
-                instance.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
-                instance.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
-                instance.CreationSource = "Glue"; // Glue did make this, so do this so the game can select it
+                newPositionedObject.Name = deserialized.InstanceName;
+                newPositionedObject.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
+                newPositionedObject.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
+                newPositionedObject.CreationSource = "Glue"; // Glue did make this, so do this so the game can select it
 
                 foreach (var instruction in deserialized.InstructionSaves)
                 {
                     var variableName = instruction.Member;
                     var variableValue = instruction.Value;
 
-                    AssignVariable(instance, variableName, variableValue);
+                    AssignVariable(newPositionedObject, variableName, variableValue);
 
                 }
             }
+
+            newObject = newPositionedObject;
+
+            return newObject;
         }
 
         public FlatRedBall.PositionedObject CreateInstanceByGame(string entityType, float x, float y)

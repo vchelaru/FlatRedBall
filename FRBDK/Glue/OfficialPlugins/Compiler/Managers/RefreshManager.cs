@@ -215,7 +215,7 @@ namespace OfficialPlugins.Compiler.Managers
                 }
                 var serialized = JsonConvert.SerializeObject(tempDeserialized);
 
-                await CommandSender.SendCommand($"AddObject:{serialized}", PortNumber);
+                await CommandSender.SendCommand($"AddObjectDto:{serialized}", PortNumber);
 
                 if(GlueState.Self.CurrentScreenSave != null)
                 {

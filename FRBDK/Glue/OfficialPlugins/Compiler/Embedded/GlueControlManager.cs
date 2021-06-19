@@ -15,8 +15,10 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
-namespace {ProjectNamespace}
+
+namespace { ProjectNamespace}
 {
 
     public class GlueControlManager
@@ -72,7 +74,7 @@ namespace {ProjectNamespace}
             serverThread.Start();
         }
 
-        private void Run()
+        private async void Run()
         {
             isRunning = true;
 
@@ -83,7 +85,7 @@ namespace {ProjectNamespace}
                 try
                 {
                     TcpClient client = listener.AcceptTcpClient();
-                    HandleClient(client);
+                    await HandleClient(client);
 
                     client.Close();
                 }
@@ -108,7 +110,7 @@ namespace {ProjectNamespace}
 
         }
 
-        private void HandleClient(TcpClient client)
+        private async Task HandleClient(TcpClient client)
         {
             StreamReader reader = new StreamReader(client.GetStream());
             var stringBuilder = new StringBuilder();
@@ -117,7 +119,7 @@ namespace {ProjectNamespace}
                 stringBuilder.AppendLine(reader.ReadLine());
             }
 
-            var response = ProcessMessage(stringBuilder.ToString()?.Trim());
+            var response = await ProcessMessage(stringBuilder.ToString()?.Trim());
             if (response == null)
             {
                 response = "true";
@@ -130,7 +132,7 @@ namespace {ProjectNamespace}
 
         #region Glue -> Game
 
-        private string ProcessMessage(string message, bool runSetImmediately = false)
+        private async Task<string> ProcessMessage(string message, bool runSetImmediately = false)
         {
             var screen =
                 FlatRedBall.Screens.ScreenManager.CurrentScreen;
@@ -178,26 +180,29 @@ namespace {ProjectNamespace}
 #endif
             }
 
+            var response = "true";
+
             if (!isGet)
             {
                 if(runSetImmediately)
                 {
-                    ApplySetMessage(message, screen, data, action);
+                    response = ApplySetMessage(message, screen, data, action) ?? null;
                 }
                 else
                 {
-                    FlatRedBall.Instructions.InstructionManager.AddSafe(() =>
-                    {
-                        ApplySetMessage(message, screen, data, action);
-                    });
+                    await FlatRedBall.Instructions.InstructionManager.DoOnMainThreadAsync(
+                        () => response = ApplySetMessage(message, screen, data, action));
+                        
                 }
             }
 
-            return "true";
+            return response;
         }
 
-        private void ApplySetMessage(string message, Screen screen, string data, string action)
+        private string ApplySetMessage(string message, Screen screen, string data, string action)
         {
+            string response = null;
+
             switch (action)
             {
                 case "RestartScreen":
@@ -242,14 +247,16 @@ namespace {ProjectNamespace}
                         EnqueueToOwner(message, owner);
                     }
                     break;
-                case "AddObject":
+#if SupportsEditMode
+                case nameof(GlueControl.Dtos.AddObjectDto):
                     {
-                        var owner = HandleAddObject(data);
-
-                        EnqueueToOwner(message, owner);
+                        var dto =
+                            Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.AddObjectDto>(data);
+                        var addResponse = HandleAddObject(dto);
+                        response = Newtonsoft.Json.JsonConvert.SerializeObject(addResponse);
+                        EnqueueToOwner(message, dto.ElementName);
                     }
                     break;
-#if SupportsEditMode
 
                 case nameof(GlueControl.Dtos.RemoveObjectDto):
 
@@ -270,6 +277,8 @@ namespace {ProjectNamespace}
 
 
             }
+
+            return response;
         }
 
         private void EnqueueToOwner(string message, string owner)
@@ -472,15 +481,13 @@ namespace {ProjectNamespace}
             return valueToReturn;
         }
 
-        public string HandleAddObject(string data)
+        public AddObjectDtoResponse HandleAddObject(GlueControl.Dtos.AddObjectDto dto)
         {
-            string valueToReturn = null;
+            AddObjectDtoResponse valueToReturn = new AddObjectDtoResponse();
 #if IncludeSetVariable
-            var deserialized = Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.AddObjectDto>(data);
 
-            valueToReturn = deserialized.ElementName;
-
-            GlueControl.InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(deserialized);
+            var createdObject = GlueControl.InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(dto);
+            valueToReturn.WasObjectCreated = createdObject != null;
 #endif
             return valueToReturn;
         }

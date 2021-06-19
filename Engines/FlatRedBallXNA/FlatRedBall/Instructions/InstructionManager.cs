@@ -14,6 +14,7 @@ using System.Reflection;
 using FlatRedBall.Math;
 using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Instructions
 {
@@ -143,6 +144,13 @@ namespace FlatRedBall.Instructions
             {
                 instructionQueue.Enqueue(new DelegateInstruction(action));
             }
+        }
+
+        public static async Task DoOnMainThreadAsync(Action action)
+        {
+            await TimeManager.DelaySeconds(0); // puts it on the main thread
+
+            action();
         }
 
         /// <summary>

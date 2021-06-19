@@ -54,7 +54,13 @@ namespace {ProjectNamespace}.GlueControl.Dtos
     }
 
     public class AddObjectDto : GlueControl.Models.NamedObjectSave
-{
+    {
         public string ElementName { get; set; }
+    }
+
+    public class AddObjectDtoResponse
+    {
+        public bool WasObjectCreated { get; set; }
+
     }
 }

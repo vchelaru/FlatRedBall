@@ -57,4 +57,9 @@ namespace OfficialPlugins.Compiler.Dtos
         public string ElementName { get; set; }
     }
 
+    public class AddObjectDtoResponse
+    {
+        public bool WasObjectCreated { get; set; }
+    }
+
 }
