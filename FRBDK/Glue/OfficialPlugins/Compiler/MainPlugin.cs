@@ -399,13 +399,13 @@ namespace OfficialPlugins.Compiler
 
             control.StopClicked += (not, used) =>
             {
-                runner.Stop();
+                runner.KillGameProcess();
             };
 
             control.RestartGameClicked += async (not, used) =>
             {
                 viewModel.IsPaused = false;
-                runner.Stop();
+                runner.KillGameProcess();
                 var succeeded = await Compile();
                 if (succeeded)
                 {
@@ -419,7 +419,7 @@ namespace OfficialPlugins.Compiler
 
 
                 viewModel.IsPaused = false;
-                runner.Stop();
+                runner.KillGameProcess();
                 var succeeded = await Compile();
 
                 if (succeeded)

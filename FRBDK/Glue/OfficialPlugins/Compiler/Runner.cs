@@ -62,6 +62,11 @@ namespace OfficialPlugins.Compiler
             public int Top;         // y position of upper-left corner
             public int Right;       // x position of lower-right corner
             public int Bottom;      // y position of lower-right corner
+
+            public override string ToString()
+            {
+                return $"Left {Left}  Top {Top}";
+            }
         }
 
         #endregion
@@ -116,7 +121,7 @@ namespace OfficialPlugins.Compiler
             var projectName = GlueState.Self.CurrentMainProject?.Name?.ToLowerInvariant();
 
             var found = processes
-                .FirstOrDefault(item => item.ProcessName.ToLowerInvariant() == projectName);
+                .FirstOrDefault(item => item.ProcessName.ToLowerInvariant() == projectName && item.MainWindowHandle != IntPtr.Zero);
             return found;
         }
 
@@ -140,16 +145,14 @@ namespace OfficialPlugins.Compiler
             {
                 StartProcess(preventFocus, runArguments, exeLocation);
 
-                await Task.Delay(200);
-
                 runningGameProcess = TryFindGameProcess();
-                int numberOfTimesToTryGettingProcess = 5;
+                int numberOfTimesToTryGettingProcess = 50;
                 int timesTried = 0;
                 while(runningGameProcess == null)
                 {
                     // didn't find it, so let's wait a little and try again:
 
-                    await Task.Delay(500);
+                    await Task.Delay(50);
 
                     runningGameProcess = TryFindGameProcess();
 
@@ -161,30 +164,40 @@ namespace OfficialPlugins.Compiler
                     }
                 }
 
-                if(runningGameProcess != null)
+
+                if (runningGameProcess != null)
                 {
 
                     runningGameProcess.EnableRaisingEvents = true;
                     runningGameProcess.Exited += HandleProcessExit;
                     toReturn = GeneralResponse.SuccessfulResponse;
+                    var windowRectDisplay = lastWindowRectangle?.ToString() ?? "null";
+
                     if (lastWindowRectangle != null)
                     {
-                        int numberOfTimesToTry = 30;
+
+                        int numberOfTimesToTry = 60;
                         for (int i = 0; i < numberOfTimesToTry; i++)
                         {
                             var id = runningGameProcess?.MainWindowHandle;
 
                             if (id == null ||  id == IntPtr.Zero)
                             {
-                                await Task.Delay(250);
+
+                                await Task.Delay(100);
                                 continue;
                             }
                             else
                             {
                                 var rect = lastWindowRectangle.Value;
-                                MoveWindow(id.Value, rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top, true);
-                                lastWindowRectangle = null;
-                                break;
+                                var didSucceed = MoveWindow(id.Value, rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top, true);
+                                if(didSucceed)
+                                {
+
+                                    lastWindowRectangle = null;
+                                    break;
+                                }
+
                             }
                         }
                     }
@@ -266,7 +279,7 @@ namespace OfficialPlugins.Compiler
             });
         }
 
-        internal void Stop()
+        internal void KillGameProcess()
         {
             var process = runningGameProcess;
             IntPtr id = IntPtr.Zero;
@@ -282,8 +295,9 @@ namespace OfficialPlugins.Compiler
 
             if(id != null)
             {
-                Runner.GetWindowRect(id, out WindowRectangle windowRect);
+                var gotWindow = Runner.GetWindowRect(id, out WindowRectangle windowRect);
                 lastWindowRectangle = windowRect;
+                var lastWindowRectValue = lastWindowRectangle?.ToString() ?? "null";
             }
 
             if (process != null)

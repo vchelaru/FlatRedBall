@@ -188,7 +188,7 @@ namespace OfficialPlugins.Compiler.Managers
 
         #endregion
 
-        #region Glue Element
+        #region Selected Object
 
         private async Task HandleElementSelected(SelectObjectDto dto, GlueElement element)
         {
@@ -199,6 +199,8 @@ namespace OfficialPlugins.Compiler.Managers
         }
 
         #endregion
+
+        #region New NamedObject
 
         internal async void HandleNewObjectCreated(NamedObjectSave newNamedObject)
         {
@@ -309,6 +311,8 @@ namespace OfficialPlugins.Compiler.Managers
                 }
             }
         }
+
+        #endregion
 
         internal async void HandleVariableChanged(IElement variableElement, CustomVariable variable)
         {
@@ -572,7 +576,7 @@ namespace OfficialPlugins.Compiler.Managers
                         printOutput("Could not get the game's screen, restarting game from startup screen");
                     }
 
-                    runner.Stop();
+                    runner.KillGameProcess();
                 }
 
                 bool compileSucceeded = false;
