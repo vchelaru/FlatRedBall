@@ -137,6 +137,7 @@ namespace OfficialPlugins.Compiler
             this.ReactToNamedObjectChangedValue += RefreshManager.Self.HandleNamedObjectValueChanged;
             this.ReactToChangedStartupScreen += ToolbarController.Self.ReactToChangedStartupScreen;
             this.ReactToItemSelectHandler += RefreshManager.Self.HandleItemSelected;
+            this.ReactToObjectContainerChanged += RefreshManager.Self.HandleObjectContainerChanged;
         }
 
         private void HandleGluxUnloaded()
@@ -381,7 +382,7 @@ namespace OfficialPlugins.Compiler
 
                             if (screen != null)
                             {
-                                GlueState.Self.CurrentElement = screen;
+                                GlueCommands.Self.DoOnUiThread(() => GlueState.Self.CurrentElement = screen);
                             }
                         }
                     }
@@ -415,6 +416,7 @@ namespace OfficialPlugins.Compiler
 
             control.RestartGameCurrentScreenClicked += async (not, used) =>
             {
+                var wasEditChecked = viewModel.IsEditChecked;
                 var screenName = await CommandSending.CommandSender.GetScreenName(viewModel.PortNumber);
 
 
@@ -427,6 +429,10 @@ namespace OfficialPlugins.Compiler
                     if (succeeded)
                     {
                         await runner.Run(preventFocus:false, screenName);
+                        if(wasEditChecked)
+                        {
+                            viewModel.IsEditChecked = true;
+                        }
                     }
                 }
             };

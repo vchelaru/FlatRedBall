@@ -314,6 +314,7 @@ namespace OfficialPlugins.Compiler.Managers
 
         #endregion
 
+        #region Variable Changed
         internal async void HandleVariableChanged(IElement variableElement, CustomVariable variable)
         {
             if (ShouldRestartOnChange)
@@ -390,7 +391,15 @@ namespace OfficialPlugins.Compiler.Managers
             {
                 try
                 {
-                    await TryPushVariable(nosName, changedMember, type, value, currentElement);
+                    var task = TryPushVariable(nosName, changedMember, type, value, currentElement);
+                    task.Wait();
+                    var response = task.Result;
+                    if(!string.IsNullOrWhiteSpace(response.Exception))
+                    {
+                        GlueCommands.Self.PrintError(response.Exception);
+                        printOutput(response.Exception);
+
+                    }
                 }
                 catch
                 {
@@ -405,8 +414,9 @@ namespace OfficialPlugins.Compiler.Managers
             //}
         }
 
-        private async Task TryPushVariable(string variableOwningNosName, string rawMemberName, string type, string value, GlueElement currentElement)
+        private async Task<GlueVariableSetDataResponse> TryPushVariable(string variableOwningNosName, string rawMemberName, string type, string value, GlueElement currentElement)
         {
+            GlueVariableSetDataResponse response = null;
             if (ViewModel.IsRunning)
             {
                 if(currentElement != null)
@@ -427,83 +437,26 @@ namespace OfficialPlugins.Compiler.Managers
 
                     var serialized = JsonConvert.SerializeObject(data);
 
-                    await CommandSender.SendCommand($"SetVariable:{serialized}", PortNumber);
+                    var responseAsString = await CommandSender.SendCommand($"SetVariable:{serialized}", PortNumber);
+
+                    if(!string.IsNullOrEmpty(responseAsString))
+                    {
+                        response = JsonConvert.DeserializeObject<GlueVariableSetDataResponse>(responseAsString);
+                    }
                 }
             }
+            return response;
         }
 
-        private async Task PushNosChangeInEntityToCurrentScreen(string variableOwningNosName, string rawMemberName, string type, string value, EntitySave currentEntitySave, ScreenSave matchingScreen)
+        #endregion
+
+        internal void HandleObjectContainerChanged(NamedObjectSave objectMoving, 
+            NamedObjectSave newContainer)
         {
-            // we want to update even if it's defined in a base class, so let's get all the screens that inherit
-            var screensToLoopThrough = ObjectFinder.Self.GetAllBaseElementsRecursively(matchingScreen);
-            screensToLoopThrough.Add(matchingScreen);
-
-            var possibleEntities = ObjectFinder.Self.GetAllBaseElementsRecursively(currentEntitySave);
-            possibleEntities.Add(currentEntitySave);
-
-            foreach (var screen in screensToLoopThrough)
+            if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
-                // don't do "all" here, just do top-level which will catch all lists:
-                foreach (var nos in screen.NamedObjects)
-                {
-                    var managedAtThisInheritanceLevel = nos.DefinedByBase == false;
-
-                    var needsToBeUpdated = false;
-
-                    if (managedAtThisInheritanceLevel && nos.IsList)
-                    {
-                        needsToBeUpdated = possibleEntities.Any(item => item.Name == nos.SourceClassGenericType);
-                    }
-
-                    if (needsToBeUpdated)
-                    {
-                        var data = new GlueVariableSetData();
-                        data.Type = type;
-                        data.VariableValue = value;
-
-                        string variableName = rawMemberName;
-
-                        bool shouldAttach = false;
-
-                        if (nos.IsList && !string.IsNullOrEmpty(nos.SourceClassGenericType) &&
-                            ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType) != null)
-                        {
-                            shouldAttach = true;
-                        }
-                        else
-                        {
-                            AssetTypeInfo ati = null;
-                            if (nos.IsList)
-                            {
-                                ati = nos.GetContainedListItemAssetTypeInfo();
-                            }
-                            else
-                            {
-                                ati = nos.GetAssetTypeInfo();
-                            }
-                            if (ati != null)
-                            {
-                                shouldAttach = ati.ShouldAttach;
-                            }
-                        }
-
-
-                        if (shouldAttach &&
-                            // What if it ignores parent attachment? Need to consider that here...
-                            (rawMemberName == "X" || rawMemberName == "Y" || rawMemberName == "Z" ||
-                            rawMemberName == "RotationX" || rawMemberName == "RotationY" || rawMemberName == "RotationZ"))
-                        {
-                            variableName = "Relative" + rawMemberName;
-                        }
-
-                        data.VariableName = $"this.{nos.InstanceName}.{variableOwningNosName}.{variableName}";
-
-                        var serialized = JsonConvert.SerializeObject(data);
-
-                        await CommandSender.SendCommand($"SetVariable:{serialized}", PortNumber);
-                    }
-                }
-
+                // take the easy way out - restart the game
+                StopAndRestartTask($"Restarting due to changed container for {objectMoving}");
             }
         }
 
@@ -526,6 +479,7 @@ namespace OfficialPlugins.Compiler.Managers
             var runner = Runner.Self;
             if (runner.DidRunnerStartProcess || (ViewModel.IsRunning == false && failedToRebuildAndRestart))
             {
+                var wasInEditMode = ViewModel.IsEditChecked;
                 TaskManager.Self.Add(
                     () =>
                     {
@@ -533,7 +487,12 @@ namespace OfficialPlugins.Compiler.Managers
                         {
                             printOutput($"Restarting because: {reason}");
                         }
-                        StopAndRestartImmediately(PortNumber);
+                        var task = StopAndRestartImmediately(PortNumber);
+                        task.Wait();
+                        if(wasInEditMode)
+                        {
+                            ViewModel.IsEditChecked = true;
+                        }
                     },
                     stopRestartDetails,
                     TaskExecutionPreference.AddOrMoveToEnd);
@@ -541,7 +500,7 @@ namespace OfficialPlugins.Compiler.Managers
         }
 
 
-        private async void StopAndRestartImmediately(int portNumber)
+        private async Task StopAndRestartImmediately(int portNumber)
         {
             bool DoesTaskManagerHaveAnotherRestartTask()
             {

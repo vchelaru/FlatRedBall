@@ -1951,6 +1951,14 @@ namespace FlatRedBall.Glue.Plugins
                 (plugin) => plugin.ReactToImportedElement != null);
         }
 
+        public static void ReactToObjectContainerChanged(NamedObjectSave objectMoved, NamedObjectSave newContainer)
+        {
+            CallMethodOnPlugin(
+                (plugin) => plugin.ReactToObjectContainerChanged(objectMoved, newContainer),
+                nameof(ReactToObjectContainerChanged),
+                (plugin) => plugin.ReactToObjectContainerChanged != null);
+        }
+
         #endregion
 
         public static void CallPluginMethod(string pluginFriendlyName, string methodName, params object[] parameters)

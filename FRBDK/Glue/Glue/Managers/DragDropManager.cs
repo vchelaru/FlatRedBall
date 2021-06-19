@@ -88,8 +88,8 @@ namespace FlatRedBall.Glue.Managers
 
         private bool DragDropNosOnNos(TreeNode treeNodeMoving, TreeNode targetNode, NamedObjectSave targetNos, NamedObjectSave movingNos, bool succeeded)
         {
-            var ati = targetNos.GetAssetTypeInfo();
-            string targetClassType = ati?.FriendlyName;
+            var targetAti = targetNos.GetAssetTypeInfo();
+            string targetClassType = targetAti?.FriendlyName;
 
             bool canBeMovedInList = false;
             bool canBeCollidable = false;
@@ -105,7 +105,7 @@ namespace FlatRedBall.Glue.Managers
 
             #region On Layer
 
-            else if (ati == AvailableAssetTypes.CommonAtis.Layer)
+            else if (targetAti == AvailableAssetTypes.CommonAtis.Layer)
             {
                 // Only allow this if the NOS's are on the same object
                 if (ObjectFinder.Self.GetElementContaining(movingNos) ==
@@ -119,7 +119,9 @@ namespace FlatRedBall.Glue.Managers
 
             #endregion
 
-            else if (ati == AvailableAssetTypes.CommonAtis.ShapeCollection)
+            #region On ShapeCollection
+
+            else if (targetAti == AvailableAssetTypes.CommonAtis.ShapeCollection)
             {
                 var response = HandleDropOnShapeCollection(treeNodeMoving, targetNode, targetNos, movingNos);
 
@@ -135,6 +137,8 @@ namespace FlatRedBall.Glue.Managers
                 }
                 succeeded = response.Succeeded;
             }
+
+            #endregion
 
             else
             {
@@ -153,7 +157,7 @@ namespace FlatRedBall.Glue.Managers
 
                 //    succeeded = response.Succeeded;
                 //}
-                if (ati == AvailableAssetTypes.CommonAtis.PositionedObjectList)
+                if (targetAti == AvailableAssetTypes.CommonAtis.PositionedObjectList)
                 {
                     if (string.IsNullOrEmpty(targetNos.SourceClassGenericType))
                     {
@@ -300,6 +304,8 @@ namespace FlatRedBall.Glue.Managers
                     EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
 
                     IElement elementToRegenerate = targetNode.Parent.Tag as IElement;
+
+                    PluginManager.ReactToObjectContainerChanged(movingNos, null);
                 }
             }
             else
@@ -410,7 +416,6 @@ namespace FlatRedBall.Glue.Managers
             var toReturn = GeneralResponse.SuccessfulResponse;
 
 
-            {
                 toReturn.Succeeded = true;
 
                 // Get the old parent of the moving NOS
@@ -430,7 +435,9 @@ namespace FlatRedBall.Glue.Managers
                 // Add the NOS to the tree node moving on
                 targetNos.ContainedObjects.Add(movingNos);
 
-            }
+                PluginManager.ReactToObjectContainerChanged(movingNos, targetNos);
+
+
             return toReturn;
         }
 
@@ -455,12 +462,14 @@ namespace FlatRedBall.Glue.Managers
                 }
                 else
                 {
-                    EditorLogic.CurrentElement.NamedObjects.Remove(movingNos);
+                    var currentElement = GlueState.Self.CurrentElement;
+                    currentElement.NamedObjects.Remove(movingNos);
                 }
                 parentTreeNode.Nodes.Remove(treeNodeMoving);
                 targetNode.Nodes.Add(treeNodeMoving);
                 targetNos.ContainedObjects.Add(movingNos);
 
+                PluginManager.ReactToObjectContainerChanged(movingNos, targetNos);
             }
             return toReturn;
         }
@@ -512,7 +521,7 @@ namespace FlatRedBall.Glue.Managers
 
             #endregion
 
-            #region Moving an Entity onto a NamedObject (currently supports only Lists)
+            #region Moving an Entity onto a NamedObject (Lists, layers)
 
             else if (targetNode.IsNamedObjectNode())
             {

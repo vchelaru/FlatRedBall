@@ -132,6 +132,8 @@ namespace {ProjectNamespace}
 
         #region Glue -> Game
 
+        #region General Functions
+
         private async Task<string> ProcessMessage(string message, bool runSetImmediately = false)
         {
             var screen =
@@ -245,13 +247,19 @@ namespace {ProjectNamespace}
                     break;
 
                 case "SetVariable":
-                case "GlueVariableSetData":
+#if SupportsEditMode
+                case nameof(GlueControl.Dtos.GlueVariableSetData):
                     {
-                        var owner = HandleSetVariable(data);
-                        EnqueueToOwner(message, owner);
+                        var dto =
+                            Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.GlueVariableSetData>(data);
+                        var setVariableResponse = HandleSetVariable(dto);
+                        response = Newtonsoft.Json.JsonConvert.SerializeObject(setVariableResponse);
+                        if(setVariableResponse.WasVariableAssigned)
+                        {
+                            EnqueueToOwner(message, dto.InstanceOwner);
+                        }
                     }
                     break;
-#if SupportsEditMode
                 case nameof(GlueControl.Dtos.AddObjectDto):
                     {
                         var dto =
@@ -348,6 +356,8 @@ namespace {ProjectNamespace}
                 }
             }
         }
+
+        #endregion
 
         private void HandleSelectObjectCommand(SelectObjectDto selectObjectDto)
         {
@@ -473,13 +483,12 @@ namespace {ProjectNamespace}
 #endif
     }
 
-        private string HandleSetVariable(string data)
+        private GlueVariableSetDataResponse HandleSetVariable(GlueVariableSetData dto)
         {
-            string valueToReturn = null;
+            GlueVariableSetDataResponse valueToReturn = null;
 #if IncludeSetVariable
-            var deserialized = Newtonsoft.Json.JsonConvert.DeserializeObject<GlueVariableSetData>(data);
-            GlueControl.Editing.VariableAssignmentLogic.SetVariable(deserialized);
-            valueToReturn = deserialized.InstanceOwner;
+
+            valueToReturn = GlueControl.Editing.VariableAssignmentLogic.SetVariable(dto);
 #endif
 
             return valueToReturn;
@@ -543,7 +552,7 @@ namespace {ProjectNamespace}
             return currentScreenType == ownerType || ownerType.IsAssignableFrom(currentScreenType);
         }
 
-#endregion
+        #endregion
 
         #region Game -> Glue
 

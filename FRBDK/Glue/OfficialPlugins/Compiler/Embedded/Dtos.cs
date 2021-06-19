@@ -41,6 +41,13 @@ namespace {ProjectNamespace}.GlueControl.Dtos
         public string Type { get; set; }
     }
 
+
+    public class GlueVariableSetDataResponse
+    {
+        public string Exception { get; set; }
+        public bool WasVariableAssigned { get; set; }
+    }
+
     public class GetCameraPosition
     {
         // no members I think...

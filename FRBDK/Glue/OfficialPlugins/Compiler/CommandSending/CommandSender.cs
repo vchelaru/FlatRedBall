@@ -64,7 +64,15 @@ namespace OfficialPlugins.Compiler.CommandSending
 
                 // give the server time to finish what it's doing:
                 //await Task.Delay((int)(1 * 60));
-                var read = await ReadFromClient(client, client.GetStream());
+                string read = null;
+                try
+                {
+                    read = await ReadFromClient(client, client.GetStream());
+                }
+                catch(Exception e)
+                {
+                    // do nothing...
+                }
                 return read;
             }
             else

@@ -13,13 +13,89 @@ namespace {ProjectNamespace}.GlueControl.Editing
 {
     public static class VariableAssignmentLogic
     {
-        public static void SetVariable(GlueVariableSetData data)
+        public static GlueVariableSetDataResponse SetVariable(GlueVariableSetData data)
         {
+            object variableValue = ConvertVariableValue(data);
+
+            var response = new GlueVariableSetDataResponse();
 
             var screen =
                 FlatRedBall.Screens.ScreenManager.CurrentScreen;
 
+            var ownerType = typeof(VariableAssignmentLogic).Assembly.GetType(data.InstanceOwner);
+            var isEntity = typeof(PositionedObject).IsAssignableFrom(ownerType);
+            if (isEntity)
+            {
+                foreach (var item in SpriteManager.ManagedPositionedObjects)
+                {
+                    if (ownerType.IsAssignableFrom(item.GetType()))
+                    {
+                        var variableName = data.VariableName.Substring("this.".Length);
+                        screen.ApplyVariable(variableName, variableValue, item);
+                    }
+                }
+            }
+            else
+            {
+                response.WasVariableAssigned = false;
+                var splitVariable = data.VariableName.Split('.');
+                if (splitVariable[0] == "this" && splitVariable.Length > 1)
+                {
 
+                    var aarect = ShapeManager.VisibleRectangles.FirstOrDefault(item =>
+                        item.Parent == null &&
+                        item.Name == splitVariable[1]);
+                    if (aarect != null)
+                    {
+                        screen.ApplyVariable(splitVariable[2], variableValue, aarect);
+                        response.WasVariableAssigned = true;
+                    }
+
+                    if (!response.WasVariableAssigned)
+                    {
+                        var circle = ShapeManager.VisibleCircles.FirstOrDefault(item =>
+                            item.Parent == null &&
+                            item.Name == splitVariable[1]);
+                        if (circle != null)
+                        {
+                            screen.ApplyVariable(splitVariable[2], variableValue, circle);
+                            response.WasVariableAssigned = true;
+                        }
+                    }
+
+                    if (!response.WasVariableAssigned)
+                    {
+                        var polygon = ShapeManager.VisiblePolygons.FirstOrDefault(item =>
+                            item.Parent == null &&
+                            item.Name == splitVariable[1]);
+
+                        if (polygon != null)
+                        {
+                            screen.ApplyVariable(splitVariable[2], variableValue, polygon);
+                            response.WasVariableAssigned = true;
+                        }
+                    }
+
+                }
+                if (!response.WasVariableAssigned)
+                {
+                    try
+                    {
+                        screen.ApplyVariable(data.VariableName, variableValue);
+                        // if no exception, assume it worked?
+                        response.WasVariableAssigned = true;
+                    }
+                    catch (Exception e)
+                    {
+                        response.Exception = e.ToString(); ;
+                    }
+                }
+            }
+            return response;
+        }
+
+        private static object ConvertVariableValue(GlueVariableSetData data)
+        {
             object variableValue = data.VariableValue;
 
             switch (data.Type)
@@ -45,66 +121,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     break;
             }
 
-            var ownerType = typeof(VariableAssignmentLogic).Assembly.GetType(data.InstanceOwner);
-            var isEntity = typeof(PositionedObject).IsAssignableFrom(ownerType);
-            if (isEntity)
-            {
-                foreach (var item in SpriteManager.ManagedPositionedObjects)
-                {
-                    if (ownerType.IsAssignableFrom(item.GetType()))
-                    {
-                        var variableName = data.VariableName.Substring("this.".Length);
-                        screen.ApplyVariable(variableName, variableValue, item);
-                    }
-                }
-            }
-            else
-            {
-                var handled = false;
-                var splitVariable = data.VariableName.Split('.');
-                if(splitVariable[0] == "this" && splitVariable.Length > 1)
-                {
-
-                    var aarect = ShapeManager.VisibleRectangles.FirstOrDefault(item =>
-                        item.Parent == null &&
-                        item.Name == splitVariable[1]);
-                    if(aarect != null)
-                    {
-                        screen.ApplyVariable(splitVariable[2], variableValue, aarect);
-                        handled = true;
-                    }
-
-                    if(!handled)
-                    {
-                        var circle = ShapeManager.VisibleCircles.FirstOrDefault(item =>
-                            item.Parent == null &&
-                            item.Name == splitVariable[1]);
-                        if (circle != null)
-                        {
-                            screen.ApplyVariable(splitVariable[2], variableValue, circle);
-                            handled = true;
-                        }
-                    }
-
-                    if(!handled)
-                    {
-                        var polygon = ShapeManager.VisiblePolygons.FirstOrDefault(item =>
-                            item.Parent == null &&
-                            item.Name == splitVariable[1]);
-
-                        if(polygon != null)
-                        {
-                            screen.ApplyVariable(splitVariable[2], variableValue, polygon);
-                            handled = true;
-                        }
-                    }
-
-                }
-                if(!handled)
-                {
-                    screen.ApplyVariable(data.VariableName, variableValue);
-                }
-            }
+            return variableValue;
         }
     }
 }
