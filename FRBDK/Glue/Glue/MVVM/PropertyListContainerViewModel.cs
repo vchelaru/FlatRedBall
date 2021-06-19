@@ -246,7 +246,7 @@ namespace FlatRedBall.Glue.MVVM
                     {
                         TaskManager.Self.OnUiThread(() =>
                             EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
-                                propertyName, oldValue));
+                                propertyName, oldValue, namedObjectSave:namedObject));
                     },
                     "Restarting due to change " + namedObject.InstanceName + "." + propertyName, TaskExecutionPreference.AddOrMoveToEnd);
                 }

@@ -16,7 +16,7 @@ namespace FlatRedBall.Glue.Plugins
     public delegate void ReactToFileChangeDelegate(string fileName);
     public delegate void RefreshCurrentElementDelegate();
     public delegate void InitializeMenuDelegate(MenuStrip menuStrip);
-    public delegate void ReactToNamedObjectChangedValueDelegate(string changedMember, object oldValue);
+    public delegate void ReactToNamedObjectChangedValueDelegate(string changedMember, object oldValue, NamedObjectSave namedObject);
     public delegate void AddNewFileOptionsDelegate(CustomizableNewFileWindow newFileWindow);
     public delegate bool CreateNewFileDelegate(AssetTypeInfo assetTypeInfo, object extraData, string directory, string name, out string resultingName);
     /// <summary>

@@ -205,7 +205,7 @@ namespace {ProjectNamespace}
             {
                 throw new System.InvalidOperationException("Objects can only be added, removed, made visible, or made invisible on the primary thread");
             }
-            string response = null;
+            string response = "true";
 
             switch (action)
             {

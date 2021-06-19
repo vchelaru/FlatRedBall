@@ -231,7 +231,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                 GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
             }
 
-            PluginManager.ReactToNamedObjectChangedValue(variableToSet, oldValue);
+            PluginManager.ReactToNamedObjectChangedValue(variableToSet, oldValue, currentNamedObject);
 
         }
 

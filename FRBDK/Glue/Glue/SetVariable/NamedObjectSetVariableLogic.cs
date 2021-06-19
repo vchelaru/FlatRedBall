@@ -406,7 +406,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             PropertyGridHelper.UpdateNamedObjectDisplay();
 
-            PluginManager.ReactToNamedObjectChangedValue(changedMember, oldValue);
+            PluginManager.ReactToNamedObjectChangedValue(changedMember, oldValue, namedObjectSave);
         }
 
         public void ReactToChangedSetByDerived(NamedObjectSave namedObjectSave, GlueElement element)

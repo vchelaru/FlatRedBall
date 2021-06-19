@@ -1486,7 +1486,7 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
-        internal static void ReactToNamedObjectChangedValue(string changedMember, object oldValue)
+        internal static void ReactToNamedObjectChangedValue(string changedMember, object oldValue, NamedObjectSave namedObject)
         {
             foreach (PluginManager pluginManager in mInstances)
             {
@@ -1499,7 +1499,7 @@ namespace FlatRedBall.Glue.Plugins
                         PluginBase plugin1 = plugin;
                         PluginCommand(() =>
                             {
-                                plugin1.ReactToNamedObjectChangedValue(changedMember, oldValue);
+                                plugin1.ReactToNamedObjectChangedValue(changedMember, oldValue, namedObject);
                             },container, "Failed in ReactToNamedObjectChangedValue");
                     }
                 }

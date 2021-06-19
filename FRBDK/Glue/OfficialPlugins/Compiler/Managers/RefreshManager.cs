@@ -205,90 +205,107 @@ namespace OfficialPlugins.Compiler.Managers
             if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
                 var tempSerialized = JsonConvert.SerializeObject(newNamedObject);
-                var tempDeserialized = JsonConvert.DeserializeObject<AddObjectDto>(tempSerialized);
+                var addObjectDto = JsonConvert.DeserializeObject<AddObjectDto>(tempSerialized);
                 var containerElement = ObjectFinder.Self.GetElementContaining(newNamedObject);
-                if(containerElement != null)
+                if (containerElement != null)
                 {
-                    tempDeserialized.ElementName =
+                    addObjectDto.ElementName =
                         GlueState.Self.ProjectNamespace + "." + containerElement.Name.Replace("\\", ".");
 
                 }
-                var serialized = JsonConvert.SerializeObject(tempDeserialized);
 
-                await CommandSender.SendCommand($"AddObjectDto:{serialized}", PortNumber);
+                var addResponseAsString = await CommandSender.Send(addObjectDto, PortNumber);
 
-                if(GlueState.Self.CurrentScreenSave != null)
+                AddObjectDtoResponse addResponse = null;
+                if(!string.IsNullOrEmpty(addResponseAsString))
                 {
-                    // If it's in a screen, then we position the object on the camera:
+                    addResponse = JsonConvert.DeserializeObject<AddObjectDtoResponse>(addResponseAsString);
+                }
 
-                    var cameraPosition = Microsoft.Xna.Framework.Vector3.Zero;
+                if(addResponse?.WasObjectCreated == true)
+                {
+                    await AdjustNewObjectToCameraPosition(newNamedObject);
+                }
+                else
+                {
+                    StopAndRestartTask($"Restarting because of added object {newNamedObject}");
+                }
+            }
+        }
 
-                    cameraPosition = await CommandSender.GetCameraPosition(PortNumber);
+        private async Task AdjustNewObjectToCameraPosition(NamedObjectSave newNamedObject)
+        {
+            if (GlueState.Self.CurrentScreenSave != null)
+            {
+                // If it's in a screen, then we position the object on the camera:
 
-                    var gluxCommands = GlueCommands.Self.GluxCommands;
+                var cameraPosition = Microsoft.Xna.Framework.Vector3.Zero;
 
-                    bool didSetValue = false;
+                cameraPosition = await CommandSender.GetCameraPosition(PortNumber);
 
-                    Vector2 newPosition = new Vector2(cameraPosition.X, cameraPosition.Y);
+                var gluxCommands = GlueCommands.Self.GluxCommands;
 
-                    var list = GlueState.Self.CurrentElement.NamedObjects.FirstOrDefault(item =>
-                        item.ContainedObjects.Contains(newNamedObject));
+                bool didSetValue = false;
 
-                    var shouldIncreasePosition = false;
-                    do
+                Vector2 newPosition = new Vector2(cameraPosition.X, cameraPosition.Y);
+
+                var list = GlueState.Self.CurrentElement.NamedObjects.FirstOrDefault(item =>
+                    item.ContainedObjects.Contains(newNamedObject));
+
+                var shouldIncreasePosition = false;
+                do
+                {
+                    shouldIncreasePosition = false;
+
+                    var listToLoopThrough = list?.ContainedObjects ?? GlueState.Self.CurrentElement.NamedObjects;
+
+                    const int incrementForNewObject = 16;
+                    const int minimumDistanceForObjects = 3;
+                    foreach (var item in listToLoopThrough)
                     {
-                        shouldIncreasePosition = false;
-
-                        var listToLoopThrough = list?.ContainedObjects ?? GlueState.Self.CurrentElement.NamedObjects;
-
-                        const int incrementForNewObject = 16;
-                        const int minimumDistanceForObjects = 3;
-                        foreach (var item in listToLoopThrough)
+                        if (item != newNamedObject)
                         {
-                            if (item != newNamedObject)
+                            Vector2 itemPosition = new Vector2(
+                                (item.GetCustomVariable("X")?.Value as float?) ?? 0,
+                                (item.GetCustomVariable("Y")?.Value as float?) ?? 0);
+
+                            var distance = (itemPosition - newPosition).Length();
+
+
+                            if (distance < minimumDistanceForObjects)
                             {
-                                Vector2 itemPosition = new Vector2(
-                                    (item.GetCustomVariable("X")?.Value as float?) ?? 0,
-                                    (item.GetCustomVariable("Y")?.Value as float?) ?? 0);
-
-                                var distance = (itemPosition - newPosition).Length();
-
-
-                                if (distance < minimumDistanceForObjects)
-                                {
-                                    shouldIncreasePosition = true;
-                                    break;
-                                }
-
+                                shouldIncreasePosition = true;
+                                break;
                             }
+
                         }
-                        if (shouldIncreasePosition)
-                        {
-                            newPosition.X += incrementForNewObject;
-                        }
-
-                    } while (shouldIncreasePosition);
-
-                    if(newPosition.X != 0)
-                    {
-                        gluxCommands.SetVariableOn(newNamedObject, "X", newPosition.X);
-                        didSetValue = true;
                     }
-                    if(newPosition.Y != 0)
+                    if (shouldIncreasePosition)
                     {
-                        gluxCommands.SetVariableOn(newNamedObject, "Y", newPosition.Y);
-
-                        didSetValue = true;
+                        newPosition.X += incrementForNewObject;
                     }
 
+                } while (shouldIncreasePosition);
+
+                if (newPosition.X != 0)
+                {
+                    gluxCommands.SetVariableOn(newNamedObject, "X", newPosition.X);
+                    didSetValue = true;
+                }
+                if (newPosition.Y != 0)
+                {
+                    gluxCommands.SetVariableOn(newNamedObject, "Y", newPosition.Y);
+
+                    didSetValue = true;
+                }
 
 
-                    if(didSetValue)
-                    {
-                        GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-                        GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-                        GlueCommands.Self.GluxCommands.SaveGlux();
-                    }
+
+                if (didSetValue)
+                {
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                    GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
+                    GlueCommands.Self.GluxCommands.SaveGlux();
                 }
             }
         }
