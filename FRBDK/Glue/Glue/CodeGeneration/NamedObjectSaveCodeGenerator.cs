@@ -473,11 +473,13 @@ namespace FlatRedBall.Glue.CodeGeneration
                     {
                         codeBlock.Line($"{objectName}.Name = \"{namedObject.InstanceName}\";");
 
-                        if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode &&
-                            !namedObject.IsLayer && 
-                            !namedObject.IsList)
+                        if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode)
                         {
-                            codeBlock.Line($"{objectName}.CreationSource = \"Glue\";");
+                            var hasCreationSource = nosAti.IsPositionedObject;
+                            if(hasCreationSource)
+                            {
+                                codeBlock.Line($"{objectName}.CreationSource = \"Glue\";");
+                            }
                         }
                     }
                 }
