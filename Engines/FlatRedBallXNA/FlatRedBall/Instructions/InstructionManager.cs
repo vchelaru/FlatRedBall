@@ -15,6 +15,7 @@ using FlatRedBall.Math;
 using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace FlatRedBall.Instructions
 {
@@ -148,9 +149,17 @@ namespace FlatRedBall.Instructions
 
         public static async Task DoOnMainThreadAsync(Action action)
         {
-            await TimeManager.DelaySeconds(0); // puts it on the main thread
+            var semaphor = new SemaphoreSlim(1);
+            semaphor.Wait();
 
-            action();
+            AddSafe(() =>
+            {
+                action();
+                semaphor.Release();
+            });
+
+            await semaphor.WaitAsync();
+
         }
 
         /// <summary>

@@ -18,7 +18,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 
-namespace { ProjectNamespace}
+namespace {ProjectNamespace}
 {
 
     public class GlueControlManager
@@ -201,6 +201,10 @@ namespace { ProjectNamespace}
 
         private string ApplySetMessage(string message, Screen screen, string data, string action)
         {
+            if (!FlatRedBallServices.IsThreadPrimary())
+            {
+                throw new System.InvalidOperationException("Objects can only be added, removed, made visible, or made invisible on the primary thread");
+            }
             string response = null;
 
             switch (action)
