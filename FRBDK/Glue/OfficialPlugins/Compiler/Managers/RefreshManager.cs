@@ -460,6 +460,11 @@ namespace OfficialPlugins.Compiler.Managers
 
         #endregion
 
+        internal void HandleVariableAdded(CustomVariable newVariable)
+        {
+            StopAndRestartTask($"Restarting because of added variable {newVariable}");
+        }
+
         #region Object Container (List, Layer, ShapeCollection) changed
         internal void HandleObjectContainerChanged(NamedObjectSave objectMoving, 
             NamedObjectSave newContainer)

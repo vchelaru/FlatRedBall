@@ -20,8 +20,6 @@ namespace OfficialPluginsCore.Wizard.Models
         public List<WizardPage> FormsDataList { get; private set; } = new List<WizardPage>();
         public WizardData ViewModel { get; private set; }
 
-        public event Action GoToLast;
-
         Grid grid;
 
         #endregion

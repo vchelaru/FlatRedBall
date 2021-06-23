@@ -138,6 +138,10 @@ namespace OfficialPlugins.Compiler
             this.ReactToChangedStartupScreen += ToolbarController.Self.ReactToChangedStartupScreen;
             this.ReactToItemSelectHandler += RefreshManager.Self.HandleItemSelected;
             this.ReactToObjectContainerChanged += RefreshManager.Self.HandleObjectContainerChanged;
+            // If a variable is added, that may be used later to control initialization.
+            // The game won't reflect that until it has been restarted, so let's just take 
+            // care of it now. For variable removal I don't know if any restart is needed...
+            this.ReactToVariableAdded += RefreshManager.Self.HandleVariableAdded;
         }
 
         private void HandleGluxUnloaded()
