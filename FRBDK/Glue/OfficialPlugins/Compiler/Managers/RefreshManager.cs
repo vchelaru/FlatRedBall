@@ -485,10 +485,13 @@ namespace OfficialPlugins.Compiler.Managers
         const string stopRestartDetails =
                    "Restarting due to Glue or file change";
 
+        bool CanRestart =>
+            Runner.Self.DidRunnerStartProcess || (ViewModel.IsRunning == false && failedToRebuildAndRestart) ||
+                (ViewModel.IsRunning && ViewModel.IsEditChecked);
+
         public void StopAndRestartTask(string reason)
         {
-            var runner = Runner.Self;
-            if (runner.DidRunnerStartProcess || (ViewModel.IsRunning == false && failedToRebuildAndRestart))
+            if (CanRestart)
             {
                 var wasInEditMode = ViewModel.IsEditChecked;
                 TaskManager.Self.Add(
@@ -526,7 +529,7 @@ namespace OfficialPlugins.Compiler.Managers
             var runner = Runner.Self;
             var compiler = Compiler.Self;
 
-            if(runner.DidRunnerStartProcess || (ViewModel.IsRunning == false && failedToRebuildAndRestart))
+            if(CanRestart)
             {
 
                 if (ViewModel.IsRunning)
