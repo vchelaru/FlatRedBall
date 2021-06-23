@@ -12,6 +12,8 @@ namespace REPLACED_NAMESPACE
 
         void Initialize(string contentManager);
         void ClearListsToAddTo();
+
+        System.Collections.Generic.List<System.Collections.IList> ListsToAddTo { get; }
     }
 
 

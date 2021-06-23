@@ -54,6 +54,7 @@ namespace OfficialPlugins.Compiler.Managers
             get; set;
         }
 
+        public bool IgnoreNextObjectAdd { get; set; }
 
         #endregion
 
@@ -204,7 +205,11 @@ namespace OfficialPlugins.Compiler.Managers
 
         internal async void HandleNewObjectCreated(NamedObjectSave newNamedObject)
         {
-            if (ViewModel.IsRunning && ViewModel.IsEditChecked)
+            if(IgnoreNextObjectAdd)
+            {
+                IgnoreNextObjectAdd = false;
+            }
+            else if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
                 var tempSerialized = JsonConvert.SerializeObject(newNamedObject);
                 var addObjectDto = JsonConvert.DeserializeObject<AddObjectDto>(tempSerialized);
@@ -482,6 +487,9 @@ namespace OfficialPlugins.Compiler.Managers
             }
         }
         #endregion
+
+        #region Stop/Restart
+
         const string stopRestartDetails =
                    "Restarting due to Glue or file change";
 
@@ -578,6 +586,8 @@ namespace OfficialPlugins.Compiler.Managers
             }
 
         }
+
+        #endregion
 
         private void RefreshViewModelHotReload()
         {

@@ -42,7 +42,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                 switch(action)
                 {
-                    case "AddObject":
+                    case nameof(AddObjectDto):
                         HandleAddObject(gamePortNumber, data);
 
                         break;
@@ -74,14 +74,15 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             }, "Handling removing object from screen");
         }
 
-        private static void HandleAddObject(int gamePortNumber, string data)
+        private static void HandleAddObject(int gamePortNumber, string dataAsString)
         {
             TaskManager.Self.Add(() =>
             {
                 ScreenSave screen = GetCurrentInGameScreen(gamePortNumber);
-                var deserializedNos = JsonConvert.DeserializeObject<NamedObjectSave>(data);
 
-                foreach (var variable in deserializedNos.InstructionSaves)
+                var addObjectDto = JsonConvert.DeserializeObject<AddObjectDto>(dataAsString);
+
+                foreach (var variable in addObjectDto.InstructionSaves)
                 {
                     if (variable.Value is double)
                     {
@@ -95,25 +96,29 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 {
                     listToAddTo = screen.NamedObjects.FirstOrDefault(item =>
                     {
-                        return item.IsList && item.SourceClassGenericType == deserializedNos.SourceClassType;
+                        return item.IsList && item.SourceClassGenericType == addObjectDto.SourceClassType;
                     });
                 }
 
                 if (listToAddTo != null)
                 {
-                    var lastSlash = deserializedNos.SourceClassType.LastIndexOf("\\");
-                    var newName = deserializedNos.SourceClassType.Substring(lastSlash + 1) + "1";
+                    var lastSlash = addObjectDto.SourceClassType.LastIndexOf("\\");
+                    var newName = addObjectDto.SourceClassType.Substring(lastSlash + 1) + "1";
 
-                    var oldName = deserializedNos.InstanceName;
+                    var oldName = addObjectDto.InstanceName;
                     while (screen.GetNamedObjectRecursively(newName) != null)
                     {
                         newName = StringFunctions.IncrementNumberAtEnd(newName);
                     }
 
-                    deserializedNos.InstanceName = newName;
-
+                    var nos = JsonConvert.DeserializeObject<NamedObjectSave>(dataAsString);
+                    nos.InstanceName = newName;
                     GlueCommands.Self.DoOnUiThread(() =>
-                        GlueCommands.Self.GluxCommands.AddNamedObjectTo(deserializedNos, screen, listToAddTo));
+                    {
+                        RefreshManager.Self.IgnoreNextObjectAdd = true;
+                        GlueCommands.Self.GluxCommands.AddNamedObjectTo(nos, screen, listToAddTo);
+
+                    });
 
                     //RefreshManager.Self.HandleNamedObjectValueChanged(nameof(deserializedNos.InstanceName), oldName, deserializedNos);
 
@@ -121,9 +126,9 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     data.Type = "string";
                     data.VariableValue = newName;
                     data.VariableName = "this." + oldName + ".Name";
+                    data.InstanceOwner = addObjectDto.ElementName;
 
                     var serialized = JsonConvert.SerializeObject(data);
-
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                     // That's okay, this is fire-and-forget, we just send this back to the game and we don't care to await it
                     CommandSender.SendCommand($"SetVariable:{serialized}", gamePortNumber);

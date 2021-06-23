@@ -115,11 +115,12 @@ namespace {ProjectNamespace}.GlueControl
             var newName = $"{entityType}Auto{TimeManager.CurrentTime.ToString().Replace(".", "_")}";
 
             var factory = FlatRedBall.TileEntities.TileEntityInstantiator.GetFactory(entityType);
+            
             var cursor = GuiManager.Cursor;
             var toReturn = factory.CreateNew(x, y) as FlatRedBall.PositionedObject;
             toReturn.Name = newName;
 
-            var nos = new Models.NamedObjectSave();
+            var nos = new Dtos.AddObjectDto();
             nos.InstanceName = newName;
             nos.SourceType = Models.SourceType.Entity;
             // todo - need to eventually include sub namespaces
@@ -138,7 +139,17 @@ namespace {ProjectNamespace}.GlueControl
                 Value = y
             });
 
-            GlueControlManager.Self.SendCommandToGlue($"AddObject:{Newtonsoft.Json.JsonConvert.SerializeObject(nos)}");
+            var currentScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen;
+            if(currentScreen is Screens.EntityViewingScreen entityViewingScreen)
+            {
+                nos.ElementName = entityViewingScreen.CurrentEntity.GetType().FullName;
+            }
+            else
+            {
+                nos.ElementName = currentScreen.GetType().FullName;
+            }
+
+            GlueControlManager.Self.SendToGlue(nos);
 
             return toReturn;
         }

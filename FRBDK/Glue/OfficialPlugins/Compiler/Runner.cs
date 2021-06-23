@@ -286,7 +286,7 @@ namespace OfficialPlugins.Compiler
 
             try
             {
-                id = process.MainWindowHandle;
+                id = process?.MainWindowHandle ?? IntPtr.Zero;
             }
             catch
             {

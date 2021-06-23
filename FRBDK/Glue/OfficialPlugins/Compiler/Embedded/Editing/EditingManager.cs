@@ -45,6 +45,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
         public ElementEditingMode ElementEditingMode { get; set; }
 
         const float SelectedItemExtraPadding = 2;
+
+        CopyPasteManager CopyPasteManager = new CopyPasteManager();
         #endregion
 
         #region Delegates/Events
@@ -240,6 +242,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     ItemSelected = null;
                 }
             }
+
+            CopyPasteManager.DoHotkeyLogic(ItemSelected);
 
             CameraLogic.DoHotkeyLogic();
             

@@ -470,7 +470,8 @@ namespace FlatRedBall.Glue.Parsing
             codeBlock.Function("void", "IEntityFactory.ClearListsToAddTo", "")
                 .Line($"{factoryClassName}.ClearListsToAddTo();");
 
-
+            codeBlock.Line(
+                $"System.Collections.Generic.List<System.Collections.IList> IEntityFactory.ListsToAddTo => {factoryClassName}.ListsToAddTo;");
         }
 
         private static ICodeBlock GetAllFactoryMethods(string factoryClassName, string baseClassName, int numberToPreAllocate, bool poolObjects)
