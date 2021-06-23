@@ -116,6 +116,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     GlueCommands.Self.DoOnUiThread(() =>
                     {
                         RefreshManager.Self.IgnoreNextObjectAdd = true;
+                        RefreshManager.Self.IgnoreNextObjectSelect = true;
                         GlueCommands.Self.GluxCommands.AddNamedObjectTo(nos, screen, listToAddTo);
 
                     });

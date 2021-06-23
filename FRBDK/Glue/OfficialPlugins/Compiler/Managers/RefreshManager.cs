@@ -55,6 +55,7 @@ namespace OfficialPlugins.Compiler.Managers
         }
 
         public bool IgnoreNextObjectAdd { get; set; }
+        public bool IgnoreNextObjectSelect { get; set; }
 
         #endregion
 
@@ -70,7 +71,11 @@ namespace OfficialPlugins.Compiler.Managers
 
         internal async void HandleItemSelected(TreeNode selectedTreeNode)
         {
-            if(ViewModel.IsEditChecked)
+            if(IgnoreNextObjectSelect)
+            {
+                IgnoreNextObjectSelect = false;
+            }
+            else if(ViewModel.IsEditChecked)
             {
                 var dto = new SelectObjectDto();
 
