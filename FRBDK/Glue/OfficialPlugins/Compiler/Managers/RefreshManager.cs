@@ -394,7 +394,7 @@ namespace OfficialPlugins.Compiler.Managers
                     var task = TryPushVariable(nosName, changedMember, type, value, currentElement);
                     task.Wait();
                     var response = task.Result;
-                    if(!string.IsNullOrWhiteSpace(response.Exception))
+                    if(!string.IsNullOrWhiteSpace(response?.Exception))
                     {
                         GlueCommands.Self.PrintError(response.Exception);
                         printOutput(response.Exception);
@@ -450,6 +450,7 @@ namespace OfficialPlugins.Compiler.Managers
 
         #endregion
 
+        #region Object Container (List, Layer, ShapeCollection) changed
         internal void HandleObjectContainerChanged(NamedObjectSave objectMoving, 
             NamedObjectSave newContainer)
         {
@@ -459,18 +460,28 @@ namespace OfficialPlugins.Compiler.Managers
                 StopAndRestartTask($"Restarting due to changed container for {objectMoving}");
             }
         }
+        #endregion
 
+        #region Object Removed
         internal async Task HandleObjectRemoved(IElement owner, NamedObjectSave nos)
         {
-            if (ViewModel.IsRunning)
+            if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
                 var dto = new Dtos.RemoveObjectDto();
                 dto.ElementName = owner.Name;
                 dto.ObjectName = nos.InstanceName;
-                await CommandSender.Send(dto, ViewModel.PortNumber);
+                var responseAsstring = await CommandSender.Send(dto, ViewModel.PortNumber);
+
+                var response = JsonConvert.DeserializeObject<RemoveObjectDtoResponse>(responseAsstring);
+                if(response.DidScreenMatch && response.WasObjectRemoved == false)
+                {
+                    StopAndRestartTask(
+                        $"Restarting because {nos} was deleted from Glue but not from game");
+                }
+
             }
         }
-
+        #endregion
         const string stopRestartDetails =
                    "Restarting due to Glue or file change";
 

@@ -68,6 +68,11 @@ namespace {ProjectNamespace}.GlueControl.Dtos
     public class AddObjectDtoResponse
     {
         public bool WasObjectCreated { get; set; }
-
+    }
+    
+    public class RemoveObjectDtoResponse
+    {
+        public bool WasObjectRemoved { get; set; }
+        public bool DidScreenMatch { get; set; }
     }
 }
