@@ -151,6 +151,9 @@ namespace {ProjectNamespace}.GlueControl
 
             GlueControlManager.Self.SendToGlue(nos);
 
+            GlueControlManager.Self.EnqueueToOwner(
+                nameof(Dtos.AddObjectDto) + ":" + Newtonsoft.Json.JsonConvert.SerializeObject(nos), nos.ElementName);
+
             return toReturn;
         }
 
@@ -200,6 +203,5 @@ namespace {ProjectNamespace}.GlueControl
                 ShapeManager.Remove(ShapesAddedAtRuntime.Polygons[i]);
             }
         }
-
     }
 }

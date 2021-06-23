@@ -302,7 +302,7 @@ namespace {ProjectNamespace}
             return response;
         }
 
-        private void EnqueueToOwner(string message, string owner)
+        public void EnqueueToOwner(string message, string owner)
         {
             if (string.IsNullOrEmpty(owner))
             {
@@ -319,12 +319,12 @@ namespace {ProjectNamespace}
                 }
                 else
                 {
-                    EnqueueMessage(owner, message);
+                    EnqueueScreenSpecificMessage(message, owner);
                 }
             }
         }
 
-        private void EnqueueMessage(string owner, string message)
+        private void EnqueueScreenSpecificMessage(string message, string owner)
         {
             Queue<string> queue = null;
             if(ScreenSpecificGlueToGameCommands.ContainsKey(owner))
