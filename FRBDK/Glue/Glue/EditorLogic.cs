@@ -151,6 +151,7 @@ namespace FlatRedBall.Glue
             set => GlueState.Self.CurrentElement = value as GlueElement;
 		}
 
+        [Obsolete("Use GlueState.Self.CurrentEntity")]
         public static EntitySave CurrentEntitySave
         {
             get

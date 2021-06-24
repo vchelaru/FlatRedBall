@@ -1091,31 +1091,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     if (derivedNamedObject != null && derivedNamedObject != namedObjectToRemove && derivedNamedObject.DefinedByBase)
                     {
-                        MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
-                        mbmb.MessageText = "What would you like to do with the object " + derivedNamedObject.ToString();
-                        mbmb.AddButton("Keep it", DialogResult.OK);
-                        mbmb.AddButton("Delete it", DialogResult.Cancel);
-
-                        DialogResult result = mbmb.ShowDialog(MainGlueWindow.Self);
-
-                        if (result == DialogResult.OK)
-                        {
-                            // Keep it
-                            derivedNamedObject.DefinedByBase = false;
-                            BaseElementTreeNode treeNode = GlueState.Self.Find.ElementTreeNode(derivedElement);
-
-                            if (updateUi)
-                            {
-                                treeNode.RefreshTreeNodes();
-                            }
-                            CodeWriter.GenerateCode(derivedElement);
-                        }
-                        else
-                        {
-                            // Delete it
-                            RemoveNamedObject(derivedNamedObject, performSave, updateUi, additionalFilesToRemove);
-                        }
-
+                        // Delete it
+                        RemoveNamedObject(derivedNamedObject, performSave, updateUi, additionalFilesToRemove);
 
                     }
 
@@ -1400,20 +1377,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             for (int i = 0; i < namedObjectsToRemove.Count; i++)
             {
-                MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
                 NamedObjectSave nos = namedObjectsToRemove[i];
-                mbmb.MessageText = "What would you like to do with the object\n\n" + nos.ToString();
-
-                mbmb.AddButton("Remove this Object", DialogResult.OK);
-                mbmb.AddButton("Keep this Object (the reference will be invalid)", DialogResult.Cancel);
-
-                DialogResult namedObjectRemovalResult = mbmb.ShowDialog();
-
-                if (namedObjectRemovalResult == DialogResult.OK)
-                {
-                    GlueCommands.Self.GluxCommands
-                        .RemoveNamedObject(nos, false, true, filesThatCouldBeRemoved);
-                }
+                GlueCommands.Self.GluxCommands
+                    .RemoveNamedObject(nos, false, true, filesThatCouldBeRemoved);
             }
             for (int i = 0; i < inheritingEntities.Count; i++)
             {
@@ -1432,6 +1398,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             ElementViewWindow.RemoveEntity(entityToRemove);
 
             ProjectManager.RemoveCodeFilesForElement(filesThatCouldBeRemoved, entityToRemove);
+
+            GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
 
             PluginManager.ReactToEntityRemoved(entityToRemove, filesThatCouldBeRemoved);
 

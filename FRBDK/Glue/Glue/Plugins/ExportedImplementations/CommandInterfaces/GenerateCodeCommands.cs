@@ -20,7 +20,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         static IGlueState GlueState => Container.Get<IGlueState>();
         static IGlueCommands GlueCommands => Container.Get<IGlueCommands>();
 
-        [Obsolete("Use GenerateAllCodeTask")]
         public void GenerateAllCode()
         {
             TaskManager.Self.AddOrRunIfTasked(

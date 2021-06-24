@@ -1417,9 +1417,9 @@ namespace FlatRedBall.Glue.FormHelpers
 
                         #region Else if is EntitySave
 
-                        else if (EditorLogic.CurrentEntitySave != null)
+                        else if (GlueState.Self.CurrentEntitySave != null)
                         {
-                            RemoveEntity(EditorLogic.CurrentEntitySave, filesToRemove);
+                            RemoveEntity(GlueState.Self.CurrentEntitySave, filesToRemove);
                             //ProjectManager.RemoveEntity(EditorLogic.CurrentEntitySave);
                         }
 
@@ -1528,11 +1528,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         private static void RemoveEntity(EntitySave entityToRemove, List<string> filesThatCouldBeRemoved)
         {
-
-
             List<NamedObjectSave> namedObjectsToRemove = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(entityToRemove.Name);
-
-
 
             DialogResult result = DialogResult.Yes;
 
