@@ -345,7 +345,11 @@ namespace {ProjectNamespace}
             GlobalGlueToGameCommands.Clear();
             foreach (var message in toProcess)
             {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                // intentionally not awaited because awaiting would mean waiting a whole frame for it
+                // to finish processing. Don't want to do that, just fire and forget.
                 ProcessMessage(message, true);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
 
             var assembly = typeof(GlueControlManager).Assembly;
@@ -360,7 +364,10 @@ namespace {ProjectNamespace}
                     kvp.Value.Clear();
                     foreach(var message in toProcess)
                     {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                        // see above for explanation
                         ProcessMessage(message, true);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                     }
                 }
             }
@@ -561,7 +568,7 @@ namespace {ProjectNamespace}
 
         private bool GetIfMatchesCurrentScreen(string elementName, out System.Type ownerType, out Screen currentScreen)
         {
-            var ownerTypeName = "{ProjectNamespace}." + elementName.Replace("\\", ".");
+            var ownerTypeName = "EditModeProject." + elementName.Replace("\\", ".");
 
             ownerType = GetType().Assembly.GetType(ownerTypeName);
             currentScreen = ScreenManager.CurrentScreen;

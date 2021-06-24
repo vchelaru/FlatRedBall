@@ -164,7 +164,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                         "Z",
                         "Width",
                         "Height",
-                        "TextureScale"
+                        "TextureScale",
+                        "Radius"
                     };
 
                     var convertToFloat = floatVariables.Contains(

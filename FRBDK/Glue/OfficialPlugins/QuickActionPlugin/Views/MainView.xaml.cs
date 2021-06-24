@@ -202,6 +202,10 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
             PluginManager.ReactToNewObject(namedObject);
+            if(targetList != null)
+            {
+                PluginManager.ReactToObjectContainerChanged(namedObject, targetList);
+            }
 
             AnyButtonClicked();
         }

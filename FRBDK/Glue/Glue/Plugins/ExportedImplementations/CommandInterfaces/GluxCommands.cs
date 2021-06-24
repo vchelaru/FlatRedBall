@@ -917,6 +917,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 throw new ArgumentNullException(nameof(element));
             }
+
             addObjectViewModel.ForcedElementToAddTo = element;
             MembershipInfo membershipInfo = NamedObjectSaveExtensionMethodsGlue.GetMemberMembershipInfo(addObjectViewModel.ObjectName);
 
@@ -990,10 +991,16 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+
+            // run after generated code so plugins like level editor work off latest code
             PluginManager.ReactToNewObject(newNos);
+            if (listToAddTo != null)
+            {
+                PluginManager.ReactToObjectContainerChanged(newNos, listToAddTo);
+            }
             MainGlueWindow.Self.PropertyGrid.Refresh();
             PropertyGridHelper.UpdateNamedObjectDisplay();
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
         }
 

@@ -478,8 +478,10 @@ namespace FlatRedBall.Glue.Managers
         {
             element.NamedObjects.Add(newNamedObject);
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
-            PluginManager.ReactToNewObject(newNamedObject);
             GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(element);
+
+            // run after generated code so plugins like level editor work off latest code
+            PluginManager.ReactToNewObject(newNamedObject);
 
         }
 
@@ -594,7 +596,9 @@ namespace FlatRedBall.Glue.Managers
 
                         ElementViewWindow.GenerateSelectedElementCode();
 
+                        // run after generated code so plugins like level editor work off latest code
                         PluginManager.ReactToNewObject(namedObject);
+                        PluginManager.ReactToObjectContainerChanged(namedObject, currentNosList);
 
                         // Don't save the Glux, the caller of this method will take care of it
                         // GluxCommands.Self.SaveGlux();

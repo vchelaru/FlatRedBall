@@ -85,8 +85,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (shouldAdd == true)
             {
-                string whyItIsntValid = null;
-                bool isValid = NameVerifier.IsNamedObjectNameValid(addObjectViewModel.ObjectName, out whyItIsntValid);
+                bool isValid = NameVerifier.IsNamedObjectNameValid(addObjectViewModel.ObjectName, out string whyItIsntValid);
 
                 if (isValid)
                 {
@@ -111,6 +110,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return newNamedObject;
         }
 
+        /// <summary>
+        /// Creates and shows the new NamedObject dialog. 
+        /// </summary>
+        /// <param name="addObjectViewModel"></param>
+        /// <returns>The WPF dialog result for showing the window.</returns>
         private static bool? CreateAndShowAddNamedObjectWindow(ref AddObjectViewModel addObjectViewModel)
         {
             var currentObject = GlueState.Self.CurrentNamedObjectSave;
