@@ -342,12 +342,16 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 menu.Items.Add("-");
 
-                NamedObjectSave currentNamedObject = EditorLogic.CurrentNamedObject;
+                var currentNamedObject = GlueState.Self.CurrentNamedObjectSave;
 
                 if (currentNamedObject.SourceType == SourceType.FlatRedBallType &&
                     currentNamedObject?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.PositionedObjectList &&
                     !string.IsNullOrEmpty(currentNamedObject.SourceClassGenericType) &&
                     !currentNamedObject.SetByDerived)
+                {
+                    menu.Items.Add(addObjectToolStripMenuItem);
+                }
+                else if(currentNamedObject?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection)
                 {
                     menu.Items.Add(addObjectToolStripMenuItem);
                 }

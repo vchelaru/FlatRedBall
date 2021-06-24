@@ -561,13 +561,13 @@ namespace {ProjectNamespace}
 
         private bool GetIfMatchesCurrentScreen(string elementName, out System.Type ownerType, out Screen currentScreen)
         {
-            var ownerTypeName = "EditModeProject." + elementName.Replace("\\", ".");
+            var ownerTypeName = "{ProjectNamespace}." + elementName.Replace("\\", ".");
 
             ownerType = GetType().Assembly.GetType(ownerTypeName);
             currentScreen = ScreenManager.CurrentScreen;
             var currentScreenType = currentScreen.GetType();
 
-            return currentScreenType == ownerType || ownerType.IsAssignableFrom(currentScreenType);
+            return currentScreenType == ownerType || ownerType?.IsAssignableFrom(currentScreenType) == true;
         }
 
         #endregion

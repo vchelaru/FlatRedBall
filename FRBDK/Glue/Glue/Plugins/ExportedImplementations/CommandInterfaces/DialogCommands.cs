@@ -126,7 +126,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;
             }
 
-            if(isTypePredetermined && addObjectViewModel.SelectedAti != null)
+            var parentNamedObject = GlueState.Self.CurrentNamedObjectSave;
+            if (parentNamedObject?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection)
+            {
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                addObjectViewModel.IsObjectTypeRadioButtonPredetermined = true;
+                addObjectViewModel.FlatRedBallAndCustomTypes.Clear();
+                addObjectViewModel.FlatRedBallAndCustomTypes.Add(AvailableAssetTypes.CommonAtis.AxisAlignedRectangle);
+                addObjectViewModel.FlatRedBallAndCustomTypes.Add(AvailableAssetTypes.CommonAtis.Circle);
+                addObjectViewModel.FlatRedBallAndCustomTypes.Add(AvailableAssetTypes.CommonAtis.Polygon);
+            }
+            else if (isTypePredetermined && addObjectViewModel.SelectedAti != null)
             {
                 addObjectViewModel.FlatRedBallAndCustomTypes.Add(addObjectViewModel.SelectedAti);
             }
@@ -176,15 +186,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             var availableTypes = converter.GetAvailableValues(false);
             addObjectViewModel.AvailableListTypes.AddRange(availableTypes);
 
-            // todo - need to handle predetermined types here
-
             addObjectViewModel.IsTypePredetermined = isTypePredetermined;
+            
             
             if (isTypePredetermined)
             {
-                var parentList = GlueState.Self.CurrentNamedObjectSave;
 
-                var genericType = parentList?.SourceClassGenericType;
+                var genericType = parentNamedObject?.SourceClassGenericType;
 
                 if (!string.IsNullOrEmpty(genericType))
                 {

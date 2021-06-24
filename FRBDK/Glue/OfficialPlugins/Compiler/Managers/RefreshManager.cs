@@ -44,7 +44,9 @@ namespace OfficialPlugins.Compiler.Managers
         }
         bool failedToRebuildAndRestart { get; set; }
 
-        bool ShouldRestartOnChange => (failedToRebuildAndRestart || IsExplicitlySetRebuildAndRestartEnabled) &&
+        bool ShouldRestartOnChange => 
+            (failedToRebuildAndRestart || IsExplicitlySetRebuildAndRestartEnabled || 
+                (ViewModel.IsRunning && ViewModel.IsEditChecked)) &&
             GlueState.Self.CurrentGlueProject != null;
 
         public int PortNumber { get; set; }
@@ -164,6 +166,8 @@ namespace OfficialPlugins.Compiler.Managers
             }
         }
 
+
+
         private bool GetIfShouldReactToFileChange(FilePath filePath )
         {
             if(filePath.FullPath.Contains(".Generated.") && filePath.FullPath.EndsWith(".cs"))
@@ -193,6 +197,14 @@ namespace OfficialPlugins.Compiler.Managers
         }
 
         #endregion
+
+        internal void HandleNewScreenCreated()
+        {
+            if (ShouldRestartOnChange)
+            {
+                StopAndRestartTask($"New screen created");
+            }
+        }
 
         #region Selected Object
 

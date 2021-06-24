@@ -14,7 +14,18 @@ namespace FlatRedBallDesktopGlTemplate
         static void Main()
         {
             using (var game = new Game1())
-                game.Run();
+            {
+                try
+                {
+                    game.Run();
+                }
+                catch (Exception e)
+                {
+                    System.IO.File.WriteAllText("CrashInfo.txt", e.ToString());
+                    throw;
+                }
+
+            }
         }
     }
 }

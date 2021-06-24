@@ -218,9 +218,20 @@ namespace FlatRedBall.Glue.ViewModels
             set => Set(value);
         }
 
+        public bool IsObjectTypeRadioButtonPredetermined
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         [DependsOn(nameof(IsTypePredetermined))]
         public bool IsSelectionEnabled => !IsTypePredetermined;
 
+
+        [DependsOn(nameof(IsSelectionEnabled))]
+        [DependsOn(nameof(IsObjectTypeRadioButtonPredetermined))]
+        public bool IsObjectTypeGroupBoxEnabled => IsSelectionEnabled &&
+            !IsObjectTypeRadioButtonPredetermined;
 
         #endregion
 

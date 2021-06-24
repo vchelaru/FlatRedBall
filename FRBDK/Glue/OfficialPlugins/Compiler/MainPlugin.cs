@@ -127,7 +127,11 @@ namespace OfficialPlugins.Compiler
             this.NewEntityCreated += RefreshManager.Self.HandleNewEntityCreated;
 
 
-            this.NewScreenCreated += ToolbarController.Self.HandleNewScreenCreated;
+            this.NewScreenCreated += (newScreen) =>
+            {
+                ToolbarController.Self.HandleNewScreenCreated(newScreen);
+                RefreshManager.Self.HandleNewScreenCreated();
+            };
             this.ReactToScreenRemoved += ToolbarController.Self.HandleScreenRemoved;
             // todo - handle startup changed...
             this.ReactToNewObjectHandler += RefreshManager.Self.HandleNewObjectCreated;

@@ -135,20 +135,16 @@ namespace OfficialPlugins.Compiler
             GeneralResponse toReturn = GeneralResponse.UnsuccessfulResponse;
 
             foundAlreadyRunningProcess = false;
-            var projectFileName = GlueState.Self.CurrentMainProject.FullFileName;
-            var projectDirectory = FileManager.GetDirectory(projectFileName);
-            var executableName = FileManager.RemoveExtension(FileManager.RemovePath(projectFileName));
-            // todo - make the plugin smarter so it knows where the .exe is really located
-            var exeLocation = projectDirectory + "bin/x86/debug/" + executableName + ".exe";
+            string exeLocation = GetGameExeLocation();
 
-            if(System.IO.File.Exists(exeLocation))
+            if (System.IO.File.Exists(exeLocation))
             {
                 StartProcess(preventFocus, runArguments, exeLocation);
 
                 runningGameProcess = TryFindGameProcess();
                 int numberOfTimesToTryGettingProcess = 50;
                 int timesTried = 0;
-                while(runningGameProcess == null)
+                while (runningGameProcess == null)
                 {
                     // didn't find it, so let's wait a little and try again:
 
@@ -158,7 +154,7 @@ namespace OfficialPlugins.Compiler
 
                     timesTried++;
 
-                    if(timesTried >= numberOfTimesToTryGettingProcess)
+                    if (timesTried >= numberOfTimesToTryGettingProcess)
                     {
                         break;
                     }
@@ -181,7 +177,7 @@ namespace OfficialPlugins.Compiler
                         {
                             var id = runningGameProcess?.MainWindowHandle;
 
-                            if (id == null ||  id == IntPtr.Zero)
+                            if (id == null || id == IntPtr.Zero)
                             {
 
                                 await Task.Delay(100);
@@ -191,7 +187,7 @@ namespace OfficialPlugins.Compiler
                             {
                                 var rect = lastWindowRectangle.Value;
                                 var didSucceed = MoveWindow(id.Value, rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top, true);
-                                if(didSucceed)
+                                if (didSucceed)
                                 {
 
                                     lastWindowRectangle = null;
@@ -226,7 +222,17 @@ namespace OfficialPlugins.Compiler
             timer.Enabled = true;
 
             return toReturn;
-             
+
+        }
+
+        private static string GetGameExeLocation()
+        {
+            var projectFileName = GlueState.Self.CurrentMainProject.FullFileName;
+            var projectDirectory = FileManager.GetDirectory(projectFileName);
+            var executableName = FileManager.RemoveExtension(FileManager.RemovePath(projectFileName));
+            // todo - make the plugin smarter so it knows where the .exe is really located
+            var exeLocation = projectDirectory + "bin/x86/debug/" + executableName + ".exe";
+            return exeLocation;
         }
 
         private static void StartProcess(bool preventFocus, string runArguments, string exeLocation)
@@ -245,7 +251,7 @@ namespace OfficialPlugins.Compiler
             }
         }
 
-        private void HandleProcessExit(object sender, EventArgs e)
+        private async void HandleProcessExit(object sender, EventArgs e)
         {
             var process = sender as Process;
 
@@ -265,7 +271,26 @@ namespace OfficialPlugins.Compiler
             {
                 if(process.ExitCode != 0)
                 {
-                    System.Windows.MessageBox.Show("Oh no! The game crashed. Run from Visual Studio for more information on the error.");
+                    await Task.Delay(1);
+
+                    string exeLocation = GetGameExeLocation();
+
+                    var directory = FileManager.GetDirectory(exeLocation);
+                    var logFile = directory + "CrashInfo.txt";
+
+                    string message = string.Empty;
+                    if(System.IO.File.Exists(logFile))
+                    {
+                        var contents = System.IO.File.ReadAllText(logFile);
+                        message = $"The game has crashed:\n\n{contents}";
+                    }
+                    else
+                    {
+                        message = "Oh no! The game crashed. Run from Visual Studio for more information on the error.";
+                    }
+
+                    // await a seocnd to see if the crash.txt file gets written...
+                    System.Windows.MessageBox.Show(message);
                 }
             }
 

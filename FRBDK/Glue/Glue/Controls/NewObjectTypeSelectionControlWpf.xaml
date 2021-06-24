@@ -24,7 +24,7 @@
 
 
 
-        <GroupBox Header="Select Object Type" Grid.Row="0" IsEnabled="{Binding IsSelectionEnabled}">
+        <GroupBox Header="Select Object Type" Grid.Row="0" IsEnabled="{Binding IsObjectTypeGroupBoxEnabled}">
             <StackPanel>
                 <RadioButton IsChecked="{Binding IsFlatRedBallType}">FlatRedBall or Custom Type</RadioButton>
                 <RadioButton IsChecked="{Binding IsEntityType}">Entity</RadioButton>
