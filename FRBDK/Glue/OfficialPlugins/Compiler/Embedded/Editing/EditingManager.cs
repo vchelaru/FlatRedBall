@@ -155,6 +155,10 @@ namespace {ProjectNamespace}.GlueControl.Editing
             if (cursor.PrimaryPush)
             {
                 ItemGrabbed = ItemOver;
+                if(ItemGrabbed == null)
+                {
+                    SideGrabbed = ResizeSide.None;
+                }
                 if(ItemOver != ItemSelected)
                 {
                     ItemSelected = ItemOver;
@@ -227,6 +231,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 }
 
                 ItemGrabbed = null;
+                SideGrabbed = ResizeSide.None;
             }
         }
 

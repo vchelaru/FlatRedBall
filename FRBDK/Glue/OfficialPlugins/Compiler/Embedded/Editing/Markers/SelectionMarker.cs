@@ -88,7 +88,6 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 if(value != rectangle.Visible)
                 {
                     rectangle.Visible = value;
-                    UpdateHandlesVisibilityAndPosition();
                 }
             }
         }
@@ -119,14 +118,16 @@ namespace {ProjectNamespace}.GlueControl.Editing
         }
 
         const int DefaultHandleDimension = 10;
+        const int HighlightedHandleDimension = 14;
 
         Microsoft.Xna.Framework.Point ScreenPointPushed;
         Vector3 unsnappedItemPosition;
         Vector2 unsnappedItemSize;
 
-        #endregion
         const float positionSnappingSize = 8;
         const float sizeSnappingSize = 8;
+
+        #endregion
 
         #region Constructor/Init
 
@@ -137,6 +138,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             for(int i = 0; i < handles.Length; i++)
             {
                 handles[i] = new AxisAlignedRectangle();
+
                 handles[i].Width = DefaultHandleDimension;
                 handles[i].Height = DefaultHandleDimension;
 
@@ -199,7 +201,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
             ApplyPrimaryDownDragEditing(item, sideGrabbed);
 
-            UpdateHandlesVisibilityAndPosition();
+            UpdateHandles(item, sideGrabbed);
         }
 
         private void UpdateScreenPointPushed(PositionedObject item)
@@ -261,9 +263,11 @@ namespace {ProjectNamespace}.GlueControl.Editing
             }
         }
 
-        void UpdateHandlesVisibilityAndPosition()
+        static HashSet<ResizeSide> sidesToHighlight = new HashSet<ResizeSide>();
+        private void UpdateHandles(PositionedObject item, ResizeSide sideGrabbed)
         {
-            if(ResizeMode == ResizeMode.EightWay)
+            #region Update Handle Visibility
+            if (ResizeMode == ResizeMode.EightWay)
             {
                 foreach(var handle in handles)
                 {
@@ -286,21 +290,85 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     handle.Visible = false;
                 }
             }
+            #endregion
 
             if(Visible)
             {
+                ResizeSide sideOver = sideGrabbed;
+                if (sideOver == ResizeSide.None)
+                {
+                    sideOver = GetSideOver();
+                }
                 UpdateHandleRelativePositions();
 
-                foreach(var handle in handles)
+                FillSidesToHighlight(item, sideOver);
+                for(int i = 0; i  < handles.Count(); i++)
                 {
+                    var handle = handles[i];
                     handle.Position += this.Position;
 
-                    handle.Width = DefaultHandleDimension / CameraLogic.CurrentZoomRatio;
-                    handle.Height = DefaultHandleDimension / CameraLogic.CurrentZoomRatio;
+                    var side = (ResizeSide)i;
+                    float size = sidesToHighlight.Contains(side) ? HighlightedHandleDimension : DefaultHandleDimension;
+                    size /= CameraLogic.CurrentZoomRatio;
+
+                    handle.Width = size;
+                    handle.Height = size;
                 }
             }
         }
 
+               private static void FillSidesToHighlight(PositionedObject item, ResizeSide sideGrabbed)
+        {
+            sidesToHighlight.Clear();
+
+            sidesToHighlight.Add(sideGrabbed);
+
+            if(GetIfShouldResizeFromCenter(item))
+            {
+                if (sideGrabbed == ResizeSide.Left && item.RelativeX == 0) sidesToHighlight.Add(ResizeSide.Right);
+                if (sideGrabbed == ResizeSide.Top && item.RelativeY == 0) sidesToHighlight.Add(ResizeSide.Bottom);
+                if (sideGrabbed == ResizeSide.Right && item.RelativeX == 0) sidesToHighlight.Add(ResizeSide.Left);
+                if (sideGrabbed == ResizeSide.Bottom && item.RelativeY == 0) sidesToHighlight.Add(ResizeSide.Top);
+
+                // if we grab a diagonal, all can be resized:
+                if(sideGrabbed == ResizeSide.TopLeft ||
+                    sideGrabbed == ResizeSide.TopRight ||
+                    sideGrabbed == ResizeSide.BottomRight ||
+                    sideGrabbed == ResizeSide.BottomLeft)
+                {
+                    if (item.RelativeX == 0) sidesToHighlight.Add(ResizeSide.Right);
+                    if (item.RelativeY == 0) sidesToHighlight.Add(ResizeSide.Bottom);
+                    if (item.RelativeX == 0) sidesToHighlight.Add(ResizeSide.Left);
+                    if (item.RelativeY == 0) sidesToHighlight.Add(ResizeSide.Top);
+                }
+            }
+
+            if(item is Circle || GetIfSetsTextureScale(item))
+            {
+                if(sideGrabbed == ResizeSide.Left)
+                {
+                    sidesToHighlight.Add(ResizeSide.Top);
+                    sidesToHighlight.Add(ResizeSide.Bottom);
+                }
+                else if (sideGrabbed == ResizeSide.Top)
+                {
+                    sidesToHighlight.Add(ResizeSide.Left);
+                    sidesToHighlight.Add(ResizeSide.Right);
+                }
+                else if (sideGrabbed == ResizeSide.Right)
+                {
+                    sidesToHighlight.Add(ResizeSide.Top);
+                    sidesToHighlight.Add(ResizeSide.Bottom);
+                }
+                else if (sideGrabbed == ResizeSide.Bottom)
+                {
+                    sidesToHighlight.Add(ResizeSide.Left);
+                    sidesToHighlight.Add(ResizeSide.Right);
+                }
+            }
+        }
+
+ 
         private void UpdateHandleRelativePositions()
         {
             var handle = handles[0];
@@ -392,13 +460,13 @@ namespace {ProjectNamespace}.GlueControl.Editing
             float widthMultiple = 0;
             float heightMultiple = 0;
 
-            switch(sideOver)
+            switch (sideOver)
             {
                 case ResizeSide.TopLeft:
-                    xPositionMultiple = 1/2.0f;
+                    xPositionMultiple = 1 / 2.0f;
                     widthMultiple = -1;
-                    
-                    yPositionMultiple = 1/2.0f;
+
+                    yPositionMultiple = 1 / 2.0f;
                     heightMultiple = 1;
                     break;
                 case ResizeSide.Top:
@@ -409,7 +477,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     heightMultiple = 1;
                     break;
                 case ResizeSide.TopRight:
-                    xPositionMultiple = 1/2.0f;
+                    xPositionMultiple = 1 / 2.0f;
                     widthMultiple = 1;
 
 
@@ -418,7 +486,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
                     break;
                 case ResizeSide.Right:
-                    xPositionMultiple = 1/2.0f;
+                    xPositionMultiple = 1 / 2.0f;
                     widthMultiple = 1;
 
                     yPositionMultiple = 0;
@@ -426,10 +494,10 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     break;
 
                 case ResizeSide.BottomRight:
-                    xPositionMultiple = 1/2.0f;
+                    xPositionMultiple = 1 / 2.0f;
                     widthMultiple = 1;
 
-                    yPositionMultiple = 1/2.0f;
+                    yPositionMultiple = 1 / 2.0f;
                     heightMultiple = -1;
 
                     break;
@@ -438,19 +506,19 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     xPositionMultiple = 0;
                     widthMultiple = 0;
 
-                    yPositionMultiple = 1/2.0f;
+                    yPositionMultiple = 1 / 2.0f;
                     heightMultiple = -1;
 
                     break;
                 case ResizeSide.BottomLeft:
-                    xPositionMultiple = 1/2.0f;
+                    xPositionMultiple = 1 / 2.0f;
                     widthMultiple = -1;
 
-                    yPositionMultiple = 1/2.0f;
+                    yPositionMultiple = 1 / 2.0f;
                     heightMultiple = -1;
                     break;
                 case ResizeSide.Left:
-                    xPositionMultiple = 1/2.0f;
+                    xPositionMultiple = 1 / 2.0f;
                     widthMultiple = -1;
 
                     yPositionMultiple = 0;
@@ -459,16 +527,17 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     break;
             }
 
+            bool shouldResizeFromCenter = GetIfShouldResizeFromCenter(item);
             // If we're resizing a rectangle on an object, we may not want to move on resize, so let's change the position
             // values to 0 and double the dimension values
-            if(item.Parent != null)
+            if (shouldResizeFromCenter)
             {
-                if(item.RelativeX == 0)
+                if (item.RelativeX == 0)
                 {
                     xPositionMultiple = 0;
                     widthMultiple *= 2;
                 }
-                if(item.RelativeY == 0)
+                if (item.RelativeY == 0)
                 {
                     yPositionMultiple = 0;
                     heightMultiple *= 2;
@@ -487,35 +556,38 @@ namespace {ProjectNamespace}.GlueControl.Editing
             float xChangeForPosition = xPositionMultiple * cursor.WorldXChangeAt(item.Z);
             float yChangeForPosition = yPositionMultiple * cursor.WorldYChangeAt(item.Z);
 
-            if (scalable is Sprite asSprite && asSprite.TextureScale > 0 && asSprite.Texture != null)
+            bool setsTextureScale = GetIfSetsTextureScale(item);
+
+            if (setsTextureScale)
             {
+                var asSprite = scalable as Sprite;
                 var currentScaleX = asSprite.ScaleX;
                 var currentScaleY = asSprite.ScaleY;
 
-                if(cursorXChange != 0 && asSprite.ScaleX != 0 && widthMultiple != 0)
+                if (cursorXChange != 0 && asSprite.ScaleX != 0 && widthMultiple != 0)
                 {
-                    var newRatio = (currentScaleX + 0.5f * cursorXChange * widthMultiple)/currentScaleX;
+                    var newRatio = (currentScaleX + 0.5f * cursorXChange * widthMultiple) / currentScaleX;
 
                     asSprite.TextureScale *= newRatio;
                 }
-                else if(cursorYChange != 0 && asSprite.ScaleY != 0 && heightMultiple != 0)
+                else if (cursorYChange != 0 && asSprite.ScaleY != 0 && heightMultiple != 0)
                 {
                     var newRatio = (currentScaleY + 0.5f * cursorYChange * heightMultiple) / currentScaleY;
 
                     asSprite.TextureScale *= newRatio;
                 }
             }
-            else if(item is Circle asCircle)
+            else if (item is Circle asCircle)
             {
                 if (cursorXChange != 0 && widthMultiple != 0)
                 {
-                    var newRadius = asCircle.Radius + cursorXChange * widthMultiple/2.0f;
+                    var newRadius = asCircle.Radius + cursorXChange * widthMultiple / 2.0f;
                     newRadius = Math.Max(0, newRadius);
                     asCircle.Radius = newRadius;
                 }
                 else if (cursorYChange != 0 && heightMultiple != 0)
                 {
-                    var newRadius = asCircle.Radius + cursorYChange * heightMultiple/2.0f;
+                    var newRadius = asCircle.Radius + cursorYChange * heightMultiple / 2.0f;
                     newRadius = Math.Max(0, newRadius);
                     asCircle.Radius = newRadius;
                 }
@@ -534,7 +606,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 var scaleXChange = newScaleX - scalable.ScaleX;
 
                 xChangeForPosition = 0;
-                if(scaleXChange != 0)
+                if (scaleXChange != 0)
                 {
                     scalable.ScaleX = MathFunctions.RoundFloat(unsnappedItemSize.X / 2.0f, sizeSnappingSize);
                     xChangeForPosition = scaleXChange * 2 * widthMultiple * xPositionMultiple;
@@ -550,13 +622,23 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 var scaleYChange = newScaleY - scalable.ScaleY;
 
                 yChangeForPosition = 0;
-                if(scaleYChange != 0)
+                if (scaleYChange != 0)
                 {
                     scalable.ScaleY = MathFunctions.RoundFloat(unsnappedItemSize.Y / 2.0f, sizeSnappingSize);
                     yChangeForPosition = scaleYChange * 2 * heightMultiple * yPositionMultiple;
                 }
             }
             ChangePositionBy(item, xChangeForPosition, yChangeForPosition);
+        }
+
+        private static bool GetIfSetsTextureScale(PositionedObject item)
+        {
+            return item is Sprite asSprite && asSprite.TextureScale > 0 && asSprite.Texture != null;
+        }
+
+        private static bool GetIfShouldResizeFromCenter(PositionedObject item)
+        {
+            return item.Parent != null;
         }
 
         #endregion
