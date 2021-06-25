@@ -103,7 +103,7 @@ namespace OfficialPlugins.Compiler
                 var gameToGlueCommandsAsString = await CommandSending.CommandSender
                     .SendCommand("GetCommands", viewModel.PortNumber);
 
-                if(!string.IsNullOrEmpty(gameToGlueCommandsAsString))
+                if (!string.IsNullOrEmpty(gameToGlueCommandsAsString))
                 {
                     CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString, viewModel.PortNumber);
                 }
@@ -121,7 +121,7 @@ namespace OfficialPlugins.Compiler
             this.ReactToLoadedGlux += HandleGluxLoaded;
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
 
-            this.ReactToFileChangeHandler += (fileName) => 
+            this.ReactToFileChangeHandler += (fileName) =>
                 RefreshManager.Self.HandleFileChanged(new FlatRedBall.IO.FilePath(fileName));
             this.ReactToCodeFileChange += RefreshManager.Self.HandleFileChanged;
             this.NewEntityCreated += RefreshManager.Self.HandleNewEntityCreated;
@@ -135,7 +135,7 @@ namespace OfficialPlugins.Compiler
             this.ReactToScreenRemoved += ToolbarController.Self.HandleScreenRemoved;
             // todo - handle startup changed...
             this.ReactToNewObjectHandler += RefreshManager.Self.HandleNewObjectCreated;
-            this.ReactToObjectRemoved += async(owner,nos) =>
+            this.ReactToObjectRemoved += async (owner, nos) =>
                 await RefreshManager.Self.HandleObjectRemoved(owner, nos);
             this.ReactToElementVariableChange += RefreshManager.Self.HandleVariableChanged;
             this.ReactToNamedObjectChangedValue += RefreshManager.Self.HandleNamedObjectValueChanged;
@@ -186,7 +186,7 @@ namespace OfficialPlugins.Compiler
             viewModel.SetFrom(model);
             ignoreViewModelChanges = false;
 
-            viewModel.IsGluxVersionNewEnoughForGlueControlGeneration = 
+            viewModel.IsGluxVersionNewEnoughForGlueControlGeneration =
                 GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.AddedGeneratedGame1;
             viewModel.HasLoadedGlux = true;
 
@@ -251,13 +251,13 @@ namespace OfficialPlugins.Compiler
                 GlueState.Self.CurrentMainProject != GlueState.Self.CurrentMainContentProject &&
                 GlueState.Self.CurrentMainContentProject.IsFilePartOfProject(fileName);
 
-            if(shouldBuildContent)
+            if (shouldBuildContent)
             {
                 control.PrintOutput($"{DateTime.Now.ToLongTimeString()} Building for changed file {fileName}");
 
                 BuildContent(OutputSuccessOrFailure);
             }
-            
+
         }
 
         private async void HandleToolbarRunClicked(object sender, EventArgs e)
@@ -267,7 +267,7 @@ namespace OfficialPlugins.Compiler
 
         public async Task BuildAndRun()
         {
-            if(viewModel.IsToolbarPlayButtonEnabled)
+            if (viewModel.IsToolbarPlayButtonEnabled)
             {
                 GlueCommands.Self.DialogCommands.FocusTab("Build");
                 var succeeded = await Compile();
@@ -319,7 +319,7 @@ namespace OfficialPlugins.Compiler
         private async void HandleMainViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             //////////Early Out////////////////////
-            if(ignoreViewModelChanges)
+            if (ignoreViewModelChanges)
             {
                 return;
             }
@@ -327,7 +327,7 @@ namespace OfficialPlugins.Compiler
             /////////End Early Out////////////////
             var propertyName = e.PropertyName;
 
-            switch(propertyName)
+            switch (propertyName)
             {
                 case nameof(CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked):
                 case nameof(CompilerViewModel.PortNumber):
@@ -352,7 +352,7 @@ namespace OfficialPlugins.Compiler
                     }
                     TaskManager.Self.Add(() => MainCodeGenerator.GenerateAll(model.GenerateGlueControlManagerCode), "Generate Glue Control Code");
 
-                    if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.NugetPackageInCsproj)
+                    if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.NugetPackageInCsproj)
                     {
                         GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
                     }
@@ -361,7 +361,7 @@ namespace OfficialPlugins.Compiler
 
                     break;
                 case nameof(CompilerViewModel.CurrentGameSpeed):
-                    var command = $"SetSpeed:{viewModel.CurrentGameSpeed.Substring(0, viewModel.CurrentGameSpeed.Length-1)}";
+                    var command = $"SetSpeed:{viewModel.CurrentGameSpeed.Substring(0, viewModel.CurrentGameSpeed.Length - 1)}";
                     await DoCommandSendingLogic(command);
                     break;
                 case nameof(CompilerViewModel.EffectiveIsRebuildAndRestartEnabled):
@@ -377,11 +377,11 @@ namespace OfficialPlugins.Compiler
                         new Dtos.SetEditMode { IsInEditMode = inEditMode },
                         viewModel.PortNumber);
 
-                    if(inEditMode)
+                    if (inEditMode)
                     {
                         var screenName = await CommandSending.CommandSender.GetScreenName(viewModel.PortNumber);
 
-                        if(!string.IsNullOrEmpty(screenName))
+                        if (!string.IsNullOrEmpty(screenName))
                         {
                             var glueScreenName =
                                 string.Join('\\', screenName.Split('.').Skip(1).ToArray());
@@ -418,7 +418,7 @@ namespace OfficialPlugins.Compiler
                 var succeeded = await Compile();
                 if (succeeded)
                 {
-                    await runner.Run(preventFocus:false);
+                    await runner.Run(preventFocus: false);
                 }
             };
 
@@ -436,8 +436,8 @@ namespace OfficialPlugins.Compiler
                 {
                     if (succeeded)
                     {
-                        await runner.Run(preventFocus:false, screenName);
-                        if(wasEditChecked)
+                        await runner.Run(preventFocus: false, screenName);
+                        if (wasEditChecked)
                         {
                             viewModel.IsEditChecked = true;
                         }
@@ -466,11 +466,11 @@ namespace OfficialPlugins.Compiler
             control.RunClicked += async (not, used) =>
             {
                 var succeeded = await Compile();
-                if (succeeded) 
+                if (succeeded)
                 {
                     if (succeeded)
                     {
-                        await runner.Run(preventFocus:false);
+                        await runner.Run(preventFocus: false);
                     }
                     else
                     {
@@ -550,8 +550,8 @@ namespace OfficialPlugins.Compiler
         {
             viewModel.IsCompiling = true;
             var toReturn = await compiler.Compile(
-                control.PrintOutput, 
-                control.PrintOutput, 
+                control.PrintOutput,
+                control.PrintOutput,
                 viewModel.Configuration);
             viewModel.IsCompiling = false;
             return toReturn;
@@ -561,5 +561,11 @@ namespace OfficialPlugins.Compiler
         {
             return true;
         }
+
+        public bool GetIfIsRunningInEditMode()
+        {
+            return viewModel.IsEditChecked && viewModel.IsRunning;
+        }
     }
+
 }

@@ -3,6 +3,7 @@
 using FlatRedBall;
 using FlatRedBall.Gui;
 using FlatRedBall.Managers;
+using FlatRedBall.Math;
 using FlatRedBall.Screens;
 using Microsoft.Xna.Framework;
 using System;
@@ -36,7 +37,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
         PositionedObject ItemGrabbed;
         ResizeSide SideGrabbed = ResizeSide.None;
 
-        PositionedObject ItemSelected;
+        PositionedObjectList<PositionedObject> ItemsSelected = new PositionedObjectList<PositionedObject>();
+        PositionedObject ItemSelected => ItemsSelected.Count > 0 ? ItemsSelected[0] : null;
 
         Vector3 GrabbedPosition;
         Vector2 GrabbedWidthAndHeight;
@@ -161,7 +163,11 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 }
                 if(ItemOver != ItemSelected)
                 {
-                    ItemSelected = ItemOver;
+                    ItemsSelected.Clear();
+                    if(ItemOver != null)
+                    {
+                        ItemsSelected.Add(ItemOver);
+                    }
                     SelectedMarker.PlayBumpAnimation(SelectedItemExtraPadding);
                 }
                 if(ItemGrabbed != null)
@@ -244,7 +250,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 if(ItemSelected != null)
                 {
                     InstanceLogic.Self.DeleteInstanceByGame(ItemSelected);
-                    ItemSelected = null;
+                    ItemsSelected.Clear();
                 }
             }
 
@@ -268,7 +274,12 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
             if (ItemSelected != foundObject)
             {
-                ItemSelected = foundObject;
+                ItemsSelected.Clear();
+                if(foundObject != null)
+                {
+                    ItemsSelected.Add(foundObject);
+                }
+
                 SelectedMarker.PlayBumpAnimation(SelectedItemExtraPadding);
 
                 // do this right away so the handles don't pop out of existance when changing selection

@@ -52,7 +52,24 @@ namespace OfficialPlugins.RuntimeFileCopier
 
         private void HandleFileChanged(string fileName)
         {
-            if (GlueState.Self.GlueSettingsSave.AutoCopyFilesOnChange && ShouldCopyFile(fileName) && System.IO.File.Exists(fileName))
+            var shouldCopy =
+                GlueState.Self.GlueSettingsSave.AutoCopyFilesOnChange && ShouldCopyFile(fileName) && System.IO.File.Exists(fileName);
+
+            if(!shouldCopy)
+            {
+                
+                var shouldCopyAsBool = PluginManager.CallPluginMethod(
+                    "Glue Compiler",
+                    "GetIfIsRunningInEditMode",
+                    new object[0]);
+
+                if(shouldCopyAsBool is bool asBool )
+                {
+                    shouldCopy = asBool;
+                }
+            }
+
+            if (shouldCopy)
             {
                 GlueCommands.Self.ProjectCommands.CopyToBuildFolder(fileName);
             }

@@ -317,7 +317,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             }
         }
 
-               private static void FillSidesToHighlight(PositionedObject item, ResizeSide sideGrabbed)
+        private static void FillSidesToHighlight(PositionedObject item, ResizeSide sideGrabbed)
         {
             sidesToHighlight.Clear();
 
