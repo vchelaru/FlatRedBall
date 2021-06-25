@@ -33,8 +33,15 @@ namespace {ProjectNamespace}.GlueControl.Dtos
         public string ElementName { get; set; }
     }
 
+    public enum AssignOrRecordOnly
+    {
+        Assign,
+        RecordOnly
+    }
+
     public class GlueVariableSetData
     {
+        public AssignOrRecordOnly AssignOrRecordOnly { get; set; }
         public string InstanceOwner { get; set; }
         public string VariableName { get; set; }
         public string VariableValue { get; set; }

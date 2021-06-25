@@ -127,6 +127,14 @@ namespace {ProjectNamespace}.GlueControl.Editing
         const float positionSnappingSize = 8;
         const float sizeSnappingSize = 8;
 
+        public Vector3 LastUpdateMovement { get; private set; }
+
+
+        public Vector3 GrabbedPosition;
+        public Vector2 GrabbedWidthAndHeight;
+        public float GrabbedRadius;
+
+
         #endregion
 
         #region Constructor/Init
@@ -160,7 +168,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         #endregion
 
-        public void PlayBumpAnimation(float endingExtraPaddingBeforeZoom)
+        public void PlayBumpAnimation(float endingExtraPaddingBeforeZoom, bool isSynchronized)
         {
             var endingExtraPadding = endingExtraPaddingBeforeZoom;
             TweenerManager.Self.StopAllTweenersOwnedBy(rectangle);
@@ -184,13 +192,19 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 tweener2.Ended += () =>
                 {
                     IsFadingInAndOut = true;
-                    FadingSeed = TimeManager.CurrentTime;
+                    if(!isSynchronized)
+                    {
+                        FadingSeed = TimeManager.CurrentTime;
+                    }
+                    
                 };
             };
         }
 
         internal void Update(PositionedObject item, ResizeSide sideGrabbed)
         {
+            LastUpdateMovement = Vector3.Zero;
+
             Visible = item != null;
 
             UpdateScreenPointPushed(item);
@@ -422,10 +436,11 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     if (sideGrabbed == ResizeSide.None)
                     {
 
-                        float xChange = cursor.WorldXChangeAt(item.Z);
-                        float yChange = cursor.WorldYChangeAt(item.Z);
+                        float cursorXChange = cursor.WorldXChangeAt(item.Z);
+                        float cursorYChange = cursor.WorldYChangeAt(item.Z);
 
-                        ChangePositionBy(item, xChange, yChange);
+
+                        LastUpdateMovement = ChangePositionBy(item, cursorXChange, cursorYChange);
                     }
                     else
                     {
@@ -436,21 +451,28 @@ namespace {ProjectNamespace}.GlueControl.Editing
         }
 
 
-        private void ChangePositionBy(PositionedObject item, float xChange, float yChange)
+        private Vector3 ChangePositionBy(PositionedObject item, float xChange, float yChange)
         {
             unsnappedItemPosition.X += xChange;
             unsnappedItemPosition.Y += yChange;
 
+            Vector3 changeAfterSnapping = Vector3.Zero;
+
             if (item.Parent == null)
             {
+                var before = item.Position;
                 item.X = MathFunctions.RoundFloat(unsnappedItemPosition.X, positionSnappingSize);
                 item.Y = MathFunctions.RoundFloat(unsnappedItemPosition.Y, positionSnappingSize);
+                changeAfterSnapping = item.Position - before;
             }
             else
             {
+                var before = item.RelativePosition;
                 item.RelativeX = unsnappedItemPosition.X;
                 item.RelativeY = unsnappedItemPosition.Y;
+                changeAfterSnapping = item.RelativePosition - before;
             }
+            return changeAfterSnapping;
         }
 
         private void ChangeSizeBy(PositionedObject item, ResizeSide sideOver, float v1, float v2)
@@ -672,6 +694,21 @@ namespace {ProjectNamespace}.GlueControl.Editing
             }
 
             return ResizeSide.None;
+        }
+
+        public void Destroy()
+        {
+#if SupportsEditMode
+
+            rectangle.Visible = false;
+            FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Remove(rectangle);
+
+            for (int i = 0; i < handles.Length; i++)
+            {
+                FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Remove(handles[i]);
+                handles[i].Visible = false;
+            }
+#endif
         }
     }
 }

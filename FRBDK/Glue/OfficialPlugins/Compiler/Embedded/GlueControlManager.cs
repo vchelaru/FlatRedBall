@@ -257,9 +257,22 @@ namespace {ProjectNamespace}
                     {
                         var dto =
                             Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.GlueVariableSetData>(data);
-                        var setVariableResponse = HandleSetVariable(dto);
-                        response = Newtonsoft.Json.JsonConvert.SerializeObject(setVariableResponse);
-                        if(setVariableResponse.WasVariableAssigned)
+                        var shouldEnqueue = false;
+                        if(dto.AssignOrRecordOnly == AssignOrRecordOnly.Assign)
+                        {
+                            var setVariableResponse = HandleSetVariable(dto);
+                            response = Newtonsoft.Json.JsonConvert.SerializeObject(setVariableResponse);
+                            shouldEnqueue = setVariableResponse.WasVariableAssigned;
+                        }
+                        else
+                        {
+                            // If it's a record-only, then we'll always want to enqueue it
+                            // need to change the record only back to assign so future re-runs will assign
+                            dto.AssignOrRecordOnly = AssignOrRecordOnly.Assign;
+                            message = $"{action}:{JsonConvert.SerializeObject(dto)}";
+                            shouldEnqueue = true;
+                        }
+                        if(shouldEnqueue)
                         {
                             EnqueueToOwner(message, dto.InstanceOwner);
                         }

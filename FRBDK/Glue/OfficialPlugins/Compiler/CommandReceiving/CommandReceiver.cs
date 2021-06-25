@@ -186,7 +186,9 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     nos.SetVariableValue(setVariableDto.VariableName, value);
 
                     GlueCommands.Self.DoOnUiThread(() =>
-                        RefreshManager.Self.HandleNamedObjectValueChanged(setVariableDto.VariableName, null, nos)
+                        RefreshManager.Self.HandleNamedObjectValueChanged(setVariableDto.VariableName, null, nos, 
+                        // record only - this variable change came from the game, we don't want to re-assign it and wipe other active edits
+                        AssignOrRecordOnly.RecordOnly)
                     );
                     // this may not be the current screen:
                     var nosParent = ObjectFinder.Self.GetElementContaining(nos);
@@ -196,7 +198,9 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(nosParent);
 
                 }
-            }, "Handling set variable from game");
+            }, "Handling set variable from game", 
+            // This is going to push the change back to the game, and we don't want to sit and wait for codegen to finish, etc. Do it immediately!
+            TaskExecutionPreference.Asap);
         }
 
         private static ScreenSave GetCurrentInGameScreen(int gamePortNumber)

@@ -110,7 +110,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     break;
                 case "bool":
                 case nameof(Boolean):
-                    variableValue = bool.Parse(data.VariableValue);
+                    variableValue = bool.Parse(data.VariableValue.ToLowerInvariant());
                     break;
                 case "double":
                 case nameof(Double):

@@ -337,6 +337,7 @@ namespace OfficialPlugins.Compiler.Managers
         #endregion
 
         #region Variable Changed
+
         internal async void HandleVariableChanged(IElement variableElement, CustomVariable variable)
         {
             if (ShouldRestartOnChange)
@@ -352,7 +353,7 @@ namespace OfficialPlugins.Compiler.Managers
                 {
                     name = "this." + variable.Name;
                 }
-                await TryPushVariable(null, name, type, value, GlueState.Self.CurrentElement);
+                await TryPushVariable(null, name, type, value, GlueState.Self.CurrentElement, AssignOrRecordOnly.Assign);
             }
             else
             {
@@ -363,10 +364,10 @@ namespace OfficialPlugins.Compiler.Managers
         internal void HandleNamedObjectValueChanged(string changedMember, object oldValue)
         {
             var nos = GlueState.Self.CurrentNamedObjectSave;
-            HandleNamedObjectValueChanged(changedMember, oldValue, nos);
+            HandleNamedObjectValueChanged(changedMember, oldValue, nos, AssignOrRecordOnly.Assign);
         }
 
-        public void HandleNamedObjectValueChanged(string changedMember, object oldValue, NamedObjectSave nos)
+        public void HandleNamedObjectValueChanged(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly)
         { 
 
             var instruction = nos?.GetCustomVariable(changedMember);
@@ -409,11 +410,11 @@ namespace OfficialPlugins.Compiler.Managers
                 type = instruction?.Type ?? instruction?.Value?.GetType().Name;
                 value = instruction?.Value?.ToString();
             }
-            TaskManager.Self.Add(async () =>
+            TaskManager.Self.Add(() =>
             {
                 try
                 {
-                    var task = TryPushVariable(nosName, changedMember, type, value, currentElement);
+                    var task = TryPushVariable(nosName, changedMember, type, value, currentElement, assignOrRecordOnly);
                     task.Wait();
                     var response = task.Result;
                     if(!string.IsNullOrWhiteSpace(response?.Exception))
@@ -436,7 +437,8 @@ namespace OfficialPlugins.Compiler.Managers
             //}
         }
 
-        private async Task<GlueVariableSetDataResponse> TryPushVariable(string variableOwningNosName, string rawMemberName, string type, string value, GlueElement currentElement)
+        private async Task<GlueVariableSetDataResponse> TryPushVariable(string variableOwningNosName, string rawMemberName, string type, string value, GlueElement currentElement,
+            AssignOrRecordOnly assignOrRecordOnly)
         {
             GlueVariableSetDataResponse response = null;
             if (ViewModel.IsRunning)
@@ -448,6 +450,7 @@ namespace OfficialPlugins.Compiler.Managers
                     data.Type = type;
                     data.VariableValue = value;
                     data.VariableName = rawMemberName;
+                    data.AssignOrRecordOnly = assignOrRecordOnly;
                     if(!string.IsNullOrEmpty(variableOwningNosName))
                     {
                         data.VariableName = "this." + variableOwningNosName + "." + data.VariableName;

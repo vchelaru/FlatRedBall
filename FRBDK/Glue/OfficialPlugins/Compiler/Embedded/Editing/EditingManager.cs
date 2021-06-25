@@ -2,6 +2,7 @@
 
 using FlatRedBall;
 using FlatRedBall.Gui;
+using FlatRedBall.Input;
 using FlatRedBall.Managers;
 using FlatRedBall.Math;
 using FlatRedBall.Screens;
@@ -30,7 +31,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         Guides Guides;
 
-        SelectionMarker SelectedMarker;
+        List<SelectionMarker> SelectedMarkers = new List<SelectionMarker>();
         SelectionMarker HighlightMarker;
 
         PositionedObject ItemOver;
@@ -39,10 +40,6 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         PositionedObjectList<PositionedObject> ItemsSelected = new PositionedObjectList<PositionedObject>();
         PositionedObject ItemSelected => ItemsSelected.Count > 0 ? ItemsSelected[0] : null;
-
-        Vector3 GrabbedPosition;
-        Vector2 GrabbedWidthAndHeight;
-        float GrabbedRadius;
 
         public ElementEditingMode ElementEditingMode { get; set; }
 
@@ -67,10 +64,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             HighlightMarker.MakePersistent();
             HighlightMarker.Name = nameof(HighlightMarker);
 
-            SelectedMarker = new SelectionMarker();
-            SelectedMarker.MakePersistent();
-            SelectedMarker.Name = nameof(SelectedMarker);
-            SelectedMarker.CanMoveItem = true;
+
 
             Guides = new Guides();
         }
@@ -92,7 +86,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 var itemOverBefore = ItemOver;
                 var itemSelectedBefore = ItemSelected;
 
-                ItemOver = SelectionLogic.GetInstanceOver(ItemSelected, SelectedMarker, GuiManager.Cursor.PrimaryDoublePush, ElementEditingMode);
+                ItemOver = SelectionLogic.GetInstanceOver(ItemsSelected, SelectedMarkers, GuiManager.Cursor.PrimaryDoublePush, ElementEditingMode);
                 var didChangeItemOver = itemOverBefore != ItemOver;
 
                 DoGrabLogic();
@@ -108,7 +102,17 @@ namespace {ProjectNamespace}.GlueControl.Editing
             else
             {
                 HighlightMarker.Visible = false;
-                SelectedMarker.Visible = false;
+                if (SelectedMarkers.Count > 0)
+                {
+                    for (int i = SelectedMarkers.Count - 1; i > -1; i--)
+                    {
+                        SelectedMarkers[i].Destroy();
+                    }
+                    SelectedMarkers.Clear();
+                }
+                ItemsSelected.Clear();
+                ItemOver = null;
+                ItemGrabbed = null;
 
             }
 #endif
@@ -118,7 +122,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         private void UpdateMarkers(bool didChangeItemOver)
         {
-            if(didChangeItemOver)
+            if (didChangeItemOver)
             {
                 HighlightMarker.FadingSeed = TimeManager.CurrentTime;
             }
@@ -126,33 +130,108 @@ namespace {ProjectNamespace}.GlueControl.Editing
             HighlightMarker.ExtraPaddingInPixels = 4;
             HighlightMarker.Update(ItemOver, SideGrabbed);
 
-            SelectedMarker.Update(ItemSelected, SideGrabbed);
+            UpdateSelectedMarkers();
+        }
 
-            if(ItemSelected is Sprite asSprite && asSprite.TextureScale > 0)
+        private void UpdateSelectedMarkers()
+        {
+            Vector3 moveVector = Vector3.Zero;
+            for (int i = 0; i < ItemsSelected.Count; i++)
             {
-                SelectedMarker.ResizeMode = ResizeMode.Cardinal;
+                var marker = SelectedMarkers[i];
+                var item = ItemsSelected[i];
+
+                marker.Update(item, SideGrabbed);
+                if(item == ItemGrabbed)
+                {
+                    moveVector = marker.LastUpdateMovement;
+                }
+
+                if (item is Sprite asSprite && asSprite.TextureScale > 0)
+                {
+                    marker.ResizeMode = ResizeMode.Cardinal;
+                }
+                else if (item is FlatRedBall.Math.Geometry.Circle)
+                {
+                    marker.ResizeMode = ResizeMode.Cardinal;
+                }
+                else if (item is FlatRedBall.Math.Geometry.IScalable)
+                {
+                    marker.ResizeMode = ResizeMode.EightWay;
+                }
+                else
+                {
+                    marker.ResizeMode = ResizeMode.None;
+                }
+
             }
-            else if(ItemSelected is FlatRedBall.Math.Geometry.Circle)
+
+            if(moveVector.X != 0 || moveVector.Y != 0)
             {
-                SelectedMarker.ResizeMode = ResizeMode.Cardinal;
+                foreach(var item in ItemsSelected)
+                {
+                    if(item != ItemGrabbed)
+                    {
+                        if (item.Parent == null)
+                        {
+                            item.X += moveVector.X;
+                            item.Y += moveVector.Y;
+                        }
+                        else
+                        {
+                            item.RelativeX += moveVector.X;
+                            item.RelativeY += moveVector.Y;
+                        }
+                    }
+                }
             }
-            else if(ItemSelected is FlatRedBall.Math.Geometry.IScalable)
+        }
+
+        private void UpdateSelectedMarkerCount()
+        {
+            var desiredMarkerCount = ItemsSelected.Count;
+            while (SelectedMarkers.Count > desiredMarkerCount)
             {
-                SelectedMarker.ResizeMode = ResizeMode.EightWay;
+                var markerToDestroy = SelectedMarkers.Last();
+                markerToDestroy.Destroy();
+                SelectedMarkers.RemoveAt(SelectedMarkers.Count - 1);
             }
-            else
+            while (SelectedMarkers.Count < desiredMarkerCount )
             {
-                SelectedMarker.ResizeMode = ResizeMode.None;
+                var newMarker = CreateNewSelectionMarker();
+                if(SelectedMarkers.Count > 0)
+                {
+                    newMarker.FadingSeed = SelectedMarkers[0].FadingSeed;
+                }
+                SelectedMarkers.Add(newMarker);
             }
+        }
+
+        private SelectionMarker CreateNewSelectionMarker()
+        {
+            var newMarker = new SelectionMarker();
+            newMarker.MakePersistent();
+            newMarker.Name = "Selection Marker";
+            newMarker.CanMoveItem = true;
+
+            return newMarker;
+        }
+
+        SelectionMarker MarkerFor(PositionedObject item)
+        {
+            var index = ItemsSelected.IndexOf(item);
+            if (index >= 0 && index < SelectedMarkers.Count)
+            {
+                return SelectedMarkers[index];
+            }
+            return null;
         }
 
         #endregion
 
-
         private void DoGrabLogic()
         {
             var cursor = GuiManager.Cursor;
-
 
             if (cursor.PrimaryPush)
             {
@@ -161,27 +240,49 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 {
                     SideGrabbed = ResizeSide.None;
                 }
-                if(ItemOver != ItemSelected)
+
+                var clickedOnSelectedItem = ItemsSelected.Contains(ItemOver);
+
+                if(!clickedOnSelectedItem)
                 {
-                    ItemsSelected.Clear();
+                    var isCtrlDown = InputManager.Keyboard.IsCtrlDown;
+
+                    if(!isCtrlDown)
+                    {
+                        ItemsSelected.Clear();
+                    }
+
                     if(ItemOver != null)
                     {
                         ItemsSelected.Add(ItemOver);
                     }
-                    SelectedMarker.PlayBumpAnimation(SelectedItemExtraPadding);
+                    UpdateSelectedMarkerCount();
+                    MarkerFor(ItemOver)?.PlayBumpAnimation(SelectedItemExtraPadding,
+                        isSynchronized : ItemsSelected.Count>1);
+
                 }
                 if(ItemGrabbed != null)
                 {
-                    GrabbedPosition = ItemGrabbed.Position;
-                    if (ItemGrabbed is FlatRedBall.Math.Geometry.IScalable itemGrabbedAsScalable)
+                    foreach(var item in ItemsSelected)
                     {
-                        GrabbedWidthAndHeight = new Vector2(itemGrabbedAsScalable.ScaleX * 2, itemGrabbedAsScalable.ScaleY * 2);
+                        var marker = MarkerFor(item);
+
+                        marker.CanMoveItem = item == ItemGrabbed;
+
+                        marker.GrabbedPosition = item.Position;
+
+
+                        if (item is FlatRedBall.Math.Geometry.IScalable itemGrabbedAsScalable)
+                        {
+                            marker.GrabbedWidthAndHeight = new Vector2(itemGrabbedAsScalable.ScaleX * 2, itemGrabbedAsScalable.ScaleY * 2);
+                        }
+                        else if(item is FlatRedBall.Math.Geometry.Circle circle)
+                        {
+                            marker.GrabbedRadius = circle.Radius;
+                        }
                     }
-                    else if(ItemGrabbed is FlatRedBall.Math.Geometry.Circle circle)
-                    {
-                        GrabbedRadius = circle.Radius;
-                    }
-                    SideGrabbed = SelectedMarker.GetSideOver();
+                    
+                    SideGrabbed = MarkerFor(ItemGrabbed)?.GetSideOver() ?? ResizeSide.None;
                     ObjectSelected(ItemGrabbed);
                 }
             }
@@ -191,54 +292,63 @@ namespace {ProjectNamespace}.GlueControl.Editing
         {
             var cursor = GuiManager.Cursor;
 
-            if (cursor.PrimaryClick)
+            ///////Early Out
+            if(!cursor.PrimaryClick)
             {
-                if(ItemGrabbed != null)
+                return;
+            }
+            //////End Early Out
+
+            if(ItemGrabbed != null)
+            {
+                foreach(var item in ItemsSelected)
                 {
-                    if (ItemGrabbed.X != GrabbedPosition.X)
+                    var marker = MarkerFor(item);
+                    if (item.X != marker.GrabbedPosition.X)
                     {
-                        var value = ItemGrabbed.Parent == null
-                            ? ItemGrabbed.X
-                            : ItemGrabbed.RelativeX;
-                        Notify(nameof(ItemGrabbed.X), value);
+                        var value = item.Parent == null
+                            ? item.X
+                            : item.RelativeX;
+                        Notify(item, nameof(item.X), value);
                     }
-                    if (ItemGrabbed.Y != GrabbedPosition.Y)
+                    if (item.Y != marker.GrabbedPosition.Y)
                     {
-                        var value = ItemGrabbed.Parent == null
-                            ? ItemGrabbed.Y
-                            : ItemGrabbed.RelativeY;
-                        Notify(nameof(ItemGrabbed.Y), value);
+                        var value = item.Parent == null
+                            ? item.Y
+                            : item.RelativeY;
+                        Notify(item, nameof(item.Y), value);
                     }
 
-                    if(ItemGrabbed is FlatRedBall.Math.Geometry.IScalable asScalable)
+                    if(item is FlatRedBall.Math.Geometry.IScalable asScalable)
                     {
-                        var didChangeWidth = GrabbedWidthAndHeight.X != asScalable.ScaleX * 2;
-                        var didChangeHeight = GrabbedWidthAndHeight.Y != asScalable.ScaleY * 2;
-                        if(ItemGrabbed is Sprite asSprite && asSprite.TextureScale > 0)
+                        var didChangeWidth = marker.GrabbedWidthAndHeight.X != asScalable.ScaleX * 2;
+                        var didChangeHeight = marker.GrabbedWidthAndHeight.Y != asScalable.ScaleY * 2;
+                        if(item is Sprite asSprite && asSprite.TextureScale > 0)
                         {
-                            Notify(nameof(asSprite.TextureScale), asSprite.TextureScale);
+                            Notify(item, nameof(asSprite.TextureScale), asSprite.TextureScale);
                         }
                         else
                         {
                             if (didChangeWidth)
                             {
-                                Notify("Width", asScalable.ScaleX*2);
+                                Notify(item, "Width", asScalable.ScaleX*2);
                             }
                             if(didChangeWidth)
                             {
-                                Notify("Height", asScalable.ScaleY * 2);
+                                Notify(item, "Height", asScalable.ScaleY * 2);
                             }
                         }
                     }
-                    else if(ItemGrabbed is FlatRedBall.Math.Geometry.Circle circle)
+                    else if(item is FlatRedBall.Math.Geometry.Circle circle)
                     {
-                        Notify(nameof(circle.Radius), circle.Radius);
+                        Notify(item, nameof(circle.Radius), circle.Radius);
                     }
-                }
 
-                ItemGrabbed = null;
-                SideGrabbed = ResizeSide.None;
+                }
             }
+
+            ItemGrabbed = null;
+            SideGrabbed = ResizeSide.None;
         }
 
         private void DoHotkeyLogic()
@@ -260,7 +370,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             
         }
 
-        void Notify(string propertyName, object value) => PropertyChanged(ItemGrabbed, propertyName, value);
+        void Notify(PositionedObject item, string propertyName, object value) => PropertyChanged(item, propertyName, value);
 
         public void UpdateDependencies()
         {
@@ -272,7 +382,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
             PositionedObject foundObject = SelectionLogic.GetAvailableObjects(ElementEditingMode)
                 ?.FirstOrDefault(item => item.Name == objectName);
 
-            if (ItemSelected != foundObject)
+            if (ItemsSelected.Contains(foundObject) == false)
             {
                 ItemsSelected.Clear();
                 if(foundObject != null)
@@ -280,7 +390,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     ItemsSelected.Add(foundObject);
                 }
 
-                SelectedMarker.PlayBumpAnimation(SelectedItemExtraPadding);
+                UpdateSelectedMarkerCount();
+                MarkerFor(ItemSelected)?.PlayBumpAnimation(SelectedItemExtraPadding, isSynchronized:false);
 
                 // do this right away so the handles don't pop out of existance when changing selection
                 UpdateMarkers(didChangeItemOver:true);

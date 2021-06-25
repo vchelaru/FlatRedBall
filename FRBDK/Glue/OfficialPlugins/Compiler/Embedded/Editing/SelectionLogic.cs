@@ -4,6 +4,7 @@ using FlatRedBall;
 using FlatRedBall.Entities;
 using FlatRedBall.Graphics;
 using FlatRedBall.Gui;
+using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 using System;
 using System.Collections.Generic;
@@ -17,16 +18,23 @@ namespace {ProjectNamespace}.GlueControl.Editing
     {
         static List<PositionedObject> tempPunchThroughList = new List<PositionedObject>();
 
-        public static PositionedObject GetInstanceOver(PositionedObject currentEntity, SelectionMarker selectionMarker,
+        public static PositionedObject GetInstanceOver(PositionedObjectList<PositionedObject> currentEntities, List<SelectionMarker> selectionMarkers,
             bool punchThrough, ElementEditingMode elementEditingMode)
         {
             PositionedObject entityOver = null;
-            if(currentEntity != null && punchThrough == false)
+            if(currentEntities.Count > 0 && punchThrough == false)
             {
-                if(IsCursorOver(currentEntity) || selectionMarker.IsCursorOverThis())
+                var currentEntityOver = currentEntities.FirstOrDefault(item => IsCursorOver(item));
+                if(currentEntityOver == null)
                 {
-                    entityOver = currentEntity;
+                    var markerOver = selectionMarkers.FirstOrDefault(item => item.IsCursorOverThis());
+                    if(markerOver != null)
+                    {
+                        var index = selectionMarkers.IndexOf(markerOver);
+                        currentEntityOver = currentEntities[index];
+                    }
                 }
+                entityOver = currentEntityOver;
             }
 
             if(punchThrough)
@@ -68,14 +76,14 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 {
                     entityOver = tempPunchThroughList[0];
                 }
-                else if(tempPunchThroughList.Contains(currentEntity) == false)
+                else if( tempPunchThroughList.Any(item => currentEntities.Contains(item)) == false)
                 {
                     // just pick the first
                     entityOver = tempPunchThroughList[0];
                 }
                 else
                 {
-                    var index = tempPunchThroughList.IndexOf(currentEntity);
+                    var index = tempPunchThroughList.IndexOf(currentEntities.FirstOrDefault());
                     if(index < tempPunchThroughList.Count - 1)
                     {
                         entityOver = tempPunchThroughList[index + 1];
