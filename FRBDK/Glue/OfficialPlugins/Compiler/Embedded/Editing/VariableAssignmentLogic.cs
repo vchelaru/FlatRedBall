@@ -34,6 +34,12 @@ namespace {ProjectNamespace}.GlueControl.Editing
                         screen.ApplyVariable(variableName, variableValue, item);
                     }
                 }
+
+                // We really don't know if it was assigned yet since the Screen isn't returning true or false, but
+                // we don't want it to always be false because not returning true prevents all assignment from being 
+                // responded to by glue
+                response.WasVariableAssigned = true;
+                // eventually ApplyVariable should return true/false
             }
             else
             {
