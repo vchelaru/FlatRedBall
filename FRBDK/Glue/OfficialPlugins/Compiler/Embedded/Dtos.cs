@@ -76,6 +76,20 @@ namespace {ProjectNamespace}.GlueControl.Dtos
     {
         public bool WasObjectCreated { get; set; }
     }
+
+
+    public class MoveObjectToContainerDto
+    {
+        public string ElementName { get; set; }
+        public string ObjectName { get; set; }
+        public string ContainerName { get; set; }
+    }
+
+
+    public class MoveObjectToContainerDtoResponse
+    {
+        public bool WasObjectMoved { get; set; }
+    }
     
     public class RemoveObjectDtoResponse
     {

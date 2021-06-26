@@ -33,6 +33,9 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile("Editing.VariableAssignmentLogic.cs",
                 "Editing/VariableAssignmentLogic.Generated.cs");
 
+            SaveEmbeddedFile("Editing.CopyPasteManager.cs",
+                "Editing/CopyPasteManager.Generated.cs");
+
             SaveEmbeddedFile("Dtos.cs",
                 "Dtos.Generated.cs");
 
@@ -53,6 +56,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration
 
             SaveEmbeddedFile("Screens.EntityViewingScreen.cs",
                 "Screens/EntityViewingScreen.Generated.cs");
+
         }
 
         private static void SaveEmbeddedFile(string resourcePath, string relativeDestinationFilePath)

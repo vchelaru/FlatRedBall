@@ -111,18 +111,9 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                         newName = StringFunctions.IncrementNumberAtEnd(newName);
                     }
 
-                    var nos = JsonConvert.DeserializeObject<NamedObjectSave>(dataAsString);
-                    nos.InstanceName = newName;
-                    GlueCommands.Self.DoOnUiThread(() =>
-                    {
-                        RefreshManager.Self.IgnoreNextObjectAdd = true;
-                        RefreshManager.Self.IgnoreNextObjectSelect = true;
-                        GlueCommands.Self.GluxCommands.AddNamedObjectTo(nos, screen, listToAddTo);
-
-                    });
-
-                    //RefreshManager.Self.HandleNamedObjectValueChanged(nameof(deserializedNos.InstanceName), oldName, deserializedNos);
-
+                    #region Send the new name back to the game so the game uses the actual Glue name rather than the AutoName
+                    // do this before adding the NOS to Glue since adding the NOS to Glue results in an AddToList command
+                    // sent to the game, and we want the right name before the AddToList command
                     var data = new GlueVariableSetData();
                     data.Type = "string";
                     data.VariableValue = newName;
@@ -134,6 +125,19 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     // That's okay, this is fire-and-forget, we just send this back to the game and we don't care to await it
                     CommandSender.SendCommand($"SetVariable:{serialized}", gamePortNumber);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                    #endregion
+
+                    var nos = JsonConvert.DeserializeObject<NamedObjectSave>(dataAsString);
+                    nos.InstanceName = newName;
+                    GlueCommands.Self.DoOnUiThread(() =>
+                    {
+                        RefreshManager.Self.IgnoreNextObjectAdd = true;
+                        RefreshManager.Self.IgnoreNextObjectSelect = true;
+                        GlueCommands.Self.GluxCommands.AddNamedObjectTo(nos, screen, listToAddTo);
+
+                    });
+
+                    //RefreshManager.Self.HandleNamedObjectValueChanged(nameof(deserializedNos.InstanceName), oldName, deserializedNos);
                 }
             }, "Adding NOS");
         }

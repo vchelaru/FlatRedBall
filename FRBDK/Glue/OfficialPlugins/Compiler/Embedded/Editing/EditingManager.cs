@@ -357,11 +357,11 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
             if(keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.Delete))
             {
-                if(ItemSelected != null)
+                for(int i = ItemsSelected.Count - 1; i > -1; i--)
                 {
-                    InstanceLogic.Self.DeleteInstanceByGame(ItemSelected);
-                    ItemsSelected.Clear();
+                    InstanceLogic.Self.DeleteInstanceByGame(ItemsSelected[i]);
                 }
+                ItemsSelected.Clear();
             }
 
             CopyPasteManager.DoHotkeyLogic(ItemSelected);

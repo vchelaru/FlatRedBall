@@ -594,12 +594,26 @@ namespace FlatRedBall.Screens
             }
         }
 
-        private void GetInstance(string variableName, object container, out string afterDot, out object instance)
+        /// <summary>
+        /// Obtains the instance object represented after the dot using reflection. The variable
+        /// should begin with "this" if it is an object on the screen. For example, passing "this.SpriteList"
+        /// will return the SpriteList object.
+        /// </summary>
+        /// <param name="variableName">The variable name with dots such as "this.SpriteList"</param>
+        /// <param name="container">The container of the object. Should be null for objects contained in the screen.</param>
+        /// <param name="afterDot">The variable after the instance has been returned, allowing for recursive calls. For example, passing Sprite.X will return X</param>
+        /// <param name="instance">The instance on the variable before the first dot. </param>
+        public void GetInstance(string variableName, object container, out string afterDot, out object instance)
         {
             var indexOfDot = variableName.IndexOf(".");
 
-            var beforeDot = variableName.Substring(0, indexOfDot);
-            afterDot = variableName.Substring(indexOfDot + 1);
+            string beforeDot = variableName;
+            afterDot = string.Empty;
+            if (indexOfDot != -1)
+            {
+                beforeDot = variableName.Substring(0, indexOfDot);
+                afterDot = variableName.Substring(indexOfDot + 1);
+            }
             instance = null;
             if (container == null && beforeDot == "this")
             {

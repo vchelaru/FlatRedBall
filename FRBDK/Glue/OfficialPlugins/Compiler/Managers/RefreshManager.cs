@@ -347,7 +347,7 @@ namespace OfficialPlugins.Compiler.Managers
                 string name = null;
                 if(variable.IsShared)
                 {
-                    name = GlueState.Self.ProjectNamespace + "." + variableElement.Name.Replace("/", ".").Replace("\\", ".") + "." + variable.Name;
+                    name = ToGameType(variableElement as GlueElement) + "." + variable.Name;
                 }
                 else
                 {
@@ -437,6 +437,9 @@ namespace OfficialPlugins.Compiler.Managers
             //}
         }
 
+        private string ToGameType(GlueElement element) =>
+            GlueState.Self.ProjectNamespace + "." + element.Name.Replace("\\", ".");
+
         private async Task<GlueVariableSetDataResponse> TryPushVariable(string variableOwningNosName, string rawMemberName, string type, string value, GlueElement currentElement,
             AssignOrRecordOnly assignOrRecordOnly)
         {
@@ -446,7 +449,7 @@ namespace OfficialPlugins.Compiler.Managers
                 if(currentElement != null)
                 {
                     var data = new GlueVariableSetData();
-                    data.InstanceOwner = GlueState.Self.ProjectNamespace + "." + currentElement.Name.Replace("\\", ".");
+                    data.InstanceOwner = ToGameType(currentElement);
                     data.Type = type;
                     data.VariableValue = value;
                     data.VariableName = rawMemberName;
@@ -481,13 +484,38 @@ namespace OfficialPlugins.Compiler.Managers
         }
 
         #region Object Container (List, Layer, ShapeCollection) changed
-        internal void HandleObjectContainerChanged(NamedObjectSave objectMoving, 
+        internal async void HandleObjectContainerChanged(NamedObjectSave objectMoving, 
             NamedObjectSave newContainer)
         {
             if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
-                // take the easy way out - restart the game
-                StopAndRestartTask($"Restarting due to changed container for {objectMoving}");
+                bool handledByGame = false;
+
+                var element = ObjectFinder.Self.GetElementContaining(objectMoving);
+                if(element != null)
+                {
+                    var dto = new MoveObjectToContainerDto
+                    {
+                        ElementName = element.Name,
+                        ObjectName = objectMoving.InstanceName,
+                        ContainerName = newContainer?.InstanceName
+
+                    };
+
+
+                    var responseAsString = await CommandSender.Send(dto, ViewModel.PortNumber);
+
+                    if(!string.IsNullOrEmpty(responseAsString))
+                    {
+                        var response = JsonConvert.DeserializeObject<MoveObjectToContainerDtoResponse>(responseAsString);
+                        handledByGame = response.WasObjectMoved;
+                    }
+                }
+
+                if(!handledByGame)
+                {
+                    StopAndRestartTask($"Restarting due to changed container for {objectMoving}");
+                }
             }
         }
         #endregion
@@ -498,7 +526,8 @@ namespace OfficialPlugins.Compiler.Managers
             if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
                 var dto = new Dtos.RemoveObjectDto();
-                dto.ElementName = owner.Name;
+                dto.ElementName = //ToGameType((GlueElement)owner);
+                    owner.Name;
                 dto.ObjectName = nos.InstanceName;
                 var responseAsstring = await CommandSender.Send(dto, ViewModel.PortNumber);
 

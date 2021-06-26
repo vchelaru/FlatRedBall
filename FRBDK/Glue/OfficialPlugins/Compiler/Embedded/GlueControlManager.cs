@@ -293,28 +293,62 @@ namespace {ProjectNamespace}
                         var dto =
                             Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.RemoveObjectDto>(data);
                         
-                        var removeResponse = HandleRemoveObject(dto);
-                        response = Newtonsoft.Json.JsonConvert.SerializeObject(removeResponse);
-                        EnqueueToOwner(message, dto.ElementName);
+                        var removeResponse = HandleRemoveObject(dto, out string gameTypeName);
+                        response = JsonConvert.SerializeObject(removeResponse);
+                        EnqueueToOwner(message, gameTypeName);
                     }
                     break;
 
                 case nameof(GlueControl.Dtos.SelectObjectDto):
                     HandleSelectObjectCommand(
-                        Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.SelectObjectDto>(data));
+                        JsonConvert.DeserializeObject<GlueControl.Dtos.SelectObjectDto>(data));
                     break;
                 case nameof(GlueControl.Dtos.SetEditMode):
                     HandleSetEditMode(
-                        Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.SetEditMode>(data));
+                        JsonConvert.DeserializeObject<GlueControl.Dtos.SetEditMode>(data));
+                    break;
+                case nameof(GlueControl.Dtos.MoveObjectToContainerDto):
+                    {
+                        var dto = JsonConvert.DeserializeObject<GlueControl.Dtos.MoveObjectToContainerDto>(data);
+                        var moveResponse = HandleMoveObjectToContainerDto(dto);
+                        response = JsonConvert.SerializeObject(moveResponse);
+                        EnqueueToOwner(message, dto.ElementName);
+                    }
                     break;
 #endif
-
-
             }
 
             return response;
         }
 
+        private MoveObjectToContainerDtoResponse HandleMoveObjectToContainerDto(MoveObjectToContainerDto dto)
+        {
+            var toReturn = new MoveObjectToContainerDtoResponse();
+
+            var matchesCurrentScreen = GetIfMatchesCurrentScreen(
+                dto.ElementName, out System.Type ownerType, out Screen currentScreen);
+            if(matchesCurrentScreen)
+            {
+                toReturn.WasObjectMoved = GlueControl.Editing.MoveObjectToContainerLogic.TryMoveObjectToContainer(
+                    dto.ObjectName, dto.ContainerName, EditingManager.ElementEditingMode);
+            }
+            else
+            {
+                // we don't know if it can be moved. We'll assume it can, and when that screen is loaded, it will re-run that and...if it 
+                // fails, then I guess we'll figure out a way to communicate back to Glue that it needs to restart. Actually this may never
+                // happen because moving objects is done in the current screen, but I gues it's technically a possibility so I'll leave this
+                // comment here.
+            }
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Enqueues the message to the owner type, where the owner is the Qualified type name like
+        /// "MyGame.Screens.Level1"
+        /// </summary>
+        /// <param name="message">The message which is of the form "DtoType:Json"</param>
+        /// <param name="owner">The owner in qualified type name</param>
         public void EnqueueToOwner(string message, string owner)
         {
             if (string.IsNullOrEmpty(owner))
@@ -534,7 +568,7 @@ namespace {ProjectNamespace}
             return valueToReturn;
         }
 
-        private RemoveObjectDtoResponse HandleRemoveObject(RemoveObjectDto removeObjectDto)
+        private RemoveObjectDtoResponse HandleRemoveObject(RemoveObjectDto removeObjectDto, out string typeName)
         {
             RemoveObjectDtoResponse response = new RemoveObjectDtoResponse();
             response.DidScreenMatch = false;
@@ -542,6 +576,8 @@ namespace {ProjectNamespace}
 
             bool matchesCurrentScreen = 
                 GetIfMatchesCurrentScreen(removeObjectDto.ElementName, out System.Type ownerType, out Screen currentScreen);
+
+            typeName = ownerType?.FullName;
 
             if (matchesCurrentScreen)
             {
@@ -665,6 +701,6 @@ namespace {ProjectNamespace}
             GameToGlueCommands.Enqueue(new GameToGlueCommand { Command = command });
         }
 
-#endregion
+        #endregion
     }
 }
