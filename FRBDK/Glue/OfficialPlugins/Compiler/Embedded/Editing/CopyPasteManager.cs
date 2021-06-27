@@ -39,7 +39,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                         }
                         else if (copiedObject is AxisAlignedRectangle originalRectangle)
                         {
-
+                            InstanceLogic.Self.HandleCreateAxisAlignedRectangleByGame(originalRectangle);
                         }
                         else if (copiedObject is Polygon originalPolygon)
                         {

@@ -41,6 +41,9 @@ namespace {ProjectNamespace}.GlueControl
 
         public ShapeCollection ShapesAddedAtRuntime = new ShapeCollection();
 
+        // this is to prevent multiple objects from having the same name in the same frame:
+        static long NewIndex = 0;
+
         #endregion
 
         public object HandleCreateInstanceCommandFromGlue(Models.NamedObjectSave deserialized)
@@ -120,12 +123,38 @@ namespace {ProjectNamespace}.GlueControl
             });
         }
 
+        string GetNameFor(string itemType)
+        {
+            var newName = $"{itemType}Auto{TimeManager.CurrentTime.ToString().Replace(".", "_")}_{NewIndex}";
+            NewIndex++;
+
+            return newName;
+        }
+
+        private static void SendAndEnqueue(Dtos.AddObjectDto addObjectDto)
+        {
+            var currentScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen;
+            if (currentScreen is Screens.EntityViewingScreen entityViewingScreen)
+            {
+                addObjectDto.ElementName = entityViewingScreen.CurrentEntity.GetType().FullName;
+            }
+            else
+            {
+                addObjectDto.ElementName = currentScreen.GetType().FullName;
+            }
+
+            GlueControlManager.Self.SendToGlue(addObjectDto);
+
+            GlueControlManager.Self.EnqueueToOwner(
+                nameof(Dtos.AddObjectDto) + ":" + Newtonsoft.Json.JsonConvert.SerializeObject(addObjectDto), addObjectDto.ElementName);
+        }
+
         public FlatRedBall.PositionedObject CreateInstanceByGame(string entityType, float x, float y)
         {
-            var newName = $"{entityType}Auto{TimeManager.CurrentTime.ToString().Replace(".", "_")}";
+            var newName = GetNameFor(entityType);
 
             var factory = FlatRedBall.TileEntities.TileEntityInstantiator.GetFactory(entityType);
-            
+
             var cursor = GuiManager.Cursor;
             var toReturn = factory.CreateNew(x, y) as FlatRedBall.PositionedObject;
             toReturn.Name = newName;
@@ -141,22 +170,9 @@ namespace {ProjectNamespace}.GlueControl
             AddFloatValue(addObjectDto, "X", x);
             AddFloatValue(addObjectDto, "Y", y);
 
-            var currentScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen;
-            if(currentScreen is Screens.EntityViewingScreen entityViewingScreen)
-            {
-                addObjectDto.ElementName = entityViewingScreen.CurrentEntity.GetType().FullName;
-            }
-            else
-            {
-                addObjectDto.ElementName = currentScreen.GetType().FullName;
-            }
-
             #endregion
 
-            GlueControlManager.Self.SendToGlue(addObjectDto);
-
-            GlueControlManager.Self.EnqueueToOwner(
-                nameof(Dtos.AddObjectDto) + ":" + Newtonsoft.Json.JsonConvert.SerializeObject(addObjectDto), addObjectDto.ElementName);
+            SendAndEnqueue(addObjectDto);
 
             return toReturn;
         }
@@ -164,7 +180,7 @@ namespace {ProjectNamespace}.GlueControl
         public Circle HandleCreateCircleByGame(Circle originalCircle)
         {
             var newCircle = originalCircle.Clone();
-            var newName = $"CircleAuto{TimeManager.CurrentTime.ToString().Replace(".", "_")}";
+            var newName = GetNameFor("Circle");
 
             newCircle.Visible = originalCircle.Visible;
             newCircle.Name = newName;
@@ -187,27 +203,46 @@ namespace {ProjectNamespace}.GlueControl
             AddFloatValue(addObjectDto, "Y", newCircle.Y);
             AddFloatValue(addObjectDto, "Radius", newCircle.Radius);
 
-            var currentScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen;
-            if (currentScreen is Screens.EntityViewingScreen entityViewingScreen)
+            #endregion
+
+            SendAndEnqueue(addObjectDto);
+
+            return newCircle;
+        }
+
+        public AxisAlignedRectangle HandleCreateAxisAlignedRectangleByGame(AxisAlignedRectangle originalRectangle)
+        {
+            var newRectangle = originalRectangle.Clone();
+            var newName = GetNameFor("Rectangle");
+
+            newRectangle.Visible = originalRectangle.Visible;
+            newRectangle.Name = newName;
+
+
+            if (ShapeManager.AutomaticallyUpdatedShapes.Contains(newRectangle))
             {
-                addObjectDto.ElementName = entityViewingScreen.CurrentEntity.GetType().FullName;
+                ShapeManager.AddAxisAlignedRectangle(newRectangle);
             }
-            else
-            {
-                addObjectDto.ElementName = currentScreen.GetType().FullName;
-            }
+            InstanceLogic.Self.ShapesAddedAtRuntime.Add(newRectangle);
+
+            #region Create the AddObjectDto for the new object
+
+            var addObjectDto = new Dtos.AddObjectDto();
+            addObjectDto.InstanceName = newName;
+            addObjectDto.SourceType = Models.SourceType.FlatRedBallType;
+            // todo - need to eventually include sub namespaces for entities in folders
+            addObjectDto.SourceClassType = "FlatRedBall.Math.Geometry.AxisAlignedRectangle";
+
+            AddFloatValue(addObjectDto, "X", newRectangle.X);
+            AddFloatValue(addObjectDto, "Y", newRectangle.Y);
+            AddFloatValue(addObjectDto, "Width", newRectangle.Width);
+            AddFloatValue(addObjectDto, "Height", newRectangle.Height);
 
             #endregion
 
+            SendAndEnqueue(addObjectDto);
 
-
-            GlueControlManager.Self.SendToGlue(addObjectDto);
-
-            GlueControlManager.Self.EnqueueToOwner(
-                nameof(Dtos.AddObjectDto) + ":" + Newtonsoft.Json.JsonConvert.SerializeObject(addObjectDto), addObjectDto.ElementName);
-
-
-            return newCircle;
+            return newRectangle;
         }
 
         public void DeleteInstanceByGame(PositionedObject positionedObject)
