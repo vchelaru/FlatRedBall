@@ -1,4 +1,5 @@
 ﻿using FlatRedBall;
+using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -12,12 +13,12 @@ namespace {ProjectNamespace}.GlueControl.Editing
 {
     class CopyPasteManager
     {
-        PositionedObject CopiedPositionedObject
+        List<PositionedObject> CopiedPositionedObjects
         {
             get; set;
-        }
+        } = new List<PositionedObject>();
 
-        public void DoHotkeyLogic(PositionedObject selectedObject)
+        public void DoHotkeyLogic(PositionedObjectList<PositionedObject> selectedObjects)
         {
             var keyboard = FlatRedBall.Input.InputManager.Keyboard;
 
@@ -25,37 +26,41 @@ namespace {ProjectNamespace}.GlueControl.Editing
             {
                 if (keyboard.KeyPushed(Keys.C))
                 {
-                    CopiedPositionedObject = selectedObject;
+                    CopiedPositionedObjects.Clear();
+                    CopiedPositionedObjects.AddRange(selectedObjects);
                 }
-                if (keyboard.KeyPushed(Keys.V) && CopiedPositionedObject != null)
+                if (keyboard.KeyPushed(Keys.V) && CopiedPositionedObjects != null)
                 {
-                    if (CopiedPositionedObject is Circle originalCircle)
+                    foreach(var copiedObject in CopiedPositionedObjects)
                     {
-                        //var newCircle = originalCircle.Clone();
+                        if (copiedObject is Circle originalCircle)
+                        {
+                            InstanceLogic.Self.HandleCreateCircleByGame(originalCircle);
+                        }
+                        else if (copiedObject is AxisAlignedRectangle originalRectangle)
+                        {
 
-                    }
-                    else if (CopiedPositionedObject is AxisAlignedRectangle originalRectangle)
-                    {
+                        }
+                        else if (copiedObject is Polygon originalPolygon)
+                        {
 
-                    }
-                    else if (CopiedPositionedObject is Polygon originalPolygon)
-                    {
+                        }
+                        else if (copiedObject is Sprite originalSprite)
+                        {
 
-                    }
-                    else if (CopiedPositionedObject is Sprite originalSprite)
-                    {
+                        }
+                        else // positioned object, so entity?
+                        {
+                            // for now assume names are unique, not qualified
+                            var instance = InstanceLogic.Self.CreateInstanceByGame(
+                                copiedObject.GetType().Name,
+                                copiedObject.X,
+                                copiedObject.Y);
+                            instance.CreationSource = "Glue";
+                            instance.Velocity = Vector3.Zero;
+                            instance.Acceleration = Vector3.Zero;
+                        }
 
-                    }
-                    else // positioned object, so entity?
-                    {
-                        // for now assume names are unique, not qualified
-                        var instance = InstanceLogic.Self.CreateInstanceByGame(
-                            CopiedPositionedObject.GetType().Name,
-                            CopiedPositionedObject.X,
-                            CopiedPositionedObject.Y);
-                        instance.CreationSource = "Glue";
-                        instance.Velocity = Vector3.Zero;
-                        instance.Acceleration = Vector3.Zero;
                     }
                 }
             }

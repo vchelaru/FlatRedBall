@@ -110,6 +110,16 @@ namespace {ProjectNamespace}.GlueControl
             return newObject;
         }
 
+        private void AddFloatValue(Dtos.AddObjectDto addObjectDto, string name, float value)
+        {
+            addObjectDto.InstructionSaves.Add(new FlatRedBall.Content.Instructions.InstructionSave
+            {
+                Member = name,
+                Type = "float",
+                Value = value
+            });
+        }
+
         public FlatRedBall.PositionedObject CreateInstanceByGame(string entityType, float x, float y)
         {
             var newName = $"{entityType}Auto{TimeManager.CurrentTime.ToString().Replace(".", "_")}";
@@ -120,41 +130,84 @@ namespace {ProjectNamespace}.GlueControl
             var toReturn = factory.CreateNew(x, y) as FlatRedBall.PositionedObject;
             toReturn.Name = newName;
 
-            var nos = new Dtos.AddObjectDto();
-            nos.InstanceName = newName;
-            nos.SourceType = Models.SourceType.Entity;
-            // todo - need to eventually include sub namespaces
-            nos.SourceClassType = $"Entities\\{entityType}";
-            nos.InstructionSaves.Add(new FlatRedBall.Content.Instructions.InstructionSave
-            {
-                Member = "X",
-                Type = "float",
-                Value = x
-            });
+            #region Create the AddObjectDto for the new object
 
-            nos.InstructionSaves.Add(new FlatRedBall.Content.Instructions.InstructionSave
-            {
-                Member = "Y",
-                Type = "float",
-                Value = y
-            });
+            var addObjectDto = new Dtos.AddObjectDto();
+            addObjectDto.InstanceName = newName;
+            addObjectDto.SourceType = Models.SourceType.Entity;
+            // todo - need to eventually include sub namespaces for entities in folders
+            addObjectDto.SourceClassType = $"Entities\\{entityType}";
+
+            AddFloatValue(addObjectDto, "X", x);
+            AddFloatValue(addObjectDto, "Y", y);
 
             var currentScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen;
             if(currentScreen is Screens.EntityViewingScreen entityViewingScreen)
             {
-                nos.ElementName = entityViewingScreen.CurrentEntity.GetType().FullName;
+                addObjectDto.ElementName = entityViewingScreen.CurrentEntity.GetType().FullName;
             }
             else
             {
-                nos.ElementName = currentScreen.GetType().FullName;
+                addObjectDto.ElementName = currentScreen.GetType().FullName;
             }
 
-            GlueControlManager.Self.SendToGlue(nos);
+            #endregion
+
+            GlueControlManager.Self.SendToGlue(addObjectDto);
 
             GlueControlManager.Self.EnqueueToOwner(
-                nameof(Dtos.AddObjectDto) + ":" + Newtonsoft.Json.JsonConvert.SerializeObject(nos), nos.ElementName);
+                nameof(Dtos.AddObjectDto) + ":" + Newtonsoft.Json.JsonConvert.SerializeObject(addObjectDto), addObjectDto.ElementName);
 
             return toReturn;
+        }
+
+        public Circle HandleCreateCircleByGame(Circle originalCircle)
+        {
+            var newCircle = originalCircle.Clone();
+            var newName = $"CircleAuto{TimeManager.CurrentTime.ToString().Replace(".", "_")}";
+
+            newCircle.Visible = originalCircle.Visible;
+            newCircle.Name = newName;
+
+            if (ShapeManager.AutomaticallyUpdatedShapes.Contains(newCircle))
+            {
+                ShapeManager.AddCircle(newCircle);
+            }
+            InstanceLogic.Self.ShapesAddedAtRuntime.Add(newCircle);
+
+            #region Create the AddObjectDto for the new object
+
+            var addObjectDto = new Dtos.AddObjectDto();
+            addObjectDto.InstanceName = newName;
+            addObjectDto.SourceType = Models.SourceType.FlatRedBallType;
+            // todo - need to eventually include sub namespaces for entities in folders
+            addObjectDto.SourceClassType = "FlatRedBall.Math.Geometry.Circle";
+
+            AddFloatValue(addObjectDto, "X", newCircle.X);
+            AddFloatValue(addObjectDto, "Y", newCircle.Y);
+            AddFloatValue(addObjectDto, "Radius", newCircle.Radius);
+
+            var currentScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen;
+            if (currentScreen is Screens.EntityViewingScreen entityViewingScreen)
+            {
+                addObjectDto.ElementName = entityViewingScreen.CurrentEntity.GetType().FullName;
+            }
+            else
+            {
+                addObjectDto.ElementName = currentScreen.GetType().FullName;
+            }
+
+            #endregion
+
+
+
+            GlueControlManager.Self.SendToGlue(addObjectDto);
+
+            GlueControlManager.Self.EnqueueToOwner(
+                nameof(Dtos.AddObjectDto) + ":" + Newtonsoft.Json.JsonConvert.SerializeObject(addObjectDto), addObjectDto.ElementName);
+
+
+            return newCircle;
         }
 
         public void DeleteInstanceByGame(PositionedObject positionedObject)

@@ -364,7 +364,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 ItemsSelected.Clear();
             }
 
-            CopyPasteManager.DoHotkeyLogic(ItemSelected);
+            CopyPasteManager.DoHotkeyLogic(ItemsSelected);
 
             CameraLogic.DoHotkeyLogic();
             

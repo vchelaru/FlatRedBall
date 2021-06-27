@@ -94,16 +94,42 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 NamedObjectSave listToAddTo = null;
                 if (screen != null)
                 {
-                    listToAddTo = screen.NamedObjects.FirstOrDefault(item =>
+                    if(addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.Circle" ||
+                        addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.AxisAlignedRectangle" ||
+                        addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.Polygon")
                     {
-                        return item.IsList && item.SourceClassGenericType == addObjectDto.SourceClassType;
-                    });
+                        listToAddTo = screen.NamedObjects.FirstOrDefault(item => item.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection);
+                    }
+                    else
+                    {
+                        listToAddTo = screen.NamedObjects.FirstOrDefault(item =>
+                        {
+                            return item.IsList && item.SourceClassGenericType == addObjectDto.SourceClassType;
+                        });
+                    }
                 }
 
                 if (listToAddTo != null)
                 {
-                    var lastSlash = addObjectDto.SourceClassType.LastIndexOf("\\");
-                    var newName = addObjectDto.SourceClassType.Substring(lastSlash + 1) + "1";
+                    string newName = null;
+
+                    if(addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.Circle")
+                    {
+                        newName = "Circle1";
+                    }
+                    else if(addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.AxisAlignedRectangle")
+                    {
+                        newName = "AxisAlignedRectangle1";
+                    }
+                    else if(addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.Polygon")
+                    {
+                        newName = "Polygon1";
+                    }
+                    else
+                    {
+                        var lastSlash = addObjectDto.SourceClassType.LastIndexOf("\\");
+                        newName = addObjectDto.SourceClassType.Substring(lastSlash + 1) + "1";
+                    }
 
                     var oldName = addObjectDto.InstanceName;
                     while (screen.GetNamedObjectRecursively(newName) != null)
