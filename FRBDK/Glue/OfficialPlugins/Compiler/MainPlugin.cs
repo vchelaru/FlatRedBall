@@ -81,6 +81,8 @@ namespace OfficialPlugins.Compiler
 
             RefreshManager.Self.InitializeEvents(this.control.PrintOutput, this.control.PrintOutput);
 
+            Output.Initialize(this.control.PrintOutput);
+
             AssignEvents();
 
             compiler = Compiler.Self;
@@ -100,12 +102,15 @@ namespace OfficialPlugins.Compiler
         {
             try
             {
-                var gameToGlueCommandsAsString = await CommandSending.CommandSender
-                    .SendCommand("GetCommands", viewModel.PortNumber);
-
-                if (!string.IsNullOrEmpty(gameToGlueCommandsAsString))
+                if(viewModel.IsEditChecked)
                 {
-                    CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString, viewModel.PortNumber);
+                    var gameToGlueCommandsAsString = await CommandSending.CommandSender
+                        .SendCommand("GetCommands", viewModel.PortNumber);
+
+                    if (!string.IsNullOrEmpty(gameToGlueCommandsAsString))
+                    {
+                        CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString, viewModel.PortNumber);
+                    }
                 }
 
             }

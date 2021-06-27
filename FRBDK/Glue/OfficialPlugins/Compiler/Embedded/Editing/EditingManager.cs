@@ -362,6 +362,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     InstanceLogic.Self.DeleteInstanceByGame(ItemsSelected[i]);
                 }
                 ItemsSelected.Clear();
+                UpdateSelectedMarkerCount();
             }
 
             CopyPasteManager.DoHotkeyLogic(ItemsSelected);

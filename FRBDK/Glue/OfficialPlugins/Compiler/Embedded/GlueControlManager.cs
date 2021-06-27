@@ -16,6 +16,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System;
 
 #if SupportsEditMode
 using Newtonsoft.Json;
@@ -130,7 +131,17 @@ namespace {ProjectNamespace}
                 response = "true";
             }
             byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(response);
-            client.GetStream().Write(messageAsBytes, 0, messageAsBytes.Length);
+            var clientStream = client.GetStream();
+
+            var length = messageAsBytes.Length;
+            var lengthAsBytes =
+                BitConverter.GetBytes(length);
+            clientStream.Write(lengthAsBytes, 0, 4);
+            if(messageAsBytes.Length > 0)
+            {
+                clientStream.Write(messageAsBytes, 0, messageAsBytes.Length);
+
+            }
 
         }
         #endregion

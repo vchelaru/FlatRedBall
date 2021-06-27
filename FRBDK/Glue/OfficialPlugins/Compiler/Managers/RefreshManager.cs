@@ -507,8 +507,16 @@ namespace OfficialPlugins.Compiler.Managers
 
                     if(!string.IsNullOrEmpty(responseAsString))
                     {
-                        var response = JsonConvert.DeserializeObject<MoveObjectToContainerDtoResponse>(responseAsString);
-                        handledByGame = response.WasObjectMoved;
+                        try
+                        {
+                            var response = JsonConvert.DeserializeObject<MoveObjectToContainerDtoResponse>(responseAsString);
+                            handledByGame = response.WasObjectMoved;
+                        }
+                        catch
+                        {
+                            handledByGame = false;
+                            Output.Print($"!!!Error parsing {responseAsString}");
+                        }
                     }
                 }
 

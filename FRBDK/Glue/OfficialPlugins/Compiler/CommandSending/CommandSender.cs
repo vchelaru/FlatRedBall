@@ -7,13 +7,14 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OfficialPlugins.Compiler.CommandSending
 {
-
     public static class CommandSender
     {
+        static SemaphoreSlim sendCommandSemaphore = new SemaphoreSlim(1);
         public static async Task<string> Send(object dto, int port)
         {
             var dtoTypeName = dto.GetType().Name;
@@ -25,77 +26,112 @@ namespace OfficialPlugins.Compiler.CommandSending
 
         public static async Task<string> SendCommand(string text, int port)
         {
-
-            TcpClient client = new TcpClient();
-
-            // this takes ~2 seconds, according to this:
-            // https://github.com/dotnet/runtime/issues/31085
-
-            var isConnected = false;
-
-            await Task.Run(() =>
+            try
             {
-                try
-                {
-                    client.Connect("127.0.0.1", port);
-                    isConnected = true;
-                }
-                catch(Exception)
-                {
-                    // throw away - no need to tell the user it failed
-                }
-            });
+                await sendCommandSemaphore.WaitAsync();
+                TcpClient client = new TcpClient();
 
-            if(isConnected)
-            {
-                // Stream string to server
-                Stream stm = client.GetStream();
-                //ASCIIEncoding asen = new ASCIIEncoding();
+                // this takes ~2 seconds, according to this:
+                // https://github.com/dotnet/runtime/issues/31085
 
-                if(!text.EndsWith("\n"))
+                var isConnected = false;
+
+                await Task.Run(() =>
                 {
-                    text += "\n"; 
-                }
+                    try
+                    {
+                        client.Connect("127.0.0.1", port);
+                        isConnected = true;
+                    }
+                    catch(Exception)
+                    {
+                        // throw away - no need to tell the user it failed
+                    }
+                });
 
-                //byte[] ba = asen.GetBytes(input);
-                byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(text);
-                stm.Write(messageAsBytes, 0, messageAsBytes.Length);
-
-
-                // give the server time to finish what it's doing:
-                //await Task.Delay((int)(1 * 60));
-                string read = null;
-                try
+                if(isConnected)
                 {
-                    read = await ReadFromClient(client, client.GetStream());
+                    // Stream string to server
+                    Stream stm = client.GetStream();
+                    //ASCIIEncoding asen = new ASCIIEncoding();
+
+                    if(!text.EndsWith("\n"))
+                    {
+                        text += "\n"; 
+                    }
+
+                    //byte[] ba = asen.GetBytes(input);
+                    byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(text);
+                    stm.Write(messageAsBytes, 0, messageAsBytes.Length);
+
+
+                    // give the server time to finish what it's doing:
+                    //await Task.Delay((int)(1 * 60));
+                    string read = null;
+                    try
+                    {
+                        read = await ReadFromClient(client, client.GetStream());
+                    }
+                    catch(Exception e)
+                    {
+                        // do nothing...
+                    }
+                    return read;
                 }
-                catch(Exception e)
+                else
                 {
-                    // do nothing...
+                    return null;
                 }
-                return read;
             }
-            else
+            finally
             {
-                return null;
+                sendCommandSemaphore.Release();
             }
 
         }
 
+        const int bufferSize = 1024;
+        static byte[] buffer = new byte[bufferSize];
         private static async Task<string> ReadFromClient(TcpClient client, Stream stm)
         {
-
             //// Read response from server.
-            byte[] buffer = new byte[1024];
             //var readTask = stm.ReadAsync(buffer, 0, buffer.Length);
-            var bytesRead = await stm.ReadAsync(buffer, 0, buffer.Length);
 
-            var response = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+            byte[] intBytes = await GetByteArrayFromStream(stm, 4);
+            var length = BitConverter.ToInt32(intBytes, 0);
 
-            client.Close();
+            if(length > 0)
+            {
+                byte[] byteArray = await GetByteArrayFromStream(stm, length);
+                var response = Encoding.ASCII.GetString(byteArray, 0, (int)byteArray.Length);
 
-            return response;
+                client.Close();
+
+                return response;
+            }
+            else
+            {
+                return string.Empty;
+            }
             //Console.ReadLine();
+        }
+
+        private static async Task<byte[]> GetByteArrayFromStream(Stream stm, int length)
+        {
+            using var memoryStream = new MemoryStream();
+            int totalBytesRead = 0;
+            int bytesRead = 0;
+            do
+            {
+                bytesRead = await stm.ReadAsync(buffer, 0, Math.Min(length, buffer.Length));
+                memoryStream.Write(buffer, 0, bytesRead);
+                totalBytesRead += bytesRead;
+
+            } while (totalBytesRead < length);
+
+            var byteArray =
+                memoryStream.ToArray();
+            return byteArray;
         }
 
         internal static async Task<string> GetScreenName(int portNumber)

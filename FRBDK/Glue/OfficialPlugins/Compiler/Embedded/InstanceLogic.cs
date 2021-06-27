@@ -244,9 +244,14 @@ namespace {ProjectNamespace}.GlueControl
 
             return newRectangle;
         }
-
+        
         public void DeleteInstanceByGame(PositionedObject positionedObject)
         {
+            // Vic June 27, 2021
+            // this sends a command to Glue to delete the object, but doesn't
+            // actually delete it in game until Glue tells the game to get rid
+            // of it. Is that okay? it's a little slower, but it works. Maybe at
+            // some point in the future I'll find a reason why it needs to be immediate.
             var name = positionedObject.Name;
 
             var dto = new Dtos.RemoveObjectDto();
