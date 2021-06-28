@@ -85,6 +85,18 @@ namespace {ProjectNamespace}.GlueControl.Editing
                             }
                         }
 
+                        if(!response.WasVariableAssigned)
+                        {
+                            var sprite = SpriteManager.AutomaticallyUpdatedSprites.FirstOrDefault(item =>
+                                item.Parent == null &&
+                                item.Name == splitVariable[1]);
+
+                            if(sprite != null)
+                            {
+                                screen.ApplyVariable(splitVariable[2], variableValue, sprite);
+                                response.WasVariableAssigned = true;
+                            }
+                        }
                     }
                     if (!response.WasVariableAssigned)
                     {

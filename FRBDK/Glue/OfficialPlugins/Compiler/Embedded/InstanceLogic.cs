@@ -92,6 +92,16 @@ namespace {ProjectNamespace}.GlueControl
                         }
                         newPositionedObject = polygon;
                         break;
+                    case "FlatRedBall.Sprite":
+                        var sprite = new FlatRedBall.Sprite();
+                        if(deserialized.AddToManagers)
+                        {
+                            SpriteManager.AddSprite(sprite);
+                            SpritesAddedAtRuntime.Add(sprite);
+                        }
+                        newPositionedObject = sprite;
+
+                        break;
                 }
             }
             if (newPositionedObject != null)
