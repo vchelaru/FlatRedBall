@@ -1185,7 +1185,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
 
             EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
-                memberName, oldValue);
+                memberName, oldValue, namedObjectSave:nos);
 
 
             PluginManager.ReactToChangedProperty(memberName, oldValue);

@@ -538,8 +538,9 @@ namespace FlatRedBall.Screens
         /// <param name="variableName">The variable name, where the name must start with "this." if it is on an instance on the screen.</param>
         /// <param name="value">The value, as an object.</param>
         /// <param name="container">The parent object, allowing variables like this.Object.Subobject, where Object is the parent.</param>
-        public void ApplyVariable(string variableName, object value, object container = null)
+        public bool ApplyVariable(string variableName, object value, object container = null)
         {
+            var wasSet = false;
             if (variableName.Contains("."))
             {
                 string afterDot;
@@ -577,6 +578,8 @@ namespace FlatRedBall.Screens
                     foreach (var item in asIList)
                     {
                         FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(item, variableName, value);
+                        wasSet = true;
+
                     }
                 }
                 else if(container is Type asType)
@@ -585,13 +588,16 @@ namespace FlatRedBall.Screens
                     if(field != null)
                     {
                         field.SetValue(value, null);
+                        wasSet = true;
                     }
                 }
                 else
                 {
-                    FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(container, variableName, value);
+                    wasSet = FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(container, variableName, value);
                 }
             }
+
+            return wasSet;
         }
 
         /// <summary>

@@ -94,7 +94,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 NamedObjectSave listToAddTo = null;
                 if (screen != null)
                 {
-                    if(addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.Circle" ||
+                    if (addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.Circle" ||
                         addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.AxisAlignedRectangle" ||
                         addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.Polygon")
                     {
@@ -109,35 +109,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     }
                 }
 
-                if (listToAddTo != null)
-                {
-                    string newName = null;
+                string newName = GetNewName(screen, addObjectDto);
+                var oldName = addObjectDto.InstanceName;
 
-                    if(addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.Circle")
-                    {
-                        newName = "Circle1";
-                    }
-                    else if(addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.AxisAlignedRectangle")
-                    {
-                        newName = "AxisAlignedRectangle1";
-                    }
-                    else if(addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.Polygon")
-                    {
-                        newName = "Polygon1";
-                    }
-                    else
-                    {
-                        var lastSlash = addObjectDto.SourceClassType.LastIndexOf("\\");
-                        newName = addObjectDto.SourceClassType.Substring(lastSlash + 1) + "1";
-                    }
-
-                    var oldName = addObjectDto.InstanceName;
-                    while (screen.GetNamedObjectRecursively(newName) != null)
-                    {
-                        newName = StringFunctions.IncrementNumberAtEnd(newName);
-                    }
-
-                    #region Send the new name back to the game so the game uses the actual Glue name rather than the AutoName
+                #region Send the new name back to the game so the game uses the actual Glue name rather than the AutoName
                     // do this before adding the NOS to Glue since adding the NOS to Glue results in an AddToList command
                     // sent to the game, and we want the right name before the AddToList command
                     var data = new GlueVariableSetData();
@@ -153,19 +128,46 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                     #endregion
 
-                    var nos = JsonConvert.DeserializeObject<NamedObjectSave>(dataAsString);
-                    nos.InstanceName = newName;
-                    GlueCommands.Self.DoOnUiThread(() =>
-                    {
-                        RefreshManager.Self.IgnoreNextObjectAdd = true;
-                        RefreshManager.Self.IgnoreNextObjectSelect = true;
-                        GlueCommands.Self.GluxCommands.AddNamedObjectTo(nos, screen, listToAddTo);
+                var nos = JsonConvert.DeserializeObject<NamedObjectSave>(dataAsString);
+                nos.InstanceName = newName;
+                GlueCommands.Self.DoOnUiThread(() =>
+                {
+                    RefreshManager.Self.IgnoreNextObjectAdd = true;
+                    RefreshManager.Self.IgnoreNextObjectSelect = true;
+                    GlueCommands.Self.GluxCommands.AddNamedObjectTo(nos, screen, listToAddTo);
+                });
 
-                    });
+                //RefreshManager.Self.HandleNamedObjectValueChanged(nameof(deserializedNos.InstanceName), oldName, deserializedNos);
 
-                    //RefreshManager.Self.HandleNamedObjectValueChanged(nameof(deserializedNos.InstanceName), oldName, deserializedNos);
-                }
             }, "Adding NOS");
+        }
+
+        private static string GetNewName(ScreenSave screen, AddObjectDto addObjectDto)
+        {
+            string newName = null;
+            if (addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.Circle")
+            {
+                newName = "Circle1";
+            }
+            else if (addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.AxisAlignedRectangle")
+            {
+                newName = "AxisAlignedRectangle1";
+            }
+            else if (addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.Polygon")
+            {
+                newName = "Polygon1";
+            }
+            else
+            {
+                var lastSlash = addObjectDto.SourceClassType.LastIndexOf("\\");
+                newName = addObjectDto.SourceClassType.Substring(lastSlash + 1) + "1";
+            }
+            while (screen.GetNamedObjectRecursively(newName) != null)
+            {
+                newName = StringFunctions.IncrementNumberAtEnd(newName);
+            }
+
+            return newName;
         }
 
         private static void HandleSetVariable(int gamePortNumber, SetVariableDto setVariableDto)

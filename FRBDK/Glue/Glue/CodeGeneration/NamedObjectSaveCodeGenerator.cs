@@ -475,7 +475,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                         if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode)
                         {
-                            var hasCreationSource = nosAti.IsPositionedObject;
+                            var hasCreationSource = nosAti?.IsPositionedObject == true;
                             if(hasCreationSource)
                             {
                                 codeBlock.Line($"{objectName}.CreationSource = \"Glue\";");

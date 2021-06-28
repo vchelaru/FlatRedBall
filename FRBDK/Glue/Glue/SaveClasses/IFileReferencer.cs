@@ -37,6 +37,18 @@ namespace FlatRedBall.Glue.SaveClasses
                         return rfs;
                     }
                 }
+                // didn't find it, so let's try un-qualified
+                if(name.Contains('/') == false)
+                {
+                    foreach (ReferencedFileSave rfs in instance.ReferencedFiles)
+                    {
+                        var nameNoExtension = IO.FileManager.RemoveExtension(rfs.Name);
+                        if (nameNoExtension.EndsWith('/' + name))
+                        {
+                            return rfs;
+                        }
+                    }
+                }
             }
             return null;
         }

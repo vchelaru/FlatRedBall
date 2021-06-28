@@ -47,9 +47,9 @@ namespace FlatRedBall.Instructions.Reflection
             return GetInstance(target.GetType()).GetValue(target, name);
         }
 
-        public static void SetValueStatic(object target, string name, object value)
+        public static bool SetValueStatic(object target, string name, object value)
         {
-            GetInstance(target.GetType()).SetValue(target, name, value);
+            return GetInstance(target.GetType()).SetValue(target, name, value);
         }
 
         public static bool TryGetValueStatic(object target, string name, out object result)
@@ -61,7 +61,7 @@ namespace FlatRedBall.Instructions.Reflection
         public abstract bool IsReadOnly(string name);
         public abstract bool IsWriteOnly(string name);
         public abstract bool TryGetValue(object target, string name, out object result);
-        public abstract void SetValue(object target, string name, object value);
+        public abstract bool SetValue(object target, string name, object value);
     }
 
 
@@ -318,16 +318,19 @@ namespace FlatRedBall.Instructions.Reflection
             }
         }
 
-        public override void SetValue(object target, string name, object value)
+        public override bool SetValue(object target, string name, object value)
         {
+            var wasSet = false;
             if (mFieldsSet.Contains(name))
             {
                 // do nothing currently
                 SetField(target, name, value);
+                wasSet = true;
             }
             else if (mPropertieSet.Contains(name))
             {
                 SetProperty(target, name, value);
+                wasSet = true;
             }
             else
             {
@@ -340,13 +343,17 @@ namespace FlatRedBall.Instructions.Reflection
                     mFieldsSet.Add(name);
 
                     SetField(target, name, value);
+                    wasSet = true;
                 }
                 else
                 {
                     mPropertieSet.Add(name);
                     SetProperty(target, name, value);
+                    wasSet = true;
                 }
             }
+
+            return wasSet;
         }
 
         private void SetField(object target, string name, object value)

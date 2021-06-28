@@ -404,6 +404,31 @@ namespace OfficialPlugins.Compiler.Managers
                         value = "0";
                     }
                 }
+                else
+                {
+                    var isFile =
+                        variableDefinition.Type == "Microsoft.Xna.Framework.Texture2D" ||
+                        variableDefinition.Type == "Texture2D" ||
+                        variableDefinition.Type == "FlatRedBall.Graphics.Animation.AnimationChainList" ||
+                        variableDefinition.Type == "AnimationChainList";
+
+                    if (isFile)
+                    {
+                        var wasModified = false;
+                        var referencedFile = currentElement.GetReferencedFileSaveRecursively(value);
+                        if(referencedFile != null)
+                        {
+                            value = FileManager.MakeRelative( GlueCommands.Self.GetAbsoluteFilePath(referencedFile).FullPath, 
+                                GlueState.Self.CurrentGlueProjectDirectory);
+                            wasModified = true;
+                        }
+                        if(!wasModified)
+                        {
+                            // set it to null
+                            value = string.Empty;
+                        }
+                    }
+                }
             }
             else
             {

@@ -107,8 +107,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 // is it slow to do this every frame?
                 availableItems = SpriteManager.ManagedPositionedObjects
                     .Where(item => item is CameraControllingEntity == false)
-
-                    .Concat(ShapeManager.VisibleRectangles.Where(item => item.Parent == null))
+                    .Concat(SpriteManager.AutomaticallyUpdatedSprites.Where(item => item.Parent == null))
+                    .Concat(ShapeManager.VisibleRectangles.Where(item => item.Parent == null)) 
                     .Concat(ShapeManager.VisibleCircles.Where(item => item.Parent == null))
                     .Concat(ShapeManager.VisiblePolygons.Where(item => item.Parent == null))
 
@@ -124,6 +124,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
             return availableItems;
         }
+
 
         private static bool IsSelectable(PositionedObject objectAtI)
         {
