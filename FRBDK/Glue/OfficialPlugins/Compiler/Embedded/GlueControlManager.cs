@@ -525,7 +525,7 @@ namespace {ProjectNamespace}
 
         private void HandleScreenDestroy()
         {
-            GlueControl.InstanceLogic.Self.DestroyShapes();
+            GlueControl.InstanceLogic.Self.DestroyDynamicallyAddedInstances();
         }
 
         private void HandleSetEditMode(GlueControl.Dtos.SetEditMode setEditMode)

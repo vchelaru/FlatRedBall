@@ -47,7 +47,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                         }
                         else if (copiedObject is Sprite originalSprite)
                         {
-
+                            InstanceLogic.Self.HandleCreateSpriteByName(originalSprite);
                         }
                         else // positioned object, so entity?
                         {

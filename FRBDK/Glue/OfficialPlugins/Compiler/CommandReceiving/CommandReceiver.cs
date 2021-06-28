@@ -157,6 +157,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             {
                 newName = "Polygon1";
             }
+            else if(addObjectDto.SourceClassType == "FlatRedBall.Sprite")
+            {
+                newName = "Sprite1";
+            }
             else
             {
                 var lastSlash = addObjectDto.SourceClassType.LastIndexOf("\\");

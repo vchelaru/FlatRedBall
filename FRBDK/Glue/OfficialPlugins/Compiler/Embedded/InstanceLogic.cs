@@ -41,6 +41,9 @@ namespace {ProjectNamespace}.GlueControl
 
         public ShapeCollection ShapesAddedAtRuntime = new ShapeCollection();
 
+        public FlatRedBall.Math.PositionedObjectList<Sprite> SpritesAddedAtRuntime = new FlatRedBall.Math.PositionedObjectList<Sprite>();
+
+
         // this is to prevent multiple objects from having the same name in the same frame:
         static long NewIndex = 0;
 
@@ -119,6 +122,16 @@ namespace {ProjectNamespace}.GlueControl
             {
                 Member = name,
                 Type = "float",
+                Value = value
+            });
+        }
+
+        private void AddStringValue(Dtos.AddObjectDto addObjectDto, string name, string value)
+        {
+            addObjectDto.InstructionSaves.Add(new FlatRedBall.Content.Instructions.InstructionSave
+            {
+                Member = name,
+                Type = "string",
                 Value = value
             });
         }
@@ -245,6 +258,59 @@ namespace {ProjectNamespace}.GlueControl
             return newRectangle;
         }
         
+        public Sprite HandleCreateSpriteByName(Sprite originalSprite)
+        {
+            var newSprite = originalSprite.Clone();
+            var newName = GetNameFor("Sprite");
+
+            newSprite.Name = newName;
+
+            if(SpriteManager.AutomaticallyUpdatedSprites.Contains(originalSprite))
+            {
+                SpriteManager.AddSprite(newSprite);
+            }
+            InstanceLogic.Self.SpritesAddedAtRuntime.Add(newSprite);
+
+            #region Create the AddObjectDto for the new object
+
+            var addObjectDto = new Dtos.AddObjectDto();
+            addObjectDto.InstanceName = newName;
+            addObjectDto.SourceType = Models.SourceType.FlatRedBallType;
+            // todo - need to eventually include sub namespaces for entities in folders
+            addObjectDto.SourceClassType = "FlatRedBall.Sprite";
+
+            AddFloatValue(addObjectDto, "X", newSprite.X);
+            AddFloatValue(addObjectDto, "Y", newSprite.Y);
+            if(newSprite.TextureScale > 0)
+            {
+                AddFloatValue(addObjectDto, "TextureScale", newSprite.TextureScale);
+            }
+            else
+            {
+                AddFloatValue(addObjectDto, "Width", newSprite.Width);
+                AddFloatValue(addObjectDto, "Height", newSprite.Height);
+            }
+
+            if(newSprite.Texture != null)
+            {
+                AddStringValue(addObjectDto, "Texture", newSprite.Texture.Name);
+            }
+            if(newSprite.AnimationChains?.Name != null)
+            {
+                AddStringValue(addObjectDto, "AnimationChains", newSprite.AnimationChains.Name);
+            }
+            if (!string.IsNullOrEmpty(newSprite.CurrentChainName))
+            {
+                AddStringValue(addObjectDto, "CurrentChainName", newSprite.CurrentChainName);
+            }
+
+            #endregion
+
+            SendAndEnqueue(addObjectDto);
+
+            return newSprite;
+        }
+
         public void DeleteInstanceByGame(PositionedObject positionedObject)
         {
             // Vic June 27, 2021
@@ -279,7 +345,7 @@ namespace {ProjectNamespace}.GlueControl
             FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(instance, variableName, variableValue);
         }
 
-        public void DestroyShapes()
+        public void DestroyDynamicallyAddedInstances()
         {
             for(int i = ShapesAddedAtRuntime.AxisAlignedRectangles.Count-1; i > -1; i--)
             {
@@ -294,6 +360,11 @@ namespace {ProjectNamespace}.GlueControl
             for (int i = ShapesAddedAtRuntime.Polygons.Count - 1; i > -1; i--)
             {
                 ShapeManager.Remove(ShapesAddedAtRuntime.Polygons[i]);
+            }
+
+            for(int i = SpritesAddedAtRuntime.Count - 1; i > -1; i--)
+            {
+                SpriteManager.RemoveSprite(SpritesAddedAtRuntime[i]);
             }
         }
     }
