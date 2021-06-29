@@ -133,6 +133,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
         public Vector3 GrabbedPosition;
         public Vector2 GrabbedWidthAndHeight;
         public float GrabbedRadius;
+        public float GrabbedTextureScale;
 
 
         #endregion

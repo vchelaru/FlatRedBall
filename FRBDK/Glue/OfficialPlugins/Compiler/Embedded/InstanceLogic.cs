@@ -128,20 +128,20 @@ namespace {ProjectNamespace}.GlueControl
 
         private void AddFloatValue(Dtos.AddObjectDto addObjectDto, string name, float value)
         {
-            addObjectDto.InstructionSaves.Add(new FlatRedBall.Content.Instructions.InstructionSave
-            {
-                Member = name,
-                Type = "float",
-                Value = value
-            });
+            AddValue(addObjectDto, name, "float", value);
         }
 
         private void AddStringValue(Dtos.AddObjectDto addObjectDto, string name, string value)
         {
+            AddValue(addObjectDto, name, "string", value);
+        }
+
+        private void AddValue(Dtos.AddObjectDto addObjectDto, string name, string type, object value)
+        {
             addObjectDto.InstructionSaves.Add(new FlatRedBall.Content.Instructions.InstructionSave
             {
                 Member = name,
-                Type = "string",
+                Type = type,
                 Value = value
             });
         }
@@ -303,11 +303,13 @@ namespace {ProjectNamespace}.GlueControl
 
             if(newSprite.Texture != null)
             {
-                AddStringValue(addObjectDto, "Texture", newSprite.Texture.Name);
+                AddValue(addObjectDto, "Texture", typeof(Microsoft.Xna.Framework.Graphics.Texture2D).FullName, 
+                    newSprite.Texture.Name);
             }
             if(newSprite.AnimationChains?.Name != null)
             {
-                AddStringValue(addObjectDto, "AnimationChains", newSprite.AnimationChains.Name);
+                AddValue(addObjectDto, "AnimationChains", typeof(FlatRedBall.Graphics.Animation.AnimationChainList).FullName,
+                    newSprite.AnimationChains.Name);
             }
             if (!string.IsNullOrEmpty(newSprite.CurrentChainName))
             {

@@ -2,6 +2,8 @@
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Graphics.Animation;
+using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using OfficialPlugins.Compiler.CommandSending;
 using OfficialPlugins.Compiler.Dtos;
@@ -82,15 +84,6 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                 var addObjectDto = JsonConvert.DeserializeObject<AddObjectDto>(dataAsString);
 
-                foreach (var variable in addObjectDto.InstructionSaves)
-                {
-                    if (variable.Value is double)
-                    {
-                        variable.Value = (float)(double)variable.Value;
-                    }
-                }
-
-
                 NamedObjectSave listToAddTo = null;
                 if (screen != null)
                 {
@@ -130,6 +123,27 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                 var nos = JsonConvert.DeserializeObject<NamedObjectSave>(dataAsString);
                 nos.InstanceName = newName;
+
+                foreach (var variable in nos.InstructionSaves)
+                {
+                    if (variable.Type == "float")
+                    {
+                        if (variable.Value is double)
+                        {
+                            variable.Value = (float)(double)variable.Value;
+                        }
+                    }
+                    else if (variable.Type == typeof(Texture2D).FullName ||
+                        variable.Type == typeof(AnimationChainList).FullName)
+                    {
+                        if (variable.Value is string asString && !string.IsNullOrEmpty(asString))
+                        {
+                            variable.Value =
+                                FileManager.RemovePath(FileManager.RemoveExtension(asString));
+                        }
+                    }
+                }
+
                 GlueCommands.Self.DoOnUiThread(() =>
                 {
                     RefreshManager.Self.IgnoreNextObjectAdd = true;
@@ -190,24 +204,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 {
                     object value = setVariableDto.VariableValue;
 
-                    var floatConverter =
-                        TypeDescriptor.GetConverter(typeof(float));
-
-                    HashSet<string> floatVariables = new HashSet<string>
-                    {
-                        "X",
-                        "Y",
-                        "Z",
-                        "Width",
-                        "Height",
-                        "TextureScale",
-                        "Radius"
-                    };
-
-                    var convertToFloat = floatVariables.Contains(
-                        setVariableDto.VariableName);
-
-                    if (convertToFloat)
+                    if (setVariableDto.Type == "float")
                     {
                         if(value is double asDouble)
                         {
@@ -215,7 +212,16 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                         }
                         else
                         {
+                            var floatConverter = TypeDescriptor.GetConverter(typeof(float));
                             value = floatConverter.ConvertFrom(value);
+                        }
+                    }
+                    else if(setVariableDto.Type == nameof(Texture2D) ||
+                        setVariableDto.Type == nameof(AnimationChainList))
+                    {
+                        if(value is string asString && !string.IsNullOrEmpty(asString))
+                        {
+                            value = FileManager.RemovePath(FileManager.RemoveExtension(asString));
                         }
                     }
 

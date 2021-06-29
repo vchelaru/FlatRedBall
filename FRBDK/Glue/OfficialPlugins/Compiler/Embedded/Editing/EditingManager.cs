@@ -275,6 +275,10 @@ namespace {ProjectNamespace}.GlueControl.Editing
                         if (item is FlatRedBall.Math.Geometry.IScalable itemGrabbedAsScalable)
                         {
                             marker.GrabbedWidthAndHeight = new Vector2(itemGrabbedAsScalable.ScaleX * 2, itemGrabbedAsScalable.ScaleY * 2);
+                            if(item is Sprite asSprite)
+                            {
+                                marker.GrabbedTextureScale = asSprite.TextureScale;
+                            }
                         }
                         else if(item is FlatRedBall.Math.Geometry.Circle circle)
                         {
@@ -323,7 +327,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     {
                         var didChangeWidth = marker.GrabbedWidthAndHeight.X != asScalable.ScaleX * 2;
                         var didChangeHeight = marker.GrabbedWidthAndHeight.Y != asScalable.ScaleY * 2;
-                        if(item is Sprite asSprite && asSprite.TextureScale > 0)
+                        if(item is Sprite asSprite && asSprite.TextureScale > 0 && 
+                            marker.GrabbedTextureScale != asSprite.TextureScale)
                         {
                             Notify(item, nameof(asSprite.TextureScale), asSprite.TextureScale);
                         }
