@@ -622,6 +622,11 @@ namespace {ProjectNamespace}
                     ShapeManager.Remove(polygon);
                     response.WasObjectRemoved = true;
                 }
+                else if(available is Sprite sprite)
+                {
+                    SpriteManager.RemoveSprite(sprite);
+                    response.WasObjectRemoved = true;
+                }
             }
             return response;
         }

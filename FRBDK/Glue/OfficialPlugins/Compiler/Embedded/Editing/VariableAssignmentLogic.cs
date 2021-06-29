@@ -56,8 +56,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                             item.Name == splitVariable[1]);
                         if (aarect != null)
                         {
-                            screen.ApplyVariable(splitVariable[2], variableValue, aarect);
-                            response.WasVariableAssigned = true;
+                            response.WasVariableAssigned = screen.ApplyVariable(splitVariable[2], variableValue, aarect);
                         }
 
                         if (!response.WasVariableAssigned)
@@ -67,8 +66,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                                 item.Name == splitVariable[1]);
                             if (circle != null)
                             {
-                                screen.ApplyVariable(splitVariable[2], variableValue, circle);
-                                response.WasVariableAssigned = true;
+                                response.WasVariableAssigned = screen.ApplyVariable(splitVariable[2], variableValue, circle);
                             }
                         }
 
@@ -80,8 +78,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
                             if (polygon != null)
                             {
-                                screen.ApplyVariable(splitVariable[2], variableValue, polygon);
-                                response.WasVariableAssigned = true;
+                                response.WasVariableAssigned = screen.ApplyVariable(splitVariable[2], variableValue, polygon);
                             }
                         }
 
@@ -93,8 +90,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
                             if(sprite != null)
                             {
-                                screen.ApplyVariable(splitVariable[2], variableValue, sprite);
-                                response.WasVariableAssigned = true;
+                                response.WasVariableAssigned = screen.ApplyVariable(splitVariable[2], variableValue, sprite);
                             }
                         }
                     }
@@ -121,43 +117,64 @@ namespace {ProjectNamespace}.GlueControl.Editing
     
         private static object ConvertVariableValue(GlueVariableSetData data)
         {
-            object variableValue = data.VariableValue;
+            var type = data.Type;
+            object variableValue = ConvertStringToType(type, data.VariableValue);
 
-            switch (data.Type)
+            return variableValue;
+        }
+    
+        public static object ConvertStringToType(string type, string variableValue)
+        {
+            object convertedValue = variableValue;
+            switch (type)
             {
                 case "float":
                 case nameof(Single):
-                    variableValue = float.Parse(data.VariableValue);
+                    convertedValue = float.Parse(variableValue);
                     break;
                 case "int":
                 case nameof(Int32):
-                    variableValue = int.Parse(data.VariableValue);
+                    convertedValue = int.Parse(variableValue);
                     break;
                 case "bool":
                 case nameof(Boolean):
-                    variableValue = bool.Parse(data.VariableValue.ToLowerInvariant());
+                    convertedValue = bool.Parse(variableValue.ToLowerInvariant());
                     break;
                 case "double":
                 case nameof(Double):
-                    variableValue = double.Parse(data.VariableValue);
+                    convertedValue = double.Parse(variableValue);
                     break;
                 case "Microsoft.Xna.Framework.Color":
-                    variableValue = typeof(Microsoft.Xna.Framework.Color).GetProperty(data.VariableValue).GetValue(null);
+                    convertedValue = typeof(Microsoft.Xna.Framework.Color).GetProperty(variableValue).GetValue(null);
                     break;
                 case "Texture2D":
                 case "Microsoft.Xna.Framework.Graphics.Texture2D":
-                    variableValue = FlatRedBallServices.Load<Microsoft.Xna.Framework.Graphics.Texture2D>(
-                        data.VariableValue, FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName);
+                    if(!string.IsNullOrWhiteSpace(variableValue))
+                    {
+                        convertedValue = FlatRedBallServices.Load<Microsoft.Xna.Framework.Graphics.Texture2D>(
+                            variableValue, FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName);
+                    }
+                    else
+                    {
+                        convertedValue = (Microsoft.Xna.Framework.Graphics.Texture2D)null;
+                    }
                     break;
                 case "FlatRedBall.Graphics.Animation.AnimationChainList":
                 case "AnimationChainList":
-                    variableValue = FlatRedBallServices.Load<FlatRedBall.Graphics.Animation.AnimationChainList>(
-                        data.VariableValue, FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName);
+                    if(!string.IsNullOrWhiteSpace(variableValue))
+                    {
+                        convertedValue = FlatRedBallServices.Load<FlatRedBall.Graphics.Animation.AnimationChainList>(
+                            variableValue, FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName);
+                    }
+                    else
+                    {
+                        convertedValue = (FlatRedBall.Graphics.Animation.AnimationChainList)null;
+                    }
                     break;
 
             }
 
-            return variableValue;
+            return convertedValue;
         }
     }
 }

@@ -120,6 +120,8 @@ namespace OfficialPlugins.Compiler.CommandSending
         {
             using var memoryStream = new MemoryStream();
             int totalBytesRead = 0;
+            TimeSpan timeout = TimeSpan.FromSeconds(10);
+            var timeStarted = DateTime.Now;
             int bytesRead = 0;
             do
             {
@@ -127,7 +129,7 @@ namespace OfficialPlugins.Compiler.CommandSending
                 memoryStream.Write(buffer, 0, bytesRead);
                 totalBytesRead += bytesRead;
 
-            } while (totalBytesRead < length);
+            } while (totalBytesRead < length && DateTime.Now - timeStarted < timeout );
 
             var byteArray =
                 memoryStream.ToArray();

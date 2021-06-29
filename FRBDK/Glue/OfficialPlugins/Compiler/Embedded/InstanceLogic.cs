@@ -113,10 +113,8 @@ namespace {ProjectNamespace}.GlueControl
 
                 foreach (var instruction in deserialized.InstructionSaves)
                 {
-                    var variableName = instruction.Member;
-                    var variableValue = instruction.Value;
-
-                    AssignVariable(newPositionedObject, variableName, variableValue);
+                    
+                    AssignVariable(newPositionedObject, instruction);
 
                 }
             }
@@ -338,11 +336,12 @@ namespace {ProjectNamespace}.GlueControl
             GlueControlManager.Self.SendToGlue(dto);
         }
 
-        private void AssignVariable(PositionedObject instance, string variableName, object variableValue)
+        private void AssignVariable(PositionedObject instance, FlatRedBall.Content.Instructions.InstructionSave instruction)
         {
-            var shouldBeFloat = floatVariables.Contains(variableName);
+            string variableName = instruction.Member;
+            object variableValue = instruction.Value;
 
-            if (shouldBeFloat)
+            if (instruction.Type == "float")
             {
                 if (variableValue is int asInt)
                 {
@@ -351,6 +350,14 @@ namespace {ProjectNamespace}.GlueControl
                 else if (variableValue is double asDouble)
                 {
                     variableValue = (float)asDouble;
+                }
+            }
+            else if(instruction.Type == typeof(FlatRedBall.Graphics.Animation.AnimationChainList).FullName ||
+                instruction.Type == typeof(Microsoft.Xna.Framework.Graphics.Texture2D).FullName)
+            {
+                if(variableValue is string asString && !string.IsNullOrWhiteSpace(asString))
+                {
+                    variableValue = Editing.VariableAssignmentLogic.ConvertStringToType(instruction.Type, asString);
                 }
             }
 

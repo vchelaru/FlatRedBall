@@ -1014,6 +1014,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             StringBuilder removalInformation = new StringBuilder();
 
+            var wasSelected = false;
+            GlueCommands.Self.DoOnUiThread(() => wasSelected = GlueState.Self.CurrentNamedObjectSave == namedObjectToRemove);
+
             // The additionalFilesToRemove is included for consistency with other methods.  It may be used later
 
             // There are the following things that need to happen:
@@ -1102,7 +1105,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (updateUi)
                 {
+                    if(wasSelected)
+                    {
+                        GlueCommands.Self.DoOnUiThread(() =>
+                        {
+                            GlueState.Self.CurrentNamedObjectSave = element.NamedObjects.LastOrDefault();
+                        });
+                    }
                     GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+
                 }
                 CodeWriter.GenerateCode(element);
                 if (element is EntitySave)
@@ -1120,13 +1131,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if(element == null && GlueState.Self.CurrentElement != null)
             {
-                // we're trying to delete something that isn't actually part of the object, so we should refresh the tree view
-                //GlueCommands.Self.RefreshCommands.RefreshUi(GlueState.Self.CurrentElement);
-
-                var elementTreeNode = GlueState.Self.Find.ElementTreeNode(GlueState.Self.CurrentElement);
-
-                elementTreeNode?.RefreshTreeNodes();
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(GlueState.Self.CurrentElement);
             }
+
+
 
             if (performSave)
             {

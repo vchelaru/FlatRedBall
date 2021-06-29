@@ -371,24 +371,27 @@ namespace FlatRedBall.Glue.SetVariable
                 CustomVariableInNamedObject cvino = namedObjectSave.GetCustomVariable(changedMember);
                 object value = cvino.Value;
 
-                foreach (CustomVariable customVariable in element.CustomVariables)
+                if(element != null)
                 {
-                    if (customVariable.SourceObject == namedObjectSave.InstanceName &&
-                        customVariable.SourceObjectProperty == changedMember)
+                    foreach (CustomVariable customVariable in element.CustomVariables)
                     {
-                        // The custom variable may have a different type:
-                        if (!string.IsNullOrEmpty(customVariable.OverridingPropertyType))
+                        if (customVariable.SourceObject == namedObjectSave.InstanceName &&
+                            customVariable.SourceObjectProperty == changedMember)
                         {
-                            // it does, so convert
-                            Type overridingType = TypeManager.GetTypeFromString(customVariable.OverridingPropertyType);
+                            // The custom variable may have a different type:
+                            if (!string.IsNullOrEmpty(customVariable.OverridingPropertyType))
+                            {
+                                // it does, so convert
+                                Type overridingType = TypeManager.GetTypeFromString(customVariable.OverridingPropertyType);
 
-                            customVariable.DefaultValue = System.Convert.ChangeType(value, overridingType);
+                                customVariable.DefaultValue = System.Convert.ChangeType(value, overridingType);
+                            }
+                            else
+                            {
+                                customVariable.DefaultValue = value;
+                            }
+                            break;
                         }
-                        else
-                        {
-                            customVariable.DefaultValue = value;
-                        }
-                        break;
                     }
                 }
             }
