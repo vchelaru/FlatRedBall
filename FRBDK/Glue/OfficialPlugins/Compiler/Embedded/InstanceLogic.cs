@@ -373,6 +373,17 @@ namespace {ProjectNamespace}.GlueControl
                     variableValue = Editing.VariableAssignmentLogic.ConvertStringToType(instruction.Type, asString);
                 }
             }
+            else if(instruction.Type == typeof(Microsoft.Xna.Framework.Graphics.TextureAddressMode).Name)
+            {
+                if(variableValue is int asInt)
+                {
+                    variableValue = (Microsoft.Xna.Framework.Graphics.TextureAddressMode)asInt;
+                }
+                if (variableValue is long asLong)
+                {
+                    variableValue = (Microsoft.Xna.Framework.Graphics.TextureAddressMode)asLong;
+                }
+            }
 
             FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(instance, variableName, variableValue);
         }
