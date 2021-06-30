@@ -26,6 +26,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
 
         void SetFormOwner(System.Windows.Forms.Form form);
+        void FocusOnTreeView();
         void ShowCreateDerivedScreenDialog(ScreenSave baseScreen);
         void MoveToCursor(System.Windows.Window window);
 

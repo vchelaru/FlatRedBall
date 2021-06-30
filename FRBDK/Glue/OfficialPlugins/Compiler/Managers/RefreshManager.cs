@@ -403,6 +403,10 @@ namespace OfficialPlugins.Compiler.Managers
                     {
                         value = "0";
                     }
+                    else if(type == "bool")
+                    {
+                        value = "false";
+                    }
                 }
                 else
                 {

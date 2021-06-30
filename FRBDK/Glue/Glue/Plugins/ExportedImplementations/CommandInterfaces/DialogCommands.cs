@@ -695,6 +695,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             if (!focused) focused = TryFocus(PluginManager.TabControlViewModel.RightTabItems);
             if (!focused) focused = TryFocus(PluginManager.TabControlViewModel.CenterTabItems);
         }
+        public void FocusOnTreeView()
+        {
+            GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin.MainExplorerPlugin.Self.ElementTreeView.Focus();
+        }
 
         public void SetFormOwner(Form form)
         {

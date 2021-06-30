@@ -324,7 +324,22 @@ namespace {ProjectNamespace}.GlueControl
             }
             if(newSprite.TextureAddressMode != Microsoft.Xna.Framework.Graphics.TextureAddressMode.Clamp)
             {
-                AddValue(addObjectDto, nameof(newSprite.TextureAddressMode), nameof(Microsoft.Xna.Framework.Graphics.TextureAddressMode), (int)newSprite.TextureAddressMode);
+                AddValue(addObjectDto, nameof(newSprite.TextureAddressMode), 
+                    nameof(Microsoft.Xna.Framework.Graphics.TextureAddressMode), (int)newSprite.TextureAddressMode);
+            }
+
+            // do we want to consider animated sprites? Does it matter?
+            // An animation could flip this and that would incorrectly set
+            // that value on Glue but if it's animated that would get overwritten anyway, so maybe it's no biggie?
+            if(newSprite.FlipHorizontal != false)
+            {
+                AddValue(addObjectDto, nameof(newSprite.FlipHorizontal), 
+                    "bool", newSprite.FlipHorizontal);
+            }
+            if (newSprite.FlipVertical != false)
+            {
+                AddValue(addObjectDto, nameof(newSprite.FlipVertical),
+                    "bool", newSprite.FlipVertical);
             }
 
             #endregion

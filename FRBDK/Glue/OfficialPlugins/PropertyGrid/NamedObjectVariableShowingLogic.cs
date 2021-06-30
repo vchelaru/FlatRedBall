@@ -612,9 +612,16 @@ namespace OfficialPlugins.VariableDisplay
                 };
 
                 instanceMember.IsDefaultSet += (owner, args) =>
+                {
+                    if(instanceMember.IsDefault)
                     {
+                        // June 29 2021 - this used to get called whenever
+                        // IsDefault is set to either true or false, but we
+                        // only want to call MakeDefault if the value is set to true.
                         MakeDefault(instance, typedMember.MemberName);
-                    };
+
+                    }
+                };
 
                 instanceMember.SetValueError += (newValue) =>
                     {
