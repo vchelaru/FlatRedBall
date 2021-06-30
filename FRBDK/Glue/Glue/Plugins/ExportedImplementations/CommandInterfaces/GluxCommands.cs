@@ -1116,6 +1116,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                     GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
 
+                    GlueCommands.Self.DialogCommands.FocusOnTreeView();
+
                 }
                 CodeWriter.GenerateCode(element);
                 if (element is EntitySave)
