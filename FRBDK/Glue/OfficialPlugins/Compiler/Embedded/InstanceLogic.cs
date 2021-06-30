@@ -15,17 +15,6 @@ namespace {ProjectNamespace}.GlueControl
     {
         #region Fields/Properties
 
-        static HashSet<string> floatVariables = new HashSet<string>
-        {
-            "X",
-            "Y",
-            "Z",
-            "Width",
-            "Height",
-            "TextureScale",
-            "Radius"
-        };
-
         static InstanceLogic self;
         public static InstanceLogic Self
         {
@@ -291,18 +280,38 @@ namespace {ProjectNamespace}.GlueControl
             AddFloatValue(addObjectDto, "Y", newSprite.Y);
             if(newSprite.TextureScale > 0)
             {
-                AddFloatValue(addObjectDto, "TextureScale", newSprite.TextureScale);
+                AddFloatValue(addObjectDto, nameof(newSprite.TextureScale), newSprite.TextureScale);
             }
             else
             {
-                AddFloatValue(addObjectDto, "Width", newSprite.Width);
-                AddFloatValue(addObjectDto, "Height", newSprite.Height);
+                AddFloatValue(addObjectDto, nameof(newSprite.Width), newSprite.Width);
+                AddFloatValue(addObjectDto, nameof(newSprite.Height), newSprite.Height);
             }
+
 
             if(newSprite.Texture != null)
             {
+                // Texture must be assigned before pixel values.
                 AddValue(addObjectDto, "Texture", typeof(Microsoft.Xna.Framework.Graphics.Texture2D).FullName, 
                     newSprite.Texture.Name);
+
+                // Glue uses the pixel coords, but we can check the coordinates more easily
+                if(newSprite.LeftTextureCoordinate != 0)
+                {
+                    AddFloatValue(addObjectDto, nameof(newSprite.LeftTexturePixel), newSprite.LeftTexturePixel);
+                }
+                if(newSprite.TopTextureCoordinate != 0)
+                {
+                    AddFloatValue(addObjectDto, nameof(newSprite.TopTexturePixel), newSprite.TopTexturePixel);
+                }
+                if (newSprite.RightTextureCoordinate != 1)
+                {
+                    AddFloatValue(addObjectDto, nameof(newSprite.RightTexturePixel), newSprite.RightTexturePixel);
+                }
+                if (newSprite.BottomTextureCoordinate != 1)
+                {
+                    AddFloatValue(addObjectDto, nameof(newSprite.BottomTexturePixel), newSprite.BottomTexturePixel);
+                }
             }
             if(newSprite.AnimationChains?.Name != null)
             {
@@ -312,6 +321,10 @@ namespace {ProjectNamespace}.GlueControl
             if (!string.IsNullOrEmpty(newSprite.CurrentChainName))
             {
                 AddStringValue(addObjectDto, "CurrentChainName", newSprite.CurrentChainName);
+            }
+            if(newSprite.TextureAddressMode != Microsoft.Xna.Framework.Graphics.TextureAddressMode.Clamp)
+            {
+                AddValue(addObjectDto, nameof(newSprite.TextureAddressMode), nameof(Microsoft.Xna.Framework.Graphics.TextureAddressMode), (int)newSprite.TextureAddressMode);
             }
 
             #endregion

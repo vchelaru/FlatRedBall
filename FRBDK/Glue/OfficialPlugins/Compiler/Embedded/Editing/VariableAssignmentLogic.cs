@@ -171,6 +171,12 @@ namespace {ProjectNamespace}.GlueControl.Editing
                         convertedValue = (FlatRedBall.Graphics.Animation.AnimationChainList)null;
                     }
                     break;
+                case nameof(Microsoft.Xna.Framework.Graphics.TextureAddressMode):
+                    if(int.TryParse(variableValue, out int parsedInt))
+                    {
+                        convertedValue = (Microsoft.Xna.Framework.Graphics.TextureAddressMode)parsedInt;
+                    }
+                    break;
 
             }
 

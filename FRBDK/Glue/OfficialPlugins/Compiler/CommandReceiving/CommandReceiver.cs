@@ -126,22 +126,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                 foreach (var variable in nos.InstructionSaves)
                 {
-                    if (variable.Type == "float")
-                    {
-                        if (variable.Value is double)
-                        {
-                            variable.Value = (float)(double)variable.Value;
-                        }
-                    }
-                    else if (variable.Type == typeof(Texture2D).FullName ||
-                        variable.Type == typeof(AnimationChainList).FullName)
-                    {
-                        if (variable.Value is string asString && !string.IsNullOrEmpty(asString))
-                        {
-                            variable.Value =
-                                FileManager.RemovePath(FileManager.RemoveExtension(asString));
-                        }
-                    }
+                    object value = variable.Value;
+                    var typeName = variable.Type;
+                    value = ConvertVariable(value, typeName);
+                    variable.Value = value;
                 }
 
                 GlueCommands.Self.DoOnUiThread(() =>
@@ -154,6 +142,39 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 //RefreshManager.Self.HandleNamedObjectValueChanged(nameof(deserializedNos.InstanceName), oldName, deserializedNos);
 
             }, "Adding NOS");
+        }
+
+        private static object ConvertVariable(object value, string typeName)
+        {
+            if (typeName == "float")
+            {
+                if (value is double asDouble)
+                {
+                    value = (float)asDouble;
+                }
+            }
+            else if (typeName == typeof(Texture2D).FullName ||
+                typeName == typeof(AnimationChainList).FullName)
+            {
+                if (value is string asString && !string.IsNullOrEmpty(asString))
+                {
+                    value =
+                        FileManager.RemovePath(FileManager.RemoveExtension(asString));
+                }
+            }
+            else if (typeName == typeof(TextureAddressMode).Name || typeName == typeof(TextureAddressMode).FullName)
+            {
+                if (value is int asInt)
+                {
+                    value = (TextureAddressMode)asInt;
+                }
+                else if(value is long asLong)
+                {
+                    value = (TextureAddressMode)asLong;
+                }
+            }
+
+            return value;
         }
 
         private static string GetNewName(ScreenSave screen, AddObjectDto addObjectDto)
@@ -203,27 +224,9 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 if (nos != null)
                 {
                     object value = setVariableDto.VariableValue;
+                    var typeName = setVariableDto.Type;
 
-                    if (setVariableDto.Type == "float")
-                    {
-                        if(value is double asDouble)
-                        {
-                            value = (float)(double)asDouble;
-                        }
-                        else
-                        {
-                            var floatConverter = TypeDescriptor.GetConverter(typeof(float));
-                            value = floatConverter.ConvertFrom(value);
-                        }
-                    }
-                    else if(setVariableDto.Type == nameof(Texture2D) ||
-                        setVariableDto.Type == nameof(AnimationChainList))
-                    {
-                        if(value is string asString && !string.IsNullOrEmpty(asString))
-                        {
-                            value = FileManager.RemovePath(FileManager.RemoveExtension(asString));
-                        }
-                    }
+                    value = ConvertVariable(value, typeName);
 
                     nos.SetVariableValue(setVariableDto.VariableName, value);
 
