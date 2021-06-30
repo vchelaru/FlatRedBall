@@ -588,7 +588,9 @@ namespace FlatRedBall.Glue.Managers
                         NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToList(namedObject, 
                             currentNosList);
 
-                        if(namedObject.SourceClassType != entity.Name)
+                        GlueState.Self.CurrentNamedObjectSave = namedObject;
+
+                        if (namedObject.SourceClassType != entity.Name)
                         {
                             namedObject.SourceClassType = entity.Name;
                             namedObject.UpdateCustomProperties();

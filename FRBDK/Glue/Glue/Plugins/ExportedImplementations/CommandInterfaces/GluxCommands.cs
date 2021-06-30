@@ -1002,6 +1002,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             MainGlueWindow.Self.PropertyGrid.Refresh();
             PropertyGridHelper.UpdateNamedObjectDisplay();
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+            GlueState.Self.CurrentNamedObjectSave = newNos;
+
         }
 
         public void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSave = true, 

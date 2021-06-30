@@ -207,6 +207,8 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
                 PluginManager.ReactToObjectContainerChanged(namedObject, targetList);
             }
 
+            GlueState.Self.CurrentNamedObjectSave = namedObject;
+
             AnyButtonClicked();
         }
     }

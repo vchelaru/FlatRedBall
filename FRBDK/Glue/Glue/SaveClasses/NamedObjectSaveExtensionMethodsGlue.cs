@@ -76,14 +76,6 @@ namespace FlatRedBall.Glue.SaveClasses
                 namedObject.SourceClassType = typeOfNewObject;
                 namedObject.UpdateCustomProperties();
             }
-
-            // Highlight the newly created object
-            TreeNode newNode = GlueState.Self.Find.NamedObjectTreeNode(namedObject);
-
-            if (newNode != null)
-            {
-                MainExplorerPlugin.Self.ElementTreeView.SelectedNode = newNode;
-            }
         }
     }
 }
