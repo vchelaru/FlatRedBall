@@ -2,6 +2,8 @@
 
 
 using {ProjectNamespace}.GlueControl.Dtos;
+using {ProjectNamespace}.GlueControl;
+
 using FlatRedBall;
 using FlatRedBall.Graphics;
 using FlatRedBall.Math.Geometry;
@@ -223,7 +225,7 @@ namespace {ProjectNamespace}
             {
                 throw new System.InvalidOperationException("Objects can only be added, removed, made visible, or made invisible on the primary thread");
             }
-            string response = "true";
+            string response = null;
 
             switch (action)
             {
@@ -271,7 +273,8 @@ namespace {ProjectNamespace}
                         var shouldEnqueue = false;
                         if(dto.AssignOrRecordOnly == AssignOrRecordOnly.Assign)
                         {
-                            var setVariableResponse = HandleSetVariable(dto);
+                            var setVariableResponse =
+                                GlueControl.CommandReceiver.ReceiveDto(dto) as GlueVariableSetDataResponse;
                             response = Newtonsoft.Json.JsonConvert.SerializeObject(setVariableResponse);
                             shouldEnqueue = setVariableResponse.WasVariableAssigned;
                         }
@@ -293,7 +296,7 @@ namespace {ProjectNamespace}
                     {
                         var dto =
                             Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.AddObjectDto>(data);
-                        var addResponse = HandleAddObject(dto);
+                        var addResponse = CommandReceiver.ReceiveDto(dto);
                         response = Newtonsoft.Json.JsonConvert.SerializeObject(addResponse);
                         EnqueueToOwner(message, dto.ElementName);
                     }
@@ -304,20 +307,12 @@ namespace {ProjectNamespace}
                         var dto =
                             Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.RemoveObjectDto>(data);
                         
-                        var removeResponse = HandleRemoveObject(dto, out string gameTypeName);
+                        var removeResponse = HandleDto(dto, out string gameTypeName);
                         response = JsonConvert.SerializeObject(removeResponse);
                         EnqueueToOwner(message, gameTypeName);
                     }
                     break;
 
-                case nameof(GlueControl.Dtos.SelectObjectDto):
-                    HandleSelectObjectCommand(
-                        JsonConvert.DeserializeObject<GlueControl.Dtos.SelectObjectDto>(data));
-                    break;
-                case nameof(GlueControl.Dtos.SetEditMode):
-                    HandleSetEditMode(
-                        JsonConvert.DeserializeObject<GlueControl.Dtos.SetEditMode>(data));
-                    break;
                 case nameof(GlueControl.Dtos.MoveObjectToContainerDto):
                     {
                         var dto = JsonConvert.DeserializeObject<GlueControl.Dtos.MoveObjectToContainerDto>(data);
@@ -325,6 +320,10 @@ namespace {ProjectNamespace}
                         response = JsonConvert.SerializeObject(moveResponse);
                         EnqueueToOwner(message, dto.ElementName);
                     }
+                    break;
+                default:
+                    response = CommandReceiver.Receive(message);
+
                     break;
 #endif
             }
@@ -433,153 +432,7 @@ namespace {ProjectNamespace}
 
         #endregion
 
-        private void HandleSelectObjectCommand(SelectObjectDto selectObjectDto)
-        {
-            bool matchesCurrentScreen =
-                GetIfMatchesCurrentScreen(selectObjectDto.ElementName, out System.Type ownerType, out Screen currentScreen);
-            
-            var ownerTypeName = "EditModeProject." + selectObjectDto.ElementName.Replace("\\", ".");
-            ownerType = GetType().Assembly.GetType(ownerTypeName);
-
-            bool isOwnerScreen = false;
-
-            if(matchesCurrentScreen)
-            {
-                EditingManager.Select(selectObjectDto.ObjectName);
-                EditingManager.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingScreen;
-                isOwnerScreen = true;
-            }
-            else
-            {
-                // it's a different screen. See if we can select that screen:
-
-
-                if(ownerType != null && typeof(Screen).IsAssignableFrom(ownerType))
-                {
-#if SupportsEditMode
-
-                    void AssignSelection(Screen screen)
-                    {
-                        // Select this even if it's null so the EditingManager deselects 
-                        EditingManager.Select(selectObjectDto.ObjectName);
-                        ReRunAllGlueToGameCommands();
-                        screen.ScreenDestroy += HandleScreenDestroy;
-                        ScreenManager.ScreenLoaded -= AssignSelection;
-                    }
-                    ScreenManager.ScreenLoaded += AssignSelection;
-
-                    ScreenManager.CurrentScreen.MoveToScreen(ownerType);
-
-                    isOwnerScreen = true;
-                    EditingManager.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingScreen;
-#endif
-                }
-            }
-
-            if(!isOwnerScreen)
-            {
-                var isEntity = typeof(PositionedObject).IsAssignableFrom(ownerType);
-
-                if (isEntity)
-                {
-                    var isAlreadyViewingThisEntity = ScreenManager.CurrentScreen.GetType().Name == "EntityViewingScreen" &&
-                        SpriteManager.ManagedPositionedObjects.Count > 0 &&
-                        SpriteManager.ManagedPositionedObjects[0].GetType() == ownerType;
-
-                    if(!isAlreadyViewingThisEntity)
-                    {
-#if SupportsEditMode
-
-                        void CreateEntityInstance(Screen screen)
-                        {
-                            var instance = ownerType.GetConstructor(new System.Type[0]).Invoke(new object[0]) as IDestroyable;
-                            (screen as Screens.EntityViewingScreen).CurrentEntity = instance;
-                            var instanceAsPositionedObject = (PositionedObject)instance;
-                            instanceAsPositionedObject.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
-                            instanceAsPositionedObject.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
-                            ScreenManager.ScreenLoaded -= CreateEntityInstance;
-
-                            EditingManager.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingEntity;
-
-                            Camera.Main.X = 0;
-                            Camera.Main.Y = 0;
-                            Camera.Main.Detach();
-
-                            ReRunAllGlueToGameCommands();
-                            screen.ScreenDestroy += HandleScreenDestroy;
-
-                            EditingManager.Select(selectObjectDto.ObjectName);
-                        }
-                        ScreenManager.ScreenLoaded += CreateEntityInstance;
-
-                        ScreenManager.CurrentScreen.MoveToScreen(typeof(Screens.EntityViewingScreen));
-#endif
-                    }
-                    else
-                    {
-                        EditingManager.Select(selectObjectDto.ObjectName);
-                    }
-                }
-            }
-        }
-
-        private void HandleScreenDestroy()
-        {
-            GlueControl.InstanceLogic.Self.DestroyDynamicallyAddedInstances();
-        }
-
-        private void HandleSetEditMode(GlueControl.Dtos.SetEditMode setEditMode)
-        {
-            var value = setEditMode.IsInEditMode;
-#if SupportsEditMode
-            FlatRedBall.Screens.ScreenManager.IsInEditMode = value;
-            FlatRedBall.Gui.GuiManager.Cursor.RequiresGameWindowInFocus = !value;
-
-            if(value)
-            {
-                var screen =
-                    FlatRedBall.Screens.ScreenManager.CurrentScreen;
-                // user may go into edit mode after moving through a level and wouldn't want it to restart fully....or would they? What if they
-                // want to change the Player start location. Need to think that through...
-
-                void HandleScreenLoaded(Screen newScreen)
-                {
-                    ReRunAllGlueToGameCommands();
-                    newScreen.ScreenDestroy += HandleScreenDestroy;
-
-                    FlatRedBall.Screens.ScreenManager.ScreenLoaded -= HandleScreenLoaded;
-                }
-
-                FlatRedBall.Screens.ScreenManager.ScreenLoaded += HandleScreenLoaded;
-
-                screen?.RestartScreen(reloadContent: true, applyRestartVariables:true);
-            }
-#endif
-    }
-
-        private GlueVariableSetDataResponse HandleSetVariable(GlueVariableSetData dto)
-        {
-            GlueVariableSetDataResponse valueToReturn = null;
-#if IncludeSetVariable
-
-            valueToReturn = GlueControl.Editing.VariableAssignmentLogic.SetVariable(dto);
-#endif
-
-            return valueToReturn;
-        }
-
-        public AddObjectDtoResponse HandleAddObject(GlueControl.Dtos.AddObjectDto dto)
-        {
-            AddObjectDtoResponse valueToReturn = new AddObjectDtoResponse();
-#if IncludeSetVariable
-
-            var createdObject = GlueControl.InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(dto);
-            valueToReturn.WasObjectCreated = createdObject != null;
-#endif
-            return valueToReturn;
-        }
-
-        private RemoveObjectDtoResponse HandleRemoveObject(RemoveObjectDto removeObjectDto, out string typeName)
+        private RemoveObjectDtoResponse HandleDto(RemoveObjectDto removeObjectDto, out string typeName)
         {
             RemoveObjectDtoResponse response = new RemoveObjectDtoResponse();
             response.DidScreenMatch = false;

@@ -36,6 +36,9 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile("Editing.CopyPasteManager.cs",
                 "Editing/CopyPasteManager.Generated.cs");
 
+            SaveEmbeddedFile("CommandReceiver.cs",
+                "CommandReceiver.Generated.cs");
+
             SaveEmbeddedFile("Dtos.cs",
                 "Dtos.Generated.cs");
 

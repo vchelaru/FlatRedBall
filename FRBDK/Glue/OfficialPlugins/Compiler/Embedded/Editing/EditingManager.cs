@@ -46,6 +46,9 @@ namespace {ProjectNamespace}.GlueControl.Editing
         const float SelectedItemExtraPadding = 2;
 
         CopyPasteManager CopyPasteManager = new CopyPasteManager();
+
+        public static EditingManager Self { get; private set; }
+
         #endregion
 
         #region Delegates/Events
@@ -59,6 +62,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         public EditingManager()
         {
+            Self = this;
             HighlightMarker = new SelectionMarker();
             HighlightMarker.BrightColor = Color.LightGreen;
             HighlightMarker.MakePersistent();

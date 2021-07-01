@@ -96,4 +96,9 @@ namespace {ProjectNamespace}.GlueControl.Dtos
         public bool WasObjectRemoved { get; set; }
         public bool DidScreenMatch { get; set; }
     }
+
+    public class SetCameraPositionDto
+    {
+        public Microsoft.Xna.Framework.Vector3 Position { get; set; }
+    }
 }
