@@ -568,7 +568,7 @@ namespace FlatRedBall.Screens
                 }
                 else if(instance != null) // the instance may be null if the chain of assignments doesn't have a value
                 {
-                    ApplyVariable(afterDot, value, instance);
+                    wasSet = ApplyVariable(afterDot, value, instance);
                 }
             }
             else
