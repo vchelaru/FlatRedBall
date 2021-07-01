@@ -29,7 +29,6 @@ namespace OfficialPlugins.CollisionPlugin
     {
         #region Fields/Properties
 
-        CollisionRelationshipViewModel relationshipViewModel;
         CollisionRelationshipView relationshipControl;
         PluginTab relationshipPluginTab;
 
@@ -60,8 +59,6 @@ namespace OfficialPlugins.CollisionPlugin
 
         public override void StartUp()
         {
-            relationshipViewModel = CollisionRelationshipViewModelController.CreateViewModel();
-
             collidableViewModel = new CollidableNamedObjectRelationshipViewModel();
             CollidableNamedObjectController.RegisterViewModel(collidableViewModel);
 
@@ -199,7 +196,8 @@ namespace OfficialPlugins.CollisionPlugin
                 {
                     relationshipControl = new CollisionRelationshipView();
                     relationshipPluginTab = this.CreateTab(relationshipControl, "Collision");
-                    relationshipControl.DataContext = relationshipViewModel;
+                    relationshipControl.DataContext = 
+                        CollisionRelationshipViewModelController.ViewModel;
                 }
                 relationshipPluginTab.Show();
             }
@@ -246,11 +244,11 @@ namespace OfficialPlugins.CollisionPlugin
                 relationshipControl.DataContext = null;
             }
 
-            CollisionRelationshipViewModelController.RefreshViewModelTo(relationshipViewModel, selectedNos);
+            CollisionRelationshipViewModelController.RefreshViewModel(selectedNos);
 
             if (relationshipControl != null)
             {
-                relationshipControl.DataContext = relationshipViewModel;
+                relationshipControl.DataContext = CollisionRelationshipViewModelController.ViewModel;
             }
         }
 

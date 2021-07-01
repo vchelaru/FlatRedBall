@@ -2,6 +2,8 @@
 #define IncludeSetVariable
 using EditModeProject.GlueControl.Dtos;
 using EditModeProject.GlueControl.Editing;
+using Microsoft.Xna.Framework;
+
 using FlatRedBall;
 using FlatRedBall.Graphics;
 using FlatRedBall.Screens;

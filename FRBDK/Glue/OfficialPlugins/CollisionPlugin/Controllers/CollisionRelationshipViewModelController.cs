@@ -15,15 +15,16 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 {
     public class CollisionRelationshipViewModelController
     {
-        public static CollisionRelationshipViewModel CreateViewModel()
-        {
-            var viewModel = new CollisionRelationshipViewModel();
-            viewModel.PropertyChanged += HandleViewModelPropertyChanged;
+        public static CollisionRelationshipViewModel ViewModel { get; private set; }
 
-            return viewModel;
+        static CollisionRelationshipViewModelController()
+        {
+            ViewModel = new CollisionRelationshipViewModel();
+            ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
         }
 
-        static void RefreshAvailableCollisionObjects(IElement element, CollisionRelationshipViewModel viewModel)
+
+        static void RefreshAvailableCollisionObjects(IElement element, CollisionRelationshipViewModel viewModel, NamedObjectSave collisionRelationship)
         {
             viewModel.FirstCollisionItemSource.Clear();
             viewModel.SecondCollisionItemSource.Clear();
@@ -170,30 +171,36 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             return false;
         }
 
-        public static void RefreshViewModelTo(CollisionRelationshipViewModel viewModel, NamedObjectSave collisionRelationship)
+        public static void RefreshViewModel(NamedObjectSave collisionRelationship)
         {
+
             var currentElement = GlueState.Self.CurrentElement;
 
-            viewModel.GlueObject = collisionRelationship;
+            ViewModel.GlueObject = collisionRelationship;
 
-            viewModel.UpdateFromGlueObject();
 
-            RefreshFirstAndSecondTypes(viewModel, collisionRelationship);
+            var wasUpdatingFromGlue = ViewModel.IsUpdatingFromGlueObject;
+            RefreshFirstAndSecondTypes(ViewModel, collisionRelationship);
 
-            viewModel.Events.Clear();
+            ViewModel.Events.Clear();
             foreach (var eventSave in currentElement.Events)
             {
                 if (eventSave.SourceObject == collisionRelationship.InstanceName)
                 {
-                    viewModel.Events.Add(eventSave);
+                    ViewModel.Events.Add(eventSave);
                 }
             }
+            ViewModel.IsUpdatingFromGlueObject = true;
+            RefreshAvailableCollisionObjects(currentElement, ViewModel, collisionRelationship);
+            RefreshSubcollisionObjects(currentElement, ViewModel);
+            RefreshIfIsPlatformer(currentElement, ViewModel, out IElement firstNosElementType);
+            RefreshPlatformerMovementValues(ViewModel, firstNosElementType);
+            RefreshPartitioningIcons(currentElement, ViewModel);
+            ViewModel.IsUpdatingFromGlueObject = wasUpdatingFromGlue;
 
-            RefreshAvailableCollisionObjects(currentElement, viewModel);
-            RefreshSubcollisionObjects(currentElement, viewModel);
-            RefreshIfIsPlatformer(currentElement, viewModel, out IElement firstNosElementType);
-            RefreshPlatformerMovementValues(viewModel, firstNosElementType);
-            RefreshPartitioningIcons(currentElement, viewModel);
+            // UpdateFromGlueObject should be called after refreshing the lists so the right values
+            // get set
+            ViewModel.UpdateFromGlueObject();
         }
 
         private static void RefreshFirstAndSecondTypes(CollisionRelationshipViewModel viewModel, NamedObjectSave collisionRelationship)

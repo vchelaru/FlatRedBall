@@ -256,13 +256,15 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             CollisionRelationshipViewModelController.TryFixMassesForTileShapeCollisionRelationship(container, newNos);
 
-            if(GlueState.Self.CurrentElement == container)
+            if (GlueState.Self.CurrentElement == container)
             {
                 GlueCommands.Self.TreeNodeCommands.RefreshCurrentElementTreeNode();
             }
 
             GlueState.Self.CurrentNamedObjectSave = newNos;
             GlueCommands.Self.DialogCommands.FocusTab("Collision");
+
+            CollisionRelationshipViewModelController.RefreshViewModel(newNos);
         }
     }
 }
