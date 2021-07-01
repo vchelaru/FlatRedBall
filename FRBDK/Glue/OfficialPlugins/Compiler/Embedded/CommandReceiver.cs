@@ -104,6 +104,8 @@ namespace EditModeProject.GlueControl
             return currentScreenType == ownerType || ownerType?.IsAssignableFrom(currentScreenType) == true;
         }
 
+        static Dictionary<string, Vector3> CameraPositions = new Dictionary<string, Vector3>();
+
         #endregion
 
         private static GlueVariableSetDataResponse HandleDto(GlueVariableSetData dto)
@@ -136,7 +138,7 @@ namespace EditModeProject.GlueControl
             else
             {
                 // it's a different screen. See if we can select that screen:
-
+                CameraPositions[currentScreen.GetType().FullName] = Camera.Main.Position;
 
                 if (ownerType != null && typeof(Screen).IsAssignableFrom(ownerType))
                 {
@@ -148,6 +150,10 @@ namespace EditModeProject.GlueControl
                         EditingManager.Self.Select(selectObjectDto.ObjectName);
                         GlueControlManager.Self.ReRunAllGlueToGameCommands();
                         screen.ScreenDestroy += HandleScreenDestroy;
+                        if (CameraPositions.ContainsKey(screen.GetType().FullName))
+                        {
+                            Camera.Main.Position = CameraPositions[screen.GetType().FullName];
+                        }
                         ScreenManager.ScreenLoaded -= AssignSelection;
                     }
                     ScreenManager.ScreenLoaded += AssignSelection;
