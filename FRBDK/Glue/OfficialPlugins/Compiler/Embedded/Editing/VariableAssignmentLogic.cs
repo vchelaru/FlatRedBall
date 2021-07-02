@@ -130,22 +130,58 @@ namespace {ProjectNamespace}.GlueControl.Editing
             {
                 case "float":
                 case nameof(Single):
-                    convertedValue = float.Parse(variableValue);
+                    if(!string.IsNullOrWhiteSpace(variableValue))
+                    {
+                        convertedValue = float.Parse(variableValue);
+                    }
+                    else
+                    {
+                        convertedValue = 0f;
+                    }
                     break;
                 case "int":
                 case nameof(Int32):
-                    convertedValue = int.Parse(variableValue);
+                    if(!string.IsNullOrWhiteSpace(variableValue))
+                    {
+                        convertedValue = int.Parse(variableValue);
+                    }
+                    else
+                    {
+                        convertedValue = 0;
+                    }
                     break;
                 case "bool":
                 case nameof(Boolean):
-                    convertedValue = bool.Parse(variableValue.ToLowerInvariant());
+                    if(!string.IsNullOrWhiteSpace(variableValue))
+                    {
+                        convertedValue = bool.Parse(variableValue.ToLowerInvariant());
+                    }
+                    else
+                    {
+                        convertedValue = false;
+                    }
                     break;
                 case "double":
                 case nameof(Double):
-                    convertedValue = double.Parse(variableValue);
+                    if(!string.IsNullOrWhiteSpace(variableValue))
+                    {
+                        convertedValue = double.Parse(variableValue);
+                    }
+                    else
+                    {
+                        convertedValue = 0.0;
+                    }
                     break;
                 case "Microsoft.Xna.Framework.Color":
-                    convertedValue = typeof(Microsoft.Xna.Framework.Color).GetProperty(variableValue).GetValue(null);
+                    if(!string.IsNullOrWhiteSpace(variableValue))
+                    {
+                        convertedValue = typeof(Microsoft.Xna.Framework.Color).GetProperty(variableValue).GetValue(null);
+                    }
+                    else
+                    {
+                        // do we default to white? that's default for shapes
+                        convertedValue = Microsoft.Xna.Framework.Color.White;
+                    }
                     break;
                 case "Texture2D":
                 case "Microsoft.Xna.Framework.Graphics.Texture2D":

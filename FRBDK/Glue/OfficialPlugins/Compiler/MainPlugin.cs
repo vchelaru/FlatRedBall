@@ -314,6 +314,7 @@ namespace OfficialPlugins.Compiler
 
             Runner.Self.ViewModel = viewModel;
             RefreshManager.Self.ViewModel = viewModel;
+            VariableSendingManager.Self.ViewModel = viewModel;
 
             buildTab = base.CreateTab(control, "Build");
             buildTab.SuggestedLocation = TabLocation.Bottom;

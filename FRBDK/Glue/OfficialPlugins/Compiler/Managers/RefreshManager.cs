@@ -44,7 +44,7 @@ namespace OfficialPlugins.Compiler.Managers
         }
         bool failedToRebuildAndRestart { get; set; }
 
-        bool ShouldRestartOnChange => 
+        public bool ShouldRestartOnChange => 
             (failedToRebuildAndRestart || IsExplicitlySetRebuildAndRestartEnabled || 
                 (ViewModel.IsRunning && ViewModel.IsEditChecked)) &&
             GlueState.Self.CurrentGlueProject != null;
@@ -165,8 +165,6 @@ namespace OfficialPlugins.Compiler.Managers
                 }
             }
         }
-
-
 
         private bool GetIfShouldReactToFileChange(FilePath filePath )
         {
@@ -334,176 +332,22 @@ namespace OfficialPlugins.Compiler.Managers
             }
         }
 
+
         #endregion
 
         #region Variable Changed
 
-        internal async void HandleVariableChanged(IElement variableElement, CustomVariable variable)
+
+        internal void HandleNamedObjectValueChanged(string variableName, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly)
         {
-            if (ShouldRestartOnChange)
-            {
-                var type = variable.Type;
-                var value = variable.DefaultValue?.ToString();
-                string name = null;
-                if(variable.IsShared)
-                {
-                    name = ToGameType(variableElement as GlueElement) + "." + variable.Name;
-                }
-                else
-                {
-                    name = "this." + variable.Name;
-                }
-                await TryPushVariable(null, name, type, value, GlueState.Self.CurrentElement, AssignOrRecordOnly.Assign);
-            }
-            else
-            {
-                StopAndRestartTask($"Object variable {variable.Name} changed");
-            }
+            VariableSendingManager.Self.HandleNamedObjectValueChanged(variableName, oldValue, nos, assignOrRecordOnly);
         }
 
-        internal void HandleNamedObjectValueChanged(string changedMember, object oldValue)
+        internal void HandleVariableChanged(IElement variableElement, CustomVariable variable)
         {
-            var nos = GlueState.Self.CurrentNamedObjectSave;
-            HandleNamedObjectValueChanged(changedMember, oldValue, nos, AssignOrRecordOnly.Assign);
+            VariableSendingManager.Self.HandleVariableChanged(variableElement, variable);
         }
 
-        public void HandleNamedObjectValueChanged(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly)
-        { 
-
-            var instruction = nos?.GetCustomVariable(changedMember);
-            var currentElement = GlueState.Self.CurrentElement;
-            var nosName = nos.InstanceName;
-            var ati = nos.GetAssetTypeInfo();
-            string type;
-            string value;
-
-            var originalMemberName = changedMember;
-
-            if(currentElement is EntitySave && nos.AttachToContainer && 
-                (changedMember == "X" || changedMember == "Y" || changedMember == "Z"))
-            {
-                changedMember = $"Relative{changedMember}";
-            }
-
-            if(changedMember == nameof(NamedObjectSave.InstanceName))
-            {
-                type = "string";
-                value = nos.InstanceName;
-                changedMember = "Name";
-                nosName = (string)oldValue;
-            }
-            else if(ati?.VariableDefinitions.Any(item => item.Name == originalMemberName) == true)
-            {
-                var variableDefinition = ati.VariableDefinitions.First(item => item.Name == originalMemberName);
-                type = variableDefinition.Type;
-                value = instruction?.Value?.ToString();
-                if(value == null)
-                {
-                    if(type == "float" || type == "int" || type == "long" || type == "double")
-                    {
-                        value = "0";
-                    }
-                    else if(type == "bool")
-                    {
-                        value = "false";
-                    }
-                }
-                else
-                {
-                    var isFile =
-                        variableDefinition.Type == "Microsoft.Xna.Framework.Texture2D" ||
-                        variableDefinition.Type == "Texture2D" ||
-                        variableDefinition.Type == "FlatRedBall.Graphics.Animation.AnimationChainList" ||
-                        variableDefinition.Type == "AnimationChainList";
-
-                    if (isFile)
-                    {
-                        var wasModified = false;
-                        var referencedFile = currentElement.GetReferencedFileSaveRecursively(value);
-                        if(referencedFile != null)
-                        {
-                            value = FileManager.MakeRelative( GlueCommands.Self.GetAbsoluteFilePath(referencedFile).FullPath, 
-                                GlueState.Self.CurrentGlueProjectDirectory);
-                            wasModified = true;
-                        }
-                        if(!wasModified)
-                        {
-                            // set it to null
-                            value = string.Empty;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                type = instruction?.Type ?? instruction?.Value?.GetType().Name;
-                value = instruction?.Value?.ToString();
-            }
-            TaskManager.Self.Add(() =>
-            {
-                try
-                {
-                    var task = TryPushVariable(nosName, changedMember, type, value, currentElement, assignOrRecordOnly);
-                    task.Wait();
-                    var response = task.Result;
-                    if(!string.IsNullOrWhiteSpace(response?.Exception))
-                    {
-                        GlueCommands.Self.PrintError(response.Exception);
-                        printOutput(response.Exception);
-
-                    }
-                }
-                catch
-                {
-                    // no biggie...
-                }
-            }, "Pushing variable to game", TaskExecutionPreference.Asap);
-            // Vic says - I don't think we want to restart anymore because there could be stray variables
-            // assigned by plugins. Instead we should try to make everything work through hotreload
-            //else
-            //{
-            //    StopAndRestartTask($"Object variable {changedMember} changed");
-            //}
-        }
-
-        private string ToGameType(GlueElement element) =>
-            GlueState.Self.ProjectNamespace + "." + element.Name.Replace("\\", ".");
-
-        private async Task<GlueVariableSetDataResponse> TryPushVariable(string variableOwningNosName, string rawMemberName, string type, string value, GlueElement currentElement,
-            AssignOrRecordOnly assignOrRecordOnly)
-        {
-            GlueVariableSetDataResponse response = null;
-            if (ViewModel.IsRunning)
-            {
-                if(currentElement != null)
-                {
-                    var data = new GlueVariableSetData();
-                    data.InstanceOwner = ToGameType(currentElement);
-                    data.Type = type;
-                    data.VariableValue = value;
-                    data.VariableName = rawMemberName;
-                    data.AssignOrRecordOnly = assignOrRecordOnly;
-                    if(!string.IsNullOrEmpty(variableOwningNosName))
-                    {
-                        data.VariableName = "this." + variableOwningNosName + "." + data.VariableName;
-                    }
-                    else
-                    {
-                        data.VariableName = "this." + data.VariableName; 
-                    }
-
-                    var serialized = JsonConvert.SerializeObject(data);
-
-                    var responseAsString = await CommandSender.SendCommand($"SetVariable:{serialized}", PortNumber);
-
-                    if(!string.IsNullOrEmpty(responseAsString))
-                    {
-                        response = JsonConvert.DeserializeObject<GlueVariableSetDataResponse>(responseAsString);
-                    }
-                }
-            }
-            return response;
-        }
 
         #endregion
 

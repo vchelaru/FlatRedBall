@@ -32,7 +32,7 @@ namespace FlatRedBall.Glue.SetVariable
         }
 
         /// <summary>
-        /// Performs logic in response to a changed named object property, such as propagating a rename
+        /// Performs logic in response to a changed named object property or custom variable (instruction), such as propagating a rename
         /// or updating inherited objects when changing SetByDerived.
         /// </summary>
         /// <param name="changedMember">The name of the variable that has changed.</param>

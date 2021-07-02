@@ -220,7 +220,7 @@ namespace EditModeProject.GlueControl
             GlueControl.InstanceLogic.Self.DestroyDynamicallyAddedInstances();
         }
 
-        private static AddObjectDtoResponse HandleDto(GlueControl.Dtos.AddObjectDto dto)
+        private static AddObjectDtoResponse HandleDto(AddObjectDto dto)
         {
             AddObjectDtoResponse valueToReturn = new AddObjectDtoResponse();
 #if IncludeSetVariable
@@ -231,7 +231,7 @@ namespace EditModeProject.GlueControl
             return valueToReturn;
         }
 
-        private static void HandleDto(GlueControl.Dtos.SetEditMode setEditMode)
+        private static void HandleDto(SetEditMode setEditMode)
         {
             var value = setEditMode.IsInEditMode;
 #if SupportsEditMode

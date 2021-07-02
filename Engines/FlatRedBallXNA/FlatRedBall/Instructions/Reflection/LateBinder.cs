@@ -472,8 +472,8 @@ namespace FlatRedBall.Instructions.Reflection
                 if (fieldInfo == null)
                 {
                     string errorMessage =
-                        "LateBinder could not find a field or property by the name of " + propertyName +
-                        ".  Check the name of the property to verify if it is correct.";
+                        $"LateBinder could not find a field or property by the name of {propertyName}" +
+                        $" in the class {mType}.  Check the name of the property to verify if it is correct.";
                     throw new System.MemberAccessException(errorMessage);
                 }
                 else
