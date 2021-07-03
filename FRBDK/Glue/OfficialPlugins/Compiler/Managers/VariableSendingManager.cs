@@ -116,6 +116,10 @@ namespace OfficialPlugins.Compiler.Managers
                         case "CollisionType":
                         case "FirstCollisionMass":
                         case "SecondCollisionMass":
+                        case "FirstSubCollisionSelectedItem":
+                        case "SecondSubCollisionSelectedItem":
+                        case "FirstCollisionName":
+                        case "SecondCollisionName":
                         case "CollisionElasticity":
                             shouldSerializeEntireNos = true;
                             break;

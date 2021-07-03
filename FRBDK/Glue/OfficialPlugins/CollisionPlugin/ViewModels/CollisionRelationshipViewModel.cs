@@ -178,14 +178,14 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         [SyncedProperty]
         public string FirstSubCollisionSelectedItem
         {
-            get { return Get<string>(); }
-            set { SetAndPersist(value); }
+            get => Get<string>(); 
+            set => SetAndPersist(value); 
         }
 
         public ObservableCollection<string> FirstSubCollisionItemsSource
         {
-            get { return Get<ObservableCollection<string>>(); }
-            set { Set(value); }
+            get => Get<ObservableCollection<string>>(); 
+            set => Set(value); 
         }
 
 
