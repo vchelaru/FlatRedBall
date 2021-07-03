@@ -70,6 +70,13 @@ namespace OfficialPlugins.Compiler.Managers
                         Output.Print(response.Exception);
 
                     }
+                    if(response?.WasVariableAssigned != true)
+                    {
+                        // wasn't assigned, the game didn't know what to do, so restart
+                        RefreshManager.Self.StopAndRestartTask($"Unhandled variable {changedMember} changed");
+
+                    }
+
                 }
                 catch
                 {

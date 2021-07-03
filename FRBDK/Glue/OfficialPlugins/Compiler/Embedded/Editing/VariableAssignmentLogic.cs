@@ -247,7 +247,10 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 }
 
                 var needsToBeRecreated = desiredRelationshipType != collisionRelationship.GetType();
-
+                if(needsToBeRecreated)
+                {
+                    handled = false;
+                }
                 //var needsToBeRecreated = shouldBeDelegate != isDelegate;
 
             }
