@@ -397,7 +397,13 @@ namespace OfficialPlugins.Compiler
 
                             if (screen != null)
                             {
-                                GlueCommands.Self.DoOnUiThread(() => GlueState.Self.CurrentElement = screen);
+                                GlueCommands.Self.DoOnUiThread(() =>
+                                {
+                                    if(GlueState.Self.CurrentElement != screen)
+                                    {
+                                        GlueState.Self.CurrentElement = screen;
+                                    }
+                                });
                             }
                         }
                     }

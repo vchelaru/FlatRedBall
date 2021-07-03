@@ -119,7 +119,7 @@ namespace {ProjectNamespace}.GlueControl
             return newObject;
         }
 
-        private static PositionedObject CreateEntity(NamedObjectSave deserialized)
+        private static PositionedObject CreateEntity(Models.NamedObjectSave deserialized)
         {
             PositionedObject newPositionedObject;
             var factory = FlatRedBall.TileEntities.TileEntityInstantiator.GetFactory(deserialized.SourceClassType);
@@ -127,7 +127,7 @@ namespace {ProjectNamespace}.GlueControl
             return newPositionedObject;
         }
 
-        private void AssignVariablesOnNewlyCreatedObject(NamedObjectSave deserialized, object newObject)
+        private void AssignVariablesOnNewlyCreatedObject(Models.NamedObjectSave deserialized, object newObject)
         {
             if (newObject is FlatRedBall.Utilities.INameable asNameable)
             {
