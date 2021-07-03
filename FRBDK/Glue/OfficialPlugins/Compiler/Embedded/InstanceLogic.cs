@@ -28,6 +28,7 @@ namespace {ProjectNamespace}.GlueControl
             }
         }
 
+        public List<ShapeCollection> ShapeCollectionsAddedAtRuntime = new List<ShapeCollection>();
         public ShapeCollection ShapesAddedAtRuntime = new ShapeCollection();
 
         public FlatRedBall.Math.PositionedObjectList<Sprite> SpritesAddedAtRuntime = new FlatRedBall.Math.PositionedObjectList<Sprite>();
@@ -38,6 +39,8 @@ namespace {ProjectNamespace}.GlueControl
 
         #endregion
 
+        #region Create Instance from Glue
+
         public object HandleCreateInstanceCommandFromGlue(Models.NamedObjectSave deserialized)
         {
 
@@ -46,14 +49,14 @@ namespace {ProjectNamespace}.GlueControl
 
             if (deserialized.SourceType == GlueControl.Models.SourceType.Entity)
             {
-                var factory = FlatRedBall.TileEntities.TileEntityInstantiator.GetFactory(deserialized.SourceClassType);
-                newPositionedObject = factory?.CreateNew() as FlatRedBall.PositionedObject;
+                newPositionedObject = CreateEntity(deserialized);
             }
             else if (deserialized.SourceType == GlueControl.Models.SourceType.FlatRedBallType)
             {
                 switch (deserialized.SourceClassType)
                 {
                     case "FlatRedBall.Math.Geometry.AxisAlignedRectangle":
+                    case "AxisAlignedRectangle":
                         var aaRect = new FlatRedBall.Math.Geometry.AxisAlignedRectangle();
                         if (deserialized.AddToManagers)
                         {
@@ -64,6 +67,7 @@ namespace {ProjectNamespace}.GlueControl
 
                         break;
                     case "FlatRedBall.Math.Geometry.Circle":
+                    case "Circle":
                         var circle = new FlatRedBall.Math.Geometry.Circle();
                         if (deserialized.AddToManagers)
                         {
@@ -73,6 +77,7 @@ namespace {ProjectNamespace}.GlueControl
                         newPositionedObject = circle;
                         break;
                     case "FlatRedBall.Math.Geometry.Polygon":
+                    case "Polygon":
                         var polygon = new FlatRedBall.Math.Geometry.Polygon();
                         if (deserialized.AddToManagers)
                         {
@@ -82,6 +87,7 @@ namespace {ProjectNamespace}.GlueControl
                         newPositionedObject = polygon;
                         break;
                     case "FlatRedBall.Sprite":
+                    case "Sprite":
                         var sprite = new FlatRedBall.Sprite();
                         if(deserialized.AddToManagers)
                         {
@@ -91,21 +97,21 @@ namespace {ProjectNamespace}.GlueControl
                         newPositionedObject = sprite;
 
                         break;
+                    case "FlatRedBall.Math.Geometry.ShapeCollection":
+                    case "ShapeCollection":
+                        var shapeCollection = new ShapeCollection();
+                        ShapeCollectionsAddedAtRuntime.Add(shapeCollection);
+                        newObject = shapeCollection;
+                        break;
                 }
             }
-            if (newPositionedObject != null)
+            if(newPositionedObject != null)
             {
-                newPositionedObject.Name = deserialized.InstanceName;
-                newPositionedObject.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
-                newPositionedObject.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
-                newPositionedObject.CreationSource = "Glue"; // Glue did make this, so do this so the game can select it
-
-                foreach (var instruction in deserialized.InstructionSaves)
-                {
-                    
-                    AssignVariable(newPositionedObject, instruction);
-
-                }
+                newObject = newPositionedObject;
+            }
+            if (newObject != null)
+            {
+                AssignVariablesOnNewlyCreatedObject(deserialized, newObject);
             }
 
             newObject = newPositionedObject;
@@ -113,25 +119,34 @@ namespace {ProjectNamespace}.GlueControl
             return newObject;
         }
 
-        private void AddFloatValue(Dtos.AddObjectDto addObjectDto, string name, float value)
+        private static PositionedObject CreateEntity(NamedObjectSave deserialized)
         {
-            AddValue(addObjectDto, name, "float", value);
+            PositionedObject newPositionedObject;
+            var factory = FlatRedBall.TileEntities.TileEntityInstantiator.GetFactory(deserialized.SourceClassType);
+            newPositionedObject = factory?.CreateNew() as FlatRedBall.PositionedObject;
+            return newPositionedObject;
         }
 
-        private void AddStringValue(Dtos.AddObjectDto addObjectDto, string name, string value)
+        private void AssignVariablesOnNewlyCreatedObject(NamedObjectSave deserialized, object newObject)
         {
-            AddValue(addObjectDto, name, "string", value);
-        }
-
-        private void AddValue(Dtos.AddObjectDto addObjectDto, string name, string type, object value)
-        {
-            addObjectDto.InstructionSaves.Add(new FlatRedBall.Content.Instructions.InstructionSave
+            if (newObject is FlatRedBall.Utilities.INameable asNameable)
             {
-                Member = name,
-                Type = type,
-                Value = value
-            });
+                asNameable.Name = deserialized.InstanceName;
+            }
+            if(newObject is PositionedObject asPositionedObject)
+            {
+                asPositionedObject.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
+                asPositionedObject.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
+                asPositionedObject.CreationSource = "Glue"; // Glue did make this, so do this so the game can select it
+            }
+
+            foreach (var instruction in deserialized.InstructionSaves)
+            {
+                AssignVariable(newObject, instruction);
+            }
         }
+
+        #endregion
 
         string GetNameFor(string itemType)
         {
@@ -157,6 +172,28 @@ namespace {ProjectNamespace}.GlueControl
 
             GlueControlManager.Self.EnqueueToOwner(
                 nameof(Dtos.AddObjectDto) + ":" + Newtonsoft.Json.JsonConvert.SerializeObject(addObjectDto), addObjectDto.ElementName);
+        }
+
+        #region Create Instance from Game
+
+        private void AddFloatValue(Dtos.AddObjectDto addObjectDto, string name, float value)
+        {
+            AddValue(addObjectDto, name, "float", value);
+        }
+
+        private void AddStringValue(Dtos.AddObjectDto addObjectDto, string name, string value)
+        {
+            AddValue(addObjectDto, name, "string", value);
+        }
+
+        private void AddValue(Dtos.AddObjectDto addObjectDto, string name, string type, object value)
+        {
+            addObjectDto.InstructionSaves.Add(new FlatRedBall.Content.Instructions.InstructionSave
+            {
+                Member = name,
+                Type = type,
+                Value = value
+            });
         }
 
         public FlatRedBall.PositionedObject CreateInstanceByGame(string entityType, float x, float y)
@@ -349,6 +386,8 @@ namespace {ProjectNamespace}.GlueControl
             return newSprite;
         }
 
+        #endregion
+
         public void DeleteInstanceByGame(PositionedObject positionedObject)
         {
             // Vic June 27, 2021
@@ -364,7 +403,7 @@ namespace {ProjectNamespace}.GlueControl
             GlueControlManager.Self.SendToGlue(dto);
         }
 
-        private void AssignVariable(PositionedObject instance, FlatRedBall.Content.Instructions.InstructionSave instruction)
+        private void AssignVariable(object instance, FlatRedBall.Content.Instructions.InstructionSave instruction)
         {
             string variableName = instruction.Member;
             object variableValue = instruction.Value;

@@ -183,7 +183,7 @@ namespace OfficialPlugins.CollisionPlugin
         private void TryHandleSelectedCollisionRelationship(NamedObjectSave selectedNos)
         {
             var shouldShowControl = false;
-            if (selectedNos?.GetAssetTypeInfo() == AssetTypeInfoManager.Self.CollisionRelationshipAti)
+            if (selectedNos?.IsCollisionRelationship() == true)
             {
                 RefreshViewModelTo(selectedNos);
 
@@ -196,9 +196,12 @@ namespace OfficialPlugins.CollisionPlugin
                 {
                     relationshipControl = new CollisionRelationshipView();
                     relationshipPluginTab = this.CreateTab(relationshipControl, "Collision");
-                    relationshipControl.DataContext = 
-                        CollisionRelationshipViewModelController.ViewModel;
+                    
+
                 }
+
+                RefreshViewModelTo(selectedNos);
+
                 relationshipPluginTab.Show();
             }
             else
@@ -238,7 +241,11 @@ namespace OfficialPlugins.CollisionPlugin
         private void RefreshViewModelTo(NamedObjectSave selectedNos)
         {
             // show UId
-
+            // Vic says - not sure why but we have to remove and re-add the view model and
+            // the view seems to show up properly. If we don't do this, parts don't show up correctly
+            // (the parts that check if the view is a platformer). Vic could investigate this, but calling
+            // this function seems to do the trick. Maybe return here if some other problem is found in the 
+            // future, but for now leave it at this.
             if (relationshipControl != null)
             {
                 relationshipControl.DataContext = null;

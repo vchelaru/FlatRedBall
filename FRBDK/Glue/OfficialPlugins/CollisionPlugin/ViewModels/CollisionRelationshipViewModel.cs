@@ -219,7 +219,7 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         [DependsOn(nameof(CollisionType))]
         public bool IsNoPhysicsChecked
         {
-            get { return CollisionType == CollisionType.NoPhysics; }
+            get => CollisionType == CollisionType.NoPhysics; 
             set
             {
                 if (value)
@@ -232,7 +232,7 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         [DependsOn(nameof(CollisionType))]
         public bool IsMoveCollisionChecked
         {
-            get { return CollisionType == CollisionType.MoveCollision; }
+            get => CollisionType == CollisionType.MoveCollision; 
             set
             {
                 if (value)

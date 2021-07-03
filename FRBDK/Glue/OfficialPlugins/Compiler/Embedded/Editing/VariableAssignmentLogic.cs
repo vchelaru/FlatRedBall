@@ -271,6 +271,15 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     handled = false;
                 }
 
+                if(firstObject != collisionRelationship.FirstAsObject)
+                {
+                    handled = false;
+                }
+                if(secondObject != collisionRelationship.SecondAsObject)
+                {
+                    handled = false;
+                }
+
                 var needsToBeRecreated = desiredRelationshipType != collisionRelationship.GetType();
                 if(needsToBeRecreated)
                 {
