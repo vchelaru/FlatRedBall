@@ -6,11 +6,12 @@ using Microsoft.Xna.Framework;
 using FlatRedBall.Input;
 
 using Vector3 = Microsoft.Xna.Framework.Vector3;
+using FlatRedBall.Utilities;
 
 namespace FlatRedBall.Math.Geometry
 {
     public class ShapeCollection : ICollidable, IEquatable<ShapeCollection> 
-        ,IMouseOver
+        ,IMouseOver, INameable
     {
         #region Fields
 

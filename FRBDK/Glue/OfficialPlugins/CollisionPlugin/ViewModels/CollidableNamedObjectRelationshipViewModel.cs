@@ -28,7 +28,7 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         [DependsOn(nameof(CanBePartitioned))]
         public Visibility AlreadyOrCantBePartitionedVisibility => (!CanBePartitioned).ToVisibility();
 
-        [SyncedProperty]
+        [SyncedProperty(SyncingConditionProperty = nameof(CanBePartitioned))]
         public bool PerformCollisionPartitioning
         {
             get => Get<bool>();
@@ -38,7 +38,7 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         [DependsOn(nameof(PerformCollisionPartitioning))]
         public Visibility PartitioningUiVisibility => PerformCollisionPartitioning.ToVisibility();
 
-        [SyncedProperty]
+        [SyncedProperty(SyncingConditionProperty = nameof(CanBePartitioned))]
         [DefaultValue((int)Axis.X)]
         public Axis SortAxis
         {
@@ -70,7 +70,7 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             }
         }
 
-        [SyncedProperty]
+        [SyncedProperty(SyncingConditionProperty = nameof(CanBePartitioned))]
         [DefaultValue(32f)]
         public float PartitionWidthHeight
         {
@@ -78,7 +78,7 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             set => SetAndPersist(value);
         }
 
-        [SyncedProperty]
+        [SyncedProperty(SyncingConditionProperty = nameof(CanBePartitioned))]
         [DefaultValue(true)]
         public bool IsSortListEveryFrameChecked
         {

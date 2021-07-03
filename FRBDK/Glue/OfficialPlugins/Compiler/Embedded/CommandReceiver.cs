@@ -264,5 +264,27 @@ namespace EditModeProject.GlueControl
         {
             Camera.Main.Position = dto.Position;
         }
+
+        private static MoveObjectToContainerDtoResponse HandleDto(MoveObjectToContainerDto dto)
+        {
+            var toReturn = new MoveObjectToContainerDtoResponse();
+
+            var matchesCurrentScreen = GetIfMatchesCurrentScreen(
+                dto.ElementName, out System.Type ownerType, out Screen currentScreen);
+            if (matchesCurrentScreen)
+            {
+                toReturn.WasObjectMoved = GlueControl.Editing.MoveObjectToContainerLogic.TryMoveObjectToContainer(
+                    dto.ObjectName, dto.ContainerName, EditingManager.Self.ElementEditingMode);
+            }
+            else
+            {
+                // we don't know if it can be moved. We'll assume it can, and when that screen is loaded, it will re-run that and...if it 
+                // fails, then I guess we'll figure out a way to communicate back to Glue that it needs to restart. Actually this may never
+                // happen because moving objects is done in the current screen, but I gues it's technically a possibility so I'll leave this
+                // comment here.
+            }
+
+            return toReturn;
+        }
     }
 }

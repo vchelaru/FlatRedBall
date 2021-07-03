@@ -585,7 +585,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 TypedMemberBase tmb = instance.TypedMembers.FirstOrDefault(member=>member.MemberName == propertyName);
 
-                Type type = tmb.MemberType ?? valueToSet?.GetType();
+                Type type = tmb?.MemberType ?? valueToSet?.GetType();
                 var customTypeName = tmb.CustomTypeName;
 
                 instruction = instance.AddNewGenericInstructionFor(propertyName, type);

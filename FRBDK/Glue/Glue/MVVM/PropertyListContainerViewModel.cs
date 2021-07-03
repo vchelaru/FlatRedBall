@@ -21,18 +21,7 @@ namespace FlatRedBall.Glue.MVVM
     {
         public string OverridingPropertyName { get; set; }
         public Type ConverterType { get; set; }
-
-        public SyncedPropertyAttribute()
-        {
-
-        }
-
-        //public SyncedPropertyAttribute(string overridingPropertyName = null, Type converterType)
-        //{
-        //    OverridingPropertyName = overridingPropertyName;
-        //    ConverterType = converterType;
-        //}
-
+        public string SyncingConditionProperty { get; set; }
     }
     #endregion
 
@@ -55,6 +44,7 @@ namespace FlatRedBall.Glue.MVVM
             public object DefaultValue { get; set; }
             public string OverridingPropertyName { get; set; }
             public bool IsSynced { get; set; }
+            public string SyncingConditionProperty { get; set; }
 
             public override string ToString()
             {
@@ -137,6 +127,9 @@ namespace FlatRedBall.Glue.MVVM
 
                         information.OverridingPropertyName =
                             syncedPropertyAttribute.OverridingPropertyName;
+
+                        information.SyncingConditionProperty =
+                            syncedPropertyAttribute.SyncingConditionProperty;
                     }
                 }
             }
@@ -287,9 +280,18 @@ namespace FlatRedBall.Glue.MVVM
                     {
                         var method = this.GetType().GetMethod(nameof(SetAndPersist)).MakeGenericMethod(defaultVmValue.GetType());
 
-                        // 3rd parameter forces the persist, because if we're in here, the Glue object does not have this
-                        // property
-                        method.Invoke(this, new object[] { defaultVmValue, viewModelPropertyName, true });
+                        var shouldSync = true;
+                        if(!string.IsNullOrEmpty(kvp.Value.SyncingConditionProperty))
+                        {
+                            shouldSync = base.Get<bool>(kvp.Value.SyncingConditionProperty);
+                        }
+
+                        if(shouldSync)
+                        {
+                            // 3rd parameter forces the persist, because if we're in here, the Glue object does not have this
+                            // property
+                            method.Invoke(this, new object[] { defaultVmValue, viewModelPropertyName, true });
+                        }
                         handledByVmDefault = true;
                     }
                 }

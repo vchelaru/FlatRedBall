@@ -246,7 +246,12 @@ namespace OfficialPlugins.Compiler.Managers
 
                 if(addResponse?.WasObjectCreated == true)
                 {
-                    await AdjustNewObjectToCameraPosition(newNamedObject);
+                    var isPositionedObject = newNamedObject.SourceType == SourceType.Entity ||
+                        (newNamedObject.GetAssetTypeInfo()?.IsPositionedObject == true);
+                    if(isPositionedObject)
+                    {
+                        await AdjustNewObjectToCameraPosition(newNamedObject);
+                    }
                 }
                 else
                 {

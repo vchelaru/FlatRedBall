@@ -42,7 +42,8 @@
                         
                     </StackPanel>
                 </StackPanel>
-                <Label Visibility="{Binding AlreadyOrCantBePartitionedVisibility}">This object cannot be manually partitioned.</Label>
+                <Label Visibility="{Binding AlreadyOrCantBePartitionedVisibility}">
+                    This object has no partitioning options available.</Label>
 
 
 

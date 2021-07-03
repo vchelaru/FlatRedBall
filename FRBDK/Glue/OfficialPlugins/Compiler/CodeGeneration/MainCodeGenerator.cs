@@ -54,6 +54,9 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile("Editing.Guides.cs",
                 "Editing/Guides.Generated.cs");
 
+            SaveEmbeddedFile("Editing.MoveObjectToContainerLogic.cs",
+                "Editing/MoveObjectToContainerLogic.Generated.cs");
+
             SaveEmbeddedFile("Editing.CameraLogic.cs",
                 "Editing/CameraLogic.Generated.cs");
 

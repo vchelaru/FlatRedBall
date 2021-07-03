@@ -315,9 +315,11 @@ namespace {ProjectNamespace}
 
                 case nameof(GlueControl.Dtos.MoveObjectToContainerDto):
                     {
+                        response = CommandReceiver.Receive(message);
+
+                        // We have to enqueue this to a certain element, so we still have to deserialize. We could eventually avoid this
+                        // by having some kind of standard interface, but not yet...
                         var dto = JsonConvert.DeserializeObject<GlueControl.Dtos.MoveObjectToContainerDto>(data);
-                        var moveResponse = HandleMoveObjectToContainerDto(dto);
-                        response = JsonConvert.SerializeObject(moveResponse);
                         EnqueueToOwner(message, dto.ElementName);
                     }
                     break;
@@ -329,28 +331,6 @@ namespace {ProjectNamespace}
             }
 
             return response;
-        }
-
-        private MoveObjectToContainerDtoResponse HandleMoveObjectToContainerDto(MoveObjectToContainerDto dto)
-        {
-            var toReturn = new MoveObjectToContainerDtoResponse();
-
-            var matchesCurrentScreen = GetIfMatchesCurrentScreen(
-                dto.ElementName, out System.Type ownerType, out Screen currentScreen);
-            if(matchesCurrentScreen)
-            {
-                toReturn.WasObjectMoved = GlueControl.Editing.MoveObjectToContainerLogic.TryMoveObjectToContainer(
-                    dto.ObjectName, dto.ContainerName, EditingManager.ElementEditingMode);
-            }
-            else
-            {
-                // we don't know if it can be moved. We'll assume it can, and when that screen is loaded, it will re-run that and...if it 
-                // fails, then I guess we'll figure out a way to communicate back to Glue that it needs to restart. Actually this may never
-                // happen because moving objects is done in the current screen, but I gues it's technically a possibility so I'll leave this
-                // comment here.
-            }
-
-            return toReturn;
         }
 
         /// <summary>

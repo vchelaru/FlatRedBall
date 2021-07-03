@@ -39,8 +39,10 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             CollidableNamedObjectRelationshipViewModel viewModel)
         {
             viewModel.GlueObject = thisNamedObject;
-            viewModel.UpdateFromGlueObject();
+            // Set this before updating from Glue object so that we don't persist values which 
+            // don't apply
             viewModel.CanBePartitioned = CollisionCodeGenerator.CanBePartitioned(thisNamedObject);
+            viewModel.UpdateFromGlueObject();
 
             viewModel.CollisionRelationshipsTitle =
                 $"{thisNamedObject.InstanceName} Collision Relationships";

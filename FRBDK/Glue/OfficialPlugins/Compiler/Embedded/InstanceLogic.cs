@@ -114,8 +114,6 @@ namespace {ProjectNamespace}.GlueControl
                 AssignVariablesOnNewlyCreatedObject(deserialized, newObject);
             }
 
-            newObject = newPositionedObject;
-
             return newObject;
         }
 
@@ -148,14 +146,6 @@ namespace {ProjectNamespace}.GlueControl
 
         #endregion
 
-        string GetNameFor(string itemType)
-        {
-            var newName = $"{itemType}Auto{TimeManager.CurrentTime.ToString().Replace(".", "_")}_{NewIndex}";
-            NewIndex++;
-
-            return newName;
-        }
-
         private static void SendAndEnqueue(Dtos.AddObjectDto addObjectDto)
         {
             var currentScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen;
@@ -175,6 +165,14 @@ namespace {ProjectNamespace}.GlueControl
         }
 
         #region Create Instance from Game
+
+        private string GetNameFor(string itemType)
+        {
+            var newName = $"{itemType}Auto{TimeManager.CurrentTime.ToString().Replace(".", "_")}_{NewIndex}";
+            NewIndex++;
+
+            return newName;
+        }
 
         private void AddFloatValue(Dtos.AddObjectDto addObjectDto, string name, float value)
         {
