@@ -22,6 +22,14 @@ namespace FlatRedBall.Math.Collision
         public Func<FirstCollidableT, Line> firstSubCollisionLine;
         public Func<FirstCollidableT, ICollidable> firstSubCollisionCollidable;
 
+        /// <summary>
+        /// Stores the name of the first sub object name used in sub collision. If null, no object. Setting this does not
+        /// change the functionality of the collidable object, it is only used by the level editor to determine if a collision
+        /// relationship has changed. This should not be changed unless the sub collision has changed, and this usually is done
+        /// in generated code.
+        /// </summary>
+        public string FirstSubObjectName { get; set; }
+
         public CollidableVsTileShapeCollectionData(TileShapeCollection tileShapeCollection)
         {
             if (tileShapeCollection == null)
@@ -158,11 +166,11 @@ namespace FlatRedBall.Math.Collision
     {
         CollidableVsTileShapeCollectionData<FirstCollidableT> data;
 
-        public void SetFirstSubCollision(Func<FirstCollidableT, Circle> subCollisionFunc) { data.firstSubCollisionCircle = subCollisionFunc; }
-        public void SetFirstSubCollision(Func<FirstCollidableT, AxisAlignedRectangle> subCollisionFunc) { data.firstSubCollisionRectangle = subCollisionFunc; }
-        public void SetFirstSubCollision(Func<FirstCollidableT, Polygon> subCollisionFunc) { data.firstSubCollisionPolygon = subCollisionFunc; }
-        public void SetFirstSubCollision(Func<FirstCollidableT, Line> subCollisionFunc) { data.firstSubCollisionLine = subCollisionFunc; }
-        public void SetFirstSubCollision(Func<FirstCollidableT, ICollidable> subCollisionFunc) { data.firstSubCollisionCollidable = subCollisionFunc; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, Circle> subCollisionFunc, string subObjectName = null) { data.firstSubCollisionCircle = subCollisionFunc; data.FirstSubObjectName = subObjectName; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, AxisAlignedRectangle> subCollisionFunc, string subObjectName = null) { data.firstSubCollisionRectangle = subCollisionFunc; data.FirstSubObjectName = subObjectName; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, Polygon> subCollisionFunc, string subObjectName = null) { data.firstSubCollisionPolygon = subCollisionFunc; data.FirstSubObjectName = subObjectName; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, Line> subCollisionFunc, string subObjectName = null) { data.firstSubCollisionLine = subCollisionFunc; data.FirstSubObjectName = subObjectName; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, ICollidable> subCollisionFunc, string subObjectName = null) { data.firstSubCollisionCollidable = subCollisionFunc; data.FirstSubObjectName = subObjectName; }
 
         public Action<FirstCollidableT, TileShapeCollection> CollisionOccurred;
 

@@ -340,12 +340,18 @@ namespace OfficialPlugins.Compiler.Managers
 
         internal void HandleNamedObjectValueChanged(string variableName, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly)
         {
-            VariableSendingManager.Self.HandleNamedObjectValueChanged(variableName, oldValue, nos, assignOrRecordOnly);
+            if(ViewModel.IsRunning && ViewModel.IsEditChecked)
+            {
+                VariableSendingManager.Self.HandleNamedObjectValueChanged(variableName, oldValue, nos, assignOrRecordOnly);
+            }
         }
 
         internal void HandleVariableChanged(IElement variableElement, CustomVariable variable)
         {
-            VariableSendingManager.Self.HandleVariableChanged(variableElement, variable);
+            if (ViewModel.IsRunning && ViewModel.IsEditChecked)
+            {
+                VariableSendingManager.Self.HandleVariableChanged(variableElement, variable);
+            }
         }
 
 

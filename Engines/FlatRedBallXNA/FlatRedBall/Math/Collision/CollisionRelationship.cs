@@ -66,6 +66,10 @@ namespace FlatRedBall.Math.Collision
         protected internal float? firstPartitioningSize;
         protected internal float? secondPartitioningSize;
 
+        public string FirstSubObjectName { get; protected set; }
+        public string SecondSubObjectName { get; protected set; }
+
+
         /// <summary>
         /// Whether the CollisionManager autoamtically calls DoCollisions on this relationship every frame.
         /// If set to false, the CollisionManager will not call DoCollision, but DoCollision can be called manually
@@ -148,26 +152,25 @@ namespace FlatRedBall.Math.Collision
         protected Func<SecondCollidableT, Line> secondSubCollisionLine;
         protected Func<SecondCollidableT, ICollidable> secondSubCollisionCollidable;
 
-
         public Action<FirstCollidableT, SecondCollidableT> CollisionOccurred;
 
         #endregion
 
         #region Set SubCollision Methods
 
-        public void SetFirstSubCollision(Func<FirstCollidableT, Circle> subCollisionFunc) { firstSubCollisionCircle = subCollisionFunc; }
-        public void SetFirstSubCollision(Func<FirstCollidableT, AxisAlignedRectangle> subCollisionFunc) { firstSubCollisionRectangle = subCollisionFunc; }
-        public void SetFirstSubCollision(Func<FirstCollidableT, Polygon> subCollisionFunc) { firstSubCollisionPolygon = subCollisionFunc; }
-        public void SetFirstSubCollision(Func<FirstCollidableT, Line> subCollisionFunc) { firstSubCollisionLine = subCollisionFunc; }
-        public void SetFirstSubCollision(Func<FirstCollidableT, ICollidable> subCollisionFunc) { firstSubCollisionCollidable = subCollisionFunc; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, Circle> subCollisionFunc, string subObjectName = null) { firstSubCollisionCircle = subCollisionFunc; FirstSubObjectName = subObjectName; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, AxisAlignedRectangle> subCollisionFunc, string subObjectName = null) { firstSubCollisionRectangle = subCollisionFunc; FirstSubObjectName = subObjectName; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, Polygon> subCollisionFunc, string subObjectName = null) { firstSubCollisionPolygon = subCollisionFunc; FirstSubObjectName = subObjectName; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, Line> subCollisionFunc, string subObjectName = null) { firstSubCollisionLine = subCollisionFunc; FirstSubObjectName = subObjectName; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, ICollidable> subCollisionFunc, string subObjectName = null) { firstSubCollisionCollidable = subCollisionFunc; FirstSubObjectName = subObjectName; }
 
-        public void SetSecondSubCollision(Func<SecondCollidableT, Circle> subCollisionFunc) { secondSubCollisionCircle = subCollisionFunc; }
-        public void SetSecondSubCollision(Func<SecondCollidableT, AxisAlignedRectangle> subCollisionFunc) { secondSubCollisionRectangle = subCollisionFunc; }
-        public void SetSecondSubCollision(Func<SecondCollidableT, Polygon> subCollisionFunc) { secondSubCollisionPolygon = subCollisionFunc; }
-        // todo - I added line for the first because it was needed in the June 2019 monthly. One day I may add the 2nd here, but for now
+        public void SetSecondSubCollision(Func<SecondCollidableT, Circle> subCollisionFunc, string subObjectName = null) { secondSubCollisionCircle = subCollisionFunc; SecondSubObjectName = subObjectName; }
+        public void SetSecondSubCollision(Func<SecondCollidableT, AxisAlignedRectangle> subCollisionFunc, string subObjectName = null) { secondSubCollisionRectangle = subCollisionFunc; SecondSubObjectName = subObjectName; }
+        public void SetSecondSubCollision(Func<SecondCollidableT, Polygon> subCollisionFunc, string subObjectName = null) { secondSubCollisionPolygon = subCollisionFunc; SecondSubObjectName = subObjectName; }
+        // todo - I added support for the Line type for the first because it was needed in the June 2019 monthly. One day I may add the 2nd here, but for now
         // I'm going to just add the first
         //public void SetSecondSubCollision(Func<SecondCollidableT, Line> subCollisionLine) { secondSubCollisionLine = subCollisionFunc; }
-        public void SetSecondSubCollision(Func<SecondCollidableT, ICollidable> subCollisionFunc) { secondSubCollisionCollidable = subCollisionFunc; }
+        public void SetSecondSubCollision(Func<SecondCollidableT, ICollidable> subCollisionFunc, string subObjectName = null) { secondSubCollisionCollidable = subCollisionFunc; SecondSubObjectName = subObjectName; }
 
         #endregion
 
@@ -1727,10 +1730,10 @@ namespace FlatRedBall.Math.Collision
 
         public Action<FirstCollidableT, ShapeCollection> CollisionOccurred;
 
-        public void SetFirstSubCollision(Func<FirstCollidableT, Circle> subCollisionFunc) { firstSubCollisionCircle = subCollisionFunc; }
-        public void SetFirstSubCollision(Func<FirstCollidableT, AxisAlignedRectangle> subCollisionFunc) { firstSubCollisionRectangle = subCollisionFunc; }
-        public void SetFirstSubCollision(Func<FirstCollidableT, Polygon> subCollisionFunc) { firstSubCollisionPolygon = subCollisionFunc; }
-        public void SetFirstSubCollision(Func<FirstCollidableT, ICollidable> subCollisionFunc) { firstSubCollisionCollidable = subCollisionFunc; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, Circle> subCollisionFunc, string subObjectName = null) { firstSubCollisionCircle = subCollisionFunc; FirstSubObjectName = subObjectName; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, AxisAlignedRectangle> subCollisionFunc, string subObjectName = null) { firstSubCollisionRectangle = subCollisionFunc; FirstSubObjectName = subObjectName; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, Polygon> subCollisionFunc, string subObjectName = null) { firstSubCollisionPolygon = subCollisionFunc; FirstSubObjectName = subObjectName; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, ICollidable> subCollisionFunc, string subObjectName = null) { firstSubCollisionCollidable = subCollisionFunc; FirstSubObjectName = subObjectName; }
 
         public override object FirstAsObject => singleObject;
         public override object SecondAsObject => shapeCollection;
@@ -1872,13 +1875,14 @@ namespace FlatRedBall.Math.Collision
         protected Func<FirstCollidableT, AxisAlignedRectangle> firstSubCollisionRectangle;
         protected Func<FirstCollidableT, Polygon> firstSubCollisionPolygon;
         protected Func<FirstCollidableT, ICollidable> firstSubCollisionCollidable;
-        
+
+
         public Action<FirstCollidableT, ShapeCollection> CollisionOccurred;
 
-        public void SetFirstSubCollision(Func<FirstCollidableT, Circle> subCollisionFunc) { firstSubCollisionCircle = subCollisionFunc; }
-        public void SetFirstSubCollision(Func<FirstCollidableT, AxisAlignedRectangle> subCollisionFunc) { firstSubCollisionRectangle = subCollisionFunc; }
-        public void SetFirstSubCollision(Func<FirstCollidableT, Polygon> subCollisionFunc) { firstSubCollisionPolygon = subCollisionFunc; }
-        public void SetFirstSubCollision(Func<FirstCollidableT, ICollidable> subCollisionFunc) { firstSubCollisionCollidable = subCollisionFunc; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, Circle> subCollisionFunc, string subObjectName = null) { firstSubCollisionCircle = subCollisionFunc; FirstSubObjectName = subObjectName; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, AxisAlignedRectangle> subCollisionFunc, string subObjectName = null) { firstSubCollisionRectangle = subCollisionFunc; FirstSubObjectName = subObjectName; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, Polygon> subCollisionFunc, string subObjectName = null) { firstSubCollisionPolygon = subCollisionFunc; FirstSubObjectName = subObjectName; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, ICollidable> subCollisionFunc, string subObjectName = null) { firstSubCollisionCollidable = subCollisionFunc; FirstSubObjectName = subObjectName; }
 
 
         public override object FirstAsObject => list;

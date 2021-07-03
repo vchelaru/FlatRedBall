@@ -161,6 +161,22 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 var isSecondList = secondObject is IList;
                 var isSecondShapeCollection = secondObject is ShapeCollection;
 
+                var firstSubCollision = Get<string>("FirstSubCollisionSelectedItem");
+
+                if (firstSubCollision == "<Entire Object>")
+                {
+                    firstSubCollision = null;
+                }
+
+                var secondSubCollision = Get<string>("SecondSubCollisionSelectedItem");
+
+                if (secondSubCollision == "<Entire Object>")
+                {
+                    secondSubCollision = null;
+                }
+
+
+
                 var existingRelationshipTypeName = collisionRelationship.GetType().FullName;
 
                 Type desiredRelationshipType = null;
@@ -246,12 +262,20 @@ namespace {ProjectNamespace}.GlueControl.Editing
                         break;
                 }
 
+                if(firstSubCollision != collisionRelationship.FirstSubObjectName)
+                {
+                    handled = false;
+                }
+                else if(secondSubCollision != collisionRelationship.SecondSubObjectName)
+                {
+                    handled = false;
+                }
+
                 var needsToBeRecreated = desiredRelationshipType != collisionRelationship.GetType();
                 if(needsToBeRecreated)
                 {
                     handled = false;
                 }
-                //var needsToBeRecreated = shouldBeDelegate != isDelegate;
 
             }
 

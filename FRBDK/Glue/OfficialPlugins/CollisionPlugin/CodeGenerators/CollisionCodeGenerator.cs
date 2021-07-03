@@ -184,14 +184,14 @@ namespace OfficialPlugins.CollisionPlugin
                 collisionType != CollisionType.PlatformerCloudCollision &&
                 collisionType != CollisionType.PlatformerSolidCollision)
             {
-                codeBlock.Line($"{instanceName}.SetFirstSubCollision(item => item.{firstSubCollision});");
+                codeBlock.Line($"{instanceName}.SetFirstSubCollision(item => item.{firstSubCollision}, \"{firstSubCollision}\");");
             }
             if(!string.IsNullOrEmpty(secondSubCollision) && 
                 secondSubCollision != CollisionRelationshipViewModel.EntireObject &&
                 collisionType != CollisionType.PlatformerCloudCollision &&
                 collisionType != CollisionType.PlatformerSolidCollision)
             {
-                codeBlock.Line($"{instanceName}.SetSecondSubCollision(item => item.{secondSubCollision});");
+                codeBlock.Line($"{instanceName}.SetSecondSubCollision(item => item.{secondSubCollision}, \"{secondSubCollision}\");");
             }
 
             if(isFirstList && isSecondList)
