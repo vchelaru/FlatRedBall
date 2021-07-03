@@ -110,6 +110,13 @@ namespace Microsoft.Xna.Framework
             }
         }
 
+        /// <summary>
+        /// Returns a unit vector with a Z value of 0 pointing in the direction
+        /// specified by the radians value.
+        /// </summary>
+        /// <param name="radians">The direction in radians, where 0 is to the right, and
+        /// values increase counterclockwise.</param>
+        /// <returns>A new Vector3 pointing in the desired direction.</returns>
         public static Vector3 FromAngle(float radians)
         {
             return new Vector3(

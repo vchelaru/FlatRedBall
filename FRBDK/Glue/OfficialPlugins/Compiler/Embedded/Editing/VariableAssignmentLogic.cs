@@ -6,8 +6,13 @@ using FlatRedBall.Math.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using FlatRedBall.Math.Collision;
+using System.Collections;
+
 
 namespace {ProjectNamespace}.GlueControl.Editing
 {
@@ -93,6 +98,15 @@ namespace {ProjectNamespace}.GlueControl.Editing
                                 response.WasVariableAssigned = screen.ApplyVariable(splitVariable[2], variableValue, sprite);
                             }
                         }
+
+                        if(!response.WasVariableAssigned)
+                        {
+                            if(splitVariable[2] == "Entire CollisionRelationship")
+                            {
+                                response.WasVariableAssigned = TryAssignCollisionRelationship(splitVariable[1],
+                                    JsonConvert.DeserializeObject< Models.NamedObjectSave>(data.VariableValue));
+                            }
+                        }
                     }
                     if (!response.WasVariableAssigned)
                     {
@@ -114,7 +128,133 @@ namespace {ProjectNamespace}.GlueControl.Editing
             }
             return response;
         }
-    
+
+        private static bool TryAssignCollisionRelationship(string relationshipName, Models.NamedObjectSave namedObject)
+        {
+            var handled = false;
+
+            var collisionRelationship = CollisionManager.Self.Relationships.FirstOrDefault(item => item.Name == relationshipName);
+
+            if(collisionRelationship != null)
+            {
+                T Get<T>(string name) => GlueControl.Models.PropertySaveListExtensions.GetValue<T>(namedObject.Properties, name);
+
+                //DelegateCollision
+                var collisionType = Get<int>("CollisionType");
+
+                var firstMass = Get<float>("FirstCollisionMass");
+                var secondMass = Get<float>("SecondCollisionMass");
+                var elasticity = Get<float>("CollisionElasticity");
+
+                var firstObjectName = Get<string>("FirstCollisionName");
+                var secondObjectName = Get<string>("SecondCollisionName");
+
+                object firstObject = null;
+                object secondObject = null;
+
+                var currentScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen;
+
+                currentScreen.GetInstance($"{firstObjectName}.Unused", currentScreen, out _, out firstObject);
+                currentScreen.GetInstance($"{secondObjectName}.Unused", currentScreen, out _, out secondObject);
+
+                var isFirstList = firstObject is IList;
+                var isSecondList = secondObject is IList;
+                var isSecondShapeCollection = secondObject is ShapeCollection;
+
+                var existingRelationshipTypeName = collisionRelationship.GetType().FullName;
+
+                Type desiredRelationshipType = null;
+
+                Type GetStandardCollisionRelationshipType()
+                {
+                    if(isFirstList && isSecondList)
+                    {
+                        return typeof(ListVsListRelationship<,>)
+                            .MakeGenericType(firstObject.GetType().GenericTypeArguments[0], secondObject.GetType().GenericTypeArguments[0]);
+                    }
+                    else if(isFirstList && isSecondShapeCollection)
+                    {
+                        return typeof(ListVsShapeCollectionRelationship<>)
+                            .MakeGenericType(firstObject.GetType().GenericTypeArguments[0]);
+                    }
+                    else if(isFirstList)
+                    {
+                        return typeof(ListVsPositionedObjectRelationship<,>)
+                            .MakeGenericType(firstObject.GetType().GenericTypeArguments[0], secondObject.GetType());
+                    }
+                    else if(isSecondList)
+                    {
+                        return typeof(PositionedObjectVsListRelationship<,>)
+                            .MakeGenericType(firstObject.GetType(), secondObject.GetType().GenericTypeArguments[0]);
+                    }
+                    else if(isSecondShapeCollection)
+                    {
+                        return typeof(PositionedObjectVsShapeCollection<>)
+                            .MakeGenericType(firstObject.GetType());
+                    }
+                    else
+                    {
+                        return typeof(PositionedObjectVsPositionedObjectRelationship<,>)
+                            .MakeGenericType(firstObject.GetType(), secondObject.GetType());
+                    }
+                }
+
+                // This uses the Glue CollisionPlugin's CollisionType with the following values:
+                switch (collisionType)
+                {
+                    case 0:
+                        //NoPhysics = 0,
+                        collisionRelationship.SetEventOnlyCollision();
+                        desiredRelationshipType = GetStandardCollisionRelationshipType();
+                        handled = true;
+                        break;
+                    case 1:
+                        //MoveCollision = 1,
+                        collisionRelationship.SetMoveCollision(firstMass, secondMass);
+                        desiredRelationshipType = GetStandardCollisionRelationshipType();
+                        handled = true;
+                        break;
+                    case 2:
+                        //BounceCollision = 2,
+                        collisionRelationship.SetBounceCollision(firstMass, secondMass, elasticity);
+                        desiredRelationshipType = GetStandardCollisionRelationshipType();
+                        handled = true;
+                        break;
+                    case 3:
+                        //PlatformerSolidCollision = 3,
+                    case 4:
+                        //PlatformerCloudCollision = 4,
+
+                        if (isFirstList && isSecondList)
+                        {
+                            desiredRelationshipType = typeof(FlatRedBall.Math.Collision.DelegateListVsListRelationship<,>)
+                                .MakeGenericType(firstObject.GetType().GenericTypeArguments[0], secondObject.GetType().GenericTypeArguments[0]);
+                        }
+                        else if (isFirstList)
+                        {
+                            desiredRelationshipType = typeof(FlatRedBall.Math.Collision.DelegateListVsSingleRelationship<,>)
+                                .MakeGenericType(firstObject.GetType().GenericTypeArguments[0], secondObject.GetType());
+                        }
+                        else if (isSecondList)
+                        {
+                            desiredRelationshipType = typeof(FlatRedBall.Math.Collision.DelegateSingleVsListRelationship<,>)
+                                .MakeGenericType(firstObject.GetType(), secondObject.GetType().GenericTypeArguments[0]);
+                        }
+
+                        break;
+                    case 5:
+                        break;
+                }
+
+                var needsToBeRecreated = desiredRelationshipType != collisionRelationship.GetType();
+
+                //var needsToBeRecreated = shouldBeDelegate != isDelegate;
+
+            }
+
+            return handled;
+        }
+
         private static object ConvertVariableValue(GlueVariableSetData data)
         {
             var type = data.Type;

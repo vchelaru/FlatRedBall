@@ -99,6 +99,28 @@ namespace OfficialPlugins.Compiler.Managers
                 {
                     changedMember = "IsActive";
                 }
+                // If one of a few variables have changed, we are going to send over the entire collision relationship 
+                // so the game can re-create it 
+                else
+                {
+                    var shouldSerializeEntireNos = false;
+                    switch(changedMember)
+                    {
+                        case "CollisionType":
+                        case "FirstCollisionMass":
+                        case "SecondCollisionMass":
+                        case "CollisionElasticity":
+                            shouldSerializeEntireNos = true;
+                            break;
+                    }
+
+                    if(shouldSerializeEntireNos)
+                    {
+                        changedMember = "Entire CollisionRelationship";
+                        type = "NamedObjectSave";
+                        value = JsonConvert.SerializeObject(nos);
+                    }
+                }
             }
 
             #endregion

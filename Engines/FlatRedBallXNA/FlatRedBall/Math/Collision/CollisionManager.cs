@@ -116,6 +116,7 @@ namespace FlatRedBall.Math.Collision
             return relationship;
         }
 
+        // Entity vs ShapeCollection
         public PositionedObjectVsShapeCollection<FirstCollidableT> CreateRelationship<FirstCollidableT>(FirstCollidableT first, ShapeCollection shapeCollection)
             where FirstCollidableT : PositionedObject, ICollidable
         {

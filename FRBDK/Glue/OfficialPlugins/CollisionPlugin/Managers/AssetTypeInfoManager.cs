@@ -252,65 +252,46 @@ namespace OfficialPlugins.CollisionPlugin.Managers
 
         public static string GetFirstGenericType(NamedObjectSave collisionRelationship, out bool isList)
         {
-            var firstName = collisionRelationship.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.FirstCollisionName));
-
-            var container = collisionRelationship.GetContainer();
-
-            string firstType = null;
-            isList = false;
-
-            if(container != null)
-            {
-                var firstObject = container.GetNamedObject(firstName);
-
-                isList = firstObject?.IsList == true;
-
-                if(firstObject != null)
-                {
-                    if(firstObject.IsList)
-                    {
-                        firstType = firstObject.SourceClassGenericType?.Replace("\\", ".");
-                    }
-                    else
-                    {
-                        firstType = NamedObjectSaveCodeGenerator.GetQualifiedTypeName(firstObject);
-                    }
-                }
-            }
-
-
-            return firstType;
+            var propertyName = nameof(CollisionRelationshipViewModel.FirstCollisionName);
+            return GetGenericTypeForPropertyName(collisionRelationship, out isList, propertyName);
         }
 
         public static string GetSecondGenericType(NamedObjectSave collisionRelationship, out bool isList)
         {
-            var secondName = collisionRelationship.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.SecondCollisionName));
+            var propertyName = nameof(CollisionRelationshipViewModel.SecondCollisionName);
+            return GetGenericTypeForPropertyName(collisionRelationship, out isList, propertyName);
+        }
+
+        private static string GetGenericTypeForPropertyName(NamedObjectSave collisionRelationship, out bool isList, string propertyName)
+        {
+            var objectName = collisionRelationship.Properties.GetValue<string>(propertyName);
 
             var container = collisionRelationship.GetContainer();
 
-            string secondType = null;
+            string type = null;
             isList = false;
 
-            if(container != null)
+            if (container != null)
             {
-                var secondObject = container.GetNamedObject(secondName);
+                var namedObject = container.GetNamedObject(objectName);
 
-                isList = secondObject?.IsList == true;
+                isList = namedObject?.IsList == true;
 
-                if(secondObject != null)
+                if (namedObject != null)
                 {
-                    if(secondObject.IsList)
+                    if (namedObject.IsList)
                     {
-                        secondType = secondObject.SourceClassGenericType?.Replace("\\", ".");
+                        type = namedObject.SourceClassGenericType?.Replace("\\", ".");
                     }
                     else
                     {
-                        secondType = NamedObjectSaveCodeGenerator.GetQualifiedTypeName(secondObject);
+                        type = NamedObjectSaveCodeGenerator.GetQualifiedTypeName(namedObject);
                     }
                 }
             }
 
-            return secondType;
+
+            return type;
         }
     }
 }

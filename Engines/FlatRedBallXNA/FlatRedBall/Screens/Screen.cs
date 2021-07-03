@@ -605,20 +605,20 @@ namespace FlatRedBall.Screens
         /// should begin with "this" if it is an object on the screen. For example, passing "this.SpriteList"
         /// will return the SpriteList object.
         /// </summary>
-        /// <param name="variableName">The variable name with dots such as "this.SpriteList"</param>
+        /// <param name="instanceName">The variable name with dots such as "this.SpriteList"</param>
         /// <param name="container">The container of the object. Should be null for objects contained in the screen.</param>
         /// <param name="afterDot">The variable after the instance has been returned, allowing for recursive calls. For example, passing Sprite.X will return X</param>
         /// <param name="instance">The instance on the variable before the first dot. </param>
-        public void GetInstance(string variableName, object container, out string afterDot, out object instance)
+        public void GetInstance(string instanceName, object container, out string afterDot, out object instance)
         {
-            var indexOfDot = variableName.IndexOf(".");
+            var indexOfDot = instanceName.IndexOf(".");
 
-            string beforeDot = variableName;
+            string beforeDot = instanceName;
             afterDot = string.Empty;
             if (indexOfDot != -1)
             {
-                beforeDot = variableName.Substring(0, indexOfDot);
-                afterDot = variableName.Substring(indexOfDot + 1);
+                beforeDot = instanceName.Substring(0, indexOfDot);
+                afterDot = instanceName.Substring(indexOfDot + 1);
             }
             instance = null;
             if (container == null && beforeDot == "this")
@@ -629,14 +629,14 @@ namespace FlatRedBall.Screens
             {
                 // Doesnt start with "this" so it's a static variable
                 var ownerType = ScreenManager.MainAssembly.GetTypes()
-                    .Where(item => variableName.StartsWith(item.FullName))
+                    .Where(item => instanceName.StartsWith(item.FullName))
                     // longest means it's the most derived.
                     .OrderBy(item => item.Name.Length)
                     .LastOrDefault();
 
                 if(ownerType != null)
                 {
-                    afterDot = variableName.Substring((ownerType.FullName + ".").Length);
+                    afterDot = instanceName.Substring((ownerType.FullName + ".").Length);
                     instance = ownerType;
                 }
             }
