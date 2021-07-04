@@ -175,7 +175,6 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             addObjectModel.SelectedAti =
                 AssetTypeInfoManager.Self.CollisionRelationshipAti;
                 //"FlatRedBall.Math.Collision.CollisionRelationship";
-            addObjectModel.ObjectName = "ToBeRenamed";
 
             addObjectModel.Properties.SetValue(nameof(CollisionRelationshipViewModel.IsAutoNameEnabled), true);
 
@@ -247,6 +246,9 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             var sourceClassType = AssetTypeInfoManager.GetCollisionRelationshipSourceClassType(container, addObjectModel.Properties);
             addObjectModel.SourceClassType = sourceClassType;
+
+            // setting the SourceClassType sets the ObjectName. Overwrite it...
+            addObjectModel.ObjectName = "ToBeRenamed";
 
             var newNos =
                 GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectModel,

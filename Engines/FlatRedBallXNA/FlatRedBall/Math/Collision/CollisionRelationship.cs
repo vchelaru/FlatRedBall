@@ -1,6 +1,7 @@
 ﻿using FlatRedBall;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
+using FlatRedBall.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,7 +43,10 @@ namespace FlatRedBall.Math.Collision
 
     #region Base Implementations
 
-    public abstract class CollisionRelationship
+    /// <summary>
+    /// Base implementation for object which provides collision logic between two objects.
+    /// </summary>
+    public abstract class CollisionRelationship : INameable
     {
         protected CollisionType CollisionType = CollisionType.EventOnlyCollision;
 

@@ -26,6 +26,9 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
         static void RefreshAvailableCollisionObjects(IElement element, CollisionRelationshipViewModel viewModel, NamedObjectSave collisionRelationship)
         {
+            var firstBefore = collisionRelationship.Properties.GetValue<string>(nameof(viewModel.FirstCollisionName));
+            var secondBefore = collisionRelationship.Properties.GetValue<string>(nameof(viewModel.SecondCollisionName));
+
             viewModel.FirstCollisionItemSource.Clear();
             viewModel.SecondCollisionItemSource.Clear();
 
@@ -56,6 +59,15 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             // allow the user to select "None" as the 2nd type:
             viewModel.SecondCollisionItemSource.Add(CollisionRelationshipViewModel.AlwaysColliding);
+
+            if(viewModel.FirstCollisionItemSource.Contains(firstBefore))
+            {
+                viewModel.FirstCollisionName = firstBefore;
+            }
+            if(viewModel.SecondCollisionItemSource.Contains(secondBefore))
+            {
+                viewModel.SecondCollisionName = secondBefore;
+            }
         }
 
         internal static void HandleFirstCollisionPartitionClicked(CollisionRelationshipViewModel viewModel)

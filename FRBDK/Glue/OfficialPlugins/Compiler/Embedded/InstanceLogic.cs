@@ -125,7 +125,7 @@ namespace {ProjectNamespace}.GlueControl
 
         private object TryCreateCollisionRelationship(Models.NamedObjectSave deserialized)
         {
-            var type = Editing.VariableAssignmentLogic.GetDesiredRelationshipType(deserialized);
+            var type = Editing.VariableAssignmentLogic.GetDesiredRelationshipType(deserialized, out object firstObject, out object secondObject);
             if(type == null)
             {
                 return null;
@@ -137,11 +137,24 @@ namespace {ProjectNamespace}.GlueControl
                 var constructor = type.GetConstructors().FirstOrDefault();
                 if (constructor != null)
                 {
-                    toReturn = constructor.Invoke(new object[0]) as FlatRedBall.Math.Collision.CollisionRelationship;
+                    List<object> parameters = new List<object>();
+                    if(firstObject != null)
+                    {
+                        parameters.Add(firstObject);
+                    }
+                    if(secondObject != null)
+                    {
+                        parameters.Add(secondObject);
+                    }
+                    var collisionRelationship =
+                        constructor.Invoke(parameters.ToArray()) as FlatRedBall.Math.Collision.CollisionRelationship;
+                    toReturn = collisionRelationship;
+                    FlatRedBall.Math.Collision.CollisionManager.Self.Relationships.Add(collisionRelationship);
                 }
                 return toReturn;
             }
         }
+
 
         private static PositionedObject CreateEntity(Models.NamedObjectSave deserialized)
         {

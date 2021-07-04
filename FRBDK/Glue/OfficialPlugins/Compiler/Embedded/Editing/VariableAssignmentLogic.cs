@@ -99,12 +99,23 @@ namespace {ProjectNamespace}.GlueControl.Editing
                             }
                         }
 
+                        // Try "Entire CollisionRelationship" first, and if not, do the normal assignment
                         if(!response.WasVariableAssigned)
                         {
                             if(splitVariable[2] == "Entire CollisionRelationship")
                             {
                                 response.WasVariableAssigned = TryAssignCollisionRelationship(splitVariable[1],
                                     JsonConvert.DeserializeObject< Models.NamedObjectSave>(data.VariableValue));
+                            }
+                        }
+                        if(!response.WasVariableAssigned)
+                        {
+                            var collisionRelationship = CollisionManager.Self.Relationships.FirstOrDefault(item =>
+                                item.Name == splitVariable[1]);
+
+                            if(collisionRelationship != null)
+                            {
+                                response.WasVariableAssigned = screen.ApplyVariable(splitVariable[2], variableValue, collisionRelationship);
                             }
                         }
                     }
@@ -239,14 +250,19 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
         public static Type GetDesiredRelationshipType(Models.NamedObjectSave namedObject)
         {
+            return GetDesiredRelationshipType(namedObject, out _, out _);
+        }
+
+        public static Type GetDesiredRelationshipType(Models.NamedObjectSave namedObject, out object firstObject, out object secondObject)
+        {
             T Get<T>(string name) => GlueControl.Models.PropertySaveListExtensions.GetValue<T>(namedObject.Properties, name);
             var collisionType = Get<int>("CollisionType");
 
             var firstObjectName = Get<string>("FirstCollisionName");
             var secondObjectName = Get<string>("SecondCollisionName");
 
-            object firstObject = null;
-            object secondObject = null;
+            firstObject = null;
+            secondObject = null;
 
             var currentScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen;
 
@@ -261,37 +277,40 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
             Type desiredRelationshipType = null;
 
+            var firstType = firstObject?.GetType();
+            var secondType = secondObject?.GetType();
+
             Type GetStandardCollisionRelationshipType()
             {
                 if (isFirstList && isSecondList)
                 {
                     return typeof(ListVsListRelationship<,>)
-                        .MakeGenericType(firstObject.GetType().GenericTypeArguments[0], secondObject.GetType().GenericTypeArguments[0]);
+                        .MakeGenericType(firstType.GenericTypeArguments[0], secondType.GenericTypeArguments[0]);
                 }
                 else if (isFirstList && isSecondShapeCollection)
                 {
                     return typeof(ListVsShapeCollectionRelationship<>)
-                        .MakeGenericType(firstObject.GetType().GenericTypeArguments[0]);
+                        .MakeGenericType(firstType.GenericTypeArguments[0]);
                 }
                 else if (isFirstList)
                 {
                     return typeof(ListVsPositionedObjectRelationship<,>)
-                        .MakeGenericType(firstObject.GetType().GenericTypeArguments[0], secondObject.GetType());
+                        .MakeGenericType(firstType.GenericTypeArguments[0], secondType);
                 }
                 else if (isSecondList)
                 {
                     return typeof(PositionedObjectVsListRelationship<,>)
-                        .MakeGenericType(firstObject.GetType(), secondObject.GetType().GenericTypeArguments[0]);
+                        .MakeGenericType(firstType, secondType.GenericTypeArguments[0]);
                 }
                 else if (isSecondShapeCollection)
                 {
                     return typeof(PositionedObjectVsShapeCollection<>)
-                        .MakeGenericType(firstObject.GetType());
+                        .MakeGenericType(firstType);
                 }
                 else
                 {
                     return typeof(PositionedObjectVsPositionedObjectRelationship<,>)
-                        .MakeGenericType(firstObject.GetType(), secondObject.GetType());
+                        .MakeGenericType(firstType, secondType);
                 }
             }
 

@@ -273,7 +273,7 @@ namespace OfficialPlugins.CollisionPlugin.Managers
 
         public static string GetSecondGenericType(NamedObjectSave nos, out bool isList)
         {
-            return GetSecondGenericType(nos, out isList);
+            return GetSecondGenericType(nos.GetContainer(), nos.Properties, out isList);
         }
 
         public static string GetSecondGenericType(GlueElement containerGlueElement, List<PropertySave> properties, out bool isList)
