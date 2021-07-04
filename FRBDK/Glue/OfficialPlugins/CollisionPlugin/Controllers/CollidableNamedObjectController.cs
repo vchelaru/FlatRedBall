@@ -177,37 +177,35 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 //"FlatRedBall.Math.Collision.CollisionRelationship";
             addObjectModel.ObjectName = "ToBeRenamed";
 
-            var newNos =
-                GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectModel,
-                container, listToAddTo: null);
+            addObjectModel.Properties.SetValue(nameof(CollisionRelationshipViewModel.IsAutoNameEnabled), true);
 
-            newNos.Properties.SetValue(nameof(CollisionRelationshipViewModel.IsAutoNameEnabled), true);
+            string effectiveSecondCollisionName;
+            NamedObjectSave effectiveFirstNos;
 
             bool needToInvert = firstNos.SourceType != SourceType.Entity &&
                 firstNos.IsList == false;
 
-            //if(!needToInvert)
-            //{
-            //    needToInvert = 
-            //}
-
-            string effectiveSecondCollisionName;
-            NamedObjectSave effectiveFirstNos;
             if (needToInvert)
             {
-                newNos.SetFirstCollidableObjectName(secondNosName);
-                newNos.SetSecondCollidableObjectName(firstNosName);
+                addObjectModel.Properties.SetValue(nameof(CollisionRelationshipViewModel.FirstCollisionName),
+                        secondNosName);
+                addObjectModel.Properties.SetValue(nameof(CollisionRelationshipViewModel.SecondCollisionName),
+                        firstNosName);
+
                 effectiveFirstNos = secondNos;
                 effectiveSecondCollisionName = firstNosName;
             }
             else
             {
-                newNos.SetFirstCollidableObjectName(firstNosName);
-                newNos.SetSecondCollidableObjectName(secondNosName);
+                addObjectModel.Properties.SetValue(nameof(CollisionRelationshipViewModel.FirstCollisionName),
+                        firstNosName);
+                addObjectModel.Properties.SetValue(nameof(CollisionRelationshipViewModel.SecondCollisionName),
+                        secondNosName);
+
                 effectiveFirstNos = firstNos;
                 effectiveSecondCollisionName = secondNosName;
             }
-
+            
             if(effectiveSecondCollisionName == "SolidCollision")
             {
                 EntitySave firstEntityType = null;
@@ -228,7 +226,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
                 if(isPlatformer)
                 {
-                    newNos.Properties.SetValue(
+                    addObjectModel.Properties.SetValue(
                         nameof(CollisionRelationshipViewModel.CollisionType),
                         (int)CollisionType.PlatformerSolidCollision);
 
@@ -236,16 +234,21 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 else
                 {
 
-                    newNos.Properties.SetValue(
+                    addObjectModel.Properties.SetValue(
                         nameof(CollisionRelationshipViewModel.CollisionType),
                         (int)CollisionType.BounceCollision);
 
 
-                    newNos.Properties.SetValue(
+                    addObjectModel.Properties.SetValue(
                         nameof(CollisionRelationshipViewModel.CollisionElasticity),
                         0.0f);
                 }
             }
+
+            var newNos =
+                GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectModel,
+                container, listToAddTo: null);
+
 
             CollisionRelationshipViewModelController.TryFixSourceClassType(newNos);
 

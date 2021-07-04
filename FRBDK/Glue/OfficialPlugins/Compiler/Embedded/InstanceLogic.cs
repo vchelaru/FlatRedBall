@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using {ProjectNamespace}.GlueControl.Models;
 
 
 namespace {ProjectNamespace}.GlueControl
@@ -50,6 +51,11 @@ namespace {ProjectNamespace}.GlueControl
             if (deserialized.SourceType == GlueControl.Models.SourceType.Entity)
             {
                 newPositionedObject = CreateEntity(deserialized);
+            }
+            else if(deserialized.SourceType == GlueControl.Models.SourceType.FlatRedBallType &&
+                deserialized.IsCollisionRelationship())
+            {
+                newObject = TryCreateCollisionRelationship(deserialized);
             }
             else if (deserialized.SourceType == GlueControl.Models.SourceType.FlatRedBallType)
             {
@@ -115,6 +121,26 @@ namespace {ProjectNamespace}.GlueControl
             }
 
             return newObject;
+        }
+
+        private object TryCreateCollisionRelationship(Models.NamedObjectSave deserialized)
+        {
+            var type = Editing.VariableAssignmentLogic.GetDesiredRelationshipType(deserialized);
+            if(type == null)
+            {
+                return null;
+            }
+            else
+            {
+                object toReturn = null;
+                // can we make a new one here?
+                var constructor = type.GetConstructors().FirstOrDefault();
+                if (constructor != null)
+                {
+                    toReturn = constructor.Invoke(new object[0]) as FlatRedBall.Math.Collision.CollisionRelationship;
+                }
+                return toReturn;
+            }
         }
 
         private static PositionedObject CreateEntity(Models.NamedObjectSave deserialized)
@@ -386,6 +412,8 @@ namespace {ProjectNamespace}.GlueControl
 
         #endregion
 
+        #region Delete Instance from Game
+        
         public void DeleteInstanceByGame(PositionedObject positionedObject)
         {
             // Vic June 27, 2021
@@ -400,6 +428,8 @@ namespace {ProjectNamespace}.GlueControl
 
             GlueControlManager.Self.SendToGlue(dto);
         }
+
+        #endregion
 
         private void AssignVariable(object instance, FlatRedBall.Content.Instructions.InstructionSave instruction)
         {

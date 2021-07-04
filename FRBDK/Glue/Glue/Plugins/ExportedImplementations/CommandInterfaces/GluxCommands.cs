@@ -953,6 +953,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             newNos.SourceClassGenericType = addObjectViewModel.SourceClassGenericType;
 
+            newNos.Properties.AddRange(addObjectViewModel.Properties);
+
             AddNamedObjectTo(newNos, element, listToAddTo);
 
             GluxCommands.Self.SaveGlux();

@@ -179,41 +179,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
                 var existingRelationshipTypeName = collisionRelationship.GetType().FullName;
 
-                Type desiredRelationshipType = null;
-
-                Type GetStandardCollisionRelationshipType()
-                {
-                    if(isFirstList && isSecondList)
-                    {
-                        return typeof(ListVsListRelationship<,>)
-                            .MakeGenericType(firstObject.GetType().GenericTypeArguments[0], secondObject.GetType().GenericTypeArguments[0]);
-                    }
-                    else if(isFirstList && isSecondShapeCollection)
-                    {
-                        return typeof(ListVsShapeCollectionRelationship<>)
-                            .MakeGenericType(firstObject.GetType().GenericTypeArguments[0]);
-                    }
-                    else if(isFirstList)
-                    {
-                        return typeof(ListVsPositionedObjectRelationship<,>)
-                            .MakeGenericType(firstObject.GetType().GenericTypeArguments[0], secondObject.GetType());
-                    }
-                    else if(isSecondList)
-                    {
-                        return typeof(PositionedObjectVsListRelationship<,>)
-                            .MakeGenericType(firstObject.GetType(), secondObject.GetType().GenericTypeArguments[0]);
-                    }
-                    else if(isSecondShapeCollection)
-                    {
-                        return typeof(PositionedObjectVsShapeCollection<>)
-                            .MakeGenericType(firstObject.GetType());
-                    }
-                    else
-                    {
-                        return typeof(PositionedObjectVsPositionedObjectRelationship<,>)
-                            .MakeGenericType(firstObject.GetType(), secondObject.GetType());
-                    }
-                }
+                Type desiredRelationshipType = GetDesiredRelationshipType(namedObject);
 
                 // This uses the Glue CollisionPlugin's CollisionType with the following values:
                 switch (collisionType)
@@ -221,67 +187,47 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     case 0:
                         //NoPhysics = 0,
                         collisionRelationship.SetEventOnlyCollision();
-                        desiredRelationshipType = GetStandardCollisionRelationshipType();
                         handled = true;
                         break;
                     case 1:
                         //MoveCollision = 1,
                         collisionRelationship.SetMoveCollision(firstMass, secondMass);
-                        desiredRelationshipType = GetStandardCollisionRelationshipType();
                         handled = true;
                         break;
                     case 2:
                         //BounceCollision = 2,
                         collisionRelationship.SetBounceCollision(firstMass, secondMass, elasticity);
-                        desiredRelationshipType = GetStandardCollisionRelationshipType();
                         handled = true;
                         break;
                     case 3:
-                        //PlatformerSolidCollision = 3,
+                    //PlatformerSolidCollision = 3,
                     case 4:
                         //PlatformerCloudCollision = 4,
-
-                        if (isFirstList && isSecondList)
-                        {
-                            desiredRelationshipType = typeof(FlatRedBall.Math.Collision.DelegateListVsListRelationship<,>)
-                                .MakeGenericType(firstObject.GetType().GenericTypeArguments[0], secondObject.GetType().GenericTypeArguments[0]);
-                        }
-                        else if (isFirstList)
-                        {
-                            desiredRelationshipType = typeof(FlatRedBall.Math.Collision.DelegateListVsSingleRelationship<,>)
-                                .MakeGenericType(firstObject.GetType().GenericTypeArguments[0], secondObject.GetType());
-                        }
-                        else if (isSecondList)
-                        {
-                            desiredRelationshipType = typeof(FlatRedBall.Math.Collision.DelegateSingleVsListRelationship<,>)
-                                .MakeGenericType(firstObject.GetType(), secondObject.GetType().GenericTypeArguments[0]);
-                        }
-
                         break;
                     case 5:
                         break;
                 }
 
-                if(firstSubCollision != collisionRelationship.FirstSubObjectName)
+                if (firstSubCollision != collisionRelationship.FirstSubObjectName)
                 {
                     handled = false;
                 }
-                else if(secondSubCollision != collisionRelationship.SecondSubObjectName)
+                else if (secondSubCollision != collisionRelationship.SecondSubObjectName)
                 {
                     handled = false;
                 }
 
-                if(firstObject != collisionRelationship.FirstAsObject)
+                if (firstObject != collisionRelationship.FirstAsObject)
                 {
                     handled = false;
                 }
-                if(secondObject != collisionRelationship.SecondAsObject)
+                if (secondObject != collisionRelationship.SecondAsObject)
                 {
                     handled = false;
                 }
 
                 var needsToBeRecreated = desiredRelationshipType != collisionRelationship.GetType();
-                if(needsToBeRecreated)
+                if (needsToBeRecreated)
                 {
                     handled = false;
                 }
@@ -289,6 +235,104 @@ namespace {ProjectNamespace}.GlueControl.Editing
             }
 
             return handled;
+        }
+
+        public static Type GetDesiredRelationshipType(Models.NamedObjectSave namedObject)
+        {
+            T Get<T>(string name) => GlueControl.Models.PropertySaveListExtensions.GetValue<T>(namedObject.Properties, name);
+            var collisionType = Get<int>("CollisionType");
+
+            var firstObjectName = Get<string>("FirstCollisionName");
+            var secondObjectName = Get<string>("SecondCollisionName");
+
+            object firstObject = null;
+            object secondObject = null;
+
+            var currentScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen;
+
+            currentScreen.GetInstance($"{firstObjectName}.Unused", currentScreen, out _, out firstObject);
+            currentScreen.GetInstance($"{secondObjectName}.Unused", currentScreen, out _, out secondObject);
+
+            var isFirstList = firstObject is IList;
+
+            var isSecondList = secondObject is IList;
+
+            var isSecondShapeCollection = secondObject is ShapeCollection;
+
+            Type desiredRelationshipType = null;
+
+            Type GetStandardCollisionRelationshipType()
+            {
+                if (isFirstList && isSecondList)
+                {
+                    return typeof(ListVsListRelationship<,>)
+                        .MakeGenericType(firstObject.GetType().GenericTypeArguments[0], secondObject.GetType().GenericTypeArguments[0]);
+                }
+                else if (isFirstList && isSecondShapeCollection)
+                {
+                    return typeof(ListVsShapeCollectionRelationship<>)
+                        .MakeGenericType(firstObject.GetType().GenericTypeArguments[0]);
+                }
+                else if (isFirstList)
+                {
+                    return typeof(ListVsPositionedObjectRelationship<,>)
+                        .MakeGenericType(firstObject.GetType().GenericTypeArguments[0], secondObject.GetType());
+                }
+                else if (isSecondList)
+                {
+                    return typeof(PositionedObjectVsListRelationship<,>)
+                        .MakeGenericType(firstObject.GetType(), secondObject.GetType().GenericTypeArguments[0]);
+                }
+                else if (isSecondShapeCollection)
+                {
+                    return typeof(PositionedObjectVsShapeCollection<>)
+                        .MakeGenericType(firstObject.GetType());
+                }
+                else
+                {
+                    return typeof(PositionedObjectVsPositionedObjectRelationship<,>)
+                        .MakeGenericType(firstObject.GetType(), secondObject.GetType());
+                }
+            }
+
+            // Get the type here:
+            switch (collisionType)
+            {
+                case 0:
+                //NoPhysics = 0,
+                case 1:
+                //MoveCollision = 1,
+                case 2:
+                    //BounceCollision = 2,
+                    desiredRelationshipType = GetStandardCollisionRelationshipType();
+                    break;
+                case 3:
+                //PlatformerSolidCollision = 3,
+                case 4:
+                    //PlatformerCloudCollision = 4,
+
+                    if (isFirstList && isSecondList)
+                    {
+                        desiredRelationshipType = typeof(FlatRedBall.Math.Collision.DelegateListVsListRelationship<,>)
+                            .MakeGenericType(firstObject.GetType().GenericTypeArguments[0], secondObject.GetType().GenericTypeArguments[0]);
+                    }
+                    else if (isFirstList)
+                    {
+                        desiredRelationshipType = typeof(FlatRedBall.Math.Collision.DelegateListVsSingleRelationship<,>)
+                            .MakeGenericType(firstObject.GetType().GenericTypeArguments[0], secondObject.GetType());
+                    }
+                    else if (isSecondList)
+                    {
+                        desiredRelationshipType = typeof(FlatRedBall.Math.Collision.DelegateSingleVsListRelationship<,>)
+                            .MakeGenericType(firstObject.GetType(), secondObject.GetType().GenericTypeArguments[0]);
+                    }
+
+                    break;
+                case 5:
+                    break;
+            }
+
+            return desiredRelationshipType;
         }
 
         private static object ConvertVariableValue(GlueVariableSetData data)

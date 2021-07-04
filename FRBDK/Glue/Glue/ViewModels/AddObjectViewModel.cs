@@ -303,6 +303,13 @@ namespace FlatRedBall.Glue.ViewModels
 
         #endregion
 
+        // Properties to copy over to the NamedObjectSave when it is created.
+        public List<PropertySave> Properties
+        {
+            get;
+            set;
+        } = new List<PropertySave>();
+
         /// <summary>
         /// The element to add to. If not set, the current element is used. This must be set first, as
         /// otherh properties (like setting the name or the SourceClassType) may adjust the name of the element.
