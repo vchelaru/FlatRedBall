@@ -306,9 +306,13 @@ namespace {ProjectNamespace}
                     {
                         var dto =
                             Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.RemoveObjectDto>(data);
-                        
-                        var removeResponse = HandleDto(dto, out string gameTypeName);
-                        response = JsonConvert.SerializeObject(removeResponse);
+
+                        bool matchesCurrentScreen =
+                            GetIfMatchesCurrentScreen(dto.ElementName, out System.Type ownerType, out Screen currentScreen);
+
+                        string gameTypeName = ownerType?.FullName;
+
+                        response = CommandReceiver.Receive(message);
                         EnqueueToOwner(message, gameTypeName);
                     }
                     break;
@@ -411,58 +415,6 @@ namespace {ProjectNamespace}
         }
 
         #endregion
-
-        private RemoveObjectDtoResponse HandleDto(RemoveObjectDto removeObjectDto, out string typeName)
-        {
-            RemoveObjectDtoResponse response = new RemoveObjectDtoResponse();
-            response.DidScreenMatch = false;
-            response.WasObjectRemoved = false;
-
-            bool matchesCurrentScreen = 
-                GetIfMatchesCurrentScreen(removeObjectDto.ElementName, out System.Type ownerType, out Screen currentScreen);
-
-            typeName = ownerType?.FullName;
-
-            if (matchesCurrentScreen)
-            {
-                response.DidScreenMatch = true;
-                var isEditingEntity =
-                    ScreenManager.CurrentScreen?.GetType() == typeof(Screens.EntityViewingScreen);
-                var editingMode = isEditingEntity 
-                    ? GlueControl.Editing.ElementEditingMode.EditingEntity 
-                    : GlueControl.Editing.ElementEditingMode.EditingScreen;
-
-                var available = GlueControl.Editing.SelectionLogic.GetAvailableObjects(editingMode)
-                        .FirstOrDefault(item => item.Name == removeObjectDto.ObjectName);
-
-                if(available is IDestroyable asDestroyable)
-                {
-                    asDestroyable.Destroy();
-                    response.WasObjectRemoved = true;
-                }
-                else if(available is AxisAlignedRectangle rectangle)
-                {
-                    ShapeManager.Remove(rectangle);
-                    response.WasObjectRemoved = true;
-                }
-                else if(available is Circle circle)
-                {
-                    ShapeManager.Remove(circle);
-                    response.WasObjectRemoved = true;
-                }
-                else if(available is Polygon polygon)
-                {
-                    ShapeManager.Remove(polygon);
-                    response.WasObjectRemoved = true;
-                }
-                else if(available is Sprite sprite)
-                {
-                    SpriteManager.RemoveSprite(sprite);
-                    response.WasObjectRemoved = true;
-                }
-            }
-            return response;
-        }
 
         private bool GetIfMatchesCurrentScreen(string elementName, out System.Type ownerType, out Screen currentScreen)
         {
