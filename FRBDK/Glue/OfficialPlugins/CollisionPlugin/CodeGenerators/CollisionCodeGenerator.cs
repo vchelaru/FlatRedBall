@@ -38,7 +38,7 @@ namespace OfficialPlugins.CollisionPlugin
             return codeBlock;
         }
 
-        public static void GenerateInitializeCodeFor(NamedObjectSave namedObject, ICodeBlock codeBlock)
+        public static void GenerateInitializeCodeFor(GlueElement containerGlueElement, NamedObjectSave namedObject, ICodeBlock codeBlock)
         {
             var firstCollidable = namedObject.GetFirstCollidableObjectName();
             var secondCollidable = namedObject.GetSecondCollidableObjectName();

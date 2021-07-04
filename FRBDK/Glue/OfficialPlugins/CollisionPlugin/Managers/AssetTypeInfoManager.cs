@@ -51,7 +51,7 @@ namespace OfficialPlugins.CollisionPlugin.Managers
 
                     var codeBlock = new CodeBlockBase();
 
-                    CollisionCodeGenerator.GenerateInitializeCodeFor(namedObjectSave, codeBlock);
+                    CollisionCodeGenerator.GenerateInitializeCodeFor(element as GlueElement, namedObjectSave, codeBlock);
 
                     return codeBlock.ToString();
                 }
@@ -61,174 +61,7 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                 }
             };
 
-            toReturn.QualifiedRuntimeTypeName.PlatformFunc = (nosAsObject) =>
-            {
-                var nos = nosAsObject as NamedObjectSave;
-
-                if(nos == null)
-                {
-                    return $"FlatRedBall.Math.Collision.CollisionRelationship";
-                }
-                else
-                {
-                    bool isFirstList;
-                    bool isSecondList;
-
-                    var firstType = GetFirstGenericType(nos, out isFirstList);
-                    var secondType = GetSecondGenericType(nos, out isSecondList);
-
-                    // qualify this to make code gen and other logic work correctly:
-                    if(firstType == "TileShapeCollection")
-                    {
-                        firstType = "FlatRedBall.TileCollisions.TileShapeCollection";
-                    }
-
-                    if(secondType == "TileShapeCollection")
-                    {
-                        secondType = "FlatRedBall.TileCollisions.TileShapeCollection";
-                    }
-
-                    var isFirstTileShapeCollection =
-                        firstType == "FlatRedBall.TileCollisions.TileShapeCollection";
-
-                    var isSecondTileShapeCollection =
-                        secondType == "FlatRedBall.TileCollisions.TileShapeCollection";
-
-                    var isFirstShapeCollection = firstType == "FlatRedBall.Math.Geometry.ShapeCollection";
-                    var isSecondShapeCollection = secondType == "FlatRedBall.Math.Geometry.ShapeCollection";
-
-                    var isSecondNull = string.IsNullOrEmpty(secondType);
-
-                    // todo - single vs. shape collection
-                    // todo - list vs. shape collection
-
-                    string relationshipType;
-
-                    var collisionType = (CollisionType)nos.Properties.GetValue<int>(
-                        nameof(CollisionRelationshipViewModel.CollisionType));
-
-                    if (collisionType == CollisionType.PlatformerCloudCollision ||
-                        collisionType == CollisionType.PlatformerSolidCollision)
-                    {
-                        var effectiveFirstType = firstType;
-                        if (isFirstList)
-                        {
-                            effectiveFirstType = $"FlatRedBall.Math.PositionedObjectList<{firstType}>";
-                        }
-                        var effectiveSecondType = secondType;
-                        if (isSecondList)
-                        {
-                            effectiveSecondType = $"FlatRedBall.Math.PositionedObjectList<{secondType}>";
-                        }
-
-
-                        relationshipType =
-                            $"FlatRedBall.Math.Collision.DelegateCollisionRelationship<{effectiveFirstType}, {effectiveSecondType}>";
-
-                        if (isFirstList && isSecondList)
-                        {
-                            relationshipType = $"FlatRedBall.Math.Collision.DelegateListVsListRelationship<{firstType}, {secondType}>";
-                        }
-                        else if(isFirstList)
-                        {
-                            relationshipType = $"FlatRedBall.Math.Collision.DelegateListVsSingleRelationship<{firstType}, {secondType}>";
-                        }
-                        else if(isSecondList)
-                        {
-                            relationshipType = $"FlatRedBall.Math.Collision.DelegateSingleVsListRelationship<{firstType}, {secondType}>";
-                        }
-                    }
-                    else if (collisionType == CollisionType.DelegateCollision)
-                    {
-                        if (isFirstList && isSecondList)
-                        {
-                            relationshipType = $"FlatRedBall.Math.Collision.DelegateListVsListRelationship";
-                        }
-                        else if(isFirstList)
-                        {
-                            relationshipType = $"FlatRedBall.Math.Collision.DelegateListVsSingleRelationship";
-                        }
-                        else if(isSecondList)
-                        {
-                            relationshipType = $"FlatRedBall.Math.Collision.DelegateSingleVsListRelationship";
-                        }
-                        else
-                        {
-                            relationshipType = $"FlatRedBall.Math.Collision.DelegateCollisionRelationshipBase";
-                        }
-                    }
-                    else if (isFirstList == false && isSecondList == false)
-                    {
-
-                        if (isSecondTileShapeCollection)
-                        {
-                            relationshipType =
-                                "FlatRedBall.Math.Collision.CollidableVsTileShapeCollectionRelationship";
-                        }
-                        else if (isSecondShapeCollection)
-                        {
-                            relationshipType =
-                                "FlatRedBall.Math.Collision.PositionedObjectVsShapeCollection";
-                        }
-                        else
-                        {
-                            relationshipType =
-                            "FlatRedBall.Math.Collision.CollisionRelationship";
-                        }
-                    }
-                    else if (isFirstList && isSecondList)
-                    {
-                        relationshipType = "FlatRedBall.Math.Collision.ListVsListRelationship";
-                    }
-                    else if (isFirstList)
-                    {
-                        if (isSecondTileShapeCollection)
-                        {
-                            relationshipType = "FlatRedBall.Math.Collision.CollidableListVsTileShapeCollectionRelationship";
-                        }
-                        else if (isSecondShapeCollection)
-                        {
-                            relationshipType = "FlatRedBall.Math.Collision.ListVsShapeCollectionRelationship";
-                        }
-                        else if(isSecondNull)
-                        {
-                            relationshipType = "FlatRedBall.Math.Collision.AlwaysCollidingListCollisionRelationship";
-                        }
-                        else
-                        {
-                            relationshipType = "FlatRedBall.Math.Collision.ListVsPositionedObjectRelationship";
-                        }
-                    }
-                    else if (isSecondList)
-                    {
-                        relationshipType = "FlatRedBall.Math.Collision.PositionedObjectVsListRelationship";
-                    }
-                    else
-                    {
-                        // not handled:
-                        relationshipType =
-                            "FlatRedBall.Math.Collision.CollisionRelationship";
-                    }
-
-                    if (collisionType == CollisionType.PlatformerCloudCollision ||
-                        collisionType == CollisionType.PlatformerSolidCollision)
-                    {
-                        return relationshipType;
-                    }
-                    else if (isSecondTileShapeCollection || isSecondShapeCollection || isSecondNull)
-                    {
-                        // doesn't require 2nd type param:
-                        return
-                            $"{relationshipType}<{firstType}>";
-                    }
-                    else
-                    {
-                        return 
-                            $"{relationshipType}<{firstType}, {secondType}>";
-                    }
-
-                }
-            };
+            toReturn.QualifiedRuntimeTypeName.PlatformFunc = GetNosSourceClassType;
 
             toReturn.QualifiedSaveTypeName = null;
             toReturn.Extension = null;
@@ -250,30 +83,216 @@ namespace OfficialPlugins.CollisionPlugin.Managers
             return toReturn;
         }
 
-        public static string GetFirstGenericType(NamedObjectSave collisionRelationship, out bool isList)
+        string GetNosSourceClassType(object nosAsObject)
+        {
+            var nos = nosAsObject as NamedObjectSave;
+
+            if(nos == null)
+            {
+                return $"FlatRedBall.Math.Collision.CollisionRelationship";
+            }
+            else
+            {
+                var container = nos.GetContainer();
+                var properties = nos.Properties;
+                return GetCollisionRelationshipSourceClassType(container, properties);
+
+            }
+        }
+
+        public static string GetCollisionRelationshipSourceClassType(GlueElement container, List<PropertySave> properties)
+        {
+            bool isFirstList;
+            bool isSecondList;
+
+            var firstType = GetFirstGenericType(container, properties, out isFirstList);
+            var secondType = GetSecondGenericType(container, properties, out isSecondList);
+
+            // qualify this to make code gen and other logic work correctly:
+            if (firstType == "TileShapeCollection")
+            {
+                firstType = "FlatRedBall.TileCollisions.TileShapeCollection";
+            }
+
+            if (secondType == "TileShapeCollection")
+            {
+                secondType = "FlatRedBall.TileCollisions.TileShapeCollection";
+            }
+
+            var isFirstTileShapeCollection =
+                firstType == "FlatRedBall.TileCollisions.TileShapeCollection";
+
+            var isSecondTileShapeCollection =
+                secondType == "FlatRedBall.TileCollisions.TileShapeCollection";
+
+            var isFirstShapeCollection = firstType == "FlatRedBall.Math.Geometry.ShapeCollection";
+            var isSecondShapeCollection = secondType == "FlatRedBall.Math.Geometry.ShapeCollection";
+
+            var isSecondNull = string.IsNullOrEmpty(secondType);
+
+            // todo - single vs. shape collection
+            // todo - list vs. shape collection
+
+            string relationshipType;
+
+            var collisionType = (CollisionType)properties.GetValue<int>(
+                nameof(CollisionRelationshipViewModel.CollisionType));
+
+            if (collisionType == CollisionType.PlatformerCloudCollision ||
+                collisionType == CollisionType.PlatformerSolidCollision)
+            {
+                var effectiveFirstType = firstType;
+                if (isFirstList)
+                {
+                    effectiveFirstType = $"FlatRedBall.Math.PositionedObjectList<{firstType}>";
+                }
+                var effectiveSecondType = secondType;
+                if (isSecondList)
+                {
+                    effectiveSecondType = $"FlatRedBall.Math.PositionedObjectList<{secondType}>";
+                }
+
+
+                relationshipType =
+                    $"FlatRedBall.Math.Collision.DelegateCollisionRelationship<{effectiveFirstType}, {effectiveSecondType}>";
+
+                if (isFirstList && isSecondList)
+                {
+                    relationshipType = $"FlatRedBall.Math.Collision.DelegateListVsListRelationship<{firstType}, {secondType}>";
+                }
+                else if (isFirstList)
+                {
+                    relationshipType = $"FlatRedBall.Math.Collision.DelegateListVsSingleRelationship<{firstType}, {secondType}>";
+                }
+                else if (isSecondList)
+                {
+                    relationshipType = $"FlatRedBall.Math.Collision.DelegateSingleVsListRelationship<{firstType}, {secondType}>";
+                }
+            }
+            else if (collisionType == CollisionType.DelegateCollision)
+            {
+                if (isFirstList && isSecondList)
+                {
+                    relationshipType = $"FlatRedBall.Math.Collision.DelegateListVsListRelationship";
+                }
+                else if (isFirstList)
+                {
+                    relationshipType = $"FlatRedBall.Math.Collision.DelegateListVsSingleRelationship";
+                }
+                else if (isSecondList)
+                {
+                    relationshipType = $"FlatRedBall.Math.Collision.DelegateSingleVsListRelationship";
+                }
+                else
+                {
+                    relationshipType = $"FlatRedBall.Math.Collision.DelegateCollisionRelationshipBase";
+                }
+            }
+            else if (isFirstList == false && isSecondList == false)
+            {
+
+                if (isSecondTileShapeCollection)
+                {
+                    relationshipType =
+                        "FlatRedBall.Math.Collision.CollidableVsTileShapeCollectionRelationship";
+                }
+                else if (isSecondShapeCollection)
+                {
+                    relationshipType =
+                        "FlatRedBall.Math.Collision.PositionedObjectVsShapeCollection";
+                }
+                else
+                {
+                    relationshipType =
+                    "FlatRedBall.Math.Collision.CollisionRelationship";
+                }
+            }
+            else if (isFirstList && isSecondList)
+            {
+                relationshipType = "FlatRedBall.Math.Collision.ListVsListRelationship";
+            }
+            else if (isFirstList)
+            {
+                if (isSecondTileShapeCollection)
+                {
+                    relationshipType = "FlatRedBall.Math.Collision.CollidableListVsTileShapeCollectionRelationship";
+                }
+                else if (isSecondShapeCollection)
+                {
+                    relationshipType = "FlatRedBall.Math.Collision.ListVsShapeCollectionRelationship";
+                }
+                else if (isSecondNull)
+                {
+                    relationshipType = "FlatRedBall.Math.Collision.AlwaysCollidingListCollisionRelationship";
+                }
+                else
+                {
+                    relationshipType = "FlatRedBall.Math.Collision.ListVsPositionedObjectRelationship";
+                }
+            }
+            else if (isSecondList)
+            {
+                relationshipType = "FlatRedBall.Math.Collision.PositionedObjectVsListRelationship";
+            }
+            else
+            {
+                // not handled:
+                relationshipType =
+                    "FlatRedBall.Math.Collision.CollisionRelationship";
+            }
+
+            if (collisionType == CollisionType.PlatformerCloudCollision ||
+                collisionType == CollisionType.PlatformerSolidCollision)
+            {
+                return relationshipType;
+            }
+            else if (isSecondTileShapeCollection || isSecondShapeCollection || isSecondNull)
+            {
+                // doesn't require 2nd type param:
+                return
+                    $"{relationshipType}<{firstType}>";
+            }
+            else
+            {
+                return
+                    $"{relationshipType}<{firstType}, {secondType}>";
+            }
+        }
+
+        public static string GetFirstGenericType(NamedObjectSave nos, out bool isList)
+        {
+            return GetFirstGenericType(nos.GetContainer(), nos.Properties, out isList);
+        }
+
+        public static string GetFirstGenericType(GlueElement containerGlueElement, List<PropertySave> properties, out bool isList)
         {
             var propertyName = nameof(CollisionRelationshipViewModel.FirstCollisionName);
-            return GetGenericTypeForPropertyName(collisionRelationship, out isList, propertyName);
+
+            return GetGenericTypeForPropertyName(containerGlueElement, properties, out isList, propertyName);
         }
 
-        public static string GetSecondGenericType(NamedObjectSave collisionRelationship, out bool isList)
+        public static string GetSecondGenericType(NamedObjectSave nos, out bool isList)
+        {
+            return GetSecondGenericType(nos, out isList);
+        }
+
+        public static string GetSecondGenericType(GlueElement containerGlueElement, List<PropertySave> properties, out bool isList)
         {
             var propertyName = nameof(CollisionRelationshipViewModel.SecondCollisionName);
-            return GetGenericTypeForPropertyName(collisionRelationship, out isList, propertyName);
+
+            return GetGenericTypeForPropertyName(containerGlueElement, properties, out isList, propertyName);
         }
 
-        private static string GetGenericTypeForPropertyName(NamedObjectSave collisionRelationship, out bool isList, string propertyName)
+        private static string GetGenericTypeForPropertyName(GlueElement containerGlueElement, List<PropertySave> properties, out bool isList, string propertyName)
         {
-            var objectName = collisionRelationship.Properties.GetValue<string>(propertyName);
-
-            var container = collisionRelationship.GetContainer();
+            var objectName = properties.GetValue<string>(propertyName);
 
             string type = null;
             isList = false;
 
-            if (container != null)
+            if (containerGlueElement != null)
             {
-                var namedObject = container.GetNamedObject(objectName);
+                var namedObject = containerGlueElement.GetNamedObject(objectName);
 
                 isList = namedObject?.IsList == true;
 

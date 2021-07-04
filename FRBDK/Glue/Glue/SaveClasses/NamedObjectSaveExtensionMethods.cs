@@ -428,7 +428,7 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        public static IElement GetContainer(this NamedObjectSave instance)
+        public static GlueElement GetContainer(this NamedObjectSave instance)
         {
             if (ObjectFinder.Self.GlueProject != null)
             {

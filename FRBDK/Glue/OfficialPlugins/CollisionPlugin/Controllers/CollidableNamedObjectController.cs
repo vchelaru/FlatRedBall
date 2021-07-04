@@ -158,7 +158,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             CreateCollisionRelationshipBetweenObjects(firstNosName, secondNosName, GlueState.Self.CurrentElement);
         }
 
-        public static void CreateCollisionRelationshipBetweenObjects(string firstNosName, string secondNosName, IElement container)
+        public static void CreateCollisionRelationshipBetweenObjects(string firstNosName, string secondNosName, GlueElement container)
         {
             var addObjectModel = new AddObjectViewModel();
 
@@ -245,12 +245,12 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 }
             }
 
+            var sourceClassType = AssetTypeInfoManager.GetCollisionRelationshipSourceClassType(container, addObjectModel.Properties);
+            addObjectModel.SourceClassType = sourceClassType;
+
             var newNos =
                 GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectModel,
                 container, listToAddTo: null);
-
-
-            CollisionRelationshipViewModelController.TryFixSourceClassType(newNos);
 
             // this will regenerate and save everything too:
             CollisionRelationshipViewModelController.TryApplyAutoName(
