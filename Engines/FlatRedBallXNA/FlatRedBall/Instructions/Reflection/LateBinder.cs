@@ -334,22 +334,30 @@ namespace FlatRedBall.Instructions.Reflection
             }
             else
             {
-#if WINDOWS_8 || UWP
-                if (mType.GetField(name) != null)
-#else
-                if (mType.GetField(name, mGetFieldBindingFlags) != null)
-#endif
+                try
                 {
-                    mFieldsSet.Add(name);
+    #if WINDOWS_8 || UWP
+                    if (mType.GetField(name) != null)
+    #else
+                    if (mType.GetField(name, mGetFieldBindingFlags) != null)
+    #endif
+                    {
+                        mFieldsSet.Add(name);
 
-                    SetField(target, name, value);
-                    wasSet = true;
+                        SetField(target, name, value);
+                        wasSet = true;
+                    }
+                    else
+                    {
+                        mPropertieSet.Add(name);
+                        SetProperty(target, name, value);
+                        wasSet = true;
+                    }
                 }
-                else
+                catch(InvalidCastException innerException)
                 {
-                    mPropertieSet.Add(name);
-                    SetProperty(target, name, value);
-                    wasSet = true;
+                    throw new InvalidOperationException(
+                        $"Error setting {name} to {value} (value type {value?.GetType()})", innerException);
                 }
             }
 

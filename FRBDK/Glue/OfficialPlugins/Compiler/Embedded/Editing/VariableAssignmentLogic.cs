@@ -186,6 +186,9 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     secondSubCollision = null;
                 }
 
+                var groupPlatformerVariableName = Get<string>("GroundPlatformerVariableName");
+                var airPlatformerVariableName = Get<string>("AirPlatformerVariableName");
+                var afterDoubleJumpPlatformerVariableName = Get<string>("AfterDoubleJumpPlatformerVariableName");
 
 
                 var existingRelationshipTypeName = collisionRelationship.GetType().FullName;
@@ -211,36 +214,63 @@ namespace {ProjectNamespace}.GlueControl.Editing
                         handled = true;
                         break;
                     case 3:
-                    //PlatformerSolidCollision = 3,
+                        //PlatformerSolidCollision = 3,
+                        // assume yes, will be no'd later
+                        handled = true;
+                        break;
                     case 4:
                         //PlatformerCloudCollision = 4,
+                        handled = true;
                         break;
                     case 5:
                         break;
                 }
 
-                if (firstSubCollision != collisionRelationship.FirstSubObjectName)
+                var doFirstSubsMatch =
+                    firstSubCollision == collisionRelationship.FirstSubObjectName;
+                var doSecondSubsMatch =
+                    secondSubCollision == collisionRelationship.SecondSubObjectName;
+                var doesFirstMatch =
+                    firstObject == collisionRelationship.FirstAsObject;
+                var doesSecondMatch =
+                    secondObject == collisionRelationship.SecondAsObject;
+
+                if (doFirstSubsMatch == false)
                 {
                     handled = false;
                 }
-                else if (secondSubCollision != collisionRelationship.SecondSubObjectName)
+                else if (doSecondSubsMatch == false)
                 {
                     handled = false;
                 }
 
-                if (firstObject != collisionRelationship.FirstAsObject)
+                if (doesFirstMatch == false)
                 {
                     handled = false;
                 }
-                if (secondObject != collisionRelationship.SecondAsObject)
+                if (doesSecondMatch == false)
                 {
                     handled = false;
                 }
 
-                var needsToBeRecreated = desiredRelationshipType != collisionRelationship.GetType();
+                var currentRelationshipType =
+                    collisionRelationship.GetType();
+                var needsToBeRecreated = desiredRelationshipType != currentRelationshipType;
                 if (needsToBeRecreated)
                 {
                     handled = false;
+                }
+
+                var needsDelegate = currentRelationshipType.Name.StartsWith("Delegate");
+                if(needsDelegate)
+                {
+                    var hasDelegate = currentRelationshipType.GetField("CollisionFunction")
+                        ?.GetValue(collisionRelationship) != null;
+
+                    if(!hasDelegate)
+                    {
+                        handled = false;
+                    }
                 }
 
             }
