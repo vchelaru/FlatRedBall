@@ -71,34 +71,6 @@ namespace OfficialPlugins.Compiler.Managers
 
         #endregion
 
-        internal async void HandleItemSelected(TreeNode selectedTreeNode)
-        {
-            if(IgnoreNextObjectSelect)
-            {
-                IgnoreNextObjectSelect = false;
-            }
-            else if(ViewModel.IsEditChecked)
-            {
-                var dto = new SelectObjectDto();
-
-                var nos = GlueState.Self.CurrentNamedObjectSave;
-                var element = GlueState.Self.CurrentElement;
-
-                if(nos != null)
-                {
-                    dto.ObjectName = nos.InstanceName;
-                    dto.ElementName = element.Name;
-
-                    await CommandSender.Send(dto, ViewModel.PortNumber);
-                }
-                else if(element != null)
-                {
-                    await HandleElementSelected(dto, element);
-                }
-            }
-
-        }
-
         #region File
 
         public async void HandleFileChanged(FilePath fileName)
@@ -206,11 +178,28 @@ namespace OfficialPlugins.Compiler.Managers
 
         #region Selected Object
 
-        private async Task HandleElementSelected(SelectObjectDto dto, GlueElement element)
+        internal async void HandleItemSelected(TreeNode selectedTreeNode)
         {
-            dto.ObjectName = String.Empty;
-            dto.ElementName = element.Name;
+            if(IgnoreNextObjectSelect)
+            {
+                IgnoreNextObjectSelect = false;
+            }
+            else if(ViewModel.IsEditChecked)
+            {
+                await PushGlueSelectionToGame();
+            }
 
+        }
+
+        public async Task PushGlueSelectionToGame()
+        {
+            var dto = new SelectObjectDto();
+
+            var nos = GlueState.Self.CurrentNamedObjectSave;
+            var element = GlueState.Self.CurrentElement;
+
+            dto.ObjectName = nos?.InstanceName ?? String.Empty; ;
+            dto.ElementName = element.Name;
             await CommandSender.Send(dto, ViewModel.PortNumber);
         }
 

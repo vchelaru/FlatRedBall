@@ -27,6 +27,7 @@ using System.Timers;
 using Glue;
 using OfficialPluginsCore.Compiler.CommandReceiving;
 using FlatRedBall.Glue.Elements;
+using OfficialPlugins.Compiler.Dtos;
 
 namespace OfficialPlugins.Compiler
 {
@@ -386,24 +387,32 @@ namespace OfficialPlugins.Compiler
 
                     if (inEditMode)
                     {
-                        var screenName = await CommandSending.CommandSender.GetScreenName(viewModel.PortNumber);
-
-                        if (!string.IsNullOrEmpty(screenName))
+                        var currentEntity = GlueCommands.Self.DoOnUiThread<EntitySave>(() => GlueState.Self.CurrentEntitySave);
+                        if(currentEntity != null)
                         {
-                            var glueScreenName =
-                                string.Join('\\', screenName.Split('.').Skip(1).ToArray());
+                            await GlueCommands.Self.DoOnUiThread(async () => await RefreshManager.Self.PushGlueSelectionToGame());
+                        }
+                        else
+                        {
+                            var screenName = await CommandSending.CommandSender.GetScreenName(viewModel.PortNumber);
 
-                            var screen = ObjectFinder.Self.GetScreenSave(glueScreenName);
-
-                            if (screen != null)
+                            if (!string.IsNullOrEmpty(screenName))
                             {
-                                GlueCommands.Self.DoOnUiThread(() =>
+                                var glueScreenName =
+                                    string.Join('\\', screenName.Split('.').Skip(1).ToArray());
+
+                                var screen = ObjectFinder.Self.GetScreenSave(glueScreenName);
+
+                                if (screen != null)
                                 {
-                                    if(GlueState.Self.CurrentElement != screen)
+                                    GlueCommands.Self.DoOnUiThread(() =>
                                     {
-                                        GlueState.Self.CurrentElement = screen;
-                                    }
-                                });
+                                        if(GlueState.Self.CurrentElement != screen)
+                                        {
+                                            GlueState.Self.CurrentElement = screen;
+                                        }
+                                    });
+                                }
                             }
                         }
                     }

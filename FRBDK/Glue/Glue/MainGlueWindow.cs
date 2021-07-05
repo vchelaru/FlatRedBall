@@ -138,8 +138,31 @@ namespace Glue
                     // otherwise, we don't care, they're exiting
                 }
             });
-
         }
+
+        public T Invoke<T>(Func<T> func)
+        {
+            T toReturn = default(T);
+            this.Invoke((MethodInvoker)delegate
+            {
+                try
+                {
+                    toReturn = func();
+                }
+                catch (Exception e)
+                {
+                    if (!IsDisposed)
+                    {
+                        throw e;
+                    }
+                    // otherwise, we don't care, they're exiting
+                }
+            });
+
+            return toReturn;
+        }
+
+
 
         private void Form1_Load(object sender, EventArgs e)
         {

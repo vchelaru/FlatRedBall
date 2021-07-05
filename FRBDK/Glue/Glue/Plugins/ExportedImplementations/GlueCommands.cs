@@ -64,6 +64,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             MainGlueWindow.Self.Invoke(action);
         }
 
+        public T DoOnUiThread<T>(Func<T> func) => MainGlueWindow.Self.Invoke(func);
+
         public void CloseGlue()
         {
             MainGlueWindow.Self.Close();
