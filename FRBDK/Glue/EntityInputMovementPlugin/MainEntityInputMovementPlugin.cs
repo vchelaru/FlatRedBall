@@ -9,6 +9,7 @@ using System.Text;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Controls;
 using EntityInputMovementPlugin.ViewModels;
+using FlatRedBall.Glue.Managers;
 
 namespace EntityInputMovementPlugin
 {

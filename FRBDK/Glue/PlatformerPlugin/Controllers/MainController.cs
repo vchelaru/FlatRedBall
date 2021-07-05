@@ -179,9 +179,10 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
         private static void GenerateCsv(EntitySave entity, PlatformerEntityViewModel viewModel)
         {
-            TaskManager.Self.Add(
-                            () => CsvGenerator.Self.GenerateFor(entity, GetIfInheritsFromPlatformer(entity), viewModel),
-                            "Generating Platformer CSV for " + entity.Name);
+            // this could fail so we're going to try multiple times, but we need it immediately because
+            // subsequent selections depend on it
+            GlueCommands.Self.TryMultipleTimes(
+                () => CsvGenerator.Self.GenerateFor(entity, GetIfInheritsFromPlatformer(entity), viewModel));
 
 
             TaskManager.Self.Add(
