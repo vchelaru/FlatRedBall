@@ -82,6 +82,12 @@ namespace FlatRedBall.Utilities
         /// <returns>The random float between the bounds.</returns>
         public float Between(float lowerBound, float upperBound) => lowerBound + (float)NextDouble() * (upperBound - lowerBound);
 
+        /// <summary>
+        /// Returns a random number within the specified range, where the lower bound is inclusive but the upper bound is exclusive.
+        /// </summary>
+        /// <param name="lowerInclusive">An inclusive lower bound - the number specified here can be returned.</param>
+        /// <param name="upperExclusive">An exclusive upper bound - the number specified here will never be returned - the largest number possible is one less.</param>
+        /// <returns>A random number inbetween the inclusive lower and exclusive upper bound.</returns>
         public int Between(int lowerInclusive, int upperExclusive) =>
             lowerInclusive + Next(upperExclusive - lowerInclusive);
 
