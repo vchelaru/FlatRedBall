@@ -145,7 +145,7 @@ namespace FlatRedBall.TileCollisions
 
         public void AddToLayer(FlatRedBall.Graphics.Layer layer)
         {
-            this.mShapes.AddToManagers(layer);
+            this.mShapes.AddToManagers(layer, makeAutomaticallyUpdated: false);
         }
 
         public void AttachTo(PositionedObject newParent, bool changeRelative = true)

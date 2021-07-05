@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 
 using FlatRedBall;
 using FlatRedBall.Graphics;
+using FlatRedBall.Math.Collision;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Screens;
 using Newtonsoft.Json;

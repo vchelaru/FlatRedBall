@@ -205,7 +205,9 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 effectiveSecondCollisionName = secondNosName;
             }
             
-            if(effectiveSecondCollisionName == "SolidCollision")
+            // this used to rely on the name "SolidCollision" but that's not a set standard and there could be multiple
+            // TileShapeCollections
+            if(secondNos?.GetAssetTypeInfo()?.FriendlyName == "TileShapeCollection")
             {
                 EntitySave firstEntityType = null;
                 if(effectiveFirstNos.SourceType == SourceType.Entity)

@@ -714,24 +714,19 @@ namespace FlatRedBall.Math.Geometry
 
         #region AddToLayer
 
-
-
-        public static void AddToLayer(AxisAlignedRectangle rectangle, Layer layer)
+        public static void AddToLayer(AxisAlignedRectangle rectangle, Layer layer, bool makeAutomaticallyUpdated = true)
         {
-            if (!rectangle.ListsBelongingTo.Contains(mAutomaticallyUpdated))
+            if (makeAutomaticallyUpdated && !rectangle.ListsBelongingTo.Contains(mAutomaticallyUpdated))
             {
                 mAutomaticallyUpdated.Add(rectangle);
             }
+            
 
             if (layer != null)
             {
                 bool shouldMakeVisible = rectangle.mLayerBelongingTo == null && rectangle.ListsBelongingTo.Contains(mRectangles) == false
                     && rectangle.Visible; 
 
-                if (!rectangle.ListsBelongingTo.Contains(mAutomaticallyUpdated))
-                {
-                    mAutomaticallyUpdated.Add(rectangle);
-                }
 
                 if (rectangle.Visible)
                 {
@@ -766,9 +761,9 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
-        public static void AddToLayer(AxisAlignedCube cube, Layer layer)
+        public static void AddToLayer(AxisAlignedCube cube, Layer layer, bool makeAutomaticallyUpdated = true)
         {
-            if (!cube.ListsBelongingTo.Contains(mAutomaticallyUpdated))
+            if (makeAutomaticallyUpdated && !cube.ListsBelongingTo.Contains(mAutomaticallyUpdated))
             {
                 mAutomaticallyUpdated.Add(cube);
             }
@@ -808,9 +803,9 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
-        public static void AddToLayer(Circle circle, Layer layer)
+        public static void AddToLayer(Circle circle, Layer layer, bool makeAutomaticallyUpdated = true)
         {
-            if (!circle.ListsBelongingTo.Contains(mAutomaticallyUpdated))
+            if (makeAutomaticallyUpdated && !circle.ListsBelongingTo.Contains(mAutomaticallyUpdated))
             {
                 mAutomaticallyUpdated.Add(circle);
             }
@@ -858,9 +853,9 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
-        public static void AddToLayer(Sphere sphere, Layer layer)
+        public static void AddToLayer(Sphere sphere, Layer layer, bool makeAutomaticallyUpdated = true)
         {
-            if (!sphere.ListsBelongingTo.Contains(mAutomaticallyUpdated))
+            if (makeAutomaticallyUpdated && !sphere.ListsBelongingTo.Contains(mAutomaticallyUpdated))
             {
                 mAutomaticallyUpdated.Add(sphere);
             }
@@ -907,12 +902,7 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
-        public static void AddToLayer(Line line, Layer layer)
-        {
-            AddToLayer(line, layer, true);
-        }
-
-        public static void AddToLayer(Line line, Layer layer, bool makeAutomaticallyUpdated)
+        public static void AddToLayer(Line line, Layer layer, bool makeAutomaticallyUpdated = true)
         {
             if (makeAutomaticallyUpdated && !line.ListsBelongingTo.Contains(mAutomaticallyUpdated))
             {
@@ -980,14 +970,8 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
-        public static void AddToLayer(Polygon polygon, Layer layer)
+        public static void AddToLayer(Polygon polygon, Layer layer, bool makeAutomaticallyUpdated = true)
         {
-            AddToLayer(polygon, layer, true);
-        }
-
-        public static void AddToLayer(Polygon polygon, Layer layer, bool makeAutomaticallyUpdated)
-        {
-
             if (makeAutomaticallyUpdated && !polygon.ListsBelongingTo.Contains(mAutomaticallyUpdated))
             {
                 mAutomaticallyUpdated.Add(polygon);
@@ -1037,11 +1021,9 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
-        public static void AddToLayer(Capsule2D capsule, Layer layer)
+        public static void AddToLayer(Capsule2D capsule, Layer layer, bool makeAutomaticallyUpdated = true)
         {
-            
-
-            if (!capsule.ListsBelongingTo.Contains(mAutomaticallyUpdated))
+            if (makeAutomaticallyUpdated && !capsule.ListsBelongingTo.Contains(mAutomaticallyUpdated))
             {
                 mAutomaticallyUpdated.Add(capsule);
             }
@@ -1085,41 +1067,41 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
-        public static void AddToLayer(ShapeCollection shapeCollection, Layer layer)
+        public static void AddToLayer(ShapeCollection shapeCollection, Layer layer, bool makeAutomaticallyUpdated = true)
         {
             for (int i = 0; i < shapeCollection.AxisAlignedCubes.Count; i++)
             {
-                AddToLayer(shapeCollection.AxisAlignedCubes[i], layer);
+                AddToLayer(shapeCollection.AxisAlignedCubes[i], layer, makeAutomaticallyUpdated);
             }
 
             for (int i = 0; i < shapeCollection.AxisAlignedRectangles.Count; i++)
             {
-                AddToLayer(shapeCollection.AxisAlignedRectangles[i], layer);
+                AddToLayer(shapeCollection.AxisAlignedRectangles[i], layer, makeAutomaticallyUpdated);
             }
 
             for (int i = 0; i < shapeCollection.Capsule2Ds.Count; i++)
             {
-                AddToLayer(shapeCollection.Capsule2Ds[i], layer);
+                AddToLayer(shapeCollection.Capsule2Ds[i], layer, makeAutomaticallyUpdated);
             }
 
             for(int i = 0; i < shapeCollection.Circles.Count; i++)
             {
-                AddToLayer(shapeCollection.Circles[i], layer);
+                AddToLayer(shapeCollection.Circles[i], layer, makeAutomaticallyUpdated);
             }
 
             for (int i = 0; i < shapeCollection.Lines.Count; i++)
             {
-                AddToLayer(shapeCollection.Lines[i], layer);
+                AddToLayer(shapeCollection.Lines[i], layer, makeAutomaticallyUpdated);
             }
 
             for (int i = 0; i < shapeCollection.Polygons.Count; i++)
             {
-                AddToLayer(shapeCollection.Polygons[i], layer);
+                AddToLayer(shapeCollection.Polygons[i], layer, makeAutomaticallyUpdated);
             }
 
             for (int i = 0; i < shapeCollection.Spheres.Count; i++)
             {
-                AddToLayer(shapeCollection.Spheres[i], layer);
+                AddToLayer(shapeCollection.Spheres[i], layer, makeAutomaticallyUpdated);
             }
         }
 
