@@ -197,10 +197,13 @@ namespace OfficialPlugins.Compiler.Managers
 
             var nos = GlueState.Self.CurrentNamedObjectSave;
             var element = GlueState.Self.CurrentElement;
+            if(element != null)
+            {
+                dto.ObjectName = nos?.InstanceName ?? String.Empty; ;
+                dto.ElementName = element?.Name;
+                await CommandSender.Send(dto, ViewModel.PortNumber);
+            }
 
-            dto.ObjectName = nos?.InstanceName ?? String.Empty; ;
-            dto.ElementName = element.Name;
-            await CommandSender.Send(dto, ViewModel.PortNumber);
         }
 
         #endregion

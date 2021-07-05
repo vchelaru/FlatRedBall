@@ -447,6 +447,7 @@ namespace {ProjectNamespace}
             dto.ObjectName = item.Name;
             dto.VariableName = propertyName;
             dto.VariableValue = value;
+            dto.Type = value?.GetType().Name;
             var message = $"{nameof(SetVariableDto)}:{Newtonsoft.Json.JsonConvert.SerializeObject(dto)}";
 
             SendCommandToGlue(message);
@@ -470,9 +471,9 @@ namespace {ProjectNamespace}
             //    EnqueueMessage(screen.GetType().FullName, simulatedGlueToGameCommand);
             //}
 #endif
-        }
+    }
 
-        private void HandleObjectSelected(PositionedObject item)
+    private void HandleObjectSelected(PositionedObject item)
         {
             var dto = new SelectObjectDto();
             dto.ObjectName = item.Name;

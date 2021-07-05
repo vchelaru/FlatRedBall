@@ -146,32 +146,45 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         private static object ConvertVariable(object value, string typeName)
         {
-            if (typeName == "float")
+            switch (typeName)
             {
-                if (value is double asDouble)
-                {
-                    value = (float)asDouble;
-                }
-            }
-            else if (typeName == typeof(Texture2D).FullName ||
-                typeName == typeof(AnimationChainList).FullName)
-            {
-                if (value is string asString && !string.IsNullOrEmpty(asString))
-                {
-                    value =
-                        FileManager.RemovePath(FileManager.RemoveExtension(asString));
-                }
-            }
-            else if (typeName == typeof(TextureAddressMode).Name || typeName == typeof(TextureAddressMode).FullName)
-            {
-                if (value is int asInt)
-                {
-                    value = (TextureAddressMode)asInt;
-                }
-                else if(value is long asLong)
-                {
-                    value = (TextureAddressMode)asLong;
-                }
+                case "float":
+                case nameof(Single):
+                    {
+                        if (value is double asDouble)
+                        {
+                            value = (float)asDouble;
+                        }
+                        else if(value is int asInt)
+                        {
+                            value = (float)asInt;
+                        }
+                    }
+                    break;
+                case "Microsoft.Xna.Framework.Graphics.Texture2D":
+                case nameof(Texture2D):
+                case "FlatRedBall.Graphics.Animation.AnimationChainList":
+                case nameof(AnimationChainList):
+                    if (value is string asString && !string.IsNullOrEmpty(asString))
+                    {
+                        value =
+                            FileManager.RemovePath(FileManager.RemoveExtension(asString));
+                    }
+                    break;
+                case nameof(TextureAddressMode):
+                case "Microsoft.Xna.Framework.Graphics.TextureAddressMode":
+                    {
+                        if (value is int asInt)
+                        {
+                            value = (TextureAddressMode)asInt;
+                        }
+                        else if (value is long asLong)
+                        {
+                            value = (TextureAddressMode)asLong;
+                        }
+                    }
+
+                    break;
             }
 
             return value;
@@ -225,6 +238,11 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 {
                     object value = setVariableDto.VariableValue;
                     var typeName = setVariableDto.Type;
+
+                    if(string.IsNullOrEmpty(typeName))
+                    {
+                        throw new InvalidOperationException($"Variable {setVariableDto.VariableName} came from glue with a value of {typeName} but didn't have a type");
+                    }
 
                     value = ConvertVariable(value, typeName);
 

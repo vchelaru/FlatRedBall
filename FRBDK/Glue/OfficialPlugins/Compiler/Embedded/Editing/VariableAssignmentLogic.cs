@@ -300,10 +300,9 @@ namespace {ProjectNamespace}.GlueControl.Editing
             currentScreen.GetInstance($"{secondObjectName}.Unused", currentScreen, out _, out secondObject);
 
             var isFirstList = firstObject is IList;
-
             var isSecondList = secondObject is IList;
-
             var isSecondShapeCollection = secondObject is ShapeCollection;
+            var isSecondTileShapeCollection = secondObject is FlatRedBall.TileCollisions.TileShapeCollection;
 
             Type desiredRelationshipType = null;
 
@@ -322,6 +321,11 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     return typeof(ListVsShapeCollectionRelationship<>)
                         .MakeGenericType(firstType.GenericTypeArguments[0]);
                 }
+                else if(isFirstList && isSecondTileShapeCollection)
+                {
+                    return typeof(CollidableListVsTileShapeCollectionRelationship<>)
+                        .MakeGenericType(firstType.GenericTypeArguments[0]);
+                }
                 else if (isFirstList)
                 {
                     return typeof(ListVsPositionedObjectRelationship<,>)
@@ -336,6 +340,11 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 {
                     return typeof(PositionedObjectVsShapeCollection<>)
                         .MakeGenericType(firstType);
+                }
+                else if(isSecondTileShapeCollection)
+                {
+                    return typeof(CollidableVsTileShapeCollectionRelationship<>)
+                        .MakeGenericType(firstType.GenericTypeArguments[0]);
                 }
                 else
                 {
@@ -442,7 +451,8 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     }
                     break;
                 case "Microsoft.Xna.Framework.Color":
-                    if(!string.IsNullOrWhiteSpace(variableValue))
+                case nameof(Microsoft.Xna.Framework.Color):
+                    if (!string.IsNullOrWhiteSpace(variableValue))
                     {
                         convertedValue = typeof(Microsoft.Xna.Framework.Color).GetProperty(variableValue).GetValue(null);
                     }
