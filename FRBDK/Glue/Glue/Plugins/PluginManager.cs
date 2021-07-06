@@ -650,23 +650,10 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void AddNewFileOptions(CustomizableNewFileWindow newFileWindow)
         {
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                // Execute the new style plugins
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.AddNewFileOptionsHandler != null);
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-                        PluginBase plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.AddNewFileOptionsHandler(newFileWindow);
-                            }, container, "Failed in AddNewFileOptions");
-                    }
-                }
-            }
+            CallMethodOnPlugin(
+                (plugin) => plugin.AddNewFileOptionsHandler(newFileWindow),
+                nameof(AddNewFileOptions),
+                (plugin => plugin.AddNewFileOptionsHandler != null));
         }
 
         internal static string CreateNewFile(AssetTypeInfo assetTypeInfo, object extraData, string directory, string name)

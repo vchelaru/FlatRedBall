@@ -198,16 +198,15 @@ namespace TileGraphicsPlugin.CodeGeneration
                     case CollisionCreationOptions.BorderOutline:
                         GenerateBorderOutline(namedObjectSave, codeBlock);
                         break;
-                    case CollisionCreationOptions.FromLayer:
-                        // not handled:
-                        GenerateFromLayerCollision(namedObjectSave, codeBlock);
-                        break;
-
                     case CollisionCreationOptions.FromProperties:
                         GenerateFromProperties(namedObjectSave, codeBlock);
                         break;
                     case CollisionCreationOptions.FromType:
                         GenerateFromTileType(namedObjectSave, codeBlock);
+                        break;
+                    case CollisionCreationOptions.FromLayer:
+                        // not handled:
+                        GenerateFromLayerCollision(namedObjectSave, codeBlock);
                         break;
                 }
             }

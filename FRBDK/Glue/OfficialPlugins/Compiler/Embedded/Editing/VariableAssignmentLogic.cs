@@ -409,6 +409,41 @@ namespace {ProjectNamespace}.GlueControl.Editing
                         handled = true;
 
                         break;
+                    case 4: // FromType
+                        
+                        ClearShapeCollection();
+
+                        var mapName = Get<string>("SourceTmxName");
+                        var typeName = Get<string>("CollisionTileTypeName");
+                        var removeTiles = Get<bool>("RemoveTilesAfterCreatingCollision");
+                        var isMerged = Get<bool>("IsCollisionMerged");
+                        if (!string.IsNullOrEmpty(mapName) && !string.IsNullOrEmpty(typeName))
+                        {
+                            var map = screen.GetType().GetMethod("GetFile").Invoke(null, new object[] { mapName }) as FlatRedBall.TileGraphics.LayeredTileMap;
+
+                            if(map != null)
+                            {
+                                if (isMerged)
+                                {
+                                    FlatRedBall.TileCollisions.TileShapeCollectionLayeredTileMapExtensions.AddMergedCollisionFromTilesWithType(
+                                        tileShapeCollection, map, typeName);
+                                }
+                                else
+                                {
+                                    FlatRedBall.TileCollisions.TileShapeCollectionLayeredTileMapExtensions.AddCollisionFromTilesWithType(
+                                        tileShapeCollection, map, typeName, removeTiles);
+                                }
+                                if (isVisible)
+                                {
+                                    tileShapeCollection.Visible = true;
+                                }
+
+                            }
+                        }
+                            
+                        handled = true;
+
+                        break;
                 }
             }
 
