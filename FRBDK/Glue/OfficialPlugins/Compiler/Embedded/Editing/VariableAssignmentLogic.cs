@@ -110,6 +110,14 @@ namespace {ProjectNamespace}.GlueControl.Editing
                         }
                         if(!response.WasVariableAssigned)
                         {
+                            if(splitVariable[2] == "Entire TileShapeCollection")
+                            {
+                                response.WasVariableAssigned = TryAssignTileShapeCollection(splitVariable[1],
+                                    JsonConvert.DeserializeObject< Models.NamedObjectSave>(data.VariableValue));
+                            }
+                        }
+                        if(!response.WasVariableAssigned)
+                        {
                             var collisionRelationship = CollisionManager.Self.Relationships.FirstOrDefault(item =>
                                 item.Name == splitVariable[1]);
 
@@ -273,6 +281,135 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     }
                 }
 
+            }
+
+            return handled;
+        }
+
+        private static bool TryAssignTileShapeCollection(string tileShapeCollectionName, Models.NamedObjectSave namedObject)
+        {
+            var handled = false;
+
+            var screen =
+                FlatRedBall.Screens.ScreenManager.CurrentScreen;
+            screen.GetInstance(namedObject.InstanceName, screen, out _, out object tileShapeCollectionAsObject);
+
+            var tileShapeCollection = tileShapeCollectionAsObject as FlatRedBall.TileCollisions.TileShapeCollection;
+            if(tileShapeCollection != null)
+            {
+                T Get<T>(string name) => GlueControl.Models.PropertySaveListExtensions.GetValue<T>(namedObject.Properties, name);
+                void ClearShapeCollection() 
+                {
+                    tileShapeCollection.Visible = false;
+                    // What if this was added to the ShapeManager? New versions of generated code don't,
+                    // so do we need to bother removing from ShapeManager?
+                    tileShapeCollection.Rectangles.Clear();
+                }
+
+                var creationOptions = Get<int>("CollisionCreationOptions");
+
+                var isVisible = (namedObject.InstructionSaves.FirstOrDefault(item => item.Member == "Visible")?.Value as bool?) == true;
+
+                var tileSize = Get<float>("CollisionTileSize");
+
+                var leftFill = Get<float>("CollisionFillLeft");
+                var topFill = Get<float>("CollisionFillTop");
+
+                var remainderX = leftFill % tileSize;
+                var remainderY = topFill % tileSize;
+
+                var widthFill = Get<int>("CollisionFillWidth");
+                var heightFill = Get<int>("CollisionFillHeight");
+
+                switch (creationOptions)
+                {
+                    case 0: // Empty
+                        ClearShapeCollection();
+                        handled = true;
+                        break;
+                    case 1: // FillCompletely
+                        ClearShapeCollection();
+
+                        tileShapeCollection.GridSize = tileSize;
+                        tileShapeCollection.LeftSeedX = remainderX;
+                        tileShapeCollection.BottomSeedY = remainderY;
+                        tileShapeCollection.SortAxis = FlatRedBall.Math.Axis.X;
+
+                        for(int x = 0; x < widthFill; x++)
+                        {
+                            for(int y = 0; y < heightFill; y++)
+                            {
+                                tileShapeCollection.AddCollisionAtWorld(
+                                    leftFill + x * tileSize + tileSize / 2.0f,
+                                    topFill - y * tileSize - tileSize / 2.0f);
+                            }
+                        }
+                        if(isVisible)
+                        {
+                            tileShapeCollection.Visible = true;
+                        }
+                        handled = true;
+                        break;
+                    case 2: // BorderOutline
+                        ClearShapeCollection();
+
+                        tileShapeCollection.GridSize = tileSize;
+                        tileShapeCollection.LeftSeedX = remainderX;
+                        tileShapeCollection.BottomSeedY = remainderY;
+                        tileShapeCollection.SortAxis = FlatRedBall.Math.Axis.X;
+
+                        var borderOutlineType = Get<int>("BorderOutlineType");
+
+
+                        if (borderOutlineType == 1 /*BorderOutlineType.InnerSize*/)
+                        {
+                            var innerWidth = Get<float>("InnerSizeWidth");
+
+                            var innerHeight = Get<float>("InnerSizeHeight");
+
+                            var additionalWidth = 2 * tileSize;
+                            var additionalHeight = 2 * tileSize;
+
+                            widthFill = FlatRedBall.Math.MathFunctions.RoundToInt(
+                                (innerWidth + additionalWidth) / tileSize);
+                            heightFill = FlatRedBall.Math.MathFunctions.RoundToInt(
+                                (innerHeight + additionalHeight) / tileSize);
+
+
+                        }
+
+                        for(int x = 0; x < widthFill; x++)
+                        {
+                            if(x == 0 || x == widthFill - 1)
+                            {
+                                for(int y = 0; y < heightFill; y++)
+                                {
+                                    tileShapeCollection.AddCollisionAtWorld(
+                                        leftFill + x * tileSize + tileSize / 2.0f,
+                                        topFill - y * tileSize - tileSize / 2.0f);
+
+                                }
+                            }
+                            else
+                            {
+                                tileShapeCollection.AddCollisionAtWorld(
+                                    leftFill + x * tileSize + tileSize / 2.0f,
+                                    topFill - tileSize / 2.0f);
+
+                                tileShapeCollection.AddCollisionAtWorld(
+                                    leftFill + x * tileSize + tileSize / 2.0f,
+                                    topFill - (heightFill - 1) * tileSize - tileSize / 2.0f);
+                            }
+                        }
+
+                        if (isVisible)
+                        {
+                            tileShapeCollection.Visible = true;
+                        }
+                        handled = true;
+
+                        break;
+                }
             }
 
             return handled;

@@ -136,6 +136,60 @@ namespace OfficialPlugins.Compiler.Managers
 
             #endregion
 
+            #region TileShapeCollection
+
+            var isTileShapeCollection =
+                nos.GetAssetTypeInfo()?.FriendlyName == "TileShapeCollection";
+
+            if (isTileShapeCollection)
+            {
+                var shouldSerializeEntireNos = false;
+                switch(changedMember)
+                {
+                    
+                    case "CollisionCreationOptions":
+
+                    case "CollisionTileSize":
+
+                    case "CollisionFillLeft":
+                    case "CollisionFillTop":
+
+                    case "CollisionFillWidth":
+                    case "CollisionFillHeight":
+
+                    case "BorderOutlineType":
+
+                    case "InnerSizeWidth":
+                    case "InnerSizeHeight":
+
+                    case "CollisionPropertyName":
+
+                    case "CollisionLayerName":
+
+                    case "CollisionLayerTileType":
+
+                    case "IsCollisionMerged":
+
+                    case "SourceTmxName":
+                    case "CollisionTileTypeName":
+                    case "RemoveTilesAfterCreatingCollision":
+
+
+                        shouldSerializeEntireNos = true;
+                        break;
+                }
+
+                if(shouldSerializeEntireNos)
+                {
+                    changedMember = "Entire TileShapeCollection";
+                    type = "NamedObjectSave";
+                    value = JsonConvert.SerializeObject(nos);
+                }
+            }
+
+
+            #endregion
+
             #region InstanceName
 
             if (changedMember == nameof(NamedObjectSave.InstanceName))

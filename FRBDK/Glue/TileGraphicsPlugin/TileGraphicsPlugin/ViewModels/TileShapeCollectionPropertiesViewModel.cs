@@ -32,8 +32,6 @@ namespace TileGraphicsPlugin.ViewModels
 
     public class TileShapeCollectionPropertiesViewModel : PropertyListContainerViewModel
     {
-        #region Empty
-
         [SyncedProperty]
         [DefaultValue((int)CollisionCreationOptions.Empty)]
         public CollisionCreationOptions CollisionCreationOptions
@@ -41,6 +39,8 @@ namespace TileGraphicsPlugin.ViewModels
             get => (CollisionCreationOptions)Get<int>(); 
             set => SetAndPersist((int)value); 
         }
+
+        #region Empty
 
         [DependsOn(nameof(CollisionCreationOptions))]
         public bool IsEmptyChecked
