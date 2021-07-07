@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Managers;
+﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using Newtonsoft.Json;
@@ -27,7 +28,7 @@ namespace OfficialPlugins.Compiler.Managers
 
 
 
-        public void HandleNamedObjectValueChanged(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly)
+        public async void HandleNamedObjectValueChanged(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly)
         {
 
             string type = null;
@@ -55,7 +56,10 @@ namespace OfficialPlugins.Compiler.Managers
             var ati = nos.GetAssetTypeInfo();
             string value;
 
-            ConvertValue(ref changedMember, oldValue, currentValue, nos, currentElement, ref nosName, ati, ref type, out value);
+            var gameScreenName = await CommandSender.GetScreenName(ViewModel.PortNumber);
+            var glueScreenName = string.Join('\\', gameScreenName.Split('.').Skip(2));
+
+            ConvertValue(ref changedMember, oldValue, currentValue, nos, currentElement, glueScreenName, ref nosName, ati, ref type, out value);
 
             TaskManager.Self.Add(() =>
             {
@@ -85,10 +89,19 @@ namespace OfficialPlugins.Compiler.Managers
             }, "Pushing variable to game", TaskExecutionPreference.Asap);
         }
 
-        private static void ConvertValue(ref string changedMember, object oldValue, object currentValue, NamedObjectSave nos, GlueElement currentElement, ref string nosName, FlatRedBall.Glue.Elements.AssetTypeInfo ati, ref string type, out string value)
+        private void ConvertValue(ref string changedMember, object oldValue, 
+            object currentValue, NamedObjectSave nos, GlueElement currentElement, string glueScreenName,
+            ref string nosName, FlatRedBall.Glue.Elements.AssetTypeInfo ati, 
+            ref string type, out string value)
         {
             value = currentValue?.ToString();
             var originalMemberName = changedMember;
+
+            // to properly convert value we may need to squash multiple inheritance levels of 
+            // NamedObjectSaves. But to know which to squash, we need to know the current game
+            // screen
+            //var gameScreenName = await CommandSender.GetScreenName(ViewModel.PortNumber);
+            //var glueScreenName = gameScreenName
 
             #region X, Y, Z
             if (currentElement is EntitySave && nos.AttachToContainer &&
@@ -129,7 +142,7 @@ namespace OfficialPlugins.Compiler.Managers
                     {
                         changedMember = "Entire CollisionRelationship";
                         type = "NamedObjectSave";
-                        value = JsonConvert.SerializeObject(nos);
+                        value = JsonConvert.SerializeObject(GetCombinedNos(nos, glueScreenName));
                     }
                 }
             }
@@ -140,6 +153,8 @@ namespace OfficialPlugins.Compiler.Managers
 
             var isTileShapeCollection =
                 nos.GetAssetTypeInfo()?.FriendlyName == "TileShapeCollection";
+
+            var glueScreen = ObjectFinder.Self.GetScreenSave(glueScreenName);
 
             if (isTileShapeCollection)
             {
@@ -183,7 +198,7 @@ namespace OfficialPlugins.Compiler.Managers
                 {
                     changedMember = "Entire TileShapeCollection";
                     type = "NamedObjectSave";
-                    value = JsonConvert.SerializeObject(nos);
+                    value = JsonConvert.SerializeObject(GetCombinedNos(nos, glueScreenName));
                 }
             }
 
@@ -253,6 +268,39 @@ namespace OfficialPlugins.Compiler.Managers
                         break;
                 }
             }
+        }
+
+        private NamedObjectSave GetCombinedNos(NamedObjectSave nos, string glueScreenName)
+        {
+            var clone = nos.Clone();
+
+
+            var screen = ObjectFinder.Self.GetScreenSave(glueScreenName);
+
+            if(screen != null)
+            {
+                var inheritance = ObjectFinder.Self.GetInheritanceChain(screen);
+
+                foreach(var currentScreenInChain in inheritance)
+                {
+                    // base -> more derived
+                    var foundNos = currentScreenInChain.AllNamedObjects.FirstOrDefault(item => item.InstanceName == nos.InstanceName);
+
+                    if(foundNos != null)
+                    {
+                        // apply this instance's properties and variables:
+                        foreach(var property in foundNos.Properties)
+                        {
+                            clone.SetProperty(property.Name, property.Value);
+                        }
+                        foreach(var variable in foundNos.InstructionSaves)
+                        {
+                            clone.SetVariable(variable.Member, variable.Value);
+                        }
+                    }
+                }
+            }
+            return clone;
         }
 
         private string ToGameType(GlueElement element) =>

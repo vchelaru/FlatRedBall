@@ -284,7 +284,8 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         /// <summary>
-        /// The name of the object in Glue.
+        /// The name of the object in Glue. This will also be the name of the object in code, but it may be the name
+        /// of a field or property depending on other settings.
         /// </summary>
         [CategoryAttribute("\t\tInstance")]
         public string InstanceName
@@ -1051,6 +1052,7 @@ namespace FlatRedBall.Glue.SaveClasses
             return returnValue;
         }
 
+        [Obsolete("Use the extension method's SetVariable")]
         public CustomVariableInNamedObject SetVariableValue(string variableName, object value)
         {
             var instructionToSet = GetCustomVariable(variableName);

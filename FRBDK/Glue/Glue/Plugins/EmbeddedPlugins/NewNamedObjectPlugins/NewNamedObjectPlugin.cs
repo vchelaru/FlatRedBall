@@ -64,7 +64,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewNamedObjectPlugins
             if (Is2D(element))
             {
 
-                nos.SetPropertyValue("Radius", 16f);
+                nos.SetVariable("Radius", 16f);
             }
         }
 
@@ -80,7 +80,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewNamedObjectPlugins
             if (Is2D(element))
             {
 
-                nos.SetPropertyValue("PixelSize", .5f);
+                nos.SetVariable("PixelSize", .5f);
 
             }
         }
@@ -89,8 +89,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewNamedObjectPlugins
         {
             if (Is2D(element))
             {
-                nos.SetPropertyValue("Width", 32f);
-                nos.SetPropertyValue("Height", 32f);
+                nos.SetVariable("Width", 32f);
+                nos.SetVariable("Height", 32f);
             }
         }
 
@@ -98,7 +98,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewNamedObjectPlugins
         {
             if (Is2D(element))
             {
-                nos.SetPropertyValue("TextureScale", 1.0f);
+                nos.SetVariable("TextureScale", 1.0f);
 
 
             }

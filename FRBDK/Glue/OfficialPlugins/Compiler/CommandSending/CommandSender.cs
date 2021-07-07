@@ -136,6 +136,11 @@ namespace OfficialPlugins.Compiler.CommandSending
             return byteArray;
         }
 
+        /// <summary>
+        /// Returns the qualified class name like "GameNamespace.Screens.MyScreen"
+        /// </summary>
+        /// <param name="portNumber">Game's port number</param>
+        /// <returns>The screen name using screen name</returns>
         internal static async Task<string> GetScreenName(int portNumber)
         {
             string screenName = null;

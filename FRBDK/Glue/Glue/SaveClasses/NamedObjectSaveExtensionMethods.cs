@@ -576,19 +576,24 @@ namespace FlatRedBall.Glue.SaveClasses
             return false;
         }
 
-        [Obsolete("This is confusingly named SetPropertyValue. You probably want to do thisObject.Properties.SetValue")]
-        public static InstructionSave SetPropertyValue(this NamedObjectSave instance, string propertyName, object valueToSet)
+
+        public static void SetProperty(this NamedObjectSave instance, string propertyName, object value)
         {
-            var instruction = instance.GetCustomVariable(propertyName);
+            instance.Properties.SetValue(propertyName, value);
+        }
+
+        public static void SetVariable(this NamedObjectSave instance, string variableName, object value)
+        {
+            var instruction = instance.GetCustomVariable(variableName);
 
             if (instruction == null)
             {
-                TypedMemberBase tmb = instance.TypedMembers.FirstOrDefault(member=>member.MemberName == propertyName);
+                TypedMemberBase tmb = instance.TypedMembers.FirstOrDefault(member=>member.MemberName == variableName);
 
-                Type type = tmb?.MemberType ?? valueToSet?.GetType();
-                var customTypeName = tmb.CustomTypeName;
+                Type type = tmb?.MemberType ?? value?.GetType();
+                var customTypeName = tmb?.CustomTypeName;
 
-                instruction = instance.AddNewGenericInstructionFor(propertyName, type);
+                instruction = instance.AddNewGenericInstructionFor(variableName, type);
 
                 if(customTypeName != null)
                 {
@@ -596,12 +601,11 @@ namespace FlatRedBall.Glue.SaveClasses
                 }
             }
 
-            var valueType = valueToSet?.GetType();
+            var valueType = value?.GetType();
 
 
-            instruction.Value = valueToSet;
+            instruction.Value = value;
 
-            return instruction;
         }
 
 
@@ -635,41 +639,6 @@ namespace FlatRedBall.Glue.SaveClasses
             instance.InstructionSaves.Add(instructionSave);
             return instructionSave;
         }
-
-        /// <summary>
-        /// Returns the value of a variable either set in the NamedObjectSave (if it is set there) or in the underlying Entity if not
-        /// </summary>
-        /// <param name="instance">The NamedObjectSave to get the variable from.</param>
-        /// <param name="variableName">The name of the variable, such as "ScaleX"</param>
-        /// <returns>The value of the variable in either the NamedObjectSave or underlying Entity.  Returns null if varible isn't found.</returns>
-        public static object GetEffectiveValue(this NamedObjectSave instance, string variableName)
-        {
-            CustomVariableInNamedObject cvino = instance.GetCustomVariable(variableName);
-
-            if (cvino == null || cvino.Value == null)
-            {
-                if (instance.SourceType == SourceType.Entity && !string.IsNullOrEmpty(instance.SourceClassType))
-                {
-                    EntitySave entitySave = ObjectFinder.Self.GetEntitySave(instance.SourceClassType);
-
-                    if (entitySave != null)
-                    {
-                        CustomVariable variable = entitySave.GetCustomVariableRecursively(variableName);
-
-                        if (variable != null)
-                        {
-                            return variable.DefaultValue;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                return cvino.Value;
-            }
-            return null;
-        }
-
 
         public static string GetMessageWhySwitchMightCauseProblems(this NamedObjectSave namedObjectSave, string oldType)
         {

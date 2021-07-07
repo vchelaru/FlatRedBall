@@ -419,7 +419,14 @@ namespace {ProjectNamespace}.GlueControl.Editing
                         var isMerged = Get<bool>("IsCollisionMerged");
                         if (!string.IsNullOrEmpty(mapName) && !string.IsNullOrEmpty(typeName))
                         {
-                            var map = screen.GetType().GetMethod("GetFile").Invoke(null, new object[] { mapName }) as FlatRedBall.TileGraphics.LayeredTileMap;
+                            var map = screen.GetType().GetMethod("GetFile").Invoke(null, new object[] { mapName }) as 
+                                FlatRedBall.TileGraphics.LayeredTileMap;
+
+                            if(map == null)
+                            {
+                                var mapAsObject = FlatRedBall.Instructions.Reflection.LateBinder.GetValueStatic(screen, mapName);
+                                map = mapAsObject as FlatRedBall.TileGraphics.LayeredTileMap;
+                            }
 
                             if(map != null)
                             {

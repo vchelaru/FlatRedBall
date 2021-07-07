@@ -236,7 +236,13 @@ namespace FlatRedBall.Glue.SaveClasses
             return null;
         }
 
-
+        /// <summary>
+        /// Returns the first found named object first checking the NamedObjectContainer directly, then checking base objects
+        /// until one is found.
+        /// </summary>
+        /// <param name="namedObjectContainer">The object containing named objects, such as a Screen or Entity.</param>
+        /// <param name="namedObjectName">The name of the NamedObject to search for.</param>
+        /// <returns>The found NamedObjectSave, or null if none are found.</returns>
         public static NamedObjectSave GetNamedObjectRecursively(this INamedObjectContainer namedObjectContainer, string namedObjectName)
         {
             List<NamedObjectSave> namedObjectList = namedObjectContainer.NamedObjects;

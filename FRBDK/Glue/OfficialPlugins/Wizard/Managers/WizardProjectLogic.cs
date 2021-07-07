@@ -596,11 +596,11 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             if (vm.FollowPlayersWithCamera && vm.AddPlayerListToGameScreen)
             {
-                cameraNos.SetVariableValue(nameof(FlatRedBall.Entities.CameraControllingEntity.Targets), "PlayerList");
+                cameraNos.SetVariable(nameof(FlatRedBall.Entities.CameraControllingEntity.Targets), "PlayerList");
             }
             if (vm.KeepCameraInMap && vm.AddTiledMap)
             {
-                cameraNos.SetVariableValue(nameof(FlatRedBall.Entities.CameraControllingEntity.Map), "Map");
+                cameraNos.SetVariable(nameof(FlatRedBall.Entities.CameraControllingEntity.Map), "Map");
             }
         }
 

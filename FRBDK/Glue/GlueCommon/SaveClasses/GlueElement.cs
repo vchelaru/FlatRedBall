@@ -104,6 +104,10 @@ namespace FlatRedBall.Glue.SaveClasses
             return Properties != null && Properties.Count != 0;
         }
 
+        /// <summary>
+        /// A flattened IEnumerable of all named objects stored on this element. This includes top-level named objects and
+        /// named objects contained in lists.
+        /// </summary>
         [Browsable(false)]
         [XmlIgnore]
         public IEnumerable<NamedObjectSave> AllNamedObjects

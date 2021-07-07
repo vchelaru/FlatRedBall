@@ -714,9 +714,9 @@ namespace FlatRedBall.Glue.SetVariable
 
                     lineHeightInPixels /= 2.0f;
 
-                    namedObjectSave.SetPropertyValue("Scale", (float)lineHeightInPixels);
-                    namedObjectSave.SetPropertyValue("Spacing", (float)lineHeightInPixels);
-                    namedObjectSave.SetPropertyValue("NewLineDistance", (float)(lineHeightInPixels * 1.5f));
+                    namedObjectSave.SetVariable("Scale", (float)lineHeightInPixels);
+                    namedObjectSave.SetVariable("Spacing", (float)lineHeightInPixels);
+                    namedObjectSave.SetVariable("NewLineDistance", (float)(lineHeightInPixels * 1.5f));
 
                 }
             }

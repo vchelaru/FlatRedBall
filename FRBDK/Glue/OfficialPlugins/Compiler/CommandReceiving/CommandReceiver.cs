@@ -246,7 +246,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                     value = ConvertVariable(value, typeName);
 
-                    nos.SetVariableValue(setVariableDto.VariableName, value);
+                    nos.SetVariable(setVariableDto.VariableName, value);
 
                     GlueCommands.Self.DoOnUiThread(() =>
                         RefreshManager.Self.HandleNamedObjectValueChanged(setVariableDto.VariableName, null, nos, 

@@ -897,6 +897,33 @@ namespace FlatRedBall.Glue.Elements
                 return 1 + GetHierarchyDepth(baseElement);
             }
         }
+
+        /// <summary>
+        /// Returns all elements involved in the inheritance chain, with the most basic type first, and most derive types
+        /// after. The argument will be added as the last element in the list.
+        /// </summary>
+        /// <param name="derivedElement">The most derived element.</param>
+        /// <returns>A list of elements representing the inhreitance chain, including the argument GlueElement.</returns>
+        public List<GlueElement> GetInheritanceChain(GlueElement derivedElement)
+        {
+            List<GlueElement> toReturn = new List<GlueElement>();
+
+            toReturn.Add(derivedElement);
+
+            var currentElement = derivedElement;
+            while(currentElement != null)
+            {
+                var baseElement = GetBaseElement(currentElement);
+
+                if(baseElement != null)
+                {
+                    toReturn.Insert(0, baseElement);
+                }
+                currentElement = baseElement;
+            }
+
+            return toReturn;
+        }
     }
 
 

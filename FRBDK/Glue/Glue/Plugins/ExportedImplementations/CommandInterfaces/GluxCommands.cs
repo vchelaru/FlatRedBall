@@ -1195,7 +1195,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     value = PropertyValuePair.ConvertStringToType((string)value, variableDefinition.Type);
                 }
             }
-            nos.SetPropertyValue(memberName, value);
+            nos.SetVariable(memberName, value);
 
 
             EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
