@@ -200,23 +200,7 @@ namespace FlatRedBallAddOns.Entities
             CodeGenerators.Add(new LoadingScreenCodeGenerator());
         }
 
-        public static bool IsOnOwnLayer(IElement element)
-        {
-            if (element is EntitySave)
-            {
-                // The AddToManagers for EntitySaves takes a layer.  We should always
-                // use this argument, but make sure all methods that take layered arguments
-                // can work with null
-                return true;
-
-            }
-            else
-            {
-                return (element as ScreenSave).IsOnOwnLayer;
-            }
-        }
-
-        public static void GenerateCode(IElement element)
+        public static void GenerateCode(GlueElement element)
         {
             if (element == null)
             {
@@ -245,8 +229,8 @@ namespace FlatRedBallAddOns.Entities
 
             if (element.Events.Count != 0)
             {
-                var sharedCodeFullFileName = 
-                    EventResponseSave.GetSharedCodeFullFileName(element, FileManager.GetDirectory(ProjectManager.GlueProjectFileName));
+                var sharedCodeFullFileName =
+                    EventResponseSave.GetSharedCodeFullFileName(element, FileManager.GetDirectory(GlueState.Self.GlueProjectFileName));
 
                 EventCodeGenerator.CreateEmptyCodeIfNecessary(element,
                     sharedCodeFullFileName, false);
@@ -272,44 +256,8 @@ namespace FlatRedBallAddOns.Entities
             {
                 throw new Exception("Global content files dictionary should not be null");
             }
+            string classNamespace = GetGlueElementNamespace(element);
 
-            string objectName = FileManager.RemovePath(element.Name);
-
-            string classNamespace = ProjectManager.ProjectNamespace;
-
-            if (element is EntitySave)
-            {
-                string directory = FileManager.MakeRelative(FileManager.GetDirectory(element.Name));
-
-                if (directory.ToLower() != "Entities/".ToLower())
-                {
-                    string relativeDirectory = FileManager.MakeRelative(directory);
-                    relativeDirectory = relativeDirectory.Substring(0, relativeDirectory.Length - 1);
-                    relativeDirectory = relativeDirectory.Replace('/', '.');
-
-                    classNamespace += "." + relativeDirectory;
-                }
-                else
-                {
-                    classNamespace += ".Entities";
-                }
-            }
-            else if (element is ScreenSave)
-            {
-                classNamespace += ".Screens";
-            }
-
-            string contentManagerName = element.UseGlobalContent ? "\"Global\"" : null;
-            ScreenSave asScreenSave = element as ScreenSave;
-            if (asScreenSave != null &&
-                !string.IsNullOrEmpty(asScreenSave.ContentManagerMethod))
-            {
-                contentManagerName = asScreenSave.ContentManagerMethod;
-            }
-
-            var whatToInheritFrom = GetInheritance(element);
-
-            
             var rootBlock = new CodeDocument(0);
 
             rootBlock.Line("#if ANDROID || IOS || DESKTOP_GL");
@@ -336,18 +284,18 @@ namespace FlatRedBallAddOns.Entities
             GenerateInitialize(element, codeBlock);
 
             GenerateAddToManagers(element, codeBlock);
-            
+
             GenerateActivity(codeBlock, element);
-           
+
             GenerateDestroy(element, codeBlock);
-                
+
             GenerateMethods(codeBlock, element);
-            
+
             foreach (var codeGenerator in CodeGenerators)
             {
                 codeGenerator.GenerateAdditionalClasses(namespaceBlock, element);
             }
-            
+
             string generatedCodeFileName = element.Name + ".Generated.cs";
             var contentsToSave = rootBlock.ToString();
 
@@ -368,7 +316,7 @@ namespace FlatRedBallAddOns.Entities
 
                 bool inheritsFromEntity = element.InheritsFromEntity();
 
-                
+
 
                 EntitySave rootEntitySave;
                 List<string> inheritanceList = InheritanceCodeWriter.Self.GetInheritanceList(element, entitySave, out rootEntitySave);
@@ -412,6 +360,35 @@ namespace FlatRedBallAddOns.Entities
             // This code will create and add above, but if the file already exists, the code above won't re-add it to the 
             // project. This is a last chance to add it if necessary:
             GlueCommands.Self.ProjectCommands.TryAddCodeFileToProject(GetAbsoluteGeneratedCodeFileFor(element), saveOnAdd: true);
+        }
+
+        public static string GetGlueElementNamespace(GlueElement element)
+        {
+            string classNamespace = ProjectManager.ProjectNamespace;
+
+            if (element is EntitySave)
+            {
+                string directory = FileManager.MakeRelative(FileManager.GetDirectory(element.Name));
+
+                if (directory.ToLower() != "Entities/".ToLower())
+                {
+                    string relativeDirectory = FileManager.MakeRelative(directory);
+                    relativeDirectory = relativeDirectory.Substring(0, relativeDirectory.Length - 1);
+                    relativeDirectory = relativeDirectory.Replace('/', '.');
+
+                    classNamespace += "." + relativeDirectory;
+                }
+                else
+                {
+                    classNamespace += ".Entities";
+                }
+            }
+            else if (element is ScreenSave)
+            {
+                classNamespace += ".Screens";
+            }
+
+            return classNamespace;
         }
 
         private static ICodeBlock GenerateClassHeader(IElement element, ICodeBlock namespaceBlock)
@@ -626,13 +603,13 @@ namespace FlatRedBallAddOns.Entities
             NamedObjectSaveCodeGenerator.ReusableEntireFileRfses = ReusableEntireFileRfses;
         }
 
-        internal static ICodeBlock GenerateFields(IElement saveObject, ICodeBlock codeBlock)
+        internal static ICodeBlock GenerateFields(IElement glueElement, ICodeBlock codeBlock)
         {
-            if(saveObject is EntitySave)
+            if(glueElement is EntitySave)
             {
-                if(saveObject.InheritsFromElement())
+                if(glueElement.InheritsFromElement())
                 {
-                    string baseQualifiedName = ProjectManager.ProjectNamespace + "." + saveObject.BaseElement.Replace("\\", ".");
+                    string baseQualifiedName = ProjectManager.ProjectNamespace + "." + glueElement.BaseElement.Replace("\\", ".");
 
                     codeBlock.Line("// This is made static so that static lazy-loaded content can access it.");
                     codeBlock.Property("public static new string", "ContentManagerName")
@@ -646,11 +623,7 @@ namespace FlatRedBallAddOns.Entities
                 }
             }
 
-
-
-
-
-            foreach (ElementComponentCodeGenerator codeGenerator in CodeWriter.CodeGenerators)
+            foreach (var codeGenerator in CodeWriter.CodeGenerators)
             {
                 if (codeGenerator == null)
                 {
@@ -659,8 +632,7 @@ namespace FlatRedBallAddOns.Entities
 
                 try
                 {
-                    codeGenerator.GenerateFields(codeBlock, saveObject);
-
+                    codeGenerator.GenerateFields(codeBlock, glueElement);
                 }
                 catch (Exception e)
                 {
@@ -670,12 +642,10 @@ namespace FlatRedBallAddOns.Entities
                 }
             }
 
-            PerformancePluginCodeGenerator.GenerateFields(saveObject, codeBlock);
-
-            EntitySave asEntitySave = saveObject as EntitySave;
+            PerformancePluginCodeGenerator.GenerateFields(glueElement, codeBlock);
 
             // No need to create LayerProvidedByContainer if this inherits from another object.
-            if (asEntitySave != null && !saveObject.InheritsFromEntity())
+            if (glueElement is EntitySave && !glueElement.InheritsFromEntity())
             {
                 // Add the layer that is going to get assigned in generated code
                 codeBlock.Line("protected FlatRedBall.Graphics.Layer LayerProvidedByContainer = null;");
@@ -1018,6 +988,22 @@ namespace FlatRedBallAddOns.Entities
             currentBlock.Line("CustomInitialize();");
             PerformancePluginCodeGenerator.GenerateEnd();
             
+        }
+
+        static bool IsOnOwnLayer(IElement element)
+        {
+            if (element is EntitySave)
+            {
+                // The AddToManagers for EntitySaves takes a layer.  We should always
+                // use this argument, but make sure all methods that take layered arguments
+                // can work with null
+                return true;
+
+            }
+            else
+            {
+                return (element as ScreenSave).IsOnOwnLayer;
+            }
         }
 
         private static void GenerateReAddToManagers(IElement saveObject, ICodeBlock currentBlock)

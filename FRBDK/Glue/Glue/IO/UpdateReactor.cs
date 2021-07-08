@@ -361,7 +361,7 @@ namespace FlatRedBall.Glue.IO
                             //comparisonObject.GetComparisonDifference(comparisonObject.Differences[0]);
                         int indexInOld = 0;
                         int indexInNew = 0;
-                        IElement element = GetElementFromObjectString(comparison.PropertyName, ProjectManager.GlueProjectSave, out indexInOld);
+                        var element = GetElementFromObjectString(comparison.PropertyName, ProjectManager.GlueProjectSave, out indexInOld);
                         GlueElement replacement = GetElementFromObjectString(comparison.PropertyName, newGlueProjectSave, out indexInNew);
 
                         if (element != null && replacement != null && indexInNew == indexInOld)

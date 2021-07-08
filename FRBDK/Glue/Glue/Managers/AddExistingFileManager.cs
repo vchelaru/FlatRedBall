@@ -141,7 +141,7 @@ namespace FlatRedBall.Glue.Managers
             {
 
                 toReturn = GlueCommands.Self.GluxCommands.AddSingleFileTo(fileName.FullPath, rfsName, extraCommandLineArguments, buildToolAssociation,
-                    isBuiltFile, options, element, directoryOfTreeNode);
+                    isBuiltFile, options, element as GlueElement, directoryOfTreeNode);
             }
 
 

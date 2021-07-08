@@ -432,8 +432,8 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 IElement element = GlueState.Self.CurrentElement;
 
-                List<IElement> elementsToGenerate = new List<IElement>();
-                List<IElement> elementsToSearchForTunneledVariablesIn = new List<IElement>();
+                var elementsToGenerate = new List<GlueElement>();
+                var elementsToSearchForTunneledVariablesIn = new List<GlueElement>();
 
                 #region Change any states that use this variable
                 foreach (StateSave stateSave in element.AllStates)
@@ -453,7 +453,7 @@ namespace FlatRedBall.Glue.SetVariable
                 List<NamedObjectSave> nosList = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(element);
                 foreach (NamedObjectSave nos in nosList)
                 {
-                    IElement container = ObjectFinder.Self.GetElementContaining(nos);
+                    var container = ObjectFinder.Self.GetElementContaining(nos);
 
                     if (!elementsToSearchForTunneledVariablesIn.Contains(container))
                     {
@@ -472,7 +472,7 @@ namespace FlatRedBall.Glue.SetVariable
                 #endregion
 
                 #region Change any CustomVaribles that tunnel in to this variable
-                foreach (IElement elementToCheck in elementsToSearchForTunneledVariablesIn)
+                foreach (var elementToCheck in elementsToSearchForTunneledVariablesIn)
                 {
                     foreach (CustomVariable variableToCheck in elementToCheck.CustomVariables)
                     {
@@ -510,7 +510,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                 #endregion
 
-                foreach (IElement toRegenerate in elementsToGenerate)
+                foreach (var toRegenerate in elementsToGenerate)
                 {
                     CodeWriter.GenerateCode(toRegenerate);
 

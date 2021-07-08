@@ -716,7 +716,7 @@ namespace FlatRedBall.Glue
                 {
                     nos.UpdateCustomProperties();
 
-                    IElement element = nos.GetContainer();
+                    var element = nos.GetContainer();
 
                     if (element != null)
                     {

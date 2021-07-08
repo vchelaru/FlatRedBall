@@ -205,7 +205,7 @@ namespace GumPlugin.Managers
                             var oldQualifiedType = prefix + exportedEvent.OldName.Replace('\\', '.') + "Runtime";
                             var newQualifiedType = prefix + exportedEvent.NewName.Replace('\\', '.') + "Runtime";
 
-                            HashSet<IElement> elementsToRegen = new HashSet<IElement>();
+                            var elementsToRegen = new HashSet<GlueElement>();
 
                             foreach(var nos in allNoses)
                             {

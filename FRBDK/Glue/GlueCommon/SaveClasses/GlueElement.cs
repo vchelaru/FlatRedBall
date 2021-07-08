@@ -10,6 +10,14 @@ using System.Xml.Serialization;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
+    /// <summary>
+    /// Base class for Glue Screens and Entities.
+    /// </summary>
+    /// <remarks>
+    /// This provides a place for common code for Screens and Entities without using 
+    /// interface default implementations (which introduce their own problems). Vic believes
+    /// that this should be the default type passed around rather than IElement going forward.
+    /// </remarks>
     public abstract class GlueElement : IFileReferencer, IElement
     {
         public List<string> Tags = new List<string>();

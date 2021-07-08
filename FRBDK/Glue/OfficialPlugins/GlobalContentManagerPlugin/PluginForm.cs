@@ -34,13 +34,13 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         {
             for (int i = 0; i < ProjectManager.GlueProjectSave.Entities.Count; i++)
             {
-                IElement element = ProjectManager.GlueProjectSave.Entities[i];
+                var element = ProjectManager.GlueProjectSave.Entities[i];
                 AddElement(element);
             }
 
             for (int i = 0; i < ProjectManager.GlueProjectSave.Screens.Count; i++)
             {
-                IElement element = ProjectManager.GlueProjectSave.Screens[i];
+                var element = ProjectManager.GlueProjectSave.Screens[i];
                 AddElement(element);
             }
             
@@ -80,7 +80,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
         private void UpdateValueAtRowColumn(int rowIndex, int columnIndex)
         {
-            IElement element = mElements[rowIndex];
+            var element = mElements[rowIndex];
 
             switch (columnIndex)
             {
@@ -130,7 +130,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
                     }
                     break;
             }
-            GlueCommands.GenerateCodeCommands.GenerateElementCode(element);
+            GlueCommands.GenerateCodeCommands.GenerateElementCode(element as GlueElement);
             GlueCommands.GenerateCodeCommands.GenerateGlobalContentCode();
             GlueCommands.GluxCommands.SaveGlux();
 

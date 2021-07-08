@@ -368,7 +368,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         }
 
-        public IElement GetElementContaining(StateSave stateSave)
+        public GlueElement GetElementContaining(StateSave stateSave)
         {
             foreach (EntitySave entitySave in Entities)
             {

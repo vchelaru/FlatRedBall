@@ -298,7 +298,7 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        public static IEnumerable<IElement> AllElements(this GlueProjectSave instance)
+        public static IEnumerable<GlueElement> AllElements(this GlueProjectSave instance)
         {
             foreach (ScreenSave screen in instance.Screens)
             {

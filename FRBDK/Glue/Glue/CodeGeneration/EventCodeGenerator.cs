@@ -573,7 +573,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
             }
 
-            CreateEmptyCodeIfNecessary(currentElement, fullFileName, forceRegenerate);
+            CreateEmptyCodeIfNecessary(currentElement as GlueElement, fullFileName, forceRegenerate);
 
             fileContents = FileManager.FromFileText(fullFileName);
 
@@ -622,7 +622,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
 
-        public static void CreateEmptyCodeIfNecessary(IElement currentElement, string fullFileName, bool forceRegenerateContents)
+        public static void CreateEmptyCodeIfNecessary(GlueElement currentElement, string fullFileName, bool forceRegenerateContents)
         {
             bool doesFileExist = File.Exists(fullFileName);
 

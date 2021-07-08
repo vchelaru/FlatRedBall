@@ -467,16 +467,16 @@ namespace FlatRedBall.Glue.Elements
             return derivedScreens;
         }
 
-        public List<IElement> GetAllElementsThatInheritFrom(string elementName)
+        public List<GlueElement> GetAllElementsThatInheritFrom(string elementName)
         {
-            IElement element = GetIElement(elementName);
+            var element = GetIElement(elementName);
 
             return GetAllElementsThatInheritFrom(element);
         }
 
-        public List<IElement> GetAllElementsThatInheritFrom(IElement baseElement)
+        public List<GlueElement> GetAllElementsThatInheritFrom(IElement baseElement)
         {
-            var derivedElements = new List<IElement>();
+            var derivedElements = new List<GlueElement>();
             var count = 0;
             var isScreen = baseElement is ScreenSave;
             var isEntity = baseElement is EntitySave;
@@ -489,7 +489,7 @@ namespace FlatRedBall.Glue.Elements
             for (var i = 0; i < count; i++)
             {
                 bool add;
-                IElement derivedElement;
+                GlueElement derivedElement;
 
                 if (isScreen)
                 {
@@ -731,7 +731,7 @@ namespace FlatRedBall.Glue.Elements
 
         }
 
-        public IElement GetElementContaining(ReferencedFileSave referencedFileSave)
+        public GlueElement GetElementContaining(ReferencedFileSave referencedFileSave)
         {
 
             for (int i = 0; i < ObjectFinder.Self.GlueProject.Screens.Count; i++)
@@ -752,7 +752,7 @@ namespace FlatRedBall.Glue.Elements
             return null;
         }
 
-        public IElement GetElementContaining(EventResponseSave ers)
+        public GlueElement GetElementContaining(EventResponseSave ers)
         {
             for (int i = 0; i < ObjectFinder.Self.GlueProject.Screens.Count; i++)
             {
@@ -791,7 +791,7 @@ namespace FlatRedBall.Glue.Elements
             return false;
         }
 
-        public  IElement GetElementContaining(StateSave stateSave)
+        public GlueElement GetElementContaining(StateSave stateSave)
         {
             return GlueProject.GetElementContaining(stateSave);
         }
@@ -825,9 +825,9 @@ namespace FlatRedBall.Glue.Elements
             }
         }
 
-        public List<IElement> GetAllElementsReferencingFile(string rfsName)
+        public List<GlueElement> GetAllElementsReferencingFile(string rfsName)
         {
-            List<IElement> returnList = new List<IElement>();
+            var returnList = new List<GlueElement>();
 
             foreach (ScreenSave screenSave in GlueProject.Screens)
             {

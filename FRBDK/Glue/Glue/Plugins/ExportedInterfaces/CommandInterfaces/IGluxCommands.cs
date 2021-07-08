@@ -53,14 +53,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <returns>The new ReferencedFileSave.</returns>
         ReferencedFileSave AddReferencedFileToGlobalContent(string fileToAdd, bool includeDirectoryInGlobalContentInName);
         void AddReferencedFileToGlobalContent(ReferencedFileSave rfs);
-        void AddReferencedFileToElement(ReferencedFileSave rfs, IElement element);
+        void AddReferencedFileToElement(ReferencedFileSave rfs, GlueElement element);
 
         ReferencedFileSave GetReferencedFileSaveFromFile(string fileName);
         ReferencedFileSave GetReferencedFileSaveFromFile(FilePath filePath);
 
         ReferencedFileSave AddSingleFileTo(string fileName, string rfsName, string extraCommandLineArguments,
-            EditorObjects.SaveClasses.BuildToolAssociation buildToolAssociation, bool isBuiltFile, object options, 
-            IElement sourceElement, string directoryOfTreeNode, bool selectFileAfterCreation = true);
+            EditorObjects.SaveClasses.BuildToolAssociation buildToolAssociation, bool isBuiltFile, object options,
+            GlueElement sourceElement, string directoryOfTreeNode, bool selectFileAfterCreation = true);
 
         void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateCode = true);
 
@@ -94,9 +94,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         // SourceType sourceType, string sourceClassType, string sourceFile, string objectName, string sourceNameInFile, string sourceClassGenericType
         NamedObjectSave AddNewNamedObjectToSelectedElement(ViewModels.AddObjectViewModel addObjectViewModel);
-        NamedObjectSave AddNewNamedObjectTo(ViewModels.AddObjectViewModel addObjectViewModel, IElement element, NamedObjectSave listToAddTo = null);
+        NamedObjectSave AddNewNamedObjectTo(ViewModels.AddObjectViewModel addObjectViewModel, GlueElement element, NamedObjectSave listToAddTo = null);
 
-        void AddNamedObjectTo(NamedObjectSave newNos, IElement element, NamedObjectSave listToAddTo = null);
+        void AddNamedObjectTo(NamedObjectSave newNos, GlueElement element, NamedObjectSave listToAddTo = null);
 
         void SetVariableOn(NamedObjectSave nos, string memberName, object value);
 

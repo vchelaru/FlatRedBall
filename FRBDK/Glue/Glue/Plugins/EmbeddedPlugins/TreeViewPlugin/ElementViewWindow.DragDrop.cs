@@ -267,8 +267,8 @@ namespace FlatRedBall.Glue.FormHelpers
             else if (targetNode.IsRootCustomVariablesNode())
             {
                 // let's see if the user is moving a variable from one element to another
-                IElement sourceElement = nodeMoving.GetContainingElementTreeNode().Tag as IElement;
-                IElement targetElement = targetNode.GetContainingElementTreeNode().Tag as IElement;
+                var sourceElement = nodeMoving.GetContainingElementTreeNode().Tag as GlueElement;
+                var targetElement = targetNode.GetContainingElementTreeNode().Tag as GlueElement;
 
                 if (sourceElement != targetElement)
                 {
@@ -386,8 +386,8 @@ namespace FlatRedBall.Glue.FormHelpers
             IElement currentElement = EditorLogic.CurrentElement;
             StateSave toAdd = (StateSave)nodeMoving.Tag;
 
-            IElement sourceContainer = nodeMoving.GetContainingElementTreeNode().Tag as IElement;
-            IElement targetContainer = targetNode.GetContainingElementTreeNode().Tag as IElement;
+            var sourceContainer = nodeMoving.GetContainingElementTreeNode().Tag as GlueElement;
+            var targetContainer = targetNode.GetContainingElementTreeNode().Tag as GlueElement;
 
             if (targetNode.IsStateCategoryNode() || targetNode.IsStateListNode())
             {

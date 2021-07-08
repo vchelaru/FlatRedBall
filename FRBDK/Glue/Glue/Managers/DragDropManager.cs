@@ -351,7 +351,7 @@ namespace FlatRedBall.Glue.Managers
                 BaseElementTreeNode treeNodeForElementMovedInto = GlueState.Self.Find.ElementTreeNode(elementMovingInto);
                 treeNodeForElementMovedInto.RefreshTreeNodes();
                 GlueCommands.Self.GenerateCodeCommands
-                    .GenerateElementAndReferencedObjectCodeTask(elementMovingInto);
+                    .GenerateElementAndReferencedObjectCodeTask(elementMovingInto as GlueElement);
 
                 MessageBox.Show("Copied\n" + movingNos + "\n\nto\n" + clonedNos);
             }
@@ -474,7 +474,7 @@ namespace FlatRedBall.Glue.Managers
             return toReturn;
         }
 
-        private static void AddExistingNamedObjectToElement(IElement element, NamedObjectSave newNamedObject)
+        private static void AddExistingNamedObjectToElement(GlueElement element, NamedObjectSave newNamedObject)
         {
             element.NamedObjects.Add(newNamedObject);
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
@@ -781,7 +781,7 @@ namespace FlatRedBall.Glue.Managers
             #endregion
 
             return GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel,
-                elementToCreateIn, null);
+                elementToCreateIn as GlueElement, null);
         }
 
         private static void AskAndAddAllContainedRfsToGlobalContent(IElement element)
@@ -1175,9 +1175,9 @@ namespace FlatRedBall.Glue.Managers
 
 
                 // 5 Re-generate the containing Element (Screen or Entity)
-                if (EditorLogic.CurrentElement != null)
+                if (GlueState.Self.CurrentElement != null)
                 {
-                    CodeWriter.GenerateCode(EditorLogic.CurrentElement);
+                    CodeWriter.GenerateCode(GlueState.Self.CurrentElement);
                 }
                 else
                 {
@@ -1186,7 +1186,7 @@ namespace FlatRedBall.Glue.Managers
 
 
                 // The new 1:  Update 
-                if (EditorLogic.CurrentElement != null)
+                if (GlueState.Self.CurrentElement != null)
                 {
                     EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
                 }

@@ -42,6 +42,8 @@ namespace OfficialPlugins.Compiler
         Runner runner;
         CompilerViewModel viewModel;
 
+        public static CompilerViewModel MainViewModel { get; private set; }
+
         PluginTab buildTab;
 
         Game1GlueControlGenerator game1GlueControlGenerator;
@@ -92,11 +94,17 @@ namespace OfficialPlugins.Compiler
             game1GlueControlGenerator = new Game1GlueControlGenerator();
             this.RegisterCodeGenerator(game1GlueControlGenerator);
 
+            this.RegisterCodeGenerator(new CompilerPluginElementCodeGenerator());
+
+            #region Start the timer
+
             var timerFrequency = 400; // ms
             timer = new Timer(timerFrequency);
             timer.Elapsed += HandleTimerElapsed;
             timer.SynchronizingObject = MainGlueWindow.Self;
             timer.Start();
+
+            #endregion
         }
 
         private async void HandleTimerElapsed(object sender, ElapsedEventArgs e)
@@ -309,6 +317,8 @@ namespace OfficialPlugins.Compiler
             viewModel.IsRebuildAndRestartEnabled = true;
 
             viewModel.PropertyChanged += HandleMainViewModelPropertyChanged;
+
+            MainViewModel = viewModel;
 
             control = new MainControl();
             control.DataContext = viewModel;

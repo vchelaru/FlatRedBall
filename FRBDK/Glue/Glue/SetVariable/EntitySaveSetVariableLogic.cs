@@ -168,11 +168,11 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 List<NamedObjectSave> allNamedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(EditorLogic.CurrentElement);
 
-                List<IElement> containers = new List<IElement>();
+                var containers = new List<GlueElement>();
 
                 foreach (NamedObjectSave nos in allNamedObjects)
                 {
-                    IElement element = nos.GetContainer();
+                    var element = nos.GetContainer();
 
                     if (!containers.Contains(element))
                     {
@@ -180,7 +180,7 @@ namespace FlatRedBall.Glue.SetVariable
                     }
                 }
 
-                foreach (IElement element in containers)
+                foreach (var element in containers)
                 {
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                 }
@@ -215,7 +215,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                 foreach (NamedObjectSave nos in namedObjects)
                 {
-                    IElement namedObjectContainer = nos.GetContainer();
+                    var namedObjectContainer = nos.GetContainer();
 
                     if (namedObjectContainer != null)
                     {
@@ -556,11 +556,11 @@ namespace FlatRedBall.Glue.SetVariable
 
         private static void RegenerateAllContainersForNamedObjectsThatUseCurrentEntity()
         {
-            List<NamedObjectSave> namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(EditorLogic.CurrentEntitySave);
-            List<IElement> elementsToGenerate = new List<IElement>();
+            var namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(GlueState.Self.CurrentEntitySave);
+            var elementsToGenerate = new List<GlueElement>();
             foreach (NamedObjectSave nos in namedObjects)
             {
-                IElement element = nos.GetContainer();
+                var element = nos.GetContainer();
 
                 if (!elementsToGenerate.Contains(element))
                 {
@@ -568,7 +568,7 @@ namespace FlatRedBall.Glue.SetVariable
                 }
             }
 
-            foreach (IElement element in elementsToGenerate)
+            foreach (var element in elementsToGenerate)
             {
                 CodeWriter.GenerateCode(element);
             }

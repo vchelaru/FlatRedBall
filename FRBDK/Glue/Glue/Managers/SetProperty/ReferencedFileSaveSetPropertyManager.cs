@@ -209,7 +209,7 @@ namespace FlatRedBall.Glue.SetVariable
                     // project.
                     //ContentPipelineHelper.ReactToUseContentPipelineChange(rfsToUpdate);
 
-                    IElement container = rfsToUpdate.GetContainer();
+                    var container = rfsToUpdate.GetContainer();
 
                     if (container != null)
                     {
@@ -268,9 +268,9 @@ namespace FlatRedBall.Glue.SetVariable
                     // so we need to find all
                     // RFS's that use this RFS
                     // and regenerate them
-                    List<IElement> elements = ObjectFinder.Self.GetAllElementsReferencingFile(rfs.Name);
+                    var elements = ObjectFinder.Self.GetAllElementsReferencingFile(rfs.Name);
 
-                    foreach (IElement element in elements)
+                    foreach (var element in elements)
                     {
                         CodeWriter.GenerateCode(element);
                     }
@@ -518,7 +518,7 @@ namespace FlatRedBall.Glue.SetVariable
 
         private static void RegenerateCodeAndUpdateUiAccordingToRfsRename(string oldName, string newName, ReferencedFileSave fileSave)
         {
-            foreach (IElement element in ProjectManager.GlueProjectSave.AllElements())
+            foreach (var element in ProjectManager.GlueProjectSave.AllElements())
             {
                 bool wasAnythingChanged = element.ReactToRenamedReferencedFile(oldName, newName);
 

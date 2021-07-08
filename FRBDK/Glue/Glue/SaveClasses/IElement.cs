@@ -22,6 +22,13 @@ namespace FlatRedBall.Glue.SaveClasses
 
     #endregion
 
+    /// <summary>
+    /// An interface which defines methods and properties common to Glue Screens and Entities.
+    /// </summary>
+    /// <remarks>
+    /// This was introduced in the early days of Glue, but now work is moving to the GlueElement abstract class. It's best to 
+    /// move out of interface into that abstract class to avoid having to place default implementations in this interface.
+    /// </remarks>
     public interface IElement : INamedObjectContainer, INameable, IFileReferencer, IEventContainer, IPropertyListContainer
     {
         //[Browsable(false)]
@@ -48,11 +55,6 @@ namespace FlatRedBall.Glue.SaveClasses
         bool HasChanged { get; set; }
 
         IEnumerable<StateSave> AllStates
-        {
-            get;
-        }
-
-        List<PropertySave> Properties
         {
             get;
         }

@@ -363,9 +363,9 @@ namespace FlatRedBall.Glue.FormHelpers
      
         public static void GenerateSelectedElementCode()
         {
-            if (EditorLogic.CurrentElement != null)
+            if (GlueState.Self.CurrentElement != null)
             {
-                CodeWriter.GenerateCode(EditorLogic.CurrentElement);
+                CodeWriter.GenerateCode(GlueState.Self.CurrentElement);
             }
             else if (EditorLogic.CurrentReferencedFile != null)
             {

@@ -24,9 +24,9 @@ namespace FlatRedBall.Glue.Controls
 
         public void PopulateWithReferencesTo(ReferencedFileSave rfs)
         {
-            List<IElement> elements = ObjectFinder.Self.GetAllElementsReferencingFile(rfs.Name);
+            var elements = ObjectFinder.Self.GetAllElementsReferencingFile(rfs.Name);
 
-            foreach (IElement element in elements)
+            foreach (var element in elements)
             {
                 var rfsInThisElement = element.GetReferencedFileSave(rfs.Name);
                 listBox1.Items.Add(rfsInThisElement);

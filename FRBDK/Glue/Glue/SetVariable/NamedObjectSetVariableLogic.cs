@@ -193,7 +193,7 @@ namespace FlatRedBall.Glue.SetVariable
                         namedObjectSave.SetByContainer = !namedObjectSave.SetByContainer;
                 }
 
-                List<IElement> derivedElements = ObjectFinder.Self.GetAllElementsThatInheritFrom(
+                var derivedElements = ObjectFinder.Self.GetAllElementsThatInheritFrom(
                     EditorLogic.CurrentElement.Name);
 
                 foreach (IElement derived in derivedElements)

@@ -73,9 +73,9 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
         void HandleAfteruseGlobalContentChanged(object sender, MemberChangeArgs args)
         {
-            IElement element = Instance as IElement;
+            var element = Instance as GlueElement;
                 
-            List<IElement> elementsToMakeGlobal = new List<IElement>();
+            var elementsToMakeGlobal = new List<GlueElement>();
 
             if (element.UseGlobalContent)
             {
@@ -105,7 +105,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                         var result = (System.Windows.Forms.DialogResult)lbw.ClickedOption;
                         if (result == System.Windows.Forms.DialogResult.Yes)
                         {
-                            foreach (IElement toMakeGlobal in elementsToMakeGlobal)
+                            foreach (var toMakeGlobal in elementsToMakeGlobal)
                             {
                                 toMakeGlobal.UseGlobalContent = true;
                                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(toMakeGlobal);
@@ -117,7 +117,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             }
         }
 
-        private static void GetAllElementsReferencedThroughObjectsRecursively(IElement element, List<IElement> elementsToMakeGlobal)
+        private static void GetAllElementsReferencedThroughObjectsRecursively(GlueElement element, List<GlueElement> elementsToMakeGlobal)
         {
 
             // loop through all NamedObjects 
@@ -126,7 +126,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
             foreach (NamedObjectSave nos in element.NamedObjects.Where(nos => nos.SourceType == SourceType.Entity))
             {
-                IElement nosElement = ObjectFinder.Self.GetIElement(nos.SourceClassType);
+                var nosElement = ObjectFinder.Self.GetIElement(nos.SourceClassType);
                 if (elementsToMakeGlobal.Contains(nosElement) == false)
                 {
                     elementsToMakeGlobal.Add(nosElement);

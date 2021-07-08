@@ -2266,13 +2266,13 @@ namespace FlatRedBall.Glue.FormHelpers
 
             UpdateCurrentElementTreeNode();
 
-            IElement element = GlueState.Self.CurrentElement;
-            List<IElement> elementsToRegen = new List<IElement>();
+            var element = GlueState.Self.CurrentElement;
+            var elementsToRegen = new List<IElement>();
 
             foreach (NamedObjectSave nos in ObjectFinder.Self.GetAllNamedObjectsThatUseElement(element))
             {
                 nos.UpdateCustomProperties();
-                IElement candidateToAdd = nos.GetContainer();
+                var candidateToAdd = nos.GetContainer();
 
                 if (!elementsToRegen.Contains(candidateToAdd))
                 {
@@ -2282,9 +2282,9 @@ namespace FlatRedBall.Glue.FormHelpers
 
             }
 
-            foreach (IElement elementToRegen in elementsToRegen)
+            foreach (var elementToRegen in elementsToRegen)
             {
-                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(elementToRegen);
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(elementToRegen as GlueElement);
             }
 
             // I think the variables are complete remade. I could make it preserve them, but it's easier to do this:

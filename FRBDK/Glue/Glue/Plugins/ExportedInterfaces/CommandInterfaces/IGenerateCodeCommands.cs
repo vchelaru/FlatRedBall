@@ -14,16 +14,16 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// </summary>
         void GenerateCurrentElementCode();
 
-        void GenerateElementCode(IElement element);
-        void GenerateElementCodeTask(IElement element);
+        void GenerateElementCode(GlueElement element);
+        void GenerateElementCodeTask(GlueElement element);
 
         void GenerateGlobalContentCode();
         void GenerateGlobalContentCodeTask();
 
-        void GenerateElementAndReferencedObjectCodeTask(IElement element);
+        void GenerateElementAndReferencedObjectCodeTask(GlueElement element);
 
 
-        string GetNamespaceForElement(IElement element);
+        string GetNamespaceForElement(GlueElement element);
 
         void GenerateCurrentCsvCode();
 

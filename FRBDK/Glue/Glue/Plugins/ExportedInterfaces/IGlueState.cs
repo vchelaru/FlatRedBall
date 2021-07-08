@@ -89,7 +89,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
         #endregion
 
 
-        IElement GetElement(string name);
+        GlueElement GetElement(string name);
         NamedObjectSave GetNamedObjectSave(string containerName, string name);
         CustomVariable GetCustomVariable(string containerName, string name);
         StateSave GetState(string containerName, string name);
@@ -249,7 +249,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
             }
         }
 
-        public IElement GetElement(string name)
+        public GlueElement GetElement(string name)
         {
             throw new System.NotImplementedException();
         }

@@ -286,7 +286,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 ErrorList.Errors, ErrorListSyncLock);
         }
 
-        public IElement GetElement(string name)
+        public GlueElement GetElement(string name)
         {
             return ObjectFinder.Self.GetIElement(name);
         }

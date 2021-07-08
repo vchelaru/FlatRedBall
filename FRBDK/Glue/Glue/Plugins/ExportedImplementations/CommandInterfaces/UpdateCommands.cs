@@ -25,7 +25,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             glueCommands.RefreshCommands.RefreshSelection();
             Application.DoEvents();
             glueCommands.RefreshCommands.RefreshPropertyGrid();
-            glueCommands.GenerateCodeCommands.GenerateElementCode(element);
+            glueCommands.GenerateCodeCommands.GenerateElementCode(element as GlueElement);
         }
 
         private static void CopyObject(object itemFrom, object itemTo)

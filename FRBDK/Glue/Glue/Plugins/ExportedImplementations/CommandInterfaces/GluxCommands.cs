@@ -341,9 +341,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             // Update any element that may reference this file because now it may mean the element
             // will simply reference it from GlobalContent instead of using the content manager.
-            List<IElement> elements = ObjectFinder.Self.GetAllElementsReferencingFile(referencedFileSave.Name);
+            var elements = ObjectFinder.Self.GetAllElementsReferencingFile(referencedFileSave.Name);
 
-            foreach (IElement element in elements)
+            foreach (var element in elements)
             {
                 element.HasChanged = true;
             }
@@ -357,7 +357,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public ReferencedFileSave AddSingleFileTo(string fileName, string rfsName, 
             string extraCommandLineArguments,
             BuildToolAssociation buildToolAssociation, bool isBuiltFile, 
-            object options, IElement sourceElement, string directoryOfTreeNode,
+            object options, GlueElement sourceElement, string directoryOfTreeNode,
             bool selectFileAfterCreation = true 
             )
         {
@@ -769,9 +769,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
-                List<IElement> elements = ObjectFinder.Self.GetAllElementsReferencingFile(referencedFileToRemove.Name);
+                var elements = ObjectFinder.Self.GetAllElementsReferencingFile(referencedFileToRemove.Name);
 
-                foreach (IElement element in elements)
+                foreach (var element in elements)
                 {
                     if (regenerateCode)
                     {
@@ -894,7 +894,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return FlatRedBall.Glue.Elements.ObjectFinder.Self.GetReferencedFileSaveFromFile(filePath.FullPath);
         }
 
-        public void AddReferencedFileToElement(ReferencedFileSave rfs, IElement element)
+        public void AddReferencedFileToElement(ReferencedFileSave rfs, GlueElement element)
         {
             throw new NotImplementedException();
         }
@@ -911,7 +911,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 GlueState.Self.CurrentNamedObjectSave);
         }
 
-        public NamedObjectSave AddNewNamedObjectTo(AddObjectViewModel addObjectViewModel, IElement element, NamedObjectSave listToAddTo = null)
+        public NamedObjectSave AddNewNamedObjectTo(AddObjectViewModel addObjectViewModel, GlueElement element, NamedObjectSave listToAddTo = null)
         {
             if (element == null)
             {
@@ -962,7 +962,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return newNos;
         }
 
-        public void AddNamedObjectTo(NamedObjectSave newNos, IElement element, NamedObjectSave listToAddTo = null)
+        public void AddNamedObjectTo(NamedObjectSave newNos, GlueElement element, NamedObjectSave listToAddTo = null)
         {
             var ati = newNos.GetAssetTypeInfo();
 
@@ -1031,7 +1031,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // 5.  Find any Elements that contain NamedObjects that are DefinedByBase - if so, see if we should remove those or make them not DefinedByBase
             // 6.  Remove any events that tunnel into this.
 
-            IElement element = namedObjectToRemove.GetContainer();
+            var element = namedObjectToRemove.GetContainer();
 
             if (element != null)
             {

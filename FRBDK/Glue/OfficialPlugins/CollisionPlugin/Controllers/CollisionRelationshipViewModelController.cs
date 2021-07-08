@@ -661,7 +661,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
                     GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
                     GlueCommands.Self.GluxCommands.SaveGlux();
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element as GlueElement);
                 }
             }
         }

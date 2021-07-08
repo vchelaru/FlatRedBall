@@ -163,13 +163,13 @@ namespace FlatRedBall.Glue.MVVM
                 var modelName = propertyInfo.OverridingPropertyName ?? propertyName;
 
 
-                IElement element = null;
+                GlueElement element = null;
                 bool isGlobalContent = false;
 
                 // codegen the object
-                if (GlueObject is IElement)
+                if (GlueObject is GlueElement)
                 {
-                    element = GlueObject as IElement;
+                    element = GlueObject as GlueElement;
                 }
                 else if (GlueObject is NamedObjectSave nos)
                 {

@@ -42,7 +42,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void GenerateCurrentElementCode()
         {
-            IElement element = null;
+            GlueElement element = null;
 
             GlueCommands.DoOnUiThread(() => element = GlueState.CurrentElement);
             if (element != null)
@@ -54,7 +54,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        public void GenerateElementCode(IElement element)
+        public void GenerateElementCode(GlueElement element)
         {
             string taskName = nameof(GenerateElementCodeTask) + " " + element.ToString();
 
@@ -63,7 +63,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 TaskExecutionPreference.AddOrMoveToEnd);
         }
 
-        public void GenerateElementAndReferencedObjectCodeTask(IElement element)
+        public void GenerateElementAndReferencedObjectCodeTask(GlueElement element)
         {
             if (element != null)
             {
@@ -79,7 +79,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        public void GenerateElementCodeTask(IElement element)
+        public void GenerateElementCodeTask(GlueElement element)
         {
             string taskName = nameof(GenerateElementCodeTask) + " " + element.ToString();
 
@@ -98,7 +98,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             TaskManager.Self.Add(GlobalContentCodeGenerator.UpdateLoadGlobalContentCode, nameof(GenerateGlobalContentCode), TaskExecutionPreference.AddOrMoveToEnd);
         }
 
-        public string GetNamespaceForElement(IElement element)
+        public string GetNamespaceForElement(GlueElement element)
         {
             string directory = FileManager.GetDirectory(element.Name, RelativeType.Relative);
 

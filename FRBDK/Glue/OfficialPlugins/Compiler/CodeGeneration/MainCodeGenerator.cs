@@ -21,6 +21,12 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile("GlueControlManager.cs", 
                 "GlueControlManager.Generated.cs");
 
+            SaveEmbeddedFile("CommandReceiver.cs",
+                "CommandReceiver.Generated.cs");
+
+            SaveEmbeddedFile("Dtos.cs",
+                "Dtos.Generated.cs");
+
             SaveEmbeddedFile("Editing.EditingManager.cs",
                 "Editing/EditingManager.Generated.cs");
 
@@ -35,12 +41,6 @@ namespace OfficialPlugins.Compiler.CodeGeneration
 
             SaveEmbeddedFile("Editing.CopyPasteManager.cs",
                 "Editing/CopyPasteManager.Generated.cs");
-
-            SaveEmbeddedFile("CommandReceiver.cs",
-                "CommandReceiver.Generated.cs");
-
-            SaveEmbeddedFile("Dtos.cs",
-                "Dtos.Generated.cs");
 
             SaveEmbeddedFile("InstanceLogic.cs",
                 "InstanceLogic.Generated.cs");

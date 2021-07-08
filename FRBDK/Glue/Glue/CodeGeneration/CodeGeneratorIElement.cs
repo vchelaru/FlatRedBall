@@ -8,7 +8,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 {
     public class CodeGeneratorIElement
     {
-        private static void GenerateElement(IElement element)
+        private static void GenerateElement(GlueElement element)
         {
 #if DEBUG
             if(element == null)
@@ -20,7 +20,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             CodeWriter.GenerateCode(element);
         }
 
-        public static void GenerateElementAndDerivedCode(IElement baseElement)
+        public static void GenerateElementAndDerivedCode(GlueElement baseElement)
         {
             GenerateElement(baseElement);
 
