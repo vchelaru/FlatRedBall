@@ -143,7 +143,7 @@ namespace OfficialPlugins.MonoGameContent
                 var forcePngsToPipeline = controller.Settings.UseContentPipelineOnAllPngs;
                 if (BuildLogic.IsBuiltByContentPipeline(rfs, forcePngsToPipeline))
                 {
-                    menuToModify.Items.Add("Rebuild Content Pipeline File").Click += (not, used) =>
+                    menuToModify.Items.Add("Rebuild Content Pipeline File (xnb)").Click += (not, used) =>
                     {
                         var fullFileName = GlueCommands.Self.GetAbsoluteFileName(rfs);
                         BuildLogic.Self.TryAddXnbReferencesAndBuild(fullFileName, GlueState.CurrentMainProject, false, rebuild:true);

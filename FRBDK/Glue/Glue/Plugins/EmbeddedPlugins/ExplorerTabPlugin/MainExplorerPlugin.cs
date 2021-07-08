@@ -128,6 +128,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
             ElementTreeView.Nodes.Add(globalContentNode);
 
             ElementViewWindow.Initialize(ElementTreeView, entityNode, screenNode, globalContentNode);
+
         }
 
         private void mElementTreeView_MouseClick(object sender, MouseEventArgs e)

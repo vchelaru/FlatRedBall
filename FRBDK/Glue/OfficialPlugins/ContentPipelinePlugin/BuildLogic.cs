@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Math.Geometry;
 
 namespace OfficialPlugins.MonoGameContent
 {
@@ -370,6 +371,7 @@ namespace OfficialPlugins.MonoGameContent
 
         private static void PerformBuild(ContentItem contentItem, bool rebuild = false)
         {
+            StringBuilder stringBuilder = new StringBuilder();
             string contentDirectory = GlueState.ContentDirectory;
             string workingDirectory = contentDirectory;
 
@@ -390,6 +392,10 @@ namespace OfficialPlugins.MonoGameContent
 
             GlueCommands.PrintOutput($"Building: {commandLineBuildExe} {commandLine}");
 
+            // Note - the process may print errors while it is running before it reports that it has an error.
+            // Therefore, if we immediately display output as it is printing from monogame, we won't
+            // know if it's an error or output, so we are going to stringbuilder it and print it as an error later.
+            // This does delay the output a little, but normal output can get lost.
             while (process.HasExited == false)
             {
                 System.Threading.Thread.Sleep(100);
@@ -399,7 +405,7 @@ namespace OfficialPlugins.MonoGameContent
                     var line = process.StandardOutput.ReadLine();
                     if (!string.IsNullOrEmpty(line))
                     {
-                        GlueCommands.PrintOutput(line);
+                        stringBuilder.AppendLine(line);
                     }
                 }
             }
@@ -409,26 +415,22 @@ namespace OfficialPlugins.MonoGameContent
             string str;
             while ((str = process.StandardOutput.ReadLine()) != null)
             {
-                // Currently the content pipeline prints errors as normal output instead of error.
-                // We can look at the error code to see if it's an error or not.
-                if(builtCorrectly)
-                {
-                    GlueCommands.PrintOutput(str);
-                }
-                else
-                {
-                    GlueCommands.PrintError(str);
-                }
+                stringBuilder.AppendLine(str);
+            }
+
+            if (builtCorrectly)
+            {
+                GlueCommands.PrintOutput(stringBuilder.ToString());
+            }
+            else
+            {
+                GlueCommands.PrintError(stringBuilder.ToString());
             }
 
             while ((str = process.StandardError.ReadLine()) != null)
             {
                 GlueCommands.PrintError(str);
             }
-
-
-
-
         }
 
 
