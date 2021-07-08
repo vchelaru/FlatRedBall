@@ -83,6 +83,10 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
                             if (polygon != null)
                             {
+                                if(splitVariable[2] == "Points" && variableValue is List<Microsoft.Xna.Framework.Vector2> vectorList)
+                                {
+                                    variableValue = vectorList.Select(item => new FlatRedBall.Math.Geometry.Point(item.X, item.Y)).ToList();
+                                }
                                 response.WasVariableAssigned = screen.ApplyVariable(splitVariable[2], variableValue, polygon);
                             }
                         }
@@ -583,11 +587,17 @@ namespace {ProjectNamespace}.GlueControl.Editing
         public static object ConvertStringToType(string type, string variableValue)
         {
             object convertedValue = variableValue;
+
             switch (type)
             {
+                case "System.Collections.Generic.List`1[[Microsoft.Xna.Framework.Vector2, MonoGame.Framework, Version=3.8.0.13, Culture=neutral, PublicKeyToken=null]]":
+                    convertedValue = JsonConvert.DeserializeObject<List<Microsoft.Xna.Framework.Vector2>>(variableValue);
+                    break;
                 case "float":
                 case nameof(Single):
-                    if(!string.IsNullOrWhiteSpace(variableValue))
+                case "System.Single":
+
+                    if (!string.IsNullOrWhiteSpace(variableValue))
                     {
                         convertedValue = float.Parse(variableValue);
                     }
@@ -598,7 +608,9 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     break;
                 case "int":
                 case nameof(Int32):
-                    if(!string.IsNullOrWhiteSpace(variableValue))
+                case "System.Int32":
+
+                    if (!string.IsNullOrWhiteSpace(variableValue))
                     {
                         convertedValue = int.Parse(variableValue);
                     }
@@ -609,7 +621,9 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     break;
                 case "bool":
                 case nameof(Boolean):
-                    if(!string.IsNullOrWhiteSpace(variableValue))
+                case "System.Boolean":
+
+                    if (!string.IsNullOrWhiteSpace(variableValue))
                     {
                         convertedValue = bool.Parse(variableValue.ToLowerInvariant());
                     }
@@ -620,7 +634,9 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     break;
                 case "double":
                 case nameof(Double):
-                    if(!string.IsNullOrWhiteSpace(variableValue))
+                case "System.Double":
+
+                    if (!string.IsNullOrWhiteSpace(variableValue))
                     {
                         convertedValue = double.Parse(variableValue);
                     }

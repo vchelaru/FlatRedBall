@@ -31,12 +31,12 @@ namespace OfficialPlugins.Compiler.Managers
         public async void HandleNamedObjectValueChanged(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly)
         {
 
-            string type = null;
+            string typeName = null;
             object currentValue = null;
             var instruction = nos?.GetCustomVariable(changedMember);
             if(instruction != null)
             {
-                type = instruction?.Type ?? instruction.Value?.GetType().Name ?? oldValue?.GetType().Name;
+                typeName = instruction?.Type ?? instruction.Value?.GetType().FullName ?? oldValue?.GetType().FullName;
                 currentValue = instruction?.Value;
             }
             // could be a property
@@ -45,7 +45,7 @@ namespace OfficialPlugins.Compiler.Managers
                 var property = nos.Properties.FirstOrDefault(item => item.Name == changedMember);
                 if(property != null)
                 {
-                    type = property.Value?.GetType().Name ?? oldValue?.GetType().Name;
+                    typeName = property.Value?.GetType().FullName ?? oldValue?.GetType().FullName;
                     currentValue = property.Value;
                 }
             }
@@ -59,13 +59,13 @@ namespace OfficialPlugins.Compiler.Managers
             var gameScreenName = await CommandSender.GetScreenName(ViewModel.PortNumber);
             var glueScreenName = string.Join('\\', gameScreenName.Split('.').Skip(2));
 
-            ConvertValue(ref changedMember, oldValue, currentValue, nos, currentElement, glueScreenName, ref nosName, ati, ref type, out value);
+            ConvertValue(ref changedMember, oldValue, currentValue, nos, currentElement, glueScreenName, ref nosName, ati, ref typeName, out value);
 
             TaskManager.Self.Add(() =>
             {
                 try
                 {
-                    var task = TryPushVariable(nosName, changedMember, type, value, currentElement, assignOrRecordOnly);
+                    var task = TryPushVariable(nosName, changedMember, typeName, value, currentElement, assignOrRecordOnly);
                     task.Wait();
                     var response = task.Result;
                     if (!string.IsNullOrWhiteSpace(response?.Exception))
@@ -110,6 +110,11 @@ namespace OfficialPlugins.Compiler.Managers
                 changedMember = $"Relative{changedMember}";
             }
             #endregion
+
+            if(type.StartsWith("System.Collections.Generic.List"))
+            {
+                value = JsonConvert.SerializeObject(currentValue);
+            }
 
             #region Collision Relationships
 
@@ -217,6 +222,7 @@ namespace OfficialPlugins.Compiler.Managers
             #endregion
 
 
+
             else if (ati?.VariableDefinitions.Any(item => item.Name == originalMemberName) == true)
             {
                 var variableDefinition = ati.VariableDefinitions.First(item => item.Name == originalMemberName);
@@ -254,16 +260,25 @@ namespace OfficialPlugins.Compiler.Managers
                 {
                     case "float":
                     case nameof(Single):
+                    case "System.Single":
+
                     case "int":
                     case nameof(Int32):
+                    case "System.Int32":
+
                     case "long":
                     case nameof(Int64):
+                    case "System.Int64":
+
                     case "double":
                     case nameof(Double):
+                    case "System.Double":
                         value = "0";
                         break;
+
                     case "bool":
                     case nameof(Boolean):
+                    case "System.Boolean":
                         value = "false";
                         break;
                 }

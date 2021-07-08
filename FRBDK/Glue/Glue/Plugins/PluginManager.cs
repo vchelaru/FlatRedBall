@@ -1473,24 +1473,12 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
-        internal static void ReactToNamedObjectChangedValue(string changedMember, object oldValue, NamedObjectSave namedObject)
+        public static void ReactToNamedObjectChangedValue(string changedMember, object oldValue, NamedObjectSave namedObject)
         {
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToNamedObjectChangedValue != null);
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-                        PluginBase plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToNamedObjectChangedValue(changedMember, oldValue, namedObject);
-                            },container, "Failed in ReactToNamedObjectChangedValue");
-                    }
-                }
-            }
+            CallMethodOnPlugin(
+                (plugin) => plugin.ReactToNamedObjectChangedValue(changedMember, oldValue, namedObject),
+                nameof(ReactToNamedObjectChangedValue),
+                (plugin) => plugin.ReactToNamedObjectChangedValue != null);
         }
 
         internal static void ReactToReferencedFileChangedValue(string changedMember, object oldValue)
@@ -1510,7 +1498,7 @@ namespace FlatRedBall.Glue.Plugins
         /// </summary>
         /// <param name="changedMember">The member that has changed</param>
         /// <param name="oldValue">The value of the member before the change</param>
-        internal static void ReactToChangedProperty(string changedMember, object oldValue)
+        public static void ReactToChangedProperty(string changedMember, object oldValue)
         {
             CallMethodOnPlugin((plugin) =>
             {

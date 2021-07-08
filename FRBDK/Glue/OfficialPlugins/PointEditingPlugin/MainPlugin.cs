@@ -98,6 +98,15 @@ namespace OfficialPlugins.PointEditingPlugin
 
         private void HandleDataChanged(object sender, EventArgs e)
         {
+            //GlueCommands.Self.GluxCommands.SetVariableOn
+            // there is no old value, the object is the same as before so just pass
+            // the object:
+            var nos = GlueState.Self.CurrentNamedObjectSave;
+            if(nos != null)
+            {
+                PluginManager.ReactToNamedObjectChangedValue("Points", nos.GetCustomVariable("Points")?.Value, nos);
+            }
+
             GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
             GlueCommands.Self.GluxCommands.SaveGlux();
         }
