@@ -196,6 +196,19 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 minY = Math.Min(minY, itemOver.Y - asCircle.Radius);
                 maxY = Math.Max(maxY, itemOver.Y + asCircle.Radius);
             }
+            else if(itemOver is Polygon polygon)
+            {
+                for(int i = 0; i < polygon.Points.Count; i++)
+                {
+                    var absolute = polygon.AbsolutePointPosition(i);
+
+                    minX = Math.Min(minX, absolute.X);
+                    maxX = Math.Max(maxX, absolute.X);
+
+                    minY = Math.Min(minY, absolute.Y) ;
+                    maxY = Math.Max(maxY, absolute.Y);
+                }
+            }
             else
             {
                 for (int i = 0; i < itemOver.Children.Count; i++)
