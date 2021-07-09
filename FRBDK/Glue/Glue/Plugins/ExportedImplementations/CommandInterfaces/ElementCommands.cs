@@ -302,7 +302,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-
+            PluginManager.ReactToNewEntityCreated(newElement);
             if (needsRefreshAndSave)
             {
                 MainGlueWindow.Self.PropertyGrid.Refresh();
@@ -321,7 +321,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void AddEntity(EntitySave entitySave, bool suppressAlreadyExistingFileMessage)
         {
-            string fileName = entitySave.Name + ".cs";
+
             entitySave.Tags.Add("GLUE");
             entitySave.Source = "GLUE";
 
@@ -331,9 +331,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             glueProject.Entities.SortByName();
 
+            var customCodeFilePath =
+                GlueCommands.Self.FileCommands.GetCustomCodeFilePath(entitySave);
             #region Create the Entity custom code file (not the generated version)
 
-            var newItem = GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(fileName, false);
+
+
+            var newItem = GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(
+                customCodeFilePath, false);
 
             string projectNamespace = GlueState.Self.ProjectNamespace;
 
@@ -356,18 +361,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             string modifiedTemplate = stringBuilder.ToString();
 
-            string nonGeneratedFileName = FileManager.RelativeDirectory + fileName;
 
             if (newItem == null)
             {
                 if (!suppressAlreadyExistingFileMessage)
                 {
-                    MessageBox.Show("There is already a file named\n\n" + nonGeneratedFileName + "\n\nThis file will be used instead of creating a new one just in case you have code that you want to keep there.");
+                    MessageBox.Show("There is already a file named\n\n" + customCodeFilePath + "\n\nThis file will be used instead of creating a new one just in case you have code that you want to keep there.");
                 }
             }
             else
             {
-                FileManager.SaveText(modifiedTemplate, nonGeneratedFileName);
+                FileManager.SaveText(modifiedTemplate, customCodeFilePath.FullPath);
             }
             #endregion
 
