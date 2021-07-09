@@ -41,6 +41,9 @@ namespace OfficialPlugins.Compiler.Dtos
     public class GlueVariableSetData
     {
         public AssignOrRecordOnly AssignOrRecordOnly { get; set; }
+        /// <summary>
+        /// The owner of the NamedObjectSave, which is either the current screen or the current entity save
+        /// </summary>
         public string InstanceOwner { get; set; }
         public string VariableName { get; set; }
         public string VariableValue { get; set; }

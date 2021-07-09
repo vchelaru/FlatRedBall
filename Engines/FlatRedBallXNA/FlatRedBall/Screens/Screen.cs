@@ -699,6 +699,12 @@ namespace FlatRedBall.Screens
                     {
                         instance = SpriteManager.ManagedPositionedObjects.FirstOrDefault(item => item.Name == beforeDot);
                     }
+                    // This could be an object that was added to an entity dynamically, so it won't be found
+                    // through reflection but it may be found through the parent/child relationship
+                    if(instance == null && container is PositionedObject containerAsPositionedObject)
+                    {
+                        instance = containerAsPositionedObject.Children.FirstOrDefault(item => item.Name == beforeDot);
+                    }
                 }
             }
             else

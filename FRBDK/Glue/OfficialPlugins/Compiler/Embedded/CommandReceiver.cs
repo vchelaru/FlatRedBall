@@ -189,7 +189,7 @@ namespace EditModeProject.GlueControl
                 {
                     var isAlreadyViewingThisEntity = ScreenManager.CurrentScreen.GetType().Name == "EntityViewingScreen" &&
                         SpriteManager.ManagedPositionedObjects.Count > 0 &&
-                        SpriteManager.ManagedPositionedObjects[0].GetType() == ownerType;
+                        DoTypesMatch(SpriteManager.ManagedPositionedObjects[0], ownerType, ownerTypeName);
 
                     if (!isAlreadyViewingThisEntity)
                     {
@@ -226,6 +226,25 @@ namespace EditModeProject.GlueControl
                         EditingManager.Self.Select(selectObjectDto.ObjectName);
                     }
                 }
+            }
+        }
+
+        // todo - move this to some type manager
+        public static bool DoTypesMatch(PositionedObject positionedObject, Type possibleType, string qualifiedTypeName)
+        {
+            if(positionedObject.GetType() == possibleType)
+            {
+                return true;
+            }
+            else if(positionedObject is GlueControl.Runtime.DynamicEntity dynamicEntity)
+            {
+                return dynamicEntity.EditModeType == qualifiedTypeName;
+            }
+            else
+            {
+                // here we need to do reflection to get the EditModeType, but that's not implemented yet.
+                // This is needed for inherited entities
+                return false;
             }
         }
 

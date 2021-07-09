@@ -120,6 +120,12 @@ namespace {ProjectNamespace}.GlueControl
             if(newPositionedObject != null)
             {
                 newObject = newPositionedObject;
+
+                var isDisplayingEntity = FlatRedBall.Screens.ScreenManager.CurrentScreen.GetType().Name == "EntityViewingScreen";
+                if (isDisplayingEntity)
+                {
+                    newPositionedObject.AttachTo(SpriteManager.ManagedPositionedObjects[0]);
+                }
             }
             if (newObject != null)
             {
@@ -183,7 +189,17 @@ namespace {ProjectNamespace}.GlueControl
             {
                 PositionedObject newPositionedObject;
                 var factory = FlatRedBall.TileEntities.TileEntityInstantiator.GetFactory(entityNameGlue);
-                newPositionedObject = factory?.CreateNew() as FlatRedBall.PositionedObject;
+                if(factory != null)
+                {
+                    newPositionedObject = factory?.CreateNew() as FlatRedBall.PositionedObject;
+                }
+                else
+                {
+                    // just instantiate it using reflection?
+                    newPositionedObject = this.GetType().Assembly.CreateInstance(entityNameGame)
+                         as PositionedObject;
+                    //newPositionedObject = ownerType.GetConstructor(new System.Type[0]).Invoke(new object[0]);
+                }
                 return newPositionedObject;
             }
         }

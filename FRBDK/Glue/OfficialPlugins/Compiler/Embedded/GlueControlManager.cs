@@ -352,7 +352,8 @@ namespace {ProjectNamespace}
             else
             {
                 var ownerType = typeof(GlueControlManager).Assembly.GetType(owner);
-                var isEntity = typeof(PositionedObject).IsAssignableFrom(ownerType);
+                var isEntity = typeof(PositionedObject).IsAssignableFrom(ownerType) ||
+                    InstanceLogic.Self.CustomGlueElements.ContainsKey(owner);
                 if (isEntity)
                 {
                     // If it's on an entity, then it needs to be applied globally
@@ -438,9 +439,25 @@ namespace {ProjectNamespace}
             var screen = ScreenManager.CurrentScreen;
             var isEditingEntity =
                 screen.GetType() == typeof(Screens.EntityViewingScreen);
-            var ownerType = isEditingEntity
-                ? SpriteManager.ManagedPositionedObjects[0].GetType().FullName
-                : screen.GetType().FullName;
+            string ownerType;
+            if(isEditingEntity)
+            {
+                var entityInstance = SpriteManager.ManagedPositionedObjects[0];
+                if(entityInstance is GlueControl.Runtime.DynamicEntity dynamicEntity)
+                {
+                    ownerType = dynamicEntity.EditModeType;
+                }
+                else
+                {
+                    // todo - handle inheritance
+                    ownerType = entityInstance.GetType().FullName;
+                }
+            }
+            else
+            {
+                ownerType = screen.GetType().FullName;
+
+            }
 
             var dto = new SetVariableDto();
             dto.InstanceOwner = ownerType;
@@ -480,7 +497,16 @@ namespace {ProjectNamespace}
 
             if(ScreenManager.CurrentScreen.GetType().Name == "EntityViewingScreen")
             {
-                dto.ElementName = SpriteManager.ManagedPositionedObjects[0].GetType().FullName;
+                var entityInstance = SpriteManager.ManagedPositionedObjects[0];
+                if (entityInstance is GlueControl.Runtime.DynamicEntity dynamicEntity)
+                {
+                    dto.ElementName = dynamicEntity.EditModeType;
+                }
+                else
+                {
+                    // todo - handle inheritance
+                    dto.ElementName = entityInstance.GetType().FullName;
+                }
             }
             else
             {

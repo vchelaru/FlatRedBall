@@ -31,12 +31,17 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     FlatRedBall.Screens.ScreenManager.CurrentScreen;
 
                 var ownerType = typeof(VariableAssignmentLogic).Assembly.GetType(data.InstanceOwner);
-                var isEntity = typeof(PositionedObject).IsAssignableFrom(ownerType);
-                if (isEntity)
+                var isInstanceOwnerEntity = typeof(PositionedObject).IsAssignableFrom(ownerType) ||
+                    InstanceLogic.Self.CustomGlueElements.ContainsKey(data.InstanceOwner);
+                if (isInstanceOwnerEntity)
                 {
+                    // Loop through all objects in the SpriteManager. If we are viewing a single 
+                    // entity in the entity screen, then this will only loop 1 time and will set 1 value.
+                    // If we are in a screen where multiple instances of the entity are around, then we set the 
+                    // value on all instances
                     foreach (var item in SpriteManager.ManagedPositionedObjects)
                     {
-                        if (ownerType.IsAssignableFrom(item.GetType()))
+                        if(CommandReceiver.DoTypesMatch(item, ownerType, data.InstanceOwner))
                         {
                             var variableName = data.VariableName.Substring("this.".Length);
                             screen.ApplyVariable(variableName, variableValue, item);
