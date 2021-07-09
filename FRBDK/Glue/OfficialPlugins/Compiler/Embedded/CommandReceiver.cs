@@ -46,7 +46,8 @@ namespace EditModeProject.GlueControl
                 throw new Exception();
             }
 
-            var dtoType = AllMethods
+            var matchingMethod =
+                AllMethods
                 .FirstOrDefault(item =>
                 {
                     if (item.Name == nameof(HandleDto))
@@ -55,7 +56,15 @@ namespace EditModeProject.GlueControl
                         return parameters.Length == 1 && parameters[0].ParameterType.Name == dtoTypeName;
                     }
                     return false;
-                }).GetParameters()[0].ParameterType;
+                });
+
+            if(matchingMethod == null)
+            {
+                throw new InvalidOperationException(
+                    $"Could not find a HandleDto method for type {dtoTypeName}");
+            }
+
+            var dtoType = matchingMethod.GetParameters()[0].ParameterType;
 
             var dto = JsonConvert.DeserializeObject(dtoSerialized, dtoType);
 
@@ -128,7 +137,8 @@ namespace EditModeProject.GlueControl
             bool matchesCurrentScreen =
                 GetIfMatchesCurrentScreen(selectObjectDto.ElementName, out System.Type ownerType, out Screen currentScreen);
 
-            var ownerTypeName = "EditModeProject." + selectObjectDto.ElementName.Replace("\\", ".");
+            var elementNameGlue = selectObjectDto.ElementName;
+            string ownerTypeName = GlueToGameElementName(elementNameGlue);
             ownerType = typeof(CommandReceiver).Assembly.GetType(ownerTypeName);
 
             bool isOwnerScreen = false;
@@ -172,7 +182,8 @@ namespace EditModeProject.GlueControl
 
             if (!isOwnerScreen)
             {
-                var isEntity = typeof(PositionedObject).IsAssignableFrom(ownerType);
+                var isEntity = typeof(PositionedObject).IsAssignableFrom(ownerType) ||
+                    InstanceLogic.Self.CustomGlueElements.ContainsKey(ownerTypeName);
 
                 if (isEntity)
                 {
@@ -186,7 +197,8 @@ namespace EditModeProject.GlueControl
 
                         void CreateEntityInstance(Screen screen)
                         {
-                            var instance = ownerType.GetConstructor(new System.Type[0]).Invoke(new object[0]) as IDestroyable;
+                            //var instance = ownerType.GetConstructor(new System.Type[0]).Invoke(new object[0]) as IDestroyable;
+                            var instance = InstanceLogic.Self.CreateEntity(elementNameGlue) as IDestroyable;
                             (screen as Screens.EntityViewingScreen).CurrentEntity = instance;
                             var instanceAsPositionedObject = (PositionedObject)instance;
                             instanceAsPositionedObject.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
@@ -215,6 +227,11 @@ namespace EditModeProject.GlueControl
                     }
                 }
             }
+        }
+
+        public static string GlueToGameElementName(string elementName)
+        {
+            return "EditModeProject." + elementName.Replace("\\", ".");
         }
 
         private static void HandleScreenDestroy()
@@ -352,5 +369,15 @@ namespace EditModeProject.GlueControl
             return response;
         }
 
+        private static void HandleDto(CreateNewEntityDto createNewEntityDto)
+        {
+            var entitySave = createNewEntityDto.EntitySave;
+
+            // convert the entity save name (which is the glue name) to a type name:
+            string elementName = GlueToGameElementName(entitySave.Name);
+
+
+            InstanceLogic.Self.CustomGlueElements[elementName] = entitySave;
+        }
     }
 }

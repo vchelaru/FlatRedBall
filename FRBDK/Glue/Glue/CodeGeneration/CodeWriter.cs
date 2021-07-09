@@ -542,7 +542,7 @@ namespace FlatRedBallAddOns.Entities
             return tryAgain;
         }
 
-        static FilePath GetAbsoluteGeneratedCodeFileFor(IElement saveObject)
+        public static FilePath GetAbsoluteGeneratedCodeFileFor(GlueElement saveObject)
         {
             string fileName = saveObject.Name + ".Generated.cs";
 
@@ -556,7 +556,7 @@ namespace FlatRedBallAddOns.Entities
             return absoluteFileName;
         }
 
-        public static void CreateGeneratedFileIfNecessary(IElement saveObject)
+        public static void CreateGeneratedFileIfNecessary(GlueElement saveObject)
         {
             var absoluteFilePath = GetAbsoluteGeneratedCodeFileFor(saveObject);
             if (absoluteFilePath.Exists() == false)

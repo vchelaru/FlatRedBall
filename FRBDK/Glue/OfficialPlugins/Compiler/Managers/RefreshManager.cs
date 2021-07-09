@@ -11,6 +11,7 @@ using OfficialPlugins.Compiler.CommandSending;
 using OfficialPlugins.Compiler.Dtos;
 using OfficialPlugins.Compiler.ViewModels;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -22,6 +23,12 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace OfficialPlugins.Compiler.Managers
 {
+    public class ExpiringFilePath
+    {
+        public DateTimeOffset? Expiration { get; set; }
+        public FilePath FilePath { get; set; }
+    }
+
     public class RefreshManager : Singleton<RefreshManager>
     {
         #region Fields/Properties
@@ -59,6 +66,9 @@ namespace OfficialPlugins.Compiler.Managers
         public bool IgnoreNextObjectAdd { get; set; }
         public bool IgnoreNextObjectSelect { get; set; }
 
+        public SynchronizedCollection<ExpiringFilePath> FilePathsToIgnore { get; private set; }
+            = new SynchronizedCollection<ExpiringFilePath>();
+
         #endregion
 
         #region Initialize
@@ -73,9 +83,30 @@ namespace OfficialPlugins.Compiler.Managers
 
         #region File
 
+        private void RemoveExpiredPaths()
+        {
+            var toRemove = FilePathsToIgnore.Where(item => item.Expiration < DateTime.Now).ToArray();
+
+            foreach(var item in toRemove)
+            {
+                FilePathsToIgnore.Remove(item);
+            }
+        }
+
+
         public async void HandleFileChanged(FilePath fileName)
         {
+            // always do this:
+            RemoveExpiredPaths();
+            var found =
+                FilePathsToIgnore.FirstOrDefault(item => item.FilePath == fileName);
+            if (found != null)
+            {
+                FilePathsToIgnore.Remove(found);
+            }
+
             var shouldReactToFileChange =
+                found == null &&
                 ShouldRestartOnChange &&
                 GetIfShouldReactToFileChange(fileName);
 
@@ -158,11 +189,23 @@ namespace OfficialPlugins.Compiler.Managers
 
         #region Entity Created
 
-        internal void HandleNewEntityCreated(EntitySave arg1)
+        internal async void HandleNewEntityCreated(EntitySave newEntity)
         {
-            if(ShouldRestartOnChange)
+            if(ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
-                StopAndRestartTask($"{arg1} created");
+                const int responseDelay = 7;
+                var expiringFilePath =
+                    new ExpiringFilePath { Expiration = DateTime.Now + TimeSpan.FromSeconds(responseDelay), 
+                    FilePath = GlueCommands.Self.FileCommands.GetCustomCodeFilePath(newEntity)};
+                FilePathsToIgnore.Add(expiringFilePath);
+
+                // ignore the generation of the custom file so it doesn't restart the game
+                var customFileToIgnore = GlueCommands.Self.FileCommands.GetCustomCodeFilePath(newEntity);
+
+                var dto = new CreateNewEntityDto();
+                dto.EntitySave = newEntity;
+
+                var response = await CommandSender.Send(dto, ViewModel.PortNumber);
             }
         }
 

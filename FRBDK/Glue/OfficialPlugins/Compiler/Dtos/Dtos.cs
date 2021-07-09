@@ -97,4 +97,9 @@ namespace OfficialPlugins.Compiler.Dtos
     {
         public Microsoft.Xna.Framework.Vector3 Position { get; set; }
     }
+
+    public class CreateNewEntityDto
+    {
+        public EntitySave EntitySave { get; set; }
+    }
 }

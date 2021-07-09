@@ -50,8 +50,6 @@ namespace FlatRedBall.Glue.SaveClasses
             get { return mBaseEntity; }
             set
             {
-                string prevValue = mBaseEntity;
-
                 if (value == "<NONE>")
                 {
                     mBaseEntity = "";

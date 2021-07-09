@@ -439,7 +439,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             CreateAndAddCodeFile(filePath, save: true);
         }
 
-        public ProjectItem CreateAndAddCodeFile(FilePath filePath, bool save)
+        public ProjectItem CreateAndAddCodeFile(FilePath filePath, bool save = true)
         {
             var directory = filePath.GetDirectoryContainingThis();
 

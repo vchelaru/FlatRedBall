@@ -34,6 +34,12 @@ namespace {ProjectNamespace}.GlueControl
 
         public FlatRedBall.Math.PositionedObjectList<Sprite> SpritesAddedAtRuntime = new FlatRedBall.Math.PositionedObjectList<Sprite>();
 
+        /// <summary>
+        /// A dictionary of custom elements where the key is the full name of the type that
+        /// would exist if the code were generated (such as "ProjectNamespace.Entities.MyEntity")
+        /// </summary>
+        public Dictionary<string, GlueElement> CustomGlueElements = new Dictionary<string, GlueElement>();
+
 
         // this is to prevent multiple objects from having the same name in the same frame:
         static long NewIndex = 0;
@@ -156,12 +162,30 @@ namespace {ProjectNamespace}.GlueControl
         }
 
 
-        private static PositionedObject CreateEntity(Models.NamedObjectSave deserialized)
+        public PositionedObject CreateEntity(Models.NamedObjectSave deserialized)
         {
-            PositionedObject newPositionedObject;
-            var factory = FlatRedBall.TileEntities.TileEntityInstantiator.GetFactory(deserialized.SourceClassType);
-            newPositionedObject = factory?.CreateNew() as FlatRedBall.PositionedObject;
-            return newPositionedObject;
+            var entityNameGlue = deserialized.SourceClassType;
+            return CreateEntity(entityNameGlue);
+        }
+
+        public PositionedObject CreateEntity(string entityNameGlue)
+        {
+            var entityNameGame = CommandReceiver.GlueToGameElementName(entityNameGlue);
+
+            if (CustomGlueElements.ContainsKey(entityNameGame))
+            {
+                var dynamicEntityInstance = new Runtime.DynamicEntity();
+                dynamicEntityInstance.EditModeType = entityNameGame;
+                SpriteManager.AddPositionedObject(dynamicEntityInstance);
+                return dynamicEntityInstance;
+            }
+            else
+            {
+                PositionedObject newPositionedObject;
+                var factory = FlatRedBall.TileEntities.TileEntityInstantiator.GetFactory(entityNameGlue);
+                newPositionedObject = factory?.CreateNew() as FlatRedBall.PositionedObject;
+                return newPositionedObject;
+            }
         }
 
         private void AssignVariablesOnNewlyCreatedObject(Models.NamedObjectSave deserialized, object newObject)

@@ -17,7 +17,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration
                 // If it has a base element, then the base will handle this...
                 string.IsNullOrEmpty(element.BaseElement))
             {
-                codeBlock.Line($"public string EditModeType {{ get; set; }} = \"{CodeWriter.GetGlueElementNamespace(element as GlueElement)}.{FileManager.RemovePath(element.Name)}\"");
+                codeBlock.Line($"public string EditModeType {{ get; set; }} = \"{CodeWriter.GetGlueElementNamespace(element as GlueElement)}.{FileManager.RemovePath(element.Name)}\";");
             }
             return codeBlock;
         }

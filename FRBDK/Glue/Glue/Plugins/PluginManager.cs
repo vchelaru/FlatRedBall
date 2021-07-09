@@ -964,6 +964,10 @@ namespace FlatRedBall.Glue.Plugins
             plugin => plugin.NewScreenCreated != null);
         }
 
+        /// <summary>
+        /// Called any time an entity is created. ReactToNewEntityCreatedWithUi may also get called.
+        /// </summary>
+        /// <param name="entitySave"></param>
         internal static void ReactToNewEntityCreated(EntitySave entitySave)
         {
             CallMethodOnPlugin((plugin) =>
@@ -972,6 +976,16 @@ namespace FlatRedBall.Glue.Plugins
             },
             nameof(ReactToNewEntityCreated),
             plugin => plugin.NewEntityCreated != null);
+        }
+
+        internal static void ReactToNewEntityCreatedWithUi(EntitySave entitySave, AddEntityWindow window)
+        {
+            CallMethodOnPlugin((plugin) =>
+            {
+                plugin.NewEntityCreatedWithUi(entitySave, window);
+            },
+            nameof(ReactToNewEntityCreatedWithUi),
+            plugin => plugin.NewEntityCreatedWithUi != null);
         }
 
         internal static void ReactToNewScreenCreatedWithUi(ScreenSave screen, AddScreenWindow addScreenWindow)
@@ -992,16 +1006,6 @@ namespace FlatRedBall.Glue.Plugins
             },
             nameof(ReactToResolutionChanged),
             plugin => plugin.ResolutionChanged != null);
-        }
-
-        internal static void ReactToNewEntityCreatedWithUi(EntitySave entitySave, AddEntityWindow window)
-        {
-            CallMethodOnPlugin((plugin) =>
-            {
-                plugin.NewEntityCreatedWithUi(entitySave, window);
-            },
-            nameof(ReactToNewEntityCreatedWithUi),
-            plugin => plugin.NewEntityCreatedWithUi != null);
         }
 
         public static void ReactToCreateCollisionRelationshipsBetween(NamedObjectSave firstNos, NamedObjectSave secondNos)

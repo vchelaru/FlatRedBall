@@ -101,4 +101,9 @@ namespace {ProjectNamespace}.GlueControl.Dtos
     {
         public Microsoft.Xna.Framework.Vector3 Position { get; set; }
     }
+
+    public class CreateNewEntityDto
+    {
+        public Models.EntitySave EntitySave { get; set; }
+    }
 }
