@@ -48,8 +48,50 @@ namespace {ProjectNamespace}.GlueControl
 
         #region Create Instance from Glue
 
-        public object HandleCreateInstanceCommandFromGlue(Models.NamedObjectSave deserialized)
+        public object HandleCreateInstanceCommandFromGlue(Dtos.AddObjectDto dto)
         {
+            //var glueName = dto.ElementName;
+            // this comes in as the game name not glue name
+            var gameName = dto.ElementName; // CommandReceiver.GlueToGameElementName(glueName);
+            var ownerType = this.GetType().Assembly.GetType(gameName);
+            var isInstanceOwnerEntity = typeof(PositionedObject).IsAssignableFrom(ownerType) ||
+                InstanceLogic.Self.CustomGlueElements.ContainsKey(gameName);
+
+            if (isInstanceOwnerEntity)
+            {
+                // Loop through all objects in the SpriteManager. If we are viewing a single 
+                // entity in the entity screen, then this will only loop 1 time and will set 1 value.
+                // If we are in a screen where multiple instances of the entity are around, then we set the 
+                // value on all instances
+                foreach (var item in SpriteManager.ManagedPositionedObjects)
+                {
+                    if (CommandReceiver.DoTypesMatch(item, ownerType, gameName))
+                    {
+                        HandleCreateInstanceCommandFromGlue(dto, item);
+                    }
+                }
+
+                return new object(); // We can just return any object to indicate that something was created. Doesn't matter what.
+            }
+            else
+            {
+                return HandleCreateInstanceCommandFromGlue(dto, null);
+            }
+
+
+        }
+
+        private object HandleCreateInstanceCommandFromGlue(Models.NamedObjectSave deserialized, PositionedObject owner)
+        { 
+            // The owner is the
+            // PositionedObject which
+            // owns the newly-created instance
+            // from the NamedObjectSave. Note that
+            // if the owner is a DynamicEntity, it will
+            // automatically remove any attached objects; 
+            // however, if it is not, the objects still need
+            // to be removed by the Glue control system, so we 
+            // are going to add them to the ShapesAddedAtRuntime
 
             PositionedObject newPositionedObject = null;
             object newObject = null;
@@ -121,10 +163,9 @@ namespace {ProjectNamespace}.GlueControl
             {
                 newObject = newPositionedObject;
 
-                var isDisplayingEntity = FlatRedBall.Screens.ScreenManager.CurrentScreen.GetType().Name == "EntityViewingScreen";
-                if (isDisplayingEntity)
+                if (owner != null)
                 {
-                    newPositionedObject.AttachTo(SpriteManager.ManagedPositionedObjects[0]);
+                    newPositionedObject.AttachTo(owner);
                 }
             }
             if (newObject != null)

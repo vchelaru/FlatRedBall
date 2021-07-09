@@ -119,7 +119,28 @@ namespace EditModeProject.GlueControl
 
         static Dictionary<string, Vector3> CameraPositions = new Dictionary<string, Vector3>();
 
+        // todo - move this to some type manager
+        public static bool DoTypesMatch(PositionedObject positionedObject, Type possibleType, string qualifiedTypeName)
+        {
+            if(positionedObject.GetType() == possibleType)
+            {
+                return true;
+            }
+            else if(positionedObject is GlueControl.Runtime.DynamicEntity dynamicEntity)
+            {
+                return dynamicEntity.EditModeType == qualifiedTypeName;
+            }
+            else
+            {
+                // here we need to do reflection to get the EditModeType, but that's not implemented yet.
+                // This is needed for inherited entities
+                return false;
+            }
+        }
+
         #endregion
+
+        #region Set Variable
 
         private static GlueVariableSetDataResponse HandleDto(GlueVariableSetData dto)
         {
@@ -132,6 +153,9 @@ namespace EditModeProject.GlueControl
             return valueToReturn;
         }
 
+        #endregion
+
+        #region Select Object
         private static void HandleDto(SelectObjectDto selectObjectDto)
         {
             bool matchesCurrentScreen =
@@ -229,29 +253,16 @@ namespace EditModeProject.GlueControl
             }
         }
 
-        // todo - move this to some type manager
-        public static bool DoTypesMatch(PositionedObject positionedObject, Type possibleType, string qualifiedTypeName)
-        {
-            if(positionedObject.GetType() == possibleType)
-            {
-                return true;
-            }
-            else if(positionedObject is GlueControl.Runtime.DynamicEntity dynamicEntity)
-            {
-                return dynamicEntity.EditModeType == qualifiedTypeName;
-            }
-            else
-            {
-                // here we need to do reflection to get the EditModeType, but that's not implemented yet.
-                // This is needed for inherited entities
-                return false;
-            }
-        }
+        #endregion
+
+        #region Rename
 
         public static string GlueToGameElementName(string elementName)
         {
             return "EditModeProject." + elementName.Replace("\\", ".");
         }
+
+        #endregion
 
         private static void HandleScreenDestroy()
         {
