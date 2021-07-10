@@ -44,7 +44,7 @@ namespace OfficialPlugins.Compiler.Dtos
         /// <summary>
         /// The owner of the NamedObjectSave, which is either the current screen or the current entity save
         /// </summary>
-        public string InstanceOwner { get; set; }
+        public string InstanceOwnerGameType { get; set; }
         public string VariableName { get; set; }
         public string VariableValue { get; set; }
         public string Type { get; set; }

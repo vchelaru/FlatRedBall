@@ -30,9 +30,9 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 var screen =
                     FlatRedBall.Screens.ScreenManager.CurrentScreen;
 
-                var ownerType = typeof(VariableAssignmentLogic).Assembly.GetType(data.InstanceOwner);
+                var ownerType = typeof(VariableAssignmentLogic).Assembly.GetType(data.InstanceOwnerGameType);
                 var isInstanceOwnerEntity = typeof(PositionedObject).IsAssignableFrom(ownerType) ||
-                    InstanceLogic.Self.CustomGlueElements.ContainsKey(data.InstanceOwner);
+                    InstanceLogic.Self.CustomGlueElements.ContainsKey(data.InstanceOwnerGameType);
                 if (isInstanceOwnerEntity)
                 {
                     // Loop through all objects in the SpriteManager. If we are viewing a single 
@@ -41,7 +41,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     // value on all instances
                     foreach (var item in SpriteManager.ManagedPositionedObjects)
                     {
-                        if(CommandReceiver.DoTypesMatch(item, data.InstanceOwner, ownerType))
+                        if(CommandReceiver.DoTypesMatch(item, data.InstanceOwnerGameType, ownerType))
                         {
                             var variableName = data.VariableName.Substring("this.".Length);
                             screen.ApplyVariable(variableName, variableValue, item);

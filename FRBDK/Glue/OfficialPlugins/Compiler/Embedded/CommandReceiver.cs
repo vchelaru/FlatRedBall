@@ -155,17 +155,17 @@ namespace EditModeProject.GlueControl
         public static Dictionary<string, Queue<object>> ScreenSpecificGlueToGameCommands =
             new Dictionary<string, Queue<object>>();
 
-        public static void EnqueueToOwner(object dto, string owner)
+        public static void EnqueueToOwner(object dto, string ownerGameType)
         {
-            if (string.IsNullOrEmpty(owner))
+            if (string.IsNullOrEmpty(ownerGameType))
             {
                 GlobalGlueToGameCommands.Enqueue(dto);
             }
             else
             {
-                var ownerType = typeof(GlueControlManager).Assembly.GetType(owner);
+                var ownerType = typeof(GlueControlManager).Assembly.GetType(ownerGameType);
                 var isEntity = typeof(PositionedObject).IsAssignableFrom(ownerType) ||
-                    InstanceLogic.Self.CustomGlueElements.ContainsKey(owner);
+                    InstanceLogic.Self.CustomGlueElements.ContainsKey(ownerGameType);
                 if (isEntity)
                 {
                     // If it's on an entity, then it needs to be applied globally
@@ -173,7 +173,7 @@ namespace EditModeProject.GlueControl
                 }
                 else
                 {
-                    EnqueueScreenSpecificMessage(dto, owner);
+                    EnqueueScreenSpecificMessage(dto, ownerGameType);
                 }
             }
         }
@@ -220,7 +220,7 @@ namespace EditModeProject.GlueControl
             }
             if (shouldEnqueue)
             {
-                EnqueueToOwner(dto, dto.InstanceOwner);
+                EnqueueToOwner(dto, dto.InstanceOwnerGameType);
             }
             return response;
         }

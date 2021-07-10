@@ -330,7 +330,7 @@ namespace OfficialPlugins.Compiler.Managers
                 if (currentElement != null)
                 {
                     var data = new GlueVariableSetData();
-                    data.InstanceOwner = ToGameType(currentElement);
+                    data.InstanceOwnerGameType = ToGameType(currentElement);
                     data.Type = type;
                     data.VariableValue = value;
                     data.VariableName = rawMemberName;
