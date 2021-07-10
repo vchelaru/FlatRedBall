@@ -120,8 +120,13 @@ namespace EditModeProject.GlueControl
         static Dictionary<string, Vector3> CameraPositions = new Dictionary<string, Vector3>();
 
         // todo - move this to some type manager
-        public static bool DoTypesMatch(PositionedObject positionedObject, Type possibleType, string qualifiedTypeName)
+        public static bool DoTypesMatch(PositionedObject positionedObject, string qualifiedTypeName, Type possibleType = null)
         {
+            if (possibleType == null)
+            {
+                possibleType = typeof(CommandReceiver).Assembly.GetType(qualifiedTypeName);
+            }
+
             if (positionedObject.GetType() == possibleType)
             {
                 return true;
@@ -280,7 +285,7 @@ namespace EditModeProject.GlueControl
                 {
                     var isAlreadyViewingThisEntity = ScreenManager.CurrentScreen.GetType().Name == "EntityViewingScreen" &&
                         SpriteManager.ManagedPositionedObjects.Count > 0 &&
-                        DoTypesMatch(SpriteManager.ManagedPositionedObjects[0], ownerType, ownerTypeName);
+                        DoTypesMatch(SpriteManager.ManagedPositionedObjects[0], ownerTypeName, ownerType);
 
                     if (!isAlreadyViewingThisEntity)
                     {

@@ -41,7 +41,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                     // value on all instances
                     foreach (var item in SpriteManager.ManagedPositionedObjects)
                     {
-                        if(CommandReceiver.DoTypesMatch(item, ownerType, data.InstanceOwner))
+                        if(CommandReceiver.DoTypesMatch(item, data.InstanceOwner, ownerType))
                         {
                             var variableName = data.VariableName.Substring("this.".Length);
                             screen.ApplyVariable(variableName, variableValue, item);

@@ -48,40 +48,48 @@ namespace {ProjectNamespace}.GlueControl
 
         #region Create Instance from Glue
 
-        public object HandleCreateInstanceCommandFromGlue(Dtos.AddObjectDto dto)
+        public object HandleCreateInstanceCommandFromGlue(Dtos.AddObjectDto dto, List<PositionedObject> itemsToAddTo = null)
         {
             //var glueName = dto.ElementName;
             // this comes in as the game name not glue name
-            var gameName = dto.ElementNameGame; // CommandReceiver.GlueToGameElementName(glueName);
-            var ownerType = this.GetType().Assembly.GetType(gameName);
+            var entityNameGame = dto.ElementNameGame; // CommandReceiver.GlueToGameElementName(glueName);
+            var ownerType = this.GetType().Assembly.GetType(entityNameGame);
             var isInstanceOwnerEntity = typeof(PositionedObject).IsAssignableFrom(ownerType) ||
-                InstanceLogic.Self.CustomGlueElements.ContainsKey(gameName);
+                InstanceLogic.Self.CustomGlueElements.ContainsKey(entityNameGame);
 
-            if (isInstanceOwnerEntity)
+            if(itemsToAddTo == null && isInstanceOwnerEntity)
             {
+                itemsToAddTo = new List<PositionedObject>();
+
                 // Loop through all objects in the SpriteManager. If we are viewing a single 
                 // entity in the entity screen, then this will only loop 1 time and will set 1 value.
                 // If we are in a screen where multiple instances of the entity are around, then we set the 
                 // value on all instances
                 foreach (var item in SpriteManager.ManagedPositionedObjects)
                 {
-                    if (CommandReceiver.DoTypesMatch(item, ownerType, gameName))
+                    if (CommandReceiver.DoTypesMatch(item, entityNameGame, ownerType))
                     {
-                        HandleCreateInstanceCommandFromGlue(dto, item);
+                        itemsToAddTo.Add(item);
                     }
                 }
+            }
 
-                return new object(); // We can just return any object to indicate that something was created. Doesn't matter what.
+
+            if(itemsToAddTo != null)
+            {
+                foreach(var item in itemsToAddTo)
+                {
+                    HandleCreateInstanceCommandFromGlueInner(dto, item);
+                }
+                return itemsToAddTo; // doesn't matter what is returned, as long as it's non-null
             }
             else
             {
-                return HandleCreateInstanceCommandFromGlue(dto, null);
+                return HandleCreateInstanceCommandFromGlueInner(dto, null);
             }
-
-
         }
 
-        private object HandleCreateInstanceCommandFromGlue(Models.NamedObjectSave deserialized, PositionedObject owner)
+        private object HandleCreateInstanceCommandFromGlueInner(Models.NamedObjectSave deserialized, PositionedObject owner)
         { 
             // The owner is the
             // PositionedObject which
