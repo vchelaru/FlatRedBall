@@ -48,48 +48,54 @@ namespace {ProjectNamespace}.GlueControl
 
         #region Create Instance from Glue
 
-        public object HandleCreateInstanceCommandFromGlue(Dtos.AddObjectDto dto, List<PositionedObject> itemsToAddTo = null)
+        public object HandleCreateInstanceCommandFromGlue(Dtos.AddObjectDto dto, int currentAddObjectIndex, PositionedObject forcedItem = null)
         {
             //var glueName = dto.ElementName;
             // this comes in as the game name not glue name
-            var entityNameGame = dto.ElementNameGame; // CommandReceiver.GlueToGameElementName(glueName);
-            var ownerType = this.GetType().Assembly.GetType(entityNameGame);
-            var isInstanceOwnerEntity = typeof(PositionedObject).IsAssignableFrom(ownerType) ||
-                InstanceLogic.Self.CustomGlueElements.ContainsKey(entityNameGame);
-
-            if(itemsToAddTo == null && isInstanceOwnerEntity)
+            var elementGameType = dto.ElementNameGame; // CommandReceiver.GlueToGameElementName(glueName);
+            var ownerType = this.GetType().Assembly.GetType(elementGameType);
+            GlueElement ownerElement = null;
+            if(CustomGlueElements.ContainsKey(elementGameType))
             {
-                itemsToAddTo = new List<PositionedObject>();
+                ownerElement = CustomGlueElements[elementGameType];
+            }
 
-                // Loop through all objects in the SpriteManager. If we are viewing a single 
-                // entity in the entity screen, then this will only loop 1 time and will set 1 value.
-                // If we are in a screen where multiple instances of the entity are around, then we set the 
-                // value on all instances
-                foreach (var item in SpriteManager.ManagedPositionedObjects)
+            var addedToEntity =
+                (ownerType != null && typeof(PositionedObject).IsAssignableFrom(ownerType))
+                ||
+                ownerElement != null && ownerElement is EntitySave;
+
+            if(addedToEntity)
+            {
+                if(forcedItem != null)
                 {
-                    if (CommandReceiver.DoTypesMatch(item, entityNameGame, ownerType))
+                    if (CommandReceiver.DoTypesMatch(forcedItem, elementGameType))
                     {
-                        itemsToAddTo.Add(item);
+                        HandleCreateInstanceCommandFromGlueInner(dto, currentAddObjectIndex, forcedItem);
+                    }
+                }
+                else
+                {
+                    // need to loop through every object and see if it is an instance of the entity type, and if so, add this object to it
+                    for(int i = 0; i < SpriteManager.ManagedPositionedObjects.Count; i++)
+                    {
+                        var item = SpriteManager.ManagedPositionedObjects[i];
+                        if(CommandReceiver.DoTypesMatch(item, elementGameType))
+                        {
+                            HandleCreateInstanceCommandFromGlueInner(dto, currentAddObjectIndex, item);
+                        }
                     }
                 }
             }
-
-
-            if(itemsToAddTo != null)
+            else if(forcedItem == null && ScreenManager.CurrentScreen.GetType().FullName == elementGameType)
             {
-                foreach(var item in itemsToAddTo)
-                {
-                    HandleCreateInstanceCommandFromGlueInner(dto, item);
-                }
-                return itemsToAddTo; // doesn't matter what is returned, as long as it's non-null
+                // it's added to the base screen, so just add it to null
+                HandleCreateInstanceCommandFromGlueInner(dto, currentAddObjectIndex, null);
             }
-            else
-            {
-                return HandleCreateInstanceCommandFromGlueInner(dto, null);
-            }
+            return dto;
         }
 
-        private object HandleCreateInstanceCommandFromGlueInner(Models.NamedObjectSave deserialized, PositionedObject owner)
+        private object HandleCreateInstanceCommandFromGlueInner(Models.NamedObjectSave deserialized, int currentAddObjectIndex, PositionedObject owner)
         { 
             // The owner is the
             // PositionedObject which
@@ -110,6 +116,14 @@ namespace {ProjectNamespace}.GlueControl
 
                 var sourceClassTypeGame = CommandReceiver.GlueToGameElementName(deserialized.SourceClassType);
 
+                for(int i = 0; i < currentAddObjectIndex; i++)
+                {
+                    var dto = CommandReceiver.GlobalGlueToGameCommands[i];
+                    if(dto is AddObjectDto addObjectDtoRerun)
+                    {
+                        HandleCreateInstanceCommandFromGlue(addObjectDtoRerun, currentAddObjectIndex, newPositionedObject);
+                    }
+                }
                 //asdfasdf need to rerun all stuff for this object.ReferenceEquals..
                 //GlueControlManager.Self.ReRunAllGlueToGameCommands((dto) =>
                 //{

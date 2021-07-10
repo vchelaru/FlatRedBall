@@ -151,7 +151,7 @@ namespace EditModeProject.GlueControl
         /// Stores all commands that have been sent from Glue to game 
         /// which should always be re-run.
         /// </summary>
-        public static Queue<object> GlobalGlueToGameCommands = new Queue<object>();
+        public static List<object> GlobalGlueToGameCommands = new List<object>();
         public static Dictionary<string, Queue<object>> ScreenSpecificGlueToGameCommands =
             new Dictionary<string, Queue<object>>();
 
@@ -159,7 +159,7 @@ namespace EditModeProject.GlueControl
         {
             if (string.IsNullOrEmpty(ownerGameType))
             {
-                GlobalGlueToGameCommands.Enqueue(dto);
+                GlobalGlueToGameCommands.Add(dto);
             }
             else
             {
@@ -169,7 +169,7 @@ namespace EditModeProject.GlueControl
                 if (isEntity)
                 {
                     // If it's on an entity, then it needs to be applied globally
-                    GlobalGlueToGameCommands.Enqueue(dto);
+                    GlobalGlueToGameCommands.Add(dto);
                 }
                 else
                 {
@@ -350,12 +350,15 @@ namespace EditModeProject.GlueControl
         private static AddObjectDtoResponse HandleDto(AddObjectDto dto)
         {
             AddObjectDtoResponse valueToReturn = new AddObjectDtoResponse();
-#if IncludeSetVariable
 
-            var createdObject = GlueControl.InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(dto);
+            var createdObject =
+                GlueControl.InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(dto, GlobalGlueToGameCommands.Count, forcedItem: null);
             valueToReturn.WasObjectCreated = createdObject != null;
-#endif
-            CommandReceiver.EnqueueToOwner(dto, dto.ElementNameGame);
+
+            // internally this decides what to add to, so we don't have to sort the DTOs
+            //CommandReceiver.EnqueueToOwner(dto, dto.ElementNameGame);
+            GlobalGlueToGameCommands.Add(dto);
+
             return valueToReturn;
         }
 
