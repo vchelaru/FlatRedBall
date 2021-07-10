@@ -102,14 +102,15 @@ namespace {ProjectNamespace}.GlueControl
 
                 var sourceClassTypeGame = CommandReceiver.GlueToGameElementName(deserialized.SourceClassType);
 
-                GlueControlManager.Self.ReRunAllGlueToGameCommands((dto) =>
-                {
-                    if(dto is Dtos.AddObjectDto addObjectDto)
-                    {
-                        return addObjectDto.ElementNameGame == sourceClassTypeGame;
-                    }
-                    return false;
-                });
+                //asdfasdf need to rerun all stuff for this object.ReferenceEquals..
+                //GlueControlManager.Self.ReRunAllGlueToGameCommands((dto) =>
+                //{
+                //    if(dto is Dtos.AddObjectDto addObjectDto)
+                //    {
+                //        return addObjectDto.ElementNameGame == sourceClassTypeGame;
+                //    }
+                //    return false;
+                //});
             }
             else if(deserialized.SourceType == GlueControl.Models.SourceType.FlatRedBallType &&
                 deserialized.IsCollisionRelationship())
@@ -291,8 +292,7 @@ namespace {ProjectNamespace}.GlueControl
 
             GlueControlManager.Self.SendToGlue(addObjectDto);
 
-            GlueControlManager.Self.EnqueueToOwner(
-                nameof(Dtos.AddObjectDto) + ":" + Newtonsoft.Json.JsonConvert.SerializeObject(addObjectDto), addObjectDto.ElementNameGame);
+            CommandReceiver.EnqueueToOwner(addObjectDto, addObjectDto.ElementNameGame);
         }
 
         #region Create Instance from Game

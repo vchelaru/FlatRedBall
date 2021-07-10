@@ -58,7 +58,7 @@ namespace EditModeProject.GlueControl
                     return false;
                 });
 
-            if(matchingMethod == null)
+            if (matchingMethod == null)
             {
                 throw new InvalidOperationException(
                     $"Could not find a HandleDto method for type {dtoTypeName}");
@@ -68,7 +68,7 @@ namespace EditModeProject.GlueControl
 
             var dto = JsonConvert.DeserializeObject(dtoSerialized, dtoType);
 
-            if(runPredicate == null || runPredicate(dto))
+            if (runPredicate == null || runPredicate(dto))
             {
                 var response = ReceiveDto(dto);
 
@@ -122,11 +122,11 @@ namespace EditModeProject.GlueControl
         // todo - move this to some type manager
         public static bool DoTypesMatch(PositionedObject positionedObject, Type possibleType, string qualifiedTypeName)
         {
-            if(positionedObject.GetType() == possibleType)
+            if (positionedObject.GetType() == possibleType)
             {
                 return true;
             }
-            else if(positionedObject is GlueControl.Runtime.DynamicEntity dynamicEntity)
+            else if (positionedObject is GlueControl.Runtime.DynamicEntity dynamicEntity)
             {
                 return dynamicEntity.EditModeType == qualifiedTypeName;
             }
@@ -140,17 +140,84 @@ namespace EditModeProject.GlueControl
 
         #endregion
 
+        #region Message Queue
+
+        /// <summary>
+        /// Stores all commands that have been sent from Glue to game 
+        /// which should always be re-run.
+        /// </summary>
+        public static Queue<object> GlobalGlueToGameCommands = new Queue<object>();
+        public static Dictionary<string, Queue<object>> ScreenSpecificGlueToGameCommands =
+            new Dictionary<string, Queue<object>>();
+
+        public static void EnqueueToOwner(object dto, string owner)
+        {
+            if (string.IsNullOrEmpty(owner))
+            {
+                GlobalGlueToGameCommands.Enqueue(dto);
+            }
+            else
+            {
+                var ownerType = typeof(GlueControlManager).Assembly.GetType(owner);
+                var isEntity = typeof(PositionedObject).IsAssignableFrom(ownerType) ||
+                    InstanceLogic.Self.CustomGlueElements.ContainsKey(owner);
+                if (isEntity)
+                {
+                    // If it's on an entity, then it needs to be applied globally
+                    GlobalGlueToGameCommands.Enqueue(dto);
+                }
+                else
+                {
+                    EnqueueScreenSpecificMessage(dto, owner);
+                }
+            }
+        }
+
+
+
+        private static void EnqueueScreenSpecificMessage(object dto, string owner)
+        {
+            Queue<object> queue = null;
+            if (ScreenSpecificGlueToGameCommands.ContainsKey(owner))
+            {
+                queue = ScreenSpecificGlueToGameCommands[owner];
+            }
+            else
+            {
+                queue = new Queue<object>();
+                ScreenSpecificGlueToGameCommands.Add(owner, queue);
+            }
+            queue.Enqueue(dto);
+        }
+
+
+
+        #endregion
+
         #region Set Variable
 
         private static GlueVariableSetDataResponse HandleDto(GlueVariableSetData dto)
         {
-            GlueVariableSetDataResponse valueToReturn = null;
-#if IncludeSetVariable
+            GlueVariableSetDataResponse response = null;
 
-            valueToReturn = GlueControl.Editing.VariableAssignmentLogic.SetVariable(dto);
-#endif
-
-            return valueToReturn;
+            var shouldEnqueue = true;
+            if (dto.AssignOrRecordOnly == AssignOrRecordOnly.Assign)
+            {
+                response = GlueControl.Editing.VariableAssignmentLogic.SetVariable(dto);
+                shouldEnqueue = response.WasVariableAssigned;
+            }
+            else
+            {
+                // If it's a record-only, then we'll always want to enqueue it
+                // need to change the record only back to assign so future re-runs will assign
+                dto.AssignOrRecordOnly = AssignOrRecordOnly.Assign;
+                shouldEnqueue = true;
+            }
+            if (shouldEnqueue)
+            {
+                EnqueueToOwner(dto, dto.InstanceOwner);
+            }
+            return response;
         }
 
         #endregion
@@ -264,10 +331,16 @@ namespace EditModeProject.GlueControl
 
         #endregion
 
+        #region Destroy Screen
+
         private static void HandleScreenDestroy()
         {
             GlueControl.InstanceLogic.Self.DestroyDynamicallyAddedInstances();
         }
+
+        #endregion
+
+        #region Add Object
 
         private static AddObjectDtoResponse HandleDto(AddObjectDto dto)
         {
@@ -277,8 +350,13 @@ namespace EditModeProject.GlueControl
             var createdObject = GlueControl.InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(dto);
             valueToReturn.WasObjectCreated = createdObject != null;
 #endif
+            CommandReceiver.EnqueueToOwner(dto, dto.ElementNameGame);
             return valueToReturn;
         }
+
+        #endregion
+
+        #region Edit vs Play
 
         private static void HandleDto(SetEditMode setEditMode)
         {
@@ -309,6 +387,8 @@ namespace EditModeProject.GlueControl
 #endif
         }
 
+        #endregion
+
         private static void HandleDto(SetCameraPositionDto dto)
         {
             Camera.Main.Position = dto.Position;
@@ -333,11 +413,16 @@ namespace EditModeProject.GlueControl
                 // comment here.
             }
 
+            CommandReceiver.EnqueueToOwner(dto, dto.ElementName);
+
+
             return toReturn;
         }
 
         private static RemoveObjectDtoResponse HandleDto(RemoveObjectDto removeObjectDto)
         {
+
+
             RemoveObjectDtoResponse response = new RemoveObjectDtoResponse();
             response.DidScreenMatch = false;
             response.WasObjectRemoved = false;
@@ -383,13 +468,13 @@ namespace EditModeProject.GlueControl
                     response.WasObjectRemoved = true;
                 }
 
-                if(!response.WasObjectRemoved)
+                if (!response.WasObjectRemoved)
                 {
                     // see if there is a collision relationship with this name
                     var matchingCollisionRelationship = CollisionManager.Self.Relationships.FirstOrDefault(
                         item => item.Name == removeObjectDto.ObjectName);
 
-                    if(matchingCollisionRelationship != null)
+                    if (matchingCollisionRelationship != null)
                     {
                         CollisionManager.Self.Relationships.Remove(matchingCollisionRelationship);
                         response.WasObjectRemoved = true;
@@ -415,7 +500,6 @@ namespace EditModeProject.GlueControl
             var screen = ScreenManager.CurrentScreen;
             screen.RestartScreen(true);
         }
-
 
         private static void HandleDto(ReloadGlobalContentDto dto)
         {

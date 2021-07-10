@@ -50,18 +50,6 @@ namespace {ProjectNamespace}
         
         public static GlueControlManager Self { get; private set; }
         
-    
-        /// <summary>
-        /// Stores all commands that have been sent from Glue to game 
-        /// which should always be re-run.
-        /// </summary>
-        
-        private Queue<string> GlobalGlueToGameCommands = new Queue<string>();
-        private Dictionary<string, Queue<string>> ScreenSpecificGlueToGameCommands =
-            new Dictionary<string, Queue<string>>();
-
-
-
         #endregion
 
         #region Init/Start/Stop
@@ -150,9 +138,7 @@ namespace {ProjectNamespace}
 
         #region Glue -> Game
 
-        #region General Functions
-
-        private async Task<string> ProcessMessage(string message, bool runSetImmediately = false, Func<object, bool> runPredicate = null)
+        private async Task<string> ProcessMessage(string message, bool runSetImmediately = false)
         {
             var screen =
                 FlatRedBall.Screens.ScreenManager.CurrentScreen;
@@ -168,40 +154,37 @@ namespace {ProjectNamespace}
                 action = message.Substring(0, message.IndexOf(":"));
             }
 
-            if(runPredicate == null)
+
+            switch (action)
             {
+                case "GetCurrentScreen":
+                    isGet = true;
+                    return screen.GetType().FullName;
 
-                switch (action)
-                {
-                    case "GetCurrentScreen":
-                        isGet = true;
-                        return screen.GetType().FullName;
-
-    #if SupportsEditMode
-                    case "GetCommands":
-                        isGet = true;
-                        string toReturn = string.Empty;
-                        if (GameToGlueCommands.Count != 0)
+#if SupportsEditMode
+                case "GetCommands":
+                    isGet = true;
+                    string toReturn = string.Empty;
+                    if (GameToGlueCommands.Count != 0)
+                    {
+                        List<string> tempList = new List<string>();
+                        while (GameToGlueCommands.TryDequeue(out GameToGlueCommand gameToGlueCommand))
                         {
-                            List<string> tempList = new List<string>();
-                            while (GameToGlueCommands.TryDequeue(out GameToGlueCommand gameToGlueCommand))
-                            {
-                                tempList.Add(gameToGlueCommand.Command);
-                            }
-                            toReturn = Newtonsoft.Json.JsonConvert.SerializeObject(tempList.ToArray());
+                            tempList.Add(gameToGlueCommand.Command);
                         }
-                        return toReturn;
-                    case nameof(GlueControl.Dtos.GetCameraPosition):
-                        isGet = true;
-                        var getCameraPositionResponse = new GlueControl.Dtos.GetCameraPositionResponse();
-                        getCameraPositionResponse.X = Camera.Main.X;
-                        getCameraPositionResponse.Y = Camera.Main.Y;
-                        getCameraPositionResponse.Z = Camera.Main.Z;
-                        toReturn = Newtonsoft.Json.JsonConvert.SerializeObject(getCameraPositionResponse);
-                        return toReturn;
-                        break;
-    #endif
-                }
+                        toReturn = Newtonsoft.Json.JsonConvert.SerializeObject(tempList.ToArray());
+                    }
+                    return toReturn;
+                case nameof(GlueControl.Dtos.GetCameraPosition):
+                    isGet = true;
+                    var getCameraPositionResponse = new GlueControl.Dtos.GetCameraPositionResponse();
+                    getCameraPositionResponse.X = Camera.Main.X;
+                    getCameraPositionResponse.Y = Camera.Main.Y;
+                    getCameraPositionResponse.Z = Camera.Main.Z;
+                    toReturn = Newtonsoft.Json.JsonConvert.SerializeObject(getCameraPositionResponse);
+                    return toReturn;
+                    break;
+#endif
             }
 
             var response = "true";
@@ -210,12 +193,12 @@ namespace {ProjectNamespace}
             {
                 if(runSetImmediately)
                 {
-                    response = ApplySetMessage(message, screen, data, action, runPredicate) ?? null;
+                    response = ApplySetMessage(message) ?? null;
                 }
                 else
                 {
                     await FlatRedBall.Instructions.InstructionManager.DoOnMainThreadAsync(
-                        () => response = ApplySetMessage(message, screen, data, action));
+                        () => response = ApplySetMessage(message));
                         
                 }
             }
@@ -223,195 +206,43 @@ namespace {ProjectNamespace}
             return response;
         }
 
-        private string ApplySetMessage(string message, Screen screen, string data, string action, Func<object, bool> runPredicate = null)
+        private string ApplySetMessage(string message)
         {
             if (!FlatRedBallServices.IsThreadPrimary())
             {
                 throw new System.InvalidOperationException("Objects can only be added, removed, made visible, or made invisible on the primary thread");
             }
-            string response = null;
-
-            switch (action)
-            {
-#if SupportsEditMode
-                case nameof(GlueControl.Dtos.GlueVariableSetData):
-                    {
-                        var dto =
-                            Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.GlueVariableSetData>(data);
-
-                        if(runPredicate == null || runPredicate(dto))
-                        {
-                            var shouldEnqueue = true;
-                            if(dto.AssignOrRecordOnly == AssignOrRecordOnly.Assign)
-                            {
-                                var setVariableResponse =
-                                    GlueControl.CommandReceiver.ReceiveDto(dto) as GlueVariableSetDataResponse;
-                                response = Newtonsoft.Json.JsonConvert.SerializeObject(setVariableResponse);
-                                shouldEnqueue = setVariableResponse.WasVariableAssigned;
-                            }
-                            else
-                            {
-                                // If it's a record-only, then we'll always want to enqueue it
-                                // need to change the record only back to assign so future re-runs will assign
-                                dto.AssignOrRecordOnly = AssignOrRecordOnly.Assign;
-                                message = $"{action}:{JsonConvert.SerializeObject(dto)}";
-                                shouldEnqueue = true;
-                            }
-                            if(shouldEnqueue && runPredicate == null)
-                            {
-                                EnqueueToOwner(message, dto.InstanceOwner);
-                            }
-                        }
-                    }
-                    break;
-                case nameof(GlueControl.Dtos.AddObjectDto):
-                    {
-                        var dto =
-                            Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.AddObjectDto>(data);
-                        if(runPredicate == null || runPredicate(dto))
-                        {
-                            var addResponse = CommandReceiver.ReceiveDto(dto);
-                            response = Newtonsoft.Json.JsonConvert.SerializeObject(addResponse);
-                            if(runPredicate == null)
-                            {
-                                EnqueueToOwner(message, dto.ElementNameGame);
-                            }
-                        }
-                    }
-                    break;
-
-                case nameof(GlueControl.Dtos.RemoveObjectDto):
-                    {
-                        var dto =
-                            Newtonsoft.Json.JsonConvert.DeserializeObject<GlueControl.Dtos.RemoveObjectDto>(data);
-
-                        if(runPredicate == null || runPredicate(dto))
-                        {
-                            bool matchesCurrentScreen =
-                                GetIfMatchesCurrentScreen(dto.ElementName, out System.Type ownerType, out Screen currentScreen);
-
-                            string gameTypeName = ownerType?.FullName;
-
-                            response = CommandReceiver.Receive(message);
-
-                            if (runPredicate == null)
-                            {
-                                EnqueueToOwner(message, gameTypeName);
-                            }
-                        }
-
-                    }
-                    break;
-
-                case nameof(GlueControl.Dtos.MoveObjectToContainerDto):
-                    {
-                        var dto = JsonConvert.DeserializeObject<GlueControl.Dtos.MoveObjectToContainerDto>(data);
-                        if(runPredicate == null || runPredicate(dto))
-                        {
-                            response = CommandReceiver.Receive(message);
-                            if(runPredicate == null)
-                            {
-                                EnqueueToOwner(message, dto.ElementName);
-                            }
-                        }
-                    }
-                    break;
-                default:
-                    response = CommandReceiver.Receive(message, runPredicate);
-
-                    break;
-#endif
-            }
-
-            return response;
+            return CommandReceiver.Receive(message);
         }
 
-        /// <summary>
-        /// Enqueues the message to the owner type, where the owner is the Qualified type name like
-        /// "MyGame.Screens.Level1"
-        /// </summary>
-        /// <param name="message">The message which is of the form "DtoType:Json"</param>
-        /// <param name="owner">The owner in qualified type name</param>
-        public void EnqueueToOwner(string message, string owner)
+        public void ReRunAllGlueToGameCommands()
         {
-            if (string.IsNullOrEmpty(owner))
-            {
-                GlobalGlueToGameCommands.Enqueue(message);
-            }
-            else
-            {
-                var ownerType = typeof(GlueControlManager).Assembly.GetType(owner);
-                var isEntity = typeof(PositionedObject).IsAssignableFrom(ownerType) ||
-                    InstanceLogic.Self.CustomGlueElements.ContainsKey(owner);
-                if (isEntity)
-                {
-                    // If it's on an entity, then it needs to be applied globally
-                    GlobalGlueToGameCommands.Enqueue(message);
-                }
-                else
-                {
-                    EnqueueScreenSpecificMessage(message, owner);
-                }
-            }
-        }
+            var toProcess = CommandReceiver.GlobalGlueToGameCommands.ToArray();
+            CommandReceiver.GlobalGlueToGameCommands.Clear();
 
-        private void EnqueueScreenSpecificMessage(string message, string owner)
-        {
-            Queue<string> queue = null;
-            if(ScreenSpecificGlueToGameCommands.ContainsKey(owner))
+            foreach (var dto in toProcess)
             {
-                queue = ScreenSpecificGlueToGameCommands[owner];
-            }
-            else
-            {
-                queue = new Queue<string>();
-                ScreenSpecificGlueToGameCommands.Add(owner, queue);
-            }
-            queue.Enqueue(message);
-        }
-
-        public void ReRunAllGlueToGameCommands(Func<object, bool> runPredicate = null)
-        {
-            var toProcess = GlobalGlueToGameCommands.ToArray();
-            if(runPredicate == null)
-            {
-                GlobalGlueToGameCommands.Clear();
-            }
-            foreach (var message in toProcess)
-            {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                // intentionally not awaited because awaiting would mean waiting a whole frame for it
-                // to finish processing. Don't want to do that, just fire and forget.
-                ProcessMessage(message, true, runPredicate);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                CommandReceiver.ReceiveDto(dto);
             }
 
             var assembly = typeof(GlueControlManager).Assembly;
             var currentScreenType = ScreenManager.CurrentScreen.GetType();
 
-            foreach(var kvp in ScreenSpecificGlueToGameCommands)
+            foreach(var kvp in CommandReceiver.ScreenSpecificGlueToGameCommands)
             {
                 var type = assembly.GetType(kvp.Key);
                 if(type != null && type.IsAssignableFrom(currentScreenType))
                 {
                     toProcess = kvp.Value.ToArray();
-                    if(runPredicate == null)
-                    {
-                        kvp.Value.Clear();
-                    }
+                    kvp.Value.Clear();
 
-                    foreach(var message in toProcess)
+                    foreach(var dto in toProcess)
                     {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                        // see above for explanation
-                        ProcessMessage(message, true, runPredicate);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                        CommandReceiver.ReceiveDto(dto);
                     }
                 }
             }
         }
-
-        #endregion
 
         private bool GetIfMatchesCurrentScreen(string elementName, out System.Type ownerType, out Screen currentScreen)
         {

@@ -383,7 +383,7 @@ namespace OfficialPlugins.Compiler
                     var speedPercentage = int.Parse(viewModel.CurrentGameSpeed.Substring(0, viewModel.CurrentGameSpeed.Length - 1));
                     await CommandSender.Send(new SetSpeedDto
                     {
-                        SpeedPercentage = speedPercentage)
+                        SpeedPercentage = speedPercentage
                     }, viewModel.PortNumber);
                     
                     break;
