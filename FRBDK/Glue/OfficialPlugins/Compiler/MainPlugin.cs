@@ -380,8 +380,12 @@ namespace OfficialPlugins.Compiler
 
                     break;
                 case nameof(CompilerViewModel.CurrentGameSpeed):
-                    var command = $"SetSpeed:{viewModel.CurrentGameSpeed.Substring(0, viewModel.CurrentGameSpeed.Length - 1)}";
-                    await DoCommandSendingLogic(command);
+                    var speedPercentage = int.Parse(viewModel.CurrentGameSpeed.Substring(0, viewModel.CurrentGameSpeed.Length - 1));
+                    await CommandSender.Send(new SetSpeedDto
+                    {
+                        SpeedPercentage = speedPercentage)
+                    }, viewModel.PortNumber);
+                    
                     break;
                 case nameof(CompilerViewModel.EffectiveIsRebuildAndRestartEnabled):
                     RefreshManager.Self.IsExplicitlySetRebuildAndRestartEnabled = viewModel.EffectiveIsRebuildAndRestartEnabled;
@@ -481,14 +485,12 @@ namespace OfficialPlugins.Compiler
             control.RestartScreenClicked += async (not, used) =>
             {
                 viewModel.IsPaused = false;
-                var command = "RestartScreen";
-                await DoCommandSendingLogic(command);
+                await CommandSender.Send(new RestartScreenDto(), viewModel.PortNumber);
             };
 
             control.AdvanceOneFrameClicked += async (not, used) =>
             {
-                var command = "AdvanceOneFrame";
-                await DoCommandSendingLogic(command);
+                await CommandSender.Send(new AdvanceOneFrameDto(), viewModel.PortNumber);
             };
 
             control.BuildContentClicked += delegate
@@ -517,36 +519,14 @@ namespace OfficialPlugins.Compiler
             control.PauseClicked += async (not, used) =>
             {
                 viewModel.IsPaused = true;
-                await CommandSender.Send(new RestartScreenDto(), viewModel.PortNumber);
+                await CommandSender.Send(new TogglePauseDto(), viewModel.PortNumber);
             };
 
             control.UnpauseClicked += async (not, used) =>
             {
                 viewModel.IsPaused = false;
-                await CommandSender.Send(new RestartScreenDto(), viewModel.PortNumber);
+                await CommandSender.Send(new TogglePauseDto(), viewModel.PortNumber);
             };
-        }
-
-        private async Task DoCommandSendingLogic(string command)
-        {
-            try
-            {
-                control.PrintOutput($"Sending command: {command}");
-                var response = await CommandSending.CommandSender
-                    .SendCommand(command, viewModel.PortNumber);
-                if (response == "true")
-                {
-                    control.PrintOutput($"Succeeded");
-                }
-                else
-                {
-                    control.PrintOutput($"Response: {response}");
-                }
-            }
-            catch (Exception e)
-            {
-                control.PrintOutput($"Failed to send command {command}:\n" + e.ToString());
-            }
         }
 
         private static bool GetIfHasErrors()

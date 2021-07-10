@@ -449,5 +449,10 @@ namespace EditModeProject.GlueControl
 
             FlatRedBall.Instructions.InstructionManager.Instructions.Add(delegateInstruction);
         }
+
+        private static void HandleDto(SetSpeedDto dto)
+        {
+            FlatRedBall.TimeManager.TimeFactor = dto.SpeedPercentage / 100.0f;
+        }
     }
 }
