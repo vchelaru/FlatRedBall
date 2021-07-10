@@ -70,7 +70,7 @@ namespace OfficialPlugins.Compiler.Dtos
 
     public class AddObjectDto : NamedObjectSave
     {
-        public string ElementName { get; set; }
+        public string ElementNameGame { get; set; }
     }
 
     public class AddObjectDtoResponse
@@ -104,5 +104,17 @@ namespace OfficialPlugins.Compiler.Dtos
     public class CreateNewEntityDto
     {
         public EntitySave EntitySave { get; set; }
+    }
+
+    public class RestartScreenDto { }
+    public class ReloadGlobalContentDto
+    {
+        public string StrippedGlobalContentFileName { get; set; }
+    }
+    public class TogglePauseDto { }
+    public class AdvanceOneFrameDto { }
+    public class SetSpeedDto
+    {
+        public int SpeedPercentage { get; set; }
     }
 }

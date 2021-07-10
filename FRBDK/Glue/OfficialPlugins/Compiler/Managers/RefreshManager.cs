@@ -136,7 +136,10 @@ namespace OfficialPlugins.Compiler.Managers
 
                         // it's part of global content and can be reloaded, so let's just tell
                         // it to reload:
-                        await CommandSender.SendCommand($"ReloadGlobal:{strippedName}", ViewModel.PortNumber);
+                        await CommandSender.Send(new ReloadGlobalContentDto
+                        {
+                            StrippedGlobalContentFileName = strippedName
+                        }, ViewModel.PortNumber);
 
                         printOutput($"Reloading global file {strippedName}");
 
@@ -266,7 +269,7 @@ namespace OfficialPlugins.Compiler.Managers
                 var containerElement = ObjectFinder.Self.GetElementContaining(newNamedObject);
                 if (containerElement != null)
                 {
-                    addObjectDto.ElementName =
+                    addObjectDto.ElementNameGame =
                         GlueState.Self.ProjectNamespace + "." + containerElement.Name.Replace("\\", ".");
 
                 }

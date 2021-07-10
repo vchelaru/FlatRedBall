@@ -344,9 +344,7 @@ namespace OfficialPlugins.Compiler.Managers
                         data.VariableName = "this." + data.VariableName;
                     }
 
-                    var serialized = JsonConvert.SerializeObject(data);
-
-                    var responseAsString = await CommandSender.SendCommand($"SetVariable:{serialized}", ViewModel.PortNumber);
+                    var responseAsString = await CommandSender.Send(data, ViewModel.PortNumber);
 
                     if (!string.IsNullOrEmpty(responseAsString))
                     {

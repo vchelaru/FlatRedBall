@@ -32,7 +32,7 @@ namespace EditModeProject.GlueControl
                 .ToArray();
         }
 
-        public static string Receive(string message)
+        public static string Receive(string message, Func<object, bool> runPredicate = null)
         {
             string dtoTypeName = null;
             string dtoSerialized = null;
@@ -68,16 +68,16 @@ namespace EditModeProject.GlueControl
 
             var dto = JsonConvert.DeserializeObject(dtoSerialized, dtoType);
 
-            var response = ReceiveDto(dto);
+            if(runPredicate == null || runPredicate(dto))
+            {
+                var response = ReceiveDto(dto);
 
-            if (response != null)
-            {
-                return JsonConvert.SerializeObject(response);
+                if (response != null)
+                {
+                    return JsonConvert.SerializeObject(response);
+                }
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public static object ReceiveDto(object dto)
@@ -408,6 +408,46 @@ namespace EditModeProject.GlueControl
 
 
             InstanceLogic.Self.CustomGlueElements[elementName] = entitySave;
+        }
+
+        private static void HandleDto(RestartScreenDto dto)
+        {
+            var screen = ScreenManager.CurrentScreen;
+            screen.RestartScreen(true);
+        }
+
+
+        private static void HandleDto(ReloadGlobalContentDto dto)
+        {
+            GlobalContent.Reload(GlobalContent.GetFile(dto.StrippedGlobalContentFileName));
+        }
+
+        private static void HandleDto(TogglePauseDto dto)
+        {
+            var screen = ScreenManager.CurrentScreen;
+
+            if (screen.IsPaused)
+            {
+                screen.UnpauseThisScreen();
+            }
+            else
+            {
+                screen.PauseThisScreen();
+            }
+        }
+
+        private static void HandleDto(AdvanceOneFrameDto dto)
+        {
+            var screen = ScreenManager.CurrentScreen;
+
+            screen.UnpauseThisScreen();
+            var delegateInstruction = new FlatRedBall.Instructions.DelegateInstruction(() =>
+            {
+                screen.PauseThisScreen();
+            });
+            delegateInstruction.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + .001;
+
+            FlatRedBall.Instructions.InstructionManager.Instructions.Add(delegateInstruction);
         }
     }
 }

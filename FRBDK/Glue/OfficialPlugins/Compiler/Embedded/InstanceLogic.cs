@@ -52,7 +52,7 @@ namespace {ProjectNamespace}.GlueControl
         {
             //var glueName = dto.ElementName;
             // this comes in as the game name not glue name
-            var gameName = dto.ElementName; // CommandReceiver.GlueToGameElementName(glueName);
+            var gameName = dto.ElementNameGame; // CommandReceiver.GlueToGameElementName(glueName);
             var ownerType = this.GetType().Assembly.GetType(gameName);
             var isInstanceOwnerEntity = typeof(PositionedObject).IsAssignableFrom(ownerType) ||
                 InstanceLogic.Self.CustomGlueElements.ContainsKey(gameName);
@@ -99,6 +99,17 @@ namespace {ProjectNamespace}.GlueControl
             if (deserialized.SourceType == GlueControl.Models.SourceType.Entity)
             {
                 newPositionedObject = CreateEntity(deserialized);
+
+                var sourceClassTypeGame = CommandReceiver.GlueToGameElementName(deserialized.SourceClassType);
+
+                GlueControlManager.Self.ReRunAllGlueToGameCommands((dto) =>
+                {
+                    if(dto is Dtos.AddObjectDto addObjectDto)
+                    {
+                        return addObjectDto.ElementNameGame == sourceClassTypeGame;
+                    }
+                    return false;
+                });
             }
             else if(deserialized.SourceType == GlueControl.Models.SourceType.FlatRedBallType &&
                 deserialized.IsCollisionRelationship())
@@ -271,17 +282,17 @@ namespace {ProjectNamespace}.GlueControl
             var currentScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen;
             if (currentScreen is Screens.EntityViewingScreen entityViewingScreen)
             {
-                addObjectDto.ElementName = entityViewingScreen.CurrentEntity.GetType().FullName;
+                addObjectDto.ElementNameGame = entityViewingScreen.CurrentEntity.GetType().FullName;
             }
             else
             {
-                addObjectDto.ElementName = currentScreen.GetType().FullName;
+                addObjectDto.ElementNameGame = currentScreen.GetType().FullName;
             }
 
             GlueControlManager.Self.SendToGlue(addObjectDto);
 
             GlueControlManager.Self.EnqueueToOwner(
-                nameof(Dtos.AddObjectDto) + ":" + Newtonsoft.Json.JsonConvert.SerializeObject(addObjectDto), addObjectDto.ElementName);
+                nameof(Dtos.AddObjectDto) + ":" + Newtonsoft.Json.JsonConvert.SerializeObject(addObjectDto), addObjectDto.ElementNameGame);
         }
 
         #region Create Instance from Game

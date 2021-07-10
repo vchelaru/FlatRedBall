@@ -28,6 +28,7 @@ using Glue;
 using OfficialPluginsCore.Compiler.CommandReceiving;
 using FlatRedBall.Glue.Elements;
 using OfficialPlugins.Compiler.Dtos;
+using OfficialPlugins.Compiler.CommandSending;
 
 namespace OfficialPlugins.Compiler
 {
@@ -516,16 +517,13 @@ namespace OfficialPlugins.Compiler
             control.PauseClicked += async (not, used) =>
             {
                 viewModel.IsPaused = true;
-                var command = "TogglePause";
-                await DoCommandSendingLogic(command);
+                await CommandSender.Send(new RestartScreenDto(), viewModel.PortNumber);
             };
 
             control.UnpauseClicked += async (not, used) =>
             {
                 viewModel.IsPaused = false;
-                var command = "TogglePause";
-                await DoCommandSendingLogic(command);
-
+                await CommandSender.Send(new RestartScreenDto(), viewModel.PortNumber);
             };
         }
 
