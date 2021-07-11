@@ -198,15 +198,18 @@ namespace {ProjectNamespace}.GlueControl.Editing
             }
             else if(itemOver is Polygon polygon)
             {
-                for(int i = 0; i < polygon.Points.Count; i++)
+                if(polygon.Points != null)
                 {
-                    var absolute = polygon.AbsolutePointPosition(i);
+                    for(int i = 0; i < polygon.Points.Count; i++)
+                    {
+                        var absolute = polygon.AbsolutePointPosition(i);
 
-                    minX = Math.Min(minX, absolute.X);
-                    maxX = Math.Max(maxX, absolute.X);
+                        minX = Math.Min(minX, absolute.X);
+                        maxX = Math.Max(maxX, absolute.X);
 
-                    minY = Math.Min(minY, absolute.Y) ;
-                    maxY = Math.Max(maxY, absolute.Y);
+                        minY = Math.Min(minY, absolute.Y) ;
+                        maxY = Math.Max(maxY, absolute.Y);
+                    }
                 }
             }
             else

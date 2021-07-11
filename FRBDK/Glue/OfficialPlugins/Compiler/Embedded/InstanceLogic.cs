@@ -414,7 +414,7 @@ namespace {ProjectNamespace}.GlueControl
             newRectangle.Name = newName;
 
 
-            if (ShapeManager.AutomaticallyUpdatedShapes.Contains(newRectangle))
+            if (ShapeManager.AutomaticallyUpdatedShapes.Contains(originalRectangle))
             {
                 ShapeManager.AddAxisAlignedRectangle(newRectangle);
             }
@@ -439,7 +439,42 @@ namespace {ProjectNamespace}.GlueControl
 
             return newRectangle;
         }
-        
+
+        public Polygon HandleCreatePolygonByGame(Polygon originalPolygon)
+        {
+            var newPolygon = originalPolygon.Clone();
+            var newName = GetNameFor("Polygon");
+
+            newPolygon.Visible = originalPolygon.Visible;
+            newPolygon.Name = newName;
+
+            if (ShapeManager.AutomaticallyUpdatedShapes.Contains(originalPolygon))
+            {
+                ShapeManager.AddPolygon(newPolygon);
+            }
+            InstanceLogic.Self.ShapesAddedAtRuntime.Add(newPolygon);
+
+            #region Create the AddObjectDto for the new object
+
+            var addObjectDto = new Dtos.AddObjectDto();
+            addObjectDto.InstanceName = newName;
+            addObjectDto.SourceType = Models.SourceType.FlatRedBallType;
+            // todo - need to eventually include sub namespaces for entities in folders
+            addObjectDto.SourceClassType = "FlatRedBall.Math.Geometry.Polygon";
+
+            AddFloatValue(addObjectDto, "X", newPolygon.X);
+            AddFloatValue(addObjectDto, "Y", newPolygon.Y);
+
+            AddValue(addObjectDto, "Points", typeof(List<Point>).ToString(),
+                Newtonsoft.Json.JsonConvert.SerializeObject(newPolygon.Points.ToList()));
+
+            #endregion
+
+            SendAndEnqueue(addObjectDto);
+
+            return newPolygon;
+        }
+
         public Sprite HandleCreateSpriteByName(Sprite originalSprite)
         {
             var newSprite = originalSprite.Clone();

@@ -3,6 +3,7 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Graphics.Animation;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using OfficialPlugins.Compiler.CommandSending;
@@ -20,6 +21,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 {
     static class CommandReceiver
     {
+        #region General Functions
+
         public static void HandleCommandsFromGame(string commandAsString, int gamePortNumber)
         {
             var commandArray = JsonConvert.DeserializeObject<string[]>(commandAsString);
@@ -60,6 +63,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 }
             }
         }
+
+        #endregion
 
         private static void HandleRemoveObject(int gamePortNumber, RemoveObjectDto removeObjectDto)
         {
@@ -127,7 +132,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 {
                     object value = variable.Value;
                     var typeName = variable.Type;
-                    value = ConvertVariable(value, typeName);
+                    value = ConvertVariable(value, ref typeName, variable.Member, nos);
+                    variable.Type = typeName;
                     variable.Value = value;
                 }
 
@@ -143,47 +149,62 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             }, "Adding NOS");
         }
 
-        private static object ConvertVariable(object value, string typeName)
+        private static object ConvertVariable(object value, ref string typeName, string variableName, NamedObjectSave owner)
         {
-            switch (typeName)
+            if(typeName == typeof(List<FlatRedBall.Math.Geometry.Point>).ToString())
             {
-                case "float":
-                case nameof(Single):
-                    {
-                        if (value is double asDouble)
-                        {
-                            value = (float)asDouble;
-                        }
-                        else if(value is int asInt)
-                        {
-                            value = (float)asInt;
-                        }
-                    }
-                    break;
-                case "Microsoft.Xna.Framework.Graphics.Texture2D":
-                case nameof(Texture2D):
-                case "FlatRedBall.Graphics.Animation.AnimationChainList":
-                case nameof(AnimationChainList):
-                    if (value is string asString && !string.IsNullOrEmpty(asString))
-                    {
-                        value =
-                            FileManager.RemovePath(FileManager.RemoveExtension(asString));
-                    }
-                    break;
-                case nameof(TextureAddressMode):
-                case "Microsoft.Xna.Framework.Graphics.TextureAddressMode":
-                    {
-                        if (value is int asInt)
-                        {
-                            value = (TextureAddressMode)asInt;
-                        }
-                        else if (value is long asLong)
-                        {
-                            value = (TextureAddressMode)asLong;
-                        }
-                    }
+                value = JsonConvert.DeserializeObject<List<FlatRedBall.Math.Geometry.Point>>(value.ToString());
 
-                    break;
+            } 
+            else
+            {
+                switch (typeName)
+                {
+                    case "float":
+                    case nameof(Single):
+                        {
+                            if (value is double asDouble)
+                            {
+                                value = (float)asDouble;
+                            }
+                            else if(value is int asInt)
+                            {
+                                value = (float)asInt;
+                            }
+                        }
+                        break;
+                    case "Microsoft.Xna.Framework.Graphics.Texture2D":
+                    case nameof(Texture2D):
+                    case "FlatRedBall.Graphics.Animation.AnimationChainList":
+                    case nameof(AnimationChainList):
+                        if (value is string asString && !string.IsNullOrEmpty(asString))
+                        {
+                            value =
+                                FileManager.RemovePath(FileManager.RemoveExtension(asString));
+                        }
+                        break;
+                    case nameof(TextureAddressMode):
+                    case "Microsoft.Xna.Framework.Graphics.TextureAddressMode":
+                        {
+                            if (value is int asInt)
+                            {
+                                value = (TextureAddressMode)asInt;
+                            }
+                            else if (value is long asLong)
+                            {
+                                value = (TextureAddressMode)asLong;
+                            }
+                        }
+
+                        break;
+                }
+            }
+
+            if(value is List<FlatRedBall.Math.Geometry.Point> pointList && owner.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Polygon &&
+                variableName == "Points")
+            {
+                value = pointList.Select(item => new Vector2((float)item.X, (float)item.Y)).ToList();
+                typeName = typeof(List<Vector2>).ToString();
             }
 
             return value;
@@ -243,7 +264,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                         throw new InvalidOperationException($"Variable {setVariableDto.VariableName} came from glue with a value of {typeName} but didn't have a type");
                     }
 
-                    value = ConvertVariable(value, typeName);
+                    value = ConvertVariable(value, ref typeName, setVariableDto.VariableName, nos);
 
                     nos.SetVariable(setVariableDto.VariableName, value);
 

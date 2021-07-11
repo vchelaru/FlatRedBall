@@ -36,7 +36,7 @@ namespace OfficialPlugins.Compiler.Managers
             var instruction = nos?.GetCustomVariable(changedMember);
             if(instruction != null)
             {
-                typeName = instruction?.Type ?? instruction.Value?.GetType().FullName ?? oldValue?.GetType().FullName;
+                typeName = instruction?.Type ?? instruction.Value?.GetType().ToString() ?? oldValue?.GetType().ToString();
                 currentValue = instruction?.Value;
             }
             // could be a property
@@ -45,7 +45,7 @@ namespace OfficialPlugins.Compiler.Managers
                 var property = nos.Properties.FirstOrDefault(item => item.Name == changedMember);
                 if(property != null)
                 {
-                    typeName = property.Value?.GetType().FullName ?? oldValue?.GetType().FullName;
+                    typeName = property.Value?.GetType().ToString() ?? oldValue?.GetType().ToString();
                     currentValue = property.Value;
                 }
             }

@@ -653,105 +653,114 @@ namespace {ProjectNamespace}.GlueControl.Editing
         {
             object convertedValue = variableValue;
 
-            switch (type)
+            if(type == typeof(List<Microsoft.Xna.Framework.Vector2>).ToString())
             {
-                case "System.Collections.Generic.List`1[[Microsoft.Xna.Framework.Vector2, MonoGame.Framework, Version=3.8.0.13, Culture=neutral, PublicKeyToken=null]]":
-                    convertedValue = JsonConvert.DeserializeObject<List<Microsoft.Xna.Framework.Vector2>>(variableValue);
-                    break;
-                case "float":
-                case nameof(Single):
-                case "System.Single":
+                convertedValue = JsonConvert.DeserializeObject<List<Microsoft.Xna.Framework.Vector2>>(variableValue);
+            }
+            else if (type == typeof(List<Point>).ToString())
+            {
+                convertedValue = JsonConvert.DeserializeObject<List<Point>>(variableValue);
+            }
+            else
+            {
+                switch (type)
+                {
+                    case "float":
+                    case nameof(Single):
+                    case "System.Single":
 
-                    if (!string.IsNullOrWhiteSpace(variableValue))
-                    {
-                        convertedValue = float.Parse(variableValue);
-                    }
-                    else
-                    {
-                        convertedValue = 0f;
-                    }
-                    break;
-                case "int":
-                case nameof(Int32):
-                case "System.Int32":
+                        if (!string.IsNullOrWhiteSpace(variableValue))
+                        {
+                            convertedValue = float.Parse(variableValue);
+                        }
+                        else
+                        {
+                            convertedValue = 0f;
+                        }
+                        break;
+                    case "int":
+                    case nameof(Int32):
+                    case "System.Int32":
 
-                    if (!string.IsNullOrWhiteSpace(variableValue))
-                    {
-                        convertedValue = int.Parse(variableValue);
-                    }
-                    else
-                    {
-                        convertedValue = 0;
-                    }
-                    break;
-                case "bool":
-                case nameof(Boolean):
-                case "System.Boolean":
+                        if (!string.IsNullOrWhiteSpace(variableValue))
+                        {
+                            convertedValue = int.Parse(variableValue);
+                        }
+                        else
+                        {
+                            convertedValue = 0;
+                        }
+                        break;
+                    case "bool":
+                    case nameof(Boolean):
+                    case "System.Boolean":
 
-                    if (!string.IsNullOrWhiteSpace(variableValue))
-                    {
-                        convertedValue = bool.Parse(variableValue.ToLowerInvariant());
-                    }
-                    else
-                    {
-                        convertedValue = false;
-                    }
-                    break;
-                case "double":
-                case nameof(Double):
-                case "System.Double":
+                        if (!string.IsNullOrWhiteSpace(variableValue))
+                        {
+                            convertedValue = bool.Parse(variableValue.ToLowerInvariant());
+                        }
+                        else
+                        {
+                            convertedValue = false;
+                        }
+                        break;
+                    case "double":
+                    case nameof(Double):
+                    case "System.Double":
 
-                    if (!string.IsNullOrWhiteSpace(variableValue))
-                    {
-                        convertedValue = double.Parse(variableValue);
-                    }
-                    else
-                    {
-                        convertedValue = 0.0;
-                    }
-                    break;
-                case "Microsoft.Xna.Framework.Color":
-                case nameof(Microsoft.Xna.Framework.Color):
-                    if (!string.IsNullOrWhiteSpace(variableValue))
-                    {
-                        convertedValue = typeof(Microsoft.Xna.Framework.Color).GetProperty(variableValue).GetValue(null);
-                    }
-                    else
-                    {
-                        // do we default to white? that's default for shapes
-                        convertedValue = Microsoft.Xna.Framework.Color.White;
-                    }
-                    break;
-                case "Texture2D":
-                case "Microsoft.Xna.Framework.Graphics.Texture2D":
-                    if(!string.IsNullOrWhiteSpace(variableValue))
-                    {
-                        convertedValue = FlatRedBallServices.Load<Microsoft.Xna.Framework.Graphics.Texture2D>(
-                            variableValue, FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName);
-                    }
-                    else
-                    {
-                        convertedValue = (Microsoft.Xna.Framework.Graphics.Texture2D)null;
-                    }
-                    break;
-                case "FlatRedBall.Graphics.Animation.AnimationChainList":
-                case "AnimationChainList":
-                    if(!string.IsNullOrWhiteSpace(variableValue))
-                    {
-                        convertedValue = FlatRedBallServices.Load<FlatRedBall.Graphics.Animation.AnimationChainList>(
-                            variableValue, FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName);
-                    }
-                    else
-                    {
-                        convertedValue = (FlatRedBall.Graphics.Animation.AnimationChainList)null;
-                    }
-                    break;
-                case nameof(Microsoft.Xna.Framework.Graphics.TextureAddressMode):
-                    if(int.TryParse(variableValue, out int parsedInt))
-                    {
-                        convertedValue = (Microsoft.Xna.Framework.Graphics.TextureAddressMode)parsedInt;
-                    }
-                    break;
+                        if (!string.IsNullOrWhiteSpace(variableValue))
+                        {
+                            convertedValue = double.Parse(variableValue);
+                        }
+                        else
+                        {
+                            convertedValue = 0.0;
+                        }
+                        break;
+                    case "Microsoft.Xna.Framework.Color":
+                    case nameof(Microsoft.Xna.Framework.Color):
+                        if (!string.IsNullOrWhiteSpace(variableValue))
+                        {
+                            convertedValue = typeof(Microsoft.Xna.Framework.Color).GetProperty(variableValue).GetValue(null);
+                        }
+                        else
+                        {
+                            // do we default to white? that's default for shapes
+                            convertedValue = Microsoft.Xna.Framework.Color.White;
+                        }
+                        break;
+                    case "Texture2D":
+                    case "Microsoft.Xna.Framework.Graphics.Texture2D":
+                        if(!string.IsNullOrWhiteSpace(variableValue))
+                        {
+                            convertedValue = FlatRedBallServices.Load<Microsoft.Xna.Framework.Graphics.Texture2D>(
+                                variableValue, FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName);
+                        }
+                        else
+                        {
+                            convertedValue = (Microsoft.Xna.Framework.Graphics.Texture2D)null;
+                        }
+                        break;
+                    case "FlatRedBall.Graphics.Animation.AnimationChainList":
+                    case "AnimationChainList":
+                        if(!string.IsNullOrWhiteSpace(variableValue))
+                        {
+                            convertedValue = FlatRedBallServices.Load<FlatRedBall.Graphics.Animation.AnimationChainList>(
+                                variableValue, FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName);
+                        }
+                        else
+                        {
+                            convertedValue = (FlatRedBall.Graphics.Animation.AnimationChainList)null;
+                        }
+                        break;
+                    case nameof(Microsoft.Xna.Framework.Graphics.TextureAddressMode):
+                        if(int.TryParse(variableValue, out int parsedInt))
+                        {
+                            convertedValue = (Microsoft.Xna.Framework.Graphics.TextureAddressMode)parsedInt;
+                        }
+                        break;
+
+                }
 
             }
 

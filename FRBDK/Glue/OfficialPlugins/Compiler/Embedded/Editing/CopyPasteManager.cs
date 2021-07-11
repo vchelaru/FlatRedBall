@@ -50,7 +50,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 }
                 else if (copiedObject is Polygon originalPolygon)
                 {
-                    //InstanceLogic.Self.HandleCreatePolygonByGame(originalPolygon);
+                    InstanceLogic.Self.HandleCreatePolygonByGame(originalPolygon);
                 }
                 else if (copiedObject is Sprite originalSprite)
                 {
