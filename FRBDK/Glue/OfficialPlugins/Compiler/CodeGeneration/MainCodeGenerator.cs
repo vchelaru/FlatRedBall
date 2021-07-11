@@ -17,6 +17,8 @@ namespace OfficialPlugins.Compiler.CodeGeneration
         {
             GlueControlCodeGenerator.GenerateFull = fullyGenerate;
 
+            SaveEmbeddedFile("Editing.Markers.SelectionMarker.cs",
+                "Editing/Markers/SelectionMarker.Generated.cs");
 
             SaveEmbeddedFile("GlueControlManager.cs", 
                 "GlueControlManager.Generated.cs");
@@ -33,8 +35,6 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile("Editing.SelectionLogic.cs",
                 "Editing/SelectionLogic.Generated.cs");
 
-            SaveEmbeddedFile("Editing.Markers.SelectionMarker.cs",
-                "Editing/Markers/SelectionMarker.Generated.cs");
 
             SaveEmbeddedFile("Editing.VariableAssignmentLogic.cs",
                 "Editing/VariableAssignmentLogic.Generated.cs");
@@ -50,6 +50,12 @@ namespace OfficialPlugins.Compiler.CodeGeneration
 
             SaveEmbeddedFile("Models.NamedObjectSave.cs",
                 "Models/NamedObjectSave.Generated.cs");
+
+            SaveEmbeddedFile("Runtime.DynamicEntity.cs",
+                "Runtime/DynamicEntitys.Generated.cs");
+
+            SaveEmbeddedFile("Models.GlueElement.cs",
+                "Models/GlueElement.Generated.cs");
 
             SaveEmbeddedFile("Editing.Guides.cs",
                 "Editing/Guides.Generated.cs");

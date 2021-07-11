@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,12 +19,14 @@ namespace FlatRedBall.Glue.Plugins.CodeGenerators
             {
                 var contents = GenerateFileContents();
 
-                GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(RelativeFile);
-
-                var fullPath = GlueState.Self.CurrentGlueProjectDirectory + RelativeFile;
+                FilePath fullPath = GlueState.Self.CurrentGlueProjectDirectory + RelativeFile;
 
                 GlueCommands.Self.TryMultipleTimes(() =>
-                    System.IO.File.WriteAllText(fullPath, contents));
+                {
+                    GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(fullPath);
+                    System.IO.File.WriteAllText(fullPath.FullPath, contents);
+
+                });
 
             }, $"Adding {RelativeFile}");
         }

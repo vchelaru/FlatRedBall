@@ -164,12 +164,12 @@ namespace TileGraphicsPlugin.CodeGeneration
                 
 
 
+                var ifBlock = codeBlock.If($"{namedObjectSave.InstanceName} != null");
                 if (!isVisible)
                 {
-                    codeBlock.Line("// normally we wait to set variables until after the object is created, but in this case if the");
-                    codeBlock.Line("// TileShapeCollection doesn't have its Visible set before creating the tiles, it can result in");
-                    codeBlock.Line("// really bad performance issues, as shapes will be made visible, then invisible. Really bad perf!");
-                    var ifBlock = codeBlock.If($"{namedObjectSave.InstanceName} != null");
+                    ifBlock.Line("// normally we wait to set variables until after the object is created, but in this case if the");
+                    ifBlock.Line("// TileShapeCollection doesn't have its Visible set before creating the tiles, it can result in");
+                    ifBlock.Line("// really bad performance issues, as shapes will be made visible, then invisible. Really bad perf!");
                     {
                         ifBlock.Line($"{namedObjectSave.InstanceName}.Visible = false;");
                     }
@@ -177,11 +177,12 @@ namespace TileGraphicsPlugin.CodeGeneration
                 }
                 bool adjustRepositionDirectionsOnAddAndRemove =
                     (namedObjectSave.GetCustomVariable("AdjustRepositionDirectionsOnAddAndRemove")?.Value as bool?) ?? true;
+
+
                 if(!adjustRepositionDirectionsOnAddAndRemove)
                 {
-                    codeBlock.Line("// normally we wait to set variables until after the object is created, in this case");
-                    codeBlock.Line("// we want the variable set before the object is instantiated");
-                    var ifBlock = codeBlock.If($"{namedObjectSave.InstanceName} != null");
+                    ifBlock.Line("// normally we wait to set variables until after the object is created, in this case");
+                    ifBlock.Line("// we want the variable set before the object is instantiated");
                     {
                         ifBlock.Line($"{namedObjectSave.InstanceName}.AdjustRepositionDirectionsOnAddAndRemove = false;");
                     }
@@ -193,20 +194,20 @@ namespace TileGraphicsPlugin.CodeGeneration
                         // do nothing
                         break;
                     case CollisionCreationOptions.FillCompletely:
-                        GenerateFillCompletely(namedObjectSave, codeBlock);
+                        GenerateFillCompletely(namedObjectSave, ifBlock);
                         break;
                     case CollisionCreationOptions.BorderOutline:
-                        GenerateBorderOutline(namedObjectSave, codeBlock);
+                        GenerateBorderOutline(namedObjectSave, ifBlock);
                         break;
                     case CollisionCreationOptions.FromProperties:
-                        GenerateFromProperties(namedObjectSave, codeBlock);
+                        GenerateFromProperties(namedObjectSave, ifBlock);
                         break;
                     case CollisionCreationOptions.FromType:
-                        GenerateFromTileType(namedObjectSave, codeBlock);
+                        GenerateFromTileType(namedObjectSave, ifBlock);
                         break;
                     case CollisionCreationOptions.FromLayer:
                         // not handled:
-                        GenerateFromLayerCollision(namedObjectSave, codeBlock);
+                        GenerateFromLayerCollision(namedObjectSave, ifBlock);
                         break;
                 }
             }

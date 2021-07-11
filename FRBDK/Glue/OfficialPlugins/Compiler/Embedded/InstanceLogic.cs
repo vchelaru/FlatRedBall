@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FlatRedBall.Screens;
+using FlatRedBall.Graphics;
 
 using {ProjectNamespace}.GlueControl.Models;
 
@@ -35,6 +36,8 @@ namespace {ProjectNamespace}.GlueControl
         public ShapeCollection ShapesAddedAtRuntime = new ShapeCollection();
 
         public FlatRedBall.Math.PositionedObjectList<Sprite> SpritesAddedAtRuntime = new FlatRedBall.Math.PositionedObjectList<Sprite>();
+
+        public List<IDestroyable> DestroyablesAddedAtRuntime = new List<IDestroyable>();
 
         /// <summary>
         /// A dictionary of custom elements where the key is the full name of the type that
@@ -255,6 +258,9 @@ namespace {ProjectNamespace}.GlueControl
                 var dynamicEntityInstance = new Runtime.DynamicEntity();
                 dynamicEntityInstance.EditModeType = entityNameGame;
                 SpriteManager.AddPositionedObject(dynamicEntityInstance);
+
+                DestroyablesAddedAtRuntime.Add(dynamicEntityInstance);
+
                 return dynamicEntityInstance;
             }
             else
@@ -272,6 +278,7 @@ namespace {ProjectNamespace}.GlueControl
                          as PositionedObject;
                     //newPositionedObject = ownerType.GetConstructor(new System.Type[0]).Invoke(new object[0]);
                 }
+                DestroyablesAddedAtRuntime.Add(newPositionedObject as IDestroyable);
                 return newPositionedObject;
             }
         }
@@ -310,8 +317,8 @@ namespace {ProjectNamespace}.GlueControl
             }
 
             GlueControlManager.Self.SendToGlue(addObjectDto);
-
-            CommandReceiver.EnqueueToOwner(addObjectDto, addObjectDto.ElementNameGame);
+        
+            CommandReceiver.GlobalGlueToGameCommands.Add(addObjectDto);
         }
 
         #region Create Instance from Game
@@ -646,10 +653,19 @@ namespace {ProjectNamespace}.GlueControl
                 ShapeManager.Remove(ShapesAddedAtRuntime.Polygons[i]);
             }
 
-            for(int i = SpritesAddedAtRuntime.Count - 1; i > -1; i--)
+
+            for (int i = SpritesAddedAtRuntime.Count - 1; i > -1; i--)
             {
                 SpriteManager.RemoveSprite(SpritesAddedAtRuntime[i]);
             }
+
+            for (int i = DestroyablesAddedAtRuntime.Count - 1; i > -1; i--)
+            {
+                DestroyablesAddedAtRuntime[i].Destroy();
+            }
+            ShapesAddedAtRuntime.Clear();
+            SpritesAddedAtRuntime.Clear();
+            DestroyablesAddedAtRuntime.Clear();
         }
     }
 }

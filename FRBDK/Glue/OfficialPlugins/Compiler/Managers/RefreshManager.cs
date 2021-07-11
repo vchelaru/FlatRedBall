@@ -202,13 +202,13 @@ namespace OfficialPlugins.Compiler.Managers
                     FilePath = GlueCommands.Self.FileCommands.GetCustomCodeFilePath(newEntity)};
                 FilePathsToIgnore.Add(expiringFilePath);
 
-                // ignore the generation of the custom file so it doesn't restart the game
-                var customFileToIgnore = GlueCommands.Self.FileCommands.GetCustomCodeFilePath(newEntity);
-
                 var dto = new CreateNewEntityDto();
                 dto.EntitySave = newEntity;
 
-                var response = await CommandSender.Send(dto, ViewModel.PortNumber);
+                await CommandSender.Send(dto, ViewModel.PortNumber);
+
+                // selection happens before the entity is created, so let's force push the selection to the game
+                await PushGlueSelectionToGame();
             }
         }
 

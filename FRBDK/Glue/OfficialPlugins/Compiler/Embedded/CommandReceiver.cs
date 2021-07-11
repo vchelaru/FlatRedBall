@@ -205,23 +205,19 @@ namespace EditModeProject.GlueControl
         {
             GlueVariableSetDataResponse response = null;
 
-            var shouldEnqueue = true;
             if (dto.AssignOrRecordOnly == AssignOrRecordOnly.Assign)
             {
                 response = GlueControl.Editing.VariableAssignmentLogic.SetVariable(dto);
-                shouldEnqueue = response.WasVariableAssigned;
             }
             else
             {
                 // If it's a record-only, then we'll always want to enqueue it
                 // need to change the record only back to assign so future re-runs will assign
                 dto.AssignOrRecordOnly = AssignOrRecordOnly.Assign;
-                shouldEnqueue = true;
             }
-            if (shouldEnqueue)
-            {
-                GlobalGlueToGameCommands.Add(dto);
-            }
+
+            GlobalGlueToGameCommands.Add(dto);
+
             return response;
         }
 
