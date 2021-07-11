@@ -7,7 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using {ProjectNamespace}.GlueControl.Models;
+using FlatRedBall.Screens;
+
+using { ProjectNamespace}.GlueControl.Models;
 
 
 namespace {ProjectNamespace}.GlueControl
@@ -119,7 +121,7 @@ namespace {ProjectNamespace}.GlueControl
                 for(int i = 0; i < currentAddObjectIndex; i++)
                 {
                     var dto = CommandReceiver.GlobalGlueToGameCommands[i];
-                    if(dto is AddObjectDto addObjectDtoRerun)
+                    if(dto is Dtos.AddObjectDto addObjectDtoRerun)
                     {
                         HandleCreateInstanceCommandFromGlue(addObjectDtoRerun, currentAddObjectIndex, newPositionedObject);
                     }
