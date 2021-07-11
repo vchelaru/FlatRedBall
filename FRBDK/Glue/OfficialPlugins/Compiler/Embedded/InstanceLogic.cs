@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FlatRedBall.Screens;
 
-using { ProjectNamespace}.GlueControl.Models;
+using {ProjectNamespace}.GlueControl.Models;
 
 
 namespace {ProjectNamespace}.GlueControl

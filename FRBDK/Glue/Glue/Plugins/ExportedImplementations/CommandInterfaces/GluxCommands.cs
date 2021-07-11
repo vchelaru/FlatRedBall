@@ -1116,10 +1116,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                             GlueState.Self.CurrentNamedObjectSave = element.NamedObjects.LastOrDefault();
                         });
                     }
-                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
 
-                    GlueCommands.Self.DialogCommands.FocusOnTreeView();
+                    GlueCommands.Self.DoOnUiThread(() =>
+                    {
+                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
 
+                        GlueCommands.Self.DialogCommands.FocusOnTreeView();
+
+                    });
                 }
                 CodeWriter.GenerateCode(element);
                 if (element is EntitySave)

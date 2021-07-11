@@ -32,7 +32,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 
                 var elementGameType = data.InstanceOwnerGameType;
                 var ownerType = typeof(VariableAssignmentLogic).Assembly.GetType(data.InstanceOwnerGameType);
-                GlueElement ownerElement = null;
+                Models.GlueElement ownerElement = null;
                 if (InstanceLogic.Self.CustomGlueElements.ContainsKey(elementGameType))
                 {
                     ownerElement = InstanceLogic.Self.CustomGlueElements[elementGameType];
@@ -42,7 +42,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 var setOnEntity =
                     (ownerType != null && typeof(PositionedObject).IsAssignableFrom(ownerType))
                     ||
-                    ownerElement is EntitySave;
+                    ownerElement is Models.EntitySave;
 
                 if(setOnEntity)
                 {

@@ -31,38 +31,59 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 }
                 if (keyboard.KeyPushed(Keys.V) && CopiedPositionedObjects != null)
                 {
-                    foreach(var copiedObject in CopiedPositionedObjects)
+                    HandlePaste();
+                }
+            }
+        }
+
+        private void HandlePaste()
+        {
+            foreach (var copiedObject in CopiedPositionedObjects)
+            {
+                if (copiedObject is Circle originalCircle)
+                {
+                    InstanceLogic.Self.HandleCreateCircleByGame(originalCircle);
+                }
+                else if (copiedObject is AxisAlignedRectangle originalRectangle)
+                {
+                    InstanceLogic.Self.HandleCreateAxisAlignedRectangleByGame(originalRectangle);
+                }
+                else if (copiedObject is Polygon originalPolygon)
+                {
+                    //InstanceLogic.Self.HandleCreatePolygonByGame(originalPolygon);
+                }
+                else if (copiedObject is Sprite originalSprite)
+                {
+                    InstanceLogic.Self.HandleCreateSpriteByName(originalSprite);
+                }
+                else // positioned object, so entity?
+                {
+                    // for now assume names are unique, not qualified
+                    var instance = InstanceLogic.Self.CreateInstanceByGame(
+                        copiedObject.GetType().Name,
+                        copiedObject.X,
+                        copiedObject.Y);
+                    instance.CreationSource = "Glue";
+                    instance.Velocity = Vector3.Zero;
+                    instance.Acceleration = Vector3.Zero;
+
+                    // apply any changes that have been made to the entity:
+                    int currentAddObjectIndex = CommandReceiver.GlobalGlueToGameCommands.Count;
+
+                    for (int i = 0; i < currentAddObjectIndex; i++)
                     {
-                        if (copiedObject is Circle originalCircle)
+                        var dto = CommandReceiver.GlobalGlueToGameCommands[i];
+                        if (dto is Dtos.AddObjectDto addObjectDtoRerun)
                         {
-                            InstanceLogic.Self.HandleCreateCircleByGame(originalCircle);
+                            InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(addObjectDtoRerun, currentAddObjectIndex, instance);
                         }
-                        else if (copiedObject is AxisAlignedRectangle originalRectangle)
+                        else if (dto is Dtos.GlueVariableSetData glueVariableSetDataRerun)
                         {
-                            InstanceLogic.Self.HandleCreateAxisAlignedRectangleByGame(originalRectangle);
+                            GlueControl.Editing.VariableAssignmentLogic.SetVariable(glueVariableSetDataRerun, instance);
                         }
-                        else if (copiedObject is Polygon originalPolygon)
-                        {
-
-                        }
-                        else if (copiedObject is Sprite originalSprite)
-                        {
-                            InstanceLogic.Self.HandleCreateSpriteByName(originalSprite);
-                        }
-                        else // positioned object, so entity?
-                        {
-                            // for now assume names are unique, not qualified
-                            var instance = InstanceLogic.Self.CreateInstanceByGame(
-                                copiedObject.GetType().Name,
-                                copiedObject.X,
-                                copiedObject.Y);
-                            instance.CreationSource = "Glue";
-                            instance.Velocity = Vector3.Zero;
-                            instance.Acceleration = Vector3.Zero;
-                        }
-
                     }
                 }
+
             }
         }
     }

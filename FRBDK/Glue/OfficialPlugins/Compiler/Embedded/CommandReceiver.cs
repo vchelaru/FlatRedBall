@@ -220,7 +220,7 @@ namespace EditModeProject.GlueControl
             }
             if (shouldEnqueue)
             {
-                EnqueueToOwner(dto, dto.InstanceOwnerGameType);
+                GlobalGlueToGameCommands.Add(dto);
             }
             return response;
         }
