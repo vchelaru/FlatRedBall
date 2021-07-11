@@ -125,16 +125,11 @@ namespace {ProjectNamespace}.GlueControl
                     {
                         HandleCreateInstanceCommandFromGlue(addObjectDtoRerun, currentAddObjectIndex, newPositionedObject);
                     }
+                    else if(dto is Dtos.GlueVariableSetData glueVariableSetDataRerun)
+                    {
+                        GlueControl.Editing.VariableAssignmentLogic.SetVariable(glueVariableSetDataRerun, newPositionedObject);
+                    }
                 }
-                //asdfasdf need to rerun all stuff for this object.ReferenceEquals..
-                //GlueControlManager.Self.ReRunAllGlueToGameCommands((dto) =>
-                //{
-                //    if(dto is Dtos.AddObjectDto addObjectDto)
-                //    {
-                //        return addObjectDto.ElementNameGame == sourceClassTypeGame;
-                //    }
-                //    return false;
-                //});
             }
             else if(deserialized.SourceType == GlueControl.Models.SourceType.FlatRedBallType &&
                 deserialized.IsCollisionRelationship())

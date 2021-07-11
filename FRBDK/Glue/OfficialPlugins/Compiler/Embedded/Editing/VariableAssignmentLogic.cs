@@ -18,7 +18,7 @@ namespace {ProjectNamespace}.GlueControl.Editing
 {
     public static class VariableAssignmentLogic
     {
-        public static GlueVariableSetDataResponse SetVariable(GlueVariableSetData data)
+        public static GlueVariableSetDataResponse SetVariable(GlueVariableSetData data, PositionedObject forcedItem = null)
         {
             object variableValue = ConvertVariableValue(data);
 
@@ -30,123 +30,49 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 var screen =
                     FlatRedBall.Screens.ScreenManager.CurrentScreen;
 
+                var elementGameType = data.InstanceOwnerGameType;
                 var ownerType = typeof(VariableAssignmentLogic).Assembly.GetType(data.InstanceOwnerGameType);
-                var isInstanceOwnerEntity = typeof(PositionedObject).IsAssignableFrom(ownerType) ||
-                    InstanceLogic.Self.CustomGlueElements.ContainsKey(data.InstanceOwnerGameType);
-                if (isInstanceOwnerEntity)
+                GlueElement ownerElement = null;
+                if (InstanceLogic.Self.CustomGlueElements.ContainsKey(elementGameType))
                 {
-                    // Loop through all objects in the SpriteManager. If we are viewing a single 
-                    // entity in the entity screen, then this will only loop 1 time and will set 1 value.
-                    // If we are in a screen where multiple instances of the entity are around, then we set the 
-                    // value on all instances
-                    foreach (var item in SpriteManager.ManagedPositionedObjects)
+                    ownerElement = InstanceLogic.Self.CustomGlueElements[elementGameType];
+                }
+
+
+                var setOnEntity =
+                    (ownerType != null && typeof(PositionedObject).IsAssignableFrom(ownerType))
+                    ||
+                    ownerElement is EntitySave;
+
+                if(setOnEntity)
+                {
+                    var variableNameOnObjectInInstance = data.VariableName.Substring("this.".Length);
+                    if(forcedItem != null)
                     {
-                        if(CommandReceiver.DoTypesMatch(item, data.InstanceOwnerGameType, ownerType))
+                        if (CommandReceiver.DoTypesMatch(forcedItem, data.InstanceOwnerGameType, ownerType))
                         {
-                            var variableName = data.VariableName.Substring("this.".Length);
-                            screen.ApplyVariable(variableName, variableValue, item);
+                            screen.ApplyVariable(variableNameOnObjectInInstance, variableValue, forcedItem);
                         }
                     }
-
-                    // We really don't know if it was assigned yet since the Screen isn't returning true or false, but
-                    // we don't want it to always be false because not returning true prevents all assignment from being 
-                    // responded to by glue
-                    response.WasVariableAssigned = true;
-                    // eventually ApplyVariable should return true/false
+                    else
+                    {
+                        // Loop through all objects in the SpriteManager. If we are viewing a single 
+                        // entity in the entity screen, then this will only loop 1 time and will set 1 value.
+                        // If we are in a screen where multiple instances of the entity are around, then we set the 
+                        // value on all instances
+                        foreach (var item in SpriteManager.ManagedPositionedObjects)
+                        {
+                            if(CommandReceiver.DoTypesMatch(item, data.InstanceOwnerGameType, ownerType))
+                            {
+                                screen.ApplyVariable(variableNameOnObjectInInstance, variableValue, item);
+                            }
+                        }
+                        response.WasVariableAssigned = true;
+                    }
                 }
                 else
                 {
-                    response.WasVariableAssigned = false;
-                    var splitVariable = data.VariableName.Split('.');
-                    if (splitVariable[0] == "this" && splitVariable.Length > 1)
-                    {
-
-                        var aarect = ShapeManager.VisibleRectangles.FirstOrDefault(item =>
-                            item.Parent == null &&
-                            item.Name == splitVariable[1]);
-                        if (aarect != null)
-                        {
-                            response.WasVariableAssigned = screen.ApplyVariable(splitVariable[2], variableValue, aarect);
-                        }
-
-                        if (!response.WasVariableAssigned)
-                        {
-                            var circle = ShapeManager.VisibleCircles.FirstOrDefault(item =>
-                                item.Parent == null &&
-                                item.Name == splitVariable[1]);
-                            if (circle != null)
-                            {
-                                response.WasVariableAssigned = screen.ApplyVariable(splitVariable[2], variableValue, circle);
-                            }
-                        }
-
-                        if (!response.WasVariableAssigned)
-                        {
-                            var polygon = ShapeManager.VisiblePolygons.FirstOrDefault(item =>
-                                item.Parent == null &&
-                                item.Name == splitVariable[1]);
-
-                            if (polygon != null)
-                            {
-                                if(splitVariable[2] == "Points" && variableValue is List<Microsoft.Xna.Framework.Vector2> vectorList)
-                                {
-                                    variableValue = vectorList.Select(item => new FlatRedBall.Math.Geometry.Point(item.X, item.Y)).ToList();
-                                }
-                                response.WasVariableAssigned = screen.ApplyVariable(splitVariable[2], variableValue, polygon);
-                            }
-                        }
-
-                        if(!response.WasVariableAssigned)
-                        {
-                            var sprite = SpriteManager.AutomaticallyUpdatedSprites.FirstOrDefault(item =>
-                                item.Parent == null &&
-                                item.Name == splitVariable[1]);
-
-                            if(sprite != null)
-                            {
-                                response.WasVariableAssigned = screen.ApplyVariable(splitVariable[2], variableValue, sprite);
-                            }
-                        }
-
-                        // Try "Entire CollisionRelationship" first, and if not, do the normal assignment
-                        if(!response.WasVariableAssigned)
-                        {
-                            if(splitVariable[2] == "Entire CollisionRelationship")
-                            {
-                                response.WasVariableAssigned = TryAssignCollisionRelationship(splitVariable[1],
-                                    JsonConvert.DeserializeObject< Models.NamedObjectSave>(data.VariableValue));
-                            }
-                        }
-                        if(!response.WasVariableAssigned)
-                        {
-                            if(splitVariable[2] == "Entire TileShapeCollection")
-                            {
-                                response.WasVariableAssigned = TryAssignTileShapeCollection(splitVariable[1],
-                                    JsonConvert.DeserializeObject< Models.NamedObjectSave>(data.VariableValue));
-                            }
-                        }
-                        if(!response.WasVariableAssigned)
-                        {
-                            var collisionRelationship = CollisionManager.Self.Relationships.FirstOrDefault(item =>
-                                item.Name == splitVariable[1]);
-
-                            if(collisionRelationship != null)
-                            {
-                                response.WasVariableAssigned = screen.ApplyVariable(splitVariable[2], variableValue, collisionRelationship);
-                            }
-                        }
-                    }
-                    if (!response.WasVariableAssigned)
-                    {
-                        try
-                        {
-                            response.WasVariableAssigned = screen.ApplyVariable(data.VariableName, variableValue);
-                        }
-                        catch (Exception e)
-                        {
-                            response.Exception = e.ToString(); ;
-                        }
-                    }
+                    variableValue = SetValueOnObjectInScreen(data, variableValue, response, screen);
                 }
             }
             catch(Exception e)
@@ -155,6 +81,140 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 response.WasVariableAssigned = false;
             }
             return response;
+        }
+
+        private static object SetValueOnObjectInScreen(GlueVariableSetData data, object variableValue, GlueVariableSetDataResponse response, FlatRedBall.Screens.Screen screen)
+        {
+            response.WasVariableAssigned = false;
+            var splitVariable = data.VariableName.Split('.');
+
+            try
+            {
+                object targetInstance = GetTargetInstance(data, ref variableValue, screen);
+
+                if (targetInstance is CollisionRelationship && splitVariable[2] == "Entire CollisionRelationship")
+                {
+                    response.WasVariableAssigned = TryAssignCollisionRelationship(splitVariable[1],
+                        JsonConvert.DeserializeObject<Models.NamedObjectSave>(data.VariableValue));
+                }
+                if (targetInstance is FlatRedBall.TileCollisions.TileShapeCollection && splitVariable[2] == "Entire TileShapeCollection")
+                {
+                    response.WasVariableAssigned = TryAssignTileShapeCollection(splitVariable[1],
+                        JsonConvert.DeserializeObject<Models.NamedObjectSave>(data.VariableValue));
+                }
+                else if (targetInstance != null)
+                {
+                    response.WasVariableAssigned = screen.ApplyVariable(splitVariable[2], variableValue, targetInstance);
+                }
+            }
+            catch (Exception e)
+            {
+                response.WasVariableAssigned = false;
+                response.Exception = e.ToString();
+            }
+
+
+            return variableValue;
+        }
+
+        private static object GetTargetInstance(GlueVariableSetData data, ref object variableValue, FlatRedBall.Screens.Screen screen)
+        {
+            var splitVariable = data.VariableName.Split('.');
+
+            object targetInstance = null;
+
+
+            // this searches for a name. we need to force it on a type too so newly-added objects can have their variables set....
+
+            if (splitVariable[0] == "this" && splitVariable.Length > 1)
+            {
+
+                var aarect = ShapeManager.VisibleRectangles.FirstOrDefault(item =>
+                    item.Parent == null &&
+                    item.Name == splitVariable[1]);
+                if (aarect != null)
+                {
+                    targetInstance = aarect;
+                }
+
+                if (targetInstance == null)
+                {
+                    var circle = ShapeManager.VisibleCircles.FirstOrDefault(item =>
+                        item.Parent == null &&
+                        item.Name == splitVariable[1]);
+                    if (circle != null)
+                    {
+                        targetInstance = circle;
+                    }
+                }
+
+                if (targetInstance == null)
+                {
+                    var polygon = ShapeManager.VisiblePolygons.FirstOrDefault(item =>
+                        item.Parent == null &&
+                        item.Name == splitVariable[1]);
+
+                    if (polygon != null)
+                    {
+                        targetInstance = polygon;
+                        if (splitVariable[2] == "Points" && variableValue is List<Microsoft.Xna.Framework.Vector2> vectorList)
+                        {
+                            variableValue = vectorList.Select(item => new FlatRedBall.Math.Geometry.Point(item.X, item.Y)).ToList();
+                        }
+                    }
+                }
+
+                if (targetInstance == null)
+                {
+                    var sprite = SpriteManager.AutomaticallyUpdatedSprites.FirstOrDefault(item =>
+                        item.Parent == null &&
+                        item.Name == splitVariable[1]);
+
+                    if (sprite != null)
+                    {
+                        targetInstance = sprite;
+                    }
+                }
+
+                // Try "Entire CollisionRelationship" first, and if not, do the normal assignment
+                if (targetInstance == null)
+                {
+                    if (splitVariable[2] == "Entire CollisionRelationship")
+                    {
+                        targetInstance = CollisionManager.Self.Relationships.FirstOrDefault(item => item.Name == splitVariable[1]);
+                    }
+                }
+
+                // handled below
+                //if (targetInstance == null)
+                //{
+                //    if (splitVariable[2] == "Entire TileShapeCollection")
+                //    {
+                //        screen.GetInstance(splitVariable[1], screen, out _, out targetInstance);
+
+                //    }
+                //}
+
+
+                if (targetInstance == null)
+                {
+                    var collisionRelationship = CollisionManager.Self.Relationships.FirstOrDefault(item =>
+                        item.Name == splitVariable[1]);
+
+                    if (collisionRelationship != null)
+                    {
+                        targetInstance = collisionRelationship;
+                    }
+                }
+
+                if (targetInstance == null)
+                {
+                    screen.GetInstance(splitVariable[1], screen, out _, out targetInstance);
+                }
+
+            }
+
+            return targetInstance;
         }
 
         private static bool TryAssignCollisionRelationship(string relationshipName, Models.NamedObjectSave namedObject)
