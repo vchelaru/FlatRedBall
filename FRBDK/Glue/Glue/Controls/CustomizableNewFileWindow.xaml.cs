@@ -185,13 +185,13 @@ namespace FlatRedBall.Glue.Controls
 
         public object GetOptionFor(AssetTypeInfo ati)
         {
-            if(GetCreationOption != null)
+            if (GetCreationOption != null)
             {
-                foreach(var deleg in GetCreationOption.GetInvocationList())
+                foreach (var deleg in GetCreationOption.GetInvocationList())
                 {
                     var result = deleg.DynamicInvoke();
 
-                    if(result != null)
+                    if (result != null)
                     {
                         return result;
                     }

@@ -60,7 +60,7 @@ namespace GlueFormsCore.ViewModels
                 if (Set(value) && value != null)
                 {
                     SelectedAssetTypeInfo = value;
-                    if(!AllOptions.Contains(value))
+                    if (!AllOptions.Contains(value))
                     {
                         // if we don't do this, future adds could un-set the selected/forced.
                         AllOptions.Add(value);
