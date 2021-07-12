@@ -290,7 +290,7 @@ namespace EditModeProject.GlueControl
                         void CreateEntityInstance(Screen screen)
                         {
                             //var instance = ownerType.GetConstructor(new System.Type[0]).Invoke(new object[0]) as IDestroyable;
-                            var instance = InstanceLogic.Self.CreateEntity(elementNameGlue) as IDestroyable;
+                            var instance = InstanceLogic.Self.CreateEntity(GlueToGameElementName(elementNameGlue)) as IDestroyable;
                             (screen as Screens.EntityViewingScreen).CurrentEntity = instance;
                             var instanceAsPositionedObject = (PositionedObject)instance;
                             instanceAsPositionedObject.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
@@ -328,6 +328,13 @@ namespace EditModeProject.GlueControl
         public static string GlueToGameElementName(string elementName)
         {
             return "EditModeProject." + elementName.Replace("\\", ".");
+        }
+
+        public static string GameElementTypeToGlueElement(string gameType)
+        {
+            var strings = gameType.Split('.');
+
+            return string.Join("\\", strings.Skip(1).ToArray());
         }
 
         #endregion

@@ -58,9 +58,14 @@ namespace {ProjectNamespace}.GlueControl.Editing
                 }
                 else // positioned object, so entity?
                 {
+                    var type = copiedObject.GetType().FullName;
+                    if(copiedObject is Runtime.DynamicEntity dynamicEntity)
+                    {
+                        type = dynamicEntity.EditModeType;
+                    }
                     // for now assume names are unique, not qualified
                     var instance = InstanceLogic.Self.CreateInstanceByGame(
-                        copiedObject.GetType().Name,
+                        type,
                         copiedObject.X,
                         copiedObject.Y);
                     instance.CreationSource = "Glue";

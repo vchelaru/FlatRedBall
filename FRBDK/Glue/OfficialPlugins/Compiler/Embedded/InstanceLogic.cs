@@ -246,17 +246,15 @@ namespace {ProjectNamespace}.GlueControl
         public PositionedObject CreateEntity(Models.NamedObjectSave deserialized)
         {
             var entityNameGlue = deserialized.SourceClassType;
-            return CreateEntity(entityNameGlue);
+            return CreateEntity(CommandReceiver.GlueToGameElementName(entityNameGlue));
         }
 
-        public PositionedObject CreateEntity(string entityNameGlue)
+        public PositionedObject CreateEntity(string entityNameGameType)
         {
-            var entityNameGame = CommandReceiver.GlueToGameElementName(entityNameGlue);
-
-            if (CustomGlueElements.ContainsKey(entityNameGame))
+            if (CustomGlueElements.ContainsKey(entityNameGameType))
             {
                 var dynamicEntityInstance = new Runtime.DynamicEntity();
-                dynamicEntityInstance.EditModeType = entityNameGame;
+                dynamicEntityInstance.EditModeType = entityNameGameType;
                 SpriteManager.AddPositionedObject(dynamicEntityInstance);
 
                 DestroyablesAddedAtRuntime.Add(dynamicEntityInstance);
@@ -266,7 +264,7 @@ namespace {ProjectNamespace}.GlueControl
             else
             {
                 PositionedObject newPositionedObject;
-                var factory = FlatRedBall.TileEntities.TileEntityInstantiator.GetFactory(entityNameGlue);
+                var factory = FlatRedBall.TileEntities.TileEntityInstantiator.GetFactory(entityNameGameType);
                 if(factory != null)
                 {
                     newPositionedObject = factory?.CreateNew() as FlatRedBall.PositionedObject;
@@ -274,7 +272,7 @@ namespace {ProjectNamespace}.GlueControl
                 else
                 {
                     // just instantiate it using reflection?
-                    newPositionedObject = this.GetType().Assembly.CreateInstance(entityNameGame)
+                    newPositionedObject = this.GetType().Assembly.CreateInstance(entityNameGameType)
                          as PositionedObject;
                     //newPositionedObject = ownerType.GetConstructor(new System.Type[0]).Invoke(new object[0]);
                 }
@@ -325,6 +323,11 @@ namespace {ProjectNamespace}.GlueControl
 
         private string GetNameFor(string itemType)
         {
+            if(itemType.Contains('.'))
+            {
+                var lastDot = itemType.LastIndexOf('.');
+                itemType = itemType.Substring(lastDot + 1);
+            }
             var newName = $"{itemType}Auto{TimeManager.CurrentTime.ToString().Replace(".", "_")}_{NewIndex}";
             NewIndex++;
 
@@ -351,14 +354,13 @@ namespace {ProjectNamespace}.GlueControl
             });
         }
 
-        public FlatRedBall.PositionedObject CreateInstanceByGame(string entityType, float x, float y)
+        public FlatRedBall.PositionedObject CreateInstanceByGame(string entityGameType, float x, float y)
         {
-            var newName = GetNameFor(entityType);
+            var newName = GetNameFor(entityGameType);
 
-            var factory = FlatRedBall.TileEntities.TileEntityInstantiator.GetFactory(entityType);
-
-            var cursor = GuiManager.Cursor;
-            var toReturn = factory.CreateNew(x, y) as FlatRedBall.PositionedObject;
+            var toReturn = CreateEntity(entityGameType);
+            toReturn.X = x;
+            toReturn.Y = y;
             toReturn.Name = newName;
 
             #region Create the AddObjectDto for the new object
@@ -367,7 +369,7 @@ namespace {ProjectNamespace}.GlueControl
             addObjectDto.InstanceName = newName;
             addObjectDto.SourceType = Models.SourceType.Entity;
             // todo - need to eventually include sub namespaces for entities in folders
-            addObjectDto.SourceClassType = $"Entities\\{entityType}";
+            addObjectDto.SourceClassType = CommandReceiver.GameElementTypeToGlueElement(entityGameType);
 
             AddFloatValue(addObjectDto, "X", x);
             AddFloatValue(addObjectDto, "Y", y);
