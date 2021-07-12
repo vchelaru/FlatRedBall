@@ -47,6 +47,9 @@ namespace FlatRedBall.Glue.Elements
         /// </summary>
         public List<string> ForcedOptions { get; set; } = new List<string>();
 
+        public double? MinValue { get; set; }
+        public double? MaxValue { get; set; }
+
         [XmlIgnore]
         [JsonIgnore]
         public Func<IElement, NamedObjectSave, ReferencedFileSave, List<string>> CustomGetForcedOptionFunc;

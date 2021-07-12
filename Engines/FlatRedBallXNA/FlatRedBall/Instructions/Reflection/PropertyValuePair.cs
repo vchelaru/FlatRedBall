@@ -431,6 +431,19 @@ namespace FlatRedBall.Instructions.Reflection
 
 #endregion
 
+                else if(desiredType == typeof(double?).FullName)
+                {
+                    if (string.IsNullOrWhiteSpace(value))
+                    {
+                        toReturn = (double?)null;
+                        handled = true;
+                    }
+                    else
+                    {
+                        handled = true;
+                        toReturn = double.Parse(value);
+                    }
+                }
 
                 #region Decimal
 

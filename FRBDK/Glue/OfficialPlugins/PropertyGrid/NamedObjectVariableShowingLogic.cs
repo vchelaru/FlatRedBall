@@ -475,6 +475,14 @@ namespace OfficialPlugins.VariableDisplay
                     instanceMember.PropertiesToSetOnDisplayer[nameof(AngleSelectorDisplay.TypeToPushToInstance)] =
                         AngleType.Radians;
                 }
+                else if(variableDefinition?.MinValue != null && variableDefinition?.MaxValue != null)
+                {
+                    instanceMember.PreferredDisplayer = typeof(SliderDisplay);
+                    instanceMember.PropertiesToSetOnDisplayer[nameof(SliderDisplay.MaxValue)] =
+                        variableDefinition.MaxValue.Value;
+                    instanceMember.PropertiesToSetOnDisplayer[nameof(SliderDisplay.MinValue)] =
+                        variableDefinition.MinValue.Value;
+                }
 
                 instanceMember.FirstGridLength = new System.Windows.GridLength(140);
 

@@ -223,6 +223,15 @@ namespace EditModeProject.GlueControl
 
         #endregion
 
+        #region Set Camera Position
+
+        private static void HandleDto(SetCameraPositionDto dto)
+        {
+            Camera.Main.Position = dto.Position;
+        }
+
+        #endregion
+
         #region Select Object
         private static void HandleDto(SelectObjectDto selectObjectDto)
         {
@@ -334,7 +343,7 @@ namespace EditModeProject.GlueControl
         {
             var strings = gameType.Split('.');
 
-            return string.Join("\\", strings.Skip(1).ToArray());
+            return string.Join(".", strings.Skip(1).ToArray());
         }
 
         #endregion
@@ -344,6 +353,21 @@ namespace EditModeProject.GlueControl
         private static void HandleScreenDestroy()
         {
             GlueControl.InstanceLogic.Self.DestroyDynamicallyAddedInstances();
+        }
+
+        #endregion
+
+        #region Add Entity
+
+        private static void HandleDto(CreateNewEntityDto createNewEntityDto)
+        {
+            var entitySave = createNewEntityDto.EntitySave;
+
+            // convert the entity save name (which is the glue name) to a type name:
+            string elementName = GlueToGameElementName(entitySave.Name);
+
+
+            InstanceLogic.Self.CustomGlueElements[elementName] = entitySave;
         }
 
         #endregion
@@ -399,11 +423,6 @@ namespace EditModeProject.GlueControl
         }
 
         #endregion
-
-        private static void HandleDto(SetCameraPositionDto dto)
-        {
-            Camera.Main.Position = dto.Position;
-        }
 
         private static MoveObjectToContainerDtoResponse HandleDto(MoveObjectToContainerDto dto)
         {
@@ -493,17 +512,6 @@ namespace EditModeProject.GlueControl
                 }
             }
             return response;
-        }
-
-        private static void HandleDto(CreateNewEntityDto createNewEntityDto)
-        {
-            var entitySave = createNewEntityDto.EntitySave;
-
-            // convert the entity save name (which is the glue name) to a type name:
-            string elementName = GlueToGameElementName(entitySave.Name);
-
-
-            InstanceLogic.Self.CustomGlueElements[elementName] = entitySave;
         }
 
         private static void HandleDto(RestartScreenDto dto)

@@ -754,14 +754,29 @@ namespace {ProjectNamespace}.GlueControl.Editing
                         }
                         break;
                     case nameof(Microsoft.Xna.Framework.Graphics.TextureAddressMode):
-                        if(int.TryParse(variableValue, out int parsedInt))
-                        {
-                            convertedValue = (Microsoft.Xna.Framework.Graphics.TextureAddressMode)parsedInt;
-                        }
+                    case "Microsoft.Xna.Framework.Graphics.TextureAddressMode":
+                        convertedValue = ToEnum<Microsoft.Xna.Framework.Graphics.TextureAddressMode>(variableValue);
+                        break;
+                    case nameof(FlatRedBall.Graphics.ColorOperation):
+                    case "FlatRedBall.Graphics.ColorOperation":
+                        convertedValue = ToEnum<FlatRedBall.Graphics.ColorOperation>(variableValue);
+
+                        break;
+                    case nameof(FlatRedBall.Graphics.BlendOperation):
+                    case "FlatRedBall.Graphics.BlendOperation":
+                        convertedValue = ToEnum<FlatRedBall.Graphics.BlendOperation>(variableValue);
+
                         break;
 
                 }
-
+                T ToEnum<T>(string asString)
+                {
+                    if (int.TryParse(variableValue, out int parsedInt))
+                    {
+                        return (T)(object)parsedInt;
+                    }
+                    return default(T);
+                }
             }
 
             return convertedValue;

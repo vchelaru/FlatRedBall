@@ -86,6 +86,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             TaskManager.Self.Add(() =>
             {
                 ScreenSave screen = GetCurrentInGameScreen(gamePortNumber);
+                GlueElement element = screen ?? GlueState.Self.CurrentElement;
 
                 var addObjectDto = JsonConvert.DeserializeObject<AddObjectDto>(dataAsString);
 
@@ -107,7 +108,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     }
                 }
 
-                string newName = GetNewName(screen, addObjectDto);
+                string newName = GetNewName(element, addObjectDto);
                 var oldName = addObjectDto.InstanceName;
 
                 #region Send the new name back to the game so the game uses the actual Glue name rather than the AutoName
@@ -210,7 +211,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             return value;
         }
 
-        private static string GetNewName(ScreenSave screen, AddObjectDto addObjectDto)
+        private static string GetNewName(GlueElement glueElement, AddObjectDto addObjectDto)
         {
             string newName = null;
             if (addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.Circle")
@@ -234,7 +235,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 var lastSlash = addObjectDto.SourceClassType.LastIndexOf("\\");
                 newName = addObjectDto.SourceClassType.Substring(lastSlash + 1) + "1";
             }
-            while (screen.GetNamedObjectRecursively(newName) != null)
+            while (glueElement.GetNamedObjectRecursively(newName) != null)
             {
                 newName = StringFunctions.IncrementNumberAtEnd(newName);
             }

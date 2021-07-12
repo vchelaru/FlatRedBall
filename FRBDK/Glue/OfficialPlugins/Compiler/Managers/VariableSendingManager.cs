@@ -33,22 +33,35 @@ namespace OfficialPlugins.Compiler.Managers
 
             string typeName = null;
             object currentValue = null;
+
+            var nosAti = nos.GetAssetTypeInfo();
+            var variableDefinition = nosAti?.VariableDefinitions.FirstOrDefault(item => item.Name == changedMember);
             var instruction = nos?.GetCustomVariable(changedMember);
-            if(instruction != null)
+            var property = nos.Properties.FirstOrDefault(item => item.Name == changedMember);
+
+            #region Identify the typeName
+            if (variableDefinition != null)
+            {
+                typeName = variableDefinition.Type;
+            }
+            else if(instruction != null)     
             {
                 typeName = instruction?.Type ?? instruction.Value?.GetType().ToString() ?? oldValue?.GetType().ToString();
-                currentValue = instruction?.Value;
             }
-            // could be a property
-            else
+            else if(property != null)
             {
-                var property = nos.Properties.FirstOrDefault(item => item.Name == changedMember);
-                if(property != null)
-                {
-                    typeName = property.Value?.GetType().ToString() ?? oldValue?.GetType().ToString();
-                    currentValue = property.Value;
-                }
+                typeName = property.Value?.GetType().ToString() ?? oldValue?.GetType().ToString();
             }
+
+            if(instruction != null)
+            {
+                currentValue = instruction.Value;
+            }
+            else if(property != null)
+            {
+                currentValue = property.Value;
+            }
+            #endregion
 
 
             var currentElement = GlueState.Self.CurrentElement;
