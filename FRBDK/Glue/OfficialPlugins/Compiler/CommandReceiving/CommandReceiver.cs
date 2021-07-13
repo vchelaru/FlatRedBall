@@ -140,7 +140,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 {
                     object value = variable.Value;
                     var typeName = variable.Type;
-                    value = ConvertVariable(value, ref typeName, variable.Member, nos);
+                    value = ConvertVariable(value, ref typeName, variable.Member, nos, element);
                     variable.Type = typeName;
                     variable.Value = value;
                 }
@@ -157,7 +157,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             }, "Adding NOS");
         }
 
-        private static object ConvertVariable(object value, ref string typeName, string variableName, NamedObjectSave owner)
+        private static object ConvertVariable(object value, ref string typeName, string variableName, NamedObjectSave owner,
+            // We have to pass this because the NOS may not have yet been added to an element if it is a new one, but we still
+            // need the element to assign file names
+            GlueElement nosContainer)
         {
             if(typeName == typeof(List<FlatRedBall.Math.Geometry.Point>).ToString())
             {
@@ -189,6 +192,17 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                         {
                             value =
                                 FileManager.RemovePath(FileManager.RemoveExtension(asString));
+
+                            ReferencedFileSave rfs = null;
+                            if (nosContainer != null)
+                            {
+                                rfs = nosContainer.GetReferencedFileSaveByInstanceNameRecursively(value as string, caseSensitive:false);
+                            }
+
+                            if(rfs != null)
+                            {
+                                value = rfs.GetInstanceName();
+                            }
                         }
                         break;
                     case nameof(TextureAddressMode):
@@ -284,7 +298,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                         throw new InvalidOperationException($"Variable {setVariableDto.VariableName} came from glue with a value of {typeName} but didn't have a type");
                     }
 
-                    value = ConvertVariable(value, ref typeName, setVariableDto.VariableName, nos);
+                    value = ConvertVariable(value, ref typeName, setVariableDto.VariableName, nos, element);
 
                     nos.SetVariable(setVariableDto.VariableName, value);
 

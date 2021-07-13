@@ -54,13 +54,16 @@ namespace FlatRedBall.Glue.SaveClasses
 
         }
 
-        public static ReferencedFileSave GetReferencedFileSaveByInstanceName(this IElement element, string instanceName)
+        public static ReferencedFileSave GetReferencedFileSaveByInstanceName(this IElement element, string instanceName, bool caseSensitive = true)
         {
             if (!string.IsNullOrEmpty(instanceName))
             {
                 foreach (ReferencedFileSave rfs in element.ReferencedFiles)
                 {
-                    if (rfs.GetInstanceName() == instanceName)
+                    var rfsInstanceName = rfs.GetInstanceName();
+                    var matches = (caseSensitive && rfsInstanceName == instanceName) ||
+                        (!caseSensitive && rfsInstanceName.Equals(instanceName, StringComparison.InvariantCultureIgnoreCase));
+                    if (matches)
                     {
                         return rfs;
                     }
@@ -70,9 +73,9 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
 
-        public static ReferencedFileSave GetReferencedFileSaveByInstanceNameRecursively(this IElement element, string instanceName)
+        public static ReferencedFileSave GetReferencedFileSaveByInstanceNameRecursively(this IElement element, string instanceName, bool caseSensitive = true)
         {
-            ReferencedFileSave rfs = element.GetReferencedFileSaveByInstanceName(instanceName);
+            ReferencedFileSave rfs = element.GetReferencedFileSaveByInstanceName(instanceName, caseSensitive);
 
             if (rfs == null && !string.IsNullOrEmpty(element.BaseElement))
             {
@@ -80,7 +83,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
                 if (baseEntitySave != null)
                 {
-                    rfs = baseEntitySave.GetReferencedFileSaveByInstanceNameRecursively(instanceName);
+                    rfs = baseEntitySave.GetReferencedFileSaveByInstanceNameRecursively(instanceName, caseSensitive);
                 }
             }
 
