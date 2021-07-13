@@ -86,7 +86,14 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             TaskManager.Self.Add(() =>
             {
                 ScreenSave screen = GetCurrentInGameScreen(gamePortNumber);
-                GlueElement element = screen ?? GlueState.Self.CurrentElement;
+                GlueElement element = screen;
+                if (element == null)
+                {
+                    GlueCommands.Self.DoOnUiThread(() =>
+                    {
+                        element = GlueState.Self.CurrentElement;
+                    });
+                }
 
                 var addObjectDto = JsonConvert.DeserializeObject<AddObjectDto>(dataAsString);
 
@@ -142,7 +149,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 {
                     RefreshManager.Self.IgnoreNextObjectAdd = true;
                     RefreshManager.Self.IgnoreNextObjectSelect = true;
-                    GlueCommands.Self.GluxCommands.AddNamedObjectTo(nos, screen, listToAddTo);
+                    GlueCommands.Self.GluxCommands.AddNamedObjectTo(nos, element, listToAddTo);
                 });
 
                 //RefreshManager.Self.HandleNamedObjectValueChanged(nameof(deserializedNos.InstanceName), oldName, deserializedNos);
@@ -186,19 +193,31 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                         break;
                     case nameof(TextureAddressMode):
                     case "Microsoft.Xna.Framework.Graphics.TextureAddressMode":
-                        {
-                            if (value is int asInt)
-                            {
-                                value = (TextureAddressMode)asInt;
-                            }
-                            else if (value is long asLong)
-                            {
-                                value = (TextureAddressMode)asLong;
-                            }
-                        }
-
+                        value = ToEnum<TextureAddressMode>(value);
+                        break;
+                    case nameof(FlatRedBall.Graphics.ColorOperation):
+                    case "FlatRedBall.Graphics.ColorOperation":
+                        value = ToEnum<FlatRedBall.Graphics.ColorOperation>(value);
+                        break;
+                    case nameof(FlatRedBall.Graphics.BlendOperation):
+                    case "FlatRedBall.Graphics.BlendOperation":
+                        value = ToEnum<FlatRedBall.Graphics.BlendOperation>(value);
                         break;
                 }
+            }
+
+            T ToEnum<T>(object toConvert)
+            {
+                T converted = default(T);
+                if (toConvert is int asInt)
+                {
+                    converted = (T)(object)asInt;
+                }
+                else if (toConvert is long asLong)
+                {
+                    converted = (T)(object)(int)asLong;
+                }
+                return converted;
             }
 
             if(value is List<FlatRedBall.Math.Geometry.Point> pointList && owner.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Polygon &&

@@ -491,6 +491,26 @@ namespace OfficialPlugins.VariableDisplay
                 instanceMember.DisplayName = displayName;
 
                 instanceMember.TypeConverter = typeConverter;
+
+                // hack! Certain ColorOperations aren't supported in MonoGame. One day they will be if we ever get the
+                // shader situation solved. But until then, these cause crashes so let's remove them.
+                // Do this after setting the type converter
+                if(variableDefinition.Type == nameof(FlatRedBall.Graphics.ColorOperation))
+                {
+                    instanceMember.TypeConverter = null;
+                    // one day?
+                    instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Texture);
+                    instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Add);
+                    instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Color);
+                    instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.ColorTextureAlpha);
+                    instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Modulate);
+                    //instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Subtract);
+                    //instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.InverseTexture);
+                    //instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Modulate2X);
+                    //instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Modulate4X);
+                    //instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.InterpolateColor);
+                }
+
                 // Important - set the forced options after setting the type converter so they have "final say"
                 if(variableDefinition?.ForcedOptions?.Count > 0)
                 {
@@ -531,6 +551,38 @@ namespace OfficialPlugins.VariableDisplay
                                 bool.TryParse(variableDefinition.DefaultValue, out boolToReturn);
 
                                 return boolToReturn;
+                            }
+                            else if(memberType == typeof(float))
+                            {
+                                float floatToReturn = 0.0f;
+
+                                float.TryParse(variableDefinition.DefaultValue, out floatToReturn);
+
+                                return floatToReturn;
+                            }
+                            else if(memberType == typeof(int))
+                            {
+                                int intToReturn = 0;
+
+                                int.TryParse(variableDefinition.DefaultValue, out intToReturn);
+
+                                return intToReturn;
+                            }
+                            else if (memberType == typeof(long))
+                            {
+                                long longToReturn = 0;
+
+                                long.TryParse(variableDefinition.DefaultValue, out longToReturn);
+
+                                return longToReturn;
+                            }
+                            else if (memberType == typeof(double))
+                            {
+                                double doubleToReturn = 0.0;
+
+                                double.TryParse(variableDefinition.DefaultValue, out doubleToReturn);
+
+                                return doubleToReturn;
                             }
                             else
                             {

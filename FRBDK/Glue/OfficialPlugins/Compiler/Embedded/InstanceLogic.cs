@@ -556,11 +556,37 @@ namespace {ProjectNamespace}.GlueControl
                 AddValue(addObjectDto, nameof(newSprite.TextureAddressMode), 
                     nameof(Microsoft.Xna.Framework.Graphics.TextureAddressMode), (int)newSprite.TextureAddressMode);
             }
+            if(newSprite.Red != 0.0f)
+            {
+                AddFloatValue(addObjectDto, nameof(newSprite.Red), newSprite.Red);
+            }
+            if (newSprite.Green != 0.0f)
+            {
+                AddFloatValue(addObjectDto, nameof(newSprite.Green), newSprite.Green);
+            }
+            if (newSprite.Blue != 0.0f)
+            {
+                AddFloatValue(addObjectDto, nameof(newSprite.Blue), newSprite.Blue);
+            }
+            if(newSprite.Alpha != 1.0f)
+            {
+                AddFloatValue(addObjectDto, nameof(newSprite.Alpha), newSprite.Alpha);
+            }
+            if(newSprite.ColorOperation != ColorOperation.Texture)
+            {
+                AddValue(addObjectDto, nameof(newSprite.ColorOperation),
+                    nameof(ColorOperation), (int)newSprite.ColorOperation);
+            }
+            if(newSprite.BlendOperation != BlendOperation.Regular)
+            {
+                AddValue(addObjectDto, nameof(newSprite.BlendOperation),
+                    nameof(BlendOperation), (int)newSprite.BlendOperation);
+            }
 
             // do we want to consider animated sprites? Does it matter?
             // An animation could flip this and that would incorrectly set
             // that value on Glue but if it's animated that would get overwritten anyway, so maybe it's no biggie?
-            if(newSprite.FlipHorizontal != false)
+            if (newSprite.FlipHorizontal != false)
             {
                 AddValue(addObjectDto, nameof(newSprite.FlipHorizontal), 
                     "bool", newSprite.FlipHorizontal);
