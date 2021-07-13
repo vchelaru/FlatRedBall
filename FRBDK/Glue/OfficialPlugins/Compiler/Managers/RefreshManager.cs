@@ -93,7 +93,6 @@ namespace OfficialPlugins.Compiler.Managers
             }
         }
 
-
         public async void HandleFileChanged(FilePath fileName)
         {
             // always do this:
@@ -187,6 +186,10 @@ namespace OfficialPlugins.Compiler.Managers
             return true;
         }
 
+        internal void HandleNewFile(ReferencedFileSave newFile)
+        {
+            GlueCommands.Self.ProjectCommands.CopyToBuildFolder(newFile);
+        }
 
         #endregion
 

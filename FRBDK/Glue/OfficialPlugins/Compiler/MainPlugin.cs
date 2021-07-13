@@ -135,6 +135,7 @@ namespace OfficialPlugins.Compiler
             this.ReactToFileChangeHandler += HandleFileChanged;
             this.ReactToLoadedGlux += HandleGluxLoaded;
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
+            this.ReactToNewFileHandler += RefreshManager.Self.HandleNewFile;
 
             this.ReactToFileChangeHandler += (fileName) =>
                 RefreshManager.Self.HandleFileChanged(new FlatRedBall.IO.FilePath(fileName));

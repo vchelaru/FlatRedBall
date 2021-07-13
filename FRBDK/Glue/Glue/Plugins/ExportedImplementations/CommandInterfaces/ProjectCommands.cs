@@ -489,19 +489,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void CopyToBuildFolder(ReferencedFileSave rfs)
         {
-            string source = GlueState.Self.ContentDirectory + rfs.Name;
+            FilePath source = GlueState.Self.ContentDirectory + rfs.Name;
 
-            CopyToBuildFolder(rfs.Name);
+            CopyToBuildFolder(source);
         }
 
-        public void CopyToBuildFolder(string absoluteSource)
+        public void CopyToBuildFolder(FilePath absoluteSource)
         {
             TaskManager.Self.AddOrRunIfTasked(() =>
             {
                 // This is the location when running from Glue
                 // Maybe eventually I'll fix glue build to build to the same location as the project...
                 string debugPath = "bin/x86/debug/";
-                CopyToBuildFolder(absoluteSource, debugPath);
+                CopyToBuildFolder(absoluteSource.FullPath, debugPath);
 
                 if (GlueState.Self.CurrentMainProject is VisualStudioProject)
                 {
@@ -513,7 +513,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     if (foundProperty != null)
                     {
                         debugPath = foundProperty.EvaluatedValue.Replace('\\', '/');
-                        CopyToBuildFolder(absoluteSource, debugPath);
+                        CopyToBuildFolder(absoluteSource.FullPath, debugPath);
                     }
 
                 }

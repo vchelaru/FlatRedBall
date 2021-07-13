@@ -53,7 +53,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void TryAddCodeFileToProject(FilePath codeFilePath, bool saveOnAdd = false);
 
         void CopyToBuildFolder(ReferencedFileSave rfs);
-        void CopyToBuildFolder(string absoluteSource);
+        void CopyToBuildFolder(FilePath absoluteSource);
 
         void AddDirectory(string folderName, System.Windows.Forms.TreeNode treeNodeToAddTo);
 
