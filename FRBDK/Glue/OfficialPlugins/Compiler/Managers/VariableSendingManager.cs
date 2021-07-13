@@ -70,7 +70,12 @@ namespace OfficialPlugins.Compiler.Managers
             string value;
 
             var gameScreenName = await CommandSender.GetScreenName(ViewModel.PortNumber);
-            var glueScreenName = string.Join('\\', gameScreenName.Split('.').Skip(2));
+            string glueScreenName = null;
+            if(!string.IsNullOrEmpty(gameScreenName))
+            {
+                glueScreenName = string.Join('\\', gameScreenName.Split('.').Skip(2));
+
+            }
 
             ConvertValue(ref changedMember, oldValue, currentValue, nos, currentElement, glueScreenName, ref nosName, ati, ref typeName, out value);
 
