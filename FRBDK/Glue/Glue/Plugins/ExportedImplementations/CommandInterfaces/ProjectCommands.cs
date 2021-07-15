@@ -521,10 +521,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }, $"{nameof(CopyToBuildFolder)} {absoluteSource}");
         }
 
-        private static void CopyToBuildFolder(string absoluteSource, string debugPath)
+        private static void CopyToBuildFolder(FilePath absoluteSource, string debugPath)
         {
             string buildFolder = FileManager.GetDirectory(GlueState.Self.CurrentCodeProjectFileName) + debugPath + "Content/";
-            string destination = buildFolder + FileManager.MakeRelative(absoluteSource, ProjectManager.ContentDirectory);
+            string destination = buildFolder + FileManager.MakeRelative(absoluteSource.FullPath, GlueState.Self.ContentDirectory);
 
             string destinationFolder = FileManager.GetDirectory(destination);
 
@@ -532,21 +532,20 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // destination folder. If this is a new entity or a new folder in an entity, 
             // there's no reason to copy this over yet - it means the game hasn't been built
             // with this file:
-            if (System.IO.Directory.Exists(destinationFolder))
+            // Update July 13, 2021 LIES! Due to the level editor, now we do want to copy it over
+            //if (System.IO.Directory.Exists(destinationFolder))
+            System.IO.Directory.CreateDirectory(destinationFolder);
+
+            try
             {
-                string projectName = FileManager.RemovePath(FileManager.RemoveExtension(GlueState.Self.CurrentCodeProjectFileName));
+                System.IO.File.Copy(absoluteSource.FullPath, destination, true);
 
-                try
-                {
-                    System.IO.File.Copy(absoluteSource, destination, true);
-
-                    PluginManager.ReceiveOutput("Copied " + absoluteSource + " ==> " + destination);
-                }
-                catch (Exception e)
-                {
-                    // this could really overwhelm the user with popups, so let's just show output:
-                    PluginManager.ReceiveOutput("Error copying file:\n\n" + e.ToString());
-                }
+                PluginManager.ReceiveOutput("Copied " + absoluteSource + " ==> " + destination);
+            }
+            catch (Exception e)
+            {
+                // this could really overwhelm the user with popups, so let's just show output:
+                PluginManager.ReceiveOutput("Error copying file:\n\n" + e.ToString());
             }
         }
 

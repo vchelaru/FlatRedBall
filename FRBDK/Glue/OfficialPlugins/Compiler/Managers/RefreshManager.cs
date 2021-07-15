@@ -154,7 +154,7 @@ namespace OfficialPlugins.Compiler.Managers
                         {
                             printOutput($"Telling game to restart screen");
 
-                            var result = await CommandSender.SendCommand("RestartScreen", ViewModel.PortNumber);
+                            await CommandSender.Send(new RestartScreenDto(), ViewModel.PortNumber);
 
                             handled = true;
                         }

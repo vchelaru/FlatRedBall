@@ -1,12 +1,8 @@
 ﻿{CompilerDirectives}
 
+using FlatRedBall;
 using FlatRedBall.Graphics;
 using FlatRedBall.Screens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace {ProjectNamespace}.Screens
 {
@@ -14,17 +10,53 @@ namespace {ProjectNamespace}.Screens
     {
         public IDestroyable CurrentEntity { get; set; }
 
+        public static string GameElementTypeToCreate { get; set; }
+        public static string InstanceToSelect { get; set; }
+
         public EntityViewingScreen() : base(nameof(EntityViewingScreen))
         {
 
         }
 
+        public override void Initialize(bool addToManagers)
+        {
+            base.Initialize(addToManagers);
+
+            if(addToManagers)
+            {
+                AddToManagers();
+            }
+        }
+
+        public override void AddToManagers()
+        {
+            base.AddToManagers();
+
+            //var instance = ownerType.GetConstructor(new System.Type[0]).Invoke(new object[0]) as IDestroyable;
+            var instance = GlueControl.InstanceLogic.Self.CreateEntity(EntityViewingScreen.GameElementTypeToCreate) as IDestroyable;
+            CurrentEntity = instance;
+            var instanceAsPositionedObject = (PositionedObject)instance;
+            instanceAsPositionedObject.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
+            instanceAsPositionedObject.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
+
+            GlueControl.Editing.EditingManager.Self.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingEntity;
+
+            Camera.Main.X = 0;
+            Camera.Main.Y = 0;
+            Camera.Main.Detach();
+
+            GlueControlManager.Self.ReRunAllGlueToGameCommands();
+
+            GlueControl.Editing.EditingManager.Self.Select(InstanceToSelect);
+        }
+
         public override void Destroy()
         {
+            GlueControl.InstanceLogic.Self.DestroyDynamicallyAddedInstances();
+
             CurrentEntity?.Destroy();
 
             base.Destroy();
         }
-
     }
 }

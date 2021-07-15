@@ -29,6 +29,8 @@ namespace FlatRedBall.TileEntities
 
         public static Settings CurrentSettings { get; set; } = new Settings();
 
+        public static Func<string, PositionedObject> CreationFunction;
+
         /// <summary>
         /// A dictionary that stores all available values for a given type.
         /// </summary>
@@ -121,18 +123,15 @@ namespace FlatRedBall.TileEntities
                     {
                         shouldCreate = restrictions.InclusiveList.Contains(entityType);
                     }
-                    if(shouldCreate)
+                    if (shouldCreate)
                     {
-                        IEntityFactory factory = GetFactory(entityType);
-
-                        if(factory != null)
+                        PositionedObject entity = CreateEntity(entityType);
+                        if (entity != null)
                         {
-                            var entity = factory.CreateNew(null) as PositionedObject;
-
                             entity.Name = circle.Name;
                             ApplyPropertiesTo(entity, properties, circle.Position);
 
-                            if(CurrentSettings.RemoveTileObjectsAfterEntityCreation)
+                            if (CurrentSettings.RemoveTileObjectsAfterEntityCreation)
                             {
                                 shapeCollection.Circles.Remove(circle);
                             }
@@ -168,15 +167,13 @@ namespace FlatRedBall.TileEntities
                     }
                     if (shouldCreate)
                     {
-                        IEntityFactory factory = GetFactory(entityType);
-                        if(factory != null)
+                        PositionedObject entity = CreateEntity(entityType);
+                        if (entity != null)
                         {
-                            var entity = factory.CreateNew(null) as PositionedObject;
-
                             entity.Name = rectangle.Name;
                             ApplyPropertiesTo(entity, properties, rectangle.Position);
 
-                            if(CurrentSettings.RemoveTileObjectsAfterEntityCreation)
+                            if (CurrentSettings.RemoveTileObjectsAfterEntityCreation)
                             {
                                 shapeCollection.AxisAlignedRectangles.Remove(rectangle);
                             }
@@ -212,11 +209,9 @@ namespace FlatRedBall.TileEntities
                     }
                     if (shouldCreate)
                     {
-                        IEntityFactory factory = GetFactory(entityType);
-                        if(factory != null)
+                        PositionedObject entity = CreateEntity(entityType);
+                        if (entity != null)
                         {
-                            var entity = factory.CreateNew(null) as PositionedObject;
-
                             entity.Name = polygon.Name;
                             ApplyPropertiesTo(entity, properties, polygon.Position);
 
@@ -237,7 +232,23 @@ namespace FlatRedBall.TileEntities
             }
         }
 
-        private static void CreateEntitiesFrom(List<string> entitiesToRemove, MapDrawableBatch layer, Dictionary<string, List<NamedValue>> propertiesDictionary, 
+        private static PositionedObject CreateEntity(string entityType)
+        {
+            PositionedObject entity = null;
+            IEntityFactory factory = GetFactory(entityType);
+            if (factory != null)
+            {
+                entity = factory.CreateNew(null) as PositionedObject;
+            }
+            else if (CreationFunction != null)
+            {
+                entity = CreationFunction(entityType);
+            }
+
+            return entity;
+        }
+
+        private static void CreateEntitiesFrom(List<string> entitiesToRemove, MapDrawableBatch layer, Dictionary<string, List<NamedValue>> propertiesDictionary,
             float tileSize,
             InstantiationRestrictions restrictions = null)
         {
@@ -271,7 +282,7 @@ namespace FlatRedBall.TileEntities
                     {
                         IEntityFactory factory = GetFactory(entityType);
 
-                        if (factory == null)
+                        if (factory == null && CreationFunction == null)
                         {
                             bool isEntity = typesInThisAssembly.Any(item => item.Name.Contains($".Entities.") && item.Name.EndsWith(entityType));
 
@@ -285,7 +296,8 @@ namespace FlatRedBall.TileEntities
                         }
                         else
                         {
-                            entitiesToRemove.Add(entityType);
+                            var createdEntityOfThisType = false;
+
                             var indexList = dictionary[tileName];
 
                             foreach (var tileIndex in indexList)
@@ -300,14 +312,30 @@ namespace FlatRedBall.TileEntities
                                     shouldCreate = bounds.IsPointInside(x, y);
                                 }
 
-                                if(shouldCreate)
+                                if (shouldCreate)
                                 {
-                                    var entity = factory.CreateNew(flatRedBallLayer) as PositionedObject;
+                                    PositionedObject entity = null;
+                                    if (factory != null)
+                                    {
+                                        entity = factory.CreateNew(flatRedBallLayer) as PositionedObject;
+                                    }
+                                    else if (CreationFunction != null)
+                                    {
+                                        entity = CreationFunction(entityType);
+                                        // todo - need to support moving to layer
+                                    }
 
-                                    ApplyPropertiesTo(entity, layer, tileIndex, propertyList);
+                                    if (entity != null)
+                                    {
+                                        ApplyPropertiesTo(entity, layer, tileIndex, propertyList);
+                                        createdEntityOfThisType = true;
+                                    }
                                 }
                             }
-
+                            if (createdEntityOfThisType)
+                            {
+                                entitiesToRemove.Add(entityType);
+                            }
                         }
                     }
                 }

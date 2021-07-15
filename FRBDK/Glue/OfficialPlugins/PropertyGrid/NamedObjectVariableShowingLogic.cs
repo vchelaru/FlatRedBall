@@ -495,7 +495,7 @@ namespace OfficialPlugins.VariableDisplay
                 // hack! Certain ColorOperations aren't supported in MonoGame. One day they will be if we ever get the
                 // shader situation solved. But until then, these cause crashes so let's remove them.
                 // Do this after setting the type converter
-                if(variableDefinition.Type == nameof(FlatRedBall.Graphics.ColorOperation))
+                if(variableDefinition?.Type == nameof(FlatRedBall.Graphics.ColorOperation))
                 {
                     instanceMember.TypeConverter = null;
                     // one day?

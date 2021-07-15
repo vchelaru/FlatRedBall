@@ -276,7 +276,10 @@ namespace {ProjectNamespace}.GlueControl
                          as PositionedObject;
                     //newPositionedObject = ownerType.GetConstructor(new System.Type[0]).Invoke(new object[0]);
                 }
-                DestroyablesAddedAtRuntime.Add(newPositionedObject as IDestroyable);
+                if(newPositionedObject != null && newPositionedObject is IDestroyable asDestroyable)
+                {
+                    DestroyablesAddedAtRuntime.Add(asDestroyable);
+                }
                 return newPositionedObject;
             }
         }

@@ -244,6 +244,7 @@ namespace EditModeProject.GlueControl
 
             bool isOwnerScreen = false;
 
+
             if (matchesCurrentScreen)
             {
                 Editing.EditingManager.Self.Select(selectObjectDto.ObjectName);
@@ -255,11 +256,12 @@ namespace EditModeProject.GlueControl
                 // it's a different screen. See if we can select that screen:
                 CameraPositions[currentScreen.GetType().FullName] = Camera.Main.Position;
 
-                if (ownerType != null && typeof(Screen).IsAssignableFrom(ownerType))
+                bool selectedNewScreen = ownerType != null && typeof(Screen).IsAssignableFrom(ownerType);
+                if (selectedNewScreen)
                 {
 #if SupportsEditMode
 
-                    void AssignSelection(Screen screen)
+                    void AfterLoadLogic(Screen screen)
                     {
                         // Select this even if it's null so the EditingManager deselects 
                         EditingManager.Self.Select(selectObjectDto.ObjectName);
@@ -269,9 +271,9 @@ namespace EditModeProject.GlueControl
                         {
                             Camera.Main.Position = CameraPositions[screen.GetType().FullName];
                         }
-                        ScreenManager.ScreenLoaded -= AssignSelection;
+                        ScreenManager.ScreenLoaded -= AfterLoadLogic;
                     }
-                    ScreenManager.ScreenLoaded += AssignSelection;
+                    ScreenManager.ScreenLoaded += AfterLoadLogic;
 
                     ScreenManager.CurrentScreen.MoveToScreen(ownerType);
 
@@ -295,30 +297,8 @@ namespace EditModeProject.GlueControl
                     if (!isAlreadyViewingThisEntity)
                     {
 #if SupportsEditMode
-
-                        void CreateEntityInstance(Screen screen)
-                        {
-                            //var instance = ownerType.GetConstructor(new System.Type[0]).Invoke(new object[0]) as IDestroyable;
-                            var instance = InstanceLogic.Self.CreateEntity(GlueToGameElementName(elementNameGlue)) as IDestroyable;
-                            (screen as Screens.EntityViewingScreen).CurrentEntity = instance;
-                            var instanceAsPositionedObject = (PositionedObject)instance;
-                            instanceAsPositionedObject.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
-                            instanceAsPositionedObject.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
-                            ScreenManager.ScreenLoaded -= CreateEntityInstance;
-
-                            EditingManager.Self.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingEntity;
-
-                            Camera.Main.X = 0;
-                            Camera.Main.Y = 0;
-                            Camera.Main.Detach();
-
-                            GlueControlManager.Self.ReRunAllGlueToGameCommands();
-                            screen.ScreenDestroy += HandleScreenDestroy;
-
-                            EditingManager.Self.Select(selectObjectDto.ObjectName);
-                        }
-                        ScreenManager.ScreenLoaded += CreateEntityInstance;
-
+                        Screens.EntityViewingScreen.GameElementTypeToCreate = GlueToGameElementName(elementNameGlue);
+                        Screens.EntityViewingScreen.InstanceToSelect = selectObjectDto.ObjectName;
                         ScreenManager.CurrentScreen.MoveToScreen(typeof(Screens.EntityViewingScreen));
 #endif
                     }
@@ -343,7 +323,7 @@ namespace EditModeProject.GlueControl
         {
             var strings = gameType.Split('.');
 
-            return string.Join(".", strings.Skip(1).ToArray());
+            return string.Join("\\", strings.Skip(1).ToArray());
         }
 
         #endregion
@@ -402,6 +382,9 @@ namespace EditModeProject.GlueControl
 
             if (value)
             {
+                FlatRedBall.TileEntities.TileEntityInstantiator.CreationFunction =
+                    InstanceLogic.Self.CreateEntity;
+
                 var screen =
                     FlatRedBall.Screens.ScreenManager.CurrentScreen;
                 // user may go into edit mode after moving through a level and wouldn't want it to restart fully....or would they? What if they
