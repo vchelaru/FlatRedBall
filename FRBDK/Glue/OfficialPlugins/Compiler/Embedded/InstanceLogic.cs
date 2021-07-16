@@ -348,8 +348,11 @@ namespace GlueControl
             }
             if (newObject is PositionedObject asPositionedObject)
             {
-                asPositionedObject.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
-                asPositionedObject.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
+                if (ScreenManager.IsInEditMode)
+                {
+                    asPositionedObject.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
+                    asPositionedObject.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
+                }
                 asPositionedObject.CreationSource = "Glue"; // Glue did make this, so do this so the game can select it
             }
 

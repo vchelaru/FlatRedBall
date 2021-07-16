@@ -403,6 +403,9 @@ namespace GlueControl
                     }
                 }
             }
+
+            CommandReceiver.GlobalGlueToGameCommands.Add(removeObjectDto);
+
             return response;
         }
 
@@ -451,28 +454,10 @@ namespace GlueControl
             FlatRedBall.Screens.ScreenManager.IsInEditMode = value;
             FlatRedBall.Gui.GuiManager.Cursor.RequiresGameWindowInFocus = !value;
 
-            if (value)
-            {
-                FlatRedBall.TileEntities.TileEntityInstantiator.CreationFunction =
-                    InstanceLogic.Self.CreateEntity;
+            FlatRedBall.TileEntities.TileEntityInstantiator.CreationFunction =
+                InstanceLogic.Self.CreateEntity;
 
-                var screen =
-                    FlatRedBall.Screens.ScreenManager.CurrentScreen;
-                // user may go into edit mode after moving through a level and wouldn't want it to restart fully....or would they? What if they
-                // want to change the Player start location. Need to think that through...
-
-                void HandleScreenLoaded(Screen newScreen)
-                {
-                    GlueControlManager.Self.ReRunAllGlueToGameCommands();
-                    newScreen.ScreenDestroy += HandleScreenDestroy;
-
-                    FlatRedBall.Screens.ScreenManager.ScreenLoaded -= HandleScreenLoaded;
-                }
-
-                FlatRedBall.Screens.ScreenManager.ScreenLoaded += HandleScreenLoaded;
-
-                screen?.RestartScreen(reloadContent: true, applyRestartVariables: true);
-            }
+            RestartScreenRerunCommands(applyRestartVariables: true);
 #endif
         }
 
@@ -499,7 +484,7 @@ namespace GlueControl
                 // comment here.
             }
 
-            CommandReceiver.EnqueueToOwner(dto, dto.ElementName);
+            CommandReceiver.GlobalGlueToGameCommands.Add(dto);
 
 
             return toReturn;
@@ -507,11 +492,34 @@ namespace GlueControl
 
         #endregion
 
+        #region Restart Screen
+
         private static void HandleDto(RestartScreenDto dto)
         {
-            var screen = ScreenManager.CurrentScreen;
-            screen.RestartScreen(true);
+            RestartScreenRerunCommands(applyRestartVariables: true);
         }
+
+        private static void RestartScreenRerunCommands(bool applyRestartVariables)
+        {
+            var screen =
+                FlatRedBall.Screens.ScreenManager.CurrentScreen;
+            // user may go into edit mode after moving through a level and wouldn't want it to restart fully....or would they? What if they
+            // want to change the Player start location. Need to think that through...
+
+            void HandleScreenLoaded(Screen newScreen)
+            {
+                GlueControlManager.Self.ReRunAllGlueToGameCommands();
+                newScreen.ScreenDestroy += HandleScreenDestroy;
+
+                FlatRedBall.Screens.ScreenManager.ScreenLoaded -= HandleScreenLoaded;
+            }
+
+            FlatRedBall.Screens.ScreenManager.ScreenLoaded += HandleScreenLoaded;
+
+            screen?.RestartScreen(reloadContent: true, applyRestartVariables: applyRestartVariables);
+        }
+
+        #endregion
 
         private static void HandleDto(ReloadGlobalContentDto dto)
         {

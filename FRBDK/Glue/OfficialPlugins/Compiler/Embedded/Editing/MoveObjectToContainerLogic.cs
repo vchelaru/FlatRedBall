@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EditModeProject.GlueControl.Editing
+namespace GlueControl.Editing
 {
     public static class MoveObjectToContainerLogic
     {

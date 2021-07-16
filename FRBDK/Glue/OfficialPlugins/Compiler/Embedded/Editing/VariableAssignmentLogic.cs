@@ -97,7 +97,7 @@ namespace GlueControl.Editing
                     response.WasVariableAssigned = TryAssignCollisionRelationship(splitVariable[1],
                         JsonConvert.DeserializeObject<Models.NamedObjectSave>(data.VariableValue));
                 }
-                if (targetInstance is FlatRedBall.TileCollisions.TileShapeCollection && splitVariable[2] == "Entire TileShapeCollection")
+                else if (targetInstance is FlatRedBall.TileCollisions.TileShapeCollection && splitVariable[2] == "Entire TileShapeCollection")
                 {
                     response.WasVariableAssigned = TryAssignTileShapeCollection(splitVariable[1],
                         JsonConvert.DeserializeObject<Models.NamedObjectSave>(data.VariableValue));
