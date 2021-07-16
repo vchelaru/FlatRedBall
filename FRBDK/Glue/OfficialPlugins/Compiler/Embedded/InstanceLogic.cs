@@ -19,6 +19,8 @@ namespace {ProjectNamespace}.GlueControl
 {
     public class InstanceLogic
     {
+    public class InstanceLogic
+    {
         #region Objects added at runtime 
         public List<ShapeCollection> ShapeCollectionsAddedAtRuntime = new List<ShapeCollection>();
 
@@ -102,7 +104,8 @@ namespace {ProjectNamespace}.GlueControl
                     }
                 }
             }
-            else if(forcedItem == null && ScreenManager.CurrentScreen.GetType().FullName == elementGameType)
+            else if(forcedItem == null && 
+                (ScreenManager.CurrentScreen.GetType().FullName == elementGameType || ownerType?.IsAssignableFrom(ScreenManager.CurrentScreen.GetType()) == true))
             {
                 // it's added to the base screen, so just add it to null
                 HandleCreateInstanceCommandFromGlueInner(dto, currentAddObjectIndex, null);

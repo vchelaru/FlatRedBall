@@ -435,7 +435,7 @@ namespace OfficialPlugins.Compiler.Managers
             if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
                 bool handledByGame = false;
-
+                string responseAsString = null;
                 var element = ObjectFinder.Self.GetElementContaining(objectMoving);
                 if(element != null)
                 {
@@ -448,7 +448,7 @@ namespace OfficialPlugins.Compiler.Managers
                     };
 
 
-                    var responseAsString = await CommandSender.Send(dto, ViewModel.PortNumber);
+                    responseAsString = await CommandSender.Send(dto, ViewModel.PortNumber);
 
                     if(!string.IsNullOrEmpty(responseAsString))
                     {
