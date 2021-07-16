@@ -19,8 +19,6 @@ namespace {ProjectNamespace}.GlueControl
 {
     public class InstanceLogic
     {
-    public class InstanceLogic
-    {
         #region Objects added at runtime 
         public List<ShapeCollection> ShapeCollectionsAddedAtRuntime = new List<ShapeCollection>();
 
@@ -269,7 +267,29 @@ namespace {ProjectNamespace}.GlueControl
 
         public PositionedObject CreateEntity(string entityNameGameType)
         {
-            if (CustomGlueElements.ContainsKey(entityNameGameType))
+            var containsKey =
+                CustomGlueElements.ContainsKey(entityNameGameType);
+            if(!containsKey && !string.IsNullOrWhiteSpace(entityNameGameType) && entityNameGameType.Contains('.') == false)
+            {
+                // It may not be qualified, which means it is coming from content that doesn't qualify - like Tiled
+                entityNameGameType = CustomGlueElements.Keys.FirstOrDefault(item => item.Split('.').Last() == entityNameGameType);
+                // Now that we've qualified, try again
+                if(!string.IsNullOrWhiteSpace(entityNameGameType))
+                {
+                    containsKey =
+                        CustomGlueElements.ContainsKey(entityNameGameType);
+                }
+            }
+
+            // This function may be given a qualified name like MyGame.Entities.MyEntity (if from Glue) 
+            // or an unqualified name like MyEntity (if from Tiled). If from Tiled, then this code attempts
+            // to fully qualify the entity name. This attempt to qualify may make the name null, so we need to
+            // check and tolerate null.
+            if(string.IsNullOrWhiteSpace(entityNameGameType))
+            {
+                return null;
+            }
+            else if (containsKey)
             {
                 var dynamicEntityInstance = new Runtime.DynamicEntity();
                 dynamicEntityInstance.EditModeType = entityNameGameType;
