@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections;
 using System.Collections.Specialized;
+using FlatRedBall.Utilities;
 
 namespace FlatRedBall.Math
 {
@@ -13,7 +14,7 @@ namespace FlatRedBall.Math
     /// </summary>
     /// <typeparam name="T">Type of the list which is of IAttachable.</typeparam>
     #endregion
-    public class AttachableList<T> : IAttachableRemovable, INotifyCollectionChanged, IList, IList<T> where T : IAttachable // Don't limit T to be a class because this creates bad IL.  This is a bug in .NET 2.0
+    public class AttachableList<T> : IAttachableRemovable, INotifyCollectionChanged, INameable, IList, IList<T> where T : IAttachable // Don't limit T to be a class because this creates bad IL.  This is a bug in .NET 2.0
     {
         #region Fields
         string mName;

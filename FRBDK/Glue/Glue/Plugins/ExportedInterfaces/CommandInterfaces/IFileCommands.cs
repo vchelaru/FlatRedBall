@@ -47,5 +47,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         FilePath GetGlueExecutingFolder();
 
         bool RenameReferencedFileSave(ReferencedFileSave rfs, string newName);
+
+        bool IsContent(FilePath filePath);
     }
 }

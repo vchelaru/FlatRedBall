@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FlatRedBall.Math;
+
 using FlatRedBall.Screens;
 using FlatRedBall.Graphics;
 
@@ -17,6 +19,19 @@ namespace {ProjectNamespace}.GlueControl
 {
     public class InstanceLogic
     {
+        #region Objects added at runtime 
+        public List<ShapeCollection> ShapeCollectionsAddedAtRuntime = new List<ShapeCollection>();
+
+        public ShapeCollection ShapesAddedAtRuntime = new ShapeCollection();
+
+        public FlatRedBall.Math.PositionedObjectList<Sprite> SpritesAddedAtRuntime = new FlatRedBall.Math.PositionedObjectList<Sprite>();
+
+        public List<IDestroyable> DestroyablesAddedAtRuntime = new List<IDestroyable>();
+
+        public List<PositionedObjectList<PositionedObject>> ListsAddedAtRuntime = new List<PositionedObjectList<PositionedObject>>();
+
+        #endregion
+
         #region Fields/Properties
 
         static InstanceLogic self;
@@ -32,12 +47,7 @@ namespace {ProjectNamespace}.GlueControl
             }
         }
 
-        public List<ShapeCollection> ShapeCollectionsAddedAtRuntime = new List<ShapeCollection>();
-        public ShapeCollection ShapesAddedAtRuntime = new ShapeCollection();
 
-        public FlatRedBall.Math.PositionedObjectList<Sprite> SpritesAddedAtRuntime = new FlatRedBall.Math.PositionedObjectList<Sprite>();
-
-        public List<IDestroyable> DestroyablesAddedAtRuntime = new List<IDestroyable>();
 
         /// <summary>
         /// A dictionary of custom elements where the key is the full name of the type that
@@ -190,6 +200,11 @@ namespace {ProjectNamespace}.GlueControl
                         var shapeCollection = new ShapeCollection();
                         ShapeCollectionsAddedAtRuntime.Add(shapeCollection);
                         newObject = shapeCollection;
+                        break;
+                    case "FlatRedBall.Math.PositionedObjectList<T>":
+                        var list = new PositionedObjectList<PositionedObject>();
+                        ListsAddedAtRuntime.Add(list);
+                        newObject = list;
                         break;
                 }
             }
@@ -666,7 +681,7 @@ namespace {ProjectNamespace}.GlueControl
 
             FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(instance, variableName, variableValue);
         }
-
+    
         public void DestroyDynamicallyAddedInstances()
         {
             for(int i = ShapesAddedAtRuntime.AxisAlignedRectangles.Count-1; i > -1; i--)
@@ -694,9 +709,18 @@ namespace {ProjectNamespace}.GlueControl
             {
                 DestroyablesAddedAtRuntime[i].Destroy();
             }
+
+            foreach(var list in ListsAddedAtRuntime)
+            {
+                for(int i = list.Count-1; i > -1; i--)
+                {
+                    list[i].RemoveSelfFromListsBelongingTo();
+                }
+            }
             ShapesAddedAtRuntime.Clear();
             SpritesAddedAtRuntime.Clear();
             DestroyablesAddedAtRuntime.Clear();
+            ListsAddedAtRuntime.Clear();
         }
     }
 }

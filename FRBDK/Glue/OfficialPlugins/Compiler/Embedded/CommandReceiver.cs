@@ -337,6 +337,75 @@ namespace EditModeProject.GlueControl
 
         #endregion
 
+        #region Remove (Destroy) NamedObjectSave
+
+        private static RemoveObjectDtoResponse HandleDto(RemoveObjectDto removeObjectDto)
+        {
+
+
+            RemoveObjectDtoResponse response = new RemoveObjectDtoResponse();
+            response.DidScreenMatch = false;
+            response.WasObjectRemoved = false;
+
+            bool matchesCurrentScreen =
+                GetIfMatchesCurrentScreen(removeObjectDto.ElementName, out System.Type ownerType, out Screen currentScreen);
+
+            if (matchesCurrentScreen)
+            {
+                response.DidScreenMatch = true;
+                var isEditingEntity =
+                    ScreenManager.CurrentScreen?.GetType() == typeof(Screens.EntityViewingScreen);
+                var editingMode = isEditingEntity
+                    ? GlueControl.Editing.ElementEditingMode.EditingEntity
+                    : GlueControl.Editing.ElementEditingMode.EditingScreen;
+
+                var available = GlueControl.Editing.SelectionLogic.GetAvailableObjects(editingMode)
+                        .FirstOrDefault(item => item.Name == removeObjectDto.ObjectName);
+
+                if (available is IDestroyable asDestroyable)
+                {
+                    asDestroyable.Destroy();
+                    response.WasObjectRemoved = true;
+                }
+                else if (available is AxisAlignedRectangle rectangle)
+                {
+                    ShapeManager.Remove(rectangle);
+                    response.WasObjectRemoved = true;
+                }
+                else if (available is Circle circle)
+                {
+                    ShapeManager.Remove(circle);
+                    response.WasObjectRemoved = true;
+                }
+                else if (available is Polygon polygon)
+                {
+                    ShapeManager.Remove(polygon);
+                    response.WasObjectRemoved = true;
+                }
+                else if (available is Sprite sprite)
+                {
+                    SpriteManager.RemoveSprite(sprite);
+                    response.WasObjectRemoved = true;
+                }
+
+                if (!response.WasObjectRemoved)
+                {
+                    // see if there is a collision relationship with this name
+                    var matchingCollisionRelationship = CollisionManager.Self.Relationships.FirstOrDefault(
+                        item => item.Name == removeObjectDto.ObjectName);
+
+                    if (matchingCollisionRelationship != null)
+                    {
+                        CollisionManager.Self.Relationships.Remove(matchingCollisionRelationship);
+                        response.WasObjectRemoved = true;
+                    }
+                }
+            }
+            return response;
+        }
+
+        #endregion
+
         #region Add Entity
 
         private static void HandleDto(CreateNewEntityDto createNewEntityDto)
@@ -407,6 +476,8 @@ namespace EditModeProject.GlueControl
 
         #endregion
 
+        #region Move to Container
+
         private static MoveObjectToContainerDtoResponse HandleDto(MoveObjectToContainerDto dto)
         {
             var toReturn = new MoveObjectToContainerDtoResponse();
@@ -432,70 +503,7 @@ namespace EditModeProject.GlueControl
             return toReturn;
         }
 
-        private static RemoveObjectDtoResponse HandleDto(RemoveObjectDto removeObjectDto)
-        {
-
-
-            RemoveObjectDtoResponse response = new RemoveObjectDtoResponse();
-            response.DidScreenMatch = false;
-            response.WasObjectRemoved = false;
-
-            bool matchesCurrentScreen =
-                GetIfMatchesCurrentScreen(removeObjectDto.ElementName, out System.Type ownerType, out Screen currentScreen);
-
-            if (matchesCurrentScreen)
-            {
-                response.DidScreenMatch = true;
-                var isEditingEntity =
-                    ScreenManager.CurrentScreen?.GetType() == typeof(Screens.EntityViewingScreen);
-                var editingMode = isEditingEntity
-                    ? GlueControl.Editing.ElementEditingMode.EditingEntity
-                    : GlueControl.Editing.ElementEditingMode.EditingScreen;
-
-                var available = GlueControl.Editing.SelectionLogic.GetAvailableObjects(editingMode)
-                        .FirstOrDefault(item => item.Name == removeObjectDto.ObjectName);
-
-                if (available is IDestroyable asDestroyable)
-                {
-                    asDestroyable.Destroy();
-                    response.WasObjectRemoved = true;
-                }
-                else if (available is AxisAlignedRectangle rectangle)
-                {
-                    ShapeManager.Remove(rectangle);
-                    response.WasObjectRemoved = true;
-                }
-                else if (available is Circle circle)
-                {
-                    ShapeManager.Remove(circle);
-                    response.WasObjectRemoved = true;
-                }
-                else if (available is Polygon polygon)
-                {
-                    ShapeManager.Remove(polygon);
-                    response.WasObjectRemoved = true;
-                }
-                else if (available is Sprite sprite)
-                {
-                    SpriteManager.RemoveSprite(sprite);
-                    response.WasObjectRemoved = true;
-                }
-
-                if (!response.WasObjectRemoved)
-                {
-                    // see if there is a collision relationship with this name
-                    var matchingCollisionRelationship = CollisionManager.Self.Relationships.FirstOrDefault(
-                        item => item.Name == removeObjectDto.ObjectName);
-
-                    if (matchingCollisionRelationship != null)
-                    {
-                        CollisionManager.Self.Relationships.Remove(matchingCollisionRelationship);
-                        response.WasObjectRemoved = true;
-                    }
-                }
-            }
-            return response;
-        }
+        #endregion
 
         private static void HandleDto(RestartScreenDto dto)
         {

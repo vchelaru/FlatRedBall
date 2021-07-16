@@ -360,6 +360,44 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return didRename;
         }
 
+        public bool IsContent(FilePath filePath)
+        {
+            string extension = filePath.Extension;
+
+            if (extension == "")
+            {
+                return false;
+            }
+
+            foreach (var ati in AvailableAssetTypes.Self.AllAssetTypes)
+            {
+                if (ati.Extension == extension)
+                {
+                    return true;
+                }
+            }
+
+            if (AvailableAssetTypes.Self.AdditionalExtensionsToTreatAsAssets.Contains(extension))
+            {
+                return true;
+            }
+
+
+            if (PluginManager.CanFileReferenceContent(filePath.FullPath))
+            {
+                return true;
+            }
+
+
+            if (extension == "csv" ||
+                extension == "xml")
+            {
+                return true;
+            }
+
+
+            return false;
+        }
     }
 
 }

@@ -430,43 +430,10 @@ namespace FlatRedBall.Glue
 
         }
 
+        [Obsolete("Use GlueCommands.Self.FileCommands.IsContent")]
         public static bool IsContent(string file)
         {
-            string extension = FileManager.GetExtension(file);
-
-            if (extension == "")
-            {
-                return false;
-            }
-
-            foreach(var ati in AvailableAssetTypes.Self.AllAssetTypes)
-            {
-                if (ati.Extension == extension)
-                {
-                    return true;
-                }
-            }
-
-            if (AvailableAssetTypes.Self.AdditionalExtensionsToTreatAsAssets.Contains(extension))
-            {
-                return true;
-            }
-
-
-            if (PluginManager.CanFileReferenceContent(file))
-            {
-                return true;
-            }
-
-
-            if (extension == "csv" ||
-                extension == "xml")
-            {
-                return true;
-            }
-
-
-            return false;
+            return GlueCommands.Self.FileCommands.IsContent(file);
         }
         
         public static bool CollectionContains(ICollection collection, string itemToSearchFor)

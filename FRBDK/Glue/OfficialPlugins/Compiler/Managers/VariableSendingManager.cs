@@ -26,10 +26,21 @@ namespace OfficialPlugins.Compiler.Managers
 
         #endregion
 
-
+        bool GetIfChangedMemberIsIgnored(string changedMember)
+        {
+            // todo - add more here over time, including making this a HashSet
+            return changedMember == nameof(NamedObjectSave.ExposedInDerived);
+        }
 
         public async void HandleNamedObjectValueChanged(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly)
         {
+            //////////////////Early Out//////////////////////////////
+            var isIgnored = GetIfChangedMemberIsIgnored(changedMember);
+            if(isIgnored)
+            {
+                return;
+            }
+            ////////////////End Early Out////////////////////////////
 
             string typeName = null;
             object currentValue = null;
@@ -51,6 +62,11 @@ namespace OfficialPlugins.Compiler.Managers
             else if(property != null)
             {
                 typeName = property.Value?.GetType().ToString() ?? oldValue?.GetType().ToString();
+            }
+            if(typeName == null)
+            {
+                // maybe it's a strongly typed property on the NOS?
+                typeName = typeof(NamedObjectSave).GetProperty(changedMember)?.PropertyType.ToString();
             }
 
             if(instruction != null)

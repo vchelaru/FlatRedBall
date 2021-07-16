@@ -101,7 +101,14 @@ namespace OfficialPlugins.Compiler.Managers
                 FilePathsToIgnore.FirstOrDefault(item => item.FilePath == fileName);
             if (found != null)
             {
-                FilePathsToIgnore.Remove(found);
+                if(DateTime.Now > found.Expiration)
+                {
+                    FilePathsToIgnore.Remove(found);
+                }
+                else
+                {
+                    printOutput($"Ignoring file change {fileName}");
+                }
             }
 
             var shouldReactToFileChange =
@@ -144,11 +151,11 @@ namespace OfficialPlugins.Compiler.Managers
 
                         handled = true;
                     }
-                    else if(rfs != null)
+                    else if(rfs != null || GlueCommands.Self.FileCommands.IsContent(fileName))
                     {
                         // Right now we'll assume the screen owns this file, although it is possible that it's 
                         // global but not part of global content. That's a special case we'll have to handle later
-                        printOutput($"Waiting for Glue to copy reload global file {strippedName}");
+                        printOutput($"Copying and restaring due to changed {strippedName}");
                         await Task.Delay(500);
                         try
                         {
@@ -199,11 +206,10 @@ namespace OfficialPlugins.Compiler.Managers
         {
             if(ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
-                const int responseDelay = 7;
-                var expiringFilePath =
-                    new ExpiringFilePath { Expiration = DateTime.Now + TimeSpan.FromSeconds(responseDelay), 
-                    FilePath = GlueCommands.Self.FileCommands.GetCustomCodeFilePath(newEntity)};
-                FilePathsToIgnore.Add(expiringFilePath);
+                var filePath = GlueCommands.Self.FileCommands.GetCustomCodeFilePath(newEntity);
+
+
+                IgnoreNextChange(filePath);
 
                 var dto = new CreateNewEntityDto();
                 dto.EntitySave = newEntity;
@@ -213,6 +219,20 @@ namespace OfficialPlugins.Compiler.Managers
                 // selection happens before the entity is created, so let's force push the selection to the game
                 await PushGlueSelectionToGame();
             }
+        }
+
+        private void IgnoreNextChange(FilePath filePath)
+        {
+            const int responseDelay = 5;
+            var expiringFilePath =
+                new ExpiringFilePath
+                {
+                    Expiration = DateTime.Now + TimeSpan.FromSeconds(responseDelay),
+                    FilePath = filePath
+                };
+
+            printOutput($"Ignoring {expiringFilePath.FilePath} for {responseDelay} seconds");
+            FilePathsToIgnore.Add(expiringFilePath);
         }
 
         #endregion
