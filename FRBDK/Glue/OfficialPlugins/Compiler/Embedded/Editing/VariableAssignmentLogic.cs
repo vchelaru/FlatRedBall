@@ -44,10 +44,10 @@ namespace GlueControl.Editing
                     ||
                     ownerElement is Models.EntitySave;
 
-                if(setOnEntity)
+                if (setOnEntity)
                 {
                     var variableNameOnObjectInInstance = data.VariableName.Substring("this.".Length);
-                    if(forcedItem != null)
+                    if (forcedItem != null)
                     {
                         if (CommandReceiver.DoTypesMatch(forcedItem, data.InstanceOwnerGameType, ownerType))
                         {
@@ -62,7 +62,7 @@ namespace GlueControl.Editing
                         // value on all instances
                         foreach (var item in SpriteManager.ManagedPositionedObjects)
                         {
-                            if(CommandReceiver.DoTypesMatch(item, data.InstanceOwnerGameType, ownerType))
+                            if (CommandReceiver.DoTypesMatch(item, data.InstanceOwnerGameType, ownerType))
                             {
                                 screen.ApplyVariable(variableNameOnObjectInInstance, variableValue, item);
                             }
@@ -75,7 +75,7 @@ namespace GlueControl.Editing
                     variableValue = SetValueOnObjectInScreen(data, variableValue, response, screen);
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 response.Exception = e.ToString();
                 response.WasVariableAssigned = false;
@@ -122,96 +122,88 @@ namespace GlueControl.Editing
             var splitVariable = data.VariableName.Split('.');
 
             object targetInstance = null;
-
-
             // this searches for a name. we need to force it on a type too so newly-added objects can have their variables set....
 
             if (splitVariable[0] == "this" && splitVariable.Length > 1)
             {
+                targetInstance = GetRuntimeInstance(screen, splitVariable[1]);
+            }
 
-                var aarect = ShapeManager.VisibleRectangles.FirstOrDefault(item =>
+            if (targetInstance != null && splitVariable[2] == "Points" && variableValue is List<Microsoft.Xna.Framework.Vector2> vectorList)
+            {
+                variableValue = vectorList.Select(item => new FlatRedBall.Math.Geometry.Point(item.X, item.Y)).ToList();
+            }
+
+            return targetInstance;
+        }
+
+        private static object GetRuntimeInstance(FlatRedBall.Screens.Screen screen, string objectName)
+        {
+            object targetInstance = null;
+
+            var aarect = ShapeManager.VisibleRectangles.FirstOrDefault(item =>
+                item.Parent == null &&
+                item.Name == objectName);
+            if (aarect != null)
+            {
+                targetInstance = aarect;
+            }
+
+            if (targetInstance == null)
+            {
+                var circle = ShapeManager.VisibleCircles.FirstOrDefault(item =>
                     item.Parent == null &&
-                    item.Name == splitVariable[1]);
-                if (aarect != null)
+                    item.Name == objectName);
+                if (circle != null)
                 {
-                    targetInstance = aarect;
+                    targetInstance = circle;
                 }
+            }
 
-                if (targetInstance == null)
+            if (targetInstance == null)
+            {
+                var polygon = ShapeManager.VisiblePolygons.FirstOrDefault(item =>
+                    item.Parent == null &&
+                    item.Name == objectName);
+
+                if (polygon != null)
                 {
-                    var circle = ShapeManager.VisibleCircles.FirstOrDefault(item =>
-                        item.Parent == null &&
-                        item.Name == splitVariable[1]);
-                    if (circle != null)
-                    {
-                        targetInstance = circle;
-                    }
+                    targetInstance = polygon;
                 }
+            }
 
-                if (targetInstance == null)
+            if (targetInstance == null)
+            {
+                var sprite = SpriteManager.AutomaticallyUpdatedSprites.FirstOrDefault(item =>
+                    item.Parent == null &&
+                    item.Name == objectName);
+
+                if (sprite != null)
                 {
-                    var polygon = ShapeManager.VisiblePolygons.FirstOrDefault(item =>
-                        item.Parent == null &&
-                        item.Name == splitVariable[1]);
-
-                    if (polygon != null)
-                    {
-                        targetInstance = polygon;
-                        if (splitVariable[2] == "Points" && variableValue is List<Microsoft.Xna.Framework.Vector2> vectorList)
-                        {
-                            variableValue = vectorList.Select(item => new FlatRedBall.Math.Geometry.Point(item.X, item.Y)).ToList();
-                        }
-                    }
+                    targetInstance = sprite;
                 }
+            }
 
-                if (targetInstance == null)
+            if (targetInstance == null)
+            {
+                var collisionRelationship = CollisionManager.Self.Relationships.FirstOrDefault(item =>
+                    item.Name == objectName);
+
+                if (collisionRelationship != null)
                 {
-                    var sprite = SpriteManager.AutomaticallyUpdatedSprites.FirstOrDefault(item =>
-                        item.Parent == null &&
-                        item.Name == splitVariable[1]);
-
-                    if (sprite != null)
-                    {
-                        targetInstance = sprite;
-                    }
+                    targetInstance = collisionRelationship;
                 }
+            }
 
-                // Try "Entire CollisionRelationship" first, and if not, do the normal assignment
-                if (targetInstance == null)
-                {
-                    if (splitVariable[2] == "Entire CollisionRelationship")
-                    {
-                        targetInstance = CollisionManager.Self.Relationships.FirstOrDefault(item => item.Name == splitVariable[1]);
-                    }
-                }
+            if (targetInstance == null)
+            {
+                targetInstance = InstanceLogic.Self.ListsAddedAtRuntime.FirstOrDefault(item =>
+                    item.Name == objectName);
+            }
 
-                // handled below
-                //if (targetInstance == null)
-                //{
-                //    if (splitVariable[2] == "Entire TileShapeCollection")
-                //    {
-                //        screen.GetInstance(splitVariable[1], screen, out _, out targetInstance);
-
-                //    }
-                //}
-
-
-                if (targetInstance == null)
-                {
-                    var collisionRelationship = CollisionManager.Self.Relationships.FirstOrDefault(item =>
-                        item.Name == splitVariable[1]);
-
-                    if (collisionRelationship != null)
-                    {
-                        targetInstance = collisionRelationship;
-                    }
-                }
-
-                if (targetInstance == null)
-                {
-                    screen.GetInstance(splitVariable[1], screen, out _, out targetInstance);
-                }
-
+            if (targetInstance == null)
+            {
+                screen.GetInstance(objectName, screen, out _, out targetInstance);
             }
 
             return targetInstance;
@@ -223,7 +215,7 @@ namespace GlueControl.Editing
 
             var collisionRelationship = CollisionManager.Self.Relationships.FirstOrDefault(item => item.Name == relationshipName);
 
-            if(collisionRelationship != null)
+            if (collisionRelationship != null)
             {
                 T Get<T>(string name) => GlueControl.Models.PropertySaveListExtensions.GetValue<T>(namedObject.Properties, name);
 
@@ -242,8 +234,8 @@ namespace GlueControl.Editing
 
                 var currentScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen;
 
-                currentScreen.GetInstance($"{firstObjectName}.Unused", currentScreen, out _, out firstObject);
-                currentScreen.GetInstance($"{secondObjectName}.Unused", currentScreen, out _, out secondObject);
+                firstObject = GetRuntimeInstance(currentScreen, firstObjectName);
+                secondObject = GetRuntimeInstance(currentScreen, secondObjectName);
 
                 var isFirstList = firstObject is IList;
                 var isSecondList = secondObject is IList;
@@ -339,12 +331,12 @@ namespace GlueControl.Editing
                 }
 
                 var needsDelegate = currentRelationshipType.Name.StartsWith("Delegate");
-                if(needsDelegate)
+                if (needsDelegate)
                 {
                     var hasDelegate = currentRelationshipType.GetField("CollisionFunction")
                         ?.GetValue(collisionRelationship) != null;
 
-                    if(!hasDelegate)
+                    if (!hasDelegate)
                     {
                         handled = false;
                     }
@@ -364,10 +356,10 @@ namespace GlueControl.Editing
             screen.GetInstance(namedObject.InstanceName, screen, out _, out object tileShapeCollectionAsObject);
 
             var tileShapeCollection = tileShapeCollectionAsObject as FlatRedBall.TileCollisions.TileShapeCollection;
-            if(tileShapeCollection != null)
+            if (tileShapeCollection != null)
             {
                 T Get<T>(string name) => GlueControl.Models.PropertySaveListExtensions.GetValue<T>(namedObject.Properties, name);
-                void ClearShapeCollection() 
+                void ClearShapeCollection()
                 {
                     tileShapeCollection.Visible = false;
                     // What if this was added to the ShapeManager? New versions of generated code don't,
@@ -404,16 +396,16 @@ namespace GlueControl.Editing
                         tileShapeCollection.BottomSeedY = remainderY;
                         tileShapeCollection.SortAxis = FlatRedBall.Math.Axis.X;
 
-                        for(int x = 0; x < widthFill; x++)
+                        for (int x = 0; x < widthFill; x++)
                         {
-                            for(int y = 0; y < heightFill; y++)
+                            for (int y = 0; y < heightFill; y++)
                             {
                                 tileShapeCollection.AddCollisionAtWorld(
                                     leftFill + x * tileSize + tileSize / 2.0f,
                                     topFill - y * tileSize - tileSize / 2.0f);
                             }
                         }
-                        if(isVisible)
+                        if (isVisible)
                         {
                             tileShapeCollection.Visible = true;
                         }
@@ -447,11 +439,11 @@ namespace GlueControl.Editing
 
                         }
 
-                        for(int x = 0; x < widthFill; x++)
+                        for (int x = 0; x < widthFill; x++)
                         {
-                            if(x == 0 || x == widthFill - 1)
+                            if (x == 0 || x == widthFill - 1)
                             {
-                                for(int y = 0; y < heightFill; y++)
+                                for (int y = 0; y < heightFill; y++)
                                 {
                                     tileShapeCollection.AddCollisionAtWorld(
                                         leftFill + x * tileSize + tileSize / 2.0f,
@@ -479,7 +471,7 @@ namespace GlueControl.Editing
 
                         break;
                     case 4: // FromType
-                        
+
                         ClearShapeCollection();
 
                         var mapName = Get<string>("SourceTmxName");
@@ -488,16 +480,16 @@ namespace GlueControl.Editing
                         var isMerged = Get<bool>("IsCollisionMerged");
                         if (!string.IsNullOrEmpty(mapName) && !string.IsNullOrEmpty(typeName))
                         {
-                            var map = screen.GetType().GetMethod("GetFile").Invoke(null, new object[] { mapName }) as 
+                            var map = screen.GetType().GetMethod("GetFile").Invoke(null, new object[] { mapName }) as
                                 FlatRedBall.TileGraphics.LayeredTileMap;
 
-                            if(map == null)
+                            if (map == null)
                             {
                                 var mapAsObject = FlatRedBall.Instructions.Reflection.LateBinder.GetValueStatic(screen, mapName);
                                 map = mapAsObject as FlatRedBall.TileGraphics.LayeredTileMap;
                             }
 
-                            if(map != null)
+                            if (map != null)
                             {
                                 if (isMerged)
                                 {
@@ -516,7 +508,7 @@ namespace GlueControl.Editing
 
                             }
                         }
-                            
+
                         handled = true;
 
                         break;
@@ -539,13 +531,10 @@ namespace GlueControl.Editing
             var firstObjectName = Get<string>("FirstCollisionName");
             var secondObjectName = Get<string>("SecondCollisionName");
 
-            firstObject = null;
-            secondObject = null;
-
             var currentScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen;
 
-            currentScreen.GetInstance($"{firstObjectName}.Unused", currentScreen, out _, out firstObject);
-            currentScreen.GetInstance($"{secondObjectName}.Unused", currentScreen, out _, out secondObject);
+            firstObject = GetRuntimeInstance(currentScreen, firstObjectName);
+            secondObject = GetRuntimeInstance(currentScreen, secondObjectName);
 
             var isFirstList = firstObject is IList;
             var isSecondList = secondObject is IList;
@@ -569,7 +558,7 @@ namespace GlueControl.Editing
                     return typeof(ListVsShapeCollectionRelationship<>)
                         .MakeGenericType(firstType.GenericTypeArguments[0]);
                 }
-                else if(isFirstList && isSecondTileShapeCollection)
+                else if (isFirstList && isSecondTileShapeCollection)
                 {
                     return typeof(CollidableListVsTileShapeCollectionRelationship<>)
                         .MakeGenericType(firstType.GenericTypeArguments[0]);
@@ -589,7 +578,7 @@ namespace GlueControl.Editing
                     return typeof(PositionedObjectVsShapeCollection<>)
                         .MakeGenericType(firstType);
                 }
-                else if(isSecondTileShapeCollection)
+                else if (isSecondTileShapeCollection)
                 {
                     return typeof(CollidableVsTileShapeCollectionRelationship<>)
                         .MakeGenericType(firstType.GenericTypeArguments[0]);
@@ -648,12 +637,12 @@ namespace GlueControl.Editing
 
             return variableValue;
         }
-    
+
         public static object ConvertStringToType(string type, string variableValue)
         {
             object convertedValue = variableValue;
 
-            if(type == typeof(List<Microsoft.Xna.Framework.Vector2>).ToString())
+            if (type == typeof(List<Microsoft.Xna.Framework.Vector2>).ToString())
             {
                 convertedValue = JsonConvert.DeserializeObject<List<Microsoft.Xna.Framework.Vector2>>(variableValue);
             }
@@ -731,7 +720,7 @@ namespace GlueControl.Editing
                         break;
                     case "Texture2D":
                     case "Microsoft.Xna.Framework.Graphics.Texture2D":
-                        if(!string.IsNullOrWhiteSpace(variableValue))
+                        if (!string.IsNullOrWhiteSpace(variableValue))
                         {
                             convertedValue = FlatRedBallServices.Load<Microsoft.Xna.Framework.Graphics.Texture2D>(
                                 variableValue, FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName);
@@ -743,7 +732,7 @@ namespace GlueControl.Editing
                         break;
                     case "FlatRedBall.Graphics.Animation.AnimationChainList":
                     case "AnimationChainList":
-                        if(!string.IsNullOrWhiteSpace(variableValue))
+                        if (!string.IsNullOrWhiteSpace(variableValue))
                         {
                             convertedValue = FlatRedBallServices.Load<FlatRedBall.Graphics.Animation.AnimationChainList>(
                                 variableValue, FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName);
