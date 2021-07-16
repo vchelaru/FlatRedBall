@@ -16,7 +16,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration
         {
             if(IsGlueControlManagerGenerationEnabled)
             {
-                codeBlock.Line("GlueControlManager glueControlManager;");
+                codeBlock.Line("GlueControl.GlueControlManager glueControlManager;");
             }
         }
 
@@ -24,7 +24,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration
         {
             if (IsGlueControlManagerGenerationEnabled)
             {
-                codeBlock.Line($"glueControlManager = new GlueControlManager({PortNumber});");
+                codeBlock.Line($"glueControlManager = new GlueControl.GlueControlManager({PortNumber});");
                 codeBlock.Line("glueControlManager.Start();");
                 codeBlock.Line("this.Exiting += (not, used) => glueControlManager.Kill();");
             }

@@ -1,7 +1,7 @@
 ﻿#define SupportsEditMode
 #define IncludeSetVariable
-using EditModeProject.GlueControl.Dtos;
-using EditModeProject.GlueControl.Editing;
+using GlueControl.Dtos;
+using GlueControl.Editing;
 using Microsoft.Xna.Framework;
 
 using FlatRedBall;
@@ -15,8 +15,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using {ProjectNamespace};
 
-namespace EditModeProject.GlueControl
+
+namespace GlueControl
 {
     static class CommandReceiver
     {

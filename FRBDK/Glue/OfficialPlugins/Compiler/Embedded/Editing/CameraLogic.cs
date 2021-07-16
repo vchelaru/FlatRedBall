@@ -1,10 +1,12 @@
 ﻿{CompilerDirectives}
 
+using {ProjectNamespace};
+
 using FlatRedBall;
 using FlatRedBall.Gui;
 using System;
 
-namespace {ProjectNamespace}.GlueControl.Editing
+namespace GlueControl.Editing
 {
     class CameraLogic
     {

@@ -11,7 +11,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace {ProjectNamespace}.GlueControl.Forms
+namespace GlueControl.Forms
 {
     class ObjectCreationWindow : UserControl
     {
@@ -80,7 +80,7 @@ namespace {ProjectNamespace}.GlueControl.Forms
                             && t.GetConstructors().Any(c=>c.GetParameters().Count() == 0));
 #else
             var filteredTypes =
-                typesInThisAssembly.Where(t => t.GetInterfaces().Contains(typeof(Performance.IEntityFactory))
+                typesInThisAssembly.Where(t => t.GetInterfaces().Contains(typeof(IEntityFactory))
                             && t.GetConstructor(Type.EmptyTypes) != null);
 #endif
 

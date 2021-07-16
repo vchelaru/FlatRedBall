@@ -1,6 +1,5 @@
 ﻿{CompilerDirectives}
 
-using EditModeProject.GlueControl.Dtos;
 using FlatRedBall;
 using FlatRedBall.Math.Geometry;
 using System;
@@ -12,9 +11,10 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using FlatRedBall.Math.Collision;
 using System.Collections;
+using GlueControl.Dtos;
 
 
-namespace {ProjectNamespace}.GlueControl.Editing
+namespace GlueControl.Editing
 {
     public static class VariableAssignmentLogic
     {

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace {ProjectNamespace}.GlueControl.Models
+namespace GlueControl.Models
 {
     #region Enums
 
@@ -102,11 +102,59 @@ namespace {ProjectNamespace}.GlueControl.Models
         public bool AddToManagers
         {
             get; set;
-        } = true; // true is the default and won't serialize if true
+        }
 
+        public bool IncludeInIVisible
+        {
+            get;
+            set;
+        }
+
+        public bool IncludeInICollidable
+        {
+            get;
+            set;
+        }
+
+
+        public bool IncludeInIClickable
+        {
+            get;
+            set;
+        }
 
         public List<InstructionSave> InstructionSaves = new List<InstructionSave>();
 
+        public NamedObjectSave()
+        {
+            //GenerateTimedEmit = true;
+            //Instantiate = true;
+            //mTypedMembersReadOnly = new ReadOnlyCollection<TypedMemberBase>(mTypedMembers);
+            ////Events = new List<EventSave>();
+
+            IncludeInIVisible = true;
+            IncludeInIClickable = true;
+            IncludeInICollidable = true;
+            //CallActivity = true;
+
+            //AttachToContainer = true;
+            AddToManagers = true;
+
+            //FulfillsRequirement = "<NONE>";
+
+            //ContainedObjects = new List<NamedObjectSave>();
+
+            //// Sept 25, 2020
+            //// This used to be 
+            //// true, but this causes
+            //// unexpected behavior when 
+            //// 2D games are resized. If we
+            //// set this to false, then layers
+            //// will automatically match the camera,
+            //// which probably matches what the user expects
+            ////IndependentOfCamera = true;
+            //IndependentOfCamera = false;
+        }
     }
 
     public static class NamedObjectSaveExtensionMethods

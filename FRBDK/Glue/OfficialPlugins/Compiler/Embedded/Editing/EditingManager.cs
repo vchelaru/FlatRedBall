@@ -13,7 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace {ProjectNamespace}.GlueControl.Editing
+namespace GlueControl.Editing
 {
     #region Enums
 

@@ -1,8 +1,7 @@
 ﻿{CompilerDirectives}
 
 
-using {ProjectNamespace}.GlueControl.Dtos;
-using {ProjectNamespace}.GlueControl;
+using GlueControl.Dtos;
 
 using FlatRedBall;
 using FlatRedBall.Graphics;
@@ -19,6 +18,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System;
+using GlueControl.Editing;
 
 #if SupportsEditMode
 using Newtonsoft.Json;
@@ -26,7 +26,7 @@ using Newtonsoft.Json;
 
 
 
-namespace {ProjectNamespace}
+namespace GlueControl
 {
 
     public class GlueControlManager

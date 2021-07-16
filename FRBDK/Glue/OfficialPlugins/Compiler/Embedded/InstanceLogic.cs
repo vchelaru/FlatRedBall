@@ -12,10 +12,10 @@ using FlatRedBall.Math;
 using FlatRedBall.Screens;
 using FlatRedBall.Graphics;
 
-using {ProjectNamespace}.GlueControl.Models;
+using GlueControl.Models;
 
 
-namespace {ProjectNamespace}.GlueControl
+namespace GlueControl
 {
     public class InstanceLogic
     {
@@ -70,7 +70,7 @@ namespace {ProjectNamespace}.GlueControl
             var elementGameType = dto.ElementNameGame; // CommandReceiver.GlueToGameElementName(glueName);
             var ownerType = this.GetType().Assembly.GetType(elementGameType);
             GlueElement ownerElement = null;
-            if(CustomGlueElements.ContainsKey(elementGameType))
+            if (CustomGlueElements.ContainsKey(elementGameType))
             {
                 ownerElement = CustomGlueElements[elementGameType];
             }
@@ -80,9 +80,9 @@ namespace {ProjectNamespace}.GlueControl
                 ||
                 ownerElement != null && ownerElement is EntitySave;
 
-            if(addedToEntity)
+            if (addedToEntity)
             {
-                if(forcedItem != null)
+                if (forcedItem != null)
                 {
                     if (CommandReceiver.DoTypesMatch(forcedItem, elementGameType))
                     {
@@ -92,17 +92,17 @@ namespace {ProjectNamespace}.GlueControl
                 else
                 {
                     // need to loop through every object and see if it is an instance of the entity type, and if so, add this object to it
-                    for(int i = 0; i < SpriteManager.ManagedPositionedObjects.Count; i++)
+                    for (int i = 0; i < SpriteManager.ManagedPositionedObjects.Count; i++)
                     {
                         var item = SpriteManager.ManagedPositionedObjects[i];
-                        if(CommandReceiver.DoTypesMatch(item, elementGameType))
+                        if (CommandReceiver.DoTypesMatch(item, elementGameType))
                         {
                             HandleCreateInstanceCommandFromGlueInner(dto, currentAddObjectIndex, item);
                         }
                     }
                 }
             }
-            else if(forcedItem == null && 
+            else if (forcedItem == null &&
                 (ScreenManager.CurrentScreen.GetType().FullName == elementGameType || ownerType?.IsAssignableFrom(ScreenManager.CurrentScreen.GetType()) == true))
             {
                 // it's added to the base screen, so just add it to null
@@ -112,7 +112,7 @@ namespace {ProjectNamespace}.GlueControl
         }
 
         private object HandleCreateInstanceCommandFromGlueInner(Models.NamedObjectSave deserialized, int currentAddObjectIndex, PositionedObject owner)
-        { 
+        {
             // The owner is the
             // PositionedObject which
             // owns the newly-created instance
@@ -132,20 +132,20 @@ namespace {ProjectNamespace}.GlueControl
 
                 var sourceClassTypeGame = CommandReceiver.GlueToGameElementName(deserialized.SourceClassType);
 
-                for(int i = 0; i < currentAddObjectIndex; i++)
+                for (int i = 0; i < currentAddObjectIndex; i++)
                 {
                     var dto = CommandReceiver.GlobalGlueToGameCommands[i];
-                    if(dto is Dtos.AddObjectDto addObjectDtoRerun)
+                    if (dto is Dtos.AddObjectDto addObjectDtoRerun)
                     {
                         HandleCreateInstanceCommandFromGlue(addObjectDtoRerun, currentAddObjectIndex, newPositionedObject);
                     }
-                    else if(dto is Dtos.GlueVariableSetData glueVariableSetDataRerun)
+                    else if (dto is Dtos.GlueVariableSetData glueVariableSetDataRerun)
                     {
                         GlueControl.Editing.VariableAssignmentLogic.SetVariable(glueVariableSetDataRerun, newPositionedObject);
                     }
                 }
             }
-            else if(deserialized.SourceType == GlueControl.Models.SourceType.FlatRedBallType &&
+            else if (deserialized.SourceType == GlueControl.Models.SourceType.FlatRedBallType &&
                 deserialized.IsCollisionRelationship())
             {
                 newObject = TryCreateCollisionRelationship(deserialized);
@@ -156,39 +156,57 @@ namespace {ProjectNamespace}.GlueControl
                 {
                     case "FlatRedBall.Math.Geometry.AxisAlignedRectangle":
                     case "AxisAlignedRectangle":
-                        var aaRect = new FlatRedBall.Math.Geometry.AxisAlignedRectangle();
-                        if (deserialized.AddToManagers)
                         {
-                            ShapeManager.AddAxisAlignedRectangle(aaRect);
-                            ShapesAddedAtRuntime.Add(aaRect);
+                            var aaRect = new FlatRedBall.Math.Geometry.AxisAlignedRectangle();
+                            if (deserialized.AddToManagers)
+                            {
+                                ShapeManager.AddAxisAlignedRectangle(aaRect);
+                                ShapesAddedAtRuntime.Add(aaRect);
+                            }
+                            if (owner is ICollidable asCollidable && deserialized.IncludeInICollidable)
+                            {
+                                asCollidable.Collision.Add(aaRect);
+                            }
+                            newPositionedObject = aaRect;
                         }
-                        newPositionedObject = aaRect;
 
                         break;
                     case "FlatRedBall.Math.Geometry.Circle":
                     case "Circle":
-                        var circle = new FlatRedBall.Math.Geometry.Circle();
-                        if (deserialized.AddToManagers)
                         {
-                            ShapeManager.AddCircle(circle);
-                            ShapesAddedAtRuntime.Add(circle);
+                            var circle = new FlatRedBall.Math.Geometry.Circle();
+                            if (deserialized.AddToManagers)
+                            {
+                                ShapeManager.AddCircle(circle);
+                                ShapesAddedAtRuntime.Add(circle);
+                            }
+                            if (owner is ICollidable asCollidable && deserialized.IncludeInICollidable)
+                            {
+                                asCollidable.Collision.Add(circle);
+                            }
+                            newPositionedObject = circle;
                         }
-                        newPositionedObject = circle;
                         break;
                     case "FlatRedBall.Math.Geometry.Polygon":
                     case "Polygon":
-                        var polygon = new FlatRedBall.Math.Geometry.Polygon();
-                        if (deserialized.AddToManagers)
                         {
-                            ShapeManager.AddPolygon(polygon);
-                            ShapesAddedAtRuntime.Add(polygon);
+                            var polygon = new FlatRedBall.Math.Geometry.Polygon();
+                            if (deserialized.AddToManagers)
+                            {
+                                ShapeManager.AddPolygon(polygon);
+                                ShapesAddedAtRuntime.Add(polygon);
+                            }
+                            if (owner is ICollidable asCollidable && deserialized.IncludeInICollidable)
+                            {
+                                asCollidable.Collision.Add(polygon);
+                            }
+                            newPositionedObject = polygon;
                         }
-                        newPositionedObject = polygon;
                         break;
                     case "FlatRedBall.Sprite":
                     case "Sprite":
                         var sprite = new FlatRedBall.Sprite();
-                        if(deserialized.AddToManagers)
+                        if (deserialized.AddToManagers)
                         {
                             SpriteManager.AddSprite(sprite);
                             SpritesAddedAtRuntime.Add(sprite);
@@ -209,7 +227,7 @@ namespace {ProjectNamespace}.GlueControl
                         break;
                 }
             }
-            if(newPositionedObject != null)
+            if (newPositionedObject != null)
             {
                 newObject = newPositionedObject;
 
@@ -229,7 +247,7 @@ namespace {ProjectNamespace}.GlueControl
         private object TryCreateCollisionRelationship(Models.NamedObjectSave deserialized)
         {
             var type = Editing.VariableAssignmentLogic.GetDesiredRelationshipType(deserialized, out object firstObject, out object secondObject);
-            if(type == null)
+            if (type == null)
             {
                 return null;
             }
@@ -241,11 +259,11 @@ namespace {ProjectNamespace}.GlueControl
                 if (constructor != null)
                 {
                     List<object> parameters = new List<object>();
-                    if(firstObject != null)
+                    if (firstObject != null)
                     {
                         parameters.Add(firstObject);
                     }
-                    if(secondObject != null)
+                    if (secondObject != null)
                     {
                         parameters.Add(secondObject);
                     }
@@ -269,12 +287,12 @@ namespace {ProjectNamespace}.GlueControl
         {
             var containsKey =
                 CustomGlueElements.ContainsKey(entityNameGameType);
-            if(!containsKey && !string.IsNullOrWhiteSpace(entityNameGameType) && entityNameGameType.Contains('.') == false)
+            if (!containsKey && !string.IsNullOrWhiteSpace(entityNameGameType) && entityNameGameType.Contains('.') == false)
             {
                 // It may not be qualified, which means it is coming from content that doesn't qualify - like Tiled
                 entityNameGameType = CustomGlueElements.Keys.FirstOrDefault(item => item.Split('.').Last() == entityNameGameType);
                 // Now that we've qualified, try again
-                if(!string.IsNullOrWhiteSpace(entityNameGameType))
+                if (!string.IsNullOrWhiteSpace(entityNameGameType))
                 {
                     containsKey =
                         CustomGlueElements.ContainsKey(entityNameGameType);
@@ -285,7 +303,7 @@ namespace {ProjectNamespace}.GlueControl
             // or an unqualified name like MyEntity (if from Tiled). If from Tiled, then this code attempts
             // to fully qualify the entity name. This attempt to qualify may make the name null, so we need to
             // check and tolerate null.
-            if(string.IsNullOrWhiteSpace(entityNameGameType))
+            if (string.IsNullOrWhiteSpace(entityNameGameType))
             {
                 return null;
             }
@@ -303,7 +321,7 @@ namespace {ProjectNamespace}.GlueControl
             {
                 PositionedObject newPositionedObject;
                 var factory = FlatRedBall.TileEntities.TileEntityInstantiator.GetFactory(entityNameGameType);
-                if(factory != null)
+                if (factory != null)
                 {
                     newPositionedObject = factory?.CreateNew() as FlatRedBall.PositionedObject;
                 }
@@ -314,7 +332,7 @@ namespace {ProjectNamespace}.GlueControl
                          as PositionedObject;
                     //newPositionedObject = ownerType.GetConstructor(new System.Type[0]).Invoke(new object[0]);
                 }
-                if(newPositionedObject != null && newPositionedObject is IDestroyable asDestroyable)
+                if (newPositionedObject != null && newPositionedObject is IDestroyable asDestroyable)
                 {
                     DestroyablesAddedAtRuntime.Add(asDestroyable);
                 }
@@ -328,7 +346,7 @@ namespace {ProjectNamespace}.GlueControl
             {
                 asNameable.Name = deserialized.InstanceName;
             }
-            if(newObject is PositionedObject asPositionedObject)
+            if (newObject is PositionedObject asPositionedObject)
             {
                 asPositionedObject.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
                 asPositionedObject.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
@@ -356,7 +374,7 @@ namespace {ProjectNamespace}.GlueControl
             }
 
             GlueControlManager.Self.SendToGlue(addObjectDto);
-        
+
             CommandReceiver.GlobalGlueToGameCommands.Add(addObjectDto);
         }
 
@@ -364,7 +382,7 @@ namespace {ProjectNamespace}.GlueControl
 
         private string GetNameFor(string itemType)
         {
-            if(itemType.Contains('.'))
+            if (itemType.Contains('.'))
             {
                 var lastDot = itemType.LastIndexOf('.');
                 itemType = itemType.Substring(lastDot + 1);
@@ -532,7 +550,7 @@ namespace {ProjectNamespace}.GlueControl
 
             newSprite.Name = newName;
 
-            if(SpriteManager.AutomaticallyUpdatedSprites.Contains(originalSprite))
+            if (SpriteManager.AutomaticallyUpdatedSprites.Contains(originalSprite))
             {
                 SpriteManager.AddSprite(newSprite);
             }
@@ -548,7 +566,7 @@ namespace {ProjectNamespace}.GlueControl
 
             AddFloatValue(addObjectDto, "X", newSprite.X);
             AddFloatValue(addObjectDto, "Y", newSprite.Y);
-            if(newSprite.TextureScale > 0)
+            if (newSprite.TextureScale > 0)
             {
                 AddFloatValue(addObjectDto, nameof(newSprite.TextureScale), newSprite.TextureScale);
             }
@@ -559,18 +577,18 @@ namespace {ProjectNamespace}.GlueControl
             }
 
 
-            if(newSprite.Texture != null)
+            if (newSprite.Texture != null)
             {
                 // Texture must be assigned before pixel values.
-                AddValue(addObjectDto, "Texture", typeof(Microsoft.Xna.Framework.Graphics.Texture2D).FullName, 
+                AddValue(addObjectDto, "Texture", typeof(Microsoft.Xna.Framework.Graphics.Texture2D).FullName,
                     newSprite.Texture.Name);
 
                 // Glue uses the pixel coords, but we can check the coordinates more easily
-                if(newSprite.LeftTextureCoordinate != 0)
+                if (newSprite.LeftTextureCoordinate != 0)
                 {
                     AddFloatValue(addObjectDto, nameof(newSprite.LeftTexturePixel), newSprite.LeftTexturePixel);
                 }
-                if(newSprite.TopTextureCoordinate != 0)
+                if (newSprite.TopTextureCoordinate != 0)
                 {
                     AddFloatValue(addObjectDto, nameof(newSprite.TopTexturePixel), newSprite.TopTexturePixel);
                 }
@@ -583,7 +601,7 @@ namespace {ProjectNamespace}.GlueControl
                     AddFloatValue(addObjectDto, nameof(newSprite.BottomTexturePixel), newSprite.BottomTexturePixel);
                 }
             }
-            if(newSprite.AnimationChains?.Name != null)
+            if (newSprite.AnimationChains?.Name != null)
             {
                 AddValue(addObjectDto, "AnimationChains", typeof(FlatRedBall.Graphics.Animation.AnimationChainList).FullName,
                     newSprite.AnimationChains.Name);
@@ -592,12 +610,12 @@ namespace {ProjectNamespace}.GlueControl
             {
                 AddStringValue(addObjectDto, "CurrentChainName", newSprite.CurrentChainName);
             }
-            if(newSprite.TextureAddressMode != Microsoft.Xna.Framework.Graphics.TextureAddressMode.Clamp)
+            if (newSprite.TextureAddressMode != Microsoft.Xna.Framework.Graphics.TextureAddressMode.Clamp)
             {
-                AddValue(addObjectDto, nameof(newSprite.TextureAddressMode), 
+                AddValue(addObjectDto, nameof(newSprite.TextureAddressMode),
                     nameof(Microsoft.Xna.Framework.Graphics.TextureAddressMode), (int)newSprite.TextureAddressMode);
             }
-            if(newSprite.Red != 0.0f)
+            if (newSprite.Red != 0.0f)
             {
                 AddFloatValue(addObjectDto, nameof(newSprite.Red), newSprite.Red);
             }
@@ -609,16 +627,16 @@ namespace {ProjectNamespace}.GlueControl
             {
                 AddFloatValue(addObjectDto, nameof(newSprite.Blue), newSprite.Blue);
             }
-            if(newSprite.Alpha != 1.0f)
+            if (newSprite.Alpha != 1.0f)
             {
                 AddFloatValue(addObjectDto, nameof(newSprite.Alpha), newSprite.Alpha);
             }
-            if(newSprite.ColorOperation != ColorOperation.Texture)
+            if (newSprite.ColorOperation != ColorOperation.Texture)
             {
                 AddValue(addObjectDto, nameof(newSprite.ColorOperation),
                     nameof(ColorOperation), (int)newSprite.ColorOperation);
             }
-            if(newSprite.BlendOperation != BlendOperation.Regular)
+            if (newSprite.BlendOperation != BlendOperation.Regular)
             {
                 AddValue(addObjectDto, nameof(newSprite.BlendOperation),
                     nameof(BlendOperation), (int)newSprite.BlendOperation);
@@ -629,7 +647,7 @@ namespace {ProjectNamespace}.GlueControl
             // that value on Glue but if it's animated that would get overwritten anyway, so maybe it's no biggie?
             if (newSprite.FlipHorizontal != false)
             {
-                AddValue(addObjectDto, nameof(newSprite.FlipHorizontal), 
+                AddValue(addObjectDto, nameof(newSprite.FlipHorizontal),
                     "bool", newSprite.FlipHorizontal);
             }
             if (newSprite.FlipVertical != false)
@@ -648,7 +666,7 @@ namespace {ProjectNamespace}.GlueControl
         #endregion
 
         #region Delete Instance from Game
-        
+
         public void DeleteInstanceByGame(PositionedObject positionedObject)
         {
             // Vic June 27, 2021
@@ -682,17 +700,17 @@ namespace {ProjectNamespace}.GlueControl
                     variableValue = (float)asDouble;
                 }
             }
-            else if(instruction.Type == typeof(FlatRedBall.Graphics.Animation.AnimationChainList).FullName ||
+            else if (instruction.Type == typeof(FlatRedBall.Graphics.Animation.AnimationChainList).FullName ||
                 instruction.Type == typeof(Microsoft.Xna.Framework.Graphics.Texture2D).FullName)
             {
-                if(variableValue is string asString && !string.IsNullOrWhiteSpace(asString))
+                if (variableValue is string asString && !string.IsNullOrWhiteSpace(asString))
                 {
                     variableValue = Editing.VariableAssignmentLogic.ConvertStringToType(instruction.Type, asString);
                 }
             }
-            else if(instruction.Type == typeof(Microsoft.Xna.Framework.Graphics.TextureAddressMode).Name)
+            else if (instruction.Type == typeof(Microsoft.Xna.Framework.Graphics.TextureAddressMode).Name)
             {
-                if(variableValue is int asInt)
+                if (variableValue is int asInt)
                 {
                     variableValue = (Microsoft.Xna.Framework.Graphics.TextureAddressMode)asInt;
                 }
@@ -704,10 +722,10 @@ namespace {ProjectNamespace}.GlueControl
 
             FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(instance, variableName, variableValue);
         }
-    
+
         public void DestroyDynamicallyAddedInstances()
         {
-            for(int i = ShapesAddedAtRuntime.AxisAlignedRectangles.Count-1; i > -1; i--)
+            for (int i = ShapesAddedAtRuntime.AxisAlignedRectangles.Count - 1; i > -1; i--)
             {
                 ShapeManager.Remove(ShapesAddedAtRuntime.AxisAlignedRectangles[i]);
             }
@@ -733,9 +751,9 @@ namespace {ProjectNamespace}.GlueControl
                 DestroyablesAddedAtRuntime[i].Destroy();
             }
 
-            foreach(var list in ListsAddedAtRuntime)
+            foreach (var list in ListsAddedAtRuntime)
             {
-                for(int i = list.Count-1; i > -1; i--)
+                for (int i = list.Count - 1; i > -1; i--)
                 {
                     list[i].RemoveSelfFromListsBelongingTo();
                 }

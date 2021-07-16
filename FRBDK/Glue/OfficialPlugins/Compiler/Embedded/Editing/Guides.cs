@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace {ProjectNamespace}.GlueControl.Editing
+namespace GlueControl.Editing
 {
     class Guides
     {

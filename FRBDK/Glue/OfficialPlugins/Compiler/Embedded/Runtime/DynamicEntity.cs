@@ -5,11 +5,16 @@ using FlatRedBall;
 using FlatRedBall.Graphics;
 using FlatRedBall.Math.Geometry;
 
-namespace EditModeProject.GlueControl.Runtime
+namespace GlueControl.Runtime
 {
     public class DynamicEntity : PositionedObject, IDestroyable
     {
         public string EditModeType { get; set; }
+
+        public ShapeCollection Collision
+        {
+            get; private set;
+        } = new ShapeCollection();
 
         public void Destroy()
         {

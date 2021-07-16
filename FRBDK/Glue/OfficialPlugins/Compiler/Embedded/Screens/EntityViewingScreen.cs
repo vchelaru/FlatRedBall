@@ -4,7 +4,7 @@ using FlatRedBall;
 using FlatRedBall.Graphics;
 using FlatRedBall.Screens;
 
-namespace {ProjectNamespace}.Screens
+namespace GlueControl.Screens
 {
     class EntityViewingScreen : Screen
     {
