@@ -105,7 +105,7 @@ namespace GlueControl.Editing
 
             if (instance == null)
             {
-                instance = InstanceLogic.Self.ListsAddedAtRuntime.FirstOrDefault(item => item.Name == containerName);
+                instance = InstanceLogic.Self.ListsAddedAtRuntime.FirstOrDefault(item => (item as FlatRedBall.Utilities.INameable).Name == containerName);
             }
 
             if (instance == null)

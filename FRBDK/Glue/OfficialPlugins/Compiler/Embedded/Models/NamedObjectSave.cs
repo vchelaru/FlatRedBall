@@ -93,6 +93,22 @@ namespace GlueControl.Models
             set;
         }
 
+        string mSourceClassGenericType;
+
+        public string SourceClassGenericType
+        {
+            get { return mSourceClassGenericType; }
+            set
+            {
+                mSourceClassGenericType = value;
+
+                if (mSourceClassGenericType == "<NONE>")
+                {
+                    mSourceClassGenericType = null;
+                }
+            }
+        }
+
         public string InstanceName
         {
             get;

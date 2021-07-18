@@ -13,6 +13,9 @@ using FlatRedBall.Screens;
 using FlatRedBall.Graphics;
 
 using GlueControl.Models;
+using System.Collections;
+using GlueControl.Runtime;
+
 
 
 namespace GlueControl
@@ -28,7 +31,7 @@ namespace GlueControl
 
         public List<IDestroyable> DestroyablesAddedAtRuntime = new List<IDestroyable>();
 
-        public List<PositionedObjectList<PositionedObject>> ListsAddedAtRuntime = new List<PositionedObjectList<PositionedObject>>();
+        public List<IList> ListsAddedAtRuntime = new List<IList>();
 
         #endregion
 
@@ -221,9 +224,7 @@ namespace GlueControl
                         newObject = shapeCollection;
                         break;
                     case "FlatRedBall.Math.PositionedObjectList<T>":
-                        var list = new PositionedObjectList<PositionedObject>();
-                        ListsAddedAtRuntime.Add(list);
-                        newObject = list;
+                        newObject = CreatePositionedObjectList(deserialized);
                         break;
                 }
             }
@@ -242,6 +243,45 @@ namespace GlueControl
             }
 
             return newObject;
+        }
+
+        private Object CreatePositionedObjectList(Models.NamedObjectSave namedObject)
+        {
+            var sourceClassGenericType = namedObject.SourceClassGenericType;
+
+            var gameTypeName =
+                CommandReceiver.GlueToGameElementName(sourceClassGenericType);
+
+            var type = this.GetType().Assembly.GetType(gameTypeName);
+
+            object newList = null;
+
+            if (type == null)
+            {
+                // see if it's contained in the list of dynamic entities
+
+                var isDynamicEntity = CustomGlueElements.ContainsKey(gameTypeName);
+                if (isDynamicEntity)
+                {
+                    var list = new PositionedObjectList<DynamicEntity>();
+                    ListsAddedAtRuntime.Add(list);
+                    newList = list;
+                }
+                else
+                {
+                    var list = new PositionedObjectList<PositionedObject>();
+                    ListsAddedAtRuntime.Add(list);
+                    newList = list;
+                }
+            }
+            else
+            {
+                var poList = typeof(PositionedObjectList<>).MakeGenericType(type);
+                var list = poList.GetConstructor(new Type[0]).Invoke(new object[0]) as IList;
+                ListsAddedAtRuntime.Add(list);
+                newList = list;
+            }
+            return newList;
         }
 
         private object TryCreateCollisionRelationship(Models.NamedObjectSave deserialized)
@@ -758,7 +798,8 @@ namespace GlueControl
             {
                 for (int i = list.Count - 1; i > -1; i--)
                 {
-                    list[i].RemoveSelfFromListsBelongingTo();
+                    var positionedObject = list[i] as PositionedObject;
+                    positionedObject.RemoveSelfFromListsBelongingTo();
                 }
             }
             ShapesAddedAtRuntime.Clear();

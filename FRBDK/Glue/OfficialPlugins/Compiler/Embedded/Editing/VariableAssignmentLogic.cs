@@ -90,21 +90,38 @@ namespace GlueControl.Editing
 
             try
             {
+                var variableName = splitVariable[2];
+
                 object targetInstance = GetTargetInstance(data, ref variableValue, screen);
 
-                if (targetInstance is CollisionRelationship && splitVariable[2] == "Entire CollisionRelationship")
+                var didAttemptToAssign = false;
+                if (targetInstance is CollisionRelationship && variableName == "Entire CollisionRelationship")
                 {
                     response.WasVariableAssigned = TryAssignCollisionRelationship(splitVariable[1],
                         JsonConvert.DeserializeObject<Models.NamedObjectSave>(data.VariableValue));
+                    didAttemptToAssign = true;
                 }
-                else if (targetInstance is FlatRedBall.TileCollisions.TileShapeCollection && splitVariable[2] == "Entire TileShapeCollection")
+
+                if (!didAttemptToAssign && targetInstance is FlatRedBall.TileCollisions.TileShapeCollection && variableName == "Entire TileShapeCollection")
                 {
                     response.WasVariableAssigned = TryAssignTileShapeCollection(splitVariable[1],
                         JsonConvert.DeserializeObject<Models.NamedObjectSave>(data.VariableValue));
+                    didAttemptToAssign = true;
                 }
-                else if (targetInstance != null)
+
+                if (!didAttemptToAssign && targetInstance is IList)
                 {
-                    response.WasVariableAssigned = screen.ApplyVariable(splitVariable[2], variableValue, targetInstance);
+                    didAttemptToAssign = variableName == "SortAxis" ||
+                        variableName == "IsSortListEveryFrameChecked" ||
+                        variableName == "PartitionWidthHeight";
+
+                    response.WasVariableAssigned = didAttemptToAssign;
+                }
+
+                if (!didAttemptToAssign && targetInstance != null)
+                {
+                    response.WasVariableAssigned = screen.ApplyVariable(variableName, variableValue, targetInstance);
+                    didAttemptToAssign = true;
                 }
             }
             catch (Exception e)
@@ -198,7 +215,7 @@ namespace GlueControl.Editing
             if (targetInstance == null)
             {
                 targetInstance = InstanceLogic.Self.ListsAddedAtRuntime.FirstOrDefault(item =>
-                    item.Name == objectName);
+                    (item as FlatRedBall.Utilities.INameable).Name == objectName);
             }
 
             if (targetInstance == null)
