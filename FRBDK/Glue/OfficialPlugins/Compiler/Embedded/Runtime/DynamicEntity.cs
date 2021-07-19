@@ -7,7 +7,7 @@ using FlatRedBall.Math.Geometry;
 
 namespace GlueControl.Runtime
 {
-    public class DynamicEntity : PositionedObject, IDestroyable
+    public class DynamicEntity : PositionedObject, IDestroyable, ICollidable
     {
         public string EditModeType { get; set; }
 
