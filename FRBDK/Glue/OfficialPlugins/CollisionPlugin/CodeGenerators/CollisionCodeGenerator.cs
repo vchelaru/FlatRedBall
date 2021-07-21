@@ -151,6 +151,8 @@ namespace OfficialPlugins.CollisionPlugin
             }
             else if(isSecondTileShapeCollection)
             {
+                // It's possible the second is null since these often come from maps, and the level editor could load something invalid:
+                codeBlock = codeBlock.If($"{secondCollidable} != null");
                 // same method used for both list and non-list
                 codeBlock.Line($"{instanceName} = " +
                     $"FlatRedBall.Math.Collision.CollisionManagerTileShapeCollectionExtensions.CreateTileRelationship(" +

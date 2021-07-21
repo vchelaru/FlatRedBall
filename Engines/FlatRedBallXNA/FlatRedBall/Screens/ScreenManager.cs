@@ -423,20 +423,50 @@ namespace FlatRedBall.Screens
                     {
                         mCurrentScreen = newScreen;
                     }
-                    newScreen.Initialize(addToManagers);
-                    TimeManager.SetNextFrameTimeTo0 = true;
-
-                    newScreen.ApplyRestartVariables();
 
                     if(IsInEditMode)
                     {
-                        // stop everything:
-                        foreach(var item in SpriteManager.ManagedPositionedObjects)
+                        try
                         {
-                            item.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
-                            item.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
+                            // in edit mode, we tolerate crashes on initialize since this is common 
+                            newScreen.Initialize(addToManagers);
+                            TimeManager.SetNextFrameTimeTo0 = true;
+
+                            newScreen.ApplyRestartVariables();
+
+
+                            // stop everything:
+                            foreach (var item in SpriteManager.ManagedPositionedObjects)
+                            {
+                                item.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
+                                item.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
+                            }
+                        }
+                        catch
+                        {
+                            // I guess do nothing?
+                        }
+
+                    }
+                    else
+                    {
+                        newScreen.Initialize(addToManagers);
+                        TimeManager.SetNextFrameTimeTo0 = true;
+
+                        newScreen.ApplyRestartVariables();
+
+                        if (IsInEditMode)
+                        {
+                            // stop everything:
+                            foreach (var item in SpriteManager.ManagedPositionedObjects)
+                            {
+                                item.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
+                                item.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
+                            }
                         }
                     }
+
+
                 }
                 mSuppressStatePush = false;
 
