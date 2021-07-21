@@ -220,6 +220,12 @@ namespace GlueControl.Editing
 
             if (targetInstance == null)
             {
+                targetInstance = InstanceLogic.Self.ShapeCollectionsAddedAtRuntime.FirstOrDefault(item =>
+                    item.Name == objectName);
+            }
+
+            if (targetInstance == null)
+            {
                 screen.GetInstance(objectName, screen, out _, out targetInstance);
             }
 

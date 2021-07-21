@@ -625,7 +625,10 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 bool nameExists = false;
                 do
                 {
-                    nameExists = element.AllNamedObjects
+                    // need to consider base objects not just the current element
+                    var allNamedObjectsRecursive = element.GetAllNamedObjectsRecurisvely().ToArray();
+
+                    nameExists = allNamedObjectsRecursive
                         .Any(item => item != namedObject &&
                                      item.InstanceName == desiredName);
 

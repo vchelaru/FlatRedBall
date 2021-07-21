@@ -425,6 +425,13 @@ namespace OfficialPlugins.Compiler.Managers
 
         internal void HandleVariableAdded(CustomVariable newVariable)
         {
+            // Vic says - When a new variable is added, we don't need to restart. However,
+            // later that variable might get assigned on instances of an object, and if it is
+            // then that would probably fail because it would attempt to assign through reflection.
+            // Therefore, we could either restart here so that all future assignments work, or we could
+            // restart on the variable add. While it might result in fewer restarts to restart when the
+            // variable is assigned (since the variable may not actually get assigned in Glue), it could
+            // also lead to confusion. Therefore, we'll just restart here:
             StopAndRestartTask($"Restarting because of added variable {newVariable}");
         }
 
