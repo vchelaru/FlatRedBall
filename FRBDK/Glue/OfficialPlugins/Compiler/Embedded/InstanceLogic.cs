@@ -294,7 +294,6 @@ namespace GlueControl
             else
             {
                 object toReturn = null;
-                // can we make a new one here?
                 var constructor = type.GetConstructors().FirstOrDefault();
                 if (constructor != null)
                 {
@@ -309,6 +308,7 @@ namespace GlueControl
                     }
                     var collisionRelationship =
                         constructor.Invoke(parameters.ToArray()) as FlatRedBall.Math.Collision.CollisionRelationship;
+                    collisionRelationship.Partitions = FlatRedBall.Math.Collision.CollisionManager.Self.Partitions;
                     toReturn = collisionRelationship;
                     FlatRedBall.Math.Collision.CollisionManager.Self.Relationships.Add(collisionRelationship);
                 }
