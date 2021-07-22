@@ -307,7 +307,8 @@ namespace OfficialPlugins.MonoGameContent
                 var viewModel = new DelegateBasedErrorViewModel();
                 viewModel.UniqueId = "Missing Monogame Builder for " + rfsFilePath.Standardized;
                 viewModel.Details = 
-                    $"Could not build {rfsFilePath.FullPath} because the Monogame Builder Tool could not be found at {commandLineBuildExe.FullPath}";
+                    $"Could not build {rfsFilePath.FullPath} because the Monogame Builder Tool could not be found at {commandLineBuildExe.FullPath} " +
+                    $"You can probably solve this by installing MonoGame for Visual Studio.";
                 // double click command?
                 viewModel.IfIsFixedDelegate = () =>
                 {
