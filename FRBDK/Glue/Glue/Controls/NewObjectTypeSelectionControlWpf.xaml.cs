@@ -72,6 +72,13 @@ namespace GlueFormsCore.Controls
 
         private void OkClicked(object sender, RoutedEventArgs e)
         {
+            if(ViewModel?.SourceType == FlatRedBall.Glue.SaveClasses.SourceType.Gum)
+            {
+                var selectedItem = ViewModel.SelectedItem;
+                // force it here because this type is used in the rest of Glue (for now)
+                ViewModel.SourceType = FlatRedBall.Glue.SaveClasses.SourceType.FlatRedBallType;
+                ViewModel.SelectedItem = selectedItem;
+            }
             this.DialogResult = true;
         }
 

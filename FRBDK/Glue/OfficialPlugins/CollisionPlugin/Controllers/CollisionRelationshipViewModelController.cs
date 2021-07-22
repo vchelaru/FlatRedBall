@@ -632,6 +632,26 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                         .Any(item => item != namedObject &&
                                      item.InstanceName == desiredName);
 
+                    if(!nameExists)
+                    {
+                        // if we got here, then there are no conflicting names in 
+                        // the current element or any base elements, but we should
+                        // also check derived in case the user made a relationship that
+                        // is level-specific, and now is trying to make a similar one in 
+                        // the base screen
+                        var derivedElements = ObjectFinder.Self.GetAllElementsThatInheritFrom(element);
+
+                        foreach(var derivedElement in derivedElements)
+                        {
+                            nameExists = derivedElement.AllNamedObjects.Any(item => item.DefinedByBase == false && item.InstanceName == desiredName);
+
+                            if(nameExists)
+                            {
+                                break;
+                            }
+                        }
+                    }
+
                     if(nameExists)
                     {
                         if(StringFunctions.HasNumberAtEnd(desiredName))

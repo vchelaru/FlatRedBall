@@ -451,13 +451,16 @@ namespace GlueControl
         {
             var value = setEditMode.IsInEditMode;
 #if SupportsEditMode
-            FlatRedBall.Screens.ScreenManager.IsInEditMode = value;
-            FlatRedBall.Gui.GuiManager.Cursor.RequiresGameWindowInFocus = !value;
+            if (value != FlatRedBall.Screens.ScreenManager.IsInEditMode)
+            {
+                FlatRedBall.Screens.ScreenManager.IsInEditMode = value;
+                FlatRedBall.Gui.GuiManager.Cursor.RequiresGameWindowInFocus = !value;
 
-            FlatRedBall.TileEntities.TileEntityInstantiator.CreationFunction =
-                InstanceLogic.Self.CreateEntity;
+                FlatRedBall.TileEntities.TileEntityInstantiator.CreationFunction =
+                    InstanceLogic.Self.CreateEntity;
 
-            RestartScreenRerunCommands(applyRestartVariables: true);
+                RestartScreenRerunCommands(applyRestartVariables: true);
+            }
 #endif
         }
 

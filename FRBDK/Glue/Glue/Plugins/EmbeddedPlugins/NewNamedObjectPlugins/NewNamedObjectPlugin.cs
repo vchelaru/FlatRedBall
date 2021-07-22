@@ -5,6 +5,9 @@ using System.Text;
 using System.ComponentModel.Composition;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using EditorObjects.IoC;
+using FlatRedBall.Glue.SetVariable;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewNamedObjectPlugins
 {
@@ -19,36 +22,58 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewNamedObjectPlugins
         void AdjustNewNamedObject(NamedObjectSave nos)
         {
             //ExportedImplementations.GlueState.Self.CurrentElement;
-            IElement element = EditorLogic.CurrentElement;
+            IElement element = GlueState.Self.CurrentElement;
 
             if (element != null)
             {
                 if(nos.SourceType == SourceType.FlatRedBallType)
                 {
-                    switch (nos.GetAssetTypeInfo()?.FriendlyName)
+                    var ati = nos.GetAssetTypeInfo();
+                    if(ati == AvailableAssetTypes.CommonAtis.Sprite)
                     {
-                        case "Sprite":
-                            AdjustSprite(nos, element);
-                            break;
-                        case "Circle":
-                            AdjustCircle(nos, element);
-                            break;
-                        case "SpriteFrame":
-                            AdjustSpriteFrame(nos, element);
-                            break;
-                        case "AxisAlignedRectangle":
-                            AdjustAxisAlignedRectangle(nos, element);
-                            break;
-                        case "Layer":
-                            AdjustLayer(nos, element);
-                            break;
-
-
+                        AdjustSprite(nos, element);
                     }
-
+                    else if(ati == AvailableAssetTypes.CommonAtis.Circle)
+                    {
+                        AdjustCircle(nos, element);
+                    }
+                    else if(nos.GetAssetTypeInfo()?.FriendlyName == "SpriteFrame")
+                    {
+                        AdjustSpriteFrame(nos, element);
+                    }
+                    else if(ati == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle)
+                    {
+                        AdjustAxisAlignedRectangle(nos, element);
+                    }
+                    else if(ati == AvailableAssetTypes.CommonAtis.Layer)
+                    {
+                        AdjustLayer(nos, element);
+                    }
+                    else if(ati == AvailableAssetTypes.CommonAtis.ShapeCollection)
+                    {
+                        AdjustShapeCollection(nos, element);
+                    }
+                    else if(ati == AvailableAssetTypes.CommonAtis.PositionedObjectList)
+                    {
+                        AdjustPositionedObjectList(nos, element);
+                    }
                 }
             }
 
+        }
+
+        private static void AdjustPositionedObjectList(NamedObjectSave nos, IElement element)
+        {
+            nos.ExposedInDerived = true;
+            Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(nameof(nos.ExposedInDerived), false,
+                namedObjectSave: nos);
+        }
+
+        private void AdjustShapeCollection(NamedObjectSave nos, IElement element)
+        {
+            nos.ExposedInDerived = true;
+            Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(nameof(nos.ExposedInDerived), false,
+                namedObjectSave: nos);
         }
 
         private void AdjustLayer(NamedObjectSave nos, IElement element)
@@ -79,9 +104,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewNamedObjectPlugins
 
             if (Is2D(element))
             {
-
                 nos.SetVariable("PixelSize", .5f);
-
             }
         }
 

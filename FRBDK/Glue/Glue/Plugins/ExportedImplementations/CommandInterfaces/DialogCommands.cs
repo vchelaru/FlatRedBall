@@ -146,11 +146,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             else
             {
-                var toAdd = AvailableAssetTypes.Self.AllAssetTypes
+                var addableTypes = AvailableAssetTypes.Self.AllAssetTypes
                     .Where(item => item.CanBeObject)
-                    .OrderBy(item => item.FriendlyName);
+                    .OrderBy(item => item.FriendlyName)
+                    .ToArray();
 
-                addObjectViewModel.FlatRedBallAndCustomTypes.AddRange(toAdd);
+                var gumTypes = addableTypes.Where(item => ((bool)PluginManager.CallPluginMethod("Gum Plugin", "IsAssetTypeInfoGum", item)) == true)
+                    .ToArray();
+                var flatRedBallTypes = addableTypes.Except(gumTypes).ToArray();
+
+                addObjectViewModel.FlatRedBallAndCustomTypes.AddRange(flatRedBallTypes);
+                addObjectViewModel.GumTypes.AddRange(gumTypes);
             }
             addObjectViewModel.AvailableEntities =
                 ObjectFinder.Self.GlueProject.Entities.ToList();

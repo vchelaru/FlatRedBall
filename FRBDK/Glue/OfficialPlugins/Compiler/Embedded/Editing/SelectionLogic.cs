@@ -22,13 +22,13 @@ namespace GlueControl.Editing
             bool punchThrough, ElementEditingMode elementEditingMode)
         {
             PositionedObject entityOver = null;
-            if(currentEntities.Count > 0 && punchThrough == false)
+            if (currentEntities.Count > 0 && punchThrough == false)
             {
                 var currentEntityOver = currentEntities.FirstOrDefault(item => IsCursorOver(item));
-                if(currentEntityOver == null)
+                if (currentEntityOver == null)
                 {
                     var markerOver = selectionMarkers.FirstOrDefault(item => item.IsCursorOverThis());
-                    if(markerOver != null)
+                    if (markerOver != null)
                     {
                         var index = selectionMarkers.IndexOf(markerOver);
                         currentEntityOver = currentEntities[index];
@@ -37,12 +37,12 @@ namespace GlueControl.Editing
                 entityOver = currentEntityOver;
             }
 
-            if(punchThrough)
+            if (punchThrough)
             {
                 tempPunchThroughList.Clear();
             }
 
-            if(entityOver == null)
+            if (entityOver == null)
             {
                 IEnumerable<PositionedObject> availableItems = GetAvailableObjects(elementEditingMode);
 
@@ -68,15 +68,15 @@ namespace GlueControl.Editing
 
             if (punchThrough)
             {
-                if(tempPunchThroughList.Count == 0)
+                if (tempPunchThroughList.Count == 0)
                 {
                     entityOver = null;
                 }
-                else if(tempPunchThroughList.Count == 1)
+                else if (tempPunchThroughList.Count == 1)
                 {
                     entityOver = tempPunchThroughList[0];
                 }
-                else if( tempPunchThroughList.Any(item => currentEntities.Contains(item)) == false)
+                else if (tempPunchThroughList.Any(item => currentEntities.Contains(item)) == false)
                 {
                     // just pick the first
                     entityOver = tempPunchThroughList[0];
@@ -84,7 +84,7 @@ namespace GlueControl.Editing
                 else
                 {
                     var index = tempPunchThroughList.IndexOf(currentEntities.FirstOrDefault());
-                    if(index < tempPunchThroughList.Count - 1)
+                    if (index < tempPunchThroughList.Count - 1)
                     {
                         entityOver = tempPunchThroughList[index + 1];
                     }
@@ -108,7 +108,7 @@ namespace GlueControl.Editing
                 availableItems = SpriteManager.ManagedPositionedObjects
                     .Where(item => item is CameraControllingEntity == false)
                     .Concat(SpriteManager.AutomaticallyUpdatedSprites.Where(item => item.Parent == null))
-                    .Concat(ShapeManager.VisibleRectangles.Where(item => item.Parent == null)) 
+                    .Concat(ShapeManager.VisibleRectangles.Where(item => item.Parent == null))
                     .Concat(ShapeManager.VisibleCircles.Where(item => item.Parent == null))
                     .Concat(ShapeManager.VisiblePolygons.Where(item => item.Parent == null))
 
@@ -160,7 +160,7 @@ namespace GlueControl.Editing
             GetDimensionsForInner(itemOver, ref minX, ref maxX, ref minY, ref maxY);
 
             const float minDimension = 16;
-            if(maxX - minX < minDimension)
+            if (maxX - minX < minDimension)
             {
                 var extraToAdd = minDimension - (maxX - minX);
 
@@ -168,7 +168,7 @@ namespace GlueControl.Editing
                 maxX += extraToAdd / 2.0f;
             }
 
-            if(maxY - minY < minDimension)
+            if (maxY - minY < minDimension)
             {
                 var extraToAdd = minDimension - (maxY - minY);
 
@@ -188,7 +188,7 @@ namespace GlueControl.Editing
                 minY = Math.Min(minY, itemOver.Y - asScalable.ScaleY);
                 maxY = Math.Max(maxY, itemOver.Y + asScalable.ScaleY);
             }
-            else if(itemOver is Circle asCircle)
+            else if (itemOver is Circle asCircle)
             {
                 minX = Math.Min(minX, itemOver.X - asCircle.Radius);
                 maxX = Math.Max(maxX, itemOver.X + asCircle.Radius);
@@ -196,18 +196,34 @@ namespace GlueControl.Editing
                 minY = Math.Min(minY, itemOver.Y - asCircle.Radius);
                 maxY = Math.Max(maxY, itemOver.Y + asCircle.Radius);
             }
-            else if(itemOver is Polygon polygon)
+#if HasGum
+            else if(itemOver is GumCoreShared.FlatRedBall.Embedded.PositionedObjectGueWrapper gumWrapper)
             {
-                if(polygon.Points != null)
+                var gue = gumWrapper.GumObject;
+
+                var absoluteOrigin = gumWrapper.GetAbsolutePositionInFrbSpace(gue);
+
+                // assume top left origin for now
+                minX = Math.Min(minX, absoluteOrigin.X - gue.GetAbsoluteWidth()/2.0f);
+                maxX = Math.Max(maxX, absoluteOrigin.X + gue.GetAbsoluteWidth()/2.0f);
+
+                minY = Math.Min(minY, absoluteOrigin.Y - gue.GetAbsoluteHeight()/2.0f);
+                maxY = Math.Max(maxY, absoluteOrigin.Y + gue.GetAbsoluteHeight() / 2.0f);
+            }
+
+#endif
+            else if (itemOver is Polygon polygon)
+            {
+                if (polygon.Points != null)
                 {
-                    for(int i = 0; i < polygon.Points.Count; i++)
+                    for (int i = 0; i < polygon.Points.Count; i++)
                     {
                         var absolute = polygon.AbsolutePointPosition(i);
 
                         minX = Math.Min(minX, absolute.X);
                         maxX = Math.Max(maxX, absolute.X);
 
-                        minY = Math.Min(minY, absolute.Y) ;
+                        minY = Math.Min(minY, absolute.Y);
                         maxY = Math.Max(maxY, absolute.Y);
                     }
                 }

@@ -91,7 +91,7 @@ namespace FlatRedBall.Glue.ViewModels
 
             RefreshFilteredItems();
 
-            NotifyPropertyChanged();
+            NotifyPropertyChanged(nameof(SourceType));
 
             SelectIfNoSelection();
         }
@@ -128,6 +128,18 @@ namespace FlatRedBall.Glue.ViewModels
                 if (value)
                 {
                     SourceType = SourceType.File;
+                }
+            }
+        }
+
+        public bool IsGumType
+        {
+            get => SourceType == SourceType.Gum;
+            set
+            {
+                if(value)
+                {
+                    SourceType = SourceType.Gum;
                 }
             }
         }
@@ -364,6 +376,11 @@ namespace FlatRedBall.Glue.ViewModels
             get => Get<List<AssetTypeInfo>>();
             set => Set(value);
         }
+        public List<AssetTypeInfo> GumTypes
+        {
+            get => Get<List<AssetTypeInfo>>();
+            set => Set(value);
+        }
         public List<EntitySave> AvailableEntities 
         { 
             get => Get<List<EntitySave>>();
@@ -450,6 +467,9 @@ namespace FlatRedBall.Glue.ViewModels
                 case SourceType.FlatRedBallType:
                     AllSelectedItemWrappers.AddRange(FlatRedBallAndCustomTypes.Select(item => MakeWrapper(item)));
                     break;
+                case SourceType.Gum:
+                    AllSelectedItemWrappers.AddRange(GumTypes.Select(item => MakeWrapper(item)));
+                    break;
                 case SourceType.Entity:
                     AllSelectedItemWrappers.AddRange(AvailableEntities.Select(item => MakeWrapper(item )));
                     break;
@@ -500,6 +520,7 @@ namespace FlatRedBall.Glue.ViewModels
         public AddObjectViewModel()
         {
             FlatRedBallAndCustomTypes = new List<AssetTypeInfo>();
+            GumTypes = new List<AssetTypeInfo>();
             AvailableEntities = new List<EntitySave>();
             AvailableFiles = new List<ReferencedFileSave>();
         }

@@ -29,6 +29,13 @@ namespace GumCoreShared.FlatRedBall.Embedded
 
         public PositionedObjectGueWrapper(PositionedObject frbObject, GraphicalUiElement gumObject) : base()
         {
+            // July 21, 2021
+            // Why don't we attach
+            // this to the frbObject.
+            // This allows code which looks
+            // through children (like the level
+            // editor) to find this.
+            this.AttachTo(frbObject);
 
             var renderable = new InvisibleRenderable();
             renderable.Visible = true;

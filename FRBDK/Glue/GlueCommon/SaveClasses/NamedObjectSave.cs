@@ -32,7 +32,7 @@ namespace FlatRedBall.Glue.SaveClasses
         File,
         Entity,
         FlatRedBallType,
-        CustomType
+        Gum
     }
 
     public enum LayerCoordinateType

@@ -435,6 +435,8 @@ namespace GumPlugin
             base.AddToToolBar(gumToolbar, "Tools");
         }
 
+        public bool HasGum() => AppState.Self.GumProjectSave != null;
+
         private void HandleFileRemoved(IElement container, ReferencedFileSave file)
         {
             if(file.Name.EndsWith(".gumx"))
@@ -863,6 +865,12 @@ namespace GumPlugin
             }
 
             return true;
+        }
+
+        public bool IsAssetTypeInfoGum(AssetTypeInfo ati)
+        {
+            return ati != null &&
+                AssetTypeInfoManager.Self.IsAssetTypeInfoGum(ati);
         }
 
         #endregion

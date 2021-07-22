@@ -28,6 +28,7 @@
             <StackPanel>
                 <RadioButton IsChecked="{Binding IsFlatRedBallType}">FlatRedBall or Custom Type</RadioButton>
                 <RadioButton IsChecked="{Binding IsEntityType}">Entity</RadioButton>
+                <RadioButton IsChecked="{Binding IsGumType}">Gum</RadioButton>
                 <RadioButton IsChecked="{Binding IsFromFileType}">From File</RadioButton>
             </StackPanel>
         </GroupBox>

@@ -137,11 +137,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             var newNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(viewModel, gameScreen, null);
 
             newNos.ExposedInDerived = true;
-            // Vic says - why do we do this? It interrupts flow...
-            // Update - we have to because we have to set derived
-            //GlueState.Self.CurrentNamedObjectSave = newNos;
             ProjectManager.UpdateAllDerivedElementFromBaseValues(regenerateCode:false, gameScreen);
-
             AnyButtonClicked();
         }
 

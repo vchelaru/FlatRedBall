@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+﻿using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration
     {
         public static bool GenerateFull { get; set; }
 
-                public static string GetEmbeddedStringContents(string embeddedLocation)
+        public static string GetEmbeddedStringContents(string embeddedLocation)
         {
             var byteArray = FileManager.GetByteArrayFromEmbeddedResource(
                 typeof(GlueControlCodeGenerator).Assembly,
@@ -31,6 +32,10 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode)
             {
                 compilerDirectives += "#define SupportsEditMode\r\n";
+            }
+            if((bool)PluginManager.CallPluginMethod("Gum Plugin", "HasGum"))
+            {
+                compilerDirectives += "#define HasGum\r\n";
             }
             asString = asString.Replace("{CompilerDirectives}", compilerDirectives);
             return asString;
