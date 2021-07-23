@@ -114,6 +114,14 @@ namespace GumCoreShared.FlatRedBall.Embedded
             }
         }
 
+        /// <summary>
+        /// Returns the absolute world position of the center of the argument graphicalUiElement.
+        /// </summary>
+        /// <remarks>
+        /// This can be used to position FRB objects (such as collision shapes) according to the absolute
+        /// position of the Glue object.</remarks>
+        /// <param name="graphicalUiElement">The argument GraphicalUiElement.</param>
+        /// <returns>The absolute position of the center of the GraphicalUiElement</returns>
         public Vector3 GetAbsolutePositionInFrbSpace(GraphicalUiElement graphicalUiElement)
         {
             var parentX = GumObject.GetAbsoluteX();
@@ -129,10 +137,15 @@ namespace GumCoreShared.FlatRedBall.Embedded
 
             var toReturn = new Vector3();
             
+            // Don't use Width and Height as those may have the wrong position values.
+            //toReturn.X = FrbObject.X + gumObjectAsIpso.X + rectLeftOffset
+            //    + graphicalUiElement.Width / 2.0f;
+            //toReturn.Y = FrbObject.Y - gumObjectAsIpso.Y - rectTopOffset
+            //    - graphicalUiElement.Height / 2.0f;
             toReturn.X = FrbObject.X + gumObjectAsIpso.X + rectLeftOffset
-                + graphicalUiElement.Width / 2.0f;
+                + graphicalUiElement.GetAbsoluteWidth()/ 2.0f;
             toReturn.Y = FrbObject.Y - gumObjectAsIpso.Y - rectTopOffset
-                - graphicalUiElement.Height / 2.0f;
+                - graphicalUiElement.GetAbsoluteHeight() / 2.0f;
 
             toReturn.Z = FrbObject.Z;
 

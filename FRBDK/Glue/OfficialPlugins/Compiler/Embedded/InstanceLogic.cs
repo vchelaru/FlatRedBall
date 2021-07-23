@@ -33,6 +33,11 @@ namespace GlueControl
 
         public List<IList> ListsAddedAtRuntime = new List<IList>();
 
+#if HasGum
+        public List<Gum.Wireframe.GraphicalUiElement> GumObjectsAddedAtRuntime = new List<Gum.Wireframe.GraphicalUiElement>();
+        public List<GumCoreShared.FlatRedBall.Embedded.PositionedObjectGueWrapper> GumWrappersAddedAtRuntime = new List<GumCoreShared.FlatRedBall.Embedded.PositionedObjectGueWrapper>();
+#endif
+
         #endregion
 
         #region Fields/Properties
@@ -227,6 +232,11 @@ namespace GlueControl
                         newObject = CreatePositionedObjectList(deserialized);
                         break;
                 }
+
+                if (newObject == null)
+                {
+                    newObject = TryCreateGumObject(deserialized, owner);
+                }
             }
             if (newPositionedObject != null)
             {
@@ -243,6 +253,53 @@ namespace GlueControl
             }
 
             return newObject;
+        }
+
+        private object TryCreateGumObject(NamedObjectSave deserialized, PositionedObject owner)
+        {
+#if HasGum
+            var type = this.GetType().Assembly.GetType(deserialized.SourceClassType);
+            var isGum = type != null && typeof(Gum.Wireframe.GraphicalUiElement).IsAssignableFrom(type);
+
+            if (isGum)
+            {
+                // create the Gum object using its constructor, and add it to a wrapper:
+                // generated code does:
+                //{var oldLayoutSuspended = global::Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended; global::Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = true; ButtonRuntimeInstance = new EditModeProject.GumRuntimes.DefaultForms.ButtonRuntime();global::Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = oldLayoutSuspended; ButtonRuntimeInstance.UpdateFontRecursive();ButtonRuntimeInstance.UpdateLayout();}
+                /*
+                 *  ButtonRuntimeInstance.AddToManagers(RenderingLibrary.SystemManagers.Default, System.Linq.Enumerable.FirstOrDefault(FlatRedBall.Gum.GumIdb.AllGumLayersOnFrbLayer(LayerProvidedByContainer)));
+                    var wrapperForAttachment = new GumCoreShared.FlatRedBall.Embedded.PositionedObjectGueWrapper(this, ButtonRuntimeInstance);
+                    FlatRedBall.SpriteManager.AddPositionedObject(wrapperForAttachment);
+                    gumAttachmentWrappers.Add(wrapperForAttachment);
+                 */
+
+                var oldLayoutSuspended = global::Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended;
+                global::Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = true;
+                var constructor = type.GetConstructor(new Type[] { typeof(bool), typeof(bool) });
+                var newGumObjectInstance = //new EditModeProject.GumRuntimes.DefaultForms.ButtonRuntime();
+                    constructor.Invoke(new object[] { true, true }) as Gum.Wireframe.GraphicalUiElement;
+
+                global::Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = oldLayoutSuspended;
+                newGumObjectInstance.UpdateFontRecursive();
+                newGumObjectInstance.UpdateLayout();
+
+                // eventually support layered, but not for now.....
+                newGumObjectInstance.AddToManagers(RenderingLibrary.SystemManagers.Default, null);
+
+                if (owner != null)
+                {
+                    var wrapperForAttachment = new GumCoreShared.FlatRedBall.Embedded.PositionedObjectGueWrapper(owner, newGumObjectInstance);
+                    FlatRedBall.SpriteManager.AddPositionedObject(wrapperForAttachment);
+
+                    //gumAttachmentWrappers.Add(wrapperForAttachment);
+                    GumWrappersAddedAtRuntime.Add(wrapperForAttachment);
+                }
+                GumObjectsAddedAtRuntime.Add(newGumObjectInstance);
+
+                return newGumObjectInstance;
+            }
+#endif
+            return null;
         }
 
         private Object CreatePositionedObjectList(Models.NamedObjectSave namedObject)
@@ -802,6 +859,21 @@ namespace GlueControl
                     positionedObject.RemoveSelfFromListsBelongingTo();
                 }
             }
+
+#if HasGum
+
+            for (int i = GumObjectsAddedAtRuntime.Count - 1; i > -1; i--)
+            {
+                GumObjectsAddedAtRuntime[i].Destroy();
+            }
+            for(int i = GumWrappersAddedAtRuntime.Count - 1; i > -1; i--)
+            {
+                GumWrappersAddedAtRuntime[i].RemoveSelfFromListsBelongingTo();
+            }
+            GumObjectsAddedAtRuntime.Clear();
+            GumWrappersAddedAtRuntime.Clear();
+#endif
+
             ShapesAddedAtRuntime.Clear();
             SpritesAddedAtRuntime.Clear();
             DestroyablesAddedAtRuntime.Clear();

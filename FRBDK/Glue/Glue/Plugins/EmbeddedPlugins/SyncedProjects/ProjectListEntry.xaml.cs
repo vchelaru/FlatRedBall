@@ -88,28 +88,29 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                 startInfo.UseShellExecute = true; // needed in .net core according to:
                 // https://github.com/dotnet/corefx/issues/10361
 
-                var startedProcess = Process.Start(startInfo);
 
-                if (startedProcess != null)
+                try
                 {
-                    bool openedWithGlue = false;
+                    var startedProcess = Process.Start(startInfo);
+                    var openedWithGlue = startedProcess.ProcessName == "Glue";
 
-                    try
+                    if(openedWithGlue)
                     {
-                        openedWithGlue = startedProcess.ProcessName == "Glue";
-
-                        if(openedWithGlue)
-                        {
-                            MessageBox.Show("Your machine has the file\n\n" + fileToOpen + "\n\nassociated with Glue.  " +
-                                "It should probably be associated with a programming IDE like Visual Studio");
-                        }
-                    }
-                    catch(InvalidOperationException)
-                    {
-                        // An error with this code has been reported, but I'm not sure why. It's not damaging to just ignore it, and say that there was a failure:
-                        GlueCommands.Self.PrintOutput("An error has occurred when trying to open the project. Please try again if Visual Studio has not opened.");
+                        MessageBox.Show("Your machine has the file\n\n" + fileToOpen + "\n\nassociated with Glue.  " +
+                            "It should probably be associated with a programming IDE like Visual Studio");
                     }
                 }
+                catch(InvalidOperationException)
+                {
+                    // An error with this code has been reported, but I'm not sure why. It's not damaging to just ignore it, and say that there was a failure:
+                    GlueCommands.Self.PrintOutput("An error has occurred when trying to open the project. Please try again if Visual Studio has not opened.");
+                }
+                catch(Exception e)
+                {
+                    GlueCommands.Self.PrintOutput($"An error has occurred when trying to open the project file {fileToOpen}." +
+                        $"You can still open this project manually through Windows Explorer or Visual Studio. Additional info:\n\n{e}");
+                }
+
             }
         }
 
