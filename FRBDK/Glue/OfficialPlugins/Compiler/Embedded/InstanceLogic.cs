@@ -15,7 +15,7 @@ using FlatRedBall.Graphics;
 using GlueControl.Models;
 using System.Collections;
 using GlueControl.Runtime;
-
+using GlueControl.Dtos;
 
 
 namespace GlueControl
@@ -150,6 +150,10 @@ namespace GlueControl
                     else if (dto is Dtos.GlueVariableSetData glueVariableSetDataRerun)
                     {
                         GlueControl.Editing.VariableAssignmentLogic.SetVariable(glueVariableSetDataRerun, newPositionedObject);
+                    }
+                    else if (dto is RemoveObjectDto removeObjectDtoRerun)
+                    {
+                        HandleDeleteInstanceCommandFromGlue(removeObjectDtoRerun, newPositionedObject);
                     }
                 }
             }
@@ -458,6 +462,125 @@ namespace GlueControl
                 AssignVariable(newObject, instruction);
             }
         }
+
+        #endregion
+
+        #region Delete Instance from Glue
+
+        public RemoveObjectDtoResponse HandleDeleteInstanceCommandFromGlue(RemoveObjectDto removeObjectDto, PositionedObject forcedItem = null)
+        {
+            RemoveObjectDtoResponse response = new RemoveObjectDtoResponse();
+            response.DidScreenMatch = false;
+            response.WasObjectRemoved = false;
+
+            var elementGameType = CommandReceiver.GlueToGameElementName(removeObjectDto.ElementNameGlue);
+            var ownerType = this.GetType().Assembly.GetType(elementGameType);
+            GlueElement ownerElement = null;
+            if (CustomGlueElements.ContainsKey(elementGameType))
+            {
+                ownerElement = CustomGlueElements[elementGameType];
+            }
+
+            var removedFromEntity =
+                (ownerType != null && typeof(PositionedObject).IsAssignableFrom(ownerType))
+                ||
+                ownerElement != null && ownerElement is EntitySave;
+
+            if (removedFromEntity)
+            {
+                if (forcedItem != null)
+                {
+                    if (CommandReceiver.DoTypesMatch(forcedItem, elementGameType))
+                    {
+                        var objectToDelete = forcedItem.Children.FindByName(removeObjectDto.ObjectName);
+                        if (objectToDelete != null)
+                        {
+                            TryDeleteObject(response, objectToDelete);
+                        }
+                    }
+                }
+                foreach (var item in SpriteManager.ManagedPositionedObjects)
+                {
+                    if (CommandReceiver.DoTypesMatch(item, elementGameType, ownerType))
+                    {
+                        // try to remove this object from here...
+                        //screen.ApplyVariable(variableNameOnObjectInInstance, variableValue, item);
+                        var objectToDelete = item.Children.FindByName(removeObjectDto.ObjectName);
+
+                        if (objectToDelete != null)
+                        {
+                            TryDeleteObject(response, objectToDelete);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                bool matchesCurrentScreen =
+                    (ScreenManager.CurrentScreen.GetType().FullName == elementGameType || ownerType?.IsAssignableFrom(ScreenManager.CurrentScreen.GetType()) == true);
+
+                if (matchesCurrentScreen)
+                {
+                    response.DidScreenMatch = true;
+                    var isEditingEntity =
+                        ScreenManager.CurrentScreen?.GetType() == typeof(Screens.EntityViewingScreen);
+                    var editingMode = isEditingEntity
+                        ? GlueControl.Editing.ElementEditingMode.EditingEntity
+                        : GlueControl.Editing.ElementEditingMode.EditingScreen;
+
+                    var foundObject = GlueControl.Editing.SelectionLogic.GetAvailableObjects(editingMode)
+                            .FirstOrDefault(item => item.Name == removeObjectDto.ObjectName);
+                    TryDeleteObject(response, foundObject);
+
+                    if (!response.WasObjectRemoved)
+                    {
+                        // see if there is a collision relationship with this name
+                        var matchingCollisionRelationship = FlatRedBall.Math.Collision.CollisionManager.Self.Relationships.FirstOrDefault(
+                            item => item.Name == removeObjectDto.ObjectName);
+
+                        if (matchingCollisionRelationship != null)
+                        {
+                            FlatRedBall.Math.Collision.CollisionManager.Self.Relationships.Remove(matchingCollisionRelationship);
+                            response.WasObjectRemoved = true;
+                        }
+                    }
+                }
+            }
+
+
+
+            return response;
+        }
+
+        private static void TryDeleteObject(RemoveObjectDtoResponse removeResponse, PositionedObject objectToDelete)
+        {
+            if (objectToDelete is IDestroyable asDestroyable)
+            {
+                asDestroyable.Destroy();
+                removeResponse.WasObjectRemoved = true;
+            }
+            else if (objectToDelete is AxisAlignedRectangle rectangle)
+            {
+                ShapeManager.Remove(rectangle);
+                removeResponse.WasObjectRemoved = true;
+            }
+            else if (objectToDelete is Circle circle)
+            {
+                ShapeManager.Remove(circle);
+                removeResponse.WasObjectRemoved = true;
+            }
+            else if (objectToDelete is Polygon polygon)
+            {
+                ShapeManager.Remove(polygon);
+                removeResponse.WasObjectRemoved = true;
+            }
+            else if (objectToDelete is Sprite sprite)
+            {
+                SpriteManager.RemoveSprite(sprite);
+                removeResponse.WasObjectRemoved = true;
+            }
+        }
+
 
         #endregion
 

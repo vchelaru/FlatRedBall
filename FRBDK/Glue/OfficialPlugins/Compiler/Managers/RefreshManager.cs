@@ -486,7 +486,7 @@ namespace OfficialPlugins.Compiler.Managers
             if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
                 var dto = new Dtos.RemoveObjectDto();
-                dto.ElementName = //ToGameType((GlueElement)owner);
+                dto.ElementNameGlue = //ToGameType((GlueElement)owner);
                     owner.Name;
                 dto.ObjectName = nos.InstanceName;
                 var responseAsstring = await CommandSender.Send(dto, ViewModel.PortNumber);

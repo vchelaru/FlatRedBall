@@ -6,9 +6,9 @@ using System.Text;
 
 namespace GlueControl.Dtos
 {
-    class RemoveObjectDto
+    public class RemoveObjectDto
     {
-        public string ElementName { get; set; }
+        public string ElementNameGlue { get; set; }
         public string ObjectName { get; set; }
     }
 
