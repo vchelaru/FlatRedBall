@@ -191,14 +191,16 @@ namespace GlueControl.Editing
 
             if (targetInstance == null)
             {
-                var sprite = SpriteManager.AutomaticallyUpdatedSprites.FirstOrDefault(item =>
+                targetInstance = SpriteManager.AutomaticallyUpdatedSprites.FirstOrDefault(item =>
                     item.Parent == null &&
                     item.Name == objectName);
+            }
 
-                if (sprite != null)
-                {
-                    targetInstance = sprite;
-                }
+            if (targetInstance == null)
+            {
+                targetInstance = FlatRedBall.Graphics.TextManager.AutomaticallyUpdatedTexts.FirstOrDefault(item =>
+                    item.Parent == null &&
+                    item.Name == objectName);
             }
 
             if (targetInstance == null)
@@ -673,6 +675,13 @@ namespace GlueControl.Editing
             {
                 convertedValue = JsonConvert.DeserializeObject<List<Point>>(variableValue);
             }
+            else if (type == typeof(BitmapFont).ToString() || type == "BitmapFont")
+            {
+                if (variableValue == null)
+                {
+                    convertedValue = TextManager.DefaultFont;
+                }
+            }
             else
             {
                 switch (type)
@@ -778,6 +787,14 @@ namespace GlueControl.Editing
                     case "FlatRedBall.Graphics.BlendOperation":
                         convertedValue = ToEnum<FlatRedBall.Graphics.BlendOperation>(variableValue);
 
+                        break;
+                    case "HorizontalAlignment":
+                        // assume FRB horizontal alignment. At some point we may have to differentiate:
+                        convertedValue = ToEnum<FlatRedBall.Graphics.HorizontalAlignment>(variableValue);
+                        break;
+                    case "VerticalAlignment":
+                        // assume FRB horizontal alignment. At some point we may have to differentiate:
+                        convertedValue = ToEnum<FlatRedBall.Graphics.VerticalAlignment>(variableValue);
                         break;
 
                 }

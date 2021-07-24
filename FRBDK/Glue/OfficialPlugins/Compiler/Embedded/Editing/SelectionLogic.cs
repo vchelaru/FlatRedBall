@@ -108,6 +108,7 @@ namespace GlueControl.Editing
                 availableItems = SpriteManager.ManagedPositionedObjects
                     .Where(item => item is CameraControllingEntity == false)
                     .Concat(SpriteManager.AutomaticallyUpdatedSprites.Where(item => item.Parent == null))
+                    .Concat(TextManager.AutomaticallyUpdatedTexts.Where(item => item.Parent == null))
                     .Concat(ShapeManager.VisibleRectangles.Where(item => item.Parent == null))
                     .Concat(ShapeManager.VisibleCircles.Where(item => item.Parent == null))
                     .Concat(ShapeManager.VisiblePolygons.Where(item => item.Parent == null))
@@ -226,6 +227,40 @@ namespace GlueControl.Editing
                         minY = Math.Min(minY, absolute.Y);
                         maxY = Math.Max(maxY, absolute.Y);
                     }
+                }
+            }
+            else if (itemOver is Text text)
+            {
+                if (text.HorizontalAlignment == HorizontalAlignment.Left)
+                {
+                    minX = Math.Min(minX, text.X);
+                    maxX = Math.Max(maxX, text.X + text.Width);
+                }
+                else if (text.HorizontalAlignment == HorizontalAlignment.Center)
+                {
+                    minX = Math.Min(minX, text.X - text.Width / 2.0f);
+                    maxX = Math.Max(maxX, text.X + text.Width / 2.0f);
+                }
+                else // right
+                {
+                    minX = Math.Min(minX, text.X - text.Width);
+                    maxX = Math.Max(maxX, text.X);
+                }
+
+                if (text.VerticalAlignment == VerticalAlignment.Top)
+                {
+                    minY = Math.Min(minY, text.Y - text.Height);
+                    maxY = Math.Max(maxY, text.Y);
+                }
+                else if (text.VerticalAlignment == VerticalAlignment.Center)
+                {
+                    minY = Math.Min(minY, text.Y - text.Height / 2.0f);
+                    maxY = Math.Max(maxY, text.Y + text.Height / 2.0f);
+                }
+                else // bottom
+                {
+                    minY = Math.Min(minY, text.Y);
+                    maxY = Math.Max(maxY, text.Y + text.Height);
                 }
             }
             else

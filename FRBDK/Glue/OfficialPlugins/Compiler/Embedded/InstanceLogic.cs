@@ -28,6 +28,7 @@ namespace GlueControl
         public ShapeCollection ShapesAddedAtRuntime = new ShapeCollection();
 
         public FlatRedBall.Math.PositionedObjectList<Sprite> SpritesAddedAtRuntime = new FlatRedBall.Math.PositionedObjectList<Sprite>();
+        public FlatRedBall.Math.PositionedObjectList<Text> TextsAddedAtRuntime = new FlatRedBall.Math.PositionedObjectList<Text>();
 
         public List<IDestroyable> DestroyablesAddedAtRuntime = new List<IDestroyable>();
 
@@ -226,6 +227,18 @@ namespace GlueControl
                         newPositionedObject = sprite;
 
                         break;
+                    case "Text":
+                    case "FlatRedBall.Graphics.Text":
+                        var text = new FlatRedBall.Graphics.Text();
+                        text.Font = TextManager.DefaultFont;
+                        text.SetPixelPerfectScale(Camera.Main);
+                        if (deserialized.AddToManagers)
+                        {
+                            TextManager.AddText(text);
+                            TextsAddedAtRuntime.Add(text);
+                        }
+                        newPositionedObject = text;
+                        break;
                     case "FlatRedBall.Math.Geometry.ShapeCollection":
                     case "ShapeCollection":
                         var shapeCollection = new ShapeCollection();
@@ -294,7 +307,7 @@ namespace GlueControl
                 {
                     var wrapperForAttachment = new GumCoreShared.FlatRedBall.Embedded.PositionedObjectGueWrapper(owner, newGumObjectInstance);
                     FlatRedBall.SpriteManager.AddPositionedObject(wrapperForAttachment);
-
+                    wrapperForAttachment.Name = deserialized.InstanceName;
                     //gumAttachmentWrappers.Add(wrapperForAttachment);
                     GumWrappersAddedAtRuntime.Add(wrapperForAttachment);
                 }
@@ -579,6 +592,13 @@ namespace GlueControl
                 SpriteManager.RemoveSprite(sprite);
                 removeResponse.WasObjectRemoved = true;
             }
+#if HasGum
+            else if (objectToDelete is GumCoreShared.FlatRedBall.Embedded.PositionedObjectGueWrapper gumWrapper)
+            {
+                gumWrapper.GumObject.Destroy();
+                gumWrapper.RemoveSelfFromListsBelongingTo();
+            }
+#endif
         }
 
 
@@ -784,7 +804,6 @@ namespace GlueControl
             var addObjectDto = new Dtos.AddObjectDto();
             addObjectDto.InstanceName = newName;
             addObjectDto.SourceType = Models.SourceType.FlatRedBallType;
-            // todo - need to eventually include sub namespaces for entities in folders
             addObjectDto.SourceClassType = "FlatRedBall.Sprite";
 
             AddFloatValue(addObjectDto, "X", newSprite.X);
@@ -886,6 +905,62 @@ namespace GlueControl
             return newSprite;
         }
 
+        public Text HandleCreateTextByName(Text originalText)
+        {
+            var newText = originalText.Clone();
+            var newName = GetNameFor("Text");
+
+            newText.Name = newName;
+            if (TextManager.AutomaticallyUpdatedTexts.Contains(originalText))
+            {
+                TextManager.AddText(newText);
+            }
+            InstanceLogic.Self.TextsAddedAtRuntime.Add(newText);
+
+            #region Create the AddObjectDto for the new object
+
+            var addObjectDto = new Dtos.AddObjectDto();
+            addObjectDto.InstanceName = newName;
+            addObjectDto.SourceType = Models.SourceType.FlatRedBallType;
+            addObjectDto.SourceClassType = typeof(FlatRedBall.Graphics.Text).FullName;
+
+            AddFloatValue(addObjectDto, "X", newText.X);
+            AddFloatValue(addObjectDto, "Y", newText.Y);
+
+            if (newText.Red != 0.0f)
+            {
+                AddFloatValue(addObjectDto, nameof(newText.Red), newText.Red);
+            }
+            if (newText.Green != 0.0f)
+            {
+                AddFloatValue(addObjectDto, nameof(newText.Green), newText.Green);
+            }
+            if (newText.Blue != 0.0f)
+            {
+                AddFloatValue(addObjectDto, nameof(newText.Blue), newText.Blue);
+            }
+            if (newText.Alpha != 1.0f)
+            {
+                AddFloatValue(addObjectDto, nameof(newText.Alpha), newText.Alpha);
+            }
+            if (newText.ColorOperation != ColorOperation.Texture)
+            {
+                AddValue(addObjectDto, nameof(newText.ColorOperation),
+                    nameof(ColorOperation), (int)newText.ColorOperation);
+            }
+            if (newText.BlendOperation != BlendOperation.Regular)
+            {
+                AddValue(addObjectDto, nameof(newText.BlendOperation),
+                    nameof(BlendOperation), (int)newText.BlendOperation);
+            }
+
+            #endregion
+
+            SendAndEnqueue(addObjectDto);
+
+            return newText;
+        }
+
         #endregion
 
         #region Delete Instance from Game
@@ -969,6 +1044,11 @@ namespace GlueControl
                 SpriteManager.RemoveSprite(SpritesAddedAtRuntime[i]);
             }
 
+            for (int i = TextsAddedAtRuntime.Count - 1; i > -1; i--)
+            {
+                TextManager.RemoveText(TextsAddedAtRuntime[i]);
+            }
+
             for (int i = DestroyablesAddedAtRuntime.Count - 1; i > -1; i--)
             {
                 DestroyablesAddedAtRuntime[i].Destroy();
@@ -1001,6 +1081,7 @@ namespace GlueControl
             SpritesAddedAtRuntime.Clear();
             DestroyablesAddedAtRuntime.Clear();
             ListsAddedAtRuntime.Clear();
+            TextsAddedAtRuntime.Clear();
         }
     }
 }

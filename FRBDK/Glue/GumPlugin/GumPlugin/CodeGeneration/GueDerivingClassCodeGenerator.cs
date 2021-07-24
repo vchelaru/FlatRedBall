@@ -705,7 +705,8 @@ namespace GumPlugin.CodeGeneration
                 if(shouldGenerateWrapper)
                 {
                     stringBuilder.AppendLine( $"var wrapperForAttachment = new GumCoreShared.FlatRedBall.Embedded.PositionedObjectGueWrapper(this, {namedObjectName});");
-                    stringBuilder.AppendLine(  "FlatRedBall.SpriteManager.AddPositionedObject(wrapperForAttachment);");
+                    stringBuilder.AppendLine($"wrapperForAttachment.Name = \"{namedObjectName}\";");
+                    stringBuilder.AppendLine( "FlatRedBall.SpriteManager.AddPositionedObject(wrapperForAttachment);");
                     stringBuilder.AppendLine("gumAttachmentWrappers.Add(wrapperForAttachment);");
 
                     GumCollidableCodeGenerator.GenerateAddCollision(stringBuilder, glueElement, namedObjectSave);

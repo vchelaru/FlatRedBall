@@ -1,4 +1,5 @@
 ﻿using FlatRedBall;
+using FlatRedBall.Graphics;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 using Microsoft.Xna.Framework;
@@ -56,10 +57,14 @@ namespace GlueControl.Editing
                 {
                     InstanceLogic.Self.HandleCreateSpriteByName(originalSprite);
                 }
+                else if (copiedObject is Text originalText)
+                {
+                    InstanceLogic.Self.HandleCreateTextByName(originalText);
+                }
                 else // positioned object, so entity?
                 {
                     var type = copiedObject.GetType().FullName;
-                    if(copiedObject is Runtime.DynamicEntity dynamicEntity)
+                    if (copiedObject is Runtime.DynamicEntity dynamicEntity)
                     {
                         type = dynamicEntity.EditModeType;
                     }
