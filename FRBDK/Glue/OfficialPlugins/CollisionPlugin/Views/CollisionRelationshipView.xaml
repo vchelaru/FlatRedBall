@@ -158,7 +158,7 @@
                                    Text="{Binding SecondMassText, FallbackValue=Second Mass}"></TextBlock>
                         <TextBox Grid.Column="1" Grid.Row="1" Margin="10,0,10,0"
                                     Text="{Binding SecondCollisionMass}"></TextBox>
-                        <StackPanel Orientation="Horizontal" Grid.Row="2">
+                        <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.ColumnSpan="2">
                             <TextBlock Width="80">Elasticity</TextBlock>
                             <TextBox  Width="80"
                                      Text="{Binding CollisionElasticity}"></TextBox>

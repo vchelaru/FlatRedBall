@@ -507,9 +507,12 @@ namespace OfficialPlugins.Compiler.Managers
         const string stopRestartDetails =
                    "Restarting due to Glue or file change";
 
-        bool CanRestart =>
-            Runner.Self.DidRunnerStartProcess || (ViewModel.IsRunning == false && failedToRebuildAndRestart) ||
-                (ViewModel.IsRunning && ViewModel.IsEditChecked);
+        bool CanRestart => ViewModel.IsGenerateGlueControlManagerInGame1Checked &&
+            (
+                Runner.Self.DidRunnerStartProcess || 
+                (ViewModel.IsRunning == false && failedToRebuildAndRestart) ||
+                (ViewModel.IsRunning && ViewModel.IsEditChecked)
+            );
 
         public void StopAndRestartTask(string reason)
         {
