@@ -110,7 +110,10 @@ namespace GlueControl
 
         private static bool GetIfMatchesCurrentScreen(string elementName, out System.Type ownerType, out Screen currentScreen)
         {
-            var ownerTypeName = "EditModeProject." + elementName.Replace("\\", ".");
+            var game1FullName = typeof(Game1).FullName;
+            var topNamespace = game1FullName.Substring(0, game1FullName.IndexOf('.'));
+            //var ownerTypeName = "WhateverNamespace." + elementName.Replace("\\", ".");
+            var ownerTypeName = $"{topNamespace}.{elementName.Replace("\\", ".")}";
 
             ownerType = typeof(CommandReceiver).Assembly.GetType(ownerTypeName);
             currentScreen = ScreenManager.CurrentScreen;
@@ -272,9 +275,15 @@ namespace GlueControl
 
         #region Rename
 
+        static string topNamespace = null;
         public static string GlueToGameElementName(string elementName)
         {
-            return "EditModeProject." + elementName.Replace("\\", ".");
+            if(topNamespace == null)
+            {
+                var game1FullName = typeof(Game1).FullName;
+                topNamespace = game1FullName.Substring(0, game1FullName.IndexOf('.'));
+            }
+            return $"{topNamespace}.{elementName.Replace("\\", ".")}";
         }
 
         public static string GameElementTypeToGlueElement(string gameType)

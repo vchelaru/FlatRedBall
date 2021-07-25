@@ -16,6 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ToolsUtilities;
+using Xceed.Wpf.Toolkit.PropertyGrid;
 
 namespace OfficialPluginsCore.Compiler.CommandReceiving
 {
@@ -217,6 +218,14 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     case "FlatRedBall.Graphics.BlendOperation":
                         value = ToEnum<FlatRedBall.Graphics.BlendOperation>(value);
                         break;
+                    case nameof(FlatRedBall.Graphics.HorizontalAlignment):
+                    case "FlatRedBall.Graphics.HorizontalAlignment":
+                        value = ToEnum<FlatRedBall.Graphics.HorizontalAlignment>(value);
+                        break;
+                    case nameof(FlatRedBall.Graphics.VerticalAlignment):
+                    case "FlatRedBall.Graphics.VerticalAlignment":
+                        value = ToEnum<FlatRedBall.Graphics.VerticalAlignment>(value);
+                        break;
                 }
             }
 
@@ -247,21 +256,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         private static string GetNewName(GlueElement glueElement, AddObjectDto addObjectDto)
         {
             string newName = null;
-            if (addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.Circle")
+            if(addObjectDto.SourceClassType.Contains('.'))
             {
-                newName = "Circle1";
-            }
-            else if (addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.AxisAlignedRectangle")
-            {
-                newName = "AxisAlignedRectangle1";
-            }
-            else if (addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.Polygon")
-            {
-                newName = "Polygon1";
-            }
-            else if(addObjectDto.SourceClassType == "FlatRedBall.Sprite")
-            {
-                newName = "Sprite1";
+                var suffix = addObjectDto.SourceClassType.Substring(addObjectDto.SourceClassType.LastIndexOf('.') + 1);
+                newName = suffix + "1";
             }
             else
             {

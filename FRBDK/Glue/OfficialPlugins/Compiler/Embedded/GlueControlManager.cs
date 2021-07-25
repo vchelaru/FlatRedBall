@@ -1,6 +1,6 @@
 ﻿{CompilerDirectives}
 
-
+using {ProjectNamespace};
 using GlueControl.Dtos;
 
 using FlatRedBall;
@@ -228,7 +228,10 @@ namespace GlueControl
 
         private bool GetIfMatchesCurrentScreen(string elementName, out System.Type ownerType, out Screen currentScreen)
         {
-            var ownerTypeName = "EditModeProject." + elementName.Replace("\\", ".");
+            var game1FullName = typeof(Game1).FullName;
+            var topNamespace = game1FullName.Substring(0, game1FullName.IndexOf('.'));
+            //var ownerTypeName = "WhateverNamespace." + elementName.Replace("\\", ".");
+            var ownerTypeName = $"{topNamespace}.{elementName.Replace("\\", ".")}";
 
             ownerType = GetType().Assembly.GetType(ownerTypeName);
             currentScreen = ScreenManager.CurrentScreen;

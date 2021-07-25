@@ -280,20 +280,10 @@ namespace GlueControl
 
             if (isGum)
             {
-                // create the Gum object using its constructor, and add it to a wrapper:
-                // generated code does:
-                //{var oldLayoutSuspended = global::Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended; global::Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = true; ButtonRuntimeInstance = new EditModeProject.GumRuntimes.DefaultForms.ButtonRuntime();global::Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = oldLayoutSuspended; ButtonRuntimeInstance.UpdateFontRecursive();ButtonRuntimeInstance.UpdateLayout();}
-                /*
-                 *  ButtonRuntimeInstance.AddToManagers(RenderingLibrary.SystemManagers.Default, System.Linq.Enumerable.FirstOrDefault(FlatRedBall.Gum.GumIdb.AllGumLayersOnFrbLayer(LayerProvidedByContainer)));
-                    var wrapperForAttachment = new GumCoreShared.FlatRedBall.Embedded.PositionedObjectGueWrapper(this, ButtonRuntimeInstance);
-                    FlatRedBall.SpriteManager.AddPositionedObject(wrapperForAttachment);
-                    gumAttachmentWrappers.Add(wrapperForAttachment);
-                 */
-
                 var oldLayoutSuspended = global::Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended;
                 global::Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = true;
                 var constructor = type.GetConstructor(new Type[] { typeof(bool), typeof(bool) });
-                var newGumObjectInstance = //new EditModeProject.GumRuntimes.DefaultForms.ButtonRuntime();
+                var newGumObjectInstance = 
                     constructor.Invoke(new object[] { true, true }) as Gum.Wireframe.GraphicalUiElement;
 
                 global::Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = oldLayoutSuspended;
@@ -590,6 +580,11 @@ namespace GlueControl
             else if (objectToDelete is Sprite sprite)
             {
                 SpriteManager.RemoveSprite(sprite);
+                removeResponse.WasObjectRemoved = true;
+            }
+            else if (objectToDelete is Text text)
+            {
+                TextManager.RemoveText(text);
                 removeResponse.WasObjectRemoved = true;
             }
 #if HasGum
@@ -926,6 +921,11 @@ namespace GlueControl
 
             AddFloatValue(addObjectDto, "X", newText.X);
             AddFloatValue(addObjectDto, "Y", newText.Y);
+
+            AddValue(addObjectDto, nameof(Text.DisplayText), "string", newText.DisplayText);
+
+            AddValue(addObjectDto, nameof(Text.HorizontalAlignment), nameof(HorizontalAlignment), (int)newText.HorizontalAlignment);
+            AddValue(addObjectDto, nameof(Text.VerticalAlignment), nameof(VerticalAlignment), (int)newText.VerticalAlignment);
 
             if (newText.Red != 0.0f)
             {
