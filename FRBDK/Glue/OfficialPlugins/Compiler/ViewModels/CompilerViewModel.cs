@@ -9,11 +9,13 @@ using System.Windows;
 
 namespace OfficialPlugins.Compiler.ViewModels
 {
+    #region Enums
     public enum PlayOrEdit
     {
         Play,
         Edit
     }
+    #endregion
 
     public class CompilerViewModel : ViewModel
     {
@@ -154,6 +156,9 @@ namespace OfficialPlugins.Compiler.ViewModels
         [DependsOn(nameof(IsGluxVersionNewEnoughForGlueControlGeneration))]
         public Visibility PortUiVisibility => IsGenerateGlueControlManagerInGame1Checked && IsGluxVersionNewEnoughForGlueControlGeneration ?
             Visibility.Visible : Visibility.Collapsed;
+
+        [DependsOn(nameof(IsGenerateGlueControlManagerInGame1Checked))]
+        public Visibility RunningModeVisibility => IsGenerateGlueControlManagerInGame1Checked.ToVisibility();
 
         public int PortNumber
         {

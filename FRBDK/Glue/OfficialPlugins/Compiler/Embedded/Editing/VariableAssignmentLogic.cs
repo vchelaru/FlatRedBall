@@ -675,11 +675,11 @@ namespace GlueControl.Editing
             {
                 convertedValue = JsonConvert.DeserializeObject<List<Point>>(variableValue);
             }
-            else if (type == typeof(BitmapFont).ToString() || type == "BitmapFont")
+            else if (type == typeof(FlatRedBall.Graphics.BitmapFont).ToString() || type == "BitmapFont")
             {
                 if (variableValue == null)
                 {
-                    convertedValue = TextManager.DefaultFont;
+                    convertedValue = FlatRedBall.Graphics.TextManager.DefaultFont;
                 }
             }
             else

@@ -154,50 +154,6 @@ namespace GlueControl
         /// which should always be re-run.
         /// </summary>
         public static List<object> GlobalGlueToGameCommands = new List<object>();
-        public static Dictionary<string, Queue<object>> ScreenSpecificGlueToGameCommands =
-            new Dictionary<string, Queue<object>>();
-
-        public static void EnqueueToOwner(object dto, string ownerGameType)
-        {
-            if (string.IsNullOrEmpty(ownerGameType))
-            {
-                GlobalGlueToGameCommands.Add(dto);
-            }
-            else
-            {
-                var ownerType = typeof(GlueControlManager).Assembly.GetType(ownerGameType);
-                var isEntity = typeof(PositionedObject).IsAssignableFrom(ownerType) ||
-                    InstanceLogic.Self.CustomGlueElements.ContainsKey(ownerGameType);
-                if (isEntity)
-                {
-                    // If it's on an entity, then it needs to be applied globally
-                    GlobalGlueToGameCommands.Add(dto);
-                }
-                else
-                {
-                    EnqueueScreenSpecificMessage(dto, ownerGameType);
-                }
-            }
-        }
-
-
-
-        private static void EnqueueScreenSpecificMessage(object dto, string owner)
-        {
-            Queue<object> queue = null;
-            if (ScreenSpecificGlueToGameCommands.ContainsKey(owner))
-            {
-                queue = ScreenSpecificGlueToGameCommands[owner];
-            }
-            else
-            {
-                queue = new Queue<object>();
-                ScreenSpecificGlueToGameCommands.Add(owner, queue);
-            }
-            queue.Enqueue(dto);
-        }
-
-
 
         #endregion
 

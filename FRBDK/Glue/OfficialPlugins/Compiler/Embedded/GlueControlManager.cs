@@ -45,11 +45,11 @@ namespace GlueControl
         bool isRunning;
         private TcpListener listener;
         private ConcurrentQueue<GameToGlueCommand> GameToGlueCommands = new ConcurrentQueue<GameToGlueCommand>();
-        private GlueControl.Editing.EditingManager EditingManager; 
+        private GlueControl.Editing.EditingManager EditingManager;
 
-        
+
         public static GlueControlManager Self { get; private set; }
-        
+
         #endregion
 
         #region Init/Start/Stop
@@ -127,7 +127,7 @@ namespace GlueControl
             var lengthAsBytes =
                 BitConverter.GetBytes(length);
             clientStream.Write(lengthAsBytes, 0, 4);
-            if(messageAsBytes.Length > 0)
+            if (messageAsBytes.Length > 0)
             {
                 clientStream.Write(messageAsBytes, 0, messageAsBytes.Length);
 
@@ -191,7 +191,7 @@ namespace GlueControl
 
             if (!isGet)
             {
-                if(runSetImmediately)
+                if (runSetImmediately)
                 {
                     response = ApplySetMessage(message) ?? null;
                 }
@@ -199,7 +199,7 @@ namespace GlueControl
                 {
                     await FlatRedBall.Instructions.InstructionManager.DoOnMainThreadAsync(
                         () => response = ApplySetMessage(message));
-                        
+
                 }
             }
 
@@ -223,24 +223,6 @@ namespace GlueControl
             foreach (var dto in toProcess)
             {
                 CommandReceiver.ReceiveDto(dto);
-            }
-
-            var assembly = typeof(GlueControlManager).Assembly;
-            var currentScreenType = ScreenManager.CurrentScreen.GetType();
-
-            foreach(var kvp in CommandReceiver.ScreenSpecificGlueToGameCommands)
-            {
-                var type = assembly.GetType(kvp.Key);
-                if(type != null && type.IsAssignableFrom(currentScreenType))
-                {
-                    toProcess = kvp.Value.ToArray();
-                    kvp.Value.Clear();
-
-                    foreach(var dto in toProcess)
-                    {
-                        CommandReceiver.ReceiveDto(dto);
-                    }
-                }
             }
         }
 
@@ -315,14 +297,14 @@ namespace GlueControl
             //    EnqueueMessage(screen.GetType().FullName, simulatedGlueToGameCommand);
             //}
 #endif
-    }
+        }
 
-    private void HandleObjectSelected(PositionedObject item)
+        private void HandleObjectSelected(PositionedObject item)
         {
             var dto = new SelectObjectDto();
             dto.ObjectName = item.Name;
 
-            if(ScreenManager.CurrentScreen.GetType().Name == "EntityViewingScreen")
+            if (ScreenManager.CurrentScreen.GetType().Name == "EntityViewingScreen")
             {
                 var entityInstance = SpriteManager.ManagedPositionedObjects[0];
                 if (entityInstance is GlueControl.Runtime.DynamicEntity dynamicEntity)
