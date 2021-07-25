@@ -68,8 +68,13 @@ namespace OfficialPlugins.Compiler.Managers
                 // maybe it's a strongly typed property on the NOS?
                 typeName = typeof(NamedObjectSave).GetProperty(changedMember)?.PropertyType.ToString();
             }
+            if(typeName == null && nos.SourceType == SourceType.Entity)
+            {
+                // try to get it from a PositionedObject
+                typeName = typeof(FlatRedBall.PositionedObject).GetProperty(changedMember)?.PropertyType.ToString();
+            }
 
-            if(instruction != null)
+            if (instruction != null)
             {
                 currentValue = instruction.Value;
             }
@@ -145,7 +150,7 @@ namespace OfficialPlugins.Compiler.Managers
             }
             #endregion
 
-            if(type.StartsWith("System.Collections.Generic.List"))
+            if(type?.StartsWith("System.Collections.Generic.List") == true)
             {
                 value = JsonConvert.SerializeObject(currentValue);
             }

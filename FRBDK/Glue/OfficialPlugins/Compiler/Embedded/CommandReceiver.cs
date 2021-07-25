@@ -353,6 +353,11 @@ namespace GlueControl
                 FlatRedBall.Screens.ScreenManager.IsInEditMode = value;
                 FlatRedBall.Gui.GuiManager.Cursor.RequiresGameWindowInFocus = !value;
 
+                if (value)
+                {
+                    FlatRedBallServices.Game.IsMouseVisible = true;
+                }
+
                 FlatRedBall.TileEntities.TileEntityInstantiator.CreationFunction =
                     InstanceLogic.Self.CreateEntity;
 
