@@ -1645,12 +1645,10 @@ namespace FlatRedBall.Glue.Plugins
         internal static void ModifyAddScreenWindow(AddScreenWindow addScreenWindow)
         {
 
-            CallMethodOnPlugin((plugin) =>
-            {
-                plugin.ModifyAddScreenWindow(addScreenWindow);
-            },
-            nameof(ModifyAddScreenWindow),
-            plugin => plugin.ModifyAddScreenWindow != null);
+            CallMethodOnPlugin(
+                (plugin) => plugin.ModifyAddScreenWindow(addScreenWindow),
+                nameof(ModifyAddScreenWindow),
+                plugin => plugin.ModifyAddScreenWindow != null);
         }
 
         internal static void AdjustDisplayedEntity(EntitySave entitySave, EntitySavePropertyGridDisplayer entitySaveDisplayer)

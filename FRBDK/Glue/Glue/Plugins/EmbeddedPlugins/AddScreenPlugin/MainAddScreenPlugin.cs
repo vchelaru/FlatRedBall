@@ -108,6 +108,33 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             }
             return nos;
         }
+
+
+        static void AddListsForAllBaseEntities(ScreenSave gameScreen)
+        {
+            var entitiesForLists = GlueState.Self.CurrentGlueProject.Entities.Where(item => string.IsNullOrWhiteSpace(item.BaseElement))
+                .ToArray();
+
+            foreach(var entity in entitiesForLists)
+            {
+                //var listNos = new NamedObjectSave();
+
+                //listNos.SourceType = SourceType.FlatRedBallType;
+                //listNos.SourceClassType = "FlatRedBall.Math.PositionedObjectList<T>";
+                //listNos.SourceClassGenericType = entity.Name;
+
+                var addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ForcedElementToAddTo = gameScreen;
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                addObjectViewModel.SourceClassType = "FlatRedBall.Math.PositionedObjectList<T>";
+                addObjectViewModel.SourceClassGenericType = entity.Name;
+                addObjectViewModel.ObjectName = $"{entity.GetStrippedName()}List";
+
+                var nos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, gameScreen, null);
+                nos.ExposedInDerived = true;
+            }
+        }
+
         private void ApplyViewModelToScreen(ScreenSave newScreen, AddScreenViewModel viewModel)
         {
 
@@ -131,6 +158,12 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                     if (viewModel.IsAddCloudCollisionShapeCollectionChecked)
                     {
                         AddCollision(newScreen, "CloudCollision");
+                        shouldSave = true;
+                    }
+
+                    if(viewModel.IsAddListsForEntitiesChecked)
+                    {
+                        AddListsForAllBaseEntities(newScreen);
                         shouldSave = true;
                     }
 

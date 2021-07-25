@@ -37,6 +37,8 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
 
             #endregion
 
+            #region Get variables needed for the rest of the method...
+
             var glueProject = GlueState.Self.CurrentGlueProject;
             var treeNode = GlueState.Self.CurrentTreeNode;
             var selectedObject = treeNode?.Tag;
@@ -47,6 +49,10 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
             var hasGameScreen = gameScreen != null;
             var hasGumProject = GlueState.Self.GetAllReferencedFiles()
                 .Any(item => item.Name.ToLowerInvariant().EndsWith(".gumx"));
+
+            #endregion
+
+            //------------------------------------------------------------//
 
             #region Wizard 
 
@@ -172,9 +178,11 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
                 selectedObject is EntitySave &&
                 hasGameScreen &&
                 // Individual:
-                gameScreen.AllNamedObjects.Any(item => item.SourceClassType == (selectedObject as EntitySave).Name) == false &&
+                gameScreen.AllNamedObjects.Any(item => item.SourceClassType == (selectedObject as EntitySave).Name) == false
                 // List:
-                gameScreen.AllNamedObjects.Any(item => item.IsList && item.SourceClassGenericType == (selectedObject as EntitySave).Name) == false
+                //gameScreen.AllNamedObjects.Any(item => item.IsList && item.SourceClassGenericType == (selectedObject as EntitySave).Name) == false
+                // Update July 25, 2021 - if the user has a list of an entity, they may still want to add instances to that list, espeically with the 
+                // Glue level editor being developed now. So let's not look for a list.
                 );
 
             if(mainView.AddInstanceOfEntityButton.Visibility == Visibility.Visible)

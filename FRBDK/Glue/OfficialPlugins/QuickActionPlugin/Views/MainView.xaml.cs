@@ -113,11 +113,14 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             viewModel.SourceType = SourceType.Entity;
 
             viewModel.SelectedEntitySave = GlueState.Self.CurrentEntitySave;
-            viewModel.ObjectName = GlueState.Self.CurrentEntitySave.GetStrippedName() + "Instance";
+            viewModel.ObjectName = GlueState.Self.CurrentEntitySave.GetStrippedName() + "1";
 
             var gameScreen = GlueState.Self.CurrentGlueProject.GetScreenSave(GameScreenName);
 
-            var newNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(viewModel, gameScreen, null);
+            var listOfThisType = gameScreen.NamedObjects.FirstOrDefault(item => 
+                item.IsList && item.SourceClassGenericType == GlueState.Self.CurrentEntitySave.Name);
+
+            var newNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(viewModel, gameScreen, listOfThisType);
 
             GlueState.Self.CurrentNamedObjectSave = newNos;
 

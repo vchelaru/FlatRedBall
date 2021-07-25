@@ -37,6 +37,11 @@
                         
                     </StackPanel>
                 </GroupBox>
+                <GroupBox Header="Entities">
+                    <StackPanel>
+                        <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsAddListsForEntitiesChecked}">Add Lists for Entites</CheckBox>
+                    </StackPanel>
+                </GroupBox>
             </StackPanel>
 
             <RadioButton IsChecked="{Binding IsEmptyScreen}">Empty Screen</RadioButton>

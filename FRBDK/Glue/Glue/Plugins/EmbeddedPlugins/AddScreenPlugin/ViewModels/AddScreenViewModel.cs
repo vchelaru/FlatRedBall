@@ -6,12 +6,15 @@ using System.Windows;
 
 namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
 {
+    #region AddScreenType Enum
     enum AddScreenType
     {
         LevelScreen,
         BaseLevelScreen,
         EmptyScreen
     }
+
+    #endregion
 
     class AddScreenViewModel : ViewModel
     {
@@ -75,7 +78,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
 
         #endregion
 
-        #region Base Level Screen
+        #region Game Screen (Base Level Screen)
 
         [DependsOn(nameof(HasGameScreen))]
         public bool CanAddBaseLevelScreen => !HasGameScreen;
@@ -114,6 +117,12 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
             set => Set(value);
         }
 
+        public bool IsAddListsForEntitiesChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         #endregion
 
         #region Empty Screen
@@ -134,5 +143,9 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
 
         #endregion
 
+        public AddScreenViewModel()
+        {
+            IsAddListsForEntitiesChecked = true;
+        }
     }
 }
