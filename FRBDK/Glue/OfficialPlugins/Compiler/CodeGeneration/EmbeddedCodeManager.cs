@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace OfficialPlugins.Compiler.CodeGeneration
 {
-    public static class MainCodeGenerator
+    public static class EmbeddedCodeManager
     {
         static string glueControlFolder => GlueState.Self.CurrentGlueProjectDirectory + "GlueControl/";
 
-        public static void GenerateAll(bool fullyGenerate)
+        public static void EmbedAll(bool fullyGenerate)
         {
             GlueControlCodeGenerator.GenerateFull = fullyGenerate;
 

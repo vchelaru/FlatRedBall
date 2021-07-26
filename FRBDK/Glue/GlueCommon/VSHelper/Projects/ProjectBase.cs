@@ -6,6 +6,8 @@ using System;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
+    #region Enums
+
     public enum BuildItemMembershipType
     {
         CopyIfNewer,
@@ -21,7 +23,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         Contained,
         Linked
     }
-
+    #endregion
 
     public delegate void SaveDelegate(string fileName);
 
@@ -161,7 +163,10 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         /// </summary>
         public abstract string ProjectId { get; }
         public abstract string PrecompilerDirective { get; }
-        
+
+        public abstract bool IsFrbSourceLinked();
+        //public abstract Version GetFrbDllVersion();
+
 
         public string MakeAbsolute(string relativePath)
         {

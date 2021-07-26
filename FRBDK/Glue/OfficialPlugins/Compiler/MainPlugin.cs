@@ -193,6 +193,18 @@ namespace OfficialPlugins.Compiler
             return compilerSettings;
         }
 
+        private bool IsFrbNewEnough()
+        {
+            var mainProject = GlueState.Self.CurrentMainProject;
+            if(mainProject.IsFrbSourceLinked())
+            {
+                return true;
+            }
+            else
+            {
+                return GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode;
+            }
+        }
 
         private void HandleGluxLoaded()
         {
@@ -213,7 +225,10 @@ namespace OfficialPlugins.Compiler
 
             ToolbarController.Self.HandleGluxLoaded();
 
-            TaskManager.Self.Add(() => MainCodeGenerator.GenerateAll(model.GenerateGlueControlManagerCode), "Generate Glue Control Code");
+            if(IsFrbNewEnough())
+            {
+                TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(model.GenerateGlueControlManagerCode), "Generate Glue Control Code");
+            }
 
             GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
         }
@@ -370,7 +385,10 @@ namespace OfficialPlugins.Compiler
                     {
                         // no big deal if it fails
                     }
-                    TaskManager.Self.Add(() => MainCodeGenerator.GenerateAll(model.GenerateGlueControlManagerCode), "Generate Glue Control Code");
+                    if (IsFrbNewEnough())
+                    {
+                        TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(model.GenerateGlueControlManagerCode), "Generate Glue Control Code");
+                    }
 
                     if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.NugetPackageInCsproj)
                     {

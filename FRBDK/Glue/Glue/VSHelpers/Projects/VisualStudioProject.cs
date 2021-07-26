@@ -453,6 +453,37 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
              */
         }
 
+        public override bool IsFrbSourceLinked()
+        {
+            var item = mProject.AllEvaluatedItems.FirstOrDefault(item =>
+            {
+                return item.ItemType == "ProjectReference" &&
+                    item.EvaluatedInclude.EndsWith("\\FlatRedBallDesktopGL.csproj");
+            });
+            return item != null;
+        }
+
+        // nope! This reads the .csproj for the file version # which is old, it doesn't get updated by the build. We'd have to load the .dll to see
+        // the version and this could be slow, so removing this...
+        //public override Version GetFrbDllVersion()
+        //{
+        //    var evaluated = mProject.AllEvaluatedItems.FirstOrDefault(item => item.EvaluatedInclude.Contains("FlatRedBallDesktopGL,"));
+        //    Version version = new Version(1,0);
+        //    if(evaluated != null)
+        //    {
+        //        var includeSplit = evaluated.EvaluatedInclude.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(item => item.Trim()).ToArray();
+
+        //        var versionAsString = includeSplit.FirstOrDefault(item => item.StartsWith("Version="))?.Substring("Version=".Length);
+
+        //        if(!string.IsNullOrWhiteSpace(versionAsString))
+        //        {
+        //            version = new Version(versionAsString);
+        //        }
+        //    }
+
+        //    return version;
+        //}
+
         public override void Load(string fileName)
         {
             mBuildItemDictionaries.Clear();
@@ -961,6 +992,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 #endregion
     }
 
+    #region Extensions
 
     public static class BuildItemExtensionMethods
     {
@@ -984,4 +1016,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
     {
         public override Encoding Encoding => Encoding.UTF8;
     }
+
+    #endregion
 }
