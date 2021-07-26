@@ -85,7 +85,7 @@ namespace GlueControl.Editing
             get => rectangle.Visible;
             set
             {
-                if(value != rectangle.Visible)
+                if (value != rectangle.Visible)
                 {
                     rectangle.Visible = value;
                 }
@@ -144,7 +144,7 @@ namespace GlueControl.Editing
         {
             rectangle = new AxisAlignedRectangle();
 
-            for(int i = 0; i < handles.Length; i++)
+            for (int i = 0; i < handles.Length; i++)
             {
                 handles[i] = new AxisAlignedRectangle();
 
@@ -193,11 +193,11 @@ namespace GlueControl.Editing
                 tweener2.Ended += () =>
                 {
                     IsFadingInAndOut = true;
-                    if(!isSynchronized)
+                    if (!isSynchronized)
                     {
                         FadingSeed = TimeManager.CurrentTime;
                     }
-                    
+
                 };
             };
         }
@@ -223,12 +223,12 @@ namespace GlueControl.Editing
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
 
-            if(cursor.PrimaryPush)
+            if (cursor.PrimaryPush)
             {
                 ScreenPointPushed = new Microsoft.Xna.Framework.Point(cursor.ScreenX, cursor.ScreenY);
                 if (item != null)
                 {
-                    if(item.Parent == null)
+                    if (item.Parent == null)
                     {
                         unsnappedItemPosition = item.Position;
                     }
@@ -237,7 +237,7 @@ namespace GlueControl.Editing
                         unsnappedItemPosition = item.RelativePosition;
                     }
 
-                    if(item is IScalable scalable)
+                    if (item is IScalable scalable)
                     {
                         unsnappedItemSize = new Vector2(scalable.ScaleX * 2, scalable.ScaleY * 2);
                     }
@@ -248,7 +248,7 @@ namespace GlueControl.Editing
         private void UpdateColor()
         {
             float value = 1;
-            if(IsFadingInAndOut)
+            if (IsFadingInAndOut)
             {
                 value = (float)(1 + System.Math.Sin((TimeManager.CurrentTime - FadingSeed) * 5)) / 2;
             }
@@ -273,7 +273,7 @@ namespace GlueControl.Editing
 
                 Position = newPosition;
 
-                ScaleX = ExtraPaddingInPixels/CameraLogic.CurrentZoomRatio + (maxX - minX) / 2.0f;
+                ScaleX = ExtraPaddingInPixels / CameraLogic.CurrentZoomRatio + (maxX - minX) / 2.0f;
                 ScaleY = ExtraPaddingInPixels / CameraLogic.CurrentZoomRatio + (maxY - minY) / 2.0f;
             }
         }
@@ -284,18 +284,18 @@ namespace GlueControl.Editing
             #region Update Handle Visibility
             if (ResizeMode == ResizeMode.EightWay)
             {
-                foreach(var handle in handles)
+                foreach (var handle in handles)
                 {
                     handle.Visible = Visible;
                 }
             }
-            else if(ResizeMode == ResizeMode.Cardinal)
+            else if (ResizeMode == ResizeMode.Cardinal)
             {
-                for(int i = 0; i < handles.Length; i++)
+                for (int i = 0; i < handles.Length; i++)
                 {
                     var handle = handles[i];
                     // every other one, starting with index 1
-                    handle.Visible = Visible && (i%2) == 1;
+                    handle.Visible = Visible && (i % 2) == 1;
                 }
             }
             else
@@ -307,7 +307,7 @@ namespace GlueControl.Editing
             }
             #endregion
 
-            if(Visible)
+            if (Visible)
             {
                 ResizeSide sideOver = sideGrabbed;
                 if (sideOver == ResizeSide.None)
@@ -317,7 +317,7 @@ namespace GlueControl.Editing
                 UpdateHandleRelativePositions();
 
                 FillSidesToHighlight(item, sideOver);
-                for(int i = 0; i  < handles.Count(); i++)
+                for (int i = 0; i < handles.Count(); i++)
                 {
                     var handle = handles[i];
                     handle.Position += this.Position;
@@ -338,7 +338,7 @@ namespace GlueControl.Editing
 
             sidesToHighlight.Add(sideGrabbed);
 
-            if(GetIfShouldResizeFromCenter(item))
+            if (GetIfShouldResizeFromCenter(item))
             {
                 if (sideGrabbed == ResizeSide.Left && item.RelativeX == 0) sidesToHighlight.Add(ResizeSide.Right);
                 if (sideGrabbed == ResizeSide.Top && item.RelativeY == 0) sidesToHighlight.Add(ResizeSide.Bottom);
@@ -346,7 +346,7 @@ namespace GlueControl.Editing
                 if (sideGrabbed == ResizeSide.Bottom && item.RelativeY == 0) sidesToHighlight.Add(ResizeSide.Top);
 
                 // if we grab a diagonal, all can be resized:
-                if(sideGrabbed == ResizeSide.TopLeft ||
+                if (sideGrabbed == ResizeSide.TopLeft ||
                     sideGrabbed == ResizeSide.TopRight ||
                     sideGrabbed == ResizeSide.BottomRight ||
                     sideGrabbed == ResizeSide.BottomLeft)
@@ -358,9 +358,9 @@ namespace GlueControl.Editing
                 }
             }
 
-            if(item is Circle || GetIfSetsTextureScale(item))
+            if (item is Circle || GetIfSetsTextureScale(item))
             {
-                if(sideGrabbed == ResizeSide.Left)
+                if (sideGrabbed == ResizeSide.Left)
                 {
                     sidesToHighlight.Add(ResizeSide.Top);
                     sidesToHighlight.Add(ResizeSide.Bottom);
@@ -383,7 +383,7 @@ namespace GlueControl.Editing
             }
         }
 
- 
+
         private void UpdateHandleRelativePositions()
         {
             var handle = handles[0];
@@ -429,7 +429,7 @@ namespace GlueControl.Editing
             if (CanMoveItem && cursor.PrimaryDown &&
                 (cursor.ScreenXChange != 0 || cursor.ScreenYChange != 0))
             {
-                var hasMovedEnough = Math.Abs(ScreenPointPushed.X - cursor.ScreenX) > 4 || 
+                var hasMovedEnough = Math.Abs(ScreenPointPushed.X - cursor.ScreenX) > 4 ||
                     Math.Abs(ScreenPointPushed.Y - cursor.ScreenY) > 4;
 
                 if (item != null && hasMovedEnough)
@@ -469,8 +469,8 @@ namespace GlueControl.Editing
             else
             {
                 var before = item.RelativePosition;
-                item.RelativeX = unsnappedItemPosition.X;
-                item.RelativeY = unsnappedItemPosition.Y;
+                item.RelativeX = MathFunctions.RoundFloat(unsnappedItemPosition.X, positionSnappingSize);
+                item.RelativeY = MathFunctions.RoundFloat(unsnappedItemPosition.Y, positionSnappingSize);
                 changeAfterSnapping = item.RelativePosition - before;
             }
             return changeAfterSnapping;
@@ -669,12 +669,12 @@ namespace GlueControl.Editing
         public bool IsCursorOverThis()
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
-            if(cursor.IsOn3D(rectangle))
+            if (cursor.IsOn3D(rectangle))
             {
                 return true;
             }
 
-            if(GetSideOver() != ResizeSide.None)
+            if (GetSideOver() != ResizeSide.None)
             {
                 return true;
             }
@@ -685,7 +685,7 @@ namespace GlueControl.Editing
         public ResizeSide GetSideOver()
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
-                
+
             for (int i = 0; i < this.handles.Length; i++)
             {
                 if (handles[i].Visible && cursor.IsOn3D(handles[i]))
