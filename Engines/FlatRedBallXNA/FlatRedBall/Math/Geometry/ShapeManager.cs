@@ -86,7 +86,7 @@ namespace FlatRedBall.Math.Geometry
         static internal PositionedObjectList<Sphere> mSpheres;
         static internal PositionedObjectList<AxisAlignedCube> mCubes;
         static internal PositionedObjectList<Capsule2D> mCapsule2Ds;
-        
+
         static ReadOnlyCollection<PositionedObject> mAutomaticallyUpdatedReadOnlyCollection;
         // Readonly instances of objects which expose the visible shapes
         static ReadOnlyCollection<AxisAlignedRectangle> mRectanglesReadOnlyCollection;
@@ -113,7 +113,7 @@ namespace FlatRedBall.Math.Geometry
 
         static bool mUseZTestingWhenDrawing = true;
         static ShapeDrawingOrder mShapeDrawingOrder = ShapeDrawingOrder.OverEverything;
-        
+
 #if SILVERLIGHT
         static Microsoft.Xna.Framework.Graphics.SpriteBatch sSpriteBatch;
         static Canvas mCanvas;
@@ -305,7 +305,7 @@ namespace FlatRedBall.Math.Geometry
             // Column
             UnscaledCubePoints[14] = new Vector3(-1, 1, -1);
             UnscaledCubePoints[15] = new Vector3(-1, -1, -1);
-            
+
             #endregion
 
 
@@ -318,7 +318,7 @@ namespace FlatRedBall.Math.Geometry
 
         #region Add Methods
 
- #if DEBUG
+#if DEBUG
         static void ThrowExceptionIfNotPrimaryThread()
         {
             if (!FlatRedBallServices.IsThreadPrimary())
@@ -348,7 +348,7 @@ namespace FlatRedBall.Math.Geometry
                 aar.ScaleX = SpriteManager.Camera.OrthogonalWidth / 8;
                 aar.ScaleY = aar.ScaleX;
             }
-            return AddAxisAlignedRectangle( aar );
+            return AddAxisAlignedRectangle(aar);
         }
 
         #region XML Docs
@@ -442,7 +442,7 @@ namespace FlatRedBall.Math.Geometry
                 mCapsule2Ds.Add(capsule2D);
             }
 
-            return capsule2D;        
+            return capsule2D;
         }
 
         #region XML Docs
@@ -456,7 +456,7 @@ namespace FlatRedBall.Math.Geometry
         #endregion
         static public Circle AddCircle()
         {
-            return AddCircle( new Circle() );
+            return AddCircle(new Circle());
 
         }
 
@@ -722,10 +722,11 @@ namespace FlatRedBall.Math.Geometry
             }
             
 
+
             if (layer != null)
             {
                 bool shouldMakeVisible = rectangle.mLayerBelongingTo == null && rectangle.ListsBelongingTo.Contains(mRectangles) == false
-                    && rectangle.Visible; 
+                    && rectangle.Visible;
 
 
                 if (rectangle.Visible)
@@ -1084,7 +1085,7 @@ namespace FlatRedBall.Math.Geometry
                 AddToLayer(shapeCollection.Capsule2Ds[i], layer, makeAutomaticallyUpdated);
             }
 
-            for(int i = 0; i < shapeCollection.Circles.Count; i++)
+            for (int i = 0; i < shapeCollection.Circles.Count; i++)
             {
                 AddToLayer(shapeCollection.Circles[i], layer, makeAutomaticallyUpdated);
             }
@@ -1273,7 +1274,7 @@ namespace FlatRedBall.Math.Geometry
             // 0 and second differene.  This happened when the rectangle was falling.
             // Not sure if I want to investigate this deeper, but making sure the value
             // is no bigger than SecondDifference throws away bad values and fixes that issue.
-            if(solutionToUse > TimeManager.SecondDifference)
+            if (solutionToUse > TimeManager.SecondDifference)
             {
                 solutionToUse = 0;
             }
@@ -1474,7 +1475,7 @@ namespace FlatRedBall.Math.Geometry
 #if DEBUG
             ThrowExceptionIfNotPrimaryThread();
 #endif
-            for(int i = 0; i < mLines.Count; i++)
+            for (int i = 0; i < mLines.Count; i++)
             {
                 Line line = mLines[i];
 
@@ -1534,7 +1535,7 @@ namespace FlatRedBall.Math.Geometry
 #endif
             capsule2DToRemove.RemoveSelfFromListsBelongingTo();
         }
-        
+
         #region XML Docs
         /// <summary>
         /// Removes the argument Circle from the ShapeManager and any 2-way PositionedObjectLists it belongs to.
@@ -1722,7 +1723,7 @@ namespace FlatRedBall.Math.Geometry
                 ThrowExceptionIfNotPrimaryThread();
 #endif
                 mSpheres.Remove(sphere);
-            } 
+            }
         }
 
         static internal void NotifyOfVisibilityChange(AxisAlignedCube axisAlignedCube)
@@ -1733,7 +1734,7 @@ namespace FlatRedBall.Math.Geometry
                 if (!SuppressAddingOnVisibilityTrue && axisAlignedCube.Visible && axisAlignedCube.ListsBelongingTo.Contains(mCubes) == false)
                 {
 #if DEBUG
-            ThrowExceptionIfNotPrimaryThread();
+                    ThrowExceptionIfNotPrimaryThread();
 #endif
                     mCubes.Add(axisAlignedCube);
                 }
@@ -1943,7 +1944,7 @@ namespace FlatRedBall.Math.Geometry
 
         static internal void Pause(InstructionList instructions)
         {
-            for(int i = 0; i < mAutomaticallyUpdated.Count; i++)
+            for (int i = 0; i < mAutomaticallyUpdated.Count; i++)
             {
                 PositionedObject shape = mAutomaticallyUpdated[i];
 
