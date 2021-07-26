@@ -258,48 +258,48 @@ namespace FlatRedBall.Math.Geometry
             AddToManagers(null);
         }
 
-        public void AddToManagers(Layer layer)
+        public void AddToManagers(Layer layer, bool makeAutomaticallyUpdated = true)
         {
             for (int i = 0; i < mAxisAlignedRectangles.Count; i++)
             {
                 AxisAlignedRectangle rectangle = mAxisAlignedRectangles[i];
-                ShapeManager.AddToLayer(rectangle, layer);
+                ShapeManager.AddToLayer(rectangle, layer, makeAutomaticallyUpdated);
             }
 
             for (int i = 0; i < mAxisAlignedCubes.Count; i++)
             {
                 AxisAlignedCube cube = mAxisAlignedCubes[i];
-                ShapeManager.AddToLayer(cube, layer);
+                ShapeManager.AddToLayer(cube, layer, makeAutomaticallyUpdated);
             }
 
             for (int i = 0; i < mCapsule2Ds.Count; i++)
             {
                 Capsule2D capsule = mCapsule2Ds[i];
-                ShapeManager.AddToLayer(capsule, layer);
+                ShapeManager.AddToLayer(capsule, layer, makeAutomaticallyUpdated);
             }
 
             for (int i = 0; i < mCircles.Count; i++)
             {
                 Circle circle = mCircles[i];
-                ShapeManager.AddToLayer(circle, layer);
+                ShapeManager.AddToLayer(circle, layer, makeAutomaticallyUpdated);
             }
 
             for (int i = 0; i < mSpheres.Count; i++)
             {
                 Sphere sphere = mSpheres[i];
-                ShapeManager.AddToLayer(sphere, layer);
+                ShapeManager.AddToLayer(sphere, layer, makeAutomaticallyUpdated);
             }
 
             for (int i = 0; i < mPolygons.Count; i++)
             {
                 Polygon polygon = mPolygons[i];
-                ShapeManager.AddToLayer(polygon, layer);
+                ShapeManager.AddToLayer(polygon, layer, makeAutomaticallyUpdated);
             }
 
             for (int i = 0; i < mLines.Count; i++)
             {
                 Line line = mLines[i];
-                ShapeManager.AddToLayer(line, layer); 
+                ShapeManager.AddToLayer(line, layer, makeAutomaticallyUpdated);
             }
         }
 
