@@ -128,16 +128,16 @@ namespace FlatRedBall.Screens
             get;
             set;
         }
+        #endregion
+
 		
 		public static Action<string> RehydrateAction
 		{
 			get;
 			set;
 		}
-
-        public static event Action<Screen> ScreenLoaded;
 		
-        #endregion
+        public static event Action<Screen> ScreenLoaded;
 
         #region Methods
 
@@ -239,7 +239,7 @@ namespace FlatRedBall.Screens
 
                     // No need to assign mCurrentScreen - this is done by the 4th argument "true"
                     //mCurrentScreen = 
-                    LoadScreen(type, null, true, true);
+                    LoadScreen(type);
                 }
                 else
                 {
@@ -333,7 +333,7 @@ namespace FlatRedBall.Screens
                 }
                 else
                 {
-                    mCurrentScreen = LoadScreen(screenToStartWith, null, true, true);
+                    mCurrentScreen = LoadScreen(screenToStartWith);
 
                     ShouldActivateScreen = false;
                 }
@@ -372,26 +372,9 @@ namespace FlatRedBall.Screens
 
         #region Private Methods
 
-        private static Screen LoadScreen(string screen, bool createNewLayer)
+        private static Screen LoadScreen(string screen)
         {
-            if (createNewLayer)
-            {
-                return LoadScreen(screen, SpriteManager.AddLayer());
-            }
-            else
-            {
-                return LoadScreen(screen, (Layer)null);
-            }
-        }
-
-        private static Screen LoadScreen(string screen, Layer layerToLoadScreenOn)
-        {
-            return LoadScreen(screen, layerToLoadScreenOn, true, false);
-        }
-
-        private static Screen LoadScreen(string screen, Layer layerToLoadScreenOn, bool addToManagers, bool makeCurrentScreen)
-        {
-            mNextScreenLayer = layerToLoadScreenOn;
+            mNextScreenLayer = null;
 
             Screen newScreen = null;
 
@@ -404,110 +387,86 @@ namespace FlatRedBall.Screens
 
             if (screen != null && screen != "")
             {
-#if XBOX360
-                newScreen = (Screen)Activator.CreateInstance(typeOfScreen);
-#else
                 newScreen = (Screen)Activator.CreateInstance(typeOfScreen, new object[0]);
-#endif
             }
 
             if (newScreen != null)
             {
                 FlatRedBall.Input.InputManager.CurrentFrameInputSuspended = true;
 
-                if (addToManagers)
+                // We do this so that new Screens are the CurrentScreen in Activity.
+                // This is useful in custom logic.
+                mCurrentScreen = newScreen;
+
+                if(IsInEditMode)
                 {
-                    // We do this so that new Screens are the CurrentScreen in Activity.
-                    // This is useful in custom logic.
-                    if (makeCurrentScreen)
+                    try
                     {
-                        mCurrentScreen = newScreen;
-                    }
-
-                    if(IsInEditMode)
-                    {
-                        try
-                        {
-                            // in edit mode, we tolerate crashes on initialize since this is common 
-                            newScreen.Initialize(addToManagers);
-                            TimeManager.SetNextFrameTimeTo0 = true;
-
-                            newScreen.ApplyRestartVariables();
-
-
-                            // stop everything:
-                            foreach (var item in SpriteManager.ManagedPositionedObjects)
-                            {
-                                item.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
-                                item.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
-                            }
-                        }
-                        catch
-                        {
-                            // I guess do nothing?
-                        }
-
-                    }
-                    else
-                    {
-                        newScreen.Initialize(addToManagers);
+                        // in edit mode, we tolerate crashes on initialize since this is common 
+                        newScreen.Initialize(true);
                         TimeManager.SetNextFrameTimeTo0 = true;
 
                         newScreen.ApplyRestartVariables();
 
-                        if (IsInEditMode)
+
+                        // stop everything:
+                        foreach (var item in SpriteManager.ManagedPositionedObjects)
                         {
-                            // stop everything:
-                            foreach (var item in SpriteManager.ManagedPositionedObjects)
-                            {
-                                item.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
-                                item.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
-                            }
+                            item.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
+                            item.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
                         }
                     }
-
+                    catch
+                    {
+                        // I guess do nothing?
+                    }
 
                 }
+                else
+                {
+                    newScreen.Initialize(true);
+                    TimeManager.SetNextFrameTimeTo0 = true;
+
+                    newScreen.ApplyRestartVariables();
+                }
+
                 mSuppressStatePush = false;
 
                 nextCallback?.Invoke(newScreen);
                 nextCallback = null;
 
-                if (addToManagers && makeCurrentScreen)
+                // Dec 28, 2020
+                // I thought we called
+                // Activity immediately
+                // when a new Screen was
+                // created/added. If we don't
+                // then a single frame will pass
+                // without activity, and objects may
+                // not be positioned correclty.
+                if (!IsInEditMode)
                 {
-                    // Dec 28, 2020
-                    // I thought we called
-                    // Activity immediately
-                    // when a new Screen was
-                    // created/added. If we don't
-                    // then a single frame will pass
-                    // without activity, and objects may
-                    // not be positioned correclty.
-                    if (!IsInEditMode)
+                    mCurrentScreen.Activity(mCurrentScreen.ActivityCallCount == 0);
+
+                    mCurrentScreen.ActivityCallCount++;
+                }
+
+                // We want to set time factor back to non-zero if in edit mode so objects can move and update
+                if (IsInEditMode || ( mCurrentScreen.ActivityCallCount == 1 && mWasFixedTimeStep.HasValue))
+                {
+                    FlatRedBallServices.Game.IsFixedTimeStep = mWasFixedTimeStep.Value;
+                    TimeManager.TimeFactor = mLastTimeFactor.Value;
+                }
+
+                ScreenLoaded?.Invoke(mCurrentScreen);
+
+                if (IsInEditMode)
+                {
+                    // stop everything:
+                    foreach (var item in SpriteManager.ManagedPositionedObjects)
                     {
-                        mCurrentScreen.Activity(mCurrentScreen.ActivityCallCount == 0);
-
-                        mCurrentScreen.ActivityCallCount++;
-                    }
-
-                    // We want to set time factor back to non-zero if in edit mode so objects can move and update
-                    if (IsInEditMode || ( mCurrentScreen.ActivityCallCount == 1 && mWasFixedTimeStep.HasValue))
-                    {
-                        FlatRedBallServices.Game.IsFixedTimeStep = mWasFixedTimeStep.Value;
-                        TimeManager.TimeFactor = mLastTimeFactor.Value;
-                    }
-
-                    ScreenLoaded?.Invoke(mCurrentScreen);
-
-                    if (IsInEditMode)
-                    {
-                        // stop everything:
-                        foreach (var item in SpriteManager.ManagedPositionedObjects)
-                        {
-                            // this prevents flickering due to the upate dependencies call
-                            // having been run earlier in the frame.
-                            item.ForceUpdateDependenciesDeep();
-                        }
+                        // this prevents flickering due to the upate dependencies call
+                        // having been run earlier in the frame.
+                        item.ForceUpdateDependenciesDeep();
                     }
                 }
 
