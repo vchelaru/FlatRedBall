@@ -602,17 +602,26 @@ namespace GlueControl.Editing
             }
             else if (item is Circle asCircle)
             {
+                float? newRadius = null;
                 if (cursorXChange != 0 && widthMultiple != 0)
                 {
-                    var newRadius = asCircle.Radius + cursorXChange * widthMultiple / 2.0f;
-                    newRadius = Math.Max(0, newRadius);
-                    asCircle.Radius = newRadius;
+                    newRadius = asCircle.Radius + cursorXChange * widthMultiple / 2.0f;
                 }
                 else if (cursorYChange != 0 && heightMultiple != 0)
                 {
-                    var newRadius = asCircle.Radius + cursorYChange * heightMultiple / 2.0f;
-                    newRadius = Math.Max(0, newRadius);
-                    asCircle.Radius = newRadius;
+                    newRadius = asCircle.Radius + cursorYChange * heightMultiple / 2.0f;
+                }
+                if (newRadius != null)
+                {
+                    newRadius = Math.Max(0, newRadius.Value);
+
+                    // Vic says - I want to enable snapping here at some point, but currently if it's 
+                    // enabled, the snapping on size conflicts with the snapping on position, resulting
+                    // in the circle shifting positions around when the handles are grabbed. Instead, the
+                    // sizing should be implemented at the selection marker level, and only then should the positions
+                    // be translated down to the object. Until then, snapping is turned off for circle resizing.
+                    //newRadius = MathFunctions.RoundFloat(newRadius.Value, sizeSnappingSize);
+                    asCircle.Radius = newRadius.Value;
                 }
             }
             else
