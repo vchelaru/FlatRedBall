@@ -81,6 +81,13 @@ namespace OfficialPlugins.Compiler
 
         private void HandleTimerTick(object sender, EventArgs e)
         {
+            ///////////////Early Out////////////////////
+            if(ViewModel.IsWaitingForGameToStart)
+            {
+                return;
+            }
+            ////////////End Early Out///////////////////
+            
             var process = runningGameProcess;
 
             if(process == null)
@@ -127,9 +134,6 @@ namespace OfficialPlugins.Compiler
 
         internal async Task<GeneralResponse> Run(bool preventFocus, string runArguments = null)
         {
-            // disable the timer so it doesn't grab the process while we're looking for it 
-            // (be sure to re-enable it later):
-            timer.Enabled = false;
             ViewModel.IsWaitingForGameToStart = true;
 
             GeneralResponse toReturn = GeneralResponse.UnsuccessfulResponse;
@@ -218,8 +222,6 @@ namespace OfficialPlugins.Compiler
                 toReturn.Message = $"Could not find game .exe";
             }
             ViewModel.IsWaitingForGameToStart = false;
-
-            timer.Enabled = true;
 
             return toReturn;
 
