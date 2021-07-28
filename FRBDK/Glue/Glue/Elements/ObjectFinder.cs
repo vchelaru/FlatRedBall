@@ -391,7 +391,19 @@ namespace FlatRedBall.Glue.Elements
             return null;
         }
 
-        public GlueElement GetIElement(string elementName)
+        [Obsolete("Use GetElement instead")]
+        public GlueElement GetIElement(string elementName) => GetElement(elementName);
+
+        public GlueElement GetElement(NamedObjectSave nos)
+        {
+            if(nos.SourceType == SourceType.Entity)
+            {
+                return GetEntitySave(nos.SourceClassType);
+            }
+            return null;
+        }
+
+        public GlueElement GetElement(string elementName)
         {
             GlueElement retval;
 
@@ -404,7 +416,6 @@ namespace FlatRedBall.Glue.Elements
 
             return retval;
         }
-
 
         public bool DoesEntityExist(string entityName)
         {

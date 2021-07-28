@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.SaveClasses.Helpers;
 using Newtonsoft.Json;
 using OfficialPlugins.Compiler.CommandSending;
 using OfficialPlugins.Compiler.Dtos;
@@ -58,6 +59,24 @@ namespace OfficialPlugins.Compiler.Managers
             else if(instruction != null)     
             {
                 typeName = instruction?.Type ?? instruction.Value?.GetType().ToString() ?? oldValue?.GetType().ToString();
+
+                var nosElement = ObjectFinder.Self.GetElement(nos);
+                if( nosElement != null)
+                {
+                    var variable = nosElement.GetCustomVariableRecursively(changedMember);
+                    if (variable != null && variable.GetIsVariableState(nosElement))
+                    {
+                        if(changedMember == "VariableState")
+                        {
+                            typeName = $"{GlueState.Self.ProjectNamespace}.{nosElement.Name.Replace('\\', '.')}.VariableState";
+                        }
+                        else if(changedMember.StartsWith("Current") && changedMember.EndsWith("State"))
+                        {
+                            var strippedName = changedMember.Substring("Current".Length, changedMember.Length - "Current".Length - "State".Length);
+                            typeName = $"{GlueState.Self.ProjectNamespace}.{nosElement.Name.Replace('\\', '.')}.{strippedName}";
+                        }
+                    }
+                }
             }
             else if(property != null)
             {
