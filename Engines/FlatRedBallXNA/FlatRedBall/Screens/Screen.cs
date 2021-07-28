@@ -69,9 +69,6 @@ namespace FlatRedBall.Screens
         /// </summary>
         protected static List<string> RestartVariables { get; private set; } = new List<string>();
 
-        Action ActivatingAction;
-        Action DeactivatingAction;
-
         
         static List<Type> cachedDerivedScreenTypes;
 
@@ -214,6 +211,15 @@ namespace FlatRedBall.Screens
         }
 
 
+
+        #endregion
+
+        #region Events/Delegates
+
+        Action ActivatingAction;
+        Action DeactivatingAction;
+
+        public Action BeforeCustomInitialize;
 
         #endregion
 

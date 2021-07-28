@@ -137,6 +137,11 @@ namespace FlatRedBall.Screens
 			set;
 		}
 		
+        /// <summary>
+        /// Event to run before a screen's CustomInitialize is run, allowing systems (like the level editor) to
+        /// run code before the user's custom code.
+        /// </summary>
+        public static event Action<Screen> BeforeScreenCustomInitialize;
         public static event Action<Screen> ScreenLoaded;
 
         #region Methods
@@ -398,6 +403,10 @@ namespace FlatRedBall.Screens
                 // This is useful in custom logic.
                 mCurrentScreen = newScreen;
 
+                if(BeforeScreenCustomInitialize != null)
+                {
+                    mCurrentScreen.BeforeCustomInitialize += () => BeforeScreenCustomInitialize(mCurrentScreen);
+                }
                 if(IsInEditMode)
                 {
                     try

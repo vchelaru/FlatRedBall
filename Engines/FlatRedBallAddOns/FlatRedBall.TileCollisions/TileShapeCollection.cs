@@ -86,6 +86,11 @@ namespace FlatRedBall.TileCollisions
 
 
         public List<Polygon> LastCollisionPolygons => mShapes.LastCollisionPolygons;
+
+        /// <summary>
+        /// Returns the rectangles which collided in the last successful collision. These can be checked in a collision event
+        /// to perform custom physics logic.
+        /// </summary>
         public List<AxisAlignedRectangle> LastCollisionAxisAlignedRectangles => mShapes.LastCollisionAxisAlignedRectangles;
 
         public bool Visible

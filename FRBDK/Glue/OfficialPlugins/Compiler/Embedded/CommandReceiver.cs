@@ -258,6 +258,17 @@ namespace GlueControl
                     if (!isAlreadyViewingThisEntity)
                     {
 #if SupportsEditMode
+                        void HandleScreenLoaded(Screen newScreen)
+                        {
+                            GlueControlManager.Self.ReRunAllGlueToGameCommands();
+                            newScreen.ScreenDestroy += HandleScreenDestroy;
+
+                            FlatRedBall.Screens.ScreenManager.ScreenLoaded -= HandleScreenLoaded;
+                        }
+
+                        FlatRedBall.Screens.ScreenManager.ScreenLoaded += HandleScreenLoaded;
+
+
                         Screens.EntityViewingScreen.GameElementTypeToCreate = GlueToGameElementName(elementNameGlue);
                         Screens.EntityViewingScreen.InstanceToSelect = selectObjectDto.ObjectName;
                         ScreenManager.CurrentScreen.MoveToScreen(typeof(Screens.EntityViewingScreen));
@@ -278,7 +289,7 @@ namespace GlueControl
         static string topNamespace = null;
         public static string GlueToGameElementName(string elementName)
         {
-            if(topNamespace == null)
+            if (topNamespace == null)
             {
                 var game1FullName = typeof(Game1).FullName;
                 topNamespace = game1FullName.Substring(0, game1FullName.IndexOf('.'));

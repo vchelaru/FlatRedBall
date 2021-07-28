@@ -45,8 +45,6 @@ namespace GlueControl.Screens
             Camera.Main.Y = 0;
             Camera.Main.Detach();
 
-            GlueControlManager.Self.ReRunAllGlueToGameCommands();
-
             GlueControl.Editing.EditingManager.Self.Select(InstanceToSelect);
         }
 

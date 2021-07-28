@@ -965,6 +965,11 @@ namespace FlatRedBallAddOns.Entities
                         // Screen will always call base.AddToManagers so that
                         // Screen.cs gets a chance to set up its timing
                         currentBlock.Line("base.AddToManagers();");
+
+                        if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode)
+                        {
+                            currentBlock.Line("BeforeCustomInitialize?.Invoke();");
+                        }
                     }
                     currentBlock.Line("AddToManagersBottomUp();");
                 }
