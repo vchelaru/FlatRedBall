@@ -222,19 +222,25 @@ namespace GlueControl
                 {
 #if SupportsEditMode
 
-                    void AfterLoadLogic(Screen screen)
+                    void BeforeCustomInitializeLogic(Screen newScreen)
+                    {
+                        GlueControlManager.Self.ReRunAllGlueToGameCommands();
+                        ScreenManager.BeforeScreenCustomInitialize -= BeforeCustomInitializeLogic;
+                    }
+
+                    void AfterInitializeLogic(Screen screen)
                     {
                         // Select this even if it's null so the EditingManager deselects 
                         EditingManager.Self.Select(selectObjectDto.ObjectName);
-                        GlueControlManager.Self.ReRunAllGlueToGameCommands();
                         screen.ScreenDestroy += HandleScreenDestroy;
                         if (CameraPositions.ContainsKey(screen.GetType().FullName))
                         {
                             Camera.Main.Position = CameraPositions[screen.GetType().FullName];
                         }
-                        ScreenManager.ScreenLoaded -= AfterLoadLogic;
+                        ScreenManager.ScreenLoaded -= AfterInitializeLogic;
                     }
-                    ScreenManager.ScreenLoaded += AfterLoadLogic;
+                    FlatRedBall.Screens.ScreenManager.BeforeScreenCustomInitialize += BeforeCustomInitializeLogic;
+                    ScreenManager.ScreenLoaded += AfterInitializeLogic;
 
                     ScreenManager.CurrentScreen.MoveToScreen(ownerType);
 
@@ -258,15 +264,21 @@ namespace GlueControl
                     if (!isAlreadyViewingThisEntity)
                     {
 #if SupportsEditMode
-                        void HandleScreenLoaded(Screen newScreen)
+                        void BeforeCustomInitializeLogic(Screen newScreen)
                         {
                             GlueControlManager.Self.ReRunAllGlueToGameCommands();
-                            newScreen.ScreenDestroy += HandleScreenDestroy;
-
-                            FlatRedBall.Screens.ScreenManager.ScreenLoaded -= HandleScreenLoaded;
+                            ScreenManager.BeforeScreenCustomInitialize -= BeforeCustomInitializeLogic;
                         }
 
-                        FlatRedBall.Screens.ScreenManager.ScreenLoaded += HandleScreenLoaded;
+                        void AfterInitializeLogic(Screen newScreen)
+                        {
+                            newScreen.ScreenDestroy += HandleScreenDestroy;
+
+                            FlatRedBall.Screens.ScreenManager.ScreenLoaded -= AfterInitializeLogic;
+                        }
+
+                        FlatRedBall.Screens.ScreenManager.ScreenLoaded += AfterInitializeLogic;
+                        FlatRedBall.Screens.ScreenManager.BeforeScreenCustomInitialize += BeforeCustomInitializeLogic;
 
 
                         Screens.EntityViewingScreen.GameElementTypeToCreate = GlueToGameElementName(elementNameGlue);
@@ -431,15 +443,25 @@ namespace GlueControl
             // user may go into edit mode after moving through a level and wouldn't want it to restart fully....or would they? What if they
             // want to change the Player start location. Need to think that through...
 
-            void HandleScreenLoaded(Screen newScreen)
+            // Vic says - We run all Glue commands before running custom initialize. The reason is - custom initialize
+            // may make modifications to objects that are created by glue commands (such as assigning acceleration to objects
+            // in a list), but it is unlikely that scripts will make modifications to objects created in CustomInitialize because
+            // objects created in CustomInitialize cannot be modified by level editor.
+            void BeforeCustomInitializeLogic(Screen newScreen)
             {
                 GlueControlManager.Self.ReRunAllGlueToGameCommands();
-                newScreen.ScreenDestroy += HandleScreenDestroy;
-
-                FlatRedBall.Screens.ScreenManager.ScreenLoaded -= HandleScreenLoaded;
+                ScreenManager.BeforeScreenCustomInitialize -= BeforeCustomInitializeLogic;
             }
 
-            FlatRedBall.Screens.ScreenManager.ScreenLoaded += HandleScreenLoaded;
+            void AfterInitializeLogic(Screen newScreen)
+            {
+                newScreen.ScreenDestroy += HandleScreenDestroy;
+
+                FlatRedBall.Screens.ScreenManager.ScreenLoaded -= AfterInitializeLogic;
+            }
+
+            FlatRedBall.Screens.ScreenManager.BeforeScreenCustomInitialize += BeforeCustomInitializeLogic;
+            FlatRedBall.Screens.ScreenManager.ScreenLoaded += AfterInitializeLogic;
 
             screen?.RestartScreen(reloadContent: true, applyRestartVariables: applyRestartVariables);
         }
