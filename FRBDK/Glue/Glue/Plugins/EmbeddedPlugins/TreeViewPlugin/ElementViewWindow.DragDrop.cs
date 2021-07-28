@@ -173,12 +173,12 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
                 else if (nodeMoving.IsStateNode())
                 {
-                    MoveState(nodeMoving, targetNode);
+                    DragDropManager.Self.MoveState(nodeMoving, targetNode);
                     shouldSaveGlux = true;
                 }
                 else if (nodeMoving.IsStateCategoryNode())
                 {
-                    MoveStateCategory(nodeMoving, targetNode);
+                    DragDropManager.Self.MoveStateCategory(nodeMoving, targetNode);
                     shouldSaveGlux = true;
                 }
                 else if (nodeMoving.IsCustomVariable())
@@ -198,40 +198,6 @@ namespace FlatRedBall.Glue.FormHelpers
                 System.Windows.Forms.MessageBox.Show("Error moving object: " + exception.ToString());
             }
 #endif
-        }
-
-        private static void MoveStateCategory(TreeNode nodeMoving, TreeNode targetNode)
-        {
-            if (targetNode.IsRootCustomVariablesNode() || targetNode.IsCustomVariable())
-            {
-                // The user drag+dropped a state category into the variables
-                // Let's make sure that it's all in the same Element though:
-                if (targetNode.GetContainingElementTreeNode() == nodeMoving.GetContainingElementTreeNode())
-                {
-                    StateSaveCategory category = nodeMoving.Tag as StateSaveCategory;
-
-                    // expose a variable that exposes the category
-                    CustomVariable customVariable = new CustomVariable();
-
-                    if (category.SharesVariablesWithOtherCategories)
-                    {
-                        customVariable.Type = "VariableState";
-                        customVariable.Name = "CurrentState";
-                    }
-                    else
-                    {
-                        customVariable.Type = category.Name;
-                        customVariable.Name = "Current" + category.Name + "State";
-                    }
-
-                    IElement element = targetNode.GetContainingElementTreeNode().Tag as IElement;
-
-                    element.CustomVariables.Add(customVariable);
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-
-                    EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
-                }
-            }
         }
 
         private static void MoveCustomVariable(TreeNode nodeMoving, TreeNode targetNode)
@@ -381,41 +347,7 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-        private static void MoveState(TreeNode nodeMoving, TreeNode targetNode)
-        {
-            IElement currentElement = EditorLogic.CurrentElement;
-            StateSave toAdd = (StateSave)nodeMoving.Tag;
 
-            var sourceContainer = nodeMoving.GetContainingElementTreeNode().Tag as GlueElement;
-            var targetContainer = targetNode.GetContainingElementTreeNode().Tag as GlueElement;
-
-            if (targetNode.IsStateCategoryNode() || targetNode.IsStateListNode())
-            {
-                if (sourceContainer == targetContainer)
-                {
-                    EditorLogic.CurrentElement.RemoveState(EditorLogic.CurrentStateSave);
-                }
-                else
-                {
-                    toAdd = toAdd.Clone();
-                }
-
-                if (targetNode.IsStateCategoryNode())
-                {
-                    ((StateSaveCategory)targetNode.Tag).States.Add(toAdd);
-                }
-                else
-                {
-                    targetContainer.States.Add(toAdd);
-                }
-
-                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(targetContainer);
-                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(targetContainer);
-
-            }
-
-
-        }
 
 
 

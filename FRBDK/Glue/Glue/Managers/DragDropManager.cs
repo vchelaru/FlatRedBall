@@ -239,6 +239,7 @@ namespace FlatRedBall.Glue.Managers
             return succeeded;
         }
 
+
         private GeneralResponse HandleCreateCollisionRelationship(NamedObjectSave movingNos, NamedObjectSave targetNos)
         {
             PluginManager.ReactToCreateCollisionRelationshipsBetween(movingNos, targetNos);
@@ -483,6 +484,92 @@ namespace FlatRedBall.Glue.Managers
             // run after generated code so plugins like level editor work off latest code
             PluginManager.ReactToNewObject(newNamedObject);
 
+        }
+
+        #endregion
+
+        #region StateSave
+
+        internal void MoveState(TreeNode nodeMoving, TreeNode targetNode)
+        {
+
+            var currentElement = GlueState.Self.CurrentElement;
+            var currentState = GlueState.Self.CurrentStateSave;
+
+            StateSave toAdd = (StateSave)nodeMoving.Tag;
+
+            var sourceContainer = nodeMoving.GetContainingElementTreeNode().Tag as GlueElement;
+            var targetContainer = targetNode.GetContainingElementTreeNode().Tag as GlueElement;
+
+            if (targetNode.IsStateCategoryNode() || targetNode.IsStateListNode())
+            {
+                if (sourceContainer == targetContainer)
+                {
+                    currentElement.RemoveState(currentState);
+                }
+                else
+                {
+                    toAdd = toAdd.Clone();
+                }
+
+                if (targetNode.IsStateCategoryNode())
+                {
+                    ((StateSaveCategory)targetNode.Tag).States.Add(toAdd);
+                }
+                else
+                {
+                    targetContainer.States.Add(toAdd);
+                }
+
+                ProjectManager.UpdateAllDerivedElementFromBaseValues(true, currentElement);
+
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(targetContainer);
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(targetContainer);
+
+            }
+
+
+        }
+
+        #endregion
+
+        #region StateSaveCategory
+
+        internal void MoveStateCategory(TreeNode nodeMoving, TreeNode targetNode)
+        {
+            if (targetNode.IsRootCustomVariablesNode() || targetNode.IsCustomVariable())
+            {
+                // The user drag+dropped a state category into the variables
+                // Let's make sure that it's all in the same Element though:
+                if (targetNode.GetContainingElementTreeNode() == nodeMoving.GetContainingElementTreeNode())
+                {
+                    StateSaveCategory category = nodeMoving.Tag as StateSaveCategory;
+
+                    // expose a variable that exposes the category
+                    CustomVariable customVariable = new CustomVariable();
+
+                    if (category.SharesVariablesWithOtherCategories)
+                    {
+                        customVariable.Type = "VariableState";
+                        customVariable.Name = "CurrentState";
+                    }
+                    else
+                    {
+                        customVariable.Type = category.Name;
+                        customVariable.Name = "Current" + category.Name + "State";
+                    }
+
+                    var element = targetNode.GetContainingElementTreeNode().Tag as GlueElement;
+
+                    element.CustomVariables.Add(customVariable);
+
+                    ProjectManager.UpdateAllDerivedElementFromBaseValues(true, element);
+
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+
+                    EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
+                }
+            }
         }
 
         #endregion

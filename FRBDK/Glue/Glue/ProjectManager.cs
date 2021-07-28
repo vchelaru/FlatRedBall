@@ -651,6 +651,8 @@ namespace FlatRedBall.Glue
 
         }
 
+        // Vic says - I don't know if this should be here or if we should move it somewhere else.
+        // Also the name is vague and the method does a ton, so it might be good to figure out a way to break this up
         public static void UpdateAllDerivedElementFromBaseValues(bool regenerateCode, GlueElement currentElement = null)
         {
             currentElement = currentElement ?? GlueState.Self.CurrentElement;
