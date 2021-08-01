@@ -502,6 +502,18 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 NamedObjectSave namedObjectSave = namedObjectSetByDerived.Clone();
 
+                // This code may be cloning a list with contained objects, and the
+                // contained objects may not SetByDerived
+                namedObjectSave.ContainedObjects.Clear();
+                foreach(var containedCandidate in namedObjectSetByDerived.ContainedObjects)
+                {
+                    if(containedCandidate.SetByDerived)
+                    {
+                        namedObjectSave.ContainedObjects.Add(containedCandidate);
+                    }
+                }
+
+
                 namedObjectSave.SetDefinedByBaseRecursively(true);
                 namedObjectSave.SetInstantiatedByBaseRecursively(instantiatedByBase);
 
