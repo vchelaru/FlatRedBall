@@ -288,7 +288,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public GlueElement GetElement(string name)
         {
-            return ObjectFinder.Self.GetIElement(name);
+            return ObjectFinder.Self.GetElement(name);
         }
 
         public NamedObjectSave GetNamedObjectSave(string containerName, string name)

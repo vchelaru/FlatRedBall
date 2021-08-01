@@ -48,6 +48,7 @@ namespace OfficialPlugins.Compiler.Dtos
         public string VariableName { get; set; }
         public string VariableValue { get; set; }
         public string Type { get; set; }
+        public bool IsState { get; set; }
     }
 
     public class GlueVariableSetDataResponse

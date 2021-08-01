@@ -45,6 +45,7 @@ namespace OfficialPlugins.Compiler.Managers
 
             string typeName = null;
             object currentValue = null;
+            var isState = false;
 
             var nosAti = nos.GetAssetTypeInfo();
             var variableDefinition = nosAti?.VariableDefinitions.FirstOrDefault(item => item.Name == changedMember);
@@ -75,6 +76,7 @@ namespace OfficialPlugins.Compiler.Managers
                             var strippedName = changedMember.Substring("Current".Length, changedMember.Length - "Current".Length - "State".Length);
                             typeName = $"{GlueState.Self.ProjectNamespace}.{nosElement.Name.Replace('\\', '.')}.{strippedName}";
                         }
+                        isState = true;
                     }
                 }
             }
@@ -123,7 +125,7 @@ namespace OfficialPlugins.Compiler.Managers
             {
                 try
                 {
-                    var task = TryPushVariable(nosName, changedMember, typeName, value, currentElement, assignOrRecordOnly);
+                    var task = TryPushVariable(nosName, changedMember, typeName, value, currentElement, assignOrRecordOnly, isState);
                     task.Wait();
                     var response = task.Result;
                     if (!string.IsNullOrWhiteSpace(response?.Exception))
@@ -379,8 +381,9 @@ namespace OfficialPlugins.Compiler.Managers
         private string ToGameType(GlueElement element) =>
             GlueState.Self.ProjectNamespace + "." + element.Name.Replace("\\", ".");
 
-        private async Task<GlueVariableSetDataResponse> TryPushVariable(string variableOwningNosName, string rawMemberName, string type, string value, GlueElement currentElement,
-            AssignOrRecordOnly assignOrRecordOnly)
+        private async Task<GlueVariableSetDataResponse> TryPushVariable(string variableOwningNosName, 
+            string rawMemberName, string type, string value, GlueElement currentElement,
+            AssignOrRecordOnly assignOrRecordOnly, bool isState)
         {
             GlueVariableSetDataResponse response = null;
             if (ViewModel.IsRunning)
@@ -393,6 +396,7 @@ namespace OfficialPlugins.Compiler.Managers
                     data.VariableValue = value;
                     data.VariableName = rawMemberName;
                     data.AssignOrRecordOnly = assignOrRecordOnly;
+                    data.IsState = isState;
                     if (!string.IsNullOrEmpty(variableOwningNosName))
                     {
                         data.VariableName = "this." + variableOwningNosName + "." + data.VariableName;
@@ -435,7 +439,13 @@ namespace OfficialPlugins.Compiler.Managers
                 {
                     name = "this." + variable.Name;
                 }
-                await TryPushVariable(null, name, type, value, GlueState.Self.CurrentElement, AssignOrRecordOnly.Assign);
+
+                var isState = variable.GetIsVariableState(variableElement);
+                if (isState)
+                {
+                    throw new NotImplementedException("Need to convert the type from System.Object to the state");
+                }
+                await TryPushVariable(null, name, type, value, GlueState.Self.CurrentElement, AssignOrRecordOnly.Assign, isState);
             }
             else
             {
