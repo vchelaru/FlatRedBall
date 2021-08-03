@@ -19,6 +19,11 @@ namespace Glue
 		[STAThread]
 		static void Main()
 		{
+            // This is a semi-hack to fix blurry rendering issues with controls on some systems. This likely
+            // sacrifices perf for stability. See:
+            // https://github.com/vchelaru/FlatRedBall/issues/151
+            System.Windows.Media.RenderOptions.ProcessRenderMode = System.Windows.Interop.RenderMode.SoftwareOnly;
+
             // Add proper exception handling so we can handle plugin exceptions:
             CreateExceptionHandlingEvents();
 
