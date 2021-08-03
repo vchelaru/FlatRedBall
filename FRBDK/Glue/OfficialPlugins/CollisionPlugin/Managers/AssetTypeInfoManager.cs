@@ -246,7 +246,10 @@ namespace OfficialPlugins.CollisionPlugin.Managers
             {
                 return relationshipType;
             }
-            else if (isSecondTileShapeCollection || isSecondShapeCollection || isSecondNull)
+            else if ( 
+                ( isSecondTileShapeCollection && collisionType != CollisionType.DelegateCollision )|| 
+                isSecondShapeCollection || 
+                isSecondNull)
             {
                 // doesn't require 2nd type param:
                 return

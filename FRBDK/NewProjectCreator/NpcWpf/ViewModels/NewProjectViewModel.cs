@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
+using ToolsUtilities;
 
 namespace Npc.ViewModels
 {
@@ -106,18 +107,45 @@ namespace Npc.ViewModels
             }
         }
 
-        [DependsOn(nameof(FinalDirectory))]
+        [DependsOn(nameof(ValidationResponse))]
         public SolidColorBrush FinalDirectoryForeground
         {
             get
             {
-                if(System.IO.Directory.Exists(FinalDirectory))
+                var validation = ValidationResponse;
+                if(validation.Succeeded)
                 {
-                    return Brushes.Red;
+                    return Brushes.Black;
                 }
                 else
                 {
-                    return Brushes.Black;
+
+                }
+                {
+                    return Brushes.Red;
+                }
+            }
+        }
+
+        [DependsOn(nameof(ValidationResponse))]
+        public string ProjectLocationError => ValidationResponse.Message;
+
+        [DependsOn(nameof(FinalDirectory))]
+        [DependsOn(nameof(IsDifferentNamespaceChecked))]
+        [DependsOn(nameof(DifferentNamespace))]
+        public GeneralResponse ValidationResponse
+        {
+            get
+            {
+                var whyIsntValid = GetWhyIsntValid();
+
+                if(!string.IsNullOrEmpty(whyIsntValid))
+                {
+                    return GeneralResponse.UnsuccessfulWith(whyIsntValid);
+                }
+                else
+                {
+                    return GeneralResponse.SuccessfulResponse;
                 }
             }
         }
@@ -140,7 +168,7 @@ namespace Npc.ViewModels
             UseLocalCopy = false;
         }
 
-        internal string GetWhyIsntValid()
+        private string GetWhyIsntValid()
         {
             string whyIsntValid = null;
             if (IsDifferentNamespaceChecked)
@@ -166,6 +194,14 @@ namespace Npc.ViewModels
             if (string.IsNullOrEmpty(whyIsntValid))
             {
                 whyIsntValid = ProjectCreationHelper.GetWhyProjectNameIsntValid(ProjectName);
+            }
+
+            if(string.IsNullOrEmpty(whyIsntValid))
+            {
+                if (System.IO.Directory.Exists(FinalDirectory))
+                {
+                    whyIsntValid = $"The directory {FinalDirectory} already exists";
+                }
             }
 
 

@@ -50,7 +50,7 @@
                         <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
                     </CheckBox.LayoutTransform>
                 </CheckBox>
-                <TextBox Visibility="{Binding DifferentNamespaceTextBoxVisibility}" Text="{Binding DifferentNamespace}" Margin="0,0,0,0"></TextBox>
+                <TextBox Visibility="{Binding DifferentNamespaceTextBoxVisibility}" Text="{Binding DifferentNamespace, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,0"></TextBox>
             </StackPanel>
 
             <TextBlock FontWeight="Bold" Grid.Row="4" VerticalAlignment="Center" Grid.Column="0" Margin="0,0,16,10" >Location:</TextBlock>
@@ -73,7 +73,8 @@
 
             <StackPanel Grid.Row="6" Grid.ColumnSpan="2">
                 <TextBlock FontStyle="Italic" FontSize="10">Solution (.sln) will be located in:</TextBlock>
-                <TextBlock FontStyle="Italic" FontSize="10" Foreground="{Binding FinalDirectoryForeground}" Text="{Binding FinalDirectory}" TextWrapping="Wrap" Margin="15,0,0,0"></TextBlock>
+                <TextBlock FontStyle="Italic" FontWeight="Bold"  FontSize="10" Foreground="{Binding FinalDirectoryForeground}" Text="{Binding FinalDirectory}" TextWrapping="Wrap" Margin="15,4,0,0"></TextBlock>
+                <TextBlock FontStyle="Italic" FontSize="10" Foreground="{Binding FinalDirectoryForeground}" Text="{Binding ProjectLocationError}" TextWrapping="Wrap" Margin="15,4,0,0"></TextBlock>
             </StackPanel>
 
             <Button 

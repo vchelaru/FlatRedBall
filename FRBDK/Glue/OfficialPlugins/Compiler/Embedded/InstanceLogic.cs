@@ -1003,7 +1003,7 @@ namespace GlueControl
             {
                 if (variableValue is string asString && !string.IsNullOrWhiteSpace(asString))
                 {
-                    variableValue = Editing.VariableAssignmentLogic.ConvertStringToType(instruction.Type, asString);
+                    variableValue = Editing.VariableAssignmentLogic.ConvertStringToType(instruction.Type, asString, false);
                 }
             }
             else if (instruction.Type == typeof(Microsoft.Xna.Framework.Graphics.TextureAddressMode).Name)
