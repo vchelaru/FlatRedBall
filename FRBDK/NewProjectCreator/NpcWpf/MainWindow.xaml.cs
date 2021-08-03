@@ -87,11 +87,11 @@ namespace Npc
 
         private async Task BeginMakingProject()
         {
-            string whyIsntValid = ViewModel.GetWhyIsntValid();
+            var validationResponse = ViewModel.ValidationResponse;
 
-            if (!string.IsNullOrEmpty(whyIsntValid))
+            if (validationResponse.Succeeded == false)
             {
-                System.Windows.MessageBox.Show(whyIsntValid);
+                System.Windows.MessageBox.Show(validationResponse.Message);
             }
             else
             {

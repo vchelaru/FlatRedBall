@@ -658,16 +658,29 @@ namespace GlueControl.Editing
         private static object ConvertVariableValue(GlueVariableSetData data)
         {
             var type = data.Type;
-            object variableValue = ConvertStringToType(type, data.VariableValue);
+            object variableValue = ConvertStringToType(type, data.VariableValue, data.IsState);
 
             return variableValue;
         }
 
-        public static object ConvertStringToType(string type, string variableValue)
+        public static object ConvertStringToType(string type, string variableValue, bool isState)
         {
             object convertedValue = variableValue;
 
-            if (type == typeof(List<Microsoft.Xna.Framework.Vector2>).ToString())
+            if (isState)
+            {
+                var splitType = type.Split('.');
+
+                type = string.Join(".", splitType.Take(splitType.Length - 1).ToArray()) + "+" +
+                    splitType.Last();
+
+                var stateType = typeof(VariableAssignmentLogic).Assembly.GetType(type);
+
+                var fieldInfo = stateType.GetField(variableValue);
+
+                convertedValue = fieldInfo.GetValue(null);
+            }
+            else if (type == typeof(List<Microsoft.Xna.Framework.Vector2>).ToString())
             {
                 convertedValue = JsonConvert.DeserializeObject<List<Microsoft.Xna.Framework.Vector2>>(variableValue);
             }
