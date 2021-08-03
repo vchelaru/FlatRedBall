@@ -437,7 +437,8 @@ namespace OfficialPlugins.Compiler.Managers
                 }
                 else
                 {
-                    name = "this." + variable.Name;
+                    // don't prefix "this", the inner call will do it
+                    name = variable.Name;
                 }
 
                 var isState = variable.GetIsVariableState(variableElement);

@@ -566,7 +566,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             else if (treeNodeToAddTo.IsRootEntityNode())
             {
-                string directory = FileManager.RelativeDirectory + "Entities/" +
+                string directory = GlueState.Self.CurrentGlueProjectDirectory + "Entities/" +
                     folderName;
 
                 Directory.CreateDirectory(directory);
@@ -581,7 +581,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 //    tiw.Result;
                 // Update October 16, 2011
                 // An Enity has both folders
-                // in the code folder (represented
+                // in the code folder (representedb
                 // by RelativeDirectory) as well as
                 // in the Content project.  An Entity
                 // may not have files in the Content folder,
@@ -595,7 +595,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // But...when we add a new folder
                 // to an Entity, we want that folder
                 // to show up in the tree view in Glue.
-                // Glue only scans the content folder, so
+                // Glue only scans the content folder (WRONG! See correction below), so
                 // we want to make sure this folder exists
                 // so it shows up okay.
                 // Update March 11, 2018
@@ -607,10 +607,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // entities tree node.
                 // Therefore, only create a folder in the content folder path,
                 // and code folders will be created only when the user explicitly
-                // adds a folder to the Entities tree node
+                // adds a folder to the Entities tree node.
+                // Update August 3, 2021
+                // Actually, Glue scans the code folders for entities not the content
+                // folders for the reasons given above - an entity must have code but may
+                // not have content. The RootEntityNode else if check above adds to the code
+                // folder, and we should respect that here too. We must tolerate empty folders
+                // but unless the .glux were to have explicit folder add/removes like .csproj, this
+                // is just something we'll have to deal with.
                 string directory;
                 
-                directory = GlueState.Self.ContentDirectory +
+                //directory = GlueState.Self.ContentDirectory +
+                directory = GlueState.Self.CurrentGlueProjectDirectory +
                         treeNodeToAddTo.GetRelativePath() +
                         folderName;
                 directory = ProjectManager.MakeAbsolute(directory, true);
