@@ -1626,6 +1626,8 @@ namespace FlatRedBall.Math.Collision
         where FirstCollidableT : PositionedObject, ICollidable where SecondCollidableT : PositionedObject, ICollidable
 
     {
+        public ListVsListLoopingMode ListVsListLoopingMode { get; set; } = ListVsListLoopingMode.PreventDoubleChecksPerFrame;
+
         public LoopDirection LoopDirection { get; set; }
 
         public Func<FirstCollidableT, SecondCollidableT, bool> CollisionFunction { get; set; }
@@ -1673,11 +1675,20 @@ namespace FlatRedBall.Math.Collision
                 if(LoopDirection == LoopDirection.FrontToBack)
                 {
                     int j = 0;
+                    int secondListStartInclusive = 0;
                     for (int i = 0; i < first.Count; i++)
                     {
                         // items could be removed, so need to do extra checks on front-to-back
                         var firstItem = first[i];
-                        for (j = 0; j < second.Count; j++)
+
+
+                        if (first == (object)second && ListVsListLoopingMode == ListVsListLoopingMode.PreventDoubleChecksPerFrame)
+                        {
+                            secondListStartInclusive = i + 1;
+                        }
+
+
+                        for (j = secondListStartInclusive; j < second.Count; j++)
                         {
                             var secondItem = second[j];
 
@@ -1694,10 +1705,20 @@ namespace FlatRedBall.Math.Collision
                 else // back to front
                 {
                     int j = 0;
+
+                    var secondListStartInclusive = second.Count - 1;
+                    var secondListEndExclusive = -1;
+
                     for (int i = first.Count - 1; i > -1; i--)
                     {
                         var firstItem = first[i];
-                        for (j = second.Count - 1; j > -1; j--)
+
+                        if (first == (object)second && ListVsListLoopingMode == ListVsListLoopingMode.PreventDoubleChecksPerFrame)
+                        {
+                            secondListStartInclusive = i - 1;
+                        }
+
+                        for (j = secondListStartInclusive; j > secondListEndExclusive; j--)
                         {
                             var secondItem = second[j];
                             var collided = CollisionFunction(firstItem, secondItem);

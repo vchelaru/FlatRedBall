@@ -1119,103 +1119,106 @@ namespace FlatRedBall.Math.Geometry
                 normalized.Normalize();
             }
 
-            if (object1.Drag == 0)
+            if(elasticity > 0)
             {
-                #region Adjust for object1's Y Acceleration
-
-                // Quadratic formula time!
-                // For a refresher, check:
-                // http://www.purplemath.com/modules/quadform.htm
-                // In short, where:
-                // ax^2 + bx + c = 0
-                // then:
-                // x = (-b (+ or -) sqrt(b^2 -4ac) ) / 2a
-                // In our case:
-                // a = acceleration/2
-                // b = velocity
-                // c = reposition
-                // x = amount of time spent in the shape (estimated based off of the reposition, not actual time because we don't know the actual time)
-                // 
-                if (object1.Acceleration.Y != 0)
+                if (object1.Drag == 0)
                 {
-                    // C is inverted because we bring
-                    // it from the right side of the equation
-                    // over to the left to make the equation equal
-                    // 0.  But we also want to invert the velocity/acceleration
-                    // values because we're trying to "rewind time" to see where
-                    // the initial pass into the shape occurred.  So we'll keep everything
-                    // positive and the math should work out
-                    double aValue = -object1.Acceleration.Y / 2.0;
-                    double bValue = object1.Velocity.Y;
-                    double cValue = collisionReposition.Y;
-                    double discriminantSquareRoot = System.Math.Sqrt(bValue * bValue - 4.0 * aValue * cValue);
-                    double twoTimesA = 2.0 * aValue;
+                    #region Adjust for object1's Y Acceleration
 
-                    double solutionToUse = GetSolution(bValue, discriminantSquareRoot, twoTimesA);
+                    // Quadratic formula time!
+                    // For a refresher, check:
+                    // http://www.purplemath.com/modules/quadform.htm
+                    // In short, where:
+                    // ax^2 + bx + c = 0
+                    // then:
+                    // x = (-b (+ or -) sqrt(b^2 -4ac) ) / 2a
+                    // In our case:
+                    // a = acceleration/2
+                    // b = velocity
+                    // c = reposition
+                    // x = amount of time spent in the shape (estimated based off of the reposition, not actual time because we don't know the actual time)
+                    // 
+                    if (object1.Acceleration.Y != 0)
+                    {
+                        // C is inverted because we bring
+                        // it from the right side of the equation
+                        // over to the left to make the equation equal
+                        // 0.  But we also want to invert the velocity/acceleration
+                        // values because we're trying to "rewind time" to see where
+                        // the initial pass into the shape occurred.  So we'll keep everything
+                        // positive and the math should work out
+                        double aValue = -object1.Acceleration.Y / 2.0;
+                        double bValue = object1.Velocity.Y;
+                        double cValue = collisionReposition.Y;
+                        double discriminantSquareRoot = System.Math.Sqrt(bValue * bValue - 4.0 * aValue * cValue);
+                        double twoTimesA = 2.0 * aValue;
 
-                    // Now we can adjust the velocity according to the acceleration value
-                    object1.Velocity.Y -= (float)(object1.Acceleration.Y * solutionToUse * System.Math.Abs(normalized.Y));
+                        double solutionToUse = GetSolution(bValue, discriminantSquareRoot, twoTimesA);
+
+                        // Now we can adjust the velocity according to the acceleration value
+                        object1.Velocity.Y -= (float)(object1.Acceleration.Y * solutionToUse * System.Math.Abs(normalized.Y));
+                    }
+
+                    #endregion
+
+                    #region Adjust for object1's XAcceleration
+
+                    if (object1.Acceleration.X != 0)
+                    {
+                        double aValue = -object1.Acceleration.X / 2.0;
+                        double bValue = object1.Velocity.X;
+                        double cValue = collisionReposition.X;
+                        double discriminantSquareRoot = System.Math.Sqrt(bValue * bValue - 4.0 * aValue * cValue);
+                        double twoTimesA = 2.0 * aValue;
+
+                        double solutionToUse = GetSolution(bValue, discriminantSquareRoot, twoTimesA);
+
+                        // Now we can adjust the velocity according to the acceleration value
+                        object1.Velocity.X -= (float)(object1.Acceleration.X * solutionToUse * System.Math.Abs(normalized.X));
+                    }
+
+                    #endregion
                 }
 
-                #endregion
-
-                #region Adjust for object1's XAcceleration
-
-                if (object1.Acceleration.X != 0)
+                if (object2.Drag == 0)
                 {
-                    double aValue = -object1.Acceleration.X / 2.0;
-                    double bValue = object1.Velocity.X;
-                    double cValue = collisionReposition.X;
-                    double discriminantSquareRoot = System.Math.Sqrt(bValue * bValue - 4.0 * aValue * cValue);
-                    double twoTimesA = 2.0 * aValue;
+                    #region Adjust for object2's YAcceleration
 
-                    double solutionToUse = GetSolution(bValue, discriminantSquareRoot, twoTimesA);
+                    // See comments in object1's YAcceleration section
+                    if (object2.Acceleration.Y != 0)
+                    {
+                        double aValue = -object2.Acceleration.Y / 2.0;
+                        double bValue = object2.Velocity.Y;
+                        double cValue = -collisionReposition.Y;
+                        double discriminantSquareRoot = System.Math.Sqrt(bValue * bValue - 4.0 * aValue * cValue);
+                        double twoTimesA = 2.0 * aValue;
 
-                    // Now we can adjust the velocity according to the acceleration value
-                    object1.Velocity.X -= (float)(object1.Acceleration.X * solutionToUse * System.Math.Abs(normalized.X));
+                        double solutionToUse = GetSolution(bValue, discriminantSquareRoot, twoTimesA);
+
+                        // Now we can adjust the velocity according to the acceleration value
+                        object2.Velocity.Y -= (float)(object2.Acceleration.Y * solutionToUse * System.Math.Abs(normalized.Y));
+                    }
+
+                    #endregion
+
+                    #region Adjust for object2's XAcceleration
+
+                    // See comments in object1's YAcceleration section
+                    if (object2.Acceleration.X != 0)
+                    {
+                        double aValue = -object2.Acceleration.X / 2.0;
+                        double bValue = object2.Velocity.X;
+                        double cValue = -collisionReposition.X;
+                        double discriminantSquareRoot = System.Math.Sqrt(bValue * bValue - 4.0 * aValue * cValue);
+                        double twoTimesA = 2.0 * aValue;
+                        double solutionToUse = GetSolution(bValue, discriminantSquareRoot, twoTimesA);
+
+                        // Now we can adjust the velocity according to the acceleration value
+                        object2.Velocity.X -= (float)(object2.Acceleration.X * solutionToUse * System.Math.Abs(normalized.X));
+                    }
+
+                    #endregion
                 }
-
-                #endregion
-            }
-
-            if (object2.Drag == 0)
-            {
-                #region Adjust for object2's YAcceleration
-
-                // See comments in object1's YAcceleration section
-                if (object2.Acceleration.Y != 0)
-                {
-                    double aValue = -object2.Acceleration.Y / 2.0;
-                    double bValue = object2.Velocity.Y;
-                    double cValue = -collisionReposition.Y;
-                    double discriminantSquareRoot = System.Math.Sqrt(bValue * bValue - 4.0 * aValue * cValue);
-                    double twoTimesA = 2.0 * aValue;
-
-                    double solutionToUse = GetSolution(bValue, discriminantSquareRoot, twoTimesA);
-
-                    // Now we can adjust the velocity according to the acceleration value
-                    object2.Velocity.Y -= (float)(object2.Acceleration.Y * solutionToUse * System.Math.Abs(normalized.Y));
-                }
-
-                #endregion
-
-                #region Adjust for object2's XAcceleration
-
-                // See comments in object1's YAcceleration section
-                if (object2.Acceleration.X != 0)
-                {
-                    double aValue = -object2.Acceleration.X / 2.0;
-                    double bValue = object2.Velocity.X;
-                    double cValue = -collisionReposition.X;
-                    double discriminantSquareRoot = System.Math.Sqrt(bValue * bValue - 4.0 * aValue * cValue);
-                    double twoTimesA = 2.0 * aValue;
-                    double solutionToUse = GetSolution(bValue, discriminantSquareRoot, twoTimesA);
-
-                    // Now we can adjust the velocity according to the acceleration value
-                    object2.Velocity.X -= (float)(object2.Acceleration.X * solutionToUse * System.Math.Abs(normalized.X));
-                }
-
-                #endregion
             }
 
             Vector2 vectorAsVelocity = new Vector2(
