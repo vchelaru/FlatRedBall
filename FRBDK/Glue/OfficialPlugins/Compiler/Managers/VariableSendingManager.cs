@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Elements;
+﻿using FlatRedBall;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
@@ -76,6 +77,16 @@ namespace OfficialPlugins.Compiler.Managers
                             var strippedName = changedMember.Substring("Current".Length, changedMember.Length - "Current".Length - "State".Length);
                             typeName = $"{GlueState.Self.ProjectNamespace}.{nosElement.Name.Replace('\\', '.')}.{strippedName}";
                         }
+                        else
+                        {
+                            typeName = variable.Type;
+
+                            if(typeName.StartsWith("Entities.") || typeName.StartsWith("Screens."))
+                            {
+                                typeName = GlueState.Self.ProjectNamespace + "." + typeName;
+                            }
+                        }
+
                         isState = true;
                     }
                 }
