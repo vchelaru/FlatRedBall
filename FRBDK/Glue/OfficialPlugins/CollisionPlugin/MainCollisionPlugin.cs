@@ -144,9 +144,40 @@ namespace OfficialPlugins.CollisionPlugin
 
                 var firstType = AssetTypeInfoManager.GetFirstGenericType(namedObjectSave, out firstThrowaway);
                 var secondType = AssetTypeInfoManager.GetSecondGenericType(namedObjectSave, out secondThrowaway);
+                
+                string GetUnqualified(string type, string fallback)
+                {
+                    if(type.Contains("."))
+                    {
+                        type = type.Substring(type.LastIndexOf('.') + 1);
+                        type = Char.ToLowerInvariant(type[0]) + type.Substring(1);
+                    }
+                    else
+                    {
+                        type = fallback;
+                    }
+                    return type;
+                }
 
-                type = $"System.Action<{firstType}, {secondType}>";
-                signatureArgs = $"{firstType} first, {secondType} second";
+                if(string.IsNullOrEmpty(secondType))
+                {
+                    // August 3, 2021
+                    // This used to be
+                    // an invalid case,
+                    // but now Glue supports
+                    // "Always" collisions which
+                    // don't specify a 2nd type
+                    type = $"System.Action<{firstType}>";
+                    signatureArgs = $"{firstType} {GetUnqualified(firstType, "first")}";
+
+                }
+                else
+                {
+                    type = $"System.Action<{firstType}, {secondType}>";
+
+
+                    signatureArgs = $"{firstType} {GetUnqualified(firstType, "first")}, {secondType} {GetUnqualified(secondType, "second")}";
+                }
             }
             else
             {

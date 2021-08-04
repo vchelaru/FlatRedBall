@@ -645,7 +645,24 @@ namespace FlatRedBall.Glue.CodeGeneration
             bool needsToBeProperty = (customVariable.SetByDerived && !customVariable.IsShared) || customVariable.CreatesProperty || customVariable.CreatesEvent
                 || IsVariableWholeNumberWithVelocity(customVariable);
 
-            needsToBeProperty = needsToBeProperty & !customVariable.GetIsVariableState();
+            if(needsToBeProperty)
+            {
+                var isState = customVariable.GetIsVariableState();
+
+                if(isState)
+                {
+                    var splitTypeName = customVariable.Type.Split();
+                    var elementName = string.Join('\\', splitTypeName.Take(splitTypeName.Length - 1));
+                    var elementDefiningCategory = ObjectFinder.Self.GetElement(elementName);
+                    // todo - this should not be a property if it is a state that is defined on this or a base entity. But if it's
+                    // a variable that references a state type from a different entity, it should!
+                    var isDefinedInDifferentElement = elementDefiningCategory != null && elementDefiningCategory != element && ObjectFinder.Self.GetAllBaseElementsRecursively(element).Contains(elementDefiningCategory) == false;
+                    if (!isDefinedInDifferentElement)
+                    {
+                        needsToBeProperty = false;
+                    }
+                }
+            }
 
 
             EventCodeGenerator.TryGenerateEventsForVariable(codeBlock, customVariable, element);

@@ -819,16 +819,15 @@ namespace FlatRedBall.Glue.Elements
             }
         }
 
-        public IElement GetElementContaining(StateSaveCategory category)
+        public GlueElement GetElementContaining(StateSaveCategory category)
         {
             if(GlueProject != null)
             {
-                IEnumerable<IElement> screens = GlueProject.Screens;
-                IEnumerable<IElement> entities = GlueProject.Entities;
+                IEnumerable<GlueElement> screens = GlueProject.Screens;
+                IEnumerable<GlueElement> entities = GlueProject.Entities;
                 return screens.Concat(entities)
                     .FirstOrDefault(item => 
                         item.StateCategoryList.Contains(category));
-
             }
             else
             {
