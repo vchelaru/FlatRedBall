@@ -86,19 +86,19 @@ namespace GlueCsvEditor
             // Determine if a csv was selected
             if (selectedTreeNode != null && IsCsv(selectedTreeNode.Tag))
             {
-                if(_editor == null )
-                {
-                    CreateNewCsvControl(selectedTreeNode);
+                //if(_editor == null )
+                //{
+                //    CreateNewCsvControl(selectedTreeNode);
 
-                    pluginTab = base.CreateAndAddTab(_editor, "CSV", TabLocation.Center);
+                //    pluginTab = base.CreateAndAddTab(_editor, "CSV", TabLocation.Center);
 
-                }
-                else
-                {
-                    pluginTab.Show();
-                }
+                //}
+                //else
+                //{
+                //    pluginTab.Show();
+                //}
 
-                LoadFile(selectedTreeNode);
+                //LoadFile(selectedTreeNode);
             }
             else
             {
