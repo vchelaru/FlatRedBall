@@ -62,7 +62,7 @@ namespace GlueCsvEditor
         public override bool ShutDown(PluginShutDownReason reason)
         {
             //base.RemoveTab();
-            pluginTab.Hide();
+            pluginTab?.Hide();
 
             return true;
         }
@@ -102,7 +102,7 @@ namespace GlueCsvEditor
             }
             else
             {
-                pluginTab.Hide();
+                pluginTab?.Hide();
 
                 _editor = null;
             }

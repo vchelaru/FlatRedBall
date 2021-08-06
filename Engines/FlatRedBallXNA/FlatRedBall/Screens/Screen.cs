@@ -40,6 +40,14 @@ namespace FlatRedBall.Screens
 
         public bool IsPaused { get; private set; } = false;
 
+        /// <summary>
+        /// The time using FlatRedBall.CurrentTime (time since the app started running) which is used
+        /// to determine the screen time.
+        /// </summary>
+        /// <remarks>
+        /// This value starts at 0 when a Screen is first created. This can be modified to restart screen timer, but
+        /// it can cause unexpected side effects for systems which depend on timing, so this should not be changed in normal gameplay.
+        /// </remarks>
         protected double mTimeScreenWasCreated;
         protected double mAccumulatedPausedTime = 0;
 

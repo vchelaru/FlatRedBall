@@ -90,7 +90,10 @@ namespace GlueControl.Editing
 
             try
             {
-                var variableName = splitVariable[2];
+                // If this is set on an instance it might be "this.InstanceName.VariableName"
+                // If it's set on the screen itself it might be "this.ScreenVariableName"
+                // In either case, the variable name is the last
+                var variableName = splitVariable.Last();
 
                 object targetInstance = GetTargetInstance(data, ref variableValue, screen);
 
@@ -123,6 +126,11 @@ namespace GlueControl.Editing
                     response.WasVariableAssigned = screen.ApplyVariable(variableName, variableValue, targetInstance);
                     didAttemptToAssign = true;
                 }
+
+                if (!didAttemptToAssign && targetInstance == null)
+                {
+                    response.WasVariableAssigned = screen.ApplyVariable(data.VariableName, variableValue);
+                }
             }
             catch (Exception e)
             {
@@ -141,7 +149,10 @@ namespace GlueControl.Editing
             object targetInstance = null;
             // this searches for a name. we need to force it on a type too so newly-added objects can have their variables set....
 
-            if (splitVariable[0] == "this" && splitVariable.Length > 1)
+            // Needs to be greater than 2.
+            // If it's "this.SomeVariable" then there's no instance
+            // If it's "this.InstanceName.SomeInstanceVariable" then it's > 2 and there is an instance
+            if (splitVariable[0] == "this" && splitVariable.Length > 2)
             {
                 targetInstance = GetRuntimeInstance(screen, splitVariable[1]);
             }

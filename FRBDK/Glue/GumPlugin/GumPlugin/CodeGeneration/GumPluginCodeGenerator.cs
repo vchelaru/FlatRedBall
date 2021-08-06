@@ -34,16 +34,22 @@ namespace GumPlugin.CodeGeneration
                 codeBlock.Line("FlatRedBall.Gum.GumIdb gumIdb;");
             }
 
-            if (isGlueScreen && hasGumScreen && hasForms)
+            if (isGlueScreen && hasGumScreen)
             {
                 var rfs = GetGumScreenRfs(element);
 
                 var elementName = element.GetStrippedName();
 
-                var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName, "Screens") +
-                    "." + rfs.GetInstanceName() + "Forms";
+                 if(hasForms)
+                {
+                    var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName, "Screens") +
+                        "." + rfs.GetInstanceName() + "Forms";
 
-                codeBlock.Line($"{formsObjectType} Forms;");
+                    codeBlock.Line($"{formsObjectType} Forms;");
+                }
+
+                codeBlock.Line($"{rfs.RuntimeType} GumScreen;");
+
             }
 
             return codeBlock;
@@ -77,7 +83,7 @@ namespace GumPlugin.CodeGeneration
                 codeBlock.Line("gumIdb = new FlatRedBall.Gum.GumIdb();");
             }
 
-            if (isGlueScreen && hasGumScreen && hasForms)
+            if (isGlueScreen && hasGumScreen)
             {
                 var elementName = element.GetStrippedName();
 
@@ -85,12 +91,19 @@ namespace GumPlugin.CodeGeneration
 
 
                 var rfs = GetGumScreenRfs(element);
-                var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName, "Screens") +
-                    "." + rfs.GetInstanceName() + "Forms";
-                var formsInstantiationLine =
-                    $"Forms = new {formsObjectType}({rfs.GetInstanceName()});";
 
-                codeBlock.Line(formsInstantiationLine);
+                if (hasForms)
+                {
+                    var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName, "Screens") +
+                        "." + rfs.GetInstanceName() + "Forms";
+                    var formsInstantiationLine =
+                        $"Forms = new {formsObjectType}({rfs.GetInstanceName()});";
+                    codeBlock.Line(formsInstantiationLine);
+                }
+
+                // also instantiate the Gum object which has a common alias\
+                codeBlock.Line($"GumScreen = {rfs.GetInstanceName()};");
+
             }
 
             return codeBlock;
