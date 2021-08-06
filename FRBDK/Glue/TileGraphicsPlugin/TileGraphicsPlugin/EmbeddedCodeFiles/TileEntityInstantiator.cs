@@ -681,6 +681,7 @@ namespace FlatRedBall.TileEntities
                     var returntypeString = methodInfo.ReturnType.Name;
 
                     return entityType == returntypeString ||
+                        entityType == methodInfo.ReturnType.FullName ||
                         entityType.EndsWith("\\" + returntypeString) ||
                         entityType.EndsWith("/" + returntypeString);
                 }

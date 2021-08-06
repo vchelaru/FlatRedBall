@@ -175,8 +175,13 @@ namespace OfficialPlugins.CollisionPlugin
                 {
                     type = $"System.Action<{firstType}, {secondType}>";
 
-
-                    signatureArgs = $"{firstType} {GetUnqualified(firstType, "first")}, {secondType} {GetUnqualified(secondType, "second")}";
+                    var firstUnqualified = GetUnqualified(firstType, "first");
+                    var secondUnqualified = GetUnqualified(secondType, "second");
+                    if(firstUnqualified == secondUnqualified)
+                    {
+                        secondUnqualified += "2";
+                    }
+                    signatureArgs = $"{firstType} {firstUnqualified}, {secondType} {secondUnqualified}";
                 }
             }
             else

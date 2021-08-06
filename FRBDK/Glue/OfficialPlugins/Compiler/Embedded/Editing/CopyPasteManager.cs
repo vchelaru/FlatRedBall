@@ -71,8 +71,7 @@ namespace GlueControl.Editing
                     // for now assume names are unique, not qualified
                     var instance = InstanceLogic.Self.CreateInstanceByGame(
                         type,
-                        copiedObject.X,
-                        copiedObject.Y);
+                        copiedObject);
                     instance.CreationSource = "Glue";
                     instance.Velocity = Vector3.Zero;
                     instance.Acceleration = Vector3.Zero;

@@ -651,6 +651,79 @@ namespace GlueControl
             });
         }
 
+        public FlatRedBall.PositionedObject CreateInstanceByGame(string entityGameType, PositionedObject original)
+        {
+            var newName = GetNameFor(entityGameType);
+
+            var toReturn = CreateEntity(entityGameType);
+            toReturn.X = original.X;
+            toReturn.Y = original.Y;
+            toReturn.Name = newName;
+
+            #region Create the AddObjectDto for the new object
+
+            var addObjectDto = new Dtos.AddObjectDto();
+            addObjectDto.InstanceName = newName;
+            addObjectDto.SourceType = Models.SourceType.Entity;
+            // todo - need to eventually include sub namespaces for entities in folders
+            addObjectDto.SourceClassType = CommandReceiver.GameElementTypeToGlueElement(entityGameType);
+
+            AddFloatValue(addObjectDto, "X", original.X);
+            AddFloatValue(addObjectDto, "Y", original.Y);
+
+            var properties = toReturn.GetType().GetProperties();
+
+            foreach (var property in properties)
+            {
+                var oldPropertyValue = property.GetValue(original);
+                var newPropertyValue = property.GetValue(toReturn);
+
+                if (oldPropertyValue != newPropertyValue)
+                {
+                    // they differ, so we should set and DTO it
+                    // But how do we know what to set and what not to set? I think we should whitelist...
+
+                    var shouldSet = oldPropertyValue != null;
+                    var isState = false;
+                    if (shouldSet)
+                    {
+                        // for now we'll only handle states, which have a + in the name. 
+                        var fullName = property.PropertyType.FullName;
+                        isState = fullName.Contains("+");
+                        shouldSet = isState;
+                    }
+
+                    if (shouldSet)
+                    {
+                        property.SetValue(toReturn, oldPropertyValue);
+                        var type = property.PropertyType.Name;
+                        var value = oldPropertyValue;
+
+                        if (isState)
+                        {
+                            type = property.PropertyType.FullName.Replace("+", ".");
+                            var split = type.Split('.');
+                            // remove the namespace prefix, should start with "Entities" or "Screens"
+                            type = string.Join(".", split.Skip(1).ToArray());
+                            var nameField = property.PropertyType.GetField("Name");
+                            if (nameField != null)
+                            {
+                                value = nameField.GetValue(value);
+                            }
+                        }
+
+                        AddValue(addObjectDto, property.Name, type, value);
+                    }
+                }
+            }
+
+            #endregion
+
+            SendAndEnqueue(addObjectDto);
+
+            return toReturn;
+        }
+
         public FlatRedBall.PositionedObject CreateInstanceByGame(string entityGameType, float x, float y)
         {
             var newName = GetNameFor(entityGameType);
@@ -670,6 +743,11 @@ namespace GlueControl
 
             AddFloatValue(addObjectDto, "X", x);
             AddFloatValue(addObjectDto, "Y", y);
+
+            //var fields = toReturn.GetType().GetFields();
+
+
+
 
             #endregion
 
