@@ -680,12 +680,7 @@ namespace GlueControl.Editing
             const string inWithSpaces = " in ";
             if (isState)
             {
-                var splitType = type.Split('.');
-
-                type = string.Join(".", splitType.Take(splitType.Length - 1).ToArray()) + "+" +
-                    splitType.Last();
-
-                var stateType = typeof(VariableAssignmentLogic).Assembly.GetType(type);
+                Type stateType = TryGetStateType(type);
 
                 var fieldInfo = stateType.GetField(variableValue);
 
@@ -851,6 +846,17 @@ namespace GlueControl.Editing
             }
 
             return convertedValue;
+        }
+
+        public static Type TryGetStateType(string qualifiedTypeName)
+        {
+            var splitType = qualifiedTypeName.Split('.');
+
+            qualifiedTypeName = string.Join(".", splitType.Take(splitType.Length - 1).ToArray()) + "+" +
+                splitType.Last();
+
+            var stateType = typeof(VariableAssignmentLogic).Assembly.GetType(qualifiedTypeName);
+            return stateType;
         }
     }
 }

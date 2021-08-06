@@ -16,7 +16,7 @@ using GlueControl.Models;
 using System.Collections;
 using GlueControl.Runtime;
 using GlueControl.Dtos;
-
+using GlueControl.Editing;
 
 namespace GlueControl
 {
@@ -702,9 +702,6 @@ namespace GlueControl
                         if (isState)
                         {
                             type = property.PropertyType.FullName.Replace("+", ".");
-                            var split = type.Split('.');
-                            // remove the namespace prefix, should start with "Entities" or "Screens"
-                            type = string.Join(".", split.Skip(1).ToArray());
                             var nameField = property.PropertyType.GetField("Name");
                             if (nameField != null)
                             {
@@ -1065,7 +1062,15 @@ namespace GlueControl
             string variableName = instruction.Member;
             object variableValue = instruction.Value;
 
-            if (instruction.Type == "float")
+            Type stateType = VariableAssignmentLogic.TryGetStateType(instruction.Type);
+
+            if (stateType != null && variableValue is string valueAsString && !string.IsNullOrWhiteSpace(valueAsString))
+            {
+                var fieldInfo = stateType.GetField(valueAsString);
+
+                variableValue = fieldInfo.GetValue(null);
+            }
+            else if (instruction.Type == "float")
             {
                 if (variableValue is int asInt)
                 {

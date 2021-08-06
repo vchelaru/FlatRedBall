@@ -170,6 +170,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             } 
             else
             {
+                if(typeName.StartsWith($"{GlueState.Self.ProjectNamespace}."))
+                {
+                    typeName = typeName.Substring(typeName.IndexOf('.') + 1);
+                }
                 switch (typeName)
                 {
                     case "float":
@@ -276,13 +280,12 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         private static void HandleSetVariable(int gamePortNumber, SetVariableDto setVariableDto)
         {
-            // push back to the game so the game can re-run this whenever the screen changes.
 
             TaskManager.Self.Add(() =>
             {
                 var type = string.Join('\\', setVariableDto.InstanceOwner.Split('.').Skip(1));
 
-                var element = ObjectFinder.Self.GetIElement(type);
+                var element = ObjectFinder.Self.GetElement(type);
 
                 var nos = element.GetNamedObjectRecursively(setVariableDto.ObjectName);
 
@@ -298,6 +301,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                     value = ConvertVariable(value, ref typeName, setVariableDto.VariableName, nos, element);
 
+                    // Setting the nos pushes back to the game so the game can re-assign this variable whenever the screen changes.
                     nos.SetVariable(setVariableDto.VariableName, value);
 
                     GlueCommands.Self.DoOnUiThread(() =>
