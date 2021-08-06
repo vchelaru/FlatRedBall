@@ -651,11 +651,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 if(isState)
                 {
-                    var splitTypeName = customVariable.Type.Split('.');
-                    var elementName = string.Join('\\', splitTypeName.Take(splitTypeName.Length - 1));
-                    var elementDefiningCategory = ObjectFinder.Self.GetElement(elementName);
-                    // todo - this should not be a property if it is a state that is defined on this or a base entity. But if it's
-                    // a variable that references a state type from a different entity, it should!
+
+                    var elementDefiningCategory = ObjectFinder.Self.GetElementDefiningStateCategory(customVariable.Type);
                     var isDefinedInDifferentElement = elementDefiningCategory != null && elementDefiningCategory != element && ObjectFinder.Self.GetAllBaseElementsRecursively(element).Contains(elementDefiningCategory) == false;
                     if (!isDefinedInDifferentElement)
                     {

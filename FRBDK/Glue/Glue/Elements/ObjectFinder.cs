@@ -417,6 +417,8 @@ namespace FlatRedBall.Glue.Elements
             return retval;
         }
 
+
+
         public bool DoesEntityExist(string entityName)
         {
             return GetEntitySave(entityName) != null;
@@ -833,6 +835,23 @@ namespace FlatRedBall.Glue.Elements
             {
                 return null;
             }
+        }
+
+        public GlueElement GetElementDefiningStateCategory(string qualifiedTypeName)
+        {
+            if(qualifiedTypeName.Contains('.'))
+            {
+                var splitTypeName = qualifiedTypeName.Split('.');
+                if(splitTypeName.Length > 1)
+                {
+                    var elementName = string.Join('\\', splitTypeName.Take(splitTypeName.Length - 1));
+                    var elementDefiningCategory = ObjectFinder.Self.GetElement(elementName);
+
+                    return elementDefiningCategory;
+                }
+
+            }
+            return null;
         }
 
         public List<GlueElement> GetAllElementsReferencingFile(string rfsName)

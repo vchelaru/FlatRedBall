@@ -413,13 +413,24 @@ namespace FlatRedBall.Glue.SetVariable
 
         private static void ReactToChangedCustomVariableName(string oldName, CustomVariable customVariable)
         {
+            var currentElement = GlueState.Self.CurrentElement;
             string whyItIsntValid = "";
-            bool isNameValid = NameVerifier.IsCustomVariableNameValid(customVariable.Name, customVariable, GlueState.Self.CurrentElement, ref whyItIsntValid);
+            bool isNameValid = NameVerifier.IsCustomVariableNameValid(customVariable.Name, customVariable, currentElement, ref whyItIsntValid);
             string newName = EditorLogic.CurrentCustomVariable.Name;
 
             if (customVariable.GetIsVariableState() && oldName != newName)
             {
-                whyItIsntValid += "\nState variables cannot be renamed - they require specific names to function properly.";
+                // This is only the case if the state is inside the entity itself. Otherwise, it can be renamed just fine...
+
+                var elementDefiningCategory = ObjectFinder.Self.GetElementDefiningStateCategory(customVariable.Type);
+                var isDefinedInDifferentElement = elementDefiningCategory != null && 
+                    elementDefiningCategory != currentElement && 
+                    ObjectFinder.Self.GetAllBaseElementsRecursively(currentElement).Contains(elementDefiningCategory) == false;
+
+                if(isDefinedInDifferentElement == false)
+                {
+                    whyItIsntValid += "\nState variables cannot be renamed - they require specific names to function properly.";
+                }
             }
 
             if (!string.IsNullOrEmpty(whyItIsntValid))

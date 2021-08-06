@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 using FlatRedBall.Math.Collision;
 using System.Collections;
 using GlueControl.Dtos;
-
+using {ProjectNamespace};
 
 namespace GlueControl.Editing
 {
@@ -666,7 +666,7 @@ namespace GlueControl.Editing
         public static object ConvertStringToType(string type, string variableValue, bool isState)
         {
             object convertedValue = variableValue;
-
+            const string inWithSpaces = " in ";
             if (isState)
             {
                 var splitType = type.Split('.');
@@ -693,6 +693,24 @@ namespace GlueControl.Editing
                 if (variableValue == null)
                 {
                     convertedValue = FlatRedBall.Graphics.TextManager.DefaultFont;
+                }
+            }
+            else if (variableValue?.Contains(inWithSpaces) == true)
+            {
+                // It could be a CSV:
+                var indexOfIn = variableValue.IndexOf(inWithSpaces);
+
+                var startOfCsvName = indexOfIn + inWithSpaces.Length;
+
+                var csvName = variableValue.Substring(startOfCsvName).Split('.')[0];
+
+                // does this thing exist in GlobalContent?
+                var file = GlobalContent.GetFile(csvName);
+
+                if (file != null && file is IDictionary asDictionary)
+                {
+                    var itemInCsv = variableValue.Substring(0, indexOfIn);
+                    convertedValue = asDictionary[itemInCsv];
                 }
             }
             else

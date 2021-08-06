@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\GlueCommon\GlueCommon.csproj" />
+    <ProjectReference Include="..\..\Glue\GlueFormsCore.csproj" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="&#xD;&#xA;md &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GlueCsvEditor\&quot;&#xD;&#xA;&#xD;&#xA;copy $(TargetDir)GlueCsvEditorCore.dll &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GlueCsvEditor\GlueCsvEditorCore.dll&quot;&#xD;&#xA;copy $(TargetDir)GlueCsvEditorCore.pdb &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GlueCsvEditor\GlueCsvEditorCore.pdb&quot;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" />
+  </Target>
+
+</Project>
