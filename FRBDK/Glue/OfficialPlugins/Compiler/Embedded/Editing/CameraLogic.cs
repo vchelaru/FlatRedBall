@@ -5,6 +5,7 @@ using {ProjectNamespace};
 using FlatRedBall;
 using FlatRedBall.Gui;
 using System;
+using System.Linq;
 
 namespace GlueControl.Editing
 {
