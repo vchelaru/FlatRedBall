@@ -72,7 +72,16 @@ namespace GlueControl.Editing
                 }
                 else
                 {
-                    variableValue = SetValueOnObjectInScreen(data, variableValue, response, screen);
+                    var elementNameGlue = string.Join("\\", data.InstanceOwnerGameType.Split('.').Skip(1).ToArray());
+                    if (CommandReceiver.GetIfMatchesCurrentScreen(elementNameGlue))
+                    {
+                        variableValue = SetValueOnObjectInScreen(data, variableValue, response, screen);
+                    }
+                    else
+                    {
+                        // it's not the current screen, so we don't know if it will assign, but we'll tell Glue "yes" so it doesn't restart
+                        response.WasVariableAssigned = true;
+                    }
                 }
             }
             catch (Exception e)

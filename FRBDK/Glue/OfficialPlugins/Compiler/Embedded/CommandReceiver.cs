@@ -108,12 +108,17 @@ namespace GlueControl
             return toReturn;
         }
 
-        private static bool GetIfMatchesCurrentScreen(string elementName, out System.Type ownerType, out Screen currentScreen)
+        public static bool GetIfMatchesCurrentScreen(string elementNameGlue)
+        {
+            return GetIfMatchesCurrentScreen(elementNameGlue, out _, out _);
+        }
+
+        private static bool GetIfMatchesCurrentScreen(string elementNameGlue, out System.Type ownerType, out Screen currentScreen)
         {
             var game1FullName = typeof(Game1).FullName;
             var topNamespace = game1FullName.Substring(0, game1FullName.IndexOf('.'));
             //var ownerTypeName = "WhateverNamespace." + elementName.Replace("\\", ".");
-            var ownerTypeName = $"{topNamespace}.{elementName.Replace("\\", ".")}";
+            var ownerTypeName = $"{topNamespace}.{elementNameGlue.Replace("\\", ".")}";
 
             ownerType = typeof(CommandReceiver).Assembly.GetType(ownerTypeName);
             currentScreen = ScreenManager.CurrentScreen;
