@@ -127,8 +127,6 @@ namespace GlueControl
             return currentScreenType == ownerType || ownerType?.IsAssignableFrom(currentScreenType) == true;
         }
 
-        static Dictionary<string, Vector3> CameraPositions = new Dictionary<string, Vector3>();
-
         // todo - move this to some type manager
         public static bool DoTypesMatch(PositionedObject positionedObject, string qualifiedTypeName, Type possibleType = null)
         {
@@ -219,8 +217,7 @@ namespace GlueControl
             }
             else
             {
-                // it's a different screen. See if we can select that screen:
-                CameraPositions[currentScreen.GetType().FullName] = Camera.Main.Position;
+                CameraLogic.RecordCameraForCurrentScreen();
 
                 bool selectedNewScreen = ownerType != null && typeof(Screen).IsAssignableFrom(ownerType);
                 if (selectedNewScreen)
@@ -238,10 +235,7 @@ namespace GlueControl
                         // Select this even if it's null so the EditingManager deselects 
                         EditingManager.Self.Select(selectObjectDto.ObjectName);
                         screen.ScreenDestroy += HandleScreenDestroy;
-                        if (CameraPositions.ContainsKey(screen.GetType().FullName))
-                        {
-                            Camera.Main.Position = CameraPositions[screen.GetType().FullName];
-                        }
+                        CameraLogic.SetCameraForScreen(screen);
 
                         CameraLogic.UpdateZoomLevelToCamera();
 
@@ -465,10 +459,7 @@ namespace GlueControl
             {
                 newScreen.ScreenDestroy += HandleScreenDestroy;
 
-                if (CameraPositions.ContainsKey(newScreen.GetType().FullName))
-                {
-                    Camera.Main.Position = CameraPositions[newScreen.GetType().FullName];
-                }
+                CameraLogic.SetCameraForScreen(screen);
 
                 CameraLogic.UpdateZoomLevelToCamera();
 
@@ -478,7 +469,7 @@ namespace GlueControl
             FlatRedBall.Screens.ScreenManager.BeforeScreenCustomInitialize += BeforeCustomInitializeLogic;
             FlatRedBall.Screens.ScreenManager.ScreenLoaded += AfterInitializeLogic;
 
-            CameraPositions[screen.GetType().FullName] = Camera.Main.Position;
+            CameraLogic.RecordCameraForCurrentScreen();
 
 
             screen?.RestartScreen(reloadContent: true, applyRestartVariables: applyRestartVariables);

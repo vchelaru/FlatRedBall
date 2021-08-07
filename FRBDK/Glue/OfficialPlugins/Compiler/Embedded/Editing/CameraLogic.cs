@@ -6,9 +6,18 @@ using FlatRedBall;
 using FlatRedBall.Gui;
 using System;
 using System.Linq;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using FlatRedBall.Screens;
 
 namespace GlueControl.Editing
 {
+    class CameraStateForScreen
+    {
+        public Vector3 Position;
+        public float OrthogonalHeight;
+    }
+
     class CameraLogic
     {
         #region Fields/Properties
@@ -43,6 +52,9 @@ namespace GlueControl.Editing
 
         public static float CameraXMovement { get; private set; }
         public static float CameraYMovement { get; private set; }
+
+        public static Dictionary<string, CameraStateForScreen> CameraStates = new Dictionary<string, CameraStateForScreen>();
+
 
         #endregion
 
@@ -195,6 +207,29 @@ namespace GlueControl.Editing
                     currentZoomLevelIndex = Math.Min(currentZoomLevelIndex + 1, zoomLevels.Length - 1);
                     UpdateCameraToZoomLevel(zoomAroundCursorPosition: false);
                 }
+            }
+        }
+
+        public static void RecordCameraForCurrentScreen()
+        {
+            var currentScreen = ScreenManager.CurrentScreen;
+
+            var state = new CameraStateForScreen();
+            state.Position = Camera.Main.Position;
+            state.OrthogonalHeight = Camera.Main.OrthogonalHeight;
+
+            CameraStates[currentScreen.GetType().FullName] = state;
+        }
+
+        public static void SetCameraForScreen(Screen screen)
+        {
+            if (CameraStates.ContainsKey(screen.GetType().FullName))
+            {
+                var camera = Camera.Main;
+                var value = CameraStates[screen.GetType().FullName];
+                camera.Position = value.Position;
+                camera.OrthogonalHeight = value.OrthogonalHeight;
+                camera.FixAspectRatioYConstant();
             }
         }
     }
