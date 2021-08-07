@@ -40,6 +40,9 @@ namespace GlueControl.Editing
 
         public static float CurrentZoomRatio => zoomLevels[currentZoomLevelIndex] / 100.0f;
 
+        public static float CameraXMovement { get; private set; }
+        public static float CameraYMovement { get; private set; }
+
         #endregion
 
         static CameraLogic()
@@ -51,10 +54,56 @@ namespace GlueControl.Editing
         {
             var cursor = GuiManager.Cursor;
             var camera = Camera.Main;
+
+            var xBefore = camera.X;
+            var yBefore = camera.Y;
+
             if (cursor.MiddleDown)
             {
                 camera.X -= cursor.WorldXChangeAt(0);
                 camera.Y -= cursor.WorldYChangeAt(0);
+            }
+
+            if (cursor.PrimaryDown)
+            {
+                // If near the edges, move in that direction.
+                const float borderInPixels = 50;
+                var MaxVelocity = Camera.Main.OrthogonalHeight / 3;
+
+                var screenX = cursor.ScreenX;
+                var screenY = cursor.ScreenY;
+
+                var screenWidthInPixels = Camera.Main.DestinationRectangle.Width;
+                var screenHeightInPixels = Camera.Main.DestinationRectangle.Height;
+
+                float xMovementRatio = 0;
+                if (screenX < borderInPixels)
+                {
+                    xMovementRatio = -1 * ((borderInPixels - screenX) / borderInPixels);
+                }
+                else if (screenX > screenWidthInPixels - borderInPixels)
+                {
+                    xMovementRatio = (screenX - (screenWidthInPixels - borderInPixels)) / borderInPixels;
+                }
+
+                float yMovementRatio = 0;
+                if (screenY < borderInPixels)
+                {
+                    yMovementRatio = ((borderInPixels - screenY) / borderInPixels);
+                }
+                else if (screenY > screenHeightInPixels - borderInPixels)
+                {
+                    yMovementRatio = -1 * (screenY - (screenHeightInPixels - borderInPixels)) / borderInPixels;
+                }
+
+                if (xMovementRatio != 0)
+                {
+                    camera.X += xMovementRatio * MaxVelocity * TimeManager.SecondDifference;
+                }
+                if (yMovementRatio != 0)
+                {
+                    camera.Y += yMovementRatio * MaxVelocity * TimeManager.SecondDifference;
+                }
             }
 
             if (cursor.ZVelocity < 0)
@@ -67,6 +116,9 @@ namespace GlueControl.Editing
                 currentZoomLevelIndex = Math.Max(currentZoomLevelIndex - 1, 0);
                 UpdateCameraToZoomLevel();
             }
+
+            CameraXMovement = camera.X - xBefore;
+            CameraYMovement = camera.Y - yBefore;
         }
 
         public static void UpdateZoomLevelToCamera()

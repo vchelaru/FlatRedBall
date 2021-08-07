@@ -426,26 +426,26 @@ namespace GlueControl.Editing
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
 
-            if (CanMoveItem && cursor.PrimaryDown &&
-                (cursor.ScreenXChange != 0 || cursor.ScreenYChange != 0))
+            var didCursorMove =
+                cursor.ScreenXChange != 0 || cursor.ScreenYChange != 0 || CameraLogic.CameraXMovement != 0 || CameraLogic.CameraYMovement != 0;
+
+            if (CanMoveItem && cursor.PrimaryDown && didCursorMove)
             {
                 var hasMovedEnough = Math.Abs(ScreenPointPushed.X - cursor.ScreenX) > 4 ||
                     Math.Abs(ScreenPointPushed.Y - cursor.ScreenY) > 4;
 
                 if (item != null && hasMovedEnough)
                 {
+                    float cursorXChange = cursor.WorldXChangeAt(item.Z) + CameraLogic.CameraXMovement;
+                    float cursorYChange = cursor.WorldYChangeAt(item.Z) + CameraLogic.CameraYMovement;
+
                     if (sideGrabbed == ResizeSide.None)
                     {
-
-                        float cursorXChange = cursor.WorldXChangeAt(item.Z);
-                        float cursorYChange = cursor.WorldYChangeAt(item.Z);
-
-
                         LastUpdateMovement = ChangePositionBy(item, cursorXChange, cursorYChange);
                     }
                     else
                     {
-                        ChangeSizeBy(item, sideGrabbed, cursor.WorldXChangeAt(item.Z), cursor.WorldYChangeAt(0));
+                        ChangeSizeBy(item, sideGrabbed, cursorXChange, cursorYChange);
                     }
                 }
             }
