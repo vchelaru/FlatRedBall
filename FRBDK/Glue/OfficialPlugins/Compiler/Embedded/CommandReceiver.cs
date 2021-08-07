@@ -237,6 +237,9 @@ namespace GlueControl
                         {
                             Camera.Main.Position = CameraPositions[screen.GetType().FullName];
                         }
+
+                        CameraLogic.UpdateZoomLevelToCamera();
+
                         ScreenManager.ScreenLoaded -= AfterInitializeLogic;
                     }
                     FlatRedBall.Screens.ScreenManager.BeforeScreenCustomInitialize += BeforeCustomInitializeLogic;
@@ -461,6 +464,8 @@ namespace GlueControl
                 {
                     Camera.Main.Position = CameraPositions[newScreen.GetType().FullName];
                 }
+
+                CameraLogic.UpdateZoomLevelToCamera();
 
                 FlatRedBall.Screens.ScreenManager.ScreenLoaded -= AfterInitializeLogic;
             }

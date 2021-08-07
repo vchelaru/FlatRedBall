@@ -56,28 +56,51 @@ namespace GlueControl.Editing
                 camera.X -= cursor.WorldXChangeAt(0);
                 camera.Y -= cursor.WorldYChangeAt(0);
             }
-            
+
             if (cursor.ZVelocity < 0)
             {
                 currentZoomLevelIndex = Math.Min(currentZoomLevelIndex + 1, zoomLevels.Length - 1);
-                UpdateToZoomLevel();
+                UpdateCameraToZoomLevel();
             }
-            if(cursor.ZVelocity > 0)
+            if (cursor.ZVelocity > 0)
             {
                 currentZoomLevelIndex = Math.Max(currentZoomLevelIndex - 1, 0);
-                UpdateToZoomLevel();
+                UpdateCameraToZoomLevel();
             }
         }
 
-        private static void UpdateToZoomLevel(bool zoomAroundCursorPosition = true)
+        public static void UpdateZoomLevelToCamera()
+        {
+            var gameZoomLevel = FlatRedBall.Math.MathFunctions.RoundToInt(100 * Camera.Main.DestinationRectangle.Height / Camera.Main.OrthogonalHeight);
+
+            if (zoomLevels.Contains(gameZoomLevel))
+            {
+                currentZoomLevelIndex = Array.IndexOf(zoomLevels, gameZoomLevel);
+            }
+            else
+            {
+                for (int i = 0; i < zoomLevels.Length; i++)
+                {
+                    if (zoomLevels[i] > gameZoomLevel)
+                    {
+                        currentZoomLevelIndex = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        private static void UpdateCameraToZoomLevel(bool zoomAroundCursorPosition = true)
         {
             var cursor = GuiManager.Cursor;
             var worldXBefore = cursor.WorldX;
             var worldYBefore = cursor.WorldY;
-            Camera.Main.OrthogonalHeight = (CameraSetup.Data.Scale / 100.0f) * CameraSetup.Data.ResolutionHeight/ (zoomLevels[currentZoomLevelIndex] / 100.0f);
+
+            var zoomLevel = zoomLevels[currentZoomLevelIndex];
+            Camera.Main.OrthogonalHeight = (CameraSetup.Data.Scale / 100.0f) * CameraSetup.Data.ResolutionHeight / (zoomLevel / 100.0f);
             Camera.Main.FixAspectRatioYConstant();
 
-            if(zoomAroundCursorPosition)
+            if (zoomAroundCursorPosition)
             {
                 var worldXAfterZoom = cursor.WorldX;
                 var worldYAfterZoom = cursor.WorldY;
@@ -109,15 +132,15 @@ namespace GlueControl.Editing
                 {
                     Camera.Main.X += movePerPush;
                 }
-                if(keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.OemPlus))
+                if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.OemPlus))
                 {
                     currentZoomLevelIndex = Math.Max(currentZoomLevelIndex - 1, 0);
-                    UpdateToZoomLevel(zoomAroundCursorPosition:false);
+                    UpdateCameraToZoomLevel(zoomAroundCursorPosition: false);
                 }
                 if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.OemMinus))
                 {
                     currentZoomLevelIndex = Math.Min(currentZoomLevelIndex + 1, zoomLevels.Length - 1);
-                    UpdateToZoomLevel(zoomAroundCursorPosition: false);
+                    UpdateCameraToZoomLevel(zoomAroundCursorPosition: false);
                 }
             }
         }
