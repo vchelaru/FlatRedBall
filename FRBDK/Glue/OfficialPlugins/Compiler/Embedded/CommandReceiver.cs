@@ -457,11 +457,19 @@ namespace GlueControl
             {
                 newScreen.ScreenDestroy += HandleScreenDestroy;
 
+                if (CameraPositions.ContainsKey(newScreen.GetType().FullName))
+                {
+                    Camera.Main.Position = CameraPositions[newScreen.GetType().FullName];
+                }
+
                 FlatRedBall.Screens.ScreenManager.ScreenLoaded -= AfterInitializeLogic;
             }
 
             FlatRedBall.Screens.ScreenManager.BeforeScreenCustomInitialize += BeforeCustomInitializeLogic;
             FlatRedBall.Screens.ScreenManager.ScreenLoaded += AfterInitializeLogic;
+
+            CameraPositions[screen.GetType().FullName] = Camera.Main.Position;
+
 
             screen?.RestartScreen(reloadContent: true, applyRestartVariables: applyRestartVariables);
         }
