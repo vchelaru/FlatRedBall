@@ -147,13 +147,28 @@ namespace GlueControl.Editing
                         if (variableValue is StateSave variableAsStateSave)
                         {
                             // convert this to the desired type:
-                            var type = typeof(VariableAssignmentLogic).Assembly.GetType(data.Type);
-                            var stateInstance = Activator.CreateInstance(type);
 
-                            foreach (var value in variableAsStateSave.InstructionSaves)
+                            var type = TryGetStateType(data.Type);
+                            if (type != null)
                             {
-                                LateBinder.SetValueStatic(stateInstance, value.Member, value.Value); // todo - need to convert this
-                                LateBinder.SetValueStatic(targetInstance, value.Member, value.Value); // todo - need to convert this
+                                var stateInstance = Activator.CreateInstance(type);
+
+                                foreach (var value in variableAsStateSave.InstructionSaves)
+                                {
+                                    var fieldType = stateInstance.GetType().GetField("")?.FieldType;
+
+
+                                    var convertedValue = value.Value;
+                                    if (value.Value is string asString)
+                                    {
+                                        // not sure if this is a state, it could be and at some point we're going to handle that, but not for now...
+                                        convertedValue = VariableAssignmentLogic.ConvertStringToType(fieldType.ToString(), asString, false);
+                                    }
+
+                                    LateBinder.SetValueStatic(stateInstance, value.Member, convertedValue);
+                                    LateBinder.SetValueStatic(targetInstance, value.Member, convertedValue);
+                                }
+                                response.WasVariableAssigned = true;
                             }
                         }
                         else

@@ -378,6 +378,8 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                     !string.IsNullOrEmpty(selectedViewModel.Name) &&
                     selectedViewModel.IsNameInvalid == false;
 
+                var element = GlueState.Self.CurrentElement;
+
                 if (needsToCreateNewState)
                 {
                     stateSave = new StateSave();
@@ -387,7 +389,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                     selectedViewModel.BackingData = stateSave;
 
                     // Add a new entry so the user can create more states easily:
-                    CreateBlankViewModelAtEnd(GlueState.Self.CurrentElement);
+                    CreateBlankViewModelAtEnd(element);
 
                     CopyViewModelValuesToState(selectedViewModel, stateSave);
 
@@ -402,7 +404,12 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                         PluginManager.ReactToStateCreated(stateSave, category);
                     }
 
-                    GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
+                    // Wow this is a heavy call! I don't think we need to re-generate the whole project. Just the current element should do:
+                    // Also, even if it's on a small project (and not heavy) it causes a re-generation of the camera settings file, which restarts
+                    // the current game.
+                    //GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+
                     GlueCommands.Self.GluxCommands.SaveGlux();
                 }
                 GlueCommands.Self.RefreshCommands.RefreshUi(this.category);
