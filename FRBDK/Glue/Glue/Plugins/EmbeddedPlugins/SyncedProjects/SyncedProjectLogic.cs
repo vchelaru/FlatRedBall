@@ -68,7 +68,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                 }
             }
 
-            var rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(bi.UnevaluatedInclude);
+            var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(bi.UnevaluatedInclude);
 
             if (!shouldSkipContent)
             {

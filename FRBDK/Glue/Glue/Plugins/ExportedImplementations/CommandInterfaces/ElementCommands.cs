@@ -520,7 +520,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public static string GetNameOfFileRelativeToContentFolder(string absoluteSourceFileName, string directoryThatFileShouldBeRelativeTo, string projectDirectory)
         {
             string fileToAdd = "";
-            var rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(absoluteSourceFileName);
+            var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(absoluteSourceFileName);
 
             if (rfs != null)
             {

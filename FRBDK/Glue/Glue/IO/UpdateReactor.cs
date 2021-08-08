@@ -61,7 +61,7 @@ namespace FlatRedBall.Glue.IO
                     if (extension == "csv" ||
                         extension == "txt")
                     {
-                        ReferencedFileSave rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(changedFile);
+                        ReferencedFileSave rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(changedFile);
 
                         bool shouldGenerate = rfs != null &&
                             (extension == "csv" || rfs.TreatAsCsv) &&
@@ -90,7 +90,7 @@ namespace FlatRedBall.Glue.IO
 
                     if (FileHelper.DoesFileReferenceContent(changedFile))
                     {
-                        ReferencedFileSave rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(changedFile);
+                        ReferencedFileSave rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(changedFile);
 
 
                         if (rfs != null)
@@ -191,7 +191,7 @@ namespace FlatRedBall.Glue.IO
 
                     #region Check for broken references to objects in file - like an Entity may reference an object in a file but it may have been removed
 
-                    if (ObjectFinder.Self.GetReferencedFileSaveFromFile(changedFile) != null)
+                    if (GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(changedFile) != null)
                     {
                         // This is a file that is part of the project, so let's see if any named objects are missing references
                         CheckForBrokenReferencesToObjectsInFile(changedFile);

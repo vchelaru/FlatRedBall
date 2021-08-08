@@ -886,13 +886,82 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public ReferencedFileSave GetReferencedFileSaveFromFile(string fileName)
         {
-            return FlatRedBall.Glue.Elements.ObjectFinder.Self.GetReferencedFileSaveFromFile(fileName);
+            ////////////////Early Out//////////////////////////////////
+            var invalidPathChars = Path.GetInvalidPathChars();
+            if (invalidPathChars.Any(item => fileName.Contains(item)))
+            {
+                // This isn't a RFS, because it's got a bad path. Early out here so that FileManager.IsRelative doesn't throw an exception
+                return null;
+            }
+
+            //////////////End Early Out////////////////////////////////
+
+
+            fileName = fileName.ToLower();
+
+            if (FileManager.IsRelative(fileName))
+            {
+
+                fileName = ObjectFinder.Self.MakeAbsoluteContent(fileName);
+
+            }
+
+            fileName = FileManager.Standardize(fileName).ToLower();
+
+            var project = ObjectFinder.Self.GlueProject;
+            if (project != null)
+            {
+                foreach (ScreenSave screenSave in project.Screens)
+                {
+                    foreach (ReferencedFileSave rfs in screenSave.ReferencedFiles)
+                    {
+                        string absoluteRfsFile = FileManager.Standardize(ObjectFinder.Self.MakeAbsoluteContent(rfs.Name)).ToLower();
+
+                        if (absoluteRfsFile == fileName)
+                        {
+                            return rfs;
+                        }
+                    }
+                }
+
+                lock (project.Entities)
+                {
+                    foreach (EntitySave entitySave in project.Entities)
+                    {
+                        foreach (ReferencedFileSave rfs in entitySave.ReferencedFiles)
+                        {
+                            string absoluteRfsFile = FileManager.Standardize(ObjectFinder.Self.MakeAbsoluteContent(rfs.Name)).ToLower();
+
+                            if (absoluteRfsFile == fileName)
+                            {
+                                return rfs;
+                            }
+                        }
+                    }
+                }
+
+                foreach (ReferencedFileSave rfs in project.GlobalFiles)
+                {
+                    string absoluteRfsFile = FileManager.Standardize(ObjectFinder.Self.MakeAbsoluteContent(rfs.Name)).ToLower();
+
+                    if (absoluteRfsFile == fileName)
+                    {
+                        return rfs;
+                    }
+                }
+            }
+
+            return null;
         }
 
         public ReferencedFileSave GetReferencedFileSaveFromFile(FilePath filePath)
         {
-            return FlatRedBall.Glue.Elements.ObjectFinder.Self.GetReferencedFileSaveFromFile(filePath.FullPath);
+            return GetReferencedFileSaveFromFile(filePath.FullPath);
         }
+
+
+
+
 
         public void AddReferencedFileToElement(ReferencedFileSave rfs, GlueElement element)
         {
@@ -906,9 +975,23 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public NamedObjectSave AddNewNamedObjectToSelectedElement(AddObjectViewModel addObjectViewModel)
         {
-            return AddNewNamedObjectTo(addObjectViewModel, 
-                GlueState.Self.CurrentElement, 
-                GlueState.Self.CurrentNamedObjectSave);
+            var elementToAddTo = GlueState.Self.CurrentElement;
+
+            var currentList =
+                GlueState.Self.CurrentNamedObjectSave;
+
+            var isMatchingList = currentList != null && currentList.IsList &&
+                currentList.SourceClassGenericType == addObjectViewModel.SourceClassType;
+
+            if (!isMatchingList)
+            {
+                currentList = elementToAddTo.NamedObjects.FirstOrDefault(item => item.IsList && item.SourceClassGenericType == addObjectViewModel.SourceClassType);
+            }
+
+
+            return AddNewNamedObjectTo(addObjectViewModel,
+                elementToAddTo, 
+                currentList);
         }
 
         public NamedObjectSave AddNewNamedObjectTo(AddObjectViewModel addObjectViewModel, GlueElement element, NamedObjectSave listToAddTo = null)

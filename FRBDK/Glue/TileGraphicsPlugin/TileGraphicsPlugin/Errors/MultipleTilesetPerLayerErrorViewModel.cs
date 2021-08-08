@@ -91,7 +91,7 @@ namespace TiledPluginCore.Errors
         {
             // fixed if:
             // 1. File has been removed from the Glue project
-            var rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(FilePath.FullPath);
+            var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(FilePath.FullPath);
             if(rfs == null)
             {
                 return true;

@@ -6,6 +6,7 @@ using Glue;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Reflection;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -241,7 +242,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 whyItIsntValid = "There is already an Screen named " + name;
             }
-            else if (ObjectFinder.Self.GetReferencedFileSaveFromFile("Screens\\" + name) != null)
+            else if (GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile("Screens\\" + name) != null)
             {
                 whyItIsntValid = "There is already a file named " + name;
             }
@@ -315,7 +316,7 @@ namespace FlatRedBall.Glue.SaveClasses
 			{
 				whyItIsntValid = "There is already an Screen named " + name;
 			}
-			else if (ObjectFinder.Self.GetReferencedFileSaveFromFile("Screens\\" + name) != null)
+			else if (GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile("Screens\\" + name) != null)
 			{
 				whyItIsntValid = "There is already a file named " + name;
 			}
@@ -349,7 +350,7 @@ namespace FlatRedBall.Glue.SaveClasses
 			{
 				whyItIsntValid = "There is already an entity named " + name;
 			}
-			else if (ObjectFinder.Self.GetReferencedFileSaveFromFile("Entities\\" + name) != null)
+			else if (GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile("Entities\\" + name) != null)
 			{
 				whyItIsntValid = "There is already a file named " + name;
 			}

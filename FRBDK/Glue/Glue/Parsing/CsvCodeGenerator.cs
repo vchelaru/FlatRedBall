@@ -292,7 +292,7 @@ namespace FlatRedBall.Glue
             {
                 foreach (string name in customClass.CsvFilesUsingThis)
                 {
-                    ReferencedFileSave foundRfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(name);
+                    ReferencedFileSave foundRfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(name);
 
                     // A dupe was added one during a Glue crash, so let's protect against that:
                     if (foundRfs != null && rfsesForClass.Contains(foundRfs) == false)
@@ -414,7 +414,7 @@ namespace FlatRedBall.Glue
             {
                 foreach (string name in customClass.CsvFilesUsingThis)
                 {
-                    ReferencedFileSave foundRfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(name);
+                    ReferencedFileSave foundRfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(name);
 
                     if (foundRfs == null)
                     {
@@ -837,7 +837,7 @@ namespace FlatRedBall.Glue
                 ReferencedFileSave rfs = null;
                 if (customClass.CsvFilesUsingThis.Count != 0)
                 {
-                    rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(customClass.CsvFilesUsingThis[0]);
+                    rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(customClass.CsvFilesUsingThis[0]);
                 }
 
                 if (rfs != null)

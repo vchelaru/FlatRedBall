@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO.Csv;
@@ -27,7 +28,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LocalizationPlugin
 
         private void HandleFileChanged(string fileName)
         {
-            var rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(fileName);
+            var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(fileName);
 
             if(rfs?.IsDatabaseForLocalizing == true)
             {

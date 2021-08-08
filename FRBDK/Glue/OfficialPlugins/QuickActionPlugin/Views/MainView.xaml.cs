@@ -37,17 +37,25 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             InitializeComponent();
         }
 
+        #region Add Screen
+
         private void AddScreenButton_Clicked(object sender, RoutedEventArgs e)
         {
             GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog();
             AnyButtonClicked();
         }
 
+        #endregion
+
+        #region Open Project
+
         private void OpenProjectButton_Clicked(object sender, RoutedEventArgs e)
         {
             GlueCommands.Self.DialogCommands.ShowLoadProjectDialog();
             AnyButtonClicked();
         }
+
+        #endregion
 
         private void AddLevelButton_Clicked(object sender, RoutedEventArgs e)
         {
@@ -88,6 +96,8 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             PluginManager.CallPluginMethod("Gum Plugin", "AskToCreateGumProject");
         }
 
+        #region Add Object
+
         private void AddObjectButton_Clicked(object sender, RoutedEventArgs e)
         {
             // before deselecting the object, store off the element
@@ -106,6 +116,8 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
                 AnyButtonClicked();
             }
         }
+
+        #endregion
 
         private void AddInstanceOfEntityButton_Clicked(object sender, RoutedEventArgs e)
         {

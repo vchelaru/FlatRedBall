@@ -331,7 +331,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         private static bool GetIfShouldUseContentPipeline(string fileAbsolute)
         {
             // grab the RFS and see if the rfs forces it
-            var rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(fileAbsolute);
+            var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(fileAbsolute);
             bool useContentPipeline = false;
             if (rfs != null && rfs.UseContentPipeline)
             {
@@ -387,7 +387,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (!useContentPipeline && project.ContentProject.IsFilePartOfProject(fileToAddAbsolute, BuildItemMembershipType.CompileOrContentPipeline))
             {
-                ReferencedFileSave rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(fileToAddAbsolute);
+                ReferencedFileSave rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(fileToAddAbsolute);
 
                 if (rfs != null)
                 {
@@ -398,7 +398,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             else if (useContentPipeline && project.ContentProject.IsFilePartOfProject(fileToAddAbsolute, BuildItemMembershipType.CopyIfNewer))
             {
-                ReferencedFileSave rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(fileToAddAbsolute);
+                ReferencedFileSave rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(fileToAddAbsolute);
 
                 if (rfs != null)
                 {

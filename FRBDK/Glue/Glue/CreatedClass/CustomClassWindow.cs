@@ -190,7 +190,7 @@ namespace FlatRedBall.Glue.Controls
                         // This thing is a CSV file that is using this class
 
                         shouldRemoveCurrent = CustomClassController.Self.SetCsvRfsToUseCustomClass(
-                            ObjectFinder.Self.GetReferencedFileSaveFromFile(node.Text), null, force:false);
+                            GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(node.Text), null, force:false);
                     }
 
                     if (shouldRemoveCurrent)

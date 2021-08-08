@@ -75,10 +75,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NpcWpf", "..\NewProjectCrea
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UpdaterWpf", "..\FRBDKUpdater\UpdaterWpf\UpdaterWpf\UpdaterWpf.csproj", "{3A3BC604-F991-4F55-8130-78AD55170B42}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CsvPlugin", "CsvPlugin", "{E3F9D7A2-D421-4FD3-824B-CAA1F7E62F38}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GlueCsvEditorCore", "CsvPlugin\GlueCsvEditor\GlueCsvEditorCore.csproj", "{B15A2EDD-634A-4852-98B6-445F330CE9FF}"
-EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
@@ -192,10 +188,6 @@ Global
 		{3A3BC604-F991-4F55-8130-78AD55170B42}.Debug|x86.Build.0 = Debug|Any CPU
 		{3A3BC604-F991-4F55-8130-78AD55170B42}.Release|x86.ActiveCfg = Release|Any CPU
 		{3A3BC604-F991-4F55-8130-78AD55170B42}.Release|x86.Build.0 = Release|Any CPU
-		{B15A2EDD-634A-4852-98B6-445F330CE9FF}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{B15A2EDD-634A-4852-98B6-445F330CE9FF}.Debug|x86.Build.0 = Debug|Any CPU
-		{B15A2EDD-634A-4852-98B6-445F330CE9FF}.Release|x86.ActiveCfg = Release|Any CPU
-		{B15A2EDD-634A-4852-98B6-445F330CE9FF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -231,7 +223,6 @@ Global
 		{E8D561F1-95BB-431E-96E9-C23AC8DE4476} = {07985C4C-B3CF-432C-8A27-36FDD006231F}
 		{480D6749-4EC5-46CB-9C63-E0C5D14E2097} = {4532DFDF-D042-4AEE-9FBE-92A1A7BC5F5D}
 		{3A3BC604-F991-4F55-8130-78AD55170B42} = {4532DFDF-D042-4AEE-9FBE-92A1A7BC5F5D}
-		{B15A2EDD-634A-4852-98B6-445F330CE9FF} = {E3F9D7A2-D421-4FD3-824B-CAA1F7E62F38}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {878CCBB8-EADE-4F25-9DE7-D55D999D414A}

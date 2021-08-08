@@ -10,6 +10,7 @@ using FlatRedBall.Glue.Elements;
 using Glue;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Utilities;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.Controls
 {
@@ -149,7 +150,7 @@ namespace FlatRedBall.Glue.Controls
                     //textBox1.Text = fileType + "File";
                     textBox1.Text = StringFunctions.MakeStringUnique(fileType + "File", mNamesAlreadyUsed, 2);
                     
-                    while (ObjectFinder.Self.GetReferencedFileSaveFromFile(textBox1.Text + "." + ResultAssetTypeInfo.Extension) != null)
+                    while (GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(textBox1.Text + "." + ResultAssetTypeInfo.Extension) != null)
                     {
                         textBox1.Text = FlatRedBall.Utilities.StringFunctions.IncrementNumberAtEnd(textBox1.Text);
                     }

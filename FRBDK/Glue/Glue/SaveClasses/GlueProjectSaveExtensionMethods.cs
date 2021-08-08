@@ -22,8 +22,6 @@ namespace FlatRedBall.Glue.SaveClasses
 {
     public static class GlueProjectSaveExtensionMethods
     {
-        static IGlueCommands GlueCommands => Container.Get<IGlueCommands>();
-
         public static void RemoveInvalidStatesFromNamedObjects(this GlueProjectSave glueProjectSave, bool showPopupsOnFixedErrors)
         {
             foreach (EntitySave entitySave in glueProjectSave.Entities)
@@ -153,7 +151,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 errorMessage = "You must select a valid type for your new file.";
             }
-            else if (ObjectFinder.Self.GetReferencedFileSaveFromFile(directoryRelativeToContent + fileName + "." + resultAssetTypeInfo.Extension) != null)
+            else if (GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(directoryRelativeToContent + fileName + "." + resultAssetTypeInfo.Extension) != null)
             {
                 errorMessage = "There is already a file named\n\n" + directoryRelativeToContent + fileName + "." + resultAssetTypeInfo.Extension;
             }
@@ -410,7 +408,7 @@ namespace FlatRedBall.Glue.SaveClasses
                     }
                     else
                     {
-                        GlueCommands.DialogCommands.ShowMessageBox("There was an error loading the .glux:\n\n" + e.ToString());
+                        GlueCommands.Self.DialogCommands.ShowMessageBox("There was an error loading the .glux:\n\n" + e.ToString());
                         otherGlueProjectSave = null;
                         succeeded = false;
                     }
@@ -485,7 +483,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 {
                     if (names.Contains(nos.InstanceName))
                     {
-                        GlueCommands.DialogCommands.ShowMessageBox("There are two objects named " + nos.InstanceName + " in the entity " + entitySave.ToString());
+                        GlueCommands.Self.DialogCommands.ShowMessageBox("There are two objects named " + nos.InstanceName + " in the entity " + entitySave.ToString());
                     }
                     else
                     {
@@ -505,7 +503,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 {
                     if (names.Contains(nos.InstanceName))
                     {
-                        GlueCommands.DialogCommands.ShowMessageBox("There are two objects named " + nos.InstanceName + " in the entity " + screenSave.ToString());
+                        GlueCommands.Self.DialogCommands.ShowMessageBox("There are two objects named " + nos.InstanceName + " in the entity " + screenSave.ToString());
                     }
                     else
                     {
