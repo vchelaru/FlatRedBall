@@ -51,6 +51,12 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile("Models.NamedObjectSave.cs",
                 "Models/NamedObjectSave.Generated.cs");
 
+            SaveEmbeddedFile("Models.StateSave.cs",
+                "Models/StateSave.Generated.cs");
+
+            SaveEmbeddedFile("Models.StateSaveCategory.cs",
+                "Models/StateSaveCategory.Generated.cs");
+
             SaveEmbeddedFile("Runtime.DynamicEntity.cs",
                 "Runtime/DynamicEntitys.Generated.cs");
 

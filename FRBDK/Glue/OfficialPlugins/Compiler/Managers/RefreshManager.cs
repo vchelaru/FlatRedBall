@@ -81,6 +81,16 @@ namespace OfficialPlugins.Compiler.Managers
 
         #endregion
 
+        #region Utilities
+
+        public string GetGameTypeFor(GlueElement element)
+        {
+            return
+                GlueState.Self.ProjectNamespace + "." + element.Name.Replace("\\", ".");
+        }
+
+        #endregion
+
         #region File
 
         private void RemoveExpiredPaths()
@@ -178,6 +188,7 @@ namespace OfficialPlugins.Compiler.Managers
             }
         }
 
+
         private bool GetIfShouldReactToFileChange(FilePath filePath )
         {
             if(filePath.FullPath.Contains(".Generated.") && filePath.FullPath.EndsWith(".cs"))
@@ -237,6 +248,8 @@ namespace OfficialPlugins.Compiler.Managers
 
         #endregion
 
+        #region Screen Created
+
         internal void HandleNewScreenCreated()
         {
             if (ShouldRestartOnChange)
@@ -244,6 +257,24 @@ namespace OfficialPlugins.Compiler.Managers
                 StopAndRestartTask($"New screen created");
             }
         }
+
+        #endregion
+
+        #region State Created
+
+        internal async void HandleStateCreated(StateSave state, StateSaveCategory category)
+        {
+            var container = ObjectFinder.Self.GetElementContaining(category);
+
+            var dto = new CreateNewStateDto();
+            dto.StateSave = state;
+            dto.CategoryName = category?.Name;
+            dto.ElementNameGame = GetGameTypeFor(container);
+
+            await CommandSender.Send(dto, ViewModel.PortNumber);
+        }
+
+        #endregion
 
         #region Selected Object
 
@@ -292,9 +323,7 @@ namespace OfficialPlugins.Compiler.Managers
                 var containerElement = ObjectFinder.Self.GetElementContaining(newNamedObject);
                 if (containerElement != null)
                 {
-                    addObjectDto.ElementNameGame =
-                        GlueState.Self.ProjectNamespace + "." + containerElement.Name.Replace("\\", ".");
-
+                    addObjectDto.ElementNameGame = GetGameTypeFor(containerElement);
                 }
 
                 var addResponseAsString = await CommandSender.Send(addObjectDto, PortNumber);
@@ -420,6 +449,23 @@ namespace OfficialPlugins.Compiler.Managers
             }
         }
 
+
+        #endregion
+
+        #region State Variable Changed
+
+        internal async void HandleStateVariableChanged(StateSave state, StateSaveCategory category, string variableName)
+        {
+            var container = ObjectFinder.Self.GetElementContaining(category);
+
+            var dto = new ChangeStateVariableDto();
+            dto.StateSave = state;
+            dto.CategoryName = category?.Name;
+            dto.ElementNameGame = GetGameTypeFor(container);
+            dto.VariableName = variableName;
+
+            await CommandSender.Send(dto, ViewModel.PortNumber);
+        }
 
         #endregion
 

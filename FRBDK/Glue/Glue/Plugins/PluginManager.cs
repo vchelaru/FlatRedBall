@@ -794,49 +794,39 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToTreeViewRightClick(TreeNode rightClickedTreeNode, ContextMenuStrip menuToModify)
         {
-
             SaveRelativeDirectory();
 
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                // Execute the new style plugins
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToTreeViewRightClickHandler != null);
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-                        PluginBase plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToTreeViewRightClickHandler(rightClickedTreeNode, menuToModify);
-                            }, container, "Failed in ReactToRightClick");
-                    }
-                }
-            }
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToTreeViewRightClickHandler(rightClickedTreeNode, menuToModify),
+                nameof(ReactToStateCreated),
+                plugin => plugin.ReactToTreeViewRightClickHandler != null);
 
+            ResumeRelativeDirectory("ReactToTreeViewRightClick");
+        }
 
-            ResumeRelativeDirectory("ReactToTreeViewRightClickHandler");
+        public static void ReactToStateCreated(StateSave newState, StateSaveCategory category)
+        {
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToStateCreated(newState, category),
+                nameof(ReactToStateCreated),
+                plugin => plugin.ReactToStateCreated != null);
+        }
+
+        public static void ReactToStateVariableChanged(StateSave newState, StateSaveCategory category, string variableName)
+        {
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToStateVariableChanged(newState, category, variableName),
+                nameof(ReactToStateVariableChanged),
+                plugin => plugin.ReactToStateVariableChanged != null);
         }
 
         internal static void ReactToStateNameChange(IElement element, string oldName, string newName)
         {
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToStateNameChangeHandler != null);
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-                        PluginBase plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToStateNameChangeHandler(element, oldName, newName);
-                            }, container, "Failed in ReactToStateNameChange");
-                    }
-                }
-            }
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToStateNameChangeHandler(element, oldName, newName),
+                nameof(ReactToStateNameChange),
+                plugin => plugin.ReactToStateNameChangeHandler != null);
+
         }
 
         internal static void ReactToStateRemoved(IElement element, string stateName)

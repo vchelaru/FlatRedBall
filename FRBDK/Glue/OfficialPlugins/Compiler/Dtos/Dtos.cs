@@ -107,6 +107,21 @@ namespace OfficialPlugins.Compiler.Dtos
         public EntitySave EntitySave { get; set; }
     }
 
+    public class CreateNewStateDto
+    {
+        public StateSave StateSave { get; set; }
+        public string CategoryName { get; set; }
+        public string ElementNameGame { get; set; }
+    }
+
+    public class ChangeStateVariableDto
+    {
+        public StateSave StateSave { get; set; }
+        public string CategoryName { get; set; }
+        public string ElementNameGame { get; set; }
+        public string VariableName { get; set; }
+    }
+
     public class RestartScreenDto { }
     public class ReloadGlobalContentDto
     {

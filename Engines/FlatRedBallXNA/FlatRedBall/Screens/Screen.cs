@@ -542,6 +542,18 @@ namespace FlatRedBall.Screens
             }
         }
 
+        public object GetInstanceRecursive(string variableName, object container = null)
+        {
+            if(variableName.Contains("."))
+            {
+                GetInstance(variableName, container, out string afterDot, out object instance);
+
+                return GetInstanceRecursive(afterDot, instance);
+            }
+
+            return container;
+        }
+
         /// <summary>
         /// Applies a value to a variable like "this.Player.X". 
         /// </summary>

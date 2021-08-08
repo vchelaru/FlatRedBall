@@ -32,6 +32,10 @@ namespace GlueControl
 
         public List<IDestroyable> DestroyablesAddedAtRuntime = new List<IDestroyable>();
 
+        // Do we want to support entire categories at runtime? For now just states, but we'll have to review this at some point
+        // if we want to allow entire categories added at runtime.
+        public Dictionary<string, List<StateSaveCategory>> StatesAddedAtRuntime = new Dictionary<string, List<StateSaveCategory>>();
+
         public List<IList> ListsAddedAtRuntime = new List<IList>();
 
 #if HasGum

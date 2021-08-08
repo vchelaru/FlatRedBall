@@ -16,6 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using {ProjectNamespace};
+using GlueControl.Models;
 
 
 namespace GlueControl
@@ -23,6 +24,12 @@ namespace GlueControl
     static class CommandReceiver
     {
         #region Supporting Methods/Properties
+
+        /// <summary>
+        /// Stores all commands that have been sent from Glue to game 
+        /// which should always be re-run.
+        /// </summary>
+        public static List<object> GlobalGlueToGameCommands = new List<object>();
 
         static System.Reflection.MethodInfo[] AllMethods;
 
@@ -153,16 +160,6 @@ namespace GlueControl
 
         #endregion
 
-        #region Message Queue
-
-        /// <summary>
-        /// Stores all commands that have been sent from Glue to game 
-        /// which should always be re-run.
-        /// </summary>
-        public static List<object> GlobalGlueToGameCommands = new List<object>();
-
-        #endregion
-
         #region Set Variable
 
         private static GlueVariableSetDataResponse HandleDto(GlueVariableSetData dto)
@@ -183,6 +180,19 @@ namespace GlueControl
             GlobalGlueToGameCommands.Add(dto);
 
             return response;
+        }
+
+        #endregion
+
+        #region Set State Variable
+
+        private static void HandleDto(ChangeStateVariableDto dto)
+        {
+            var elementGameType = dto.ElementNameGame;
+            var categoryName = dto.CategoryName;
+            var stateSave = dto.StateSave;
+
+            ReplaceStateWithNewState(elementGameType, categoryName, stateSave);
         }
 
         #endregion
@@ -329,7 +339,7 @@ namespace GlueControl
 
         #endregion
 
-        #region Remove (Destroy) NamedObjectSave
+        #region Destroy NamedObjectSave
 
         private static RemoveObjectDtoResponse HandleDto(RemoveObjectDto removeObjectDto)
         {
@@ -372,6 +382,47 @@ namespace GlueControl
             GlobalGlueToGameCommands.Add(dto);
 
             return valueToReturn;
+        }
+
+        #endregion
+
+        #region Add State
+
+        private static void HandleDto(CreateNewStateDto dto)
+        {
+            var elementGameType = dto.ElementNameGame;
+            var categoryName = dto.CategoryName;
+            var stateSave = dto.StateSave;
+
+            ReplaceStateWithNewState(elementGameType, categoryName, stateSave);
+        }
+
+        private static void ReplaceStateWithNewState(string elementGameType, string categoryName, StateSave newStateSave)
+        {
+            List<StateSaveCategory> statesForThisElement = null;
+            if (!InstanceLogic.Self.StatesAddedAtRuntime.ContainsKey(elementGameType))
+            {
+                InstanceLogic.Self.StatesAddedAtRuntime[elementGameType] =
+                    new List<StateSaveCategory>();
+            }
+            statesForThisElement = InstanceLogic.Self.StatesAddedAtRuntime[elementGameType];
+
+            // does this category exist?
+            var category = statesForThisElement.FirstOrDefault(item => item.Name == categoryName);
+            if (category == null)
+            {
+                category = new StateSaveCategory();
+                category.Name = categoryName;
+                statesForThisElement.Add(category);
+            }
+
+            var existingWithMatchingName = category.States.FirstOrDefault(item => item.Name == newStateSave.Name);
+            if (existingWithMatchingName != null)
+            {
+                category.States.Remove(existingWithMatchingName);
+            }
+
+            category.States.Add(newStateSave);
         }
 
         #endregion
@@ -485,10 +536,14 @@ namespace GlueControl
 
         #endregion
 
+        #region Reload Content
+
         private static void HandleDto(ReloadGlobalContentDto dto)
         {
             GlobalContent.Reload(GlobalContent.GetFile(dto.StrippedGlobalContentFileName));
         }
+
+        #endregion
 
         private static void HandleDto(TogglePauseDto dto)
         {

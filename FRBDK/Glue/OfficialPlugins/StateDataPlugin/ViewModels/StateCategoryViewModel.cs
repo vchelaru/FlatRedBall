@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPluginsCore.StateDataPlugin.Managers;
@@ -30,8 +31,8 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
 
         public ObservableCollection<StateViewModel> States
         {
-            get { return Get<ObservableCollection<StateViewModel>>(); }
-            set { Set(value); }
+            get => Get<ObservableCollection<StateViewModel>>(); 
+            set => Set(value); 
         }
 
         public string Name
@@ -276,6 +277,9 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                         }
 
                     }
+
+                    PluginManager.ReactToStateVariableChanged(stateSave, category, variable.Name);
+
                 }
                 catch (Exception e)
                 {
@@ -392,6 +396,11 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                 if(selectedViewModel.IsNameInvalid == false)
                 {
                     stateSave.Name = selectedViewModel.Name;
+
+                    if(needsToCreateNewState)
+                    {
+                        PluginManager.ReactToStateCreated(stateSave, category);
+                    }
 
                     GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
                     GlueCommands.Self.GluxCommands.SaveGlux();

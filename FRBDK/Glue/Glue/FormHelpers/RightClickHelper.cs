@@ -996,7 +996,7 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             // search: addstate, add new state, addnewstate, add state
             TextInputWindow tiw = new TextInputWindow();
-            tiw.DisplayText = "Enter a name for the new state";
+            tiw.Message  = "Enter a name for the new state";
             tiw.Text = "New State";
 
 
@@ -1004,8 +1004,10 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (result == DialogResult.OK)
             {
+                var currentElement = GlueState.Self.CurrentElement;
+
                 string whyItIsntValid;
-                if (!NameVerifier.IsStateNameValid(tiw.Result, EditorLogic.CurrentElement, EditorLogic.CurrentStateSaveCategory, EditorLogic.CurrentStateSave, out whyItIsntValid))
+                if (!NameVerifier.IsStateNameValid(tiw.Result, currentElement, EditorLogic.CurrentStateSaveCategory, EditorLogic.CurrentStateSave, out whyItIsntValid))
                 {
                     GlueGui.ShowMessageBox(whyItIsntValid);
                 }
@@ -1015,18 +1017,23 @@ namespace FlatRedBall.Glue.FormHelpers
                     StateSave newState = new StateSave();
                     newState.Name = tiw.Result;
 
-                    if (EditorLogic.CurrentStateSaveCategory != null)
+                    var category = EditorLogic.CurrentStateSaveCategory;
+
+                    if (category != null)
                     {
-                        EditorLogic.CurrentStateSaveCategory.States.Add(newState);
+                        category.States.Add(newState);
                     }
                     else
                     {
-                        IElement element = EditorLogic.CurrentElement;
+                        var element = currentElement;
 
                         element.States.Add(newState);
                     }
 
                     EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
+
+                    PluginManager.ReactToStateCreated(newState, category);
+
                     ElementViewWindow.GenerateSelectedElementCode();
 
                     GlueCommands.Self.TreeNodeCommands.SelectTreeNode(newState);

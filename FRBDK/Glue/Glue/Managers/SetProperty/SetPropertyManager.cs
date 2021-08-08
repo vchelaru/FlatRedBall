@@ -158,7 +158,16 @@ namespace FlatRedBall.Glue.SetVariable
             #endregion
 
 
-            PluginManager.ReactToChangedProperty(variableNameAsDisplayed, oldValue);
+            if(parentGridItemName == "State Variable")
+            {
+                PluginManager.ReactToStateVariableChanged(GlueState.Self.CurrentStateSave,
+                    GlueState.Self.CurrentStateSaveCategory,
+                    variableName);
+            }
+            else
+            {
+                PluginManager.ReactToChangedProperty(variableNameAsDisplayed, oldValue);
+            }
 
             if (GlueState.Self.CurrentElement != null)
             {

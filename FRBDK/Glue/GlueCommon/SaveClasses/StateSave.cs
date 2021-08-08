@@ -5,11 +5,13 @@ using System.Text;
 using FlatRedBall.Content.Instructions;
 using System.ComponentModel;
 using System.Xml.Serialization;
+using Newtonsoft.Json;
+using GlueCommon.Converters;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
 
-    [TypeConverter(typeof(ExpandableObjectConverter))]
+    [TypeConverter(typeof(SerializableExpandableObjectConverter))]
     public class StateSave
     {
         #region Fields
@@ -30,6 +32,7 @@ namespace FlatRedBall.Glue.SaveClasses
         #endregion
 
         [XmlIgnore]
+        [JsonIgnore]
         public static Func<StateSave, string> ToStringDelegate;
 
         #region Methods
