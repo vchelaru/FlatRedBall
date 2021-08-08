@@ -221,15 +221,19 @@ namespace GlueControl.Editing
             CameraStates[currentScreen.GetType().FullName] = state;
         }
 
-        public static void SetCameraForScreen(Screen screen)
+        public static void SetCameraForScreen(Screen screen, bool setZoom = true)
         {
             if (CameraStates.ContainsKey(screen.GetType().FullName))
             {
                 var camera = Camera.Main;
                 var value = CameraStates[screen.GetType().FullName];
                 camera.Position = value.Position;
-                camera.OrthogonalHeight = value.OrthogonalHeight;
-                camera.FixAspectRatioYConstant();
+                if (setZoom)
+                {
+                    camera.OrthogonalHeight = value.OrthogonalHeight;
+                    camera.FixAspectRatioYConstant();
+
+                }
             }
         }
     }

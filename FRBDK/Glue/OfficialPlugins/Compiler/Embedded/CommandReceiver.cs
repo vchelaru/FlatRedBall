@@ -384,6 +384,8 @@ namespace GlueControl
 #if SupportsEditMode
             if (value != FlatRedBall.Screens.ScreenManager.IsInEditMode)
             {
+                CameraLogic.RecordCameraForCurrentScreen();
+
                 FlatRedBall.Screens.ScreenManager.IsInEditMode = value;
                 FlatRedBall.Gui.GuiManager.Cursor.RequiresGameWindowInFocus = !value;
 
@@ -395,7 +397,7 @@ namespace GlueControl
                 FlatRedBall.TileEntities.TileEntityInstantiator.CreationFunction =
                     InstanceLogic.Self.CreateEntity;
 
-                RestartScreenRerunCommands(applyRestartVariables: true);
+                RestartScreenRerunCommands(applyRestartVariables: true, shouldRecordCameraPosition: false, forceCameraToPreviousState: true);
             }
 #endif
         }
@@ -438,7 +440,7 @@ namespace GlueControl
             RestartScreenRerunCommands(applyRestartVariables: true);
         }
 
-        private static void RestartScreenRerunCommands(bool applyRestartVariables)
+        private static void RestartScreenRerunCommands(bool applyRestartVariables, bool shouldRecordCameraPosition = true, bool forceCameraToPreviousState = false)
         {
             var screen =
                 FlatRedBall.Screens.ScreenManager.CurrentScreen;
@@ -459,7 +461,10 @@ namespace GlueControl
             {
                 newScreen.ScreenDestroy += HandleScreenDestroy;
 
-                CameraLogic.SetCameraForScreen(screen);
+                if (FlatRedBall.Screens.ScreenManager.IsInEditMode || forceCameraToPreviousState)
+                {
+                    CameraLogic.SetCameraForScreen(screen, setZoom: FlatRedBall.Screens.ScreenManager.IsInEditMode);
+                }
 
                 CameraLogic.UpdateZoomLevelToCamera();
 
@@ -469,7 +474,10 @@ namespace GlueControl
             FlatRedBall.Screens.ScreenManager.BeforeScreenCustomInitialize += BeforeCustomInitializeLogic;
             FlatRedBall.Screens.ScreenManager.ScreenLoaded += AfterInitializeLogic;
 
-            CameraLogic.RecordCameraForCurrentScreen();
+            if (shouldRecordCameraPosition)
+            {
+                CameraLogic.RecordCameraForCurrentScreen();
+            }
 
 
             screen?.RestartScreen(reloadContent: true, applyRestartVariables: applyRestartVariables);
