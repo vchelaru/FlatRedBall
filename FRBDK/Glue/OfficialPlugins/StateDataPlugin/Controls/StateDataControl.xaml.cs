@@ -17,9 +17,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LinqToVisualTree;
+using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace OfficialPlugins.StateDataPlugin.Controls
 {
+    #region Classes/Structs
     struct StateVmPath
     {
         public string Path;
@@ -87,6 +90,8 @@ namespace OfficialPlugins.StateDataPlugin.Controls
         }
     }
 
+    #endregion
+
     /// <summary>
     /// Interaction logic for StateDataControl.xaml
     /// </summary>
@@ -113,13 +118,7 @@ namespace OfficialPlugins.StateDataPlugin.Controls
             }
         }
 
-        StateCategoryViewModel ViewModel
-        {
-            get
-            {
-                return DataContext as StateCategoryViewModel;
-            }
-        }
+        StateCategoryViewModel ViewModel => DataContext as StateCategoryViewModel;
 
         public StateDataControl()
         {
@@ -148,6 +147,16 @@ namespace OfficialPlugins.StateDataPlugin.Controls
                     FocusTextBoxAt(currentColumnIndex, currentRowIndex);
                 }
 
+            }
+
+            ViewModel.SelectedState = DataGridInstance.CurrentItem as StateViewModel;
+            if(ViewModel.SelectedState == null)
+            {
+                ViewModel.SelectedIndex  = -1;
+            }
+            else
+            {
+                ViewModel.SelectedIndex = ViewModel.States.IndexOf(ViewModel.SelectedState);
             }
             //var rowIndex = DataGridInstance.SelectedIndex;
             //var state = ViewModel.States[rowIndex];
@@ -202,7 +211,24 @@ namespace OfficialPlugins.StateDataPlugin.Controls
 
         private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            var propertyName = e.PropertyName;
 
+            if(propertyName == nameof(ViewModel.SelectedState))
+            {
+                StateSave highlightedState = ViewModel.SelectedState?.BackingData;
+
+                if(highlightedState != null)
+                {
+                    // Broadcast that this changed to the level editor plugin:
+                    PluginManager.CallPluginMethod("Glue Compiler", "ShowState",
+                        new object[]
+                        {
+                            highlightedState.Name,
+                            GlueState.Self.CurrentStateSaveCategory?.Name
+                        });
+
+                }
+            }
         }
 
         public void RefreshColumns()

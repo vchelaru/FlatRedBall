@@ -63,10 +63,20 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             set { Set(value); }
         }
 
+        /// <summary>
+        /// The index of the state that is selected. This is only a valid number
+        /// if an entire row is selected. Otherwise it's -1.
+        /// </summary>
         public int SelectedIndex
         {
-            get { return Get<int>(); }
-            set { Set(value); }
+            get => Get<int>(); 
+            set => Set(value); 
+        }
+
+        public StateViewModel SelectedState
+        {
+            get => Get<StateViewModel>();
+            set => Set(value);
         }
 
         public List<string> Columns
@@ -441,16 +451,16 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             if(shouldRemove)
             {
                 this.category.States.Remove(selectedState.BackingData);
-                int oldIndex = this.States.IndexOf(selectedState);
+                int oldSelectedIndex = this.States.IndexOf(selectedState);
 
 
-                this.States.RemoveAt(oldIndex);
+                this.States.RemoveAt(oldSelectedIndex);
 
                 GlueCommands.Self.RefreshCommands.RefreshUi(this.category);
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
                 GlueCommands.Self.GluxCommands.SaveGlux();
 
-                if(oldIndex > 0)
+                if(oldSelectedIndex > 0)
                 {
                     // Victor Chelaru June 8, 2018
                     // I can't get this to select, not sure why.
@@ -460,7 +470,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                     // peculiar behavior of the WPF datagrid according to StackOverflow posts
 
                     //this.SelectedState = this.States[oldIndex - 1];
-                    this.SelectedIndex = oldIndex - 1;
+                    this.SelectedIndex = oldSelectedIndex - 1;
                 }
             }
         }

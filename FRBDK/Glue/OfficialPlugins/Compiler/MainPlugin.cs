@@ -597,6 +597,11 @@ namespace OfficialPlugins.Compiler
         {
             return viewModel.IsEditChecked && viewModel.IsRunning;
         }
+
+        public async void ShowState(string stateName, string categoryName)
+        {
+            await RefreshManager.Self.PushGlueSelectionToGame(categoryName, stateName);
+        }
     }
 
 }

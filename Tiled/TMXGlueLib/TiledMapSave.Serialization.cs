@@ -926,7 +926,7 @@ namespace TMXGlueLib
         }
     }
 
-#region mapObjectgroupObjectPolyline
+    #region mapObjectgroupObjectPolyline
 
     /// <remarks/>
     [XmlType(AnonymousType = true)]
@@ -950,7 +950,7 @@ namespace TMXGlueLib
         }
     }
 
-#endregion
+    #endregion
 
 #region NewDataSet Class
     /// <remarks/>

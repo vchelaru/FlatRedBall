@@ -59,11 +59,16 @@
         </StackPanel>
 
         <!--https://www.wpftutorial.net/DataGrid.html-->
+        
+                  <!--
+        These don't work when selecting a cell. They do if selecting an entire row, so the binding is set up
+        in the codebehind.
+        SelectedItem="{Binding SelectedState}"
+                  SelectedIndex="{Binding SelectedIndex}"-->
         <DataGrid Grid.Row="1"
             x:Name="DataGridInstance" 
                   ItemsSource="{Binding States}" 
-                  SelectedItem="{Binding SelectedState}"
-                  SelectedIndex="{Binding SelectedIndex}"
+                  IsSynchronizedWithCurrentItem="False"
                   CanUserDeleteRows="False"
                   AutoGenerateColumns="False" 
                   SelectionUnit="CellOrRowHeader"
