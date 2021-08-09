@@ -306,9 +306,17 @@ namespace FlatRedBall.Glue
             {
                 TreeNode treeNode = CurrentTreeNode;
 
-                if (treeNode != null && treeNode.IsStateCategoryNode())
+                if (treeNode != null)
                 {
-                    return (StateSaveCategory)treeNode.Tag;
+                    if (treeNode.IsStateCategoryNode())
+                    {
+                        return (StateSaveCategory)treeNode.Tag;
+                    }
+                    // if the current node is a state, maybe the parent is a category
+                    else if(treeNode.Parent.IsStateCategoryNode())
+                    {
+                        return (StateSaveCategory)treeNode.Parent.Tag;
+                    }
                 }
 
                 return null;

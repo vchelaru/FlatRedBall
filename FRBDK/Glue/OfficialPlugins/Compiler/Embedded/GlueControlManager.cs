@@ -307,23 +307,29 @@ namespace GlueControl
             var dto = new SelectObjectDto();
             dto.ObjectName = item.Name;
 
+            string elementGameType = null;
+
             if (ScreenManager.CurrentScreen.GetType().Name == "EntityViewingScreen")
             {
                 var entityInstance = SpriteManager.ManagedPositionedObjects[0];
                 if (entityInstance is GlueControl.Runtime.DynamicEntity dynamicEntity)
                 {
-                    dto.ElementName = dynamicEntity.EditModeType;
+                    elementGameType = dynamicEntity.EditModeType;
                 }
                 else
                 {
                     // todo - handle inheritance
-                    dto.ElementName = entityInstance.GetType().FullName;
+                    elementGameType = entityInstance.GetType().FullName;
                 }
             }
             else
             {
-                dto.ElementName = ScreenManager.CurrentScreen.GetType().Name;
+                elementGameType = ScreenManager.CurrentScreen.GetType().Name;
             }
+
+
+            var split = elementGameType.Split('.').ToList().Skip(1);
+            dto.ElementNameGlue = string.Join("\\", split);
 
             var message = $"{nameof(SelectObjectDto)}:{Newtonsoft.Json.JsonConvert.SerializeObject(dto)}";
             SendCommandToGlue(message);

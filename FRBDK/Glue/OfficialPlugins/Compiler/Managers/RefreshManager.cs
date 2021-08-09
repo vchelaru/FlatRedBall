@@ -291,7 +291,7 @@ namespace OfficialPlugins.Compiler.Managers
 
         }
 
-        public async Task PushGlueSelectionToGame()
+        public async Task PushGlueSelectionToGame(string forcedCategoryName = null, string forcedStateName = null)
         {
             var dto = new SelectObjectDto();
 
@@ -300,7 +300,13 @@ namespace OfficialPlugins.Compiler.Managers
             if(element != null)
             {
                 dto.ObjectName = nos?.InstanceName ?? String.Empty; ;
-                dto.ElementName = element?.Name;
+                dto.ElementNameGlue = element?.Name;
+                dto.StateName = forcedStateName ??
+                    GlueState.Self.CurrentStateSave?.Name;
+
+                dto.StateCategoryName = forcedCategoryName ??
+                    GlueState.Self.CurrentStateSaveCategory?.Name;
+
                 await CommandSender.Send(dto, ViewModel.PortNumber);
             }
 

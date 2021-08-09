@@ -352,9 +352,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                 if(screen == null)
                 {
-                    var entityName = selectObjectDto.ElementName;
-                    var split = entityName.Split('.').ToList().Skip(1);
-                    entityName = string.Join('\\', split);
+                    var entityName = selectObjectDto.ElementNameGlue;
                     EntitySave currentEntity = ObjectFinder.Self.GetEntitySave(entityName);
                     
                     if(currentEntity != null)

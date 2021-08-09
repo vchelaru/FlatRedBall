@@ -207,12 +207,13 @@ namespace GlueControl
         #endregion
 
         #region Select Object
+
         private static void HandleDto(SelectObjectDto selectObjectDto)
         {
             bool matchesCurrentScreen =
-                GetIfMatchesCurrentScreen(selectObjectDto.ElementName, out System.Type ownerType, out Screen currentScreen);
+                GetIfMatchesCurrentScreen(selectObjectDto.ElementNameGlue, out System.Type ownerType, out Screen currentScreen);
 
-            var elementNameGlue = selectObjectDto.ElementName;
+            var elementNameGlue = selectObjectDto.ElementNameGlue;
             string ownerTypeName = GlueToGameElementName(elementNameGlue);
             ownerType = typeof(CommandReceiver).Assembly.GetType(ownerTypeName);
 
@@ -223,6 +224,10 @@ namespace GlueControl
             {
                 Editing.EditingManager.Self.Select(selectObjectDto.ObjectName);
                 Editing.EditingManager.Self.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingScreen;
+                if (!string.IsNullOrEmpty(selectObjectDto.StateName))
+                {
+                    SelectState(selectObjectDto.StateName, selectObjectDto.StateCategoryName);
+                }
                 isOwnerScreen = true;
             }
             else
@@ -244,6 +249,12 @@ namespace GlueControl
                     {
                         // Select this even if it's null so the EditingManager deselects 
                         EditingManager.Self.Select(selectObjectDto.ObjectName);
+
+                        if (!string.IsNullOrEmpty(selectObjectDto.StateName))
+                        {
+                            SelectState(selectObjectDto.StateName, selectObjectDto.StateCategoryName);
+                        }
+
                         screen.ScreenDestroy += HandleScreenDestroy;
                         CameraLogic.SetCameraForScreen(screen);
 
@@ -259,6 +270,13 @@ namespace GlueControl
                     isOwnerScreen = true;
                     EditingManager.Self.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingScreen;
 #endif
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(selectObjectDto.StateName))
+                    {
+                        SelectState(selectObjectDto.StateName, selectObjectDto.StateCategoryName);
+                    }
                 }
             }
 
@@ -303,6 +321,44 @@ namespace GlueControl
                         EditingManager.Self.Select(selectObjectDto.ObjectName);
                     }
                 }
+            }
+        }
+
+        private static void SelectState(string stateName, string stateCategoryName)
+        {
+            var currentScreen = ScreenManager.CurrentScreen;
+            var entity = SpriteManager.ManagedPositionedObjects.FirstOrDefault();
+            ////////////////Early Out//////////////////////
+            if (currentScreen.GetType().Name != "EntityViewingScreen" ||
+                entity == null)
+            {
+                return;
+            }
+            /////////////End Early Out/////////////////////
+
+            var entityType = entity.GetType();
+
+            var stateTypeName = entityType.FullName + "+" + stateCategoryName ?? "VariableState";
+
+            var stateType = entityType.Assembly.GetType(stateTypeName);
+
+            var dictionary = stateType.GetField("AllStates").GetValue(null) as System.Collections.IDictionary;
+
+            if (dictionary.Contains(stateName))
+            {
+                // got the state, gotta apply:
+                var stateInstance = dictionary[stateName];
+
+                string propertyName = "VariableState";
+
+                if (!string.IsNullOrEmpty(stateCategoryName))
+                {
+                    propertyName = $"Current{stateCategoryName}State";
+                }
+
+                var stateProperty = entityType.GetProperty(propertyName);
+
+                stateProperty.SetValue(entity, stateInstance);
             }
         }
 

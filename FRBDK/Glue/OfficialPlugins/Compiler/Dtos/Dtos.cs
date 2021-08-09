@@ -29,7 +29,10 @@ namespace OfficialPlugins.Compiler.Dtos
     class SelectObjectDto
     {
         public string ObjectName { get; set; }
-        public string ElementName { get; set; }
+        public string ElementNameGlue { get; set; }
+        public string StateName { get; set; }
+        public string StateCategoryName { get; set; }
+
     }
 
     public enum AssignOrRecordOnly
