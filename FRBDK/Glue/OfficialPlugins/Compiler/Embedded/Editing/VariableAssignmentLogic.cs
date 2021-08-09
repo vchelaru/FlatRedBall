@@ -144,37 +144,7 @@ namespace GlueControl.Editing
                     }
                     else
                     {
-                        if (variableValue is StateSave variableAsStateSave)
-                        {
-                            // convert this to the desired type:
-
-                            var type = TryGetStateType(data.Type);
-                            if (type != null)
-                            {
-                                var stateInstance = Activator.CreateInstance(type);
-
-                                foreach (var value in variableAsStateSave.InstructionSaves)
-                                {
-                                    var fieldType = stateInstance.GetType().GetField("")?.FieldType;
-
-
-                                    var convertedValue = value.Value;
-                                    if (value.Value is string asString)
-                                    {
-                                        // not sure if this is a state, it could be and at some point we're going to handle that, but not for now...
-                                        convertedValue = VariableAssignmentLogic.ConvertStringToType(fieldType.ToString(), asString, false);
-                                    }
-
-                                    LateBinder.SetValueStatic(stateInstance, value.Member, convertedValue);
-                                    LateBinder.SetValueStatic(targetInstance, value.Member, convertedValue);
-                                }
-                                response.WasVariableAssigned = true;
-                            }
-                        }
-                        else
-                        {
-                            response.WasVariableAssigned = screen.ApplyVariable(variableName, variableValue, targetInstance);
-                        }
+                        response.WasVariableAssigned = screen.ApplyVariable(variableName, variableValue, targetInstance);
                     }
                     didAttemptToAssign = true;
                 }
@@ -894,38 +864,17 @@ namespace GlueControl.Editing
 
         private static object TryGetStateValue(string type, string variableValue)
         {
-            StateSave dynamicallyCreatedState = null;
-            if (type.Contains('.'))
+            Type stateType = TryGetStateType(type);
+
+            var dictionary = stateType.GetField("AllStates").GetValue(null) as IDictionary;
+
+            if (dictionary != null && dictionary.Contains(variableValue))
             {
-                var splitType = type.Split('.').ToArray();
-                var ownerType =
-                    string.Join(".", splitType.Take(splitType.Length - 1));
-
-                // can we have same named states in different categories? If so, this would fail:
-                if (InstanceLogic.Self.StatesAddedAtRuntime.ContainsKey(ownerType))
-                {
-                    // see if this state is located anywhere:
-                    var categories = InstanceLogic.Self.StatesAddedAtRuntime[ownerType];
-
-                    dynamicallyCreatedState = categories
-                        .FirstOrDefault(item => item.States.Any(state => state.Name == variableValue))
-                        ?.States.Find(item => item.Name == variableValue);
-                }
-            }
-
-            if (dynamicallyCreatedState != null)
-            {
-                return dynamicallyCreatedState;
+                return dictionary[variableValue];
             }
             else
             {
-                object convertedValue;
-                Type stateType = TryGetStateType(type);
-
-                var fieldInfo = stateType.GetField(variableValue);
-
-                convertedValue = fieldInfo.GetValue(null);
-                return convertedValue;
+                return null;
             }
         }
 

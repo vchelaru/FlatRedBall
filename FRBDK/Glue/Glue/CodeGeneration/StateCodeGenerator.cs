@@ -57,7 +57,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if (!string.IsNullOrEmpty(element.BaseElement))
             {
-                IElement baseElement = ObjectFinder.Self.GetIElement(element.BaseElement);
+                IElement baseElement = ObjectFinder.Self.GetElement(element.BaseElement);
 
                 if (baseElement != null)
                 {
@@ -82,7 +82,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 if (!string.IsNullOrEmpty(element.BaseElement) && includeInheritance)
                 {
-                    var uncontained = GetAllStateCategoryNames(ObjectFinder.Self.GetIElement(element.BaseElement), includeInheritance).Where(name => !names.ContainsKey(name.Key));
+                    var uncontained = GetAllStateCategoryNames(ObjectFinder.Self.GetElement(element.BaseElement), includeInheritance).Where(name => !names.ContainsKey(name.Key));
 
                     foreach (var kvp in uncontained)
                     {
@@ -247,15 +247,40 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             #endregion
 
-            bool isElse = false;
-            foreach (StateSave stateSave in states)
-            {
-                GenerateVariableAssignmentForState(element, setBlock, stateSave, category, isElse);
-                isElse = true;
-            }
+            // August 9, 2021
+            // Before StateData,
+            // states were enums which
+            // resulted in variables assigned
+            // in code generation. After StateData,
+            // states became an object which held their
+            // own values. This means that users can now
+            // define their own states dynamically and change
+            // a state at runtime (not sure why, but it's possible).
+            // Since states now store their own values, we no longer need
+            // codegen to explicitly assign variables. Sure, assigning hard
+            // values is faster, but having conditionals is slower so...does
+            // it really save us that much? Also, it's extra gencode bloat that
+            // we could get rid of and replace with a single assignment block. That
+            // else statement was added today in GenerateVariableAssignmentForDynamicState
+            // which means we could probably get rid of the GenerateVariableAssignmentForState
+            // calls. But I don't know if the two are 100% equivalent so I'll leave the codegen
+            // in for now. However, eventually this can go away completely with some testing...perhaps
+            // once the automated test project is revived.
+            // Update August 9, 2021 - Well that didn't take long. If we leave the hardcoded generation in
+            // then if the user changes a compiled-in state, the hardcoded value will get assigned even if the
+            // user changes it. I guess we're going to have to convert over right now...
+            //bool isElse = false;
+            //foreach (StateSave stateSave in states)
+            //{
+            //    GenerateVariableAssignmentForState(element, setBlock, stateSave, category, isElse);
+            //    isElse = true;
+            //}
+
+            GenerateVariableAssignmentForDynamicState(element, setBlock, category);
+
 
             if ((enumType == "VariableState" && DoesBaseHaveUncategorizedStates(element)) ||
-                (!string.IsNullOrEmpty(element.BaseElement) && GetAllStateCategoryNames(ObjectFinder.Self.GetIElement(element.BaseElement), true).Any(category => category.Key == enumType)))
+                (!string.IsNullOrEmpty(element.BaseElement) && GetAllStateCategoryNames(ObjectFinder.Self.GetElement(element.BaseElement), true).Any(category => category.Key == enumType)))
             {
                 setBlock.Else()
                     .Line("base.Current" + variableNameModifier + "State = base.Current" + variableNameModifier + "State;");
@@ -269,6 +294,90 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
+        private static void GenerateVariableAssignmentForDynamicState(IElement element, ICodeBlock setBlock, StateSaveCategory category)
+        {
+            foreach (var variable in element.CustomVariables)
+            {
+                var shouldInclude = false;
+                if (category != null)
+                {
+                    if (category.ExcludedVariables.Contains(variable.Name))
+                    {
+                        shouldInclude = false;
+                    }
+                    // If we don't do this, the variable will recursively get set. 
+                    // I can't think of a case where a user would want this since it
+                    // will inevitably turn into a StackOverflowException.
+                    else if (variable.Type == category.Name)
+                    {
+                        shouldInclude = false;
+                    }
+                    else
+                    {
+                        shouldInclude = true;
+                    }
+                }
+
+                if (shouldInclude)
+                {
+
+                    string member = variable.Name;
+
+                    // Get the valueAsString, which is the right-side of the equals sign
+                    string rightSideOfEquals = $"value.{variable.Name}";
+
+                    if (!string.IsNullOrEmpty(rightSideOfEquals))
+                    {
+                        CustomVariable customVariable = element.GetCustomVariableRecursively(member);
+                        NamedObjectSave referencedNos = element.GetNamedObjectRecursively(customVariable.SourceObject);
+
+                        if (referencedNos != null)
+                        {
+                            NamedObjectSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(setBlock, referencedNos);
+                        }
+
+                        string leftSideOfEquals = GetLeftSideOfEquals(element, customVariable, member, false);
+                        string leftSideOfEqualsWithRelative = GetLeftSideOfEquals(element, customVariable, member, true);
+
+
+
+
+                        if (leftSideOfEquals != leftSideOfEqualsWithRelative)
+                        {
+                            string objectWithParent = null;
+
+                            if (string.IsNullOrEmpty(customVariable.SourceObject))
+                            {
+                                objectWithParent = "this";
+                            }
+                            else
+                            {
+                                objectWithParent = customVariable.SourceObject;
+                            }
+
+                            setBlock
+                                .If(objectWithParent + ".Parent == null")
+                                    .Line(leftSideOfEquals + " = " + rightSideOfEquals + ";")
+                                .End()
+
+                                .Else()
+                                    .Line(leftSideOfEqualsWithRelative + " = " + rightSideOfEquals + ";");
+                        }
+                        else
+                        {
+                            setBlock.Line(leftSideOfEquals + " = " + rightSideOfEquals + ";");
+                        }
+
+                        if (referencedNos != null)
+                        {
+                            NamedObjectSaveCodeGenerator.AddEndIfIfNecessary(setBlock, referencedNos);
+                        }
+
+                    }
+                }
+            }
+        }
+
         private static bool IsStateDefinedInBase(IElement element, string enumName)
         {
             bool toReturn = false;
@@ -278,7 +387,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
             else
             {
-                IElement baseElement = ObjectFinder.Self.GetIElement(element.BaseElement);
+                IElement baseElement = ObjectFinder.Self.GetElement(element.BaseElement);
 
                 if (baseElement != null)
                 {
@@ -309,7 +418,6 @@ namespace FlatRedBall.Glue.CodeGeneration
                 curBlock = codeBlock.If($"Current{variableNameModifier}State == {enumType}.{stateSave.Name}");
 
             }
-            bool doesStateAssignAbsoluteValues = GetDoesStateAssignAbsoluteValues(stateSave, element);
 
             foreach(var variable in element.CustomVariables)
             {
@@ -421,7 +529,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             //Get states for parent entities
             if (!string.IsNullOrEmpty(currentElement.BaseElement))
             {
-                IElement baseElement = ObjectFinder.Self.GetIElement(currentElement.BaseElement);
+                IElement baseElement = ObjectFinder.Self.GetElement(currentElement.BaseElement);
                 if (baseElement != null)
                 {
                     statesForThisCategory.AddRange(GetSharedVariableStates(baseElement));
@@ -440,30 +548,6 @@ namespace FlatRedBall.Glue.CodeGeneration
 
 
 
-        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, SaveClasses.IElement element)
-        {
-            //throw new NotImplementedException();
-            return codeBlock;
-        }
-
-        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, SaveClasses.IElement element)
-        {
-            //throw new NotImplementedException();
-            return codeBlock;
-        }
-
-        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, SaveClasses.IElement element)
-        {
-            //throw new NotImplementedException();
-            return codeBlock;
-        }
-
-        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, SaveClasses.IElement element)
-        {
-            //throw new NotImplementedException();
-            return codeBlock;
-        }
-
         public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
             if (element.HasStates)
@@ -479,7 +563,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     if (!string.IsNullOrEmpty(element.BaseElement))
                     {
-                        IElement baseElement = ObjectFinder.Self.GetIElement(element.BaseElement);
+                        IElement baseElement = ObjectFinder.Self.GetElement(element.BaseElement);
                         if (baseElement != null && baseElement.DefinesCategoryEnumRecursive("VariableState"))
                         {
                             propertyPrefix += "new ";
@@ -592,7 +676,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
             else
             {
-                IElement baseElement = ObjectFinder.Self.GetIElement(element.BaseElement);
+                IElement baseElement = ObjectFinder.Self.GetElement(element.BaseElement);
 
                 if (baseElement != null)
                 {
@@ -741,7 +825,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     if (namedObject != null)
                     {
-                        ObjectFinder.Self.GetIElement(namedObject.SourceClassType);
+                        ObjectFinder.Self.GetElement(namedObject.SourceClassType);
                     }
 
                     if (objectElement != null)

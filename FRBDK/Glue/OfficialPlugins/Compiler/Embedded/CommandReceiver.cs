@@ -423,6 +423,44 @@ namespace GlueControl
             }
 
             category.States.Add(newStateSave);
+
+            // Now create the runtime object and 
+            var stateType = VariableAssignmentLogic.TryGetStateType(elementGameType + "." + (categoryName ?? "VariableState"));
+            if (stateType != null)
+            {
+                var allStates = stateType.GetField("AllStates").GetValue(null) as System.Collections.IDictionary;
+
+                object existingState = null;
+
+                if (allStates.Contains(newStateSave.Name))
+                {
+                    existingState = allStates[newStateSave.Name];
+                }
+                else
+                {
+                    existingState = Activator.CreateInstance(stateType);
+                }
+
+                // what if a value has been nulled out?
+                // Categories require all values to be set
+                // so it won't matter there, and Vic thinks we
+                // should phase out uncategorized states so maybe
+                // there's no need to handle that here?
+                foreach (var instruction in newStateSave.InstructionSaves)
+                {
+                    var fieldType = stateType.GetField(instruction.Member)?.FieldType;
+
+
+                    var convertedValue = instruction.Value;
+                    if (instruction.Value is string asString)
+                    {
+                        // not sure if this is a state, it could be and at some point we're going to handle that, but not for now...
+                        convertedValue = VariableAssignmentLogic.ConvertStringToType(fieldType.ToString(), asString, false);
+                    }
+
+                    FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(existingState, instruction.Member, convertedValue);
+                }
+            }
         }
 
         #endregion
