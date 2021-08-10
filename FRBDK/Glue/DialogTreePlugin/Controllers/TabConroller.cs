@@ -58,7 +58,7 @@ namespace DialogTreePlugin.Controllers
 
         internal void UpdateTo(ReferencedFileSave currentFileSave)
         {
-            var fileName = GlueCommands.Self.GetAbsoluteFileName(currentFileSave);
+            var fileName = GlueCommands.Self.GetAbsoluteFilePath(currentFileSave);
             try
             {
                 DialogTreeConverted.Rootobject dialogTreeNew = DialogTreeFileController.Self.DeserializeConvertedDialogTree(fileName);

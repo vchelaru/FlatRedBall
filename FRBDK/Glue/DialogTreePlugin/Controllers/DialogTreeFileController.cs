@@ -2,6 +2,7 @@
 using DialogTreePlugin.SaveClasses;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.IO;
 using FlatRedBall.IO.Csv;
 using System;
 using System.Collections.Generic;
@@ -73,9 +74,9 @@ namespace DialogTreePlugin.Controllers
             return deserializedDialogTree;
         }
 
-        public DialogTreeConverted.Rootobject DeserializeConvertedDialogTree(string fileName)
+        public DialogTreeConverted.Rootobject DeserializeConvertedDialogTree(FilePath filePath)
         {
-            Stream openStream = new FileStream(fileName, FileMode.Open);
+            Stream openStream = new FileStream(filePath.FullPath, FileMode.Open);
             var serializer = new DataContractJsonSerializer(typeof(DialogTreeConverted.Rootobject));
             var dialogTreeNew = (DialogTreeConverted.Rootobject)serializer.ReadObject(openStream);
             return dialogTreeNew;

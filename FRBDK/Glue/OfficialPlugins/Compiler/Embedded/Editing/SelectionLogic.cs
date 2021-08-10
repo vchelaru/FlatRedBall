@@ -18,7 +18,7 @@ namespace GlueControl.Editing
     {
         static List<PositionedObject> tempPunchThroughList = new List<PositionedObject>();
 
-        public static PositionedObject GetInstanceOver(PositionedObjectList<PositionedObject> currentEntities, List<SelectionMarker> selectionMarkers,
+        public static PositionedObject GetInstanceOver(PositionedObjectList<PositionedObject> currentEntities, List<ISelectionMarker> selectionMarkers,
             bool punchThrough, ElementEditingMode elementEditingMode)
         {
             PositionedObject entityOver = null;

@@ -3,6 +3,7 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Graphics.Animation;
+using FlatRedBall.Math;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
@@ -15,6 +16,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TMXGlueLib;
 using ToolsUtilities;
 using Xceed.Wpf.Toolkit.PropertyGrid;
 
@@ -60,6 +62,9 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                         break;
                     case nameof(RemoveObjectDto):
                         HandleRemoveObject(gamePortNumber, JsonConvert.DeserializeObject<RemoveObjectDto>(data));
+                        break;
+                    case nameof(ModifyCollisionDto):
+                        HandleDto(JsonConvert.DeserializeObject<ModifyCollisionDto>(data));
                         break;
                 }
             }
@@ -379,6 +384,93 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     });
                 }
             }, "Selecting object from game command");
+        }
+
+        private static void HandleDto(ModifyCollisionDto dto)
+        {
+            var currentScreen = GlueState.Self.CurrentScreenSave;
+
+            var collisionNos = currentScreen.GetNamedObject(dto.TileShapeCollection);
+
+            // this should use a file as a source, need to find that
+            var sourceTmx = collisionNos.Properties.GetValue<string>("SourceTmxName");
+            var isFromType = collisionNos.Properties.GetValue<bool>("IsFromTypeChecked");
+            var collisionTileTypeName = collisionNos.Properties.GetValue<string>("CollisionTileTypeName");
+
+            var isUsingTmx = !string.IsNullOrEmpty(sourceTmx) && isFromType && !string.IsNullOrEmpty(collisionTileTypeName);
+
+            FlatRedBall.IO.FilePath tmxFilePath = null;
+            TiledMapSave map = null;
+            MapLayer mapLayer = null;
+            if(isUsingTmx)
+            {
+                var rfs = currentScreen.GetReferencedFileSaveRecursively(sourceTmx);
+
+                if(rfs != null)
+                {
+                    tmxFilePath = GlueCommands.Self.GetAbsoluteFilePath(rfs);
+                }
+            }
+
+            if(tmxFilePath?.Exists() == true)
+            {
+                map = TiledMapSave.FromFile(tmxFilePath.FullPath);
+                // assume this for now...
+                mapLayer = map.Layers.Find(item => item.Name == "GameplayLayer");
+            }
+
+            var didChange = false;
+
+            if(mapLayer != null)
+            {
+                
+                var ids = mapLayer.data[0].tiles;
+
+                // todo - support seeds
+                foreach(var newTile in dto.AddedPositions)
+                {
+                    int absoluteIndex = GetTileIndexFromWorldPosition(newTile);
+
+                    // todo - get the ID that is being painted
+                    uint newId = 1;
+
+                    if(ids[absoluteIndex] != newId)
+                    {
+                        ids[absoluteIndex] = newId; 
+                        didChange = true;
+                    }
+                }
+
+                foreach (var oldTile in dto.RemovedPositions)
+                {
+                    int absoluteIndex = GetTileIndexFromWorldPosition(oldTile);
+
+                    if(ids[absoluteIndex] != 0)
+                    {
+                        ids[absoluteIndex] = 0;
+                        didChange = true;
+                    }
+                }
+
+                if(didChange)
+                {
+                    mapLayer.data[0].SetTileData(ids, mapLayer.data[0].encoding, mapLayer.data[0].compression);
+
+                    map.Save(tmxFilePath.FullPath);
+                }
+            }
+
+            static int GetTileIndexFromWorldPosition(Vector2 worldPosition)
+            {
+                // todo - read tile size properties
+                var xIndex = (int)(worldPosition.X / 16);
+                var yIndex = (int)(worldPosition.Y / 16);
+
+                var mapWidth = 32; // todo - need to read this property
+
+                var absoluteIndex = xIndex + yIndex * mapWidth;
+                return absoluteIndex;
+            }
         }
     }
 }

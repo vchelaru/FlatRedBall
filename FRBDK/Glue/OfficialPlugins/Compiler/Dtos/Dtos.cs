@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.SaveClasses;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -135,5 +136,12 @@ namespace OfficialPlugins.Compiler.Dtos
     public class SetSpeedDto
     {
         public int SpeedPercentage { get; set; }
+    }
+
+    public class ModifyCollisionDto
+    {
+        public string TileShapeCollection { get; set; }
+        public List<Vector2> AddedPositions { get; set; }
+        public List<Vector2> RemovedPositions { get; set; }
     }
 }

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Xna.Framework;
 
 namespace GlueControl.Dtos
 {
@@ -139,5 +140,12 @@ namespace GlueControl.Dtos
     public class SetSpeedDto
     {
         public int SpeedPercentage { get; set; }
+    }
+
+    public class ModifyCollisionDto
+    {
+        public string TileShapeCollection { get; set; }
+        public List<Vector2> AddedPositions { get; set; }
+        public List<Vector2> RemovedPositions { get; set; }
     }
 }

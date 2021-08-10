@@ -159,7 +159,7 @@ namespace GlueControl
             {
                 case "GetCurrentScreen":
                     isGet = true;
-                    return screen.GetType().FullName;
+                    return screen?.GetType().FullName;
 
 #if SupportsEditMode
                 case "GetCommands":

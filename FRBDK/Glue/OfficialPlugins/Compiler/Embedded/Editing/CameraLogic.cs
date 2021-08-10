@@ -213,12 +213,15 @@ namespace GlueControl.Editing
         public static void RecordCameraForCurrentScreen()
         {
             var currentScreen = ScreenManager.CurrentScreen;
+            if (currentScreen != null)
+            {
+                var state = new CameraStateForScreen();
+                state.Position = Camera.Main.Position;
+                state.OrthogonalHeight = Camera.Main.OrthogonalHeight;
 
-            var state = new CameraStateForScreen();
-            state.Position = Camera.Main.Position;
-            state.OrthogonalHeight = Camera.Main.OrthogonalHeight;
+                CameraStates[currentScreen.GetType().FullName] = state;
 
-            CameraStates[currentScreen.GetType().FullName] = state;
+            }
         }
 
         public static void SetCameraForScreen(Screen screen, bool setZoom = true)

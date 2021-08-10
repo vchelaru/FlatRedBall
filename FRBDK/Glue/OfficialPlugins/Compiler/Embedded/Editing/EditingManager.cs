@@ -31,7 +31,7 @@ namespace GlueControl.Editing
 
         Guides Guides;
 
-        List<SelectionMarker> SelectedMarkers = new List<SelectionMarker>();
+        List<ISelectionMarker> SelectedMarkers = new List<ISelectionMarker>();
         SelectionMarker HighlightMarker;
 
         PositionedObject ItemOver;
@@ -146,35 +146,17 @@ namespace GlueControl.Editing
                 var item = ItemsSelected[i];
 
                 marker.Update(item, SideGrabbed);
-                if(item == ItemGrabbed)
+                if (item == ItemGrabbed)
                 {
                     moveVector = marker.LastUpdateMovement;
                 }
-
-                if (item is Sprite asSprite && asSprite.TextureScale > 0)
-                {
-                    marker.ResizeMode = ResizeMode.Cardinal;
-                }
-                else if (item is FlatRedBall.Math.Geometry.Circle)
-                {
-                    marker.ResizeMode = ResizeMode.Cardinal;
-                }
-                else if (item is FlatRedBall.Math.Geometry.IScalable)
-                {
-                    marker.ResizeMode = ResizeMode.EightWay;
-                }
-                else
-                {
-                    marker.ResizeMode = ResizeMode.None;
-                }
-
             }
 
-            if(moveVector.X != 0 || moveVector.Y != 0)
+            if (moveVector.X != 0 || moveVector.Y != 0)
             {
-                foreach(var item in ItemsSelected)
+                foreach (var item in ItemsSelected)
                 {
-                    if(item != ItemGrabbed)
+                    if (item != ItemGrabbed)
                     {
                         if (item.Parent == null)
                         {
@@ -200,10 +182,10 @@ namespace GlueControl.Editing
                 markerToDestroy.Destroy();
                 SelectedMarkers.RemoveAt(SelectedMarkers.Count - 1);
             }
-            while (SelectedMarkers.Count < desiredMarkerCount )
+            while (SelectedMarkers.Count < desiredMarkerCount)
             {
                 var newMarker = CreateNewSelectionMarker();
-                if(SelectedMarkers.Count > 0)
+                if (SelectedMarkers.Count > 0)
                 {
                     newMarker.FadingSeed = SelectedMarkers[0].FadingSeed;
                 }
@@ -217,11 +199,11 @@ namespace GlueControl.Editing
             newMarker.MakePersistent();
             newMarker.Name = "Selection Marker";
             newMarker.CanMoveItem = true;
-
+            newMarker.PropertyChanged += (item, variable, value) => PropertyChanged(item, variable, value);
             return newMarker;
         }
 
-        SelectionMarker MarkerFor(PositionedObject item)
+        ISelectionMarker MarkerFor(PositionedObject item)
         {
             var index = ItemsSelected.IndexOf(item);
             if (index >= 0 && index < SelectedMarkers.Count)
@@ -240,57 +222,44 @@ namespace GlueControl.Editing
             if (cursor.PrimaryPush)
             {
                 ItemGrabbed = ItemOver;
-                if(ItemGrabbed == null)
+                if (ItemGrabbed == null)
                 {
                     SideGrabbed = ResizeSide.None;
                 }
 
                 var clickedOnSelectedItem = ItemsSelected.Contains(ItemOver);
 
-                if(!clickedOnSelectedItem)
+                if (!clickedOnSelectedItem)
                 {
                     var isCtrlDown = InputManager.Keyboard.IsCtrlDown;
 
-                    if(!isCtrlDown)
+                    if (!isCtrlDown)
                     {
                         ItemsSelected.Clear();
                     }
 
-                    if(ItemOver != null)
+                    if (ItemOver != null)
                     {
                         ItemsSelected.Add(ItemOver);
                     }
                     UpdateSelectedMarkerCount();
                     MarkerFor(ItemOver)?.PlayBumpAnimation(SelectedItemExtraPadding,
-                        isSynchronized : ItemsSelected.Count>1);
+                        isSynchronized: ItemsSelected.Count > 1);
 
                 }
-                if(ItemGrabbed != null)
+                if (ItemGrabbed != null)
                 {
-                    foreach(var item in ItemsSelected)
+                    foreach (var item in ItemsSelected)
                     {
                         var marker = MarkerFor(item);
 
                         marker.CanMoveItem = item == ItemGrabbed;
 
-                        marker.GrabbedPosition = item.Position;
-
-
-                        if (item is FlatRedBall.Math.Geometry.IScalable itemGrabbedAsScalable)
-                        {
-                            marker.GrabbedWidthAndHeight = new Vector2(itemGrabbedAsScalable.ScaleX * 2, itemGrabbedAsScalable.ScaleY * 2);
-                            if(item is Sprite asSprite)
-                            {
-                                marker.GrabbedTextureScale = asSprite.TextureScale;
-                            }
-                        }
-                        else if(item is FlatRedBall.Math.Geometry.Circle circle)
-                        {
-                            marker.GrabbedRadius = circle.Radius;
-                        }
+                        marker.HandleCursorPushed(item);
                     }
-                    
-                    SideGrabbed = MarkerFor(ItemGrabbed)?.GetSideOver() ?? ResizeSide.None;
+
+                    var markerOver = MarkerFor(ItemGrabbed) as SelectionMarker;
+                    SideGrabbed = markerOver?.GetSideOver() ?? ResizeSide.None;
                     ObjectSelected(ItemGrabbed);
                 }
             }
@@ -301,58 +270,19 @@ namespace GlueControl.Editing
             var cursor = GuiManager.Cursor;
 
             ///////Early Out
-            if(!cursor.PrimaryClick)
+            if (!cursor.PrimaryClick)
             {
                 return;
             }
             //////End Early Out
 
-            if(ItemGrabbed != null)
+            if (ItemGrabbed != null)
             {
-                foreach(var item in ItemsSelected)
+                foreach (var item in ItemsSelected)
                 {
                     var marker = MarkerFor(item);
-                    if (item.X != marker.GrabbedPosition.X)
-                    {
-                        var value = item.Parent == null
-                            ? item.X
-                            : item.RelativeX;
-                        Notify(item, nameof(item.X), value);
-                    }
-                    if (item.Y != marker.GrabbedPosition.Y)
-                    {
-                        var value = item.Parent == null
-                            ? item.Y
-                            : item.RelativeY;
-                        Notify(item, nameof(item.Y), value);
-                    }
 
-                    if(item is FlatRedBall.Math.Geometry.IScalable asScalable)
-                    {
-                        var didChangeWidth = marker.GrabbedWidthAndHeight.X != asScalable.ScaleX * 2;
-                        var didChangeHeight = marker.GrabbedWidthAndHeight.Y != asScalable.ScaleY * 2;
-                        if(item is Sprite asSprite && asSprite.TextureScale > 0 && 
-                            marker.GrabbedTextureScale != asSprite.TextureScale)
-                        {
-                            Notify(item, nameof(asSprite.TextureScale), asSprite.TextureScale);
-                        }
-                        else
-                        {
-                            if (didChangeWidth)
-                            {
-                                Notify(item, "Width", asScalable.ScaleX*2);
-                            }
-                            if(didChangeWidth)
-                            {
-                                Notify(item, "Height", asScalable.ScaleY * 2);
-                            }
-                        }
-                    }
-                    else if(item is FlatRedBall.Math.Geometry.Circle circle)
-                    {
-                        Notify(item, nameof(circle.Radius), circle.Radius);
-                    }
-
+                    marker.HandleCursorRelease(item);
                 }
             }
 
@@ -364,9 +294,9 @@ namespace GlueControl.Editing
         {
             var keyboard = FlatRedBall.Input.InputManager.Keyboard;
 
-            if(keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.Delete))
+            if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.Delete))
             {
-                for(int i = ItemsSelected.Count - 1; i > -1; i--)
+                for (int i = ItemsSelected.Count - 1; i > -1; i--)
                 {
                     InstanceLogic.Self.DeleteInstanceByGame(ItemsSelected[i]);
                 }
@@ -377,7 +307,7 @@ namespace GlueControl.Editing
             CopyPasteManager.DoHotkeyLogic(ItemsSelected);
 
             CameraLogic.DoHotkeyLogic();
-            
+
         }
 
         void Notify(PositionedObject item, string propertyName, object value) => PropertyChanged(item, propertyName, value);
@@ -395,16 +325,16 @@ namespace GlueControl.Editing
             if (ItemsSelected.Contains(foundObject) == false)
             {
                 ItemsSelected.Clear();
-                if(foundObject != null)
+                if (foundObject != null)
                 {
                     ItemsSelected.Add(foundObject);
                 }
 
                 UpdateSelectedMarkerCount();
-                MarkerFor(ItemSelected)?.PlayBumpAnimation(SelectedItemExtraPadding, isSynchronized:false);
+                MarkerFor(ItemSelected)?.PlayBumpAnimation(SelectedItemExtraPadding, isSynchronized: false);
 
                 // do this right away so the handles don't pop out of existance when changing selection
-                UpdateMarkers(didChangeItemOver:true);
+                UpdateMarkers(didChangeItemOver: true);
 
             }
         }
