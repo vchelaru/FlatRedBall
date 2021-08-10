@@ -172,8 +172,10 @@ namespace TiledPluginCore.Managers
 
             // let's just cheat:
             // to do this we'd have to do all the data to gzip this. Worry about it later
-            tileMapSave.Layers[0].data[0].Value =
-                "\n   H4sIAAAAAAAACu3NsQ0AAAzCMPj/6X5RFkfK7Cbp+FV8Pp/P5/P5fD6fz+d/+ssPQZZTxQAQAAA=\n  ";
+            //tileMapSave.Layers[0].data[0].Value =
+            //    "\n   H4sIAAAAAAAACu3NsQ0AAAzCMPj/6X5RFkfK7Cbp+FV8Pp/P5/P5fD6fz+d/+ssPQZZTxQAQAAA=\n  ";
+
+            tileMapSave.Layers[0].data[0].SetTileData(tiles, "base64", "gzip");
 
             tileMapSave.Tilesets[0].Firstgid = 1;
 

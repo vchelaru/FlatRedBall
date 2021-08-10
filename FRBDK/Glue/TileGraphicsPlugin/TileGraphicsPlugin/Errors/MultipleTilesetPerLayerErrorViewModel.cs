@@ -67,20 +67,29 @@ namespace TiledPluginCore.Errors
             if (layer.data.Length > 0)
             {
                 var data = layer.data[0];
-                for (int i = 0; i < data.tiles.Count; i++)
+                try
                 {
-                    var tileset = tms.GetTilesetForGid(data.tiles[i]);
-                    if (tileset != null)
+                    var tiles = data.tiles;
+                    for (int i = 0; i < tiles.Count; i++)
                     {
-                        if (tilesetForLayer == null)
+                        var tileset = tms.GetTilesetForGid(tiles[i]);
+                        if (tileset != null)
                         {
-                            tilesetForLayer = tileset.Firstgid;
-                        }
-                        else if (tilesetForLayer != null && tilesetForLayer != tileset.Firstgid)
-                        {
-                            return true;
+                            if (tilesetForLayer == null)
+                            {
+                                tilesetForLayer = tileset.Firstgid;
+                            }
+                            else if (tilesetForLayer != null && tilesetForLayer != tileset.Firstgid)
+                            {
+                                return true;
+                            }
                         }
                     }
+                }
+                catch
+                {
+                    // couldn't parse this, it's busted badly, but this is here to report if a file has multiple tilesets, not if the TMX is broken.
+                    return false;
                 }
             }
 
