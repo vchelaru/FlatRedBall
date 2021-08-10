@@ -26,6 +26,8 @@ namespace GlueControl.Screens
             {
                 AddToManagers();
             }
+
+            BeforeCustomInitialize?.Invoke();
         }
 
         public override void AddToManagers()
