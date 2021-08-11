@@ -38,6 +38,9 @@ namespace GlueControl.Editing
 
     #endregion
 
+    #region Interfaces
+
+
     public interface ISelectionMarker
     {
         float ExtraPaddingInPixels { get; set; }
@@ -47,6 +50,8 @@ namespace GlueControl.Editing
         string Name { get; set; }
         bool CanMoveItem { get; set; }
         Vector3 LastUpdateMovement { get; }
+
+        PositionedObject Owner { get; }
 
         void MakePersistent();
         void PlayBumpAnimation(float endingExtraPaddingBeforeZoom, bool isSynchronized);
@@ -58,8 +63,8 @@ namespace GlueControl.Editing
         void Destroy();
     }
 
-    // todo - the SelectionMarker needs to be an interface so we can abstract that and have
-    // the tileshapecollection have its own marker.
+    #endregion
+
 
     public class SelectionMarker : ISelectionMarker
     {
@@ -142,6 +147,7 @@ namespace GlueControl.Editing
         float GrabbedRadius;
         float GrabbedTextureScale;
 
+        public PositionedObject Owner { get; private set; }
 
         #endregion
 
@@ -150,8 +156,9 @@ namespace GlueControl.Editing
 
         #region Constructor/Init
 
-        public SelectionMarker()
+        public SelectionMarker(PositionedObject owner)
         {
+            this.Owner = owner;
             rectangle = new AxisAlignedRectangle();
 
             for (int i = 0; i < handles.Length; i++)
@@ -413,7 +420,6 @@ namespace GlueControl.Editing
                 }
             }
         }
-
 
         private void UpdateHandleRelativePositions()
         {

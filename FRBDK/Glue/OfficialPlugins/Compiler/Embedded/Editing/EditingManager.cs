@@ -63,7 +63,7 @@ namespace GlueControl.Editing
         public EditingManager()
         {
             Self = this;
-            HighlightMarker = new SelectionMarker();
+            HighlightMarker = new SelectionMarker(null);
             HighlightMarker.BrightColor = Color.LightGreen;
             HighlightMarker.MakePersistent();
             HighlightMarker.Name = nameof(HighlightMarker);
@@ -176,26 +176,39 @@ namespace GlueControl.Editing
         private void UpdateSelectedMarkerCount()
         {
             var desiredMarkerCount = ItemsSelected.Count;
-            while (SelectedMarkers.Count > desiredMarkerCount)
+
+            for (int i = SelectedMarkers.Count-1; i > -1; i--)
             {
-                var markerToDestroy = SelectedMarkers.Last();
-                markerToDestroy.Destroy();
-                SelectedMarkers.RemoveAt(SelectedMarkers.Count - 1);
-            }
-            while (SelectedMarkers.Count < desiredMarkerCount)
-            {
-                var newMarker = CreateNewSelectionMarker();
-                if (SelectedMarkers.Count > 0)
+                var marker = SelectedMarkers[i];
+                var hasSelectedItem = ItemsSelected.Contains(marker.Owner);
+
+                if (!hasSelectedItem)
                 {
-                    newMarker.FadingSeed = SelectedMarkers[0].FadingSeed;
+                    marker.Destroy();
+                    SelectedMarkers.RemoveAt(i);
                 }
-                SelectedMarkers.Add(newMarker);
+            }
+
+            for (int i = 0; i < ItemsSelected.Count; i++)
+            {
+                var owner = ItemsSelected[i];
+                var hasMarker = SelectedMarkers.Any(item => item.Owner == owner);
+
+                if (!hasMarker)
+                {
+                    var newMarker = CreateNewSelectionMarker(owner);
+                    if (SelectedMarkers.Count > 0)
+                    {
+                        newMarker.FadingSeed = SelectedMarkers[0].FadingSeed;
+                    }
+                    SelectedMarkers.Add(newMarker);
+                }
             }
         }
 
-        private SelectionMarker CreateNewSelectionMarker()
+        private SelectionMarker CreateNewSelectionMarker(PositionedObject owner)
         {
-            var newMarker = new SelectionMarker();
+            var newMarker = new SelectionMarker(owner);
             newMarker.MakePersistent();
             newMarker.Name = "Selection Marker";
             newMarker.CanMoveItem = true;
