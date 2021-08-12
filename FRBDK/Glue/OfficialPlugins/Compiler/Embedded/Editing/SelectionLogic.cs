@@ -6,6 +6,7 @@ using FlatRedBall.Graphics;
 using FlatRedBall.Gui;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
+using FlatRedBall.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace GlueControl.Editing
     {
         static List<PositionedObject> tempPunchThroughList = new List<PositionedObject>();
 
-        public static PositionedObject GetInstanceOver(PositionedObjectList<PositionedObject> currentEntities, List<ISelectionMarker> selectionMarkers,
+        public static INameable GetInstanceOver(List<PositionedObject> currentEntities, List<ISelectionMarker> selectionMarkers,
             bool punchThrough, ElementEditingMode elementEditingMode)
         {
             PositionedObject entityOver = null;

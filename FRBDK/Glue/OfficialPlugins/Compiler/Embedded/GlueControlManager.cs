@@ -19,6 +19,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System;
 using GlueControl.Editing;
+using FlatRedBall.Utilities;
 
 #if SupportsEditMode
 using Newtonsoft.Json;
@@ -244,7 +245,7 @@ namespace GlueControl
 
         #region Game -> Glue
 
-        private void HandlePropertyChanged(PositionedObject item, string propertyName, object value)
+        private void HandlePropertyChanged(INameable item, string propertyName, object value)
         {
 #if SupportsEditMode
 

@@ -19,7 +19,7 @@ namespace GlueControl.Editing
             get; set;
         } = new List<PositionedObject>();
 
-        public void DoHotkeyLogic(PositionedObjectList<PositionedObject> selectedObjects)
+        public void DoHotkeyLogic(List<PositionedObject> selectedObjects)
         {
             var keyboard = FlatRedBall.Input.InputManager.Keyboard;
 
