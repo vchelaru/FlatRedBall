@@ -39,8 +39,8 @@ namespace GlueControl.Editing
         PositionedObject ItemGrabbed;
         ResizeSide SideGrabbed = ResizeSide.None;
 
-        List<PositionedObject> ItemsSelected = new List<PositionedObject>();
-        PositionedObject ItemSelected => ItemsSelected.Count > 0 ? ItemsSelected[0] : null;
+        List<INameable> ItemsSelected = new List<INameable>();
+        INameable ItemSelected => ItemsSelected.Count > 0 ? ItemsSelected[0] : null;
 
         public ElementEditingMode ElementEditingMode { get; set; }
 
@@ -55,7 +55,7 @@ namespace GlueControl.Editing
         #region Delegates/Events
 
         public Action<INameable, string, object> PropertyChanged;
-        public Action<PositionedObject> ObjectSelected;
+        public Action<INameable> ObjectSelected;
 
         #endregion
 
@@ -158,17 +158,17 @@ namespace GlueControl.Editing
             {
                 foreach (var item in ItemsSelected)
                 {
-                    if (item != ItemGrabbed)
+                    if (item != ItemGrabbed && item is PositionedObject itemAsPositionedObject)
                     {
-                        if (item.Parent == null)
+                        if (itemAsPositionedObject.Parent == null)
                         {
-                            item.X += moveVector.X;
-                            item.Y += moveVector.Y;
+                            itemAsPositionedObject.X += moveVector.X;
+                            itemAsPositionedObject.Y += moveVector.Y;
                         }
                         else
                         {
-                            item.RelativeX += moveVector.X;
-                            item.RelativeY += moveVector.Y;
+                            itemAsPositionedObject.RelativeX += moveVector.X;
+                            itemAsPositionedObject.RelativeY += moveVector.Y;
                         }
                     }
                 }

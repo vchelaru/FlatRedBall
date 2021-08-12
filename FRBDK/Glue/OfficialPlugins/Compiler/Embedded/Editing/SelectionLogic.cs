@@ -19,20 +19,21 @@ namespace GlueControl.Editing
     {
         static List<PositionedObject> tempPunchThroughList = new List<PositionedObject>();
 
-        public static INameable GetInstanceOver(List<PositionedObject> currentEntities, List<ISelectionMarker> selectionMarkers,
+        public static INameable GetInstanceOver(List<INameable> currentEntities, List<ISelectionMarker> selectionMarkers,
             bool punchThrough, ElementEditingMode elementEditingMode)
         {
             PositionedObject entityOver = null;
             if (currentEntities.Count > 0 && punchThrough == false)
             {
-                var currentEntityOver = currentEntities.FirstOrDefault(item => IsCursorOver(item));
+                var currentEntityOver = currentEntities.FirstOrDefault(item => IsCursorOver(item as PositionedObject))
+                    as PositionedObject;
                 if (currentEntityOver == null)
                 {
                     var markerOver = selectionMarkers.FirstOrDefault(item => item.IsCursorOverThis());
                     if (markerOver != null)
                     {
                         var index = selectionMarkers.IndexOf(markerOver);
-                        currentEntityOver = currentEntities[index];
+                        currentEntityOver = currentEntities[index] as PositionedObject;
                     }
                 }
                 entityOver = currentEntityOver;
@@ -84,7 +85,7 @@ namespace GlueControl.Editing
                 }
                 else
                 {
-                    var index = tempPunchThroughList.IndexOf(currentEntities.FirstOrDefault());
+                    var index = tempPunchThroughList.IndexOf(currentEntities.FirstOrDefault() as PositionedObject);
                     if (index < tempPunchThroughList.Count - 1)
                     {
                         entityOver = tempPunchThroughList[index + 1];

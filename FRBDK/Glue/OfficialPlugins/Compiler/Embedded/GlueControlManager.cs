@@ -303,7 +303,7 @@ namespace GlueControl
 #endif
         }
 
-        private void HandleObjectSelected(PositionedObject item)
+        private void HandleObjectSelected(INameable item)
         {
             var dto = new SelectObjectDto();
             dto.ObjectName = item.Name;
