@@ -2,6 +2,7 @@
 using FlatRedBall.Graphics;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
+using FlatRedBall.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;

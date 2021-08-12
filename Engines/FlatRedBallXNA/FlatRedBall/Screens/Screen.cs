@@ -626,6 +626,12 @@ namespace FlatRedBall.Screens
             return wasSet;
         }
 
+        public object GetInstance(string instanceName, object container = null)
+        {
+            GetInstance(instanceName, container, out string _, out object instance);
+            return instance;
+        }
+
         /// <summary>
         /// Obtains the instance object represented after the dot using reflection. The variable
         /// should begin with "this" if it is an object on the screen. For example, passing "this.SpriteList"

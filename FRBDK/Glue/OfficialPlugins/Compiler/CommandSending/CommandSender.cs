@@ -36,20 +36,38 @@ namespace OfficialPlugins.Compiler.CommandSending
 
                 var isConnected = false;
 
-                await Task.Run(() =>
-                {
-                    try
-                    {
-                        client.Connect("127.0.0.1", port);
-                        isConnected = true;
-                    }
-                    catch(Exception)
-                    {
-                        // throw away - no need to tell the user it failed
-                    }
-                });
+                //await Task.Run(() =>
+                //{
+                //    try
+                //    {
+                //        client.Connect("127.0.0.1", port);
+                //        isConnected = true;
+                //    }
+                //    catch(Exception)
+                //    {
+                //        // throw away - no need to tell the user it failed
+                //    }
+                //});
+                const int timeoutDuration = 3000;
+                var timeoutTask = Task.Delay(timeoutDuration);
+                var connectTask = client.ConnectAsync("127.0.0.1", port);
 
-                if(isConnected)
+                var completedTask = await Task.WhenAny(timeoutTask, connectTask);
+                if (completedTask == timeoutTask)
+                {
+                    client.Dispose();
+                    isConnected = false;
+                }
+                else
+                {
+                    isConnected = true;
+                }
+
+
+
+
+
+                if (isConnected)
                 {
                     // Stream string to server
                     Stream stm = client.GetStream();

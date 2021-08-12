@@ -414,6 +414,9 @@ namespace OfficialPlugins.Compiler
                 case nameof(CompilerViewModel.IsToolbarPlayButtonEnabled):
                     ToolbarController.Self.SetEnabled(viewModel.IsToolbarPlayButtonEnabled);
                     break;
+                case nameof(CompilerViewModel.IsRunning):
+                    //CommandSender.CancelConnect();
+                    break;
                 case nameof(CompilerViewModel.PlayOrEdit):
 
                     var inEditMode = viewModel.PlayOrEdit == PlayOrEdit.Edit;

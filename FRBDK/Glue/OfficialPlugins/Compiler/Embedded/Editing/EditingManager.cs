@@ -340,8 +340,16 @@ namespace GlueControl.Editing
 
         internal void Select(string objectName)
         {
-            PositionedObject foundObject = SelectionLogic.GetAvailableObjects(ElementEditingMode)
+            INameable foundObject = SelectionLogic.GetAvailableObjects(ElementEditingMode)
                 ?.FirstOrDefault(item => item.Name == objectName);
+
+            if (foundObject == null)
+            {
+                var screen = ScreenManager.CurrentScreen;
+                var instance = screen.GetInstance($"this.{objectName}");
+
+                foundObject = instance as INameable;
+            }
 
             if (ItemsSelected.Contains(foundObject) == false)
             {
