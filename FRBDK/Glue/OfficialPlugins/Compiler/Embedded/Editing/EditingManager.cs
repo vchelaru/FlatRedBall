@@ -213,7 +213,7 @@ namespace GlueControl.Editing
             ISelectionMarker newMarker = null;
             if (owner is FlatRedBall.TileCollisions.TileShapeCollection)
             {
-                newMarker = new SelectionMarker(owner);
+                newMarker = new TileShapeCollectionMarker(owner);
             }
             else
             {

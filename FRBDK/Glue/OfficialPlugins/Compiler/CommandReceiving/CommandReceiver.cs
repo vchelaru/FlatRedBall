@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using TMXGlueLib;
@@ -24,6 +25,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 {
     static class CommandReceiver
     {
+        static int gamePortNumber;
+
         #region General Functions
 
         public static void HandleCommandsFromGame(string commandAsString, int gamePortNumber)
@@ -38,6 +41,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         private static void HandleIndividualCommand(string command, int gamePortNumber)
         {
+            CommandReceiver.gamePortNumber = gamePortNumber;
             var firstColon = command.IndexOf(":");
             if(firstColon == -1)
             {
@@ -51,17 +55,17 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 switch(action)
                 {
                     case nameof(AddObjectDto):
-                        HandleAddObject(gamePortNumber, data);
+                        HandleAddObject(data);
 
                         break;
                     case nameof(SetVariableDto):
-                        HandleSetVariable(gamePortNumber, JsonConvert.DeserializeObject<SetVariableDto>(data));
+                        HandleSetVariable(JsonConvert.DeserializeObject<SetVariableDto>(data));
                         break;
                     case nameof(SelectObjectDto):
-                        HandleSelectObject(gamePortNumber, JsonConvert.DeserializeObject<SelectObjectDto>(data));
+                        HandleSelectObject(JsonConvert.DeserializeObject<SelectObjectDto>(data));
                         break;
                     case nameof(RemoveObjectDto):
-                        HandleRemoveObject(gamePortNumber, JsonConvert.DeserializeObject<RemoveObjectDto>(data));
+                        HandleRemoveObject(JsonConvert.DeserializeObject<RemoveObjectDto>(data));
                         break;
                     case nameof(ModifyCollisionDto):
                         HandleDto(JsonConvert.DeserializeObject<ModifyCollisionDto>(data));
@@ -72,7 +76,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #endregion
 
-        private static void HandleRemoveObject(int gamePortNumber, RemoveObjectDto removeObjectDto)
+        private static void HandleRemoveObject(RemoveObjectDto removeObjectDto)
         {
             TaskManager.Self.Add(() =>
             {
@@ -87,7 +91,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             }, "Handling removing object from screen");
         }
 
-        private static void HandleAddObject(int gamePortNumber, string dataAsString)
+        private static void HandleAddObject(string dataAsString)
         {
             TaskManager.Self.Add(() =>
             {
@@ -283,7 +287,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             return newName;
         }
 
-        private static void HandleSetVariable(int gamePortNumber, SetVariableDto setVariableDto)
+        private static void HandleSetVariable(SetVariableDto setVariableDto)
         {
 
             TaskManager.Self.Add(() =>
@@ -347,7 +351,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             }
         }
 
-        private static void HandleSelectObject(int gamePortNumber, SelectObjectDto selectObjectDto)
+        private static void HandleSelectObject(SelectObjectDto selectObjectDto)
         {
 
             TaskManager.Self.Add(() =>

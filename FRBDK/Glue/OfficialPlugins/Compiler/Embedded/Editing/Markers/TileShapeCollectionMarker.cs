@@ -5,6 +5,7 @@ using FlatRedBall.Math.Geometry;
 using FlatRedBall.TileCollisions;
 using FlatRedBall.Utilities;
 using GlueControl.Editing;
+using GlueControl.Dtos;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;

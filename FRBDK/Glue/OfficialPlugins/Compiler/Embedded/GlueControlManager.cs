@@ -343,7 +343,7 @@ namespace GlueControl
             SendCommandToGlue($"{type}:{json}");
         }
 
-        public void SendCommandToGlue(string command)
+        private void SendCommandToGlue(string command)
         {
             GameToGlueCommands.Enqueue(new GameToGlueCommand { Command = command });
         }
