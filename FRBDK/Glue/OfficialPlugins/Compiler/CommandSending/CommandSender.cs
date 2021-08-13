@@ -69,25 +69,25 @@ namespace OfficialPlugins.Compiler.CommandSending
 
                 if (isConnected)
                 {
-                    // Stream string to server
-                    Stream stm = client.GetStream();
-                    //ASCIIEncoding asen = new ASCIIEncoding();
-
-                    if(!text.EndsWith("\n"))
-                    {
-                        text += "\n"; 
-                    }
-
-                    //byte[] ba = asen.GetBytes(input);
-                    byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(text);
-                    stm.Write(messageAsBytes, 0, messageAsBytes.Length);
-
-
-                    // give the server time to finish what it's doing:
-                    //await Task.Delay((int)(1 * 60));
                     string read = null;
                     try
                     {
+                        // Stream string to server
+                        Stream stm = client.GetStream();
+                        //ASCIIEncoding asen = new ASCIIEncoding();
+
+                        if(!text.EndsWith("\n"))
+                        {
+                            text += "\n"; 
+                        }
+
+                        //byte[] ba = asen.GetBytes(input);
+                        byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(text);
+                        stm.Write(messageAsBytes, 0, messageAsBytes.Length);
+
+
+                        // give the server time to finish what it's doing:
+                        //await Task.Delay((int)(1 * 60));
                         read = await ReadFromClient(client, client.GetStream());
                     }
                     catch(Exception e)

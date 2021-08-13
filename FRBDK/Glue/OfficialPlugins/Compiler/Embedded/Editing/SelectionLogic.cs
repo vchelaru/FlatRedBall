@@ -19,24 +19,27 @@ namespace GlueControl.Editing
     {
         static List<PositionedObject> tempPunchThroughList = new List<PositionedObject>();
 
-        public static INameable GetInstanceOver(List<INameable> currentEntities, List<ISelectionMarker> selectionMarkers,
+        public static INameable GetInstanceOver(List<INameable> currentEntities, List<ISelectionMarker> currentSelectionMarkers,
             bool punchThrough, ElementEditingMode elementEditingMode)
         {
-            PositionedObject entityOver = null;
+            INameable objectOver = null;
             if (currentEntities.Count > 0 && punchThrough == false)
             {
-                var currentEntityOver = currentEntities.FirstOrDefault(item => IsCursorOver(item as PositionedObject))
-                    as PositionedObject;
-                if (currentEntityOver == null)
+                // Vic asks - why do we use the the current entities rather than the markers?
+                var currentObjectOver = currentEntities.FirstOrDefault(item =>
                 {
-                    var markerOver = selectionMarkers.FirstOrDefault(item => item.IsCursorOverThis());
+                    return item is PositionedObject asPositionedObject && IsCursorOver(item as PositionedObject);
+                });
+                if (currentObjectOver == null)
+                {
+                    var markerOver = currentSelectionMarkers.FirstOrDefault(item => item.IsCursorOverThis());
                     if (markerOver != null)
                     {
-                        var index = selectionMarkers.IndexOf(markerOver);
-                        currentEntityOver = currentEntities[index] as PositionedObject;
+                        var index = currentSelectionMarkers.IndexOf(markerOver);
+                        currentObjectOver = currentEntities[index];
                     }
                 }
-                entityOver = currentEntityOver;
+                objectOver = currentObjectOver;
             }
 
             if (punchThrough)
@@ -44,7 +47,7 @@ namespace GlueControl.Editing
                 tempPunchThroughList.Clear();
             }
 
-            if (entityOver == null)
+            if (objectOver == null)
             {
                 IEnumerable<PositionedObject> availableItems = GetAvailableObjects(elementEditingMode);
 
@@ -60,7 +63,7 @@ namespace GlueControl.Editing
                             }
                             else
                             {
-                                entityOver = objectAtI;
+                                objectOver = objectAtI;
                                 break;
                             }
                         }
@@ -72,32 +75,32 @@ namespace GlueControl.Editing
             {
                 if (tempPunchThroughList.Count == 0)
                 {
-                    entityOver = null;
+                    objectOver = null;
                 }
                 else if (tempPunchThroughList.Count == 1)
                 {
-                    entityOver = tempPunchThroughList[0];
+                    objectOver = tempPunchThroughList[0];
                 }
                 else if (tempPunchThroughList.Any(item => currentEntities.Contains(item)) == false)
                 {
                     // just pick the first
-                    entityOver = tempPunchThroughList[0];
+                    objectOver = tempPunchThroughList[0];
                 }
                 else
                 {
                     var index = tempPunchThroughList.IndexOf(currentEntities.FirstOrDefault() as PositionedObject);
                     if (index < tempPunchThroughList.Count - 1)
                     {
-                        entityOver = tempPunchThroughList[index + 1];
+                        objectOver = tempPunchThroughList[index + 1];
                     }
                     else
                     {
-                        entityOver = tempPunchThroughList[0];
+                        objectOver = tempPunchThroughList[0];
                     }
                 }
             }
 
-            return entityOver;
+            return objectOver;
         }
 
         public static IEnumerable<PositionedObject> GetAvailableObjects(ElementEditingMode elementEditingMode)
@@ -127,7 +130,6 @@ namespace GlueControl.Editing
 
             return availableItems;
         }
-
 
         private static bool IsSelectable(PositionedObject objectAtI)
         {

@@ -110,6 +110,7 @@ namespace FlatRedBall.Glue.Elements
 
         /// <summary>
         /// Returns a custom function to instantiate objects. This is null by default, which means the object will be instantiated using a standard constructor call.
+        /// If the object is a nameable, the construction function is responsible for assigning the name.
         /// </summary>
         [XmlIgnore]
         public Func<IElement, NamedObjectSave, ReferencedFileSave, string> ConstructorFunc;

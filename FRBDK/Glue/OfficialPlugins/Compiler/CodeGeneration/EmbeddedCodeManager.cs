@@ -20,6 +20,9 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile("Editing.Markers.SelectionMarker.cs",
                 "Editing/Markers/SelectionMarker.Generated.cs");
 
+            SaveEmbeddedFile("Editing.Markers.TileShapeCollectionMarker.cs",
+                "Editing/Markers/TileShapeCollectionMarker.Generated.cs");
+
             SaveEmbeddedFile("GlueControlManager.cs", 
                 "GlueControlManager.Generated.cs");
 
