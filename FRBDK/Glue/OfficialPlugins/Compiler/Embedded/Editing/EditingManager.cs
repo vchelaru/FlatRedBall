@@ -228,7 +228,7 @@ namespace GlueControl.Editing
 
         ISelectionMarker MarkerFor(INameable item)
         {
-            var index = ItemsSelected.IndexOf(item as PositionedObject);
+            var index = ItemsSelected.IndexOf(item);
             if (index >= 0 && index < SelectedMarkers.Count)
             {
                 return SelectedMarkers[index];

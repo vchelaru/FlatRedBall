@@ -614,6 +614,8 @@ namespace GlueControl
                 CameraLogic.UpdateZoomLevelToCamera();
 
                 FlatRedBall.Screens.ScreenManager.ScreenLoaded -= AfterInitializeLogic;
+
+                EditingManager.Self.RefreshSelectionAfterScreenLoad();
             }
 
             FlatRedBall.Screens.ScreenManager.BeforeScreenCustomInitialize += BeforeCustomInitializeLogic;
