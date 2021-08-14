@@ -7,6 +7,8 @@ using FlatRedBall.Managers;
 using FlatRedBall.Math;
 using FlatRedBall.Screens;
 using FlatRedBall.Utilities;
+using GlueControl.Models;
+
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -41,6 +43,7 @@ namespace GlueControl.Editing
 
         List<INameable> ItemsSelected = new List<INameable>();
         INameable ItemSelected => ItemsSelected.Count > 0 ? ItemsSelected[0] : null;
+        public NamedObjectSave CurrentNamedObjectSave { get; private set; }
 
         public ElementEditingMode ElementEditingMode { get; set; }
 
@@ -213,7 +216,7 @@ namespace GlueControl.Editing
             ISelectionMarker newMarker = null;
             if (owner is FlatRedBall.TileCollisions.TileShapeCollection)
             {
-                newMarker = new TileShapeCollectionMarker(owner);
+                newMarker = new TileShapeCollectionMarker(owner, CurrentNamedObjectSave);
             }
             else
             {
@@ -336,6 +339,13 @@ namespace GlueControl.Editing
         public void UpdateDependencies()
         {
 
+        }
+
+        internal void Select(NamedObjectSave namedObject)
+        {
+            CurrentNamedObjectSave = namedObject;
+
+            Select(namedObject?.InstanceName);
         }
 
         internal void Select(string objectName, bool addToExistingSelection = false)

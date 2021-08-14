@@ -3,6 +3,7 @@
 using FlatRedBall;
 using FlatRedBall.Graphics;
 using FlatRedBall.Screens;
+using GlueControl.Models;
 
 namespace GlueControl.Screens
 {
@@ -11,7 +12,8 @@ namespace GlueControl.Screens
         public IDestroyable CurrentEntity { get; set; }
 
         public static string GameElementTypeToCreate { get; set; }
-        public static string InstanceToSelect { get; set; }
+        public static NamedObjectSave InstanceToSelect { get; set; }
+
 
         public EntityViewingScreen() : base(nameof(EntityViewingScreen))
         {

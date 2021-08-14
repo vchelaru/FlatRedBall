@@ -49,6 +49,8 @@ namespace GlueControl.Editing
         public string Name { get; set; }
         public bool CanMoveItem { get => false; set { } }
 
+        Models.NamedObjectSave namedObjectSave;
+
         AxisAlignedRectangle currentTileHighlight;
 
         public Vector3 LastUpdateMovement => throw new NotImplementedException();
@@ -77,8 +79,9 @@ namespace GlueControl.Editing
 
         #endregion
 
-        public TileShapeCollectionMarker(INameable owner)
+        public TileShapeCollectionMarker(INameable owner, Models.NamedObjectSave namedObjectSave)
         {
+            this.namedObjectSave = namedObjectSave;
             this.Owner = owner;
             currentTileHighlight = new AxisAlignedRectangle();
             currentTileHighlight.Name = "TileShapeCollectionMarker current tile highlight";
@@ -92,6 +95,20 @@ namespace GlueControl.Editing
 
         private void TryFindMap()
         {
+            var collisionCreationOptionsValue = namedObjectSave.Properties.FirstOrDefault(item => item.Name == "CollisionCreationOptions")?.Value;
+
+            int? collisionCreationOptions = collisionCreationOptionsValue as int?;
+            if (collisionCreationOptionsValue is long asLong)
+            {
+                collisionCreationOptions = (int)asLong;
+            }
+            var sourceTmxObject = namedObjectSave.Properties.FirstOrDefault(item => item.Name == "SourceTmxName").Value as string;
+
+            if (collisionCreationOptions == 4 && !string.IsNullOrEmpty(sourceTmxObject))
+            {
+                var foundObject = ScreenManager.CurrentScreen.GetInstanceRecursive("this." + sourceTmxObject + ".throwaway");
+                map = foundObject as FlatRedBall.TileGraphics.LayeredTileMap;
+            }
         }
 
         public void Update(ResizeSide sideGrabbed)
@@ -104,8 +121,8 @@ namespace GlueControl.Editing
 
             float tileDimensionHalf = tileDimensions / 2.0f;
 
-            currentTileHighlight.X = MathFunctions.RoundFloat(cursor.WorldX - tileDimensionHalf, 16) + tileDimensionHalf;
-            currentTileHighlight.Y = MathFunctions.RoundFloat(cursor.WorldY - tileDimensionHalf, 16) + tileDimensionHalf;
+            currentTileHighlight.X = MathFunctions.RoundFloat(cursor.WorldX - tileDimensionHalf, tileDimensions) + tileDimensionHalf;
+            currentTileHighlight.Y = MathFunctions.RoundFloat(cursor.WorldY - tileDimensionHalf, tileDimensions) + tileDimensionHalf;
 
             #endregion
 
@@ -142,21 +159,7 @@ namespace GlueControl.Editing
             {
                 if (EditingMode == EditingMode.Adding)
                 {
-                    var dto = new ModifyCollisionDto();
-                    dto.TileShapeCollection = owner.Name;
-
-                    dto.AddedPositions = new List<Vector2>();
-
-                    foreach (var tile in RectanglesAddedOrRemoved)
-                    {
-                        tile.Width = tileDimensions;
-                        tile.Height = tileDimensions;
-
-                        tile.Color = Color.White; // is this always the color?
-                        dto.AddedPositions.Add(tile.Position.ToVector2());
-                    }
-                    GlueControlManager.Self.SendToGlue(dto);
-                    EditingMode = EditingMode.None;
+                    CommitPaintedTiles();
                 }
             }
 
@@ -220,6 +223,56 @@ namespace GlueControl.Editing
             #endregion
         }
 
+        private void CommitPaintedTiles()
+        {
+            var tileDimensions = owner.GridSize;
+
+            var dto = new ModifyCollisionDto();
+            dto.TileShapeCollection = owner.Name;
+
+            dto.AddedPositions = new List<Vector2>();
+
+            foreach (var tile in RectanglesAddedOrRemoved)
+            {
+                tile.Width = tileDimensions;
+                tile.Height = tileDimensions;
+
+                tile.Color = Color.White; // is this always the color?
+                dto.AddedPositions.Add(tile.Position.ToVector2());
+            }
+            GlueControlManager.Self.SendToGlue(dto);
+            EditingMode = EditingMode.None;
+
+
+            var gameplayLayer = map?.MapLayers.FirstOrDefault(item => item.Name == "GameplayLayer");
+
+            if (gameplayLayer != null)
+            {
+                var layer = new FlatRedBall.TileGraphics.MapDrawableBatch(RectanglesAddedOrRemoved.Count, gameplayLayer.Texture);
+
+                foreach (var tile in RectanglesAddedOrRemoved)
+                {
+                    Vector3 bottomLeft = new Vector3(
+                        tile.X - tileDimensions / 2.0f,
+                        tile.Y - tileDimensions / 2.0f,
+                        0);
+                    layer.AddTile(bottomLeft, new Vector2(tileDimensions, tileDimensions), 0, 0, 16, 16);
+                }
+
+                gameplayLayer.MergeOntoThis(new List<MapDrawableBatch>() { layer });
+                // create a new MapDrawableBatch with the right # of tiles, merge into this 
+
+                // todo - this shouldn't actually paint the tile here, but rahter on 
+
+                //var xIndex = (int)(currentTileHighlight.X / tileDimensions);
+                //var yIndex = -(int)(currentTileHighlight.Y / tileDimensions);
+
+                //// todo - translate texture ID to texture coordinates. Assume top left while testing...
+
+                //gameplayLayer.AddTile(bottomLeft, new Vector2(tileDimensions, tileDimensions), 0, 0, 16, 16);
+            }
+        }
+
         private void PaintTileAtHighlight()
         {
             var tileDimensions = owner.GridSize;
@@ -231,8 +284,6 @@ namespace GlueControl.Editing
             newRect.Height = tileDimensions - 2;
 
             RectanglesAddedOrRemoved.Add(newRect);
-
-
         }
 
         public void Destroy()
