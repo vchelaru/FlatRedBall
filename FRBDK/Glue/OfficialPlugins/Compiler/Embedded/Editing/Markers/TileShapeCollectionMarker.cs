@@ -12,9 +12,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FlatRedBall.Screens;
 
 namespace GlueControl.Editing
 {
+    public enum EditingMode
+    {
+        None,
+        Adding,
+        Removing
+    }
+
     public class TileShapeCollectionMarker : ISelectionMarker
     {
         #region Fields/Properties
@@ -51,6 +59,8 @@ namespace GlueControl.Editing
             get => owner;
             set => SetTileShapeCollectionInternal(value);
         }
+
+        EditingMode EditingMode { get; set; }
 
         #endregion
 
@@ -108,6 +118,8 @@ namespace GlueControl.Editing
 
         public void Update(ResizeSide sideGrabbed)
         {
+            #region Initial Variable Assignment
+
             var cursor = GuiManager.Cursor;
 
             float tileDimensions = 16;
@@ -116,69 +128,124 @@ namespace GlueControl.Editing
             currentTileHighlight.X = MathFunctions.RoundFloat(cursor.WorldX - tileDimensionHalf, 16) + tileDimensionHalf;
             currentTileHighlight.Y = MathFunctions.RoundFloat(cursor.WorldY - tileDimensionHalf, 16) + tileDimensionHalf;
 
+            #endregion
+
+            #region Primary Push
+
+            if (cursor.PrimaryPush && EditingMode == EditingMode.None)
+            {
+                EditingMode = EditingMode.Adding;
+            }
+
+            #endregion
+
             #region Primary Down
 
             if (cursor.PrimaryDown)
             {
-                // try to paint
-                var existingRectangle = owner.GetRectangleAtPosition(currentTileHighlight.X, currentTileHighlight.Y);
-
-                if (existingRectangle == null)
+                if (EditingMode == EditingMode.Adding)
                 {
-                    owner.AddCollisionAtWorld(currentTileHighlight.X, currentTileHighlight.Y);
-                    var newRect = owner.GetRectangleAtPosition(currentTileHighlight.X, currentTileHighlight.Y);
-                    newRect.Visible = true;
-                    newRect.Color = Color.Green;
-                    newRect.Width = tileDimensions - 2;
-                    newRect.Height = tileDimensions - 2;
+                    // try to paint
+                    var existingRectangle = owner.GetRectangleAtPosition(currentTileHighlight.X, currentTileHighlight.Y);
 
-                    RectanglesAddedOrRemoved.Add(newRect);
+                    if (existingRectangle == null)
+                    {
+                        owner.AddCollisionAtWorld(currentTileHighlight.X, currentTileHighlight.Y);
+                        var newRect = owner.GetRectangleAtPosition(currentTileHighlight.X, currentTileHighlight.Y);
+                        newRect.Visible = true;
+                        newRect.Color = Color.Green;
+                        newRect.Width = tileDimensions - 2;
+                        newRect.Height = tileDimensions - 2;
+
+                        RectanglesAddedOrRemoved.Add(newRect);
+                    }
                 }
             }
 
             #endregion
 
+            #region Primary Click
+
+            if (cursor.PrimaryClick)
+            {
+                if (EditingMode == EditingMode.Adding)
+                {
+                    var dto = new ModifyCollisionDto();
+                    dto.TileShapeCollection = owner.Name;
+
+                    dto.AddedPositions = new List<Vector2>();
+
+                    foreach (var tile in RectanglesAddedOrRemoved)
+                    {
+                        tile.Width = tileDimensions;
+                        tile.Height = tileDimensions;
+
+                        tile.Color = Color.White; // is this always the color?
+                        dto.AddedPositions.Add(tile.Position.ToVector2());
+                    }
+                    GlueControlManager.Self.SendToGlue(dto);
+                    EditingMode = EditingMode.None;
+                }
+            }
+
+            #endregion
+
+            #region Secondary Push
+
+            if (cursor.SecondaryPush && EditingMode == EditingMode.None)
+            {
+                EditingMode = EditingMode.Removing;
+            }
+
+            #endregion
 
             #region Secondary Down
 
             if (cursor.SecondaryDown)
             {
-                // try to erase
-                var existingRectangle = owner.GetRectangleAtPosition(currentTileHighlight.X, currentTileHighlight.Y);
-
-                if (existingRectangle != null)
+                if (EditingMode == EditingMode.Removing)
                 {
-                    owner.AddCollisionAtWorld(currentTileHighlight.X, currentTileHighlight.Y);
-                    var newRect = owner.GetRectangleAtPosition(currentTileHighlight.X, currentTileHighlight.Y);
-                    newRect.Visible = true;
-                    newRect.Color = Color.Red;
-                    newRect.Width = tileDimensions - 2;
-                    newRect.Height = tileDimensions - 2;
+                    // try to erase
+                    var existingRectangle = owner.GetRectangleAtPosition(currentTileHighlight.X, currentTileHighlight.Y);
 
-                    RectanglesAddedOrRemoved.Add(newRect);
+                    if (existingRectangle != null)
+                    {
+                        owner.AddCollisionAtWorld(currentTileHighlight.X, currentTileHighlight.Y);
+                        var newRect = owner.GetRectangleAtPosition(currentTileHighlight.X, currentTileHighlight.Y);
+                        newRect.Visible = true;
+                        newRect.Color = Color.Red;
+                        newRect.Width = tileDimensions - 2;
+                        newRect.Height = tileDimensions - 2;
+
+                        RectanglesAddedOrRemoved.Add(newRect);
+                    }
                 }
             }
 
             #endregion
 
+            #region Secondary Click
 
-            if (cursor.PrimaryClick)
+            if (cursor.SecondaryClick)
             {
-                var dto = new ModifyCollisionDto();
-                dto.TileShapeCollection = owner.Name;
-
-                dto.AddedPositions = new List<Vector2>();
-
-                foreach (var tile in RectanglesAddedOrRemoved)
+                if (EditingMode == EditingMode.Removing)
                 {
-                    tile.Width = tileDimensions;
-                    tile.Height = tileDimensions;
+                    var dto = new ModifyCollisionDto();
+                    dto.TileShapeCollection = owner.Name;
 
-                    tile.Color = Color.White; // is this always the color?
-                    dto.AddedPositions.Add(tile.Position.ToVector2());
+                    dto.RemovedPositions = new List<Vector2>();
+
+                    foreach (var tile in RectanglesAddedOrRemoved)
+                    {
+                        owner.RemoveCollisionAtWorld(tile.X, tile.Y);
+                        dto.RemovedPositions.Add(tile.Position.ToVector2());
+                    }
+                    GlueControlManager.Self.SendToGlue(dto);
+                    EditingMode = EditingMode.None;
                 }
-                GlueControlManager.Self.SendToGlue(dto);
             }
+
+            #endregion
         }
 
         private void SetTileShapeCollectionInternal(INameable value)

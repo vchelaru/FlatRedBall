@@ -263,7 +263,7 @@ namespace GlueControl.Editing
 
                     if (ItemOver != null)
                     {
-                        ItemsSelected.Add(ItemOver as PositionedObject);
+                        ItemsSelected.Add(ItemOver);
                     }
                     UpdateSelectedMarkerCount();
                     MarkerFor(ItemOver)?.PlayBumpAnimation(SelectedItemExtraPadding,
@@ -338,7 +338,7 @@ namespace GlueControl.Editing
 
         }
 
-        internal void Select(string objectName)
+        internal void Select(string objectName, bool addToExistingSelection = false)
         {
             INameable foundObject = null;
 
@@ -360,7 +360,10 @@ namespace GlueControl.Editing
 
             if (ItemsSelected.Contains(foundObject) == false)
             {
-                ItemsSelected.Clear();
+                if (!addToExistingSelection)
+                {
+                    ItemsSelected.Clear();
+                }
                 if (foundObject != null)
                 {
                     ItemsSelected.Add(foundObject);
@@ -372,6 +375,18 @@ namespace GlueControl.Editing
                 // do this right away so the handles don't pop out of existance when changing selection
                 UpdateMarkers(didChangeItemOver: true);
 
+            }
+        }
+
+        public void RefreshSelectionAfterScreenLoad()
+        {
+            var names = ItemsSelected.Select(item => item.Name).ToArray();
+
+            ItemsSelected.Clear();
+
+            foreach (var name in names)
+            {
+                Select(name, addToExistingSelection: true);
             }
         }
     }
