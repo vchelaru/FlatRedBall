@@ -37,7 +37,7 @@ namespace GlueControl.Editing
         public string Name { get; set; }
         public bool CanMoveItem { get => false; set { } }
 
-        AxisAlignedRectangle currentTileHighlight = new AxisAlignedRectangle();
+        AxisAlignedRectangle currentTileHighlight;
 
         public Vector3 LastUpdateMovement => throw new NotImplementedException();
 
@@ -59,6 +59,8 @@ namespace GlueControl.Editing
         public TileShapeCollectionMarker(INameable owner)
         {
             this.Owner = owner;
+            currentTileHighlight = new AxisAlignedRectangle();
+            currentTileHighlight.Name = "TileShapeCollectionMarker current tile highlight";
             currentTileHighlight.Visible = true;
             currentTileHighlight.Width = 16;
             currentTileHighlight.Height = 16;
@@ -73,6 +75,8 @@ namespace GlueControl.Editing
             }
 
             currentTileHighlight.Visible = false;
+            ScreenManager.PersistentAxisAlignedRectangles.Remove(currentTileHighlight);
+
         }
 
         public void HandleCursorPushed()
@@ -94,6 +98,7 @@ namespace GlueControl.Editing
 
         public void MakePersistent()
         {
+            ScreenManager.PersistentAxisAlignedRectangles.Add(currentTileHighlight);
         }
 
         public void PlayBumpAnimation(float endingExtraPaddingBeforeZoom, bool isSynchronized)

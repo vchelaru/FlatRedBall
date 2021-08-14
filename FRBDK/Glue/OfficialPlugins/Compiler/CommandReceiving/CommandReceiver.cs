@@ -397,18 +397,27 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             var collisionNos = currentScreen.GetNamedObject(dto.TileShapeCollection);
 
             // this should use a file as a source, need to find that
-            var sourceTmx = collisionNos.Properties.GetValue<string>("SourceTmxName");
-            var isFromType = collisionNos.Properties.GetValue<bool>("IsFromTypeChecked");
+            var sourceTmxObjectName = collisionNos.Properties.GetValue<string>("SourceTmxName");
+            const int FromTypeCollisionCreationOption = 4;
+
+            var isFromType = ObjectFinder.Self.GetPropertyValueRecursively<int>(
+                collisionNos, "CollisionCreationOptions") == FromTypeCollisionCreationOption;
+
             var collisionTileTypeName = collisionNos.Properties.GetValue<string>("CollisionTileTypeName");
 
-            var isUsingTmx = !string.IsNullOrEmpty(sourceTmx) && isFromType && !string.IsNullOrEmpty(collisionTileTypeName);
+            var isUsingTmx = !string.IsNullOrEmpty(sourceTmxObjectName) && isFromType && !string.IsNullOrEmpty(collisionTileTypeName);
 
             FlatRedBall.IO.FilePath tmxFilePath = null;
-            TiledMapSave map = null;
+            TiledMapSave tiledMapSave = null;
             MapLayer mapLayer = null;
             if(isUsingTmx)
             {
-                var rfs = currentScreen.GetReferencedFileSaveRecursively(sourceTmx);
+                var tmxObjectNos = currentScreen.GetNamedObjectRecursively(sourceTmxObjectName);
+                ReferencedFileSave rfs = null;
+                if(tmxObjectNos.SourceType == SourceType.File)
+                {
+                    rfs = currentScreen.GetReferencedFileSaveRecursively(tmxObjectNos.SourceFile);
+                }
 
                 if(rfs != null)
                 {
@@ -418,41 +427,63 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
             if(tmxFilePath?.Exists() == true)
             {
-                map = TiledMapSave.FromFile(tmxFilePath.FullPath);
+                tiledMapSave = TiledMapSave.FromFile(tmxFilePath.FullPath);
                 // assume this for now...
-                mapLayer = map.Layers.Find(item => item.Name == "GameplayLayer");
+                mapLayer = tiledMapSave.Layers.Find(item => item.Name == "GameplayLayer");
             }
 
             var didChange = false;
 
             if(mapLayer != null)
             {
+
+                uint tileTypeGid = 0;
+                foreach(var tileset in tiledMapSave.Tilesets)
+                {
+                    foreach(var kvp in tileset.TileDictionary)
+                    {
+                        var tilesetTile = kvp.Value;
+                        if(tilesetTile.Type == collisionTileTypeName)
+                        {
+                            tileTypeGid = kvp.Key + tileset.Firstgid;
+                            break;
+                        }
+                    }
+
+                    if(tileTypeGid > 0)
+                    {
+                        break;
+                    }
+                }
                 
                 var ids = mapLayer.data[0].tiles;
 
                 // todo - support seeds
-                foreach(var newTile in dto.AddedPositions)
+                if(dto.AddedPositions != null)
                 {
-                    int absoluteIndex = GetTileIndexFromWorldPosition(newTile);
-
-                    // todo - get the ID that is being painted
-                    uint newId = 1;
-
-                    if(ids[absoluteIndex] != newId)
+                    foreach (var newTile in dto.AddedPositions)
                     {
-                        ids[absoluteIndex] = newId; 
-                        didChange = true;
+                        int absoluteIndex = GetTileIndexFromWorldPosition(newTile, mapLayer);
+
+                        if(absoluteIndex >= 0 && absoluteIndex < ids.Count && ids[absoluteIndex] != tileTypeGid)
+                        {
+                            ids[absoluteIndex] = tileTypeGid; 
+                            didChange = true;
+                        }
                     }
                 }
 
-                foreach (var oldTile in dto.RemovedPositions)
+                if(dto.RemovedPositions != null)
                 {
-                    int absoluteIndex = GetTileIndexFromWorldPosition(oldTile);
-
-                    if(ids[absoluteIndex] != 0)
+                    foreach (var oldTile in dto.RemovedPositions)
                     {
-                        ids[absoluteIndex] = 0;
-                        didChange = true;
+                        int absoluteIndex = GetTileIndexFromWorldPosition(oldTile, mapLayer);
+
+                        if(ids[absoluteIndex] != 0)
+                        {
+                            ids[absoluteIndex] = 0;
+                            didChange = true;
+                        }
                     }
                 }
 
@@ -460,20 +491,30 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 {
                     mapLayer.data[0].SetTileData(ids, mapLayer.data[0].encoding, mapLayer.data[0].compression);
 
-                    map.Save(tmxFilePath.FullPath);
+                    tiledMapSave.Save(tmxFilePath.FullPath);
                 }
             }
 
-            static int GetTileIndexFromWorldPosition(Vector2 worldPosition)
+            static int GetTileIndexFromWorldPosition(Vector2 worldPosition, MapLayer mapLayer)
             {
                 // todo - read tile size properties
                 var xIndex = (int)(worldPosition.X / 16);
-                var yIndex = (int)(worldPosition.Y / 16);
+                var yIndex = (int)-(worldPosition.Y / 16);
 
-                var mapWidth = 32; // todo - need to read this property
 
-                var absoluteIndex = xIndex + yIndex * mapWidth;
-                return absoluteIndex;
+                var mapWidth = mapLayer.width;
+                var mapHeight = mapLayer.height;
+
+                if(xIndex >= mapWidth || xIndex < 0 || yIndex < 0 || yIndex > mapHeight)
+                {
+                    return -1;
+                }
+                else
+                {
+                    var absoluteIndex = xIndex + yIndex * mapWidth;
+                    return absoluteIndex;
+                }
+
             }
         }
     }

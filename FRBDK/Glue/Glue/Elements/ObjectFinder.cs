@@ -53,6 +53,7 @@ namespace FlatRedBall.Glue.Elements
             StateSave.ToStringDelegate = StateSaveExtensionMethods.StateSaveToString;
         }
 
+        #region File and RFS related
 
         public string MakeAbsoluteContent(string fileName)
         {
@@ -107,67 +108,21 @@ namespace FlatRedBall.Glue.Elements
             return toReturn;
         }
 
-        public ReferencedFileSave GetFirstCsvUsingClass(string className)
-        {
-            return GetFirstCsvUsingClass(className, null);
-        }
-
-
-        public ReferencedFileSave GetFirstCsvUsingClass(string className, IElement elementToLookIn)
+        public List<ReferencedFileSave> GetAllReferencedFiles()
         {
             if (GlueProject != null)
             {
-                if (elementToLookIn != null)
-                {
-                    // Maybe we need to make this recursive?
-                    foreach (ReferencedFileSave rfs in elementToLookIn.ReferencedFiles)
-                    {
-                        if (rfs.IsCsvOrTreatedAsCsv &&
-                            rfs.GetTypeForCsvFile() == className)
-                        {
-                            return rfs;
-                        }
-                    }
-                }
-                else
-                {
-                    foreach (ScreenSave screenSave in GlueProject.Screens)
-                    {
-                        foreach (ReferencedFileSave rfs in screenSave.ReferencedFiles)
-                        {
-                            if (rfs.IsCsvOrTreatedAsCsv &&
-                                rfs.GetTypeForCsvFile() == className)
-                            {
-                                return rfs;
-                            }
-                        }
-                    }
-
-                    foreach (EntitySave entitySave in GlueProject.Entities)
-                    {
-                        foreach (ReferencedFileSave rfs in entitySave.ReferencedFiles)
-                        {
-                            if (rfs.IsCsvOrTreatedAsCsv && rfs.GetTypeForCsvFile() == className)
-                            {
-                                return rfs;
-                            }
-                        }
-                    }
-                }
-
-                className = FileManager.RemovePath(className);
-
-                foreach (ReferencedFileSave rfs in GlueProject.GlobalFiles)
-                {
-                    if (rfs.IsCsvOrTreatedAsCsv && rfs.GetTypeForCsvFile() == className)
-                    {
-                        return rfs;
-                    }
-                }
+                return GlueProject.GetAllReferencedFiles();
             }
-
-            return null;
+            else
+            {
+                return new List<ReferencedFileSave>();
+            }
         }
+
+        #endregion
+
+        #region Get Element
 
         public EntitySave GetEntitySave(string entityName)
         {
@@ -353,6 +308,71 @@ namespace FlatRedBall.Glue.Elements
             return GetEntitySave(entityName) != null;
         }
 
+        #endregion
+
+        #region CSV
+
+        public ReferencedFileSave GetFirstCsvUsingClass(string className)
+        {
+            return GetFirstCsvUsingClass(className, null);
+        }
+
+        public ReferencedFileSave GetFirstCsvUsingClass(string className, IElement elementToLookIn)
+        {
+            if (GlueProject != null)
+            {
+                if (elementToLookIn != null)
+                {
+                    // Maybe we need to make this recursive?
+                    foreach (ReferencedFileSave rfs in elementToLookIn.ReferencedFiles)
+                    {
+                        if (rfs.IsCsvOrTreatedAsCsv &&
+                            rfs.GetTypeForCsvFile() == className)
+                        {
+                            return rfs;
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (ScreenSave screenSave in GlueProject.Screens)
+                    {
+                        foreach (ReferencedFileSave rfs in screenSave.ReferencedFiles)
+                        {
+                            if (rfs.IsCsvOrTreatedAsCsv &&
+                                rfs.GetTypeForCsvFile() == className)
+                            {
+                                return rfs;
+                            }
+                        }
+                    }
+
+                    foreach (EntitySave entitySave in GlueProject.Entities)
+                    {
+                        foreach (ReferencedFileSave rfs in entitySave.ReferencedFiles)
+                        {
+                            if (rfs.IsCsvOrTreatedAsCsv && rfs.GetTypeForCsvFile() == className)
+                            {
+                                return rfs;
+                            }
+                        }
+                    }
+                }
+
+                className = FileManager.RemovePath(className);
+
+                foreach (ReferencedFileSave rfs in GlueProject.GlobalFiles)
+                {
+                    if (rfs.IsCsvOrTreatedAsCsv && rfs.GetTypeForCsvFile() == className)
+                    {
+                        return rfs;
+                    }
+                }
+            }
+
+            return null;
+        }
+
         public CustomClassSave GetCustomClassFor(ReferencedFileSave rfs)
         {
             foreach(var customClass in mGlueProjectSave.CustomClasses)
@@ -364,6 +384,10 @@ namespace FlatRedBall.Glue.Elements
             }
             return null;
         }
+
+        #endregion
+
+        #region Inheritance
 
         public List<EntitySave> GetAllEntitiesThatInheritFrom(EntitySave baseEntity)
         {
@@ -498,17 +522,9 @@ namespace FlatRedBall.Glue.Elements
             return baseElements;
         }
 
-        public List<ReferencedFileSave> GetAllReferencedFiles()
-        {
-            if (GlueProject != null)
-            {
-                return GlueProject.GetAllReferencedFiles();
-            }
-            else
-            {
-                return new List<ReferencedFileSave>();
-            }
-        }
+        #endregion
+
+        #region NamedObjects
 
         /// <summary>
         /// Returns a fully recursive enumerable of all NamedObjectSaves in the project. This includes
@@ -630,21 +646,36 @@ namespace FlatRedBall.Glue.Elements
             }
         }
 
+        #endregion
 
-        //public IBehaviorContainer GetBehaviorContainer(string behaviorContainerName)
-        //{
-        //    EntitySave entitySave = GetEntitySave(behaviorContainerName);
+        #region NamedObjectSave properties
 
-        //    if (entitySave != null)
-        //    {
-        //        return entitySave;
-        //    }
-        //    else
-        //    {
-        //        return GetScreenSave(behaviorContainerName);
-        //    }
-        //}
+        public T GetPropertyValueRecursively<T>(NamedObjectSave nos, string propertyName)
+        {
+            var propertyOnNos = nos.Properties.FirstOrDefault(item => item.Name == propertyName);
 
+            if(propertyOnNos != null)
+            {
+                return (T)((object)propertyOnNos.Value);
+            }
+            else if(nos.DefinedByBase)
+            {
+
+                // this NOS doesn't have it, but maybe it's defined in a base:
+                var elementContaining = GetElementContaining(nos);
+
+                if(!string.IsNullOrEmpty(elementContaining?.BaseElement))
+                {
+                    var baseElement = GetBaseElement(elementContaining);
+                    var nosInBase = baseElement.GetNamedObject(nos.InstanceName);
+
+                    return GetPropertyValueRecursively<T>(nosInBase, propertyName);
+                }
+            }
+            return default(T);
+        }
+
+        #endregion
 
         public IElement GetVariableContainer(CustomVariable customVariable)
         {
