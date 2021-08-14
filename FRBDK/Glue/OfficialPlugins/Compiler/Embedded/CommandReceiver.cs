@@ -222,7 +222,7 @@ namespace GlueControl
 
             if (matchesCurrentScreen)
             {
-                Editing.EditingManager.Self.Select(selectObjectDto.ObjectName);
+                Editing.EditingManager.Self.Select(selectObjectDto.NamedObject?.InstanceName);
                 Editing.EditingManager.Self.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingScreen;
                 if (!string.IsNullOrEmpty(selectObjectDto.StateName))
                 {
@@ -248,7 +248,7 @@ namespace GlueControl
                     void AfterInitializeLogic(Screen screen)
                     {
                         // Select this even if it's null so the EditingManager deselects 
-                        EditingManager.Self.Select(selectObjectDto.ObjectName);
+                        EditingManager.Self.Select(selectObjectDto.NamedObject?.InstanceName);
 
                         if (!string.IsNullOrEmpty(selectObjectDto.StateName))
                         {
@@ -312,13 +312,13 @@ namespace GlueControl
 
 
                         Screens.EntityViewingScreen.GameElementTypeToCreate = GlueToGameElementName(elementNameGlue);
-                        Screens.EntityViewingScreen.InstanceToSelect = selectObjectDto.ObjectName;
+                        Screens.EntityViewingScreen.InstanceToSelect = selectObjectDto.NamedObject?.InstanceName;
                         ScreenManager.CurrentScreen.MoveToScreen(typeof(Screens.EntityViewingScreen));
 #endif
                     }
                     else
                     {
-                        EditingManager.Self.Select(selectObjectDto.ObjectName);
+                        EditingManager.Self.Select(selectObjectDto.NamedObject?.InstanceName);
                     }
                 }
             }

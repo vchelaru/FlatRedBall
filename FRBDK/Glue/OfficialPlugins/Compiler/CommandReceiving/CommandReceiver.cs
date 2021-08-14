@@ -366,17 +366,17 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     
                     if(currentEntity != null)
                     {
-                        nos = currentEntity.GetNamedObjectRecursively(selectObjectDto.ObjectName);
+                        nos = currentEntity.GetNamedObjectRecursively(selectObjectDto.NamedObject?.InstanceName);
                         if(nos == null && 
-                            selectObjectDto.ObjectName?.StartsWith('m') == true && selectObjectDto.ObjectName.Length > 1)
+                            selectObjectDto.NamedObject?.InstanceName?.StartsWith('m') == true && selectObjectDto.NamedObject?.InstanceName?.Length > 1)
                         {
-                            nos = currentEntity.GetNamedObjectRecursively(selectObjectDto.ObjectName[1..]);
+                            nos = currentEntity.GetNamedObjectRecursively(selectObjectDto.NamedObject?.InstanceName[1..]);
                         }
                     }
                 }
                 else
                 {
-                    nos = screen.GetNamedObjectRecursively(selectObjectDto.ObjectName);
+                    nos = screen.GetNamedObjectRecursively(selectObjectDto.NamedObject?.InstanceName);
                 }
 
                 if(nos != null)

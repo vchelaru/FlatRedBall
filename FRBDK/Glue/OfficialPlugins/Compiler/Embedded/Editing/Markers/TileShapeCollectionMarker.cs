@@ -58,6 +58,9 @@ namespace GlueControl.Editing
         bool originalVisibility;
 
         TileShapeCollection owner;
+
+        FlatRedBall.TileGraphics.LayeredTileMap map;
+
         public INameable Owner
         {
             get => owner;
@@ -83,6 +86,12 @@ namespace GlueControl.Editing
             currentTileHighlight.Width = 16;
             currentTileHighlight.Height = 16;
             currentTileHighlight.Color = Microsoft.Xna.Framework.Color.Orange;
+
+            TryFindMap();
+        }
+
+        private void TryFindMap()
+        {
         }
 
         public void Update(ResizeSide sideGrabbed)
@@ -222,11 +231,18 @@ namespace GlueControl.Editing
             newRect.Height = tileDimensions - 2;
 
             RectanglesAddedOrRemoved.Add(newRect);
+
+
         }
 
         public void Destroy()
         {
-            if (owner != null)
+            // If the owner was invisible, let's make it invisible again
+            // If it's visible, then this didn't change that at all, so it
+            // will remain visible. Setting Visible = true here may force visibility
+            // on an already-destroyed TileShapeCollection, so only setting it to false
+            // avoids multiple problems
+            if (owner != null && originalVisibility == false)
             {
                 owner.Visible = originalVisibility;
             }

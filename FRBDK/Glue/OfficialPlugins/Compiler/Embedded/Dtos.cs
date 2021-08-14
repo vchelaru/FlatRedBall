@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
+using GlueControl.Models;
+
 
 namespace GlueControl.Dtos
 {
@@ -30,12 +32,12 @@ namespace GlueControl.Dtos
 
     class SelectObjectDto
     {
-        public string ObjectName { get; set; }
+        public NamedObjectSave NamedObject { get; set; }
         public string ElementNameGlue { get; set; }
         public string StateName { get; set; }
         public string StateCategoryName { get; set; }
 
-    }
+    } 
 
     public enum AssignOrRecordOnly
     {

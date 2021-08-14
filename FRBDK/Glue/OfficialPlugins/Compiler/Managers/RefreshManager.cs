@@ -299,7 +299,7 @@ namespace OfficialPlugins.Compiler.Managers
             var element = GlueState.Self.CurrentElement;
             if(element != null)
             {
-                dto.ObjectName = nos?.InstanceName ?? String.Empty; ;
+                dto.NamedObject = nos;
                 dto.ElementNameGlue = element?.Name;
                 dto.StateName = forcedStateName ??
                     GlueState.Self.CurrentStateSave?.Name;
