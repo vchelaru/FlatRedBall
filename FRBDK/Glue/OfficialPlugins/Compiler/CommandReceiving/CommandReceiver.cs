@@ -390,96 +390,62 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             }, "Selecting object from game command");
         }
 
-        private static void HandleDto(ModifyCollisionDto dto)
+        private static async void HandleDto(ModifyCollisionDto dto)
         {
-            var currentScreen = GlueState.Self.CurrentScreenSave;
-
-            var collisionNos = currentScreen.GetNamedObject(dto.TileShapeCollection);
-
-            // this should use a file as a source, need to find that
-            var sourceTmxObjectName = collisionNos.Properties.GetValue<string>("SourceTmxName");
-            const int FromTypeCollisionCreationOption = 4;
-
-            var isFromType = ObjectFinder.Self.GetPropertyValueRecursively<int>(
-                collisionNos, "CollisionCreationOptions") == FromTypeCollisionCreationOption;
-
-            var collisionTileTypeName = collisionNos.Properties.GetValue<string>("CollisionTileTypeName");
-
-            var isUsingTmx = !string.IsNullOrEmpty(sourceTmxObjectName) && isFromType && !string.IsNullOrEmpty(collisionTileTypeName);
-
-            FlatRedBall.IO.FilePath tmxFilePath = null;
-            TiledMapSave tiledMapSave = null;
-            MapLayer mapLayer = null;
-            if(isUsingTmx)
-            {
-                var tmxObjectNos = currentScreen.GetNamedObjectRecursively(sourceTmxObjectName);
-                ReferencedFileSave rfs = null;
-                if(tmxObjectNos.SourceType == SourceType.File)
-                {
-                    rfs = currentScreen.GetReferencedFileSaveRecursively(tmxObjectNos.SourceFile);
-                }
-
-                if(rfs != null)
-                {
-                    tmxFilePath = GlueCommands.Self.GetAbsoluteFilePath(rfs);
-                }
-            }
-
-            if(tmxFilePath?.Exists() == true)
-            {
-                tiledMapSave = TiledMapSave.FromFile(tmxFilePath.FullPath);
-                // assume this for now...
-                mapLayer = tiledMapSave.Layers.Find(item => item.Name == "GameplayLayer");
-            }
+            string collisionTileTypeName;
+            FlatRedBall.IO.FilePath tmxFilePath;
+            TiledMapSave tiledMapSave;
+            MapLayer mapLayer;
+            GetMapLayer(dto, out collisionTileTypeName, out tmxFilePath, out tiledMapSave, out mapLayer);
 
             var didChange = false;
 
-            if(mapLayer != null)
+            if (mapLayer != null)
             {
 
                 uint tileTypeGid = 0;
-                foreach(var tileset in tiledMapSave.Tilesets)
+                foreach (var tileset in tiledMapSave.Tilesets)
                 {
-                    foreach(var kvp in tileset.TileDictionary)
+                    foreach (var kvp in tileset.TileDictionary)
                     {
                         var tilesetTile = kvp.Value;
-                        if(tilesetTile.Type == collisionTileTypeName)
+                        if (tilesetTile.Type == collisionTileTypeName)
                         {
                             tileTypeGid = kvp.Key + tileset.Firstgid;
                             break;
                         }
                     }
 
-                    if(tileTypeGid > 0)
+                    if (tileTypeGid > 0)
                     {
                         break;
                     }
                 }
-                
+
                 var ids = mapLayer.data[0].tiles;
 
                 // todo - support seeds
-                if(dto.AddedPositions != null)
+                if (dto.AddedPositions != null)
                 {
                     foreach (var newTile in dto.AddedPositions)
                     {
                         int absoluteIndex = GetTileIndexFromWorldPosition(newTile, mapLayer);
 
-                        if(absoluteIndex >= 0 && absoluteIndex < ids.Count && ids[absoluteIndex] != tileTypeGid)
+                        if (absoluteIndex >= 0 && absoluteIndex < ids.Count && ids[absoluteIndex] != tileTypeGid)
                         {
-                            ids[absoluteIndex] = tileTypeGid; 
+                            ids[absoluteIndex] = tileTypeGid;
                             didChange = true;
                         }
                     }
                 }
 
-                if(dto.RemovedPositions != null)
+                if (dto.RemovedPositions != null)
                 {
                     foreach (var oldTile in dto.RemovedPositions)
                     {
                         int absoluteIndex = GetTileIndexFromWorldPosition(oldTile, mapLayer);
 
-                        if(ids[absoluteIndex] != 0)
+                        if (ids[absoluteIndex] != 0)
                         {
                             ids[absoluteIndex] = 0;
                             didChange = true;
@@ -487,13 +453,29 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     }
                 }
 
-                if(didChange)
+                if (didChange)
                 {
                     mapLayer.data[0].SetTileData(ids, mapLayer.data[0].encoding, mapLayer.data[0].compression);
 
                     RefreshManager.Self.IgnoreNextChange(tmxFilePath.FullPath);
 
                     tiledMapSave.Save(tmxFilePath.FullPath);
+
+                    // Restart the screen *after* the TMX is saved, and after it has been copied too:
+                    // The TMX needs to be copied which is a tasked operation:
+                    TaskManager.Self.Add(() =>
+                    {
+                        GlueCommands.Self.ProjectCommands.CopyToBuildFolder(tmxFilePath.FullPath);
+
+                        var playBump = true;
+                        // tell the game that it should restart the screen quietly
+#pragma warning disable CS4014 // Do not await in add calls this can cause problems
+                        CommandSender.Send(new RestartScreenDto { ShowSelectionBump = playBump }, gamePortNumber);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                    },
+                    "Copy TMX and restart screen",
+                    executionPreference: TaskExecutionPreference.Asap);
+
                 }
             }
 
@@ -507,7 +489,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 var mapWidth = mapLayer.width;
                 var mapHeight = mapLayer.height;
 
-                if(xIndex >= mapWidth || xIndex < 0 || yIndex < 0 || yIndex > mapHeight)
+                if (xIndex >= mapWidth || xIndex < 0 || yIndex < 0 || yIndex > mapHeight)
                 {
                     return -1;
                 }
@@ -517,6 +499,48 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     return absoluteIndex;
                 }
 
+            }
+        }
+
+        private static void GetMapLayer(ModifyCollisionDto dto, out string collisionTileTypeName, out FlatRedBall.IO.FilePath tmxFilePath, out TiledMapSave tiledMapSave, out MapLayer mapLayer)
+        {
+            var currentScreen = GlueState.Self.CurrentScreenSave;
+
+            var collisionNos = currentScreen.GetNamedObject(dto.TileShapeCollection);
+
+            // this should use a file as a source, need to find that
+            var sourceTmxObjectName = collisionNos.Properties.GetValue<string>("SourceTmxName");
+            const int FromTypeCollisionCreationOption = 4;
+
+            var isFromType = ObjectFinder.Self.GetPropertyValueRecursively<int>(
+                collisionNos, "CollisionCreationOptions") == FromTypeCollisionCreationOption;
+
+            collisionTileTypeName = collisionNos.Properties.GetValue<string>("CollisionTileTypeName");
+            var isUsingTmx = !string.IsNullOrEmpty(sourceTmxObjectName) && isFromType && !string.IsNullOrEmpty(collisionTileTypeName);
+
+            tmxFilePath = null;
+            tiledMapSave = null;
+            mapLayer = null;
+            if (isUsingTmx)
+            {
+                var tmxObjectNos = currentScreen.GetNamedObjectRecursively(sourceTmxObjectName);
+                ReferencedFileSave rfs = null;
+                if (tmxObjectNos.SourceType == SourceType.File)
+                {
+                    rfs = currentScreen.GetReferencedFileSaveRecursively(tmxObjectNos.SourceFile);
+                }
+
+                if (rfs != null)
+                {
+                    tmxFilePath = GlueCommands.Self.GetAbsoluteFilePath(rfs);
+                }
+            }
+
+            if (tmxFilePath?.Exists() == true)
+            {
+                tiledMapSave = TiledMapSave.FromFile(tmxFilePath.FullPath);
+                // assume this for now...
+                mapLayer = tiledMapSave.Layers.Find(item => item.Name == "GameplayLayer");
             }
         }
     }
