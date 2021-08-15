@@ -463,18 +463,21 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                     // Restart the screen *after* the TMX is saved, and after it has been copied too:
                     // The TMX needs to be copied which is a tasked operation:
-                    TaskManager.Self.Add(() =>
+                    if(dto.RequestRestart)
                     {
-                        GlueCommands.Self.ProjectCommands.CopyToBuildFolder(tmxFilePath.FullPath);
+                        TaskManager.Self.Add(() =>
+                        {
+                            GlueCommands.Self.ProjectCommands.CopyToBuildFolder(tmxFilePath.FullPath);
 
-                        var playBump = true;
-                        // tell the game that it should restart the screen quietly
-#pragma warning disable CS4014 // Do not await in add calls this can cause problems
-                        CommandSender.Send(new RestartScreenDto { ShowSelectionBump = playBump }, gamePortNumber);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                    },
-                    "Copy TMX and restart screen",
-                    executionPreference: TaskExecutionPreference.Asap);
+                            var playBump = true;
+                            // tell the game that it should restart the screen quietly
+    #pragma warning disable CS4014 // Do not await in add calls this can cause problems
+                            CommandSender.Send(new RestartScreenDto { ShowSelectionBump = playBump }, gamePortNumber);
+    #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                        },
+                        "Copy TMX and restart screen",
+                        executionPreference: TaskExecutionPreference.Asap);
+                    }
 
                 }
             }

@@ -146,5 +146,6 @@ namespace OfficialPlugins.Compiler.Dtos
         public string TileShapeCollection { get; set; }
         public List<Vector2> AddedPositions { get; set; }
         public List<Vector2> RemovedPositions { get; set; }
+        public bool RequestRestart { get; set; }
     }
 }

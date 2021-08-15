@@ -259,7 +259,7 @@ namespace GlueControl.Editing
             }
         }
 
-        private void RemoveTilesOnGameplayLayer(MapDrawableBatch gameplayLayer)
+        private bool RemoveTilesOnGameplayLayer(MapDrawableBatch gameplayLayer)
         {
             var quadsToRemove = new List<int>();
             foreach (var removedRectangle in RectanglesAddedOrRemoved)
@@ -272,10 +272,14 @@ namespace GlueControl.Editing
                 }
             }
 
-            if (quadsToRemove.Count > 0)
+            var shouldRemove = quadsToRemove.Count > 0;
+
+            if (shouldRemove)
             {
                 gameplayLayer.RemoveQuads(quadsToRemove);
             }
+
+            return shouldRemove;
         }
 
         private void SendRemovedTileModifyDto()
@@ -295,7 +299,6 @@ namespace GlueControl.Editing
         private void CommitPaintedTiles()
         {
 
-            SendPaintedTileModifyDto();
 
             var tileDimensions = owner.GridSize;
             foreach (var tile in RectanglesAddedOrRemoved)
@@ -308,6 +311,10 @@ namespace GlueControl.Editing
 
             var gameplayLayer = map?.MapLayers.FirstOrDefault(item => item.Name == "GameplayLayer");
 
+            var doesGameplayLayerHaveMissingTexture = gameplayLayer != null && gameplayLayer.Texture == null;
+
+            bool wereAnyTilesRemoved = false;
+
             if (gameplayLayer != null)
             {
                 bool removeTilesOnShapeCollectionCreation = GetIfShouldRemoveTilesOnShapeCollisionCreation();
@@ -315,12 +322,13 @@ namespace GlueControl.Editing
                 if (!removeTilesOnShapeCollectionCreation)
                 {
                     // Let's remove first, which will get rid of any tiles that were painted over:
-                    RemoveTilesOnGameplayLayer(gameplayLayer);
+                    wereAnyTilesRemoved = RemoveTilesOnGameplayLayer(gameplayLayer);
 
                     PaintTileOnGameplayLayer(gameplayLayer);
                 }
-
             }
+
+            SendPaintedTileModifyDto(requestRestart: wereAnyTilesRemoved || doesGameplayLayerHaveMissingTexture);
         }
 
         private bool GetIfShouldRemoveTilesOnShapeCollisionCreation()
@@ -344,6 +352,8 @@ namespace GlueControl.Editing
             int textureTopPixel = 0;
             int tileWidth = 16;
             int tileHeight = 16;
+
+            var gameplayLayerHasTexture = gameplayLayer.Texture != null;
 
             foreach (var tileProperty in map.TileProperties)
             {
@@ -406,7 +416,7 @@ namespace GlueControl.Editing
             }
 
             // todo - need to somehow figure out which texture to use...
-            if (gameplayLayer.Texture != null)
+            if (gameplayLayerHasTexture)
             {
                 var layer = new FlatRedBall.TileGraphics.MapDrawableBatch(RectanglesAddedOrRemoved.Count, gameplayLayer.Texture);
 
@@ -423,7 +433,7 @@ namespace GlueControl.Editing
             }
         }
 
-        private void SendPaintedTileModifyDto()
+        private void SendPaintedTileModifyDto(bool requestRestart = false)
         {
             var tileDimensions = owner.GridSize;
             var dto = new ModifyCollisionDto();
@@ -435,6 +445,9 @@ namespace GlueControl.Editing
             {
                 dto.AddedPositions.Add(tile.Position.ToVector2());
             }
+
+            dto.RequestRestart = requestRestart;
+
             GlueControlManager.Self.SendToGlue(dto);
         }
 
