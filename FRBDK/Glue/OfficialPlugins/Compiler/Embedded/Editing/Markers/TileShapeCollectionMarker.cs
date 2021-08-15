@@ -14,6 +14,8 @@ using System.Text;
 using System.Threading.Tasks;
 using FlatRedBall.Screens;
 using StateInterpolationPlugin;
+using FlatRedBall.TileGraphics;
+
 
 namespace GlueControl.Editing
 {
@@ -248,6 +250,73 @@ namespace GlueControl.Editing
 
             if (gameplayLayer != null)
             {
+                var collisionType = namedObjectSave.Properties.FirstOrDefault(item => item.Name == "CollisionTileTypeName")?.Value as string;
+
+                int textureLeftPixel = 0;
+                int textureTopPixel = 0;
+                int tileWidth = 16;
+                int tileHeight = 16;
+
+                foreach (var tileProperty in map.TileProperties)
+                {
+                    var hasValue = tileProperty.Value.Any(item => item.Name == "Type" && (string)item.Value == collisionType);
+
+                    if (hasValue)
+                    {
+                        // We don't know the file path of the tileset, so we'll just assume there's no duplicate texture names. There could be, and if so then we'll worry about
+                        // that then, because that would be a ton of work.
+                        string textureNameStripped = null;
+                        if (gameplayLayer.Texture != null)
+                        {
+                            textureNameStripped = FileManager.RemovePath(FileManager.RemoveExtension(gameplayLayer.Texture.Name)).ToLowerInvariant();
+                        }
+                        // this is the name, but how do we get tile 
+                        var tileset = map.Tilesets.FirstOrDefault(item =>
+                        {
+                            if (item.Images.Length > 0)
+                            {
+                                var imageName = item.Images[0].sourceFileName;
+
+                                if (!string.IsNullOrEmpty(imageName))
+                                {
+                                    return FileManager.RemovePath(FileManager.RemoveExtension(imageName)).ToLowerInvariant() == textureNameStripped;
+                                }
+                            }
+                            return false;
+                        });
+
+                        int? textureTileId = null;
+
+                        if (tileset != null)
+                        {
+                            foreach (var kvp in tileset.TileDictionary)
+                            {
+                                var type = kvp.Value.PropertyDictionary.FirstOrDefault(item => item.Key == "Type");
+
+                                if (type.Key == "Type" && type.Value == collisionType)
+                                {
+                                    textureTileId = kvp.Value.id;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (textureTileId != null)
+                        {
+                            tileWidth = tileset.Tilewidth;
+                            tileHeight = tileset.Tileheight;
+
+                            var yIndex = textureTileId.Value / tileHeight;
+                            var xIndex = textureTileId.Value % tileWidth;
+
+                            textureLeftPixel = xIndex * tileWidth;
+                            textureTopPixel = yIndex * tileHeight;
+                            break;
+                        }
+
+                    }
+                }
+
                 var layer = new FlatRedBall.TileGraphics.MapDrawableBatch(RectanglesAddedOrRemoved.Count, gameplayLayer.Texture);
 
                 foreach (var tile in RectanglesAddedOrRemoved)
@@ -256,20 +325,10 @@ namespace GlueControl.Editing
                         tile.X - tileDimensions / 2.0f,
                         tile.Y - tileDimensions / 2.0f,
                         0);
-                    layer.AddTile(bottomLeft, new Vector2(tileDimensions, tileDimensions), 0, 0, 16, 16);
+                    layer.AddTile(bottomLeft, new Vector2(tileDimensions, tileDimensions), textureLeftPixel, textureTopPixel, textureLeftPixel + tileWidth, textureTopPixel + tileHeight);
                 }
 
                 gameplayLayer.MergeOntoThis(new List<MapDrawableBatch>() { layer });
-                // create a new MapDrawableBatch with the right # of tiles, merge into this 
-
-                // todo - this shouldn't actually paint the tile here, but rahter on 
-
-                //var xIndex = (int)(currentTileHighlight.X / tileDimensions);
-                //var yIndex = -(int)(currentTileHighlight.Y / tileDimensions);
-
-                //// todo - translate texture ID to texture coordinates. Assume top left while testing...
-
-                //gameplayLayer.AddTile(bottomLeft, new Vector2(tileDimensions, tileDimensions), 0, 0, 16, 16);
             }
         }
 
