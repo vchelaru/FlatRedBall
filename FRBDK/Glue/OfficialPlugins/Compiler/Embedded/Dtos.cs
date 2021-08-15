@@ -132,7 +132,10 @@ namespace GlueControl.Dtos
         public string VariableName { get; set; }
     }
 
-    public class RestartScreenDto { }
+    public class RestartScreenDto
+    {
+        public bool ShowSelectionBump { get; set; } = true;
+    }
     public class ReloadGlobalContentDto 
     {
         public string StrippedGlobalContentFileName { get; set; }

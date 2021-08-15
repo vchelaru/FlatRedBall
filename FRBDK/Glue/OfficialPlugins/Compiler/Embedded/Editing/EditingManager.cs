@@ -178,7 +178,7 @@ namespace GlueControl.Editing
             }
         }
 
-        private void UpdateSelectedMarkerCount()
+        private void AddAndDestroyMarkersAccordingToItemsSelected()
         {
             var desiredMarkerCount = ItemsSelected.Count;
 
@@ -268,7 +268,7 @@ namespace GlueControl.Editing
                     {
                         ItemsSelected.Add(ItemOver);
                     }
-                    UpdateSelectedMarkerCount();
+                    AddAndDestroyMarkersAccordingToItemsSelected();
                     MarkerFor(ItemOver)?.PlayBumpAnimation(SelectedItemExtraPadding,
                         isSynchronized: ItemsSelected.Count > 1);
 
@@ -327,7 +327,7 @@ namespace GlueControl.Editing
                     InstanceLogic.Self.DeleteInstanceByGame(ItemsSelected[i]);
                 }
                 ItemsSelected.Clear();
-                UpdateSelectedMarkerCount();
+                AddAndDestroyMarkersAccordingToItemsSelected();
             }
 
             CopyPasteManager.DoHotkeyLogic(ItemsSelected);
@@ -348,7 +348,7 @@ namespace GlueControl.Editing
             Select(namedObject?.InstanceName);
         }
 
-        internal void Select(string objectName, bool addToExistingSelection = false)
+        internal void Select(string objectName, bool addToExistingSelection = false, bool playBump = true)
         {
             INameable foundObject = null;
 
@@ -379,8 +379,12 @@ namespace GlueControl.Editing
                     ItemsSelected.Add(foundObject);
                 }
 
-                UpdateSelectedMarkerCount();
-                MarkerFor(ItemSelected)?.PlayBumpAnimation(SelectedItemExtraPadding, isSynchronized: false);
+                AddAndDestroyMarkersAccordingToItemsSelected();
+
+                if (playBump)
+                {
+                    MarkerFor(ItemSelected)?.PlayBumpAnimation(SelectedItemExtraPadding, isSynchronized: false);
+                }
 
                 // do this right away so the handles don't pop out of existance when changing selection
                 UpdateMarkers(didChangeItemOver: true);
@@ -388,7 +392,7 @@ namespace GlueControl.Editing
             }
         }
 
-        public void RefreshSelectionAfterScreenLoad()
+        public void RefreshSelectionAfterScreenLoad(bool playBump)
         {
             var names = ItemsSelected.Select(item => item.Name).ToArray();
 
@@ -396,7 +400,7 @@ namespace GlueControl.Editing
 
             foreach (var name in names)
             {
-                Select(name, addToExistingSelection: true);
+                Select(name, addToExistingSelection: true, playBump);
             }
         }
     }

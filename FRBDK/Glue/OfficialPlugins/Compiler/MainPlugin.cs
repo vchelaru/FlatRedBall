@@ -99,7 +99,7 @@ namespace OfficialPlugins.Compiler
 
             #region Start the timer
 
-            var timerFrequency = 400; // ms
+            var timerFrequency = 250; // ms
             timer = new Timer(timerFrequency);
             timer.Elapsed += HandleTimerElapsed;
             timer.SynchronizingObject = MainGlueWindow.Self;
@@ -108,26 +108,35 @@ namespace OfficialPlugins.Compiler
             #endregion
         }
 
+        System.Threading.SemaphoreSlim getCommandsSemaphore = new System.Threading.SemaphoreSlim(1);
         private async void HandleTimerElapsed(object sender, ElapsedEventArgs e)
         {
-            try
+            var isBusy = await getCommandsSemaphore.WaitAsync(0);
+            if(!isBusy)
             {
-                if(viewModel.IsEditChecked)
+                try
                 {
-                    var gameToGlueCommandsAsString = await CommandSending.CommandSender
-                        .SendCommand("GetCommands", viewModel.PortNumber);
-
-                    if (!string.IsNullOrEmpty(gameToGlueCommandsAsString))
+                    if(viewModel.IsEditChecked)
                     {
-                        CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString, viewModel.PortNumber);
+                        var gameToGlueCommandsAsString = await CommandSending.CommandSender
+                            .SendCommand("GetCommands", viewModel.PortNumber);
+
+                        if (!string.IsNullOrEmpty(gameToGlueCommandsAsString))
+                        {
+                            CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString, viewModel.PortNumber);
+                        }
                     }
                 }
+                catch
+                {
+                    // it's okay
+                }
+                finally
+                {
+                    getCommandsSemaphore.Release();
+                }
+            }
 
-            }
-            catch
-            {
-                // it's okay
-            }
         }
 
         private void AssignEvents()

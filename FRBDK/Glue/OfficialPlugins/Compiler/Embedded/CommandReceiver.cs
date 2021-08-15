@@ -582,10 +582,11 @@ namespace GlueControl
 
         private static void HandleDto(RestartScreenDto dto)
         {
-            RestartScreenRerunCommands(applyRestartVariables: true);
+            RestartScreenRerunCommands(applyRestartVariables: true, playBump: dto.ShowSelectionBump);
         }
 
-        private static void RestartScreenRerunCommands(bool applyRestartVariables, bool shouldRecordCameraPosition = true, bool forceCameraToPreviousState = false)
+        private static void RestartScreenRerunCommands(bool applyRestartVariables, bool shouldRecordCameraPosition = true, bool forceCameraToPreviousState = false,
+            bool playBump = true)
         {
             var screen =
                 FlatRedBall.Screens.ScreenManager.CurrentScreen;
@@ -615,7 +616,7 @@ namespace GlueControl
 
                 FlatRedBall.Screens.ScreenManager.ScreenLoaded -= AfterInitializeLogic;
 
-                EditingManager.Self.RefreshSelectionAfterScreenLoad();
+                EditingManager.Self.RefreshSelectionAfterScreenLoad(playBump);
             }
 
             FlatRedBall.Screens.ScreenManager.BeforeScreenCustomInitialize += BeforeCustomInitializeLogic;
