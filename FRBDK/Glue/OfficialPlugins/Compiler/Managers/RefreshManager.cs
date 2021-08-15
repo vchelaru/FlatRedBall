@@ -188,7 +188,6 @@ namespace OfficialPlugins.Compiler.Managers
             }
         }
 
-
         private bool GetIfShouldReactToFileChange(FilePath filePath )
         {
             if(filePath.FullPath.Contains(".Generated.") && filePath.FullPath.EndsWith(".cs"))
@@ -232,7 +231,7 @@ namespace OfficialPlugins.Compiler.Managers
             }
         }
 
-        private void IgnoreNextChange(FilePath filePath)
+        public void IgnoreNextChange(FilePath filePath)
         {
             const int responseDelay = 5;
             var expiringFilePath =

@@ -326,7 +326,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 if (!string.IsNullOrEmpty(namedObjectContainer.BaseObject))
                 {
-                    baseElements.Add(ObjectFinder.Self.GetIElement(namedObjectContainer.BaseObject));
+                    baseElements.Add(ObjectFinder.Self.GetElement(namedObjectContainer.BaseObject));
                 }
                 //List<EntitySave> allBase = ((EntitySave)namedObjectContainer).GetAllBaseEntities();
                 //foreach (EntitySave baseEntitySave in allBase)
@@ -338,7 +338,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 if (!string.IsNullOrEmpty(namedObjectContainer.BaseObject))
                 {
-                    baseElements.Add(ObjectFinder.Self.GetIElement(namedObjectContainer.BaseObject));
+                    baseElements.Add(ObjectFinder.Self.GetElement(namedObjectContainer.BaseObject));
                 }
                 //List<ScreenSave> allBase = ((ScreenSave)namedObjectContainer).GetAllBaseScreens();
                 //foreach (ScreenSave baseScreenSave in allBase)
@@ -391,7 +391,7 @@ namespace FlatRedBall.Glue.SaveClasses
                     string message = "The following object is marked as \"defined by base\" but it is not contained in " +
                         "any base elements\n\n" + nos.ToString() + "\n\nWhat would you like to do?";
 
-                    MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
+                    var mbmb = new MultiButtonMessageBox();
 
                     mbmb.MessageText = message;
 

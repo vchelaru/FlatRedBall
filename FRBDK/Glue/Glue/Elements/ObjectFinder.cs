@@ -522,6 +522,27 @@ namespace FlatRedBall.Glue.Elements
             return baseElements;
         }
 
+        public List<GlueElement> GetAllDerivedElementsRecursive(GlueElement baseElement)
+        {
+            HashSet<GlueElement> toReturnHashSet = new HashSet<GlueElement>();
+
+            AddAllDerivedElementsRecursive(baseElement, toReturnHashSet);
+
+            return toReturnHashSet.ToList();
+        }
+
+        private void AddAllDerivedElementsRecursive(GlueElement baseElement, HashSet<GlueElement> derivedElements)
+        { 
+            var directDerived = GetAllElementsThatInheritFrom(baseElement);
+
+            foreach(var derived in directDerived)
+            {
+                derivedElements.Add(derived);
+
+                AddAllDerivedElementsRecursive(derived, derivedElements);
+            }
+        }
+
         #endregion
 
         #region NamedObjects

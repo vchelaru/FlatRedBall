@@ -39,6 +39,25 @@ namespace TileGraphicsPlugin.Controllers
                     RefreshAvailableTypes();
                     break;
             }
+
+            if(viewModel.IsUpdatingFromGlueObject == false)
+            {
+                if(viewModel.IsPropertySynced(e.PropertyName))
+                {
+                    var element = GlueState.Self.CurrentElement;
+                    var currentNos = GlueState.Self.CurrentNamedObjectSave;
+                    // need to push this to all derived too:
+                    var allDerived = ObjectFinder.Self.GetAllDerivedElementsRecursive(element);
+
+                    foreach(var derived in allDerived)
+                    {
+                        var existingNos = derived.NamedObjects.FirstOrDefault(item => item.InstanceName == currentNos.InstanceName && item.DefinedByBase);
+
+                        existingNos.SetProperty(e.PropertyName, currentNos.Properties.GetValue(e.PropertyName));
+                    }
+                    GlueCommands.Self.GluxCommands.SaveGlux();
+                }
+            }
         }
 
         public void RefreshAvailableTypes()
@@ -199,7 +218,7 @@ namespace TileGraphicsPlugin.Controllers
 
             viewModel.UpdateFromGlueObject();
 
-            viewModel.IsEntireViewEnabled = namedObject.DefinedByBase == false;
+            viewModel.DefinedByBase = namedObject.DefinedByBase;
 
             RefreshAvailableTypes();
 

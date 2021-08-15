@@ -958,20 +958,6 @@ namespace FlatRedBall.Glue.SaveClasses
             return null;
         }
 
-        [Obsolete("This confusingly is named GetProperties, but it actually searches the Instructions (variables) on the object. You might want to use thisObject.Properties.GetValue instead")]
-        public object GetPropertyValue(string propertyName)
-        {
-            InstructionSave instruction = GetCustomVariable(propertyName);
-            if (instruction == null)
-            {
-                return null;
-            }
-            else
-            {
-                return instruction.Value;
-            }
-        }
-
         //public EventSave GetEvent(string eventName)
         //{
         //    foreach (EventSave es in Events)

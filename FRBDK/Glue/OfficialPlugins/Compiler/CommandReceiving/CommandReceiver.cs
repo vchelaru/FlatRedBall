@@ -491,6 +491,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 {
                     mapLayer.data[0].SetTileData(ids, mapLayer.data[0].encoding, mapLayer.data[0].compression);
 
+                    RefreshManager.Self.IgnoreNextChange(tmxFilePath.FullPath);
+
                     tiledMapSave.Save(tmxFilePath.FullPath);
                 }
             }
