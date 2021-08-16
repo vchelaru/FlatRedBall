@@ -1697,6 +1697,45 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
+        public void SortQuadsOnAxis(SortAxis sortAxis)
+        {
+            this.SortAxis = sortAxis;
+
+            List<Quad> quads = new List<Quad>();
+
+            for (int i = 0; i < Vertices.Count(); i += 4)
+            {
+                var quad = new Quad();
+                quad.Vertices[0] = Vertices[i + 0];
+                quad.Vertices[1] = Vertices[i + 1];
+                quad.Vertices[2] = Vertices[i + 2];
+                quad.Vertices[3] = Vertices[i + 3];
+
+                quads.Add(quad);
+            }
+
+            Quad[] sortedQuads = null;
+            if (sortAxis == SortAxis.X)
+            {
+                sortedQuads = quads.OrderBy(item => item.Position.X).ToArray();
+            }
+            else if (sortAxis == SortAxis.Y)
+            {
+                sortedQuads = quads.OrderBy(item => item.Position.Y).ToArray();
+            }
+            else
+            {
+                throw new ArgumentException($"Invalid sort axis: {sortAxis}");
+            }
+
+            for (int i = 0; i < sortedQuads.Length; i++)
+            {
+                Vertices[i * 4 + 0] = sortedQuads[i].Vertices[0];
+                Vertices[i * 4 + 1] = sortedQuads[i].Vertices[1];
+                Vertices[i * 4 + 2] = sortedQuads[i].Vertices[2];
+                Vertices[i * 4 + 3] = sortedQuads[i].Vertices[3];
+            }
+        }
 
         public void RemoveQuads(IEnumerable<int> quadIndexes)
         {
@@ -1764,8 +1803,14 @@ namespace FlatRedBall.TileGraphics
         #endregion
     }
 
+    #region Additional Classes
 
+    public class Quad
+    {
+        public Vector3 Position => Vertices[0].Position;
 
+        public VertexType[] Vertices = new VertexType[4];
+    }
 
     public static class MapDrawableBatchExtensionMethods
     {
@@ -1773,5 +1818,5 @@ namespace FlatRedBall.TileGraphics
 
     }
 
-
+    #endregion
 }

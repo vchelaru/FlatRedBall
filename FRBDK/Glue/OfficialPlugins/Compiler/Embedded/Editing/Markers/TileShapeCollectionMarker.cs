@@ -429,6 +429,8 @@ namespace GlueControl.Editing
                     layer.AddTile(bottomLeft, new Vector2(tileDimensions, tileDimensions), textureLeftPixel, textureTopPixel, textureLeftPixel + tileWidth, textureTopPixel + tileHeight);
                 }
 
+                layer.SortQuadsOnAxis(gameplayLayer.SortAxis);
+
                 gameplayLayer.MergeOntoThis(new List<MapDrawableBatch>() { layer });
             }
         }
