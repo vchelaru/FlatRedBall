@@ -96,11 +96,11 @@ namespace GlueControl.Editing
 
             TryFindMap();
 
+            boundsRectangle = new AxisAlignedRectangle();
             if (map != null)
             {
                 var extraBorder = 3;
 
-                boundsRectangle = new AxisAlignedRectangle();
                 boundsRectangle.Visible = true;
                 boundsRectangle.Width = map.Width + extraBorder * 2;
                 boundsRectangle.Height = map.Height + extraBorder * 2;
@@ -112,6 +112,8 @@ namespace GlueControl.Editing
             else
             {
                 boundsRectangle.Visible = false;
+                currentTileHighlight.Visible = false;
+
             }
         }
 
@@ -124,7 +126,7 @@ namespace GlueControl.Editing
             {
                 collisionCreationOptions = (int)asLong;
             }
-            var sourceTmxObject = namedObjectSave.Properties.FirstOrDefault(item => item.Name == "SourceTmxName").Value as string;
+            var sourceTmxObject = namedObjectSave.Properties.FirstOrDefault(item => item.Name == "SourceTmxName")?.Value as string;
 
             if (collisionCreationOptions == 4 && !string.IsNullOrEmpty(sourceTmxObject))
             {
@@ -135,6 +137,13 @@ namespace GlueControl.Editing
 
         public void Update(ResizeSide sideGrabbed)
         {
+            ////////////////early out//////////////////////////////
+            if (map == null)
+            {
+                return;
+            }
+            //////////////end early out////////////////////////////
+            
             #region Initial Variable Assignment
 
             var cursor = GuiManager.Cursor;
