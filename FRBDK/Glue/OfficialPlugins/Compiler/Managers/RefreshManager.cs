@@ -169,9 +169,12 @@ namespace OfficialPlugins.Compiler.Managers
                         await Task.Delay(500);
                         try
                         {
-                            printOutput($"Telling game to restart screen");
+                            if(ViewModel.IsRunning)
+                            {
+                                printOutput($"Telling game to restart screen");
 
-                            await CommandSender.Send(new RestartScreenDto(), ViewModel.PortNumber);
+                                await CommandSender.Send(new RestartScreenDto(), ViewModel.PortNumber);
+                            }
 
                             handled = true;
                         }
