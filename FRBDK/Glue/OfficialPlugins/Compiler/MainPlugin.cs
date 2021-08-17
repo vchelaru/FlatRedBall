@@ -408,6 +408,11 @@ namespace OfficialPlugins.Compiler
 
                     RefreshManager.Self.StopAndRestartTask($"{propertyName} changed");
 
+                    control.PrintOutput("Waiting for tasks to finish...");
+                    await TaskManager.Self.WaitForAllTasksFinished();
+                    control.PrintOutput("Finishined adding/generating code for GlueControlManager");
+
+
                     break;
                 case nameof(CompilerViewModel.CurrentGameSpeed):
                     var speedPercentage = int.Parse(viewModel.CurrentGameSpeed.Substring(0, viewModel.CurrentGameSpeed.Length - 1));
