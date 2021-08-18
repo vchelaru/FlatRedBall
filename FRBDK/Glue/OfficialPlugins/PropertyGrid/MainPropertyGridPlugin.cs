@@ -128,6 +128,16 @@ namespace OfficialPlugins.VariableDisplay
 
         private void HandleNamedObjectSelect(NamedObjectSave namedObject)
         {
+            // Update August 17, 2021
+            // If it's a list, don't show the Variables tab. It's never got anything:
+            var hide = namedObject.IsList;
+
+            if(hide)
+            {
+                variableTab?.Hide();
+                return;
+            }
+
 
             if (showSettings)
             {
@@ -185,6 +195,7 @@ namespace OfficialPlugins.VariableDisplay
 
             NamedObjectVariableShowingLogic.UpdateShownVariables(variableGrid.DataUiGrid, namedObject,
                 GlueState.Self.CurrentElement, ati);
+
         }
 
         private void AddOrShowSettingsGrid()
