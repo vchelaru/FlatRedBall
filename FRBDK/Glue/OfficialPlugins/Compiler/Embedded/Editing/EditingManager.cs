@@ -368,12 +368,13 @@ namespace GlueControl.Editing
             }
 
 
+            if (!addToExistingSelection)
+            {
+                ItemsSelected.Clear();
+            }
+
             if (ItemsSelected.Contains(foundObject) == false)
             {
-                if (!addToExistingSelection)
-                {
-                    ItemsSelected.Clear();
-                }
                 if (foundObject != null)
                 {
                     ItemsSelected.Add(foundObject);
