@@ -495,6 +495,8 @@ namespace GlueControl
                 else
                 {
                     existingState = Activator.CreateInstance(stateType);
+                    FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(existingState, "Name", newStateSave.Name);
+                    allStates[newStateSave.Name] = existingState;
                 }
 
                 // what if a value has been nulled out?
@@ -504,17 +506,7 @@ namespace GlueControl
                 // there's no need to handle that here?
                 foreach (var instruction in newStateSave.InstructionSaves)
                 {
-                    var fieldType = stateType.GetField(instruction.Member)?.FieldType;
-
-
-                    var convertedValue = instruction.Value;
-                    if (instruction.Value is string asString)
-                    {
-                        // not sure if this is a state, it could be and at some point we're going to handle that, but not for now...
-                        convertedValue = VariableAssignmentLogic.ConvertStringToType(fieldType.ToString(), asString, false);
-                    }
-
-                    FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(existingState, instruction.Member, convertedValue);
+                    InstanceLogic.Self.AssignVariable(existingState, instruction);
                 }
             }
         }

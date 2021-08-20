@@ -1062,7 +1062,7 @@ namespace GlueControl
 
         #endregion
 
-        private void AssignVariable(object instance, FlatRedBall.Content.Instructions.InstructionSave instruction)
+        public void AssignVariable(object instance, FlatRedBall.Content.Instructions.InstructionSave instruction)
         {
             string variableName = instruction.Member;
             object variableValue = instruction.Value;
@@ -1075,7 +1075,7 @@ namespace GlueControl
 
                 variableValue = fieldInfo.GetValue(null);
             }
-            else if (instruction.Type == "float")
+            else if (instruction.Type == "float" || instruction.Type == "Single")
             {
                 if (variableValue is int asInt)
                 {

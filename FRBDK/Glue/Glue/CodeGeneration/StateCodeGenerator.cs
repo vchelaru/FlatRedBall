@@ -27,7 +27,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             var currentBlock = codeBlock;
 
-            if (element.HasStates)
+            if (element.HasStates || element.StateCategoryList.Count > 0)
             {
                 List<StateSave> statesForThisCategory = GetSharedVariableStates(element);
 
@@ -102,86 +102,88 @@ namespace FlatRedBall.Glue.CodeGeneration
         {
             string categoryClassName = category?.Name ?? "VariableState";
 
-            if (statesForThisCategory.Count != 0)
+            // Update August 18, 2021
+            // We want to generate the
+            // class even if it doesn't
+            // have any states. This allows
+            // GView to inject states dynamically.
+            //if (statesForThisCategory.Count != 0)
+            string prefix = "public";
+
+            string postfix = null;
+            if (IsStateDefinedInBase(element, categoryClassName))
             {
-                string prefix = "public";
-
-                string postfix = null;
-                if (IsStateDefinedInBase(element, categoryClassName))
-                {
-                    postfix = $" : {element.BaseElement.Replace("\\", ".")}.{categoryClassName}";
-                }
-
-
-                currentBlock = currentBlock.Class(prefix, categoryClassName, postfix);
-
-                currentBlock.Line($"public string Name;");
-
-                var includedVariables = element.CustomVariables.Where(item => category?.ExcludedVariables.Contains(item.Name) == false)
-                    .ToArray();
-
-                foreach (var variable in includedVariables)
-                {
-                    string type = variable.Type;
-
-                    if (variable.GetIsFile())
-                    {
-                        type = "string";
-                    }
-                    else
-                    {
-                        type = CustomVariableCodeGenerator.GetMemberTypeFor(variable, element);
-                    }
-                    currentBlock.Line($"public {type} {variable.Name};");
-                }
-
-
-
-                for (int i = 0; i < statesForThisCategory.Count; i++)
-                {
-                    var state = statesForThisCategory[i];
-                    currentBlock.Line($"public static {categoryClassName} {state.Name} = new {categoryClassName}()");
-
-                    var variableBlock = currentBlock.Block();
-
-                    variableBlock.Line($"Name = \"{state.Name}\",");
-
-                    foreach(var variable in includedVariables)
-                    {
-                        var instruction = state.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name);
-
-                        var valueToSet = state.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name)?.Value
-                            ?? variable.DefaultValue;
-                        if(valueToSet != null)
-                        {
-                            var rightSide = GetRightSideAssignmentValueAsString(element, variable.Name, valueToSet);
-                            var matchingVariable = element.GetCustomVariableRecursively(variable.Name);
-                            if(matchingVariable?.GetIsFile() == true)
-                            {
-                                // If it's a file we are only going to reference the file name here as to not preload the file
-                                rightSide = $"\"{rightSide}\"";
-                            }
-
-                            variableBlock.Line($"{variable.Name} = {rightSide},");
-                        }
-                    }
-                    variableBlock.End().Line(";");
-
-
-                }
-
-                currentBlock.Line($"public static Dictionary<string, {categoryClassName}> AllStates = new Dictionary<string, {categoryClassName}>");
-                var dictionaryBlock = currentBlock.Block();
-                dictionaryBlock.PostCodeLines.Add(new CodeLine(";"));
-
-                for (int i = 0; i < statesForThisCategory.Count; i++)
-                {
-                    var state = statesForThisCategory[i];
-                    dictionaryBlock.Line("{\"" + state.Name + "\", " + state.Name + "},");
-                }
-
-                currentBlock = currentBlock.End();
+                postfix = $" : {element.BaseElement.Replace("\\", ".")}.{categoryClassName}";
             }
+
+
+            currentBlock = currentBlock.Class(prefix, categoryClassName, postfix);
+
+            currentBlock.Line($"public string Name;");
+
+            var includedVariables = element.CustomVariables.Where(item => category?.ExcludedVariables.Contains(item.Name) == false)
+                .ToArray();
+
+            foreach (var variable in includedVariables)
+            {
+                string type = variable.Type;
+
+                if (variable.GetIsFile())
+                {
+                    type = "string";
+                }
+                else
+                {
+                    type = CustomVariableCodeGenerator.GetMemberTypeFor(variable, element);
+                }
+                currentBlock.Line($"public {type} {variable.Name};");
+            }
+
+
+
+            for (int i = 0; i < statesForThisCategory.Count; i++)
+            {
+                var state = statesForThisCategory[i];
+                currentBlock.Line($"public static {categoryClassName} {state.Name} = new {categoryClassName}()");
+
+                var variableBlock = currentBlock.Block();
+
+                variableBlock.Line($"Name = \"{state.Name}\",");
+
+                foreach(var variable in includedVariables)
+                {
+                    var instruction = state.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name);
+
+                    var valueToSet = state.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name)?.Value
+                        ?? variable.DefaultValue;
+                    if(valueToSet != null)
+                    {
+                        var rightSide = GetRightSideAssignmentValueAsString(element, variable.Name, valueToSet);
+                        var matchingVariable = element.GetCustomVariableRecursively(variable.Name);
+                        if(matchingVariable?.GetIsFile() == true)
+                        {
+                            // If it's a file we are only going to reference the file name here as to not preload the file
+                            rightSide = $"\"{rightSide}\"";
+                        }
+
+                        variableBlock.Line($"{variable.Name} = {rightSide},");
+                    }
+                }
+                variableBlock.End().Line(";");
+            }
+
+            currentBlock.Line($"public static Dictionary<string, {categoryClassName}> AllStates = new Dictionary<string, {categoryClassName}>");
+            var dictionaryBlock = currentBlock.Block();
+            dictionaryBlock.PostCodeLines.Add(new CodeLine(";"));
+
+            for (int i = 0; i < statesForThisCategory.Count; i++)
+            {
+                var state = statesForThisCategory[i];
+                dictionaryBlock.Line("{\"" + state.Name + "\", " + state.Name + "},");
+            }
+
+            currentBlock = currentBlock.End();
+
             return currentBlock;
         }
 
@@ -189,10 +191,15 @@ namespace FlatRedBall.Glue.CodeGeneration
         {
             string enumType = category?.Name ?? "VariableState";
             // early out
-            if (states.Count == 0)
-            {
-                return codeBlock;
-            }
+            // Update August 20, 2021
+            // Don't early out anymore, 
+            // even though there are no states
+            // now, they could be added dynamically
+            // by the user or by GView
+            //if (states.Count == 0)
+            //{
+            //    return codeBlock;
+            //}
 
             string variableNameModifier = enumType;
             if (enumType == "VariableState")

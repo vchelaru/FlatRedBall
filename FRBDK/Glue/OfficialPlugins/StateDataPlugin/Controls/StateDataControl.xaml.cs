@@ -322,7 +322,14 @@ namespace OfficialPlugins.StateDataPlugin.Controls
                     textBox.LostFocus += (not, used) =>
                     {
                         var textBoxDataContext = textBox.DataContext;
-                        ((StateViewModel)textBoxDataContext).Variables[i].IsFocused = false;
+
+                        var stateViewModel = textBoxDataContext as StateViewModel;
+
+                        if(stateViewModel != null)
+                        {
+                            stateViewModel.Variables[i].IsFocused = false;
+
+                        }
 
                         //(textBox.DataContext as StateVariableViewModel).IsFocused = false;
                         //HandleTextBoxLostFocus(textBox, i);

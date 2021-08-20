@@ -453,15 +453,13 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                 this.category.States.Remove(selectedState.BackingData);
                 int oldSelectedIndex = this.States.IndexOf(selectedState);
 
-
-                this.States.RemoveAt(oldSelectedIndex);
-
-                GlueCommands.Self.RefreshCommands.RefreshUi(this.category);
-                GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
-                GlueCommands.Self.GluxCommands.SaveGlux();
-
                 if(oldSelectedIndex > 0)
                 {
+                    this.States.RemoveAt(oldSelectedIndex);
+
+                    GlueCommands.Self.RefreshCommands.RefreshUi(this.category);
+                    GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
+                    GlueCommands.Self.GluxCommands.SaveGlux();
                     // Victor Chelaru June 8, 2018
                     // I can't get this to select, not sure why.
                     // I've tried setting the selected state, the selected
