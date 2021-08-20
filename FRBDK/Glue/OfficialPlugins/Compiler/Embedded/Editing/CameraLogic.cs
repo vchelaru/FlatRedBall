@@ -77,7 +77,7 @@ namespace GlueControl.Editing
                 camera.Y -= cursor.WorldYChangeAt(0);
             }
 
-            if (cursor.PrimaryDown)
+            if (cursor.PrimaryDown || cursor.SecondaryDown)
             {
                 // If near the edges, move in that direction.
                 const float borderInPixels = 50;
