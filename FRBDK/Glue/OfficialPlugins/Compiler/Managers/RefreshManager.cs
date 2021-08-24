@@ -23,11 +23,15 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace OfficialPlugins.Compiler.Managers
 {
+    #region Classes
+
     public class ExpiringFilePath
     {
         public DateTimeOffset? Expiration { get; set; }
         public FilePath FilePath { get; set; }
     }
+
+    #endregion
 
     public class RefreshManager : Singleton<RefreshManager>
     {
@@ -278,45 +282,7 @@ namespace OfficialPlugins.Compiler.Managers
 
         #endregion
 
-        #region Selected Object
-
-        internal async void HandleItemSelected(TreeNode selectedTreeNode)
-        {
-            if(IgnoreNextObjectSelect)
-            {
-                IgnoreNextObjectSelect = false;
-            }
-            else if(ViewModel.IsEditChecked)
-            {
-                await PushGlueSelectionToGame();
-            }
-
-        }
-
-        public async Task PushGlueSelectionToGame(string forcedCategoryName = null, string forcedStateName = null)
-        {
-            var dto = new SelectObjectDto();
-
-            var nos = GlueState.Self.CurrentNamedObjectSave;
-            var element = GlueState.Self.CurrentElement;
-            if(element != null)
-            {
-                dto.NamedObject = nos;
-                dto.ElementNameGlue = element?.Name;
-                dto.StateName = forcedStateName ??
-                    GlueState.Self.CurrentStateSave?.Name;
-
-                dto.StateCategoryName = forcedCategoryName ??
-                    GlueState.Self.CurrentStateSaveCategory?.Name;
-
-                await CommandSender.Send(dto, ViewModel.PortNumber);
-            }
-
-        }
-
-        #endregion
-
-        #region New NamedObject
+        #region NamedObject Created
 
         internal async void HandleNewObjectCreated(NamedObjectSave newNamedObject)
         {
@@ -435,6 +401,81 @@ namespace OfficialPlugins.Compiler.Managers
             }
         }
 
+        #endregion
+
+        #region Variable Created
+
+        internal async void HandleVariableAdded(CustomVariable newVariable)
+        {
+            // Vic says - When a new variable is added, we don't need to restart. However,
+            // later that variable might get assigned on instances of an object, and if it is
+            // then that would probably fail because it would attempt to assign through reflection.
+            // Therefore, we could either restart here so that all future assignments work, or we could
+            // restart on the variable set. While it might result in fewer restarts to restart when the
+            // variable is assigned (since the variable may not actually get assigned in Glue), it could
+            // also lead to confusion. Therefore, we'll just restart here:
+            // Update August 21, 2021
+            // Let's look at the possible variables that are added:
+            // * New variables - which by default have no functionality until code is written for them
+            // * Exposed variables - these do have functionality but they ultimately are just setting other variables
+            // If it's a new variable, we are going to restart. Otherwise if it's expoed, send that to the game to use 
+            // for assigning real values
+            var isTunneled = !string.IsNullOrWhiteSpace(newVariable.SourceObject) &&
+                !string.IsNullOrWhiteSpace(newVariable.SourceObjectProperty);
+
+            if(isTunneled)
+            {
+                // send this down to the game
+                var dto = new AddVariableDto();
+                dto.CustomVariable = newVariable;
+                dto.ElementGameType = GetGameTypeFor(GlueState.Self.CurrentElement);
+
+                await CommandSender.Send(dto, PortNumber);
+            }
+            else
+            {
+                // it's a brand new variable, so let's restart it...
+                StopAndRestartTask($"Restarting because of added variable {newVariable}");
+            }
+        }
+
+        #endregion
+
+        #region Selected Object
+
+        internal async void HandleItemSelected(TreeNode selectedTreeNode)
+        {
+            if(IgnoreNextObjectSelect)
+            {
+                IgnoreNextObjectSelect = false;
+            }
+            else if(ViewModel.IsEditChecked)
+            {
+                await PushGlueSelectionToGame();
+            }
+
+        }
+
+        public async Task PushGlueSelectionToGame(string forcedCategoryName = null, string forcedStateName = null)
+        {
+            var dto = new SelectObjectDto();
+
+            var nos = GlueState.Self.CurrentNamedObjectSave;
+            var element = GlueState.Self.CurrentElement;
+            if(element != null)
+            {
+                dto.NamedObject = nos;
+                dto.ElementNameGlue = element?.Name;
+                dto.StateName = forcedStateName ??
+                    GlueState.Self.CurrentStateSave?.Name;
+
+                dto.StateCategoryName = forcedCategoryName ??
+                    GlueState.Self.CurrentStateSaveCategory?.Name;
+
+                await CommandSender.Send(dto, ViewModel.PortNumber);
+            }
+
+        }
 
         #endregion
 
@@ -476,18 +517,6 @@ namespace OfficialPlugins.Compiler.Managers
         }
 
         #endregion
-
-        internal void HandleVariableAdded(CustomVariable newVariable)
-        {
-            // Vic says - When a new variable is added, we don't need to restart. However,
-            // later that variable might get assigned on instances of an object, and if it is
-            // then that would probably fail because it would attempt to assign through reflection.
-            // Therefore, we could either restart here so that all future assignments work, or we could
-            // restart on the variable add. While it might result in fewer restarts to restart when the
-            // variable is assigned (since the variable may not actually get assigned in Glue), it could
-            // also lead to confusion. Therefore, we'll just restart here:
-            StopAndRestartTask($"Restarting because of added variable {newVariable}");
-        }
 
         #region Object Container (List, Layer, ShapeCollection) changed
         internal async void HandleObjectContainerChanged(NamedObjectSave objectMoving, 

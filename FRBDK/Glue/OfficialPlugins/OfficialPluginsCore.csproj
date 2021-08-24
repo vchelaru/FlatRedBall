@@ -37,6 +37,7 @@
     <Compile Remove="Compiler\Embedded\Forms\ObjectCreationWindow.cs" />
     <Compile Remove="Compiler\Embedded\GlueControlManager.cs" />
     <Compile Remove="Compiler\Embedded\InstanceLogic.cs" />
+    <Compile Remove="Compiler\Embedded\Models\CustomVariable.cs" />
     <Compile Remove="Compiler\Embedded\Models\GlueElement.cs" />
     <Compile Remove="Compiler\Embedded\Models\NamedObjectSave.cs" />
     <Compile Remove="Compiler\Embedded\Models\StateSave.cs" />
@@ -105,6 +106,7 @@
     <EmbeddedResource Include="Compiler\Embedded\Forms\ObjectCreationWindow.cs" />
     <EmbeddedResource Include="Compiler\Embedded\GlueControlManager.cs" />
     <EmbeddedResource Include="Compiler\Embedded\InstanceLogic.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Models\CustomVariable.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\GlueElement.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\NamedObjectSave.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\StateSave.cs" />

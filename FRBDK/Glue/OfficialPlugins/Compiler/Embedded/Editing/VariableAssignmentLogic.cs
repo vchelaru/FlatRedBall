@@ -31,7 +31,6 @@ namespace GlueControl.Editing
 
             try
             {
-
                 var screen =
                     FlatRedBall.Screens.ScreenManager.CurrentScreen;
 
@@ -157,6 +156,7 @@ namespace GlueControl.Editing
                     }
                     else
                     {
+                        variableName = TryConvertVariableNameToExposedVariableName(variableName, targetInstance);
                         response.WasVariableAssigned = screen.ApplyVariable(variableName, variableValue, targetInstance);
                     }
                     didAttemptToAssign = true;
@@ -171,6 +171,24 @@ namespace GlueControl.Editing
 
 
             return variableValue;
+        }
+
+        private static string TryConvertVariableNameToExposedVariableName(string variableName, INameable targetInstance)
+        {
+            var targetInstanceType = targetInstance.GetType().FullName;
+            if (InstanceLogic.Self.CustomVariablesAddedAtRuntime.ContainsKey(targetInstanceType))
+            {
+                var variablesForThisType = InstanceLogic.Self.CustomVariablesAddedAtRuntime[targetInstanceType];
+
+                var customVariable = variablesForThisType.FirstOrDefault(item => item.Name == variableName);
+
+                if (customVariable != null)
+                {
+                    variableName = customVariable.SourceObject + "." + customVariable.SourceObjectProperty;
+                }
+            }
+
+            return variableName;
         }
 
         private static FlatRedBall.Utilities.INameable GetTargetInstance(GlueVariableSetData data, ref object variableValue, FlatRedBall.Screens.Screen screen)

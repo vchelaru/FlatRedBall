@@ -38,6 +38,7 @@ namespace GlueControl
             AllMethods = typeof(CommandReceiver).GetMethods(
                 System.Reflection.BindingFlags.Static |
                 System.Reflection.BindingFlags.NonPublic)
+                .Where(item => item.Name == nameof(HandleDto))
                 .ToArray();
         }
 
@@ -59,12 +60,8 @@ namespace GlueControl
                 AllMethods
                 .FirstOrDefault(item =>
                 {
-                    if (item.Name == nameof(HandleDto))
-                    {
-                        var parameters = item.GetParameters();
-                        return parameters.Length == 1 && parameters[0].ParameterType.Name == dtoTypeName;
-                    }
-                    return false;
+                    var parameters = item.GetParameters();
+                    return parameters.Length == 1 && parameters[0].ParameterType.Name == dtoTypeName;
                 });
 
             if (matchingMethod == null)
@@ -96,12 +93,8 @@ namespace GlueControl
             var method = AllMethods
                 .FirstOrDefault(item =>
                 {
-                    if (item.Name == nameof(HandleDto))
-                    {
-                        var parameters = item.GetParameters();
-                        return parameters.Length == 1 && parameters[0].ParameterType == type;
-                    }
-                    return false;
+                    var parameters = item.GetParameters();
+                    return parameters.Length == 1 && parameters[0].ParameterType == type;
                 });
 
 
@@ -509,6 +502,33 @@ namespace GlueControl
                     InstanceLogic.Self.AssignVariable(existingState, instruction);
                 }
             }
+        }
+
+        #endregion
+
+        #region Add Variable
+
+        private static void HandleDto(AddVariableDto dto)
+        {
+            var newVariable = dto.CustomVariable;
+
+            if (!InstanceLogic.Self.CustomVariablesAddedAtRuntime.ContainsKey(dto.ElementGameType))
+            {
+                var newList = new List<CustomVariable>();
+
+                InstanceLogic.Self.CustomVariablesAddedAtRuntime.Add(dto.ElementGameType, newList);
+            }
+
+            List<CustomVariable> listToAddTo = InstanceLogic.Self.CustomVariablesAddedAtRuntime[dto.ElementGameType];
+
+            var existingVariable = listToAddTo.FirstOrDefault(item => item.Name == dto.CustomVariable.Name);
+
+            if (existingVariable != null)
+            {
+                listToAddTo.Remove(existingVariable);
+            }
+
+            listToAddTo.Add(dto.CustomVariable);
         }
 
         #endregion

@@ -87,6 +87,11 @@ namespace GlueControl.Dtos
         public bool WasObjectCreated { get; set; }
     }
 
+    public class AddVariableDto
+    {
+        public CustomVariable CustomVariable { get; set; }
+        public string ElementGameType { get; set; }
+    }
 
     public class MoveObjectToContainerDto
     {
