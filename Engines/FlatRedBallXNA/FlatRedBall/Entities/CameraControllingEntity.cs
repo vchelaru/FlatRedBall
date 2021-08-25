@@ -24,6 +24,8 @@ namespace FlatRedBall.Entities
         private float defaultOrthoHeight;
         private float minZoomPercent;
         private bool isAutoZoomEnabled;
+        private float furthestZoom;
+
 
         /// <summary>
         /// Defines the behavior of the camera when determining its target position. 
@@ -84,12 +86,13 @@ namespace FlatRedBall.Entities
 
         #endregion
 
-        public void EnableAutoZooming(float defaultOrthoWidth, float defaultOrthoHeight, float minZoomPercent)
+        public void EnableAutoZooming(float defaultOrthoWidth, float defaultOrthoHeight, float minZoomPercent, float furthestZoom = 0)
         {
             this.defaultOrthoWidth = defaultOrthoWidth;
             this.defaultOrthoHeight = defaultOrthoHeight;
             this.minZoomPercent = minZoomPercent;
             this.isAutoZoomEnabled = true;
+            this.furthestZoom = furthestZoom;
         }
 
         public void Activity()
@@ -115,7 +118,7 @@ namespace FlatRedBall.Entities
         private void ApplyZoom()
         {
             var separationVector = GetTargetSeparation();
-            ApplySeparation(separationVector);
+            ApplySeparationForZoom(separationVector);
         }
 
         /// <summary>
@@ -256,7 +259,7 @@ namespace FlatRedBall.Entities
             }
         }
 
-        public void ApplySeparation(Vector2 separationVector)
+        public void ApplySeparationForZoom(Vector2 separationVector)
         {
             // for now we'll assume a padding:
             float noZoomRatio = .8f;
@@ -266,7 +269,8 @@ namespace FlatRedBall.Entities
 
             if(currentSeparationDistance > noZoomDistance)
             {
-                Camera.Main.OrthogonalHeight = defaultOrthoHeight * currentSeparationDistance/noZoomDistance;
+                var newZoom = System.Math.Max(furthestZoom, currentSeparationDistance / noZoomDistance);
+                Camera.Main.OrthogonalHeight = defaultOrthoHeight * newZoom;
             }
             else
             {
