@@ -267,13 +267,12 @@ namespace FlatRedBall.Entities
             if(currentSeparationDistance > noZoomDistance)
             {
                 Camera.Main.OrthogonalHeight = defaultOrthoHeight * currentSeparationDistance/noZoomDistance;
-
             }
             else
             {
                 Camera.Main.OrthogonalHeight = defaultOrthoHeight;
-                Camera.Main.FixAspectRatioYConstant();
             }
+            Camera.Main.FixAspectRatioYConstant();
         }
     }
 }
