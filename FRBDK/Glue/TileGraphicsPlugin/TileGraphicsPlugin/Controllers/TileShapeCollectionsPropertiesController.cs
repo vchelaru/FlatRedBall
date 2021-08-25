@@ -53,7 +53,10 @@ namespace TileGraphicsPlugin.Controllers
                     {
                         var existingNos = derived.NamedObjects.FirstOrDefault(item => item.InstanceName == currentNos.InstanceName && item.DefinedByBase);
 
-                        existingNos.SetProperty(e.PropertyName, currentNos.Properties.GetValue(e.PropertyName));
+                        if(existingNos != null)
+                        {
+                            existingNos.SetProperty(e.PropertyName, currentNos.Properties.GetValue(e.PropertyName));
+                        }
                     }
                     GlueCommands.Self.GluxCommands.SaveGlux();
                 }
