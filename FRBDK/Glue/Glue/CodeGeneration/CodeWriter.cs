@@ -202,6 +202,8 @@ namespace FlatRedBallAddOns.Entities
 
         public static void GenerateCode(GlueElement element)
         {
+            #region Prepare for generation
+
             if (element == null)
             {
                 throw new ArgumentNullException("element");
@@ -220,10 +222,14 @@ namespace FlatRedBallAddOns.Entities
                 PluginManager.ReceiveError("Error fixing enumerations for " + element + ": " + e.ToString());
             }
 
+
             // Do this before doing anything else since 
             // these reusable entire file RFS's are used 
             // in other code.
             RefreshReusableEntireFileRfses(element);
+            #endregion
+
+            #region Event Generation
 
             EventCodeGenerator.GenerateEventGeneratedFile(element);
 
@@ -239,6 +245,8 @@ namespace FlatRedBallAddOns.Entities
 
 
             EventCodeGenerator.AddStubsForCustomEvents(element);
+
+            #endregion
 
             CreateGeneratedFileIfNecessary(element);
 
@@ -260,14 +268,7 @@ namespace FlatRedBallAddOns.Entities
 
             var rootBlock = new CodeDocument(0);
 
-            rootBlock.Line("#if ANDROID || IOS || DESKTOP_GL");
-            rootBlock.Line("#define REQUIRES_PRIMARY_THREAD_LOADING");
-            rootBlock.Line("#endif");
-
-            // Not sure if we still need this, as we've been slowly ripping out using statements from generated code.
-            rootBlock.Line("using Color = Microsoft.Xna.Framework.Color;");
-            // Need this for FindByNameSyntax which may use linq
-            rootBlock.Line("using System.Linq;");
+            GenerateDefines(rootBlock);
 
             UsingsCodeGenerator.GenerateUsingStatements(rootBlock, element);
 
@@ -360,6 +361,19 @@ namespace FlatRedBallAddOns.Entities
             // This code will create and add above, but if the file already exists, the code above won't re-add it to the 
             // project. This is a last chance to add it if necessary:
             GlueCommands.Self.ProjectCommands.TryAddCodeFileToProject(GetAbsoluteGeneratedCodeFileFor(element), saveOnAdd: true);
+        }
+
+        public static void GenerateDefines(ICodeBlock rootBlock)
+        {
+            rootBlock.Line("#if ANDROID || IOS || DESKTOP_GL");
+            rootBlock.Line("#define REQUIRES_PRIMARY_THREAD_LOADING");
+            rootBlock.Line("#endif");
+
+            var project = GlueState.Self.CurrentGlueProject;
+            if(project.FileVersion >= (int)GlueProjectSave.GluxVersions. SupportsEditMode)
+            {
+                rootBlock.Line("#define SUPPORTS_GLUEVIEW_2");
+            }
         }
 
         public static string GetGlueElementNamespace(GlueElement element)
