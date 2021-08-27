@@ -77,7 +77,11 @@ namespace GlueFormsCore.Controls
                 var selectedItem = ViewModel.SelectedItem;
                 // force it here because this type is used in the rest of Glue (for now)
                 ViewModel.SourceType = FlatRedBall.Glue.SaveClasses.SourceType.FlatRedBallType;
+                var oldName = ViewModel.ObjectName;
+                // this changes the name...
                 ViewModel.SelectedItem = selectedItem;
+                // ... so change it back
+                ViewModel.ObjectName = oldName;
             }
             this.DialogResult = true;
         }
