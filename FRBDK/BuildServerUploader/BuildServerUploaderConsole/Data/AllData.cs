@@ -129,17 +129,17 @@ namespace BuildServerUploaderConsole.Data
                 engine.RelativeToLibrariesReleaseFolder = @"UWP\Release";
                 engine.TemplateFolder = @"FlatRedBallUwpTemplate\FlatRedBallUwpTemplate\";
 
-                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Debug\FlatRedBall.Forms.Uwp.dll");
-                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Debug\FlatRedBall.Forms.Uwp.pdb");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\FlatRedBall.Forms.Uwp.dll");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\FlatRedBall.Forms.Uwp.pdb");
 
-                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Debug\GumCoreUwp.dll");
-                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Debug\GumCoreUwp.pdb");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\GumCoreUwp.dll");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\GumCoreUwp.pdb");
 
-                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Debug\FlatRedBallUwp.dll");
-                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Debug\FlatRedBallUwp.pdb");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\FlatRedBallUwp.dll");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\FlatRedBallUwp.pdb");
 
-                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Debug\StateInterpolation.Uwp.dll");
-                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Debug\StateInterpolation.Uwp.pdb");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\StateInterpolation.Uwp.dll");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\StateInterpolation.Uwp.pdb");
 
 
                 engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Release\FlatRedBall.Forms.Uwp.dll");
