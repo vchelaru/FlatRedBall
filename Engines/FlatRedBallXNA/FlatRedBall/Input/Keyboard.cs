@@ -36,6 +36,8 @@ namespace FlatRedBall.Input
 
         bool[] mKeysIgnoredForThisFrame;
 
+        Dictionary<Keys, KeyReference> cachedKeys = new Dictionary<Keys, KeyReference>();
+
         #endregion
 
         #region Properties
@@ -445,14 +447,21 @@ namespace FlatRedBall.Input
         }
 
 
-
+        /// <summary>
+        /// Retrns a KeyReference for the argument key.
+        /// </summary>
+        /// <param name="key">The key, such as Keys.A.</param>
+        /// <returns>The reference, which can be used to check for input.</returns>
         public KeyReference GetKey(Keys key)
 		{
-			var toReturn = new KeyReference ();
+            if(cachedKeys.ContainsKey(key))
+            {
+			    var newReference = new KeyReference ();
 
-			toReturn.Key = key;
-
-			return toReturn;
+			    newReference.Key = key;
+                cachedKeys.Add(key, newReference);
+            }
+            return cachedKeys[key];
 		}
 
         public I1DInput Get1DInput(Keys negative, Keys positive)

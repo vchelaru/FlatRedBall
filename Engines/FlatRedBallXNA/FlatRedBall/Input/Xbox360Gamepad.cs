@@ -1,6 +1,7 @@
 #define IMPLEMENT_INTERNALS
 
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -88,6 +89,8 @@ namespace FlatRedBall.Input
         GamePadCapabilities mCapabilities;
 
         bool[] mButtonsIgnoredForThisFrame = new bool[NumberOfButtons];
+
+        Dictionary<Button, Xbox360ButtonReference> cachedButtons = new Dictionary<Button, Xbox360ButtonReference>();
 
         #endregion
 
@@ -859,16 +862,20 @@ namespace FlatRedBall.Input
         }
 
         /// <summary>
-        /// Returns an Xbox360ButtonReference from the argument Button.
+        /// Returns an Xbox360ButtonReference for the argument Button.
         /// </summary>
         /// <param name="button">The button, such as Button.A</param>
         /// <returns>The reference, which can then be used to check for input.</returns>
         public Xbox360ButtonReference GetButton(Button button)
         {
-            var toReturn = new Xbox360ButtonReference();
-            toReturn.Button = button;
-            toReturn.GamePad = this;
-            return toReturn;
+            if(cachedButtons.ContainsKey(button) == false)
+            {
+                var newReference = new Xbox360ButtonReference();
+                newReference.Button = button;
+                newReference.GamePad = this;
+                cachedButtons.Add(button, newReference);
+            }
+            return cachedButtons[button];
         }
         #endregion
 
@@ -902,7 +909,7 @@ namespace FlatRedBall.Input
         }
 
 
-#region Control Positioned Object
+        #region Control Positioned Object
 
         public void ControlPositionedObject(PositionedObject positionedObject)
         {
@@ -959,7 +966,7 @@ namespace FlatRedBall.Input
             positionedObject.RotationMatrix *= Matrix.CreateFromAxisAngle(up, -TimeManager.SecondDifference * RightStick.Position.X);
         }
 
-#endregion
+        #endregion
 
         /// <summary>
         /// Creates a ButtonMap for this controller using the default bindings.  This is 
