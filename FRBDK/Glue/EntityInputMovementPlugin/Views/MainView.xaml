@@ -15,18 +15,35 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" >
             <GroupBox Header="Input Movement Type" IsEnabled="{Binding CanUserSelectMovementType}">
+                <GroupBox.ToolTip>Setting the Input Movement Type enables standard movement using the keyboard, gamepad, or custom input.</GroupBox.ToolTip>
                 <StackPanel>
-                    <RadioButton IsChecked="{Binding IsNoneRadioChecked}">None</RadioButton>
-                    <RadioButton IsChecked="{Binding IsTopDownRadioChecked}">Top-Down</RadioButton>
-                    <RadioButton IsChecked="{Binding IsPlatformerRadioChecked}">Platformer</RadioButton>
+                    <RadioButton IsChecked="{Binding IsNoneRadioChecked}">
+                        <RadioButton.ToolTip>If None is checked, no movement code is generated.</RadioButton.ToolTip>
+                        None
+                    </RadioButton>
+                    <RadioButton IsChecked="{Binding IsTopDownRadioChecked}">
+                        <RadioButton.ToolTip>If Top-Down is checked, standard top-down movement code is generated for moving in four directions.</RadioButton.ToolTip>
+                        Top-Down
+                    </RadioButton>
+                    <RadioButton IsChecked="{Binding IsPlatformerRadioChecked}">
+                        <RadioButton.ToolTip>If Platformer is checked, standard platformer movement code is generated for moving horizontally and jumping.</RadioButton.ToolTip>
+                        Platformer
+                    </RadioButton>
                     <!--eventually...
                     <RadioButton>Racing</RadioButton>-->
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Input Device" Visibility="{Binding InputDeviceVisibility}">
+                <GroupBox.ToolTip>Glue can generate standard input reading code. This can be overridden in code</GroupBox.ToolTip>
                 <StackPanel>
-                    <RadioButton IsChecked="{Binding IsGamepadWithKeyboardFallbackInputDevice}">Xbox Gamepad with Keyboard Fallback</RadioButton>
-                    <RadioButton IsChecked="{Binding IsNoneInputDevice}">None (Can Assign in Code)</RadioButton>
+                    <RadioButton IsChecked="{Binding IsGamepadWithKeyboardFallbackInputDevice}">
+                        <RadioButton.ToolTip>Generates code to use a gamepad if plugged in, otherwise to use the Keyboard.</RadioButton.ToolTip>
+                        Xbox Gamepad with Keyboard Fallback
+                    </RadioButton>
+                    <RadioButton IsChecked="{Binding IsNoneInputDevice}">
+                        <RadioButton.ToolTip>Generates no input assignment code.</RadioButton.ToolTip>
+                        None (Can Assign in Code)
+                    </RadioButton>
                 </StackPanel>
             </GroupBox>
         </StackPanel>
