@@ -431,13 +431,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             addEntityVm.IsSpriteChecked = vm.AddPlayerSprite;
 
-
             playerEntity = GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(addEntityVm);
-            if (vm.OffsetPlayerPosition)
-            {
-                playerEntity.SetCustomVariable("X", 64.0f);
-                playerEntity.SetCustomVariable("Y", -64.0f);
-            }
 
             return playerEntity;
         }
@@ -467,7 +461,10 @@ namespace OfficialPluginsCore.Wizard.Managers
                     addPlayerVm.SourceClassType = playerEntity.Name;
                     addPlayerVm.ObjectName = "Player1";
 
-                    GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addPlayerVm, gameScreen, playerList);
+                    var playerNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addPlayerVm, gameScreen, playerList);
+
+                    playerNos.SetVariable("X", 64.0f);
+                    playerNos.SetVariable("Y", -64.0f);
                 }
             }
 

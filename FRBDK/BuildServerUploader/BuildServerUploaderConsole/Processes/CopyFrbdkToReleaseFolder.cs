@@ -28,15 +28,8 @@ namespace BuildServerUploaderConsole.Processes
         {
             get
             {
-                if (System.IO.Directory.Exists(DirectoryHelper.FrbdkDirectory + @"Glue\Glue\bin\DEBUG\netcoreapp3.0\win-x86\publish\"))
-                {
-                    return DirectoryHelper.FrbdkDirectory + @"Glue\Glue\bin\DEBUG\netcoreapp3.0\win-x86\publish\";
-                }
-                else
-                {
-                    // alternative, which is what is happening on Vic's desktop 2021:
-                    return DirectoryHelper.FrbdkDirectory + @"Glue\Glue\bin\x86\Debug\netcoreapp3.0\";
-                }
+                return DirectoryHelper.FrbdkDirectory + @"Glue\Glue\bin\DEBUG\netcoreapp3.0\win-x86\publish\";
+
             }
         }
 
