@@ -454,7 +454,7 @@ namespace FlatRedBall.Input
         /// <returns>The reference, which can be used to check for input.</returns>
         public KeyReference GetKey(Keys key)
 		{
-            if(cachedKeys.ContainsKey(key))
+            if(cachedKeys.ContainsKey(key) == false)
             {
 			    var newReference = new KeyReference ();
 

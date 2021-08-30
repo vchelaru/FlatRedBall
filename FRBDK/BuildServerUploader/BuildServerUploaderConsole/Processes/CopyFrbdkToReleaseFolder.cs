@@ -24,8 +24,21 @@ namespace BuildServerUploaderConsole.Processes
         string GlueRegularBuildDestinationFolder =
             @"Glue\Glue\bin\x86\Debug\netcoreapp3.0\";
         // This is the output from: dotnet publish GlueFormsCore.csproj -r win-x86 -c DEBUG
-        string GluePublishDestinationFolder =
-            @"Glue\Glue\bin\DEBUG\netcoreapp3.0\win-x86\publish\";
+        string GluePublishDestinationFolder
+        {
+            get
+            {
+                if (System.IO.Directory.Exists(DirectoryHelper.FrbdkDirectory + @"Glue\Glue\bin\DEBUG\netcoreapp3.0\win-x86\publish\"))
+                {
+                    return DirectoryHelper.FrbdkDirectory + @"Glue\Glue\bin\DEBUG\netcoreapp3.0\win-x86\publish\";
+                }
+                else
+                {
+                    // alternative, which is what is happening on Vic's desktop 2021:
+                    return DirectoryHelper.FrbdkDirectory + @"Glue\Glue\bin\x86\Debug\netcoreapp3.0\";
+                }
+            }
+        }
 
         // I'd like to have all the tools sit in their own directories, but
         // this is a big change so I'm going to do it incrementally by moving
@@ -43,7 +56,7 @@ namespace BuildServerUploaderConsole.Processes
             : base(
                 @"Copy all FRBDK .exe files, EditorObjects.dll, and the engine to ReleaseFiles\FRBDK For Zip\ (Auto)", results)
         {
-            
+
             _excludedDirs = new List<string>();
             _excludeFiles = new List<string>();
 
@@ -57,7 +70,7 @@ namespace BuildServerUploaderConsole.Processes
             var frbdkForZipDirectory = DirectoryHelper.ReleaseDirectory + @"FRBDK For Zip\";
 
             frbdkForZipDirectory = FileManager.Standardize(frbdkForZipDirectory);
-            
+
             DirectoryHelper.DeleteDirectory(frbdkForZipDirectory);
 
             if (!Directory.Exists(frbdkForZipDirectory))
@@ -89,7 +102,7 @@ namespace BuildServerUploaderConsole.Processes
             }
 
 
-            CopyDirectory(DirectoryHelper.FrbdkDirectory + GluePublishDestinationFolder, "Copied " + GluePublishDestinationFolder);
+            CopyDirectory(GluePublishDestinationFolder, "Copied " + GluePublishDestinationFolder);
             CopyDirectory(DirectoryHelper.FrbdkDirectory + GlueRegularBuildDestinationFolder + @"Plugins\", "Copied plugins to Glue", @"\Plugins\");
 
             FileManager.CopyDirectory(frbdkForZipDirectory + @"\Assets", frbdkForZipDirectory + @"\Xna 4 Tools\Assets", false, _excludeFiles, _excludedDirs);
