@@ -48,6 +48,8 @@ namespace TopDownPlugin.Views
                 newItemName = FlatRedBall.Utilities.StringFunctions.IncrementNumberAtEnd(newItemName);
             }
 
+            // See MainControl.Xaml.cs for platformer to see a discussion about whether this should use Overwrite as its default behavior instead of inherit....
+
             values.Name = newItemName;
 
             ViewModel.TopDownValues.Add(values);

@@ -17,8 +17,8 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
 
         public string Name
         {
-            get { return Get<string>(); }
-            set { Set(value); }
+            get => Get<string>(); 
+            set => Set(value); 
         }
 
         public float MaxSpeedX
@@ -93,17 +93,7 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
         [DependsOn(nameof(MoveSameSpeedOnSlopes))]
         public Visibility SlopeMovementSpeedUiVisibility
         {
-            get
-            {
-                if (MoveSameSpeedOnSlopes)
-                {
-                    return Visibility.Collapsed;
-                }
-                else
-                {
-                    return Visibility.Visible;
-                }
-            }
+            get => (MoveSameSpeedOnSlopes == false).ToVisibility();
         }
 
 
@@ -167,14 +157,14 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
 
         public bool JumpApplyByButtonHold
         {
-            get { return Get<bool>(); }
-            set { Set(value); }
+            get => Get<bool>(); 
+            set => Set(value); 
         }
 
         public decimal UphillFullSpeedSlope
         {
-            get { return Get<decimal>(); }
-            set { Set(value); }
+            get => Get<decimal>();
+            set => Set(value); 
         }
 
         public decimal UphillStopSpeedSlope
@@ -259,8 +249,17 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
             set => Set(value);
         }
 
+        public bool DoesBaseEntityHaveSameNamedValues
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         [DependsOn(nameof(IsInDerivedPlatformerEntity))]
-        public Visibility InheritBoxVisibility => IsInDerivedPlatformerEntity.ToVisibility();
+        [DependsOn(nameof(DoesBaseEntityHaveSameNamedValues))]
+        public Visibility InheritBoxVisibility => 
+            (IsInDerivedPlatformerEntity && DoesBaseEntityHaveSameNamedValues == false).ToVisibility();
+            
 
         [DependsOn(nameof(IsInDerivedPlatformerEntity))]
         public Visibility DeleteButtonVisibility => (IsInDerivedPlatformerEntity == false).ToVisibility();
@@ -310,7 +309,7 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
             }
         }
 
-        internal void SetFrom(PlatformerValues values, bool isInDerivedPlatformer)
+        internal void SetFrom(PlatformerValues values, bool isInDerivedPlatformer, bool doesBaseEntityHaveSameNamedValues)
         {
             Name = values.Name;
             MaxSpeedX = values.MaxSpeedX;
@@ -340,6 +339,7 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
 
             this.InheritOrOverwrite = values.InheritOrOverwrite;
             this.IsInDerivedPlatformerEntity = isInDerivedPlatformer;
+            this.DoesBaseEntityHaveSameNamedValues = DoesBaseEntityHaveSameNamedValues;
         }
 
         private void ClampUphillValues()

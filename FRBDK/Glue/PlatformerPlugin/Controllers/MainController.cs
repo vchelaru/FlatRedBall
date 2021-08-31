@@ -317,7 +317,8 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
                             platformerValuesViewModel = new PlatformerValuesViewModel();
                             viewModel.PlatformerValues.Add(platformerValuesViewModel);
                         }
-                        platformerValuesViewModel.SetFrom(value, inheritsFromPlatformer);
+                        platformerValuesViewModel.SetFrom(value, inheritsFromPlatformer, 
+                            doesBaseEntityHaveSameNamedValues:true);
                         // since it's coming from a derived, force it as "inherits"
                         platformerValuesViewModel.InheritOrOverwrite = InheritOrOverwrite.Inherit;
                     }
@@ -332,7 +333,10 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
                 {
                     var platformerValuesViewModel = new PlatformerValuesViewModel();
 
-                    platformerValuesViewModel.SetFrom(value, inheritsFromPlatformer);
+
+
+                    platformerValuesViewModel.SetFrom(value, inheritsFromPlatformer, 
+                        doesBaseEntityHaveSameNamedValues:existing != null);
 
                     if(existing != null)
                     {

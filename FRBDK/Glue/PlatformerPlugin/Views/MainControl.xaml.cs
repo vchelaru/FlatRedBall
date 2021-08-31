@@ -66,6 +66,13 @@ namespace FlatRedBall.PlatformerPlugin.Views
                 newItemName = FlatRedBall.Utilities.StringFunctions.IncrementNumberAtEnd(newItemName);
             }
 
+            // Update August 31, 2021
+            // New objects should use the
+            // override so that they aren't
+            // considered inherited values when
+            // added to a derived entity.
+            values.InheritOrOverwrite = GlueCommon.Models.InheritOrOverwrite.Overwrite;
+
             values.Name = newItemName;
 
             ViewModel.PlatformerValues.Add(values);

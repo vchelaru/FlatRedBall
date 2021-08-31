@@ -43,12 +43,6 @@ namespace FlatRedBall.Glue.SaveClasses
 
             List<INamedObjectContainer> baseElements = new List<INamedObjectContainer>();
 
-            // June 1, 2011:
-            // The following code
-            // was using AddRange instead
-            // of manually looping, but this
-            // is only possible in .NET 4.0, and
-            // GlueView still uses 3.1.  
             // July 24, 2011
             // Before today, this
             // code would loop through
@@ -61,7 +55,7 @@ namespace FlatRedBall.Glue.SaveClasses
             // anything that inherited directly from the base should
             // be forced to define it.  If it does, then the 3rd Element
             // in the inheritance chain shouldn't have to define it, but before
-            // to day it did.  This caused a lot of problems including generated
+            // today it did.  This caused a lot of problems including generated
             // code creating the element twice.
             if (namedObjectContainer is EntitySave)
             {
