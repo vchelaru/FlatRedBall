@@ -626,6 +626,12 @@ namespace GlueControl
 
                 CameraLogic.UpdateZoomLevelToCamera();
 
+                if (FlatRedBall.Screens.ScreenManager.IsInEditMode)
+                {
+                    Camera.Main.Velocity = Vector3.Zero;
+                    Camera.Main.Acceleration = Vector3.Zero;
+                }
+
                 FlatRedBall.Screens.ScreenManager.ScreenLoaded -= AfterInitializeLogic;
 
                 EditingManager.Self.RefreshSelectionAfterScreenLoad(playBump);

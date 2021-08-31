@@ -2393,6 +2393,7 @@ namespace FlatRedBall
             mManuallyUpdatedSprites.Remove(spriteToRemove);
 
             UnderAllDrawnLayer.Remove(spriteToRemove);
+            TopLayer.Remove(spriteToRemove);
 
             foreach (Layer sl in mLayers)
                 sl.Remove(spriteToRemove);
