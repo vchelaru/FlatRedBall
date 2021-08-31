@@ -27,7 +27,7 @@ namespace BuildServerUploaderConsole.Processes
             //processStart.CreateNoWindow = true;
             processStart.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
 
-            Results.WriteMessage($"{executable} {args}");
+            Results.WriteMessage($"{executable} {args} in {processStart.WorkingDirectory}");
             //dotnet publish GlueFormsCore.csproj -r win-x86 -c DEBUG
             var process = System.Diagnostics.Process.Start(processStart);
             process.WaitForExit();

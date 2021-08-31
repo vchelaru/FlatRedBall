@@ -84,7 +84,7 @@ namespace FlatRedBall
         {
             Reset();
 #if WINDOWS_8 || UWP
-            mAction = ThreadPool.RunAsync(TimedActivityInternal);
+            mAction = Windows.System.Threading.ThreadPool.RunAsync(TimedActivityInternal);
 #else
             ThreadPool.QueueUserWorkItem(TimedActivityInternal);
 #endif
@@ -115,7 +115,7 @@ namespace FlatRedBall
         {
             Reset();
 #if WINDOWS_8  || UWP
-            mAction = ThreadPool.RunAsync(AnimateSelfInternal);
+            mAction = Windows.System.Threading.ThreadPool.RunAsync(AnimateSelfInternal);
 #else
             ThreadPool.QueueUserWorkItem(AnimateSelfInternal);
 #endif
@@ -143,7 +143,7 @@ namespace FlatRedBall
         {
             Reset();
 #if WINDOWS_8 || UWP
-            mAction = ThreadPool.RunAsync(ExecuteInstructionsInternal);
+            mAction = Windows.System.Threading.ThreadPool.RunAsync(ExecuteInstructionsInternal);
 #else
             ThreadPool.QueueUserWorkItem(ExecuteInstructionsInternal);
 #endif
@@ -170,7 +170,7 @@ namespace FlatRedBall
         {
             Reset();
 #if WINDOWS_8 || UWP
-            mAction = ThreadPool.RunAsync(UpdateDependenciesInternal);
+            mAction = Windows.System.Threading.ThreadPool.RunAsync(UpdateDependenciesInternal);
 #else
             ThreadPool.QueueUserWorkItem(UpdateDependenciesInternal);
 #endif

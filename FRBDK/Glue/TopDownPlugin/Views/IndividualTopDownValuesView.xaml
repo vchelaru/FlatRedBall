@@ -40,7 +40,13 @@
 
         <!--Name-->
         <StackPanel Grid.Row="1" Margin="3">
-            <TextBlock HorizontalAlignment="Center" Margin="3">Movement Type</TextBlock>
+            <TextBlock HorizontalAlignment="Center" Margin="3">
+                <TextBlock.ToolTip>
+                    The name of the movement type. This name can be used in code to assign this movement type.
+                </TextBlock.ToolTip>
+                Movement Type
+            </TextBlock>
+            
             <TextBox Text="{Binding Name}" Width="90" VerticalAlignment="Top" 
                      KeyUp="TextBox_KeyEnterUpdate" 
                      IsEnabled="{Binding IsNameEditable}">

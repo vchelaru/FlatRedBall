@@ -231,7 +231,7 @@ namespace OfficialPlugins.Compiler
             viewModel.HasLoadedGlux = true;
 
             game1GlueControlGenerator.PortNumber = model.PortNumber;
-            game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = model.GenerateGlueControlManagerCode;
+            game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = model.GenerateGlueControlManagerCode && IsFrbNewEnough();
             RefreshManager.Self.PortNumber = model.PortNumber;
 
             ToolbarController.Self.HandleGluxLoaded();
@@ -378,7 +378,7 @@ namespace OfficialPlugins.Compiler
                 case nameof(CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked):
                 case nameof(CompilerViewModel.PortNumber):
                     control.PrintOutput("Applying changes");
-                    game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = viewModel.IsGenerateGlueControlManagerInGame1Checked;
+                    game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = viewModel.IsGenerateGlueControlManagerInGame1Checked && IsFrbNewEnough();
                     game1GlueControlGenerator.PortNumber = viewModel.PortNumber;
                     RefreshManager.Self.PortNumber = viewModel.PortNumber;
                     GlueCommands.Self.GenerateCodeCommands.GenerateGame1();

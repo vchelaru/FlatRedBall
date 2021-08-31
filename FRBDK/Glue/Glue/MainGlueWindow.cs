@@ -95,6 +95,10 @@ namespace Glue
 
             InitializeComponent();
 
+            this.Activated += new System.EventHandler(this.Form1_Activated);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+            this.Load += new System.EventHandler(this.Form1_Load);
+
             //this.MainPanelSplitContainer = new GlueFormsCore.Controls.WinformsSplitContainer();
             //this.Controls.Add(this.MainPanelSplitContainer);
             var wpfHost = new ElementHost();

@@ -104,7 +104,7 @@ namespace GlueFormsCore.Controls
 
             this.PropertyChanged += (sender, args) => HandlePropertyChanged(args.PropertyName);
 
-            RefreshColumnAndRowWidths();
+            ExpandAndCollapseColumnAndRowWidths();
         }
 
         private void HandlePropertyChanged(string propertyName)
@@ -112,35 +112,35 @@ namespace GlueFormsCore.Controls
             switch (propertyName)
             {
                 case nameof(TopTabItems):
-                    RefreshColumnAndRowWidths();
+                    ExpandAndCollapseColumnAndRowWidths();
                     if(TopTabItems.Count > 0 && TopSelectedTab == null)
                     {
                         TopSelectedTab = TopTabItems[0];
                     }
                     break;
                 case nameof(BottomTabItems):
-                    RefreshColumnAndRowWidths();
+                    ExpandAndCollapseColumnAndRowWidths();
                     if (BottomTabItems.Count > 0 && BottomSelectedTab == null)
                     {
                         BottomSelectedTab = BottomTabItems[0];
                     }
                     break;
                 case nameof(LeftTabItems):
-                    RefreshColumnAndRowWidths();
+                    ExpandAndCollapseColumnAndRowWidths();
                     if (LeftTabItems.Count > 0 && LeftSelectedTab == null)
                     {
                         LeftSelectedTab = LeftTabItems[0];
                     }
                     break;
                 case nameof(RightTabItems):
-                    RefreshColumnAndRowWidths();
+                    ExpandAndCollapseColumnAndRowWidths();
                     if (RightTabItems.Count > 0 && RightSelectedTab == null)
                     {
                         RightSelectedTab = RightTabItems[0];
                     }
                     break;
                 case nameof(CenterTabItems):
-                    RefreshColumnAndRowWidths();
+                    ExpandAndCollapseColumnAndRowWidths();
                     if (CenterTabItems.Count > 0 && CenterSelectedTab == null)
                     {
                         CenterSelectedTab = CenterTabItems[0];
@@ -149,7 +149,7 @@ namespace GlueFormsCore.Controls
             }
         }
 
-        private void RefreshColumnAndRowWidths()
+        private void ExpandAndCollapseColumnAndRowWidths()
         {
             var shouldShrinkLeft = LeftTabItems.Count == 0 && LeftSplitterWidth.Value > 0;
             var shouldExpandLeft = LeftTabItems.Count > 0 && LeftSplitterWidth.Value == 0;

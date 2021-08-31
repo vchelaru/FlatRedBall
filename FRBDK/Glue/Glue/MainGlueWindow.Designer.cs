@@ -89,9 +89,7 @@ namespace Glue
             this.MainMenuStrip = this.mMenu;
             this.Name = "MainGlueWindow";
             this.Text = "FlatRedBall Glue";
-            this.Activated += new System.EventHandler(this.Form1_Activated);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
-            this.Load += new System.EventHandler(this.Form1_Load);
+
             this.mElementContextMenu.ResumeLayout(false);
             this.mMenu.ResumeLayout(false);
             this.mMenu.PerformLayout();

@@ -1,0 +1,109 @@
+﻿<Window x:Class="Npc.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Create new project" ResizeMode="NoResize" SizeToContent="Height" Width="400">
+    <Window.Resources>
+        <Style x:Key="myStyle" TargetType="Button">
+            <Setter Property="Background" Value="#71AA34" />
+            
+        </Style>
+    </Window.Resources>
+    <Grid Margin="12,24,12,12">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <TextBlock FontWeight="Bold" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,10" >Project Name:</TextBlock>
+            <TextBox Height="20" VerticalAlignment="Top" Grid.Column="1" Text="{Binding ProjectName, UpdateSourceTrigger=PropertyChanged}" KeyDown="TextBox_KeyDown"></TextBox>
+
+            <TextBlock FontWeight="Bold" Grid.Column="0" Grid.Row="1" Margin="0,0,16,10" >Platform:</TextBlock>
+            <ComboBox VerticalAlignment="Top"  ItemsSource="{Binding AvailableProjects, Mode=OneWay}" 
+                     SelectedItem="{Binding SelectedProject}" Grid.Column="1" Grid.Row="1"></ComboBox>
+
+            <TextBlock FontWeight="Bold" Grid.Column="0" Grid.Row="2" Margin="0,0,16,10">Use Local Copy if available:</TextBlock>
+            <CheckBox IsChecked="{Binding UseLocalCopy}" Grid.Column="1" Grid.Row="2">
+                <CheckBox.LayoutTransform>
+                    <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                </CheckBox.LayoutTransform>
+            </CheckBox>
+            
+            <TextBlock FontWeight="Bold" Grid.Column="0" Grid.Row="3" Margin="0,0,16,10" >Custom Namespace:</TextBlock>
+            <StackPanel Grid.Column="1" Grid.Row="3" VerticalAlignment="Top">
+                <CheckBox  IsChecked="{Binding IsDifferentNamespaceChecked}">
+                    <CheckBox.LayoutTransform>
+                        <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                    </CheckBox.LayoutTransform>
+                </CheckBox>
+                <TextBox Visibility="{Binding DifferentNamespaceTextBoxVisibility}" Text="{Binding DifferentNamespace, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,0"></TextBox>
+            </StackPanel>
+
+            <TextBlock FontWeight="Bold" Grid.Row="4" VerticalAlignment="Center" Grid.Column="0" Margin="0,0,16,10" >Location:</TextBlock>
+            <Grid Grid.Row="4" Grid.Column="1" VerticalAlignment="Top" Margin="0,5,0,10" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <TextBox Height="20" VerticalAlignment="Top"  Grid.Column="0" Text="{Binding ProjectLocation}"></TextBox>
+                <Button Grid.Column="1" Width="18" VerticalAlignment="Top" Click="SelectLocationClicked">...</Button>
+            </Grid>
+
+            <TextBlock FontWeight="Bold" Grid.Row="5" Margin="0,0,16,10" >Create Project Directory:</TextBlock>
+            <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding IsCreateProjectDirectoryChecked}">
+                <CheckBox.LayoutTransform>
+                    <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                </CheckBox.LayoutTransform>
+            </CheckBox>
+
+            <StackPanel Grid.Row="6" Grid.ColumnSpan="2">
+                <TextBlock FontStyle="Italic" FontSize="10">Solution (.sln) will be located in:</TextBlock>
+                <TextBlock FontStyle="Italic" FontWeight="Bold"  FontSize="10" Foreground="{Binding FinalDirectoryForeground}" Text="{Binding FinalDirectory}" TextWrapping="Wrap" Margin="15,4,0,0"></TextBlock>
+                <TextBlock FontStyle="Italic" FontSize="10" Foreground="{Binding FinalDirectoryForeground}" Text="{Binding ProjectLocationError}" TextWrapping="Wrap" Margin="15,4,0,0"></TextBlock>
+            </StackPanel>
+
+            <Button 
+                Margin="0,16,0,16"
+                Style="{StaticResource myStyle}"
+                Grid.Row="7" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Click="HandleMakeMyProjectClicked" Height="48">
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <ContentControl>
+                            <Border Name="innerborder" BorderBrush="Gray" BorderThickness="0" Background="{TemplateBinding Background}" CornerRadius="12">
+                                <Grid>
+                                    <TextBlock HorizontalAlignment="Stretch" 
+                                               FontWeight="DemiBold"
+                                               FontSize="26" VerticalAlignment="Center" 
+                                               TextAlignment="Center" Text="Create Project!"></TextBlock>
+                                </Grid>
+                            </Border>
+                        </ContentControl>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Button.IsMouseOver" Value="True" >
+                                <Setter TargetName="innerborder" Property="Background" Value="#7CB538" />
+                            </Trigger>
+                            <Trigger Property="Button.IsPressed" Value="True" >
+                                <Setter TargetName="innerborder" Property="Background" Value="#567F27" />
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </Grid>
+    </Grid>
+</Window>

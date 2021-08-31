@@ -23,15 +23,15 @@
         
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="{Binding TopPanelHeight}"></RowDefinition>
+            <RowDefinition Height="{Binding TopPanelHeight, Mode=TwoWay}"></RowDefinition>
 
-            <RowDefinition Height="{Binding TopSplitterHeight}"></RowDefinition>
+            <RowDefinition Height="{Binding TopSplitterHeight, Mode=TwoWay}"></RowDefinition>
             
             <RowDefinition></RowDefinition>
 
-            <RowDefinition Height="{Binding BottomSplitterHeight}"></RowDefinition>
+            <RowDefinition Height="{Binding BottomSplitterHeight, Mode=TwoWay}"></RowDefinition>
 
-            <RowDefinition Height="{Binding BottomPanelHeight}"></RowDefinition>
+            <RowDefinition Height="{Binding BottomPanelHeight, Mode=TwoWay}"></RowDefinition>
         </Grid.RowDefinitions>
 
         <controls:ToolbarControl x:Name="ToolbarControl"></controls:ToolbarControl>
@@ -42,8 +42,8 @@
         
         <Grid Grid.Row="3" x:Name="CenterGrid">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="{Binding LeftPanelWidth}" ></ColumnDefinition>
-                <ColumnDefinition Width="{Binding LeftSplitterWidth}"></ColumnDefinition>
+                <ColumnDefinition Width="{Binding LeftPanelWidth, Mode=TwoWay}" ></ColumnDefinition>
+                <ColumnDefinition Width="{Binding LeftSplitterWidth, Mode=TwoWay}"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>

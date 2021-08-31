@@ -33,8 +33,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToolsUtilitiesStandard", ".
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GlueCommon", "..\Glue\GlueCommon\GlueCommon.csproj", "{BDDAB7DE-DB12-4BFE-AD4C-F607F3B7AF43}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBallStandard", "..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj", "{A6BF8D65-7BDC-404F-B7E8-F29B800E1308}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{a6bf8d65-7bdc-404f-b7e8-f29b800e1308}*SharedItemsImports = 5
 		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{e1cb7d7b-e2ec-4deb-92e2-6ef0b76f40f0}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -256,6 +259,22 @@ Global
 		{BDDAB7DE-DB12-4BFE-AD4C-F607F3B7AF43}.Release|x86.Build.0 = Release|x86
 		{BDDAB7DE-DB12-4BFE-AD4C-F607F3B7AF43}.Submission|x86.ActiveCfg = Debug|x86
 		{BDDAB7DE-DB12-4BFE-AD4C-F607F3B7AF43}.Submission|x86.Build.0 = Debug|x86
+		{A6BF8D65-7BDC-404F-B7E8-F29B800E1308}.AutomatedBuild|x86.ActiveCfg = Debug|x86
+		{A6BF8D65-7BDC-404F-B7E8-F29B800E1308}.AutomatedBuild|x86.Build.0 = Debug|x86
+		{A6BF8D65-7BDC-404F-B7E8-F29B800E1308}.Debug|x86.ActiveCfg = Debug|x86
+		{A6BF8D65-7BDC-404F-B7E8-F29B800E1308}.Debug|x86.Build.0 = Debug|x86
+		{A6BF8D65-7BDC-404F-B7E8-F29B800E1308}.Debug2|x86.ActiveCfg = Debug|x86
+		{A6BF8D65-7BDC-404F-B7E8-F29B800E1308}.Debug2|x86.Build.0 = Debug|x86
+		{A6BF8D65-7BDC-404F-B7E8-F29B800E1308}.DebugCopyScripts|x86.ActiveCfg = Debug|x86
+		{A6BF8D65-7BDC-404F-B7E8-F29B800E1308}.DebugCopyScripts|x86.Build.0 = Debug|x86
+		{A6BF8D65-7BDC-404F-B7E8-F29B800E1308}.DebugProfile|x86.ActiveCfg = Debug|x86
+		{A6BF8D65-7BDC-404F-B7E8-F29B800E1308}.DebugProfile|x86.Build.0 = Debug|x86
+		{A6BF8D65-7BDC-404F-B7E8-F29B800E1308}.Profile|x86.ActiveCfg = Debug|x86
+		{A6BF8D65-7BDC-404F-B7E8-F29B800E1308}.Profile|x86.Build.0 = Debug|x86
+		{A6BF8D65-7BDC-404F-B7E8-F29B800E1308}.Release|x86.ActiveCfg = Release|x86
+		{A6BF8D65-7BDC-404F-B7E8-F29B800E1308}.Release|x86.Build.0 = Release|x86
+		{A6BF8D65-7BDC-404F-B7E8-F29B800E1308}.Submission|x86.ActiveCfg = Debug|x86
+		{A6BF8D65-7BDC-404F-B7E8-F29B800E1308}.Submission|x86.Build.0 = Debug|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -272,6 +291,7 @@ Global
 		{54BFE18A-84B4-48AB-92E0-0774EA019202} = {D56DDD6D-AB13-4F2D-AF52-8DBBFB4064AC}
 		{4CF72913-817F-4B60-8920-3214FCAF7BE9} = {D56DDD6D-AB13-4F2D-AF52-8DBBFB4064AC}
 		{BDDAB7DE-DB12-4BFE-AD4C-F607F3B7AF43} = {F83E1FC3-B8AA-40EA-9CC8-0B688A208130}
+		{A6BF8D65-7BDC-404F-B7E8-F29B800E1308} = {F83E1FC3-B8AA-40EA-9CC8-0B688A208130}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB4CF3B0-7560-4FC7-AA72-63D774F93E3F}

@@ -1090,7 +1090,8 @@ namespace GlueControl
                 }
             }
             else if (instruction.Type == typeof(FlatRedBall.Graphics.Animation.AnimationChainList).FullName ||
-                instruction.Type == typeof(Microsoft.Xna.Framework.Graphics.Texture2D).FullName)
+                instruction.Type == typeof(Microsoft.Xna.Framework.Graphics.Texture2D).FullName ||
+                instruction.Type == typeof(Microsoft.Xna.Framework.Color).FullName)
             {
                 if (variableValue is string asString && !string.IsNullOrWhiteSpace(asString))
                 {

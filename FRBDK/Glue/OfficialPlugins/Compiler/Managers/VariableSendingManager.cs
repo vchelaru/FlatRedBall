@@ -114,6 +114,10 @@ namespace OfficialPlugins.Compiler.Managers
             {
                 currentValue = property.Value;
             }
+            else if(changedMember == "IncludeInICollidable")
+            {
+                currentValue = nos.IncludeInICollidable;
+            }
             #endregion
 
 

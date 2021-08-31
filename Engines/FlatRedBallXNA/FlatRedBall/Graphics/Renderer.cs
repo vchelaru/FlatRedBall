@@ -67,7 +67,7 @@ namespace FlatRedBall.Graphics
         {
             Reset();
 #if UWP
-            ThreadPool.RunAsync(FillVertexListSync);
+            Windows.System.Threading.ThreadPool.RunAsync(FillVertexListSync);
 #else
             ThreadPool.QueueUserWorkItem(FillVertexListSync);
 #endif

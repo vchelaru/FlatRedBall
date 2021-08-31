@@ -49,8 +49,9 @@
             <TextBlock HorizontalAlignment="Center" Margin="3">Movement Type</TextBlock>
             <TextBox Text="{Binding Name}" Width="90" VerticalAlignment="Top" 
                      b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"
-                     IsEnabled="{Binding IsNameEditable}"
-                     ></TextBox>
+                     IsEnabled="{Binding IsNameEditable}">
+                
+            </TextBox>
             <GroupBox Header="Inheritance" Visibility="{Binding InheritBoxVisibility}">
                 <StackPanel>
                     <RadioButton VerticalContentAlignment="Center" IsChecked="{Binding InheritMovementValues}">
@@ -75,18 +76,34 @@
 
             <TextBlock>Max Speed:</TextBlock>
             <TextBox Text="{Binding MaxSpeedX}" HorizontalAlignment="Left" Width="70" Margin="0,0,0,5"
-                     b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
+                     b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
+                <TextBox.ToolTip>The maximum speed that the entity can move due to input being applyed. This speed can be exceeded when on a moving platform.</TextBox.ToolTip>
+            </TextBox>
 
-            <RadioButton IsChecked="{Binding IsImmediate}">Immediate</RadioButton>
-            <RadioButton  IsChecked="{Binding UsesAcceleration}" Margin="0,0,0,5">Speed Up/Down</RadioButton>
+            <RadioButton IsChecked="{Binding IsImmediate}">
+                <RadioButton.ToolTip>Speeding up to maximum speed or down to stopping happens immediately.</RadioButton.ToolTip>
+                Immediate
+            </RadioButton>
+            <RadioButton  IsChecked="{Binding UsesAcceleration}" Margin="0,0,0,5">
+                <RadioButton.ToolTip>Speeding up to maximum speed or down happens gradually.</RadioButton.ToolTip>
+                Speed Up/Down
+            </RadioButton>
 
             <StackPanel Visibility="{Binding AccelerationValuesVisibility}">
                 <TextBlock>Speed Up Time:</TextBlock>
                 <TextBox HorizontalAlignment="Left" Width="50"  Text="{Binding AccelerationTimeX}"
-                         b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
+                         b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
+                    <TextBox.ToolTip>
+                        The number of seconds to accelerate from a standstill to full speed.
+                    </TextBox.ToolTip>
+                </TextBox>
                 <TextBlock>Slow Down Time:</TextBlock>
                 <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding DecelerationTimeX}"
-                         b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
+                         b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
+                    <TextBox.ToolTip>
+                        The number of seconds to decelerate from max speed to a standstill.
+                    </TextBox.ToolTip>
+                </TextBox>
 
 
                 <CheckBox VerticalContentAlignment="Center" Margin="0,10,0,0" IsChecked="{Binding IsCustomDecelerationChecked}">
@@ -108,8 +125,13 @@
         <!--Slope Movement -->
         <TextBlock Grid.Column="2" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3">Slope Movement</TextBlock>
         <StackPanel Grid.Row="1" Grid.Column="2" Margin="12,3,8,3"  IsEnabled="{Binding IsEditable}">
-            <RadioButton IsChecked="{Binding MoveSameSpeedOnSlopes}" VerticalContentAlignment="Center">Move the same speed</RadioButton>
-            <RadioButton IsChecked="{Binding AdjustSpeedOnSlopes}" VerticalContentAlignment="Center">Slopes change speed</RadioButton>
+            <RadioButton IsChecked="{Binding MoveSameSpeedOnSlopes}" VerticalContentAlignment="Center">
+                <RadioButton.ToolTip>Horizontal movement is not impacted by slopes.</RadioButton.ToolTip>
+                Move the same speed</RadioButton>
+            <RadioButton IsChecked="{Binding AdjustSpeedOnSlopes}" VerticalContentAlignment="Center">
+                <RadioButton.ToolTip>Horizontal movement is impacted by slopes.</RadioButton.ToolTip>
+
+                Slopes change speed</RadioButton>
             <StackPanel Margin="10,0,0,0" Visibility="{Binding SlopeMovementSpeedUiVisibility}">
 
                 <StackPanel Orientation="Horizontal">
@@ -151,20 +173,36 @@
         <StackPanel Grid.Column="3" Grid.Row="1" Margin="12,3,8,3"  IsEnabled="{Binding IsEditable}">
             <TextBlock>Jump Speed:</TextBlock>
             <TextBox HorizontalAlignment="Left" Width="70"  Text="{Binding JumpVelocity}" Margin="1,0,-1,5"
-                     b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
+                     b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
+                <TextBox.ToolTip>
+                    The Y velocity to assign when jumping. Setting a value of 0 means the entity cannot jump.
+                </TextBox.ToolTip>
+            </TextBox>
 
-            <CheckBox Margin="0,5,0,0" IsChecked="{Binding JumpApplyByButtonHold}">Hold to Jump Higher</CheckBox>
+            <CheckBox Margin="0,5,0,0" IsChecked="{Binding JumpApplyByButtonHold}">
+                <CheckBox.ToolTip>If checked, the player can hold the jump button to jump higher. If unchecked, all jumps will be the same height, regardless of how long the jump button is held.</CheckBox.ToolTip>
+                Hold to Jump Higher</CheckBox>
             <StackPanel Visibility="{Binding JumpHoldTimeVisibility}">
                 <TextBlock>Max Jump Hold Time:</TextBlock>
                 <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding JumpApplyLength}"
-                         b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
+                         b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
+                    <TextBox.ToolTip>
+                        The amount of time that the player can hold the jump button to jump higher. While the button is held, gravity is disabled.
+                    </TextBox.ToolTip>
+                </TextBox>
             </StackPanel>
 
-            <CheckBox Margin="0,10,0,0" IsChecked="{Binding CanFallThroughCloudPlatforms}">Can Fall Through Clouds</CheckBox>
+            <CheckBox Margin="0,10,0,0" IsChecked="{Binding CanFallThroughCloudPlatforms}">
+                <CheckBox.ToolTip>If checked, the player can press the down direction and jump to fall through clouds.</CheckBox.ToolTip>
+                Can Fall Through Clouds</CheckBox>
             <StackPanel Visibility="{Binding FallThroughCloudPlatformsVisibility}">
                 <TextBlock>Cloud Platform Thickness:</TextBlock>
                 <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding CloudFallThroughDistance}"
-                         b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
+                         b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
+                    <TextBox.ToolTip>
+                        The amount of distance to fall when pressing down and jump on cloud before re-enabling cloud collision. This should be the height of the entity collision.
+                    </TextBox.ToolTip>
+                </TextBox>
             </StackPanel>
         </StackPanel>
 
@@ -173,12 +211,16 @@
         <StackPanel Grid.Column="4" Grid.Row="1" Margin="12,3,8,3"  IsEnabled="{Binding IsEditable}">
             <TextBlock>Gravity:</TextBlock>
             <TextBox HorizontalAlignment="Left" Width="70" Text="{Binding Gravity}" 
-                     b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
+                     b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
+                <TextBox.ToolTip>The gravity (Y Acceleration) to apply to the entity. A positive value makes the entity fall downward.</TextBox.ToolTip>
+            </TextBox>
             <TextBlock HorizontalAlignment="Left" MaxWidth="150" Margin="0,0,0,5" FontSize="9" Foreground="Red" TextWrapping="Wrap" Visibility="{Binding Gravity0WarningVisibility}">
                 If these values are used for ground movement with 0 or negative gravity, the entity may have its OnGround set to false every other frame.</TextBlock>
             <TextBlock>Max Falling Speed:</TextBlock>
             <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding MaxFallSpeed}"
-                     b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
+                     b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
+                <TextBox.ToolTip>The maximum falling speed.</TextBox.ToolTip>
+            </TextBox>
             <TextBlock HorizontalAlignment="Left" MaxWidth="150" Margin="0,0,0,5" FontSize="9" Foreground="Red" TextWrapping="Wrap" Visibility="{Binding MaxFallingSpeed0WarningVisibility}">
                 If these values are used for ground movement with 0 or negative Max Falling Speed, the entity may have its OnGround set to false every other frame.</TextBlock>
 
@@ -194,11 +236,15 @@
             </CheckBox>
             <TextBlock Margin="0,5,0,0" Visibility="{Binding ClimbingUiVisibility}" >Climbing Speed:</TextBlock>
             <TextBox HorizontalAlignment="Left" Width="70" Text="{Binding MaxClimbingSpeed}"  Visibility="{Binding ClimbingUiVisibility}"
-                     b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
+                     b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
+                <TextBox.ToolTip>The vertical movement speed when climging.</TextBox.ToolTip>
+            </TextBox>
             
         </StackPanel>
 
-        <Button Grid.Column="6" Width="24" Click="HandleXClick" Visibility="{Binding DeleteButtonVisibility}" >X</Button>
+        <Button Grid.Column="6" Width="24" Click="HandleXClick" Visibility="{Binding DeleteButtonVisibility}" >
+            <Button.ToolTip>Deletes this set of movement values.</Button.ToolTip>
+            X</Button>
 
 
     </Grid>
