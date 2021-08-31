@@ -181,64 +181,76 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
         {
             // this could fail so we're going to try multiple times, but we need it immediately because
             // subsequent selections depend on it
-            GlueCommands.Self.TryMultipleTimes(
-                () => CsvGenerator.Self.GenerateFor(entity, GetIfInheritsFromPlatformer(entity), viewModel));
+            var didGenerate = false;
+            try
+            {
+                GlueCommands.Self.TryMultipleTimes(
+                    () => CsvGenerator.Self.GenerateFor(entity, GetIfInheritsFromPlatformer(entity), viewModel));
+                didGenerate = true;
+            }
+            catch(System.IO.IOException ioException)
+            {
+                GlueCommands.Self.PrintError($"Could not generate CSV for entity {entity}:\n{ioException.Message}");
+            }
 
-
-            TaskManager.Self.Add(
-                () =>
-                {
-                    string rfsName = entity.Name.Replace("\\", "/") + "/" + CsvGenerator.RelativeCsvFile;
-                    bool isAlreadyAdded = entity.ReferencedFiles.FirstOrDefault(item => item.Name == rfsName) != null;
-
-                    if (!isAlreadyAdded)
+            if(didGenerate)
+            {
+                TaskManager.Self.Add(
+                    () =>
                     {
-                        var newCsvRfs = GlueCommands.Self.GluxCommands.AddSingleFileTo(
-                            CsvGenerator.Self.CsvFileFor(entity).FullPath,
-                            CsvGenerator.RelativeCsvFile,
-                            "",
-                            null,
-                            false,
-                            null,
-                            entity,
-                            null,
-                            selectFileAfterCreation:false
-                            );
+                        string rfsName = entity.Name.Replace("\\", "/") + "/" + CsvGenerator.RelativeCsvFile;
+                        bool isAlreadyAdded = entity.ReferencedFiles.FirstOrDefault(item => item.Name == rfsName) != null;
 
-                        newCsvRfs.HasPublicProperty = true;
-                    }
-
-                    var rfs = entity.ReferencedFiles.FirstOrDefault(item => item.Name == rfsName);
-
-                    if (rfs != null && rfs.CreatesDictionary == false)
-                    {
-                        rfs.CreatesDictionary = true;
-                        GlueCommands.Self.GluxCommands.SaveGlux();
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
-                    }
-
-                    const string customClassName = "PlatformerValues";
-                    if (GlueState.Self.CurrentGlueProject.CustomClasses.Any(item => item.Name == customClassName) == false)
-                    {
-                        CustomClassSave throwaway;
-                        GlueCommands.Self.GluxCommands.AddNewCustomClass(customClassName, out throwaway);
-                    }
-
-                    var customClass = GlueState.Self.CurrentGlueProject.CustomClasses
-                        .FirstOrDefault(item => item.Name == customClassName);
-
-                    if (rfs != null)
-                    {
-                        if (customClass != null && customClass.CsvFilesUsingThis.Contains(rfs.Name) == false)
+                        if (!isAlreadyAdded)
                         {
-                            Glue.CreatedClass.CustomClassController.Self.SetCsvRfsToUseCustomClass(rfs, customClass, force: true);
+                            var newCsvRfs = GlueCommands.Self.GluxCommands.AddSingleFileTo(
+                                CsvGenerator.Self.CsvFileFor(entity).FullPath,
+                                CsvGenerator.RelativeCsvFile,
+                                "",
+                                null,
+                                false,
+                                null,
+                                entity,
+                                null,
+                                selectFileAfterCreation:false
+                                );
 
-                            GlueCommands.Self.GluxCommands.SaveGlux();
+                            newCsvRfs.HasPublicProperty = true;
                         }
-                    }
-                },
-                "Adding csv to platformer entity"
-                );
+
+                        var rfs = entity.ReferencedFiles.FirstOrDefault(item => item.Name == rfsName);
+
+                        if (rfs != null && rfs.CreatesDictionary == false)
+                        {
+                            rfs.CreatesDictionary = true;
+                            GlueCommands.Self.GluxCommands.SaveGlux();
+                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
+                        }
+
+                        const string customClassName = "PlatformerValues";
+                        if (GlueState.Self.CurrentGlueProject.CustomClasses.Any(item => item.Name == customClassName) == false)
+                        {
+                            CustomClassSave throwaway;
+                            GlueCommands.Self.GluxCommands.AddNewCustomClass(customClassName, out throwaway);
+                        }
+
+                        var customClass = GlueState.Self.CurrentGlueProject.CustomClasses
+                            .FirstOrDefault(item => item.Name == customClassName);
+
+                        if (rfs != null)
+                        {
+                            if (customClass != null && customClass.CsvFilesUsingThis.Contains(rfs.Name) == false)
+                            {
+                                Glue.CreatedClass.CustomClassController.Self.SetCsvRfsToUseCustomClass(rfs, customClass, force: true);
+
+                                GlueCommands.Self.GluxCommands.SaveGlux();
+                            }
+                        }
+                    },
+                    "Adding csv to platformer entity"
+                    );
+
+            }
         }
 
         private static void DetermineWhatToGenerate(string propertyName, PlatformerEntityViewModel viewModel, 

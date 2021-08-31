@@ -10,6 +10,7 @@ using FlatRedBall.Glue.GuiDisplay;
 using FlatRedBall.Graphics.Animation;
 using FlatRedBall.Glue.GuiDisplay.Facades;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.IO;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -73,8 +74,25 @@ namespace FlatRedBall.Glue.SaveClasses
                         throw new NullReferenceException("The ProjectValues property in FAcadeContainer.Self.ProjectValues must be set before trying to get the CSV type converter for the variable " + customVariable.ToString());
                     }
 
+                    var elements = ObjectFinder.Self.GetAllBaseElementsRecursively(containingElement).ToList();
+                    elements.Add(containingElement);
+                    
+
                     var rfsesUsingType = ObjectFinder.Self.GetAllReferencedFiles().Where(item =>
-                        item.IsCsvOrTreatedAsCsv && item.GetTypeForCsvFile() == customVariable.Type);
+                    {
+                        var isMatch = item.IsCsvOrTreatedAsCsv && item.GetTypeForCsvFile() == customVariable.Type;
+
+                        if(isMatch)
+                        {
+                            // we include this if:
+                            // 1 - it's in global content
+                            // 2 - it's in this element
+                            // 3 - it's in a base element
+                            isMatch = GlueState.CurrentGlueProject.GlobalFiles.Contains(item) || elements.Any(element => element.ReferencedFiles.Contains(item));
+                        }
+                        return isMatch;
+                    }).ToArray();
+
 
 
                     // May 3, 2020
@@ -87,22 +105,22 @@ namespace FlatRedBall.Glue.SaveClasses
                     // need to contain the CSV name, but the 
                     // fully-qualified CSV name
 
-                    var rfs = 
-                        // prioritize this element...
-                        rfsesUsingType.FirstOrDefault(item => containingElement.ReferencedFiles.Contains(item)) ??
-                        // ... and if none found, fall back to any
-                        rfsesUsingType.FirstOrDefault();
+                    //var rfs = 
+                    //    // prioritize this element...
+                    //    rfsesUsingType.FirstOrDefault(item => containingElement.ReferencedFiles.Contains(item)) ??
+                    //    // ... and if none found, fall back to any
+                    //    rfsesUsingType.FirstOrDefault();
 
                     AvailableSpreadsheetValueTypeConverter converter = null;
-                    if (rfs != null)
+                    if (rfsesUsingType.Length > 0)
                     {
-                        converter = new AvailableSpreadsheetValueTypeConverter(
-                           FacadeContainer.Self.ProjectValues.ContentDirectory + rfs.Name, containingElement);
+                        var filePaths = rfsesUsingType.Select(item => new FilePath( FacadeContainer.Self.ProjectValues.ContentDirectory + item.Name)).ToArray();
+                        converter = new AvailableSpreadsheetValueTypeConverter(filePaths);
                     }
                     else
                     {
                         converter = new AvailableSpreadsheetValueTypeConverter(
-                            FacadeContainer.Self.ProjectValues.ContentDirectory + customVariable.Type, containingElement);
+                            FacadeContainer.Self.ProjectValues.ContentDirectory + customVariable.Type);
                     }
                     converter.ShouldAppendFileName = true;
 

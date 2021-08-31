@@ -14,8 +14,8 @@ namespace FlatRedBall.Glue.GuiDisplay
 
         #region Fields
 
-        IElement mContainer;
-        string mAbsoluteFile;
+        List<FilePath> filePaths = new List<FilePath>();
+
         #endregion
 
         #region Properties
@@ -44,98 +44,104 @@ namespace FlatRedBall.Glue.GuiDisplay
             return true;
         }
 
-        public static List<string> GetAvailableValues(string absoluteFile, bool shouldAppendFileName)
+        public static List<string> GetAvailableValues(FilePath absoluteFile, bool shouldAppendFileName)
         {
             List<string> stringsToReturn = new List<string>();
             stringsToReturn.Clear();
             stringsToReturn.Add("<NULL>");
 
-
-            if (FileManager.IsRelative(absoluteFile))
-            {
-                throw new ArgumentException("The argument absoluteFile must be absolute.  It is passed as " + absoluteFile);
-            }
-
-            //List<string> filesToSearchIn = GetAllFilesUsingClass(absoluteFile);
-
-            //foreach (string file in filesToSearchIn)
-            {
-//                AddAvailableValuesFromFileToList(absoluteFile, stringsToReturn);
-            }
-
-            AddAvailableValuesFromFileToList(absoluteFile, stringsToReturn, shouldAppendFileName);
-
+            AddAvailableValuesFromFileToList(
+                new List<FilePath>() { absoluteFile }, stringsToReturn, shouldAppendFileName);
 
             return stringsToReturn;
         }
 
-        private static void AddAvailableValuesFromFileToList(string absoluteFile, List<string> stringsToReturn, bool shouldAppendFileName)
+        public static List<string> GetAvailableValues(IEnumerable<FilePath> absoluteFiles, bool shouldAppendFileName)
         {
-            if (System.IO.File.Exists(absoluteFile))
+            List<string> stringsToReturn = new List<string>();
+            stringsToReturn.Clear();
+            stringsToReturn.Add("<NULL>");
+
+            AddAvailableValuesFromFileToList(absoluteFiles, stringsToReturn, shouldAppendFileName);
+
+            return stringsToReturn;
+        }
+
+        private static void AddAvailableValuesFromFileToList(IEnumerable<FilePath> absoluteFiles, List<string> stringsToReturn, bool shouldAppendFileName)
+        {
+            foreach(var file in absoluteFiles)
             {
-                try
+                if (file.Exists())
                 {
-                    string toAppend = "";
-                    if (shouldAppendFileName)
+                    try
                     {
-                        // Eventually we want to make this relative to the container, not just the folename
-                        toAppend = " in " + FileManager.RemovePath(absoluteFile);
-                    }
-
-                    RuntimeCsvRepresentation rcr =
-                        CsvFileManager.CsvDeserializeToRuntime(absoluteFile);
-
-                    rcr.RemoveHeaderWhitespaceAndDetermineIfRequired();
-
-                    int requiredIndex = -1;
-
-                    for (int i = 0; i < rcr.Headers.Length; i++)
-                    {
-                        if (rcr.Headers[i].IsRequired)
+                        string toAppend = "";
+                        if (shouldAppendFileName)
                         {
-                            requiredIndex = i;
-                            break;
+                            // Eventually we want to make this relative to the container, not just the folename
+                            toAppend = " in " + file.NoPath;
                         }
-                    }
 
-                    if (requiredIndex != -1)
-                    {
-                        foreach (string[] record in rcr.Records)
+                        RuntimeCsvRepresentation rcr =
+                            CsvFileManager.CsvDeserializeToRuntime(file.FullPath);
+
+                        rcr.RemoveHeaderWhitespaceAndDetermineIfRequired();
+
+                        int requiredIndex = -1;
+
+                        for (int i = 0; i < rcr.Headers.Length; i++)
                         {
-                            string possibleValue = record[requiredIndex];
-                            if (!string.IsNullOrEmpty(possibleValue))
+                            if (rcr.Headers[i].IsRequired)
                             {
-                                if (shouldAppendFileName)
+                                requiredIndex = i;
+                                break;
+                            }
+                        }
+
+                        if (requiredIndex != -1)
+                        {
+                            foreach (string[] record in rcr.Records)
+                            {
+                                string possibleValue = record[requiredIndex];
+                                if (!string.IsNullOrEmpty(possibleValue))
                                 {
-                                    stringsToReturn.Add(possibleValue + toAppend);
-                                }
-                                else
-                                {
-                                    stringsToReturn.Add(possibleValue);
+                                    if (shouldAppendFileName)
+                                    {
+                                        stringsToReturn.Add(possibleValue + toAppend);
+                                    }
+                                    else
+                                    {
+                                        stringsToReturn.Add(possibleValue);
+                                    }
                                 }
                             }
                         }
                     }
+                    catch (Exception e)
+                    {
+                        // do nothing for now...
+                    }
                 }
-                catch (Exception e)
-                {
-                    // do nothing for now...
-                }
+
             }
 
 
         }
 
 
-        public AvailableSpreadsheetValueTypeConverter(FilePath filePath, IElement container)
+        public AvailableSpreadsheetValueTypeConverter(FilePath filePath)
         {
-            this.mContainer = container;
-            this.mAbsoluteFile = filePath.FullPath;
+            filePaths.Add(filePath);
+        }
+
+        public AvailableSpreadsheetValueTypeConverter(IEnumerable<FilePath> filePaths)
+        {
+            this.filePaths.AddRange(filePaths);
         }
 
         public override TypeConverter.StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-            StandardValuesCollection svc = new StandardValuesCollection(GetAvailableValues(mAbsoluteFile, ShouldAppendFileName));
+            StandardValuesCollection svc = new StandardValuesCollection(GetAvailableValues(filePaths, ShouldAppendFileName));
 
             return svc;
         }

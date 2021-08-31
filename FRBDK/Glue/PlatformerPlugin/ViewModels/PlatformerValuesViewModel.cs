@@ -258,7 +258,7 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
         [DependsOn(nameof(IsInDerivedPlatformerEntity))]
         [DependsOn(nameof(DoesBaseEntityHaveSameNamedValues))]
         public Visibility InheritBoxVisibility => 
-            (IsInDerivedPlatformerEntity && DoesBaseEntityHaveSameNamedValues == false).ToVisibility();
+            (IsInDerivedPlatformerEntity && DoesBaseEntityHaveSameNamedValues).ToVisibility();
             
 
         [DependsOn(nameof(IsInDerivedPlatformerEntity))]
@@ -268,8 +268,9 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
         [DependsOn(nameof(IsInDerivedPlatformerEntity))]
         public bool IsEditable => InheritOrOverwrite == InheritOrOverwrite.Overwrite || IsInDerivedPlatformerEntity == false;
 
+        [DependsOn(nameof(DoesBaseEntityHaveSameNamedValues))]
         [DependsOn(nameof(IsInDerivedPlatformerEntity))]
-        public bool IsNameEditable => IsInDerivedPlatformerEntity == false;
+        public bool IsNameEditable => IsInDerivedPlatformerEntity == false || DoesBaseEntityHaveSameNamedValues == false;
 
 
 
@@ -339,7 +340,7 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
 
             this.InheritOrOverwrite = values.InheritOrOverwrite;
             this.IsInDerivedPlatformerEntity = isInDerivedPlatformer;
-            this.DoesBaseEntityHaveSameNamedValues = DoesBaseEntityHaveSameNamedValues;
+            this.DoesBaseEntityHaveSameNamedValues = doesBaseEntityHaveSameNamedValues;
         }
 
         private void ClampUphillValues()

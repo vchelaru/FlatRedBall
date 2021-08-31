@@ -8,6 +8,23 @@ using System.Xml.Serialization;
 
 namespace FlatRedBall.Glue.Elements
 {
+    #region Enums
+
+    public enum CsvInclusion
+    {
+        None = 0,
+        InThisElement = 1,
+        InBaseElements = 2,
+        InDerivedElements = 4,
+        InUnrelatedElements = 8,
+        InGlobalContent = 16,
+        AllInProject = InThisElement | InBaseElements | InDerivedElements | InUnrelatedElements | InGlobalContent,
+
+
+    }
+    #endregion
+
+
     /// <summary>
     /// Defines characteristics of a variable on an object for use by Glue when displaying the
     /// variable.
@@ -49,6 +66,10 @@ namespace FlatRedBall.Glue.Elements
 
         public double? MinValue { get; set; }
         public double? MaxValue { get; set; }
+
+        // Vic says - maybe we'll need this? Not sure...
+        //public CsvInclusion PrimaryCsvInclusion { get; set; } = CsvInclusion.InThisElement;
+        //public CsvInclusion FallbackCsvInclusion { get; set; } = CsvInclusion.AllInProject;
 
         [XmlIgnore]
         [JsonIgnore]
