@@ -75,7 +75,8 @@ namespace OfficialPlugins.Compiler
         {
             timer = new System.Windows.Forms.Timer();
             timer.Tick += HandleTimerTick;
-            timer.Interval = 3 * 2000;
+            // This was 6 seconds, but that seems a bit much...
+            timer.Interval = 3 * 1000;
             timer.Start();
         }
 
