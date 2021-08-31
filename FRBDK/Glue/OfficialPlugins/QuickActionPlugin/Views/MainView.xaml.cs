@@ -5,6 +5,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.Glue.ViewModels;
+using GlueFormsCore.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -152,7 +153,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             var newNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(viewModel, gameScreen, null);
 
             newNos.ExposedInDerived = true;
-            ProjectManager.UpdateAllDerivedElementFromBaseValues(regenerateCode:false, gameScreen);
+            InheritanceManager.UpdateAllDerivedElementFromBaseValues(regenerateCode:false, gameScreen);
             AnyButtonClicked();
         }
 

@@ -12,6 +12,7 @@ using Glue;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using GlueFormsCore.Managers;
 
 namespace FlatRedBall.Glue.SetVariable
 {
@@ -19,19 +20,13 @@ namespace FlatRedBall.Glue.SetVariable
     {
         internal void ReactToEntityChangedProperty(string changedMember, object oldValue)
         {
-            EntitySave entitySave = EditorLogic.CurrentEntitySave;
+            EntitySave entitySave = GlueState.Self.CurrentEntitySave;
 
             #region BaseEntity changed
 
             if (changedMember == nameof(EntitySave.BaseEntity))
             {
-                // Not sure why we want to return here.  Maybe the user used
-                // to have this set to something but now is undoing it
-                //if (string.IsNullOrEmpty(entitySave.BaseEntity))
-                //{
-                //    return;
-                //}
-                ReactToChangedBaseEntity(oldValue as string, entitySave);
+                InheritanceManager.ReactToChangedBaseEntity(oldValue as string, entitySave);
             }
 
             #endregion
@@ -224,232 +219,6 @@ namespace FlatRedBall.Glue.SetVariable
                 }
             }
             PropertyGridHelper.UpdateDisplayedPropertyGridProperties();
-        }
-
-        private static void ReactToChangedBaseEntity(string oldValue, EntitySave entitySave)
-        {
-            bool isValidBase = GetIfCurrentEntityBaseIsValid(entitySave);
-
-            if (isValidBase == false)
-            {
-                entitySave.BaseEntity = (string)oldValue;
-                MainGlueWindow.Self.PropertyGrid.Refresh();
-            }
-            else
-            {
-                var oldEntity = GlueState.Self.GetElement(oldValue) as EntitySave;
-                var newEntity = GlueState.Self.GetElement(entitySave.BaseEntity) as EntitySave;
-
-                HashSet<ScreenSave> screensToRegenerate = new HashSet<ScreenSave>();
-
-                if(oldEntity != null)
-                {
-                    var allObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(oldEntity);
-                    var screens = allObjects.Select(item => item.GetContainer())
-                        .Where(item => item as ScreenSave != null)
-                        .Select(item => item as ScreenSave);
-
-                    foreach (var screen in screens)
-                    {
-                        screensToRegenerate.Add(screen);
-                    }
-                }
-
-                if(newEntity != null)
-                {
-                    var allObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(newEntity);
-                    var screens = allObjects.Select(item => item.GetContainer())
-                        .Where(item => item as ScreenSave != null)
-                        .Select(item => item as ScreenSave);
-
-                    foreach (var screen in screens)
-                    {
-                        screensToRegenerate.Add(screen);
-                    }
-                }
-
-                foreach(var screen in screensToRegenerate)
-                {
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(screen);
-                }
-
-                List<CustomVariable> variablesBefore = new List<CustomVariable>();
-
-                variablesBefore.AddRange(entitySave.CustomVariables);
-
-                entitySave.UpdateFromBaseType();
-
-                AskToPreserveVariables(entitySave, variablesBefore);
-            }
-            PropertyGridHelper.UpdateEntitySaveDisplay();
-        }
-
-        private static bool GetIfCurrentEntityBaseIsValid(EntitySave entitySave)
-        {
-            bool isValidBase = true;
-
-            // Gotta check the new inhertiance tree to make sure that there are no duplicate object names
-            if (!string.IsNullOrEmpty(entitySave.BaseEntity))
-            {
-                List<EntitySave> thisAndDerivedFromThisList;
-                List<EntitySave> baseEntities = new List<EntitySave>();
-
-                thisAndDerivedFromThisList = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(entitySave.Name);
-                thisAndDerivedFromThisList.Add(entitySave);
-
-                EntitySave newBase = ObjectFinder.Self.GetEntitySave(entitySave.BaseEntity);
-
-                if (newBase != null)
-                {
-
-                    baseEntities = GetAllEntitiesThatThisInherits(entitySave.BaseEntity);
-                    baseEntities.Add(newBase);
-                }
-
-                List<string> derivedNamedObjects = new List<string>();
-                List<string> baseNamedObjects = new List<string>();
-                List<string> baseNamedObjectsIncludingSetByDerived = new List<string>();
-
-                List<string> derivedReferencedFiles = new List<string>();
-                List<string> baseReferencedFiles = new List<string>();
-
-                foreach (EntitySave es in baseEntities)
-                {
-                    foreach (NamedObjectSave nos in es.NamedObjects)
-                    {
-                        if (!nos.SetByDerived)
-                        {
-                            baseNamedObjects.Add(nos.InstanceName);
-                        }
-                        baseNamedObjectsIncludingSetByDerived.Add(nos.InstanceName);
-                    }
-
-
-                    foreach (ReferencedFileSave rfs in es.ReferencedFiles)
-                    {
-                        baseReferencedFiles.Add(rfs.GetInstanceName());
-                    }
-                }
-
-                foreach (EntitySave es in thisAndDerivedFromThisList)
-                {
-                    foreach (NamedObjectSave nos in es.NamedObjects)
-                    {
-                        if (!nos.DefinedByBase)
-                        {
-                            derivedNamedObjects.Add(nos.InstanceName);
-                        }
-                    }
-
-                    foreach (ReferencedFileSave rfs in es.ReferencedFiles)
-                    {
-                        derivedReferencedFiles.Add(rfs.GetInstanceName());
-                    }
-                }
-
-
-
-                for (int i = 0; i < derivedNamedObjects.Count; i++)
-                {
-                    if (baseNamedObjects.Contains(derivedNamedObjects[i]))
-                    {
-                        MessageBox.Show("There is a duplicate named object:\n\n" + derivedNamedObjects[i] + "\n\nThe base class cannot be set");
-                        isValidBase = false;
-                        break;
-                    }
-
-                    if (baseReferencedFiles.Contains(derivedNamedObjects[i]))
-                    {
-                        MessageBox.Show("There is a file and object both named:\n\n" + derivedNamedObjects[i] + "\n\nThe base class cannot be set");
-                        isValidBase = false;
-                        break;
-                    }
-                }
-
-                for (int i = 0; i < derivedReferencedFiles.Count; i++)
-                {
-                    if (baseNamedObjectsIncludingSetByDerived.Contains(derivedReferencedFiles[i]))
-                    {
-                        MessageBox.Show("There is a file and object both named:\n\n" + derivedReferencedFiles[i] + "\n\nThe base class cannot be set");
-                        isValidBase = false;
-                        break;
-                    }
-
-                    if (baseReferencedFiles.Contains(derivedReferencedFiles[i]))
-                    {
-                        MessageBox.Show("There are two files named:\n\n" + derivedReferencedFiles[i] + "\n\nThe base class cannot be set");
-                        isValidBase = false;
-                        break;
-                    }
-                }
-            }
-
-
-            if (isValidBase && ProjectManager.VerifyInheritanceGraph(entitySave) == ProjectManager.CheckResult.Failed)
-            {
-                isValidBase = false;
-            }
-
-            return isValidBase;
-        }
-
-        public static List<EntitySave> GetAllEntitiesThatThisInherits(string derivedEntity)
-        {
-            List<EntitySave> listToReturn = new List<EntitySave>();
-
-            EntitySave entity = ObjectFinder.Self.GetEntitySave(derivedEntity);
-
-            entity.GetAllBaseEntities(listToReturn);
-
-            return listToReturn;
-        }
-
-        private static void AskToPreserveVariables(EntitySave entitySave, List<CustomVariable> variablesBefore)
-        {
-            foreach (CustomVariable oldVariable in variablesBefore)
-            {
-                if (entitySave.GetCustomVariableRecursively(oldVariable.Name) == null)
-                {
-                    MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
-                    string message = "The variable\n\n" + oldVariable.ToString() + "\n\nIs no longer part of the Entity.  What do you want to do?";
-
-                    mbmb.MessageText = message;
-
-                    mbmb.AddButton("Add a new variable with the same name and type to " + entitySave.Name, DialogResult.Yes);
-                    mbmb.AddButton("Nothing - the variable will go away", DialogResult.No);
-
-                    DialogResult result = mbmb.ShowDialog();
-
-                    if (result == DialogResult.Yes)
-                    {
-                        CustomVariable newVariable = new CustomVariable();
-                        newVariable.Type = oldVariable.Type;
-                        newVariable.Name = oldVariable.Name;
-                        newVariable.DefaultValue = oldVariable.DefaultValue;
-                        newVariable.SourceObject = oldVariable.SourceObject;
-                        newVariable.SourceObjectProperty = oldVariable.SourceObjectProperty;
-
-                        newVariable.Properties = new List<PropertySave>();
-                        newVariable.Properties.AddRange(oldVariable.Properties);
-
-                        newVariable.HasAccompanyingVelocityProperty = oldVariable.HasAccompanyingVelocityProperty;
-                        newVariable.CreatesEvent = oldVariable.CreatesEvent;
-                        newVariable.IsShared = oldVariable.IsShared;
-
-                        if (!string.IsNullOrEmpty(oldVariable.OverridingPropertyType))
-                        {
-                            newVariable.OverridingPropertyType = oldVariable.OverridingPropertyType;
-                            newVariable.TypeConverter = oldVariable.TypeConverter;
-                        }
-
-                        newVariable.CreatesEvent = oldVariable.CreatesEvent;
-
-                        entitySave.CustomVariables.Add(newVariable);
-
-                    }
-
-                }
-            }
         }
 
         private static void ReactToChangedImplementsIVisible(object oldValue, EntitySave entitySave)

@@ -15,6 +15,7 @@ using FlatRedBall.Glue.ViewModels;
 using FlatRedBall.IO;
 using FlatRedBall.Utilities;
 using Glue;
+using GlueFormsCore.Managers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -521,7 +522,7 @@ namespace FlatRedBall.Glue.Managers
                     targetContainer.States.Add(toAdd);
                 }
 
-                ProjectManager.UpdateAllDerivedElementFromBaseValues(true, currentElement);
+                InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, currentElement);
 
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(targetContainer);
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(targetContainer);
@@ -563,7 +564,7 @@ namespace FlatRedBall.Glue.Managers
 
                     element.CustomVariables.Add(customVariable);
 
-                    ProjectManager.UpdateAllDerivedElementFromBaseValues(true, element);
+                    InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, element);
 
                     GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 

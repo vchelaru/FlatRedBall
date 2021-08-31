@@ -10,6 +10,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.SaveClasses.Helpers;
+using GlueFormsCore.Managers;
 
 namespace FlatRedBall.Glue.SetVariable
 {
@@ -44,7 +45,7 @@ namespace FlatRedBall.Glue.SetVariable
                 }
                 else
                 {
-                    ProjectManager.UpdateAllDerivedElementFromBaseValues(true, element);
+                    InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, element);
                 }
             }
             #endregion

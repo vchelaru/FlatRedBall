@@ -17,6 +17,7 @@ using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.SaveClasses;
 using Glue.IO;
 using Microsoft.Xna.Framework.Graphics;
+using GlueFormsCore.Managers;
 
 namespace FlatRedBall.Glue.SetVariable
 {
@@ -158,7 +159,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                 SetExposedByDerivedRecursively(namedObjectSave, oldValue);
 
-                ProjectManager.UpdateAllDerivedElementFromBaseValues(true, element);
+                InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, element);
             }
 
 
@@ -446,7 +447,7 @@ namespace FlatRedBall.Glue.SetVariable
             }
             else
             {
-                ProjectManager.UpdateAllDerivedElementFromBaseValues(true, element);
+                InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, element);
             }
         }
 
@@ -484,7 +485,7 @@ namespace FlatRedBall.Glue.SetVariable
                 }
             }
 
-            ProjectManager.UpdateAllDerivedElementFromBaseValues(true, element);
+            InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, element);
         }
 
 

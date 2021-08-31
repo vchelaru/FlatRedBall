@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.SaveClasses;
+using GlueFormsCore.Managers;
 
 namespace FlatRedBall.Glue.SetVariable
 {
@@ -29,14 +30,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             else if (changedMember == "BaseScreen")
             {
-                if (ProjectManager.VerifyInheritanceGraph(screenSave) == ProjectManager.CheckResult.Failed)
-                {
-                    screenSave.BaseScreen = (string)oldValue;
-                }
-                else
-                {
-                    screenSave.UpdateFromBaseType();
-                }
+                InheritanceManager.ReactToChangedBaseScreen(oldValue, screenSave);
             }
 
             #endregion

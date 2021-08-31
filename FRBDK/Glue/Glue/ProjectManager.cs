@@ -41,6 +41,7 @@ using System.Collections.ObjectModel;
 using EditorObjects.IoC;
 using GluePropertyGridClasses.Interfaces;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
+using GlueFormsCore.Managers;
 
 namespace FlatRedBall.Glue
 {
@@ -472,7 +473,7 @@ namespace FlatRedBall.Glue
             }
             UpdateCurrentTreeNodeAndCodeAndSave();
 
-            UpdateAllDerivedElementFromBaseValues(true, element);
+            InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, element);
 
             PluginManager.ReactToVariableRemoved(customVariable);
         }
@@ -651,69 +652,6 @@ namespace FlatRedBall.Glue
 
         }
 
-        // Vic says - I don't know if this should be here or if we should move it somewhere else.
-        // Also the name is vague and the method does a ton, so it might be good to figure out a way to break this up
-        public static void UpdateAllDerivedElementFromBaseValues(bool regenerateCode, GlueElement currentElement = null)
-        {
-            currentElement = currentElement ?? GlueState.Self.CurrentElement;
-
-            if (currentElement is EntitySave currentEntity)
-            {
-                List<EntitySave> derivedEntities = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(currentEntity.Name);
-
-                List<NamedObjectSave> nosList = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(currentEntity.Name);
-
-                for (int i = 0; i < derivedEntities.Count; i++)
-                {
-                    EntitySave entitySave = derivedEntities[i];
-
-                    nosList.AddRange(ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(entitySave.Name));
-
-
-                    entitySave.UpdateFromBaseType();
-                    // Update the tree nodes
-                    EntityTreeNode treeNode = GlueState.Self.Find.EntityTreeNode(entitySave);
-                    treeNode.RefreshTreeNodes();
-
-                    if (regenerateCode)
-                    {
-                        CodeWriter.GenerateCode(entitySave);
-                    }
-                }
-
-                foreach (NamedObjectSave nos in nosList)
-                {
-                    nos.UpdateCustomProperties();
-
-                    var element = nos.GetContainer();
-
-                    if (element != null)
-                    {
-                        CodeWriter.GenerateCode(element);
-                    }
-
-                }
-            }
-            else if (currentElement is ScreenSave currentScreenSave)
-            {
-                List<ScreenSave> derivedScreens = ObjectFinder.Self.GetAllScreensThatInheritFrom(currentScreenSave.Name);
-
-                for (int i = 0; i < derivedScreens.Count; i++)
-                {
-                    ScreenSave screenSave = derivedScreens[i];
-                    screenSave.UpdateFromBaseType();
-
-                    ScreenTreeNode treeNode = GlueState.Self.Find.ScreenTreeNode(screenSave);
-                    treeNode.RefreshTreeNodes();
-
-                    if (regenerateCode)
-                    {
-                        CodeWriter.GenerateCode(screenSave);
-                    }
-                }
-            }
-        }
-
         static object mUpdateExternallyBuiltFileLock = new object();
         public static bool UpdateExternallyBuiltFile(string changedFile)
         {
@@ -807,28 +745,6 @@ namespace FlatRedBall.Glue
             return null;
         }
 
-        internal static CheckResult VerifyInheritanceGraph(INamedObjectContainer node)
-        {
-            if (mGlueProjectSave != null)
-            {
-                VerificationId++;
-                string resultString = "";
-
-                if (InheritanceVerificationHelper(ref node, ref resultString) == CheckResult.Failed)
-                {
-                    MessageBox.Show("This assignment has created an inheritence cycle containing the following classes:\n\n" +
-                                    resultString +
-                                    "\nThe assignment will be undone.");
-                    node.BaseObject = null;
-                    return CheckResult.Failed;
-                }
-
-            }
-
-            return CheckResult.Passed;
-        }
-
-
         internal static bool LoadOrCreateProjectSpecificSettings(string projectFolder)
         {
             // The Glue project hasn't been loaded yet so we need to manually get the folder:
@@ -909,49 +825,6 @@ namespace FlatRedBall.Glue
         private static void UpdateCurrentTreeNodeAndCodeAndSave()
         {
             EditorLogic.CurrentElementTreeNode?.RefreshTreeNodes();
-        }
-
-        private static CheckResult InheritanceVerificationHelper(ref INamedObjectContainer node, ref string cycleString)
-        {
-            //Assign the current VerificationId to identify nodes that have been visited
-            node.VerificationIndex = VerificationId;
-
-            //Travel upward through the inheritence tree from this object, stopping when either the
-            //tree stops, or you reach a node that's already been visited.
-            if (!string.IsNullOrEmpty(node.BaseObject))
-            {
-                INamedObjectContainer baseNode = ObjectFinder.Self.GetNamedObjectContainer(node.BaseObject);
-
-                if (baseNode == null)
-                {
-                    // We do nothing - the base object for this
-                    // Entity doesn't exist, so we'll continue as if this thing doesn't really have
-                    // a base Entity.  The user will have to address this in the Glue UI
-                }
-                else if (baseNode.VerificationIndex != VerificationId)
-                {
-
-                    //If baseNode verification failed, add this node's name to the list and return Failed
-                    if (InheritanceVerificationHelper(ref baseNode, ref cycleString) == CheckResult.Failed)
-                    {
-                        cycleString = (node as FlatRedBall.Utilities.INameable).Name + "\n" + cycleString;
-                        return CheckResult.Failed;
-                    }
-
-                }
-                else
-                {
-                    //If the basenode has already been visited, begin the cycleString and return Failed
-
-                    cycleString = (node as FlatRedBall.Utilities.INameable).Name + "\n" +
-                                    (baseNode as FlatRedBall.Utilities.INameable).Name + "\n";
-
-                    return CheckResult.Failed;
-                }
-            }
-
-
-            return CheckResult.Passed;
         }
 
         private static CheckResult ReferenceVerificationHelper(IElement element, ref string cycleString, Stack<IElement> visitedElements)
