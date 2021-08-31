@@ -17,6 +17,7 @@
                       IsChecked="{Binding IsCollisionVisible}">Visible</CheckBox>-->
             <GroupBox Header="Creation Options" Grid.Row="1" IsEnabled="{Binding IsEntireViewEnabled}">
                 <StackPanel>
+                    <TextBlock TextWrapping="Wrap" Visibility="{Binding MessageAboutInheritanceVisibility}">This TileShapeCollection is defined in a base Screen. Changes must be made in the base screen.</TextBlock>
                     <RadioButton VerticalContentAlignment="Center"
                                  HorizontalAlignment="Left"
                                  IsChecked="{Binding IsEmptyChecked}">Empty</RadioButton>

@@ -169,6 +169,7 @@ namespace FlatRedBall.TileGraphics
         public LayeredTileMapAnimation Animation { get; set; }
 
         public List<NamedValue> MapProperties { get; set; }
+        public List<TMXGlueLib.Tileset> Tilesets { get; private set; }
 
 
         IVisible IVisible.Parent
@@ -575,6 +576,8 @@ namespace FlatRedBall.TileGraphics
                 { Name = propertySave.name, Value = propertySave.value, Type = propertySave.Type })
                 .ToList();
 
+            // copy the original tilesets over
+            toReturn.Tilesets = tms.Tilesets.ToList();
 
             return toReturn;
         }

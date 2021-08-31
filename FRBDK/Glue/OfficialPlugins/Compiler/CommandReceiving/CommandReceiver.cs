@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using TMXGlueLib;
@@ -24,6 +25,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 {
     static class CommandReceiver
     {
+        static int gamePortNumber;
+
         #region General Functions
 
         public static void HandleCommandsFromGame(string commandAsString, int gamePortNumber)
@@ -38,6 +41,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         private static void HandleIndividualCommand(string command, int gamePortNumber)
         {
+            CommandReceiver.gamePortNumber = gamePortNumber;
             var firstColon = command.IndexOf(":");
             if(firstColon == -1)
             {
@@ -51,17 +55,17 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 switch(action)
                 {
                     case nameof(AddObjectDto):
-                        HandleAddObject(gamePortNumber, data);
+                        HandleAddObject(data);
 
                         break;
                     case nameof(SetVariableDto):
-                        HandleSetVariable(gamePortNumber, JsonConvert.DeserializeObject<SetVariableDto>(data));
+                        HandleSetVariable(JsonConvert.DeserializeObject<SetVariableDto>(data));
                         break;
                     case nameof(SelectObjectDto):
-                        HandleSelectObject(gamePortNumber, JsonConvert.DeserializeObject<SelectObjectDto>(data));
+                        HandleSelectObject(JsonConvert.DeserializeObject<SelectObjectDto>(data));
                         break;
                     case nameof(RemoveObjectDto):
-                        HandleRemoveObject(gamePortNumber, JsonConvert.DeserializeObject<RemoveObjectDto>(data));
+                        HandleRemoveObject(JsonConvert.DeserializeObject<RemoveObjectDto>(data));
                         break;
                     case nameof(ModifyCollisionDto):
                         HandleDto(JsonConvert.DeserializeObject<ModifyCollisionDto>(data));
@@ -72,7 +76,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #endregion
 
-        private static void HandleRemoveObject(int gamePortNumber, RemoveObjectDto removeObjectDto)
+        private static void HandleRemoveObject(RemoveObjectDto removeObjectDto)
         {
             TaskManager.Self.Add(() =>
             {
@@ -87,7 +91,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             }, "Handling removing object from screen");
         }
 
-        private static void HandleAddObject(int gamePortNumber, string dataAsString)
+        private static void HandleAddObject(string dataAsString)
         {
             TaskManager.Self.Add(() =>
             {
@@ -283,7 +287,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             return newName;
         }
 
-        private static void HandleSetVariable(int gamePortNumber, SetVariableDto setVariableDto)
+        private static void HandleSetVariable(SetVariableDto setVariableDto)
         {
 
             TaskManager.Self.Add(() =>
@@ -347,7 +351,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             }
         }
 
-        private static void HandleSelectObject(int gamePortNumber, SelectObjectDto selectObjectDto)
+        private static void HandleSelectObject(SelectObjectDto selectObjectDto)
         {
 
             TaskManager.Self.Add(() =>
@@ -362,17 +366,17 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     
                     if(currentEntity != null)
                     {
-                        nos = currentEntity.GetNamedObjectRecursively(selectObjectDto.ObjectName);
+                        nos = currentEntity.GetNamedObjectRecursively(selectObjectDto.NamedObject?.InstanceName);
                         if(nos == null && 
-                            selectObjectDto.ObjectName?.StartsWith('m') == true && selectObjectDto.ObjectName.Length > 1)
+                            selectObjectDto.NamedObject?.InstanceName?.StartsWith('m') == true && selectObjectDto.NamedObject?.InstanceName?.Length > 1)
                         {
-                            nos = currentEntity.GetNamedObjectRecursively(selectObjectDto.ObjectName[1..]);
+                            nos = currentEntity.GetNamedObjectRecursively(selectObjectDto.NamedObject?.InstanceName[1..]);
                         }
                     }
                 }
                 else
                 {
-                    nos = screen.GetNamedObjectRecursively(selectObjectDto.ObjectName);
+                    nos = screen.GetNamedObjectRecursively(selectObjectDto.NamedObject?.InstanceName);
                 }
 
                 if(nos != null)
@@ -386,90 +390,160 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             }, "Selecting object from game command");
         }
 
-        private static void HandleDto(ModifyCollisionDto dto)
+        private static async void HandleDto(ModifyCollisionDto dto)
+        {
+            string collisionTileTypeName;
+            FlatRedBall.IO.FilePath tmxFilePath;
+            TiledMapSave tiledMapSave;
+            MapLayer mapLayer;
+            GetMapLayer(dto, out collisionTileTypeName, out tmxFilePath, out tiledMapSave, out mapLayer);
+
+            var didChange = false;
+
+            if (mapLayer != null)
+            {
+
+                uint tileTypeGid = 0;
+                foreach (var tileset in tiledMapSave.Tilesets)
+                {
+                    foreach (var kvp in tileset.TileDictionary)
+                    {
+                        var tilesetTile = kvp.Value;
+                        if (tilesetTile.Type == collisionTileTypeName)
+                        {
+                            tileTypeGid = kvp.Key + tileset.Firstgid;
+                            break;
+                        }
+                    }
+
+                    if (tileTypeGid > 0)
+                    {
+                        break;
+                    }
+                }
+
+                var ids = mapLayer.data[0].tiles;
+
+                // todo - support seeds
+                if (dto.AddedPositions != null)
+                {
+                    foreach (var newTile in dto.AddedPositions)
+                    {
+                        int absoluteIndex = GetTileIndexFromWorldPosition(newTile, mapLayer);
+
+                        if (absoluteIndex >= 0 && absoluteIndex < ids.Count && ids[absoluteIndex] != tileTypeGid)
+                        {
+                            ids[absoluteIndex] = tileTypeGid;
+                            didChange = true;
+                        }
+                    }
+                }
+
+                if (dto.RemovedPositions != null)
+                {
+                    foreach (var oldTile in dto.RemovedPositions)
+                    {
+                        int absoluteIndex = GetTileIndexFromWorldPosition(oldTile, mapLayer);
+
+                        if (ids[absoluteIndex] != 0)
+                        {
+                            ids[absoluteIndex] = 0;
+                            didChange = true;
+                        }
+                    }
+                }
+
+                if (didChange)
+                {
+                    mapLayer.data[0].SetTileData(ids, mapLayer.data[0].encoding, mapLayer.data[0].compression);
+
+                    RefreshManager.Self.IgnoreNextChange(tmxFilePath.FullPath);
+
+                    tiledMapSave.Save(tmxFilePath.FullPath);
+
+                    // Restart the screen *after* the TMX is saved, and after it has been copied too:
+                    // The TMX needs to be copied which is a tasked operation:
+                    if(dto.RequestRestart)
+                    {
+                        TaskManager.Self.Add(() =>
+                        {
+                            GlueCommands.Self.ProjectCommands.CopyToBuildFolder(tmxFilePath.FullPath);
+
+                            var playBump = true;
+                            // tell the game that it should restart the screen quietly
+    #pragma warning disable CS4014 // Do not await in add calls this can cause problems
+                            CommandSender.Send(new RestartScreenDto { ShowSelectionBump = playBump }, gamePortNumber);
+    #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                        },
+                        "Copy TMX and restart screen",
+                        executionPreference: TaskExecutionPreference.Asap);
+                    }
+
+                }
+            }
+
+            static int GetTileIndexFromWorldPosition(Vector2 worldPosition, MapLayer mapLayer)
+            {
+                // todo - read tile size properties
+                var xIndex = (int)(worldPosition.X / 16);
+                var yIndex = (int)-(worldPosition.Y / 16);
+
+
+                var mapWidth = mapLayer.width;
+                var mapHeight = mapLayer.height;
+
+                if (xIndex >= mapWidth || xIndex < 0 || yIndex < 0 || yIndex > mapHeight)
+                {
+                    return -1;
+                }
+                else
+                {
+                    var absoluteIndex = xIndex + yIndex * mapWidth;
+                    return absoluteIndex;
+                }
+
+            }
+        }
+
+        private static void GetMapLayer(ModifyCollisionDto dto, out string collisionTileTypeName, out FlatRedBall.IO.FilePath tmxFilePath, out TiledMapSave tiledMapSave, out MapLayer mapLayer)
         {
             var currentScreen = GlueState.Self.CurrentScreenSave;
 
             var collisionNos = currentScreen.GetNamedObject(dto.TileShapeCollection);
 
             // this should use a file as a source, need to find that
-            var sourceTmx = collisionNos.Properties.GetValue<string>("SourceTmxName");
-            var isFromType = collisionNos.Properties.GetValue<bool>("IsFromTypeChecked");
-            var collisionTileTypeName = collisionNos.Properties.GetValue<string>("CollisionTileTypeName");
+            var sourceTmxObjectName = collisionNos.Properties.GetValue<string>("SourceTmxName");
+            const int FromTypeCollisionCreationOption = 4;
 
-            var isUsingTmx = !string.IsNullOrEmpty(sourceTmx) && isFromType && !string.IsNullOrEmpty(collisionTileTypeName);
+            var isFromType = ObjectFinder.Self.GetPropertyValueRecursively<int>(
+                collisionNos, "CollisionCreationOptions") == FromTypeCollisionCreationOption;
 
-            FlatRedBall.IO.FilePath tmxFilePath = null;
-            TiledMapSave map = null;
-            MapLayer mapLayer = null;
-            if(isUsingTmx)
+            collisionTileTypeName = collisionNos.Properties.GetValue<string>("CollisionTileTypeName");
+            var isUsingTmx = !string.IsNullOrEmpty(sourceTmxObjectName) && isFromType && !string.IsNullOrEmpty(collisionTileTypeName);
+
+            tmxFilePath = null;
+            tiledMapSave = null;
+            mapLayer = null;
+            if (isUsingTmx)
             {
-                var rfs = currentScreen.GetReferencedFileSaveRecursively(sourceTmx);
+                var tmxObjectNos = currentScreen.GetNamedObjectRecursively(sourceTmxObjectName);
+                ReferencedFileSave rfs = null;
+                if (tmxObjectNos.SourceType == SourceType.File)
+                {
+                    rfs = currentScreen.GetReferencedFileSaveRecursively(tmxObjectNos.SourceFile);
+                }
 
-                if(rfs != null)
+                if (rfs != null)
                 {
                     tmxFilePath = GlueCommands.Self.GetAbsoluteFilePath(rfs);
                 }
             }
 
-            if(tmxFilePath?.Exists() == true)
+            if (tmxFilePath?.Exists() == true)
             {
-                map = TiledMapSave.FromFile(tmxFilePath.FullPath);
+                tiledMapSave = TiledMapSave.FromFile(tmxFilePath.FullPath);
                 // assume this for now...
-                mapLayer = map.Layers.Find(item => item.Name == "GameplayLayer");
-            }
-
-            var didChange = false;
-
-            if(mapLayer != null)
-            {
-                
-                var ids = mapLayer.data[0].tiles;
-
-                // todo - support seeds
-                foreach(var newTile in dto.AddedPositions)
-                {
-                    int absoluteIndex = GetTileIndexFromWorldPosition(newTile);
-
-                    // todo - get the ID that is being painted
-                    uint newId = 1;
-
-                    if(ids[absoluteIndex] != newId)
-                    {
-                        ids[absoluteIndex] = newId; 
-                        didChange = true;
-                    }
-                }
-
-                foreach (var oldTile in dto.RemovedPositions)
-                {
-                    int absoluteIndex = GetTileIndexFromWorldPosition(oldTile);
-
-                    if(ids[absoluteIndex] != 0)
-                    {
-                        ids[absoluteIndex] = 0;
-                        didChange = true;
-                    }
-                }
-
-                if(didChange)
-                {
-                    mapLayer.data[0].SetTileData(ids, mapLayer.data[0].encoding, mapLayer.data[0].compression);
-
-                    map.Save(tmxFilePath.FullPath);
-                }
-            }
-
-            static int GetTileIndexFromWorldPosition(Vector2 worldPosition)
-            {
-                // todo - read tile size properties
-                var xIndex = (int)(worldPosition.X / 16);
-                var yIndex = (int)(worldPosition.Y / 16);
-
-                var mapWidth = 32; // todo - need to read this property
-
-                var absoluteIndex = xIndex + yIndex * mapWidth;
-                return absoluteIndex;
+                mapLayer = tiledMapSave.Layers.Find(item => item.Name == "GameplayLayer");
             }
         }
     }

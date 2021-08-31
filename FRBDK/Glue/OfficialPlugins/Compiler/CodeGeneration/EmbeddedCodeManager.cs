@@ -20,6 +20,9 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile("Editing.Markers.SelectionMarker.cs",
                 "Editing/Markers/SelectionMarker.Generated.cs");
 
+            SaveEmbeddedFile("Editing.Markers.TileShapeCollectionMarker.cs",
+                "Editing/Markers/TileShapeCollectionMarker.Generated.cs");
+
             SaveEmbeddedFile("GlueControlManager.cs", 
                 "GlueControlManager.Generated.cs");
 
@@ -35,9 +38,17 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile("Editing.SelectionLogic.cs",
                 "Editing/SelectionLogic.Generated.cs");
 
-
             SaveEmbeddedFile("Editing.VariableAssignmentLogic.cs",
                 "Editing/VariableAssignmentLogic.Generated.cs");
+
+            SaveEmbeddedFile("Editing.Guides.cs",
+                "Editing/Guides.Generated.cs");
+
+            SaveEmbeddedFile("Editing.MoveObjectToContainerLogic.cs",
+                "Editing/MoveObjectToContainerLogic.Generated.cs");
+
+            SaveEmbeddedFile("Editing.CameraLogic.cs",
+                "Editing/CameraLogic.Generated.cs");
 
             SaveEmbeddedFile("Editing.CopyPasteManager.cs",
                 "Editing/CopyPasteManager.Generated.cs");
@@ -48,6 +59,9 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile("Forms.ObjectCreationWindow.cs",
                 "Forms/ObjectCreationWindow.Generated.cs");
 
+            SaveEmbeddedFile("Models.CustomVariable.cs",
+                "Models/CustomVariable.Generated.cs");
+
             SaveEmbeddedFile("Models.NamedObjectSave.cs",
                 "Models/NamedObjectSave.Generated.cs");
 
@@ -57,20 +71,14 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile("Models.StateSaveCategory.cs",
                 "Models/StateSaveCategory.Generated.cs");
 
-            SaveEmbeddedFile("Runtime.DynamicEntity.cs",
-                "Runtime/DynamicEntitys.Generated.cs");
+            SaveEmbeddedFile("Models.CustomVariable.cs",
+                "Models/CustomVariable.Generated.cs");
 
             SaveEmbeddedFile("Models.GlueElement.cs",
                 "Models/GlueElement.Generated.cs");
 
-            SaveEmbeddedFile("Editing.Guides.cs",
-                "Editing/Guides.Generated.cs");
-
-            SaveEmbeddedFile("Editing.MoveObjectToContainerLogic.cs",
-                "Editing/MoveObjectToContainerLogic.Generated.cs");
-
-            SaveEmbeddedFile("Editing.CameraLogic.cs",
-                "Editing/CameraLogic.Generated.cs");
+            SaveEmbeddedFile("Runtime.DynamicEntity.cs",
+                "Runtime/DynamicEntitys.Generated.cs");
 
             SaveEmbeddedFile("Screens.EntityViewingScreen.cs",
                 "Screens/EntityViewingScreen.Generated.cs");

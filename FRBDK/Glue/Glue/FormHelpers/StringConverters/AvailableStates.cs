@@ -111,7 +111,7 @@ namespace FlatRedBall.Glue.GuiDisplay
                 {
                     int m = 3;
                 }
-                customVariable = FillPossibleStatesFor(listToFill, currentElement, customVariable);
+                FillPossibleStatesFor(listToFill, currentElement, customVariable);
 
             }
         }
@@ -204,6 +204,11 @@ namespace FlatRedBall.Glue.GuiDisplay
                     listToFill.Add(stateSave.Name);
                 }
             }
+
+            var temp = listToFill.OrderBy(item => item).ToArray();
+            listToFill.Clear();
+            listToFill.AddRange(temp);
+
             return customVariable;
         }
 
@@ -276,9 +281,12 @@ namespace FlatRedBall.Glue.GuiDisplay
                             listToFill.Add(state.Name);
                         }
                     }
-                    element = ObjectFinder.Self.GetIElement(element.BaseElement);
+                    element = ObjectFinder.Self.GetElement(element.BaseElement);
                 }
             }
+            var temp = listToFill.OrderBy(item => item).ToArray();
+            listToFill.Clear();
+            listToFill.AddRange(temp);
         }
     }
 }

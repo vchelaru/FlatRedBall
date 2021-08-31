@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.TileGraphics;
+using FlatRedBall.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,7 +11,7 @@ using AARect = FlatRedBall.Math.Geometry.AxisAlignedRectangle;
 
 namespace FlatRedBall.TileCollisions
 {
-    public partial class TileShapeCollection
+    public partial class TileShapeCollection : INameable
     {
         #region Fields
 

@@ -99,7 +99,7 @@ namespace OfficialPlugins.Compiler
 
             #region Start the timer
 
-            var timerFrequency = 400; // ms
+            var timerFrequency = 250; // ms
             timer = new Timer(timerFrequency);
             timer.Elapsed += HandleTimerElapsed;
             timer.SynchronizingObject = MainGlueWindow.Self;
@@ -108,26 +108,35 @@ namespace OfficialPlugins.Compiler
             #endregion
         }
 
+        System.Threading.SemaphoreSlim getCommandsSemaphore = new System.Threading.SemaphoreSlim(1);
         private async void HandleTimerElapsed(object sender, ElapsedEventArgs e)
         {
-            try
+            var isBusy = await getCommandsSemaphore.WaitAsync(0);
+            if(!isBusy)
             {
-                if(viewModel.IsEditChecked)
+                try
                 {
-                    var gameToGlueCommandsAsString = await CommandSending.CommandSender
-                        .SendCommand("GetCommands", viewModel.PortNumber);
-
-                    if (!string.IsNullOrEmpty(gameToGlueCommandsAsString))
+                    if(viewModel.IsEditChecked)
                     {
-                        CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString, viewModel.PortNumber);
+                        var gameToGlueCommandsAsString = await CommandSending.CommandSender
+                            .SendCommand("GetCommands", viewModel.PortNumber);
+
+                        if (!string.IsNullOrEmpty(gameToGlueCommandsAsString))
+                        {
+                            CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString, viewModel.PortNumber);
+                        }
                     }
                 }
+                catch
+                {
+                    // it's okay
+                }
+                finally
+                {
+                    getCommandsSemaphore.Release();
+                }
+            }
 
-            }
-            catch
-            {
-                // it's okay
-            }
         }
 
         private void AssignEvents()
@@ -399,6 +408,11 @@ namespace OfficialPlugins.Compiler
 
                     RefreshManager.Self.StopAndRestartTask($"{propertyName} changed");
 
+                    control.PrintOutput("Waiting for tasks to finish...");
+                    await TaskManager.Self.WaitForAllTasksFinished();
+                    control.PrintOutput("Finishined adding/generating code for GlueControlManager");
+
+
                     break;
                 case nameof(CompilerViewModel.CurrentGameSpeed):
                     var speedPercentage = int.Parse(viewModel.CurrentGameSpeed.Substring(0, viewModel.CurrentGameSpeed.Length - 1));
@@ -413,6 +427,9 @@ namespace OfficialPlugins.Compiler
                     break;
                 case nameof(CompilerViewModel.IsToolbarPlayButtonEnabled):
                     ToolbarController.Self.SetEnabled(viewModel.IsToolbarPlayButtonEnabled);
+                    break;
+                case nameof(CompilerViewModel.IsRunning):
+                    //CommandSender.CancelConnect();
                     break;
                 case nameof(CompilerViewModel.PlayOrEdit):
 
@@ -441,11 +458,16 @@ namespace OfficialPlugins.Compiler
 
                                 if (screen != null)
                                 {
-                                    GlueCommands.Self.DoOnUiThread(() =>
+                                    await GlueCommands.Self.DoOnUiThread(async () =>
                                     {
                                         if(GlueState.Self.CurrentElement != screen)
                                         {
                                             GlueState.Self.CurrentElement = screen;
+                                        }
+                                        else
+                                        {
+                                            // the screens are the same, so push the object selection from Glue to the game:
+                                            await RefreshManager.Self.PushGlueSelectionToGame();
                                         }
                                     });
                                 }

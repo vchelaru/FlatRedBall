@@ -123,7 +123,8 @@ namespace TileGraphicsPlugin.CodeGeneration
             }
             else
             {
-                return $"{namedObjectSave.FieldName} = new FlatRedBall.TileCollisions.TileShapeCollection();";
+                return $"{namedObjectSave.FieldName} = new FlatRedBall.TileCollisions.TileShapeCollection(); {namedObjectSave.FieldName}.Name = \"{namedObjectSave.InstanceName}\";";
+
 
             }
 

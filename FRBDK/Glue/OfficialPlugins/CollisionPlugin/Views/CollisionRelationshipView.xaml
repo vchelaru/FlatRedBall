@@ -19,6 +19,7 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
 
                 <Grid>
@@ -57,13 +58,19 @@
                           IsEnabled="{Binding FirstSubCollisionEnabled}"
                           SelectedItem="{Binding FirstSubCollisionSelectedItem}"
                           ItemsSource="{Binding FirstSubCollisionItemsSource}"
+                          Visibility="{Binding SubcollisionDropdownVisibility}"
                           ></ComboBox>
                 <ComboBox Grid.Row="2" Grid.Column="2"
                           IsEnabled="{Binding SecondSubCollisionEnabled}"
                           SelectedItem="{Binding SecondSubCollisionSelectedItem}"
                           ItemsSource="{Binding SecondSubCollisionItemsSource}"
-                          
+                          Visibility="{Binding SubcollisionDropdownVisibility}"
                           ></ComboBox>
+
+                <TextBlock Grid.Row="3" Grid.ColumnSpan="3" TextWrapping="Wrap" 
+                           Margin="10,0,0,0" FontSize="10"
+                           Visibility="{Binding NoSubcollisionMessageVisibility}">
+                    Subcollision cannot be set on Delegate Collision - the delegate can internally select which objects to collide.</TextBlock>
 
 
             </Grid>

@@ -191,7 +191,9 @@ namespace OfficialPlugins.CollisionPlugin
             if(!string.IsNullOrEmpty(secondSubCollision) && 
                 secondSubCollision != CollisionRelationshipViewModel.EntireObject &&
                 collisionType != CollisionType.PlatformerCloudCollision &&
-                collisionType != CollisionType.PlatformerSolidCollision)
+                collisionType != CollisionType.PlatformerSolidCollision && 
+                // delegate collision cannot specify subcollision, that can be done manually in the collision
+                collisionType != CollisionType.DelegateCollision)
             {
                 codeBlock.Line($"{instanceName}.SetSecondSubCollision(item => item.{secondSubCollision}, \"{secondSubCollision}\");");
             }

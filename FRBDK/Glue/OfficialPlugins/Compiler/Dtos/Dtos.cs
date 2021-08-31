@@ -29,7 +29,7 @@ namespace OfficialPlugins.Compiler.Dtos
 
     class SelectObjectDto
     {
-        public string ObjectName { get; set; }
+        public NamedObjectSave NamedObject { get; set; }
         public string ElementNameGlue { get; set; }
         public string StateName { get; set; }
         public string StateCategoryName { get; set; }
@@ -83,6 +83,12 @@ namespace OfficialPlugins.Compiler.Dtos
         public bool WasObjectCreated { get; set; }
     }
 
+    public class AddVariableDto
+    {
+        public CustomVariable CustomVariable { get; set; }
+        public string ElementGameType { get; set; }
+    }
+
     public class MoveObjectToContainerDto
     {
         public string ElementName { get; set; }
@@ -126,7 +132,10 @@ namespace OfficialPlugins.Compiler.Dtos
         public string VariableName { get; set; }
     }
 
-    public class RestartScreenDto { }
+    public class RestartScreenDto 
+    {
+        public bool ShowSelectionBump { get; set; } = true;
+    }
     public class ReloadGlobalContentDto
     {
         public string StrippedGlobalContentFileName { get; set; }
@@ -143,5 +152,6 @@ namespace OfficialPlugins.Compiler.Dtos
         public string TileShapeCollection { get; set; }
         public List<Vector2> AddedPositions { get; set; }
         public List<Vector2> RemovedPositions { get; set; }
+        public bool RequestRestart { get; set; }
     }
 }

@@ -331,11 +331,17 @@ namespace TileGraphicsPlugin.ViewModels
             set => SetAndPersist(value);
         }
 
-        public bool IsEntireViewEnabled
+        public bool DefinedByBase
         {
-            get { return Get<bool>(); }
-            set { Set(value); }
+            get => Get<bool>(); 
+            set => Set(value); 
         }
+
+        [DependsOn(nameof(DefinedByBase))]
+        public bool IsEntireViewEnabled => DefinedByBase == false;
+
+        [DependsOn(nameof(DefinedByBase))]
+        public Visibility MessageAboutInheritanceVisibility => DefinedByBase.ToVisibility();
 
         public TileShapeCollectionPropertiesViewModel()
         {

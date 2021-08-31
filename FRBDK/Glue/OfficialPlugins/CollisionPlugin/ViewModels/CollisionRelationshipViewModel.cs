@@ -159,8 +159,8 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
 
         public ObservableCollection<string> FirstCollisionItemSource
         {
-            get { return Get<ObservableCollection<string>>(); }
-            set { Set(value); }
+            get => Get<ObservableCollection<string>>(); 
+            set => Set(value); 
         }
 
         public ObservableCollection<string> SecondCollisionItemSource
@@ -171,8 +171,8 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
 
         public bool FirstSubCollisionEnabled
         {
-            get { return Get<bool>(); }
-            set { Set(value); }
+            get => Get<bool>(); 
+            set => Set(value); 
         }
 
         [SyncedProperty]
@@ -191,23 +191,28 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
 
         public bool SecondSubCollisionEnabled
         {
-            get { return Get<bool>(); }
-            set { Set(value); }
+            get => Get<bool>(); 
+            set => Set(value); 
         }
 
         [SyncedProperty]
         public string SecondSubCollisionSelectedItem
         {
-            get { return Get<string>(); }
-            set { SetAndPersist(value); }
+            get => Get<string>(); 
+            set => SetAndPersist(value); 
         }
 
         public ObservableCollection<string> SecondSubCollisionItemsSource
         {
-            get { return Get<ObservableCollection<string>>(); }
-            set { Set(value); }
+            get => Get<ObservableCollection<string>>(); 
+            set => Set(value); 
         }
 
+        [DependsOn(nameof(CollisionType))]
+        public Visibility SubcollisionDropdownVisibility => (CollisionType != CollisionType.DelegateCollision).ToVisibility();
+
+        [DependsOn(nameof(CollisionType))]
+        public Visibility NoSubcollisionMessageVisibility => (CollisionType == CollisionType.DelegateCollision).ToVisibility();
 
         [SyncedProperty]
         public CollisionType CollisionType

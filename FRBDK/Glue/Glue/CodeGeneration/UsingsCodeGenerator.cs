@@ -18,6 +18,11 @@ namespace FlatRedBall.Glue.CodeGeneration
         {
             List<string> usingStrings = new List<string>();
 
+            // Not sure if we still need this, as we've been slowly ripping out using statements from generated code.
+            usingStrings.Add("using Color = Microsoft.Xna.Framework.Color;");
+            // Need this for FindByNameSyntax which may use linq
+            usingStrings.Add("using System.Linq;");
+
             if (SaveObject is EntitySave)
             {
                 EntitySave asEntitySave = (EntitySave)SaveObject;

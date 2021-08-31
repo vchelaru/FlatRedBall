@@ -36,7 +36,15 @@
                       Margin="0,4,0,0"
                       IsChecked="{Binding IsGenerateGlueControlManagerInGame1Checked}"
                       Visibility="{Binding GlueControlDependentVisibility}">
-                Generate GlueControlManager in Game1
+                Enable GlueView
+                <CheckBox.ToolTip>
+                    <ToolTip>
+                        <StackPanel>
+                            <TextBlock FontWeight="Bold">Adds code to your project to enable GlueView</TextBlock>
+                            <TextBlock>GlueView allows live previewing of levels and entities. You can also edit your game while it's running and try your changes without restarting.</TextBlock>
+                        </StackPanel>
+                    </ToolTip>
+                </CheckBox.ToolTip>
             </CheckBox>
             <StackPanel Margin="7,0,0,0" Orientation="Horizontal" VerticalAlignment="Top" Visibility="{Binding PortUiVisibility}">
                 <TextBlock VerticalAlignment="Center">

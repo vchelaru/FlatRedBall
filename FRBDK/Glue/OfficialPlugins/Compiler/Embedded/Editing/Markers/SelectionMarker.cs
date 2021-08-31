@@ -4,6 +4,7 @@ using FlatRedBall;
 using FlatRedBall.Instructions;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
+using FlatRedBall.Utilities;
 using Microsoft.Xna.Framework;
 using StateInterpolationPlugin;
 using System;
@@ -38,8 +39,13 @@ namespace GlueControl.Editing
 
     #endregion
 
+    #region Interfaces
+
+
     public interface ISelectionMarker
     {
+        event Action<INameable, string, object> PropertyChanged;
+
         float ExtraPaddingInPixels { get; set; }
         bool Visible { get; set; }
         double FadingSeed { get; set; }
@@ -48,18 +54,20 @@ namespace GlueControl.Editing
         bool CanMoveItem { get; set; }
         Vector3 LastUpdateMovement { get; }
 
+        INameable Owner { get; }
+
         void MakePersistent();
         void PlayBumpAnimation(float endingExtraPaddingBeforeZoom, bool isSynchronized);
-        void Update(PositionedObject item, ResizeSide sideGrabbed);
+        void Update(ResizeSide sideGrabbed);
 
         bool IsCursorOverThis();
-        void HandleCursorRelease(PositionedObject item);
-        void HandleCursorPushed(PositionedObject item);
+        void HandleCursorRelease();
+        void HandleCursorPushed();
         void Destroy();
     }
 
-    // todo - the SelectionMarker needs to be an interface so we can abstract that and have
-    // the tileshapecollection have its own marker.
+    #endregion
+
 
     public class SelectionMarker : ISelectionMarker
     {
@@ -142,16 +150,23 @@ namespace GlueControl.Editing
         float GrabbedRadius;
         float GrabbedTextureScale;
 
+        PositionedObject ownerAsPositionedObject;
+        public INameable Owner
+        {
+            get => ownerAsPositionedObject;
+            set => ownerAsPositionedObject = value as PositionedObject;
+        }
 
         #endregion
 
         // owner, variable name, variable value
-        public Action<PositionedObject, string, object> PropertyChanged;
+        public event Action<INameable, string, object> PropertyChanged;
 
         #region Constructor/Init
 
-        public SelectionMarker()
+        public SelectionMarker(INameable owner)
         {
+            this.Owner = owner;
             rectangle = new AxisAlignedRectangle();
 
             for (int i = 0; i < handles.Length; i++)
@@ -178,6 +193,8 @@ namespace GlueControl.Editing
         }
 
         #endregion
+
+        #region Updates
 
         public void PlayBumpAnimation(float endingExtraPaddingBeforeZoom, bool isSynchronized)
         {
@@ -212,34 +229,34 @@ namespace GlueControl.Editing
             };
         }
 
-        public void Update(PositionedObject item, ResizeSide sideGrabbed)
+        public void Update(ResizeSide sideGrabbed)
         {
             LastUpdateMovement = Vector3.Zero;
 
-            Visible = item != null;
+            Visible = Owner != null;
 
-            UpdateScreenPointPushed(item);
+            UpdateScreenPointPushed(ownerAsPositionedObject);
 
-            UpdateMainRectangleSizeToItem(item);
+            UpdateMainRectangleSizeToItem(ownerAsPositionedObject);
 
             UpdateColor();
 
-            ApplyPrimaryDownDragEditing(item, sideGrabbed);
+            ApplyPrimaryDownDragEditing(ownerAsPositionedObject, sideGrabbed);
 
-            UpdateHandles(item, sideGrabbed);
+            UpdateHandles(ownerAsPositionedObject, sideGrabbed);
 
 
             if (CanMoveItem)
             {
-                if (item is Sprite asSprite && asSprite.TextureScale > 0)
+                if (ownerAsPositionedObject is Sprite asSprite && asSprite.TextureScale > 0)
                 {
                     ResizeMode = ResizeMode.Cardinal;
                 }
-                else if (item is FlatRedBall.Math.Geometry.Circle)
+                else if (ownerAsPositionedObject is FlatRedBall.Math.Geometry.Circle)
                 {
                     ResizeMode = ResizeMode.Cardinal;
                 }
-                else if (item is FlatRedBall.Math.Geometry.IScalable)
+                else if (ownerAsPositionedObject is FlatRedBall.Math.Geometry.IScalable)
                 {
                     ResizeMode = ResizeMode.EightWay;
                 }
@@ -414,7 +431,6 @@ namespace GlueControl.Editing
             }
         }
 
-
         private void UpdateHandleRelativePositions()
         {
             var handle = handles[0];
@@ -450,6 +466,8 @@ namespace GlueControl.Editing
             handle.Y = 0;
 
         }
+
+        #endregion
 
         #region Drag to move/resize
 
@@ -737,67 +755,67 @@ namespace GlueControl.Editing
             return ResizeSide.None;
         }
 
-        public void HandleCursorRelease(PositionedObject item)
+        public void HandleCursorRelease()
         {
 
-            if (item.X != GrabbedPosition.X)
+            if (ownerAsPositionedObject.X != GrabbedPosition.X)
             {
-                var value = item.Parent == null
-                    ? item.X
-                    : item.RelativeX;
-                PropertyChanged(item, nameof(item.X), value);
+                var value = ownerAsPositionedObject.Parent == null
+                    ? ownerAsPositionedObject.X
+                    : ownerAsPositionedObject.RelativeX;
+                PropertyChanged(Owner, nameof(ownerAsPositionedObject.X), value);
             }
-            if (item.Y != GrabbedPosition.Y)
+            if (ownerAsPositionedObject.Y != GrabbedPosition.Y)
             {
-                var value = item.Parent == null
-                    ? item.Y
-                    : item.RelativeY;
-                PropertyChanged(item, nameof(item.Y), value);
+                var value = ownerAsPositionedObject.Parent == null
+                    ? ownerAsPositionedObject.Y
+                    : ownerAsPositionedObject.RelativeY;
+                PropertyChanged(Owner, nameof(ownerAsPositionedObject.Y), value);
             }
 
-            if (item is FlatRedBall.Math.Geometry.IScalable asScalable)
+            if (Owner is FlatRedBall.Math.Geometry.IScalable asScalable)
             {
                 var didChangeWidth = GrabbedWidthAndHeight.X != asScalable.ScaleX * 2;
                 var didChangeHeight = GrabbedWidthAndHeight.Y != asScalable.ScaleY * 2;
-                if (item is Sprite asSprite && asSprite.TextureScale > 0 &&
+                if (Owner is Sprite asSprite && asSprite.TextureScale > 0 &&
                     GrabbedTextureScale != asSprite.TextureScale)
                 {
-                    PropertyChanged(item, nameof(asSprite.TextureScale), asSprite.TextureScale);
+                    PropertyChanged(Owner, nameof(asSprite.TextureScale), asSprite.TextureScale);
                 }
                 else
                 {
                     if (didChangeWidth)
                     {
-                        PropertyChanged(item, "Width", asScalable.ScaleX * 2);
+                        PropertyChanged(Owner, "Width", asScalable.ScaleX * 2);
                     }
                     if (didChangeWidth)
                     {
-                        PropertyChanged(item, "Height", asScalable.ScaleY * 2);
+                        PropertyChanged(Owner, "Height", asScalable.ScaleY * 2);
                     }
                 }
             }
-            else if (item is FlatRedBall.Math.Geometry.Circle circle)
+            else if (Owner is FlatRedBall.Math.Geometry.Circle circle)
             {
                 if (GrabbedRadius != circle.Radius)
                 {
-                    PropertyChanged(item, nameof(circle.Radius), circle.Radius);
+                    PropertyChanged(Owner, nameof(circle.Radius), circle.Radius);
                 }
             }
         }
 
-        public void HandleCursorPushed(PositionedObject item)
+        public void HandleCursorPushed()
         {
-            GrabbedPosition = item.Position;
+            GrabbedPosition = ownerAsPositionedObject.Position;
 
-            if (item is FlatRedBall.Math.Geometry.IScalable itemGrabbedAsScalable)
+            if (Owner is FlatRedBall.Math.Geometry.IScalable itemGrabbedAsScalable)
             {
                 GrabbedWidthAndHeight = new Vector2(itemGrabbedAsScalable.ScaleX * 2, itemGrabbedAsScalable.ScaleY * 2);
-                if (item is Sprite asSprite)
+                if (Owner is Sprite asSprite)
                 {
                     GrabbedTextureScale = asSprite.TextureScale;
                 }
             }
-            else if (item is FlatRedBall.Math.Geometry.Circle circle)
+            else if (Owner is FlatRedBall.Math.Geometry.Circle circle)
             {
                 GrabbedRadius = circle.Radius;
             }

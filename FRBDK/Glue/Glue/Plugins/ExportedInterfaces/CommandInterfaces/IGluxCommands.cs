@@ -20,6 +20,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
             get;
         }
 
+        IElementCommands ElementCommands { get;  }
+
         IProjectCommands ProjectCommands { get; }
 
         string StartUpScreenName { get; set; }

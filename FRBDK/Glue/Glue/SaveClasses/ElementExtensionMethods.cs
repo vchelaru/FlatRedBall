@@ -8,6 +8,7 @@ namespace FlatRedBall.Glue.SaveClasses
 {
     public static class ElementExtensionMethods
     {
+        [Obsolete("Use GlueState.Self.ElementCommands.UpdateFromBaseType")]
         public static bool UpdateFromBaseType(this IElement elementSave)
         {
             bool haveChangesOccurred = false;

@@ -17,12 +17,29 @@ namespace FlatRedBall.Entities
     // Influenced by https://www.gamasutra.com/blogs/ItayKeren/20150511/243083/Scroll_Back_The_Theory_and_Practice_of_Cameras_in_SideScrollers.php
     public class CameraControllingEntity : PositionedObject
     {
-        bool hasActivityBeenCalled = false;
+        #region Fields/Properties
 
-        public CameraBehaviorType BehaviorType { get; set; }
+        bool hasActivityBeenCalled = false;
+        private float defaultOrthoWidth;
+        private float defaultOrthoHeight;
+        private float minZoomPercent;
+        private bool isAutoZoomEnabled;
+        private float furthestZoom;
+
 
         /// <summary>
-        /// The target PositionedObjects to fillow. In a single-player game this can be one entity. In a multi-player game, this can 
+        /// Defines the behavior of the camera when determining its target position. 
+        /// Currently it always performs PositionLocking, but additional types of bhehavior may be added in the future.
+        /// </summary>
+        public CameraBehaviorType BehaviorType { get; set; }
+
+        // August 24, 2021
+        // Vic asks - Targets used to be an IList instead of IList<PositionedObject>. Why? Was this intentional?
+        // Changing it to IList of PositionedObject.
+        // Update - the reason is because we assign PositionedObjectList<PositionedObjectType> which does not implement
+        // IList<PositionedObject>
+        /// <summary>
+        /// The target PositionedObjects to follow. In a single-player game this can be one entity. In a multi-player game, this can 
         /// be all players. The camera will average their position and follow the average.
         /// </summary>
         public System.Collections.IList Targets { get; set; } = new List<PositionedObject>();
@@ -67,6 +84,17 @@ namespace FlatRedBall.Entities
         /// </summary>
         public bool IsActive { get; set; } = true;
 
+        #endregion
+
+        public void EnableAutoZooming(float defaultOrthoWidth, float defaultOrthoHeight, float minZoomPercent, float furthestZoom = 0)
+        {
+            this.defaultOrthoWidth = defaultOrthoWidth;
+            this.defaultOrthoHeight = defaultOrthoHeight;
+            this.minZoomPercent = minZoomPercent;
+            this.isAutoZoomEnabled = true;
+            this.furthestZoom = furthestZoom;
+        }
+
         public void Activity()
         {
             ///////////////////Early Out/////////////////////
@@ -76,14 +104,27 @@ namespace FlatRedBall.Entities
             }
             //////////////////End Early Out//////////////////
 
-
-            Vector2 target = GetTarget();
-
+            var target = GetTarget();
             ApplyTarget(target, hasActivityBeenCalled ? LerpSmooth : false);
+
+            if(isAutoZoomEnabled)
+            {
+                ApplyZoom();
+            }
 
             hasActivityBeenCalled = true;
         }
 
+        private void ApplyZoom()
+        {
+            var separationVector = GetTargetSeparation();
+            ApplySeparationForZoom(separationVector);
+        }
+
+        /// <summary>
+        /// Returns the desired position of the camera (X and Y) given the position of all Targets and the bounds of the camera.
+        /// </summary>
+        /// <returns>The target X and Y of the camera.</returns>
         public Vector2 GetTarget()
         {
             #region Get the average position of all the target instances
@@ -150,7 +191,36 @@ namespace FlatRedBall.Entities
             }
 
             #endregion
+
             return target;
+        }
+
+        private Vector2 GetTargetSeparation()
+        {
+            //////// Early Out///////////////
+            if(Targets.Count == 0)
+            {
+                return Vector2.Zero;
+            }
+            //////End Early Out//////////////
+
+            var firstTargetPosition = (Targets[0] as PositionedObject).Position;
+
+            Vector2 min = firstTargetPosition.ToVector2();
+            Vector2 max = min;
+
+            for(int i = 1; i < Targets.Count; i++)
+            {
+                var atI = Targets[i] as PositionedObject;
+
+                if (atI.X < min.X) min.X = atI.X;
+                if (atI.X > max.X) max.X = atI.X;
+
+                if (atI.Y < min.Y) min.Y = atI.Y;
+                if (atI.Y > max.Y) max.Y = atI.Y;
+            }
+
+            return max - min;
         }
 
         public void ApplyTarget(Vector2 target, bool lerpSmooth = true)
@@ -187,6 +257,26 @@ namespace FlatRedBall.Entities
                 Camera.Main.X = objectToMove.X;
                 Camera.Main.Y = objectToMove.Y;
             }
+        }
+
+        public void ApplySeparationForZoom(Vector2 separationVector)
+        {
+            // for now we'll assume a padding:
+            float noZoomRatio = .8f;
+            float noZoomDistance = System.Math.Min(defaultOrthoWidth, defaultOrthoHeight) * noZoomRatio;
+
+            var currentSeparationDistance = separationVector.Length();
+
+            if(currentSeparationDistance > noZoomDistance)
+            {
+                var newZoom = System.Math.Max(furthestZoom, currentSeparationDistance / noZoomDistance);
+                Camera.Main.OrthogonalHeight = defaultOrthoHeight * newZoom;
+            }
+            else
+            {
+                Camera.Main.OrthogonalHeight = defaultOrthoHeight;
+            }
+            Camera.Main.FixAspectRatioYConstant();
         }
     }
 }

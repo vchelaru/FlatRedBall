@@ -2,6 +2,7 @@
 using FlatRedBall.Graphics;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
+using FlatRedBall.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -14,12 +15,12 @@ namespace GlueControl.Editing
 {
     class CopyPasteManager
     {
-        List<PositionedObject> CopiedPositionedObjects
+        List<INameable> CopiedObjects
         {
             get; set;
-        } = new List<PositionedObject>();
+        } = new List<INameable>();
 
-        public void DoHotkeyLogic(PositionedObjectList<PositionedObject> selectedObjects)
+        public void DoHotkeyLogic(List<INameable> selectedObjects)
         {
             var keyboard = FlatRedBall.Input.InputManager.Keyboard;
 
@@ -27,10 +28,10 @@ namespace GlueControl.Editing
             {
                 if (keyboard.KeyPushed(Keys.C))
                 {
-                    CopiedPositionedObjects.Clear();
-                    CopiedPositionedObjects.AddRange(selectedObjects);
+                    CopiedObjects.Clear();
+                    CopiedObjects.AddRange(selectedObjects);
                 }
-                if (keyboard.KeyPushed(Keys.V) && CopiedPositionedObjects != null)
+                if (keyboard.KeyPushed(Keys.V) && CopiedObjects != null)
                 {
                     HandlePaste();
                 }
@@ -39,7 +40,7 @@ namespace GlueControl.Editing
 
         private void HandlePaste()
         {
-            foreach (var copiedObject in CopiedPositionedObjects)
+            foreach (var copiedObject in CopiedObjects)
             {
                 if (copiedObject is Circle originalCircle)
                 {
@@ -61,7 +62,7 @@ namespace GlueControl.Editing
                 {
                     InstanceLogic.Self.HandleCreateTextByName(originalText);
                 }
-                else // positioned object, so entity?
+                else if (copiedObject is PositionedObject asPositionedObject) // positioned object, so entity?
                 {
                     var type = copiedObject.GetType().FullName;
                     if (copiedObject is Runtime.DynamicEntity dynamicEntity)
@@ -71,7 +72,7 @@ namespace GlueControl.Editing
                     // for now assume names are unique, not qualified
                     var instance = InstanceLogic.Self.CreateInstanceByGame(
                         type,
-                        copiedObject);
+                        asPositionedObject);
                     instance.CreationSource = "Glue";
                     instance.Velocity = Vector3.Zero;
                     instance.Acceleration = Vector3.Zero;

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FlatRedBall.Math;
+using FlatRedBall.Utilities;
 
 using FlatRedBall.Screens;
 using FlatRedBall.Graphics;
@@ -33,8 +34,11 @@ namespace GlueControl
         public List<IDestroyable> DestroyablesAddedAtRuntime = new List<IDestroyable>();
 
         // Do we want to support entire categories at runtime? For now just states, but we'll have to review this at some point
-        // if we want to allow entire categories added at runtime.
+        // if we want to allow entire categories added at runtime. The key is the game type (GameNamespace.Entities.EntityName)
         public Dictionary<string, List<StateSaveCategory>> StatesAddedAtRuntime = new Dictionary<string, List<StateSaveCategory>>();
+
+        public Dictionary<string, List<CustomVariable>> CustomVariablesAddedAtRuntime = new Dictionary<string, List<CustomVariable>>();
+
 
         public List<IList> ListsAddedAtRuntime = new List<IList>();
 
@@ -1044,24 +1048,24 @@ namespace GlueControl
 
         #region Delete Instance from Game
 
-        public void DeleteInstanceByGame(PositionedObject positionedObject)
+        public void DeleteInstanceByGame(INameable instance)
         {
             // Vic June 27, 2021
             // this sends a command to Glue to delete the object, but doesn't
             // actually delete it in game until Glue tells the game to get rid
             // of it. Is that okay? it's a little slower, but it works. Maybe at
             // some point in the future I'll find a reason why it needs to be immediate.
-            var name = positionedObject.Name;
+            var name = instance.Name;
 
             var dto = new Dtos.RemoveObjectDto();
-            dto.ObjectName = positionedObject.Name;
+            dto.ObjectName = instance.Name;
 
             GlueControlManager.Self.SendToGlue(dto);
         }
 
         #endregion
 
-        private void AssignVariable(object instance, FlatRedBall.Content.Instructions.InstructionSave instruction)
+        public void AssignVariable(object instance, FlatRedBall.Content.Instructions.InstructionSave instruction)
         {
             string variableName = instruction.Member;
             object variableValue = instruction.Value;
@@ -1074,7 +1078,7 @@ namespace GlueControl
 
                 variableValue = fieldInfo.GetValue(null);
             }
-            else if (instruction.Type == "float")
+            else if (instruction.Type == "float" || instruction.Type == "Single")
             {
                 if (variableValue is int asInt)
                 {

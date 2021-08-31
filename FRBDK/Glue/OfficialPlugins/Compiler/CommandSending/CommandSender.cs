@@ -36,40 +36,58 @@ namespace OfficialPlugins.Compiler.CommandSending
 
                 var isConnected = false;
 
-                await Task.Run(() =>
+                //await Task.Run(() =>
+                //{
+                //    try
+                //    {
+                //        client.Connect("127.0.0.1", port);
+                //        isConnected = true;
+                //    }
+                //    catch(Exception)
+                //    {
+                //        // throw away - no need to tell the user it failed
+                //    }
+                //});
+                const int timeoutDuration = 3000;
+                var timeoutTask = Task.Delay(timeoutDuration);
+                var connectTask = client.ConnectAsync("127.0.0.1", port);
+
+                var completedTask = await Task.WhenAny(timeoutTask, connectTask);
+                if (completedTask == timeoutTask)
                 {
-                    try
-                    {
-                        client.Connect("127.0.0.1", port);
-                        isConnected = true;
-                    }
-                    catch(Exception)
-                    {
-                        // throw away - no need to tell the user it failed
-                    }
-                });
-
-                if(isConnected)
+                    client.Dispose();
+                    isConnected = false;
+                }
+                else
                 {
-                    // Stream string to server
-                    Stream stm = client.GetStream();
-                    //ASCIIEncoding asen = new ASCIIEncoding();
-
-                    if(!text.EndsWith("\n"))
-                    {
-                        text += "\n"; 
-                    }
-
-                    //byte[] ba = asen.GetBytes(input);
-                    byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(text);
-                    stm.Write(messageAsBytes, 0, messageAsBytes.Length);
+                    isConnected = true;
+                }
 
 
-                    // give the server time to finish what it's doing:
-                    //await Task.Delay((int)(1 * 60));
+
+
+
+                if (isConnected)
+                {
                     string read = null;
                     try
                     {
+                        // Stream string to server
+                        Stream stm = client.GetStream();
+                        //ASCIIEncoding asen = new ASCIIEncoding();
+
+                        if(!text.EndsWith("\n"))
+                        {
+                            text += "\n"; 
+                        }
+
+                        //byte[] ba = asen.GetBytes(input);
+                        byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(text);
+                        stm.Write(messageAsBytes, 0, messageAsBytes.Length);
+
+
+                        // give the server time to finish what it's doing:
+                        //await Task.Delay((int)(1 * 60));
                         read = await ReadFromClient(client, client.GetStream());
                     }
                     catch(Exception e)

@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
+using GlueControl.Models;
+
 
 namespace GlueControl.Dtos
 {
@@ -30,12 +32,12 @@ namespace GlueControl.Dtos
 
     class SelectObjectDto
     {
-        public string ObjectName { get; set; }
+        public NamedObjectSave NamedObject { get; set; }
         public string ElementNameGlue { get; set; }
         public string StateName { get; set; }
         public string StateCategoryName { get; set; }
 
-    }
+    } 
 
     public enum AssignOrRecordOnly
     {
@@ -85,6 +87,11 @@ namespace GlueControl.Dtos
         public bool WasObjectCreated { get; set; }
     }
 
+    public class AddVariableDto
+    {
+        public CustomVariable CustomVariable { get; set; }
+        public string ElementGameType { get; set; }
+    }
 
     public class MoveObjectToContainerDto
     {
@@ -130,7 +137,10 @@ namespace GlueControl.Dtos
         public string VariableName { get; set; }
     }
 
-    public class RestartScreenDto { }
+    public class RestartScreenDto
+    {
+        public bool ShowSelectionBump { get; set; } = true;
+    }
     public class ReloadGlobalContentDto 
     {
         public string StrippedGlobalContentFileName { get; set; }
@@ -147,5 +157,6 @@ namespace GlueControl.Dtos
         public string TileShapeCollection { get; set; }
         public List<Vector2> AddedPositions { get; set; }
         public List<Vector2> RemovedPositions { get; set; }
+        public bool RequestRestart { get; set; }
     }
 }

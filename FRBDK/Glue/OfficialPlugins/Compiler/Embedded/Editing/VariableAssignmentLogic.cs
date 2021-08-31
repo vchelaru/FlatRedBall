@@ -17,6 +17,7 @@ using FlatRedBall.Forms.Controls;
 using GlueControl.Models;
 using System.Runtime.CompilerServices;
 using FlatRedBall.Instructions.Reflection;
+using FlatRedBall.Utilities;
 
 namespace GlueControl.Editing
 {
@@ -30,7 +31,6 @@ namespace GlueControl.Editing
 
             try
             {
-
                 var screen =
                     FlatRedBall.Screens.ScreenManager.CurrentScreen;
 
@@ -108,7 +108,7 @@ namespace GlueControl.Editing
                 // In either case, the variable name is the last
                 var variableName = splitVariable.Last();
 
-                object targetInstance = GetTargetInstance(data, ref variableValue, screen);
+                var targetInstance = GetTargetInstance(data, ref variableValue, screen);
 
                 var didAttemptToAssign = false;
                 if (targetInstance is CollisionRelationship && variableName == "Entire CollisionRelationship")
@@ -120,8 +120,20 @@ namespace GlueControl.Editing
 
                 if (!didAttemptToAssign && targetInstance is FlatRedBall.TileCollisions.TileShapeCollection && variableName == "Entire TileShapeCollection")
                 {
+                    FlatRedBall.TileCollisions.TileShapeCollection foundTileShapeCollection;
                     response.WasVariableAssigned = TryAssignTileShapeCollection(splitVariable[1],
-                        JsonConvert.DeserializeObject<Models.NamedObjectSave>(data.VariableValue));
+                        JsonConvert.DeserializeObject<Models.NamedObjectSave>(data.VariableValue), out foundTileShapeCollection);
+
+                    if (response.WasVariableAssigned)
+                    {
+                        if (EditingManager.Self.CurrentNamedObjectSave?.InstanceName == foundTileShapeCollection?.Name)
+                        {
+                            var nosToReselect = EditingManager.Self.CurrentNamedObjectSave;
+                            // force re-selection to update visibility:
+                            EditingManager.Self.Select(null);
+                            EditingManager.Self.Select(nosToReselect);
+                        }
+                    }
                     didAttemptToAssign = true;
                 }
 
@@ -137,13 +149,14 @@ namespace GlueControl.Editing
 
                 if (!didAttemptToAssign)
                 {
-                    targetInstance = targetInstance ?? screen.GetInstanceRecursive(data.VariableName);
+                    targetInstance = targetInstance ?? screen.GetInstanceRecursive(data.VariableName) as INameable;
                     if (targetInstance == null)
                     {
                         response.WasVariableAssigned = screen.ApplyVariable(data.VariableName, variableValue);
                     }
                     else
                     {
+                        variableName = TryConvertVariableNameToExposedVariableName(variableName, targetInstance);
                         response.WasVariableAssigned = screen.ApplyVariable(variableName, variableValue, targetInstance);
                     }
                     didAttemptToAssign = true;
@@ -160,11 +173,29 @@ namespace GlueControl.Editing
             return variableValue;
         }
 
-        private static object GetTargetInstance(GlueVariableSetData data, ref object variableValue, FlatRedBall.Screens.Screen screen)
+        private static string TryConvertVariableNameToExposedVariableName(string variableName, INameable targetInstance)
+        {
+            var targetInstanceType = targetInstance.GetType().FullName;
+            if (InstanceLogic.Self.CustomVariablesAddedAtRuntime.ContainsKey(targetInstanceType))
+            {
+                var variablesForThisType = InstanceLogic.Self.CustomVariablesAddedAtRuntime[targetInstanceType];
+
+                var customVariable = variablesForThisType.FirstOrDefault(item => item.Name == variableName);
+
+                if (customVariable != null)
+                {
+                    variableName = customVariable.SourceObject + "." + customVariable.SourceObjectProperty;
+                }
+            }
+
+            return variableName;
+        }
+
+        private static FlatRedBall.Utilities.INameable GetTargetInstance(GlueVariableSetData data, ref object variableValue, FlatRedBall.Screens.Screen screen)
         {
             var splitVariable = data.VariableName.Split('.');
 
-            object targetInstance = null;
+            FlatRedBall.Utilities.INameable targetInstance = null;
             // this searches for a name. we need to force it on a type too so newly-added objects can have their variables set....
 
             // Needs to be greater than 2.
@@ -183,9 +214,9 @@ namespace GlueControl.Editing
             return targetInstance;
         }
 
-        private static object GetRuntimeInstance(FlatRedBall.Screens.Screen screen, string objectName)
+        private static FlatRedBall.Utilities.INameable GetRuntimeInstance(FlatRedBall.Screens.Screen screen, string objectName)
         {
-            object targetInstance = null;
+            FlatRedBall.Utilities.INameable targetInstance = null;
 
             var aarect = ShapeManager.VisibleRectangles.FirstOrDefault(item =>
                 item.Parent == null &&
@@ -246,7 +277,7 @@ namespace GlueControl.Editing
             if (targetInstance == null)
             {
                 targetInstance = InstanceLogic.Self.ListsAddedAtRuntime.FirstOrDefault(item =>
-                    (item as FlatRedBall.Utilities.INameable).Name == objectName);
+                    (item as FlatRedBall.Utilities.INameable).Name == objectName) as INameable;
             }
 
             if (targetInstance == null)
@@ -257,7 +288,9 @@ namespace GlueControl.Editing
 
             if (targetInstance == null)
             {
-                screen.GetInstance(objectName, screen, out _, out targetInstance);
+                object foundObject;
+                screen.GetInstance(objectName, screen, out _, out foundObject);
+                targetInstance = foundObject as INameable;
             }
 
             return targetInstance;
@@ -401,7 +434,7 @@ namespace GlueControl.Editing
             return handled;
         }
 
-        private static bool TryAssignTileShapeCollection(string tileShapeCollectionName, Models.NamedObjectSave namedObject)
+        private static bool TryAssignTileShapeCollection(string tileShapeCollectionName, Models.NamedObjectSave namedObject, out FlatRedBall.TileCollisions.TileShapeCollection foundTileShapeCollection)
         {
             var handled = false;
 
@@ -410,6 +443,7 @@ namespace GlueControl.Editing
             screen.GetInstance(namedObject.InstanceName, screen, out _, out object tileShapeCollectionAsObject);
 
             var tileShapeCollection = tileShapeCollectionAsObject as FlatRedBall.TileCollisions.TileShapeCollection;
+            foundTileShapeCollection = tileShapeCollection;
             if (tileShapeCollection != null)
             {
                 T Get<T>(string name) => GlueControl.Models.PropertySaveListExtensions.GetValue<T>(namedObject.Properties, name);

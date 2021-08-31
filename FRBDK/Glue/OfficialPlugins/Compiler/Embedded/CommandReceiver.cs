@@ -38,6 +38,7 @@ namespace GlueControl
             AllMethods = typeof(CommandReceiver).GetMethods(
                 System.Reflection.BindingFlags.Static |
                 System.Reflection.BindingFlags.NonPublic)
+                .Where(item => item.Name == nameof(HandleDto))
                 .ToArray();
         }
 
@@ -59,12 +60,8 @@ namespace GlueControl
                 AllMethods
                 .FirstOrDefault(item =>
                 {
-                    if (item.Name == nameof(HandleDto))
-                    {
-                        var parameters = item.GetParameters();
-                        return parameters.Length == 1 && parameters[0].ParameterType.Name == dtoTypeName;
-                    }
-                    return false;
+                    var parameters = item.GetParameters();
+                    return parameters.Length == 1 && parameters[0].ParameterType.Name == dtoTypeName;
                 });
 
             if (matchingMethod == null)
@@ -96,12 +93,8 @@ namespace GlueControl
             var method = AllMethods
                 .FirstOrDefault(item =>
                 {
-                    if (item.Name == nameof(HandleDto))
-                    {
-                        var parameters = item.GetParameters();
-                        return parameters.Length == 1 && parameters[0].ParameterType == type;
-                    }
-                    return false;
+                    var parameters = item.GetParameters();
+                    return parameters.Length == 1 && parameters[0].ParameterType == type;
                 });
 
 
@@ -222,7 +215,7 @@ namespace GlueControl
 
             if (matchesCurrentScreen)
             {
-                Editing.EditingManager.Self.Select(selectObjectDto.ObjectName);
+                Editing.EditingManager.Self.Select(selectObjectDto.NamedObject);
                 Editing.EditingManager.Self.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingScreen;
                 if (!string.IsNullOrEmpty(selectObjectDto.StateName))
                 {
@@ -248,7 +241,7 @@ namespace GlueControl
                     void AfterInitializeLogic(Screen screen)
                     {
                         // Select this even if it's null so the EditingManager deselects 
-                        EditingManager.Self.Select(selectObjectDto.ObjectName);
+                        EditingManager.Self.Select(selectObjectDto.NamedObject);
 
                         if (!string.IsNullOrEmpty(selectObjectDto.StateName))
                         {
@@ -312,13 +305,13 @@ namespace GlueControl
 
 
                         Screens.EntityViewingScreen.GameElementTypeToCreate = GlueToGameElementName(elementNameGlue);
-                        Screens.EntityViewingScreen.InstanceToSelect = selectObjectDto.ObjectName;
+                        Screens.EntityViewingScreen.InstanceToSelect = selectObjectDto.NamedObject;
                         ScreenManager.CurrentScreen.MoveToScreen(typeof(Screens.EntityViewingScreen));
 #endif
                     }
                     else
                     {
-                        EditingManager.Self.Select(selectObjectDto.ObjectName);
+                        EditingManager.Self.Select(selectObjectDto.NamedObject);
                     }
                 }
             }
@@ -495,6 +488,8 @@ namespace GlueControl
                 else
                 {
                     existingState = Activator.CreateInstance(stateType);
+                    FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(existingState, "Name", newStateSave.Name);
+                    allStates[newStateSave.Name] = existingState;
                 }
 
                 // what if a value has been nulled out?
@@ -504,19 +499,36 @@ namespace GlueControl
                 // there's no need to handle that here?
                 foreach (var instruction in newStateSave.InstructionSaves)
                 {
-                    var fieldType = stateType.GetField(instruction.Member)?.FieldType;
-
-
-                    var convertedValue = instruction.Value;
-                    if (instruction.Value is string asString)
-                    {
-                        // not sure if this is a state, it could be and at some point we're going to handle that, but not for now...
-                        convertedValue = VariableAssignmentLogic.ConvertStringToType(fieldType.ToString(), asString, false);
-                    }
-
-                    FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(existingState, instruction.Member, convertedValue);
+                    InstanceLogic.Self.AssignVariable(existingState, instruction);
                 }
             }
+        }
+
+        #endregion
+
+        #region Add Variable
+
+        private static void HandleDto(AddVariableDto dto)
+        {
+            var newVariable = dto.CustomVariable;
+
+            if (!InstanceLogic.Self.CustomVariablesAddedAtRuntime.ContainsKey(dto.ElementGameType))
+            {
+                var newList = new List<CustomVariable>();
+
+                InstanceLogic.Self.CustomVariablesAddedAtRuntime.Add(dto.ElementGameType, newList);
+            }
+
+            List<CustomVariable> listToAddTo = InstanceLogic.Self.CustomVariablesAddedAtRuntime[dto.ElementGameType];
+
+            var existingVariable = listToAddTo.FirstOrDefault(item => item.Name == dto.CustomVariable.Name);
+
+            if (existingVariable != null)
+            {
+                listToAddTo.Remove(existingVariable);
+            }
+
+            listToAddTo.Add(dto.CustomVariable);
         }
 
         #endregion
@@ -582,10 +594,11 @@ namespace GlueControl
 
         private static void HandleDto(RestartScreenDto dto)
         {
-            RestartScreenRerunCommands(applyRestartVariables: true);
+            RestartScreenRerunCommands(applyRestartVariables: true, playBump: dto.ShowSelectionBump);
         }
 
-        private static void RestartScreenRerunCommands(bool applyRestartVariables, bool shouldRecordCameraPosition = true, bool forceCameraToPreviousState = false)
+        private static void RestartScreenRerunCommands(bool applyRestartVariables, bool shouldRecordCameraPosition = true, bool forceCameraToPreviousState = false,
+            bool playBump = true)
         {
             var screen =
                 FlatRedBall.Screens.ScreenManager.CurrentScreen;
@@ -614,6 +627,8 @@ namespace GlueControl
                 CameraLogic.UpdateZoomLevelToCamera();
 
                 FlatRedBall.Screens.ScreenManager.ScreenLoaded -= AfterInitializeLogic;
+
+                EditingManager.Self.RefreshSelectionAfterScreenLoad(playBump);
             }
 
             FlatRedBall.Screens.ScreenManager.BeforeScreenCustomInitialize += BeforeCustomInitializeLogic;

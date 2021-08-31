@@ -91,24 +91,46 @@ namespace TiledPluginCore.CodeGeneration
 
             switch(creationOptions)
             {
+                case TileNodeNetworkCreationOptions.Empty:
+                    // assume this for now:
+                    {
+                        var tileSize = 16;
+                        var numberOfXTiles = 32;
+                        var numberOfYTiles = 32;
+
+                        var tileSizeString = FloatString(tileSize);
+
+                        var leftFill = tileSize/2.0f;
+                        var leftFillString = FloatString(leftFill);
+
+
+
+                        var topFill = 0 - tileSize / 2.0f;
+                        // heightFill - 1, because if it's just 1 cell high, we use the value as-is. Then each additional moves the bottom left by 1
+                        var bottomFillString = FloatString(topFill - (numberOfYTiles - 1) * tileSize);
+                        toReturn = $"{instanceName} = new FlatRedBall.AI.Pathfinding.TileNodeNetwork({leftFillString}, {bottomFillString}, {tileSizeString}, {numberOfXTiles}, {numberOfYTiles}, FlatRedBall.AI.Pathfinding.DirectionalType.{fourOrEight});";
+                    }
+
+                    break;
                 case TileNodeNetworkCreationOptions.FillCompletely:
+                    {
+                        var tileSize = Get<float>(nameof(TileNodeNetworkPropertiesViewModel.NodeNetworkTileSize));
+                        var tileSizeString = FloatString(tileSize);
 
-                    var tileSize = Get<float>(nameof(TileNodeNetworkPropertiesViewModel.NodeNetworkTileSize));
-                    var tileSizeString = FloatString(tileSize);
-
-                    var leftFill = Get<float>(nameof(TileNodeNetworkPropertiesViewModel.NodeNetworkFillLeft));
-                    var leftFillString = FloatString(leftFill);
+                        var leftFill = Get<float>(nameof(TileNodeNetworkPropertiesViewModel.NodeNetworkFillLeft));
+                        var leftFillString = FloatString(leftFill);
 
 
-                    var widthFill = Get<int>(nameof(TileNodeNetworkPropertiesViewModel.NodeNetworkFillWidth));
-                    var heightFill = Get<int>(nameof(TileNodeNetworkPropertiesViewModel.NodeNetworkFillHeight));
+                        var widthFill = Get<int>(nameof(TileNodeNetworkPropertiesViewModel.NodeNetworkFillWidth));
+                        var heightFill = Get<int>(nameof(TileNodeNetworkPropertiesViewModel.NodeNetworkFillHeight));
 
-                    var topFill = Get<float>(nameof(TileNodeNetworkPropertiesViewModel.NodeNetworkFillTop));
+                        var topFill = Get<float>(nameof(TileNodeNetworkPropertiesViewModel.NodeNetworkFillTop));
 
-                    // heightFill - 1, because if it's just 1 cell high, we use the value as-is. Then each additional moves the bottom left by 1
-                    var bottomFillString = FloatString(topFill - (heightFill-1) * tileSize);
+                        // heightFill - 1, because if it's just 1 cell high, we use the value as-is. Then each additional moves the bottom left by 1
+                        var bottomFillString = FloatString(topFill - (heightFill-1) * tileSize);
 
-                    toReturn = $"{instanceName} = new FlatRedBall.AI.Pathfinding.TileNodeNetwork({leftFillString}, {bottomFillString}, {tileSizeString}, {widthFill}, {heightFill}, FlatRedBall.AI.Pathfinding.DirectionalType.{fourOrEight});";
+                        toReturn = $"{instanceName} = new FlatRedBall.AI.Pathfinding.TileNodeNetwork({leftFillString}, {bottomFillString}, {tileSizeString}, {widthFill}, {heightFill}, FlatRedBall.AI.Pathfinding.DirectionalType.{fourOrEight});";
+                    }
                     break;
                 case TileNodeNetworkCreationOptions.FromType:
                     var typeName = Get<string>(nameof(TileNodeNetworkPropertiesViewModel.NodeNetworkTileTypeName));

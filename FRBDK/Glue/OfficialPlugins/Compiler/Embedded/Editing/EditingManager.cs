@@ -6,6 +6,9 @@ using FlatRedBall.Input;
 using FlatRedBall.Managers;
 using FlatRedBall.Math;
 using FlatRedBall.Screens;
+using FlatRedBall.Utilities;
+using GlueControl.Models;
+
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -34,12 +37,13 @@ namespace GlueControl.Editing
         List<ISelectionMarker> SelectedMarkers = new List<ISelectionMarker>();
         SelectionMarker HighlightMarker;
 
-        PositionedObject ItemOver;
+        INameable ItemOver;
         PositionedObject ItemGrabbed;
         ResizeSide SideGrabbed = ResizeSide.None;
 
-        PositionedObjectList<PositionedObject> ItemsSelected = new PositionedObjectList<PositionedObject>();
-        PositionedObject ItemSelected => ItemsSelected.Count > 0 ? ItemsSelected[0] : null;
+        List<INameable> ItemsSelected = new List<INameable>();
+        INameable ItemSelected => ItemsSelected.Count > 0 ? ItemsSelected[0] : null;
+        public NamedObjectSave CurrentNamedObjectSave { get; private set; }
 
         public ElementEditingMode ElementEditingMode { get; set; }
 
@@ -53,8 +57,8 @@ namespace GlueControl.Editing
 
         #region Delegates/Events
 
-        public Action<PositionedObject, string, object> PropertyChanged;
-        public Action<PositionedObject> ObjectSelected;
+        public Action<INameable, string, object> PropertyChanged;
+        public Action<INameable> ObjectSelected;
 
         #endregion
 
@@ -63,7 +67,7 @@ namespace GlueControl.Editing
         public EditingManager()
         {
             Self = this;
-            HighlightMarker = new SelectionMarker();
+            HighlightMarker = new SelectionMarker(null);
             HighlightMarker.BrightColor = Color.LightGreen;
             HighlightMarker.MakePersistent();
             HighlightMarker.Name = nameof(HighlightMarker);
@@ -86,7 +90,7 @@ namespace GlueControl.Editing
             if (isInEditMode)
             {
                 Guides.UpdateGridLines();
-                
+
                 var itemOverBefore = ItemOver;
                 var itemSelectedBefore = ItemSelected;
 
@@ -132,7 +136,8 @@ namespace GlueControl.Editing
             }
 
             HighlightMarker.ExtraPaddingInPixels = 4;
-            HighlightMarker.Update(ItemOver, SideGrabbed);
+            HighlightMarker.Owner = ItemOver;
+            HighlightMarker.Update(SideGrabbed);
 
             UpdateSelectedMarkers();
         }
@@ -145,7 +150,7 @@ namespace GlueControl.Editing
                 var marker = SelectedMarkers[i];
                 var item = ItemsSelected[i];
 
-                marker.Update(item, SideGrabbed);
+                marker.Update(SideGrabbed);
                 if (item == ItemGrabbed)
                 {
                     moveVector = marker.LastUpdateMovement;
@@ -156,46 +161,67 @@ namespace GlueControl.Editing
             {
                 foreach (var item in ItemsSelected)
                 {
-                    if (item != ItemGrabbed)
+                    if (item != ItemGrabbed && item is PositionedObject itemAsPositionedObject)
                     {
-                        if (item.Parent == null)
+                        if (itemAsPositionedObject.Parent == null)
                         {
-                            item.X += moveVector.X;
-                            item.Y += moveVector.Y;
+                            itemAsPositionedObject.X += moveVector.X;
+                            itemAsPositionedObject.Y += moveVector.Y;
                         }
                         else
                         {
-                            item.RelativeX += moveVector.X;
-                            item.RelativeY += moveVector.Y;
+                            itemAsPositionedObject.RelativeX += moveVector.X;
+                            itemAsPositionedObject.RelativeY += moveVector.Y;
                         }
                     }
                 }
             }
         }
 
-        private void UpdateSelectedMarkerCount()
+        private void AddAndDestroyMarkersAccordingToItemsSelected()
         {
             var desiredMarkerCount = ItemsSelected.Count;
-            while (SelectedMarkers.Count > desiredMarkerCount)
+
+            for (int i = SelectedMarkers.Count - 1; i > -1; i--)
             {
-                var markerToDestroy = SelectedMarkers.Last();
-                markerToDestroy.Destroy();
-                SelectedMarkers.RemoveAt(SelectedMarkers.Count - 1);
-            }
-            while (SelectedMarkers.Count < desiredMarkerCount)
-            {
-                var newMarker = CreateNewSelectionMarker();
-                if (SelectedMarkers.Count > 0)
+                var marker = SelectedMarkers[i];
+                var hasSelectedItem = ItemsSelected.Contains(marker.Owner);
+
+                if (!hasSelectedItem)
                 {
-                    newMarker.FadingSeed = SelectedMarkers[0].FadingSeed;
+                    marker.Destroy();
+                    SelectedMarkers.RemoveAt(i);
                 }
-                SelectedMarkers.Add(newMarker);
+            }
+
+            for (int i = 0; i < ItemsSelected.Count; i++)
+            {
+                var owner = ItemsSelected[i];
+                var hasMarker = SelectedMarkers.Any(item => item.Owner == owner);
+
+                if (!hasMarker)
+                {
+                    var newMarker = CreateNewSelectionMarker(owner);
+                    if (SelectedMarkers.Count > 0)
+                    {
+                        newMarker.FadingSeed = SelectedMarkers[0].FadingSeed;
+                    }
+                    SelectedMarkers.Add(newMarker);
+                }
             }
         }
 
-        private SelectionMarker CreateNewSelectionMarker()
+        private ISelectionMarker CreateNewSelectionMarker(INameable owner)
         {
-            var newMarker = new SelectionMarker();
+            ISelectionMarker newMarker = null;
+            if (owner is FlatRedBall.TileCollisions.TileShapeCollection)
+            {
+                newMarker = new TileShapeCollectionMarker(owner, CurrentNamedObjectSave);
+            }
+            else
+            {
+                newMarker = new SelectionMarker(owner);
+            }
             newMarker.MakePersistent();
             newMarker.Name = "Selection Marker";
             newMarker.CanMoveItem = true;
@@ -203,7 +229,7 @@ namespace GlueControl.Editing
             return newMarker;
         }
 
-        ISelectionMarker MarkerFor(PositionedObject item)
+        ISelectionMarker MarkerFor(INameable item)
         {
             var index = ItemsSelected.IndexOf(item);
             if (index >= 0 && index < SelectedMarkers.Count)
@@ -221,7 +247,7 @@ namespace GlueControl.Editing
 
             if (cursor.PrimaryPush)
             {
-                ItemGrabbed = ItemOver;
+                ItemGrabbed = ItemOver as PositionedObject;
                 if (ItemGrabbed == null)
                 {
                     SideGrabbed = ResizeSide.None;
@@ -242,7 +268,7 @@ namespace GlueControl.Editing
                     {
                         ItemsSelected.Add(ItemOver);
                     }
-                    UpdateSelectedMarkerCount();
+                    AddAndDestroyMarkersAccordingToItemsSelected();
                     MarkerFor(ItemOver)?.PlayBumpAnimation(SelectedItemExtraPadding,
                         isSynchronized: ItemsSelected.Count > 1);
 
@@ -255,7 +281,7 @@ namespace GlueControl.Editing
 
                         marker.CanMoveItem = item == ItemGrabbed;
 
-                        marker.HandleCursorPushed(item);
+                        marker.HandleCursorPushed();
                     }
 
                     var markerOver = MarkerFor(ItemGrabbed) as SelectionMarker;
@@ -282,7 +308,7 @@ namespace GlueControl.Editing
                 {
                     var marker = MarkerFor(item);
 
-                    marker.HandleCursorRelease(item);
+                    marker.HandleCursorRelease();
                 }
             }
 
@@ -301,7 +327,7 @@ namespace GlueControl.Editing
                     InstanceLogic.Self.DeleteInstanceByGame(ItemsSelected[i]);
                 }
                 ItemsSelected.Clear();
-                UpdateSelectedMarkerCount();
+                AddAndDestroyMarkersAccordingToItemsSelected();
             }
 
             CopyPasteManager.DoHotkeyLogic(ItemsSelected);
@@ -310,32 +336,72 @@ namespace GlueControl.Editing
 
         }
 
-        void Notify(PositionedObject item, string propertyName, object value) => PropertyChanged(item, propertyName, value);
-
         public void UpdateDependencies()
         {
 
         }
 
-        internal void Select(string objectName)
+        internal void Select(NamedObjectSave namedObject)
         {
-            PositionedObject foundObject = SelectionLogic.GetAvailableObjects(ElementEditingMode)
-                ?.FirstOrDefault(item => item.Name == objectName);
+            CurrentNamedObjectSave = namedObject;
+
+            Select(namedObject?.InstanceName);
+        }
+
+        internal void Select(string objectName, bool addToExistingSelection = false, bool playBump = true)
+        {
+            INameable foundObject = null;
+
+            if (!string.IsNullOrEmpty(objectName))
+            {
+                foundObject = SelectionLogic.GetAvailableObjects(ElementEditingMode)
+                    ?.FirstOrDefault(item => item.Name == objectName);
+
+
+                if (foundObject == null)
+                {
+                    var screen = ScreenManager.CurrentScreen;
+                    var instance = screen.GetInstance($"{objectName}", screen);
+
+                    foundObject = instance as INameable;
+                }
+            }
+
+
+            if (!addToExistingSelection)
+            {
+                ItemsSelected.Clear();
+            }
 
             if (ItemsSelected.Contains(foundObject) == false)
             {
-                ItemsSelected.Clear();
                 if (foundObject != null)
                 {
                     ItemsSelected.Add(foundObject);
                 }
 
-                UpdateSelectedMarkerCount();
-                MarkerFor(ItemSelected)?.PlayBumpAnimation(SelectedItemExtraPadding, isSynchronized: false);
+                AddAndDestroyMarkersAccordingToItemsSelected();
+
+                if (playBump)
+                {
+                    MarkerFor(ItemSelected)?.PlayBumpAnimation(SelectedItemExtraPadding, isSynchronized: false);
+                }
 
                 // do this right away so the handles don't pop out of existance when changing selection
                 UpdateMarkers(didChangeItemOver: true);
 
+            }
+        }
+
+        public void RefreshSelectionAfterScreenLoad(bool playBump)
+        {
+            var names = ItemsSelected.Select(item => item.Name).ToArray();
+
+            ItemsSelected.Clear();
+
+            foreach (var name in names)
+            {
+                Select(name, addToExistingSelection: true, playBump);
             }
         }
     }

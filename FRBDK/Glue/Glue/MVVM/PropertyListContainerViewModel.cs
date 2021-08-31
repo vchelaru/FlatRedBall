@@ -251,6 +251,18 @@ namespace FlatRedBall.Glue.MVVM
             }
         }
 
+        public bool IsPropertySynced(string propertyName)
+        {
+            if(viewModelProperties.ContainsKey(propertyName))
+            {
+                return viewModelProperties[propertyName].IsSynced;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public virtual void UpdateFromGlueObject()
         {
             IsUpdatingFromGlueObject = true;

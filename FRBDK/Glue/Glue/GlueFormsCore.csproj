@@ -124,6 +124,7 @@
     <ProjectReference Include="..\..\..\..\Gum\ToolsUtilities\ToolsUtilitiesStandard.csproj" />
     <ProjectReference Include="..\..\..\..\Gum\WpfDataUiCore\WpfDataUiCore.csproj" />
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
+    <ProjectReference Include="..\..\..\Tiled\TMXGlueLib\TMXGlueLibCore.csproj" />
     <ProjectReference Include="..\..\FRBDKUpdater\UpdaterWpf\UpdaterWpf\UpdaterWpf.csproj" />
     <ProjectReference Include="..\..\NewProjectCreator\NpcWpf\NpcWpf.csproj" />
     <ProjectReference Include="..\FlatRedBall.Plugin\FlatRedBall.PluginCore.csproj" />

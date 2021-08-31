@@ -19,6 +19,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System;
 using GlueControl.Editing;
+using FlatRedBall.Utilities;
 
 #if SupportsEditMode
 using Newtonsoft.Json;
@@ -244,7 +245,7 @@ namespace GlueControl
 
         #region Game -> Glue
 
-        private void HandlePropertyChanged(PositionedObject item, string propertyName, object value)
+        private void HandlePropertyChanged(INameable item, string propertyName, object value)
         {
 #if SupportsEditMode
 
@@ -302,10 +303,11 @@ namespace GlueControl
 #endif
         }
 
-        private void HandleObjectSelected(PositionedObject item)
+        private void HandleObjectSelected(INameable item)
         {
             var dto = new SelectObjectDto();
-            dto.ObjectName = item.Name;
+            dto.NamedObject = new Models.NamedObjectSave();
+            dto.NamedObject.InstanceName = item.Name;
 
             string elementGameType = null;
 
@@ -342,7 +344,7 @@ namespace GlueControl
             SendCommandToGlue($"{type}:{json}");
         }
 
-        public void SendCommandToGlue(string command)
+        private void SendCommandToGlue(string command)
         {
             GameToGlueCommands.Enqueue(new GameToGlueCommand { Command = command });
         }

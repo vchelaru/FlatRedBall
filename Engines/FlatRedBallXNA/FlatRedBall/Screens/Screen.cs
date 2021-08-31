@@ -626,6 +626,12 @@ namespace FlatRedBall.Screens
             return wasSet;
         }
 
+        public object GetInstance(string instanceName, object container = null)
+        {
+            GetInstance(instanceName, container, out string _, out object instance);
+            return instance;
+        }
+
         /// <summary>
         /// Obtains the instance object represented after the dot using reflection. The variable
         /// should begin with "this" if it is an object on the screen. For example, passing "this.SpriteList"
@@ -715,8 +721,16 @@ namespace FlatRedBall.Screens
                         instance = null;
                     }
 
-                    // names can change and not match the original instance name, so let's verify that
-                    if(instance is INameable nameable && nameable.Name != beforeDot)
+                    // names can change and not match the original instance name, so let's verify that.
+                    // Update August 14, 2021 - objects from Glue may not have their names assigned. For
+                    // example, LayeredTileMaps do not currently have their name assigned. They could, but
+                    // then the question is - should the name match the Object in Glue? Or the file name? There's
+                    // arguments for both. Vic didn't want to pick one right now because he wasn't sure what the preferred
+                    // approach is. For example, Texture2D's use their file name as their name - should TMX files too? Hard
+                    // to say. However, if it's nameable and the name doesn't match, let's null it out only if the object does
+                    // have a name. If the name is null, then that means the object didn't change its name, but rather it never 
+                    // had one.
+                    if(instance is INameable nameable && nameable.Name != beforeDot && !string.IsNullOrEmpty(nameable.Name))
                     {
                         instance = null;
                     }
