@@ -793,6 +793,9 @@ namespace TMXGlueLib
     /// <remarks/>
     public partial class mapObjectgroupObject
     {
+        [XmlAttribute("visible")]
+        public int Visible { get; set; } = 1;
+
         private mapObjectgroupObjectEllipse ellipseField = null;
 
         private mapObjectgroupObjectPolygon[] polygonField;

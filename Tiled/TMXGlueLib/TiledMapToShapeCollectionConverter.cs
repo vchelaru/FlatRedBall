@@ -111,6 +111,7 @@ namespace TMXGlueLib
                         ScaleX = @object.width / 2,
                         ScaleY = @object.height / 2,
                     };
+                    rectangle.Visible = @object.Visible == 1;
 
                 }
                 else if (@object.ellipse != null && @object.width == @object.height)
@@ -122,6 +123,7 @@ namespace TMXGlueLib
                         Y = (float)-@object.y - (@object.height / 2),
                         Radius = @object.width / 2
                     };
+                    circle.Visible = @object.Visible == 1;
 
                 }
                 else
