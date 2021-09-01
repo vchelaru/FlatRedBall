@@ -122,9 +122,9 @@ namespace GlueControl
 
             ownerType = typeof(CommandReceiver).Assembly.GetType(ownerTypeName);
             currentScreen = ScreenManager.CurrentScreen;
-            var currentScreenType = currentScreen.GetType();
+            var currentScreenType = currentScreen?.GetType();
 
-            return currentScreenType == ownerType || ownerType?.IsAssignableFrom(currentScreenType) == true;
+            return currentScreenType == ownerType || (currentScreenType != null && ownerType?.IsAssignableFrom(currentScreenType) == true);
         }
 
         // todo - move this to some type manager
