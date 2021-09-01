@@ -85,6 +85,7 @@ namespace TMXGlueLib
                     // TODO: Make this a rectangle object
                     polygon = ConvertTmxObjectToFrbPolygon(@object.Name,
                         @object.x, @object.y, @object.Rotation, tiledPolygon.points, true);
+                    polygon.Visible = tiledPolygon.Visible == 1;
                 }
             }
 
@@ -94,6 +95,7 @@ namespace TMXGlueLib
                 {
                     polygon = ConvertTmxObjectToFrbPolygon(@object.Name,
                         @object.x, @object.y, @object.Rotation, polyline.points, false);
+                    polygon.Visible = polyline.Visible == 1;
                 }
             }
 
