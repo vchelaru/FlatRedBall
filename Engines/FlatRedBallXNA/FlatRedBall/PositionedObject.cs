@@ -193,11 +193,9 @@ namespace FlatRedBall
         #endregion
         protected float mRelativeRotationY;
 
-        #region XML Docs
         /// <summary>
-        /// The Z component of the object's relative rotation.
+        /// The z component of relative rotation in radians
         /// </summary>
-        #endregion
         protected float mRelativeRotationZ;
 
         #region XML Docs
@@ -574,8 +572,17 @@ namespace FlatRedBall
         }
 
         /// <summary>
-        /// Gets and sets the rotation on the Z axis relative to the instance's parent.
+        /// The z rotation of a PositionedObject relative to its parent in radians. Only applies if this instance is attached to a parent.
         /// </summary>
+        /// <remarks>
+        /// This rotates the PositionedObject about the Z axis if it is attached to a parent.  Rotation is represented in 
+        /// radians.  Angles will always be greater than or equal to 0 and less than
+        /// two times PI.  Values outside of these bounds will be regulated by the
+        /// set property.
+        /// 
+        /// RelativeRotationZ can be used to "spin" a PositionedObject, with a positive variable spinning
+        /// counterclockwise.  
+        /// </remarks>
         public float RelativeRotationZ
         {
             get { return mRelativeRotationZ; }
@@ -794,7 +801,7 @@ namespace FlatRedBall
         }
 
         /// <summary>
-        /// The z rotation of a PositionedObject
+        /// The z rotation of a PositionedObject in radians.
         /// </summary>
         /// <remarks>
         /// This rotates the PositionedObject about the Z axis.  Rotation is represented in 
@@ -803,7 +810,7 @@ namespace FlatRedBall
         /// set property.
         /// 
         /// RotationZ can be used to "spin" a PositionedObject, with a positive variable spinning
-        /// clockwise.  
+        /// counterclockwise.  
         /// </remarks>
         public float RotationZ
         {
