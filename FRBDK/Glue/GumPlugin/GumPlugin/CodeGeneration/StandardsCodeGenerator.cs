@@ -23,7 +23,6 @@ namespace GumPlugin.CodeGeneration
         List<string> variablesToCallLayoutAfter = new List<string>();
 
         List<string> mVariableNamesToSkipForProperties = new List<string>();
-
         // These are new variables that don't appear in the base definitioin of the standard element, but we support in code for convenience
         List<VariableSave> variableNamesToAddForProperties = new List<VariableSave>();
 
@@ -86,6 +85,7 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForProperties.Add("Parent");
             mVariableNamesToSkipForProperties.Add("Guide");
             mVariableNamesToSkipForProperties.Add("IsItalic");
+            mVariableNamesToSkipForProperties.Add("IsBold");
 
             mVariableNamesToSkipForProperties.Add("X Origin");
             mVariableNamesToSkipForProperties.Add("X Units");

@@ -79,6 +79,9 @@ namespace GumPlugin.CodeGeneration
             //mVariableNamesToSkipForStates.Add("SourceFile");
             mVariableNamesToSkipForStates.Add("Contained Type");
             mVariableNamesToSkipForStates.Add("IsXamarinFormsControl");
+            mVariableNamesToSkipForStates.Add("IsBold");
+
+
 
             // Eventually we'll support this but first Gum needs to support 
             // setting categorized states on instances
