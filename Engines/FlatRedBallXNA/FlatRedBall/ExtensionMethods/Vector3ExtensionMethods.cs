@@ -103,10 +103,9 @@ namespace Microsoft.Xna.Framework
             }
             else
             {
-                vector3 = vector3 * -1;
                 var existingAngle = vector3.Angle().Value;
                 var newAngle = existingAngle + radiansToRotateBy;
-                return FromAngle(newAngle);
+                return FromAngle(newAngle) * vector3.Length();
             }
         }
 
