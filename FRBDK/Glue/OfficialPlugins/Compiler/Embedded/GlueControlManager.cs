@@ -73,31 +73,41 @@ namespace GlueControl
 
         private async void Run()
         {
-            isRunning = true;
-
-            listener.Start();
-
-            while (isRunning)
+            var isGameAlreadyRunning = false;
+            try
             {
-                try
-                {
-                    TcpClient client = listener.AcceptTcpClient();
-                    await HandleClient(client);
-
-                    client.Close();
-                }
-                catch (System.Exception e)
-                {
-                    if (isRunning)
-                    {
-                        throw e;
-                    }
-                }
+                listener.Start();
+                isRunning = true;
+            }
+            catch(System.Net.Sockets.SocketException e)
+            {
+                isGameAlreadyRunning = true;
             }
 
-            isRunning = false;
+            if(!isGameAlreadyRunning)
+            {
+                while (isRunning)
+                {
+                    try
+                    {
+                        TcpClient client = listener.AcceptTcpClient();
+                        await HandleClient(client);
 
-            listener.Stop();
+                        client.Close();
+                    }
+                    catch (System.Exception e)
+                    {
+                        if (isRunning)
+                        {
+                            throw e;
+                        }
+                    }
+                }
+
+                isRunning = false;
+
+                listener.Stop();
+            }
         }
 
         public void Kill()
