@@ -546,7 +546,7 @@ namespace FlatRedBall.Glue.Parsing
 
             codeBlock
                 .Function(StringHelper.SpaceStrings("public", "static", className), "CreateNew", "Microsoft.Xna.Framework.Vector3 position")
-                    .Line("return CreateNew(null, x, y, z);")
+                    .Line("return CreateNew(null, position.X, position.Y, position.Z);")
                 .End();
 
 

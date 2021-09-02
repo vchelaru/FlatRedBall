@@ -8,6 +8,7 @@ namespace REPLACED_NAMESPACE
     public interface IEntityFactory
     {
         object CreateNew(float x = 0, float y = 0);
+        object CreateNew(Microsoft.Xna.Framework.Vector3 position);
         object CreateNew(FlatRedBall.Graphics.Layer layer);
 
         void Initialize(string contentManager);
