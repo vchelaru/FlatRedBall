@@ -540,8 +540,8 @@ namespace FlatRedBall.Glue.Parsing
 
             // no tabs needed on first line
             codeBlock
-                .Function(StringHelper.SpaceStrings("public", "static", className), "CreateNew", "float x = 0, float y = 0")
-                    .Line("return CreateNew(null, x, y);")
+                .Function(StringHelper.SpaceStrings("public", "static", className), "CreateNew", "float x = 0, float y = 0, float z = 0")
+                    .Line("return CreateNew(null, x, y, z);")
                 .End();
 
             codeBlock
