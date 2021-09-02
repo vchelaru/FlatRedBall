@@ -432,7 +432,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             #endregion
 
-            else if (namedObject.SourceType == SourceType.FlatRedBallType)
+            else if (namedObject.SourceType == SourceType.FlatRedBallType || namedObject.SourceType == SourceType.Gum)
             {
                 string objectName = namedObject.FieldName;
                 AssetTypeInfo nosAti = namedObject.GetAssetTypeInfo();
