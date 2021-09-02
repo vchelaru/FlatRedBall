@@ -533,7 +533,7 @@ namespace GlueControl
 
         #endregion
 
-        #region Edit vs Play
+        #region EditMode vs Play
 
         private static void HandleDto(SetEditMode setEditMode)
         {
@@ -549,6 +549,15 @@ namespace GlueControl
                 if (value)
                 {
                     FlatRedBallServices.Game.IsMouseVisible = true;
+                    // If in edit mode, polygons can get sent over from Glue
+                    // without points. We don't want to crash the game when this
+                    // happens.
+                    // Should we preserve the old value and reset it back? This adds
+                    // complexity, and I don't know if there's any benefit because this
+                    // property is usually false to catch coding errors, but code can't be
+                    // added without restarting the app, which would then reset this value back
+                    // to false. Let's keep it simple.
+                    Polygon.TolerateEmptyPolygons = true;
                 }
 
                 FlatRedBall.TileEntities.TileEntityInstantiator.CreationFunction =

@@ -264,6 +264,21 @@ namespace GlueControl.Editing
 
             #endregion
 
+            if (!didAttemptToAssign && variableName == "Points" && targetInstance is Polygon targetPolygon)
+            {
+                List<Point> points = variableValue as List<Point>;
+                if (variableValue is List<Microsoft.Xna.Framework.Vector2> asVectors)
+                {
+                    points = asVectors.Select(item => new Point(item.X, item.Y)).ToList();
+
+                }
+                if (points != null)
+                {
+                    targetPolygon.Points = points;
+                    didAttemptToAssign = true;
+                }
+            }
+
             if (!didAttemptToAssign)
             {
                 targetInstance = targetInstance ?? screen.GetInstanceRecursive(variableName) as INameable;
