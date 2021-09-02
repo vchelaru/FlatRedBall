@@ -677,7 +677,7 @@ namespace FlatRedBall.TileEntities
                 else
                 {
                     var type = item.GetType();
-                    var methodInfo = type.GetMethod("CreateNew", new[] { typeof(Layer), typeof(float), typeof(float) });
+                    var methodInfo = type.GetMethod("CreateNew", new[] { typeof(Layer), typeof(float), typeof(float), typeof(float) });
                     var returntypeString = methodInfo.ReturnType.Name;
 
                     return entityType == returntypeString ||

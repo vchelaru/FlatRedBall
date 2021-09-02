@@ -16,6 +16,8 @@ using FlatRedBall.Glue.Plugins.Interfaces;
 
 namespace FlatRedBall.Glue.Parsing
 {
+    #region ElementComponentCodeGenerators
+
     public class FactoryCodeGeneratorEarly : ElementComponentCodeGenerator
     {
         public override CodeLocation CodeLocation
@@ -39,9 +41,7 @@ namespace FlatRedBall.Glue.Parsing
 
             return codeBlock;
         }
-
     }
-
 
     public class FactoryCodeGenerator : ElementComponentCodeGenerator
     {
@@ -348,13 +348,16 @@ namespace FlatRedBall.Glue.Parsing
 
     }
 
+    #endregion
+
     public class FactoryEntireClassGenerator : EntireClassCodeGenerator
     {
+        #region Fields/Properties
+
         public bool ShouldPoolObjects
         {
             get{ return EntitySave.PooledByFactory;}
         }
-
 
         public EntitySave EntitySave
         {
@@ -371,6 +374,8 @@ namespace FlatRedBall.Glue.Parsing
         {
             get { return "Factories"; }
         }
+
+        #endregion
 
         public override string GetCode()
         {
@@ -461,6 +466,10 @@ namespace FlatRedBall.Glue.Parsing
             codeBlock.Function("object", "IEntityFactory.CreateNew", "float x = 0, float y = 0")
                 .Line($"return {factoryClassName}.CreateNew(x, y);");
 
+
+            codeBlock.Function("object", "IEntityFactory.CreateNew", "Microsoft.Xna.Framework.Vector3 position")
+                .Line($"return {factoryClassName}.CreateNew(position);");
+
             codeBlock.Function("object", "IEntityFactory.CreateNew", "Layer layer")
                 .Line($"return {factoryClassName}.CreateNew(layer);");
 
@@ -535,8 +544,14 @@ namespace FlatRedBall.Glue.Parsing
                     .Line("return CreateNew(null, x, y);")
                 .End();
 
+            codeBlock
+                .Function(StringHelper.SpaceStrings("public", "static", className), "CreateNew", "Microsoft.Xna.Framework.Vector3 position")
+                    .Line("return CreateNew(null, x, y, z);")
+                .End();
+
+
             codeBlock = codeBlock
-                .Function(StringHelper.SpaceStrings("public", "static", className), "CreateNew", "Layer layer, float x = 0, float y = 0");
+                .Function(StringHelper.SpaceStrings("public", "static", className), "CreateNew", "Layer layer, float x = 0, float y = 0, float z = 0");
 
             codeBlock.Line(className + " instance = null;");
 
@@ -570,6 +585,7 @@ namespace FlatRedBall.Glue.Parsing
 
             codeBlock.Line("instance.X = x;");
             codeBlock.Line("instance.Y = y;");
+            codeBlock.Line("instance.Z = z;");
 
             CreateAddToListCode(codeBlock, className);
 
