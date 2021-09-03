@@ -342,6 +342,8 @@ namespace GlueControl.Editing
         {
             var keyboard = InputManager.Keyboard;
 
+            var isShiftDown = keyboard.IsShiftDown;
+            var shiftAmount = isShiftDown ? 8 : 1;
             if (keyboard.IsCtrlDown == false)
             {
                 if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.Up))
@@ -350,7 +352,7 @@ namespace GlueControl.Editing
                     {
                         if (item is PositionedObject asPositionedObject)
                         {
-                            asPositionedObject.Y++;
+                            asPositionedObject.Y += shiftAmount;
                             PropertyChanged(item, nameof(asPositionedObject.Y), asPositionedObject.Y);
                         }
                     }
@@ -361,7 +363,7 @@ namespace GlueControl.Editing
                     {
                         if (item is PositionedObject asPositionedObject)
                         {
-                            asPositionedObject.Y--;
+                            asPositionedObject.Y -= shiftAmount;
                             PropertyChanged(item, nameof(asPositionedObject.Y), asPositionedObject.Y);
                         }
                     }
@@ -372,7 +374,7 @@ namespace GlueControl.Editing
                     {
                         if (item is PositionedObject asPositionedObject)
                         {
-                            asPositionedObject.X--;
+                            asPositionedObject.X -= shiftAmount;
                             PropertyChanged(item, nameof(asPositionedObject.X), asPositionedObject.X);
                         }
                     }
@@ -383,7 +385,7 @@ namespace GlueControl.Editing
                     {
                         if (item is PositionedObject asPositionedObject)
                         {
-                            asPositionedObject.X++;
+                            asPositionedObject.X += shiftAmount;
                             PropertyChanged(item, nameof(asPositionedObject.X), asPositionedObject.X);
                         }
                     }
