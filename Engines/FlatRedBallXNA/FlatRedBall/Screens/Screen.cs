@@ -154,12 +154,15 @@ namespace FlatRedBall.Screens
         }
 
         /// <summary>
-        /// Gets and sets whether the activity is finished for a particular screen.
+        /// Gets and sets whether the activity is finished for a particular screen. Setting this to 
+        /// true will notify the Screen that it should destroy itself and move on to the next screen.
         /// </summary>
         /// <remarks>
         /// If activity is finished, then the ScreenManager or parent
         /// screen (if the screen is a popup) knows to destroy the screen
         /// and loads the NextScreen class.</remarks>
+        /// <seealso cref="MoveToScreen(string)"/>
+        /// <seealso cref="MoveToScreen(Type)"/>
         public bool IsActivityFinished
         {
             get { return mIsActivityFinished; }
@@ -408,6 +411,11 @@ namespace FlatRedBall.Screens
             mTimeScreenWasCreated = TimeManager.CurrentTime;
         }
 
+        /// <summary>
+        /// Performs the unloading of content and destroys all contained objects. 
+        /// Typically this method should not be called directly, but instead the IsActivityFinished 
+        /// property is set to true, which internally calls Destroy.
+        /// </summary>
         public virtual void Destroy()
         {
 
@@ -788,8 +796,9 @@ namespace FlatRedBall.Screens
 
         #region Screen Navigation Methods
 
-        /// <summary>Tells the screen that we are done and wish to move to the
-        /// the screen with the matching (fully qualified) name.
+        /// <summary>Tells the screen that it should destroy itself
+        /// and move to the screen with the matching (fully qualified) name.
+        /// This method is usually used to move between screens or levels.
         /// </summary>
         /// <param>Fully Qualified Type of the screen to move to</param>
         public void MoveToScreen(string screenClass)
