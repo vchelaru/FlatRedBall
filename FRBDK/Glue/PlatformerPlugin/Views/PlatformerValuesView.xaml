@@ -77,7 +77,7 @@
             <TextBlock>Max Speed:</TextBlock>
             <TextBox Text="{Binding MaxSpeedX}" HorizontalAlignment="Left" Width="70" Margin="0,0,0,5"
                      b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
-                <TextBox.ToolTip>The maximum speed that the entity can move due to input being applyed. This speed can be exceeded when on a moving platform.</TextBox.ToolTip>
+                <TextBox.ToolTip>The maximum speed in pixels per second that the entity can move due to input being applyed. This speed can be exceeded when on a moving platform.</TextBox.ToolTip>
             </TextBox>
 
             <RadioButton IsChecked="{Binding IsImmediate}">
