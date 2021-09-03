@@ -18,7 +18,7 @@ namespace FlatRedBall.Glue.Controls
             InitializeComponent();
 
             propertyGrid1.SelectedObject =
-                ProjectManager.GlueProjectSave.PerformanceSettingsSave;
+                ProjectManager.GlueProjectSave?.PerformanceSettingsSave;
         }
 
         private void propertyGrid1_Click(object sender, EventArgs e)
