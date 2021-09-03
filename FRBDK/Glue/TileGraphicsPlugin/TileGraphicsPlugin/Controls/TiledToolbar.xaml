@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              
-             d:DesignHeight="250" d:DesignWidth="300">
+             d:DesignHeight="50" d:DesignWidth="200">
     <Grid>
         <xctk:SplitButton
             ToolTip="Open Tiled"

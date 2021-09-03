@@ -28,6 +28,25 @@ namespace TopDownPlugin.Logic
                 }
             };
 
+            viewModel.PropertyChanged += (sender, args) =>
+            {
+                switch(args.PropertyName)
+                {
+                    case nameof(viewModel.IsTopDownRadioChecked):
+                    case nameof(viewModel.IsPlatformerRadioChecked):
+                        if(viewModel.IsPlatformerRadioChecked || viewModel.IsTopDownRadioChecked)
+                        {
+                            commonViewModel.IsICollidableEnabled = false;
+                            commonViewModel.IsICollidableChecked = true;
+                        }
+                        else
+                        {
+                            commonViewModel.IsICollidableEnabled = true;
+                        }
+                        break;
+                }
+            };
+
             var control = new AdditionalEntitiesControls();
             control.DataContext = viewModel;
             window.AddControl(control);

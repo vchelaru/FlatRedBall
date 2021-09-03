@@ -40,7 +40,7 @@
                 <CheckBox x:Name="IVisibleCheckBox" IsChecked="{Binding IsIVisibleChecked}">IVisible</CheckBox>
                 <CheckBox x:Name="IClickableCheckBox" IsChecked="{Binding IsIClickableChecked}">IClickable</CheckBox>
                 <CheckBox x:Name="IWindowCheckBox" IsChecked="{Binding IsIWindowChecked}">IWindow</CheckBox>
-                <CheckBox x:Name="ICollidableCheckBox" IsChecked="{Binding IsICollidableChecked}">ICollidable</CheckBox>
+                <CheckBox x:Name="ICollidableCheckBox" IsChecked="{Binding IsICollidableChecked}" IsEnabled="{Binding IsICollidableEnabled}">ICollidable</CheckBox>
             </StackPanel>
         </GroupBox>
 

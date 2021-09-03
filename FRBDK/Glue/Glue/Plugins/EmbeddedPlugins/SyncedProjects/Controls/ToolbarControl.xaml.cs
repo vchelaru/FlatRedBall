@@ -21,6 +21,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects.Controls
     /// </summary>
     public partial class ToolbarControl : UserControl
     {
+
         public ToolbarControl()
         {
             InitializeComponent();

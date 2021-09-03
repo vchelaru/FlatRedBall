@@ -4,13 +4,21 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects.Controls"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+
              mc:Ignorable="d" >
     <StackPanel Orientation="Horizontal">
-        <Button Click="VisualStudioButtonClick" 
+        <xctk:SplitButton
+            Click="VisualStudioButtonClick" 
              ToolTip="Open Project in Visual Studio"
-             Height="22" Width="22">
+             Height="22" Width="40">
+            <xctk:SplitButton.DropDownContent>
+                <StackPanel>
+                    <CheckBox IsChecked="{Binding IsOpenVisualStudioAutomaticallyChecked}">Open Visual Studio Automatically</CheckBox>
+                </StackPanel>
+            </xctk:SplitButton.DropDownContent>
             <Image Source="/Plugins/EmbeddedPlugins/SyncedProjects/Images/VsIcon.png"></Image>
-        </Button>
+        </xctk:SplitButton>
 
         <Button Click="FolderButtonClick" 
              ToolTip="Open Project Folder"

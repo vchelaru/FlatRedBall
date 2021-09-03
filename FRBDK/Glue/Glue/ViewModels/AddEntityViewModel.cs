@@ -155,5 +155,16 @@ namespace GlueFormsCore.ViewModels
                 }
             }
         }
+
+        public bool IsICollidableEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public AddEntityViewModel()
+        {
+            IsICollidableEnabled = true;
+        }
     }
 }

@@ -25,6 +25,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
     public class GlueProjectSave
     {
+        #region Glux Version
+
         // Version 0/1 didn't exist
         // Version 2 introduces a partial game class
         // Version 3 has lists associated with factory
@@ -38,9 +40,9 @@ namespace FlatRedBall.Glue.SaveClasses
             CsvInheritanceSupport = 5,
             NugetPackageInCsproj = 6,
             SupportsEditMode = 7
-                
-
         }
+
+        #endregion
 
         #region Fields / Properties
 
