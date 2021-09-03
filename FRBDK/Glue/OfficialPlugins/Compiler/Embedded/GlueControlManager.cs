@@ -255,7 +255,7 @@ namespace GlueControl
 
         #region Game -> Glue
 
-        private void HandlePropertyChanged(INameable item, string propertyName, object value)
+        private void HandlePropertyChanged(INameable item, string propertyName, object newValue)
         {
 #if SupportsEditMode
 
@@ -286,8 +286,8 @@ namespace GlueControl
             dto.InstanceOwner = ownerType;
             dto.ObjectName = item.Name;
             dto.VariableName = propertyName;
-            dto.VariableValue = value;
-            dto.Type = value?.GetType().Name;
+            dto.VariableValue = newValue;
+            dto.Type = newValue?.GetType().Name;
             var message = $"{nameof(SetVariableDto)}:{Newtonsoft.Json.JsonConvert.SerializeObject(dto)}";
 
             SendCommandToGlue(message);

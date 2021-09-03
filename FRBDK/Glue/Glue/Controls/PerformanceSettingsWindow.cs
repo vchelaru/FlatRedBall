@@ -21,6 +21,7 @@ namespace FlatRedBall.Glue.Controls
                 ProjectManager.GlueProjectSave?.PerformanceSettingsSave;
         }
 
+
         private void propertyGrid1_Click(object sender, EventArgs e)
         {
 

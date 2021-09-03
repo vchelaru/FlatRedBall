@@ -328,7 +328,9 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 }
             }, "Handling set variable from game", 
             // This is going to push the change back to the game, and we don't want to sit and wait for codegen to finish, etc. Do it immediately!
-            TaskExecutionPreference.Asap);
+            // Update - if it's asap, then later commands can execute before earlier ones, so we need to still respect fifo. It will add delay but removes
+            // the confusion.
+            TaskExecutionPreference.Fifo);
         }
 
         private static ScreenSave GetCurrentInGameScreen(int gamePortNumber)

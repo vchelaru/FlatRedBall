@@ -330,10 +330,65 @@ namespace GlueControl.Editing
                 AddAndDestroyMarkersAccordingToItemsSelected();
             }
 
+            DoNudgeHotkeyLogic();
+
             CopyPasteManager.DoHotkeyLogic(ItemsSelected);
 
             CameraLogic.DoHotkeyLogic();
 
+        }
+
+        private void DoNudgeHotkeyLogic()
+        {
+            var keyboard = InputManager.Keyboard;
+
+            if (keyboard.IsCtrlDown == false)
+            {
+                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.Up))
+                {
+                    foreach (var item in ItemsSelected)
+                    {
+                        if (item is PositionedObject asPositionedObject)
+                        {
+                            asPositionedObject.Y++;
+                            PropertyChanged(item, nameof(asPositionedObject.Y), asPositionedObject.Y);
+                        }
+                    }
+                }
+                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.Down))
+                {
+                    foreach (var item in ItemsSelected)
+                    {
+                        if (item is PositionedObject asPositionedObject)
+                        {
+                            asPositionedObject.Y--;
+                            PropertyChanged(item, nameof(asPositionedObject.Y), asPositionedObject.Y);
+                        }
+                    }
+                }
+                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.Left))
+                {
+                    foreach (var item in ItemsSelected)
+                    {
+                        if (item is PositionedObject asPositionedObject)
+                        {
+                            asPositionedObject.X--;
+                            PropertyChanged(item, nameof(asPositionedObject.X), asPositionedObject.X);
+                        }
+                    }
+                }
+                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.Right))
+                {
+                    foreach (var item in ItemsSelected)
+                    {
+                        if (item is PositionedObject asPositionedObject)
+                        {
+                            asPositionedObject.X++;
+                            PropertyChanged(item, nameof(asPositionedObject.X), asPositionedObject.X);
+                        }
+                    }
+                }
+            }
         }
 
         public void UpdateDependencies()

@@ -1473,6 +1473,7 @@ namespace FlatRedBall.Math.Geometry
 
         #endregion
 
+        [Obsolete("This method will eventually be removed. Why have this and not all other shape types?")]
         public static void MakeAllLinesInvisible()
         {
 #if DEBUG
@@ -1510,12 +1511,10 @@ namespace FlatRedBall.Math.Geometry
         }
 
 
-        #region XML Docs
         /// <summary>
         /// Removes the argument AxisAlignedCube from the ShapeManager and any 2-way PositionedObjectLists it belongs to.
         /// </summary>
         /// <param name="axisAlignedCubeToRemove">The AxisAlignedCube to remove.  Cannot be null.</param>
-        #endregion
         static public void Remove(AxisAlignedCube axisAlignedCubeToRemove)
         {
 #if DEBUG
