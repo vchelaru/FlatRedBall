@@ -83,7 +83,7 @@
             <TextBox Text="{Binding MaxSpeed}" HorizontalAlignment="Left" Width="70" Margin="0,0,0,5"
                      KeyUp="TextBox_KeyEnterUpdate">
                 <TextBox.ToolTip>
-                    The maximum speed that this entity can move through input. It is possible to move faster if another force (such as collision) acts on this entity.
+                    The maximum speed in pixels per second that this entity can move through input. It is possible to move faster if another force (such as collision) acts on this entity.
                 </TextBox.ToolTip>
             </TextBox>
 
