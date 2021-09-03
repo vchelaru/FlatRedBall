@@ -93,7 +93,8 @@ namespace FlatRedBall.Glue.FormHelpers.StringConverters
 
             #endregion
 
-            return availableClasses;
+
+            return availableClasses.OrderBy(item => item).ToArray();
         }
 
         private static string[] GetAvailableFrbClasses()
