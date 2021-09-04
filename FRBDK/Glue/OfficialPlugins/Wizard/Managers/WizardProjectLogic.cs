@@ -34,6 +34,8 @@ namespace OfficialPluginsCore.Wizard.Managers
 
         public async Task Apply(WizardData vm)
         {
+            #region Initialization and utility methods
+
             var tasks = new List<TaskItemViewModel>();
 
             void AddTask(string name, Func<Task> task)
@@ -57,6 +59,8 @@ namespace OfficialPluginsCore.Wizard.Managers
             NamedObjectSave cloudCollisionNos = null;
 
             List<Func<Task>> operations = new List<Func<Task>>();
+
+            #endregion
 
             // Add Gum before adding a GameScreen, so the GameScreen gets its Gum screen
             if (vm.AddGum)
