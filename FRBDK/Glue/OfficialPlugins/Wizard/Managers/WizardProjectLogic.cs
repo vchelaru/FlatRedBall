@@ -478,6 +478,23 @@ namespace OfficialPluginsCore.Wizard.Managers
                 // imported, so the view model doesn't know.
                 var isPlatformer = playerEntity.Properties.GetValue<bool>("IsPlatformer");
 
+                // Add cloud collision first, then solid collision so that solid collision
+                // is performed after cloud. Otherwise when cloud and solid meet, snagging can happen
+
+                if (vm.CollideAgainstCloudCollision && vm.AddCloudCollision)
+                {
+                    PluginManager.ReactToCreateCollisionRelationshipsBetween(playerList, cloudCollisionNos);
+
+                    var nos = gameScreen.GetNamedObject("PlayerListVsCloudCollision");
+
+                    if (isPlatformer)
+                    {
+                        nos.Properties.SetValue("CollisionType", 4);
+                    }
+
+                    PluginManager.CallPluginMethod("Collision Plugin", "FixNamedObjectCollisionType", nos);
+                }
+
                 if (vm.CollideAgainstSolidCollision)
                 {
                     PluginManager.ReactToCreateCollisionRelationshipsBetween(playerList, solidCollisionNos);
@@ -500,19 +517,6 @@ namespace OfficialPluginsCore.Wizard.Managers
                         nos.Properties.SetValue("SecondCollisionMass", 1.0f);
                         nos.Properties.SetValue("CollisionElasticity", 0.0f);
 
-                    }
-
-                    PluginManager.CallPluginMethod("Collision Plugin", "FixNamedObjectCollisionType", nos);
-                }
-                if (vm.CollideAgainstCloudCollision && vm.AddCloudCollision)
-                {
-                    PluginManager.ReactToCreateCollisionRelationshipsBetween(playerList, cloudCollisionNos);
-
-                    var nos = gameScreen.GetNamedObject("PlayerListVsCloudCollision");
-
-                    if (isPlatformer)
-                    {
-                        nos.Properties.SetValue("CollisionType", 4);
                     }
 
                     PluginManager.CallPluginMethod("Collision Plugin", "FixNamedObjectCollisionType", nos);
