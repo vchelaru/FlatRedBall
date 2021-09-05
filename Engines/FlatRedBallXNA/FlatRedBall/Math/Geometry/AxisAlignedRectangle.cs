@@ -1158,15 +1158,15 @@ namespace FlatRedBall.Math.Geometry
 
         public bool IsPointInside(float x, float y)
         {
-            return x < X + mScaleX && x > X - ScaleX &&
-                y < Y + mScaleY && y > Y - mScaleY;
+            return x < Position.X + mScaleX && x > Position.X - ScaleX &&
+                y < Position.Y + mScaleY && y > Position.Y - mScaleY;
         }
 
 
         public bool IsPointInside(ref Vector3 point)
         {
-            return point.X < X + mScaleX && point.X > X - ScaleX &&
-                point.Y < Y + mScaleY && point.Y > Y - mScaleY;
+            return point.X < Position.X + mScaleX && point.X > Position.X - ScaleX &&
+                point.Y < Position.Y + mScaleY && point.Y > Position.Y - mScaleY;
 
         }
 
