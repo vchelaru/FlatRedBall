@@ -1301,7 +1301,7 @@ namespace FlatRedBall.TileCollisions
                     }
                     if (rect.Y > maxY)
                     {
-                        minY = rect.Y;
+                        maxY = rect.Y;
                     }
                 }
 
