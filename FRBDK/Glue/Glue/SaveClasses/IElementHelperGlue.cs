@@ -86,6 +86,13 @@ namespace FlatRedBall.Glue.SaveClasses
                             {
                                 nos.SourceClassGenericType = newNameFull;
                             }
+                            else if(nos.IsCollisionRelationship())
+                            {
+                                PluginManager.CallPluginMethod(
+                                    "Collision Plugin",
+                                    "FixNamedObjectCollisionType",
+                                    new object[] { nos });
+                            }
                         }
                     }
                     else
