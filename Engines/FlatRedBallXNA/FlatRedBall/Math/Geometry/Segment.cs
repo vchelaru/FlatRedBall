@@ -632,13 +632,11 @@ namespace FlatRedBall.Math.Geometry
         }
         
 
-        #region XML Docs
         /// <summary>
-        /// Determines whether this segment intersects the argument segment.
+        /// Returns whether this segment intersects the argument segment.
         /// </summary>
         /// <param name="s2">The segment to test for intersection.</param>
         /// <returns>Whether the segments intersect (whether they cross).</returns>
-        #endregion
         public bool Intersects(Segment s2)
         {
             IntersectionPoint(ref s2, out mPoint);

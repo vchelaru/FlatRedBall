@@ -70,6 +70,21 @@ namespace Microsoft.Xna.Framework
             }
         }
 
+        public static Vector2 RotatedBy(this Vector2 vector2, float radiansToRotateBy)
+        {
+            if (vector2.X == 0 && vector2.Y == 0)
+            {
+                return vector2;
+            }
+            else
+            {
+                var existingAngle = vector2.Angle().Value;
+                var newAngle = existingAngle + radiansToRotateBy;
+                return FromAngle(newAngle) * vector2.Length();
+            }
+        }
+
+
         /// <summary>
         /// Returns a vector in the same direction as the argument vector, but of the length specified by the length argument.
         /// </summary>

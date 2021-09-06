@@ -268,6 +268,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Math\IStaticPositionable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\MathFunctions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\NaNException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\Paths\Path.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\PositionedObjectList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\RollingAverage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Splines\Spline.cs" />
