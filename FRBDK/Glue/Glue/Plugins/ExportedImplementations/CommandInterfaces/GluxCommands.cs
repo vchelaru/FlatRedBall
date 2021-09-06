@@ -1219,6 +1219,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                 }
 
+                EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
+
                 PluginManager.ReactToObjectRemoved(element, namedObjectToRemove);
             }
 
@@ -1288,6 +1290,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
                 memberName, oldValue, namedObjectSave:nos);
 
+            EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
 
             PluginManager.ReactToChangedProperty(memberName, oldValue);
         }
@@ -1501,6 +1504,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             ProjectManager.RemoveCodeFilesForElement(filesThatCouldBeRemoved, entityToRemove);
 
             GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
+
+            EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
 
             PluginManager.ReactToEntityRemoved(entityToRemove, filesThatCouldBeRemoved);
 

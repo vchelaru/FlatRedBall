@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPlugins.StateDataPlugin.Controls;
+using OfficialPlugins.StateDataPlugin.StateError;
 using OfficialPlugins.StateDataPlugin.ViewModels;
 using OfficialPluginsCore.StateDataPlugin.Managers;
 using System;
@@ -21,6 +22,9 @@ namespace OfficialPlugins.StateDataPlugin
     {
         StateDataControl control;
         PluginTab tab;
+
+        StateErrorReporter stateErrorReporter;
+
         public override string FriendlyName { get { return "State Data Plugin"; } }
 
         // 0.1.0 - Initial creation
@@ -39,6 +43,15 @@ namespace OfficialPlugins.StateDataPlugin
         public override void StartUp()
         {
             this.ReactToItemSelectHandler += HandleReactToItemSelect;
+            this.ReactToStateRemovedHandler += HandleStateRemoved;
+
+            stateErrorReporter = new StateErrorReporter();
+            this.AddErrorReporter(stateErrorReporter);
+        }
+
+        private void HandleStateRemoved(IElement element, string stateName)
+        {
+            GlueCommands.Self.RefreshCommands.RefreshErrorsFor(stateErrorReporter);
         }
 
         private void HandleReactToItemSelect(TreeNode selectedTreeNode)

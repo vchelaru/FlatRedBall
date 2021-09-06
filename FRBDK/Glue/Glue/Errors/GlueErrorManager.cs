@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,20 @@ namespace FlatRedBall.Glue.Errors
             PluginManager.CallPluginMethod("Error Window Plugin", "RefreshErrors");
         }
 
-        public void ClearFixedErrors() => errors.RemoveAll(item => item.GetIfIsFixed());
+        public void ClearFixedErrors()
+        {
+            errors.RemoveAll(item => item.GetIfIsFixed());
+
+            lock (GlueState.ErrorListSyncLock)
+            {
+                for (int i = GlueState.Self.ErrorList.Errors.Count - 1; i > -1; i--)
+                {
+                    if(GlueState.Self.ErrorList.Errors[i].GetIfIsFixed())
+                    {
+                        GlueState.Self.ErrorList.Errors.RemoveAt(i);
+                    }
+                }
+            }
+        }
     }
 }

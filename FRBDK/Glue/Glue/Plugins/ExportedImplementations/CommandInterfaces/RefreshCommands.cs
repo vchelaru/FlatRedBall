@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows.Forms;
 using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
@@ -195,6 +196,30 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             TaskManager.Self.AddOrRunIfTasked(() => RefreshErrorsAction?.Invoke(),
                 "Refreshing Errors",
                 TaskExecutionPreference.AddOrMoveToEnd);
+        }
+
+        public void RefreshErrorsFor(IErrorReporter errorReporter)
+        {
+            TaskManager.Self.AddOrRunIfTasked(() =>
+            {
+                var errors = errorReporter.GetAllErrors();
+
+                if (errors != null)
+                {
+                    foreach (var error in errors)
+                    {
+                        lock (GlueState.ErrorListSyncLock)
+                        {
+                            var id = error.UniqueId;
+                            if (GlueState.Self.ErrorList.Errors.Any(item => item.UniqueId == id) == false)
+                            {
+                                GlueState.Self.ErrorList.Errors.Add(error);
+                            }
+                        }
+                    }
+                }
+
+            }, $"Refreshing errors for {errorReporter}");
         }
 
         public void RefreshDirectoryTreeNodes()

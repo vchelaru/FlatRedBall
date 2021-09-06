@@ -475,6 +475,8 @@ namespace FlatRedBall.Glue
 
             InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, element);
 
+            EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
+
             PluginManager.ReactToVariableRemoved(customVariable);
         }
 

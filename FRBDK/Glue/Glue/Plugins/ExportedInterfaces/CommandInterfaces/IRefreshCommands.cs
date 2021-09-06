@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.SaveClasses;
+﻿using FlatRedBall.Glue.Errors;
+using FlatRedBall.Glue.SaveClasses;
 using System.Security.Cryptography;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
@@ -32,6 +33,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// Refreshes all errors.
         /// </summary>
         void RefreshErrors();
+
+        void RefreshErrorsFor(IErrorReporter errorReporter);
+
 
 
         /// <summary>

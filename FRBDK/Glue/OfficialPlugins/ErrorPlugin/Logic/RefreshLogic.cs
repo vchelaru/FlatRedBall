@@ -16,6 +16,9 @@ namespace OfficialPlugins.ErrorPlugin.Logic
 {
     public static class RefreshLogic
     {
+
+
+
         public static void RefreshAllErrors(ErrorListViewModel errorListViewModel)
         {
             TaskManager.Self.Add(() =>
