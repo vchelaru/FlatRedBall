@@ -111,6 +111,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Gum\CommonFormsAndControls\CommonFormsAndControls.csproj">
+      <Project>{54bfe18a-84b4-48ab-92e0-0774ea019202}</Project>
+      <Name>CommonFormsAndControls</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Gum\ToolsUtilities\ToolsUtilitiesStandard.csproj">
       <Project>{4cf72913-817f-4b60-8920-3214fcaf7be9}</Project>
       <Name>ToolsUtilitiesStandard</Name>
