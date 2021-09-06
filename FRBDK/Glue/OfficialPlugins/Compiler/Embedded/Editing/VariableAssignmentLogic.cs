@@ -276,6 +276,7 @@ namespace GlueControl.Editing
                 {
                     targetPolygon.Points = points;
                     didAttemptToAssign = true;
+                    response.WasVariableAssigned = didAttemptToAssign;
                 }
             }
 
