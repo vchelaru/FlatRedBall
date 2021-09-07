@@ -44,7 +44,6 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             codeBlock.Line("bool mCanContinueToApplyJumpToHold = false;");
 
 
-            codeBlock.Line("bool wasOnGroundLastFrame = false;");
 
             codeBlock.Line("private float lastNonZeroPlatformerHorizontalMaxSpeed = 0;");
 
@@ -116,6 +115,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
             codeBlock.Line("#region Platformer Properties");
 
+            codeBlock.Line("public bool WasOnGroundLastFrame{ get; private set; }");
 
             codeBlock.Property("public FlatRedBall.Input.IInputDevice", "InputDevice")
                 .Line("get;")
@@ -729,7 +729,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             if (isFirstCollisionOfTheFrame)
             {
                 groundHorizontalVelocity = 0;
-                wasOnGroundLastFrame = mIsOnGround;
+                WasOnGroundLastFrame = mIsOnGround;
                 mLastCollisionTime = FlatRedBall.TimeManager.CurrentTime;
                 PositionBeforeLastPlatformerCollision = this.Position;
                 mIsOnGround = false;
@@ -752,7 +752,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
                 if(canCheckCollision)
                 {
-                    if(wasOnGroundLastFrame == false &&  VerticalInput?.Value < -.5 && CurrentMovement.CanFallThroughCloudPlatforms)
+                    if(WasOnGroundLastFrame == false &&  VerticalInput?.Value < -.5 && CurrentMovement.CanFallThroughCloudPlatforms)
                     {
                         // User is in the air, holding 'down', and the current movement allows the user to fall through clouds
                         canCheckCollision = false;

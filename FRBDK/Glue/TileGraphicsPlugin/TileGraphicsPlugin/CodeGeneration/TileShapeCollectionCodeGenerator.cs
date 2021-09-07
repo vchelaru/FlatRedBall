@@ -21,7 +21,10 @@ namespace TileGraphicsPlugin.CodeGeneration
 
             foreach (var tileShapeCollection in tileShapeCollections)
             {
-                GenerateInitializeCodeFor(tileShapeCollection, codeBlock);
+                if(tileShapeCollection.DefinedByBase == false)
+                {
+                    codeBlock.Line($"FillCollisionFor{tileShapeCollection.InstanceName}();");
+                }
             }
 
             return codeBlock;
@@ -427,6 +430,38 @@ namespace TileGraphicsPlugin.CodeGeneration
                     $"{namedObjectSave.InstanceName}, {mapName}, \"{typeName}\", {removeTiles.ToString().ToLowerInvariant()});");
             }
 
+        }
+
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
+        {
+            NamedObjectSave[] tileShapeCollections = GetAllTileShapeCollectionNamedObjectsInElement(element);
+
+            foreach (var tileShapeCollection in tileShapeCollections)
+            {
+                if (tileShapeCollection.DefinedByBase == false)
+                {
+                    var method = codeBlock.Function("protected virtual void", $"FillCollisionFor{tileShapeCollection.InstanceName}");
+                    GenerateInitializeCodeFor(tileShapeCollection, method);
+                }
+                else
+                {
+                    // override it if it's an outline:
+                    T Get<T>(string name)
+                    {
+                        return tileShapeCollection.Properties.GetValue<T>(name);
+                    }
+                    var creationOptions = Get<CollisionCreationOptions>(
+                        nameof(TileShapeCollectionPropertiesViewModel.CollisionCreationOptions));
+
+                    if(creationOptions == CollisionCreationOptions.BorderOutline)
+                    {
+                        var method = codeBlock.Function("protected override void", $"FillCollisionFor{tileShapeCollection.InstanceName}");
+                        GenerateInitializeCodeFor(tileShapeCollection, method);
+                    }
+                }
+            }
+
+            return codeBlock;
         }
     }
 }
