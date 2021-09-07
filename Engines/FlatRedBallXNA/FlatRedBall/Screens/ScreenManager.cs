@@ -130,6 +130,7 @@ namespace FlatRedBall.Screens
         }
         #endregion
 
+        static Exception GlueViewLoadException;
 		
 		public static Action<string> RehydrateAction
 		{
@@ -166,6 +167,13 @@ namespace FlatRedBall.Screens
                 mCurrentScreen.Activity(mCurrentScreen.ActivityCallCount == 0);
 
                 mCurrentScreen.ActivityCallCount++;
+            }
+            else
+            {
+                if(GlueViewLoadException != null)
+                {
+                    FlatRedBall.Debugging.Debugger.Write(GlueViewLoadException.ToString());
+                }
             }
 
             if (mCurrentScreen.ActivityCallCount == 1 && mWasFixedTimeStep.HasValue)
@@ -409,6 +417,8 @@ namespace FlatRedBall.Screens
                 }
                 if(IsInEditMode)
                 {
+                    GlueViewLoadException = null;
+
                     try
                     {
                         // in edit mode, we tolerate crashes on initialize since this is common 
@@ -425,9 +435,10 @@ namespace FlatRedBall.Screens
                             item.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
                         }
                     }
-                    catch
+                    catch(Exception e)
                     {
                         // I guess do nothing?
+                        GlueViewLoadException = e;
                     }
 
                 }
