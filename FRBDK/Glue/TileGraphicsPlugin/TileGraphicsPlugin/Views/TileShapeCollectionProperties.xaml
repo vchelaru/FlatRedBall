@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TileGraphicsPlugin.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="660" d:DesignWidth="300">
+             d:DesignHeight="760" d:DesignWidth="300">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         
         <Grid>
@@ -15,16 +15,18 @@
             </Grid.RowDefinitions>
             <!--<CheckBox VerticalAlignment="Center" VerticalContentAlignment="Center"
                       IsChecked="{Binding IsCollisionVisible}">Visible</CheckBox>-->
-            <GroupBox Header="Creation Options" Grid.Row="1" IsEnabled="{Binding IsEntireViewEnabled}">
+            <GroupBox Header="Creation Options" Grid.Row="1">
                 <StackPanel>
                     <TextBlock TextWrapping="Wrap" Visibility="{Binding MessageAboutInheritanceVisibility}">This TileShapeCollection is defined in a base Screen. Changes must be made in the base screen.</TextBlock>
                     <RadioButton VerticalContentAlignment="Center"
                                  HorizontalAlignment="Left"
+                                 IsEnabled="{Binding IsEntireViewEnabled}"
                                  IsChecked="{Binding IsEmptyChecked}">Empty</RadioButton>
                     <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
                                  HorizontalAlignment="Left"
+                                 IsEnabled="{Binding IsEntireViewEnabled}"
                                  IsChecked="{Binding IsFillCompletelyChecked}">Fill Completely</RadioButton>
-                    <StackPanel Margin="10, 0, 0, 0" Visibility="{Binding FillDimensionsVisibility}">
+                    <StackPanel Margin="10, 0, 0, 0" Visibility="{Binding FillDimensionsVisibility}" IsEnabled="{Binding IsEntireViewEnabled}">
 
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Width="60">Tile Size:</TextBlock>
@@ -55,6 +57,7 @@
                     </StackPanel>
                     <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
                                  HorizontalAlignment="Left"
+                                 IsEnabled="{Binding IsEntireViewEnabled}"
                                  IsChecked="{Binding IsBorderChecked}">Border Outline</RadioButton>
                     <StackPanel Margin="10, 0, 0, 0" Visibility="{Binding BorderOutlineVisibility}">
 
@@ -105,8 +108,9 @@
 
                     <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
                                  HorizontalAlignment="Left"
+                                 IsEnabled="{Binding IsEntireViewEnabled}"
                                  IsChecked="{Binding IsFromTypeChecked}">From Type</RadioButton>
-                    <StackPanel x:Name="Types" Margin="10, 0, 0, 0" 
+                    <StackPanel x:Name="Types" Margin="10, 0, 0, 0"  IsEnabled="{Binding IsEntireViewEnabled}"
                                 Visibility="{Binding FromTypeVisibility}">
                         <TextBlock>Source TMX File/Object:</TextBlock>
                         <ComboBox Width="200" HorizontalAlignment="Left"
@@ -127,8 +131,9 @@
 
                     <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
                                  HorizontalAlignment="Left"
+                                 IsEnabled="{Binding IsEntireViewEnabled}"
                                  IsChecked="{Binding IsFromPropertiesChecked}">From Property</RadioButton>
-                    <StackPanel x:Name="Properties" Margin="10, 0, 0, 0" 
+                    <StackPanel x:Name="Properties" Margin="10, 0, 0, 0"  IsEnabled="{Binding IsEntireViewEnabled}"
                                 Visibility="{Binding FromPropertiesVisibility}">
                         <TextBlock>Source TMX File/Object:</TextBlock>
                         <ComboBox Width="200" HorizontalAlignment="Left"
@@ -143,8 +148,9 @@
                 
                     <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
                                  HorizontalAlignment="Left"
+                                 IsEnabled="{Binding IsEntireViewEnabled}"
                                  IsChecked="{Binding IsFromLayerChecked}">From Layer</RadioButton>
-                    <StackPanel Margin="10,0,0,0" Visibility="{Binding FromLayerVisibility}">
+                    <StackPanel Margin="10,0,0,0" Visibility="{Binding FromLayerVisibility}" IsEnabled="{Binding IsEntireViewEnabled}">
                         <TextBlock>Source TMX File/Object:</TextBlock>
                         <ComboBox Width="200" HorizontalAlignment="Left"
                                   ItemsSource="{Binding TmxObjectNames}"

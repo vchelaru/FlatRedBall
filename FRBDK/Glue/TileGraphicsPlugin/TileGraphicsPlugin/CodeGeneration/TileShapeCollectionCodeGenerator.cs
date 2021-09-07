@@ -132,25 +132,21 @@ namespace TileGraphicsPlugin.CodeGeneration
 
         private void GenerateInitializeCodeFor(NamedObjectSave namedObjectSave, ICodeBlock codeBlock)
         {
-            if(namedObjectSave.DefinedByBase == false)
+
+            T Get<T>(string name)
             {
-                // don't generate if it's defined by base, the base class defines the properties
-                // for now. Maybe eventually derived classes can override or change the behavior?
-                // Not sure, that definitely does not seem like standard behavior, so maybe we leave
-                // it to codegen.
+                return namedObjectSave.Properties.GetValue<T>(name);
+            }
+            var creationOptions = Get<CollisionCreationOptions>(
+                nameof(TileShapeCollectionPropertiesViewModel.CollisionCreationOptions));
 
-                var sourceName = namedObjectSave.SourceNameWithoutParenthesis;
+            // Victor Chelaru Sept 6 2021
+            // Currently only the outline can override the settings. This could expand over time but let's take it incrementally
+            var canGenerateInitialize =
+                namedObjectSave.DefinedByBase == false || creationOptions == CollisionCreationOptions.BorderOutline;
 
-                T Get<T>(string name)
-                {
-                    return namedObjectSave.Properties.GetValue<T>(name);
-                }
-
-                var creationOptions = Get<CollisionCreationOptions>(
-                    nameof(TileShapeCollectionPropertiesViewModel.CollisionCreationOptions));
-
-
-
+            if (canGenerateInitialize)
+            {
                 var sourceType = namedObjectSave.SourceType;
 
                 if(sourceType == SourceType.File)
@@ -271,6 +267,8 @@ namespace TileGraphicsPlugin.CodeGeneration
 
             var instanceName = namedObjectSave.FieldName;
 
+            codeBlock.Line($"// Call RemoveFromManagers in case this was populated in a base class");
+            codeBlock.Line($"{instanceName}.RemoveFromManagers();");
             codeBlock.Line($"{instanceName}.GridSize = {tileSizeString};");
             //TileShapeCollectionInstance.GridSize = gridSize;
 
