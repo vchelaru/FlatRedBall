@@ -512,11 +512,21 @@ namespace FlatRedBall.Math.Geometry
             return null;
         }
 
+        /// <summary>
+        /// Removes all contained shapes from the ShapeManager and clears this ShapeCollection.
+        /// </summary>
         public void RemoveFromManagers()
         {
             RemoveFromManagers(true);
         }
 
+        /// <summary>
+        /// Removes all contained shapes from the ShapeManager and optionally clears this ShapeCollection.
+        /// </summary>
+        /// <remarks>
+        /// Removal of shapes removes shapes from every-frame management and visibility.
+        /// </remarks>
+        /// <param name="clearThis">Whether to clear this ShapeCollection.</param>
         public void RemoveFromManagers(bool clearThis)
         {
             if (!clearThis)

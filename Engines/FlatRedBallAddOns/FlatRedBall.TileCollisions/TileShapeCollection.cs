@@ -1079,6 +1079,10 @@ namespace FlatRedBall.TileCollisions
             this.mShapes.MakeTwoWay();
         }
 
+        /// <summary>
+        /// Removes all shapes from managers (makes them invisible) and clears this TileShapeCollection.
+        /// </summary>
+        /// <seealso cref="RemoveFromManagersOneWay"/>
         public void RemoveFromManagers()
         {
             this.mShapes.RemoveFromManagers();
