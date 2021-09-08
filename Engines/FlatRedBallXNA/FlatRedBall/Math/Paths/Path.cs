@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FlatRedBall.Utilities;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -60,7 +61,7 @@ namespace FlatRedBall.Math.Paths
 
     #endregion
 
-    public class Path
+    public class Path : INameable
     {
         #region Fields/Properties
 
@@ -70,6 +71,7 @@ namespace FlatRedBall.Math.Paths
         float currentY;
 
         public float TotalLength { get; private set; }
+        public string Name { get; set; }
 
         #endregion
 

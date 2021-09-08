@@ -1663,17 +1663,6 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.AdjustDisplayedNamedObject != null);
         }
 
-        internal static void AdjustDisplayedCustomVariable(CustomVariable customVariable, CustomVariablePropertyGridDisplayer displayer)
-        {
-            CallMethodOnPlugin(
-                delegate(PluginBase plugin)
-                {
-                    plugin.AdjustDisplayedCustomVariable(customVariable, displayer);
-                },
-                nameof(AdjustDisplayedCustomVariable),
-                plugin => plugin.AdjustDisplayedCustomVariable != null);
-        }
-
         internal static void AdjustDisplayedReferencedFile(ReferencedFileSave referencedFileSave, ReferencedFileSavePropertyGridDisplayer displayer)
         {
             CallMethodOnPlugin(
@@ -2223,7 +2212,7 @@ namespace FlatRedBall.Glue.Plugins
             SaveRelativeDirectory();
 
             CallMethodOnPlugin(
-                delegate (PluginBase plugin)
+                (plugin) =>
                 {
                     var foundValue = plugin.GetTypeConverter(container, instance, typedMember);
                     if (foundValue != null)

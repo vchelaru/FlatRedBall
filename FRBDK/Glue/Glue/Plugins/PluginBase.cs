@@ -127,7 +127,7 @@ namespace FlatRedBall.Glue.Plugins
         Dictionary<ToolStripMenuItem, ToolStripMenuItem> toolStripItemsAndParents = new Dictionary<ToolStripMenuItem, ToolStripMenuItem>();
 
 
-        #region Properties
+        #region Fields/Properties
 
         public string PluginFolder
         {
@@ -141,6 +141,7 @@ namespace FlatRedBall.Glue.Plugins
 
         protected PluginTabPage PluginTab { get; private set; } // This is the tab that will hold our control
 
+        List<AssetTypeInfo> AddedAssetTypeInfos = new List<AssetTypeInfo>();
 
         #endregion
 
@@ -490,6 +491,20 @@ namespace FlatRedBall.Glue.Plugins
         protected void AddErrorReporter(IErrorReporter errorReporter)
         {
             EditorObjects.IoC.Container.Get<GlueErrorManager>().Add(errorReporter);
+        }
+
+        protected void AddAssetTypeInfo(AssetTypeInfo ati)
+        {
+            AddedAssetTypeInfos.Add(ati);
+            AvailableAssetTypes.Self.AddAssetType(ati);
+        }
+
+        public void UnregisterAssetTypeInfos()
+        {
+            foreach(var ati in AddedAssetTypeInfos)
+            {
+                AvailableAssetTypes.Self.RemoveAssetType(ati);
+            }
         }
 
         #region Tab Methods

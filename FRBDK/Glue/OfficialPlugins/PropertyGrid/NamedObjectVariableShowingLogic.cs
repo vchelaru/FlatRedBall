@@ -469,7 +469,11 @@ namespace OfficialPlugins.VariableDisplay
 
                 }
 
-                if(variableDefinition?.Name == "RotationZ" && variableDefinition.Type == "float")
+                if(variableDefinition?.PreferredDisplayer != null)
+                {
+                    instanceMember.PreferredDisplayer = variableDefinition.PreferredDisplayer;
+                }
+                else if(variableDefinition?.Name == "RotationZ" && variableDefinition.Type == "float")
                 {
                     instanceMember.PreferredDisplayer = typeof(AngleSelectorDisplay);
                     instanceMember.PropertiesToSetOnDisplayer[nameof(AngleSelectorDisplay.TypeToPushToInstance)] =

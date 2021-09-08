@@ -75,6 +75,10 @@ namespace FlatRedBall.Glue.Elements
         [JsonIgnore]
         public Func<IElement, NamedObjectSave, ReferencedFileSave, List<string>> CustomGetForcedOptionFunc;
 
+        [XmlIgnore]
+        [JsonIgnore]
+        public Type PreferredDisplayer { get; set; }
+
         public override string ToString()
         {
             return Name + " (" + Type + ")";

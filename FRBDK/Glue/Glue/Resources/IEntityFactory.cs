@@ -78,7 +78,7 @@ namespace REPLACED_NAMESPACE
             var factory = factories.FirstOrDefault(item =>
             {
                 var type = item.GetType();
-                var methodInfo = type.GetMethod("CreateNew", new[] { typeof(FlatRedBall.Graphics.Layer), typeof(float), typeof(float) });
+                var methodInfo = type.GetMethod("CreateNew", new[] { typeof(FlatRedBall.Graphics.Layer), typeof(float), typeof(float), typeof(float) });
                 var returntypeString = methodInfo.ReturnType.Name;
 
                 return entityType == returntypeString ||

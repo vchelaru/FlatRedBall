@@ -170,7 +170,6 @@ namespace FlatRedBall.Glue.FormHelpers
             mCustomVariableDisplayer.CurrentElement = GlueState.Self.CurrentElement;
 
             mCustomVariableDisplayer.Instance = GlueState.Self.CurrentCustomVariable;
-            PluginManager.AdjustDisplayedCustomVariable(GlueState.Self.CurrentCustomVariable, mCustomVariableDisplayer);
 
             mCustomVariableDisplayer.PropertyGrid = MainGlueWindow.Self.PropertyGrid;
         }

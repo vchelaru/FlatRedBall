@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="OfficialPlugins.PathPlugin.Views.PathSegmentView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:OfficialPlugins.PathPlugin.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="24" d:DesignWidth="400">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <ComboBox></ComboBox>
+        <Grid Grid.Column="1" Margin="14,0,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center"  Margin="0,0,3,0">X:</TextBlock>
+            <TextBox Grid.Column="1"></TextBox>
+        </Grid>
+        <Grid Grid.Column="2" Margin="14,0,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock  VerticalAlignment="Center"  Margin="0,0,3,0">Y:</TextBlock>
+            <TextBox Grid.Column="1"></TextBox>
+        </Grid>
+        <Grid Grid.Column="3" Margin="14,0,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock  VerticalAlignment="Center" Margin="0,0,3,0">Angle:</TextBlock>
+            <TextBox Grid.Column="1"></TextBox>
+        </Grid>
+    </Grid>
+</UserControl>
