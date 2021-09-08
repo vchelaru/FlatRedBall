@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OfficialPlugins.PathPlugin.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -18,9 +19,16 @@ namespace OfficialPlugins.PathPlugin.Views
     /// </summary>
     public partial class PathSegmentView : UserControl
     {
+        PathSegmentViewModel ViewModel => DataContext as PathSegmentViewModel;
+
         public PathSegmentView()
         {
             InitializeComponent();
+        }
+
+        private void CloseClicked(object sender, RoutedEventArgs e)
+        {
+            ViewModel.HandleCloseClicked();
         }
     }
 }

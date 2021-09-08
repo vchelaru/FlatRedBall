@@ -6,13 +6,15 @@
              xmlns:local="clr-namespace:OfficialPlugins.PathPlugin.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <ScrollViewer>
-        <StackPanel>
-            <TextBlock>Enter the paths below:</TextBlock>
-            <local:PathSegmentView></local:PathSegmentView>
-            <local:PathSegmentView></local:PathSegmentView>
-            <local:PathSegmentView></local:PathSegmentView>
-            <local:PathSegmentView></local:PathSegmentView>
-        </StackPanel>
-    </ScrollViewer>
+    <StackPanel>
+        <TextBlock>Enter the paths below:</TextBlock>
+        <ItemsControl ItemsSource="{Binding PathSegments}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <local:PathSegmentView Margin="0,0,0,6"></local:PathSegmentView>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <Button Click="AddToPathButtonClicked">Add to Path</Button>
+    </StackPanel>
 </UserControl>

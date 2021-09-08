@@ -447,7 +447,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
                 #region Remove based off of SourceType
 
-                if (instance.SourceType == SourceType.FlatRedBallType)
+                if (instance.SourceType == SourceType.FlatRedBallType || instance.SourceType == SourceType.Gum)
                 {
                     shouldShowCurrentState = false;
                     shouldIncludeSourceFile = false;

@@ -16,16 +16,18 @@ namespace OfficialPlugins.PathPlugin.Managers
             PathAssetTypeInfo = CreatePathAssetTypeInfo();
         }
 
+        public const string PathsVariableName = "Paths";
+
         static AssetTypeInfo CreatePathAssetTypeInfo()
         {
             var ati = new AssetTypeInfo();
-            ati.FriendlyName = "Path";
+            ati.FriendlyName = PathsVariableName;
             ati.QualifiedRuntimeTypeName = new PlatformSpecificType();
             ati.QualifiedRuntimeTypeName.QualifiedType = typeof(FlatRedBall.Math.Paths.Path).FullName;
             ati.CanBeObject = true;
 
             var segmentDefinition = new VariableDefinition();
-            segmentDefinition.Type = "List<FlatRedBall.Math.Paths.PathSegment>";
+            segmentDefinition.Type = "string";
             segmentDefinition.Name = "Paths";
             segmentDefinition.UsesCustomCodeGeneration = true;
             segmentDefinition.CustomGenerationFunc = GeneratePaths;

@@ -72,7 +72,7 @@ namespace FlatRedBall.Glue.FormHelpers.StringConverters
 
             #region If FlatRedBallType
 
-            if (sourceType == SourceType.FlatRedBallType)
+            if (sourceType == SourceType.FlatRedBallType || sourceType == SourceType.Gum)
             {
                 availableClasses = GetAvailableFrbClasses();
             }
@@ -107,7 +107,7 @@ namespace FlatRedBall.Glue.FormHelpers.StringConverters
             {
                 if (ati.CanBeObject)
                 {
-                    toReturnAsList.Add(ati.RuntimeTypeName);
+                    toReturnAsList.Add(ati.QualifiedRuntimeTypeName.QualifiedType);
                 }
             }
             FlatRedBall.Utilities.StringFunctions.RemoveDuplicates(toReturnAsList);

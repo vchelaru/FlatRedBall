@@ -12,15 +12,16 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <ComboBox></ComboBox>
+        <ComboBox ItemsSource="{Binding AvailableSegmentTypes}" SelectedItem="{Binding SegmentType}" ></ComboBox>
         <Grid Grid.Column="1" Margin="14,0,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock VerticalAlignment="Center"  Margin="0,0,3,0">X:</TextBlock>
-            <TextBox Grid.Column="1"></TextBox>
+            <TextBlock VerticalAlignment="Center" Margin="0,0,3,0">X:</TextBlock>
+            <TextBox Grid.Column="1" Text="{Binding X}"></TextBox>
         </Grid>
         <Grid Grid.Column="2" Margin="14,0,0,0">
             <Grid.ColumnDefinitions>
@@ -28,15 +29,16 @@
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <TextBlock  VerticalAlignment="Center"  Margin="0,0,3,0">Y:</TextBlock>
-            <TextBox Grid.Column="1"></TextBox>
+            <TextBox Grid.Column="1" Text="{Binding Y}"></TextBox>
         </Grid>
-        <Grid Grid.Column="3" Margin="14,0,0,0">
+        <Grid Grid.Column="3" Margin="14,0,0,0" Visibility="{Binding AngleVisibility}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <TextBlock  VerticalAlignment="Center" Margin="0,0,3,0">Angle:</TextBlock>
-            <TextBox Grid.Column="1"></TextBox>
+            <TextBox Grid.Column="1" Text="{Binding Angle}"></TextBox>
         </Grid>
+        <Button Grid.Column="4" Width="24" Click="CloseClicked">X</Button>
     </Grid>
 </UserControl>
