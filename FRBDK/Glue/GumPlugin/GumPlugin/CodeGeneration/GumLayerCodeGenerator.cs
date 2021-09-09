@@ -14,8 +14,8 @@ namespace GumPlugin.CodeGeneration
 {
     class GumLayerCodeGenerator : ElementComponentCodeGenerator
     {
-        const string TopLayerGumName = "AboveEverythingLayerGum";
-        const string UnderEverythingLayerGumName = "UnderEverythingLayerGum";
+        const string TopLayerGumName = GumLayerAssociationCodeGenerator.AboveEverythingLayerPrefix + "Gum";
+        const string UnderEverythingLayerGumName = GumLayerAssociationCodeGenerator.UnderEverythingLayerPrefix + "Gum";
 
 
 

@@ -473,20 +473,16 @@ namespace FlatRedBall
         /// <seealso cref="SpriteManager.MoveLayerAboveLayer(Layer, Layer)"/>
         /// <seealso cref="SpriteManager.MoveToBack(Layer)"/>
         /// <seealso cref="SpriteManager.MoveToFront(Layer)"/>
-        public static ReadOnlyCollection<Layer> Layers
-        {
-            get { return mLayersReadOnly; }
-        }
+        public static ReadOnlyCollection<Layer> Layers => mLayersReadOnly; 
+        
 
 
         /// <summary>
         /// A layer which is drawn on top of all other layers. 
         /// This is drawn on every camera, obeying the camera's DestinationRectangle.
         /// </summary>
-        public static Layer TopLayer
-        {
-            get { return mTopLayer; }
-        }
+        public static Layer TopLayer => mTopLayer; 
+        
 
         /// <summary>
         /// A layer which is drawn underneath all other layers, and under unlayered objects. 

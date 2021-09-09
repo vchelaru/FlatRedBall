@@ -15,7 +15,8 @@ namespace GumPlugin.CodeGeneration
 {
     class GumLayerAssociationCodeGenerator : ElementComponentCodeGenerator
     {
-        const string UnderEverythingLayerPrefix = "UnderEverythingLayer";
+        public const string UnderEverythingLayerPrefix = "UnderEverythingLayer";
+        public const string AboveEverythingLayerPrefix = "AboveEverythingLayer";
 
         bool ShouldGenerate
         {
@@ -55,7 +56,7 @@ namespace GumPlugin.CodeGeneration
 
             if(anyOnAboveAllLayer)
             {
-                list.Add("TopLayer");
+                list.Add(AboveEverythingLayerPrefix);
             }
 
 
@@ -98,6 +99,10 @@ namespace GumPlugin.CodeGeneration
                         if(frbLayerName == UnderEverythingLayerPrefix)
                         {
                             frbLayerName = "global::FlatRedBall.SpriteManager.UnderAllDrawnLayer";
+                        }
+                        else if(frbLayerName == AboveEverythingLayerPrefix)
+                        {
+                            frbLayerName = "global::FlatRedBall.SpriteManager.TopLayer";
                         }
 
                         codeBlock.Line(idbName + ".AddGumLayerToFrbLayer(" + layerPrefix + "Gum, " + frbLayerName + ");");
