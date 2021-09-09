@@ -69,11 +69,26 @@ namespace OfficialPlugins.PathPlugin.Managers
                     segmentVm.Angle = segment.ArcAngle;
                     segmentVm.SegmentType = segment.SegmentType;
                     segmentVm.PropertyChanged += HandlePathSegmentViewModelPropertyChanged;
+                    segmentVm.CloseClicked += HandleSegmentRemoveClicked;
                     MainViewModel.PathSegments.Add(segmentVm);
                 }
             }
 
             MainViewModel.UpdateModelOnChanges = true;
+        }
+
+        public static void CreateNewSegmentViewModel()
+        {
+            var newSegment = new PathSegmentViewModel();
+            newSegment.Y = 20;
+            newSegment.PropertyChanged += HandlePathSegmentViewModelPropertyChanged;
+            newSegment.CloseClicked += HandleSegmentRemoveClicked;
+            MainViewModel.PathSegments.Add(newSegment);
+        }
+
+        private static void HandleSegmentRemoveClicked(PathSegmentViewModel segmentVm)
+        {
+            MainViewModel.PathSegments.Remove(segmentVm);
         }
 
         internal static void HandlePathSegmentsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

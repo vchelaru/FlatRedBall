@@ -154,10 +154,25 @@ namespace OfficialPlugins.VariableDisplay
 
             else // This is used when viewing a  NOS that is of entity type (no ATI)
             {
+                var instanceElement = ObjectFinder.Self.GetElement(instance);
                 for (int i = 0; i < instance.TypedMembers.Count; i++)
                 {
+                    VariableDefinition baseVariableDefinition = null;
                     TypedMemberBase typedMember = instance.TypedMembers[i];
-                    AddForTypedMember(instance, container, categories, ati, typedMember);
+                    if(instanceElement != null)
+                    {
+                        var variableInElement = instanceElement.GetCustomVariable(typedMember.MemberName);
+
+                        if(variableInElement != null && !string.IsNullOrEmpty(variableInElement.SourceObject))
+                        {
+                            var ownerNos = instanceElement.GetNamedObjectRecursively(variableInElement.SourceObject);
+
+                            var ownerNosAti = ownerNos.GetAssetTypeInfo();
+                            baseVariableDefinition = ownerNosAti?.VariableDefinitions
+                                .FirstOrDefault(item => item.Name == variableInElement.SourceObjectProperty);
+                        }
+                    }
+                    AddForTypedMember(instance, container, categories, ati, typedMember, baseVariableDefinition);
                 }
             }
             bool shouldAddSourceNameVariable = instance.SourceType == SourceType.File &&
@@ -170,9 +185,10 @@ namespace OfficialPlugins.VariableDisplay
             }
         }
 
-        private static void AddForTypedMember(NamedObjectSave instance, IElement container, List<MemberCategory> categories, AssetTypeInfo ati, TypedMemberBase typedMember)
+        private static void AddForTypedMember(NamedObjectSave instance, IElement container, List<MemberCategory> categories,
+            AssetTypeInfo ati, TypedMemberBase typedMember, VariableDefinition variableDefinition = null)
         {
-            var variableDefinition = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
+            variableDefinition = variableDefinition ?? ati?.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
             InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember, ati, variableDefinition);
 
             var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember);

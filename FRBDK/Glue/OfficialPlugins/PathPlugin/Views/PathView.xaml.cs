@@ -74,14 +74,7 @@ namespace OfficialPlugins.PathPlugin.Views
 
         private void AddToPathButtonClicked(object sender, RoutedEventArgs e)
         {
-            var newSegment = new PathSegmentViewModel();
-            var previousSegment = ViewModel.PathSegments.LastOrDefault();
-            if(previousSegment != null)
-            {
-                newSegment.Y = 20;
-            }
-            newSegment.PropertyChanged += ViewModelManager.HandlePathSegmentViewModelPropertyChanged;
-            ViewModel.PathSegments.Add(newSegment);
+            ViewModelManager.CreateNewSegmentViewModel();
         }
     }
 }

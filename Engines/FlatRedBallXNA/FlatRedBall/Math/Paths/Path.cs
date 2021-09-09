@@ -75,6 +75,14 @@ namespace FlatRedBall.Math.Paths
 
         #endregion
 
+        public void Clear()
+        {
+            Segments.Clear();
+            TotalLength = 0;
+            currentX = 0;
+            currentY = 0;
+        }
+
         public void MoveTo(float x, float y)
         {
             currentX = x;
