@@ -129,7 +129,7 @@ namespace OfficialPluginsCore.CameraControllingEntityPlugin
             return mapObjects.Select(item => item.FieldName).ToList();
         }
 
-        private string GenerateMapCodeGen(IElement arg1, NamedObjectSave nos, ReferencedFileSave arg3)
+        private string GenerateMapCodeGen(IElement arg1, NamedObjectSave nos, ReferencedFileSave arg3, string memberName)
         {
             var value = 
                 nos.GetCustomVariable(nameof(FlatRedBall.Entities.CameraControllingEntity.Map))?.Value as string;
@@ -144,7 +144,7 @@ namespace OfficialPluginsCore.CameraControllingEntityPlugin
             }
         }
 
-        private string GenerateTargetsCodeGen(IElement nosContainer, NamedObjectSave nos, ReferencedFileSave arg3)
+        private string GenerateTargetsCodeGen(IElement nosContainer, NamedObjectSave nos, ReferencedFileSave arg3, string memberName)
         {
             var value =
                 nos.GetCustomVariable(nameof(FlatRedBall.Entities.CameraControllingEntity.Targets))?.Value as string;

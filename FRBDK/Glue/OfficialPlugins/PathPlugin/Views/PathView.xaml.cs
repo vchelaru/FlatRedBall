@@ -1,5 +1,6 @@
 ﻿using OfficialPlugins.PathPlugin.Managers;
 using OfficialPlugins.PathPlugin.ViewModels;
+using OfficialPlugins.VariableDisplay;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +46,10 @@ namespace OfficialPlugins.PathPlugin.Views
             {
                 instanceMember = value;
                 // update view model
-
+                var asDataGridItem = value as DataGridItem;
+                var variableName = asDataGridItem.UnmodifiedVariableName;
+                // name must be set before updating the VM
+                ViewModel.VariableName = variableName;
                 ViewModelManager.UpdateViewModelToModel();
             }
         }

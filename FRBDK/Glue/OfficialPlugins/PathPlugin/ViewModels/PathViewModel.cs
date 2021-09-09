@@ -9,6 +9,8 @@ namespace OfficialPlugins.PathPlugin.ViewModels
 {
     public class PathViewModel : ViewModel
     {
+        public string VariableName { get; set; }
+
         public bool UpdateModelOnChanges { get; set; } = true;
 
         public ObservableCollection<PathSegmentViewModel> PathSegments

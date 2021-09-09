@@ -54,7 +54,8 @@ namespace FlatRedBall.Glue.Elements
 
         [XmlIgnore]
         [JsonIgnore]
-        public Func<IElement, NamedObjectSave, ReferencedFileSave, string> CustomGenerationFunc;
+        // The second to last string is the name of the variable, which may be a tunneled variable
+        public Func<IElement, NamedObjectSave, ReferencedFileSave, string, string> CustomGenerationFunc;
 
 
         /// <summary>

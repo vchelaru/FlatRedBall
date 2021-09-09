@@ -22,12 +22,14 @@ namespace OfficialPlugins.PathPlugin.Managers
         {
             get
             {
-                var variable = nos.GetCustomVariable(AssetTypeInfoManager.PathsVariableName);
+                var variableName = MainViewModel?.VariableName ?? AssetTypeInfoManager.PathsVariableName;
+
+                var variable = nos.GetCustomVariable(variableName);
 
                 if(variable == null)
                 {
                     variable = new CustomVariableInNamedObject();
-                    variable.Member = AssetTypeInfoManager.PathsVariableName;
+                    variable.Member = variableName;
                     variable.Type = "string";
                     variable.Value = "";
                     nos.InstructionSaves.Add(variable);

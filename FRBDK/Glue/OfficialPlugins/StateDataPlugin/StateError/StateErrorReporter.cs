@@ -50,7 +50,7 @@ namespace OfficialPlugins.StateDataPlugin.StateError
                         var variableInElement = nosElement.CustomVariables
                             .FirstOrDefault(item => item.Name == variable.Member);
 
-                        if(variableInElement.GetIsVariableState(nosElement))
+                        if(variableInElement?.GetIsVariableState(nosElement) == true)
                         {
                             int m = 3;
                             var elementVariableType = variableInElement.Type;
