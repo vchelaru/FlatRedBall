@@ -44,16 +44,34 @@ namespace OfficialPlugins.PathPlugin.Managers
 
         static string FloatToString(float value) => value.ToString(CultureInfo.InvariantCulture);
 
-        private static string GeneratePaths(IElement element, NamedObjectSave nos, ReferencedFileSave rfs)
+        private static string GeneratePaths(IElement element, NamedObjectSave nos, ReferencedFileSave rfs, string memberName)
         {
             StringBuilder toReturn = new StringBuilder();
-            var variable = nos.GetCustomVariable(PathsVariableName)?.Value as string;
 
-            toReturn.AppendLine($"{nos.InstanceName}.Clear();");
+            var variable = nos.GetCustomVariable(memberName ?? PathsVariableName);
 
-            if(!string.IsNullOrEmpty(variable))
+            var nosElement = ObjectFinder.Self.GetElement(nos.SourceClassType);
+
+            string ownerName = nos.InstanceName;
+
+            if(nosElement != null)
             {
-                var deserialized = JsonConvert.DeserializeObject<List<PathSegment>>(variable);
+                // this is a tunneled variable
+                var customVariable = nosElement.CustomVariables.Find(item => item.Name == memberName);
+
+                if(!string.IsNullOrEmpty(customVariable?.SourceObject))
+                {
+                    ownerName += "." + customVariable.SourceObject;
+                }
+            }
+
+            var variableValue = variable?.Value as string;
+
+            toReturn.AppendLine($"{ownerName}.Clear();");
+
+            if(!string.IsNullOrEmpty(variableValue))
+            {
+                var deserialized = JsonConvert.DeserializeObject<List<PathSegment>>(variableValue);
 
                 foreach(var item in deserialized)
                 {
@@ -61,7 +79,7 @@ namespace OfficialPlugins.PathPlugin.Managers
                     var endY = FloatToString(item.EndY);
                     if(item.SegmentType == SegmentType.Line)
                     {
-                        toReturn.AppendLine($"{nos.InstanceName}.LineToRelative({endX}, {endY});");
+                        toReturn.AppendLine($"{ownerName}.LineToRelative({endX}, {endY});");
                         //LineToRelative(float x, float y)
                     }
                     else if(item.SegmentType == SegmentType.Arc)
@@ -70,7 +88,7 @@ namespace OfficialPlugins.PathPlugin.Managers
 
                         //ArcToRelative(float endX, float endY, float signedAngle)
                         toReturn.AppendLine(
-                            $"{nos.InstanceName}.ArcToRelative({endX}, {endY}, Microsoft.Xna.Framework.MathHelper.ToRadians({signedAngle}));");
+                            $"{ownerName}.ArcToRelative({endX}, {endY}, Microsoft.Xna.Framework.MathHelper.ToRadians({signedAngle}));");
                     }
                     else
                     {

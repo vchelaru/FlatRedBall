@@ -1199,12 +1199,12 @@ namespace FlatRedBall.Glue.CodeGeneration
                     usesStandardCodeGen = false;
                 }
 
+                var nosOwner = ObjectFinder.Self.GetElementContaining(namedObject);
                 if(foundVariableDefinition?.CustomGenerationFunc != null)
                 {
-                    var nosOwner = ObjectFinder.Self.GetElementContaining(namedObject);
                     if(nosOwner != null)
                     {
-                        var line = foundVariableDefinition.CustomGenerationFunc(nosOwner, namedObject, null);
+                        var line = foundVariableDefinition.CustomGenerationFunc(nosOwner, namedObject, null, instructionSave.Member);
                         if(!string.IsNullOrWhiteSpace(line))
                         {
                             codeBlock.Line(line);
@@ -1227,7 +1227,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     IElement rootElementForVariable = entitySave;
                     string rootVariable = instructionSave.Member;
-
+                    var handledByTunneledCustomCodeGeneration = false;
                     while (customVariable != null && customVariable.IsTunneling)
                     {
                         NamedObjectSave referencedNamedObject = rootElementForVariable.GetNamedObjectRecursively(customVariable.SourceObject);
@@ -1240,6 +1240,19 @@ namespace FlatRedBall.Glue.CodeGeneration
                         }
                         else
                         {
+                            var nosAti = referencedNamedObject?.GetAssetTypeInfo();
+                            var nosAtiVariableDefinition = nosAti.VariableDefinitions?.FirstOrDefault(item => item.Name == customVariable.SourceObjectProperty);
+
+                            if (nosAtiVariableDefinition?.CustomGenerationFunc != null)
+                            {
+                                handledByTunneledCustomCodeGeneration = true;
+                                var line = nosAtiVariableDefinition.CustomGenerationFunc(nosOwner, namedObject, null, customVariable.Name);
+                                if (!string.IsNullOrWhiteSpace(line))
+                                {
+                                    codeBlock.Line(line);
+                                }
+                            }
+
                             break;
                         }
                     }
@@ -1249,7 +1262,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     bool shouldSkipGeneration = customVariable?.GetIsVariableState(entitySave) == true &&
                         (instructionSave.Value as string) == "<NONE>";
 
-                    if(!shouldSkipGeneration)
+                    if(!shouldSkipGeneration && !handledByTunneledCustomCodeGeneration)
                     {
                         AppendCustomVariableInInstanceStandard(namedObject, codeBlock, instructionSave, ati, entitySave, customVariable, rootVariable);
 

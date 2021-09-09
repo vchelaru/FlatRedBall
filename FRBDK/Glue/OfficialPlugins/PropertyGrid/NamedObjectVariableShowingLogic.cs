@@ -191,7 +191,7 @@ namespace OfficialPlugins.VariableDisplay
             variableDefinition = variableDefinition ?? ati?.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
             InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember, ati, variableDefinition);
 
-            var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember);
+            var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember, variableDefinition);
 
             if (instanceMember != null)
             {
@@ -407,36 +407,41 @@ namespace OfficialPlugins.VariableDisplay
             return categories;
         }
 
-        private static MemberCategory GetOrCreateCategoryToAddTo(List<MemberCategory> categories, AssetTypeInfo ati, TypedMemberBase typedMember)
+        private static MemberCategory GetOrCreateCategoryToAddTo(List<MemberCategory> categories, AssetTypeInfo ati,
+            TypedMemberBase typedMember, VariableDefinition variableDefinition = null)
         {
             // By defaut make the last category get used (this is "Variables")
             var categoryToAddTo = categories.Last();
             // If there is an AssetTypeInfo...
-            if (ati != null)
+
+            string categoryName = null;
+
+            if (ati != null || variableDefinition != null)
             {
                 // ... see if there is avariable definition for this variable...
-                var foundVariableDefinition = ati.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
+                var foundVariableDefinition = variableDefinition ??  ati.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
                 if (foundVariableDefinition != null)
                 {
                     //... if so, see the category that it's a part of...
-                    string categoryName = foundVariableDefinition.Category;
-
-                    if (!string.IsNullOrEmpty(categoryName))
-                    {
-                        //... if a category is defined, see if we have a MemberCategory that we've created for it...
-                        categoryToAddTo = categories.FirstOrDefault(item => item.Name == categoryName);
-
-                        if (categoryToAddTo == null)
-                        {
-                            //... if not, make one, and insert it before the last:
-                            categoryToAddTo = new MemberCategory(categoryName);
-                            categoryToAddTo.FontSize = 14;
-
-                            categories.Insert(categories.Count - 1, categoryToAddTo);
-                        }
-                    }
+                    categoryName = foundVariableDefinition.Category;
                 }
             }
+
+            if (!string.IsNullOrEmpty(categoryName))
+            {
+                //... if a category is defined, see if we have a MemberCategory that we've created for it...
+                categoryToAddTo = categories.FirstOrDefault(item => item.Name == categoryName);
+
+                if (categoryToAddTo == null)
+                {
+                    //... if not, make one, and insert it before the last:
+                    categoryToAddTo = new MemberCategory(categoryName);
+                    categoryToAddTo.FontSize = 14;
+
+                    categories.Insert(categories.Count - 1, categoryToAddTo);
+                }
+            }
+
             return categoryToAddTo;
         }
 
