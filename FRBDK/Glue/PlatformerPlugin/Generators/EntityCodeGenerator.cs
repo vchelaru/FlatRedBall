@@ -514,6 +514,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 
                 this.XAcceleration = accelerationMagnitude * System.Math.Sign(desiredSpeed - XVelocity);
             }
+            groundHorizontalVelocity = 0;
         }
 
         private void ApplyClimbingInput()
@@ -728,7 +729,9 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
             if (isFirstCollisionOfTheFrame)
             {
-                groundHorizontalVelocity = 0;
+                // This was set here, but if it is, custom collision (called on non-active collision relationships) won't update 
+                // this value and have it be set. Instead, we reset this after applying it
+                //groundHorizontalVelocity = 0;
                 WasOnGroundLastFrame = mIsOnGround;
                 mLastCollisionTime = FlatRedBall.TimeManager.CurrentTime;
                 PositionBeforeLastPlatformerCollision = this.Position;

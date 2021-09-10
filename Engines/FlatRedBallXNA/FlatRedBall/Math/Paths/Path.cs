@@ -338,29 +338,38 @@ namespace FlatRedBall.Math.Paths
             var spilloverLength = 0f;
             PathSegment segmentToUse = null;
 
-            for(int i = 0; i < Segments.Count; i++)
+            if (length >= TotalLength && Segments.Count > 0)
             {
-                var segmentLength = Segments[i].CalculatedLength;
-                if(lengthSoFar + segmentLength > length)
-                {
-                    segmentToUse = Segments[i];
-                    spilloverLength = length - lengthSoFar;
-                    break;
-                }
-                else
-                {
-                    lengthSoFar += segmentLength;
-                }
-            }
-
-            if(segmentToUse != null)
-            {
-                return segmentToUse.PointAtLength(spilloverLength);
+                var segment = Segments[Segments.Count - 1];
+                return segment.PointAtLength(segment.CalculatedLength);
             }
             else
             {
-                return Vector2.Zero; 
+                for(int i = 0; i < Segments.Count; i++)
+                {
+                    var segmentLength = Segments[i].CalculatedLength;
+                    if(lengthSoFar + segmentLength > length)
+                    {
+                        segmentToUse = Segments[i];
+                        spilloverLength = length - lengthSoFar;
+                        break;
+                    }
+                    else
+                    {
+                        lengthSoFar += segmentLength;
+                    }
+                }
+
+                if(segmentToUse != null)
+                {
+                    return segmentToUse.PointAtLength(spilloverLength);
+                }
+                else
+                {
+                    return Vector2.Zero; 
+                }
             }
+
         }
     }
 }

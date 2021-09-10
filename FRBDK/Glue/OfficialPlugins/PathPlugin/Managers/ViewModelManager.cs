@@ -123,7 +123,10 @@ namespace OfficialPlugins.PathPlugin.Managers
                 pathSegments.Add(pathSegment);
             }
 
-            GlueCommands.Self.DoOnUiThread(() => Variable.Value = JsonConvert.SerializeObject(pathSegments));
+            GlueCommands.Self.DoOnUiThread(() =>
+            {
+                Variable.Value = JsonConvert.SerializeObject(pathSegments);
+            });
         }
 
         private static void ApplyVmToSegment(PathSegmentViewModel segmentVm, PathSegment segment)

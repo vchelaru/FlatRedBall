@@ -2671,7 +2671,7 @@ namespace FlatRedBallAddOns.Entities
 
                 var nosAti = owner.GetAssetTypeInfo();
 
-                var variableDefinition = nosAti.VariableDefinitions.Find(item => item.Name == customVariable.SourceObjectProperty);
+                var variableDefinition = nosAti?.VariableDefinitions.Find(item => item.Name == customVariable.SourceObjectProperty);
 
                 if(variableDefinition?.CustomGenerationFunc != null)
                 {
