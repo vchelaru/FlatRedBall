@@ -314,6 +314,11 @@ namespace FlatRedBall.Screens
             }
         }
 
+        public virtual void ActivityEditMode()
+        {
+
+        }
+
         Type asyncScreenTypeToLoad = null;
 
 		public void StartAsyncLoad(Type type, Action afterLoaded = null)

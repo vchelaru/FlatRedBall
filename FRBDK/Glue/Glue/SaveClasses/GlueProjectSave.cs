@@ -39,7 +39,8 @@ namespace FlatRedBall.Glue.SaveClasses
             HasFormsObject = 4, // Not sure if this is exact, but it should be maybe around here. This will make old projects work
             CsvInheritanceSupport = 5,
             NugetPackageInCsproj = 6,
-            SupportsEditMode = 7
+            SupportsEditMode = 7,
+            ScreensHaveActivityEditMode = 8
         }
 
         #endregion

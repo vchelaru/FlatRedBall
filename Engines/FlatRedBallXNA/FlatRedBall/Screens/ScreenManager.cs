@@ -170,6 +170,7 @@ namespace FlatRedBall.Screens
             }
             else
             {
+                mCurrentScreen.ActivityEditMode();
                 if(GlueViewLoadException != null)
                 {
                     FlatRedBall.Debugging.Debugger.Write(GlueViewLoadException.ToString());

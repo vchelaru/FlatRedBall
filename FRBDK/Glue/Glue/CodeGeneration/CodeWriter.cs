@@ -288,6 +288,11 @@ namespace FlatRedBallAddOns.Entities
 
             GenerateActivity(codeBlock, element);
 
+            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.ScreensHaveActivityEditMode)
+            {
+                GenerateActivityEditMode(codeBlock, element);
+            }
+
             GenerateDestroy(element, codeBlock);
 
             GenerateMethods(codeBlock, element);
@@ -1169,10 +1174,9 @@ namespace FlatRedBallAddOns.Entities
             }
             #endregion
 
-
-
             if (saveObject is ScreenSave)
             {
+
 
                 currentBlock = currentBlock
                     .If("!IsPaused");
@@ -1210,6 +1214,49 @@ namespace FlatRedBallAddOns.Entities
             
         }
 
+        static void GenerateActivityEditMode(ICodeBlock codeBlock, IElement saveObject)
+        {
+
+            string activityPre = "public virtual void";
+            string activityParameters = "";
+
+            var inherits = saveObject is ScreenSave || saveObject.InheritsFromElement();
+
+            if (inherits)
+            {
+                activityPre = "public override void";
+            }
+            
+
+            var currentBlock = codeBlock.Function(activityPre, "ActivityEditMode", activityParameters);
+
+            if(saveObject is ScreenSave)
+            {
+                currentBlock = currentBlock.If("FlatRedBall.Screens.ScreenManager.IsInEditMode");
+
+            }
+            foreach(var nos in saveObject.NamedObjects)
+            {
+                if(!nos.DefinedByBase && !nos.IsDisabled)
+                {
+                    if(nos.SourceType == SourceType.Entity)
+                    {
+                        currentBlock.Line($"{nos.InstanceName}.ActivityEditMode();");
+                    }
+                    else if(nos.IsList && ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType) != null)
+                    {
+                        var foreachBlock = currentBlock.ForEach($"var item in {nos.InstanceName}");
+                        foreachBlock.Line($"item.ActivityEditMode();");
+                    }
+                }
+            }
+            currentBlock.Line("CustomActivityEditMode();");
+
+            if(inherits)
+            {
+                currentBlock.Line("base.ActivityEditMode();");
+            }
+        }
 
         internal static ICodeBlock GenerateGeneralActivity(ICodeBlock codeBlock, IElement saveObject)
         {
@@ -2445,6 +2492,8 @@ namespace FlatRedBallAddOns.Entities
             {
                 currentBlock = codeGenerator.GenerateAdditionalMethods(currentBlock, element);
             }
+
+            currentBlock.Line("partial void CustomActivityEditMode();");
 
             foreach (PluginManager pluginManager in PluginManager.GetInstances())
             {
