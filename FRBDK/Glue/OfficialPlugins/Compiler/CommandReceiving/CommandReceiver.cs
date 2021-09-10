@@ -385,6 +385,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 {
                     GlueCommands.Self.DoOnUiThread(() =>
                     {
+                        RefreshManager.Self.IgnoreNextObjectSelect = true;
+
                         GlueState.Self.CurrentNamedObjectSave = nos;
                         GlueCommands.Self.DialogCommands.FocusTab("Variables");
                     });
