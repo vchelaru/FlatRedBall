@@ -371,5 +371,23 @@ namespace FlatRedBall.Math.Paths
             }
 
         }
+
+        public Vector2 PointAtSegmentIndex(int index)
+        {
+            var segment = Segments[index];
+            return new Vector2(segment.StartX, segment.StartY);
+        }
+
+        public float LengthAtSegmentIndex(int index)
+        {
+            var lengthSoFar = 0f;
+
+            for(int i = 0; i < index; i++)
+            {
+                lengthSoFar += Segments[i].CalculatedLength;
+            }
+
+            return lengthSoFar;
+        }
     }
 }
