@@ -748,8 +748,19 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
             if(isCloudCollision)
             {
-                // need to be moving down
-                canCheckCollision = velocityBeforeCollision.Y < 0 &&
+                // need to be moving down...
+                // Update September 10, 2021
+                // But what if we're standing 
+                // on a platform that is moving
+                // upward? This moving platform may
+                // be a cloud collision, and we should
+                // still perform collision. Therefore, we 
+                // should probably do cloud collision if...
+                // * We are on the ground OR moving downward 
+                //    --and--
+                // * Not ignoring fallthrough
+                //canCheckCollision = velocityBeforeCollision.Y < 0 &&
+                canCheckCollision = (velocityBeforeCollision.Y < 0 || WasOnGroundLastFrame) &&
                     // and not ignoring fallthrough
                     cloudCollisionFallThroughY == null;
 
