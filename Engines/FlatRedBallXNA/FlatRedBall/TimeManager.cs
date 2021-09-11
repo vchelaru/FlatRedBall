@@ -369,16 +369,14 @@ namespace FlatRedBall
 
             if (showTotal)
 			{
-#if !SILVERLIGHT
 				if (TimedSectionReportingUnit == TimeMeasurementUnit.Millisecond)
 				{
-					stringBuilder.Append("Total Timed: " + ((TimeManager.SystemCurrentTime - TimeManager.mCurrentTimeForTimedSections) * 1000.0f).ToString("f2"));
+					stringBuilder.Append("Total Timed: " + ((TimeManager.CurrentSystemTime - TimeManager.mCurrentTimeForTimedSections) * 1000.0f).ToString("f2"));
 				}
 				else
 				{
-					stringBuilder.Append("Total Timed: " + (TimeManager.SystemCurrentTime - TimeManager.mCurrentTimeForTimedSections));
+					stringBuilder.Append("Total Timed: " + (TimeManager.CurrentSystemTime - TimeManager.mCurrentTimeForTimedSections));
 				}
-#endif
 			}
 
             return stringBuilder.ToString();
@@ -388,10 +386,9 @@ namespace FlatRedBall
 
         public static void PersistentTimeSection(string label)
         {
-#if !SILVERLIGHT
             if (mIsPersistentTiming)
             {
-                double currentTime = SystemCurrentTime;
+                double currentTime = CurrentSystemTime;
                 if (mPersistentSections.ContainsKey(label))
                 {
 					if (TimedSectionReportingUnit == TimeMeasurementUnit.Millisecond)
@@ -417,7 +414,6 @@ namespace FlatRedBall
 
                 mLastPersistentTime = currentTime;
             }
-#endif
         }
 
 
@@ -427,9 +423,8 @@ namespace FlatRedBall
             mPersistentSections.Clear();
 
             mIsPersistentTiming = true;
-#if !SILVERLIGHT
-            mLastPersistentTime = SystemCurrentTime;
-#endif
+
+            mLastPersistentTime = CurrentSystemTime;
         }
 
         /// <summary>
@@ -459,16 +454,14 @@ namespace FlatRedBall
         {
             mSumSections.Clear();
             mSumSectionHitCount.Clear();
-#if !SILVERLIGHT
-            mLastSumTime = SystemCurrentTime;
-#endif
+
+            mLastSumTime = CurrentSystemTime;
         }
 
 
         public static void SumTimeSection(string label)
         {
-#if !SILVERLIGHT
-            double currentTime = SystemCurrentTime;
+            double currentTime = CurrentSystemTime;
             if (mSumSections.ContainsKey(label))
             {
                 mSumSections[label] += currentTime - mLastSumTime;
@@ -480,15 +473,12 @@ namespace FlatRedBall
                 //mSumSectionHitCount.Add(label, 1);
             }
             mLastSumTime = currentTime;
-#endif
         }
 
 
         public static void SumTimeRefresh()
         {
-#if !SILVERLIGHT
-            mLastSumTime = SystemCurrentTime;
-#endif
+            mLastSumTime = CurrentSystemTime;
         }
 
         #region XML Docs
@@ -528,8 +518,7 @@ namespace FlatRedBall
                 Monitor.Enter(sections);
 #endif
 
-#if !SILVERLIGHT
-                double f = (SystemCurrentTime - mCurrentTimeForTimedSections);
+                double f = (CurrentSystemTime - mCurrentTimeForTimedSections);
                 if (TimedSectionReportingUnit == TimeMeasurementUnit.Millisecond)
                 {
                     f *= 1000.0f;
@@ -541,7 +530,6 @@ namespace FlatRedBall
 
                 sections.Add(f);
                 sectionLabels.Add(label);
-#endif
 
 #if !SILVERLIGHT && !WINDOWS_PHONE
                 Monitor.Exit(sections);
@@ -627,7 +615,7 @@ namespace FlatRedBall
 
             if (useSystemCurrentTime)
             {
-                double systemCurrentTime = SystemCurrentTime;
+                double systemCurrentTime = CurrentSystemTime;
                 elapsedTime = systemCurrentTime - mLastCurrentTime;
                 mLastCurrentTime = systemCurrentTime;
                 //stop big frame times
@@ -663,7 +651,7 @@ namespace FlatRedBall
             mSecondDifference = (float)(elapsedTime);
             CurrentTime += elapsedTime;
 
-            double currentSystemTime = SystemCurrentTime + mSecondDifference;
+            double currentSystemTime = CurrentSystemTime + mSecondDifference;
 
             mSecondDifferenceSquaredDividedByTwo = (mSecondDifference * mSecondDifference) / 2.0f;
             mCurrentTimeForTimedSections = currentSystemTime;

@@ -384,13 +384,6 @@ namespace FlatRedBall.Instructions.Reflection
             FieldInfo fieldInfo = target.GetType().GetField(
                 name);
 
-#if DEBUG && !IOS && !ANDROID && !WINDOWS_8 && !UWP
-            if (value.GetType().IsValueType && 
-                value.GetType().IsPrimitive == false)
-            {
-                throw new NotImplementedException();
-            }
-#endif
             fieldInfo.SetValue(target, value);
 
 #else

@@ -1,7 +1,9 @@
-﻿using FlatRedBall.Utilities;
+﻿using FlatRedBall.Instructions.Reflection;
+using FlatRedBall.Utilities;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 // not built in to .NET until .net 5...
@@ -403,7 +405,7 @@ namespace FlatRedBall.Math.Paths
 
         public void FromJson(string serializedSegments)
         {
-            var deserialized = Newtonsoft.Json.JsonConvert.DeserializeObject<List<PathSegment>>(serializedSegments);
+            var deserialized = ParseToSegmentList(serializedSegments);
             Clear();
             foreach (var item in deserialized)
             {
@@ -424,6 +426,113 @@ namespace FlatRedBall.Math.Paths
                 {
                     // Unknown segment type...
                 }
+            }
+        }
+
+        private List<PathSegment> ParseToSegmentList(string serializedSegments)
+        {
+            var toReturn = new List<PathSegment>();
+            // example:
+            /*
+             * [
+             *  {
+             *      "SegmentType":0,
+             *      "IsRelative":false,
+             *      "StartX":0.0,
+             *      "StartY":0.0,
+             *      "EndX":1.0,
+             *      "EndY":96.0,
+             *      "ArcAngle":0.0,
+             *      "CircleCenter":"0, 0",
+             *      "CalculatedLength":0.0,
+             *      "AngleUnit":0
+             *  },
+             *  {
+             *      "SegmentType":1,"IsRelative":false,"StartX":0.0,"StartY":0.0,"EndX":60.0,"EndY":0.0,"ArcAngle":-180.0,"CircleCenter":"0, 0",
+             *      "CalculatedLength":0.0,"AngleUnit":0
+             *  }
+             *  ,
+             *  {"SegmentType":0,"IsRelative":false,"StartX":0.0,"StartY":0.0,"EndX":0.0,"EndY":-96.0,"ArcAngle":0.0,"CircleCenter":"0, 0","CalculatedLength":0.0,"AngleUnit":0},{"SegmentType":1,"IsRelative":false,"StartX":0.0,"StartY":0.0,"EndX":-58.0,"EndY":0.0,"ArcAngle":-180.0,"CircleCenter":"0, 0","CalculatedLength":0.0,"AngleUnit":0}]
+             * 
+             */
+            // remove [ and ] at the dstart and end:
+            serializedSegments = serializedSegments.Substring(1, serializedSegments.Length - 2);
+
+            // split on }
+            var segments = serializedSegments.Split('}')
+                .Select(item =>
+                {
+                    if(item?.Length > 0)
+                    {
+                        return item.Substring(1).Replace("{", "");
+                    }
+                    else
+                    {
+                        return item;
+                    }
+                })
+                .Where(item => !string.IsNullOrEmpty(item))
+                .ToArray();
+
+
+            foreach(var segment in segments)
+            {
+                var pathSegment = new PathSegment();
+
+                var splitNameValues = segment.Split('\"')
+                    .Where(item => !string.IsNullOrEmpty(item) && item != "," && item != ":")
+                    .Select(item =>
+                    {
+                        if(item.StartsWith(":"))
+                        {
+                            item = item.Substring(1);
+                        }
+                        if(item.EndsWith(","))
+                        {
+                            item = item.Substring(0, item.Length - 1);
+                        }
+                        return item;
+                    })
+                    .ToArray();
+
+                for(int i = 0; i < splitNameValues.Length; i+= 2)
+                {
+                    AssignValueOnSegment(pathSegment, splitNameValues[i], splitNameValues[i + 1]);
+                }
+
+                toReturn.Add(pathSegment);
+            }
+
+            
+
+            return toReturn;
+        }
+
+        private void AssignValueOnSegment(PathSegment segment, string propertyName, string v2)
+        {
+            object parsedValue = null;
+            var apply = false;
+            switch(propertyName)
+            {
+                case nameof(PathSegment.SegmentType):
+                    parsedValue = (SegmentType)int.Parse(v2);
+                    apply = true;
+                    break;
+                case nameof(PathSegment.EndX):
+                case nameof(PathSegment.EndY):
+                case nameof(PathSegment.ArcAngle):
+                    parsedValue = float.Parse(v2);
+                    apply = true;
+                    break;
+                case nameof(PathSegment.AngleUnit):
+                    parsedValue = (AngleUnit)int.Parse(v2);
+                    apply = true;
+                    break;
+            }
+
+            if(apply)
+            {
+                LateBinder.SetValueStatic(segment, propertyName, parsedValue);
             }
         }
     }
