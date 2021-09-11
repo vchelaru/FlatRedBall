@@ -66,7 +66,7 @@ namespace FlatRedBall.Glue.Elements
         /// </summary>
         [XmlIgnore]
         [JsonIgnore]
-        public Action<IElement, CustomVariable, ICodeBlock> CustomPropertyGenerationFunc;
+        public Func<IElement, CustomVariable, string> CustomPropertySetFunc;
 
 
         /// <summary>
@@ -87,6 +87,8 @@ namespace FlatRedBall.Glue.Elements
         [JsonIgnore]
         public Func<IElement, NamedObjectSave, ReferencedFileSave, List<string>> CustomGetForcedOptionFunc;
 
+
+        public bool HasGetter { get; set; } = true;
 
         [XmlIgnore]
         [JsonIgnore]

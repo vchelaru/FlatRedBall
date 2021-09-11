@@ -386,6 +386,8 @@ namespace FlatRedBall.Graphics
 
         #region Properties
 
+
+
         #region Public Properties
 
         //public static RendererDiagnosticSettings RendererDiagnosticSettings

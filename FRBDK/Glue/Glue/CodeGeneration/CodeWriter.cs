@@ -2714,18 +2714,6 @@ namespace FlatRedBallAddOns.Entities
                 }
             }
 
-            if(!string.IsNullOrEmpty(customVariable.SourceObject))
-            {
-                var owner = element.GetNamedObjectRecursively(customVariable.SourceObject);
-                var nosAti = owner.GetAssetTypeInfo();
-                var variableDefinition = nosAti?.VariableDefinitions.Find(item => item.Name == customVariable.SourceObjectProperty);
-
-                if(variableDefinition?.CustomGenerationFunc != null)
-                {
-                    return true;
-                }
-            }
-
             return false;
         }
 

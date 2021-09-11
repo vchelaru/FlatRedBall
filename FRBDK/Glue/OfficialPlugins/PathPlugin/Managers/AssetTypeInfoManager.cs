@@ -35,7 +35,8 @@ namespace OfficialPlugins.PathPlugin.Managers
             pathsVariableDefinition.Name = "Paths";
             pathsVariableDefinition.UsesCustomCodeGeneration = true;
             pathsVariableDefinition.CustomGenerationFunc = GeneratePaths;
-            pathsVariableDefinition.CustomPropertyGenerationFunc = GenerateProperty;
+            pathsVariableDefinition.CustomPropertySetFunc= GenerateProperty;
+            pathsVariableDefinition.HasGetter = false;
 
             pathsVariableDefinition.Category = "Path";
             pathsVariableDefinition.PreferredDisplayer = typeof(PathView);
@@ -45,13 +46,9 @@ namespace OfficialPlugins.PathPlugin.Managers
             return ati;
         }
 
-        private static void GenerateProperty(IElement arg1, CustomVariable customVariable, ICodeBlock codeBlock)
+        private static string GenerateProperty(IElement arg1, CustomVariable customVariable)
         {
-            var prop = codeBlock.Property($"public string", customVariable.Name);
-
-            var setter = prop.Set();
-
-            setter.Line($"{customVariable.SourceObject}.FromJson(value);");
+            return $"{customVariable.SourceObject}.FromJson(value);";
         }
 
         static string FloatToString(float value) => value.ToString(CultureInfo.InvariantCulture);

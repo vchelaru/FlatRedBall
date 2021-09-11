@@ -125,6 +125,7 @@ namespace OfficialPlugins.PathPlugin.Managers
             foreach(var segmentVm in MainViewModel.PathSegments)
             {
                 var pathSegment = new PathSegment();
+                pathSegment.AngleUnit = AngleUnit.Degrees;
                 ApplyVmToSegment(segmentVm, pathSegment);
                 pathSegments.Add(pathSegment);
             }

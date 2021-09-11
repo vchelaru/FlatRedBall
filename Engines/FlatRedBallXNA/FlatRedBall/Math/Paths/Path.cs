@@ -17,6 +17,12 @@ namespace FlatRedBall.Math.Paths
         Arc
     }
 
+    public enum AngleUnit
+    {
+        Degrees,
+        Radians
+    }
+
     #endregion
 
     #region PathSegment Class
@@ -39,6 +45,8 @@ namespace FlatRedBall.Math.Paths
         public Vector2 CircleCenter;
 
         public float CalculatedLength;
+
+        public AngleUnit AngleUnit;
 
         public Vector2 PointAtLength(float lengthFromStart)
         {
@@ -395,12 +403,8 @@ namespace FlatRedBall.Math.Paths
 
         public void FromJson(string serializedSegments)
         {
-            var ms = new System.IO.MemoryStream(Encoding.UTF8.GetBytes(serializedSegments));
-            var ser = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(List<PathSegment>));
-            var deserialized =
-                 ser.ReadObject(ms) as List<PathSegment>;
-            //var deserialized = JsonConvert.DeserializeObject<List<PathSegment>>(variableValue);
-
+            var deserialized = Newtonsoft.Json.JsonConvert.DeserializeObject<List<PathSegment>>(serializedSegments);
+            Clear();
             foreach (var item in deserialized)
             {
                 if (item.SegmentType == SegmentType.Line)
@@ -409,7 +413,12 @@ namespace FlatRedBall.Math.Paths
                 }
                 else if (item.SegmentType == SegmentType.Arc)
                 {
-                    ArcToRelative(item.EndX, item.EndY, item.ArcAngle);
+                    var angle = item.ArcAngle;
+                    if(item.AngleUnit == AngleUnit.Degrees)
+                    {
+                        angle = Microsoft.Xna.Framework.MathHelper.ToRadians(angle);
+                    }
+                    ArcToRelative(item.EndX, item.EndY, angle);
                 }
                 else
                 {

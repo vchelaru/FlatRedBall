@@ -60,13 +60,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                     variableDefinition = nosAti?.VariableDefinitions.Find(item => item.Name == customVariable.SourceObjectProperty);
                 }
 
-                if(variableDefinition?.CustomPropertyGenerationFunc != null)
+                if (CodeWriter.IsVariableHandledByCustomCodeGenerator(customVariable, element) == false)
                 {
-                    variableDefinition.CustomPropertyGenerationFunc(element, customVariable, codeBlock);
-                }
-                else if (CodeWriter.IsVariableHandledByCustomCodeGenerator(customVariable, element) == false)
-                {
-                    AppendCodeForMember(element, codeBlock, customVariable);
+                    AppendCodeForMember(element, codeBlock, customVariable, variableDefinition);
                 }
             }
             return codeBlock;
@@ -163,7 +159,8 @@ namespace FlatRedBall.Glue.CodeGeneration
             
 
 
-        private static ICodeBlock AppendCodeForMember(IElement saveObject, ICodeBlock codeBlock, CustomVariable customVariable)
+        private static ICodeBlock AppendCodeForMember(IElement saveObject, ICodeBlock codeBlock, CustomVariable customVariable,
+            VariableDefinition variableDefinition)
         {
             // Regarding customVariable.IsTunneling -
             // If a variable is tunneling, then we want to generate code for DefinedByBase - this means
@@ -175,7 +172,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 #region if Tunneled Variable
                 if (customVariable.IsTunneling && IsSourceObjectEnabled(saveObject, customVariable))
                 {
-                    AppendPropertyForTunneledVariable(saveObject, codeBlock, customVariable);
+                    AppendPropertyForTunneledVariable(saveObject, codeBlock, customVariable, variableDefinition);
 
                 }
                 #endregion
@@ -243,7 +240,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static void AppendPropertyForTunneledVariable(IElement saveObject, ICodeBlock codeBlock, CustomVariable customVariable)
+        private static void AppendPropertyForTunneledVariable(IElement saveObject, ICodeBlock codeBlock, CustomVariable customVariable, VariableDefinition variableDefinition)
         {
             NamedObjectSave referencedNos = saveObject.GetNamedObjectRecursively(customVariable.SourceObject);
 
@@ -274,7 +271,8 @@ namespace FlatRedBall.Glue.CodeGeneration
                 if (referencedNos.SourceType == SourceType.File &&
                     FileManager.GetExtension(referencedNos.SourceFile) == "scnx" &&
                     referencedNos.SourceName.StartsWith("Entire File") &&
-                    customVariable.SourceObjectProperty == "Visible")
+                    customVariable.SourceObjectProperty == "Visible" ||
+                    variableDefinition?.HasGetter == false)
                 {
                     hasGetter = false;
                 }
@@ -295,14 +293,15 @@ namespace FlatRedBall.Glue.CodeGeneration
                     WriteGetterForProperty(customVariable, saveObject, prop);
                 }
 
-                WriteSetterForProperty(saveObject, customVariable, prop, isVisibleSetterOnList);
+                WriteSetterForProperty(saveObject, customVariable, prop, isVisibleSetterOnList, variableDefinition);
 
                 NamedObjectSaveCodeGenerator.AddEndIfIfNecessary(codeBlock, referencedNos);
 
             }
         }
 
-        private static void WriteSetterForProperty(IElement saveObject, CustomVariable customVariable, ICodeBlock prop, bool isVisibleSetterOnList)
+        private static void WriteSetterForProperty(IElement saveObject, CustomVariable customVariable, ICodeBlock prop, 
+            bool isVisibleSetterOnList, VariableDefinition variableDefinition)
         {
             var setter = prop.Set();
 
@@ -315,7 +314,13 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             bool addOrRemoveOnValueChange = nos.RemoveFromManagersWhenInvisible && customVariable.SourceObjectProperty == "Visible";
 
-            if (isVisibleSetterOnList)
+            if (variableDefinition?.CustomPropertySetFunc != null)
+            {
+                setter.Line(variableDefinition.CustomPropertySetFunc(saveObject, customVariable));
+            }
+
+
+            else if (isVisibleSetterOnList)
             {
                 var forLoop = setter.For($"int i = 0; i < {customVariable.SourceObject}.Count; i++");
                 forLoop.Line($"{customVariable.SourceObject}[i].Visible = value;");
