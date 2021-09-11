@@ -52,7 +52,19 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 CustomVariable customVariable = element.CustomVariables[i];
 
-                if (CodeWriter.IsVariableHandledByCustomCodeGenerator(customVariable, element) == false)
+                VariableDefinition variableDefinition = null;
+                if (!string.IsNullOrEmpty(customVariable.SourceObject))
+                {
+                    var owner = element.GetNamedObjectRecursively(customVariable.SourceObject);
+                    var nosAti = owner.GetAssetTypeInfo();
+                    variableDefinition = nosAti?.VariableDefinitions.Find(item => item.Name == customVariable.SourceObjectProperty);
+                }
+
+                if(variableDefinition?.CustomPropertyGenerationFunc != null)
+                {
+                    variableDefinition.CustomPropertyGenerationFunc(element, customVariable, codeBlock);
+                }
+                else if (CodeWriter.IsVariableHandledByCustomCodeGenerator(customVariable, element) == false)
                 {
                     AppendCodeForMember(element, codeBlock, customVariable);
                 }

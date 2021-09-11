@@ -4,6 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+// not built in to .NET until .net 5...
+//using System.Text.Json;
+
 namespace FlatRedBall.Math.Paths
 {
     #region Enums
@@ -388,6 +391,31 @@ namespace FlatRedBall.Math.Paths
             }
 
             return lengthSoFar;
+        }
+
+        public void FromJson(string serializedSegments)
+        {
+            var ms = new System.IO.MemoryStream(Encoding.UTF8.GetBytes(serializedSegments));
+            var ser = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(List<PathSegment>));
+            var deserialized =
+                 ser.ReadObject(ms) as List<PathSegment>;
+            //var deserialized = JsonConvert.DeserializeObject<List<PathSegment>>(variableValue);
+
+            foreach (var item in deserialized)
+            {
+                if (item.SegmentType == SegmentType.Line)
+                {
+                    LineToRelative(item.EndX, item.EndY);
+                }
+                else if (item.SegmentType == SegmentType.Arc)
+                {
+                    ArcToRelative(item.EndX, item.EndY, item.ArcAngle);
+                }
+                else
+                {
+                    // Unknown segment type...
+                }
+            }
         }
     }
 }

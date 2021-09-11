@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.SaveClasses;
+﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.SaveClasses;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -52,10 +53,20 @@ namespace FlatRedBall.Glue.Elements
         /// </summary>
         public bool UsesCustomCodeGeneration { get; set; }
 
+        /// <summary>
+        /// Func returning the assignment for a variable.
+        /// </summary>
         [XmlIgnore]
         [JsonIgnore]
         // The second to last string is the name of the variable, which may be a tunneled variable
         public Func<IElement, NamedObjectSave, ReferencedFileSave, string, string> CustomGenerationFunc;
+
+        /// <summary>
+        /// Action for filling the code block with the custom definition for a property.
+        /// </summary>
+        [XmlIgnore]
+        [JsonIgnore]
+        public Action<IElement, CustomVariable, ICodeBlock> CustomPropertyGenerationFunc;
 
 
         /// <summary>
@@ -75,6 +86,7 @@ namespace FlatRedBall.Glue.Elements
         [XmlIgnore]
         [JsonIgnore]
         public Func<IElement, NamedObjectSave, ReferencedFileSave, List<string>> CustomGetForcedOptionFunc;
+
 
         [XmlIgnore]
         [JsonIgnore]

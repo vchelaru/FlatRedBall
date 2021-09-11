@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Elements;
+﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Math.Paths;
 using Newtonsoft.Json;
@@ -29,17 +30,28 @@ namespace OfficialPlugins.PathPlugin.Managers
             ati.QualifiedRuntimeTypeName.QualifiedType = typeof(FlatRedBall.Math.Paths.Path).FullName;
             ati.CanBeObject = true;
 
-            var segmentDefinition = new VariableDefinition();
-            segmentDefinition.Type = "string";
-            segmentDefinition.Name = "Paths";
-            segmentDefinition.UsesCustomCodeGeneration = true;
-            segmentDefinition.CustomGenerationFunc = GeneratePaths;
-            segmentDefinition.Category = "Path";
-            segmentDefinition.PreferredDisplayer = typeof(PathView);
-            ati.VariableDefinitions.Add(segmentDefinition);
+            var pathsVariableDefinition = new VariableDefinition();
+            pathsVariableDefinition.Type = "string";
+            pathsVariableDefinition.Name = "Paths";
+            pathsVariableDefinition.UsesCustomCodeGeneration = true;
+            pathsVariableDefinition.CustomGenerationFunc = GeneratePaths;
+            pathsVariableDefinition.CustomPropertyGenerationFunc = GenerateProperty;
+
+            pathsVariableDefinition.Category = "Path";
+            pathsVariableDefinition.PreferredDisplayer = typeof(PathView);
+            ati.VariableDefinitions.Add(pathsVariableDefinition);
 
 
             return ati;
+        }
+
+        private static void GenerateProperty(IElement arg1, CustomVariable customVariable, ICodeBlock codeBlock)
+        {
+            var prop = codeBlock.Property($"public string", customVariable.Name);
+
+            var setter = prop.Set();
+
+            setter.Line($"{customVariable.SourceObject}.FromJson(value);");
         }
 
         static string FloatToString(float value) => value.ToString(CultureInfo.InvariantCulture);

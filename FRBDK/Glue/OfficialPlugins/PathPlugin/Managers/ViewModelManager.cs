@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Math.Paths;
@@ -15,6 +16,8 @@ namespace OfficialPlugins.PathPlugin.Managers
 {
     public static class ViewModelManager
     {
+        #region Fields/Properties
+
         public static PathViewModel MainViewModel { get; set; }
         static NamedObjectSave nos => GlueState.Self.CurrentNamedObjectSave;
 
@@ -40,6 +43,8 @@ namespace OfficialPlugins.PathPlugin.Managers
         }
 
         static string PathSegmentString => Variable.Value as string;
+
+        #endregion
 
         internal static void HandlePathViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -106,6 +111,7 @@ namespace OfficialPlugins.PathPlugin.Managers
             TaskManager.Self.Add(() =>
             {
                 UpdateModelToViewModel();
+                SendChangeToPluginManager();
                 GlueCommands.Self.GluxCommands.SaveGlux();
                 GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
@@ -151,12 +157,23 @@ namespace OfficialPlugins.PathPlugin.Managers
             TaskManager.Self.Add(() =>
             {
                 UpdateModelToViewModel();
+                SendChangeToPluginManager();
                 GlueCommands.Self.GluxCommands.SaveGlux();
                 GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
             }, $"Modifying Segment for {nos}");
         }
 
+        private static void SendChangeToPluginManager()
+        {
+            GlueCommands.Self.DoOnUiThread(() =>
+            {
+                PluginManager.ReactToNamedObjectChangedValue(
+                    MainViewModel?.VariableName ?? AssetTypeInfoManager.PathsVariableName,
+                    null,
+                    nos);
+            });
 
+        }
     }
 }
