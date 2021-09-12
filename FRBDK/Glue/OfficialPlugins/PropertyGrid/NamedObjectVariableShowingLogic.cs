@@ -461,7 +461,7 @@ namespace OfficialPlugins.VariableDisplay
 
                 var memberType = typedMember.MemberType;
 
-                if(isObjectInFile)
+                if (isObjectInFile)
                 {
                     var fileInstanceMember = new FileInstanceMember();
                     instanceMember = fileInstanceMember;
@@ -490,17 +490,17 @@ namespace OfficialPlugins.VariableDisplay
 
                 }
 
-                if(variableDefinition?.PreferredDisplayer != null)
+                if (variableDefinition?.PreferredDisplayer != null)
                 {
                     instanceMember.PreferredDisplayer = variableDefinition.PreferredDisplayer;
                 }
-                else if(variableDefinition?.Name == "RotationZ" && variableDefinition.Type == "float")
+                else if (variableDefinition?.Name == "RotationZ" && variableDefinition.Type == "float")
                 {
                     instanceMember.PreferredDisplayer = typeof(AngleSelectorDisplay);
                     instanceMember.PropertiesToSetOnDisplayer[nameof(AngleSelectorDisplay.TypeToPushToInstance)] =
                         AngleType.Radians;
                 }
-                else if(variableDefinition?.MinValue != null && variableDefinition?.MaxValue != null)
+                else if (variableDefinition?.MinValue != null && variableDefinition?.MaxValue != null)
                 {
                     instanceMember.PreferredDisplayer = typeof(SliderDisplay);
                     instanceMember.PropertiesToSetOnDisplayer[nameof(SliderDisplay.MaxValue)] =
@@ -520,7 +520,7 @@ namespace OfficialPlugins.VariableDisplay
                 // hack! Certain ColorOperations aren't supported in MonoGame. One day they will be if we ever get the
                 // shader situation solved. But until then, these cause crashes so let's remove them.
                 // Do this after setting the type converter
-                if(variableDefinition?.Type == nameof(FlatRedBall.Graphics.ColorOperation))
+                if (variableDefinition?.Type == nameof(FlatRedBall.Graphics.ColorOperation))
                 {
                     instanceMember.TypeConverter = null;
                     // one day?
@@ -537,14 +537,14 @@ namespace OfficialPlugins.VariableDisplay
                 }
 
                 // Important - set the forced options after setting the type converter so they have "final say"
-                if(variableDefinition?.ForcedOptions?.Count > 0)
+                if (variableDefinition?.ForcedOptions?.Count > 0)
                 {
                     instanceMember.PreferredDisplayer = typeof(ComboBoxDisplay);
                     var list = new List<object>();
                     list.AddRange(variableDefinition.ForcedOptions);
                     instanceMember.CustomOptions = list;
                 }
-                else if(variableDefinition?.CustomGetForcedOptionFunc != null)
+                else if (variableDefinition?.CustomGetForcedOptionFunc != null)
                 {
                     instanceMember.PreferredDisplayer = typeof(ComboBoxDisplay);
                     var list = new List<object>();
@@ -557,80 +557,7 @@ namespace OfficialPlugins.VariableDisplay
 
                 instanceMember.IsDefault = instance.GetCustomVariable(typedMember.MemberName) == null;
 
-
-
-                instanceMember.CustomGetEvent += (throwaway) =>
-                {
-
-                    var instruction = instance.GetCustomVariable(typedMember.MemberName);
-
-                    if (instruction == null)
-                    {
-                        if (variableDefinition != null)
-                        {
-                            var toReturn = variableDefinition.DefaultValue;
-                            if (memberType == typeof(bool))
-                            {
-                                bool boolToReturn = false;
-
-                                bool.TryParse(variableDefinition.DefaultValue, out boolToReturn);
-
-                                return boolToReturn;
-                            }
-                            else if(memberType == typeof(float))
-                            {
-                                float floatToReturn = 0.0f;
-
-                                float.TryParse(variableDefinition.DefaultValue, out floatToReturn);
-
-                                return floatToReturn;
-                            }
-                            else if(memberType == typeof(int))
-                            {
-                                int intToReturn = 0;
-
-                                int.TryParse(variableDefinition.DefaultValue, out intToReturn);
-
-                                return intToReturn;
-                            }
-                            else if (memberType == typeof(long))
-                            {
-                                long longToReturn = 0;
-
-                                long.TryParse(variableDefinition.DefaultValue, out longToReturn);
-
-                                return longToReturn;
-                            }
-                            else if (memberType == typeof(double))
-                            {
-                                double doubleToReturn = 0.0;
-
-                                double.TryParse(variableDefinition.DefaultValue, out doubleToReturn);
-
-                                return doubleToReturn;
-                            }
-                            else
-                            {
-                                return toReturn;
-                            }
-                        }
-                        else
-                        {
-                            return null;
-                        }
-                    }
-                    else
-                    {
-                        if(memberType.IsEnum && instruction.Value is int)
-                        {
-                            return Enum.ToObject(memberType, instruction.Value);
-                        }
-                        else
-                        {
-                            return instruction.Value;
-                        }
-                    }
-                };
+                AssignCustomGetEvent(instance, typedMember, variableDefinition, instanceMember);
 
                 instanceMember.CustomSetEvent += (owner, value) =>
                 {
@@ -698,7 +625,7 @@ namespace OfficialPlugins.VariableDisplay
 
                 instanceMember.IsDefaultSet += (owner, args) =>
                 {
-                    if(instanceMember.IsDefault)
+                    if (instanceMember.IsDefault)
                     {
                         // June 29 2021 - this used to get called whenever
                         // IsDefault is set to either true or false, but we
@@ -709,12 +636,12 @@ namespace OfficialPlugins.VariableDisplay
                 };
 
                 instanceMember.SetValueError += (newValue) =>
+                {
+                    if (newValue is string && string.IsNullOrEmpty(newValue as string))
                     {
-                        if (newValue is string && string.IsNullOrEmpty(newValue as string))
-                        {
-                            MakeDefault(instance, typedMember.MemberName);
-                        }
-                    };
+                        MakeDefault(instance, typedMember.MemberName);
+                    }
+                };
 
                 instanceMember.ContextMenuEvents.Add("Tunnel Variable", (not, used) =>
                 {
@@ -723,7 +650,7 @@ namespace OfficialPlugins.VariableDisplay
                     {
                         variableToTunnel = variableDefinition?.Name;
                     }
-                    else if(typedMember != null)
+                    else if (typedMember != null)
                     {
                         variableToTunnel = typedMember.MemberName;
                     }
@@ -734,6 +661,95 @@ namespace OfficialPlugins.VariableDisplay
                 });
             }
             return instanceMember;
+        }
+
+        private static void AssignCustomGetEvent(NamedObjectSave instance, TypedMemberBase typedMember, VariableDefinition variableDefinition, DataGridItem instanceMember)
+        {
+            var memberType = typedMember.MemberType;
+
+            instanceMember.CustomGetEvent += (throwaway) =>
+            {
+
+                var instruction = instance.GetCustomVariable(typedMember.MemberName);
+
+                if (instruction == null)
+                {
+                    // Get the value for this variable from the base element. 
+                    var element = ObjectFinder.Self.GetElement(instance);
+                    if(element != null)
+                    {
+                        var variable = element.GetCustomVariableRecursively(typedMember.MemberName);
+                        if(variable != null)
+                        {
+                            return variable.DefaultValue;
+                        }
+                    }
+
+                    if (variableDefinition != null)
+                    {
+                        var toReturn = variableDefinition.DefaultValue;
+                        if (memberType == typeof(bool))
+                        {
+                            bool boolToReturn = false;
+
+                            bool.TryParse(variableDefinition.DefaultValue, out boolToReturn);
+
+                            return boolToReturn;
+                        }
+                        else if (memberType == typeof(float))
+                        {
+                            float floatToReturn = 0.0f;
+
+                            float.TryParse(variableDefinition.DefaultValue, out floatToReturn);
+
+                            return floatToReturn;
+                        }
+                        else if (memberType == typeof(int))
+                        {
+                            int intToReturn = 0;
+
+                            int.TryParse(variableDefinition.DefaultValue, out intToReturn);
+
+                            return intToReturn;
+                        }
+                        else if (memberType == typeof(long))
+                        {
+                            long longToReturn = 0;
+
+                            long.TryParse(variableDefinition.DefaultValue, out longToReturn);
+
+                            return longToReturn;
+                        }
+                        else if (memberType == typeof(double))
+                        {
+                            double doubleToReturn = 0.0;
+
+                            double.TryParse(variableDefinition.DefaultValue, out doubleToReturn);
+
+                            return doubleToReturn;
+                        }
+                        else
+                        {
+                            return toReturn;
+                        }
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                else
+                {
+                    if (memberType.IsEnum && instruction.Value is int)
+                    {
+                        return Enum.ToObject(memberType, instruction.Value);
+                    }
+                    else
+                    {
+                        return instruction.Value;
+                    }
+                }
+            };
         }
 
 
