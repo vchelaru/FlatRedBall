@@ -714,6 +714,14 @@ namespace FlatRedBall.Math.Geometry
 
         #region AddToLayer
 
+        /// <summary>
+        /// Adds the argument rectangle to the layer and optionally makes the rectangle automatically managed.
+        /// </summary>
+        /// <remarks>If the rectnagle's Visible property is set to false, the rectangle will not be added to the layer, but it will
+        /// set an internal value so that it will show up on teh layer when its Visibility is set to true.</remarks>
+        /// <param name="rectangle">The rectangle to add.</param>
+        /// <param name="layer">The layer to add to.</param>
+        /// <param name="makeAutomaticallyUpdated">Whether the rectangle should also be automatically managed by the ShapeManager.</param>
         public static void AddToLayer(AxisAlignedRectangle rectangle, Layer layer, bool makeAutomaticallyUpdated = true)
         {
             if (makeAutomaticallyUpdated && !rectangle.ListsBelongingTo.Contains(mAutomaticallyUpdated))

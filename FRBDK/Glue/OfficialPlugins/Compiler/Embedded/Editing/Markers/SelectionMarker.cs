@@ -169,6 +169,9 @@ namespace GlueControl.Editing
             this.Owner = owner;
             rectangle = new AxisAlignedRectangle();
 
+            rectangle.Visible = false;
+            ShapeManager.AddToLayer(rectangle, SpriteManager.TopLayer, makeAutomaticallyUpdated: false);
+
             for (int i = 0; i < handles.Length; i++)
             {
                 handles[i] = new AxisAlignedRectangle();
@@ -176,6 +179,8 @@ namespace GlueControl.Editing
                 handles[i].Width = DefaultHandleDimension;
                 handles[i].Height = DefaultHandleDimension;
 
+                handles[i].Visible = false;
+                ShapeManager.AddToLayer(handles[i], SpriteManager.TopLayer, makeAutomaticallyUpdated: false);
             }
         }
 
