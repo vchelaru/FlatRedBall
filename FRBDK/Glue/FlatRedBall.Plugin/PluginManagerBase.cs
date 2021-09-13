@@ -53,12 +53,12 @@ namespace FlatRedBall.Glue.Plugins
             get { return mAddGlobalOnInitialize; }
         }
 
-        public static PluginManagerBase GetGlobal()
+        public static PluginManagerBase GetGlobalPluginManager()
         {
             return mGlobalInstance;
         }
 
-        public static PluginManagerBase GetProject()
+        public static PluginManagerBase GetProjectPluginManager()
         {
             return mProjectInstance;
         }
@@ -73,14 +73,7 @@ namespace FlatRedBall.Glue.Plugins
         {
             get
             {
-                List<PluginContainer> returnList = new List<PluginContainer>();
-
-                foreach (PluginManagerBase pluginManager in mInstances)
-                {
-                    returnList.AddRange(pluginManager.mPluginContainers.Values);
-                }
-
-                return returnList;
+                return mInstances.SelectMany(item => item.mPluginContainers.Values).ToList();
             }
         }
 

@@ -101,12 +101,7 @@ namespace Glue
 
             //this.MainPanelSplitContainer = new GlueFormsCore.Controls.WinformsSplitContainer();
             //this.Controls.Add(this.MainPanelSplitContainer);
-            var wpfHost = new ElementHost();
-            wpfHost.Dock = DockStyle.Fill;
-            MainWpfControl = new MainPanelControl();
-            wpfHost.Child = MainWpfControl;
-            this.Controls.Add(wpfHost);
-            this.PerformLayout();
+            CreateMainWpfPanel();
             // so docking works
             //this.Controls.SetChildIndex(this.MainPanelSplitContainer, 0);
             this.Controls.Add(this.mMenu);
@@ -123,6 +118,16 @@ namespace Glue
             this.FileWatchTimer.Interval = 400;
             this.FileWatchTimer.Tick += new System.EventHandler(this.FileWatchTimer_Tick);
 
+        }
+
+        private void CreateMainWpfPanel()
+        {
+            var wpfHost = new ElementHost();
+            wpfHost.Dock = DockStyle.Fill;
+            MainWpfControl = new MainPanelControl();
+            wpfHost.Child = MainWpfControl;
+            this.Controls.Add(wpfHost);
+            this.PerformLayout();
         }
 
         public void Invoke(Action action)

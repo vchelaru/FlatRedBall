@@ -41,6 +41,8 @@ namespace FlatRedBall.Glue.Plugins
 {
     public class PluginManager : PluginManagerBase
     {
+        #region Fields/Properties
+
         #region Interface Lists
 
         [ImportMany(AllowRecomposition = true)]
@@ -60,9 +62,7 @@ namespace FlatRedBall.Glue.Plugins
 
         #endregion
 
-
         private static MenuStrip mMenuStrip;
-
 
         // not sure who should provide access to these tabs, but
         // we want to make it easier to get access to them instead
@@ -133,26 +133,15 @@ namespace FlatRedBall.Glue.Plugins
 
         #endregion
 
+        #endregion
+
         #region Constructor/Initialize
 
 
         public PluginManager(bool global)
             : base(global)
         {
-            // This forces the RenderingLibrary.dll to be loaded
-            // so we don't allow plugins to load their own versions.
-            // We're just accessing the class, we're not going to actually use it.
-            //RenderingLibrary.IPositionedSizedObject test = null;
-            // ... and we should do the same thing with ToolsUtilities
-            //var throwaway = ToolsUtilities.FileManager.GetExtension("something.png");
-            // ... and XNA+winforms
-            //var anotherThrowaway = typeof(XnaAndWinforms.GraphicsDeviceControl);
-            // .. specialized xna controls:
-
-            //var throwaway4 = typeof(InputLibrary.Keyboard);
-            //var throwaway5 = typeof(RenderingLibrary.Camera);
-            //var throwaway6 = typeof(ToolsUtilities.FileManager);
-            //var throwaway7 = typeof(XnaAndWinforms.GraphicsDeviceControl);
+            // Forces this class to be accesed. Vic is not sure if this is needed as of Sept 13, 2021
             var throwaway8 = typeof(Microsoft.Build.Utilities.AssemblyFoldersFromConfigInfo);
 
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -612,6 +601,8 @@ namespace FlatRedBall.Glue.Plugins
 
         #endregion
 
+        #region General Methods
+
         private static void UninstallPlugins()
         {
             if (File.Exists(UninstallPluginWindow.UninstallPluginFile))
@@ -645,6 +636,113 @@ namespace FlatRedBall.Glue.Plugins
                 }
             }
         }
+
+        public static object CallPluginMethod(string pluginFriendlyName, string methodName, params object[] parameters)
+        {
+            object toReturn = null;
+            CallMethodOnPlugin((plugin) =>
+            {
+                var method = plugin.GetType().GetMethod(methodName);
+                if(method != null)
+                {
+                    toReturn = method.Invoke(plugin, parameters:parameters);
+                }
+            }, $"CallPluginMethod {methodName}",
+            (plugin) => plugin.FriendlyName == pluginFriendlyName);
+
+            return toReturn;
+        }
+
+        internal static void PrintPreInitializeOutput()
+        {
+            if (mPreInitializeOutput.Length != 0)
+            {
+                PrintOutput(mPreInitializeOutput.ToString(), ((PluginManager)mGlobalInstance));
+            }
+
+            //System.Threading.Thread.Sleep(300);
+            if (mPreInitializeError.Length != 0)
+            {
+                PrintError(mPreInitializeError.ToString(), ((PluginManager)mGlobalInstance));
+            }
+            mPreInitializeOutput.Clear();
+            mPreInitializeError.Clear();
+        }
+
+        internal static bool CanFileReferenceContent(string absoluteName)
+        {
+
+            SaveRelativeDirectory();
+
+            bool toReturn = false;
+
+
+            CallMethodOnPluginNotUiThread(
+                delegate(PluginBase plugin)
+                {
+                    if (plugin.CanFileReferenceContent != null)
+                    {
+                        toReturn |= plugin.CanFileReferenceContent(absoluteName);
+
+                    }
+                },
+                "CanFileReferenceContent");
+
+            ResumeRelativeDirectory("CanFileReferenceContent");
+            return toReturn;
+
+
+        }
+
+        internal static GeneralResponse GetFilesReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, List<FilePath> listToFill)
+        {
+            GeneralResponse generalResponse =  GeneralResponse.SuccessfulResponse;
+            SaveRelativeDirectory();
+
+            CallMethodOnPluginNotUiThread(
+                delegate(PluginBase plugin)
+                {
+                    if(plugin.FillWithReferencedFiles != null)
+                    {
+                        var response = plugin.FillWithReferencedFiles(absoluteName, listToFill);
+
+                        if(!response.Succeeded)
+                        {
+                            generalResponse = response;
+                        }
+                    }
+                },
+                nameof(GetFilesReferencedBy));
+
+            ResumeRelativeDirectory($"GetFilesReferencedBy for {absoluteName}");
+
+            return generalResponse;
+        }
+
+        internal static void GetFilesNeededOnDiskBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, List<FilePath> listToFill)
+        {
+            SaveRelativeDirectory();
+            CallMethodOnPluginNotUiThread(
+                delegate (PluginBase plugin)
+                {
+                    if (plugin.GetFilesNeededOnDiskBy != null)
+                    {
+                        plugin.GetFilesNeededOnDiskBy(absoluteName, listToFill);
+                    }
+                    else if (plugin.FillWithReferencedFiles != null)
+                    {
+                        List<FilePath> innerList = new List<FilePath>();
+                        plugin.FillWithReferencedFiles(absoluteName, innerList);
+                        listToFill.AddRange(innerList);
+
+                    }
+                },
+                nameof(GetFilesNeededOnDiskBy));
+
+            ResumeRelativeDirectory(nameof(GetFilesNeededOnDiskBy));
+        }
+
+        #endregion
 
         #region Methods
 
@@ -1505,23 +1603,20 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToGluxUnload(bool isExiting)
         {
-            foreach (PluginManager pluginManager in mInstances)
-            {
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToUnloadedGlux(),
+                nameof(ReactToGluxUnload),
+                plugin => plugin.ReactToUnloadedGlux != null);
 
-                
-                // Execute the new style plugins
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToUnloadedGlux != null);
-                foreach (var plugin in plugins)
+            // now we need to unregister code generators and other things automatically registered for plugins which are project-specific
+            var projectSpecificPlugins = PluginManagerBase.GetProjectPluginManager().PluginContainers.Values;
+            foreach(var pluginContainer in projectSpecificPlugins)
+            {
+                if(pluginContainer.IsEnabled && pluginContainer.Plugin is PluginBase asPluginBase)
                 {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-                        PluginBase plugin1 = plugin;
-                        PluginCommand(() =>
-                        {
-                            plugin1.ReactToUnloadedGlux();
-                        }, container, "Failed in ReactToUnloadedGlux");
-                    }
+                    asPluginBase.UnregisterAllCodeGenerators();
+                    asPluginBase.UnregisterAssetTypeInfos();
+                    asPluginBase.ShutDown(PluginShutDownReason.GluxUnload);
                 }
             }
         }
@@ -1917,111 +2012,6 @@ namespace FlatRedBall.Glue.Plugins
         }
 
         #endregion
-
-        public static object CallPluginMethod(string pluginFriendlyName, string methodName, params object[] parameters)
-        {
-            object toReturn = null;
-            CallMethodOnPlugin((plugin) =>
-            {
-                var method = plugin.GetType().GetMethod(methodName);
-                if(method != null)
-                {
-                    toReturn = method.Invoke(plugin, parameters:parameters);
-                }
-            }, $"CallPluginMethod {methodName}",
-            (plugin) => plugin.FriendlyName == pluginFriendlyName);
-
-            return toReturn;
-        }
-
-        internal static void PrintPreInitializeOutput()
-        {
-            if (mPreInitializeOutput.Length != 0)
-            {
-                PrintOutput(mPreInitializeOutput.ToString(), ((PluginManager)mGlobalInstance));
-            }
-
-            //System.Threading.Thread.Sleep(300);
-            if (mPreInitializeError.Length != 0)
-            {
-                PrintError(mPreInitializeError.ToString(), ((PluginManager)mGlobalInstance));
-            }
-            mPreInitializeOutput.Clear();
-            mPreInitializeError.Clear();
-        }
-
-        internal static bool CanFileReferenceContent(string absoluteName)
-        {
-
-            SaveRelativeDirectory();
-
-            bool toReturn = false;
-
-
-            CallMethodOnPluginNotUiThread(
-                delegate(PluginBase plugin)
-                {
-                    if (plugin.CanFileReferenceContent != null)
-                    {
-                        toReturn |= plugin.CanFileReferenceContent(absoluteName);
-
-                    }
-                },
-                "CanFileReferenceContent");
-
-            ResumeRelativeDirectory("CanFileReferenceContent");
-            return toReturn;
-
-
-        }
-
-        internal static GeneralResponse GetFilesReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, List<FilePath> listToFill)
-        {
-            GeneralResponse generalResponse =  GeneralResponse.SuccessfulResponse;
-            SaveRelativeDirectory();
-
-            CallMethodOnPluginNotUiThread(
-                delegate(PluginBase plugin)
-                {
-                    if(plugin.FillWithReferencedFiles != null)
-                    {
-                        var response = plugin.FillWithReferencedFiles(absoluteName, listToFill);
-
-                        if(!response.Succeeded)
-                        {
-                            generalResponse = response;
-                        }
-                    }
-                },
-                nameof(GetFilesReferencedBy));
-
-            ResumeRelativeDirectory($"GetFilesReferencedBy for {absoluteName}");
-
-            return generalResponse;
-        }
-
-        internal static void GetFilesNeededOnDiskBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, List<FilePath> listToFill)
-        {
-            SaveRelativeDirectory();
-            CallMethodOnPluginNotUiThread(
-                delegate (PluginBase plugin)
-                {
-                    if (plugin.GetFilesNeededOnDiskBy != null)
-                    {
-                        plugin.GetFilesNeededOnDiskBy(absoluteName, listToFill);
-                    }
-                    else if (plugin.FillWithReferencedFiles != null)
-                    {
-                        List<FilePath> innerList = new List<FilePath>();
-                        plugin.FillWithReferencedFiles(absoluteName, innerList);
-                        listToFill.AddRange(innerList);
-
-                    }
-                },
-                nameof(GetFilesNeededOnDiskBy));
-
-            ResumeRelativeDirectory(nameof(GetFilesNeededOnDiskBy));
-        }
 
         internal static bool TryHandleException(Exception exception)
         {
