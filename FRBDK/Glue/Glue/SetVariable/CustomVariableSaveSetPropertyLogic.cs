@@ -112,7 +112,7 @@ namespace FlatRedBall.Glue.SetVariable
                     // this variable exposed, and if so, set that 
                     // variable too so the two mirror each other...
                     // or make it null if this is a recasted variable.
-                    NamedObjectSave nos = currentElement.GetNamedObjectRecursively(customVariable.SourceObject);
+                    NamedObjectSave nos = currentElement?.GetNamedObjectRecursively(customVariable.SourceObject);
 
                     if (nos != null)
                     {

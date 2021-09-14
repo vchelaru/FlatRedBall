@@ -317,6 +317,10 @@ namespace FlatRedBall.Glue.CodeGeneration
                     codeBlock.Line($"{namedObject.FieldName}.Clear();");
                 }
             }
+            else
+            {
+                codeBlock.Line($"// skipping instantiation of {namedObject} because it has its InstantiatedByBase set to true");
+            }
             #endregion
 
             if (succeeded)

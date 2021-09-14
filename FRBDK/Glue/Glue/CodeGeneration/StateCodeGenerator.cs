@@ -11,6 +11,7 @@ using FlatRedBall.Glue.SaveClasses.Helpers;
 using System;
 using System.Linq;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.TypeConversions;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -18,8 +19,6 @@ namespace FlatRedBall.Glue.CodeGeneration
     {
 
         #region Generating Fields / Inner Classes
-
-
 
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
@@ -333,54 +332,67 @@ namespace FlatRedBall.Glue.CodeGeneration
                     // Get the valueAsString, which is the right-side of the equals sign
                     string rightSideOfEquals = $"value.{variable.Name}";
 
-                    if (!string.IsNullOrEmpty(rightSideOfEquals))
+                    CustomVariable customVariable = element.GetCustomVariableRecursively(member);
+                    var isFile = customVariable.GetIsFile();
+
+                    if(isFile)
                     {
-                        CustomVariable customVariable = element.GetCustomVariableRecursively(member);
-                        NamedObjectSave referencedNos = element.GetNamedObjectRecursively(customVariable.SourceObject);
-
-                        if (referencedNos != null)
+                        var type = customVariable.Type;
+                        if(type == "AnimationChainList")
                         {
-                            NamedObjectSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(setBlock, referencedNos);
+                            type = typeof(Graphics.Animation.AnimationChainList).FullName;
                         }
+                        rightSideOfEquals = $"GetFile(value.{variable.Name}) as {type}";
+                    }
+                    else if(!string.IsNullOrWhiteSpace(customVariable.OverridingPropertyType))
+                    {
+                        var value = TypeConverterHelper.Convert(customVariable, GetterOrSetter.Getter, "value." + variable.Name);
+                        rightSideOfEquals = value;
+                    }
 
-                        string leftSideOfEquals = GetLeftSideOfEquals(element, customVariable, member, false);
-                        string leftSideOfEqualsWithRelative = GetLeftSideOfEquals(element, customVariable, member, true);
+                    NamedObjectSave referencedNos = element.GetNamedObjectRecursively(customVariable.SourceObject);
+                    if (referencedNos != null)
+                    {
+                        NamedObjectSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(setBlock, referencedNos);
+                    }
+
+                    string leftSideOfEquals = GetLeftSideOfEquals(element, customVariable, member, false);
+                    string leftSideOfEqualsWithRelative = GetLeftSideOfEquals(element, customVariable, member, true);
 
 
 
 
-                        if (leftSideOfEquals != leftSideOfEqualsWithRelative)
+                    if (leftSideOfEquals != leftSideOfEqualsWithRelative)
+                    {
+                        string objectWithParent = null;
+
+                        if (string.IsNullOrEmpty(customVariable.SourceObject))
                         {
-                            string objectWithParent = null;
-
-                            if (string.IsNullOrEmpty(customVariable.SourceObject))
-                            {
-                                objectWithParent = "this";
-                            }
-                            else
-                            {
-                                objectWithParent = customVariable.SourceObject;
-                            }
-
-                            setBlock
-                                .If(objectWithParent + ".Parent == null")
-                                    .Line(leftSideOfEquals + " = " + rightSideOfEquals + ";")
-                                .End()
-
-                                .Else()
-                                    .Line(leftSideOfEqualsWithRelative + " = " + rightSideOfEquals + ";");
+                            objectWithParent = "this";
                         }
                         else
                         {
-                            setBlock.Line(leftSideOfEquals + " = " + rightSideOfEquals + ";");
+                            objectWithParent = customVariable.SourceObject;
                         }
 
-                        if (referencedNos != null)
-                        {
-                            NamedObjectSaveCodeGenerator.AddEndIfIfNecessary(setBlock, referencedNos);
-                        }
+                        setBlock
+                            .If(objectWithParent + ".Parent == null")
+                                .Line(leftSideOfEquals + " = " + rightSideOfEquals + ";")
+                            .End()
 
+                            .Else()
+                                .Line(leftSideOfEqualsWithRelative + " = " + rightSideOfEquals + ";");
                     }
+                    else
+                    {
+                        setBlock.Line(leftSideOfEquals + " = " + rightSideOfEquals + ";");
+                    }
+
+                    if (referencedNos != null)
+                    {
+                        NamedObjectSaveCodeGenerator.AddEndIfIfNecessary(setBlock, referencedNos);
+                    }
+
                 }
             }
         }
@@ -553,8 +565,6 @@ namespace FlatRedBall.Glue.CodeGeneration
             return statesForThisCategory;
         }
 
-
-
         public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
             if (element.HasStates)
@@ -710,7 +720,6 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         }
 
-
         private static string GetLeftSideOfEquals(IElement element, CustomVariable customVariable, string member, bool switchToRelative)
         {
             string leftSideOfEquals = member;
@@ -857,6 +866,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                         value,
                         valueAsString,
                         customVariable);
+
+                    if(!string.IsNullOrEmpty(customVariable.OverridingPropertyType))
+                    {
+                        valueAsString = TypeConverterHelper.Convert(customVariable, GetterOrSetter.Setter, valueAsString);
+                    }
                 }
             }
             else
