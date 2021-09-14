@@ -9,6 +9,9 @@ using System.Text;
 
 namespace GumCoreShared.FlatRedBall.Embedded
 {
+    /// <summary>
+    /// A PositionedObject which can hold a reference to a Gum object (GraphicalUiElement) to position it in FlatRedBall coordinates. 
+    /// </summary>
     public class PositionedObjectGueWrapper : PositionedObject
     {
         PositionedObject frbObject;
@@ -96,6 +99,12 @@ namespace GumCoreShared.FlatRedBall.Embedded
             var zoom = 1.0f;
             if (camera.Orthogonal)
             {
+                var managers = GumObject.Managers ?? SystemManagers.Default;
+                //var gumZoom = GumObject.Managers.Renderer.Camera.Zoom;
+                //zoom = managers.Renderer.Camera.Zoom;
+                // If we use the Gum zoom (managers.Renderer.Camera.Zoom), position will be accurate
+                // but zooming of the objects in Gum won't change. What should happen is the Gum zoom 
+                // should be zooming when the normal camera zooms too
                 zoom = camera.DestinationRectangle.Height / camera.OrthogonalHeight;
             }
 
