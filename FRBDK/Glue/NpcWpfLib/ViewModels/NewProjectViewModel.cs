@@ -200,7 +200,18 @@ namespace Npc.ViewModels
             {
                 if (System.IO.Directory.Exists(FinalDirectory))
                 {
-                    whyIsntValid = $"The directory {FinalDirectory} already exists";
+                    // it's okay if it exists, just make sure it's either empty, or only has a .gitignore file
+                    var contentsOfDirectory = FileManager.GetAllFilesInDirectory(FinalDirectory, null, 0);
+                    if(contentsOfDirectory.Count > 0)
+                    {
+                        whyIsntValid = $"The directory {FinalDirectory} already exists and it is not empty";
+                    }
+                    var csprojFolder = FinalDirectory + "/" + ProjectName;
+
+                    if(System.IO.Directory.Exists(csprojFolder))
+                    {
+                        whyIsntValid = $"The directory {FinalDirectory} exists and it contains a subfolder {csprojFolder} which would be overwritten";
+                    }
                 }
             }
 

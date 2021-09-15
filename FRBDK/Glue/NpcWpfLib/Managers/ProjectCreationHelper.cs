@@ -96,7 +96,7 @@ namespace Npc
             {
 
                 bool isFileNameValid = GetIfFileNameIsValid(viewModel, unpackDirectory);
-                unpackDirectory = viewModel.CombinedProjectDirectory;
+                unpackDirectory = viewModel.FinalDirectory;
 
                 if (!isFileNameValid)
                 {
