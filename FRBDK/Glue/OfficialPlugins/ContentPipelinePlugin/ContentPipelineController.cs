@@ -77,7 +77,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
             bool useContentPipeline = settings.UseContentPipelineOnAllPngs;
 
 
-            TaskManager.Self.AddSync(() =>
+            TaskManager.Self.Add(() =>
             {
                 if (useContentPipeline)
                 {
@@ -103,7 +103,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
 
             if (useContentPipeline)
             {
-                AddXnbs();
+                AddPngXnbsReferencesAndBuild();
             }
 
             AddSaveTasks();
@@ -119,7 +119,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
             "Saving due to RFS changes");
         }
 
-        private void AddXnbs()
+        public void AddPngXnbsReferencesAndBuild()
         {
             var referencedPngs = GetReferencedPngs();
 

@@ -254,12 +254,12 @@ namespace OfficialPlugins.MonoGameContent
             controller.LoadOrCreateSettings();
             viewModel.UseContentPipelineOnPngs = controller.Settings.UseContentPipelineOnAllPngs;
             aliasCodeGenerator.GenerateFileAliasLogicCode(controller.Settings.UseContentPipelineOnAllPngs);
-            BuildLogic.Self.RefreshBuiltFilesFor(GlueState.CurrentMainProject, viewModel.UseContentPipelineOnPngs);
+            BuildLogic.Self.RefreshBuiltFilesFor(GlueState.CurrentMainProject, viewModel.UseContentPipelineOnPngs, controller);
         }
 
         private void HandleLoadedSyncedProject(ProjectBase project)
         {
-            BuildLogic.Self.RefreshBuiltFilesFor((VisualStudioProject)project, viewModel.UseContentPipelineOnPngs);
+            BuildLogic.Self.RefreshBuiltFilesFor((VisualStudioProject)project, viewModel.UseContentPipelineOnPngs, controller);
         }
 
         private void HandleFileChanged(string fileName)

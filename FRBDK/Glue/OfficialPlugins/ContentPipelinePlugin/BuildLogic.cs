@@ -14,6 +14,7 @@ using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Math.Geometry;
+using OfficialPlugins.ContentPipelinePlugin;
 
 namespace OfficialPlugins.MonoGameContent
 {
@@ -26,7 +27,7 @@ namespace OfficialPlugins.MonoGameContent
         static FilePath commandLineBuildExe =
             @"C:\Program Files (x86)\MSBuild\MonoGame\v3.0\Tools\MGCB.exe";
 
-        public void RefreshBuiltFilesFor(VisualStudioProject project, bool forcePngsToContentPipeline)
+        public void RefreshBuiltFilesFor(VisualStudioProject project, bool forcePngsToContentPipeline, ContentPipelineController controller)
         {
 
 
@@ -56,6 +57,11 @@ namespace OfficialPlugins.MonoGameContent
                 {
                     UpdateFileMembershipAndBuildReferencedFile(project, fileToBeBuilt, forcePngsToContentPipeline);
                 }
+            }
+
+            if(forcePngsToContentPipeline)
+            {
+                controller.AddPngXnbsReferencesAndBuild();
             }
 
             //foreach (var file in GlueState.Self.CurrentGlueProject.GetAllReferencedFiles())
