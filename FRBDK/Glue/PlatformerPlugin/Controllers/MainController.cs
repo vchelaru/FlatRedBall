@@ -134,7 +134,9 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             if (shouldGenerateCsv)
             {
 
-                if(viewModel.IsPlatformer && viewModel.PlatformerValues.Count == 0)
+                if(viewModel.IsPlatformer && viewModel.PlatformerValues.Count == 0 &&
+                    // don't re-add these if the user removed them. We can tell by looking at the platformer variable
+                    e.PropertyName != nameof(PlatformerEntityViewModel.PlatformerValues) )
                 {
                     // ignore changes while adding these two, otherwise this function becomes recursive
                     // resulting in the same CSV being added multiple times:

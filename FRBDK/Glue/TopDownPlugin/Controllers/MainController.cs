@@ -106,7 +106,9 @@ namespace TopDownPlugin.Controllers
 
             if (shouldGenerateCsv)
             {
-                if (viewModel.IsTopDown && viewModel.TopDownValues.Count == 0)
+                if (viewModel.IsTopDown && viewModel.TopDownValues.Count == 0 &&
+                    // don't re-add these if the user removed them. We can tell by looking at the platformer variable
+                    e.PropertyName != nameof(TopDownEntityViewModel.TopDownValues))
                 {
                     var newValues = PredefinedTopDownValues.GetValues("Default");
                     viewModel.TopDownValues.Add(newValues);
