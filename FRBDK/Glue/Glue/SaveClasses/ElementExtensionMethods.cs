@@ -28,15 +28,7 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             bool haveChangesOccurred = false;
 
-            List<NamedObjectSave> referencedObjectsBeforeUpdate = new List<NamedObjectSave>();
-
-            for (int i = 0; i < namedObjectContainer.NamedObjects.Count; i++)
-            {
-                if (namedObjectContainer.NamedObjects[i].DefinedByBase)
-                {
-                    referencedObjectsBeforeUpdate.Add(namedObjectContainer.NamedObjects[i]);
-                }
-            }
+            List<NamedObjectSave> referencedObjectsBeforeUpdate = namedObjectContainer.AllNamedObjects.Where(item => item.DefinedByBase).ToList();
 
             List<NamedObjectSave> namedObjectsSetByDerived = new List<NamedObjectSave>();
             List<NamedObjectSave> namedObjectsExposedInDerived = new List<NamedObjectSave>();
@@ -96,26 +88,13 @@ namespace FlatRedBall.Glue.SaveClasses
             #region See if there are any objects to be removed from the derived.
             for (int i = referencedObjectsBeforeUpdate.Count - 1; i > -1; i--)
             {
-                bool contains = false;
+                var atI = referencedObjectsBeforeUpdate[i];
 
-                for (int j = 0; j < namedObjectsSetByDerived.Count; j++)
-                {
-                    if (referencedObjectsBeforeUpdate[i].InstanceName == namedObjectsSetByDerived[j].InstanceName &&
-                        referencedObjectsBeforeUpdate[i].DefinedByBase)
-                    {
-                        contains = true;
-                        break;
-                    }
-                }
+                var contains = atI.DefinedByBase && namedObjectsSetByDerived.Any(item => item.InstanceName == atI.InstanceName);
 
-                for (int j = 0; j < namedObjectsExposedInDerived.Count; j++)
+                if(!contains)
                 {
-                    if (referencedObjectsBeforeUpdate[i].InstanceName == namedObjectsExposedInDerived[j].InstanceName &&
-                        referencedObjectsBeforeUpdate[i].DefinedByBase)
-                    {
-                        contains = true;
-                        break;
-                    }
+                    contains = namedObjectsExposedInDerived.Any(item => item.InstanceName == atI.InstanceName);
                 }
 
                 if (!contains)
@@ -126,19 +105,28 @@ namespace FlatRedBall.Glue.SaveClasses
                     string message = "The following object is marked as \"defined by base\" but it is not contained in " +
                         "any base elements\n\n" + nos.ToString() + "\n\nWhat would you like to do?";
 
-                    var mbmb = new MultiButtonMessageBox();
+                    var mbmb = new MultiButtonMessageBoxWpf();
 
                     mbmb.MessageText = message;
 
                     mbmb.AddButton("Remove " + nos.ToString(), DialogResult.Yes);
                     mbmb.AddButton("Keep it, make it not \"defined by base\"", DialogResult.No);
 
-                    DialogResult result = mbmb.ShowDialog();
+                    var dialogResult = mbmb.ShowDialog();
 
-                    if (result == DialogResult.Yes)
+                    if(dialogResult == true && (DialogResult)mbmb.ClickedResult == DialogResult.Yes)
                     {
+                        if(namedObjectContainer.NamedObjects.Contains(nos))
+                        {
+                            namedObjectContainer.NamedObjects.Remove(nos);
+                        }
+                        else
+                        {
+                            namedObjectContainer.NamedObjects
+                                .FirstOrDefault(item => item.ContainedObjects.Contains(nos))
+                                ?.ContainedObjects.Remove(nos);
+                        }
                         // We got a NamedObject we should remove
-                        namedObjectContainer.NamedObjects.Remove(nos);
                         referencedObjectsBeforeUpdate.RemoveAt(i);
                     }
                     else
@@ -179,26 +167,36 @@ namespace FlatRedBall.Glue.SaveClasses
 
             for (int i = 0; i < namedObjectsExposedInDerived.Count; i++)
             {
-                NamedObjectSave namedObjectSetByDerived = namedObjectsExposedInDerived[i];
+                NamedObjectSave nosInBase = namedObjectsExposedInDerived[i];
 
-                NamedObjectSave matchingDefinedByBase = null;// contains = false;
-                for (int j = 0; j < referencedObjectsBeforeUpdate.Count; j++)
-                {
-                    if (referencedObjectsBeforeUpdate[j].InstanceName == namedObjectSetByDerived.InstanceName &&
-                        referencedObjectsBeforeUpdate[j].DefinedByBase)
-                    {
-                        matchingDefinedByBase = referencedObjectsBeforeUpdate[j];
-                        break;
-                    }
-                }
+                NamedObjectSave nosInDerived = referencedObjectsBeforeUpdate
+                    .FirstOrDefault(item => item.InstanceName == nosInBase.InstanceName && item.DefinedByBase);
+                
 
-                if (matchingDefinedByBase == null)
+                if (nosInDerived == null)
                 {
-                    AddSetByDerivedNos(namedObjectContainer, namedObjectSetByDerived, true);
+                    nosInDerived = AddSetByDerivedNos(namedObjectContainer, nosInBase, true);
                 }
                 else
                 {
-                    MatchDerivedToBase(namedObjectSetByDerived, matchingDefinedByBase);
+                    MatchDerivedToBase(nosInBase, nosInDerived);
+                }
+
+                foreach(var containedInBaseNos in nosInBase.ContainedObjects)
+                {
+                    if(containedInBaseNos.ExposedInDerived)
+                    {
+                        var containedInDerived = referencedObjectsBeforeUpdate
+                            .FirstOrDefault(item => item.InstanceName == containedInBaseNos.InstanceName && item.DefinedByBase);
+                        if (containedInDerived == null)
+                        {
+                            AddSetByDerivedNos(namedObjectContainer, containedInBaseNos, true, nosInDerived);
+                        }
+                        else
+                        {
+                            MatchDerivedToBase(containedInBaseNos, containedInDerived);
+                        }
+                    }
                 }
             }
 
@@ -210,12 +208,10 @@ namespace FlatRedBall.Glue.SaveClasses
         private static void MatchDerivedToBase(NamedObjectSave inBase, NamedObjectSave inDerived)
         {
             inDerived.SourceClassGenericType = inBase.SourceClassGenericType;
-
-
         }
 
-        private static void AddSetByDerivedNos(INamedObjectContainer namedObjectContainer,
-            NamedObjectSave namedObjectSetByDerived, bool instantiatedByBase)
+        private static NamedObjectSave AddSetByDerivedNos(INamedObjectContainer namedObjectContainer,
+            NamedObjectSave namedObjectSetByDerived, bool instantiatedByBase, NamedObjectSave containerToAddTo = null)
         {
             NamedObjectSave existingNamedObject = null;
 
@@ -232,31 +228,39 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 existingNamedObject.DefinedByBase = true;
                 existingNamedObject.InstantiatedByBase = instantiatedByBase;
+                return existingNamedObject;
             }
             else
             {
-                NamedObjectSave namedObjectSave = namedObjectSetByDerived.Clone();
+                NamedObjectSave newNamedObject = namedObjectSetByDerived.Clone();
 
                 // This code may be cloning a list with contained objects, and the
                 // contained objects may not SetByDerived
-                namedObjectSave.ContainedObjects.Clear();
+                newNamedObject.ContainedObjects.Clear();
                 foreach (var containedCandidate in namedObjectSetByDerived.ContainedObjects)
                 {
                     if (containedCandidate.SetByDerived)
                     {
-                        namedObjectSave.ContainedObjects.Add(containedCandidate);
+                        newNamedObject.ContainedObjects.Add(containedCandidate);
                     }
                 }
 
-
-                namedObjectSave.SetDefinedByBaseRecursively(true);
-                namedObjectSave.SetInstantiatedByBaseRecursively(instantiatedByBase);
+                newNamedObject.SetDefinedByBaseRecursively(true);
+                newNamedObject.SetInstantiatedByBaseRecursively(instantiatedByBase);
 
                 // This can't be set by derived because an object it inherits from has that already set
-                namedObjectSave.SetSetByDerivedRecursively(false);
+                newNamedObject.SetSetByDerivedRecursively(false);
 
+                if(containerToAddTo == null)
+                {
+                    namedObjectContainer.NamedObjects.Add(newNamedObject);
+                }
+                else
+                {
+                    containerToAddTo.ContainedObjects.Add(newNamedObject);
+                }
 
-                namedObjectContainer.NamedObjects.Add(namedObjectSave);
+                return newNamedObject;
             }
         }
 

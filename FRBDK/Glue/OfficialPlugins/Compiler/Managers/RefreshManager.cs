@@ -270,14 +270,17 @@ namespace OfficialPlugins.Compiler.Managers
 
         internal async void HandleStateCreated(StateSave state, StateSaveCategory category)
         {
-            var container = ObjectFinder.Self.GetElementContaining(category);
+            if(category != null)
+            {
+                var container = ObjectFinder.Self.GetElementContaining(category);
 
-            var dto = new CreateNewStateDto();
-            dto.StateSave = state;
-            dto.CategoryName = category?.Name;
-            dto.ElementNameGame = GetGameTypeFor(container);
+                var dto = new CreateNewStateDto();
+                dto.StateSave = state;
+                dto.CategoryName = category?.Name;
+                dto.ElementNameGame = GetGameTypeFor(container);
 
-            await CommandSender.Send(dto, ViewModel.PortNumber);
+                await CommandSender.Send(dto, ViewModel.PortNumber);
+            }
         }
 
         #endregion

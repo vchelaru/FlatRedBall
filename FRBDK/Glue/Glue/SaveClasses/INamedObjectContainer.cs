@@ -14,6 +14,9 @@ namespace FlatRedBall.Glue.SaveClasses
             get;
         }
 
+        IEnumerable<NamedObjectSave> AllNamedObjects { get; }
+
+
         string BaseObject
         {
             get;
