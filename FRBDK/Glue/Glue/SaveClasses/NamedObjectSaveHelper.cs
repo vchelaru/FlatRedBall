@@ -93,7 +93,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 }
             }
 
-            foreach (NamedObjectSave nos in namedObjectContainer.NamedObjects)
+            foreach (NamedObjectSave nos in namedObjectContainer.AllNamedObjects)
             {
                 if (nos.ExposedInDerived)
                 {
