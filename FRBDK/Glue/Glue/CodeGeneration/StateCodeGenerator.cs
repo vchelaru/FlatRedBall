@@ -334,13 +334,14 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     CustomVariable customVariable = element.GetCustomVariableRecursively(member);
                     var isFile = customVariable.GetIsFile();
-
+                    var assignOnlyIfNonNull = false;
                     if(isFile)
                     {
                         var type = customVariable.Type;
                         if(type == "AnimationChainList")
                         {
                             type = typeof(Graphics.Animation.AnimationChainList).FullName;
+                            assignOnlyIfNonNull = true;
                         }
                         rightSideOfEquals = $"GetFile(value.{variable.Name}) as {type}";
                     }
@@ -385,7 +386,12 @@ namespace FlatRedBall.Glue.CodeGeneration
                     }
                     else
                     {
-                        setBlock.Line(leftSideOfEquals + " = " + rightSideOfEquals + ";");
+                        var effectiveBlock = setBlock;
+                        if(assignOnlyIfNonNull)
+                        {
+                            effectiveBlock = setBlock.If($"({rightSideOfEquals}) != null");
+                        }
+                        effectiveBlock.Line(leftSideOfEquals + " = " + rightSideOfEquals + ";");
                     }
 
                     if (referencedNos != null)
