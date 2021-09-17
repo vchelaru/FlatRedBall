@@ -815,23 +815,36 @@ namespace FlatRedBall.TileCollisions
                 down != null && left != null && downLeft == null;
         }
 
-        private RepositionDirections GetRepositionDirection(PositionedObject positionedObject, bool[] array, float left, float bottom, int numberTilesWide)
+        private RepositionDirections GetRepositionDirection(PositionedObject positionedObject, bool[] array, float collectionLeft, float collectionBottom, int numberTilesWide, out bool repositionHalfSize)
         {
             var worldX = positionedObject.Position.X;
             var worldY = positionedObject.Position.Y;
 
-            var xIndex = MathFunctions.RoundToInt((worldX - left) / mGridSize);
-            var yIndex = MathFunctions.RoundToInt((worldY - bottom) / mGridSize);
+            var xIndex = MathFunctions.RoundToInt((worldX - collectionLeft) / mGridSize);
+            var yIndex = MathFunctions.RoundToInt((worldY - collectionBottom) / mGridSize);
 
             bool ValueAt(int xIndexInner, int yIndexInner)
             {
                 var absoluteIndex = xIndexInner + yIndexInner * numberTilesWide;
 
-                return absoluteIndex < array.Length && absoluteIndex > -1 && array[absoluteIndex];
+                return xIndexInner >= 0 && xIndexInner < numberTilesWide && absoluteIndex < array.Length && absoluteIndex > -1 && array[absoluteIndex];
             }
 
             RepositionDirections directions = RepositionDirections.All;
-            if (xIndex > 0 && ValueAt(xIndex - 1, yIndex))
+
+            bool left = ValueAt(xIndex - 1, yIndex);
+            bool right = ValueAt(xIndex + 1, yIndex);
+            bool up = ValueAt(xIndex, yIndex + 1);
+            var down = ValueAt(xIndex, yIndex - 1);
+
+            bool upLeft = ValueAt(xIndex - 1, yIndex + 1);
+            bool upRight = ValueAt(xIndex + 1, yIndex + 1);
+
+
+            bool downLeft = ValueAt(xIndex - 1, yIndex - 1);
+            bool downRight = ValueAt(xIndex + 1, yIndex - 1);
+
+            if (left)
             {
                 directions -= RepositionDirections.Left;
             }
@@ -849,7 +862,7 @@ namespace FlatRedBall.TileCollisions
                 //}
             }
 
-            if (xIndex < numberTilesWide - 1 && ValueAt(xIndex + 1, yIndex))
+            if (right)
             {
                 directions -= RepositionDirections.Right;
             }
@@ -868,8 +881,7 @@ namespace FlatRedBall.TileCollisions
             }
 
 
-
-            if (ValueAt(xIndex, yIndex + 1))
+            if (up)
             {
                 directions -= RepositionDirections.Up;
             }
@@ -888,7 +900,7 @@ namespace FlatRedBall.TileCollisions
                 //}
             }
 
-            if (ValueAt(xIndex, yIndex - 1))
+            if (down)
             {
                 directions -= RepositionDirections.Down;
             }
@@ -906,6 +918,13 @@ namespace FlatRedBall.TileCollisions
                 //    }
                 //}
             }
+
+            // do the L-shaped:
+            repositionHalfSize =
+                (left && up && !upLeft) ||
+                (up && right && !upRight) ||
+                (right && down && !downRight) ||
+                (down && left && !downLeft);
 
             return directions;
         }
@@ -1130,8 +1149,9 @@ namespace FlatRedBall.TileCollisions
                 var rectangle = this.mShapes.AxisAlignedRectangles[i];
 
                 var directions = // UpdateRepositionDirections(rectangle, false, bytes, numberTilesWide);
-                    GetRepositionDirection(rectangle, bytes, left, bottom, numberTilesWide);
+                    GetRepositionDirection(rectangle, bytes, left, bottom, numberTilesWide, out bool repositionHalfSize);
                 rectangle.RepositionDirections = directions;
+                rectangle.RepositionHalfSize = repositionHalfSize;
             }
 
             count = this.mShapes.Polygons.Count;

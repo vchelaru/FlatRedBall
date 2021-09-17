@@ -35,6 +35,14 @@ namespace FlatRedBall.Math.Geometry
 
         internal Layer mLayerBelongingTo;
 
+        /// <summary>
+        /// Whether collision reposition should consider the full size of the AxisAlignedRectangle. If false,
+        /// repositions along one of the directions will only start at the halfway point and move outward.
+        /// </summary>
+        /// <remarks>
+        /// This property is primarily used for "L-shaped" collision areas on tile maps. Tiles which make up the corner
+        /// of the L should have this value set to true. Otherwise, collisions may result in an object tunneling through the collision.
+        /// </remarks>
         public bool RepositionHalfSize;
 
         #endregion

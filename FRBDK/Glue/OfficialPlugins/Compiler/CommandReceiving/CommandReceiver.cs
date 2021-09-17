@@ -463,7 +463,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                     RefreshManager.Self.IgnoreNextChange(tmxFilePath.FullPath);
 
-                    tiledMapSave.Save(tmxFilePath.FullPath);
+                    GlueCommands.Self.TryMultipleTimes(() => tiledMapSave.Save(tmxFilePath.FullPath));
 
                     // Restart the screen *after* the TMX is saved, and after it has been copied too:
                     // The TMX needs to be copied which is a tasked operation:
