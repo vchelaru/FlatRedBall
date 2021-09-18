@@ -710,14 +710,6 @@ namespace GlueControl
                 }
             }
 
-
-
-
-            // do we need to add the new NOS to the current element? Or do we rely on the game to tell us that? Need to test/decide this....
-
-
-
-
             #region Create the AddObjectDto for the new object
 
             var addObjectDto = new Dtos.AddObjectDto();
@@ -784,6 +776,26 @@ namespace GlueControl
             }
 
             #endregion
+
+
+            // do we need to add the new NOS to the current element? Or do we rely on the game to tell us that? Need to test/decide this....
+            // Update - The game will eventually refresh this whenever the selection changes, but we do want to 
+            var currentElement = EditingManager.Self.CurrentGlueElement;
+            if (currentElement != null)
+            {
+                if (currentElement.NamedObjects.Contains(nosForCopiedObject))
+                {
+                    currentElement.NamedObjects.Add(addObjectDto);
+                }
+                else
+                {
+                    var container = currentElement.NamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(nosForCopiedObject));
+                    if (container != null)
+                    {
+                        container.ContainedObjects.Add(addObjectDto);
+                    }
+                }
+            }
 
             SendAndEnqueue(addObjectDto);
 
