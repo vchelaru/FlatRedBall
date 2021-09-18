@@ -157,7 +157,7 @@ namespace GlueControl.Editing
             }
         }
 
-        private static void UpdateCameraToZoomLevel(bool zoomAroundCursorPosition = true)
+        public static void UpdateCameraToZoomLevel(bool zoomAroundCursorPosition = true)
         {
             var cursor = GuiManager.Cursor;
             var worldXBefore = cursor.WorldX;

@@ -15,6 +15,12 @@ using Color = Microsoft.Xna.Framework.Color;
 
 namespace FlatRedBall.Math.Geometry
 {
+    /// <summary>
+    /// A rectangle which can be used to perform collison checks against other shapes. The name "axis aligned"
+    /// implies that the rectangle cannot be rotated. Its sides will always be aligned (parallel) with the X and Y
+    /// axes. The AxisAlignedRectangle is a shape commonly used in FlatRedBall Entities to perform collision against
+    /// other entities and TileShapeCollections.
+    /// </summary>
     public class AxisAlignedRectangle : PositionedObject, 
         IPositionedSizedObject, IScalable, IEquatable<AxisAlignedRectangle>, IMouseOver, IVisible
     {
@@ -49,6 +55,10 @@ namespace FlatRedBall.Math.Geometry
 
         #region Properties
 
+        /// <summary>
+        /// The absolute left edge of the AxisAlignedRectangle, calculated by subtracting half of its width from its position;
+        /// Setting this value will change its Position.
+        /// </summary>
         public float Left
         {
             get => Position.X - mScaleX; 
@@ -282,9 +292,6 @@ namespace FlatRedBall.Math.Geometry
             ScaleY = 1;
             mColor = Color.White;
             RepositionDirections = Geometry.RepositionDirections.All;
-#if SILVERLIGHT
-            FillColor = new Color(0,0,0,0);
-            #endif
         }
 
         public AxisAlignedRectangle(float scaleX, float scaleY)
@@ -294,9 +301,6 @@ namespace FlatRedBall.Math.Geometry
             ScaleY = scaleY;
             mColor = Color.White;
 
-#if SILVERLIGHT
-            FillColor = new Color(0,0,0,0);
-#endif
         }
 
         #endregion
@@ -420,6 +424,13 @@ namespace FlatRedBall.Math.Geometry
         {
             return shapeCollection.CollideAgainst(this);
         }
+
+        /// <summary>
+        /// Returns whether this intance collides against the argument ICollidable.
+        /// </summary>
+        /// <param name="collidable">The ICollidable to test collision against.</param>
+        /// <returns>Whether collision has occurred.</returns>
+        public bool CollideAgainst(ICollidable collidable) => CollideAgainst(collidable.Collision);
 
         public bool CollideAgainstMove(Circle circle, float thisMass, float otherMass)
         {
