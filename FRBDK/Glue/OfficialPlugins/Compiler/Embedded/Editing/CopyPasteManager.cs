@@ -95,6 +95,16 @@ namespace GlueControl.Editing
                 }
 
             }
+
+            if (CopiedObjects.Count > 0)
+            {
+                // If at least one object was copied, then we sent that one object over to Glue. Glue will
+                // automatically select newly-created objects, but we don't want that to happen when we copy/paste,
+                // so we re-send the select command on the first selected item. If only one item is selected, this will
+                // work perfectly. If not, then the first item is sent over, which is as good as we can do since Glue doesn't
+                // support multi-selection.
+                EditingManager.Self.RaiseObjectSelected();
+            }
         }
     }
 }

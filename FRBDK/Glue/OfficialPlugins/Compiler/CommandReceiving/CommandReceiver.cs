@@ -76,6 +76,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #endregion
 
+        #region Remove Object
+
         private static void HandleRemoveObject(RemoveObjectDto removeObjectDto)
         {
             TaskManager.Self.Add(() =>
@@ -90,6 +92,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 }
             }, "Handling removing object from screen");
         }
+
+        #endregion
+
+        #region Add Object (including copy/paste
 
         private static void HandleAddObject(string dataAsString)
         {
@@ -159,12 +165,89 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 {
                     RefreshManager.Self.IgnoreNextObjectAdd = true;
                     RefreshManager.Self.IgnoreNextObjectSelect = true;
+
+                    // This will result in Glue selecting the new object. When GView copy/pastes, it keeps the
+                    // old object selected. Glue shouldn't assume this is the case, because in the future new instances
+                    // may be added without copy/paste, and those would be selected. Therefore, we'll rely on the game to 
+                    // tell us to select something different...
                     GlueCommands.Self.GluxCommands.AddNamedObjectTo(nos, element, listToAddTo);
                 });
 
                 //RefreshManager.Self.HandleNamedObjectValueChanged(nameof(deserializedNos.InstanceName), oldName, deserializedNos);
 
             }, "Adding NOS");
+        }
+
+        private static string GetNewName(GlueElement glueElement, AddObjectDto addObjectDto)
+        {
+            string newName = null;
+            if(addObjectDto.SourceClassType.Contains('.'))
+            {
+                var suffix = addObjectDto.SourceClassType.Substring(addObjectDto.SourceClassType.LastIndexOf('.') + 1);
+                newName = suffix + "1";
+            }
+            else
+            {
+                var lastSlash = addObjectDto.SourceClassType.LastIndexOf("\\");
+                newName = addObjectDto.SourceClassType.Substring(lastSlash + 1) + "1";
+            }
+            while (glueElement.GetNamedObjectRecursively(newName) != null)
+            {
+                newName = StringFunctions.IncrementNumberAtEnd(newName);
+            }
+
+            return newName;
+        }
+
+        #endregion
+
+
+        #region Set Variable
+
+        private static void HandleSetVariable(SetVariableDto setVariableDto)
+        {
+
+            TaskManager.Self.Add(() =>
+            {
+                var type = string.Join('\\', setVariableDto.InstanceOwner.Split('.').Skip(1));
+
+                var element = ObjectFinder.Self.GetElement(type);
+
+                var nos = element.GetNamedObjectRecursively(setVariableDto.ObjectName);
+
+                if (nos != null)
+                {
+                    object value = setVariableDto.VariableValue;
+                    var typeName = setVariableDto.Type;
+
+                    if(string.IsNullOrEmpty(typeName))
+                    {
+                        throw new InvalidOperationException($"Variable {setVariableDto.VariableName} came from glue with a value of {typeName} but didn't have a type");
+                    }
+
+                    value = ConvertVariable(value, ref typeName, setVariableDto.VariableName, nos, element);
+
+                    // Setting the nos pushes back to the game so the game can re-assign this variable whenever the screen changes.
+                    nos.SetVariable(setVariableDto.VariableName, value);
+
+                    GlueCommands.Self.DoOnUiThread(() =>
+                        RefreshManager.Self.HandleNamedObjectValueChanged(setVariableDto.VariableName, null, nos, 
+                        // record only - this variable change came from the game, we don't want to re-assign it and wipe other active edits
+                        AssignOrRecordOnly.RecordOnly)
+                    );
+                    // this may not be the current screen:
+                    var nosParent = ObjectFinder.Self.GetElementContaining(nos);
+
+                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.DoOnUiThread(GlueCommands.Self.RefreshCommands.RefreshVariables);
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(nosParent);
+
+                }
+            }, "Handling set variable from game", 
+            // This is going to push the change back to the game, and we don't want to sit and wait for codegen to finish, etc. Do it immediately!
+            // Update - if it's asap, then later commands can execute before earlier ones, so we need to still respect fifo. It will add delay but removes
+            // the confusion.
+            TaskExecutionPreference.Fifo);
         }
 
         private static object ConvertVariable(object value, ref string typeName, string variableName, NamedObjectSave owner,
@@ -266,72 +349,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             return value;
         }
 
-        private static string GetNewName(GlueElement glueElement, AddObjectDto addObjectDto)
-        {
-            string newName = null;
-            if(addObjectDto.SourceClassType.Contains('.'))
-            {
-                var suffix = addObjectDto.SourceClassType.Substring(addObjectDto.SourceClassType.LastIndexOf('.') + 1);
-                newName = suffix + "1";
-            }
-            else
-            {
-                var lastSlash = addObjectDto.SourceClassType.LastIndexOf("\\");
-                newName = addObjectDto.SourceClassType.Substring(lastSlash + 1) + "1";
-            }
-            while (glueElement.GetNamedObjectRecursively(newName) != null)
-            {
-                newName = StringFunctions.IncrementNumberAtEnd(newName);
-            }
-
-            return newName;
-        }
-
-        private static void HandleSetVariable(SetVariableDto setVariableDto)
-        {
-
-            TaskManager.Self.Add(() =>
-            {
-                var type = string.Join('\\', setVariableDto.InstanceOwner.Split('.').Skip(1));
-
-                var element = ObjectFinder.Self.GetElement(type);
-
-                var nos = element.GetNamedObjectRecursively(setVariableDto.ObjectName);
-
-                if (nos != null)
-                {
-                    object value = setVariableDto.VariableValue;
-                    var typeName = setVariableDto.Type;
-
-                    if(string.IsNullOrEmpty(typeName))
-                    {
-                        throw new InvalidOperationException($"Variable {setVariableDto.VariableName} came from glue with a value of {typeName} but didn't have a type");
-                    }
-
-                    value = ConvertVariable(value, ref typeName, setVariableDto.VariableName, nos, element);
-
-                    // Setting the nos pushes back to the game so the game can re-assign this variable whenever the screen changes.
-                    nos.SetVariable(setVariableDto.VariableName, value);
-
-                    GlueCommands.Self.DoOnUiThread(() =>
-                        RefreshManager.Self.HandleNamedObjectValueChanged(setVariableDto.VariableName, null, nos, 
-                        // record only - this variable change came from the game, we don't want to re-assign it and wipe other active edits
-                        AssignOrRecordOnly.RecordOnly)
-                    );
-                    // this may not be the current screen:
-                    var nosParent = ObjectFinder.Self.GetElementContaining(nos);
-
-                    GlueCommands.Self.GluxCommands.SaveGlux();
-                    GlueCommands.Self.DoOnUiThread(GlueCommands.Self.RefreshCommands.RefreshVariables);
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(nosParent);
-
-                }
-            }, "Handling set variable from game", 
-            // This is going to push the change back to the game, and we don't want to sit and wait for codegen to finish, etc. Do it immediately!
-            // Update - if it's asap, then later commands can execute before earlier ones, so we need to still respect fifo. It will add delay but removes
-            // the confusion.
-            TaskExecutionPreference.Fifo);
-        }
+        #endregion
 
         private static ScreenSave GetCurrentInGameScreen(int gamePortNumber)
         {

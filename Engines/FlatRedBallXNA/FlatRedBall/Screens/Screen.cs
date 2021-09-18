@@ -630,7 +630,7 @@ namespace FlatRedBall.Screens
                         wasSet = true;
                     }
                 }
-                else
+                else if(container != null)
                 {
                     wasSet = FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(container, variableName, value);
                 }
