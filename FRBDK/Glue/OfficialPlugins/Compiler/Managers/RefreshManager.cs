@@ -467,8 +467,11 @@ namespace OfficialPlugins.Compiler.Managers
             var element = GlueState.Self.CurrentElement;
             if(element != null)
             {
+                dto.ScreenSave = GlueState.Self.CurrentScreenSave;
+                dto.EntitySave = GlueState.Self.CurrentEntitySave;
+
                 dto.NamedObject = nos;
-                dto.ElementNameGlue = element?.Name;
+                dto.ElementNameGlue = element.Name;
                 dto.StateName = forcedStateName ??
                     GlueState.Self.CurrentStateSave?.Name;
 

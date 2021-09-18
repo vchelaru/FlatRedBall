@@ -601,11 +601,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 }
             }
 
-            var valueType = value?.GetType();
-
-
             instruction.Value = value;
-
         }
 
 

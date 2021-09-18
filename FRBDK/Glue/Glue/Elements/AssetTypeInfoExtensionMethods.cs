@@ -36,6 +36,17 @@ namespace FlatRedBall.Glue.Elements
             // to be equatable
 			//TypedMemberBase typedMemberBase = TypedMemberBase.GetTypedMember(memberName, type);
             TypedMemberBase typedMemberBase = TypedMemberBase.GetTypedMemberUnequatable(memberName, type);
+            // Sept 18, 2021
+            // Vic says - I would
+            // like to stop using the 
+            // Type object since this requires
+            // that Glue understands the compiled
+            // Types. Therefore, I'm going to specify
+            // the custom type here if the Type is null:
+            if(type == null)
+            {
+                typedMemberBase.CustomTypeName = typeString;
+            }
 			return typedMemberBase;
 		}
 

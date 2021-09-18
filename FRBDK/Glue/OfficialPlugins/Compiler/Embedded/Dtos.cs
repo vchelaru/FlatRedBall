@@ -32,6 +32,9 @@ namespace GlueControl.Dtos
 
     class SelectObjectDto
     {
+        public ScreenSave ScreenSave { get; set; }
+        public EntitySave EntitySave { get; set; }
+        public GlueElement GlueElement => (GlueElement)ScreenSave ?? EntitySave;
         public NamedObjectSave NamedObject { get; set; }
         public string ElementNameGlue { get; set; }
         public string StateName { get; set; }

@@ -212,6 +212,7 @@ namespace GlueControl
 
             bool isOwnerScreen = false;
 
+            Editing.EditingManager.Self.CurrentGlueElement = selectObjectDto.GlueElement;
 
             if (matchesCurrentScreen)
             {

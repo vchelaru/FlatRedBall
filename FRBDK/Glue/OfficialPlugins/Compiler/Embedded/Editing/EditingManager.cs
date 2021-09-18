@@ -43,6 +43,8 @@ namespace GlueControl.Editing
 
         List<INameable> ItemsSelected = new List<INameable>();
         INameable ItemSelected => ItemsSelected.Count > 0 ? ItemsSelected[0] : null;
+
+        public GlueElement CurrentGlueElement { get; set; }
         public NamedObjectSave CurrentNamedObjectSave { get; private set; }
 
         public ElementEditingMode ElementEditingMode { get; set; }
@@ -398,6 +400,8 @@ namespace GlueControl.Editing
 
         }
 
+        #region Selection
+
         internal void Select(NamedObjectSave namedObject)
         {
             CurrentNamedObjectSave = namedObject;
@@ -461,5 +465,15 @@ namespace GlueControl.Editing
                 Select(name, addToExistingSelection: true, playBump);
             }
         }
+
+        public void RaiseObjectSelected()
+        {
+            if (ObjectSelected != null && ItemSelected != null)
+            {
+                ObjectSelected(ItemSelected);
+            }
+        }
+
+        #endregion
     }
 }

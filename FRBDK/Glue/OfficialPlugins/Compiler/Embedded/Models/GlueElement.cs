@@ -4,12 +4,50 @@ using System.Text;
 
 namespace GlueControl.Models
 {
+    public abstract class GlueElement
+    {
+        public bool IsOnOwnLayer
+        {
+            get;
+            set;
+        }
+
+
+        public string Name
+        {
+            get;
+            set;
+        }
+
+        public abstract string BaseElement { get; }
+
+        public IEnumerable<NamedObjectSave> AllNamedObjects
+        {
+            get
+            {
+                foreach (NamedObjectSave nos in NamedObjects)
+                {
+                    yield return nos;
+
+                    foreach (NamedObjectSave containedNos in nos.ContainedObjects)
+                    {
+                        yield return containedNos;
+                    }
+                }
+            }
+        }
+
+
+        public List<NamedObjectSave> NamedObjects
+        {
+            get;
+            set;
+        }
+    }
+
     public class EntitySave : GlueElement
     {
-        public override string BaseElement
-        {
-            get { return BaseEntity; }
-        }
+        public override string BaseElement => BaseEntity; 
 
         string mBaseEntity;
         public string BaseEntity
@@ -30,15 +68,27 @@ namespace GlueControl.Models
         }
     }
 
-    public abstract class GlueElement
+    public class ScreenSave : GlueElement
     {
-        public string Name
+        string mBaseScreen;
+
+        public string BaseScreen
         {
-            get;
-            set;
+            get { return mBaseScreen; }
+            set
+            {
+                if (value == "<NONE>")
+                {
+                    mBaseScreen = "";
+                }
+                else
+                {
+                    mBaseScreen = value;
+                }
+            }
         }
 
-        public abstract string BaseElement { get; }
+        public override string BaseElement => BaseScreen;
 
     }
 }

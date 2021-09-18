@@ -166,10 +166,7 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        public override string BaseElement
-        {
-            get { return BaseScreen; }
-        }
+        public override string BaseElement => BaseScreen;
 
         [XmlIgnore]
         [CategoryAttribute("Performance")]

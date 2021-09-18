@@ -1034,13 +1034,35 @@ namespace GlueControl.Editing
                 return null;
             }
         }
-
         public static Type TryGetStateType(string qualifiedTypeName)
         {
+            ///////// Early Out/////////////
+            if (!qualifiedTypeName.Contains('.'))
+            {
+                return null;
+            }
+            ////////End Early Out/////////////
+            
             var splitType = qualifiedTypeName.Split('.');
 
             qualifiedTypeName = string.Join(".", splitType.Take(splitType.Length - 1).ToArray()) + "+" +
                 splitType.Last();
+
+            var gameType = typeof(Game1).FullName.Split('.');
+            if (splitType[0] != gameType[0])
+            {
+                // The qualifiedTypeName could be in one of two formats.
+                // One is the Type.FullName which would appear as follows:
+                // GameRootNamespace.Entities.EntityName.StateName
+                // The Type.FullName variety is used when Glue prepends the 
+                // namespace.
+                // However, when we copy/paste in game, the NamedObject types
+                // get copied and the NamedObject doesn't contain that, so we 
+                // should tolerate that too. Infact, I question whether we even
+                // need the root namespace prefix. By supporting both we can incrementally
+                // refactor if that becomes the preferred way to do it.
+                qualifiedTypeName = gameType[0] + '.' + qualifiedTypeName;
+            }
 
             var stateType = typeof(VariableAssignmentLogic).Assembly.GetType(qualifiedTypeName);
             return stateType;
