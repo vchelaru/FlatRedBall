@@ -308,6 +308,77 @@ namespace FlatRedBall.Glue.Elements
             return GetEntitySave(entityName) != null;
         }
 
+
+        public GlueElement GetElementContaining(NamedObjectSave namedObjectSave)
+        {
+            for (int i = 0; i < ObjectFinder.Self.GlueProject.Screens.Count; i++)
+            {
+                var screen = ObjectFinder.Self.GlueProject.Screens[i];
+                if (IsContainedInListOrAsChild(screen.NamedObjects, namedObjectSave))
+                {
+                    return screen;
+                }
+            }
+            for (int i = 0; i < ObjectFinder.Self.GlueProject.Entities.Count; i++)
+            {
+                if (IsContainedInListOrAsChild(ObjectFinder.Self.GlueProject.Entities[i].NamedObjects, namedObjectSave))
+                {
+                    return ObjectFinder.Self.GlueProject.Entities[i];
+                }
+            }
+
+            return null;
+
+        }
+
+        public GlueElement GetElementContaining(ReferencedFileSave referencedFileSave)
+        {
+
+            for (int i = 0; i < ObjectFinder.Self.GlueProject.Screens.Count; i++)
+            {
+                if (ObjectFinder.Self.GlueProject.Screens[i].ReferencedFiles.Contains(referencedFileSave))
+                {
+                    return ObjectFinder.Self.GlueProject.Screens[i];
+                }
+            }
+            for (int i = 0; i < ObjectFinder.Self.GlueProject.Entities.Count; i++)
+            {
+                if (ObjectFinder.Self.GlueProject.Entities[i].ReferencedFiles.Contains(referencedFileSave))
+                {
+                    return ObjectFinder.Self.GlueProject.Entities[i];
+                }
+            }
+
+            return null;
+        }
+
+        public GlueElement GetElementContaining(EventResponseSave ers)
+        {
+            for (int i = 0; i < ObjectFinder.Self.GlueProject.Screens.Count; i++)
+            {
+                foreach (EventResponseSave possibleErs in ObjectFinder.Self.GlueProject.Screens[i].Events)
+                {
+                    if (possibleErs == ers)
+                    {
+                        return ObjectFinder.Self.GlueProject.Screens[i];
+                    }
+                }
+            }
+            for (int i = 0; i < ObjectFinder.Self.GlueProject.Entities.Count; i++)
+            {
+                foreach (EventResponseSave possibleErs in ObjectFinder.Self.GlueProject.Entities[i].Events)
+                {
+                    if (possibleErs == ers)
+                    {
+                        return ObjectFinder.Self.GlueProject.Entities[i];
+                    }
+                }
+            }
+
+            return null;
+
+        }
+
         #endregion
 
         #region CSV
@@ -698,81 +769,14 @@ namespace FlatRedBall.Glue.Elements
 
         #endregion
 
+        #region Variables
+
         public IElement GetVariableContainer(CustomVariable customVariable)
         {
             return GlueProject.GetElementContaining(customVariable);
         }
 
-        public GlueElement GetElementContaining(NamedObjectSave namedObjectSave)
-        {
-            for (int i = 0; i < ObjectFinder.Self.GlueProject.Screens.Count; i++)
-            {
-                var screen = ObjectFinder.Self.GlueProject.Screens[i];
-                if (IsContainedInListOrAsChild(screen.NamedObjects, namedObjectSave))
-                {
-                    return screen;
-                }
-            }
-            for (int i = 0; i < ObjectFinder.Self.GlueProject.Entities.Count; i++)
-            {
-                if (IsContainedInListOrAsChild(ObjectFinder.Self.GlueProject.Entities[i].NamedObjects, namedObjectSave))
-                {
-                    return ObjectFinder.Self.GlueProject.Entities[i];
-                }
-            }
-
-            return null;
-
-        }
-
-        public GlueElement GetElementContaining(ReferencedFileSave referencedFileSave)
-        {
-
-            for (int i = 0; i < ObjectFinder.Self.GlueProject.Screens.Count; i++)
-            {
-                if (ObjectFinder.Self.GlueProject.Screens[i].ReferencedFiles.Contains(referencedFileSave))
-                {
-                    return ObjectFinder.Self.GlueProject.Screens[i];
-                }
-            }
-            for (int i = 0; i < ObjectFinder.Self.GlueProject.Entities.Count; i++)
-            {
-                if (ObjectFinder.Self.GlueProject.Entities[i].ReferencedFiles.Contains(referencedFileSave))
-                {
-                    return ObjectFinder.Self.GlueProject.Entities[i];
-                }
-            }
-
-            return null;
-        }
-
-        public GlueElement GetElementContaining(EventResponseSave ers)
-        {
-            for (int i = 0; i < ObjectFinder.Self.GlueProject.Screens.Count; i++)
-            {
-                foreach (EventResponseSave possibleErs in ObjectFinder.Self.GlueProject.Screens[i].Events)
-                {
-                    if (possibleErs == ers)
-                    {
-                        return ObjectFinder.Self.GlueProject.Screens[i];
-                    }
-                }
-            }
-            for (int i = 0; i < ObjectFinder.Self.GlueProject.Entities.Count; i++)
-            {
-                foreach (EventResponseSave possibleErs in ObjectFinder.Self.GlueProject.Entities[i].Events)
-                {
-                    if (possibleErs == ers)
-                    {
-                        return ObjectFinder.Self.GlueProject.Entities[i];
-                    }
-                }
-            }
-
-            return null;
-
-        }
-
+        #endregion
         bool IsContainedInListOrAsChild(List<NamedObjectSave> namedObjects, NamedObjectSave objectToFind)
         {
             foreach (NamedObjectSave nos in namedObjects)

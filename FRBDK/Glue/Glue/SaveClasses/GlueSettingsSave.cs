@@ -81,8 +81,6 @@ namespace FlatRedBall.Glue.SaveClasses
         public int MainSplitterDistance { get; set; }
         public int StoredRecentFiles { get; set; }
 
-        public bool AutoCopyFilesOnChange { get; set; }
-
         public ExternalSeparatingList<BuildToolAssociation> BuildToolAssociations = new ExternalSeparatingList<BuildToolAssociation>();
 
         [XmlIgnore]

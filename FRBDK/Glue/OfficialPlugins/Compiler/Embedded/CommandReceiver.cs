@@ -671,6 +671,12 @@ namespace GlueControl
             GlobalContent.Reload(GlobalContent.GetFile(dto.StrippedGlobalContentFileName));
         }
 
+
+        private static void HandleDto(Dtos.ForceReloadFileDto dto)
+        {
+
+        }
+
         #endregion
 
         private static void HandleDto(TogglePauseDto dto)

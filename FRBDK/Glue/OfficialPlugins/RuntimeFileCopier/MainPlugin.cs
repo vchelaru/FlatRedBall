@@ -41,50 +41,7 @@ namespace OfficialPlugins.RuntimeFileCopier
 
         public override void StartUp()
         {
-            this.ReactToLoadedGlux += HandleGluxLoaded;
-            this.ReactToFileChangeHandler += HandleFileChanged;
-
-            menuItem = base.AddMenuItemTo("Copy changed files to bin folder",
-                HandleContentMenuItemClick, "Content");
-
-            menuItem.CheckOnClick = true;
         }
 
-        private void HandleFileChanged(string fileName)
-        {
-            var shouldCopy =
-                GlueState.Self.GlueSettingsSave.AutoCopyFilesOnChange && ShouldCopyFile(fileName) && System.IO.File.Exists(fileName);
-
-            if(!shouldCopy)
-            {
-                
-                var shouldCopyAsBool = PluginManager.CallPluginMethod(
-                    "Glue Compiler",
-                    "GetIfIsRunningInEditMode",
-                    new object[0]);
-
-                if(shouldCopyAsBool is bool asBool )
-                {
-                    shouldCopy = asBool;
-                }
-            }
-
-            if (shouldCopy)
-            {
-                GlueCommands.Self.ProjectCommands.CopyToBuildFolder(fileName);
-            }
-        }
-
-        private void HandleGluxLoaded()
-        {
-            menuItem.Checked = GlueState.Self.GlueSettingsSave.AutoCopyFilesOnChange;
-        }
-
-        private void HandleContentMenuItemClick(object sender, EventArgs e)
-        {
-
-            GlueState.Self.GlueSettingsSave.AutoCopyFilesOnChange = menuItem.Checked;
-            GlueCommands.Self.GluxCommands.SaveSettings();
-        }
     }
 }

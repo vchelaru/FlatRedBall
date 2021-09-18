@@ -41,6 +41,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         string GetFullFileName(ReferencedFileSave rfs);
         FilePath GetFilePath(ReferencedFileSave rfs);
         ReferencedFileSave GetReferencedFile(string absoluteFile);
+        List<ReferencedFileSave> GetReferencedFiles(string fileName);
 
         FilePath GetCustomCodeFilePath(GlueElement glueElement);
 

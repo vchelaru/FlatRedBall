@@ -157,10 +157,10 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             GenerateGetFileMethodByName(element.ReferencedFiles, codeBlock, inherits, functionName, false);
 
-
-
-
             GenerateGetMember(codeBlock, element);
+
+            GenerateReloadFileMethod(codeBlock, element.ReferencedFiles);
+
             return codeBlock;
         }
 
@@ -1663,6 +1663,42 @@ namespace FlatRedBall.Glue.CodeGeneration
             return rfs.IsDatabaseForLocalizing ||
                 (rfs.UseContentPipeline && FileManager.GetExtension(rfs.Name) == "png");
 
+        }
+
+
+        private static bool GetIfFileCanBeReloaded(ReferencedFileSave item)
+        {
+            var assetTypeInfo = item.GetAssetTypeInfo();
+            var qualifiedType = assetTypeInfo?.QualifiedRuntimeTypeName.QualifiedType;
+            return item.IsCsvOrTreatedAsCsv ||
+                qualifiedType == "FlatRedBall.Graphics.Animation.AnimationChainList" ||
+                qualifiedType == "Microsoft.Xna.Framework.Graphics.Texture2D" ||
+                assetTypeInfo?.CustomReloadFunc != null;
+        }
+
+        public static void GenerateReloadFileMethod(ICodeBlock currentBlock, List<ReferencedFileSave> files)
+        {
+            var reloadFunction = currentBlock
+                .Function("public static void", "Reload", "object whatToReload");
+
+            var toLoopThrough = files.Where(item =>
+                // The reason localization databases can't be reloaded is because
+                // this function is called by passing an object (whatToReload). Localization
+                // databases don't create an object in GlobalContent, so there's nothing to reload.
+                // Therefore, the user will have to manually reload
+                item.IsDatabaseForLocalizing == false &&
+                item.LoadedAtRuntime &&
+                GetIfFileCanBeReloaded(item)).ToList();
+
+            foreach (var rfs in toLoopThrough)
+            {
+                var ifInReload = reloadFunction.If("whatToReload == " + rfs.GetInstanceName());
+                {
+                    ReferencedFileSaveCodeGenerator.GetReload(rfs, null, ifInReload, LoadType.MaintainInstance);
+
+                }
+
+            }
         }
     }
 }

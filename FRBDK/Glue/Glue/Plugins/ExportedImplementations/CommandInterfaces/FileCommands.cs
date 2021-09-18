@@ -224,15 +224,20 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return filePath;
         }
 
-        // This replaces ObjectFinder.GetReferencedFileSaveFromFile - if any changes are made here, make the changes there too
         public ReferencedFileSave GetReferencedFile(string fileName)
         {
+            return GetReferencedFiles(fileName).FirstOrDefault();
+        }
+
+        public List<ReferencedFileSave> GetReferencedFiles(string fileName)
+        {
+            List<ReferencedFileSave> files = new List<ReferencedFileSave>();
             ////////////////Early Out//////////////////////////////////
             var invalidPathChars = Path.GetInvalidPathChars();
             if (invalidPathChars.Any(item => fileName.Contains(item)))
             {
                 // This isn't a RFS, because it's got a bad path. Early out here so that FileManager.IsRelative doesn't throw an exception
-                return null;
+                return files;
             }
 
             //////////////End Early Out////////////////////////////////
@@ -260,7 +265,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                         if (absoluteRfsFile == fileName)
                         {
-                            return rfs;
+                            files.Add(rfs);
                         }
                     }
                 }
@@ -273,7 +278,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                         if (absoluteRfsFile == fileName)
                         {
-                            return rfs;
+                            files.Add(rfs);
                         }
                     }
                 }
@@ -284,12 +289,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     if (absoluteRfsFile == fileName)
                     {
-                        return rfs;
+                        files.Add(rfs);
                     }
                 }
             }
 
-            return null;
+            return files;
         }
 
         public GeneralResponse GetLastParseResponse(FilePath file)

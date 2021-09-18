@@ -146,8 +146,6 @@ namespace OfficialPlugins.Compiler
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
             this.ReactToNewFileHandler += RefreshManager.Self.HandleNewFile;
 
-            this.ReactToFileChangeHandler += (fileName) =>
-                RefreshManager.Self.HandleFileChanged(new FlatRedBall.IO.FilePath(fileName));
             this.ReactToCodeFileChange += RefreshManager.Self.HandleFileChanged;
             this.NewEntityCreated += RefreshManager.Self.HandleNewEntityCreated;
 
@@ -288,8 +286,24 @@ namespace OfficialPlugins.Compiler
             base.AddToToolBar(toolbar, "Standard");
         }
 
+        string[] copiedExtensions = new[]
+        {
+            "csv",
+            "txt",
+            "png",
+            "tmx",
+            "tsx",
+            "bmp",
+            "png",
+            "achx",
+            "emix",
+            "json"
+        };
+
         private void HandleFileChanged(string fileName)
         {
+            // If a file changed, always copy it over - why only do so if we're in edit mode?
+
             bool shouldBuildContent = viewModel.AutoBuildContent &&
                 GlueState.Self.CurrentMainProject != GlueState.Self.CurrentMainContentProject &&
                 GlueState.Self.CurrentMainContentProject.IsFilePartOfProject(fileName);
@@ -301,6 +315,16 @@ namespace OfficialPlugins.Compiler
                 BuildContent(OutputSuccessOrFailure);
             }
 
+            var extension = FileManager.GetExtension(fileName);
+            var shouldCopy = copiedExtensions.Contains(extension);
+
+            if(shouldCopy)
+            {
+                GlueCommands.Self.ProjectCommands.CopyToBuildFolder(fileName);
+
+            }
+
+            RefreshManager.Self.HandleFileChanged(fileName);
         }
 
         private async void HandleToolbarRunClicked(object sender, EventArgs e)

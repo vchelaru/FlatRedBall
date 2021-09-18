@@ -162,4 +162,11 @@ namespace GlueControl.Dtos
         public List<Vector2> RemovedPositions { get; set; }
         public bool RequestRestart { get; set; }
     }
+
+    public class ForceReloadFileDto
+    {
+        public bool LoadInGlobalContent { get; set; }
+        public List<string> ElementsContainingFile { get; set; }
+        public string StrippedFileName { get; set; }
+    }
 }

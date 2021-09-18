@@ -132,9 +132,9 @@ namespace OfficialPlugins.Compiler.Managers
 
             if(shouldReactToFileChange)
             {
-                var rfs = GlueCommands.Self.FileCommands.GetReferencedFile(fileName.FullPath);
-
-                var isGlobalContent = rfs != null && rfs.GetContainer() == null;
+                var rfses = GlueCommands.Self.FileCommands.GetReferencedFiles(fileName.FullPath);
+                var firstRfs = rfses.FirstOrDefault();
+                var isGlobalContent = rfses.Any(item => item.GetContainer() == null);
 
                 bool canSendCommands = ViewModel.IsGenerateGlueControlManagerInGame1Checked;
 
@@ -143,11 +143,11 @@ namespace OfficialPlugins.Compiler.Managers
                 if(canSendCommands)
                 {
                     string strippedName = null;
-                    if (rfs != null)
+                    if (firstRfs != null)
                     {
-                        strippedName = FileManager.RemovePath(FileManager.RemoveExtension(rfs.Name));
+                        strippedName = FileManager.RemovePath(FileManager.RemoveExtension(firstRfs.Name));
                     }
-                    if(isGlobalContent && rfs.GetAssetTypeInfo().CustomReloadFunc != null)
+                    if(isGlobalContent && firstRfs.GetAssetTypeInfo().CustomReloadFunc != null)
                     {
                         printOutput($"Waiting for Glue to copy reload global file {strippedName}");
 
@@ -165,19 +165,27 @@ namespace OfficialPlugins.Compiler.Managers
 
                         handled = true;
                     }
-                    else if(rfs != null || GlueCommands.Self.FileCommands.IsContent(fileName))
+
+                    var containerNames = rfses.Select(item => item.GetContainer()?.Name).Where(item => item != null).ToHashSet();
+
+
+                    if(containerNames.Any() || GlueCommands.Self.FileCommands.IsContent(fileName))
                     {
                         // Right now we'll assume the screen owns this file, although it is possible that it's 
                         // global but not part of global content. That's a special case we'll have to handle later
                         printOutput($"Copying and restaring due to changed {strippedName}");
-                        await Task.Delay(500);
+                        await Task.Delay(600);
                         try
                         {
                             if(ViewModel.IsRunning)
                             {
-                                printOutput($"Telling game to restart screen");
+                                //printOutput($"Telling game to restart screen");
 
-                                await CommandSender.Send(new RestartScreenDto(), ViewModel.PortNumber);
+                                //await CommandSender.Send(new RestartScreenDto(), ViewModel.PortNumber);
+                                var dto = new Dtos.ForceReloadFileDto();
+                                dto.ElementsContainingFile = containerNames.ToList();
+                                dto.StrippedFileName = fileName.NoPathNoExtension;
+                                await CommandSender.Send(dto, ViewModel.PortNumber);
                             }
 
                             handled = true;
