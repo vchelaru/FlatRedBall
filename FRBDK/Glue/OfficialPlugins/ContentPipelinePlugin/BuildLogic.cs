@@ -23,17 +23,22 @@ namespace OfficialPlugins.MonoGameContent
         static IGlueState GlueState => EditorObjects.IoC.Container.Get<IGlueState>();
         static IGlueCommands GlueCommands => EditorObjects.IoC.Container.Get<IGlueCommands>();
 
+        static List<FilePath> possibleMGCBPaths = new List<FilePath>()
+        {
+            new FilePath( AppDomain.CurrentDomain.BaseDirectory + @"..\PrebuiltTools\MGCB\MGCB.exe"),
+            new FilePath(@"C:\Program Files (x86)\MSBuild\MonoGame\v3.0\Tools\MGCB.exe"),
 
-        static FilePath commandLineBuildExe =
-            @"C:\Program Files (x86)\MSBuild\MonoGame\v3.0\Tools\MGCB.exe";
+        };
+
+        static FilePath commandLineBuildExe => possibleMGCBPaths.FirstOrDefault(item => item.Exists());
 
         public void RefreshBuiltFilesFor(VisualStudioProject project, bool forcePngsToContentPipeline, ContentPipelineController controller)
         {
 
-
+            var mgcbToUse = commandLineBuildExe;
             /////////////Early Out///////////////////
-            bool builderExists = commandLineBuildExe.Exists();
-            if (builderExists == false)
+            
+            if (mgcbToUse == null)
             {
                 // error? output?
                 return;
@@ -306,9 +311,17 @@ namespace OfficialPlugins.MonoGameContent
         public void TryAddXnbReferencesAndBuild(FilePath rfsFilePath, VisualStudioProject project, bool saveProjectAfterAdd, bool rebuild = false)
         {
             //////////////EARLY OUT////////////////////////
-            if(!commandLineBuildExe.Exists())
+            if(commandLineBuildExe == null)
             {
-                GlueCommands.PrintError($"Could not find Monogame Builder Tool. Looking for {commandLineBuildExe.FullPath}.\n\nTry installing MonoGame");
+                var error = $"Could not find Monogame Builder Tool. Looked in the following locations:";
+
+                foreach(var filePath in possibleMGCBPaths)
+                {
+                    error += $"\n\t{filePath}";
+                }
+
+                error += "\nTry installing MonoGame";
+                GlueCommands.PrintError(error);
 
                 var viewModel = new DelegateBasedErrorViewModel();
                 viewModel.UniqueId = "Missing Monogame Builder for " + rfsFilePath.Standardized;
