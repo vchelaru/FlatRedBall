@@ -21,6 +21,11 @@ namespace BuildServerUploaderConsole.Processes
             @"PrebuiltTools\SpriteEditor",
         };
 
+        List<string> extraTools = new List<string>
+        {
+            @"PrebuiltTools\MGCB"
+        };
+
         string GlueRegularBuildDestinationFolder =
             @"Glue\Glue\bin\x86\Debug\netcoreapp3.0\";
         // This is the output from: dotnet publish GlueFormsCore.csproj -r win-x86 -c DEBUG
@@ -76,6 +81,13 @@ namespace BuildServerUploaderConsole.Processes
             {
                 CopyDirectory(DirectoryHelper.FrbdkDirectory + xna3_1tool, "Copied " + xna3_1tool);
             }
+
+            foreach(var extraTool in extraTools)
+            {
+                CopyDirectory(DirectoryHelper.FrbdkDirectory + extraTool, "Copied" + extraTool);
+            }
+
+
 
             //XNA 4 TOOLS
             string xna4ToolsDirectory = FileManager.Standardize(frbdkForZipDirectory + @"\Xna 4 Tools\");
