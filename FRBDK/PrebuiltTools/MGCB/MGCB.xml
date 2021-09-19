@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MGCB</name>
+    </assembly>
+    <members>
+        <member name="T:MGCB.MGBuildParser">
+            <summary>
+            Adapted from this generic command line argument parser:
+            http://blogs.msdn.com/b/shawnhar/archive/2012/04/20/a-reusable-reflection-based-command-line-parser.aspx     
+            </summary>
+        </member>
+    </members>
+</doc>
