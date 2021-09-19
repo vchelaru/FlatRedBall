@@ -173,7 +173,7 @@ namespace OfficialPlugins.Compiler.Managers
                     {
                         // Right now we'll assume the screen owns this file, although it is possible that it's 
                         // global but not part of global content. That's a special case we'll have to handle later
-                        printOutput($"Copying and restaring due to changed {strippedName}");
+                        printOutput($"Waiting for file to be copied: {strippedName}");
                         await Task.Delay(600);
                         try
                         {
@@ -182,6 +182,8 @@ namespace OfficialPlugins.Compiler.Managers
                                 //printOutput($"Telling game to restart screen");
 
                                 //await CommandSender.Send(new RestartScreenDto(), ViewModel.PortNumber);
+                                printOutput($"Sending force reload for file: {strippedName}");
+
                                 var dto = new Dtos.ForceReloadFileDto();
                                 dto.ElementsContainingFile = containerNames.ToList();
                                 dto.StrippedFileName = fileName.NoPathNoExtension;

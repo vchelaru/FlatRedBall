@@ -843,7 +843,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                         $"FlatRedBall.IO.Csv.CsvFileManager.UpdateDictionaryValuesFromCsv({instanceName}, \"{fileName}\");";
                     codeBlock.Line(line);
                 }
-                if (ati?.QualifiedRuntimeTypeName.QualifiedType == "Microsoft.Xna.Framework.Graphics.Texture2D")
+                else if (ati?.QualifiedRuntimeTypeName.QualifiedType == "Microsoft.Xna.Framework.Graphics.Texture2D")
                 {
                     codeBlock.Line($"var oldTexture = {referencedFile.GetInstanceName()};");
                     GetInitializationForReferencedFile(referencedFile, container, codeBlock, loadType);

@@ -787,7 +787,7 @@ namespace FlatRedBall.IO.Csv
         {
             var newDictionary = new Dictionary<KeyType, ValueType>(dictionaryToUpdate.Count);
 
-            CreateObjectDictionary(newDictionary, contentManagerName);
+            FillObjectDictionary(newDictionary, contentManagerName);
 
             var type = typeof(ValueType);
 
@@ -802,16 +802,23 @@ namespace FlatRedBall.IO.Csv
 
                 var oldItem = dictionaryToUpdate[key];
 
-                foreach(var field in fields)
+                if(oldItem == null)
                 {
-                    var valueOnNew = field.GetValue(newItem);
-                    field.SetValue(oldItem, valueOnNew);
+                    dictionaryToUpdate[key] = newItem;
                 }
-
-                foreach(var property in properties)
+                else
                 {
-                    var valueOnNew = property.GetValue(newItem, null);
-                    property.SetValue(oldItem, valueOnNew, null);
+                    foreach(var field in fields)
+                    {
+                        var valueOnNew = field.GetValue(newItem);
+                        field.SetValue(oldItem, valueOnNew);
+                    }
+
+                    foreach(var property in properties)
+                    {
+                        var valueOnNew = property.GetValue(newItem, null);
+                        property.SetValue(oldItem, valueOnNew, null);
+                    }
                 }
             }
         }
