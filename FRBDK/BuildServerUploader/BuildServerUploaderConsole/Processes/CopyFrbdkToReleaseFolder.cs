@@ -84,7 +84,7 @@ namespace BuildServerUploaderConsole.Processes
 
             foreach(var extraTool in extraTools)
             {
-                CopyDirectory(DirectoryHelper.FrbdkDirectory + extraTool, "Copied" + extraTool);
+                CopyDirectory(DirectoryHelper.FrbdkDirectory + extraTool, "Copied" + extraTool, subdirectoryName:extraTool);
             }
 
 
