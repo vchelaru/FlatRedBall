@@ -674,7 +674,23 @@ namespace GlueControl
 
         private static void HandleDto(Dtos.ForceReloadFileDto dto)
         {
+            var gameType = typeof(Game1).GetType();
+            var gameAssembly = gameType.Assembly;
+            var namespacePrefix = gameType.GetType().Name.Split('.').First();
 
+            Type elementType = null;
+            foreach (var element in dto.ElementsContainingFile)
+            {
+                var qualifiedName = $"{namespacePrefix}.{element}";
+
+                elementType = gameAssembly.GetType(qualifiedName);
+
+            }
+
+            if (elementType != null)
+            {
+                // invoke the ReloadFile method:
+            }
         }
 
         #endregion
