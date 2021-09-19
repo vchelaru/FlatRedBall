@@ -89,6 +89,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                 });
             }
 
+            // Create the levels *after* the player, so the player gets exposed in the levels
             if (vm.CreateLevels)
             {
                 Add("Create Levels", () =>
@@ -469,6 +470,8 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                     playerNos.SetVariable("X", 64.0f);
                     playerNos.SetVariable("Y", -64.0f);
+                    playerNos.ExposedInDerived = true; // do we have to push this to the derived screens? No, because screens are created after
+
                 }
             }
 
