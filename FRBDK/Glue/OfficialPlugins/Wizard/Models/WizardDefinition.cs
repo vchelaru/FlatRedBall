@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Instructions;
 using Newtonsoft.Json;
 using OfficialPlugins.Compiler.CommandSending;
+using OfficialPlugins.Wizard.Views;
 using OfficialPluginsCore.Wizard.ViewModels;
 using OfficialPluginsCore.Wizard.Views;
 using System;
@@ -33,6 +34,45 @@ namespace OfficialPluginsCore.Wizard.Models
         public void CreatePages()
         {
             ViewModel = new WizardData();
+
+            {
+                var formsData = new WizardPage(ViewModel);
+
+                var page = new NewWizardWelcomePage();
+                page.PlatformerClicked += () =>
+                {
+                    ViewModel.PlayerControlType = GameType.Platformer;
+                    // all other defaults apply
+                    //Show(FormsDataList.Last());
+                    DoneClicked();
+                };
+                page.TopDownClicked += () =>
+                {
+                    ViewModel.PlayerControlType = GameType.Topdown;
+                    // all other defaults apply
+                    //Show(FormsDataList.Last());
+                    DoneClicked();
+                };
+
+                page.CustomClicked += () =>
+                {
+                    formsData.CallNext();
+                };
+
+                page.JsonConfigurationClicked += () =>
+                {
+                    formsData.CallNext();
+                };
+
+                var item = formsData.AddView(page);
+                item.StackOrFill = StackOrFill.Fill;
+                formsData.HasNextButton = false;
+
+
+
+                FormsDataList.Add(formsData);
+            }
+
 
             #region Welcome Page
             {

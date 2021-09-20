@@ -16,7 +16,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
     /// <summary>
     /// Interaction logic for QuickActionButton.xaml
     /// </summary>
-    public partial class QuickActionButton : UserControl
+    public partial class TitleImageButton : UserControl
     {
         public event RoutedEventHandler Clicked;
 
@@ -38,7 +38,13 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             set => ImageInstance.Source = value;
         }
 
-        public QuickActionButton()
+        public double ImageWidthRatio
+        {
+            get => ImageColumn.Width.Value;
+            set => ImageColumn.Width = new GridLength(value, GridUnitType.Star);
+        }
+
+        public TitleImageButton()
         {
             InitializeComponent();
         }
