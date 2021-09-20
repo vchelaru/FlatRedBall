@@ -114,6 +114,11 @@ namespace OfficialPluginsCore.Wizard.Managers
                     ImportAdditionalObjects(vm.NamedObjectSavesSerialized));
             }
 
+            Add("Regenerating All Code", () =>
+            {
+                GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
+
+            });
 
             AddTask("Flushing Files", async () =>
             {
