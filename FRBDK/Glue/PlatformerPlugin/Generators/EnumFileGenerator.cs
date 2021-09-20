@@ -24,24 +24,28 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
                 GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(relativeDirectory);
 
-                var fullFile = GlueState.Self.CurrentGlueProjectDirectory + relativeDirectory;
+                var glueProjectDirectory = GlueState.Self.CurrentGlueProjectDirectory;
 
-
-                try
+                if(!string.IsNullOrEmpty(glueProjectDirectory))
                 {
-                    GlueCommands.Self.TryMultipleTimes(() =>
-                        System.IO.File.WriteAllText(fullFile, contents));
-                }
-                catch(Exception e)
-                {
-                    GlueCommands.Self.PrintError(e.ToString());
-                }
+                    var fullFile = GlueState.Self.CurrentGlueProjectDirectory + relativeDirectory;
 
-                FilePath oldFile = GlueState.Self.CurrentGlueProjectDirectory +
-                    "Platformer/Enums.cs";
+                    try
+                    {
+                        GlueCommands.Self.TryMultipleTimes(() =>
+                            System.IO.File.WriteAllText(fullFile, contents));
+                    }
+                    catch(Exception e)
+                    {
+                        GlueCommands.Self.PrintError(e.ToString());
+                    }
 
-                GlueCommands.Self.ProjectCommands.RemoveFromProjects(
-                    oldFile, saveAfterRemoving: true);
+                    FilePath oldFile = GlueState.Self.CurrentGlueProjectDirectory +
+                        "Platformer/Enums.cs";
+
+                    GlueCommands.Self.ProjectCommands.RemoveFromProjects(
+                        oldFile, saveAfterRemoving: true);
+                }
 
             }, "Adding platformer enum files to the project");
 

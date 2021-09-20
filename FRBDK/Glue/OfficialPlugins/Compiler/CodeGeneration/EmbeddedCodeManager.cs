@@ -23,6 +23,22 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile("Editing.Markers.TileShapeCollectionMarker.cs",
                 "Editing/Markers/TileShapeCollectionMarker.Generated.cs");
 
+            SaveEmbeddedFile("Editing.Visuals.Arrow.cs",
+                "Editing/Visuals/Arrow.Generated.cs");
+
+            SaveEmbeddedFile("Editing.CameraLogic.cs",
+                "Editing/CameraLogic.Generated.cs");
+
+            SaveEmbeddedFile("Editing.CopyPasteManager.cs",
+                "Editing/CopyPasteManager.Generated.cs");
+
+            SaveEmbeddedFile("Editing.EditingManager.cs",
+                "Editing/EditingManager.Generated.cs");
+
+            SaveEmbeddedFile("Editing.EditorVisuals.cs",
+                "Editing/EditorVisuals.Generated.cs");
+
+
             SaveEmbeddedFile("GlueControlManager.cs", 
                 "GlueControlManager.Generated.cs");
 
@@ -32,8 +48,6 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile("Dtos.cs",
                 "Dtos.Generated.cs");
 
-            SaveEmbeddedFile("Editing.EditingManager.cs",
-                "Editing/EditingManager.Generated.cs");
 
             SaveEmbeddedFile("Editing.SelectionLogic.cs",
                 "Editing/SelectionLogic.Generated.cs");
@@ -46,12 +60,6 @@ namespace OfficialPlugins.Compiler.CodeGeneration
 
             SaveEmbeddedFile("Editing.MoveObjectToContainerLogic.cs",
                 "Editing/MoveObjectToContainerLogic.Generated.cs");
-
-            SaveEmbeddedFile("Editing.CameraLogic.cs",
-                "Editing/CameraLogic.Generated.cs");
-
-            SaveEmbeddedFile("Editing.CopyPasteManager.cs",
-                "Editing/CopyPasteManager.Generated.cs");
 
             SaveEmbeddedFile("InstanceLogic.cs",
                 "InstanceLogic.Generated.cs");

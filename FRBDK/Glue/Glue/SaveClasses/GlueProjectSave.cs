@@ -47,7 +47,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Fields / Properties
 
-        public const int LatestVersion = (int)GluxVersions.SupportsEditMode;
+        public const int LatestVersion = (int)GluxVersions.ScreensHaveActivityEditMode;
 
         public int FileVersion { get; set; }
 

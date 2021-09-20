@@ -27,6 +27,7 @@
     <Compile Remove="Compiler\Embedded\Editing\CameraLogic.cs" />
     <Compile Remove="Compiler\Embedded\Editing\CopyPasteManager.cs" />
     <Compile Remove="Compiler\Embedded\Editing\EditingManager.cs" />
+    <Compile Remove="Compiler\Embedded\Editing\EditorVisuals.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Guides.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Markers\SelectionMarker.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Markers\TileShapeCollectionMarker.cs" />
@@ -34,6 +35,7 @@
     <Compile Remove="Compiler\Embedded\Editing\SelectionLogic.cs" />
     <Compile Remove="Compiler\Embedded\Editing\SelectionMarker.cs" />
     <Compile Remove="Compiler\Embedded\Editing\VariableAssignmentLogic.cs" />
+    <Compile Remove="Compiler\Embedded\Editing\Visuals\Arrow.cs" />
     <Compile Remove="Compiler\Embedded\Forms\ObjectCreationWindow.cs" />
     <Compile Remove="Compiler\Embedded\GlueControlManager.cs" />
     <Compile Remove="Compiler\Embedded\InstanceLogic.cs" />
@@ -97,12 +99,14 @@
     <EmbeddedResource Include="Compiler\Embedded\Editing\CameraLogic.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\CopyPasteManager.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\EditingManager.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Editing\EditorVisuals.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Guides.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Markers\SelectionMarker.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Markers\TileShapeCollectionMarker.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\MoveObjectToContainerLogic.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\SelectionLogic.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\VariableAssignmentLogic.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Editing\Visuals\Arrow.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Forms\ObjectCreationWindow.cs" />
     <EmbeddedResource Include="Compiler\Embedded\GlueControlManager.cs" />
     <EmbeddedResource Include="Compiler\Embedded\InstanceLogic.cs" />

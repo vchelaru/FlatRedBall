@@ -747,8 +747,10 @@ namespace FlatRedBall.Screens
 
                     if (textCount != 0)
                     {
-                        messages.Add("There are " + textCount +
-                            "automatically updated Texts in the TextManager.  See \"FlatRedBall.Graphics.TextManager.AutomaticallyUpdatedTexts\"");
+                        var textError =
+                            "There are " + textCount +
+                            " automatically updated Texts in the TextManager.  See \"FlatRedBall.Graphics.TextManager.AutomaticallyUpdatedTexts\"";
+                        messages.Add(textError);
                     }
                 }
                 #endregion

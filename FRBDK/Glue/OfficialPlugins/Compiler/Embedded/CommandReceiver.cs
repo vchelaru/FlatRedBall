@@ -660,6 +660,7 @@ namespace GlueControl
 
 
             screen?.RestartScreen(reloadContent: true, applyRestartVariables: applyRestartVariables);
+            EditorVisuals.DestroyContainedObjects();
         }
 
         #endregion
