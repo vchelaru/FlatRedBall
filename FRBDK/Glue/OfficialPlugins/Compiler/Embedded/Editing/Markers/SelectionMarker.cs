@@ -68,6 +68,148 @@ namespace GlueControl.Editing
 
     #endregion
 
+    #region Handles Class
+    public class Handles
+    {
+        AxisAlignedRectangle[] rectangles = new AxisAlignedRectangle[8];
+        const int DefaultHandleDimension = 10;
+        const int HighlightedHandleDimension = 14;
+
+
+        public ResizeMode ResizeMode { get; set; }
+
+        public Handles()
+        {
+            for (int i = 0; i < rectangles.Length; i++)
+            {
+                rectangles[i] = new AxisAlignedRectangle();
+
+                rectangles[i].Width = DefaultHandleDimension;
+                rectangles[i].Height = DefaultHandleDimension;
+
+                rectangles[i].Visible = false;
+                ShapeManager.AddToLayer(rectangles[i], SpriteManager.TopLayer, makeAutomaticallyUpdated: false);
+            }
+        }
+
+        internal void MakePersistent()
+        {
+            for (int i = 0; i < rectangles.Length; i++)
+            {
+                FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Add(rectangles[i]);
+            }
+        }
+
+        internal void UpdateVisibilityConsideringResizeMode(bool isVisible)
+        {
+            if (ResizeMode == ResizeMode.EightWay)
+            {
+                foreach (var handle in rectangles)
+                {
+                    handle.Visible = isVisible;
+                }
+            }
+            else if (ResizeMode == ResizeMode.Cardinal)
+            {
+                for (int i = 0; i < rectangles.Length; i++)
+                {
+                    var handle = rectangles[i];
+                    // every other one, starting with index 1
+                    handle.Visible = isVisible && (i % 2) == 1;
+                }
+            }
+            else
+            {
+                foreach (var handle in rectangles)
+                {
+                    handle.Visible = false;
+                }
+            }
+        }
+
+        internal void UpdateDimension(HashSet<ResizeSide> sidesToHighlight)
+        {
+
+            for (int i = 0; i < rectangles.Count(); i++)
+            {
+                var handle = rectangles[i];
+
+                var side = (ResizeSide)i;
+                float size = sidesToHighlight.Contains(side) ? HighlightedHandleDimension : DefaultHandleDimension;
+                size /= CameraLogic.CurrentZoomRatio;
+
+                handle.Width = size;
+                handle.Height = size;
+            }
+        }
+
+        public void UpdateHandlePositions(IScalable owner, Vector3 objectCenter)
+        {
+            var handle = rectangles[0];
+            handle.X = -owner.ScaleX - handle.Width / 2;
+            handle.Y = owner.ScaleY + handle.Height / 2;
+
+            handle = rectangles[1];
+            handle.X = 0;
+            handle.Y = owner.ScaleY + handle.Height / 2;
+
+            handle = rectangles[2];
+            handle.X = owner.ScaleX + handle.Width / 2;
+            handle.Y = owner.ScaleY + handle.Height / 2;
+
+            handle = rectangles[3];
+            handle.X = owner.ScaleX + handle.Width / 2;
+            handle.Y = 0;
+
+            handle = rectangles[4];
+            handle.X = +owner.ScaleX + handle.Width / 2;
+            handle.Y = -owner.ScaleY - handle.Height / 2;
+
+            handle = rectangles[5];
+            handle.X = 0;
+            handle.Y = -owner.ScaleY - handle.Height / 2;
+
+            handle = rectangles[6];
+            handle.X = -owner.ScaleX - handle.Width / 2;
+            handle.Y = -owner.ScaleY - handle.Height / 2;
+
+            handle = rectangles[7];
+            handle.X = -owner.ScaleX - handle.Width / 2;
+            handle.Y = 0;
+
+            foreach (var rect in rectangles)
+            {
+                rect.Position += objectCenter;
+            }
+
+        }
+
+        public ResizeSide GetSideOver()
+        {
+            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+
+            for (int i = 0; i < this.rectangles.Length; i++)
+            {
+                if (rectangles[i].Visible && cursor.IsOn3D(rectangles[i]))
+                {
+                    return (ResizeSide)i;
+                }
+            }
+
+            return ResizeSide.None;
+        }
+
+        internal void Destroy()
+        {
+            for (int i = 0; i < rectangles.Length; i++)
+            {
+                FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Remove(rectangles[i]);
+                rectangles[i].Visible = false;
+            }
+        }
+    }
+
+    #endregion
 
     public class SelectionMarker : ISelectionMarker
     {
@@ -75,7 +217,7 @@ namespace GlueControl.Editing
 
         AxisAlignedRectangle rectangle;
 
-        AxisAlignedRectangle[] handles = new AxisAlignedRectangle[8];
+        Handles Handles;
 
         public float ExtraPaddingInPixels { get; set; } = 2;
 
@@ -128,14 +270,6 @@ namespace GlueControl.Editing
 
         public bool CanMoveItem { get; set; }
 
-        ResizeMode ResizeMode
-        {
-            get; set;
-        }
-
-        const int DefaultHandleDimension = 10;
-        const int HighlightedHandleDimension = 14;
-
         Microsoft.Xna.Framework.Point ScreenPointPushed;
         Vector3 unsnappedItemPosition;
         Vector2 unsnappedItemSize;
@@ -172,16 +306,8 @@ namespace GlueControl.Editing
             rectangle.Visible = false;
             ShapeManager.AddToLayer(rectangle, SpriteManager.TopLayer, makeAutomaticallyUpdated: false);
 
-            for (int i = 0; i < handles.Length; i++)
-            {
-                handles[i] = new AxisAlignedRectangle();
+            Handles = new Handles();
 
-                handles[i].Width = DefaultHandleDimension;
-                handles[i].Height = DefaultHandleDimension;
-
-                handles[i].Visible = false;
-                ShapeManager.AddToLayer(handles[i], SpriteManager.TopLayer, makeAutomaticallyUpdated: false);
-            }
         }
 
         public void MakePersistent()
@@ -190,10 +316,7 @@ namespace GlueControl.Editing
 
             FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Add(rectangle);
 
-            for(int i = 0; i < handles.Length; i++)
-            {
-                FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Add(handles[i]);
-            }
+            Handles.MakePersistent();
 #endif
         }
 
@@ -255,19 +378,19 @@ namespace GlueControl.Editing
             {
                 if (ownerAsPositionedObject is Sprite asSprite && asSprite.TextureScale > 0)
                 {
-                    ResizeMode = ResizeMode.Cardinal;
+                    Handles.ResizeMode = ResizeMode.Cardinal;
                 }
                 else if (ownerAsPositionedObject is FlatRedBall.Math.Geometry.Circle)
                 {
-                    ResizeMode = ResizeMode.Cardinal;
+                    Handles.ResizeMode = ResizeMode.Cardinal;
                 }
                 else if (ownerAsPositionedObject is FlatRedBall.Math.Geometry.IScalable)
                 {
-                    ResizeMode = ResizeMode.EightWay;
+                    Handles.ResizeMode = ResizeMode.EightWay;
                 }
                 else
                 {
-                    ResizeMode = ResizeMode.None;
+                    Handles.ResizeMode = ResizeMode.None;
                 }
             }
         }
@@ -334,31 +457,7 @@ namespace GlueControl.Editing
         static HashSet<ResizeSide> sidesToHighlight = new HashSet<ResizeSide>();
         private void UpdateHandles(PositionedObject item, ResizeSide sideGrabbed)
         {
-            #region Update Handle Visibility
-            if (ResizeMode == ResizeMode.EightWay)
-            {
-                foreach (var handle in handles)
-                {
-                    handle.Visible = Visible;
-                }
-            }
-            else if (ResizeMode == ResizeMode.Cardinal)
-            {
-                for (int i = 0; i < handles.Length; i++)
-                {
-                    var handle = handles[i];
-                    // every other one, starting with index 1
-                    handle.Visible = Visible && (i % 2) == 1;
-                }
-            }
-            else
-            {
-                foreach (var handle in handles)
-                {
-                    handle.Visible = false;
-                }
-            }
-            #endregion
+            Handles.UpdateVisibilityConsideringResizeMode(Visible);
 
             if (Visible)
             {
@@ -367,21 +466,12 @@ namespace GlueControl.Editing
                 {
                     sideOver = GetSideOver();
                 }
-                UpdateHandleRelativePositions();
+                Handles.UpdateHandlePositions(rectangle, this.Position);
 
                 FillSidesToHighlight(item, sideOver);
-                for (int i = 0; i < handles.Count(); i++)
-                {
-                    var handle = handles[i];
-                    handle.Position += this.Position;
 
-                    var side = (ResizeSide)i;
-                    float size = sidesToHighlight.Contains(side) ? HighlightedHandleDimension : DefaultHandleDimension;
-                    size /= CameraLogic.CurrentZoomRatio;
+                Handles.UpdateDimension(sidesToHighlight);
 
-                    handle.Width = size;
-                    handle.Height = size;
-                }
             }
         }
 
@@ -434,42 +524,6 @@ namespace GlueControl.Editing
                     sidesToHighlight.Add(ResizeSide.Right);
                 }
             }
-        }
-
-        private void UpdateHandleRelativePositions()
-        {
-            var handle = handles[0];
-            handle.X = -rectangle.Width / 2 - handle.Width / 2;
-            handle.Y = rectangle.Height / 2 + handle.Height / 2;
-
-            handle = handles[1];
-            handle.X = 0;
-            handle.Y = rectangle.Height / 2 + handle.Height / 2;
-
-            handle = handles[2];
-            handle.X = rectangle.Width / 2 + handle.Width / 2;
-            handle.Y = rectangle.Height / 2 + handle.Height / 2;
-
-            handle = handles[3];
-            handle.X = rectangle.Width / 2 + handle.Width / 2;
-            handle.Y = 0;
-
-            handle = handles[4];
-            handle.X = +rectangle.Width / 2 + handle.Width / 2;
-            handle.Y = -rectangle.Height / 2 - handle.Height / 2;
-
-            handle = handles[5];
-            handle.X = 0;
-            handle.Y = -rectangle.Height / 2 - handle.Height / 2;
-
-            handle = handles[6];
-            handle.X = -rectangle.Width / 2 - handle.Width / 2;
-            handle.Y = -rectangle.Height / 2 - handle.Height / 2;
-
-            handle = handles[7];
-            handle.X = -rectangle.Width / 2 - handle.Width / 2;
-            handle.Y = 0;
-
         }
 
         #endregion
@@ -756,20 +810,8 @@ namespace GlueControl.Editing
             return false;
         }
 
-        public ResizeSide GetSideOver()
-        {
-            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+        public ResizeSide GetSideOver() => Handles.GetSideOver();
 
-            for (int i = 0; i < this.handles.Length; i++)
-            {
-                if (handles[i].Visible && cursor.IsOn3D(handles[i]))
-                {
-                    return (ResizeSide)i;
-                }
-            }
-
-            return ResizeSide.None;
-        }
 
         public void HandleCursorRelease()
         {
@@ -844,11 +886,7 @@ namespace GlueControl.Editing
             rectangle.Visible = false;
             FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Remove(rectangle);
 
-            for (int i = 0; i < handles.Length; i++)
-            {
-                FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Remove(handles[i]);
-                handles[i].Visible = false;
-            }
+            Handles.Destroy();
 #endif
         }
     }
