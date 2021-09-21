@@ -34,7 +34,8 @@ namespace GlueControl.Editing
     {
         None,
         EightWay,
-        Cardinal
+        Cardinal,
+        RightAndDown
     }
 
     #endregion
