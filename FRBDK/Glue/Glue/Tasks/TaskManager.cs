@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Tasks;
+using FlatRedBall.IO;
 
 namespace FlatRedBall.Glue.Managers
 {
@@ -43,6 +45,7 @@ namespace FlatRedBall.Glue.Managers
 
         List<GlueTask> mActiveAsyncTasks = new List<GlueTask>();
 
+        const int maxTasksInHistory = 121;
         List<string> taskHistory = new List<string>();
 
         public int? SyncTaskThreadId { get; private set; }
@@ -365,11 +368,8 @@ namespace FlatRedBall.Glue.Managers
 
             if (toProcess != null)
             {
-                taskHistory.Add(glueTask.DisplayInfo);
-                while(taskHistory.Count > 100)
-                {
-                    taskHistory.RemoveAt(0);
-                }
+                string taskDisplayInfo = glueTask.DisplayInfo;
+                RecordTaskHistory(taskDisplayInfo);
                 ThreadPool.QueueUserWorkItem(delegate
                 {
                     SyncTaskThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
@@ -378,7 +378,7 @@ namespace FlatRedBall.Glue.Managers
                     //this.taskHistory.Add(glueTask?.DisplayInfo);
                     glueTask.TimeStarted = DateTime.Now;
                     TaskAddedOrRemoved?.Invoke(TaskEvent.Started, glueTask);
-                    if(glueTask.DoOnUiThread)
+                    if (glueTask.DoOnUiThread)
                     {
                         global::Glue.MainGlueWindow.Self.Invoke(toProcess);
                     }
@@ -395,7 +395,7 @@ namespace FlatRedBall.Glue.Managers
                     lock (mSyncLockObject)
                     {
                         // The task may have already been removed
-                        if(mSyncedActions.Contains(glueTask))
+                        if (mSyncedActions.Contains(glueTask))
                         {
                             mSyncedActions.Remove(glueTask);
                         }
@@ -413,6 +413,27 @@ namespace FlatRedBall.Glue.Managers
                 });
                 TaskAddedOrRemoved?.Invoke(TaskEvent.Queued, glueTask);
 
+            }
+        }
+
+        public void RecordTaskHistory(string taskDisplayInfo)
+        {
+            var projectName = GlueState.Self.CurrentMainProject?.FullFileName;
+            if (string.IsNullOrEmpty(projectName))
+            {
+                projectName = "<NO PROJECT>";
+            }
+            else
+            {
+                projectName = FileManager.RemovePath(FileManager.RemoveExtension(projectName));
+            }
+            var taskDetail = $"{DateTime.Now.ToString("hh:mm:ss tt")} {projectName} {taskDisplayInfo}";
+            taskHistory.Add(taskDetail);
+
+
+            while (taskHistory.Count > maxTasksInHistory)
+            {
+                taskHistory.RemoveAt(0);
             }
         }
 

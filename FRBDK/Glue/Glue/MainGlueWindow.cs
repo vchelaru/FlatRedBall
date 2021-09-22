@@ -519,8 +519,10 @@ namespace Glue
             GlueCommands.Self.GluxCommands.SaveSettings();
         }
 
-        public static void CloseProject(bool shouldSave, bool isExiting)
+        public static void CloseProject(bool shouldSave, bool isExiting, InitializationWindow initWindow = null)
         {
+            TaskManager.Self.RecordTaskHistory($"--Received Close Project Command --");
+
             // Let's set this to true so all tasks can end
             ProjectManager.WantsToClose = true;
 
@@ -549,10 +551,21 @@ namespace Glue
                     // pump events
                     Application.DoEvents();
 
+                    if(initWindow != null)
+                    {
+                        initWindow.Message = "Closing Project";
+                        initWindow.SubMessage = $"Waiting for {TaskManager.Self.TaskCount} tasks to finish...\nCurrent Task: {TaskManager.Self.CurrentTask}";
+
+                    }
+
+                    const int maxMsToWait = 50 * 1000;
+
                     // don't wait forever. This is mainly so we wait for any simultaneous tasks.
                     // There shouldn't be any but just in case Vic messed up the code...
-                    if(msWaited > 3*1000)
+                    if(msWaited > maxMsToWait)
                     {
+                        TaskManager.Self.RecordTaskHistory($"--Waited maximum time to finish tasks, but still have {TaskManager.Self.TaskCount} tasks left --");
+
                         break;
                     }
                 }
@@ -578,6 +591,8 @@ namespace Glue
 
             MainGlueWindow.Self.Text = "FlatRedBall Glue";
             ProjectManager.WantsToClose = false;
+            TaskManager.Self.RecordTaskHistory($"--Ending Close Project Command --");
+
 
         }
 

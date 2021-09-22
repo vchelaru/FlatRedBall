@@ -137,7 +137,10 @@ namespace FlatRedBall.Glue.IO
 
                     bool anyFlushed = false;
 
-                    foreach (string file in filesToFlush.Distinct())
+                    var distinctFiles =
+                        filesToFlush.Distinct().ToArray();
+
+                    foreach (string file in distinctFiles)
                     {
                         anyFlushed = true;
 
@@ -161,7 +164,6 @@ namespace FlatRedBall.Glue.IO
                                     if(ReactToChangedFile(file))
                                     {
                                         UnreferencedFilesManager.Self.IsRefreshRequested = true;
-
                                     }
                                 },
                                 "Reacting to changed file " + file);

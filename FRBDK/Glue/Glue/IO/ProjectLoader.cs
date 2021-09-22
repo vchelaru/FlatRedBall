@@ -76,6 +76,8 @@ namespace FlatRedBall.Glue.IO
             }
             //////////////////// End EARLY OUT////////////////////////////////
 
+            TaskManager.Self.RecordTaskHistory($"--Received Load project Command {projectFileName}--");
+
             FileWatchManager.PerformFlushing = false;
 
             bool closeInitWindow = PrepareInitializationWindow(initializationWindow);
@@ -90,6 +92,7 @@ namespace FlatRedBall.Glue.IO
             // turn off task processing while this is loading, so that no background tasks are running while plugins are starting up.
             // Do this *after* closing previous project, because closing previous project waits for all tasks to finish.
             TaskManager.Self.IsTaskProcessingEnabled = false;
+            TaskManager.Self.RecordTaskHistory($"--Starting to load project {projectFileName}--");
 
             SetInitWindowText("Loading code project");
 
@@ -576,7 +579,7 @@ namespace FlatRedBall.Glue.IO
         {
             if (ProjectManager.ProjectBase != null)
             {
-                MainGlueWindow.CloseProject(shouldSave:false, isExiting:false);
+                MainGlueWindow.CloseProject(shouldSave:false, isExiting:false, initWindow: mCurrentInitWindow);
             }
         }
 
