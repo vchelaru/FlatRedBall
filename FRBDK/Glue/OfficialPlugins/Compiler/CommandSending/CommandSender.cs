@@ -24,11 +24,16 @@ namespace OfficialPlugins.Compiler.CommandSending
             return await SendCommand($"{dtoTypeName}:{serialized}", port);
         }
 
+        static string LastCommand;
+        // Maybe we should have a bool here on whether to wait. if false, exit if the sendCommandSemaphore returns false
         public static async Task<string> SendCommand(string text, int port)
         {
             try
             {
                 await sendCommandSemaphore.WaitAsync();
+
+                LastCommand = text;
+
                 TcpClient client = new TcpClient();
 
                 // this takes ~2 seconds, according to this:
