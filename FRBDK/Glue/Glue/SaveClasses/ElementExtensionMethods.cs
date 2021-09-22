@@ -213,16 +213,8 @@ namespace FlatRedBall.Glue.SaveClasses
         private static NamedObjectSave AddSetByDerivedNos(INamedObjectContainer namedObjectContainer,
             NamedObjectSave namedObjectSetByDerived, bool instantiatedByBase, NamedObjectSave containerToAddTo = null)
         {
-            NamedObjectSave existingNamedObject = null;
-
-            foreach (NamedObjectSave namedObjectInDerived in namedObjectContainer.NamedObjects)
-            {
-                if (namedObjectInDerived.InstanceName == namedObjectSetByDerived.InstanceName)
-                {
-                    existingNamedObject = namedObjectInDerived;
-                    break;
-                }
-            }
+            NamedObjectSave existingNamedObject = namedObjectContainer.AllNamedObjects
+                .FirstOrDefault(item => item.InstanceName == namedObjectSetByDerived.InstanceName);
 
             if (existingNamedObject != null)
             {

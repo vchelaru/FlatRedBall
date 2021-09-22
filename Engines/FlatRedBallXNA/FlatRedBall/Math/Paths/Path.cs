@@ -130,19 +130,19 @@ namespace FlatRedBall.Math.Paths
 
         }
 
-        public void ArcTo(float endX, float endY, float signedAngle)
+        public void ArcTo(float endX, float endY, float signedAngleRadians)
         {
             var pathSegment = GetSegmentToAbsolutePoint(endX, endY, SegmentType.Arc);
-            pathSegment.ArcAngle = signedAngle;
+            pathSegment.ArcAngle = signedAngleRadians;
             AssignArcLength(pathSegment);
             Segments.Add(pathSegment);
             TotalLength += pathSegment.CalculatedLength;
 
         }
-        public void ArcToRelative(float endX, float endY, float signedAngle)
+        public void ArcToRelative(float endX, float endY, float signedAngleRadians)
         {
             var pathSegment = GetSegmentToAbsolutePoint(currentX + endX, currentY + endY, SegmentType.Arc);
-            pathSegment.ArcAngle = signedAngle;
+            pathSegment.ArcAngle = signedAngleRadians;
 
             AssignArcLength(pathSegment);
             Segments.Add(pathSegment);
