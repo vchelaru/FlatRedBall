@@ -435,6 +435,11 @@ namespace FlatRedBall.Screens
                             item.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
                             item.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
                         }
+                        foreach(var shape in ShapeManager.AutomaticallyUpdatedShapes)
+                        {
+                            shape.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
+                            shape.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
+                        }
                     }
                     catch(Exception e)
                     {
