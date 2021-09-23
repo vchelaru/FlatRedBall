@@ -354,7 +354,14 @@ namespace GlueControl.Editing
                     {
                         if (item is PositionedObject asPositionedObject)
                         {
-                            asPositionedObject.Y += shiftAmount;
+                            if (asPositionedObject.Parent != null)
+                            {
+                                asPositionedObject.RelativeY += shiftAmount;
+                            }
+                            else
+                            {
+                                asPositionedObject.Y += shiftAmount;
+                            }
                             PropertyChanged(item, nameof(asPositionedObject.Y), asPositionedObject.Y);
                         }
                     }
@@ -365,7 +372,14 @@ namespace GlueControl.Editing
                     {
                         if (item is PositionedObject asPositionedObject)
                         {
-                            asPositionedObject.Y -= shiftAmount;
+                            if (asPositionedObject.Parent != null)
+                            {
+                                asPositionedObject.RelativeY -= shiftAmount;
+                            }
+                            else
+                            {
+                                asPositionedObject.Y -= shiftAmount;
+                            }
                             PropertyChanged(item, nameof(asPositionedObject.Y), asPositionedObject.Y);
                         }
                     }
@@ -376,7 +390,14 @@ namespace GlueControl.Editing
                     {
                         if (item is PositionedObject asPositionedObject)
                         {
-                            asPositionedObject.X -= shiftAmount;
+                            if (asPositionedObject.Parent != null)
+                            {
+                                asPositionedObject.RelativeX -= shiftAmount;
+                            }
+                            else
+                            {
+                                asPositionedObject.X -= shiftAmount;
+                            }
                             PropertyChanged(item, nameof(asPositionedObject.X), asPositionedObject.X);
                         }
                     }
@@ -387,7 +408,14 @@ namespace GlueControl.Editing
                     {
                         if (item is PositionedObject asPositionedObject)
                         {
-                            asPositionedObject.X += shiftAmount;
+                            if (asPositionedObject.Parent != null)
+                            {
+                                asPositionedObject.RelativeX += shiftAmount;
+                            }
+                            else
+                            {
+                                asPositionedObject.X += shiftAmount;
+                            }
                             PropertyChanged(item, nameof(asPositionedObject.X), asPositionedObject.X);
                         }
                     }
