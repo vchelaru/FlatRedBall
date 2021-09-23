@@ -11,6 +11,9 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
+
+            <ColumnDefinition></ColumnDefinition>
+
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
@@ -39,6 +42,17 @@
             <TextBlock  VerticalAlignment="Center" Margin="0,0,3,0">Angle:</TextBlock>
             <TextBox Grid.Column="1" Text="{Binding Angle}" KeyUp="TextBox_KeyEnterUpdate"></TextBox>
         </Grid>
-        <Button Grid.Column="4" Width="24" Click="CloseClicked">X</Button>
+
+        <Grid Grid.Column="4" Margin="16,0,16,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button Click="MoveUpClick">^</Button>
+            <Button Click="MoveDownClick" Grid.Column="1" >v</Button>
+        </Grid>
+        
+        
+        <Button Grid.Column="5" Width="24" Click="CloseClicked">X</Button>
     </Grid>
 </UserControl>

@@ -10,11 +10,14 @@ namespace OfficialPlugins.PathPlugin.ViewModels
     public class PathSegmentViewModel : ViewModel
     {
         public event Action<PathSegmentViewModel> CloseClicked;
+        public event Action<PathSegmentViewModel> MoveUpClicked;
+        public event Action<PathSegmentViewModel> MoveDownClicked;
 
         static List<SegmentType> availableValuesStatic = new List<SegmentType>()
         {
             SegmentType.Line,
-            SegmentType.Arc
+            SegmentType.Arc,
+            SegmentType.Move
         };
 
         public IEnumerable<SegmentType> AvailableSegmentTypes => availableValuesStatic;
@@ -47,5 +50,7 @@ namespace OfficialPlugins.PathPlugin.ViewModels
         }
 
         public void HandleCloseClicked() => CloseClicked(this);
+        public void HandleMoveUpClicked() => MoveUpClicked(this);
+        public void HandleMoveDownClicked() => MoveDownClicked(this);
     }
 }

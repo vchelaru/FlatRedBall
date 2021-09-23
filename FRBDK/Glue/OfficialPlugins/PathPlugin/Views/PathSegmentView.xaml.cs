@@ -42,5 +42,15 @@ namespace OfficialPlugins.PathPlugin.Views
                 if (binding != null) { binding.UpdateSource(); }
             }
         }
+
+        private void MoveUpClick(object sender, RoutedEventArgs e)
+        {
+            ViewModel.HandleMoveUpClicked();
+        }
+
+        private void MoveDownClick(object sender, RoutedEventArgs e)
+        {
+            ViewModel.HandleMoveDownClicked();
+        }
     }
 }

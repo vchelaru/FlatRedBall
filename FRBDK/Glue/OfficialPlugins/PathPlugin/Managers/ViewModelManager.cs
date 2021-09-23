@@ -75,8 +75,7 @@ namespace OfficialPlugins.PathPlugin.Managers
                     segmentVm.Y = segment.EndY;
                     segmentVm.Angle = segment.ArcAngle;
                     segmentVm.SegmentType = segment.SegmentType;
-                    segmentVm.PropertyChanged += HandlePathSegmentViewModelPropertyChanged;
-                    segmentVm.CloseClicked += HandleSegmentRemoveClicked;
+                    AssignSegmentEvents(segmentVm);
                     MainViewModel.PathSegments.Add(segmentVm);
                 }
             }
@@ -84,12 +83,38 @@ namespace OfficialPlugins.PathPlugin.Managers
             MainViewModel.UpdateModelOnChanges = true;
         }
 
+        static void AssignSegmentEvents(PathSegmentViewModel vm)
+        {
+            vm.PropertyChanged += HandlePathSegmentViewModelPropertyChanged;
+            vm.CloseClicked += HandleSegmentRemoveClicked;
+
+            vm.MoveUpClicked += (_) =>
+            {
+                var index = MainViewModel.PathSegments.IndexOf(vm);
+
+                if (index > 0)
+                {
+                    MainViewModel.PathSegments.Remove(vm);
+                    MainViewModel.PathSegments.Insert(index - 1, vm);
+                }
+            };
+            vm.MoveDownClicked += (_) =>
+            {
+                var index = MainViewModel.PathSegments.IndexOf(vm);
+
+                if (index < MainViewModel.PathSegments.Count - 1)
+                {
+                    MainViewModel.PathSegments.Remove(vm);
+                    MainViewModel.PathSegments.Insert(index + 1, vm);
+                }
+            };
+        }
+
         public static void CreateNewSegmentViewModel()
         {
             var newSegment = new PathSegmentViewModel();
             newSegment.Y = 20;
-            newSegment.PropertyChanged += HandlePathSegmentViewModelPropertyChanged;
-            newSegment.CloseClicked += HandleSegmentRemoveClicked;
+            AssignSegmentEvents(newSegment);
             MainViewModel.PathSegments.Add(newSegment);
         }
 

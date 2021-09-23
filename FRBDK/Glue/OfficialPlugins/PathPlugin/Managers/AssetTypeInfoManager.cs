@@ -84,29 +84,38 @@ namespace OfficialPlugins.PathPlugin.Managers
 
                 foreach(var item in deserialized)
                 {
-                    var endX = FloatToString(item.EndX);
-                    var endY = FloatToString(item.EndY);
-                    if(item.SegmentType == SegmentType.Line)
-                    {
-                        toReturn.AppendLine($"{ownerName}.LineToRelative({endX}, {endY});");
-                        //LineToRelative(float x, float y)
-                    }
-                    else if(item.SegmentType == SegmentType.Arc)
-                    {
-                        var signedAngle = FloatToString(item.ArcAngle);
-
-                        //ArcToRelative(float endX, float endY, float signedAngle)
-                        toReturn.AppendLine(
-                            $"{ownerName}.ArcToRelative({endX}, {endY}, Microsoft.Xna.Framework.MathHelper.ToRadians({signedAngle}));");
-                    }
-                    else
-                    {
-                        // Unknown segment type...
-                    }
+                    GenerateCodeForSegment(toReturn, ownerName, item);
                 }
             }
 
             return toReturn.ToString();
+        }
+
+        private static void GenerateCodeForSegment(StringBuilder toReturn, string ownerName, PathSegment item)
+        {
+            var endX = FloatToString(item.EndX);
+            var endY = FloatToString(item.EndY);
+            if (item.SegmentType == SegmentType.Line)
+            {
+                toReturn.AppendLine($"{ownerName}.LineToRelative({endX}, {endY});");
+                //LineToRelative(float x, float y)
+            }
+            else if (item.SegmentType == SegmentType.Arc)
+            {
+                var signedAngle = FloatToString(item.ArcAngle);
+
+                //ArcToRelative(float endX, float endY, float signedAngle)
+                toReturn.AppendLine(
+                    $"{ownerName}.ArcToRelative({endX}, {endY}, Microsoft.Xna.Framework.MathHelper.ToRadians({signedAngle}));");
+            }
+            else if(item.SegmentType == SegmentType.Move)
+            {
+                toReturn.AppendLine($"{ownerName}.MoveToRelative({endX}, {endY});");
+            }
+            else
+            {
+                // Unknown segment type...
+            }
         }
     }
 }

@@ -16,7 +16,9 @@ namespace FlatRedBall.Math.Paths
     public enum SegmentType
     {
         Line,
-        Arc
+        Arc,
+        // Even though this isn't technically a path, we need to store this for serialization
+        Move
     }
 
     public enum AngleUnit
@@ -55,6 +57,10 @@ namespace FlatRedBall.Math.Paths
             if(SegmentType == SegmentType.Line)
             {
                 return Start + (End - Start).AtLength(lengthFromStart);
+            }
+            else if(SegmentType == SegmentType.Move)
+            {
+                return Start; // do we return start or end? Seems arbitrary unless there's some use case that benefits from one or the other...
             }
             else
             {
@@ -98,14 +104,14 @@ namespace FlatRedBall.Math.Paths
 
         public void MoveTo(float x, float y)
         {
-            currentX = x;
-            currentY = y;
+            var segment = GetSegmentToAbsolutePoint( x, y, SegmentType.Move);
+            segment.CalculatedLength = 0;
         }
 
         public void MoveToRelative(float x, float y)
         {
-            currentX += x;
-            currentY += y;
+            var segment = GetSegmentToAbsolutePoint(currentX + x, currentY + y, SegmentType.Move);
+            segment.CalculatedLength = 0;
         }
 
         public void LineTo(float x, float y)
@@ -128,6 +134,24 @@ namespace FlatRedBall.Math.Paths
             Segments.Add(pathSegment);
             TotalLength += pathSegment.CalculatedLength;
 
+        }
+
+        public void ShiftBy(float x, float y)
+        {
+            foreach(var segment in Segments)
+            {
+                segment.StartX += x;
+                segment.EndX += x;
+
+                segment.StartY += y;
+                segment.EndY += y;
+
+                if(segment.SegmentType == SegmentType.Arc)
+                {
+                    AssignArcLength(segment);
+
+                }
+            }
         }
 
         public void ArcTo(float endX, float endY, float signedAngleRadians)
@@ -421,6 +445,10 @@ namespace FlatRedBall.Math.Paths
                         angle = Microsoft.Xna.Framework.MathHelper.ToRadians(angle);
                     }
                     ArcToRelative(item.EndX, item.EndY, angle);
+                }
+                else if(item.SegmentType == SegmentType.Move)
+                {
+                    MoveToRelative(item.EndX, item.EndY);
                 }
                 else
                 {
