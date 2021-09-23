@@ -304,6 +304,7 @@ namespace GlueControl
                         FlatRedBall.Screens.ScreenManager.ScreenLoaded += AfterInitializeLogic;
                         FlatRedBall.Screens.ScreenManager.BeforeScreenCustomInitialize += BeforeCustomInitializeLogic;
 
+                        EditorVisuals.DestroyContainedObjects();
 
                         Screens.EntityViewingScreen.GameElementTypeToCreate = GlueToGameElementName(elementNameGlue);
                         Screens.EntityViewingScreen.InstanceToSelect = selectObjectDto.NamedObject;
