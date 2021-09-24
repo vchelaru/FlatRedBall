@@ -139,6 +139,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             return GetAbsoluteFileName(rfs);
         }
 
+        public FilePath GetAbsoluteFilePath(string rfsName)
+        {
+            return ProjectManager.MakeAbsolute(rfsName, forceAsContent:true);
+
+        }
+
         public string GetAbsoluteFileName(string relativeFileName, bool isContent)
         {
             return ProjectManager.MakeAbsolute(relativeFileName, isContent);

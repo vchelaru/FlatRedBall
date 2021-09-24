@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="250" d:DesignWidth="300">
+             d:DesignHeight="350" d:DesignWidth="300">
     <Grid>
         <StackPanel>
             <RadioButton Visibility="{Binding LevelScreenOptionUiVisibility}" IsEnabled="{Binding CanAddLevelScreen}" IsChecked="{Binding IsLevelScreen}">Level Screen</RadioButton>
@@ -20,8 +20,12 @@
                 </GroupBox>
                 <GroupBox Header="Tiled">
                     <StackPanel>
-                        <CheckBox VerticalContentAlignment="Center"
-                          IsChecked="{Binding IsAddStandardTmxChecked }">Add Standard TMX File</CheckBox>
+                        <!--<CheckBox VerticalContentAlignment="Center"
+                          IsChecked="{Binding IsAddStandardTmxChecked }">Add Standard TMX File</CheckBox>-->
+                        <RadioButton IsChecked="{Binding IsAddStandardTmxChecked }">Add Standard TMX File</RadioButton>
+                        <RadioButton IsChecked="{Binding IsCopyTmxFromOtherLevelChecked}" Visibility="{Binding CopyTmxFromOtherLevelVisibility}">Copy TMX From Other Level</RadioButton>
+                        <ComboBox Margin="20,0,0,6" Visibility="{Binding TmxComboBoxVisibility}" ItemsSource="{Binding AvailableTmxFiles, Mode=OneWay}" SelectedItem="{Binding SelectedTmxFile}"></ComboBox>
+                        <RadioButton IsChecked="{Binding IsNoTmxFileChecked}">No TMX File (Can be added later)</RadioButton>
                     </StackPanel>
                 </GroupBox>
             </StackPanel>

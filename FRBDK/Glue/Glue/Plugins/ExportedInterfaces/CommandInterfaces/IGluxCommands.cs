@@ -3,6 +3,7 @@ using FlatRedBall.Glue.SaveClasses;
 using System.Collections.Generic;
 using GlueFormsCore.ViewModels;
 using FlatRedBall.IO;
+using FlatRedBall.Glue.Elements;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
@@ -56,6 +57,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         ReferencedFileSave AddReferencedFileToGlobalContent(string fileToAdd, bool includeDirectoryInGlobalContentInName);
         void AddReferencedFileToGlobalContent(ReferencedFileSave rfs);
         void AddReferencedFileToElement(ReferencedFileSave rfs, GlueElement element);
+
+        ReferencedFileSave CreateReferencedFileSaveForExistingFile(IElement containerForFile, FilePath filePath, AssetTypeInfo ati = null);
 
         ReferencedFileSave GetReferencedFileSaveFromFile(string fileName);
         ReferencedFileSave GetReferencedFileSaveFromFile(FilePath filePath);

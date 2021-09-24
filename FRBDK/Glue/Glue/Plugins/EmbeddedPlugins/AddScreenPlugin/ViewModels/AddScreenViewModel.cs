@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.MVVM;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows;
 
@@ -12,6 +13,13 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
         LevelScreen,
         BaseLevelScreen,
         EmptyScreen
+    }
+
+    enum TmxOptions
+    {
+        NewStandardTmx,
+        CopiedTmx,
+        NoTmx
     }
 
     #endregion
@@ -58,11 +66,55 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
         public Visibility LevelScreenUiVisibility => (HasGameScreen && IsLevelScreen).ToVisibility();
 
 
-        public bool IsAddStandardTmxChecked
+        public TmxOptions TmxOptions
         {
-            get => Get<bool>();
+            get => Get<TmxOptions>();
             set => Set(value);
         }
+
+
+        [DependsOn(nameof(TmxOptions))]
+        public bool IsAddStandardTmxChecked
+        {
+            get => TmxOptions == TmxOptions.NewStandardTmx;
+            set
+            {
+                if (value) TmxOptions = TmxOptions.NewStandardTmx;
+            }
+        }
+
+        [DependsOn(nameof(TmxOptions))]
+        public bool IsCopyTmxFromOtherLevelChecked
+        {
+            get => TmxOptions == TmxOptions.CopiedTmx;
+            set
+            {
+                if (value) TmxOptions = TmxOptions.CopiedTmx;
+            }
+        }
+        [DependsOn(nameof(TmxOptions))]
+        public bool IsNoTmxFileChecked
+        {
+            get => TmxOptions == TmxOptions.NoTmx;
+            set
+            {
+                if (value) TmxOptions = TmxOptions.NoTmx;
+            }
+        }
+
+        [DependsOn(nameof(AvailableTmxFiles))]
+        public Visibility CopyTmxFromOtherLevelVisibility => (AvailableTmxFiles.Count > 0).ToVisibility();
+
+        public ObservableCollection<string> AvailableTmxFiles { get; private set; } 
+
+        public string SelectedTmxFile
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(TmxOptions))]
+        public Visibility TmxComboBoxVisibility => (TmxOptions == TmxOptions.CopiedTmx).ToVisibility();
 
         public bool InheritFromGameScreen
         {
@@ -146,6 +198,8 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
         public AddScreenViewModel()
         {
             IsAddListsForEntitiesChecked = true;
+            AvailableTmxFiles = new ObservableCollection<string>();
+            AvailableTmxFiles.CollectionChanged += (_,__) => NotifyPropertyChanged(nameof(AvailableTmxFiles));
         }
     }
 }

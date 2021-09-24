@@ -6,6 +6,7 @@ using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.ViewModels;
+using FlatRedBall.IO;
 using FlatRedBall.Utilities;
 using GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels;
 using GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.Views;
@@ -70,6 +71,14 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             {
                 viewModel.AddScreenType = AddScreenType.BaseLevelScreen;
             }
+
+            var allTmxFiles = ObjectFinder.Self.GetAllReferencedFiles()
+                .Where(item => FileManager.GetExtension(item.Name) == "tmx")
+                .Select(item => item.Name)
+                .ToArray();
+
+            viewModel.AvailableTmxFiles.AddRange(allTmxFiles);
+            viewModel.SelectedTmxFile = allTmxFiles.FirstOrDefault();
 
             optionsView.DataContext = viewModel;
             window.AddControl(optionsView);
@@ -176,7 +185,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                         if(gameScreen != null)
                         {
                             newScreen.BaseScreen = gameScreen.Name;
-                            newScreen.UpdateFromBaseType();
+                            GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(newScreen);
                             shouldSave = true;
 
                         }
@@ -189,9 +198,47 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                         // meh, eventually we'll fix this:
                     }
 
-                    if(viewModel.IsAddStandardTmxChecked)
+                    switch(viewModel.TmxOptions)
                     {
-                        ShowUiForNewTmx(newScreen);
+                        case TmxOptions.NewStandardTmx:
+                            ShowUiForNewTmx(newScreen);
+                            break;
+                        case TmxOptions.CopiedTmx:
+                            var originalFile = GlueCommands.Self.GetAbsoluteFilePath(viewModel.SelectedTmxFile);
+
+                            var destinationFolder = GlueCommands.Self.FileCommands.GetContentFolder(newScreen);
+                            var strippedName = newScreen.GetStrippedName() + "Map";
+                            FilePath destinationFile = new FilePath(destinationFolder + strippedName + ".tmx");
+
+                            if(originalFile.Exists())
+                            {
+                                try
+                                {
+                                    GlueCommands.Self.TryMultipleTimes(() =>
+                                    {
+                                        System.IO.Directory.CreateDirectory(destinationFile.GetDirectoryContainingThis().FullPath);
+                                        System.IO.File.Copy(originalFile.FullPath, destinationFile.FullPath);
+                                    });
+                                }
+                                catch(Exception e)
+                                {
+                                    GlueCommands.Self.PrintError($"Error copying TMX:\n{e}");
+                                }
+                            }
+
+                            if(destinationFile.Exists())
+                            {
+                                var newRfs = GlueCommands.Self.GluxCommands.CreateReferencedFileSaveForExistingFile(newScreen, destinationFile);
+
+                                if (newRfs != null)
+                                {
+                                    UpdateMapObjectToNewTmx(newScreen, newRfs);
+                                }
+                            }
+
+
+                            break;
+                            // don't do anything for the other options
                     }
                     break;
             }
@@ -219,7 +266,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
 
             var nos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, newScreen, null);
             nos.SetByDerived = true;
-            nos.SetVariableValue("CreateEntitiesFromTiles", true);
+            nos.SetVariable("CreateEntitiesFromTiles", true);
         }
 
         private static void ShowUiForNewTmx(ScreenSave newScreen)
@@ -239,13 +286,19 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
 
             if (newRfs != null)
             {
-                var mapObject = newScreen.NamedObjects.FirstOrDefault(item => item.InstanceName == "Map" && item.GetAssetTypeInfo().FriendlyName.StartsWith("LayeredTileMap"));
-                if (mapObject != null)
-                {
-                    mapObject.SourceType = SourceType.File;
-                    mapObject.SourceFile = newRfs.Name;
-                    mapObject.SourceName = "Entire File (LayeredTileMap)";
-                }
+                UpdateMapObjectToNewTmx(newScreen, newRfs);
+            }
+        }
+
+        private static void UpdateMapObjectToNewTmx(ScreenSave newScreen, ReferencedFileSave newRfs)
+        {
+            var mapObject = newScreen.NamedObjects
+                .FirstOrDefault(item => item.InstanceName == "Map" && item.GetAssetTypeInfo().FriendlyName.StartsWith("LayeredTileMap"));
+            if (mapObject != null)
+            {
+                mapObject.SourceType = SourceType.File;
+                mapObject.SourceFile = newRfs.Name;
+                mapObject.SourceName = "Entire File (LayeredTileMap)";
             }
         }
     }

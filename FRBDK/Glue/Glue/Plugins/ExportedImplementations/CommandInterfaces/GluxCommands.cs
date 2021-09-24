@@ -59,10 +59,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        public IScreenCommands ScreenCommands
-        {
-            get { return mElementCommands; }
-        }
+        public IScreenCommands ScreenCommands => mElementCommands; 
+        
 
         public IEntityCommands EntityCommands
         {
@@ -354,6 +352,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         // Vic asks: What's the difference between AddSingleFileTo and CreateReferencedFileSaveForExistingFile? The name 
         // CreateReferencedFileSaveForExistingFile suggests it's newer/more complete, but why not obsolete this?
+        // I think we should obsolete this
+        [Obsolete("Use GluxCommands.CreateReferencedFileSaveForExistingFile")]
         public ReferencedFileSave AddSingleFileTo(string fileName, string rfsName, 
             string extraCommandLineArguments,
             BuildToolAssociation buildToolAssociation, bool isBuiltFile, 
@@ -500,7 +500,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
 
 
-        private ReferencedFileSave CreateReferencedFileSaveForExistingFile(IElement containerForFile, string directoryInsideContainer, string absoluteFileName,
+        public ReferencedFileSave CreateReferencedFileSaveForExistingFile(IElement containerForFile, FilePath filePath, AssetTypeInfo ati = null)
+        {
+            return CreateReferencedFileSaveForExistingFile(containerForFile,
+                null,
+                filePath.FullPath,
+                PromptHandleEnum.Prompt,
+                ati ?? AvailableAssetTypes.Self.GetAssetTypeFromExtension(filePath.Extension),
+                out string creationReport,
+                out string errorMessage
+                );
+        }
+
+        public ReferencedFileSave CreateReferencedFileSaveForExistingFile(IElement containerForFile, string directoryInsideContainer, string absoluteFileName,
             PromptHandleEnum unknownTypeHandle, AssetTypeInfo ati, out string creationReport, out string errorMessage, bool selectFileAfterCreation = true)
         {
             creationReport = "";
