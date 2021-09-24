@@ -179,15 +179,23 @@ namespace OfficialPlugins.Compiler.Managers
                         {
                             if(ViewModel.IsRunning)
                             {
-                                //printOutput($"Telling game to restart screen");
+                                var extension = fileName.Extension;
+                                var shouldReload = extension == "csv";
+                                if(shouldReload)
+                                {
+                                    printOutput($"Sending force reload for file: {strippedName}");
 
-                                //await CommandSender.Send(new RestartScreenDto(), ViewModel.PortNumber);
-                                printOutput($"Sending force reload for file: {strippedName}");
+                                    var dto = new Dtos.ForceReloadFileDto();
+                                    dto.ElementsContainingFile = containerNames.ToList();
+                                    dto.StrippedFileName = fileName.NoPathNoExtension;
+                                    await CommandSender.Send(dto, ViewModel.PortNumber);
+                                }
+                                else
+                                {
+                                    printOutput($"Telling game to restart screen");
 
-                                var dto = new Dtos.ForceReloadFileDto();
-                                dto.ElementsContainingFile = containerNames.ToList();
-                                dto.StrippedFileName = fileName.NoPathNoExtension;
-                                await CommandSender.Send(dto, ViewModel.PortNumber);
+                                    await CommandSender.Send(new RestartScreenDto(), ViewModel.PortNumber);
+                                }
                             }
 
                             handled = true;

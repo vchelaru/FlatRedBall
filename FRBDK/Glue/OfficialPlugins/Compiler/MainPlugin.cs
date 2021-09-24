@@ -87,7 +87,6 @@ namespace OfficialPlugins.Compiler
 
             Output.Initialize(this.control.PrintOutput);
 
-            AssignEvents();
 
             compiler = Compiler.Self;
             runner = Runner.Self;
@@ -96,6 +95,9 @@ namespace OfficialPlugins.Compiler
             this.RegisterCodeGenerator(game1GlueControlGenerator);
 
             this.RegisterCodeGenerator(new CompilerPluginElementCodeGenerator());
+
+            // do this after creating the compiler, view model, and control
+            AssignEvents();
 
             #region Start the timer
 
@@ -141,7 +143,8 @@ namespace OfficialPlugins.Compiler
 
         private void AssignEvents()
         {
-            this.ReactToFileChangeHandler += HandleFileChanged;
+            var manager = new FileChangeManager(control, compiler, viewModel);
+            this.ReactToFileChangeHandler += manager.HandleFileChanged;
             this.ReactToLoadedGlux += HandleGluxLoaded;
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
             this.ReactToNewFileHandler += RefreshManager.Self.HandleNewFile;
@@ -284,47 +287,6 @@ namespace OfficialPlugins.Compiler
             toolbar.DataContext = ToolbarController.Self.GetViewModel();
 
             base.AddToToolBar(toolbar, "Standard");
-        }
-
-        string[] copiedExtensions = new[]
-        {
-            "csv",
-            "txt",
-            "png",
-            "tmx",
-            "tsx",
-            "bmp",
-            "png",
-            "achx",
-            "emix",
-            "json"
-        };
-
-        private void HandleFileChanged(string fileName)
-        {
-            // If a file changed, always copy it over - why only do so if we're in edit mode?
-
-            bool shouldBuildContent = viewModel.AutoBuildContent &&
-                GlueState.Self.CurrentMainProject != GlueState.Self.CurrentMainContentProject &&
-                GlueState.Self.CurrentMainContentProject.IsFilePartOfProject(fileName);
-
-            if (shouldBuildContent)
-            {
-                control.PrintOutput($"{DateTime.Now.ToLongTimeString()} Building for changed file {fileName}");
-
-                BuildContent(OutputSuccessOrFailure);
-            }
-
-            var extension = FileManager.GetExtension(fileName);
-            var shouldCopy = copiedExtensions.Contains(extension);
-
-            if(shouldCopy)
-            {
-                GlueCommands.Self.ProjectCommands.CopyToBuildFolder(fileName);
-
-            }
-
-            RefreshManager.Self.HandleFileChanged(fileName);
         }
 
         private async void HandleToolbarRunClicked(object sender, EventArgs e)
