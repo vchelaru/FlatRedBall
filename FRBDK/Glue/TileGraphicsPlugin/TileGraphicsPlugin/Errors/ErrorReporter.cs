@@ -30,23 +30,31 @@ namespace TiledPluginCore.Managers
                 if(rfs.GetAssetTypeInfo() == AssetTypeInfoAdder.Self.TmxAssetTypeInfo)
                 {
                     var fileName = GlueCommands.Self.GetAbsoluteFilePath(rfs);
-                    var tms = TiledMapSave.FromFile(fileName.FullPath);
 
-
-                    foreach(var layer in tms.Layers)
+                    TiledMapSave tms = null;
+                    if (fileName.Exists())
                     {
-                        if(MultipleTilesetPerLayerErrorViewModel.HasMultipleTilesets(tms, layer))
+                        tms = TiledMapSave.FromFile(fileName.FullPath);
+                    }
+
+                    if(tms != null)
+                    {
+                        foreach(var layer in tms.Layers)
                         {
-                            errors.Add(new MultipleTilesetPerLayerErrorViewModel()
+                            if(MultipleTilesetPerLayerErrorViewModel.HasMultipleTilesets(tms, layer))
                             {
-                                Details = $"The layer {layer.Name} in {rfs.Name} references multiple tilesets. This can cause rendering errors",
-                                FilePath = GlueCommands.Self.GetAbsoluteFileName(rfs),
-                                LayerName = layer.Name
+                                errors.Add(new MultipleTilesetPerLayerErrorViewModel()
+                                {
+                                    Details = $"The layer {layer.Name} in {rfs.Name} references multiple tilesets. This can cause rendering errors",
+                                    FilePath = GlueCommands.Self.GetAbsoluteFileName(rfs),
+                                    LayerName = layer.Name
 
-                            });
+                                });
 
+                            }
                         }
                     }
+
                 }
             }
         }

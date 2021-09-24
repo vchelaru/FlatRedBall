@@ -260,6 +260,7 @@ namespace GlueControl
                     ScreenManager.ScreenLoaded += AfterInitializeLogic;
 
                     ScreenManager.CurrentScreen.MoveToScreen(ownerType);
+                    EditorVisuals.DestroyContainedObjects();
 
                     isOwnerScreen = true;
                     EditingManager.Self.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingScreen;
