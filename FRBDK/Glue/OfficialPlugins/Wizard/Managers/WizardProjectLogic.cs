@@ -252,12 +252,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                     foreach (var nos in sortedNoses)
                     {
-                        NamedObjectSave listToAddTo = null;
-                        if(nos.IsList == false)
-                        {
-                            // see if there are any lists in this object which have a shared type. Eventually we might care about inheritance, but not yet...
-                            listToAddTo = glueElement.NamedObjects.FirstOrDefault(item => item.IsList && item.SourceClassGenericType == nos.SourceClassType);
-                        }
+                        NamedObjectSave listToAddTo = ObjectFinder.Self.GetDefaultListToContain(nos, glueElement);
 
                         GlueCommands.Self.GluxCommands.AddNamedObjectTo(nos, glueElement, listToAddTo);
 

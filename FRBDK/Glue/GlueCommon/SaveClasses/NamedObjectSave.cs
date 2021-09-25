@@ -623,41 +623,6 @@ namespace FlatRedBall.Glue.SaveClasses
             return ContainedObjects != null && ContainedObjects.Count != 0;
         }
 
-        // I don't think we use these anymore.  Events are handled in IElements like variables
-        //[Browsable(false)]
-        //public List<EventSave> Events
-        //{
-        //    get;
-        //    set;
-        //}
-        //public bool ShouldSerializeEvents()
-        //{
-        //    return Events != null && Events.Count != 0;
-        //}
-
-        // May 19, 2012
-        // We now have events to handle
-        // click as well as all kinds of
-        // other types of events, so we don't
-        // need this explicitly defined anymore.
-//        [Browsable(false)]
-//        [BroadcastAttribute(BroadcastStaticOrInstance.Instance)]
-//        [TypeConverter(typeof(BroadcastAutofillTypeConverter))]
-
-//        [CategoryAttribute("Active Events")]
-//        public string ClickEvent
-//        {
-//            get { return mClickEvent; }
-//            set 
-//            {
-//                mClickEvent = value;
-//                if (mClickEvent == "<NONE>")
-//                {
-//                    mClickEvent = "";
-//                }
-//            }
-//        }
-
         [Browsable(false)]
         [XmlIgnore]
         [JsonIgnore]

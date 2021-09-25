@@ -762,7 +762,7 @@ namespace FlatRedBall.Glue.Managers
 
             #region Get the IElement elementToCreateIn
 
-            IElement elementToCreateIn = null;
+            GlueElement elementToCreateIn = null;
 
             if (targetNode.IsRootNamedObjectNode())
             {
@@ -776,8 +776,7 @@ namespace FlatRedBall.Glue.Managers
 
             #endregion
 
-            // does the target have a list of this type? If so, add it to that list. Otherwise, add it to the root
-            var listOfThisType = elementToCreateIn.NamedObjects.FirstOrDefault(item => item.IsList && item.SourceClassGenericType == entitySaveMoved.Name);
+            var listOfThisType = ObjectFinder.Self.GetDefaultListToContain(entitySaveMoved, elementToCreateIn);
 
             if(listOfThisType != null)
             {

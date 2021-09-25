@@ -113,23 +113,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                 var addObjectDto = JsonConvert.DeserializeObject<AddObjectDto>(dataAsString);
 
-                NamedObjectSave listToAddTo = null;
-                if (screen != null)
-                {
-                    if (addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.Circle" ||
-                        addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.AxisAlignedRectangle" ||
-                        addObjectDto.SourceClassType == "FlatRedBall.Math.Geometry.Polygon")
-                    {
-                        listToAddTo = screen.NamedObjects.FirstOrDefault(item => item.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection);
-                    }
-                    else
-                    {
-                        listToAddTo = screen.NamedObjects.FirstOrDefault(item =>
-                        {
-                            return item.IsList && item.SourceClassGenericType == addObjectDto.SourceClassType;
-                        });
-                    }
-                }
+                var listToAddTo = ObjectFinder.Self.GetDefaultListToContain(addObjectDto, screen);
 
                 string newName = GetNewName(element, addObjectDto);
                 var oldName = addObjectDto.InstanceName;

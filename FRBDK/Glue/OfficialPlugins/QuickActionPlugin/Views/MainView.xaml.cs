@@ -130,8 +130,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
 
             var gameScreen = GlueState.Self.CurrentGlueProject.GetScreenSave(GameScreenName);
 
-            var listOfThisType = gameScreen.NamedObjects.FirstOrDefault(item => 
-                item.IsList && item.SourceClassGenericType == GlueState.Self.CurrentEntitySave.Name);
+            var listOfThisType = ObjectFinder.Self.GetDefaultListToContain(GlueState.Self.CurrentEntitySave, gameScreen);
 
             var newNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(viewModel, gameScreen, listOfThisType);
 

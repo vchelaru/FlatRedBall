@@ -992,12 +992,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             var currentList =
                 GlueState.Self.CurrentNamedObjectSave;
 
+
             var isMatchingList = currentList != null && currentList.IsList &&
                 currentList.SourceClassGenericType == addObjectViewModel.SourceClassType;
 
             if (!isMatchingList)
             {
-                currentList = elementToAddTo.NamedObjects.FirstOrDefault(item => item.IsList && item.SourceClassGenericType == addObjectViewModel.SourceClassType);
+                currentList = ObjectFinder.Self.GetDefaultListToContain(addObjectViewModel.SourceClassType, elementToAddTo);
             }
 
 

@@ -379,6 +379,68 @@ namespace FlatRedBall.Glue.Elements
 
         }
 
+        bool IsContainedInListOrAsChild(List<NamedObjectSave> namedObjects, NamedObjectSave objectToFind)
+        {
+            foreach (NamedObjectSave nos in namedObjects)
+            {
+                if (nos == objectToFind || IsContainedInListOrAsChild(nos.ContainedObjects, objectToFind))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public GlueElement GetElementContaining(StateSave stateSave)
+        {
+            return GlueProject.GetElementContaining(stateSave);
+        }
+
+        public GlueElement GetElementContaining(CustomVariable customVariable)
+        {
+            if (GlueProject != null)
+            {
+                return GlueProject.GetElementContaining(customVariable);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public GlueElement GetElementContaining(StateSaveCategory category)
+        {
+            if(GlueProject != null)
+            {
+                IEnumerable<GlueElement> screens = GlueProject.Screens;
+                IEnumerable<GlueElement> entities = GlueProject.Entities;
+                return screens.Concat(entities)
+                    .FirstOrDefault(item => 
+                        item.StateCategoryList.Contains(category));
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public GlueElement GetElementDefiningStateCategory(string qualifiedTypeName)
+        {
+            if(qualifiedTypeName.Contains('.'))
+            {
+                var splitTypeName = qualifiedTypeName.Split('.');
+                if(splitTypeName.Length > 1)
+                {
+                    var elementName = string.Join('\\', splitTypeName.Take(splitTypeName.Length - 1));
+                    var elementDefiningCategory = ObjectFinder.Self.GetElement(elementName);
+
+                    return elementDefiningCategory;
+                }
+
+            }
+            return null;
+        }
+
         #endregion
 
         #region CSV
@@ -678,7 +740,6 @@ namespace FlatRedBall.Glue.Elements
             return namedObjects;
         }
 
-
         private void GetAllNamedObjectsThatUseElement(List<NamedObjectSave> sourceList, List<NamedObjectSave> listToAddTo, string name, SourceType sourceType, GlueElement parentGlueElement)
         {
             bool DoesNosMatchType(NamedObjectSave nos)
@@ -722,8 +783,6 @@ namespace FlatRedBall.Glue.Elements
 
         }
 
-
-
         public INamedObjectContainer GetNamedObjectContainer(string namedObjectContainerName)
         {
             EntitySave entitySave = ObjectFinder.Self.GetEntitySave(namedObjectContainerName);
@@ -737,6 +796,59 @@ namespace FlatRedBall.Glue.Elements
                 return ObjectFinder.Self.GetScreenSave(namedObjectContainerName);
             }
         }
+
+        public NamedObjectSave GetDefaultListToContain(NamedObjectSave namedObject, GlueElement containerElement)
+        {
+            var namedObjectSourceClassType = namedObject.SourceClassType;
+            return GetDefaultListToContain(namedObjectSourceClassType, containerElement);
+
+        }
+
+        public  NamedObjectSave GetDefaultListToContain(string namedObjectSourceClassType, GlueElement containerElement)
+        {
+            var isNosShape = namedObjectSourceClassType == "FlatRedBall.Math.Geometry.Circle" ||
+                              namedObjectSourceClassType == "FlatRedBall.Math.Geometry.AxisAlignedRectangle" ||
+                              namedObjectSourceClassType == "FlatRedBall.Math.Geometry.Polygon";
+
+            var nosEntity = GetEntitySave(namedObjectSourceClassType);
+
+
+            if (isNosShape)
+            {
+                return containerElement.NamedObjects.FirstOrDefault(item => item.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection);
+            }
+            else if (nosEntity != null)
+            {
+                return GetDefaultListToContain(nosEntity, containerElement);
+            }
+
+            return null;
+        }
+
+        public NamedObjectSave GetDefaultListToContain(EntitySave nosEntity, GlueElement containerElement)
+        {
+            var baseEntityTypes = GetAllBaseElementsRecursively(nosEntity);
+
+            // Do the top-level NamedObjects instead of AllNamedObjects
+            foreach (var listCandidate in containerElement.NamedObjects)
+            {
+                if (listCandidate.IsList)
+                {
+                    var listEntityType = GetEntitySave(listCandidate.SourceClassGenericType);
+
+                    if (listEntityType != null)
+                    {
+                        if (listEntityType == nosEntity || baseEntityTypes.Contains(listEntityType))
+                        {
+                            return listCandidate;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+
 
         #endregion
 
@@ -777,67 +889,6 @@ namespace FlatRedBall.Glue.Elements
         }
 
         #endregion
-        bool IsContainedInListOrAsChild(List<NamedObjectSave> namedObjects, NamedObjectSave objectToFind)
-        {
-            foreach (NamedObjectSave nos in namedObjects)
-            {
-                if (nos == objectToFind || IsContainedInListOrAsChild(nos.ContainedObjects, objectToFind))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public GlueElement GetElementContaining(StateSave stateSave)
-        {
-            return GlueProject.GetElementContaining(stateSave);
-        }
-
-        public GlueElement GetElementContaining(CustomVariable customVariable)
-        {
-            if (GlueProject != null)
-            {
-                return GlueProject.GetElementContaining(customVariable);
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public GlueElement GetElementContaining(StateSaveCategory category)
-        {
-            if(GlueProject != null)
-            {
-                IEnumerable<GlueElement> screens = GlueProject.Screens;
-                IEnumerable<GlueElement> entities = GlueProject.Entities;
-                return screens.Concat(entities)
-                    .FirstOrDefault(item => 
-                        item.StateCategoryList.Contains(category));
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public GlueElement GetElementDefiningStateCategory(string qualifiedTypeName)
-        {
-            if(qualifiedTypeName.Contains('.'))
-            {
-                var splitTypeName = qualifiedTypeName.Split('.');
-                if(splitTypeName.Length > 1)
-                {
-                    var elementName = string.Join('\\', splitTypeName.Take(splitTypeName.Length - 1));
-                    var elementDefiningCategory = ObjectFinder.Self.GetElement(elementName);
-
-                    return elementDefiningCategory;
-                }
-
-            }
-            return null;
-        }
 
         public List<GlueElement> GetAllElementsReferencingFile(string rfsName)
         {
