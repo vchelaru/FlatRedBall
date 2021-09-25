@@ -341,6 +341,8 @@ namespace TileGraphicsPlugin
 
             this.ModifyAddEntityWindow += ModifyAddEntityWindowLogic.HandleModifyAddEntityWindow;
 
+            this.ReactToNewObjectHandler += NewObjectLogic.HandleNewObject;
+
             this.NewEntityCreatedWithUi += NewEntityCreatedReactionLogic.ReactToNewEntityCreated;
 
             this.ReactToNewFileHandler = ReactToNewFile;
