@@ -419,7 +419,11 @@ namespace FlatRedBallAddOns.Entities
                 inheritance = " : " + inheritance;
             }
 
-            var classCodeblock = namespaceBlock.Class("public partial", FileManager.RemovePath( element.Name), inheritance);
+            var isAbstract = element.AllNamedObjects.Any(item => item.SetByDerived);
+
+            string optionalAbstractString = isAbstract ? "abstract " : string.Empty;
+
+            var classCodeblock = namespaceBlock.Class($"public {optionalAbstractString}partial", FileManager.RemovePath( element.Name), inheritance);
 
             return classCodeblock;
         }

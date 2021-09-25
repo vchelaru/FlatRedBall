@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.MVVM;
+﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPluginsCore.QuickActionPlugin.Views;
@@ -135,7 +136,10 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
                 nosList = GlueState.Self.CurrentElement.NamedObjects
                     .FirstOrDefault(item => item.ContainedObjects.Contains(GlueState.Self.CurrentNamedObjectSave));
             }
-            mainView.AddObjectToListButton.Visibility = ToVisibility(nosList != null);
+
+            var isListReferencingAbstractEntity = nosList != null && ObjectFinder.Self.GetEntitySave(nosList.SourceClassGenericType)?.AllNamedObjects.Any(item => item.SetByDerived) == true;
+
+            mainView.AddObjectToListButton.Visibility = ToVisibility(nosList != null && !isListReferencingAbstractEntity);
             var listType = nosList?.SourceClassGenericType;
             if(listType?.Contains('\\') == true)
             {
@@ -175,14 +179,17 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
 
             mainView.AddInstanceOfEntityButton.Visibility = ToVisibility(
                 glueProject != null &&
-                selectedObject is EntitySave &&
+                selectedObject is EntitySave entitySave &&
                 hasGameScreen &&
                 // Individual:
-                gameScreen.AllNamedObjects.Any(item => item.SourceClassType == (selectedObject as EntitySave).Name) == false
+                gameScreen.AllNamedObjects.Any(item => item.SourceClassType == (selectedObject as EntitySave).Name) == false &&
                 // List:
                 //gameScreen.AllNamedObjects.Any(item => item.IsList && item.SourceClassGenericType == (selectedObject as EntitySave).Name) == false
                 // Update July 25, 2021 - if the user has a list of an entity, they may still want to add instances to that list, espeically with the 
-                // Glue level editor being developed now. So let's not look for a list.
+                // Glue level editor being developed now. So don't exclude this button if a list exists
+                // Update Sept 25, 2021
+                // Don't allow instances of this if there is a SetByDerived instance
+                entitySave.AllNamedObjects.Any(item => item.SetByDerived == true) == false
                 );
 
             if(mainView.AddInstanceOfEntityButton.Visibility == Visibility.Visible)
@@ -202,7 +209,8 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
 
             mainView.AddEntityFactory.Visibility = ToVisibility(
                 selectedEntity != null &&
-                selectedEntity.CreatedByOtherEntities == false
+                selectedEntity.CreatedByOtherEntities == false &&
+                selectedEntity.AllNamedObjects.Any(item => item.SetByDerived) == false
                 );
 
             if(mainView.AddEntityFactory.Visibility == Visibility.Visible)

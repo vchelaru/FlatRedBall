@@ -344,12 +344,21 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 var currentNamedObject = GlueState.Self.CurrentNamedObjectSave;
 
-                if (currentNamedObject.SourceType == SourceType.FlatRedBallType &&
-                    currentNamedObject?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.PositionedObjectList &&
+                if (currentNamedObject.IsList &&
                     !string.IsNullOrEmpty(currentNamedObject.SourceClassGenericType) &&
                     !currentNamedObject.SetByDerived)
                 {
-                    menu.Items.Add(addObjectToolStripMenuItem);
+                    var shouldAdd = true;
+                    var genericEntityType = ObjectFinder.Self.GetEntitySave(currentNamedObject.SourceClassGenericType);
+                    var isAbstractEntity = genericEntityType?.AllNamedObjects.Any(item => item.SetByDerived) == true;
+                    if(isAbstractEntity)
+                    {
+                        shouldAdd = false;
+                    }
+                    if(shouldAdd)
+                    {
+                        menu.Items.Add(addObjectToolStripMenuItem);
+                    }
                 }
                 else if(currentNamedObject?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection)
                 {
@@ -1171,7 +1180,8 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if(newNamedObject.SetByDerived)
             {
-                Container.Get<NamedObjectSetVariableLogic>().ReactToChangedSetByDerived(newNamedObject, container);
+                GlueFormsCore.SetVariable.NamedObjectSaves.SetByDerivedSetLogic.ReactToChangedSetByDerived(
+                    newNamedObject, container);
             }
 
 

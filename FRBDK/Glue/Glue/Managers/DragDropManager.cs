@@ -599,10 +599,19 @@ namespace FlatRedBall.Glue.Managers
                 {
                     if (treeNodeMoving == targetNode.GetContainingElementTreeNode())
                     {
-
                         isValidDrop = false;
                     }
                 }
+
+                // If the entity has any SetByDerived objects, then it's abstract so don't allow it!
+                var entity = treeNodeMoving.EntitySave;
+                var isAbstract = entity.AllNamedObjects.Any(item => item.SetByDerived);
+                if(isAbstract)
+                {
+                    GlueCommands.Self.DialogCommands.ShowMessageBox($"Cannot add {entity} to {targetNode.Text} because it is an abstract class");
+                    isValidDrop = false;
+                }
+                
                 if (isValidDrop)
                 {
                     newTreeNode = MoveEntityOntoElement(treeNodeMoving, targetNode, newTreeNode);

@@ -18,6 +18,7 @@ using FlatRedBall.Glue.SaveClasses;
 using Glue.IO;
 using Microsoft.Xna.Framework.Graphics;
 using GlueFormsCore.Managers;
+using GlueFormsCore.SetVariable.NamedObjectSaves;
 
 namespace FlatRedBall.Glue.SetVariable
 {
@@ -139,7 +140,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             else if (changedMember ==nameof(NamedObjectSave.SetByDerived))
             {
-                ReactToChangedSetByDerived(namedObjectSave, element);
+                SetByDerivedSetLogic.ReactToChangedSetByDerived(namedObjectSave, element);
             }
 
             #endregion
@@ -413,43 +414,7 @@ namespace FlatRedBall.Glue.SetVariable
             PluginManager.ReactToNamedObjectChangedValue(changedMember, oldValue, namedObjectSave);
         }
 
-        public void ReactToChangedSetByDerived(NamedObjectSave namedObjectSave, GlueElement element)
-        {
-            if (namedObjectSave.SourceType == SourceType.Entity &&
-                !string.IsNullOrEmpty(namedObjectSave.SourceClassType))
-            {
-                if (ProjectManager.VerifyReferenceGraph(ObjectFinder.Self.GetEntitySave(namedObjectSave.SourceClassType)) == ProjectManager.CheckResult.Failed)
-                    namedObjectSave.SetByDerived = !namedObjectSave.SetByDerived;
-            }
 
-
-            if (namedObjectSave.SetByDerived && namedObjectSave.ExposedInDerived)
-            {
-                // The user has just set SetByDerived to true, but ExposedInDerived means that
-                // the derived expects that the base instantiates.  We need to tell the user that
-                // both values can't be true at the same time, and that ExposedInDerived will be set
-                // to false.
-                MessageBox.Show("You have set SetByDerived to true, but ExposedInDerived is also true.  Both cannot be true at the same time " +
-                    "so Glue will set ExposedInDerived to false.");
-                namedObjectSave.ExposedInDerived = false;
-            }
-
-
-            if (namedObjectSave.SourceType == SourceType.FlatRedBallType &&
-                namedObjectSave.IsList &&
-                namedObjectSave.SetByDerived == true &&
-                namedObjectSave.ContainedObjects.Count != 0)
-            {
-                MessageBox.Show("This list is not empty, so it can't be set to \"Set By Derived\".  You must first empty the list", "Invalid Setting");
-
-                namedObjectSave.SetByDerived = false;
-
-            }
-            else
-            {
-                InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, element);
-            }
-        }
 
         private void ReactToSourceClassGenericType(NamedObjectSave namedObjectSave, object oldValue, GlueElement element)
         {

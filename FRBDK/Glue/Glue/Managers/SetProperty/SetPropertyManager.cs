@@ -52,6 +52,15 @@ namespace FlatRedBall.Glue.SetVariable
             ReactToPropertyChanged(changedMember, oldValue, variableName, parentGridItemName);
         }
 
+        /// <summary>
+        /// Reacts to the changing of a property by name considering the current GlueElement, NamedObject, REferencedFile, StateSave, StateSaveCategory, Event, or Variable.
+        /// Note that this should not be called if a property change occurs on an object which is not selected. In that case, the
+        /// specific Logic object should be invoked.
+        /// </summary>
+        /// <param name="variableNameAsDisplayed">The variable name as displayed in the property grid.</param>
+        /// <param name="oldValue">The value before the change</param>
+        /// <param name="variableName">The variable name as defined in Glue (no spaces)</param>
+        /// <param name="parentGridItemName">The parent PropertyGridItem, usually null unless the value being changed is a component of a larger property grid.</param>
         public void ReactToPropertyChanged(string variableNameAsDisplayed, object oldValue, 
             string variableName, string parentGridItemName)
         {
@@ -133,7 +142,7 @@ namespace FlatRedBall.Glue.SetVariable
             #region Entity
             else if (EditorLogic.CurrentEntitySave != null)
             {
-                Container.Get<EntitySaveSetVariableLogic>().ReactToEntityChangedProperty(variableNameAsDisplayed, oldValue);
+                Container.Get<EntitySaveSetPropertyLogic>().ReactToEntityChangedProperty(variableNameAsDisplayed, oldValue);
             }
 
             #endregion

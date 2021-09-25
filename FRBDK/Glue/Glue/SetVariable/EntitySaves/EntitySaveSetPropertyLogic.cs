@@ -13,10 +13,11 @@ using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using GlueFormsCore.Managers;
+using GlueFormsCore.SetVariable.EntitySaves;
 
 namespace FlatRedBall.Glue.SetVariable
 {
-    class EntitySaveSetVariableLogic
+    class EntitySaveSetPropertyLogic
     {
         internal void ReactToEntityChangedProperty(string changedMember, object oldValue)
         {
@@ -33,9 +34,9 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region CreatedByOtherEntities changed
 
-            else if (changedMember == "CreatedByOtherEntities")
+            else if (changedMember == nameof(EntitySave.CreatedByOtherEntities))
             {
-                HandleCreatedByOtherEntitiesSet(entitySave);
+                CreatedByOtherEntitiesSetLogic.HandleCreatedByOtherEntitiesSet(entitySave);
             }
 
             #endregion
@@ -182,43 +183,6 @@ namespace FlatRedBall.Glue.SetVariable
             }
 
             #endregion
-        }
-
-        private static void HandleCreatedByOtherEntitiesSet(EntitySave entitySave)
-        {
-            if (entitySave.CreatedByOtherEntities == true)
-            {
-                FactoryCodeGenerator.AddGeneratedPerformanceTypes();
-                FactoryCodeGenerator.UpdateFactoryClass(entitySave);
-                GlueCommands.Self.ProjectCommands.SaveProjects();
-            }
-            else
-            {
-                FactoryCodeGenerator.RemoveFactory(entitySave);
-                GlueCommands.Self.ProjectCommands.SaveProjects();
-            }
-
-
-            List<EntitySave> entitiesToRefresh = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(entitySave);
-            entitiesToRefresh.AddRange(entitySave.GetAllBaseEntities());
-            entitiesToRefresh.Add(entitySave);
-
-            // We need to re-generate all objects that use this Entity
-            foreach (EntitySave entityToRefresh in entitiesToRefresh)
-            {
-                List<NamedObjectSave> namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(entityToRefresh.Name);
-
-                foreach (NamedObjectSave nos in namedObjects)
-                {
-                    var namedObjectContainer = nos.GetContainer();
-
-                    if (namedObjectContainer != null)
-                    {
-                        CodeWriter.GenerateCode(namedObjectContainer);
-                    }
-                }
-            }
-            PropertyGridHelper.UpdateDisplayedPropertyGridProperties();
         }
 
         private static void ReactToChangedImplementsIVisible(object oldValue, EntitySave entitySave)
