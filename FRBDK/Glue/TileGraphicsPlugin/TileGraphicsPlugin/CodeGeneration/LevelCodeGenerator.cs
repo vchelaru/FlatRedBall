@@ -56,17 +56,6 @@ namespace TileGraphicsPlugin.CodeGeneration
             function.Line("FlatRedBall.Camera.Main.SetBordersAtZ(0, -CurrentTileMap.Height, CurrentTileMap.Width, 0, 0);");
         }
 
-        private static void GenerateAddCollisionAndEntities(ICodeBlock function)
-        {
-            function.Line("FlatRedBall.TileCollisions.TileShapeCollectionLayeredTileMapExtensions.AddCollisionFrom(" +
-                    "SolidCollisions, CurrentTileMap);");
-
-            function.Line("FlatRedBall.TileEntities.TileEntityInstantiator.CreateEntitiesFrom(" +
-                    "CurrentTileMap);");
-
-
-        }
-
         private static void GenerateInitializeAnimations(ICodeBlock function)
         {
             function.Line("// initialize the animations:");
