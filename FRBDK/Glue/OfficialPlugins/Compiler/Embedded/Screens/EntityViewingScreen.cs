@@ -13,7 +13,7 @@ namespace GlueControl.Screens
 
         public static string GameElementTypeToCreate { get; set; }
         public static NamedObjectSave InstanceToSelect { get; set; }
-
+        public System.Reflection.MethodInfo ActivityEditModeMethod;
 
         public EntityViewingScreen() : base(nameof(EntityViewingScreen))
         {
@@ -24,12 +24,19 @@ namespace GlueControl.Screens
         {
             base.Initialize(addToManagers);
 
-            if(addToManagers)
+            if (addToManagers)
             {
                 AddToManagers();
             }
 
             BeforeCustomInitialize?.Invoke();
+        }
+
+        public override void ActivityEditMode()
+        {
+            base.ActivityEditMode();
+
+            ActivityEditModeMethod?.Invoke(CurrentEntity, null);
         }
 
         public override void AddToManagers()
@@ -50,6 +57,8 @@ namespace GlueControl.Screens
             Camera.Main.Detach();
 
             GlueControl.Editing.EditingManager.Self.Select(InstanceToSelect);
+
+            ActivityEditModeMethod = CurrentEntity.GetType().GetMethod("ActivityEditMode");
         }
 
         public override void Destroy()

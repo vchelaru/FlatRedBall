@@ -280,6 +280,14 @@ namespace GlueControl.Editing
                 }
             }
 
+
+            if (!didAttemptToAssign && variableName == "Path" && targetInstance is FlatRedBall.Math.Paths.Path asPath)
+            {
+                asPath.FromJson(variableValue as string);
+                didAttemptToAssign = true;
+                response.WasVariableAssigned = true;
+            }
+
             if (!didAttemptToAssign)
             {
                 targetInstance = targetInstance ?? screen.GetInstanceRecursive(variableName) as INameable;

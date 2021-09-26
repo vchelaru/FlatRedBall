@@ -25,14 +25,14 @@ namespace OfficialPlugins.PathPlugin.Managers
         static AssetTypeInfo CreatePathAssetTypeInfo()
         {
             var ati = new AssetTypeInfo();
-            ati.FriendlyName = PathsVariableName;
+            ati.FriendlyName = "Path";
             ati.QualifiedRuntimeTypeName = new PlatformSpecificType();
             ati.QualifiedRuntimeTypeName.QualifiedType = typeof(FlatRedBall.Math.Paths.Path).FullName;
             ati.CanBeObject = true;
 
             var pathsVariableDefinition = new VariableDefinition();
             pathsVariableDefinition.Type = "string";
-            pathsVariableDefinition.Name = "Paths";
+            pathsVariableDefinition.Name = "Path";
             pathsVariableDefinition.UsesCustomCodeGeneration = true;
             pathsVariableDefinition.CustomGenerationFunc = GeneratePaths;
             pathsVariableDefinition.CustomPropertySetFunc= GenerateProperty;
