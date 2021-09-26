@@ -49,7 +49,7 @@ namespace GlueControl.Editing
             textInstance.Position = position;
             textInstance.HorizontalAlignment = HorizontalAlignment.Center;
             textInstance.VerticalAlignment = VerticalAlignment.Center;
-
+            textInstance.SetPixelPerfectScale(Camera.Main);
             nextText++;
         }
 
