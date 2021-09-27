@@ -86,13 +86,17 @@ namespace FlatRedBall.Glue.SaveClasses
             }
 
             #region See if there are any objects to be removed from the derived.
+
+            var derivedNosesToAskAbout = new List<NamedObjectSave>();
+
+
             for (int i = referencedObjectsBeforeUpdate.Count - 1; i > -1; i--)
             {
                 var atI = referencedObjectsBeforeUpdate[i];
 
                 var contains = atI.DefinedByBase && namedObjectsSetByDerived.Any(item => item.InstanceName == atI.InstanceName);
 
-                if(!contains)
+                if (!contains)
                 {
                     contains = namedObjectsExposedInDerived.Any(item => item.InstanceName == atI.InstanceName);
                 }
@@ -102,19 +106,39 @@ namespace FlatRedBall.Glue.SaveClasses
 
                     NamedObjectSave nos = referencedObjectsBeforeUpdate[i];
 
-                    string message = "The following object is marked as \"defined by base\" but it is not contained in " +
-                        "any base elements\n\n" + nos.ToString() + "\n\nWhat would you like to do?";
+                    derivedNosesToAskAbout.Add(nos);
+                }
+            }
 
-                    var mbmb = new MultiButtonMessageBoxWpf();
 
-                    mbmb.MessageText = message;
+            if(derivedNosesToAskAbout.Count > 0)
+            {
+                var singleOrPluralPhrase = derivedNosesToAskAbout.Count == 1 ? "object is" : "objects are";
+                var thisOrTheseObjects = derivedNosesToAskAbout.Count == 1 ? "this object" : "these objects";
 
-                    mbmb.AddButton("Remove " + nos.ToString(), DialogResult.Yes);
-                    mbmb.AddButton("Keep it, make it not \"defined by base\"", DialogResult.No);
 
-                    var dialogResult = mbmb.ShowDialog();
+                string message = "The following object is marked as \"defined by base\" but not contained in " +
+                    "any base elements\n\n";
 
-                    if(dialogResult == true && (DialogResult)mbmb.ClickedResult == DialogResult.Yes)
+                foreach (var nos in derivedNosesToAskAbout)
+                {
+                    message += nos.ToString() + "\n";
+                }
+                
+                message += "\nWhat would you like to do?";
+
+                var mbmb = new MultiButtonMessageBoxWpf();
+
+                mbmb.MessageText = message;
+
+                mbmb.AddButton($"Remove {thisOrTheseObjects}", DialogResult.Yes);
+                mbmb.AddButton($"Keep {thisOrTheseObjects}, set \"defined by base\" to false", DialogResult.No);
+
+                var dialogResult = mbmb.ShowDialog();
+
+                if(dialogResult == true && (DialogResult)mbmb.ClickedResult == DialogResult.Yes)
+                {
+                    foreach(var nos in derivedNosesToAskAbout)
                     {
                         if(namedObjectContainer.NamedObjects.Contains(nos))
                         {
@@ -127,15 +151,18 @@ namespace FlatRedBall.Glue.SaveClasses
                                 ?.ContainedObjects.Remove(nos);
                         }
                         // We got a NamedObject we should remove
-                        referencedObjectsBeforeUpdate.RemoveAt(i);
+                        referencedObjectsBeforeUpdate.Remove(nos);
                     }
-                    else
+                }
+                else
+                {
+                    foreach(var nos in derivedNosesToAskAbout)
                     {
                         nos.DefinedByBase = false;
                         nos.InstantiatedByBase = false;
                     }
-                    haveChangesOccurred = true;
                 }
+                haveChangesOccurred = true;
             }
             #endregion
 

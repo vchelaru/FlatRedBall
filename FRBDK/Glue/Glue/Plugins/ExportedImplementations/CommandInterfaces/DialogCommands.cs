@@ -364,7 +364,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             double height = window.Height;
             if (double.IsNaN(height))
             {
-                height = 0;
+                // Let's just assume some small height so it doesn't appear down below the cursor:
+                //height = 0;
+                height = 64;
             }
 
             var scaledX = MainGlueWindow.Self.LogicalToDeviceUnits(MainGlueWindow.MousePosition.X);

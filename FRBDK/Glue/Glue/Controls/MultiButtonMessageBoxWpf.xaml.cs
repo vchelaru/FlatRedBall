@@ -47,8 +47,7 @@ namespace FlatRedBall.Glue.Controls
             InitializeComponent();
 
             this.KeyDown += HandleKeyDown;
-
-            GlueCommands.Self.DialogCommands.MoveToCursor(this);
+            this.Loaded += (_,__) => GlueCommands.Self.DialogCommands.MoveToCursor(this);
         }
 
         private void HandleKeyDown(object sender, KeyEventArgs e)
@@ -82,5 +81,6 @@ namespace FlatRedBall.Glue.Controls
 
             this.DialogResult = true;
         }
+
     }
 }
