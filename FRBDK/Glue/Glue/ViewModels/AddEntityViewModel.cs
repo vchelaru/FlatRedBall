@@ -162,9 +162,16 @@ namespace GlueFormsCore.ViewModels
             set => Set(value);
         }
 
+        public bool IsCreateFactoryChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public AddEntityViewModel()
         {
             IsICollidableEnabled = true;
+            IsCreateFactoryChecked = true;
         }
     }
 }

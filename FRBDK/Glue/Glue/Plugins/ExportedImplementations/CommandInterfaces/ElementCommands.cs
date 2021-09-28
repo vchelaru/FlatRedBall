@@ -302,6 +302,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
+            // even derived entities can have factories
+            if(viewModel.IsCreateFactoryChecked)
+            {
+                newElement.CreatedByOtherEntities = true;
+                needsRefreshAndSave = true;
+            }
+
             PluginManager.ReactToNewEntityCreated(newElement);
             if (needsRefreshAndSave)
             {

@@ -22,21 +22,7 @@ namespace TileGraphicsPlugin.ViewModels
             set { Set(value); }
         }
 
-        [DependsOn(nameof(InstantiateInTileMap))]
-        public Visibility ScreenListVisibility
-        {
-            get
-            {
-                if(InstantiateInTileMap)
-                {
-                    return Visibility.Visible;
-                }
-                else
-                {
-                    return Visibility.Collapsed;
-                }
-            }
-        }
+        public Visibility ScreenListVisibility => Visibility.Visible;
 
         public bool IncludeListsInScreens
         {
@@ -55,7 +41,6 @@ namespace TileGraphicsPlugin.ViewModels
             // as to why entities aren't showing up. It's better
             // to avoid confusion and have unwanted functionality
             // generated
-            InstantiateInTileMap = true;
             IncludeListsInScreens = true;
         }
     }

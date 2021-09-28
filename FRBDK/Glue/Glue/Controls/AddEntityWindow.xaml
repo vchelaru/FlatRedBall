@@ -43,7 +43,11 @@
                 <CheckBox x:Name="ICollidableCheckBox" IsChecked="{Binding IsICollidableChecked}" IsEnabled="{Binding IsICollidableEnabled}">ICollidable</CheckBox>
             </StackPanel>
         </GroupBox>
-
+        <GroupBox Header="Creation">
+            <StackPanel>
+                <CheckBox x:Name="CreateFactoryCheckBox" IsChecked="{Binding IsCreateFactoryChecked}">Create Factory</CheckBox>
+            </StackPanel>
+        </GroupBox>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Width="60" Click="OkClickInternal">OK</Button>
             <Button Margin="5,0,0,0" Width="60" Click="CancelClickInternal" Content="Cancel"/>

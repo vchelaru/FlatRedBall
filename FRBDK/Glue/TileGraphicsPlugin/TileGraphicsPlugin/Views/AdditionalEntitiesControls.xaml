@@ -13,10 +13,6 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
-            <CheckBox VerticalContentAlignment="Center"
-                      IsChecked="{Binding InstantiateInTileMap}">
-                Instantiate in Tile Map
-            </CheckBox>
             <CheckBox Grid.Row="1" VerticalAlignment="Center"
                       Visibility="{Binding ScreenListVisibility}"
                       IsChecked="{Binding IncludeListsInScreens}">
