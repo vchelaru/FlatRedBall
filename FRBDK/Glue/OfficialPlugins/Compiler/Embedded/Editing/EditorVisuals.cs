@@ -24,6 +24,9 @@ namespace GlueControl.Editing
         static int nextArrow = 0;
         static List<Arrow> Arrows = new List<Arrow>();
 
+        static int nextSprite = 0;
+        static List<Sprite> Sprites = new List<Sprite>();
+
         static double lastFrameReset;
 
         #endregion
@@ -96,6 +99,32 @@ namespace GlueControl.Editing
             nextArrow++;
         }
 
+        public static void Sprite(AnimationChain animationChain, Vector3 position, float textureScale = 1)
+        {
+            // This screen is cleaning up, so don't make anymore objects:
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            {
+                return;
+            }
+
+            TryResetEveryFrameValues();
+
+            if (nextSprite == Sprites.Count)
+            {
+                Sprites.Add(SpriteManager.AddSprite(animationChain));
+            }
+
+            var sprite = Sprites[nextSprite];
+            sprite.Name = $"EditorVisuals Sprite {nextSprite}";
+            sprite.Visible = true;
+            sprite.SetAnimationChain(animationChain);
+            sprite.Position = position;
+            sprite.TextureScale = textureScale;
+
+            nextSprite++;
+
+        }
+
         private static void TryResetEveryFrameValues()
         {
             if (lastFrameReset != TimeManager.CurrentTime)
@@ -114,9 +143,14 @@ namespace GlueControl.Editing
                 {
                     arrow.Visible = false;
                 }
+                foreach (var sprite in Sprites)
+                {
+                    sprite.Visible = false;
+                }
                 nextText = 0;
                 nextArrow = 0;
                 nextLine = 0;
+                nextSprite = 0;
             }
         }
 
@@ -141,6 +175,11 @@ namespace GlueControl.Editing
             }
             Arrows.Clear();
 
+            foreach (var sprite in Sprites)
+            {
+                SpriteManager.RemoveSprite(sprite);
+            }
+            Sprites.Clear();
         }
     }
 }
