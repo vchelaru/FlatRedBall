@@ -477,16 +477,21 @@ namespace OfficialPlugins.Compiler.Managers
 
         }
 
-        public async Task PushGlueSelectionToGame(string forcedCategoryName = null, string forcedStateName = null)
+        public async Task PushGlueSelectionToGame(string forcedCategoryName = null, string forcedStateName = null, GlueElement forcedElement = null)
         {
+            var element = forcedElement ?? GlueState.Self.CurrentElement;
+
             var dto = new SelectObjectDto();
 
-            var nos = GlueState.Self.CurrentNamedObjectSave;
-            var element = GlueState.Self.CurrentElement;
+            NamedObjectSave nos = null;
+            if(forcedElement != null)
+            {
+                nos = GlueState.Self.CurrentNamedObjectSave;
+            }
             if(element != null)
             {
-                dto.ScreenSave = GlueState.Self.CurrentScreenSave;
-                dto.EntitySave = GlueState.Self.CurrentEntitySave;
+                dto.ScreenSave = element as ScreenSave;
+                dto.EntitySave = element as EntitySave;
 
                 dto.NamedObject = nos;
                 dto.ElementNameGlue = element.Name;

@@ -460,6 +460,17 @@ namespace OfficialPlugins.Compiler
                             }
                         }
                     }
+                    else
+                    {
+                        // the user is viewing an entity, so force the screen
+                        if(GlueState.Self.CurrentEntitySave != null)
+                        {
+                            // push the selection to game
+                            var startupScreen = ObjectFinder.Self.GetScreenSave(GlueState.Self.CurrentGlueProject.StartUpScreen);
+                            await RefreshManager.Self.PushGlueSelectionToGame(forcedElement: startupScreen);
+                        }
+                    }
+
 
                     break;
             }
