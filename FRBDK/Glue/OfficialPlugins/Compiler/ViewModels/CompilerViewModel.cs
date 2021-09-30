@@ -115,22 +115,13 @@ namespace OfficialPlugins.Compiler.ViewModels
         [DependsOn(nameof(IsGluxVersionNewEnoughForGlueControlGeneration))]
         public Visibility PauseButtonVisibility => (!IsPaused && IsGluxVersionNewEnoughForGlueControlGeneration).ToVisibility();
 
-        public bool IsRebuildAndRestartEnabled
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
         public bool DidRunnerStartProcess
         {
             get => Get<bool>();
             set => Set(value);
         }
 
-        [DependsOn(nameof(IsRebuildAndRestartEnabled))]
-        [DependsOn(nameof(DidRunnerStartProcess))]
-        public bool EffectiveIsRebuildAndRestartEnabled =>
-            IsRebuildAndRestartEnabled;
+        public bool EffectiveIsRebuildAndRestartEnabled => true;
             //&&            DidRunnerStartProcess;
 
         [DependsOn(nameof(DidRunnerStartProcess))]
@@ -153,18 +144,7 @@ namespace OfficialPlugins.Compiler.ViewModels
         }
 
         [DependsOn(nameof(IsGenerateGlueControlManagerInGame1Checked))]
-        [DependsOn(nameof(IsGluxVersionNewEnoughForGlueControlGeneration))]
-        public Visibility PortUiVisibility => IsGenerateGlueControlManagerInGame1Checked && IsGluxVersionNewEnoughForGlueControlGeneration ?
-            Visibility.Visible : Visibility.Collapsed;
-
-        [DependsOn(nameof(IsGenerateGlueControlManagerInGame1Checked))]
         public Visibility RunningModeVisibility => IsGenerateGlueControlManagerInGame1Checked.ToVisibility();
-
-        public int PortNumber
-        {
-            get => Get<int>();
-            set => Set(value);
-        }
 
         public string Configuration { get; set; }
 
@@ -239,15 +219,11 @@ namespace OfficialPlugins.Compiler.ViewModels
         internal void SetFrom(CompilerSettingsModel model)
         {
             this.IsGenerateGlueControlManagerInGame1Checked = model.GenerateGlueControlManagerCode;
-            this.PortNumber = model.PortNumber;
         }
 
-        public CompilerSettingsModel ToModel()
+        public void SetModel(CompilerSettingsModel compilerSettings)
         {
-            CompilerSettingsModel toReturn = new CompilerSettingsModel();
-            toReturn.GenerateGlueControlManagerCode = this.IsGenerateGlueControlManagerInGame1Checked;
-            toReturn.PortNumber = this.PortNumber;
-            return toReturn;
+            compilerSettings.GenerateGlueControlManagerCode = this.IsGenerateGlueControlManagerInGame1Checked;
         }
 
         #endregion

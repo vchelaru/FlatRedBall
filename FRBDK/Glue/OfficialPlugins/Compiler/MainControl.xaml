@@ -46,16 +46,11 @@
                     </ToolTip>
                 </CheckBox.ToolTip>
             </CheckBox>
-            <StackPanel Margin="7,0,0,0" Orientation="Horizontal" VerticalAlignment="Top" Visibility="{Binding PortUiVisibility}">
-                <TextBlock VerticalAlignment="Center">
-                    Port:
-                </TextBlock>
-                <TextBox Width="60" Height="22" VerticalContentAlignment="Center" 
-                         Text="{Binding PortNumber}"
-                         KeyUp="TextBox_KeyEnterUpdate">
-                    
-                </TextBox>
-            </StackPanel>
+
+            <Button VerticalAlignment="Top" Width="24" Height="24" Click="GlueViewSettingsButtonClicked">
+                <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/Compiler/Icons/Settings.png"></Image>
+            </Button>
+
             <StackPanel Margin="3" Orientation="Horizontal" Visibility="{Binding CompileContentButtonVisibility}">
                 <Button Click="HandleBuildContentClick" Content="Build Content"></Button>
 

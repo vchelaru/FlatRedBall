@@ -34,10 +34,8 @@ namespace Glue
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainGlueWindow));
             this.mElementContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ElementImages = new System.Windows.Forms.ImageList(this.components);
-            this.mMenu = new System.Windows.Forms.MenuStrip();
 
             this.mElementContextMenu.SuspendLayout();
-            this.mMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // mElementContextMenu
@@ -70,14 +68,7 @@ namespace Glue
             this.ElementImages.Images.SetKeyName(16, "variable.png");
             this.ElementImages.Images.SetKeyName(17, "layerList.png");
             this.ElementImages.Images.SetKeyName(18, "collisionRelationshipList.png");
-            // 
-            // mMenu
-            // 
-            this.mMenu.Location = new System.Drawing.Point(0, 0);
-            this.mMenu.Name = "mMenu";
-            this.mMenu.Size = new System.Drawing.Size(764, 24);
-            this.mMenu.TabIndex = 1;
-            this.mMenu.Text = "menuStrip1";
+
             // 
             // MainGlueWindow
             // 
@@ -86,20 +77,16 @@ namespace Glue
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(764, 633);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MainMenuStrip = this.mMenu;
             this.Name = "MainGlueWindow";
             this.Text = "FlatRedBall Glue";
 
             this.mElementContextMenu.ResumeLayout(false);
-            this.mMenu.ResumeLayout(false);
-            this.mMenu.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 		}
 
 		#endregion
 
-        private System.Windows.Forms.MenuStrip mMenu;
         public System.Windows.Forms.ImageList ElementImages;
         internal System.Windows.Forms.ContextMenuStrip mElementContextMenu;
     }

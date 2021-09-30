@@ -61,6 +61,7 @@
     <None Remove="Compiler\Icons\RestartGame.png" />
     <None Remove="Compiler\Icons\RestartGameOnCurrentScreen.png" />
     <None Remove="Compiler\Icons\RestartScreen.png" />
+    <None Remove="Compiler\Icons\Settings.png" />
     <None Remove="Compiler\Icons\SlowMotion.png" />
     <None Remove="Compiler\Icons\stop.png" />
     <None Remove="Compiler\Icons\Unpause.png" />
@@ -118,6 +119,7 @@
     <EmbeddedResource Include="Compiler\Embedded\Models\StateSaveCategory.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Runtime\DynamicEntity.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Screens\EntityViewingScreen.cs" />
+    <Resource Include="Compiler\Icons\Settings.png" />
     <Resource Include="Content\Icons\CopyIcon.png" />
     <EmbeddedResource Include="ProfilePlugin\EmbeddedCodeFiles\ProfileManagerBase.cs" />
   </ItemGroup>

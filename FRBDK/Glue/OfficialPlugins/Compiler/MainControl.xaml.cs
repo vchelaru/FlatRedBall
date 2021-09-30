@@ -38,6 +38,7 @@ namespace OfficialPlugins.Compiler
         public event EventHandler AdvanceOneFrameClicked;
         public event EventHandler PauseClicked;
         public event EventHandler UnpauseClicked;
+        public event EventHandler SettingsClicked;
 
         #endregion
 
@@ -135,6 +136,11 @@ namespace OfficialPlugins.Compiler
 
                 e.Handled = true;
             }
+        }
+
+        private void GlueViewSettingsButtonClicked(object sender, RoutedEventArgs e)
+        {
+            SettingsClicked?.Invoke(this, null);
         }
     }
 }

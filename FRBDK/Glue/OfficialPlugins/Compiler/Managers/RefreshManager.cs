@@ -66,6 +66,10 @@ namespace OfficialPlugins.Compiler.Managers
         {
             get; set;
         }
+        public GlueViewSettingsViewModel GlueViewSettingsViewModel
+        {
+            get; set;
+        }
 
         public bool IgnoreNextObjectAdd { get; set; }
         public bool IgnoreNextObjectSelect { get; set; }
@@ -159,7 +163,7 @@ namespace OfficialPlugins.Compiler.Managers
                         await CommandSender.Send(new ReloadGlobalContentDto
                         {
                             StrippedGlobalContentFileName = strippedName
-                        }, ViewModel.PortNumber);
+                        }, GlueViewSettingsViewModel.PortNumber);
 
                         printOutput($"Reloading global file {strippedName}");
 
@@ -188,13 +192,13 @@ namespace OfficialPlugins.Compiler.Managers
                                     var dto = new Dtos.ForceReloadFileDto();
                                     dto.ElementsContainingFile = containerNames.ToList();
                                     dto.StrippedFileName = fileName.NoPathNoExtension;
-                                    await CommandSender.Send(dto, ViewModel.PortNumber);
+                                    await CommandSender.Send(dto, GlueViewSettingsViewModel.PortNumber);
                                 }
                                 else
                                 {
                                     printOutput($"Telling game to restart screen");
 
-                                    await CommandSender.Send(new RestartScreenDto(), ViewModel.PortNumber);
+                                    await CommandSender.Send(new RestartScreenDto(), GlueViewSettingsViewModel.PortNumber);
                                 }
                             }
 
@@ -249,7 +253,7 @@ namespace OfficialPlugins.Compiler.Managers
                 var dto = new CreateNewEntityDto();
                 dto.EntitySave = newEntity;
 
-                await CommandSender.Send(dto, ViewModel.PortNumber);
+                await CommandSender.Send(dto, GlueViewSettingsViewModel.PortNumber);
 
                 // selection happens before the entity is created, so let's force push the selection to the game
                 await PushGlueSelectionToGame();
@@ -297,7 +301,7 @@ namespace OfficialPlugins.Compiler.Managers
                 dto.CategoryName = category?.Name;
                 dto.ElementNameGame = GetGameTypeFor(container);
 
-                await CommandSender.Send(dto, ViewModel.PortNumber);
+                await CommandSender.Send(dto, GlueViewSettingsViewModel.PortNumber);
             }
         }
 
@@ -501,7 +505,7 @@ namespace OfficialPlugins.Compiler.Managers
                 dto.StateCategoryName = forcedCategoryName ??
                     GlueState.Self.CurrentStateSaveCategory?.Name;
 
-                await CommandSender.Send(dto, ViewModel.PortNumber);
+                await CommandSender.Send(dto, GlueViewSettingsViewModel.PortNumber);
             }
 
         }
@@ -542,7 +546,7 @@ namespace OfficialPlugins.Compiler.Managers
             dto.ElementNameGame = GetGameTypeFor(container);
             dto.VariableName = variableName;
 
-            await CommandSender.Send(dto, ViewModel.PortNumber);
+            await CommandSender.Send(dto, GlueViewSettingsViewModel.PortNumber);
         }
 
         #endregion
@@ -567,7 +571,7 @@ namespace OfficialPlugins.Compiler.Managers
                     };
 
 
-                    responseAsString = await CommandSender.Send(dto, ViewModel.PortNumber);
+                    responseAsString = await CommandSender.Send(dto, GlueViewSettingsViewModel.PortNumber);
 
                     if(!string.IsNullOrEmpty(responseAsString))
                     {
@@ -601,7 +605,7 @@ namespace OfficialPlugins.Compiler.Managers
                 dto.ElementNameGlue = //ToGameType((GlueElement)owner);
                     owner.Name;
                 dto.ObjectName = nos.InstanceName;
-                var responseAsstring = await CommandSender.Send(dto, ViewModel.PortNumber);
+                var responseAsstring = await CommandSender.Send(dto, GlueViewSettingsViewModel.PortNumber);
 
                 var response = JsonConvert.DeserializeObject<RemoveObjectDtoResponse>(responseAsstring);
                 if(response.DidScreenMatch && response.WasObjectRemoved == false)

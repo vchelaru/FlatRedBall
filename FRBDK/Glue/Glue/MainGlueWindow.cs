@@ -61,8 +61,6 @@ namespace Glue
 
         public bool HasErrorOccurred = false;
 
-        private System.Windows.Forms.Timer FileWatchTimer;
-
         private static MainGlueWindow mSelf;
 
         public static MainPanelControl MainWpfControl { get; private set; }
@@ -73,8 +71,8 @@ namespace Glue
         }
 
         MainExplorerPlugin mainExplorerPlugin;
-        //private GlueFormsCore.Controls.WinformsSplitContainer MainPanelSplitContainer;
 
+        private System.Windows.Forms.MenuStrip mMenu;
 
 
         public System.ComponentModel.IContainer Components => components;
@@ -95,29 +93,29 @@ namespace Glue
 
             InitializeComponent();
 
-            this.Activated += new System.EventHandler(this.Form1_Activated);
+            CreateMenuStrip();
+
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
 
-            //this.MainPanelSplitContainer = new GlueFormsCore.Controls.WinformsSplitContainer();
-            //this.Controls.Add(this.MainPanelSplitContainer);
             CreateMainWpfPanel();
             // so docking works
             //this.Controls.SetChildIndex(this.MainPanelSplitContainer, 0);
             this.Controls.Add(this.mMenu);
+        }
 
-            this.FileWatchTimer = new System.Windows.Forms.Timer(this.components);
-
-            this.FileWatchTimer.Enabled = true;
-            // the frequency of file change flushes. Reducing this time
-            // makes Glue more responsive, but increases the chance of 
-            // Glue performing a check mid update like on a git pull.
-            // Note that the ChangeInformation also keeps a timer since the last
-            // file was added, and will wait mMinimumTimeAfterChangeToReact until 
-            // flushing.
-            this.FileWatchTimer.Interval = 400;
-            this.FileWatchTimer.Tick += new System.EventHandler(this.FileWatchTimer_Tick);
-
+        private void CreateMenuStrip()
+        {
+            this.mMenu = new System.Windows.Forms.MenuStrip();
+            // 
+            // mMenu
+            // 
+            this.mMenu.Location = new System.Drawing.Point(0, 0);
+            this.mMenu.Name = "mMenu";
+            this.mMenu.Size = new System.Drawing.Size(764, 24);
+            this.mMenu.TabIndex = 1;
+            this.mMenu.Text = "menuStrip1";
+            this.MainMenuStrip = this.mMenu;
         }
 
         private void CreateMainWpfPanel()
@@ -596,12 +594,6 @@ namespace Glue
 
         }
 
-        private void FileWatchTimer_Tick(object sender, EventArgs e)
-        {
-            if(ProjectManager.ProjectBase != null && !string.IsNullOrEmpty(ProjectManager.ProjectBase.FullFileName))
-                FileWatchManager.Flush();
-        }
-
         private async void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             ProjectManager.WantsToClose = true;
@@ -615,11 +607,6 @@ namespace Glue
 
             PluginManager.ReactToGlueClose();
             CloseProject(true, true);
-        }
-
-        private void Form1_Activated(object sender, EventArgs e)
-        {
-            int m = 3;
         }
     }
 }

@@ -26,6 +26,8 @@ namespace OfficialPlugins.Compiler.Managers
             get; set;
         }
 
+        public GlueViewSettingsViewModel GlueViewSettingsViewModel { get; set; }
+
         #endregion
 
         bool GetIfChangedMemberIsIgnored(string changedMember)
@@ -126,7 +128,7 @@ namespace OfficialPlugins.Compiler.Managers
             var ati = nos.GetAssetTypeInfo();
             string value;
 
-            var gameScreenName = await CommandSender.GetScreenName(ViewModel.PortNumber);
+            var gameScreenName = await CommandSender.GetScreenName(GlueViewSettingsViewModel.PortNumber);
             string glueScreenName = null;
             if(!string.IsNullOrEmpty(gameScreenName))
             {
@@ -422,7 +424,7 @@ namespace OfficialPlugins.Compiler.Managers
                         data.VariableName = "this." + data.VariableName;
                     }
 
-                    var responseAsString = await CommandSender.Send(data, ViewModel.PortNumber);
+                    var responseAsString = await CommandSender.Send(data, GlueViewSettingsViewModel.PortNumber);
 
                     if (!string.IsNullOrEmpty(responseAsString))
                     {

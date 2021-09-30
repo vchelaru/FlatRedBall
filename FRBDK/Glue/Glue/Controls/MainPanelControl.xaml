@@ -22,14 +22,14 @@
     <Grid>
         
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto" x:Name="ToolbarControlRow"></RowDefinition>
             <RowDefinition Height="{Binding TopPanelHeight, Mode=TwoWay}"></RowDefinition>
 
-            <RowDefinition Height="{Binding TopSplitterHeight, Mode=TwoWay}"></RowDefinition>
+            <RowDefinition Height="{Binding TopSplitterHeight, Mode=TwoWay, FallbackValue=3}"></RowDefinition>
             
             <RowDefinition></RowDefinition>
 
-            <RowDefinition Height="{Binding BottomSplitterHeight, Mode=TwoWay}"></RowDefinition>
+            <RowDefinition Height="{Binding BottomSplitterHeight, Mode=TwoWay,FallbackValue=3}"></RowDefinition>
 
             <RowDefinition Height="{Binding BottomPanelHeight, Mode=TwoWay}"></RowDefinition>
         </Grid.RowDefinitions>

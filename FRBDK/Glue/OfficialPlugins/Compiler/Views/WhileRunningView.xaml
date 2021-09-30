@@ -114,20 +114,5 @@
                 </ToolTip>
             </Button.ToolTip>
         </Button>
-
-        <CheckBox VerticalAlignment="Top" Margin="8,0,8,0" 
-                  Height="24"
-                  IsChecked="{Binding IsRebuildAndRestartEnabled}"
-                  Visibility="{Binding RebuildRestartCheckBoxVisiblity}"
-                  VerticalContentAlignment="Center">
-            <Image Height="24" Source="/OfficialPluginsCore;component/Compiler/Icons/HotReload.png" >
-            </Image>
-            <CheckBox.ToolTip>
-                <StackPanel>
-                    <TextBlock FontWeight="Bold">Hot Reload</TextBlock>
-                    <TextBlock>If enabled, Glue will watch for any changes and will reload the game if changes occur</TextBlock>
-                </StackPanel>
-            </CheckBox.ToolTip>
-        </CheckBox>
     </StackPanel>
 </UserControl>

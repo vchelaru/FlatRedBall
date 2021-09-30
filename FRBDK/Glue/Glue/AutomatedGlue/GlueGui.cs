@@ -1,4 +1,5 @@
-﻿using Glue;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using Glue;
 using System;
 using System.Windows.Forms;
 
@@ -14,6 +15,7 @@ namespace FlatRedBall.Glue.AutomatedGlue
 
         #region Properties
 
+        // todo - move this to GlueGui
         public static MenuStrip MenuStrip
         {
             get
@@ -54,7 +56,7 @@ namespace FlatRedBall.Glue.AutomatedGlue
         {
             if (ShowGui)
             {
-                mMenuStrip.Invoke((MethodInvoker)delegate
+                GlueCommands.Self.DoOnUiThread(() =>
                 {
                     MessageBox.Show(MainGlueWindow.Self, text, caption);
                 });
@@ -65,7 +67,7 @@ namespace FlatRedBall.Glue.AutomatedGlue
         {
             if (ShowGui)
             {
-                mMenuStrip.Invoke((MethodInvoker)delegate
+                GlueCommands.Self.DoOnUiThread(() =>
                 {
                     MessageBox.Show(MainGlueWindow.Self, text);
                 });
@@ -76,7 +78,7 @@ namespace FlatRedBall.Glue.AutomatedGlue
         {
             if (ShowGui)
             {
-                mMenuStrip.Invoke((MethodInvoker)delegate
+                GlueCommands.Self.DoOnUiThread(() =>
                 {
                     // We want to show the exception here so we can diagnose it better.
                     MessageBox.Show(MainGlueWindow.Self, text + "\n\n\nDetails:\n\n" + ex, caption);
@@ -92,7 +94,7 @@ namespace FlatRedBall.Glue.AutomatedGlue
         {
             if (ShowGui)
             {
-                mMenuStrip.Invoke((MethodInvoker)delegate
+                GlueCommands.Self.DoOnUiThread(() =>
                 {
                     form.Show(owner);
                 });

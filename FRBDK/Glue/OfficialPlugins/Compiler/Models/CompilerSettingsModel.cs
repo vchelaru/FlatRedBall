@@ -10,5 +10,7 @@ namespace OfficialPlugins.Compiler.Models
     {
         public bool GenerateGlueControlManagerCode { get; set; }
         public int PortNumber { get; set; } = 8021;
+        public bool ShowScreenBoundsWhenViewingEntities { get; set; } = true;
+        public decimal GridSize { get; set; }
     }
 }

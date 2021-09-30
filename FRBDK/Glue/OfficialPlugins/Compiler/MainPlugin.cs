@@ -42,10 +42,12 @@ namespace OfficialPlugins.Compiler
         Compiler compiler;
         Runner runner;
         CompilerViewModel viewModel;
+        GlueViewSettingsViewModel glueViewSettingsViewModel;
 
         public static CompilerViewModel MainViewModel { get; private set; }
 
         PluginTab buildTab;
+        PluginTab glueViewSettingsTab;
 
         Game1GlueControlGenerator game1GlueControlGenerator;
 
@@ -121,11 +123,11 @@ namespace OfficialPlugins.Compiler
                     if(viewModel.IsEditChecked)
                     {
                         var gameToGlueCommandsAsString = await CommandSending.CommandSender
-                            .SendCommand("GetCommands", viewModel.PortNumber);
+                            .SendCommand("GetCommands", glueViewSettingsViewModel.PortNumber);
 
                         if (!string.IsNullOrEmpty(gameToGlueCommandsAsString))
                         {
-                            CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString, viewModel.PortNumber);
+                            CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString, glueViewSettingsViewModel.PortNumber);
                         }
                     }
                 }
@@ -225,6 +227,7 @@ namespace OfficialPlugins.Compiler
             var model = LoadOrCreateCompilerSettings();
             ignoreViewModelChanges = true;
             viewModel.SetFrom(model);
+            glueViewSettingsViewModel.SetFrom(model);
             ignoreViewModelChanges = false;
 
             viewModel.IsGluxVersionNewEnoughForGlueControlGeneration =
@@ -328,8 +331,8 @@ namespace OfficialPlugins.Compiler
         {
             viewModel = new CompilerViewModel();
             viewModel.Configuration = "Debug";
-            viewModel.IsRebuildAndRestartEnabled = true;
-
+            glueViewSettingsViewModel = new GlueViewSettingsViewModel();
+            glueViewSettingsViewModel.PropertyChanged += HandleGlueViewSettingsViewModelPropertyChanged;
             viewModel.PropertyChanged += HandleMainViewModelPropertyChanged;
 
             MainViewModel = viewModel;
@@ -339,13 +342,43 @@ namespace OfficialPlugins.Compiler
 
             Runner.Self.ViewModel = viewModel;
             RefreshManager.Self.ViewModel = viewModel;
+            RefreshManager.Self.GlueViewSettingsViewModel = glueViewSettingsViewModel;
+
             VariableSendingManager.Self.ViewModel = viewModel;
+            VariableSendingManager.Self.GlueViewSettingsViewModel = glueViewSettingsViewModel;
+
 
             buildTab = base.CreateTab(control, "Build");
             buildTab.SuggestedLocation = TabLocation.Bottom;
             buildTab.Show();
 
+
+            var glueViewSettingsView = new Views.GlueViewSettings();
+            glueViewSettingsView.ViewModel = glueViewSettingsViewModel;
+
+            glueViewSettingsTab = base.CreateTab(glueViewSettingsView, "GlueView Settings");
+            glueViewSettingsTab.SuggestedLocation = TabLocation.Left;
+
             AssignControlEvents();
+        }
+
+        private async void HandleGlueViewSettingsViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            //////////Early Out////////////////////
+            if (ignoreViewModelChanges)
+            {
+                return;
+            }
+
+            /////////End Early Out//////////////// 
+            var propertyName = e.PropertyName;
+            switch(propertyName)
+            {
+                case nameof(GlueViewSettingsViewModel.PortNumber):
+                    await HandlePortOrGenerateCheckedChanged(propertyName);
+                    break;
+            }
+            throw new NotImplementedException();
         }
 
         private async void HandleMainViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -362,42 +395,7 @@ namespace OfficialPlugins.Compiler
             switch (propertyName)
             {
                 case nameof(CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked):
-                case nameof(CompilerViewModel.PortNumber):
-                    control.PrintOutput("Applying changes");
-                    game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = viewModel.IsGenerateGlueControlManagerInGame1Checked && IsFrbNewEnough();
-                    game1GlueControlGenerator.PortNumber = viewModel.PortNumber;
-                    RefreshManager.Self.PortNumber = viewModel.PortNumber;
-                    GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
-                    var model = viewModel.ToModel();
-                    try
-                    {
-                        var text = JsonConvert.SerializeObject(model);
-                        GlueCommands.Self.TryMultipleTimes(() =>
-                        {
-                            System.IO.Directory.CreateDirectory(JsonSettingsFilePath.GetDirectoryContainingThis().FullPath);
-                            System.IO.File.WriteAllText(JsonSettingsFilePath.FullPath, text);
-                        });
-                    }
-                    catch
-                    {
-                        // no big deal if it fails
-                    }
-                    if (IsFrbNewEnough())
-                    {
-                        TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(model.GenerateGlueControlManagerCode), "Generate Glue Control Code");
-                    }
-
-                    if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.NugetPackageInCsproj)
-                    {
-                        GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
-                    }
-
-                    RefreshManager.Self.StopAndRestartTask($"{propertyName} changed");
-
-                    control.PrintOutput("Waiting for tasks to finish...");
-                    await TaskManager.Self.WaitForAllTasksFinished();
-                    control.PrintOutput("Finishined adding/generating code for GlueControlManager");
-
+                    await HandlePortOrGenerateCheckedChanged(propertyName);
 
                     break;
                 case nameof(CompilerViewModel.CurrentGameSpeed):
@@ -405,7 +403,7 @@ namespace OfficialPlugins.Compiler
                     await CommandSender.Send(new SetSpeedDto
                     {
                         SpeedPercentage = speedPercentage
-                    }, viewModel.PortNumber);
+                    }, glueViewSettingsViewModel.PortNumber);
                     
                     break;
                 case nameof(CompilerViewModel.EffectiveIsRebuildAndRestartEnabled):
@@ -422,7 +420,7 @@ namespace OfficialPlugins.Compiler
                     var inEditMode = viewModel.PlayOrEdit == PlayOrEdit.Edit;
                     await CommandSending.CommandSender.Send(
                         new Dtos.SetEditMode { IsInEditMode = inEditMode },
-                        viewModel.PortNumber);
+                        glueViewSettingsViewModel.PortNumber);
 
                     if (inEditMode)
                     {
@@ -433,7 +431,7 @@ namespace OfficialPlugins.Compiler
                         }
                         else
                         {
-                            var screenName = await CommandSending.CommandSender.GetScreenName(viewModel.PortNumber);
+                            var screenName = await CommandSending.CommandSender.GetScreenName(glueViewSettingsViewModel.PortNumber);
 
                             if (!string.IsNullOrEmpty(screenName))
                             {
@@ -476,6 +474,46 @@ namespace OfficialPlugins.Compiler
             }
         }
 
+        private async Task HandlePortOrGenerateCheckedChanged(string propertyName)
+        {
+            control.PrintOutput("Applying changes");
+            game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = viewModel.IsGenerateGlueControlManagerInGame1Checked && IsFrbNewEnough();
+            game1GlueControlGenerator.PortNumber = glueViewSettingsViewModel.PortNumber;
+            RefreshManager.Self.PortNumber = glueViewSettingsViewModel.PortNumber;
+            GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
+            var model = new CompilerSettingsModel();
+            viewModel.SetModel(model);
+            glueViewSettingsViewModel.SetModel(model);
+            try
+            {
+                var text = JsonConvert.SerializeObject(model);
+                GlueCommands.Self.TryMultipleTimes(() =>
+                {
+                    System.IO.Directory.CreateDirectory(JsonSettingsFilePath.GetDirectoryContainingThis().FullPath);
+                    System.IO.File.WriteAllText(JsonSettingsFilePath.FullPath, text);
+                });
+            }
+            catch
+            {
+                // no big deal if it fails
+            }
+            if (IsFrbNewEnough())
+            {
+                TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(model.GenerateGlueControlManagerCode), "Generate Glue Control Code");
+            }
+
+            if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.NugetPackageInCsproj)
+            {
+                GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
+            }
+
+            RefreshManager.Self.StopAndRestartTask($"{propertyName} changed");
+
+            control.PrintOutput("Waiting for tasks to finish...");
+            await TaskManager.Self.WaitForAllTasksFinished();
+            control.PrintOutput("Finishined adding/generating code for GlueControlManager");
+        }
+
         private void AssignControlEvents()
         {
             control.BuildClicked += async (not, used) =>
@@ -502,7 +540,7 @@ namespace OfficialPlugins.Compiler
             control.RestartGameCurrentScreenClicked += async (not, used) =>
             {
                 var wasEditChecked = viewModel.IsEditChecked;
-                var screenName = await CommandSending.CommandSender.GetScreenName(viewModel.PortNumber);
+                var screenName = await CommandSending.CommandSender.GetScreenName(glueViewSettingsViewModel.PortNumber);
 
 
                 viewModel.IsPaused = false;
@@ -525,12 +563,12 @@ namespace OfficialPlugins.Compiler
             control.RestartScreenClicked += async (not, used) =>
             {
                 viewModel.IsPaused = false;
-                await CommandSender.Send(new RestartScreenDto(), viewModel.PortNumber);
+                await CommandSender.Send(new RestartScreenDto(), glueViewSettingsViewModel.PortNumber);
             };
 
             control.AdvanceOneFrameClicked += async (not, used) =>
             {
-                await CommandSender.Send(new AdvanceOneFrameDto(), viewModel.PortNumber);
+                await CommandSender.Send(new AdvanceOneFrameDto(), glueViewSettingsViewModel.PortNumber);
             };
 
             control.BuildContentClicked += delegate
@@ -559,14 +597,25 @@ namespace OfficialPlugins.Compiler
             control.PauseClicked += async (not, used) =>
             {
                 viewModel.IsPaused = true;
-                await CommandSender.Send(new TogglePauseDto(), viewModel.PortNumber);
+                await CommandSender.Send(new TogglePauseDto(), glueViewSettingsViewModel.PortNumber);
             };
 
             control.UnpauseClicked += async (not, used) =>
             {
                 viewModel.IsPaused = false;
-                await CommandSender.Send(new TogglePauseDto(), viewModel.PortNumber);
+                await CommandSender.Send(new TogglePauseDto(), glueViewSettingsViewModel.PortNumber);
             };
+
+            control.SettingsClicked += (not, used) =>
+            {
+                ShowSettingsTab();
+            };
+        }
+
+        void ShowSettingsTab()
+        {
+            glueViewSettingsTab.Show();
+            glueViewSettingsTab.Focus();
         }
 
         private static bool GetIfHasErrors()

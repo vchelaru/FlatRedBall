@@ -119,7 +119,7 @@ namespace OfficialPlugins.Compiler
             }
         }
 
-        private static Process TryFindGameProcess()
+        public static Process TryFindGameProcess()
         {
             // find a process for game
             var processes = Process.GetProcesses()

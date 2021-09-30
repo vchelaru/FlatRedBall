@@ -1,4 +1,6 @@
-﻿using FlatRedBall.Glue.Controls;
+﻿using FlatRedBall.Glue;
+using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins;
@@ -206,28 +208,52 @@ namespace GlueFormsCore.Controls
     /// </summary>
     public partial class MainPanelControl : UserControl
     {
+        #region Fields/Properties
+
         public static string AppTheme = "Light";
         public static ResourceDictionary ResourceDictionary { get; private set; }
+
+        System.Timers.Timer FileWatchTimer;
+
+        #endregion
 
         public MainPanelControl()
         {
             InitializeComponent();
 
-            this.Resources.MergedDictionaries[0].Source =
-                new Uri($"/Themes/{AppTheme}.xaml", UriKind.Relative);
-
-
-            Style style = this.TryFindResource("UserControlStyle") as Style;
-            if (style != null)
-            {
-                this.Style = style;
-            }
-
-            ResourceDictionary = Resources;
+            InitializeThemes();
 
             var viewModel = new TabControlViewModel();
             this.DataContext = viewModel;
 
+            SetBinding(viewModel);
+
+            PluginManager.SetTabs(viewModel);
+            PluginManager.SetToolbarTray(ToolbarControl);
+
+            CreateFileWatchTimer();
+            //TopTabControl
+        }
+
+        private void CreateFileWatchTimer()
+        {
+            this.FileWatchTimer = //new System.Windows.Forms.Timer(this.components);
+                new System.Timers.Timer();
+
+            this.FileWatchTimer.Enabled = true;
+            // the frequency of file change flushes. Reducing this time
+            // makes Glue more responsive, but increases the chance of 
+            // Glue performing a check mid update like on a git pull.
+            // Note that the ChangeInformation also keeps a timer since the last
+            // file was added, and will wait mMinimumTimeAfterChangeToReact until 
+            // flushing.
+            this.FileWatchTimer.Interval = 400;
+            this.FileWatchTimer.Elapsed += this.FileWatchTimer_Tick;
+            this.FileWatchTimer.Start();
+        }
+
+        private void SetBinding(TabControlViewModel viewModel)
+        {
             TopTabControl.SetBinding(TabControl.ItemsSourceProperty, nameof(viewModel.TopTabItems));
             TopTabControl.SetBinding(TabControl.SelectedItemProperty, nameof(viewModel.TopSelectedTab));
 
@@ -242,12 +268,21 @@ namespace GlueFormsCore.Controls
 
             CenterTabControl.SetBinding(TabControl.ItemsSourceProperty, nameof(viewModel.CenterTabItems));
             CenterTabControl.SetBinding(TabControl.SelectedItemProperty, nameof(viewModel.CenterSelectedTab));
+        }
 
-            PluginManager.SetTabs(viewModel);
-            PluginManager.SetToolbarTray(ToolbarControl);
+        private void InitializeThemes()
+        {
+            this.Resources.MergedDictionaries[0].Source =
+                new Uri($"/Themes/{AppTheme}.xaml", UriKind.Relative);
 
 
-            //TopTabControl
+            Style style = this.TryFindResource("UserControlStyle") as Style;
+            if (style != null)
+            {
+                this.Style = style;
+            }
+
+            ResourceDictionary = Resources;
         }
 
         private void UserControl_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -256,6 +291,12 @@ namespace GlueFormsCore.Controls
             {
                 e.Handled = true;
             }
+        }
+
+        private void FileWatchTimer_Tick(object sender, EventArgs e)
+        {
+            if (ProjectManager.ProjectBase != null && !string.IsNullOrEmpty(ProjectManager.ProjectBase.FullFileName))
+                FileWatchManager.Flush();
         }
     }
 }
