@@ -174,6 +174,23 @@ namespace FlatRedBall.Math.Paths
 
         }
 
+        public void FlipHorizontally(float xToFlipAbout = 0)
+        {
+            foreach(var segment in this.Segments)
+            {
+                segment.ArcAngle = segment.ArcAngle * -1;
+
+                var centerOffset = segment.CircleCenter.X - xToFlipAbout;
+                segment.CircleCenter.X = xToFlipAbout - centerOffset;
+
+                var endXOffset = segment.EndX - xToFlipAbout;
+                segment.EndX = xToFlipAbout - endXOffset;
+
+                var startXOffset = segment.StartX - xToFlipAbout;
+                segment.StartX = xToFlipAbout - startXOffset;
+            }
+        }
+
         void AssignArcLength(PathSegment segment)
         {
             var first = new Vector2(segment.StartX, segment.StartY);
