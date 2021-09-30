@@ -52,5 +52,10 @@ namespace OfficialPlugins.PathPlugin.Views
         {
             ViewModel.HandleMoveDownClicked();
         }
+
+        private void CopyClicked(object sender, RoutedEventArgs e)
+        {
+            ViewModel.HandleCopyClicked();
+        }
     }
 }

@@ -108,6 +108,17 @@ namespace OfficialPlugins.PathPlugin.Managers
                     MainViewModel.PathSegments.Insert(index + 1, vm);
                 }
             };
+            vm.CopyClicked += (_) =>
+            {
+                var newVm = new PathSegmentViewModel();
+                AssignSegmentEvents(newVm);
+                newVm.X = vm.X;
+                newVm.Y = vm.Y;
+                newVm.SegmentType = vm.SegmentType;
+                newVm.Angle = vm.Angle;
+                MainViewModel.PathSegments.Add(newVm);
+
+            };
         }
 
         public static void CreateNewSegmentViewModel()

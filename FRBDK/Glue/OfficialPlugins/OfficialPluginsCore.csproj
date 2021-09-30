@@ -64,6 +64,7 @@
     <None Remove="Compiler\Icons\SlowMotion.png" />
     <None Remove="Compiler\Icons\stop.png" />
     <None Remove="Compiler\Icons\Unpause.png" />
+    <None Remove="Content\Icons\CopyIcon.png" />
     <None Remove="ErrorPlugin\Icons\CopyAll.png" />
     <None Remove="ErrorPlugin\Icons\CopySingle.png" />
     <None Remove="ErrorPlugin\Icons\ErrorWindowError.png" />
@@ -117,6 +118,7 @@
     <EmbeddedResource Include="Compiler\Embedded\Models\StateSaveCategory.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Runtime\DynamicEntity.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Screens\EntityViewingScreen.cs" />
+    <Resource Include="Content\Icons\CopyIcon.png" />
     <EmbeddedResource Include="ProfilePlugin\EmbeddedCodeFiles\ProfileManagerBase.cs" />
   </ItemGroup>
 

@@ -12,6 +12,7 @@ namespace OfficialPlugins.PathPlugin.ViewModels
         public event Action<PathSegmentViewModel> CloseClicked;
         public event Action<PathSegmentViewModel> MoveUpClicked;
         public event Action<PathSegmentViewModel> MoveDownClicked;
+        public event Action<PathSegmentViewModel> CopyClicked;
 
         static List<SegmentType> availableValuesStatic = new List<SegmentType>()
         {
@@ -52,5 +53,6 @@ namespace OfficialPlugins.PathPlugin.ViewModels
         public void HandleCloseClicked() => CloseClicked(this);
         public void HandleMoveUpClicked() => MoveUpClicked(this);
         public void HandleMoveDownClicked() => MoveDownClicked(this);
+        public void HandleCopyClicked() => CopyClicked(this);
     }
 }
