@@ -28,7 +28,7 @@ namespace OfficialPluginsCore.PropertiesTabOldPlugin
         {
             CreatePropertyGrid();
 
-            pluginTab = this.CreateAndAddTab(PropertyGrid, "Properties");
+            pluginTab = this.CreateAndAddTab(PropertyGrid, "Properties", TabLocation.Right);
             pluginTab.CanClose = false;
             this.ReactToItemSelectHandler += HandleItemSelected;
 

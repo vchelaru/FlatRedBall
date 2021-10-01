@@ -70,7 +70,7 @@ namespace Glue
             get { return mSelf; }
         }
 
-        MainExplorerPlugin mainExplorerPlugin;
+        internal MainExplorerPlugin mainExplorerPlugin;
 
         private System.Windows.Forms.MenuStrip mMenu;
 
@@ -79,7 +79,7 @@ namespace Glue
 
         public System.Windows.Forms.PropertyGrid PropertyGrid;
 
-        private int NumberOfStoredRecentFiles
+        public int NumberOfStoredRecentFiles
         {
             get;
             set;
@@ -465,8 +465,8 @@ namespace Glue
                     //this.Top = settingsSave.WindowTop;
 
                     // This used to be 0, b
-                    this.Height = settingsSave.WindowHeight > 100 ? settingsSave.WindowHeight : 480;
-                    this.Width = settingsSave.WindowWidth > 100 ? settingsSave.WindowWidth : 640;
+                    //this.Height = settingsSave.WindowHeight > 100 ? settingsSave.WindowHeight : 480;
+                    //this.Width = settingsSave.WindowWidth > 100 ? settingsSave.WindowWidth : 640;
                 }
             }
             else
@@ -480,117 +480,9 @@ namespace Glue
 
         }
 
-        private void UpdateGlueSettings()
-        {
-            GlueSettingsSave save = ProjectManager.GlueSettingsSave;
-
-            string lastFileName = null;
-
-            if (ProjectManager.ProjectBase != null)
-            {
-                lastFileName = ProjectManager.ProjectBase.FullFileName;
-            }
-
-            save.LastProjectFile = lastFileName;
-
-            var glueExeFileName = ProjectLoader.GetGlueExeLocation();
-            var foundItem = save.GlueLocationSpecificLastProjectFiles
-                .FirstOrDefault(item => item.GlueFileName == glueExeFileName);
-
-            var alreadyIsListed = foundItem != null;
-
-            if(!alreadyIsListed)
-            {
-                foundItem = new ProjectFileGlueFilePair();
-                save.GlueLocationSpecificLastProjectFiles.Add(foundItem);
-            }
-            foundItem.GlueFileName = glueExeFileName;
-            foundItem.GameProjectFileName = lastFileName;
-            
-            // set up the positions of the window
-            save.WindowLeft = this.Left;
-            save.WindowTop = this.Top;
-            save.WindowHeight = this.Height;
-            save.WindowWidth = this.Width;
-            save.StoredRecentFiles = this.NumberOfStoredRecentFiles;
-
-            GlueCommands.Self.GluxCommands.SaveSettings();
-        }
-
         public static void CloseProject(bool shouldSave, bool isExiting, InitializationWindow initWindow = null)
         {
-            TaskManager.Self.RecordTaskHistory($"--Received Close Project Command --");
-
-            // Let's set this to true so all tasks can end
-            ProjectManager.WantsToClose = true;
-
-            long msWaited = 0;
-            // But give them a chance to end...
-            while (TaskManager.Self.AreAllAsyncTasksDone == false)
-            {
-                // We want to wait until all tasks are done, but
-                // if the task is to reload, we can continue or else
-                // we'll have a deadlock
-                var canContinue = TaskManager.Self.CurrentTask == UpdateReactor.ReloadingProjectDescription ||
-                    (TaskManager.Self.CurrentTask.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTask.EndsWith(".glux")) ||
-                    (TaskManager.Self.CurrentTask.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTask.EndsWith(".csproj")) ||
-                    TaskManager.Self.CurrentTask.StartsWith("Reloading glux due to file change on disk");
-
-                if (canContinue)
-                {
-                    break;
-                }
-                else
-                {
-                    const int sleepLength = 50;
-                    System.Threading.Thread.Sleep(sleepLength);
-                    msWaited += sleepLength;
-
-                    // pump events
-                    Application.DoEvents();
-
-                    if(initWindow != null)
-                    {
-                        initWindow.Message = "Closing Project";
-                        initWindow.SubMessage = $"Waiting for {TaskManager.Self.TaskCount} tasks to finish...\nCurrent Task: {TaskManager.Self.CurrentTask}";
-
-                    }
-
-                    const int maxMsToWait = 50 * 1000;
-
-                    // don't wait forever. This is mainly so we wait for any simultaneous tasks.
-                    // There shouldn't be any but just in case Vic messed up the code...
-                    if(msWaited > maxMsToWait)
-                    {
-                        TaskManager.Self.RecordTaskHistory($"--Waited maximum time to finish tasks, but still have {TaskManager.Self.TaskCount} tasks left --");
-
-                        break;
-                    }
-                }
-
-            }
-
-
-            if (shouldSave)
-            {
-                if (ProjectManager.ProjectBase != null && !string.IsNullOrEmpty(ProjectManager.ProjectBase.FullFileName))
-                {
-                    GlueCommands.Self.ProjectCommands.SaveProjectsImmediately();
-                    Self.UpdateGlueSettings();
-                }
-            }
-
-
-            ProjectManager.UnloadProject(isExiting);
-
-            Self.mainExplorerPlugin.HandleProjectClose(isExiting);
-
-            MainGlueWindow.Self.PropertyGrid.SelectedObject = null;
-
-            MainGlueWindow.Self.Text = "FlatRedBall Glue";
-            ProjectManager.WantsToClose = false;
-            TaskManager.Self.RecordTaskHistory($"--Ending Close Project Command --");
-
+            MainWpfControl.ReactToCloseProject(shouldSave, isExiting, initWindow);
 
         }
 

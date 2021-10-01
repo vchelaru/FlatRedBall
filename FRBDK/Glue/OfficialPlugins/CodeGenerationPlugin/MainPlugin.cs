@@ -51,8 +51,7 @@ namespace OfficialPlugins.CodeGenerationPlugin
             if (control == null)
             {
                 control = new CodeGenerationControl();
-                tab = base.CreateTab(control, "Code Generation");
-                tab.SuggestedLocation = TabLocation.Bottom;
+                tab = base.CreateTab(control, "Code Generation", TabLocation.Bottom);
             }
             tab.Show();
         }

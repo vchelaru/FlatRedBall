@@ -111,7 +111,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
             var Help = AddTopLevelMenuItem("Help");
             {
-                Help.Add("About FlatRedBall Glue", () => new AboutBox1().Show());
+                Help.Add("About FlatRedBall", () => new AboutBox1().Show());
                 Help.DropDownItems.Add(new ToolStripSeparator());
                 Help.Add("Tutorials", () => Process.Start("http://flatredball.com/documentation/tutorials/"));
                 Help.Add("Report a Bug", () => Process.Start("https://github.com/vchelaru/flatredball/issues"));

@@ -195,7 +195,6 @@ namespace OfficialPlugins.MonoGameContent
                 control.RefreshClicked += controller.HandleRefreshClicked;
 
                 tab = base.CreateTab(control, "Content Pipeline");
-                tab.SuggestedLocation = TabLocation.Left;
             }
             tab.Show();
         }

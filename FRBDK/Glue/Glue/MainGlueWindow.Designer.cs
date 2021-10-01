@@ -78,7 +78,7 @@ namespace Glue
             this.ClientSize = new System.Drawing.Size(764, 633);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainGlueWindow";
-            this.Text = "FlatRedBall Glue";
+            this.Text = "FlatRedBall";
 
             this.mElementContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);

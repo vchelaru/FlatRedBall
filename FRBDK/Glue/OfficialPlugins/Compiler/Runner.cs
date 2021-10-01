@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.IO;
@@ -16,6 +17,35 @@ using GeneralResponse = ToolsUtilities.GeneralResponse;
 
 namespace OfficialPlugins.Compiler
 {
+    [StructLayout(LayoutKind.Sequential)]
+    public struct WindowRectangle
+    {
+        public int Left;        // x position of upper-left corner
+        public int Top;         // y position of upper-left corner
+        public int Right;       // x position of lower-right corner
+        public int Bottom;      // y position of lower-right corner
+
+        public override string ToString()
+        {
+            return $"Left {Left}  Top {Top}";
+        }
+    }
+
+    public static class WindowMover
+    {
+        #region DLL Import for GetWindowRect/MoveWindow
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetWindowRect(IntPtr hWnd, out WindowRectangle lpRect);
+
+
+        #endregion
+    }
+
     class Runner : Singleton<Runner>
     {
         #region Fields/Properties
@@ -46,30 +76,7 @@ namespace OfficialPlugins.Compiler
 
         #endregion
 
-        #region DLL Import for GetWindowRect/MoveWindow
 
-        [DllImport("user32.dll", SetLastError = true)]
-        internal static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool GetWindowRect(IntPtr hWnd, out WindowRectangle lpRect);
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct WindowRectangle
-        {
-            public int Left;        // x position of upper-left corner
-            public int Top;         // y position of upper-left corner
-            public int Right;       // x position of lower-right corner
-            public int Bottom;      // y position of lower-right corner
-
-            public override string ToString()
-            {
-                return $"Left {Left}  Top {Top}";
-            }
-        }
-
-        #endregion
 
         public Runner()
         {
@@ -191,7 +198,7 @@ namespace OfficialPlugins.Compiler
                             else
                             {
                                 var rect = lastWindowRectangle.Value;
-                                var didSucceed = MoveWindow(id.Value, rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top, true);
+                                var didSucceed = WindowMover.MoveWindow(id.Value, rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top, true);
                                 if (didSucceed)
                                 {
 
@@ -208,6 +215,8 @@ namespace OfficialPlugins.Compiler
                     {
                         ViewModel.IsRunning = runningGameProcess != null;
                         ViewModel.DidRunnerStartProcess = DidRunnerStartProcess;
+
+                        PluginManager.CallPluginMethod("Game Host", "MoveGameToHost");
 
                     });
                 }
@@ -230,12 +239,19 @@ namespace OfficialPlugins.Compiler
 
         private static string GetGameExeLocation()
         {
-            var projectFileName = GlueState.Self.CurrentMainProject.FullFileName;
-            var projectDirectory = FileManager.GetDirectory(projectFileName);
-            var executableName = FileManager.RemoveExtension(FileManager.RemovePath(projectFileName));
-            // todo - make the plugin smarter so it knows where the .exe is really located
-            var exeLocation = projectDirectory + "bin/x86/debug/" + executableName + ".exe";
-            return exeLocation;
+            var projectFileName = GlueState.Self.CurrentMainProject?.FullFileName;
+            if(string.IsNullOrEmpty(projectFileName))
+            {
+                return null;
+            }
+            else
+            {
+                var projectDirectory = FileManager.GetDirectory(projectFileName);
+                var executableName = FileManager.RemoveExtension(FileManager.RemovePath(projectFileName));
+                // todo - make the plugin smarter so it knows where the .exe is really located
+                var exeLocation = projectDirectory + "bin/x86/debug/" + executableName + ".exe";
+                return exeLocation;
+            }
         }
 
         private static void StartProcess(bool preventFocus, string runArguments, string exeLocation)
@@ -278,33 +294,39 @@ namespace OfficialPlugins.Compiler
 
                     string exeLocation = GetGameExeLocation();
 
-                    var directory = FileManager.GetDirectory(exeLocation);
-                    var logFile = directory + "CrashInfo.txt";
-
-                    string message = string.Empty;
-                    if(System.IO.File.Exists(logFile))
+                    if(!string.IsNullOrEmpty(exeLocation))
                     {
-                        var contents = System.IO.File.ReadAllText(logFile);
-                        message = $"The game has crashed:\n\n{contents}";
-                    }
-                    else
-                    {
-                        message = "Oh no! The game crashed. Run from Visual Studio for more information on the error.";
-                    }
+                        var directory = FileManager.GetDirectory(exeLocation);
+                        var logFile = directory + "CrashInfo.txt";
 
-                    // await a seocnd to see if the crash.txt file gets written...
-                    System.Windows.MessageBox.Show(message);
+                        string message = string.Empty;
+                        if(System.IO.File.Exists(logFile))
+                        {
+                            var contents = System.IO.File.ReadAllText(logFile);
+                            message = $"The game has crashed:\n\n{contents}";
+                        }
+                        else
+                        {
+                            message = "Oh no! The game crashed. Run from Visual Studio for more information on the error.";
+                        }
+
+                        // await a seocnd to see if the crash.txt file gets written...
+                        System.Windows.MessageBox.Show(message);
+                    }
                 }
             }
 
             runningGameProcess = null;
 
-            global::Glue.MainGlueWindow.Self.Invoke(() =>
+            if(!global::Glue.MainGlueWindow.Self.IsDisposed)
             {
-                ViewModel.IsRunning = runningGameProcess != null;
-                ViewModel.DidRunnerStartProcess = DidRunnerStartProcess;
+                global::Glue.MainGlueWindow.Self.Invoke(() =>
+                {
+                    ViewModel.IsRunning = runningGameProcess != null;
+                    ViewModel.DidRunnerStartProcess = DidRunnerStartProcess;
 
-            });
+                });
+            }
         }
 
         internal void KillGameProcess()
@@ -323,7 +345,7 @@ namespace OfficialPlugins.Compiler
 
             if(id != null)
             {
-                var gotWindow = Runner.GetWindowRect(id, out WindowRectangle windowRect);
+                var gotWindow = WindowMover.GetWindowRect(id, out WindowRectangle windowRect);
                 lastWindowRectangle = windowRect;
                 var lastWindowRectValue = lastWindowRectangle?.ToString() ?? "null";
             }

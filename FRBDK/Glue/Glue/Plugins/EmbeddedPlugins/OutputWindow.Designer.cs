@@ -39,6 +39,7 @@
             this.TextBox.Size = new System.Drawing.Size(150, 150);
             this.TextBox.TabIndex = 0;
             this.TextBox.Text = "";
+            this.TextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             // 
             // OutputWindow
             // 

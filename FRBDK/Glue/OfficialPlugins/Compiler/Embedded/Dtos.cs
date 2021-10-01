@@ -169,4 +169,10 @@ namespace GlueControl.Dtos
         public List<string> ElementsContainingFile { get; set; }
         public string StrippedFileName { get; set; }
     }
+
+
+    public class SetBorderlessDto
+    {
+        public bool IsBorderless { get; set; }
+    }
 }

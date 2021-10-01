@@ -709,6 +709,8 @@ namespace GlueControl
 
         #endregion
 
+        #region Pause/speed/frame methods
+
         private static void HandleDto(TogglePauseDto dto)
         {
             var screen = ScreenManager.CurrentScreen;
@@ -740,6 +742,13 @@ namespace GlueControl
         private static void HandleDto(SetSpeedDto dto)
         {
             FlatRedBall.TimeManager.TimeFactor = dto.SpeedPercentage / 100.0f;
+        }
+
+        #endregion
+
+        private static void HandleDto(SetBorderlessDto dto)
+        {
+            FlatRedBallServices.Game.Window.IsBorderless = dto.IsBorderless;
         }
     }
 }

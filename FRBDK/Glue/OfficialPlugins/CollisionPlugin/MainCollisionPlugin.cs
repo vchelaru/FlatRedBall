@@ -260,6 +260,7 @@ namespace OfficialPlugins.CollisionPlugin
                 {
                     collidableDisplay = new CollidableNamedObjectRelationshipDisplay();
                     collidableTab = this.CreateTab(collidableDisplay, "Collision");
+
                     collidableDisplay.DataContext = collidableViewModel;
                 }
                 collidableTab.Show();

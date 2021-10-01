@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -7,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using FlatRedBall.Glue.MVVM;
 //using System.Windows.Forms;
 using FlatRedBall.Glue.Plugins;
@@ -27,13 +29,17 @@ namespace FlatRedBall.Glue.Controls
         //TextBlock closeX;
         Button closeButton;
 
+        MenuItem moveMenuItem;
+
+        public event Action<TabLocation> MoveToTabSelected;
+
         public string Title
         {
             get => textBlock.Text;
             set => textBlock.Text = value;
         }
 
-        public object ParentTabControl
+        public ObservableCollection<PluginTabPage> ParentTabControl
         {
             get; set;
         }
@@ -84,6 +90,14 @@ namespace FlatRedBall.Glue.Controls
             closeButton.VerticalContentAlignment = VerticalAlignment.Top;
             stackPanel.Children.Add(closeButton);
 
+
+            this.VerticalContentAlignment = VerticalAlignment.Stretch;
+
+            moveMenuItem = new MenuItem();
+            moveMenuItem.Header = "Move to";
+            this.ContextMenu = new ContextMenu();
+            this.ContextMenu.Items.Add(moveMenuItem);
+
             //moveToMenuItem = this.ContextMenu.MenuItems.Add("MoveTo");
 
             //closeMenuItem = new MenuItem("Close");
@@ -103,85 +117,51 @@ namespace FlatRedBall.Glue.Controls
 
         public void RefreshRightClickCommands()
         {
-            RefreshCloseCommands();
-
             RefreshMoveToCommands();
-        }
-
-        private void RefreshCloseCommands()
-        {
-            //var alreadyContains = ContextMenu.MenuItems.Contains(closeMenuItem);
-            //if(DrawX && alreadyContains == false)
-            //{
-            //    ContextMenu.MenuItems.Add(closeMenuItem);
-            //}
-            //if(!DrawX && alreadyContains)
-            //{
-            //    ContextMenu.MenuItems.Remove(closeMenuItem);
-            //}
-
         }
 
         private void RefreshMoveToCommands()
         {
-            //moveToMenuItem.MenuItems.Clear();
-            //if (ParentTabControl != PluginManager.LeftTab)
-            //{
-            //    moveToMenuItem.MenuItems.Add("Left Tab", HandleMoveToLeftTab);
-            //}
+            var parent = this.Parent;
 
-            //if (ParentTabControl != PluginManager.RightTab)
-            //{
-            //    moveToMenuItem.MenuItems.Add("Right Tab", HandleMoveToRightTab);
-            //}
+            moveMenuItem.Items.Clear();
 
-            //if (ParentTabControl != PluginManager.TopTab)
-            //{
-            //    moveToMenuItem.MenuItems.Add("Top Tab", HandleMoveToTopTab);
-            //}
+            void Add(string text, TabLocation tabLocation)
+            {
+                var menuItem = new MenuItem();
+                menuItem.Header = text;
+                menuItem.Click += (not, used) => MoveToTabSelected?.Invoke(tabLocation);
+                var image = new System.Windows.Controls.Image();
+                string pngName = $"{tabLocation}Tab.png";
+                image.Source = new BitmapImage(new Uri($@"pack://application:,,,/Resources/Icons/MoveTabs/{pngName}"));
+                menuItem.Icon = image;
+                moveMenuItem.Items.Add(menuItem);
+            }
 
-            //if (ParentTabControl != PluginManager.BottomTab)
-            //{
-            //    moveToMenuItem.MenuItems.Add("Bottom Tab", HandleMoveToBottomTab);
-            //}
+            if (ParentTabControl != PluginManager.TabControlViewModel.TopTabItems)
+            {
+                Add("Top Tab", TabLocation.Top);
+            }
 
-            //if (ParentTabControl != PluginManager.CenterTab)
-            //{
-            //    moveToMenuItem.MenuItems.Add("Center Tab", HandleMoveToCenterTab);
-            //}
-        }
+            if (ParentTabControl != PluginManager.TabControlViewModel.LeftTabItems)
+            {
+                Add("Left Tab", TabLocation.Left);
+            }
 
-        private void HandleMoveToLeftTab(object sender, EventArgs e)
-        {
-            //ParentTabControl.TabPages.Remove(this);
-            //FlatRedBall.Glue.Plugins.PluginManager.LeftTab.TabPages.Add(this);
-        }
+            if (ParentTabControl != PluginManager.TabControlViewModel.CenterTabItems)
+            {
+                Add("Center Tab", TabLocation.Center);
+            }
 
-        private void HandleMoveToRightTab(object sender, EventArgs e)
-        {
-            //ParentTabControl.TabPages.Remove(this);
-            //FlatRedBall.Glue.Plugins.PluginManager.RightTab.TabPages.Add(this);
+            if (ParentTabControl != PluginManager.TabControlViewModel.RightTabItems)
+            {
+                Add("Right Tab", TabLocation.Right);
+            }
 
-        }
-
-        private void HandleMoveToTopTab(object sender, EventArgs e)
-        {
-            //ParentTabControl.TabPages.Remove(this);
-            //FlatRedBall.Glue.Plugins.PluginManager.TopTab.TabPages.Add(this);
-
-        }
-
-        private void HandleMoveToBottomTab(object sender, EventArgs e)
-        {
-            //ParentTabControl.TabPages.Remove(this);
-            //FlatRedBall.Glue.Plugins.PluginManager.BottomTab.TabPages.Add(this);
-
-        }
-
-        private void HandleMoveToCenterTab(object sender, EventArgs e)
-        {
-            //ParentTabControl.TabPages.Remove(this);
-            //FlatRedBall.Glue.Plugins.PluginManager.CenterTab.TabPages.Add(this);
+            if (ParentTabControl != PluginManager.TabControlViewModel.BottomTabItems)
+            {
+                Add("Bottom Tab", TabLocation.Bottom);
+            }
 
         }
 

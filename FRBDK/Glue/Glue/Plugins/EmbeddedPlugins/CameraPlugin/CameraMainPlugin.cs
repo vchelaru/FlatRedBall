@@ -135,9 +135,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
                     {
                         control = new CameraSettingsControl();
                         tab = base.CreateTab(control, "Display Settings");
-                        tab.SuggestedLocation = TabLocation.Left;
                     }
                     tab.Show();
+                    tab.Focus();
 
                     respondToViewModelChanges = false;
                     {

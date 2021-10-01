@@ -81,6 +81,12 @@ namespace FlatRedBall.Glue.SaveClasses
         public int MainSplitterDistance { get; set; }
         public int StoredRecentFiles { get; set; }
 
+        public List<string> TopTabs { get; set; } = new List<string>();
+        public List<string> LeftTabs { get; set; } = new List<string>();
+        public List<string> CenterTabs { get; set; } = new List<string>();
+        public List<string> RightTabs { get; set; } = new List<string>();
+        public List<string> BottomTabs { get; set; } = new List<string>();
+
         public ExternalSeparatingList<BuildToolAssociation> BuildToolAssociations = new ExternalSeparatingList<BuildToolAssociation>();
 
         [XmlIgnore]

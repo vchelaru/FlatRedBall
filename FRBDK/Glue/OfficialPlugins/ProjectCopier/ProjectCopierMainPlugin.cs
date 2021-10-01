@@ -34,10 +34,18 @@ namespace OfficialPlugins.ProjectCopier
         public override void StartUp()
         {
             copyManager = new CopyManager(ShowError);
-            //this.AddMenuItemTo("Copy Projects To...", ShowFileWindowForCopy, "Project");
+            this.AddMenuItemTo("Show Copy Entire Project tab", AddControlToTab, "Project");
             //this.InitializeBottomTabHandler += AddControlToTab;
-            AddControlToTab();
+
+            CreateControl();
             this.ReactToLoadedGlux += HandleGluxLoad;
+        }
+
+        private void CreateControl()
+        {
+            mControl = new CopyToProjectControl(copyManager);
+            mControl.Click += mControl_Click;
+            mControl.Dock = DockStyle.Fill;
         }
 
         private void HandleGluxLoad()
@@ -58,11 +66,12 @@ namespace OfficialPlugins.ProjectCopier
 
         void AddControlToTab()
         {
-            mControl = new CopyToProjectControl(copyManager);
-            mControl.Click += mControl_Click;
-            mControl.Dock = DockStyle.Fill;
-
-            mTab = this.CreateAndAddTab(mControl, "Copy Project", TabLocation.Bottom);
+            if(mTab == null)
+            {
+                mTab = this.CreateTab(mControl, "Copy Project", TabLocation.Bottom);
+            }
+            mTab.Show();
+            mTab.Focus();
         }
 
         void mControl_Click(object sender, EventArgs e)

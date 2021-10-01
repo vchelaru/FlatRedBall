@@ -199,7 +199,7 @@ namespace FlatRedBall.Glue.IO
 
                 UnreferencedFilesManager.Self.RefreshUnreferencedFiles(true);
 
-                TaskManager.Self.OnUiThread(() => MainGlueWindow.Self.Text = "FlatRedBall Glue - " + projectFileName);
+                TaskManager.Self.OnUiThread(() => MainGlueWindow.Self.Text = "FlatRedBall - " + projectFileName);
 
                 if (shouldSaveGlux)
                 {

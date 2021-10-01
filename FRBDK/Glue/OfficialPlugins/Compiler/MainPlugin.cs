@@ -79,6 +79,8 @@ namespace OfficialPlugins.Compiler
 
         #endregion
 
+        #region Startup
+
         public override void StartUp()
         {
             CreateControl();
@@ -110,37 +112,6 @@ namespace OfficialPlugins.Compiler
             timer.Start();
 
             #endregion
-        }
-
-        System.Threading.SemaphoreSlim getCommandsSemaphore = new System.Threading.SemaphoreSlim(1);
-        private async void HandleTimerElapsed(object sender, ElapsedEventArgs e)
-        {
-            var isBusy = await getCommandsSemaphore.WaitAsync(0);
-            if(!isBusy)
-            {
-                try
-                {
-                    if(viewModel.IsEditChecked)
-                    {
-                        var gameToGlueCommandsAsString = await CommandSending.CommandSender
-                            .SendCommand("GetCommands", glueViewSettingsViewModel.PortNumber);
-
-                        if (!string.IsNullOrEmpty(gameToGlueCommandsAsString))
-                        {
-                            CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString, glueViewSettingsViewModel.PortNumber);
-                        }
-                    }
-                }
-                catch
-                {
-                    // it's okay
-                }
-                finally
-                {
-                    getCommandsSemaphore.Release();
-                }
-            }
-
         }
 
         private void AssignEvents()
@@ -179,6 +150,89 @@ namespace OfficialPlugins.Compiler
             this.ReactToStateVariableChanged += RefreshManager.Self.HandleStateVariableChanged;
         }
 
+
+        #endregion
+
+        #region Public events (called externally)
+
+        public async Task BuildAndRun()
+        {
+            if (viewModel.IsToolbarPlayButtonEnabled)
+            {
+                GlueCommands.Self.DialogCommands.FocusTab("Build");
+                var succeeded = await Compile();
+
+                if (succeeded)
+                {
+                    bool hasErrors = GetIfHasErrors();
+                    if (hasErrors)
+                    {
+                        var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
+
+                        GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, async () => await runner.Run(preventFocus: false));
+                    }
+                    else
+                    {
+                        PluginManager.ReceiveOutput("Building succeeded. Running project...");
+
+                        await runner.Run(preventFocus: false);
+                    }
+                }
+                else
+                {
+                    PluginManager.ReceiveError("Building failed. See \"Build\" tab for more information.");
+                }
+            }
+        }
+
+        public bool GetIfIsRunningInEditMode()
+        {
+            return viewModel.IsEditChecked && viewModel.IsRunning;
+        }
+
+        public async void MakeGameBorderless(bool isBorderless)
+        {
+            var dto = new Dtos.SetBorderlessDto
+            {
+                IsBorderless = isBorderless
+            };
+
+            await CommandSending.CommandSender
+                .Send(dto, glueViewSettingsViewModel.PortNumber);
+        }
+
+        #endregion
+
+        System.Threading.SemaphoreSlim getCommandsSemaphore = new System.Threading.SemaphoreSlim(1);
+        private async void HandleTimerElapsed(object sender, ElapsedEventArgs e)
+        {
+            var isBusy = await getCommandsSemaphore.WaitAsync(0);
+            if(!isBusy)
+            {
+                try
+                {
+                    if(viewModel.IsEditChecked)
+                    {
+                        var gameToGlueCommandsAsString = await CommandSending.CommandSender
+                            .SendCommand("GetCommands", glueViewSettingsViewModel.PortNumber);
+
+                        if (!string.IsNullOrEmpty(gameToGlueCommandsAsString))
+                        {
+                            CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString, glueViewSettingsViewModel.PortNumber);
+                        }
+                    }
+                }
+                catch
+                {
+                    // it's okay
+                }
+                finally
+                {
+                    getCommandsSemaphore.Release();
+                }
+            }
+
+        }
         private void HandleGluxUnloaded()
         {
             viewModel.CompileContentButtonVisibility = Visibility.Collapsed;
@@ -297,35 +351,6 @@ namespace OfficialPlugins.Compiler
             await BuildAndRun();
         }
 
-        public async Task BuildAndRun()
-        {
-            if (viewModel.IsToolbarPlayButtonEnabled)
-            {
-                GlueCommands.Self.DialogCommands.FocusTab("Build");
-                var succeeded = await Compile();
-
-                if (succeeded)
-                {
-                    bool hasErrors = GetIfHasErrors();
-                    if (hasErrors)
-                    {
-                        var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
-
-                        GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, async () => await runner.Run(preventFocus: false));
-                    }
-                    else
-                    {
-                        PluginManager.ReceiveOutput("Building succeeded. Running project...");
-
-                        await runner.Run(preventFocus: false);
-                    }
-                }
-                else
-                {
-                    PluginManager.ReceiveError("Building failed. See \"Build\" tab for more information.");
-                }
-            }
-        }
 
         private void CreateControl()
         {
@@ -348,8 +373,7 @@ namespace OfficialPlugins.Compiler
             VariableSendingManager.Self.GlueViewSettingsViewModel = glueViewSettingsViewModel;
 
 
-            buildTab = base.CreateTab(control, "Build");
-            buildTab.SuggestedLocation = TabLocation.Bottom;
+            buildTab = base.CreateTab(control, "Build", TabLocation.Bottom);
             buildTab.Show();
 
 
@@ -357,7 +381,6 @@ namespace OfficialPlugins.Compiler
             glueViewSettingsView.ViewModel = glueViewSettingsViewModel;
 
             glueViewSettingsTab = base.CreateTab(glueViewSettingsView, "GlueView Settings");
-            glueViewSettingsTab.SuggestedLocation = TabLocation.Left;
 
             AssignControlEvents();
         }
@@ -661,10 +684,6 @@ namespace OfficialPlugins.Compiler
             return true;
         }
 
-        public bool GetIfIsRunningInEditMode()
-        {
-            return viewModel.IsEditChecked && viewModel.IsRunning;
-        }
 
         public async void ShowState(string stateName, string categoryName)
         {

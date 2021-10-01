@@ -52,6 +52,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
             // 
             this.ElementTreeView.AllowDrop = true;
             this.ElementTreeView.BackColor = System.Drawing.Color.Black;
+            this.ElementTreeView.BorderStyle = BorderStyle.None;
             this.ElementTreeView.ContextMenuStrip = MainGlueWindow.Self.mElementContextMenu;
             this.ElementTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ElementTreeView.ForeColor = System.Drawing.Color.White;
@@ -83,7 +84,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
         {
             var window = new ExplorerView();
 
-            ExplorerTab = this.CreateAndAddTab(window, "Explorer", TabLocation.Right);
+            ExplorerTab = this.CreateAndAddTab(window, "Explorer", TabLocation.Left);
 
             ExplorerTab.CanClose = false;
 

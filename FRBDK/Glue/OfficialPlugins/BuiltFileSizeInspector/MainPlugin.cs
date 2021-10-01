@@ -39,7 +39,6 @@ namespace OfficialPlugins.BuiltFileSizeInspector
                 mainControl.DataContext = new BuiltFileSizeViewModel();
 
                 tab = this.CreateTab(mainControl, "Built File Size");
-                tab.SuggestedLocation = TabLocation.Left;
             }
             tab.Show();
         }

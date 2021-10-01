@@ -25,6 +25,7 @@ using System.Windows;
 using System.Collections.ObjectModel;
 using GlueFormsCore.Controls;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -44,6 +45,8 @@ namespace FlatRedBall.Glue.Plugins
     #region PluginTab
     public class PluginTab
     {
+        public event EventHandler AfterHide;
+
         public string Title
         {
             get => Page.Title;
@@ -78,7 +81,7 @@ namespace FlatRedBall.Glue.Plugins
             var items = Page.ParentTabControl as ObservableCollection<PluginTabPage>;
             items?.Remove(Page);
             Page.ParentTabControl = null;
-
+            AfterHide?.Invoke(this, null);
         }
 
         public void Show()
@@ -88,6 +91,8 @@ namespace FlatRedBall.Glue.Plugins
                 var items = PluginBase.GetTabContainerFromLocation(SuggestedLocation);
                 items.Add(Page);
                 Page.ParentTabControl = items;
+                Page.RefreshRightClickCommands();
+
             }
         }
 
@@ -105,18 +110,19 @@ namespace FlatRedBall.Glue.Plugins
 
         public void ForceLocation(TabLocation tabLocation)
         {
-            var desiredTabControl = PluginBase.GetTabContainerFromLocation(SuggestedLocation);
+            var desiredTabControl = PluginBase.GetTabContainerFromLocation(tabLocation);
             var parentTabControl = Page.ParentTabControl as ObservableCollection<PluginTabPage>;
 
             if(desiredTabControl != parentTabControl)
             {
                 if(parentTabControl != null)
                 {
-                    desiredTabControl.Remove(Page);
+                    parentTabControl.Remove(Page);
                 }
 
-                parentTabControl.Add(Page);
+                desiredTabControl.Add(Page);
                 Page.ParentTabControl = desiredTabControl;
+                Page.RefreshRightClickCommands();
             }
         }
     }
@@ -509,7 +515,7 @@ namespace FlatRedBall.Glue.Plugins
 
         #region Tab Methods
 
-        protected PluginTab CreateTab(System.Windows.FrameworkElement control, string tabName)
+        protected PluginTab CreateTab(System.Windows.FrameworkElement control, string tabName, TabLocation defaultLocation = TabLocation.Right)
         {
             //System.Windows.Forms.Integration.ElementHost wpfHost;
             //wpfHost = new System.Windows.Forms.Integration.ElementHost();
@@ -526,6 +532,37 @@ namespace FlatRedBall.Glue.Plugins
 
             PluginTab pluginTab = new PluginTab();
             pluginTab.Page = page;
+            page.MoveToTabSelected += (newLocation) =>
+            {
+                pluginTab.ForceLocation(newLocation);
+                pluginTab.Focus();
+            };
+
+            var settings = GlueState.Self.GlueSettingsSave;
+            if(settings.TopTabs.Contains(tabName))
+            {
+                pluginTab.SuggestedLocation = TabLocation.Top;
+            }
+            else if (settings.LeftTabs.Contains(tabName))
+            {
+                pluginTab.SuggestedLocation = TabLocation.Left;
+            }
+            else if (settings.CenterTabs.Contains(tabName))
+            {
+                pluginTab.SuggestedLocation = TabLocation.Center;
+            }
+            else if (settings.RightTabs.Contains(tabName))
+            {
+                pluginTab.SuggestedLocation = TabLocation.Right;
+            }
+            else if (settings.BottomTabs.Contains(tabName))
+            {
+                pluginTab.SuggestedLocation = TabLocation.Bottom;
+            }
+            else
+            {
+                pluginTab.SuggestedLocation = defaultLocation;
+            }
 
             page.ClosedByUser += (sender) =>
             {
@@ -537,13 +574,13 @@ namespace FlatRedBall.Glue.Plugins
 
         }
 
-        protected PluginTab CreateTab(System.Windows.Forms.Control control, string tabName)
+        protected PluginTab CreateTab(System.Windows.Forms.Control control, string tabName, TabLocation tabLocation = TabLocation.Right)
         {
             var host = new System.Windows.Forms.Integration.WindowsFormsHost();
 
             host.Child = control;
 
-            return CreateTab(host, tabName);
+            return CreateTab(host, tabName, tabLocation);
         }
 
         public static ObservableCollection<PluginTabPage> GetTabContainerFromLocation(TabLocation tabLocation)
@@ -562,18 +599,16 @@ namespace FlatRedBall.Glue.Plugins
             return tabContainer;
         }
 
-        protected PluginTab CreateAndAddTab(System.Windows.Forms.Control control, string tabName, TabLocation tabLocation = TabLocation.Center)
+        protected PluginTab CreateAndAddTab(System.Windows.Forms.Control control, string tabName, TabLocation tabLocation = TabLocation.Right)
         {
-            var tab = CreateTab(control, tabName);
-            tab.SuggestedLocation = tabLocation;
+            var tab = CreateTab(control, tabName, tabLocation);
             tab.Show();
             return tab;
         }
 
         protected PluginTab CreateAndAddTab(System.Windows.Controls.UserControl control, string tabName, TabLocation tabLocation = TabLocation.Center)
         {
-            var tab = CreateTab(control, tabName);
-            tab.SuggestedLocation = tabLocation;
+            var tab = CreateTab(control, tabName, tabLocation);
             tab.Show();
             return tab;
         }
