@@ -138,7 +138,9 @@ namespace GlueControl.Editing
 
         public static void UpdateZoomLevelToCamera()
         {
-            var gameZoomLevel = FlatRedBall.Math.MathFunctions.RoundToInt(100 * Camera.Main.DestinationRectangle.Height / Camera.Main.OrthogonalHeight);
+            var windowSizeRelativeToDefault = Camera.Main.DestinationRectangle.Height / (double)CameraSetup.Data.ResolutionHeight;
+            windowSizeRelativeToDefault /= (CameraSetup.Data.Scale / 100.0f);
+            var gameZoomLevel = FlatRedBall.Math.MathFunctions.RoundToInt(100 * Camera.Main.DestinationRectangle.Height / (Camera.Main.OrthogonalHeight * windowSizeRelativeToDefault));
 
             if (zoomLevels.Contains(gameZoomLevel))
             {

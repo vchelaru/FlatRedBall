@@ -41,7 +41,7 @@
                 Visibility="{Binding PauseButtonVisibility}"
                 Click="HandlePauseClicked"
             >
-            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/Pause.png"></Image>
+            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/Pause.png" Margin="0,3"></Image>
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -70,7 +70,7 @@
                 Visibility="{Binding UnpauseButtonVisibility}"
                 Click="HandleUnpauseClicked"
             >
-            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/Unpause.png"></Image>
+            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/Unpause.png" Margin="3"></Image>
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -85,7 +85,7 @@
                 Visibility="{Binding UnpauseButtonVisibility}"
                 Click="HandleAdvanceOneFrameClicked"
         >
-            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/AdvanceOneFrame.png"></Image>
+            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/AdvanceOneFrame.png" Margin="3"></Image>
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -96,7 +96,7 @@
             </Button.ToolTip>
         </Button>
         <Button Height="24" VerticalAlignment="Top" Margin="0,0,6,0" Click="HandleStopClicked">
-            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/stop.png"></Image>
+            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/stop.png" Margin="3"></Image>
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -121,7 +121,7 @@
 
         <Button Height="24" VerticalAlignment="Top" Margin="0,0,6,0" Click="HandleRestartGameCurrentScreenClicked"
                 Visibility="{Binding GlueControlDependentVisibility}">
-            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/RestartGameOnCurrentScreen.png"></Image>
+            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/RestartGameOnCurrentScreen.png" Margin="1"></Image>
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -135,7 +135,7 @@
 
         <Button Height="24" VerticalAlignment="Top"  Margin="0,0,6,0" Click="HandleRestartScreenClicked"
                 Visibility="{Binding GlueControlDependentVisibility}">
-            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/RestartScreen.png"></Image>
+            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/RestartScreen.png" Margin="1"></Image>
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
