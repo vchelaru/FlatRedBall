@@ -45,8 +45,13 @@ namespace FlatRedBall.Glue.Plugins
 
         #region Interface Lists
 
+        List<PluginBase> importedPlugins = new List<PluginBase>();
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<PluginBase> ImportedPlugins { get; set; } = new List<PluginBase>();
+        public IEnumerable<PluginBase> ImportedPlugins
+        {
+            get => importedPlugins;
+            set => importedPlugins = value.ToList() ;
+        }
 
         [ImportMany(AllowRecomposition = true)]
         public IEnumerable<IMenuStripPlugin> MenuStripPlugins { get; set; } = new List<IMenuStripPlugin>();

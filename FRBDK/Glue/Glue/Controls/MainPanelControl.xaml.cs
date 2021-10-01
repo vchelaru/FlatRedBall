@@ -216,6 +216,7 @@ namespace GlueFormsCore.Controls
 
         public static string AppTheme = "Light";
         public static ResourceDictionary ResourceDictionary { get; private set; }
+        public static bool IsExiting { get; private set; }
 
         System.Timers.Timer FileWatchTimer;
 
@@ -242,7 +243,7 @@ namespace GlueFormsCore.Controls
 
         public void ReactToCloseProject(bool shouldSave, bool isExiting, InitializationWindow initWindow = null)
         {
-
+            MainPanelControl.IsExiting = isExiting;
             TaskManager.Self.RecordTaskHistory($"--Received Close Project Command --");
 
             // Let's set this to true so all tasks can end
@@ -306,8 +307,6 @@ namespace GlueFormsCore.Controls
 
 
             ProjectManager.UnloadProject(isExiting);
-
-            MainGlueWindow.Self.mainExplorerPlugin.HandleProjectClose(isExiting);
 
             MainGlueWindow.Self.PropertyGrid.SelectedObject = null;
 

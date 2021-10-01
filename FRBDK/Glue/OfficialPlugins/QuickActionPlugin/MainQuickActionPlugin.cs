@@ -42,6 +42,9 @@ namespace OfficialPluginsCore.QuickActionPlugin
             AssignEvents();
 
             buttonVisibilityManager.UpdateVisibility();
+
+            ReactToLoadedGlux += () => buttonVisibilityManager.UpdateVisibility();
+            ReactToUnloadedGlux += () => buttonVisibilityManager.UpdateVisibility(forceUnloaded:true);
         }
 
         private void CreateUi()

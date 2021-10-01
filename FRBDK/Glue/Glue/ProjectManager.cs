@@ -603,6 +603,18 @@ namespace FlatRedBall.Glue
 
         public static void UnloadProject(bool isExiting)
         {
+            // Sept 30, 2021
+            // Vic asks - why
+            // do we raise the 
+            // plugin events before
+            // setting the GlueProjectSave
+            // to null? Plugins will know that
+            // the GlueProjectSave is being unloaded
+            // based on the method being called, but any
+            // internal checks on the GlueState.Self.CurrentGlueProject
+            // will return non-null. Should these plugin calls be moved below
+            // where the objects are nulled out? Not sure.
+            // I had to work around this issue in the MainQuickActionPlugin.
             PluginManager.ReactToGluxUnload(isExiting);
 
             if (!isExiting)
@@ -617,11 +629,6 @@ namespace FlatRedBall.Glue
             mProjectBase = null;
 
             GlueProjectSave = null;
-
-            if (!TaskManager.Self.IsInTask())
-            {
-                int m = 3;
-            }
 
             foreach (var syncedProject in mSyncedProjects)
             {

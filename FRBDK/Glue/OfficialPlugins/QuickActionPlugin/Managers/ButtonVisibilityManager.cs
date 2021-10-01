@@ -26,7 +26,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
             this.mainView = mainView;
         }
 
-        public void UpdateVisibility()
+        public void UpdateVisibility(bool forceUnloaded = false)
         {
             #region Helper Methods
 
@@ -40,7 +40,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
 
             #region Get variables needed for the rest of the method...
 
-            var glueProject = GlueState.Self.CurrentGlueProject;
+            var glueProject = forceUnloaded ? null : GlueState.Self.CurrentGlueProject;
             var treeNode = GlueState.Self.CurrentTreeNode;
             var selectedObject = treeNode?.Tag;
             var selectedElement = selectedObject as IElement;

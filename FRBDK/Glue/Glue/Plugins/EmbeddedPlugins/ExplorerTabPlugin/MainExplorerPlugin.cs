@@ -7,6 +7,7 @@ using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using Glue;
+using GlueFormsCore.Controls;
 using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin.Views;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ using Point = System.Drawing.Point;
 
 namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
 {
-    //[Export(typeof(PluginBase))]
+    [Export(typeof(PluginBase))]
     class MainExplorerPlugin : EmbeddedPlugin
     {
         public static MainExplorerPlugin Self
@@ -38,7 +39,14 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
 
         public override void StartUp()
         {
+            AssignEvents();
+            Initialize();
+        }
 
+        private void AssignEvents()
+        {
+            this.ReactToLoadedGlux += () => ExplorerTab.Show();
+            this.ReactToUnloadedGlux += () => HandleProjectClose(MainPanelControl.IsExiting);
         }
 
         public void Initialize()
@@ -84,7 +92,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
         {
             var window = new ExplorerView();
 
-            ExplorerTab = this.CreateAndAddTab(window, "Explorer", TabLocation.Left);
+            ExplorerTab = this.CreateTab(window, "Explorer", TabLocation.Left);
 
             ExplorerTab.CanClose = false;
 
@@ -173,6 +181,8 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
 
                 InitializeElementViewWindow();
             }
+
+            ExplorerTab.Hide();
         }
 
         private void ElementTreeView_KeyPress(object sender, KeyPressEventArgs e)

@@ -37,6 +37,9 @@ namespace OfficialPlugins.GameHost
 
         #endregion
 
+        #region Fields/Properties
+
+
         public override string FriendlyName => "Game Host";
 
         public override Version Version => new Version();
@@ -45,6 +48,8 @@ namespace OfficialPlugins.GameHost
         System.Windows.Forms.Panel winformsPanel;
 
         Process gameProcess;
+
+        #endregion
 
         public override void StartUp()
         {
@@ -58,10 +63,14 @@ namespace OfficialPlugins.GameHost
             winformsPanel.BorderStyle = System.Windows.Forms.BorderStyle.None;
             //GameHostView = new GameHostView();
             //GameHostView.DoItClicked += MoveGameToHost;
-            pluginTab = base.CreateAndAddTab(winformsPanel, "Game", TabLocation.Center);
+            pluginTab = base.CreateTab(winformsPanel, "Game", TabLocation.Center);
             pluginTab.CanClose = false;
             pluginTab.AfterHide += (_, __) => TryKillGame();
             //pluginTab = base.CreateAndAddTab(GameHostView, "Game Contrll", TabLocation.Bottom);
+
+
+            this.ReactToLoadedGlux += () => pluginTab.Show();
+            this.ReactToUnloadedGlux += () => pluginTab.Hide();
         }
 
         public async void MoveGameToHost()

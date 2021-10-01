@@ -70,7 +70,7 @@ namespace Glue
             get { return mSelf; }
         }
 
-        internal MainExplorerPlugin mainExplorerPlugin;
+        //internal MainExplorerPlugin mainExplorerPlugin;
 
         private System.Windows.Forms.MenuStrip mMenu;
 
@@ -278,8 +278,9 @@ namespace Glue
 
             // This plugin initialization needs to happen before LoadGlueSettings
             // EVentually we can break this out
-            mainExplorerPlugin = new MainExplorerPlugin();
-            mainExplorerPlugin.Initialize();
+            // Vic asks - why does it need to happen first?
+            //mainExplorerPlugin = new MainExplorerPlugin();
+            //mainExplorerPlugin.Initialize();
 
             PluginManager.Initialize(true, pluginsToIgnore);
 
