@@ -110,7 +110,7 @@ namespace OfficialPluginsCore.Compiler.Managers
 
         internal void SetEnabled(bool isToolbarPlayButtonEnabled)
         {
-            toolbarViewModel.IsEnabled = isToolbarPlayButtonEnabled;
+            toolbarViewModel.IsPlayVisible = isToolbarPlayButtonEnabled;
         }
     }
 }

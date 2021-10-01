@@ -12,7 +12,7 @@
 
         <xctk:SplitButton x:Name="SplitButton" Width="148" Height="22" 
                           HorizontalContentAlignment="Left"
-                          IsEnabled="{Binding IsEnabled}"
+                          Visibility="{Binding PlayVisibility}"
                           Click="HandleButtonClick">
             <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                 <Image ToolTip="Run Game" Source="/OfficialPluginsCore;component/Compiler/Icons/play.png"></Image>

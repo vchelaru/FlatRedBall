@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Windows;
 
 namespace OfficialPluginsCore.Compiler.ViewModels
 {
@@ -19,15 +20,18 @@ namespace OfficialPluginsCore.Compiler.ViewModels
             get; set;
         } = new ObservableCollection<string>();
 
-        public bool IsEnabled
+        public bool IsPlayVisible
         {
             get => Get<bool>();
             set => Set(value);
         }
 
+        [DependsOn(nameof(IsPlayVisible))]
+        public Visibility PlayVisibility => IsPlayVisible.ToVisibility();
+
         public RunnerToolbarViewModel()
         {
-            IsEnabled = true;
+            IsPlayVisible = true;
         }
     }
 }

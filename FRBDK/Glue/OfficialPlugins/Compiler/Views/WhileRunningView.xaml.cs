@@ -123,5 +123,15 @@ namespace OfficialPlugins.Compiler.Views
 
             GlueCommands.Self.DialogCommands.ShowMessageBox(message);
         }
+
+        private void SpeedDecreaseClicked(object sender, RoutedEventArgs e)
+        {
+            ViewModel.DecreaseGameSpeed();
+        }
+
+        private void SpeedIncreaseClicked(object sender, RoutedEventArgs e)
+        {
+            ViewModel.IncreaseGameSpeed();
+        }
     }
 }

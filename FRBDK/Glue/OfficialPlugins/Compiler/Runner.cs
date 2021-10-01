@@ -76,7 +76,7 @@ namespace OfficialPlugins.Compiler
 
         #endregion
 
-
+        public event Action AfterSuccessfulRun;
 
         public Runner()
         {
@@ -216,8 +216,7 @@ namespace OfficialPlugins.Compiler
                         ViewModel.IsRunning = runningGameProcess != null;
                         ViewModel.DidRunnerStartProcess = DidRunnerStartProcess;
 
-                        PluginManager.CallPluginMethod("Game Host", "MoveGameToHost");
-
+                        AfterSuccessfulRun();
                     });
                 }
                 else

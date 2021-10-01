@@ -132,6 +132,7 @@ namespace OfficialPlugins.Compiler.ViewModels
             IsGluxVersionNewEnoughForGlueControlGeneration ?
             Visibility.Visible : Visibility.Collapsed;
 
+
         [DependsOn(nameof(IsPaused))]
         [DependsOn(nameof(IsGluxVersionNewEnoughForGlueControlGeneration))]
         public Visibility UnpauseButtonVisibility => IsPaused && IsGluxVersionNewEnoughForGlueControlGeneration ?
@@ -190,6 +191,11 @@ namespace OfficialPlugins.Compiler.ViewModels
             }
         }
 
+        [DependsOn(nameof(IsPlayChecked))]
+        public Visibility RunIconVisibility => IsPlayChecked.ToVisibility();
+        [DependsOn(nameof(IsPlayChecked))]
+        public Visibility RunDisabledIconVisibility => (!IsPlayChecked).ToVisibility();
+
         [DependsOn(nameof(PlayOrEdit))]
         public bool IsEditChecked
         {
@@ -203,6 +209,11 @@ namespace OfficialPlugins.Compiler.ViewModels
             }
         }
 
+        [DependsOn(nameof(IsEditChecked))]
+        public Visibility EditIconVisibility => IsEditChecked.ToVisibility();
+        [DependsOn(nameof(IsEditChecked))]
+        public Visibility EditDisabledIconVisibility => (!IsEditChecked).ToVisibility();
+
         #endregion
 
         #region Constructor
@@ -210,6 +221,29 @@ namespace OfficialPlugins.Compiler.ViewModels
         public CompilerViewModel()
         {
             CurrentGameSpeed = "100%";
+        }
+
+        #endregion
+
+        #region Commands
+
+
+        internal void DecreaseGameSpeed()
+        {
+            var index = GameSpeedList.IndexOf(CurrentGameSpeed);
+            if(index > 0)
+            {
+                CurrentGameSpeed = GameSpeedList[index - 1];
+            }
+        }
+
+        internal void IncreaseGameSpeed()
+        {
+            var index = GameSpeedList.IndexOf(CurrentGameSpeed);
+            if (index < GameSpeedList.Count-1)
+            {
+                CurrentGameSpeed = GameSpeedList[index + 1];
+            }
         }
 
         #endregion

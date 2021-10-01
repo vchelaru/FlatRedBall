@@ -54,6 +54,8 @@
     <None Remove="CollisionPlugin\Icons\PartitionEnabled.png" />
     <None Remove="Compiler\Icons\AdvanceOneFrame.png" />
     <None Remove="Compiler\Icons\build.png" />
+    <None Remove="Compiler\Icons\Edit.png" />
+    <None Remove="Compiler\Icons\EditDeselected.png" />
     <None Remove="Compiler\Icons\HotReload.pdn" />
     <None Remove="Compiler\Icons\HotReload.png" />
     <None Remove="Compiler\Icons\Pause.png" />
@@ -61,6 +63,8 @@
     <None Remove="Compiler\Icons\RestartGame.png" />
     <None Remove="Compiler\Icons\RestartGameOnCurrentScreen.png" />
     <None Remove="Compiler\Icons\RestartScreen.png" />
+    <None Remove="Compiler\Icons\Run.png" />
+    <None Remove="Compiler\Icons\RunDeselected.png" />
     <None Remove="Compiler\Icons\Settings.png" />
     <None Remove="Compiler\Icons\SlowMotion.png" />
     <None Remove="Compiler\Icons\stop.png" />
@@ -119,6 +123,10 @@
     <EmbeddedResource Include="Compiler\Embedded\Models\StateSaveCategory.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Runtime\DynamicEntity.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Screens\EntityViewingScreen.cs" />
+    <Resource Include="Compiler\Icons\Edit.png" />
+    <Resource Include="Compiler\Icons\EditDeselected.png" />
+    <Resource Include="Compiler\Icons\Run.png" />
+    <Resource Include="Compiler\Icons\RunDeselected.png" />
     <Resource Include="Compiler\Icons\Settings.png" />
     <Resource Include="Content\Icons\CopyIcon.png" />
     <EmbeddedResource Include="ProfilePlugin\EmbeddedCodeFiles\ProfileManagerBase.cs" />

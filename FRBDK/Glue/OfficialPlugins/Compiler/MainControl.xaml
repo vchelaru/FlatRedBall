@@ -22,16 +22,7 @@
                 RunClicked="HandleRunClick"
                 >
             </views:WhileStoppedView>
-            <views:WhileRunningView  Height="Auto"
-                Visibility="{Binding WhileRunningViewVisibility}"
-                StopClicked="WhileRunningView_StopClicked"
-                RestartGameClicked="WhileRunningView_RestartGameClicked"
-                RestartGameCurrentScreenClicked ="WhileRunningView_RestartGameCurrentScreenClicked"
-                RestartScreenClicked="WhileRunningView_RestartScreenClicked"
-                AdvanceOneFrameClicked="WhileRunningView_AdvanceOneFrameClicked"
-                PauseClicked="WhileRunningView_PauseClicked"
-                UnpauseClicked="WhileRunningView_UnpauseClicked"
-                ></views:WhileRunningView>
+
             <CheckBox VerticalContentAlignment="Center" VerticalAlignment="Top"
                       Margin="0,4,0,0"
                       IsChecked="{Binding IsGenerateGlueControlManagerInGame1Checked}"

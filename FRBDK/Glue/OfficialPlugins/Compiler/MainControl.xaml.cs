@@ -31,13 +31,7 @@ namespace OfficialPlugins.Compiler
         public event EventHandler BuildClicked;
         public event EventHandler BuildContentClicked;
         public event EventHandler RunClicked;
-        public event EventHandler StopClicked;
-        public event EventHandler RestartGameClicked;
-        public event EventHandler RestartGameCurrentScreenClicked;
-        public event EventHandler RestartScreenClicked;
-        public event EventHandler AdvanceOneFrameClicked;
-        public event EventHandler PauseClicked;
-        public event EventHandler UnpauseClicked;
+
         public event EventHandler SettingsClicked;
 
         #endregion
@@ -89,40 +83,7 @@ namespace OfficialPlugins.Compiler
             }
         }
 
-        private void WhileRunningView_StopClicked(object sender, EventArgs e)
-        {
-            StopClicked?.Invoke(this, null);
-        }
 
-        private void WhileRunningView_RestartGameClicked(object sender, EventArgs e)
-        {
-            RestartGameClicked?.Invoke(this, null);
-        }
-
-        private void WhileRunningView_RestartGameCurrentScreenClicked(object sender, EventArgs e)
-        {
-            RestartGameCurrentScreenClicked?.Invoke(this, null);
-        }
-
-        private void WhileRunningView_RestartScreenClicked(object sender, EventArgs e)
-        {
-            RestartScreenClicked?.Invoke(this, null);
-        }
-
-        private void WhileRunningView_AdvanceOneFrameClicked(object sender, EventArgs e)
-        {
-            AdvanceOneFrameClicked?.Invoke(this, null);
-        }
-
-        private void WhileRunningView_PauseClicked(object sender, EventArgs e)
-        {
-            PauseClicked?.Invoke(this, null);
-        }
-
-        private void WhileRunningView_UnpauseClicked(object sender, EventArgs e)
-        {
-            UnpauseClicked?.Invoke(this, null);
-        }
 
         private void TextBox_KeyEnterUpdate(object sender, KeyEventArgs e)
         {

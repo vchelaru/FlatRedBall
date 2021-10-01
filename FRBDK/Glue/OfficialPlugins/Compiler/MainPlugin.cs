@@ -29,6 +29,8 @@ using OfficialPluginsCore.Compiler.CommandReceiving;
 using FlatRedBall.Glue.Elements;
 using OfficialPlugins.Compiler.Dtos;
 using OfficialPlugins.Compiler.CommandSending;
+using System.Runtime.InteropServices;
+using OfficialPlugins.GameHost.Views;
 
 namespace OfficialPlugins.Compiler
 {
@@ -37,12 +39,13 @@ namespace OfficialPlugins.Compiler
     {
         #region Fields/Properties
 
-        MainControl control;
 
         Compiler compiler;
         Runner runner;
-        CompilerViewModel viewModel;
-        GlueViewSettingsViewModel glueViewSettingsViewModel;
+
+        public CompilerViewModel CompilerViewModel { get; private set; }
+        public GlueViewSettingsViewModel GlueViewSettingsViewModel { get; private set; }
+        public MainControl MainControl { get; private set; } 
 
         public static CompilerViewModel MainViewModel { get; private set; }
 
@@ -77,6 +80,7 @@ namespace OfficialPlugins.Compiler
 
         Timer timer;
 
+
         #endregion
 
         #region Startup
@@ -87,13 +91,18 @@ namespace OfficialPlugins.Compiler
 
             CreateToolbar();
 
-            RefreshManager.Self.InitializeEvents(this.control.PrintOutput, this.control.PrintOutput);
+            RefreshManager.Self.InitializeEvents(this.MainControl.PrintOutput, this.MainControl.PrintOutput);
 
-            Output.Initialize(this.control.PrintOutput);
+            Output.Initialize(this.MainControl.PrintOutput);
 
 
             compiler = Compiler.Self;
             runner = Runner.Self;
+
+            runner.AfterSuccessfulRun += () =>
+            {
+                MoveGameToHost();
+            };
 
             game1GlueControlGenerator = new Game1GlueControlGenerator();
             this.RegisterCodeGenerator(game1GlueControlGenerator);
@@ -112,11 +121,28 @@ namespace OfficialPlugins.Compiler
             timer.Start();
 
             #endregion
+
+
+            // winforms stuff is here:
+            // https://social.msdn.microsoft.com/Forums/en-US/f6e28fe1-03b2-4df5-8cfd-7107c2b6d780/hosting-external-application-in-windowsformhost?forum=wpf
+            gameHostView = new GameHostView();
+            gameHostView.DataContext = CompilerViewModel;
+
+            pluginTab = base.CreateTab(gameHostView, "Game", TabLocation.Center);
+            pluginTab.CanClose = false;
+            pluginTab.AfterHide += (_, __) => TryKillGame();
+            //pluginTab = base.CreateAndAddTab(GameHostView, "Game Contrll", TabLocation.Bottom);
+
+
+            this.ReactToLoadedGlux += () => pluginTab.Show();
+            this.ReactToUnloadedGlux += () => pluginTab.Hide();
+
+            GameHostController.Self.Initialize(gameHostView, MainControl, CompilerViewModel, GlueViewSettingsViewModel);
         }
 
         private void AssignEvents()
         {
-            var manager = new FileChangeManager(control, compiler, viewModel);
+            var manager = new FileChangeManager(MainControl, compiler, CompilerViewModel);
             this.ReactToFileChangeHandler += manager.HandleFileChanged;
             this.ReactToLoadedGlux += HandleGluxLoaded;
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
@@ -157,7 +183,7 @@ namespace OfficialPlugins.Compiler
 
         public async Task BuildAndRun()
         {
-            if (viewModel.IsToolbarPlayButtonEnabled)
+            if (CompilerViewModel.IsToolbarPlayButtonEnabled)
             {
                 GlueCommands.Self.DialogCommands.FocusTab("Build");
                 var succeeded = await Compile();
@@ -187,7 +213,7 @@ namespace OfficialPlugins.Compiler
 
         public bool GetIfIsRunningInEditMode()
         {
-            return viewModel.IsEditChecked && viewModel.IsRunning;
+            return CompilerViewModel.IsEditChecked && CompilerViewModel.IsRunning;
         }
 
         public async void MakeGameBorderless(bool isBorderless)
@@ -198,7 +224,7 @@ namespace OfficialPlugins.Compiler
             };
 
             await CommandSending.CommandSender
-                .Send(dto, glueViewSettingsViewModel.PortNumber);
+                .Send(dto, GlueViewSettingsViewModel.PortNumber);
         }
 
         #endregion
@@ -211,14 +237,14 @@ namespace OfficialPlugins.Compiler
             {
                 try
                 {
-                    if(viewModel.IsEditChecked)
+                    if(CompilerViewModel.IsEditChecked)
                     {
                         var gameToGlueCommandsAsString = await CommandSending.CommandSender
-                            .SendCommand("GetCommands", glueViewSettingsViewModel.PortNumber);
+                            .SendCommand("GetCommands", GlueViewSettingsViewModel.PortNumber);
 
                         if (!string.IsNullOrEmpty(gameToGlueCommandsAsString))
                         {
-                            CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString, glueViewSettingsViewModel.PortNumber);
+                            CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString, GlueViewSettingsViewModel.PortNumber);
                         }
                     }
                 }
@@ -235,8 +261,8 @@ namespace OfficialPlugins.Compiler
         }
         private void HandleGluxUnloaded()
         {
-            viewModel.CompileContentButtonVisibility = Visibility.Collapsed;
-            viewModel.HasLoadedGlux = false;
+            CompilerViewModel.CompileContentButtonVisibility = Visibility.Collapsed;
+            CompilerViewModel.HasLoadedGlux = false;
 
             ToolbarController.Self.HandleGluxUnloaded();
         }
@@ -280,13 +306,13 @@ namespace OfficialPlugins.Compiler
 
             var model = LoadOrCreateCompilerSettings();
             ignoreViewModelChanges = true;
-            viewModel.SetFrom(model);
-            glueViewSettingsViewModel.SetFrom(model);
+            CompilerViewModel.SetFrom(model);
+            GlueViewSettingsViewModel.SetFrom(model);
             ignoreViewModelChanges = false;
 
-            viewModel.IsGluxVersionNewEnoughForGlueControlGeneration =
+            CompilerViewModel.IsGluxVersionNewEnoughForGlueControlGeneration =
                 GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.AddedGeneratedGame1;
-            viewModel.HasLoadedGlux = true;
+            CompilerViewModel.HasLoadedGlux = true;
 
             game1GlueControlGenerator.PortNumber = model.PortNumber;
             game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = model.GenerateGlueControlManagerCode && IsFrbNewEnough();
@@ -326,11 +352,11 @@ namespace OfficialPlugins.Compiler
 
             if (shouldShowCompileContentButton)
             {
-                viewModel.CompileContentButtonVisibility = Visibility.Visible;
+                CompilerViewModel.CompileContentButtonVisibility = Visibility.Visible;
             }
             else
             {
-                viewModel.CompileContentButtonVisibility = Visibility.Collapsed;
+                CompilerViewModel.CompileContentButtonVisibility = Visibility.Collapsed;
             }
         }
 
@@ -354,31 +380,31 @@ namespace OfficialPlugins.Compiler
 
         private void CreateControl()
         {
-            viewModel = new CompilerViewModel();
-            viewModel.Configuration = "Debug";
-            glueViewSettingsViewModel = new GlueViewSettingsViewModel();
-            glueViewSettingsViewModel.PropertyChanged += HandleGlueViewSettingsViewModelPropertyChanged;
-            viewModel.PropertyChanged += HandleMainViewModelPropertyChanged;
+            CompilerViewModel = new CompilerViewModel();
+            CompilerViewModel.Configuration = "Debug";
+            GlueViewSettingsViewModel = new GlueViewSettingsViewModel();
+            GlueViewSettingsViewModel.PropertyChanged += HandleGlueViewSettingsViewModelPropertyChanged;
+            CompilerViewModel.PropertyChanged += HandleMainViewModelPropertyChanged;
 
-            MainViewModel = viewModel;
+            MainViewModel = CompilerViewModel;
 
-            control = new MainControl();
-            control.DataContext = viewModel;
+            MainControl = new MainControl();
+            MainControl.DataContext = CompilerViewModel;
 
-            Runner.Self.ViewModel = viewModel;
-            RefreshManager.Self.ViewModel = viewModel;
-            RefreshManager.Self.GlueViewSettingsViewModel = glueViewSettingsViewModel;
+            Runner.Self.ViewModel = CompilerViewModel;
+            RefreshManager.Self.ViewModel = CompilerViewModel;
+            RefreshManager.Self.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
 
-            VariableSendingManager.Self.ViewModel = viewModel;
-            VariableSendingManager.Self.GlueViewSettingsViewModel = glueViewSettingsViewModel;
+            VariableSendingManager.Self.ViewModel = CompilerViewModel;
+            VariableSendingManager.Self.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
 
 
-            buildTab = base.CreateTab(control, "Build", TabLocation.Bottom);
+            buildTab = base.CreateTab(MainControl, "Build", TabLocation.Bottom);
             buildTab.Show();
 
 
             var glueViewSettingsView = new Views.GlueViewSettings();
-            glueViewSettingsView.ViewModel = glueViewSettingsViewModel;
+            glueViewSettingsView.ViewModel = GlueViewSettingsViewModel;
 
             glueViewSettingsTab = base.CreateTab(glueViewSettingsView, "GlueView Settings");
 
@@ -397,7 +423,7 @@ namespace OfficialPlugins.Compiler
             var propertyName = e.PropertyName;
             switch(propertyName)
             {
-                case nameof(GlueViewSettingsViewModel.PortNumber):
+                case nameof(ViewModels.GlueViewSettingsViewModel.PortNumber):
                     await HandlePortOrGenerateCheckedChanged(propertyName);
                     break;
             }
@@ -417,33 +443,33 @@ namespace OfficialPlugins.Compiler
 
             switch (propertyName)
             {
-                case nameof(CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked):
+                case nameof(ViewModels.CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked):
                     await HandlePortOrGenerateCheckedChanged(propertyName);
 
                     break;
-                case nameof(CompilerViewModel.CurrentGameSpeed):
-                    var speedPercentage = int.Parse(viewModel.CurrentGameSpeed.Substring(0, viewModel.CurrentGameSpeed.Length - 1));
+                case nameof(ViewModels.CompilerViewModel.CurrentGameSpeed):
+                    var speedPercentage = int.Parse(CompilerViewModel.CurrentGameSpeed.Substring(0, CompilerViewModel.CurrentGameSpeed.Length - 1));
                     await CommandSender.Send(new SetSpeedDto
                     {
                         SpeedPercentage = speedPercentage
-                    }, glueViewSettingsViewModel.PortNumber);
+                    }, GlueViewSettingsViewModel.PortNumber);
                     
                     break;
-                case nameof(CompilerViewModel.EffectiveIsRebuildAndRestartEnabled):
-                    RefreshManager.Self.IsExplicitlySetRebuildAndRestartEnabled = viewModel.EffectiveIsRebuildAndRestartEnabled;
+                case nameof(ViewModels.CompilerViewModel.EffectiveIsRebuildAndRestartEnabled):
+                    RefreshManager.Self.IsExplicitlySetRebuildAndRestartEnabled = CompilerViewModel.EffectiveIsRebuildAndRestartEnabled;
                     break;
-                case nameof(CompilerViewModel.IsToolbarPlayButtonEnabled):
-                    ToolbarController.Self.SetEnabled(viewModel.IsToolbarPlayButtonEnabled);
+                case nameof(ViewModels.CompilerViewModel.IsToolbarPlayButtonEnabled):
+                    ToolbarController.Self.SetEnabled(CompilerViewModel.IsToolbarPlayButtonEnabled);
                     break;
-                case nameof(CompilerViewModel.IsRunning):
+                case nameof(ViewModels.CompilerViewModel.IsRunning):
                     //CommandSender.CancelConnect();
                     break;
-                case nameof(CompilerViewModel.PlayOrEdit):
+                case nameof(ViewModels.CompilerViewModel.PlayOrEdit):
 
-                    var inEditMode = viewModel.PlayOrEdit == PlayOrEdit.Edit;
+                    var inEditMode = CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit;
                     await CommandSending.CommandSender.Send(
                         new Dtos.SetEditMode { IsInEditMode = inEditMode },
-                        glueViewSettingsViewModel.PortNumber);
+                        GlueViewSettingsViewModel.PortNumber);
 
                     if (inEditMode)
                     {
@@ -454,7 +480,7 @@ namespace OfficialPlugins.Compiler
                         }
                         else
                         {
-                            var screenName = await CommandSending.CommandSender.GetScreenName(glueViewSettingsViewModel.PortNumber);
+                            var screenName = await CommandSending.CommandSender.GetScreenName(GlueViewSettingsViewModel.PortNumber);
 
                             if (!string.IsNullOrEmpty(screenName))
                             {
@@ -499,14 +525,14 @@ namespace OfficialPlugins.Compiler
 
         private async Task HandlePortOrGenerateCheckedChanged(string propertyName)
         {
-            control.PrintOutput("Applying changes");
-            game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = viewModel.IsGenerateGlueControlManagerInGame1Checked && IsFrbNewEnough();
-            game1GlueControlGenerator.PortNumber = glueViewSettingsViewModel.PortNumber;
-            RefreshManager.Self.PortNumber = glueViewSettingsViewModel.PortNumber;
+            MainControl.PrintOutput("Applying changes");
+            game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked && IsFrbNewEnough();
+            game1GlueControlGenerator.PortNumber = GlueViewSettingsViewModel.PortNumber;
+            RefreshManager.Self.PortNumber = GlueViewSettingsViewModel.PortNumber;
             GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
             var model = new CompilerSettingsModel();
-            viewModel.SetModel(model);
-            glueViewSettingsViewModel.SetModel(model);
+            CompilerViewModel.SetModel(model);
+            GlueViewSettingsViewModel.SetModel(model);
             try
             {
                 var text = JsonConvert.SerializeObject(model);
@@ -532,74 +558,25 @@ namespace OfficialPlugins.Compiler
 
             RefreshManager.Self.StopAndRestartTask($"{propertyName} changed");
 
-            control.PrintOutput("Waiting for tasks to finish...");
+            MainControl.PrintOutput("Waiting for tasks to finish...");
             await TaskManager.Self.WaitForAllTasksFinished();
-            control.PrintOutput("Finishined adding/generating code for GlueControlManager");
+            MainControl.PrintOutput("Finishined adding/generating code for GlueControlManager");
         }
 
         private void AssignControlEvents()
         {
-            control.BuildClicked += async (not, used) =>
+            MainControl.BuildClicked += async (not, used) =>
             {
                 await Compile();
             };
 
-            control.StopClicked += (not, used) =>
-            {
-                runner.KillGameProcess();
-            };
 
-            control.RestartGameClicked += async (not, used) =>
-            {
-                viewModel.IsPaused = false;
-                runner.KillGameProcess();
-                var succeeded = await Compile();
-                if (succeeded)
-                {
-                    await runner.Run(preventFocus: false);
-                }
-            };
-
-            control.RestartGameCurrentScreenClicked += async (not, used) =>
-            {
-                var wasEditChecked = viewModel.IsEditChecked;
-                var screenName = await CommandSending.CommandSender.GetScreenName(glueViewSettingsViewModel.PortNumber);
-
-
-                viewModel.IsPaused = false;
-                runner.KillGameProcess();
-                var succeeded = await Compile();
-
-                if (succeeded)
-                {
-                    if (succeeded)
-                    {
-                        await runner.Run(preventFocus: false, screenName);
-                        if (wasEditChecked)
-                        {
-                            viewModel.IsEditChecked = true;
-                        }
-                    }
-                }
-            };
-
-            control.RestartScreenClicked += async (not, used) =>
-            {
-                viewModel.IsPaused = false;
-                await CommandSender.Send(new RestartScreenDto(), glueViewSettingsViewModel.PortNumber);
-            };
-
-            control.AdvanceOneFrameClicked += async (not, used) =>
-            {
-                await CommandSender.Send(new AdvanceOneFrameDto(), glueViewSettingsViewModel.PortNumber);
-            };
-
-            control.BuildContentClicked += delegate
+            MainControl.BuildContentClicked += delegate
             {
                 BuildContent(OutputSuccessOrFailure);
             };
 
-            control.RunClicked += async (not, used) =>
+            MainControl.RunClicked += async (not, used) =>
             {
                 var succeeded = await Compile();
                 if (succeeded)
@@ -617,19 +594,8 @@ namespace OfficialPlugins.Compiler
                 }
             };
 
-            control.PauseClicked += async (not, used) =>
-            {
-                viewModel.IsPaused = true;
-                await CommandSender.Send(new TogglePauseDto(), glueViewSettingsViewModel.PortNumber);
-            };
 
-            control.UnpauseClicked += async (not, used) =>
-            {
-                viewModel.IsPaused = false;
-                await CommandSender.Send(new TogglePauseDto(), glueViewSettingsViewModel.PortNumber);
-            };
-
-            control.SettingsClicked += (not, used) =>
+            MainControl.SettingsClicked += (not, used) =>
             {
                 ShowSettingsTab();
             };
@@ -654,33 +620,34 @@ namespace OfficialPlugins.Compiler
         {
             if (succeeded)
             {
-                control.PrintOutput($"{DateTime.Now.ToLongTimeString()} Build succeeded");
+                MainControl.PrintOutput($"{DateTime.Now.ToLongTimeString()} Build succeeded");
             }
             else
             {
-                control.PrintOutput($"{DateTime.Now.ToLongTimeString()} Build failed");
+                MainControl.PrintOutput($"{DateTime.Now.ToLongTimeString()} Build failed");
 
             }
         }
 
         private void BuildContent(Action<bool> afterCompile = null)
         {
-            compiler.BuildContent(control.PrintOutput, control.PrintOutput, afterCompile, viewModel.Configuration);
+            compiler.BuildContent(MainControl.PrintOutput, MainControl.PrintOutput, afterCompile, CompilerViewModel.Configuration);
         }
 
         private async Task<bool> Compile()
         {
-            viewModel.IsCompiling = true;
+            CompilerViewModel.IsCompiling = true;
             var toReturn = await compiler.Compile(
-                control.PrintOutput,
-                control.PrintOutput,
-                viewModel.Configuration);
-            viewModel.IsCompiling = false;
+                MainControl.PrintOutput,
+                MainControl.PrintOutput,
+                CompilerViewModel.Configuration);
+            CompilerViewModel.IsCompiling = false;
             return toReturn;
         }
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
+            TryKillGame();
             return true;
         }
 
@@ -689,6 +656,69 @@ namespace OfficialPlugins.Compiler
         {
             await RefreshManager.Self.PushGlueSelectionToGame(categoryName, stateName);
         }
+
+
+
+
+
+        #region DLLImports
+        [DllImport("user32.dll")]
+        static extern int SetWindowLong(IntPtr hWnd, int nIndex, UInt32 dwNewLong);
+
+        // from https://docs.microsoft.com/en-us/dotnet/desktop/wpf/advanced/walkthrough-hosting-a-win32-control-in-wpf?view=netframeworkdesktop-4.8
+        internal const int
+          WS_CHILD = 0x40000000,
+          WS_VISIBLE = 0x10000000,
+          LBS_NOTIFY = 0x00000001,
+          HOST_ID = 0x00000002,
+          LISTBOX_ID = 0x00000001,
+          WS_VSCROLL = 0x00200000,
+          WS_BORDER = 0x00800000;
+
+        [DllImport("user32.dll")]
+        static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
+
+        #endregion
+
+        #region Fields/Properties
+
+
+        PluginTab pluginTab;
+        GameHostView gameHostView;
+
+        Process gameProcess;
+
+        #endregion
+
+        public async void MoveGameToHost()
+        {
+            gameProcess = Runner.TryFindGameProcess();
+            var handle = gameProcess?.MainWindowHandle;
+
+            if (handle != null)
+            {
+                await gameHostView.EmbedHwnd(handle.Value);
+            }
+        }
+
+
+        private void TryKillGame()
+        {
+            if (gameProcess != null)
+            {
+                try
+                {
+                    gameProcess?.Kill();
+                }
+                catch
+                {
+                    // no biggie, It hink
+                }
+            }
+        }
+
+
+
     }
 
 }

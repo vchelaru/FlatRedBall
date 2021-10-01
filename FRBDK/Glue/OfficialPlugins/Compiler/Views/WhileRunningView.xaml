@@ -5,15 +5,38 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPlugins.Compiler.Views"
              mc:Ignorable="d" 
-             Height="60" d:DesignWidth="800">
+             Height="Auto" d:DesignWidth="750">
     <StackPanel Orientation="Horizontal">
 
-        <GroupBox Header="Running Mode" VerticalAlignment="Top" Visibility="{Binding RunningModeVisibility}">
-            <StackPanel>
-                <RadioButton IsChecked="{Binding IsPlayChecked}">Play</RadioButton>
-                <RadioButton IsChecked="{Binding IsEditChecked}">Edit</RadioButton>
-            </StackPanel>
-        </GroupBox>
+        <ToggleButton IsChecked="{Binding IsPlayChecked}" Height="24" Width="24">
+            <ToggleButton.ToolTip>
+                <ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold">Running Mode</TextBlock>
+                        <TextBlock>The game will run regularly with no editor interaction.</TextBlock>
+                    </StackPanel>
+                </ToolTip>
+            </ToggleButton.ToolTip>
+            <Grid>
+                <Image Source="/OfficialPluginsCore;component/Compiler/Icons/Run.png" Visibility="{Binding RunIconVisibility}"/>
+                <Image Source="/OfficialPluginsCore;component/Compiler/Icons/RunDeselected.png" Visibility="{Binding RunDisabledIconVisibility}"/>
+            </Grid>
+        </ToggleButton>
+        <ToggleButton IsChecked="{Binding IsEditChecked}" Margin="0,0,10,0" Height="24" Width="24">
+            <ToggleButton.ToolTip>
+                <ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold">Edit Mode</TextBlock>
+                        <TextBlock>The game will run in edit mode enabling live editing of screens and entities.</TextBlock>
+                    </StackPanel>
+                </ToolTip>
+            </ToggleButton.ToolTip>
+            <Grid>
+                <Image Source="/OfficialPluginsCore;component/Compiler/Icons/Edit.png" Visibility="{Binding EditIconVisibility}"/>
+                <Image Source="/OfficialPluginsCore;component/Compiler/Icons/EditDeselected.png" Visibility="{Binding EditDisabledIconVisibility}"/>
+            </Grid>
+        </ToggleButton>
+
         <Button Width="24" Height="24" VerticalAlignment="Top" Margin="0,0,6,0" MinWidth="22" 
                 Visibility="{Binding PauseButtonVisibility}"
                 Click="HandlePauseClicked"
@@ -31,9 +54,20 @@
         </Button>
         <StackPanel Height="24" VerticalAlignment="Top" Orientation="Horizontal" Margin="8,0,8,0" Visibility="{Binding PauseButtonVisibility}">
             <Image  Source="/OfficialPluginsCore;component/Compiler/Icons/SlowMotion.png"></Image>
+            <Button Height="18" Width="18" Click="SpeedDecreaseClicked">
+                <TextBlock Margin="0,-3,0,0">
+                    -
+                </TextBlock>
+            </Button>
+            <TextBlock VerticalAlignment="Center" Text="{Binding CurrentGameSpeed, FallbackValue=100%}"></TextBlock>
             <ComboBox Width="70" ItemsSource="{Binding GameSpeedList}" 
                       HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                       SelectedItem="{Binding CurrentGameSpeed}"></ComboBox>
+            <Button Height="18" Width="18" Click="SpeedIncreaseClicked">
+                <TextBlock Margin="0,-3,0,0">
+                    +
+                </TextBlock>
+            </Button>
         </StackPanel>
         <Button Height="24" VerticalAlignment="Top" Style="{DynamicResource ButtonStyleDark}" Margin="0,0,6,0" MinWidth="22"
                 Visibility="{Binding UnpauseButtonVisibility}"
