@@ -174,7 +174,7 @@ namespace GlueFormsCore.Controls
             else if(shouldExpandLeft)
             {
                 LeftSplitterWidth = new GridLength(4);
-                LeftPanelWidth = new GridLength(200, GridUnitType.Pixel);
+                LeftPanelWidth = new GridLength(230, GridUnitType.Pixel);
                 //LeftPanelWidth = new GridLength(1, GridUnitType.Star);
             }
 

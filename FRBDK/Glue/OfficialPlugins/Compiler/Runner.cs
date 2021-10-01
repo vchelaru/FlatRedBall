@@ -320,12 +320,20 @@ namespace OfficialPlugins.Compiler
 
             if(!global::Glue.MainGlueWindow.Self.IsDisposed)
             {
-                global::Glue.MainGlueWindow.Self.Invoke(() =>
+                // This can get disposed in the meantime...
+                try
                 {
-                    ViewModel.IsRunning = runningGameProcess != null;
-                    ViewModel.DidRunnerStartProcess = DidRunnerStartProcess;
+                    global::Glue.MainGlueWindow.Self.Invoke(() =>
+                    {
+                        ViewModel.IsRunning = runningGameProcess != null;
+                        ViewModel.DidRunnerStartProcess = DidRunnerStartProcess;
 
-                });
+                    });
+                }
+                catch(ObjectDisposedException)
+                {
+                    // do nothing.
+                }
             }
         }
 
