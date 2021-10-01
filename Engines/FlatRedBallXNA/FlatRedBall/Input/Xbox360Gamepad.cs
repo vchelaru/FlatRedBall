@@ -42,7 +42,7 @@ namespace FlatRedBall.Input
         }
 
         // This serves as a sentinel value.
-        const int NumberOfButtons = 20;
+        public const int NumberOfButtons = 20;
 
         public enum DPadDirection
         {
@@ -441,7 +441,12 @@ namespace FlatRedBall.Input
             return false;
         }
 
-
+        /// <summary>
+        /// Returns whether the argument button is being held down. For analog buttons, such as LeftTrigger 
+        /// and RightTrigger, the AnalogOnThreshold value is used to determine if the button is down.
+        /// </summary>
+        /// <param name="button">The button to check.</param>
+        /// <returns>Returns true if the button is down, otherwise false.</returns>
         public bool ButtonDown(Button button)
         {
             if (mButtonsIgnoredForThisFrame[(int)button] || InputManager.CurrentFrameInputSuspended)
