@@ -113,7 +113,12 @@ namespace OfficialPlugins.Compiler.ViewModels
 
         [DependsOn(nameof(IsPaused))]
         [DependsOn(nameof(IsGluxVersionNewEnoughForGlueControlGeneration))]
-        public Visibility PauseButtonVisibility => (!IsPaused && IsGluxVersionNewEnoughForGlueControlGeneration).ToVisibility();
+        [DependsOn(nameof(PlayOrEdit))]
+        public Visibility PauseButtonVisibility => (
+            !IsPaused && 
+            IsGluxVersionNewEnoughForGlueControlGeneration &&
+            PlayOrEdit == PlayOrEdit.Play
+            ).ToVisibility();
 
         public bool DidRunnerStartProcess
         {
