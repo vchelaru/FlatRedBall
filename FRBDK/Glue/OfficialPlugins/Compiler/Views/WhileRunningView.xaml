@@ -53,16 +53,13 @@
 
         </Button>
         <StackPanel Height="24" VerticalAlignment="Top" Orientation="Horizontal" Margin="8,0,8,0" Visibility="{Binding PauseButtonVisibility}">
-            <Image  Source="/OfficialPluginsCore;component/Compiler/Icons/SlowMotion.png"></Image>
             <Button Height="18" Width="18" Click="SpeedDecreaseClicked">
                 <TextBlock Margin="0,-3,0,0">
                     -
                 </TextBlock>
             </Button>
+            <Image  Source="/OfficialPluginsCore;component/Compiler/Icons/SlowMotion.png" Height="16"></Image>
             <TextBlock VerticalAlignment="Center" Text="{Binding CurrentGameSpeed, FallbackValue=100%}"></TextBlock>
-            <ComboBox Width="70" ItemsSource="{Binding GameSpeedList}" 
-                      HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                      SelectedItem="{Binding CurrentGameSpeed}"></ComboBox>
             <Button Height="18" Width="18" Click="SpeedIncreaseClicked">
                 <TextBlock Margin="0,-3,0,0">
                     +

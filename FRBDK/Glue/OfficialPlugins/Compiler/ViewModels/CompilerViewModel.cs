@@ -227,22 +227,21 @@ namespace OfficialPlugins.Compiler.ViewModels
 
         #region Commands
 
-
         internal void DecreaseGameSpeed()
         {
             var index = GameSpeedList.IndexOf(CurrentGameSpeed);
-            if(index > 0)
+            if (index < GameSpeedList.Count-1)
             {
-                CurrentGameSpeed = GameSpeedList[index - 1];
+                CurrentGameSpeed = GameSpeedList[index + 1];
             }
         }
 
         internal void IncreaseGameSpeed()
         {
             var index = GameSpeedList.IndexOf(CurrentGameSpeed);
-            if (index < GameSpeedList.Count-1)
+            if(index > 0)
             {
-                CurrentGameSpeed = GameSpeedList[index + 1];
+                CurrentGameSpeed = GameSpeedList[index - 1];
             }
         }
 
