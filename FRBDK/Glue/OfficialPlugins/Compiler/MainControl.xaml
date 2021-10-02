@@ -38,10 +38,6 @@
                 </CheckBox.ToolTip>
             </CheckBox>
 
-            <Button VerticalAlignment="Top" Width="24" Height="24" Click="GlueViewSettingsButtonClicked">
-                <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/Compiler/Icons/Settings.png"></Image>
-            </Button>
-
             <StackPanel Margin="3" Orientation="Horizontal" Visibility="{Binding CompileContentButtonVisibility}">
                 <Button Click="HandleBuildContentClick" Content="Build Content"></Button>
 

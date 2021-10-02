@@ -20,11 +20,18 @@ namespace OfficialPlugins.Compiler.ViewModels
             set => Set(value);
         }
 
+
         public decimal GridSize
         {
             get => Get<decimal>();
-            set => Set(value);
+            set
+            {
+                const decimal minValue = 4;
+                value = Math.Max(value, minValue);
+                Set(value);
+            }
         }
+
 
         internal void SetFrom(CompilerSettingsModel model)
         {

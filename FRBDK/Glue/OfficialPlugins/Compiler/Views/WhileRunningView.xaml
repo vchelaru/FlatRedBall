@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPlugins.Compiler.Views"
              mc:Ignorable="d" 
-             Height="Auto" d:DesignWidth="750">
+             Height="Auto" Width="Auto">
     <StackPanel Orientation="Horizontal">
 
         <ToggleButton IsChecked="{Binding IsPlayChecked}" Height="24" Width="24">

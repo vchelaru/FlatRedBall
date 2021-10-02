@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins;
 using OfficialPlugins.Compiler.CommandSending;
 using OfficialPlugins.Compiler.Dtos;
 using OfficialPlugins.Compiler.ViewModels;
@@ -12,8 +13,12 @@ namespace OfficialPlugins.Compiler.Managers
 {
     public class GameHostController : Singleton<GameHostController>
     {
-        public void Initialize(GameHostView gameHostControl, MainControl mainControl, CompilerViewModel compilerViewModel, GlueViewSettingsViewModel glueViewSettingsViewModel)
+        PluginTab glueViewSettingsTab;
+
+        public void Initialize(GameHostView gameHostControl, MainControl mainControl, CompilerViewModel compilerViewModel, GlueViewSettingsViewModel glueViewSettingsViewModel,
+            PluginTab glueViewSettingsTab)
         {
+            this.glueViewSettingsTab = glueViewSettingsTab;
             var runner = Runner.Self;
             gameHostControl.StopClicked += (not, used) =>
             {
@@ -78,6 +83,11 @@ namespace OfficialPlugins.Compiler.Managers
                 await CommandSender.Send(new TogglePauseDto(), glueViewSettingsViewModel.PortNumber);
             };
 
+            gameHostControl.SettingsClicked += (not, used) =>
+            {
+                ShowSettingsTab();
+            };
+
 
             async Task<bool> Compile()
             {
@@ -90,6 +100,13 @@ namespace OfficialPlugins.Compiler.Managers
                 compilerViewModel.IsCompiling = false;
                 return toReturn;
             }
+
+            void ShowSettingsTab()
+            {
+                glueViewSettingsTab.Show();
+                glueViewSettingsTab.Focus();
+            }
+
         }
     }
 }

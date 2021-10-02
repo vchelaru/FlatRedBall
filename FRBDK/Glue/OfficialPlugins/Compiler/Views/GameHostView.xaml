@@ -23,6 +23,11 @@
                 PauseClicked="WhileRunningView_PauseClicked"
                 UnpauseClicked="WhileRunningView_UnpauseClicked"
                 ></views:WhileRunningView>
+        <StackPanel x:Name="AlwaysVisibleStack" HorizontalAlignment="Right">
+            <Button VerticalAlignment="Top" Width="24" Height="24" Click="GlueViewSettingsButtonClicked">
+                <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/Compiler/Icons/Settings.png"></Image>
+            </Button>
+        </StackPanel>
         <Grid x:Name="MainGrid" Grid.Row="1">
             <WindowsFormsHost x:Name="WinformsHost">
                 

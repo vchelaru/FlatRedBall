@@ -750,5 +750,10 @@ namespace GlueControl
         {
             FlatRedBallServices.Game.Window.IsBorderless = dto.IsBorderless;
         }
+
+        private static void HandleDto(GlueViewSettingsDto dto)
+        {
+            EditingManager.Self.GuidesGridSpacing = (float)dto.GridSize;
+        }
     }
 }

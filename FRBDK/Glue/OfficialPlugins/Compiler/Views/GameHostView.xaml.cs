@@ -53,6 +53,7 @@ namespace OfficialPlugins.GameHost.Views
         public event EventHandler AdvanceOneFrameClicked;
         public event EventHandler PauseClicked;
         public event EventHandler UnpauseClicked;
+        public event EventHandler SettingsClicked;
 
         public GameHostView()
         {
@@ -73,6 +74,8 @@ namespace OfficialPlugins.GameHost.Views
         {
             SetParent(handle, winformsPanel.Handle);
 
+            //MakeGameBorderless(true);
+            // Has to be done before moving the window, it seems
             PluginManager.CallPluginMethod("Glue Compiler", "MakeGameBorderless", new object[] { true });
             WindowRectangle rectangle = new WindowRectangle();
             do
@@ -130,6 +133,11 @@ namespace OfficialPlugins.GameHost.Views
         private void WhileRunningView_UnpauseClicked(object sender, EventArgs e)
         {
             UnpauseClicked?.Invoke(this, null);
+        }
+
+        private void GlueViewSettingsButtonClicked(object sender, RoutedEventArgs e)
+        {
+            SettingsClicked?.Invoke(this, null);
         }
     }
 }

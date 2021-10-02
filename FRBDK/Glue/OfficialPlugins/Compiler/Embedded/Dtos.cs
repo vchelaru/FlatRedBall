@@ -175,4 +175,10 @@ namespace GlueControl.Dtos
     {
         public bool IsBorderless { get; set; }
     }
+
+    public class GlueViewSettingsDto
+    {
+        public bool ShowScreenBoundsWhenViewingEntities { get; set; }
+        public decimal GridSize { get; set; }
+    }
 }

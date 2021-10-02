@@ -181,35 +181,19 @@ namespace OfficialPlugins.Compiler
                     toReturn = GeneralResponse.SuccessfulResponse;
                     var windowRectDisplay = lastWindowRectangle?.ToString() ?? "null";
 
-                    if (lastWindowRectangle != null)
+                    // wait for a handle
+                    int numberOfTimesToTry = 60;
+                    for (int i = 0; i < numberOfTimesToTry; i++)
                     {
+                        var id = runningGameProcess?.MainWindowHandle;
 
-                        int numberOfTimesToTry = 60;
-                        for (int i = 0; i < numberOfTimesToTry; i++)
+                        if (id == null || id == IntPtr.Zero)
                         {
-                            var id = runningGameProcess?.MainWindowHandle;
 
-                            if (id == null || id == IntPtr.Zero)
-                            {
-
-                                await Task.Delay(100);
-                                continue;
-                            }
-                            else
-                            {
-                                var rect = lastWindowRectangle.Value;
-                                var didSucceed = WindowMover.MoveWindow(id.Value, rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top, true);
-                                if (didSucceed)
-                                {
-
-                                    lastWindowRectangle = null;
-                                    break;
-                                }
-
-                            }
+                            await Task.Delay(100);
+                            continue;
                         }
                     }
-
 
                     global::Glue.MainGlueWindow.Self.Invoke(() =>
                     {

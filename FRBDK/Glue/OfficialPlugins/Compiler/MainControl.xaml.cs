@@ -32,7 +32,6 @@ namespace OfficialPlugins.Compiler
         public event EventHandler BuildContentClicked;
         public event EventHandler RunClicked;
 
-        public event EventHandler SettingsClicked;
 
         #endregion
 
@@ -99,9 +98,5 @@ namespace OfficialPlugins.Compiler
             }
         }
 
-        private void GlueViewSettingsButtonClicked(object sender, RoutedEventArgs e)
-        {
-            SettingsClicked?.Invoke(this, null);
-        }
     }
 }

@@ -19,7 +19,7 @@ namespace GlueControl.Editing
         Line HorizontalLine;
         Line VerticalLine;
 
-        const int spacing = 32;
+        public float GridSpacing { get; set; } = 32;
         List<Line> verticalLines = new List<Line>();
         List<Line> horizontalLines = new List<Line>();
 
@@ -39,7 +39,7 @@ namespace GlueControl.Editing
                     visible = value;
                     HorizontalLine.Visible = value;
                     VerticalLine.Visible = value;
-                    foreach(var line in horizontalLines)
+                    foreach (var line in horizontalLines)
                     {
                         line.Visible = value;
                     }
@@ -78,10 +78,10 @@ namespace GlueControl.Editing
         public void UpdateGridLines()
         {
             var camera = Camera.Main;
-            var leftmost = MathFunctions.RoundFloat( camera.AbsoluteLeftXEdge, spacing);
-            var rightMost = MathFunctions.RoundFloat(camera.AbsoluteRightXEdge, spacing);
+            var leftmost = MathFunctions.RoundFloat(camera.AbsoluteLeftXEdge, GridSpacing);
+            var rightMost = MathFunctions.RoundFloat(camera.AbsoluteRightXEdge, GridSpacing);
 
-            var numberOfVerticalLines = 1 + MathFunctions.RoundToInt((rightMost - leftmost) / spacing);
+            var numberOfVerticalLines = 1 + MathFunctions.RoundToInt((rightMost - leftmost) / GridSpacing);
 
 #if SupportsEditMode
 
@@ -109,15 +109,15 @@ namespace GlueControl.Editing
                     new Vector3(currentX, 1_000_000, 0),
                     new Vector3(currentX, -1_000_000, 0)
                     );
-                currentX += spacing;
+                currentX += GridSpacing;
             }
 
             // ---------------------------------------------------------------------------------
 
-            var bottomMost = MathFunctions.RoundFloat(camera.AbsoluteBottomYEdge, spacing);
-            var topmost = MathFunctions.RoundFloat(camera.AbsoluteTopYEdge, spacing);
+            var bottomMost = MathFunctions.RoundFloat(camera.AbsoluteBottomYEdge, GridSpacing);
+            var topmost = MathFunctions.RoundFloat(camera.AbsoluteTopYEdge, GridSpacing);
 
-            var numberOfHorizontalLines = 1 + MathFunctions.RoundToInt((topmost - bottomMost) / spacing);
+            var numberOfHorizontalLines = 1 + MathFunctions.RoundToInt((topmost - bottomMost) / GridSpacing);
 
             while(horizontalLines.Count < numberOfHorizontalLines)
             {
@@ -143,7 +143,7 @@ namespace GlueControl.Editing
                     new Vector3(1_000_000, currentY, 0),
                     new Vector3(-1_000_000, currentY, 0)
                     );
-                currentY += spacing;
+                currentY += GridSpacing;
             }
 #endif
         }

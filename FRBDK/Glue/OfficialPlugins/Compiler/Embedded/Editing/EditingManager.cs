@@ -34,6 +34,12 @@ namespace GlueControl.Editing
 
         Guides Guides;
 
+        public float GuidesGridSpacing
+        {
+            get => Guides.GridSpacing;
+            set => Guides.GridSpacing = value;
+        }
+
         List<ISelectionMarker> SelectedMarkers = new List<ISelectionMarker>();
         SelectionMarker HighlightMarker;
 

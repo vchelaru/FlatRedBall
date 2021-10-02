@@ -49,6 +49,8 @@ namespace OfficialPlugins.Compiler
 
         public static CompilerViewModel MainViewModel { get; private set; }
 
+
+
         PluginTab buildTab;
         PluginTab glueViewSettingsTab;
 
@@ -137,7 +139,10 @@ namespace OfficialPlugins.Compiler
             this.ReactToLoadedGlux += () => pluginTab.Show();
             this.ReactToUnloadedGlux += () => pluginTab.Hide();
 
-            GameHostController.Self.Initialize(gameHostView, MainControl, CompilerViewModel, GlueViewSettingsViewModel);
+            GameHostController.Self.Initialize(gameHostView, MainControl, 
+                CompilerViewModel, 
+                GlueViewSettingsViewModel,
+                glueViewSettingsTab);
         }
 
         private void AssignEvents()
@@ -384,7 +389,7 @@ namespace OfficialPlugins.Compiler
             CompilerViewModel.Configuration = "Debug";
             GlueViewSettingsViewModel = new GlueViewSettingsViewModel();
             GlueViewSettingsViewModel.PropertyChanged += HandleGlueViewSettingsViewModelPropertyChanged;
-            CompilerViewModel.PropertyChanged += HandleMainViewModelPropertyChanged;
+            CompilerViewModel.PropertyChanged += HandleCompilerViewModelPropertyChanged;
 
             MainViewModel = CompilerViewModel;
 
@@ -426,11 +431,23 @@ namespace OfficialPlugins.Compiler
                 case nameof(ViewModels.GlueViewSettingsViewModel.PortNumber):
                     await HandlePortOrGenerateCheckedChanged(propertyName);
                     break;
+                case nameof(ViewModels.GlueViewSettingsViewModel.GridSize):
+                case nameof(ViewModels.GlueViewSettingsViewModel.ShowScreenBoundsWhenViewingEntities):
+                    var dto = new Dtos.GlueViewSettingsDto
+                    {
+                        GridSize = GlueViewSettingsViewModel.GridSize,
+                        ShowScreenBoundsWhenViewingEntities = GlueViewSettingsViewModel.ShowScreenBoundsWhenViewingEntities
+                    };
+
+                    await CommandSender.Send(dto, GlueViewSettingsViewModel.PortNumber);
+                    break;
             }
-            throw new NotImplementedException();
+
+            SaveCompilerSettingsModel();
+
         }
 
-        private async void HandleMainViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private async void HandleCompilerViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             //////////Early Out////////////////////
             if (ignoreViewModelChanges)
@@ -445,6 +462,7 @@ namespace OfficialPlugins.Compiler
             {
                 case nameof(ViewModels.CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked):
                     await HandlePortOrGenerateCheckedChanged(propertyName);
+                    SaveCompilerSettingsModel();
 
                     break;
                 case nameof(ViewModels.CompilerViewModel.CurrentGameSpeed):
@@ -521,6 +539,8 @@ namespace OfficialPlugins.Compiler
 
                     break;
             }
+
+
         }
 
         private async Task HandlePortOrGenerateCheckedChanged(string propertyName)
@@ -530,6 +550,25 @@ namespace OfficialPlugins.Compiler
             game1GlueControlGenerator.PortNumber = GlueViewSettingsViewModel.PortNumber;
             RefreshManager.Self.PortNumber = GlueViewSettingsViewModel.PortNumber;
             GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
+            if (IsFrbNewEnough())
+            {
+                TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked), "Generate Glue Control Code");
+            }
+
+            if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.NugetPackageInCsproj)
+            {
+                GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
+            }
+
+            RefreshManager.Self.StopAndRestartTask($"{propertyName} changed");
+
+            MainControl.PrintOutput("Waiting for tasks to finish...");
+            await TaskManager.Self.WaitForAllTasksFinished();
+            MainControl.PrintOutput("Finishined adding/generating code for GlueControlManager");
+        }
+
+        private void SaveCompilerSettingsModel()
+        {
             var model = new CompilerSettingsModel();
             CompilerViewModel.SetModel(model);
             GlueViewSettingsViewModel.SetModel(model);
@@ -546,21 +585,6 @@ namespace OfficialPlugins.Compiler
             {
                 // no big deal if it fails
             }
-            if (IsFrbNewEnough())
-            {
-                TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(model.GenerateGlueControlManagerCode), "Generate Glue Control Code");
-            }
-
-            if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.NugetPackageInCsproj)
-            {
-                GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
-            }
-
-            RefreshManager.Self.StopAndRestartTask($"{propertyName} changed");
-
-            MainControl.PrintOutput("Waiting for tasks to finish...");
-            await TaskManager.Self.WaitForAllTasksFinished();
-            MainControl.PrintOutput("Finishined adding/generating code for GlueControlManager");
         }
 
         private void AssignControlEvents()
@@ -595,17 +619,9 @@ namespace OfficialPlugins.Compiler
             };
 
 
-            MainControl.SettingsClicked += (not, used) =>
-            {
-                ShowSettingsTab();
-            };
+
         }
 
-        void ShowSettingsTab()
-        {
-            glueViewSettingsTab.Show();
-            glueViewSettingsTab.Focus();
-        }
 
         private static bool GetIfHasErrors()
         {
