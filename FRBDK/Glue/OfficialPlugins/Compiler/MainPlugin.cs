@@ -101,9 +101,11 @@ namespace OfficialPlugins.Compiler
             compiler = Compiler.Self;
             runner = Runner.Self;
 
-            runner.AfterSuccessfulRun += () =>
+            runner.AfterSuccessfulRun += async () =>
             {
                 MoveGameToHost();
+                await SendGlueViewSettingsToGame();
+
             };
 
             game1GlueControlGenerator = new Game1GlueControlGenerator();
@@ -433,18 +435,23 @@ namespace OfficialPlugins.Compiler
                     break;
                 case nameof(ViewModels.GlueViewSettingsViewModel.GridSize):
                 case nameof(ViewModels.GlueViewSettingsViewModel.ShowScreenBoundsWhenViewingEntities):
-                    var dto = new Dtos.GlueViewSettingsDto
-                    {
-                        GridSize = GlueViewSettingsViewModel.GridSize,
-                        ShowScreenBoundsWhenViewingEntities = GlueViewSettingsViewModel.ShowScreenBoundsWhenViewingEntities
-                    };
-
-                    await CommandSender.Send(dto, GlueViewSettingsViewModel.PortNumber);
+                    await SendGlueViewSettingsToGame();
                     break;
             }
 
             SaveCompilerSettingsModel();
 
+        }
+
+        private async Task SendGlueViewSettingsToGame()
+        {
+            var dto = new Dtos.GlueViewSettingsDto
+            {
+                GridSize = GlueViewSettingsViewModel.GridSize,
+                ShowScreenBoundsWhenViewingEntities = GlueViewSettingsViewModel.ShowScreenBoundsWhenViewingEntities
+            };
+
+            await CommandSender.Send(dto, GlueViewSettingsViewModel.PortNumber);
         }
 
         private async void HandleCompilerViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
