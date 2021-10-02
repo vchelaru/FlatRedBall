@@ -85,7 +85,15 @@ namespace OfficialPlugins.Compiler.Managers
 
             gameHostControl.SettingsClicked += (not, used) =>
             {
-                ShowSettingsTab();
+                if(glueViewSettingsTab.IsShown)
+                {
+                    glueViewSettingsTab.Hide();
+                }
+                else
+                {
+                    glueViewSettingsTab.Show();
+                    glueViewSettingsTab.Focus();
+                }
             };
 
 
@@ -101,11 +109,6 @@ namespace OfficialPlugins.Compiler.Managers
                 return toReturn;
             }
 
-            void ShowSettingsTab()
-            {
-                glueViewSettingsTab.Show();
-                glueViewSettingsTab.Focus();
-            }
 
         }
     }

@@ -84,6 +84,8 @@ namespace FlatRedBall.Glue.Plugins
             AfterHide?.Invoke(this, null);
         }
 
+        public bool IsShown => Page.ParentTabControl != null;
+
         public void Show()
         {
             if(Page.ParentTabControl == null)

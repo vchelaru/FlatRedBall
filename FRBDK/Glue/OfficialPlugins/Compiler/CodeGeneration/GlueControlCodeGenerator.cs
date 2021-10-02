@@ -37,6 +37,10 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             {
                 compilerDirectives += "#define HasGum\r\n";
             }
+
+
+            compilerDirectives += $"using {GlueState.Self.ProjectNamespace};\r\n";
+
             asString = asString.Replace("{CompilerDirectives}", compilerDirectives);
             return asString;
         }

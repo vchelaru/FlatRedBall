@@ -754,6 +754,7 @@ namespace GlueControl
         private static void HandleDto(GlueViewSettingsDto dto)
         {
             EditingManager.Self.GuidesGridSpacing = (float)dto.GridSize;
+            Screens.EntityViewingScreen.ShowScreenBounds = dto.ShowScreenBoundsWhenViewingEntities;
         }
     }
 }

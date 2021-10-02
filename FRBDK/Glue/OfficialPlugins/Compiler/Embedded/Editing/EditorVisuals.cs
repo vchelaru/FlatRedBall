@@ -12,7 +12,7 @@ using FlatRedBall.Graphics.Animation;
 
 namespace GlueControl.Editing
 {
-    public static class EditorVisuals
+    public class EditorVisuals : FlatRedBall.Managers.IManager
     {
         #region Fields/Properties
 
@@ -28,9 +28,18 @@ namespace GlueControl.Editing
         static int nextSprite = 0;
         static List<Sprite> Sprites = new List<Sprite>();
 
+        static int nextRectangle = 0;
+        static List<AxisAlignedRectangle> Rectangles = new List<AxisAlignedRectangle>();
+
         static double lastFrameReset;
 
         #endregion
+
+        static EditorVisuals()
+        {
+            FlatRedBallServices.AddManager(new EditorVisuals());
+        }
+
 
         public static void Text(string text, Vector3 position)
         {
@@ -57,7 +66,7 @@ namespace GlueControl.Editing
             nextText++;
         }
 
-        internal static void Line(Vector3 point1, Vector3 point2)
+        public static void Line(Vector3 point1, Vector3 point2)
         {
             // This screen is cleaning up, so don't make anymore objects:
             if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
@@ -78,7 +87,7 @@ namespace GlueControl.Editing
             nextLine++;
         }
 
-        internal static void Arrow(Vector3 point1, Vector3 point2)
+        public static void Arrow(Vector3 point1, Vector3 point2)
         {
             // This screen is cleaning up, so don't make anymore objects:
             if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
@@ -126,6 +135,31 @@ namespace GlueControl.Editing
 
         }
 
+        public static void Rectangle(float width, float height, Vector3 centerPosition)
+        {
+            // This screen is cleaning up, so don't make anymore objects:
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            {
+                return;
+            }
+
+            TryResetEveryFrameValues();
+
+            if (nextRectangle == Rectangles.Count)
+            {
+                Rectangles.Add(ShapeManager.AddAxisAlignedRectangle());
+            }
+
+            var rectangle = Rectangles[nextRectangle];
+            rectangle.Name = $"EditorVisuals Rectangle {nextRectangle}";
+            rectangle.Visible = true;
+            rectangle.Width = width;
+            rectangle.Height = height;
+            rectangle.Position = centerPosition;
+
+            nextRectangle++;
+        }
+
         private static void TryResetEveryFrameValues()
         {
             if (lastFrameReset != TimeManager.CurrentTime)
@@ -148,13 +182,17 @@ namespace GlueControl.Editing
                 {
                     sprite.Visible = false;
                 }
+                foreach (var rectangle in Rectangles)
+                {
+                    rectangle.Visible = false;
+                }
                 nextText = 0;
                 nextArrow = 0;
                 nextLine = 0;
                 nextSprite = 0;
+                nextRectangle = 0;
             }
         }
-
 
         public static void DestroyContainedObjects()
         {
@@ -181,6 +219,21 @@ namespace GlueControl.Editing
                 SpriteManager.RemoveSprite(sprite);
             }
             Sprites.Clear();
+
+            foreach (var rectangle in Rectangles)
+            {
+                ShapeManager.Remove(rectangle);
+            }
+            Rectangles.Clear();
+        }
+
+        public void Update()
+        {
+            TryResetEveryFrameValues();
+        }
+
+        public void UpdateDependencies()
+        {
         }
     }
 }

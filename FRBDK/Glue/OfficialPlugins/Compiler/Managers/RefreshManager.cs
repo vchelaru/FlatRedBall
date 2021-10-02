@@ -151,6 +151,10 @@ namespace OfficialPlugins.Compiler.Managers
                     {
                         strippedName = FileManager.RemovePath(FileManager.RemoveExtension(firstRfs.Name));
                     }
+                    else
+                    {
+                        strippedName = fileName.NoPath;
+                    }
                     if(isGlobalContent && firstRfs.GetAssetTypeInfo().CustomReloadFunc != null)
                     {
                         printOutput($"Waiting for Glue to copy reload global file {strippedName}");
@@ -172,8 +176,10 @@ namespace OfficialPlugins.Compiler.Managers
 
                     var containerNames = rfses.Select(item => item.GetContainer()?.Name).Where(item => item != null).ToHashSet();
 
+                    var shouldCopy = false;
+                    shouldCopy = containerNames.Any() || GlueCommands.Self.FileCommands.IsContent(fileName);
 
-                    if(containerNames.Any() || GlueCommands.Self.FileCommands.IsContent(fileName))
+                    if (shouldCopy)
                     {
                         // Right now we'll assume the screen owns this file, although it is possible that it's 
                         // global but not part of global content. That's a special case we'll have to handle later
@@ -217,8 +223,10 @@ namespace OfficialPlugins.Compiler.Managers
             }
         }
 
+        
         private bool GetIfShouldReactToFileChange(FilePath filePath )
         {
+            var noPath = filePath.NoPath;
             if(filePath.FullPath.Contains(".Generated.") && filePath.FullPath.EndsWith(".cs"))
             {
                 return false;
@@ -227,6 +235,11 @@ namespace OfficialPlugins.Compiler.Managers
             {
                 return false;
             }
+            if(noPath == "CompilerSettings.json")
+            {
+                return false;
+            }
+
 
 
             return true;

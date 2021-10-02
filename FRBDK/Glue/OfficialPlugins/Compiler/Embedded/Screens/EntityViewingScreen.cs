@@ -4,6 +4,7 @@ using FlatRedBall;
 using FlatRedBall.Graphics;
 using FlatRedBall.Screens;
 using GlueControl.Models;
+using Microsoft.Xna.Framework;
 
 namespace GlueControl.Screens
 {
@@ -14,6 +15,9 @@ namespace GlueControl.Screens
         public static string GameElementTypeToCreate { get; set; }
         public static NamedObjectSave InstanceToSelect { get; set; }
         public System.Reflection.MethodInfo ActivityEditModeMethod;
+
+        public static bool ShowScreenBounds { get; set; }
+
 
         public EntityViewingScreen() : base(nameof(EntityViewingScreen))
         {
@@ -37,6 +41,13 @@ namespace GlueControl.Screens
             base.ActivityEditMode();
 
             ActivityEditModeMethod?.Invoke(CurrentEntity, null);
+
+            if (ShowScreenBounds)
+            {
+                var width = CameraSetup.Data.ResolutionWidth;
+                var height = CameraSetup.Data.ResolutionHeight;
+                Editing.EditorVisuals.Rectangle(width, height, Vector3.Zero);
+            }
         }
 
         public override void AddToManagers()
