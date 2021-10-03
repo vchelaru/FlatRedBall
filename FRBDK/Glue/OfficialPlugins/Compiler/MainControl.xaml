@@ -26,7 +26,7 @@
             <CheckBox VerticalContentAlignment="Center" VerticalAlignment="Top"
                       Margin="0,4,0,0"
                       IsChecked="{Binding IsGenerateGlueControlManagerInGame1Checked}"
-                      Visibility="{Binding GlueControlDependentVisibility}">
+                      Visibility="{Binding GenerateGlueViewCheckboxVisibility}">
                 Enable GlueView
                 <CheckBox.ToolTip>
                     <ToolTip>

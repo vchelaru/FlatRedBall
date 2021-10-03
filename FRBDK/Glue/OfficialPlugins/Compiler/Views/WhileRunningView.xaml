@@ -8,7 +8,7 @@
              Height="Auto" Width="Auto">
     <StackPanel Orientation="Horizontal">
 
-        <ToggleButton IsChecked="{Binding IsPlayChecked}" Height="24" Width="24">
+        <ToggleButton IsChecked="{Binding IsPlayChecked}" Height="24" Width="24" Visibility="{Binding GlueViewCommandUiVisibility}">
             <ToggleButton.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -22,7 +22,7 @@
                 <Image Source="/OfficialPluginsCore;component/Compiler/Icons/RunDeselected.png" Visibility="{Binding RunDisabledIconVisibility}"/>
             </Grid>
         </ToggleButton>
-        <ToggleButton IsChecked="{Binding IsEditChecked}" Margin="0,0,10,0" Height="24" Width="24">
+        <ToggleButton IsChecked="{Binding IsEditChecked}" Margin="0,0,10,0" Height="24" Width="24" Visibility="{Binding GlueViewCommandUiVisibility}">
             <ToggleButton.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -120,7 +120,7 @@
         </Button>-->
 
         <Button Height="24" VerticalAlignment="Top" Margin="0,0,6,0" Click="HandleRestartGameCurrentScreenClicked"
-                Visibility="{Binding GlueControlDependentVisibility}">
+                Visibility="{Binding WhileRunningViewVisibility}">
             <Image Source="/OfficialPluginsCore;component/Compiler/Icons/RestartGameOnCurrentScreen.png" Margin="1"></Image>
             <Button.ToolTip>
                 <ToolTip>
@@ -134,7 +134,7 @@
 
 
         <Button Height="24" VerticalAlignment="Top"  Margin="0,0,6,0" Click="HandleRestartScreenClicked"
-                Visibility="{Binding GlueControlDependentVisibility}">
+                Visibility="{Binding GlueViewCommandUiVisibility}">
             <Image Source="/OfficialPluginsCore;component/Compiler/Icons/RestartScreen.png" Margin="1"></Image>
             <Button.ToolTip>
                 <ToolTip>

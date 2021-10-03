@@ -109,15 +109,20 @@ namespace OfficialPlugins.Compiler.ViewModels
         }
 
         [DependsOn(nameof(IsGluxVersionNewEnoughForGlueControlGeneration))]
-        public Visibility GlueControlDependentVisibility => IsGluxVersionNewEnoughForGlueControlGeneration.ToVisibility();
+        public Visibility GenerateGlueViewCheckboxVisibility =>
+            // formerly:
+            //GlueControlDependentVisibility => 
+            (IsGluxVersionNewEnoughForGlueControlGeneration).ToVisibility();
 
         [DependsOn(nameof(IsPaused))]
         [DependsOn(nameof(IsGluxVersionNewEnoughForGlueControlGeneration))]
         [DependsOn(nameof(PlayOrEdit))]
+        [DependsOn(nameof(IsGenerateGlueControlManagerInGame1Checked))]
         public Visibility PauseButtonVisibility => (
             !IsPaused && 
             IsGluxVersionNewEnoughForGlueControlGeneration &&
-            PlayOrEdit == PlayOrEdit.Play
+            PlayOrEdit == PlayOrEdit.Play &&
+            IsGenerateGlueControlManagerInGame1Checked
             ).ToVisibility();
 
         public bool DidRunnerStartProcess
@@ -140,8 +145,11 @@ namespace OfficialPlugins.Compiler.ViewModels
 
         [DependsOn(nameof(IsPaused))]
         [DependsOn(nameof(IsGluxVersionNewEnoughForGlueControlGeneration))]
-        public Visibility UnpauseButtonVisibility => IsPaused && IsGluxVersionNewEnoughForGlueControlGeneration ?
-            Visibility.Visible : Visibility.Collapsed;
+        [DependsOn(nameof(IsGenerateGlueControlManagerInGame1Checked))]
+        public Visibility UnpauseButtonVisibility => (
+            IsPaused &&
+            IsGluxVersionNewEnoughForGlueControlGeneration &&
+            IsGenerateGlueControlManagerInGame1Checked ).ToVisibility();
 
         public bool IsGenerateGlueControlManagerInGame1Checked
         {
@@ -150,7 +158,7 @@ namespace OfficialPlugins.Compiler.ViewModels
         }
 
         [DependsOn(nameof(IsGenerateGlueControlManagerInGame1Checked))]
-        public Visibility RunningModeVisibility => IsGenerateGlueControlManagerInGame1Checked.ToVisibility();
+        public Visibility GlueViewCommandUiVisibility => IsGenerateGlueControlManagerInGame1Checked.ToVisibility();
 
         public string Configuration { get; set; }
 
