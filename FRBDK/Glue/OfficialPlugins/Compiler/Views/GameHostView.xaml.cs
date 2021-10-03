@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using OfficialPlugins.Compiler;
 using System;
 using System.Collections.Generic;
@@ -74,10 +75,9 @@ namespace OfficialPlugins.GameHost.Views
         {
             SetParent(handle, winformsPanel.Handle);
 
-            //MakeGameBorderless(true);
-            // Has to be done before moving the window, it seems
             PluginManager.CallPluginMethod("Glue Compiler", "MakeGameBorderless", new object[] { true });
             WindowRectangle rectangle = new WindowRectangle();
+
             do
             {
                 WindowMover.GetWindowRect(handle, out rectangle);
@@ -85,7 +85,17 @@ namespace OfficialPlugins.GameHost.Views
                 var delay = 140;
                 await Task.Delay(delay);
 
-                WindowMover.MoveWindow(handle, 0, 0, rectangle.Right - rectangle.Left, rectangle.Bottom - rectangle.Top, true);
+                var width = rectangle.Right - rectangle.Left;
+                var height = rectangle.Bottom - rectangle.Top;
+
+                var displaySettings = GlueState.Self.CurrentGlueProject.DisplaySettings;
+                if(displaySettings != null)
+                {
+                    width = FlatRedBall.Math.MathFunctions.RoundToInt (displaySettings.ResolutionWidth * displaySettings.Scale / 100.0);
+                    height = FlatRedBall.Math.MathFunctions.RoundToInt(displaySettings.ResolutionHeight * displaySettings.Scale / 100.0);
+                }
+
+                WindowMover.MoveWindow(handle, 0, 0, width, height, true);
 
             } while (rectangle.Left != 0 && rectangle.Left != 0);
         }
