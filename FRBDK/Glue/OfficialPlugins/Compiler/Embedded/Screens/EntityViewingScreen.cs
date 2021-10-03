@@ -18,6 +18,8 @@ namespace GlueControl.Screens
 
         public static bool ShowScreenBounds { get; set; }
 
+        bool isViewingAbstractEntity;
+
 
         public EntityViewingScreen() : base(nameof(EntityViewingScreen))
         {
@@ -40,6 +42,13 @@ namespace GlueControl.Screens
         {
             base.ActivityEditMode();
 
+            if (isViewingAbstractEntity)
+            {
+                var camera = Camera.Main;
+                Editing.EditorVisuals.Text(
+                    $"The entity {EntityViewingScreen.GameElementTypeToCreate} is abstract so it cannot be previewed.\nSelect a derived entity type to view it.",
+                    new Vector3(camera.X, camera.Y, 0));
+            }
             ActivityEditModeMethod?.Invoke(CurrentEntity, null);
 
             if (ShowScreenBounds)
@@ -54,12 +63,8 @@ namespace GlueControl.Screens
         {
             base.AddToManagers();
 
-            //var instance = ownerType.GetConstructor(new System.Type[0]).Invoke(new object[0]) as IDestroyable;
-            var instance = GlueControl.InstanceLogic.Self.CreateEntity(EntityViewingScreen.GameElementTypeToCreate) as IDestroyable;
-            CurrentEntity = instance;
-            var instanceAsPositionedObject = (PositionedObject)instance;
-            instanceAsPositionedObject.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
-            instanceAsPositionedObject.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
+            var entityType = this.GetType().Assembly.GetType(EntityViewingScreen.GameElementTypeToCreate);
+            isViewingAbstractEntity = entityType?.IsAbstract == true;
 
             GlueControl.Editing.EditingManager.Self.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingEntity;
 
@@ -67,9 +72,26 @@ namespace GlueControl.Screens
             Camera.Main.Y = 0;
             Camera.Main.Detach();
 
-            GlueControl.Editing.EditingManager.Self.Select(InstanceToSelect);
+            if (!isViewingAbstractEntity)
+            {
 
-            ActivityEditModeMethod = CurrentEntity.GetType().GetMethod("ActivityEditMode");
+                //var instance = ownerType.GetConstructor(new System.Type[0]).Invoke(new object[0]) as IDestroyable;
+                var instance = GlueControl.InstanceLogic.Self.CreateEntity(EntityViewingScreen.GameElementTypeToCreate) as IDestroyable;
+                CurrentEntity = instance;
+                var instanceAsPositionedObject = (PositionedObject)instance;
+                instanceAsPositionedObject.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
+                instanceAsPositionedObject.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
+
+
+                GlueControl.Editing.EditingManager.Self.Select(InstanceToSelect);
+
+                var currentEntityType = CurrentEntity.GetType();
+                if (!isViewingAbstractEntity)
+                {
+                    ActivityEditModeMethod = currentEntityType.GetMethod("ActivityEditMode");
+                }
+
+            }
         }
 
         public override void Destroy()
