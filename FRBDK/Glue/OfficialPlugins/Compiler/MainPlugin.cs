@@ -103,7 +103,12 @@ namespace OfficialPlugins.Compiler
 
             runner.AfterSuccessfulRun += async () =>
             {
-                MoveGameToHost();
+                // If we aren't generating the code, we shouldn't try to move the game to Glue since the borders can't be adjusted
+                if(CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked)
+                {
+                    MoveGameToHost();
+                }
+                
                 await SendGlueViewSettingsToGame();
 
             };
