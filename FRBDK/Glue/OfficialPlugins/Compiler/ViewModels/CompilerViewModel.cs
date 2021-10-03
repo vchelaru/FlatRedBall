@@ -160,6 +160,9 @@ namespace OfficialPlugins.Compiler.ViewModels
         [DependsOn(nameof(IsGenerateGlueControlManagerInGame1Checked))]
         public Visibility GlueViewCommandUiVisibility => IsGenerateGlueControlManagerInGame1Checked.ToVisibility();
 
+        [DependsOn(nameof(IsGenerateGlueControlManagerInGame1Checked))]
+        public Visibility MessageAboutEditModeDisabledVisibility => (IsGenerateGlueControlManagerInGame1Checked == false).ToVisibility();
+
         public string Configuration { get; set; }
 
         public Visibility CompileContentButtonVisibility
@@ -260,18 +263,5 @@ namespace OfficialPlugins.Compiler.ViewModels
 
         #endregion
 
-        #region To/From Model
-
-        internal void SetFrom(CompilerSettingsModel model)
-        {
-            this.IsGenerateGlueControlManagerInGame1Checked = model.GenerateGlueControlManagerCode;
-        }
-
-        public void SetModel(CompilerSettingsModel compilerSettings)
-        {
-            compilerSettings.GenerateGlueControlManagerCode = this.IsGenerateGlueControlManagerInGame1Checked;
-        }
-
-        #endregion
     }
 }

@@ -23,21 +23,7 @@
                 >
             </views:WhileStoppedView>
 
-            <CheckBox VerticalContentAlignment="Center" VerticalAlignment="Top"
-                      Margin="0,4,0,0"
-                      IsChecked="{Binding IsGenerateGlueControlManagerInGame1Checked}"
-                      Visibility="{Binding GenerateGlueViewCheckboxVisibility}">
-                Enable GlueView
-                <CheckBox.ToolTip>
-                    <ToolTip>
-                        <StackPanel>
-                            <TextBlock FontWeight="Bold">Adds code to your project to enable GlueView</TextBlock>
-                            <TextBlock>GlueView allows live previewing of levels and entities. You can also edit your game while it's running and try your changes without restarting.</TextBlock>
-                        </StackPanel>
-                    </ToolTip>
-                </CheckBox.ToolTip>
-            </CheckBox>
-
+            
             <StackPanel Margin="3" Orientation="Horizontal" Visibility="{Binding CompileContentButtonVisibility}">
                 <Button Click="HandleBuildContentClick" Content="Build Content"></Button>
 

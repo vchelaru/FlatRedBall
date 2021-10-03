@@ -318,8 +318,8 @@ namespace OfficialPlugins.Compiler
 
             var model = LoadOrCreateCompilerSettings();
             ignoreViewModelChanges = true;
-            CompilerViewModel.SetFrom(model);
             GlueViewSettingsViewModel.SetFrom(model);
+            CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableGlueViewEdit;
             ignoreViewModelChanges = false;
 
             CompilerViewModel.IsGluxVersionNewEnoughForGlueControlGeneration =
@@ -328,6 +328,7 @@ namespace OfficialPlugins.Compiler
 
             game1GlueControlGenerator.PortNumber = model.PortNumber;
             game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = model.GenerateGlueControlManagerCode && IsFrbNewEnough();
+
             RefreshManager.Self.PortNumber = model.PortNumber;
 
             ToolbarController.Self.HandleGluxLoaded();
@@ -436,6 +437,8 @@ namespace OfficialPlugins.Compiler
             switch(propertyName)
             {
                 case nameof(ViewModels.GlueViewSettingsViewModel.PortNumber):
+                case nameof(ViewModels.GlueViewSettingsViewModel.EnableGlueViewEdit):
+                    CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableGlueViewEdit;
                     await HandlePortOrGenerateCheckedChanged(propertyName);
                     break;
                 case nameof(ViewModels.GlueViewSettingsViewModel.GridSize):
@@ -443,6 +446,7 @@ namespace OfficialPlugins.Compiler
                     await SendGlueViewSettingsToGame();
                     break;
             }
+
 
             SaveCompilerSettingsModel();
 
@@ -472,11 +476,7 @@ namespace OfficialPlugins.Compiler
 
             switch (propertyName)
             {
-                case nameof(ViewModels.CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked):
-                    await HandlePortOrGenerateCheckedChanged(propertyName);
-                    SaveCompilerSettingsModel();
 
-                    break;
                 case nameof(ViewModels.CompilerViewModel.CurrentGameSpeed):
                     var speedPercentage = int.Parse(CompilerViewModel.CurrentGameSpeed.Substring(0, CompilerViewModel.CurrentGameSpeed.Length - 1));
                     await CommandSender.Send(new SetSpeedDto
@@ -558,13 +558,13 @@ namespace OfficialPlugins.Compiler
         private async Task HandlePortOrGenerateCheckedChanged(string propertyName)
         {
             MainControl.PrintOutput("Applying changes");
-            game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked && IsFrbNewEnough();
+            game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = GlueViewSettingsViewModel.EnableGlueViewEdit && IsFrbNewEnough();
             game1GlueControlGenerator.PortNumber = GlueViewSettingsViewModel.PortNumber;
             RefreshManager.Self.PortNumber = GlueViewSettingsViewModel.PortNumber;
             GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
             if (IsFrbNewEnough())
             {
-                TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked), "Generate Glue Control Code");
+                TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(GlueViewSettingsViewModel.EnableGlueViewEdit), "Generate Glue Control Code");
             }
 
             if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.NugetPackageInCsproj)
@@ -582,7 +582,6 @@ namespace OfficialPlugins.Compiler
         private void SaveCompilerSettingsModel()
         {
             var model = new CompilerSettingsModel();
-            CompilerViewModel.SetModel(model);
             GlueViewSettingsViewModel.SetModel(model);
             try
             {
