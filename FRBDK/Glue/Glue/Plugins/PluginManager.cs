@@ -2016,6 +2016,14 @@ namespace FlatRedBall.Glue.Plugins
                 (plugin) => plugin.ReactToObjectContainerChanged != null);
         }
 
+        public static void ReactToMainWindowMoved()
+        {
+            CallMethodOnPlugin(
+                (plugin) => plugin.ReactToMainWindowMoved(),
+                nameof(ReactToObjectContainerChanged),
+                (plugin) => plugin.ReactToMainWindowMoved != null);
+        }
+
         #endregion
 
         internal static bool TryHandleException(Exception exception)

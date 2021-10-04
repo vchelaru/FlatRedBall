@@ -118,8 +118,6 @@ namespace OfficialPlugins.Compiler
 
             this.RegisterCodeGenerator(new CompilerPluginElementCodeGenerator());
 
-            // do this after creating the compiler, view model, and control
-            AssignEvents();
 
             #region Start the timer
 
@@ -142,6 +140,8 @@ namespace OfficialPlugins.Compiler
             pluginTab.AfterHide += (_, __) => TryKillGame();
             //pluginTab = base.CreateAndAddTab(GameHostView, "Game Contrll", TabLocation.Bottom);
 
+            // do this after creating the compiler, view model, and control
+            AssignEvents();
 
             this.ReactToLoadedGlux += () => pluginTab.Show();
             this.ReactToUnloadedGlux += () => pluginTab.Hide();
@@ -186,6 +186,8 @@ namespace OfficialPlugins.Compiler
             this.ReactToVariableAdded += RefreshManager.Self.HandleVariableAdded;
             this.ReactToStateCreated += RefreshManager.Self.HandleStateCreated;
             this.ReactToStateVariableChanged += RefreshManager.Self.HandleStateVariableChanged;
+            this.ReactToMainWindowMoved += gameHostView.ReactToMainWindowMoved;
+
         }
 
 

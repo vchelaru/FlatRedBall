@@ -35,7 +35,7 @@
                 UnpauseClicked="WhileRunningView_UnpauseClicked"
                 ></views:WhileRunningView>
         <Grid x:Name="MainGrid" Grid.Row="1">
-            <WindowsFormsHost x:Name="WinformsHost">
+            <WindowsFormsHost x:Name="WinformsHost" SizeChanged="WinformsHost_SizeChanged">
                 
             </WindowsFormsHost>
         </Grid>

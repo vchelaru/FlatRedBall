@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using OfficialPlugins.Compiler;
+using OfficialPlugins.Compiler.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -42,7 +43,19 @@ namespace OfficialPlugins.GameHost.Views
 
         #endregion
 
+        #region Fields/Properties
+
         System.Windows.Forms.Panel winformsPanel;
+
+        CompilerViewModel ViewModel => DataContext as CompilerViewModel;
+
+        // It seems like once the game is moved, we can't get the handle to this again. Not sure why, but it's
+        // simple enough to hold on to it
+        IntPtr gameHandle;
+
+        #endregion
+
+        #region Events
 
         public event EventHandler DoItClicked;
 
@@ -56,13 +69,15 @@ namespace OfficialPlugins.GameHost.Views
         public event EventHandler UnpauseClicked;
         public event EventHandler SettingsClicked;
 
+        #endregion
+
         public GameHostView()
         {
             InitializeComponent();
 
 
             winformsPanel = new System.Windows.Forms.Panel();
-            winformsPanel.BackColor = System.Drawing.Color.FromArgb(20, 20, 20);
+            winformsPanel.BackColor = System.Drawing.Color.FromArgb(30, 30, 30);
             winformsPanel.Width = 20;
             winformsPanel.Height = 30;
             winformsPanel.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -74,31 +89,41 @@ namespace OfficialPlugins.GameHost.Views
         public async Task EmbedHwnd(IntPtr handle)
         {
             SetParent(handle, winformsPanel.Handle);
-
+            gameHandle = handle;
             PluginManager.CallPluginMethod("Glue Compiler", "MakeGameBorderless", new object[] { true });
             WindowRectangle rectangle = new WindowRectangle();
 
-            do
-            {
-                WindowMover.GetWindowRect(handle, out rectangle);
+            WindowMover.GetWindowRect(handle, out rectangle);
 
-                var delay = 140;
+            // I used to have this code check if the window was at 0,0,
+            // but that doesn't seem to actually work - the loop would run 
+            // indefinitely, continually changing the position of the cursor.
+            // Now I just do it 5 times and it seems to work
+            for(int i = 0; i < 5; i++)
+            {
+                var delay = 180;
                 await Task.Delay(delay);
 
-                var width = rectangle.Right - rectangle.Left;
-                var height = rectangle.Bottom - rectangle.Top;
+                //var width = rectangle.Right - rectangle.Left;
+                //var height = rectangle.Bottom - rectangle.Top;
 
-                var displaySettings = GlueState.Self.CurrentGlueProject?.DisplaySettings;
-                if(displaySettings != null)
-                {
-                    width = FlatRedBall.Math.MathFunctions.RoundToInt (displaySettings.ResolutionWidth * displaySettings.Scale / 100.0);
-                    height = FlatRedBall.Math.MathFunctions.RoundToInt(displaySettings.ResolutionHeight * displaySettings.Scale / 100.0);
-                }
+                //var displaySettings = GlueState.Self.CurrentGlueProject?.DisplaySettings;
+                //if(displaySettings != null)
+                //{
+                //    width = FlatRedBall.Math.MathFunctions.RoundToInt (displaySettings.ResolutionWidth * displaySettings.Scale / 100.0);
+                //    height = FlatRedBall.Math.MathFunctions.RoundToInt(displaySettings.ResolutionHeight * displaySettings.Scale / 100.0);
+                //}
+
+                var width = (int)WinformsHost.ActualWidth;
+                var height = (int)WinformsHost.ActualHeight;
 
                 WindowMover.MoveWindow(handle, 0, 0, width, height, true);
 
-            } while (rectangle.Left != 0 && rectangle.Left != 0);
+            }
+
         }
+
+
 
         public void AddChild(UIElement child)
         {
@@ -118,6 +143,17 @@ namespace OfficialPlugins.GameHost.Views
         private void WhileRunningView_RestartGameClicked(object sender, EventArgs e)
         {
             RestartGameClicked?.Invoke(this, null);
+        }
+
+        private void WinformsHost_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (ViewModel.IsRunning && ViewModel.IsGenerateGlueControlManagerInGame1Checked && gameHandle != IntPtr.Zero)
+            {
+                var newWidth = (int)WinformsHost.ActualWidth;
+                var newHeight = (int)WinformsHost.ActualHeight;
+
+                WindowMover.MoveWindow(gameHandle, 0, 0, newWidth, newHeight, true);
+            }
         }
 
         private void WhileRunningView_RestartGameCurrentScreenClicked(object sender, EventArgs e)
@@ -148,6 +184,16 @@ namespace OfficialPlugins.GameHost.Views
         private void GlueViewSettingsButtonClicked(object sender, RoutedEventArgs e)
         {
             SettingsClicked?.Invoke(this, null);
+        }
+
+        public void ReactToMainWindowMoved()
+        {
+            var oldWidth = WinformsHost.Width;
+
+            WinformsHost.Width = 0;
+            WinformsHost.UpdateLayout();
+            WinformsHost.Width = oldWidth;
+            WinformsHost_SizeChanged(null, null);
         }
     }
 }

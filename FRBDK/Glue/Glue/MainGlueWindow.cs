@@ -97,11 +97,17 @@ namespace Glue
 
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.Move += HandleWindowMoved;
 
             CreateMainWpfPanel();
             // so docking works
             //this.Controls.SetChildIndex(this.MainPanelSplitContainer, 0);
             this.Controls.Add(this.mMenu);
+        }
+
+        private void HandleWindowMoved(object sender, EventArgs e)
+        {
+            PluginManager.ReactToMainWindowMoved();
         }
 
         private void CreateMenuStrip()
