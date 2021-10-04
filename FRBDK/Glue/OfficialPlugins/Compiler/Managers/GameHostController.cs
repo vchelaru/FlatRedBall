@@ -14,10 +14,13 @@ namespace OfficialPlugins.Compiler.Managers
     public class GameHostController : Singleton<GameHostController>
     {
         PluginTab glueViewSettingsTab;
-
+        CompilerViewModel compilerViewModel;
+        MainControl mainControl;
         public void Initialize(GameHostView gameHostControl, MainControl mainControl, CompilerViewModel compilerViewModel, GlueViewSettingsViewModel glueViewSettingsViewModel,
             PluginTab glueViewSettingsTab)
         {
+            this.compilerViewModel = compilerViewModel;
+            this.mainControl = mainControl;
             this.glueViewSettingsTab = glueViewSettingsTab;
             var runner = Runner.Self;
             gameHostControl.StopClicked += (not, used) =>
@@ -97,19 +100,28 @@ namespace OfficialPlugins.Compiler.Managers
             };
 
 
-            async Task<bool> Compile()
+
+
+        }
+        public async Task<bool> Compile()
+        {
+            var compiler = Compiler.Self;
+
+            // does it already have it?
+            var existingProcess = Runner.Self.TryFindGameProcess(false);
+
+            if(existingProcess != null)
             {
-                var compiler = Compiler.Self;
-                compilerViewModel.IsCompiling = true;
-                var toReturn = await compiler.Compile(
-                    mainControl.PrintOutput,
-                    mainControl.PrintOutput,
-                    compilerViewModel.Configuration);
-                compilerViewModel.IsCompiling = false;
-                return toReturn;
+                Runner.Self.KillGameProcess(existingProcess);
             }
 
-
+            compilerViewModel.IsCompiling = true;
+            var toReturn = await compiler.Compile(
+                mainControl.PrintOutput,
+                mainControl.PrintOutput,
+                compilerViewModel.Configuration);
+            compilerViewModel.IsCompiling = false;
+            return toReturn;
         }
     }
 }

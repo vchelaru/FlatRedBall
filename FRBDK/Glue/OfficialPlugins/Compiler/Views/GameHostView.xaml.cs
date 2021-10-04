@@ -88,7 +88,7 @@ namespace OfficialPlugins.GameHost.Views
                 var width = rectangle.Right - rectangle.Left;
                 var height = rectangle.Bottom - rectangle.Top;
 
-                var displaySettings = GlueState.Self.CurrentGlueProject.DisplaySettings;
+                var displaySettings = GlueState.Self.CurrentGlueProject?.DisplaySettings;
                 if(displaySettings != null)
                 {
                     width = FlatRedBall.Math.MathFunctions.RoundToInt (displaySettings.ResolutionWidth * displaySettings.Scale / 100.0);

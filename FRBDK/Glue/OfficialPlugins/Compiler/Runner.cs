@@ -17,6 +17,8 @@ using GeneralResponse = ToolsUtilities.GeneralResponse;
 
 namespace OfficialPlugins.Compiler
 {
+    #region WindowRectangle
+
     [StructLayout(LayoutKind.Sequential)]
     public struct WindowRectangle
     {
@@ -30,6 +32,7 @@ namespace OfficialPlugins.Compiler
             return $"Left {Left}  Top {Top}";
         }
     }
+    #endregion
 
     public static class WindowMover
     {
@@ -46,6 +49,7 @@ namespace OfficialPlugins.Compiler
         #endregion
     }
 
+
     class Runner : Singleton<Runner>
     {
         #region Fields/Properties
@@ -61,8 +65,6 @@ namespace OfficialPlugins.Compiler
 
         bool suppressNextExitCodeAnnouncement = false;
         bool foundAlreadyRunningProcess = false;
-
-        WindowRectangle? lastWindowRectangle;
 
         System.Windows.Forms.Timer timer;
 
@@ -126,7 +128,7 @@ namespace OfficialPlugins.Compiler
             }
         }
 
-        public static Process TryFindGameProcess()
+        public Process TryFindGameProcess(bool mustHaveWindow = true)
         {
             // find a process for game
             var processes = Process.GetProcesses()
@@ -136,7 +138,8 @@ namespace OfficialPlugins.Compiler
             var projectName = GlueState.Self.CurrentMainProject?.Name?.ToLowerInvariant();
 
             var found = processes
-                .FirstOrDefault(item => item.ProcessName.ToLowerInvariant() == projectName && item.MainWindowHandle != IntPtr.Zero);
+                .FirstOrDefault(item => item.ProcessName.ToLowerInvariant() == projectName && 
+                (mustHaveWindow == false || item.MainWindowHandle != IntPtr.Zero));
             return found;
         }
 
@@ -179,7 +182,6 @@ namespace OfficialPlugins.Compiler
                     runningGameProcess.EnableRaisingEvents = true;
                     runningGameProcess.Exited += HandleProcessExit;
                     toReturn = GeneralResponse.SuccessfulResponse;
-                    var windowRectDisplay = lastWindowRectangle?.ToString() ?? "null";
 
                     // wait for a handle
                     int numberOfTimesToTry = 60;
@@ -320,26 +322,9 @@ namespace OfficialPlugins.Compiler
             }
         }
 
-        internal void KillGameProcess()
+        internal void KillGameProcess(Process process = null)
         {
-            var process = runningGameProcess;
-            IntPtr id = IntPtr.Zero;
-
-            try
-            {
-                id = process?.MainWindowHandle ?? IntPtr.Zero;
-            }
-            catch
-            {
-                // process could be dead
-            }
-
-            if(id != null)
-            {
-                var gotWindow = WindowMover.GetWindowRect(id, out WindowRectangle windowRect);
-                lastWindowRectangle = windowRect;
-                var lastWindowRectValue = lastWindowRectangle?.ToString() ?? "null";
-            }
+            process = process ?? runningGameProcess;
 
             if (process != null)
             {
@@ -352,9 +337,9 @@ namespace OfficialPlugins.Compiler
                 {
                     // do nothing
                     process = null;
-                    ViewModel.IsRunning = false;
-                    ViewModel.DidRunnerStartProcess = DidRunnerStartProcess;
                 }
+                ViewModel.IsRunning = false;
+                ViewModel.DidRunnerStartProcess = DidRunnerStartProcess;
             }
         }
     }

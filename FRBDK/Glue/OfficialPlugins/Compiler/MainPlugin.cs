@@ -198,7 +198,7 @@ namespace OfficialPlugins.Compiler
             if (CompilerViewModel.IsToolbarPlayButtonEnabled)
             {
                 GlueCommands.Self.DialogCommands.FocusTab("Build");
-                var succeeded = await Compile();
+                var succeeded = await GameHostController.Self.Compile();
 
                 if (succeeded)
                 {
@@ -602,7 +602,7 @@ namespace OfficialPlugins.Compiler
         {
             MainControl.BuildClicked += async (not, used) =>
             {
-                await Compile();
+                await GameHostController.Self.Compile();
             };
 
 
@@ -613,7 +613,7 @@ namespace OfficialPlugins.Compiler
 
             MainControl.RunClicked += async (not, used) =>
             {
-                var succeeded = await Compile();
+                var succeeded = await GameHostController.Self.Compile();
                 if (succeeded)
                 {
                     if (succeeded)
@@ -659,17 +659,6 @@ namespace OfficialPlugins.Compiler
         private void BuildContent(Action<bool> afterCompile = null)
         {
             compiler.BuildContent(MainControl.PrintOutput, MainControl.PrintOutput, afterCompile, CompilerViewModel.Configuration);
-        }
-
-        private async Task<bool> Compile()
-        {
-            CompilerViewModel.IsCompiling = true;
-            var toReturn = await compiler.Compile(
-                MainControl.PrintOutput,
-                MainControl.PrintOutput,
-                CompilerViewModel.Configuration);
-            CompilerViewModel.IsCompiling = false;
-            return toReturn;
         }
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
@@ -719,7 +708,7 @@ namespace OfficialPlugins.Compiler
 
         public async void MoveGameToHost()
         {
-            gameProcess = Runner.TryFindGameProcess();
+            gameProcess = Runner.Self.TryFindGameProcess();
             var handle = gameProcess?.MainWindowHandle;
 
             if (handle != null)
