@@ -189,11 +189,12 @@ namespace OfficialPlugins.GameHost.Views
         public void ReactToMainWindowMoved()
         {
             var oldWidth = WinformsHost.Width;
-
-            WinformsHost.Width = 0;
+            var actualWidth = WinformsHost.ActualWidth;
+            WinformsHost.Width = actualWidth;
             WinformsHost.UpdateLayout();
-            WinformsHost.Width = oldWidth;
             WinformsHost_SizeChanged(null, null);
+            WinformsHost.Width = double.NaN;
+            WinformsHost.UpdateLayout();
         }
     }
 }

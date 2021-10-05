@@ -2024,6 +2024,14 @@ namespace FlatRedBall.Glue.Plugins
                 (plugin) => plugin.ReactToMainWindowMoved != null);
         }
 
+        public static void ReactToMainWindowResizeEnd()
+        {
+            CallMethodOnPlugin(
+                (plugin) => plugin.ReactToMainWindowResizeEnd(),
+                nameof(ReactToObjectContainerChanged),
+                (plugin) => plugin.ReactToMainWindowResizeEnd != null);
+        }
+
         #endregion
 
         internal static bool TryHandleException(Exception exception)
