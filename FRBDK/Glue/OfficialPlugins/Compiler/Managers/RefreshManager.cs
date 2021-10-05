@@ -501,7 +501,7 @@ namespace OfficialPlugins.Compiler.Managers
             var dto = new SelectObjectDto();
 
             NamedObjectSave nos = null;
-            if(forcedElement != null)
+            if(forcedElement == null)
             {
                 nos = GlueState.Self.CurrentNamedObjectSave;
             }
