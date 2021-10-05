@@ -223,7 +223,18 @@ namespace OfficialPlugins.Compiler.Managers
             }
         }
 
-        
+        internal bool HandleTreeNodeDoubleClicked(TreeNode arg)
+        {
+            if(arg.Tag is NamedObjectSave asNos)
+            {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                PushGlueSelectionToGame(bringIntoFocus:true);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                return true;
+            }
+            return false;
+        }
+
         private bool GetIfShouldReactToFileChange(FilePath filePath )
         {
             var noPath = filePath.NoPath;
@@ -494,7 +505,7 @@ namespace OfficialPlugins.Compiler.Managers
 
         }
 
-        public async Task PushGlueSelectionToGame(string forcedCategoryName = null, string forcedStateName = null, GlueElement forcedElement = null)
+        public async Task PushGlueSelectionToGame(string forcedCategoryName = null, string forcedStateName = null, GlueElement forcedElement = null, bool bringIntoFocus = false)
         {
             var element = forcedElement ?? GlueState.Self.CurrentElement;
 
@@ -509,7 +520,7 @@ namespace OfficialPlugins.Compiler.Managers
             {
                 dto.ScreenSave = element as ScreenSave;
                 dto.EntitySave = element as EntitySave;
-
+                dto.BringIntoFocus = bringIntoFocus;
                 dto.NamedObject = nos;
                 dto.ElementNameGlue = element.Name;
                 dto.StateName = forcedStateName ??

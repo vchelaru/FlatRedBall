@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using Glue;
 using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
 using System;
@@ -42,6 +43,9 @@ namespace FlatRedBall.Glue.Managers
                     PluginManager.CallPluginMethod(
                         "Glue Compiler",
                         "BuildAndRun");
+                    return true;
+                case Keys.F12:
+                    GlueCommands.Self.DialogCommands.GoToDefinitionOfSelection();
                     return true;
                 default:
                     return false;
@@ -113,6 +117,9 @@ namespace FlatRedBall.Glue.Managers
                         "Glue Compiler",
                         "BuildAndRun");
                     FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self.DialogCommands.FocusTab("Build");
+                    return true;
+                case Key.F12:
+                    GlueCommands.Self.DialogCommands.GoToDefinitionOfSelection();
                     return true;
             }
 

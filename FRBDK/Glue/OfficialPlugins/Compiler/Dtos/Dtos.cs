@@ -36,6 +36,7 @@ namespace OfficialPlugins.Compiler.Dtos
         public string ElementNameGlue { get; set; }
         public string StateName { get; set; }
         public string StateCategoryName { get; set; }
+        public bool BringIntoFocus { get; set; }
 
     }
 

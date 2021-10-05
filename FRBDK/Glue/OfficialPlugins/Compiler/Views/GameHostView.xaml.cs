@@ -70,7 +70,7 @@ namespace OfficialPlugins.GameHost.Views
         public event EventHandler PauseClicked;
         public event EventHandler UnpauseClicked;
         public event EventHandler SettingsClicked;
-
+        public event EventHandler FocusOnSelectedObjectClicked;
         #endregion
 
         public GameHostView()
@@ -171,6 +171,11 @@ namespace OfficialPlugins.GameHost.Views
         private void WhileRunningView_AdvanceOneFrameClicked(object sender, EventArgs e)
         {
             AdvanceOneFrameClicked?.Invoke(this, null);
+        }
+
+        private void FocusButtonClicked(object sender, RoutedEventArgs e)
+        {
+            FocusOnSelectedObjectClicked?.Invoke(this, null);
         }
 
         private void WhileRunningView_PauseClicked(object sender, EventArgs e)

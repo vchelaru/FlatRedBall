@@ -188,6 +188,7 @@ namespace OfficialPlugins.Compiler
             this.ReactToStateVariableChanged += RefreshManager.Self.HandleStateVariableChanged;
             //this.ReactToMainWindowMoved += gameHostView.ReactToMainWindowMoved;
             this.ReactToMainWindowResizeEnd += gameHostView.ReactToMainWindowResizeEnd;
+            this.TryHandleTreeNodeDoubleClicked += RefreshManager.Self.HandleTreeNodeDoubleClicked;
         }
 
 

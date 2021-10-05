@@ -30,5 +30,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void ShowCreateDerivedScreenDialog(ScreenSave baseScreen);
         void MoveToCursor(System.Windows.Window window);
 
+        void GoToDefinitionOfSelection();
     }
 }

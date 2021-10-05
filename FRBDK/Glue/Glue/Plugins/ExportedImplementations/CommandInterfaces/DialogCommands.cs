@@ -164,7 +164,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             addObjectViewModel.AvailableFiles =
                 GlueState.Self.CurrentElement.ReferencedFiles.ToList();
 
-            if(addObjectViewModel.SelectedItem != null)
+            if (addObjectViewModel.SelectedItem != null)
             {
 
                 var backingObject = addObjectViewModel.SelectedItem.BackingObject;
@@ -174,20 +174,20 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 addObjectViewModel.ForceRefreshToSourceType();
                 // re-assign the backing object so it uses the current set of wrappers:
-                if(backingObject is EntitySave backingEntitySave)
+                if (backingObject is EntitySave backingEntitySave)
                 {
                     addObjectViewModel.SelectedEntitySave = backingEntitySave;
                 }
-                else if(backingObject is AssetTypeInfo backingAti)
+                else if (backingObject is AssetTypeInfo backingAti)
                 {
                     addObjectViewModel.SelectedAti = backingAti;
                 }
-                else if(backingObject is ReferencedFileSave backingFile)
+                else if (backingObject is ReferencedFileSave backingFile)
                 {
                     addObjectViewModel.SourceFile = backingFile;
                 }
             }
-            if(isNewWindow)
+            if (isNewWindow)
             {
                 addObjectViewModel.ForceRefreshToSourceType();
             }
@@ -197,8 +197,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             addObjectViewModel.AvailableListTypes.AddRange(availableTypes);
 
             addObjectViewModel.IsTypePredetermined = isTypePredetermined;
-            
-            
+
+
             if (isTypePredetermined)
             {
 
@@ -393,7 +393,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region Variable
 
-        public void ShowAddNewVariableDialog(CustomVariableType variableType = CustomVariableType.Exposed, 
+        public void ShowAddNewVariableDialog(CustomVariableType variableType = CustomVariableType.Exposed,
             string tunnelingObject = "",
             string tunneledVariableName = "")
         {
@@ -579,7 +579,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             string name = "NewScreen";
 
-            if(GlueState.Self.CurrentGlueProject.Screens.Count == 0)
+            if (GlueState.Self.CurrentGlueProject.Screens.Count == 0)
             {
                 name = "GameScreen";
             }
@@ -615,7 +615,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     GlueState.Self.CurrentElement = screen;
                     var treeNode = EditorLogic.CurrentScreenTreeNode;
-                    if(treeNode != null)
+                    if (treeNode != null)
                     {
                         treeNode.Expand();
                     }
@@ -681,7 +681,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             bool TryFocus(IEnumerable<PluginTabPage> items)
             {
-                foreach(var tabPage in items)
+                foreach (var tabPage in items)
                 {
                     if (tabPage.Title == dialogTitle)
                     {
@@ -728,18 +728,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 GlueCommands.Self.DoOnUiThread(() =>
                {
-                    var result = MessageBox.Show(message, "", MessageBoxButtons.YesNo);
+                   var result = MessageBox.Show(message, "", MessageBoxButtons.YesNo);
 
-                   if(result == DialogResult.Yes)
+                   if (result == DialogResult.Yes)
                    {
                        yesAction?.Invoke();
                    }
-                   else if(result == DialogResult.No)
+                   else if (result == DialogResult.No)
                    {
                        noAction?.Invoke();
                    }
                });
-                
+
             }
         }
 
@@ -752,12 +752,110 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             List<T> toReturn = new List<T>();
 
 
-            foreach(T item in list)
+            foreach (T item in list)
             {
                 toReturn.Add(item);
             }
 
             return toReturn;
         }
+
+        public void GoToDefinitionOfSelection()
+        {
+            TreeNode selectedNode = GlueState.Self.CurrentTreeNode;
+
+            #region Double-clicked a named object
+
+            if (selectedNode.IsNamedObjectNode())
+            {
+                NamedObjectSave nos = selectedNode.Tag as NamedObjectSave;
+
+                if (nos.SourceType == SourceType.Entity)
+                {
+                    TreeNode entityNode = GlueState.Self.Find.EntityTreeNode(nos.SourceClassType);
+
+                    GlueState.Self.CurrentTreeNode = entityNode;
+
+                }
+                else if (nos.SourceType == SourceType.FlatRedBallType && nos.IsGenericType)
+                {
+                    // Is this an entity?
+                    EntitySave genericEntityType = ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType);
+
+                    if (genericEntityType != null)
+                    {
+                        GlueState.Self.CurrentTreeNode = GlueState.Self.Find.EntityTreeNode(genericEntityType);
+                    }
+
+                }
+                else if (nos.SourceType == SourceType.File && !string.IsNullOrEmpty(nos.SourceFile))
+                {
+                    ReferencedFileSave rfs = nos.GetContainer().GetReferencedFileSave(nos.SourceFile);
+                    TreeNode treeNode = GlueState.Self.Find.ReferencedFileSaveTreeNode(rfs);
+
+                    GlueState.Self.CurrentTreeNode = treeNode;
+                }
+            }
+
+            #endregion
+
+            #region Double-clicked a CustomVariable
+            else if (selectedNode.IsCustomVariable())
+            {
+                CustomVariable customVariable = EditorLogic.CurrentCustomVariable;
+
+                if (!string.IsNullOrEmpty(customVariable.SourceObject))
+                {
+                    NamedObjectSave namedObjectSave = EditorLogic.CurrentElement.GetNamedObjectRecursively(customVariable.SourceObject);
+
+                    if (namedObjectSave != null)
+                    {
+                        GlueState.Self.CurrentTreeNode = GlueState.Self.Find.NamedObjectTreeNode(namedObjectSave);
+                    }
+
+                }
+            }
+
+            #endregion
+
+            #region Double-click an Event
+
+            else if (selectedNode.IsEventResponseTreeNode())
+            {
+                var ers = EditorLogic.CurrentEventResponseSave;
+
+                if (!string.IsNullOrEmpty(ers.SourceObject))
+                {
+                    NamedObjectSave namedObjectSave = EditorLogic.CurrentElement.GetNamedObjectRecursively(ers.SourceObject);
+
+                    if (namedObjectSave != null)
+                    {
+                        GlueState.Self.CurrentTreeNode = GlueState.Self.Find.NamedObjectTreeNode(namedObjectSave);
+                    }
+                }
+            }
+
+
+            #endregion
+
+            #region Double-click an Enity/Screen
+
+            else if (selectedNode.IsElementNode())
+            {
+                IElement element = selectedNode.Tag as IElement;
+
+                string baseObject = element.BaseElement;
+
+                if (!string.IsNullOrEmpty(baseObject))
+                {
+                    IElement baseElement = ObjectFinder.Self.GetIElement(baseObject);
+
+                    GlueState.Self.CurrentTreeNode = GlueState.Self.Find.ElementTreeNode(baseElement);
+                }
+            }
+
+            #endregion
+        }
+
     }
 }

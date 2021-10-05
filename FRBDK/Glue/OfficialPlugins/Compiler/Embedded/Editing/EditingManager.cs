@@ -443,7 +443,7 @@ namespace GlueControl.Editing
             Select(namedObject?.InstanceName);
         }
 
-        internal void Select(string objectName, bool addToExistingSelection = false, bool playBump = true)
+        internal void Select(string objectName, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false)
         {
             INameable foundObject = null;
 
@@ -485,6 +485,12 @@ namespace GlueControl.Editing
                 // do this right away so the handles don't pop out of existance when changing selection
                 UpdateMarkers(didChangeItemOver: true);
 
+            }
+
+            if (focusCameraOnObject && foundObject is PositionedObject positionedObject)
+            {
+                Camera.Main.X = positionedObject.X;
+                Camera.Main.Y = positionedObject.Y;
             }
         }
 

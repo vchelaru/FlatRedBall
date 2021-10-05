@@ -216,7 +216,7 @@ namespace GlueControl
 
             if (matchesCurrentScreen)
             {
-                Editing.EditingManager.Self.Select(selectObjectDto.NamedObject);
+                Editing.EditingManager.Self.Select(selectObjectDto.NamedObject?.InstanceName, playBump: true, focusCameraOnObject: selectObjectDto.BringIntoFocus);
                 Editing.EditingManager.Self.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingScreen;
                 if (!string.IsNullOrEmpty(selectObjectDto.StateName))
                 {
@@ -242,7 +242,7 @@ namespace GlueControl
                     void AfterInitializeLogic(Screen screen)
                     {
                         // Select this even if it's null so the EditingManager deselects 
-                        EditingManager.Self.Select(selectObjectDto.NamedObject);
+                        EditingManager.Self.Select(selectObjectDto.NamedObject?.InstanceName, playBump: true, focusCameraOnObject: true);
 
                         if (!string.IsNullOrEmpty(selectObjectDto.StateName))
                         {
@@ -314,7 +314,7 @@ namespace GlueControl
                     }
                     else
                     {
-                        EditingManager.Self.Select(selectObjectDto.NamedObject);
+                        EditingManager.Self.Select(selectObjectDto.NamedObject?.InstanceName, playBump: true, focusCameraOnObject: true);
                     }
                 }
             }

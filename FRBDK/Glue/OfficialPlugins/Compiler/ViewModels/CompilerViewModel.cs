@@ -230,6 +230,9 @@ namespace OfficialPlugins.Compiler.ViewModels
         [DependsOn(nameof(IsEditChecked))]
         public Visibility EditDisabledIconVisibility => (!IsEditChecked).ToVisibility();
 
+        [DependsOn(nameof(PlayOrEdit))]
+        public Visibility FocusButtonVisibility => (PlayOrEdit == PlayOrEdit.Edit).ToVisibility();
+
         #endregion
 
         #region Constructor

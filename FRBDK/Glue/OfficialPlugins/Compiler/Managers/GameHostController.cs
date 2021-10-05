@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using OfficialPlugins.Compiler.CommandSending;
 using OfficialPlugins.Compiler.Dtos;
 using OfficialPlugins.Compiler.ViewModels;
@@ -99,7 +100,15 @@ namespace OfficialPlugins.Compiler.Managers
                 }
             };
 
+            gameHostControl.FocusOnSelectedObjectClicked += async (not, used) =>
+            {
+                var selectedNos = GlueState.Self.CurrentNamedObjectSave;
+                if (selectedNos != null)
+                {
+                    await RefreshManager.Self.PushGlueSelectionToGame(bringIntoFocus: true);
 
+                }
+            };
 
 
         }

@@ -258,7 +258,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
         private static void GoToDefinitionClick(object sender, EventArgs e)
         {
-            string baseName = EditorLogic.CurrentElement.BaseElement;
+            string baseName = GlueState.Self.CurrentElement.BaseElement;
 
             TreeNode entityNode = GlueState.Self.Find.EntityTreeNode(baseName);
 
@@ -272,7 +272,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                 ProjectManager.GlueProjectSave.ResolutionWidth,
                 ProjectManager.GlueProjectSave.ResolutionHeight);
 
-            EditorLogic.CurrentNamedObject.DestinationRectangle = rectangle;
+            GlueState.Self.CurrentNamedObjectSave.DestinationRectangle = rectangle;
 
             ElementViewWindow.GenerateSelectedElementCode();
             GluxCommands.Self.SaveGlux();
@@ -281,7 +281,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
         private static void UseFullScreenClick(object sender, EventArgs e)
         {
-            EditorLogic.CurrentNamedObject.DestinationRectangle = null;
+            GlueState.Self.CurrentNamedObjectSave.DestinationRectangle = null;
 
             ElementViewWindow.GenerateSelectedElementCode();
             GluxCommands.Self.SaveGlux();
