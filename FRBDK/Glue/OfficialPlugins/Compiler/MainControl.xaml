@@ -35,8 +35,8 @@
             </StackPanel>
         </WrapPanel>
 
-        <TextBox Grid.Row="2" ScrollViewer.VerticalScrollBarVisibility="Auto" 
+        <RichTextBox Grid.Row="2" ScrollViewer.VerticalScrollBarVisibility="Auto" 
                  ScrollViewer.HorizontalScrollBarVisibility="Auto" 
-                 x:Name="TextBox" TextWrapping="Wrap"> </TextBox>
+                 x:Name="TextBox"> </RichTextBox>
     </Grid>
 </UserControl>

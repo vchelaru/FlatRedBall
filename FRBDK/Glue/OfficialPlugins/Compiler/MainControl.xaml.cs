@@ -41,18 +41,20 @@ namespace OfficialPlugins.Compiler
 
             InitializeComponent();
 
+            TextBox.Document.Blocks.Add(new Paragraph());
         }
 
         private void HandleCompileClick(object sender, EventArgs e)
         {
-            TextBox.Clear();
+            TextBox.Document.Blocks.Clear();
+            TextBox.Document.Blocks.Add(new Paragraph());
             BuildClicked?.Invoke(this, null);
         }
 
         private void HandleBuildContentClick(object sender, EventArgs e)
         {
-
-            TextBox.Clear();
+            TextBox.Document.Blocks.Clear();
+            TextBox.Document.Blocks.Add(new Paragraph());
             BuildContentClicked?.Invoke(this, null);
         }
 
@@ -67,29 +69,27 @@ namespace OfficialPlugins.Compiler
             // suppress warnings...
             var split = text.Split('\n');
 
-            foreach(var line in split)
+            Glue.MainGlueWindow.Self.Invoke(() =>
             {
-                var outputType = outputParser.GetOutputType(line);
-                if(outputType != OutputType.Warning)
-                // Now all output is combined into one, so we have to do a split
+                var paragraph = TextBox.Document.Blocks.Last() as Paragraph;
+                foreach (var line in split)
                 {
-                    Glue.MainGlueWindow.Self.Invoke(() =>
+                    var outputType = outputParser.GetOutputType(line);
+                    if(outputType != OutputType.Warning)
                     {
-                        TextBox.AppendText(line + "\n");
-                        TextBox.ScrollToEnd();
-                    });
+                        var color = outputType == OutputType.Error ? Brushes.Red : Brushes.Black;
+                        paragraph.Inlines.Add(new Run(line) { Foreground = color});
+                    }
                 }
-            }
+            });
         }
-
-
 
         private void TextBox_KeyEnterUpdate(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
                 TextBox tBox = (TextBox)sender;
-                DependencyProperty prop = TextBox.TextProperty;
+                DependencyProperty prop = System.Windows.Controls.TextBox.TextProperty;
 
                 BindingExpression binding = BindingOperations.GetBindingExpression(tBox, prop);
                 if (binding != null) { binding.UpdateSource(); }

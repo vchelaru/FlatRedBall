@@ -22,6 +22,10 @@ namespace OfficialPlugins.Compiler
             {
                 return OutputType.Warning;
             }
+            else if(text.Contains(": error CS"))
+            {
+                return OutputType.Error;
+            }
             else
             {
                 return OutputType.Info;
