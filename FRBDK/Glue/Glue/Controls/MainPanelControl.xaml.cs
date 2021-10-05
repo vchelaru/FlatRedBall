@@ -169,7 +169,7 @@ namespace GlueFormsCore.Controls
             if(shouldShrinkLeft)
             {
                 LeftSplitterWidth = new GridLength(0);
-                LeftPanelWidth = new GridLength(0);
+                LeftPanelWidth = new GridLength(0, GridUnitType.Pixel);
             }
             else if(shouldExpandLeft)
             {
@@ -218,6 +218,8 @@ namespace GlueFormsCore.Controls
         public static ResourceDictionary ResourceDictionary { get; private set; }
         public static bool IsExiting { get; private set; }
 
+        public static TabControlViewModel ViewModel { get; private set; }
+
         System.Timers.Timer FileWatchTimer;
 
         #endregion
@@ -228,12 +230,12 @@ namespace GlueFormsCore.Controls
 
             InitializeThemes();
 
-            var viewModel = new TabControlViewModel();
-            this.DataContext = viewModel;
+            ViewModel = new TabControlViewModel();
+            this.DataContext = ViewModel;
 
-            SetBinding(viewModel);
+            SetBinding(ViewModel);
 
-            PluginManager.SetTabs(viewModel);
+            PluginManager.SetTabs(ViewModel);
             PluginManager.SetToolbarTray(ToolbarControl);
 
             CreateFileWatchTimer();

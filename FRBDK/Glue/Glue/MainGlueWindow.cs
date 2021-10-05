@@ -98,6 +98,8 @@ namespace Glue
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Move += HandleWindowMoved;
+
+            // this fires continually, so instead overriding wndproc
             this.ResizeEnd += HandleResizeEnd;
 
             CreateMainWpfPanel();
@@ -109,8 +111,25 @@ namespace Glue
         private void HandleResizeEnd(object sender, EventArgs e)
         {
             PluginManager.ReactToMainWindowResizeEnd();
-
         }
+
+        // I thought this was needed but I think it will work with ResizeEnd event, I had a bug initially.
+        //protected override void WndProc(ref Message m)
+        //{
+        //    const int WM_EXITSIZEMOVE = 0x232;
+
+        //    switch (m.Msg)
+        //    {
+        //        case WM_EXITSIZEMOVE:
+        //            base.WndProc(ref m);
+        //            GlueCommands.Self.PrintOutput("End resize");
+        //            PluginManager.ReactToMainWindowResizeEnd();
+        //            break;
+        //        default:
+        //            base.WndProc(ref m);
+        //            break;
+        //    }
+        //}
 
         private void HandleWindowMoved(object sender, EventArgs e)
         {

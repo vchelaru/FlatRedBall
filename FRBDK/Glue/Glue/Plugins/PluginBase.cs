@@ -348,7 +348,7 @@ namespace FlatRedBall.Glue.Plugins
         public Action<NamedObjectSave, NamedObjectSave> ReactToObjectContainerChanged { get; protected set; }
 
         public Action ReactToMainWindowMoved { get; protected set; }
-
+        public Action ReactToMainWindowResizeEnd { get; protected set; }
         #endregion
 
         public abstract void StartUp();

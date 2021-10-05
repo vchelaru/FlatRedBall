@@ -1,5 +1,7 @@
 ﻿using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using Glue;
+using GlueFormsCore.Controls;
 using OfficialPlugins.Compiler;
 using OfficialPlugins.Compiler.ViewModels;
 using System;
@@ -186,15 +188,50 @@ namespace OfficialPlugins.GameHost.Views
             SettingsClicked?.Invoke(this, null);
         }
 
-        public void ReactToMainWindowMoved()
+        // Victor Chelaru Oct 4
+        // This bug sucks, and this is the best way I know how to solve it.
+        // The bug is - whenever the main Glue window moves, the Cursor position
+        // is reported incorrectly by the game. It seems as if the window visibly
+        // moves, but the underlying systems still get the cursor position as if the
+        // window was in its old position. Not sure why this is, but whenever the Game
+        // tab is resized, the problem fixes itself. I tried lots of things to solve this:
+        // * Explicitly changing the Width and Height of the window
+        // * Updating the layout by itself
+        // * calling the code to refresh the internal window
+        //public void ReactToMainWindowMoved()
+        //{
+        //    var oldWidth = WinformsHost.Width;
+        //    var actualWidth = WinformsHost.ActualWidth;
+        //    WinformsHost.Width = actualWidth;
+        //    WinformsHost.UpdateLayout();
+        //    WinformsHost_SizeChanged(null, null);
+        //    WinformsHost.Width = double.NaN;
+        //    WinformsHost.UpdateLayout();
+        //}
+        // Nothign worked - the cursor was still reported incorrectly. Therefore, to fix it
+        // I just explicitly change the left tab size, which sucks but I don't know of a better
+        // way to do it.
+        // I initially started with a delay of 1000 ms, and got it much lower. Too low and the problem doesn't
+        // get solved, too high and the user sees long delays between the flickers.
+
+        int lastWidth;
+        int lastHeight;
+        public async void ReactToMainWindowResizeEnd()
         {
-            var oldWidth = WinformsHost.Width;
-            var actualWidth = WinformsHost.ActualWidth;
-            WinformsHost.Width = actualWidth;
-            WinformsHost.UpdateLayout();
-            WinformsHost_SizeChanged(null, null);
-            WinformsHost.Width = double.NaN;
-            WinformsHost.UpdateLayout();
+            var window = MainGlueWindow.Self;
+            var areSame = window.Width == lastWidth && window.Height == lastHeight;
+            var are0 = lastWidth == 0 && lastHeight == 0;
+
+            lastWidth = window.Width;
+            lastHeight = window.Height;
+            if (areSame || are0)
+            {
+                var leftPixel = MainPanelControl.ViewModel.LeftPanelWidth.Value;
+                // need to get the VM for the splitter and adjust it:
+                MainPanelControl.ViewModel.LeftPanelWidth = new GridLength(leftPixel + 1);
+                await Task.Delay(5);
+                MainPanelControl.ViewModel.LeftPanelWidth = new GridLength(leftPixel);
+            }
         }
     }
 }
