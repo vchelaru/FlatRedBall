@@ -28,10 +28,13 @@ namespace FlatRedBall.Glue.Parsing
             }
         }
 
+        bool IsAbstract(IElement element) => element.AllNamedObjects.Any(item => item.SetByDerived);
+
+
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
         {
             // This needs to be before the base.Destroy(); call so that the derived class can make itself unused before the base class get a chance
-            if (element is EntitySave && (element as EntitySave).CreatedByOtherEntities)
+            if (element is EntitySave && (element as EntitySave).CreatedByOtherEntities && !IsAbstract(element))
             {
                 codeBlock.Line("var wasUsed = this.Used;");
                 codeBlock
@@ -45,6 +48,7 @@ namespace FlatRedBall.Glue.Parsing
 
     public class FactoryCodeGenerator : ElementComponentCodeGenerator
     {
+        static bool IsAbstract(IElement element) => element.AllNamedObjects.Any(item => item.SetByDerived);
         static FactoryEntireClassGenerator mEntireClassGenerator = new FactoryEntireClassGenerator();
 
         #region CodeGenerator methods (for generating code in an Element)
@@ -103,7 +107,7 @@ namespace FlatRedBall.Glue.Parsing
             }
 
             var allEntitiesWithFactories = GlueState.Self.CurrentGlueProject.Entities
-                .Where(item => item.CreatedByOtherEntities);
+                .Where(item => item.CreatedByOtherEntities && !IsAbstract(item));
 
             var shouldConsiderAssociateWithFactory =
                 GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.ListsHaveAssociateWithFactoryBool;
@@ -163,7 +167,7 @@ namespace FlatRedBall.Glue.Parsing
 
                 if (sourceEntitySave != null)
                 {
-                    if (sourceEntitySave.CreatedByOtherEntities && !entitiesToInitializeFactoriesFor.Contains(sourceEntitySave))
+                    if (sourceEntitySave.CreatedByOtherEntities && !entitiesToInitializeFactoriesFor.Contains(sourceEntitySave) && !IsAbstract(sourceEntitySave))
                     {
                         entitiesToInitializeFactoriesFor.Add(sourceEntitySave);
                     }
@@ -183,7 +187,7 @@ namespace FlatRedBall.Glue.Parsing
 
 
                 var allEntitiesWithFactories = GlueState.Self.CurrentGlueProject.Entities
-                    .Where(item => item.CreatedByOtherEntities);
+                    .Where(item => item.CreatedByOtherEntities && !IsAbstract(item));
 
                 foreach (var listNos in entityLists)
                 {
@@ -253,7 +257,7 @@ namespace FlatRedBall.Glue.Parsing
                 EntitySave asEntitySave = element as EntitySave;
 
                 shouldCallPostInitializeBecauseIsPooled =
-                    asEntitySave.CreatedByOtherEntities && asEntitySave.PooledByFactory;
+                    asEntitySave.CreatedByOtherEntities && asEntitySave.PooledByFactory && !IsAbstract(asEntitySave);
 
                 if (!shouldCallPostInitializeBecauseIsPooled)
                 {
@@ -262,7 +266,7 @@ namespace FlatRedBall.Glue.Parsing
 
                     foreach (EntitySave derivedEntity in entities)
                     {
-                        if (derivedEntity.CreatedByOtherEntities && derivedEntity.PooledByFactory)
+                        if (derivedEntity.CreatedByOtherEntities && derivedEntity.PooledByFactory && !IsAbstract(derivedEntity))
                         {
                             shouldCallPostInitializeBecauseIsPooled = true;
                             break;

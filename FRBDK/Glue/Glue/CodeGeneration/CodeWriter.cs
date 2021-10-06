@@ -334,7 +334,11 @@ namespace FlatRedBallAddOns.Entities
 
                 if (entitySave.CreatedByOtherEntities)
                 {
-                    FactoryCodeGenerator.UpdateFactoryClass(entitySave);
+                    var isAbstract = entitySave.AllNamedObjects.Any(item => item.SetByDerived);
+                    if(!isAbstract)
+                    {
+                        FactoryCodeGenerator.UpdateFactoryClass(entitySave);
+                    }
                 }
 
                 #endregion

@@ -303,6 +303,13 @@ namespace FlatRedBall.Glue.IO
             reason = IgnoreReason.NotIgnored;
 
             var projectDirectory = new FilePath(GlueState.Self.CurrentGlueProjectDirectory);
+
+            // early out:
+            if(projectDirectory == null)
+            {
+                return false;
+            }
+
             var contentDirectory = new FilePath(GlueState.Self.ContentDirectory);
             var objFolder = new FilePath(projectDirectory.FullPath + "obj/");
             var binFolder = new FilePath(projectDirectory.FullPath + "bin/");
