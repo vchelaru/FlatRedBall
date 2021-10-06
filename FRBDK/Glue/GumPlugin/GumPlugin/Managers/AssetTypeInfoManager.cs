@@ -373,7 +373,7 @@ namespace GumPlugin.Managers
                 else
                 {
                     var aspectRatio = displaySettings.AspectRatioWidth / displaySettings.AspectRatioHeight;
-                    toReturn += $"FlatRedBall.Gum.GumIdb.FixedCanvasAspectRatio = {displaySettings.AspectRatioWidth}/{displaySettings.AspectRatioHeight}m;";
+                    toReturn += $"FlatRedBall.Gum.GumIdb.FixedCanvasAspectRatio = {displaySettings.AspectRatioWidth}m/{displaySettings.AspectRatioHeight}m;";
                 }
             }
 
