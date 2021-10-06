@@ -104,11 +104,8 @@ namespace FlatRedBall.Glue.IO
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                lock (FileWatchManager.LockObject)
-                {
-                    string fileName = openFileDialog.FileName;
-                    TaskManager.Self.Add(() => ImportElementFromFile(fileName, true), $"Import Entity {fileName}");
-                }
+                string fileName = openFileDialog.FileName;
+                TaskManager.Self.Add(() => ImportElementFromFile(fileName, true), $"Import Entity {fileName}");
             }
 
         }

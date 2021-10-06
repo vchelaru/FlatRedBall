@@ -137,29 +137,6 @@ namespace FlatRedBall.Glue
             get { return mGameClass; }
         }
 
-        [Obsolete("use GlueState.Self.GlueProjectFileName")]
-        public static string GlueProjectFileName
-        {
-            get
-            {
-#if TEST
-                return FileManager.CurrentDirectory + "TestProject.glux";
-#else
-
-                if (mProjectBase == null)
-                {
-                    return null;
-                }
-                else
-                {
-                    return FileManager.RemoveExtension(mProjectBase.FullFileName) + ".glux";
-                }
-#endif
-
-            }
-
-        }
-
         public static bool WantsToClose { get; set; }
 
 

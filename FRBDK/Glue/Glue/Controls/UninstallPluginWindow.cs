@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 
 namespace FlatRedBall.Glue.Controls
@@ -44,9 +45,9 @@ namespace FlatRedBall.Glue.Controls
                                                                                          }).ToList());
             }
 
-            if (ProjectManager.GlueProjectFileName != null)
+            if (GlueState.Self.GlueProjectFileName != null)
             {
-                var projectPath = FileManager.GetDirectory(ProjectManager.GlueProjectFileName) + "Plugins";
+                var projectPath = FileManager.GetDirectory(GlueState.Self.GlueProjectFileName) + "Plugins";
 
                 if (Directory.Exists(projectPath) && Directory.GetDirectories(projectPath).Count() > 0)
                 {

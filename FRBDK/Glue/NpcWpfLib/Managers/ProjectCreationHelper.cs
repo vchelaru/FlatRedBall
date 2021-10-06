@@ -398,6 +398,9 @@ namespace Npc
                 unpackDirectory, "glux"));
 
             filesToReplace.AddRange(FileManager.GetAllFilesInDirectory(
+                unpackDirectory, "gluj"));
+
+            filesToReplace.AddRange(FileManager.GetAllFilesInDirectory(
                 unpackDirectory, "pfx"));
 
 
@@ -601,8 +604,9 @@ namespace Npc
 
             filesToFix.Clear();
             filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "glux"));
+            filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "gluj"));
 
-            foreach(string fileName in filesToFix)
+            foreach (string fileName in filesToFix)
             {
                 string contents = FileManager.FromFileText(fileName);
 

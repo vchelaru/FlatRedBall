@@ -260,6 +260,7 @@ namespace GlueFormsCore.Controls
                 // we'll have a deadlock
                 var canContinue = TaskManager.Self.CurrentTask == UpdateReactor.ReloadingProjectDescription ||
                     (TaskManager.Self.CurrentTask.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTask.EndsWith(".glux")) ||
+                    (TaskManager.Self.CurrentTask.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTask.EndsWith(".gluj")) ||
                     (TaskManager.Self.CurrentTask.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTask.EndsWith(".csproj")) ||
                     TaskManager.Self.CurrentTask.StartsWith("Reloading glux due to file change on disk");
 

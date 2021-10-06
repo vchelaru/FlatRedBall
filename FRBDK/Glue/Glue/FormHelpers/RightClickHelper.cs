@@ -1314,230 +1314,227 @@ namespace FlatRedBall.Glue.FormHelpers
             }
             //////////////////////////////END EARLY OUT/////////////////////////////////////
 
-            lock (FileWatchManager.LockObject)
+            // Search terms: removefromproject, remove from project, remove file, remove referencedfilesave
+            List<string> filesToRemove = new List<string>();
+
+            if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
             {
-                // Search terms: removefromproject, remove from project, remove file, remove referencedfilesave
-                List<string> filesToRemove = new List<string>();
+                #region Find out if the user really wants to remove this - don't ask if askAreYouSure is false
+                DialogResult reallyRemoveResult = DialogResult.Yes;
 
-                if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
+                if (askAreYouSure)
                 {
-                    #region Find out if the user really wants to remove this - don't ask if askAreYouSure is false
-                    DialogResult reallyRemoveResult = DialogResult.Yes;
+                    string message = "Are you sure you want to remove this:\n\n" + EditorLogic.CurrentTreeNode.Tag.ToString();
 
-                    if (askAreYouSure)
+                    reallyRemoveResult =
+                        MessageBox.Show(message, "Remove?", MessageBoxButtons.YesNo);
+                }
+                #endregion
+
+                if (reallyRemoveResult == DialogResult.Yes)
+                {
+                    #region If is NamedObjectSave
+                    // test deep first
+                    if (GlueState.Self.CurrentNamedObjectSave != null)
                     {
-                        string message = "Are you sure you want to remove this:\n\n" + EditorLogic.CurrentTreeNode.Tag.ToString();
-
-                        reallyRemoveResult =
-                            MessageBox.Show(message, "Remove?", MessageBoxButtons.YesNo);
+                        GlueCommands.Self.GluxCommands
+                            .RemoveNamedObject(GlueState.Self.CurrentNamedObjectSave, true, true, filesToRemove);
+                        //ProjectManager.RemoveNamedObject(EditorLogic.CurrentNamedObject);
                     }
                     #endregion
 
-                    if (reallyRemoveResult == DialogResult.Yes)
+                    #region Else if is StateSave
+                    else if (GlueState.Self.CurrentStateSave != null)
                     {
-                        #region If is NamedObjectSave
-                        // test deep first
-                        if (GlueState.Self.CurrentNamedObjectSave != null)
+                        var name = GlueState.Self.CurrentStateSave.Name;
+
+                        GlueState.Self.CurrentElement.RemoveState(GlueState.Self.CurrentStateSave);
+
+                        AskToRemoveCustomVariablesWithoutState(GlueState.Self.CurrentElement);
+
+                        EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
+
+                        PluginManager.ReactToStateRemoved(GlueState.Self.CurrentElement, name);
+
+                        GluxCommands.Self.SaveGlux();
+                    }
+
+                    #endregion
+
+                    #region Else if is StateSaveCategory
+
+                    else if (EditorLogic.CurrentStateSaveCategory != null)
+                    {
+                        GlueState.Self.CurrentElement.StateCategoryList.Remove(EditorLogic.CurrentStateSaveCategory);
+
+                        EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
+
+                        GluxCommands.Self.SaveGlux();
+                    }
+
+                    #endregion
+
+                    #region Else if is ReferencedFileSave
+
+                    else if (EditorLogic.CurrentReferencedFile != null)
+                    {
+                        // the GluxCommand handles saving and regenerate internally, no need to do it twice
+                        saveAndRegenerate = false;
+                        var toRemove = EditorLogic.CurrentReferencedFile;
+
+                        if(GlueState.Self.Find.IfReferencedFileSaveIsReferenced(toRemove))
                         {
-                            GlueCommands.Self.GluxCommands
-                                .RemoveNamedObject(GlueState.Self.CurrentNamedObjectSave, true, true, filesToRemove);
-                            //ProjectManager.RemoveNamedObject(EditorLogic.CurrentNamedObject);
-                        }
-                        #endregion
+                            IElement element = GlueState.Self.CurrentElement;
 
-                        #region Else if is StateSave
-                        else if (GlueState.Self.CurrentStateSave != null)
+                            // this could happen at the same time as file flushing, which can cause locks.  Therefore we need to add this as a task:
+                            TaskManager.Self.AddOrRunIfTasked(() =>
+                            {
+                                GluxCommands.Self.RemoveReferencedFile(toRemove, filesToRemove, regenerateCode:true);
+                            },
+                            "Remove file " + toRemove.ToString());
+
+                        }
+                            
+                    }
+                    #endregion
+
+                    #region Else if is CustomVariable
+
+                    else if (EditorLogic.CurrentCustomVariable != null)
+                    {
+                        ProjectManager.RemoveCustomVariable(EditorLogic.CurrentCustomVariable, filesToRemove);
+                        //ProjectManager.RemoveCustomVariable(EditorLogic.CurrentCustomVariable);
+                    }
+
+                    #endregion
+
+                    #region Else if is EventSave
+                    else if (EditorLogic.CurrentEventResponseSave != null)
+                    {
+                        var element = EditorLogic.CurrentElement;
+                        var eventResponse = EditorLogic.CurrentEventResponseSave;
+                        EditorLogic.CurrentElement.Events.Remove(eventResponse);
+                        PluginManager.ReactToEventResponseRemoved(element, eventResponse);
+                        GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
+                    }
+                    #endregion
+
+                    #region Else if is ScreenSave
+
+                    // Then test higher if deep didn't get removed
+                    else if (EditorLogic.CurrentScreenSave != null)
+                    {
+                        var screenToRemove = EditorLogic.CurrentScreenSave;
+                        RemoveScreen(screenToRemove, filesToRemove);
+                    }
+
+                    #endregion
+
+                    #region Else if is EntitySave
+
+                    else if (GlueState.Self.CurrentEntitySave != null)
+                    {
+                        RemoveEntity(GlueState.Self.CurrentEntitySave, filesToRemove);
+                        //ProjectManager.RemoveEntity(EditorLogic.CurrentEntitySave);
+                    }
+
+                    #endregion
+
+
+                    #region Files were deleted and the user wants to be asked to delete
+
+                    if (filesToRemove.Count != 0 && askToDelete)
+                    {
+
+                        for (int i = 0; i < filesToRemove.Count; i++)
                         {
-                            var name = GlueState.Self.CurrentStateSave.Name;
-
-                            GlueState.Self.CurrentElement.RemoveState(GlueState.Self.CurrentStateSave);
-
-                            AskToRemoveCustomVariablesWithoutState(GlueState.Self.CurrentElement);
-
-                            EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
-
-                            PluginManager.ReactToStateRemoved(GlueState.Self.CurrentElement, name);
-
-                            GluxCommands.Self.SaveGlux();
+                            if (FileManager.IsRelative(filesToRemove[i]))
+                            {
+                                filesToRemove[i] = ProjectManager.MakeAbsolute(filesToRemove[i]);
+                            }
+                            filesToRemove[i] = filesToRemove[i].Replace("\\", "/");
                         }
 
-                        #endregion
+                        StringFunctions.RemoveDuplicates(filesToRemove, true);
 
-                        #region Else if is StateSaveCategory
+                        var lbw = new ListBoxWindowWpf();
+                            
+                        string messageString = "What would you like to do with the following files:\n";
+                        lbw.Message = messageString;
 
-                        else if (EditorLogic.CurrentStateSaveCategory != null)
+                        foreach (string s in filesToRemove)
                         {
-                            GlueState.Self.CurrentElement.StateCategoryList.Remove(EditorLogic.CurrentStateSaveCategory);
+                                
+                            lbw.AddItem(s);
+                        }
+                        lbw.ClearButtons();
+                        lbw.AddButton("Nothing - leave them as part of the game project", DialogResult.No);
+                        lbw.AddButton("Remove them from the project but keep the files", DialogResult.OK);
+                        lbw.AddButton("Remove and delete the files", DialogResult.Yes);
 
-                            EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
+                        var dialogShowResult = lbw.ShowDialog();
+                        DialogResult result = (DialogResult)lbw.ClickedOption;
 
-                            GluxCommands.Self.SaveGlux();
+                        if (result == DialogResult.OK || result == DialogResult.Yes)
+                        {
+                            foreach (string file in filesToRemove)
+                            {
+                                FilePath fileName = ProjectManager.MakeAbsolute(file);
+                                // This file may have been removed
+                                // in windows explorer, and now removed
+                                // from Glue.  Check to prevent a crash.
+
+                                GlueCommands.Self.ProjectCommands.RemoveFromProjects(fileName, false);
+                            }
                         }
 
-                        #endregion
+                        if (result == DialogResult.Yes)
+                        {
+                            foreach (string file in filesToRemove)
+                            {
+                                string fileName = ProjectManager.MakeAbsolute(file);
+                                // This file may have been removed
+                                // in windows explorer, and now removed
+                                // from Glue.  Check to prevent a crash.
+                                if (File.Exists(fileName))
+                                {
+                                    FileHelper.DeleteFile(fileName);
+                                }
+                            }
+                        }
+                    }
 
-                        #region Else if is ReferencedFileSave
+                    #endregion
 
+                    // Nodes aren't directly removed in the code above. Instead, 
+                    // a "refresh nodes" method is called, which may remove unneeded
+                    // nodes, but event raising is suppressed. Therefore, we have to explicitly 
+                    // do it here:
+                    PluginManager.ReactToItemSelect(GlueState.Self.CurrentTreeNode);
+
+
+                    if (saveAndRegenerate)
+                    {
+                        if (EditorLogic.CurrentScreenTreeNode != null)
+                        {
+                            var screen = EditorLogic.CurrentScreenSave;
+                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(screen);
+                        }
+                        else if (EditorLogic.CurrentEntityTreeNode != null)
+                        {
+                            var entity = EditorLogic.CurrentEntitySave;
+                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(entity);
+                        }
                         else if (EditorLogic.CurrentReferencedFile != null)
                         {
-                            // the GluxCommand handles saving and regenerate internally, no need to do it twice
-                            saveAndRegenerate = false;
-                            var toRemove = EditorLogic.CurrentReferencedFile;
+                            GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCodeTask();
 
-                            if(GlueState.Self.Find.IfReferencedFileSaveIsReferenced(toRemove))
-                            {
-                                IElement element = GlueState.Self.CurrentElement;
-
-                                // this could happen at the same time as file flushing, which can cause locks.  Therefore we need to add this as a task:
-                                TaskManager.Self.AddOrRunIfTasked(() =>
-                                {
-                                    GluxCommands.Self.RemoveReferencedFile(toRemove, filesToRemove, regenerateCode:true);
-                                },
-                                "Remove file " + toRemove.ToString());
-
-                            }
-                            
-                        }
-                        #endregion
-
-                        #region Else if is CustomVariable
-
-                        else if (EditorLogic.CurrentCustomVariable != null)
-                        {
-                            ProjectManager.RemoveCustomVariable(EditorLogic.CurrentCustomVariable, filesToRemove);
-                            //ProjectManager.RemoveCustomVariable(EditorLogic.CurrentCustomVariable);
+                            // Vic asks - do we have to do anything else here?  I don't think so...
                         }
 
-                        #endregion
 
-                        #region Else if is EventSave
-                        else if (EditorLogic.CurrentEventResponseSave != null)
-                        {
-                            var element = EditorLogic.CurrentElement;
-                            var eventResponse = EditorLogic.CurrentEventResponseSave;
-                            EditorLogic.CurrentElement.Events.Remove(eventResponse);
-                            PluginManager.ReactToEventResponseRemoved(element, eventResponse);
-                            GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
-                        }
-                        #endregion
-
-                        #region Else if is ScreenSave
-
-                        // Then test higher if deep didn't get removed
-                        else if (EditorLogic.CurrentScreenSave != null)
-                        {
-                            var screenToRemove = EditorLogic.CurrentScreenSave;
-                            RemoveScreen(screenToRemove, filesToRemove);
-                        }
-
-                        #endregion
-
-                        #region Else if is EntitySave
-
-                        else if (GlueState.Self.CurrentEntitySave != null)
-                        {
-                            RemoveEntity(GlueState.Self.CurrentEntitySave, filesToRemove);
-                            //ProjectManager.RemoveEntity(EditorLogic.CurrentEntitySave);
-                        }
-
-                        #endregion
-
-
-                        #region Files were deleted and the user wants to be asked to delete
-
-                        if (filesToRemove.Count != 0 && askToDelete)
-                        {
-
-                            for (int i = 0; i < filesToRemove.Count; i++)
-                            {
-                                if (FileManager.IsRelative(filesToRemove[i]))
-                                {
-                                    filesToRemove[i] = ProjectManager.MakeAbsolute(filesToRemove[i]);
-                                }
-                                filesToRemove[i] = filesToRemove[i].Replace("\\", "/");
-                            }
-
-                            StringFunctions.RemoveDuplicates(filesToRemove, true);
-
-                            var lbw = new ListBoxWindowWpf();
-                            
-                            string messageString = "What would you like to do with the following files:\n";
-                            lbw.Message = messageString;
-
-                            foreach (string s in filesToRemove)
-                            {
-                                
-                                lbw.AddItem(s);
-                            }
-                            lbw.ClearButtons();
-                            lbw.AddButton("Nothing - leave them as part of the game project", DialogResult.No);
-                            lbw.AddButton("Remove them from the project but keep the files", DialogResult.OK);
-                            lbw.AddButton("Remove and delete the files", DialogResult.Yes);
-
-                            var dialogShowResult = lbw.ShowDialog();
-                            DialogResult result = (DialogResult)lbw.ClickedOption;
-
-                            if (result == DialogResult.OK || result == DialogResult.Yes)
-                            {
-                                foreach (string file in filesToRemove)
-                                {
-                                    FilePath fileName = ProjectManager.MakeAbsolute(file);
-                                    // This file may have been removed
-                                    // in windows explorer, and now removed
-                                    // from Glue.  Check to prevent a crash.
-
-                                    GlueCommands.Self.ProjectCommands.RemoveFromProjects(fileName, false);
-                                }
-                            }
-
-                            if (result == DialogResult.Yes)
-                            {
-                                foreach (string file in filesToRemove)
-                                {
-                                    string fileName = ProjectManager.MakeAbsolute(file);
-                                    // This file may have been removed
-                                    // in windows explorer, and now removed
-                                    // from Glue.  Check to prevent a crash.
-                                    if (File.Exists(fileName))
-                                    {
-                                        FileHelper.DeleteFile(fileName);
-                                    }
-                                }
-                            }
-                        }
-
-                        #endregion
-
-                        // Nodes aren't directly removed in the code above. Instead, 
-                        // a "refresh nodes" method is called, which may remove unneeded
-                        // nodes, but event raising is suppressed. Therefore, we have to explicitly 
-                        // do it here:
-                        PluginManager.ReactToItemSelect(GlueState.Self.CurrentTreeNode);
-
-
-                        if (saveAndRegenerate)
-                        {
-                            if (EditorLogic.CurrentScreenTreeNode != null)
-                            {
-                                var screen = EditorLogic.CurrentScreenSave;
-                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(screen);
-                            }
-                            else if (EditorLogic.CurrentEntityTreeNode != null)
-                            {
-                                var entity = EditorLogic.CurrentEntitySave;
-                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(entity);
-                            }
-                            else if (EditorLogic.CurrentReferencedFile != null)
-                            {
-                                GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCodeTask();
-
-                                // Vic asks - do we have to do anything else here?  I don't think so...
-                            }
-
-
-                            GluxCommands.Self.ProjectCommands.SaveProjects();
-                            GluxCommands.Self.SaveGlux();
-                        }
+                        GluxCommands.Self.ProjectCommands.SaveProjects();
+                        GluxCommands.Self.SaveGlux();
                     }
                 }
             }

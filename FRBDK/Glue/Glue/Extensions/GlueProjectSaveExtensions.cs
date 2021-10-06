@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
+using Newtonsoft.Json;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -18,7 +19,14 @@ namespace FlatRedBall.Glue.SaveClasses
 
             var whatToSave = glueProjectSave.ConvertToPartial(tag);
 
-            FileManager.XmlSerialize(whatToSave, out serializedToString);
+            if(glueProjectSave.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
+            {
+                serializedToString = JsonConvert.SerializeObject(glueProjectSave);
+            }
+            else
+            {
+                FileManager.XmlSerialize(whatToSave, out serializedToString);
+            }
         }
 
         public static bool Save(this GlueProjectSave glueProjectSave, string tag, string fileName, out Exception lastException)
@@ -61,7 +69,16 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             var toSave = glueProjectSave.ConvertToPartial(tag);
             string convertedFileName = fileName.ConvertToPartialName(tag);
-            FileManager.XmlSerialize(toSave, convertedFileName);
+            if(glueProjectSave.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
+            {
+                var serialized = JsonConvert.SerializeObject(glueProjectSave, Formatting.Indented);
+                FileManager.SaveText(serialized, fileName);
+
+            }
+            else
+            {
+                FileManager.XmlSerialize(toSave, convertedFileName);
+            }
         }
 
         private static GlueProjectSave ConvertToPartial(this GlueProjectSave glueProjectSave, string tag)
@@ -105,16 +122,26 @@ namespace FlatRedBall.Glue.SaveClasses
             return newFileName;
         }
 
-        public static GlueProjectSave Load(string fileName)
+        public static GlueProjectSave Load(FilePath fileName)
         {
-            var main = FileManager.XmlDeserialize<GlueProjectSave>(fileName).MarkTags("GLUE");
+            GlueProjectSave main = null;
+            if(fileName.Extension == "glux")
+            {
+                main = FileManager.XmlDeserialize<GlueProjectSave>(fileName.FullPath);
+            }
+            else if(fileName.Extension == "gluj")
+            {
+                var text = System.IO.File.ReadAllText(fileName.FullPath);
+                main = JsonConvert.DeserializeObject<GlueProjectSave>(text);
+            }
+            main = main.MarkTags("GLUE"); 
 
             var files =
-                Directory.GetFiles(Path.GetDirectoryName(fileName) + @"\");
+                Directory.GetFiles(fileName.GetDirectoryContainingThis() + @"\");
 
 
 
-            foreach (var file in files.Where(item=>item.ToLower().EndsWith(".generated.glux")))
+            foreach (var file in files.Where(item=>item.ToLower().EndsWith(".generated.glux") || item.ToLower().EndsWith(".generated.gluj")))
             {
                 string withoutExtension = FileManager.RemoveExtension(file);
                 string withoutGenerated = FileManager.RemoveExtension(withoutExtension);

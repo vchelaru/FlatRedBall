@@ -130,10 +130,21 @@ namespace FlatRedBall.Glue.IO
 
                 #region Load the GlueProjectSave file if one exists
 
-                string glueProjectFile = ProjectManager.GlueProjectFileName;
+                FilePath glueProjectFile = GlueState.Self.GlueProjectFileName;
+
+                if (!glueProjectFile.Exists() && glueProjectFile.Extension == "glux")
+                {
+                    // does the gluj exist?
+                    if(System.IO.File.Exists(glueProjectFile.RemoveExtension() + ".gluj"))
+                    {
+                        glueProjectFile = glueProjectFile.RemoveExtension() + ".gluj";
+                    }
+                }
+
+
                 bool shouldSaveGlux = false;
 
-                if (!FileManager.FileExists(glueProjectFile))
+                if (!glueProjectFile.Exists())
                 {
                     if(!TaskManager.Self.IsInTask())
                     {
@@ -143,8 +154,11 @@ namespace FlatRedBall.Glue.IO
 
                     ProjectManager.GlueProjectSave.FileVersion = GlueProjectSave.LatestVersion;
 
-                    GlueCommands.Self.PrintOutput($"Trying to load {glueProjectFile}, but could not find it, so" +
-                        $"creating a new .glux file");
+                    // After assigning the file version the glue project may change version, so try to update it:
+                    glueProjectFile = GlueState.Self.GlueProjectFileName;
+
+                    GlueCommands.Self.PrintOutput($"Trying to load {glueProjectFile}, but could not find it, so " +
+                        $"creating a new Glue Project file");
 
                     // temporary - eventually this will just be done in the .glux itself, or by the plugin 
                     // but for now we do it here because we only want to do it on new projects
@@ -152,7 +166,7 @@ namespace FlatRedBall.Glue.IO
 
 
                     ProjectManager.FindGameClass();
-                    GluxCommands.Self.SaveGluxImmediately();
+                    GluxCommands.Self.SaveGlueProjectImmediately();
 
                     // no need to do this - will do it in PerformLoadGlux:
                     //PluginManager.ReactToLoadedGlux(ProjectManager.GlueProjectSave, glueProjectFile);
@@ -163,7 +177,7 @@ namespace FlatRedBall.Glue.IO
                     //GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeSync();
                     //ProjectManager.SaveProjects();
                 }
-                PerformGluxLoad(projectFileName, glueProjectFile);
+                PerformGluxLoad(projectFileName, glueProjectFile.FullPath);
 
                 #endregion
 
@@ -230,12 +244,16 @@ namespace FlatRedBall.Glue.IO
             bool shouldLoad = true;
 
             // see if this project references any plugins that aren't installed:
-            var glueFileName = FileManager.RemoveExtension(projectFileName) + ".glux";
-            if (System.IO.File.Exists(glueFileName))
+            var gluxFileName = FileManager.RemoveExtension(projectFileName) + ".glux";
+            var glueJavascriptFileName = FileManager.RemoveExtension(projectFileName) + ".gluj";
+            var fileToLoad = System.IO.File.Exists(gluxFileName) ? gluxFileName
+                : System.IO.File.Exists(glueJavascriptFileName) ? glueJavascriptFileName
+                : string.Empty;
+            if (!string.IsNullOrEmpty(fileToLoad))
             {
                 try
                 {
-                    var tempGlux = GlueProjectSaveExtensions.Load(glueFileName);
+                    var tempGlux = GlueProjectSaveExtensions.Load(fileToLoad);
 
                     var requiredPlugins = tempGlux.PluginData.RequiredPlugins;
 
@@ -270,7 +288,7 @@ namespace FlatRedBall.Glue.IO
                     string missingPluginMessage = null;
                     if (individualPluginMessages.Count != 0)
                     {
-                        missingPluginMessage = $"The project {glueFileName} requires the following plugins:\n";
+                        missingPluginMessage = $"The project {fileToLoad} requires the following plugins:\n";
 
                         foreach (var item in individualPluginMessages)
                         {
@@ -291,7 +309,7 @@ namespace FlatRedBall.Glue.IO
                 }
                 catch (Exception e)
                 {
-                    GlueGui.ShowMessageBox($"Could not load .glux file {glueFileName}. Error:\n\n{e.ToString()}");
+                    GlueGui.ShowMessageBox($"Could not load .glux file {fileToLoad}. Error:\n\n{e.ToString()}");
                     shouldLoad = false;
                 }
             }
@@ -332,12 +350,12 @@ namespace FlatRedBall.Glue.IO
 
         private void PerformGluxLoad(string projectFileName, string glueProjectFile)
         {
-            SetInitWindowText("Loading .glux");
+            SetInitWindowText("Loading Glue Project");
 
 
             bool succeeded = true;
 
-            succeeded = DeserializeGluxXmlInternal(projectFileName, glueProjectFile);
+            succeeded = DeserializeGlueProjectInternal(projectFileName, glueProjectFile);
 
             if (succeeded)
             {
@@ -634,7 +652,7 @@ namespace FlatRedBall.Glue.IO
             }
         }
 
-        private bool DeserializeGluxXmlInternal(string projectFileName, string glueProjectFile)
+        private bool DeserializeGlueProjectInternal(string projectFileName, string glueProjectFile)
         {
             bool succeeded = true;
             try

@@ -413,7 +413,7 @@ namespace FlatRedBall.Glue.Controls
             }
             if (shouldSave)
             {
-                GlueState.Self.CurrentPluginSettings.Save(FileManager.GetDirectory(ProjectManager.GlueProjectFileName));
+                GlueState.Self.CurrentPluginSettings.Save(FileManager.GetDirectory(GlueState.Self.GlueProjectFileName));
             }
         }
 

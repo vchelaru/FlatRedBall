@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using FlatRedBall.Glue.Managers;
 using System.Threading;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.IO
 {
@@ -57,8 +58,7 @@ namespace FlatRedBall.Glue.IO
 
         #region Properties
 
-        public static object LockObject = new object();
-
+        static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1);
         #endregion
 
         #region Event Methods
@@ -118,65 +118,64 @@ namespace FlatRedBall.Glue.IO
         /// <remarks>
         /// The handling of the system event is in ChangedFileGroup.
         /// </remarks>
-        public static void Flush()
+        public static async Task Flush()
         {
-            lock (FileWatchManager.LockObject)
+            await semaphoreSlim.WaitAsync();
+            if (!IsFlushing && PerformFlushing)
             {
-                if (!IsFlushing && PerformFlushing)
+                IsFlushing = true;
+
+                List<string> filesToFlush = new List<string>();
+
+
+                if(mChangedProjectFiles.CanFlush)
                 {
-                    IsFlushing = true;
-
-                    List<string> filesToFlush = new List<string>();
-
-
-                    if(mChangedProjectFiles.CanFlush)
-                    {
-                        filesToFlush.AddRange(mChangedProjectFiles.AllFiles);
-                        mChangedProjectFiles.Clear();
-                    }
-
-                    bool anyFlushed = false;
-
-                    var distinctFiles =
-                        filesToFlush.Distinct().ToArray();
-
-                    foreach (string file in distinctFiles)
-                    {
-                        anyFlushed = true;
-
-                        var fileCopy = file;
-
-                        // The task internally will skip files if they are to be ignored, but projects can have
-                        // *so many* generated files, that putting a check here on generated can eliminate hundreds
-                        // of tasks from being created, improving startup performance
-                        IgnoreReason reason;
-                        bool isIgnored = IsFileIgnored(file, out reason);
-
-                        // November 12, 2019
-                        // Vic asks - why do we only ignore files that are generated here?
-                        //var skip = isIgnored && reason == IgnoreReason.GeneratedCodeFile;
-                        var skip = isIgnored;
-
-                        if(!skip)
-                        {
-                            TaskManager.Self.Add(() =>
-                                {
-                                    if(ReactToChangedFile(file))
-                                    {
-                                        UnreferencedFilesManager.Self.IsRefreshRequested = true;
-                                    }
-                                },
-                                "Reacting to changed file " + file);
-                        }
-                    }
-
-                    if (anyFlushed)
-                    {
-                        UnreferencedFilesManager.Self.RefreshUnreferencedFiles(async: true);
-                    }
-                    IsFlushing = false;
+                    filesToFlush.AddRange(mChangedProjectFiles.AllFiles);
+                    mChangedProjectFiles.Clear();
                 }
+
+                bool anyFlushed = false;
+
+                var distinctFiles =
+                    filesToFlush.Distinct().ToArray();
+
+                foreach (string file in distinctFiles)
+                {
+                    anyFlushed = true;
+
+                    var fileCopy = file;
+
+                    // The task internally will skip files if they are to be ignored, but projects can have
+                    // *so many* generated files, that putting a check here on generated can eliminate hundreds
+                    // of tasks from being created, improving startup performance
+                    IgnoreReason reason;
+                    bool isIgnored = IsFileIgnored(file, out reason);
+
+                    // November 12, 2019
+                    // Vic asks - why do we only ignore files that are generated here?
+                    //var skip = isIgnored && reason == IgnoreReason.GeneratedCodeFile;
+                    var skip = isIgnored;
+
+                    if(!skip)
+                    {
+                        TaskManager.Self.Add(() =>
+                            {
+                                if(ReactToChangedFile(file))
+                                {
+                                    UnreferencedFilesManager.Self.IsRefreshRequested = true;
+                                }
+                            },
+                            "Reacting to changed file " + file);
+                    }
+                }
+
+                if (anyFlushed)
+                {
+                    UnreferencedFilesManager.Self.RefreshUnreferencedFiles(async: true);
+                }
+                IsFlushing = false;
             }
+            semaphoreSlim.Release();
         }
 
         private static bool ReactToChangedFile(string file)
@@ -375,7 +374,7 @@ namespace FlatRedBall.Glue.IO
             {
                 return 2;
             }
-            else if (extension == "glux")
+            else if (extension == "glux" || extension == "gluj")
             {
                 return 1;
             }

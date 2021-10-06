@@ -256,29 +256,26 @@ namespace FlatRedBall.Glue.Managers
             RefreshUnreferencedFiles(false);
 
             bool shouldRefreshAgainst = false;
-            lock (FileWatchManager.LockObject)
-            {
                 // use the property to be thread-safe
                 
-                var lastAddedUnreferenced = UnreferencedFilesManager.LastAddedUnreferencedFiles;
-                foreach (ProjectSpecificFile projectSpecificFile in lastAddedUnreferenced)
+            var lastAddedUnreferenced = UnreferencedFilesManager.LastAddedUnreferencedFiles;
+            foreach (ProjectSpecificFile projectSpecificFile in lastAddedUnreferenced)
+            {
+                if (File.Exists(ProjectManager.MakeAbsolute(projectSpecificFile.FilePath)))
                 {
-                    if (File.Exists(ProjectManager.MakeAbsolute(projectSpecificFile.FilePath)))
+                    DialogResult result =
+                        System.Windows.Forms.MessageBox.Show(
+                            "The following file is no longer referenced by the project\n\n" +
+                            projectSpecificFile +
+                            "\n\nRemove and delete this file?", "Remove unreferenced file?", MessageBoxButtons.YesNo);
+
+                    if (result == DialogResult.Yes)
                     {
-                        DialogResult result =
-                            System.Windows.Forms.MessageBox.Show(
-                                "The following file is no longer referenced by the project\n\n" +
-                                projectSpecificFile +
-                                "\n\nRemove and delete this file?", "Remove unreferenced file?", MessageBoxButtons.YesNo);
+                        ProjectManager.GetProjectByName(projectSpecificFile.ProjectName).ContentProject.RemoveItem(
+                            projectSpecificFile.FilePath);
 
-                        if (result == DialogResult.Yes)
-                        {
-                            ProjectManager.GetProjectByName(projectSpecificFile.ProjectName).ContentProject.RemoveItem(
-                                projectSpecificFile.FilePath);
-
-                            FileHelper.DeleteFile(ProjectManager.MakeAbsolute(projectSpecificFile.FilePath));
-                            shouldRefreshAgainst = true;
-                        }
+                        FileHelper.DeleteFile(ProjectManager.MakeAbsolute(projectSpecificFile.FilePath));
+                        shouldRefreshAgainst = true;
                     }
                 }
             }

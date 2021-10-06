@@ -12,6 +12,7 @@ using System.IO;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Graphics;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.Elements
 {
@@ -72,7 +73,7 @@ namespace FlatRedBall.Glue.Elements
         {
             get
             {
-                string projectFileName = ProjectManager.GlueProjectFileName;
+                string projectFileName = GlueState.Self.GlueProjectFileName;
                 string directory = FileManager.GetDirectory(projectFileName);
 
                 return directory + @"GlueSettings\";

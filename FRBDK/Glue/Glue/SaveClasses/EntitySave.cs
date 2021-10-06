@@ -33,7 +33,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
     #endregion
 
-    public class EntitySave : GlueElement, ITaggable, IPropertyListContainer
+    public class EntitySave : GlueElement, IPropertyListContainer
     {
         #region Fields
 
@@ -200,11 +200,7 @@ namespace FlatRedBall.Glue.SaveClasses
             set;
         }
 
-        public override string BaseElement
-        {
-            get { return BaseEntity; }
-        }
-
+        public override string BaseElement => BaseEntity; 
 
         #region ScrollableEntityList Properties
 
@@ -315,16 +311,6 @@ namespace FlatRedBall.Glue.SaveClasses
             set;
         }
 
-        List<string> ITaggable.Tags
-        {
-            get { return Tags; }
-        }
-
-        string ITaggable.Source
-        {
-            get { return Source; }
-        }
-
         #endregion
 
         #region Methods
@@ -385,19 +371,6 @@ namespace FlatRedBall.Glue.SaveClasses
 
             return entitySaveToReturn;
              */
-        }
-
-
-        public CustomVariable GetCustomVariable(string customVariableName)
-        {
-            foreach (CustomVariable customVariable in CustomVariables)
-            {
-                if (customVariable.Name == customVariableName)
-                {
-                    return customVariable;
-                }
-            }
-            return null;
         }
 
 

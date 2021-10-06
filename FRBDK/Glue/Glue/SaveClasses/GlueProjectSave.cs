@@ -9,8 +9,7 @@ using GlueSaveClasses;
 //using System.Windows.Forms;
 
 using System.Collections;
-
-
+using Newtonsoft.Json;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -25,6 +24,11 @@ namespace FlatRedBall.Glue.SaveClasses
 
     public class GlueProjectSave
     {
+        public const string ScreenExtension = "glsj";
+        public const string EntityExtension = "glej";
+
+
+
         #region Glux Version
 
         // Version 0/1 didn't exist
@@ -40,17 +44,21 @@ namespace FlatRedBall.Glue.SaveClasses
             CsvInheritanceSupport = 5,
             NugetPackageInCsproj = 6,
             SupportsEditMode = 7,
-            ScreensHaveActivityEditMode = 8
+            ScreensHaveActivityEditMode = 8,
+            GlueSavedToJson = 9
         }
 
         #endregion
 
         #region Fields / Properties
 
-        public const int LatestVersion = (int)GluxVersions.ScreensHaveActivityEditMode;
+        #region Versions
+
+        public const int LatestVersion = (int)GluxVersions.GlueSavedToJson;
 
         public int FileVersion { get; set; }
 
+        #endregion
 
         #region Camera Fields
         // April 2017 - adding replacement for these, eventually should get removed:
@@ -69,6 +77,16 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #endregion
 
+        public List<ScreenSave> Screens = new List<ScreenSave>();
+
+        public List<EntitySave> Entities = new List<EntitySave>();
+
+
+
+        public List<ReferencedFileSave> GlobalFiles = new List<ReferencedFileSave>();
+
+
+
         public GluxPluginData PluginData
         {
             get;
@@ -82,11 +100,6 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
 
-        public List<ScreenSave> Screens = new List<ScreenSave>();
-
-        public List<EntitySave> Entities = new List<EntitySave>();
-
-        public List<ReferencedFileSave> GlobalFiles = new List<ReferencedFileSave>();
 
         public GlobalContentSettingsSave GlobalContentSettingsSave = new GlobalContentSettingsSave();
 
@@ -123,6 +136,7 @@ namespace FlatRedBall.Glue.SaveClasses
         = new List<DisplaySettings>();
 
         [XmlIgnore]
+        [JsonIgnore]
         public bool UsesTranslation
         {
             get;
@@ -130,6 +144,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         public bool GlobalContentHasChanged { get; set; }
 
         #endregion
@@ -322,11 +337,6 @@ namespace FlatRedBall.Glue.SaveClasses
         public void SortScreens()
         {
             Screens.Sort(CompareScreenSaves);
-        }
-
-        private static int CompareReferencedFiles(ReferencedFileSave rfs1, ReferencedFileSave rfs2)
-        {
-            return rfs1.Name.CompareTo(rfs2.Name);
         }
 
         private static int CompareScreenSaves(ScreenSave ss1, ScreenSave ss2)

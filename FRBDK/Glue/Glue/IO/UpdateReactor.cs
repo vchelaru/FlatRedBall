@@ -27,13 +27,13 @@ namespace FlatRedBall.Glue.IO
     public static class UpdateReactor
     {
         public const string ReloadingProjectDescription = "Reloading Project";
-        static object mUpdateFileLock = new object();
+        //static object mUpdateFileLock = new object();
         public static bool UpdateFile(string changedFile)
         {
             bool shouldSave = false;
             bool handled = false;
                 
-            lock (mUpdateFileLock)
+            //lock (mUpdateFileLock)
             {
                 string projectFileName = ProjectManager.ProjectBase?.FullFileName;
                 if(ProjectManager.ProjectBase != null)
@@ -41,11 +41,18 @@ namespace FlatRedBall.Glue.IO
                     handled = TryHandleProjectFileChanges(changedFile);
 
                     var standardizedGlux = FileManager.RemoveExtension(FileManager.Standardize(projectFileName).ToLower()) + ".glux";
+                    var standardizedGluj = FileManager.RemoveExtension(FileManager.Standardize(projectFileName).ToLower()) + ".gluj";
                     var partialGlux = FileManager.RemoveExtension(FileManager.Standardize(projectFileName).ToLower()) + @"\..*\.generated\.glux";
                     var partialGluxRegex = new Regex(partialGlux);
-                    if(!handled && ((changedFile.ToLower() == standardizedGlux) || partialGluxRegex.IsMatch(changedFile.ToLower())))
+                    if(!handled && (
+                        changedFile.ToLower() == standardizedGlux || partialGluxRegex.IsMatch(changedFile.ToLower()) || changedFile.ToLower() == standardizedGluj
+                        )
+                    )
                     {
-                        TaskManager.Self.OnUiThread(ReloadGlux);
+                        if(!ProjectManager.WantsToClose)
+                        {
+                            TaskManager.Self.OnUiThread(ReloadGlux);
+                        }
                         handled = true;
                     }
 
@@ -315,7 +322,7 @@ namespace FlatRedBall.Glue.IO
         {
             object selectedObject = null;
             IElement parentElement = null;
-            PluginManager.ReceiveOutput("Reloading .glux");
+            PluginManager.ReceiveOutput("Reloading Glue Project");
 
             TaskManager.Self.OnUiThread(() =>
             {
@@ -340,7 +347,7 @@ namespace FlatRedBall.Glue.IO
                 // March 1, 2020 - this can fail on int comparison so...we'll just tolerate it and do a full reload:
                 try
                 {
-                    compareResult = ProjectManager.GlueProjectSave.ReloadUsingComparison(ProjectManager.GlueProjectFileName, out newGlueProjectSave);
+                    compareResult = ProjectManager.GlueProjectSave.ReloadUsingComparison(GlueState.Self.GlueProjectFileName, out newGlueProjectSave);
                 }
                 catch
                 {

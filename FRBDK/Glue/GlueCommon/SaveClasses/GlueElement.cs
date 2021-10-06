@@ -18,8 +18,12 @@ namespace FlatRedBall.Glue.SaveClasses
     /// interface default implementations (which introduce their own problems). Vic believes
     /// that this should be the default type passed around rather than IElement going forward.
     /// </remarks>
-    public abstract class GlueElement : IFileReferencer, IElement
+    public abstract class GlueElement : IFileReferencer, IElement, ITaggable
     {
+        List<string> ITaggable.Tags => this.Tags;
+
+        string ITaggable.Source => this.Source;
+
         public List<string> Tags = new List<string>();
         public string Source = "";
 
@@ -249,5 +253,16 @@ namespace FlatRedBall.Glue.SaveClasses
             get; set;
         } = new List<CustomClassSave>();
 
+        public CustomVariable GetCustomVariable(string customVariableName)
+        {
+            foreach (var customVariable in CustomVariables)
+            {
+                if (customVariable.Name == customVariableName)
+                {
+                    return customVariable;
+                }
+            }
+            return null;
+        }
     }
 }

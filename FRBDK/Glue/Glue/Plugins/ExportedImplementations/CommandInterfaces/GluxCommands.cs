@@ -117,8 +117,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public void SaveGlux()
         {
             TaskManager.Self.AddOrRunIfTasked(
-                () => SaveGluxImmediately(),
-                "Saving .glux", 
+                () => SaveGlueProjectImmediately(),
+                "Saving Glue Project", 
                 // asap because otherwise this may get added
                 // after a reload command
                 TaskExecutionPreference.Asap);
@@ -128,7 +128,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         /// Saves the current project immediately - this should not be called except in very rare circumstances as it will run right away and may result
         /// in multiple threads accessing the glux at the same time.
         /// </summary>
-        public void SaveGluxImmediately()
+        public void SaveGlueProjectImmediately()
         {
             if (ProjectManager.GlueProjectSave != null)
             {
@@ -173,7 +173,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         string errorLogLocation = FileManager.UserApplicationDataForThisApplication + "ExceptionInGlue.txt";
 
                         GlueCommands.Self.DialogCommands.ShowMessageBox(
-                            "Error trying to save your .glux file.  Because of this error, Glue did not make any changes to the .glux file on disk.\n\nAn error log has been saved here:\n" + errorLogLocation);
+                            "Error trying to save your Glue file.  Because of this error, Glue did not make any changes to the file on disk.\n\nAn error log has been saved here:\n" + errorLogLocation);
                         try
                         {
                             FileManager.SaveText(e.ToString(), errorLogLocation);

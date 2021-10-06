@@ -255,7 +255,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 }
                 else
                 {
-                    return FileManager.RemoveExtension(CurrentMainProject.FullFileName) + ".glux";
+                    if(CurrentGlueProject?.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
+                    {
+                        return FileManager.RemoveExtension(CurrentMainProject.FullFileName) + ".gluj";
+                    }
+                    else
+                    {
+                        return FileManager.RemoveExtension(CurrentMainProject.FullFileName) + ".glux";
+                    }
                 }
             }
 

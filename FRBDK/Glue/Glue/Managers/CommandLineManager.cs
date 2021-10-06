@@ -30,6 +30,11 @@ namespace FlatRedBall.Glue.Managers
                     mProjectToLoad = var;
                     mProjectToLoad = mProjectToLoad.Replace(".glux", ".csproj");
                 }
+                if (var.Contains(".gluj"))
+                {
+                    mProjectToLoad = var;
+                    mProjectToLoad = mProjectToLoad.Replace(".gluj", ".csproj");
+                }
                 if (var.Contains(".csproj"))
                 {
                     mProjectToLoad = var;

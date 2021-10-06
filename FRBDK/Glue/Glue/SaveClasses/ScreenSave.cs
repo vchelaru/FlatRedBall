@@ -10,7 +10,7 @@ using FlatRedBall.Glue.Events;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
-    public class ScreenSave : GlueElement, IEventContainer, ITaggable
+    public class ScreenSave : GlueElement, IEventContainer
     {
         #region Fields
 
@@ -21,15 +21,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Properties
 
-        List<string> ITaggable.Tags
-        {
-            get { return this.Tags; }
-        }
 
-        string ITaggable.Source
-        {
-            get { return this.Source; }
-        }
 
 
         // Broadcasting has been removed
@@ -213,33 +205,7 @@ namespace FlatRedBall.Glue.SaveClasses
             return FileManager.CloneObject<ScreenSave>(this);
         }
 
-        //public BehaviorSave GetBehavior(string behaviorName)
-        //{
-        //    return IBehaviorContainerHelper.GetBehavior(this, behaviorName);
-        //}
-
-        public CustomVariable GetCustomVariable(string customVariableName)
-        {
-            foreach (CustomVariable customVariable in CustomVariables)
-            {
-                if (customVariable.Name == customVariableName)
-                {
-                    return customVariable;
-                }
-            }
-            return null;
-        }
-
-        //public CustomVariable GetCustomVariableRecursively(string variableName)
-        //{
-        //    return IBehaviorContainerHelper.GetCustomVariableRecursively(this, variableName);
-        //}
-
-        //public string GetFulfillerName(BehaviorRequirement behaviorRequirement)
-        //{
-        //    return IBehaviorContainerHelper.GetFulfillerName(this, behaviorRequirement);
-        //}
-        
+       
         public object GetPropertyValue(string propertyName)
         {
             for (int i = 0; i < CustomVariables.Count; i++)
