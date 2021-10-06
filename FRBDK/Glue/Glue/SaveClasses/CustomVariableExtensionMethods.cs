@@ -224,11 +224,20 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public static void FixEnumerationTypes(this CustomVariable customVariable)
         {
-            if (customVariable.GetIsEnumeration() && customVariable.DefaultValue != null && customVariable.DefaultValue.GetType() == typeof(int))
+            if (customVariable.GetIsEnumeration() && customVariable.DefaultValue != null)
             {
                 Type runtimeType = customVariable.GetRuntimeType();
                 Array array = Enum.GetValues(runtimeType);
-                int valueAsInt = (int)customVariable.DefaultValue;
+
+                int valueAsInt = 0;
+                if (customVariable.DefaultValue is int asInt)
+                {
+                    valueAsInt = asInt;
+                }
+                else if(customVariable.DefaultValue is long asLong)
+                {
+                    valueAsInt = (int)asLong;
+                }
 
 
                 try

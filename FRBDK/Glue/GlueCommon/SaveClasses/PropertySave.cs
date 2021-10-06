@@ -26,6 +26,9 @@ namespace FlatRedBall.Glue.SaveClasses
         //[XmlElement("ValueAsEnum", typeof(Enum))]
         public object Value;
 
+        // This is only needed for JSON serialization, as XML can use the XmlElement attribute to know its type:
+        public string Type { get; set; }
+
         public override string ToString()
         {
             return $"{Name} = {Value}";
@@ -62,7 +65,7 @@ namespace FlatRedBall.Glue.SaveClasses
         /// Returns the value for the argument property name if it exists, otherwise returns the default 
         /// value for the type (such as false for a bool). This will not throw an exception if the property name is missing.
         /// </summary>
-        /// <typeparam name="T">The type of thevalue</typeparam>
+        /// <typeparam name="T">The type of the value</typeparam>
         /// <param name="propertySaveList">The property list.</param>
         /// <param name="nameToSearchFor">The name of the property to find.</param>
         /// <returns>The found property value, or the default for the type if not found.</returns>
@@ -74,13 +77,21 @@ namespace FlatRedBall.Glue.SaveClasses
                 if (propertySave.Name == nameToSearchFor)
                 {
                     var uncastedValue = propertySave.Value;
-                    if(typeof(T) == typeof(int) && uncastedValue is long asLong)
+                    if( typeof(T) == typeof(int) && uncastedValue is long asLong)
                     {
                         return (T)((object)(int)asLong);
                     }
                     else if(typeof(T) == typeof(float) && uncastedValue is double asDouble)
                     {
                         return (T)((object)(float)asDouble);
+                    }
+                    else if (typeof(T) == typeof(decimal) && uncastedValue is double asDouble2)
+                    {
+                        return (T)((object)(float)asDouble2);
+                    }
+                    else if(typeof(T).IsEnum && uncastedValue is long asLong2)
+                    {
+                        return (T)((object)(int)asLong2);
                     }
                     else
                     {

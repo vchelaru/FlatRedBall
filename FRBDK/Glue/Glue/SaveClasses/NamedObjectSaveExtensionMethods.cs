@@ -336,22 +336,31 @@ namespace FlatRedBall.Glue.SaveClasses
                 {
                     Type type = TypeManager.GetTypeFromString(instruction.Type);
 
-                    if (type != null && instruction.Value != null && type.IsEnum && instruction.Value.GetType() == typeof(int))
+                    if (type != null && instruction.Value != null && type.IsEnum)
                     {
+                        int valueAsInt = 0;
+                        if(instruction.Value is int asInt)
+                        {
+                            valueAsInt = asInt;
+                        }
+                        else if(instruction.Value is long asLong)
+                        {
+                            valueAsInt = (int) asLong;
+                        }
                         Array array = Enum.GetValues(type);
                         
-                            // The enumerations may not necessarily be
-                            // 0,1,2,3,4
-                            // They may skip values or start at non-zero values.
-                            // Therefore, we need to compare the int values
-                            for (int i = 0; i < array.Length; i++)
+                        // The enumerations may not necessarily be
+                        // 0,1,2,3,4
+                        // They may skip values or start at non-zero values.
+                        // Therefore, we need to compare the int values
+                        for (int i = 0; i < array.Length; i++)
+                        {
+                            if ((int)(array.GetValue(i)) == valueAsInt)
                             {
-                                if ((int)(array.GetValue(i)) == (int)instruction.Value)
-                                {
-                                    instruction.Value = array.GetValue(i);
-                                    break;
-                                }
+                                instruction.Value = array.GetValue(i);
+                                break;
                             }
+                        }
                     }
                 }
             }

@@ -96,11 +96,20 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 Type type = TypeManager.GetTypeFromString(instructionSave.Type);
 
-                if (type != null && type.IsEnum && instructionSave.Value.GetType() == typeof(int) )
+                if (type != null && type.IsEnum )
                 {
+                    int valueAsInt = 0;
+                    if(instructionSave.Value is int asInt)
+                    {
+                        valueAsInt = asInt;
+                    }
+                    else if(instructionSave.Value is long asLong)
+                    {
+                        valueAsInt = (int)asLong;
+                    }
                     Array array = Enum.GetValues(type);
 
-                    instructionSave.Value = array.GetValue((int)instructionSave.Value);
+                    instructionSave.Value = array.GetValue(valueAsInt);
                 }
             }
         }
