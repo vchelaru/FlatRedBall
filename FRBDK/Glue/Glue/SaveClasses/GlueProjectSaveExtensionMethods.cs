@@ -341,6 +341,20 @@ namespace FlatRedBall.Glue.SaveClasses
             });
         }
 
+        public static void FixAllTypes(this GlueProjectSave instance)
+        {
+            foreach (EntitySave entitySave in instance.Entities)
+            {
+                entitySave.FixAllTypes();
+
+            }
+
+            foreach (ScreenSave screen in instance.Screens)
+            {
+                screen.FixAllTypes();
+            }
+        }
+
         public static void FixEnumerationValues(this GlueProjectSave instance)
         {
             foreach (EntitySave entitySave in instance.Entities)

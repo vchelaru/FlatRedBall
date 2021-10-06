@@ -307,7 +307,7 @@ namespace FlatRedBall.IO
 
 #region Public Methods
 
-#region Caching Methods
+        #region Caching Methods
         public static void CacheObject(object objectToCache, string fileName)
         {
             mFileCache.Add(Standardize(fileName), objectToCache);
@@ -340,7 +340,7 @@ namespace FlatRedBall.IO
 
             return (T)serializer.Deserialize(new StringReader(container));
         }
-#if !WINDOWS_8
+
         public static void CopyDirectory(string sourceDirectory, string destDirectory, bool deletePrevious, List<string> excludeFiles, List<string> excludeDirectories)
         {
             if (excludeDirectories != null)
@@ -382,9 +382,7 @@ namespace FlatRedBall.IO
 
         public static void DeleteDirectory(string directory)
         {
-#if WINDOWS_8
-            throw new NotImplementedException();
-#else
+
             string[] dirList = Directory.GetDirectories(directory);
             foreach (string dir in dirList)
             {
@@ -398,10 +396,8 @@ namespace FlatRedBall.IO
             }
 
             Directory.Delete(directory);
-#endif
-        }
-#endif
 
+        }
 
         public static void DeleteFile(string fileName)
         {
@@ -413,18 +409,6 @@ namespace FlatRedBall.IO
 #endif
         }
 
-
-#if XBOX360
-        public static void DisposeLastStorageContainer()
-        {
-            if (mLastStorageContainer != null)
-            {
-                mLastStorageContainer.Dispose();
-                mLastStorageContainer = null;
-            }
-        }
-
-#endif
 
 #region XML Docs
         /// <summary>

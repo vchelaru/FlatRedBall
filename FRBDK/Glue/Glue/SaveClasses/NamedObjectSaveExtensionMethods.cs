@@ -328,46 +328,93 @@ namespace FlatRedBall.Glue.SaveClasses
             return AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(instance.SourceClassGenericType, instance, isObject: true);
         }
 
+        public static void FixAllTypes(this NamedObjectSave instance)
+        {
+            foreach (CustomVariableInNamedObject instruction in instance.InstructionSaves)
+            {
+                FixAllTypes(instruction);
+            }
+
+            foreach (NamedObjectSave contained in instance.ContainedObjects)
+            {
+                contained.FixAllTypes();
+            }
+        }
+
         public static void FixEnumerationTypes(this NamedObjectSave instance)
         {
             foreach (CustomVariableInNamedObject instruction in instance.InstructionSaves)
             {
-                if (!string.IsNullOrEmpty(instruction.Type))
-                {
-                    Type type = TypeManager.GetTypeFromString(instruction.Type);
-
-                    if (type != null && instruction.Value != null && type.IsEnum)
-                    {
-                        int valueAsInt = 0;
-                        if(instruction.Value is int asInt)
-                        {
-                            valueAsInt = asInt;
-                        }
-                        else if(instruction.Value is long asLong)
-                        {
-                            valueAsInt = (int) asLong;
-                        }
-                        Array array = Enum.GetValues(type);
-                        
-                        // The enumerations may not necessarily be
-                        // 0,1,2,3,4
-                        // They may skip values or start at non-zero values.
-                        // Therefore, we need to compare the int values
-                        for (int i = 0; i < array.Length; i++)
-                        {
-                            if ((int)(array.GetValue(i)) == valueAsInt)
-                            {
-                                instruction.Value = array.GetValue(i);
-                                break;
-                            }
-                        }
-                    }
-                }
+                FixEnumerationType(instruction);
             }
 
             foreach (NamedObjectSave contained in instance.ContainedObjects)
             {
                 contained.FixEnumerationTypes();
+            }
+        }
+
+        private static void FixAllTypes(CustomVariableInNamedObject instruction)
+        {
+            FixEnumerationType(instruction);
+
+            if (!string.IsNullOrEmpty(instruction.Type) && instruction.Value != null)
+            {
+                object variableValue = instruction.Value;
+                if (instruction.Type == "int")
+                {
+                    if (variableValue is long asLong)
+                    {
+                        variableValue = (int)asLong;
+                    }
+                }
+                else if (instruction.Type == "float" || instruction.Type == "Single")
+                {
+                    if (variableValue is int asInt)
+                    {
+                        variableValue = (float)asInt;
+                    }
+                    else if (variableValue is double asDouble)
+                    {
+                        variableValue = (float)asDouble;
+                    }
+                }
+                instruction.Value = variableValue;
+            }
+        }
+
+        private static void FixEnumerationType(CustomVariableInNamedObject instruction)
+        {
+            if (!string.IsNullOrEmpty(instruction.Type))
+            {
+                Type type = TypeManager.GetTypeFromString(instruction.Type);
+
+                if (type != null && instruction.Value != null && type.IsEnum)
+                {
+                    int valueAsInt = 0;
+                    if (instruction.Value is int asInt)
+                    {
+                        valueAsInt = asInt;
+                    }
+                    else if (instruction.Value is long asLong)
+                    {
+                        valueAsInt = (int)asLong;
+                    }
+                    Array array = Enum.GetValues(type);
+
+                    // The enumerations may not necessarily be
+                    // 0,1,2,3,4
+                    // They may skip values or start at non-zero values.
+                    // Therefore, we need to compare the int values
+                    for (int i = 0; i < array.Length; i++)
+                    {
+                        if ((int)(array.GetValue(i)) == valueAsInt)
+                        {
+                            instruction.Value = array.GetValue(i);
+                            break;
+                        }
+                    }
+                }
             }
         }
 

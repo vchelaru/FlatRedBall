@@ -132,13 +132,11 @@ namespace FlatRedBall.Glue.IO
 
                 FilePath glueProjectFile = GlueState.Self.GlueProjectFileName;
 
-                if (!glueProjectFile.Exists() && glueProjectFile.Extension == "glux")
+
+                // does the gluj exist? If so, use that since it's newer and should be used going forward:
+                if(System.IO.File.Exists(glueProjectFile.RemoveExtension() + ".gluj"))
                 {
-                    // does the gluj exist?
-                    if(System.IO.File.Exists(glueProjectFile.RemoveExtension() + ".gluj"))
-                    {
-                        glueProjectFile = glueProjectFile.RemoveExtension() + ".gluj";
-                    }
+                    glueProjectFile = glueProjectFile.RemoveExtension() + ".gluj";
                 }
 
 
@@ -214,7 +212,7 @@ namespace FlatRedBall.Glue.IO
                 UnreferencedFilesManager.Self.RefreshUnreferencedFiles(true);
 
                 TaskManager.Self.OnUiThread(() => MainGlueWindow.Self.Text = "FlatRedBall - " + projectFileName);
-
+                GlueState.Self.CurrentGlueProject.FixAllTypes();
                 if (shouldSaveGlux)
                 {
                     GluxCommands.Self.SaveGlux();

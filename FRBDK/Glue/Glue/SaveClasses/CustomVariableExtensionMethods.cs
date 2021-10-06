@@ -222,6 +222,37 @@ namespace FlatRedBall.Glue.SaveClasses
             customVariable.FixEnumerationTypes();
         }
 
+        public static void FixAllTypes(this CustomVariable customVariable)
+        {
+            customVariable.FixEnumerationTypes();
+
+
+            if (!string.IsNullOrEmpty(customVariable.Type) && customVariable.DefaultValue != null)
+            {
+                object variableValue = customVariable.DefaultValue;
+                if (customVariable.Type == "int")
+                {
+                    if (variableValue is long asLong)
+                    {
+                        variableValue = (int)asLong;
+                    }
+                }
+                else if (customVariable.Type == "float" || customVariable.Type == "Single")
+                {
+                    if (variableValue is int asInt)
+                    {
+                        variableValue = (float)asInt;
+                    }
+                    else if (variableValue is double asDouble)
+                    {
+                        variableValue = (float)asDouble;
+                    }
+                }
+                customVariable.DefaultValue = variableValue;
+            }
+        }
+
+
         public static void FixEnumerationTypes(this CustomVariable customVariable)
         {
             if (customVariable.GetIsEnumeration() && customVariable.DefaultValue != null)
@@ -266,6 +297,14 @@ namespace FlatRedBall.Glue.SaveClasses
             if(customVariable.DefaultValue?.GetType()?.IsEnum == true)
             {
                 customVariable.DefaultValue = (int)customVariable.DefaultValue;
+
+                foreach(var property in customVariable.Properties)
+                {
+                    if(property.Value?.GetType()?.IsEnum == true)
+                    {
+                        property.Value = (int)property.Value;
+                    }
+                }
             }
         }
 

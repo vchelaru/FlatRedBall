@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Xml.Serialization;
 
@@ -33,6 +34,7 @@ namespace FlatRedBall.Glue.SaveClasses
     {
         #region Fields
         [XmlIgnore]
+        [JsonIgnore]
         public static CustomVariableToString ToStringDelegate;
 
         public List<PropertySave> Properties = new List<PropertySave>();
@@ -59,6 +61,7 @@ namespace FlatRedBall.Glue.SaveClasses
         // I think this will be around for a while - maybe a year?
         // Okay we waited long enough (12/12/2020)
         [XmlIgnore]
+        [JsonIgnore]
         [ReadOnlyAttribute(true)]
 		public string Type
 		{
@@ -179,6 +182,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         public bool HasAccompanyingVelocityProperty
         {
             
@@ -193,6 +197,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         [CategoryAttribute("Type Conversion")]
         public string OverridingPropertyType
         {
@@ -221,6 +226,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         [CategoryAttribute("Type Conversion")]
         public string TypeConverter
         {
@@ -242,6 +248,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         [Browsable(false)]
         public bool IsTunneling
         {
@@ -252,6 +259,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         [CategoryAttribute("Access")]
         public bool CreatesProperty
         {
@@ -267,6 +275,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         [CategoryAttribute("Access")]
         public Scope Scope
         {

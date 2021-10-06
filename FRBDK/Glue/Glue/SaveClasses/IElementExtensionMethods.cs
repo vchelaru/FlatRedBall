@@ -245,6 +245,22 @@ namespace FlatRedBall.Glue.SaveClasses
             return toReturn;
         }
 
+        public static void FixAllTypes(this IElement instance)
+        {
+            foreach (NamedObjectSave nos in instance.NamedObjects)
+            {
+                nos.FixAllTypes();
+            }
+            foreach (StateSave state in instance.AllStates)
+            {
+                state.FixAllTypes();
+            }
+            foreach (CustomVariable customVariable in instance.CustomVariables)
+            {
+                customVariable.FixAllTypes();
+            }
+        }
+
         public static void FixEnumerationValues(this IElement instance)
         {
 

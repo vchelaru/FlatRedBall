@@ -89,6 +89,37 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
+        public static void FixAllTypes(this StateSave instance)
+        {
+            instance.FixEnumerationTypes();
+
+            foreach (InstructionSave instruction in instance.InstructionSaves)
+            {
+                if (!string.IsNullOrEmpty(instruction.Type) && instruction.Value != null)
+                {
+                    object variableValue = instruction.Value;
+                    if (instruction.Type == "int")
+                    {
+                        if (variableValue is long asLong)
+                        {
+                            variableValue = (int)asLong;
+                        }
+                    }
+                    else if (instruction.Type == "float" || instruction.Type == "Single")
+                    {
+                        if (variableValue is int asInt)
+                        {
+                            variableValue = (float)asInt;
+                        }
+                        else if (variableValue is double asDouble)
+                        {
+                            variableValue = (float)asDouble;
+                        }
+                    }
+                    instruction.Value = variableValue;
+                }
+            }
+        }
 
         public static void FixEnumerationTypes(this StateSave instance)
         {

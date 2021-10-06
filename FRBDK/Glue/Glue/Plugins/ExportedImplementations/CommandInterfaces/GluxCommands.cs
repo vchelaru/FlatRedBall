@@ -154,7 +154,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     // .NET Core XmlSerialization
                     // requires no enums - values must
                     // be ints, so let's convert them:
-                    ProjectManager.GlueProjectSave.ConvertEnumerationValuesToInts();
+                    if(ProjectManager.GlueProjectSave.FileVersion < (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
+                    {
+                        ProjectManager.GlueProjectSave.ConvertEnumerationValuesToInts();
+                    }
 
 
                     // October 27, 2011

@@ -87,7 +87,15 @@ namespace FlatRedBall.Glue.SaveClasses
             if (tag == "GLUE")
             {
                 //Remove other elements
-                returnValue = glueProjectSave.Clone();
+                if(glueProjectSave.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
+                {
+                    var serialized = JsonConvert.SerializeObject(glueProjectSave);
+                    returnValue = JsonConvert.DeserializeObject<GlueProjectSave>(serialized);
+                }
+                else
+                {
+                    returnValue = glueProjectSave.Clone();
+                }
 
                 //Entities
                 returnValue.Entities.RemoveAll(t => !t.Tags.Contains(tag) && t.Tags.Count != 0);
@@ -131,8 +139,16 @@ namespace FlatRedBall.Glue.SaveClasses
             }
             else if(fileName.Extension == "gluj")
             {
-                var text = System.IO.File.ReadAllText(fileName.FullPath);
-                main = JsonConvert.DeserializeObject<GlueProjectSave>(text);
+                // During the conversion, there may still be XML files using version 9, so check for that:
+                if(fileName.Exists())
+                {
+                    var text = System.IO.File.ReadAllText(fileName.FullPath);
+                    main = JsonConvert.DeserializeObject<GlueProjectSave>(text);
+                }
+                else if(System.IO.File.Exists( fileName.RemoveExtension() + ".glux"))
+                {
+                    main = FileManager.XmlDeserialize<GlueProjectSave>(fileName.RemoveExtension() + ".glux");
+                }
             }
             main = main.MarkTags("GLUE"); 
 
