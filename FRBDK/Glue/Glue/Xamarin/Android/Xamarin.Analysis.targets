@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<UsingTask TaskName="Xamarin.Analysis.Tasks.EmitAnalysisResults" AssemblyFile="Xamarin.Analysis.Tasks.dll" />
+
+<!--
+This infrastructure enables plugging new rules into the Code Analysis commands in Xamarin Studio and Visual Studio.
+-->
+
+<!--
+If the MS code analysis targets are not installed + imported, import the compat targets
+-->
+<Import Project="$(MSBuildThisFileDirectory)Xamarin.Analysis.Compatibility.targets" Condition="'$(RunCodeAnalysisDependsOn)'==''" />
+<!--TODO-->
+
+<PropertyGroup>
+	<RunCodeAnalysisDependsOn>$(RunCodeAnalysisDependsOn);RunXamarinProjectAnalysis;RunXamarinPackageAnalysis</RunCodeAnalysisDependsOn>
+</PropertyGroup>
+
+<!--
+Conditionally import the targets file that contains the actual analysis logic.
+This means that we do not incur the cost of parsing that file except when analysis is taking place.
+-->
+<Import Project="$(XamarinAnalysisTargetsFile)" Condition="'$(RunCodeAnalysisOnThisProject)'=='True'" />
+
+<!-- This target is an entry point. Actual project analysis targets get inserted as XamarinProjectAnalysisTargets items -->
+<Target Name="RunXamarinProjectAnalysis"
+	DependsOnTargets="$(RunXamarinProjectAnalysisDependsOn);@(XamarinProjectAnalysisTargets);_EmitXamarinProjectAnalysisResults" />
+
+<!-- This target is an entry point. Actual package analysis targets get inserted as XamarinPackageAnalysisTargets items -->
+<Target Name="RunXamarinPackageAnalysis"
+	DependsOnTargets="$(RunXamarinPackageAnalysisDependsOn);@(XamarinPackageAnalysisTargets);_EmitXamarinPackageAnalysisResults" />
+
+
+<Target Name="_EmitXamarinProjectAnalysisResults">
+	<EmitAnalysisResults Results="@(XamarinProjectAnalysisResult)" Condition="'@(XamarinProjectAnalysisResult)' != ''" />
+</Target>
+
+<Target Name="_EmitXamarinPackageAnalysisResults">
+	<EmitAnalysisResults Results="@(XamarinPackageAnalysisResult)" Condition="'@(XamarinPackageAnalysisResult)' != ''" />
+</Target>
+
+</Project>

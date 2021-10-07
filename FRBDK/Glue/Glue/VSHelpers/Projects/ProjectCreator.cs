@@ -93,7 +93,10 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 else if (exceptionMessage.Contains("Xamarin.Android.CSharp.targets"))
                 {
                     message = @"Error loading this Android project. Please verify that you have correctly installed the requirements to build Android projects. Opening:
-https://docs.microsoft.com/en-us/xamarin/android/get-started/installation/windows";
+https://docs.microsoft.com/en-us/xamarin/android/get-started/installation/windows
+
+Additional Info:
+" + exceptionMessage;
                     locationToOpen = "https://docs.microsoft.com/en-us/xamarin/android/get-started/installation/windows";
                     result.ShouldTryToLoadProject = false;
                     shouldThrowException = false;
