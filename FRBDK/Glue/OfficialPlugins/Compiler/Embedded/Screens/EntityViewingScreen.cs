@@ -4,12 +4,15 @@ using FlatRedBall;
 using FlatRedBall.Graphics;
 using FlatRedBall.Screens;
 using GlueControl.Models;
+using System;
 using Microsoft.Xna.Framework;
 
 namespace GlueControl.Screens
 {
     class EntityViewingScreen : Screen
     {
+        #region Fields/properties
+
         public IDestroyable CurrentEntity { get; set; }
 
         public static string GameElementTypeToCreate { get; set; }
@@ -20,6 +23,7 @@ namespace GlueControl.Screens
 
         bool isViewingAbstractEntity;
 
+        #endregion
 
         public EntityViewingScreen() : base(nameof(EntityViewingScreen))
         {
@@ -42,14 +46,24 @@ namespace GlueControl.Screens
         {
             base.ActivityEditMode();
 
+            var camera = Camera.Main;
             if (isViewingAbstractEntity)
             {
-                var camera = Camera.Main;
                 Editing.EditorVisuals.Text(
                     $"The entity {EntityViewingScreen.GameElementTypeToCreate} is abstract so it cannot be previewed.\nSelect a derived entity type to view it.",
                     new Vector3(camera.X, camera.Y, 0));
             }
-            ActivityEditModeMethod?.Invoke(CurrentEntity, null);
+
+            try
+            {
+                ActivityEditModeMethod?.Invoke(CurrentEntity, null);
+            }
+            catch (Exception e)
+            {
+                Editing.EditorVisuals.Text(
+                    $"Error in edit mode for entity {CurrentEntity?.GetType().Name}\n{e.InnerException}",
+                    new Vector3(camera.X, camera.Y, 0));
+            }
 
             if (ShowScreenBounds)
             {
