@@ -350,9 +350,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public void TakeSnapshot()
         {
-            var treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
+            var selectedTreeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
 
-            snapshot.CurrentTreeNode = treeNode;
+            snapshot.CurrentTreeNode = selectedTreeNode;
             snapshot.CurrentElementTreeNode = GetCurrentElementTreeNodeFromSelection();
             snapshot.CurrentElement = GetCurrentElementFromSelection();
             snapshot.CurrentEntitySave = GetCurrentEntitySaveFromSelection();
@@ -365,14 +365,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             snapshot.CurrentEventResponseSave = GetCurrentEventResponseSaveFromSelection();
 
 
-            TreeNode GetCurrentTreeNodeFromSelection()
-            {
-                return MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
-            }
             BaseElementTreeNode GetCurrentElementTreeNodeFromSelection()
             {
-                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
-
+                var treeNode = selectedTreeNode;
                 while (treeNode != null)
                 {
                     if (treeNode is BaseElementTreeNode)
@@ -388,22 +383,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
             GlueElement GetCurrentElementFromSelection()
             {
-                if (CurrentEntitySave != null)
-                {
-                    return CurrentEntitySave;
-                }
-                else if (CurrentScreenSave != null)
-                {
-                    return CurrentScreenSave;
-                }
-                else
-                {
-                    return null;
-                }
+                return (GlueElement)GetCurrentEntitySaveFromSelection() ?? GetCurrentScreenSaveFromSelection();
             }
             EntitySave GetCurrentEntitySaveFromSelection()
             {
-                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
+                var treeNode = selectedTreeNode;
 
                 while (treeNode != null)
                 {
@@ -422,10 +406,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             ScreenSave GetCurrentScreenSaveFromSelection()
             {
 
-#if UNIT_TESTS
-                return null;
-#endif
-                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
+                var treeNode = selectedTreeNode;
 
                 while (treeNode != null)
                 {
@@ -443,7 +424,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
             ReferencedFileSave GetCurrentReferencedFileSaveFromSelection()
             {
-                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
+                var treeNode = selectedTreeNode;
 
                 if (treeNode != null && treeNode.Tag != null && treeNode.Tag is ReferencedFileSave)
                 {
@@ -456,7 +437,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
             NamedObjectSave GetCurrentNamedObjectSaveFromSelection()
             {
-                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
+                var treeNode = selectedTreeNode;
 
                 if (treeNode == null)
                 {
@@ -473,7 +454,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
             StateSave GetCurrentStateSaveFromSelection()
             {
-                var treeNode = CurrentTreeNode;
+                var treeNode = selectedTreeNode;
 
                 if (treeNode != null && treeNode.IsStateNode())
                 {
@@ -484,7 +465,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
             StateSaveCategory GetCurrentStateSaveCategoryFromSelection()
             {
-                TreeNode treeNode = CurrentTreeNode;
+                var treeNode = selectedTreeNode;
 
                 if (treeNode != null)
                 {
@@ -503,7 +484,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
             CustomVariable GetCurrentCustomVariableFromSelection()
             {
-                TreeNode treeNode = CurrentTreeNode;
+                var treeNode = selectedTreeNode;
 
                 if (treeNode == null)
                 {
@@ -518,12 +499,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                     return null;
                 }
             }
-            static EventResponseSave GetCurrentEventResponseSaveFromSelection()
+            EventResponseSave GetCurrentEventResponseSaveFromSelection()
             {
-                //This is needed because of designer issues.
-                if (MainGlueWindow.Self == null) return null;
-
-                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
+                var treeNode = selectedTreeNode;
 
                 if (treeNode == null)
                 {
