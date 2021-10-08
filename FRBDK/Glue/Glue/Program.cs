@@ -8,6 +8,7 @@ using System.Runtime.Remoting;
 using System.Threading;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using GlueFormsCore.Controls;
 
 namespace Glue
 {
@@ -38,13 +39,18 @@ namespace Glue
             // Creates a Mutex, if it works, then we can go on and start Glue, if not...
             //if (succeededToObtainMutex)
             {
+                var mainGlueWindow =
+                    new MainGlueWindow();
                 try
                 {
-                    Application.Run(new MainGlueWindow());
+                    Application.Run(mainGlueWindow);
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show(e.ToString());
+                    if(!MainPanelControl.IsExiting)
+                    {
+                        MessageBox.Show(e.ToString());
+                    }
                 }
                 //finally
                 //{
