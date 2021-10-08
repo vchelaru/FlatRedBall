@@ -18,13 +18,20 @@ using FlatRedBall.Glue.FormHelpers;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 {
-    public static class GlueStateSnapshot
+    public class GlueStateSnapshot
     {
-        public static BaseElementTreeNode CurrentElementTreeNode;
-        public static IElement CurrentElement;
-        public static TreeNode CurrentTreeNode;
-        public static StateSave CurrentState;
-        public static NamedObjectSave CurrentNamedObject;
+        public TreeNode CurrentTreeNode;
+        public BaseElementTreeNode CurrentElementTreeNode;
+        public GlueElement CurrentElement;
+        public EntitySave CurrentEntitySave;
+        public ScreenSave CurrentScreenSave;
+        public ReferencedFileSave CurrentReferencedFileSave;
+        public NamedObjectSave CurrentNamedObjectSave;
+        public StateSave CurrentStateSave;
+        public StateSaveCategory CurrentStateSaveCategory;
+        public CustomVariable CurrentCustomVariable;
+        public EventResponseSave CurrentEventResponseSave;
+
     }
 
     public class GlueState : IGlueState
@@ -35,126 +42,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         #endregion
 
-        #region Properties
+        #region Current Selection Properties
 
-        public static GlueState Self
-        {
-            get
-            {
-                if (mSelf == null)
-                {
-                    mSelf = new GlueState();
-                }
-                return mSelf;
-            }
-        }
-
-        public IFindManager Find
-        {
-            get;
-            private set;
-        }
-
-        public GlueElement CurrentElement
-        {
-            get 
-            {
-                if (CurrentEntitySave != null)
-                {
-                    return CurrentEntitySave;
-                }
-                else if (CurrentScreenSave != null)
-                {
-                    return CurrentScreenSave;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            set 
-            {
-                var treeNode = GlueState.Self.Find.ElementTreeNode(value);
-
-                CurrentTreeNode = treeNode;
-            }
-
-        }
-
-        public EntitySave CurrentEntitySave
-        {
-            get 
-            {
-                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
-
-                while (treeNode != null)
-                {
-                    if (treeNode is EntityTreeNode)
-                    {
-                        return ((EntityTreeNode)treeNode).EntitySave;
-                    }
-                    else
-                    {
-                        treeNode = treeNode.Parent;
-                    }
-                }
-
-                return null;
-            }
-            set { CurrentElement = value; }
-        }
-
-        public ScreenSave CurrentScreenSave
-        {
-            get
-            {
-
-#if UNIT_TESTS
-                return null;
-#endif
-                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
-
-                while (treeNode != null)
-                {
-                    if (treeNode is BaseElementTreeNode && ((BaseElementTreeNode)treeNode).SaveObject is ScreenSave)
-                    {
-                        return ((BaseElementTreeNode)treeNode).SaveObject as ScreenSave;
-                    }
-                    else
-                    {
-                        treeNode = treeNode.Parent;
-                    }
-                }
-
-                return null;
-            }
-            set
-            {
-                MainExplorerPlugin.Self.ElementTreeView.SelectedNode =
-                    GlueState.Self.Find.ScreenTreeNode(value);
-            }
-        }
-
-        public ReferencedFileSave CurrentReferencedFileSave
-        {
-            get
-            {
-                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
-
-                if (treeNode != null && treeNode.Tag != null && treeNode.Tag is ReferencedFileSave)
-                {
-                    return (ReferencedFileSave)treeNode.Tag;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            set
-            {
-                CurrentTreeNode = GlueState.Self.Find.ReferencedFileSaveTreeNode(value);
-            }
-        }
+        GlueStateSnapshot snapshot = new GlueStateSnapshot();
 
         public TreeNode CurrentTreeNode
         {
@@ -188,29 +78,132 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             return null;
         }
 
+        public GlueElement CurrentElement
+        {
+            get
+            {
+                return GetCurrentElementFromSelection();
+            }
+            set
+            {
+                var treeNode = GlueState.Self.Find.ElementTreeNode(value);
+
+                CurrentTreeNode = treeNode;
+            }
+
+        }
+        private GlueElement GetCurrentElementFromSelection()
+        {
+            if (CurrentEntitySave != null)
+            {
+                return CurrentEntitySave;
+            }
+            else if (CurrentScreenSave != null)
+            {
+                return CurrentScreenSave;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public EntitySave CurrentEntitySave
+        {
+            get
+            {
+                return GetCurrentEntitySaveFromSelection();
+            }
+            set { CurrentElement = value; }
+        }
+        private static EntitySave GetCurrentEntitySaveFromSelection()
+        {
+            TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
+
+            while (treeNode != null)
+            {
+                if (treeNode is EntityTreeNode)
+                {
+                    return ((EntityTreeNode)treeNode).EntitySave;
+                }
+                else
+                {
+                    treeNode = treeNode.Parent;
+                }
+            }
+
+            return null;
+        }
+
+        public ScreenSave CurrentScreenSave
+        {
+            get
+            {
+                return GetCurrentScreenSaveFromSelection();
+            }
+            set
+            {
+                MainExplorerPlugin.Self.ElementTreeView.SelectedNode =
+                    GlueState.Self.Find.ScreenTreeNode(value);
+            }
+        }
+        private static ScreenSave GetCurrentScreenSaveFromSelection()
+        {
+
+#if UNIT_TESTS
+                return null;
+#endif
+            TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
+
+            while (treeNode != null)
+            {
+                if (treeNode is BaseElementTreeNode && ((BaseElementTreeNode)treeNode).SaveObject is ScreenSave)
+                {
+                    return ((BaseElementTreeNode)treeNode).SaveObject as ScreenSave;
+                }
+                else
+                {
+                    treeNode = treeNode.Parent;
+                }
+            }
+
+            return null;
+        }
+
+        public ReferencedFileSave CurrentReferencedFileSave
+        {
+            get
+            {
+                return GetCurrentReferencedFileSaveFromSelection();
+            }
+            set
+            {
+                CurrentTreeNode = GlueState.Self.Find.ReferencedFileSaveTreeNode(value);
+            }
+        }
+        private static ReferencedFileSave GetCurrentReferencedFileSaveFromSelection()
+        {
+            TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
+
+            if (treeNode != null && treeNode.Tag != null && treeNode.Tag is ReferencedFileSave)
+            {
+                return (ReferencedFileSave)treeNode.Tag;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public NamedObjectSave CurrentNamedObjectSave
         {
             get
             {
-
-                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
-
-                if (treeNode == null)
-                {
-                    return null;
-                }
-                else if (treeNode.Tag != null && treeNode.Tag is NamedObjectSave)
-                {
-                    return (NamedObjectSave)treeNode.Tag;
-                }
-                else
-                {
-                    return null;
-                }
+                return GetCurrentNamedObjectSaveFromSelection();
             }
             set
             {
-                if(value == null)
+                if (value == null)
                 {
                     CurrentTreeNode = null;
                 }
@@ -220,9 +213,26 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 }
             }
         }
+        private static NamedObjectSave GetCurrentNamedObjectSaveFromSelection()
+        {
+            TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
+
+            if (treeNode == null)
+            {
+                return null;
+            }
+            else if (treeNode.Tag != null && treeNode.Tag is NamedObjectSave)
+            {
+                return (NamedObjectSave)treeNode.Tag;
+            }
+            else
+            {
+                return null;
+            }
+        }
 
         public StateSave CurrentStateSave => GetCurrentStateSaveFromSelection();
-        StateSave GetCurrentStateSaveFromSelection()
+        private StateSave GetCurrentStateSaveFromSelection()
         {
             var treeNode = CurrentTreeNode;
 
@@ -238,43 +248,34 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         {
             get
             {
-                TreeNode treeNode = CurrentTreeNode;
-
-                if (treeNode != null)
-                {
-                    if (treeNode.IsStateCategoryNode())
-                    {
-                        return (StateSaveCategory)treeNode.Tag;
-                    }
-                    // if the current node is a state, maybe the parent is a category
-                    else if (treeNode.Parent != null && treeNode.Parent.IsStateCategoryNode())
-                    {
-                        return (StateSaveCategory)treeNode.Parent.Tag;
-                    }
-                }
-
-                return null;
+                return GetCurrentStateSaveCategoryFromSelection();
             }
+        }
+        private StateSaveCategory GetCurrentStateSaveCategoryFromSelection()
+        {
+            TreeNode treeNode = CurrentTreeNode;
+
+            if (treeNode != null)
+            {
+                if (treeNode.IsStateCategoryNode())
+                {
+                    return (StateSaveCategory)treeNode.Tag;
+                }
+                // if the current node is a state, maybe the parent is a category
+                else if (treeNode.Parent != null && treeNode.Parent.IsStateCategoryNode())
+                {
+                    return (StateSaveCategory)treeNode.Parent.Tag;
+                }
+            }
+
+            return null;
         }
 
         public CustomVariable CurrentCustomVariable
         {
             get
             {
-                TreeNode treeNode = CurrentTreeNode;
-
-                if (treeNode == null)
-                {
-                    return null;
-                }
-                else if (treeNode.IsCustomVariable())
-                {
-                    return (CustomVariable)treeNode.Tag;
-                }
-                else
-                {
-                    return null;
-                }
+                return GetCurrentCustomVariableFromSelection();
 
             }
 
@@ -285,11 +286,86 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
 
         }
+        private CustomVariable GetCurrentCustomVariableFromSelection()
+        {
+            TreeNode treeNode = CurrentTreeNode;
+
+            if (treeNode == null)
+            {
+                return null;
+            }
+            else if (treeNode.IsCustomVariable())
+            {
+                return (CustomVariable)treeNode.Tag;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public EventResponseSave CurrentEventResponseSave
+        {
+            get
+            {
+                return GetCurrentEventResponseSaveFromSelection();
+            }
+            set
+            {
+                TreeNode treeNode = GlueState.Self.Find.EventResponseTreeNode(value);
+
+                ElementViewWindow.SelectedNode = treeNode;
+
+            }
+        }
+        private static EventResponseSave GetCurrentEventResponseSaveFromSelection()
+        {
+            //This is needed because of designer issues.
+            if (MainGlueWindow.Self == null) return null;
+
+            TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
+
+            if (treeNode == null)
+            {
+                return null;
+            }
+            else if (treeNode.Tag != null && treeNode.Tag is EventResponseSave)
+            {
+                return (EventResponseSave)treeNode.Tag;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        #endregion
+
+        #region Properties
+
+        public static GlueState Self
+        {
+            get
+            {
+                if (mSelf == null)
+                {
+                    mSelf = new GlueState();
+                }
+                return mSelf;
+            }
+        }
+
+        public IFindManager Find
+        {
+            get;
+            private set;
+        }
         public States.Clipboard Clipboard
         {
             get;
             private set;
         }
+
 
         public string ContentDirectory
         {
@@ -309,7 +385,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             get
             {
                 var currentGlueProjectFileName = CurrentCodeProjectFileName;
-                if(!string.IsNullOrEmpty(currentGlueProjectFileName))
+                if (!string.IsNullOrEmpty(currentGlueProjectFileName))
                 {
                     return FlatRedBall.IO.FileManager.GetDirectory(currentGlueProjectFileName);
                 }
@@ -354,7 +430,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 }
                 else
                 {
-                    if(CurrentGlueProject?.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
+                    if (CurrentGlueProject?.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
                     {
                         return FileManager.RemoveExtension(CurrentMainProject.FullFileName) + ".gluj";
                     }
@@ -377,36 +453,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
-        public EventResponseSave CurrentEventResponseSave
-        {
-            get
-            {
-                //This is needed because of designer issues.
-                if (MainGlueWindow.Self == null) return null;
-
-                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
-
-                if (treeNode == null)
-                {
-                    return null;
-                }
-                else if (treeNode.Tag != null && treeNode.Tag is EventResponseSave)
-                {
-                    return (EventResponseSave)treeNode.Tag;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            set
-            {
-                TreeNode treeNode = GlueState.Self.Find.EventResponseTreeNode(value);
-
-                ElementViewWindow.SelectedNode = treeNode;
-
-            }
-        }
 
 
         public ErrorListViewModel ErrorList { get; private set; } = new ErrorListViewModel();
@@ -504,15 +550,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public void TakeSnapshot()
         {
-            MainGlueWindow.Self.Invoke((MethodInvoker)delegate
-            {
-                GlueStateSnapshot.CurrentElementTreeNode = CurrentElementTreeNode;
-                GlueStateSnapshot.CurrentState = CurrentStateSave;
-                GlueStateSnapshot.CurrentTreeNode = CurrentTreeNode;
-                GlueStateSnapshot.CurrentNamedObject = CurrentNamedObjectSave;
-                GlueStateSnapshot.CurrentElement = CurrentElement;
-            });
+            snapshot.CurrentTreeNode = GetCurrentTreeNodeFromSelection();
+            snapshot.CurrentElementTreeNode = GetCurrentElementTreeNodeFromSelection();
+            snapshot.CurrentElement = GetCurrentElementFromSelection();
+            snapshot.CurrentEntitySave = GetCurrentEntitySaveFromSelection();
+            snapshot.CurrentScreenSave = GetCurrentScreenSaveFromSelection();
+            snapshot.CurrentReferencedFileSave = GetCurrentReferencedFileSaveFromSelection();
+            snapshot.CurrentNamedObjectSave = GetCurrentNamedObjectSaveFromSelection();
+            snapshot.CurrentStateSave = GetCurrentStateSaveFromSelection();
+            snapshot.CurrentStateSaveCategory = GetCurrentStateSaveCategoryFromSelection();
+            snapshot.CurrentCustomVariable = GetCurrentCustomVariableFromSelection();
+            snapshot.CurrentEventResponseSave = GetCurrentEventResponseSaveFromSelection();
         }
-
     }
 }
