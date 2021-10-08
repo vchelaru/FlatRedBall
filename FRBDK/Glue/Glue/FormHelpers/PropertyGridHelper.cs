@@ -65,7 +65,7 @@ namespace FlatRedBall.Glue.FormHelpers
             
         }
 
-
+        [Obsolete("Use RefreshCommands.RefreshPropertyGrid")]
         public static void UpdateDisplayedPropertyGridProperties()
         {
 
