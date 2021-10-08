@@ -74,14 +74,18 @@ namespace OfficialPlugins.Compiler
                 var paragraph = TextBox.Document.Blocks.Last() as Paragraph;
                 foreach (var line in split)
                 {
-                    
-                    var outputType = outputParser.GetOutputType(line);
-                    if(outputType != OutputType.Warning)
+                    if(!string.IsNullOrWhiteSpace(line))
                     {
-                        var color = outputType == OutputType.Error ? Brushes.Red : Brushes.Black;
-                        paragraph.Inlines.Add(new Run(line + "\r\n") { Foreground = color});
+                        var outputType = outputParser.GetOutputType(line);
+                        if(outputType != OutputType.Warning)
+                        {
+                            var color = outputType == OutputType.Error ? Brushes.Red : Brushes.Black;
+                            paragraph.Inlines.Add(new Run(line + "\r\n") { Foreground = color});
+                        }
                     }
                 }
+
+                TextBox.ScrollToEnd();
             });
         }
 
