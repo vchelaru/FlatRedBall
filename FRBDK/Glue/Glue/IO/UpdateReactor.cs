@@ -121,9 +121,9 @@ namespace FlatRedBall.Glue.IO
                             {
                                 if (rfs.GetContainerType() == ContainerType.Entity)
                                 {
-                                    if (EditorLogic.CurrentEntityTreeNode != null)
+                                    if (GlueState.Self.CurrentEntitySave != null)
                                     {
-                                        if (EditorLogic.CurrentEntitySave == rfs.GetContainer())
+                                        if (GlueState.Self.CurrentEntitySave == rfs.GetContainer())
                                         {
                                             PluginManager.RefreshCurrentElement();
                                         }
@@ -131,9 +131,9 @@ namespace FlatRedBall.Glue.IO
                                 }
                                 else if (rfs.GetContainerType() == ContainerType.Screen)
                                 {
-                                    if (EditorLogic.CurrentScreenTreeNode != null)
+                                    if (GlueState.Self.CurrentScreenSave != null)
                                     {
-                                        if (EditorLogic.CurrentScreenSave == rfs.GetContainer())
+                                        if (GlueState.Self.CurrentScreenSave == rfs.GetContainer())
                                         {
                                             PluginManager.RefreshCurrentElement();
                                         }
@@ -533,7 +533,7 @@ namespace FlatRedBall.Glue.IO
                                 shouldGenerateEntityCode = true;
                                 shouldSave = true;
 
-                                if (entity == EditorLogic.CurrentEntitySave)
+                                if (entity == GlueState.Self.CurrentEntitySave)
                                 {
                                     MainGlueWindow.Self.PropertyGrid.Refresh();
                                 }

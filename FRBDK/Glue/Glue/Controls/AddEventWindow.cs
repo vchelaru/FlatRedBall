@@ -297,13 +297,13 @@ namespace FlatRedBall.Glue.Controls
         {
             List<ExposableEvent> availableEvents = null;
 
-            if (EditorLogic.CurrentEntitySave != null)
+            if (GlueState.Self.CurrentEntitySave != null)
             {
-                availableEvents = ExposedEventManager.GetExposableEventsFor(EditorLogic.CurrentEntitySave, true);
+                availableEvents = ExposedEventManager.GetExposableEventsFor(GlueState.Self.CurrentEntitySave, true);
 
 
             }
-            else if (EditorLogic.CurrentScreenSave != null)
+            else if (GlueState.Self.CurrentScreenSave != null)
             {
                 availableEvents = ExposedEventManager.GetExposableEventsFor(EditorLogic.CurrentScreenSave, true);
             }
@@ -344,8 +344,8 @@ namespace FlatRedBall.Glue.Controls
         {
             // See if if the user is trying to create a reserved variable
             if (this.DialogResult == System.Windows.Forms.DialogResult.OK &&
-                radCreateNewEvent.Checked && 
-                EditorLogic.CurrentEntitySave != null &&
+                radCreateNewEvent.Checked &&
+                GlueState.Self.CurrentEntitySave != null &&
                 ExposedVariableManager.IsMemberDefinedByPositionedObject(this.textBox1.Text)
                 )
             {

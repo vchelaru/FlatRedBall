@@ -414,7 +414,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         private static void HandleAddVariableOk(AddVariableWindow addVariableWindow)
         {
             string resultName = addVariableWindow.ResultName;
-            IElement currentElement = EditorLogic.CurrentElement;
+            IElement currentElement = GlueState.Self.CurrentElement;
             string failureMessage;
 
             bool didFailureOccur = IsVariableInvalid(addVariableWindow, resultName, currentElement, out failureMessage);
@@ -437,7 +437,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
 
                 // See if there is already a variable in the base with this name
-                CustomVariable existingVariableInBase = EditorLogic.CurrentElement.GetCustomVariableRecursively(resultName);
+                CustomVariable existingVariableInBase = GlueState.Self.CurrentElement.GetCustomVariableRecursively(resultName);
 
                 bool canCreate = true;
                 bool isDefinedByBase = false;
@@ -542,7 +542,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         private static bool IsUserTryingToCreateNewWithExposableName(string resultName, bool isExposeTabSelected)
         {
-            List<string> exposables = ExposedVariableManager.GetExposableMembersFor(EditorLogic.CurrentElement, false).Select(item => item.Member).ToList();
+            List<string> exposables = ExposedVariableManager.GetExposableMembersFor(GlueState.Self.CurrentElement, false).Select(item => item.Member).ToList();
             if (exposables.Contains(resultName))
             {
                 return isExposeTabSelected == false;
@@ -614,11 +614,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(addScreenWindow.Result);
 
                     GlueState.Self.CurrentElement = screen;
-                    var treeNode = EditorLogic.CurrentScreenTreeNode;
-                    if (treeNode != null)
-                    {
-                        treeNode.Expand();
-                    }
+                    GlueState.Self.CurrentElementTreeNode?.Expand();
 
                     PluginManager.ReactToNewScreenCreatedWithUi(screen, addScreenWindow);
 
@@ -806,7 +802,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (!string.IsNullOrEmpty(customVariable.SourceObject))
                 {
-                    NamedObjectSave namedObjectSave = EditorLogic.CurrentElement.GetNamedObjectRecursively(customVariable.SourceObject);
+                    NamedObjectSave namedObjectSave = GlueState.Self.CurrentElement.GetNamedObjectRecursively(customVariable.SourceObject);
 
                     if (namedObjectSave != null)
                     {
@@ -826,7 +822,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (!string.IsNullOrEmpty(ers.SourceObject))
                 {
-                    NamedObjectSave namedObjectSave = EditorLogic.CurrentElement.GetNamedObjectRecursively(ers.SourceObject);
+                    NamedObjectSave namedObjectSave = GlueState.Self.CurrentElement.GetNamedObjectRecursively(ers.SourceObject);
 
                     if (namedObjectSave != null)
                     {

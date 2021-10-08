@@ -177,7 +177,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         private void RefreshSelectionInternal(object sender, EventArgs e)
         {
             // During a reload the CurrentElement may no longer be valid:
-            var element = EditorLogic.CurrentElement;
+            var element = GlueState.Self.CurrentElement;
             if (element != null)
             {
                 if (EditorLogic.CurrentCustomVariable != null)

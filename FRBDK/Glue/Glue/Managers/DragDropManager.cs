@@ -72,7 +72,7 @@ namespace FlatRedBall.Glue.Managers
 
                 if (succeeded)
                 {
-                    if (EditorLogic.CurrentElement != null)
+                    if (GlueState.Self.CurrentElement != null)
                     {
                         ElementViewWindow.GenerateSelectedElementCode();
 

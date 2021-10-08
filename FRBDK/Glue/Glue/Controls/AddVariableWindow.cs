@@ -89,16 +89,16 @@ namespace FlatRedBall.Glue.Controls
             {
                 if (radExistingVariable.Checked)
                 {
-                    if (EditorLogic.CurrentEntitySave != null)
+                    if (GlueState.Self.CurrentEntitySave != null)
                     {
-                        string type = ExposedVariableManager.GetMemberTypeForEntity(ResultName, EditorLogic.CurrentEntitySave);
+                        string type = ExposedVariableManager.GetMemberTypeForEntity(ResultName, GlueState.Self.CurrentEntitySave);
 
                         return TypeManager.ConvertToCommonType(type);
 
                     }
                     else
                     {
-                        string type = ExposedVariableManager.GetMemberTypeForScreen(ResultName, EditorLogic.CurrentScreenSave);
+                        string type = ExposedVariableManager.GetMemberTypeForScreen(ResultName, GlueState.Self.CurrentScreenSave);
 
                         return TypeManager.ConvertToCommonType(type);
                     }
@@ -266,14 +266,14 @@ namespace FlatRedBall.Glue.Controls
         {
             List<string> availableVariables = null;
 
-            if (EditorLogic.CurrentEntitySave != null)
+            if (GlueState.Self.CurrentEntitySave != null)
             {
-                availableVariables = ExposedVariableManager.GetExposableMembersFor(EditorLogic.CurrentEntitySave, true).Select(item=>item.Member).ToList();
+                availableVariables = ExposedVariableManager.GetExposableMembersFor(GlueState.Self.CurrentEntitySave, true).Select(item=>item.Member).ToList();
 
             }
-            else if (EditorLogic.CurrentScreenSave != null)
+            else if (GlueState.Self.CurrentScreenSave != null)
             {
-                availableVariables = ExposedVariableManager.GetExposableMembersFor(EditorLogic.CurrentScreenSave, true).Select(item => item.Member).ToList();
+                availableVariables = ExposedVariableManager.GetExposableMembersFor(GlueState.Self.CurrentScreenSave, true).Select(item => item.Member).ToList();
             }
 
             if (availableVariables != null)
@@ -322,8 +322,8 @@ namespace FlatRedBall.Glue.Controls
         {
             // See if if the user is trying to create a reserved variable
             if (this.DialogResult == System.Windows.Forms.DialogResult.OK &&
-                this.radCreateNewVariable.Checked && 
-                EditorLogic.CurrentEntitySave != null &&
+                this.radCreateNewVariable.Checked &&
+                GlueState.Self.CurrentEntitySave != null &&
                 ExposedVariableManager.IsMemberDefinedByPositionedObject(this.createNewVariableControl1.VariableName)
                 )
             {

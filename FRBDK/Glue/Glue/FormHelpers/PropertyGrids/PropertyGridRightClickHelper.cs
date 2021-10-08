@@ -79,9 +79,9 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
             #region If there is a current NamedObject
 
-            else if (EditorLogic.CurrentNamedObject != null)
+            else if (GlueState.Self.CurrentNamedObjectSave != null)
             {
-                NamedObjectSave namedObject = EditorLogic.CurrentNamedObject;
+                NamedObjectSave namedObject = GlueState.Self.CurrentNamedObjectSave;
 
                 // Is this a variable
                 if (namedObject.GetCustomVariable(label) != null)
@@ -110,11 +110,11 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
             #region If there is a current Entity Save (to be checked *after* the checks above)
 
-            else if (EditorLogic.CurrentElement != null)
+            else if (GlueState.Self.CurrentElement != null)
             {
                 if (EditorLogic.CurrentTreeNode.IsRootCustomVariablesNode())
                 {
-                    CustomVariable customVariable = EditorLogic.CurrentElement.GetCustomVariable(label);
+                    CustomVariable customVariable = GlueState.Self.CurrentElement.GetCustomVariable(label);
 
                     if(customVariable != null)
                     {
@@ -122,10 +122,10 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                         contextMenu.MenuItems.Add(mSetDefaultMenuItem);
                     }
                 }
-                else if (EditorLogic.CurrentEntitySave != null)
+                else if (GlueState.Self.CurrentEntitySave != null)
                 {
                     
-                    EntitySave sourceEntitySave = EditorLogic.CurrentEntitySave;
+                    EntitySave sourceEntitySave = GlueState.Self.CurrentEntitySave;
 
                     if (label == "ImplementsIVisible" && sourceEntitySave != null && sourceEntitySave.ImplementsIVisible
                         && sourceEntitySave.GetCustomVariable("Visible") == null
@@ -133,7 +133,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                     {
                         contextMenu.MenuItems.Add(mExposeVariable);
                     }
-                    else if (label == "BaseEntity" && !string.IsNullOrEmpty(EditorLogic.CurrentEntitySave.BaseEntity))
+                    else if (label == "BaseEntity" && !string.IsNullOrEmpty(GlueState.Self.CurrentEntitySave.BaseEntity))
                     {
                         contextMenu.MenuItems.Add("Go to definition", GoToDefinitionClick);
 
@@ -181,7 +181,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             }
             else
             {
-                NamedObjectSave currentNamedObject = EditorLogic.CurrentNamedObject;
+                NamedObjectSave currentNamedObject = GlueState.Self.CurrentNamedObjectSave;
 
                 string variableToSet = MainGlueWindow.Self.PropertyGrid.SelectedGridItem.Label;
 

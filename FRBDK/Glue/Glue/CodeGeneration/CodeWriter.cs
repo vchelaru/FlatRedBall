@@ -379,9 +379,15 @@ namespace FlatRedBallAddOns.Entities
             rootBlock.Line("#endif");
 
             var project = GlueState.Self.CurrentGlueProject;
-            if(project.FileVersion >= (int)GlueProjectSave.GluxVersions. SupportsEditMode)
+            if(project.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode)
             {
                 rootBlock.Line("#define SUPPORTS_GLUEVIEW_2");
+            }
+            else
+            {
+                rootBlock.Line($"The project needs to be new enough, but it is on version {project.FileVersion}");
+                rootBlock.Line("//#define SUPPORTS_GLUEVIEW_2");
+
             }
         }
 

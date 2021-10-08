@@ -24,18 +24,6 @@ namespace FlatRedBall.Glue
 
     public static class EditorLogic
     {
-        public static void TakeSnapshot()
-        {
-            MainGlueWindow.Self.Invoke((MethodInvoker)delegate
-            {
-                EditorLogicSnapshot.CurrentElementTreeNode = CurrentElementTreeNode;
-                EditorLogicSnapshot.CurrentState = CurrentStateSave;
-                EditorLogicSnapshot.CurrentTreeNode = CurrentTreeNode;
-                EditorLogicSnapshot.CurrentNamedObject = CurrentNamedObject;
-                EditorLogicSnapshot.CurrentElement = CurrentElement;
-            });
-        }
-
         public static EventResponseSave CurrentEventResponseSave
         {
             get
@@ -71,26 +59,17 @@ namespace FlatRedBall.Glue
         {
             get
             {
-                if (CurrentScreenSave != null)
+                if (GlueState.Self.CurrentScreenSave != null)
                 {
-                    return CurrentScreenSave;
+                    return GlueState.Self.CurrentScreenSave;
                 }
-                else if (CurrentEntitySave != null)
+                else if (GlueState.Self.CurrentEntitySave != null)
                 {
-                    return CurrentEntitySave;
+                    return GlueState.Self.CurrentEntitySave;
                 }
 
                 return null;
 
-            }
-        }
-
-        [Obsolete("Use GlueState")]
-        public static NamedObjectSave CurrentNamedObject
-        {
-            get
-            {
-                return GlueState.Self.CurrentNamedObjectSave;
             }
         }
 
@@ -144,160 +123,50 @@ namespace FlatRedBall.Glue
             }
         }
 
-        [Obsolete("Use GlueState.CurrentElement")]
-		public static IElement CurrentElement
+        public static BaseElementTreeNode CurrentElementTreeNode => GetCurrentElementTreeNodeFromSelection();
+        private static BaseElementTreeNode GetCurrentElementTreeNodeFromSelection()
+        {
+            TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
+
+            while (treeNode != null)
+            {
+                if (treeNode is BaseElementTreeNode)
+                {
+                    return ((BaseElementTreeNode)treeNode);
+                }
+                else
+                {
+                    treeNode = treeNode.Parent;
+                }
+            }
+            return null;
+        }
+
+        public static TreeNode CurrentTreeNode
 		{
-            get => GlueState.Self.CurrentElement;
-            set => GlueState.Self.CurrentElement = value as GlueElement;
-		}
-
-        [Obsolete("Use GlueState.Self.CurrentEntity")]
-        public static EntitySave CurrentEntitySave
-        {
-            get
-            {
-#if UNIT_TESTS
-                return null;
-#endif
-                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
-
-                while (treeNode != null)
-                {
-                    if (treeNode is EntityTreeNode)
-                    {
-                        return ((EntityTreeNode)treeNode).EntitySave;
-                    }
-                    else
-                    {
-                        treeNode = treeNode.Parent;
-                    }
-                }
-
-                return null;
-            }
-
-        }
-
-        public static ScreenSave CurrentScreenSave
-        {
-            get
-            {
-#if UNIT_TESTS
-                return null;
-#endif
-                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
-
-                while (treeNode != null)
-                {
-                    if (treeNode is BaseElementTreeNode && ((BaseElementTreeNode)treeNode).SaveObject is ScreenSave)
-                    {
-                        return ((BaseElementTreeNode)treeNode).SaveObject as ScreenSave;
-                    }
-                    else
-                    {
-                        treeNode = treeNode.Parent;
-                    }
-                }
-
-                return null;
-            }
-            set
-            {
-                MainExplorerPlugin.Self.ElementTreeView.SelectedNode =
-                    GlueState.Self.Find.ScreenTreeNode(value);
-            }
-        }
-
-        public static ScreenTreeNode CurrentScreenTreeNode
-        {
-            get
-            {
-                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
-
-                while (treeNode != null)
-                {
-                    if (treeNode is ScreenTreeNode)
-                    {
-                        return ((ScreenTreeNode)treeNode);
-                    }
-                    else
-                    {
-                        treeNode = treeNode.Parent;
-                    }
-                }
-
-                return null;
-            }
-        }
-
-        public static EntityTreeNode CurrentEntityTreeNode
-        {
-            get
-            {
-                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
-
-                while (treeNode != null)
-                {
-                    if (treeNode is EntityTreeNode)
-                    {
-                        return ((EntityTreeNode)treeNode);
-                    }
-                    else
-                    {
-                        treeNode = treeNode.Parent;
-                    }
-                }
-                return null;
-            }
-        }
-
-        public static BaseElementTreeNode CurrentElementTreeNode
-        {
-            get
-            {
-                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
-
-                while (treeNode != null)
-                {
-                    if (treeNode is BaseElementTreeNode)
-                    {
-                        return ((BaseElementTreeNode)treeNode);
-                    }
-                    else
-                    {
-                        treeNode = treeNode.Parent;
-                    }
-                }
-                return null;
-            }
-        }
-
-		public static TreeNode CurrentTreeNode
-		{
-			get 
-            { 
-                return MainExplorerPlugin.Self.ElementTreeView.SelectedNode; 
-            }
+			get => GetCurrentTreeNodeFromSelection();
             set
             {
                 MainExplorerPlugin.Self.ElementTreeView.SelectedNode = value;
             }
 		}
+        private static TreeNode GetCurrentTreeNodeFromSelection()
+        {
+            return MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
+        }
 
         [Obsolete("Use GlueState")]
-        public static StateSave CurrentStateSave
+        public static StateSave CurrentStateSave => GetCurrentStateSaveFromSelection();
+        static StateSave GetCurrentStateSaveFromSelection()
         {
-            get
+            TreeNode treeNode = CurrentTreeNode;
+
+            if (treeNode != null && treeNode.IsStateNode())
             {
-                TreeNode treeNode = CurrentTreeNode;
-
-                if (treeNode != null && treeNode.IsStateNode())
-                {
-                    return (StateSave)treeNode.Tag;
-                }
-
-                return null;
+                return (StateSave)treeNode.Tag;
             }
+
+            return null;
         }
 
         public static StateSaveCategory CurrentStateSaveCategory

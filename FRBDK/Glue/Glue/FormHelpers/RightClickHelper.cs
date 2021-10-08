@@ -169,7 +169,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     AddRemoveFromProjectItems(form, menu);
 
-                    if (EditorLogic.CurrentScreenSave.IsRequiredAtStartup)
+                    if (GlueState.Self.CurrentScreenSave.IsRequiredAtStartup)
                     {
                         mMakeRequiredAtStartup.Text = "Remove StartUp Requirement";
                     }
@@ -654,7 +654,7 @@ namespace FlatRedBall.Glue.FormHelpers
             editResetVariablesToolStripMenuItem.Click += (not, used) =>
             {
 
-                NamedObjectSave nos = EditorLogic.CurrentNamedObject;
+                var nos = GlueState.Self.CurrentNamedObjectSave;
 
                 VariablesToResetWindow vtrw = new VariablesToResetWindow(nos.VariablesToReset);
                 DialogResult result = vtrw.ShowDialog(MainGlueWindow.Self);
@@ -875,7 +875,7 @@ namespace FlatRedBall.Glue.FormHelpers
         public static void HandleAddEventOk(AddEventWindow addEventWindow)
         {
             string resultName = addEventWindow.ResultName;
-            IElement currentElement = EditorLogic.CurrentElement;
+            IElement currentElement = GlueState.Self.CurrentElement;
 
             string failureMessage;
             bool isInvalid = DialogCommands.IsVariableInvalid(null, resultName, currentElement, out failureMessage);
@@ -1072,7 +1072,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
                 else
                 {
-                    IElement element = EditorLogic.CurrentElement;
+                    IElement element = GlueState.Self.CurrentElement;
 
                     StateSaveCategory newCategory = new StateSaveCategory();
                     newCategory.Name = tiw.Result;
@@ -1251,9 +1251,9 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 erlw.PopulateWithReferencesTo(EditorLogic.CurrentReferencedFile);
             }
-            else if (EditorLogic.CurrentNamedObject != null)
+            else if (GlueState.Self.CurrentNamedObjectSave != null)
             {
-                erlw.PopulateWithReferencesTo(EditorLogic.CurrentNamedObject, GlueState.Self.CurrentElement);
+                erlw.PopulateWithReferencesTo(GlueState.Self.CurrentNamedObjectSave, GlueState.Self.CurrentElement);
             }
             else if (EditorLogic.CurrentCustomVariable != null)
             {
@@ -1411,9 +1411,9 @@ namespace FlatRedBall.Glue.FormHelpers
                     #region Else if is EventSave
                     else if (EditorLogic.CurrentEventResponseSave != null)
                     {
-                        var element = EditorLogic.CurrentElement;
+                        var element = GlueState.Self.CurrentElement;
                         var eventResponse = EditorLogic.CurrentEventResponseSave;
-                        EditorLogic.CurrentElement.Events.Remove(eventResponse);
+                        GlueState.Self.CurrentElement.Events.Remove(eventResponse);
                         PluginManager.ReactToEventResponseRemoved(element, eventResponse);
                         GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
                     }
@@ -1422,9 +1422,9 @@ namespace FlatRedBall.Glue.FormHelpers
                     #region Else if is ScreenSave
 
                     // Then test higher if deep didn't get removed
-                    else if (EditorLogic.CurrentScreenSave != null)
+                    else if (GlueState.Self.CurrentScreenSave != null)
                     {
-                        var screenToRemove = EditorLogic.CurrentScreenSave;
+                        var screenToRemove = GlueState.Self.CurrentScreenSave;
                         RemoveScreen(screenToRemove, filesToRemove);
                     }
 
@@ -1515,14 +1515,14 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     if (saveAndRegenerate)
                     {
-                        if (EditorLogic.CurrentScreenTreeNode != null)
+                        if (GlueState.Self.CurrentScreenSave != null)
                         {
-                            var screen = EditorLogic.CurrentScreenSave;
+                            var screen = GlueState.Self.CurrentScreenSave;
                             GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(screen);
                         }
-                        else if (EditorLogic.CurrentEntityTreeNode != null)
+                        else if (GlueState.Self.CurrentEntitySave != null)
                         {
-                            var entity = EditorLogic.CurrentEntitySave;
+                            var entity = GlueState.Self.CurrentEntitySave;
                             GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(entity);
                         }
                         else if (EditorLogic.CurrentReferencedFile != null)
@@ -2034,7 +2034,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 // cannot regenerate the non-generated code file.
 
 
-                var currentElement = EditorLogic.CurrentElement;
+                var currentElement = GlueState.Self.CurrentElement;
 
                 if (currentElement != null)
                 {
@@ -2065,14 +2065,10 @@ namespace FlatRedBall.Glue.FormHelpers
 
             CustomVariableHelper.SetDefaultValueFor(newVariable, currentElement);
 
-            if (EditorLogic.CurrentEntityTreeNode != null)
+            if (GlueState.Self.CurrentElementTreeNode != null)
             {
-                EditorLogic.CurrentEntityTreeNode.RefreshTreeNodes();
+                GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
 
-            }
-            else if (EditorLogic.CurrentScreenTreeNode != null)
-            {
-                EditorLogic.CurrentScreenTreeNode.RefreshTreeNodes();
             }
 
             MainGlueWindow.Self.PropertyGrid.Refresh();
@@ -2410,7 +2406,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static void MakeRequiredAtStartupClick(object sender, EventArgs e)
         {
-            ScreenSave screenSave = EditorLogic.CurrentScreenSave;
+            ScreenSave screenSave = GlueState.Self.CurrentScreenSave;
 
 
             ScreenTreeNode treeNode = null;

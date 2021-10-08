@@ -83,34 +83,34 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public bool SelectedTreeNodeIsEntity()
         {
-            return EditorLogic.CurrentEntitySave != null;
+            return GlueState.Self.CurrentEntitySave != null;
         }
 
         public bool SelectedTreeNodeIsScreen()
         {
-            return EditorLogic.CurrentScreenSave != null;
+            return GlueState.Self.CurrentScreenSave != null;
         }
 
         public EntitySave GetSelectedEntitySave()
         {
-            return EditorLogic.CurrentEntitySave;
+            return GlueState.Self.CurrentEntitySave;
         }
 
         public ScreenSave GetSelectedScreenSave()
         {
-            return EditorLogic.CurrentScreenSave;
+            return GlueState.Self.CurrentScreenSave;
         }
 
         public void SetProperty<T>(string name, T value)
         {
-            if(EditorLogic.CurrentEntitySave != null)
+            if(GlueState.Self.CurrentEntitySave != null)
             {
-                var currentEntity = EditorLogic.CurrentEntitySave;
+                var currentEntity = GlueState.Self.CurrentEntitySave;
 
                 SetProperty(currentEntity, name, value);
-            }else if(EditorLogic.CurrentScreenSave != null)
+            }else if(GlueState.Self.CurrentScreenSave != null)
             {
-                var currentScreen = EditorLogic.CurrentScreenSave;
+                var currentScreen = GlueState.Self.CurrentScreenSave;
 
                 SetProperty(currentScreen, name, value);
             }else
@@ -139,16 +139,16 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public T GetProperty<T>(string name)
         {
-            if (EditorLogic.CurrentEntitySave != null)
+            if (GlueState.Self.CurrentEntitySave != null)
             {
-                var currentEntity = EditorLogic.CurrentEntitySave;
+                var currentEntity = GlueState.Self.CurrentEntitySave;
 
                 return GetProperty<T>(currentEntity, name);
             }
             
-            if (EditorLogic.CurrentScreenSave != null)
+            if (GlueState.Self.CurrentScreenSave != null)
             {
-                var currentScreen = EditorLogic.CurrentScreenSave;
+                var currentScreen = GlueState.Self.CurrentScreenSave;
 
                 return GetProperty<T>(currentScreen, name);
             }

@@ -7,6 +7,7 @@ using FlatRedBall.Glue.SaveClasses;
 using System.ComponentModel;
 using FlatRedBall.Glue.FormHelpers.StringConverters;
 using FlatRedBall.Instructions.Reflection;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 {
@@ -207,13 +208,13 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                 value = PropertyValuePair.ConvertStringToType((string)args.Value, variableRuntimeType);
             }
 
-            if (EditorLogic.CurrentEntitySave != null)
+            if (GlueState.Self.CurrentEntitySave != null)
             {
-                EditorLogic.CurrentEntitySave.SetCustomVariable(EditorLogic.CurrentCustomVariable.Name, value);
+                GlueState.Self.CurrentEntitySave.SetCustomVariable(EditorLogic.CurrentCustomVariable.Name, value);
             }
             else
             {
-                EditorLogic.CurrentScreenSave.SetCustomVariable(EditorLogic.CurrentCustomVariable.Name, value);
+                GlueState.Self.CurrentScreenSave.SetCustomVariable(EditorLogic.CurrentCustomVariable.Name, value);
 
             }
         }

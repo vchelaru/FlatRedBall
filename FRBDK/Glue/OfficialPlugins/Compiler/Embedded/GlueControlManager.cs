@@ -172,10 +172,10 @@ namespace GlueControl
                     isGet = true;
                     return screen?.GetType().FullName;
 
-#if SupportsEditMode
                 case "GetCommands":
                     isGet = true;
                     string toReturn = string.Empty;
+#if SupportsEditMode
                     if (GameToGlueCommands.Count != 0)
                     {
                         List<string> tempList = new List<string>();
@@ -185,17 +185,21 @@ namespace GlueControl
                         }
                         toReturn = Newtonsoft.Json.JsonConvert.SerializeObject(tempList.ToArray());
                     }
+#endif
+
                     return toReturn;
                 case nameof(GlueControl.Dtos.GetCameraPosition):
+#if SupportsEditMode
+
                     isGet = true;
                     var getCameraPositionResponse = new GlueControl.Dtos.GetCameraPositionResponse();
                     getCameraPositionResponse.X = Camera.Main.X;
                     getCameraPositionResponse.Y = Camera.Main.Y;
                     getCameraPositionResponse.Z = Camera.Main.Z;
                     toReturn = Newtonsoft.Json.JsonConvert.SerializeObject(getCameraPositionResponse);
+#endif
                     return toReturn;
                     break;
-#endif
             }
 
             var response = "true";

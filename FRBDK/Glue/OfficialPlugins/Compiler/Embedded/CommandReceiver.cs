@@ -53,7 +53,7 @@ namespace GlueControl
             }
             else
             {
-                throw new Exception();
+                throw new Exception($"The command {message} does not contain a : (colon) separator");
             }
 
             var matchingMethod =

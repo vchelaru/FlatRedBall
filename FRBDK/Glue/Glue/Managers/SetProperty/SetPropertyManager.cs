@@ -140,7 +140,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             // Check Entities and Screens after checking variables and objects
             #region Entity
-            else if (EditorLogic.CurrentEntitySave != null)
+            else if (GlueState.Self.CurrentEntitySave != null)
             {
                 Container.Get<EntitySaveSetPropertyLogic>().ReactToEntityChangedProperty(variableNameAsDisplayed, oldValue);
             }
@@ -149,7 +149,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region ScreenSave
 
-            else if (EditorLogic.CurrentScreenSave != null)
+            else if (GlueState.Self.CurrentScreenSave != null)
             {
                 Container.Get<ScreenSaveSetVariableLogic>().ReactToScreenChangedValue(variableNameAsDisplayed, oldValue);
             }

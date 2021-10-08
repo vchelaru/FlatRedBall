@@ -231,7 +231,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             PropertyGridHelper.UpdateDisplayedPropertyGridProperties();
 
-            EditorLogic.TakeSnapshot();
+            GlueState.Self.TakeSnapshot();
 
             bool wasFocused = mTreeView?.Focused == true;
             if (!SuppressSelectionEvents)

@@ -162,7 +162,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             else if (changedMember == "ClassName")
             {
-                List<NamedObjectSave> allNamedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(EditorLogic.CurrentElement);
+                List<NamedObjectSave> allNamedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(GlueState.Self.CurrentElement);
 
                 var containers = new List<GlueElement>();
 

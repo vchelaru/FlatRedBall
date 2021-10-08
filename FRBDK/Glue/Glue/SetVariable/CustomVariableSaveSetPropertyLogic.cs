@@ -72,7 +72,7 @@ namespace FlatRedBall.Glue.SetVariable
             else if (changedMember == nameof(CustomVariable.SourceObjectProperty))
             {
                 // See if there is already a NOS that uses this SourceObject/SourceObjectProperty combo
-                IElement currentElement = EditorLogic.CurrentElement;
+                IElement currentElement = GlueState.Self.CurrentElement;
                 CustomVariable currentVariable = customVariable;
 
                 if (!string.IsNullOrEmpty(currentVariable.SourceObject) && !string.IsNullOrEmpty(currentVariable.SourceObjectProperty))
@@ -389,7 +389,7 @@ namespace FlatRedBall.Glue.SetVariable
                     // We want to set the accompanying to false before checking this, then back to true.
                     customVariable.HasAccompanyingVelocityProperty = false;
                     InterpolationCharacteristic characteristic =
-                        CustomVariableHelper.GetInterpolationCharacteristic(customVariable, EditorLogic.CurrentElement);
+                        CustomVariableHelper.GetInterpolationCharacteristic(customVariable, GlueState.Self.CurrentElement);
                     customVariable.HasAccompanyingVelocityProperty = true;
 
                     if (characteristic == InterpolationCharacteristic.CantInterpolate)

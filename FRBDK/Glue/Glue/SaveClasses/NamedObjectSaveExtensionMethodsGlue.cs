@@ -31,16 +31,16 @@ namespace FlatRedBall.Glue.SaveClasses
         
         public static MembershipInfo GetMemberMembershipInfo(string memberName)
         {
-            if (EditorLogic.CurrentScreenSave != null)
+            if (GlueState.Self.CurrentScreenSave != null)
             {
-                if (EditorLogic.CurrentScreenSave.HasMemberWithName(memberName))
+                if (GlueState.Self.CurrentScreenSave.HasMemberWithName(memberName))
                 {
                     return MembershipInfo.ContainedInThis;
                 }
             }
-            else if (EditorLogic.CurrentEntitySave != null)
+            else if (GlueState.Self.CurrentEntitySave != null)
             {
-                return EditorLogic.CurrentEntitySave.GetMemberMembershipInfo(memberName);
+                return GlueState.Self.CurrentEntitySave.GetMemberMembershipInfo(memberName);
             }
 
             return MembershipInfo.NotContained;

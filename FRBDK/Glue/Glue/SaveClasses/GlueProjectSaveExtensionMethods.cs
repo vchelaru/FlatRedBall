@@ -156,8 +156,8 @@ namespace FlatRedBall.Glue.SaveClasses
                 errorMessage = "There is already a file named\n\n" + directoryRelativeToContent + fileName + "." + resultAssetTypeInfo.Extension;
             }
             // TODO:  This currently checks for an exact match, but we should prevent different files (like a .emix and .scnx) from having the same name
-            else if (EditorLogic.CurrentElement != null &&
-                EditorLogic.CurrentElement.GetReferencedFileSaveRecursively(directoryRelativeToContent + fileName + "." + resultAssetTypeInfo.Extension) != null)
+            else if (GlueState.Self.CurrentElement != null &&
+                GlueState.Self.CurrentElement.GetReferencedFileSaveRecursively(directoryRelativeToContent + fileName + "." + resultAssetTypeInfo.Extension) != null)
             {
                 errorMessage = "There is already a file named " + fileName;
             }

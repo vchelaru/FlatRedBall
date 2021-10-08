@@ -730,13 +730,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 MainGlueWindow.Self.Invoke(() =>
                 {
-                    if (EditorLogic.CurrentScreenTreeNode != null)
+                    if (GlueState.Self.CurrentElementTreeNode != null)
                     {
-                        EditorLogic.CurrentScreenTreeNode.RefreshTreeNodes();
-                    }
-                    else if (EditorLogic.CurrentEntityTreeNode != null)
-                    {
-                        EditorLogic.CurrentEntityTreeNode.RefreshTreeNodes();
+                        GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
                     }
                     if (regenerateCode)
                     {

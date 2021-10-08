@@ -39,7 +39,7 @@ namespace FlatRedBall.Glue.Factories
             // Search:  pool, pooling, variable reset, variablereset, add reset variables for pooling
             mResetVariablesToAdd.Clear();
 
-            EntitySave entitySave = EditorLogic.CurrentEntitySave;
+            EntitySave entitySave = GlueState.Self.CurrentEntitySave;
 
             SetResetVariablesForEntitySave(entitySave);
 

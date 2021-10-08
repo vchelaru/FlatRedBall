@@ -464,7 +464,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public static bool IsNamedObjectNameValid(string name, out string whyItIsntValid)
         {
-            return IsNamedObjectNameValid(name, EditorLogic.CurrentNamedObject, out whyItIsntValid);
+            return IsNamedObjectNameValid(name, GlueState.Self.CurrentNamedObjectSave, out whyItIsntValid);
         }
 
         public static bool IsNamedObjectNameValid(string name, NamedObjectSave namedObject, out string whyItIsntValid)
@@ -494,7 +494,7 @@ namespace FlatRedBall.Glue.SaveClasses
             if (membershipInfo == MembershipInfo.ContainedInBase)
             {
                 // make sure this thing is set to be SetByDerived
-                NamedObjectSave nos = EditorLogic.CurrentElement.GetNamedObjectRecursively(name);
+                NamedObjectSave nos = GlueState.Self.CurrentElement.GetNamedObjectRecursively(name);
 
                 if (!nos.SetByDerived)
                 {
@@ -517,9 +517,9 @@ namespace FlatRedBall.Glue.SaveClasses
                 {
                     whyItIsntValid = "The name " + name + " is already being used";
                 }
-                else if (EditorLogic.CurrentElement != null && FileManager.RemovePath(EditorLogic.CurrentElement.Name) == name)
+                else if (GlueState.Self.CurrentElement != null && FileManager.RemovePath(GlueState.Self.CurrentElement.Name) == name)
                 {
-                    if (EditorLogic.CurrentElement is EntitySave)
+                    if (GlueState.Self.CurrentElement is EntitySave)
                     {
                         whyItIsntValid = "You can't name your Object the same name as the Entity it is contained in.";
 
@@ -542,11 +542,11 @@ namespace FlatRedBall.Glue.SaveClasses
                 {
                     whyItIsntValid = "Object names can't have spaces";
                 }
-                else if (EditorLogic.CurrentElement != null &&
-                    ExposedVariableManager.GetExposableMembersFor(EditorLogic.CurrentElement, false).Any(item => item.Member == name))
+                else if (GlueState.Self.CurrentElement != null &&
+                    ExposedVariableManager.GetExposableMembersFor(GlueState.Self.CurrentElement, false).Any(item => item.Member == name))
                 {
                     whyItIsntValid = "The name " + name + " is an existing or exposable variable name in " +
-                        EditorLogic.CurrentElement.ToString() + " so it is not a valid object name";
+                        GlueState.Self.CurrentElement.ToString() + " so it is not a valid object name";
                 }
                 else if (mOtherReservedNames.Contains(name))
                 {
@@ -586,7 +586,7 @@ namespace FlatRedBall.Glue.SaveClasses
             // so we're going to remove it from the NOS list before running the check, then we'll
             // insert it back to the appropriate place.
             wasRemovedFromIndex = -1;
-            element = EditorLogic.CurrentElement;
+            element = GlueState.Self.CurrentElement;
 
             if (namedObject != null && element != null && element.NamedObjects.Contains(namedObject))
             {

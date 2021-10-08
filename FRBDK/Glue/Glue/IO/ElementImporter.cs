@@ -87,7 +87,7 @@ namespace FlatRedBall.Glue.IO
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
             openFileDialog.Multiselect = false;
-            EntitySave es = EditorLogic.CurrentEntitySave;
+            EntitySave es = GlueState.Self.CurrentEntitySave;
 
             if (EditorLogic.CurrentTreeNode.IsRootEntityNode() ||
                 EditorLogic.CurrentTreeNode.IsFolderForEntities())

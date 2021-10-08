@@ -179,7 +179,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             else if (changedMember == nameof(NamedObjectSave.IsDisabled))
             {
-                GlueState.Self.Find.ElementTreeNode(EditorLogic.CurrentElement).RefreshTreeNodes();
+                GlueState.Self.Find.ElementTreeNode(GlueState.Self.CurrentElement).RefreshTreeNodes();
             }
 
             #endregion
@@ -196,7 +196,7 @@ namespace FlatRedBall.Glue.SetVariable
                 }
 
                 var derivedElements = ObjectFinder.Self.GetAllElementsThatInheritFrom(
-                    EditorLogic.CurrentElement.Name);
+                    GlueState.Self.CurrentElement.Name);
 
                 foreach (IElement derived in derivedElements)
                 {
@@ -209,9 +209,9 @@ namespace FlatRedBall.Glue.SetVariable
                     }
                 }
 
-                if (EditorLogic.CurrentEntitySave != null)
+                if (GlueState.Self.CurrentEntitySave != null)
                 {
-                    List<NamedObjectSave> entityNamedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(EditorLogic.CurrentEntitySave.Name);
+                    List<NamedObjectSave> entityNamedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(GlueState.Self.CurrentEntitySave.Name);
 
                     foreach (NamedObjectSave nos in entityNamedObjects)
                     {
@@ -658,7 +658,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             if (!string.IsNullOrEmpty(value))
             {
-                IElement element = EditorLogic.CurrentElement;
+                IElement element = GlueState.Self.CurrentElement;
 
                 ReferencedFileSave referencedFileSave = element.GetReferencedFileSaveByInstanceNameRecursively(value);
 

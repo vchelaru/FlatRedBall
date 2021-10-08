@@ -226,7 +226,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     eventResponseSave.DelegateType = null;
 
-                    RightClickHelper.AddEventToElementAndSave(EditorLogic.CurrentElement, eventResponseSave);
+                    RightClickHelper.AddEventToElementAndSave(GlueState.Self.CurrentElement, eventResponseSave);
 
                 }
             }

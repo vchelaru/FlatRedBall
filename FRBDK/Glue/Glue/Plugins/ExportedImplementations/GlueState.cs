@@ -13,6 +13,7 @@ using FlatRedBall.Glue.Errors;
 using System.Linq;
 using FlatRedBall.Glue.IO;
 using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
+using FlatRedBall.Glue.Controls;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 {
@@ -72,20 +73,55 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public EntitySave CurrentEntitySave
         {
-            get { return EditorLogic.CurrentEntitySave; }
-            set { EditorLogic.CurrentElement = value; }
-        }
+            get 
+            {
+                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
 
+                while (treeNode != null)
+                {
+                    if (treeNode is EntityTreeNode)
+                    {
+                        return ((EntityTreeNode)treeNode).EntitySave;
+                    }
+                    else
+                    {
+                        treeNode = treeNode.Parent;
+                    }
+                }
+
+                return null;
+            }
+            set { CurrentElement = value; }
+        }
 
         public ScreenSave CurrentScreenSave
         {
             get
             {
-                return EditorLogic.CurrentScreenSave;
+
+#if UNIT_TESTS
+                return null;
+#endif
+                TreeNode treeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
+
+                while (treeNode != null)
+                {
+                    if (treeNode is BaseElementTreeNode && ((BaseElementTreeNode)treeNode).SaveObject is ScreenSave)
+                    {
+                        return ((BaseElementTreeNode)treeNode).SaveObject as ScreenSave;
+                    }
+                    else
+                    {
+                        treeNode = treeNode.Parent;
+                    }
+                }
+
+                return null;
             }
             set
             {
-                EditorLogic.CurrentScreenSave = value;
+                MainExplorerPlugin.Self.ElementTreeView.SelectedNode =
+                    GlueState.Self.Find.ScreenTreeNode(value);
             }
         }
 
@@ -119,7 +155,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             set { EditorLogic.CurrentTreeNode = value; }
         }
 
-        public TreeNode CurrentElementTreeNode
+        public BaseElementTreeNode CurrentElementTreeNode
         {
             get { return EditorLogic.CurrentElementTreeNode; }
             //set { EditorLogic.CurrentTreeNode = value; }
@@ -370,6 +406,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         public IEnumerable<ReferencedFileSave> GetAllReferencedFiles()
         {
             return ObjectFinder.Self.GetAllReferencedFiles();
+        }
+
+        public void TakeSnapshot()
+        {
+            MainGlueWindow.Self.Invoke((MethodInvoker)delegate
+            {
+                EditorLogicSnapshot.CurrentElementTreeNode = CurrentElementTreeNode;
+                EditorLogicSnapshot.CurrentState = CurrentStateSave;
+                EditorLogicSnapshot.CurrentTreeNode = CurrentTreeNode;
+                EditorLogicSnapshot.CurrentNamedObject = CurrentNamedObjectSave;
+                EditorLogicSnapshot.CurrentElement = CurrentElement;
+            });
         }
 
     }

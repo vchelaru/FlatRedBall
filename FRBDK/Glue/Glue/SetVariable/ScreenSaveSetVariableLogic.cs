@@ -8,6 +8,7 @@ using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.SaveClasses;
 using GlueFormsCore.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.SetVariable
 {
@@ -15,7 +16,7 @@ namespace FlatRedBall.Glue.SetVariable
     {
         internal void ReactToScreenChangedValue(string changedMember, object oldValue)
         {
-            ScreenSave screenSave = EditorLogic.CurrentScreenSave;
+            ScreenSave screenSave = GlueState.Self.CurrentScreenSave;
 
             #region Name
 
