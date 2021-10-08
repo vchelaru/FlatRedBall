@@ -70,7 +70,7 @@ namespace FlatRedBall.Glue.SetVariable
             bool updateTreeView = true;
 
             #region EventResponseSave
-            if (EditorLogic.CurrentEventResponseSave != null)
+            if (GlueState.Self.CurrentEventResponseSave != null)
             {
                 Container.Get<EventResponseSaveSetVariableLogic>().ReactToChange(
                     variableNameAsDisplayed, oldValue, GlueState.Self.CurrentEventResponseSave, GlueState.Self.CurrentElement);
@@ -80,10 +80,10 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region State
 
-            else if (EditorLogic.CurrentStateSave != null)
+            else if (GlueState.Self.CurrentStateSave != null)
             {
                 Container.Get<StateSaveSetVariableLogic>().ReactToStateSaveChangedValue(
-                    EditorLogic.CurrentStateSave, EditorLogic.CurrentStateSaveCategory, variableNameAsDisplayed, oldValue,
+                    GlueState.Self.CurrentStateSave, GlueState.Self.CurrentStateSaveCategory, variableNameAsDisplayed, oldValue,
                     GlueState.Self.CurrentElement, ref updateTreeView);
 
 
@@ -93,10 +93,10 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region StateCategory
 
-            else if (EditorLogic.CurrentStateSaveCategory != null)
+            else if (GlueState.Self.CurrentStateSaveCategory != null)
             {
                 Container.Get<StateSaveCategorySetVariableLogic>().ReactToStateSaveCategoryChangedValue(
-                    EditorLogic.CurrentStateSaveCategory, variableNameAsDisplayed, oldValue,
+                    GlueState.Self.CurrentStateSaveCategory, variableNameAsDisplayed, oldValue,
                     GlueState.Self.CurrentElement, ref updateTreeView);
 
             }
@@ -115,7 +115,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region ReferencedFile
 
-            else if (EditorLogic.CurrentReferencedFile != null)
+            else if (GlueState.Self.CurrentReferencedFileSave != null)
             {
                 Container.Get<ReferencedFileSaveSetPropertyManager>().ReactToChangedReferencedFile(
                     variableNameAsDisplayed, oldValue, ref updateTreeView);
@@ -125,10 +125,10 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region CustomVariable
 
-            else if (EditorLogic.CurrentCustomVariable != null)
+            else if (GlueState.Self.CurrentCustomVariable != null)
             {
                 Container.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
-                    variableNameAsDisplayed, EditorLogic.CurrentCustomVariable, oldValue);
+                    variableNameAsDisplayed, GlueState.Self.CurrentCustomVariable, oldValue);
             }
             else if (mPropertyGrid.SelectedObject != null && mPropertyGrid.SelectedObject is PropertyGridDisplayer &&
                 GlueState.Self.CurrentElement != null && GlueState.Self.CurrentElement.GetCustomVariableRecursively(variableName) != null)
@@ -158,7 +158,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region Global content container node
 
-            else if (EditorLogic.CurrentTreeNode.Root().IsGlobalContentContainerNode())
+            else if (GlueState.Self.CurrentTreeNode.Root().IsGlobalContentContainerNode())
             {
                 Container.Get<GlobalContentSetVariableLogic>().ReactToGlobalContentChangedValue(
                     variableNameAsDisplayed, oldValue, ref updateTreeView);
@@ -183,7 +183,7 @@ namespace FlatRedBall.Glue.SetVariable
                 GlueCommands.Self.GenerateCodeCommands
                     .GenerateElementAndReferencedObjectCodeTask(GlueState.Self.CurrentElement);
             }
-            else if (EditorLogic.CurrentReferencedFile != null)
+            else if (GlueState.Self.CurrentReferencedFileSave != null)
             {
                 GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
             }

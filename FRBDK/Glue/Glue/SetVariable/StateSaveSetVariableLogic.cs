@@ -24,7 +24,7 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 string whyItIsntValid;
                 if (!NameVerifier.IsStateNameValid(stateSave.Name, 
-                    GlueState.Self.CurrentElement, EditorLogic.CurrentStateSaveCategory, EditorLogic.CurrentStateSave, out whyItIsntValid))
+                    GlueState.Self.CurrentElement, GlueState.Self.CurrentStateSaveCategory, GlueState.Self.CurrentStateSave, out whyItIsntValid))
                 {
                     stateSave.Name = (string)oldValue;
                     updateTreeView = false;

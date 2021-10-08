@@ -914,11 +914,11 @@ namespace FlatRedBall.Glue.FormHelpers
 
             ElementViewWindow.GenerateSelectedElementCode();
 
-            EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
+            GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
 
             GluxCommands.Self.SaveGlux();
 
-            EditorLogic.CurrentEventResponseSave = eventResponseSave;
+            GlueState.Self.CurrentEventResponseSave = eventResponseSave;
         }
 
         static void ViewFileOrderClick(object sender, EventArgs e)
@@ -969,7 +969,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static void mFillValuesFromVariables_Click(object sender, EventArgs e)
         {
-            StateSave stateSave = EditorLogic.CurrentStateSave;
+            StateSave stateSave = GlueState.Self.CurrentStateSave;
             IElement element = GlueState.Self.CurrentElement;
 
             DialogResult result = MessageBox.Show(
@@ -997,7 +997,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static void mUseContentPipeline_Click(object sender, EventArgs e)
         {
-            ReferencedFileSave rfs = EditorLogic.CurrentReferencedFile;
+            ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
 
         }
         
@@ -1016,7 +1016,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 var currentElement = GlueState.Self.CurrentElement;
 
                 string whyItIsntValid;
-                if (!NameVerifier.IsStateNameValid(tiw.Result, currentElement, EditorLogic.CurrentStateSaveCategory, EditorLogic.CurrentStateSave, out whyItIsntValid))
+                if (!NameVerifier.IsStateNameValid(tiw.Result, currentElement, GlueState.Self.CurrentStateSaveCategory, GlueState.Self.CurrentStateSave, out whyItIsntValid))
                 {
                     GlueGui.ShowMessageBox(whyItIsntValid);
                 }
@@ -1026,7 +1026,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     StateSave newState = new StateSave();
                     newState.Name = tiw.Result;
 
-                    var category = EditorLogic.CurrentStateSaveCategory;
+                    var category = GlueState.Self.CurrentStateSaveCategory;
 
                     if (category != null)
                     {
@@ -1039,7 +1039,7 @@ namespace FlatRedBall.Glue.FormHelpers
                         element.States.Add(newState);
                     }
 
-                    EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
+                    GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
 
                     PluginManager.ReactToStateCreated(newState, category);
 
@@ -1080,7 +1080,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     element.StateCategoryList.Add(newCategory);
 
-                    EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
+                    GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
                     ElementViewWindow.GenerateSelectedElementCode();
 
                     GluxCommands.Self.SaveGlux();
@@ -1095,7 +1095,7 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 DuplicateCurrentNamedObject();
             }
-            else if (EditorLogic.CurrentStateSave != null)
+            else if (GlueState.Self.CurrentStateSave != null)
             {
                 DuplicateCurrentStateSave();
             }
@@ -1247,17 +1247,17 @@ namespace FlatRedBall.Glue.FormHelpers
             // find all references, findallreferences, find references
             ElementReferenceListWindow erlw = new ElementReferenceListWindow();
             erlw.Show();
-            if (EditorLogic.CurrentReferencedFile != null)
+            if (GlueState.Self.CurrentReferencedFileSave != null)
             {
-                erlw.PopulateWithReferencesTo(EditorLogic.CurrentReferencedFile);
+                erlw.PopulateWithReferencesTo(GlueState.Self.CurrentReferencedFileSave);
             }
             else if (GlueState.Self.CurrentNamedObjectSave != null)
             {
                 erlw.PopulateWithReferencesTo(GlueState.Self.CurrentNamedObjectSave, GlueState.Self.CurrentElement);
             }
-            else if (EditorLogic.CurrentCustomVariable != null)
+            else if (GlueState.Self.CurrentCustomVariable != null)
             {
-                erlw.PopulateWithReferencesTo(EditorLogic.CurrentCustomVariable, GlueState.Self.CurrentElement);
+                erlw.PopulateWithReferencesTo(GlueState.Self.CurrentCustomVariable, GlueState.Self.CurrentElement);
             }
             else
             {
@@ -1307,8 +1307,8 @@ namespace FlatRedBall.Glue.FormHelpers
             // remove from screen, remove from entity, remove file
             ///////////////////////////////EARLY OUT///////////////////////////////////////
             // This can now be called by pushing Delete, so we should check if deleting is valid
-            if (EditorLogic.CurrentTreeNode == null || EditorLogic.CurrentTreeNode.Parent == null ||
-                EditorLogic.CurrentTreeNode.Text.EndsWith(".cs") || EditorLogic.CurrentTreeNode.Tag == null)
+            if (GlueState.Self.CurrentTreeNode == null || GlueState.Self.CurrentTreeNode.Parent == null ||
+                GlueState.Self.CurrentTreeNode.Text.EndsWith(".cs") || GlueState.Self.CurrentTreeNode.Tag == null)
             {
                 return;
             }
@@ -1324,7 +1324,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 if (askAreYouSure)
                 {
-                    string message = "Are you sure you want to remove this:\n\n" + EditorLogic.CurrentTreeNode.Tag.ToString();
+                    string message = "Are you sure you want to remove this:\n\n" + GlueState.Self.CurrentTreeNode.Tag.ToString();
 
                     reallyRemoveResult =
                         MessageBox.Show(message, "Remove?", MessageBoxButtons.YesNo);
@@ -1352,7 +1352,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                         AskToRemoveCustomVariablesWithoutState(GlueState.Self.CurrentElement);
 
-                        EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
+                        GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
 
                         PluginManager.ReactToStateRemoved(GlueState.Self.CurrentElement, name);
 
@@ -1363,11 +1363,11 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     #region Else if is StateSaveCategory
 
-                    else if (EditorLogic.CurrentStateSaveCategory != null)
+                    else if (GlueState.Self.CurrentStateSaveCategory != null)
                     {
-                        GlueState.Self.CurrentElement.StateCategoryList.Remove(EditorLogic.CurrentStateSaveCategory);
+                        GlueState.Self.CurrentElement.StateCategoryList.Remove(GlueState.Self.CurrentStateSaveCategory);
 
-                        EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
+                        GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
 
                         GluxCommands.Self.SaveGlux();
                     }
@@ -1376,11 +1376,11 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     #region Else if is ReferencedFileSave
 
-                    else if (EditorLogic.CurrentReferencedFile != null)
+                    else if (GlueState.Self.CurrentReferencedFileSave != null)
                     {
                         // the GluxCommand handles saving and regenerate internally, no need to do it twice
                         saveAndRegenerate = false;
-                        var toRemove = EditorLogic.CurrentReferencedFile;
+                        var toRemove = GlueState.Self.CurrentReferencedFileSave;
 
                         if(GlueState.Self.Find.IfReferencedFileSaveIsReferenced(toRemove))
                         {
@@ -1400,19 +1400,19 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     #region Else if is CustomVariable
 
-                    else if (EditorLogic.CurrentCustomVariable != null)
+                    else if (GlueState.Self.CurrentCustomVariable != null)
                     {
-                        ProjectManager.RemoveCustomVariable(EditorLogic.CurrentCustomVariable, filesToRemove);
+                        ProjectManager.RemoveCustomVariable(GlueState.Self.CurrentCustomVariable, filesToRemove);
                         //ProjectManager.RemoveCustomVariable(EditorLogic.CurrentCustomVariable);
                     }
 
                     #endregion
 
                     #region Else if is EventSave
-                    else if (EditorLogic.CurrentEventResponseSave != null)
+                    else if (GlueState.Self.CurrentEventResponseSave != null)
                     {
                         var element = GlueState.Self.CurrentElement;
-                        var eventResponse = EditorLogic.CurrentEventResponseSave;
+                        var eventResponse = GlueState.Self.CurrentEventResponseSave;
                         GlueState.Self.CurrentElement.Events.Remove(eventResponse);
                         PluginManager.ReactToEventResponseRemoved(element, eventResponse);
                         GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
@@ -1525,7 +1525,7 @@ namespace FlatRedBall.Glue.FormHelpers
                             var entity = GlueState.Self.CurrentEntitySave;
                             GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(entity);
                         }
-                        else if (EditorLogic.CurrentReferencedFile != null)
+                        else if (GlueState.Self.CurrentReferencedFileSave != null)
                         {
                             GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCodeTask();
 
@@ -1637,7 +1637,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         internal static void IgnoreDirectoryClick()
         {
-            string directoryToIgnore = EditorLogic.CurrentTreeNode.GetRelativePath();
+            string directoryToIgnore = GlueState.Self.CurrentTreeNode.GetRelativePath();
 
             directoryToIgnore = FileManager.Standardize(directoryToIgnore);
 
@@ -1663,7 +1663,7 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 string folderName = tiw.Result;
 
-                TreeNode treeNodeToAddTo = EditorLogic.CurrentTreeNode;
+                TreeNode treeNodeToAddTo = GlueState.Self.CurrentTreeNode;
                 GlueCommands.Self.ProjectCommands.AddDirectory(folderName, treeNodeToAddTo);
 
                 treeNodeToAddTo.Nodes.SortByTextConsideringDirectories();
@@ -1684,20 +1684,20 @@ namespace FlatRedBall.Glue.FormHelpers
                 // view in explorer
                 string locationToShow = "";
 
-                if (EditorLogic.CurrentReferencedFile != null)
+                if (GlueState.Self.CurrentReferencedFileSave != null)
                 {
-                    ReferencedFileSave rfs = EditorLogic.CurrentReferencedFile;
+                    ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
 
                     locationToShow = ProjectManager.MakeAbsolute(rfs.Name);
 
                 }
-                else if (EditorLogic.CurrentTreeNode.IsDirectoryNode() || EditorLogic.CurrentTreeNode == ElementViewWindow.GlobalContentFileNode)
+                else if (GlueState.Self.CurrentTreeNode.IsDirectoryNode() || GlueState.Self.CurrentTreeNode == ElementViewWindow.GlobalContentFileNode)
                 {
-                    locationToShow = ProjectManager.MakeAbsolute(EditorLogic.CurrentTreeNode.GetRelativePath(), true);
+                    locationToShow = ProjectManager.MakeAbsolute(GlueState.Self.CurrentTreeNode.GetRelativePath(), true);
                 }
-                else if (EditorLogic.CurrentTreeNode.IsFilesContainerNode() || EditorLogic.CurrentTreeNode.IsFolderInFilesContainerNode())
+                else if (GlueState.Self.CurrentTreeNode.IsFilesContainerNode() || GlueState.Self.CurrentTreeNode.IsFolderInFilesContainerNode())
                 {
-                    string relativePath = EditorLogic.CurrentTreeNode.GetRelativePath();
+                    string relativePath = GlueState.Self.CurrentTreeNode.GetRelativePath();
 
                     // Victor Chelaru April 11, 2013
                     // RelativePath already includes "Screens/"
@@ -1717,9 +1717,9 @@ namespace FlatRedBall.Glue.FormHelpers
                         Directory.CreateDirectory(locationToShow);
                     }
                 }
-                else if (EditorLogic.CurrentTreeNode.Text.EndsWith(".cs"))
+                else if (GlueState.Self.CurrentTreeNode.Text.EndsWith(".cs"))
                 {
-                    locationToShow = ProjectManager.MakeAbsolute(EditorLogic.CurrentTreeNode.GetRelativePath(), false);
+                    locationToShow = ProjectManager.MakeAbsolute(GlueState.Self.CurrentTreeNode.GetRelativePath(), false);
 
                 }
 
@@ -1763,9 +1763,9 @@ namespace FlatRedBall.Glue.FormHelpers
         static void ViewContentFolderInExplorer(object sender, EventArgs e)
         {
 
-            if (EditorLogic.CurrentTreeNode.IsDirectoryNode())
+            if (GlueState.Self.CurrentTreeNode.IsDirectoryNode())
             {
-                string locationToShow = ProjectManager.MakeAbsolute(EditorLogic.CurrentTreeNode.GetRelativePath(), true);
+                string locationToShow = ProjectManager.MakeAbsolute(GlueState.Self.CurrentTreeNode.GetRelativePath(), true);
 
                 if(System.IO.Directory.Exists(locationToShow))
                 {
@@ -1798,13 +1798,13 @@ namespace FlatRedBall.Glue.FormHelpers
 
             bool forceContent = false;
 
-            if (EditorLogic.CurrentTreeNode.IsChildOfGlobalContent() ||
-                EditorLogic.CurrentTreeNode.IsFolderInFilesContainerNode())
+            if (GlueState.Self.CurrentTreeNode.IsChildOfGlobalContent() ||
+                GlueState.Self.CurrentTreeNode.IsFolderInFilesContainerNode())
             {
                 forceContent = true;
             }
 
-            string absolutePath = ProjectManager.MakeAbsolute(EditorLogic.CurrentTreeNode.GetRelativePath(), forceContent);
+            string absolutePath = ProjectManager.MakeAbsolute(GlueState.Self.CurrentTreeNode.GetRelativePath(), forceContent);
 
             string[] files = null;
             string[] directories = null;
@@ -1826,12 +1826,12 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (shouldDelete == DialogResult.Yes)
             {
-                if (EditorLogic.CurrentTreeNode.IsChildOfRootEntityNode() && EditorLogic.CurrentTreeNode.IsFolderForEntities())
+                if (GlueState.Self.CurrentTreeNode.IsChildOfRootEntityNode() && GlueState.Self.CurrentTreeNode.IsFolderForEntities())
                 {
                     // We have to remove all contained Entities
                     // from the project.
                     List<EntitySave> allEntitySaves = new List<EntitySave>();
-                    GetAllEntitySavesIn(EditorLogic.CurrentTreeNode, allEntitySaves);
+                    GetAllEntitySavesIn(GlueState.Self.CurrentTreeNode, allEntitySaves);
 
                     foreach (EntitySave entitySave in allEntitySaves)
                     {
@@ -1840,10 +1840,10 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     }
                 }
-                else if (EditorLogic.CurrentTreeNode.IsFolderInFilesContainerNode())
+                else if (GlueState.Self.CurrentTreeNode.IsFolderInFilesContainerNode())
                 {
                     List<ReferencedFileSave> allReferencedFileSaves = new List<ReferencedFileSave>();
-                    GetAllReferencedFileSavesIn(EditorLogic.CurrentTreeNode, allReferencedFileSaves);
+                    GetAllReferencedFileSavesIn(GlueState.Self.CurrentTreeNode, allReferencedFileSaves);
 
                     foreach (ReferencedFileSave rfs in allReferencedFileSaves)
                     {
@@ -1853,7 +1853,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     }
                 }
 
-                EditorLogic.CurrentTreeNode.Parent.Nodes.Remove(EditorLogic.CurrentTreeNode);
+                GlueState.Self.CurrentTreeNode.Parent.Nodes.Remove(GlueState.Self.CurrentTreeNode);
                 System.IO.Directory.Delete(absolutePath, true);
                 // Do we need to save the project?  For some reason removing mulitple RFS's isn't updating the .csproj
             }
@@ -1982,9 +1982,9 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static void ViewCodeFolderInExplorerClick(object sender, EventArgs e)
         {
-            if (EditorLogic.CurrentTreeNode.IsDirectoryNode())
+            if (GlueState.Self.CurrentTreeNode.IsDirectoryNode())
             {
-                string locationToShow = FileManager.RelativeDirectory + EditorLogic.CurrentTreeNode.GetRelativePath();
+                string locationToShow = FileManager.RelativeDirectory + GlueState.Self.CurrentTreeNode.GetRelativePath();
 
                 locationToShow = locationToShow.Replace("/", "\\");
                 Process.Start("explorer.exe", "/select," + locationToShow);
@@ -1995,16 +1995,16 @@ namespace FlatRedBall.Glue.FormHelpers
         internal static void ReGenerateCodeForSelectedElement()
         {
             // re-generate regenerate re generate regenerate code re generate code re-generate code
-            if (EditorLogic.CurrentTreeNode.IsGlobalContentContainerNode())
+            if (GlueState.Self.CurrentTreeNode.IsGlobalContentContainerNode())
             {
                 GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
             }
 
             #region This is a content file
 
-            else if (EditorLogic.CurrentTreeNode.IsReferencedFile())
+            else if (GlueState.Self.CurrentTreeNode.IsReferencedFile())
             {
-                ReferencedFileSave rfs = EditorLogic.CurrentReferencedFile;
+                ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
 
                 var isCsv = 
                     FileManager.GetExtension(rfs.Name) == "csv" || (FileManager.GetExtension(rfs.Name) == "txt" && rfs.TreatAsCsv);
@@ -2046,7 +2046,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 {
                     project.ClearPendingTranslations();
 
-                    ((VisualStudioProject)project.CodeProject).AddCodeBuildItem(EditorLogic.CurrentTreeNode.Text);
+                    ((VisualStudioProject)project.CodeProject).AddCodeBuildItem(GlueState.Self.CurrentTreeNode.Text);
 
                     project.PerformPendingTranslations();
                 }
@@ -2125,7 +2125,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 {
                     listToRemoveFrom.Remove(objectToRemove);
                     listToRemoveFrom.Insert(0, objectToRemove);
-                    PostMoveActivity(EditorLogic.CurrentTreeNode);
+                    PostMoveActivity(GlueState.Self.CurrentTreeNode);
                 }
                 return true;
             }
@@ -2182,7 +2182,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     listToRemoveFrom.Insert(newIndex, objectToRemove);
 
-                    PostMoveActivity(EditorLogic.CurrentTreeNode);
+                    PostMoveActivity(GlueState.Self.CurrentTreeNode);
 
                     return true;
                 }
@@ -2212,7 +2212,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 {
                     listToRemoveFrom.Remove(objectToRemove);
                     listToRemoveFrom.Insert(listToRemoveFrom.Count, objectToRemove);
-                    PostMoveActivity(EditorLogic.CurrentTreeNode);
+                    PostMoveActivity(GlueState.Self.CurrentTreeNode);
                 }
                 return true;
             }
@@ -2225,9 +2225,9 @@ namespace FlatRedBall.Glue.FormHelpers
             objectToMove = null;
             listToRemoveFrom = null;
             listForIndexing = null;
-            if (EditorLogic.CurrentCustomVariable != null)
+            if (GlueState.Self.CurrentCustomVariable != null)
             {
-                objectToMove = EditorLogic.CurrentCustomVariable;
+                objectToMove = GlueState.Self.CurrentCustomVariable;
                 listToRemoveFrom = GlueState.Self.CurrentElement.CustomVariables;
                 listForIndexing = listToRemoveFrom;
             }
@@ -2343,7 +2343,7 @@ namespace FlatRedBall.Glue.FormHelpers
         private static void RebuildFileClick(object sender, EventArgs e)
         {
             // search terms: rebuild file
-            ReferencedFileSave rfs = EditorLogic.CurrentReferencedFile;
+            ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
 
             if (rfs != null)
             {
@@ -2385,7 +2385,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         private static void ViewSourceInExplorerClick(object sender, EventArgs e)
         {
-            ReferencedFileSave rfs = EditorLogic.CurrentReferencedFile;
+            ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
 
             if (rfs != null)
             {
@@ -2464,7 +2464,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static void CreateNewFileForMissingFileClick(object sender, EventArgs e)
         {
-            TreeNode treeNode = EditorLogic.CurrentTreeNode;
+            TreeNode treeNode = GlueState.Self.CurrentTreeNode;
 
             string extension = FileManager.GetExtension(treeNode.Text);
 
@@ -2481,7 +2481,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         private static void UpdateCurrentElementTreeNode()
         {
-            BaseElementTreeNode containerTreeNode = EditorLogic.CurrentElementTreeNode;
+            BaseElementTreeNode containerTreeNode = GlueState.Self.CurrentElementTreeNode;
 
             containerTreeNode.RefreshTreeNodes();
 
@@ -2499,7 +2499,7 @@ namespace FlatRedBall.Glue.FormHelpers
         public static void CreateZipPackageClick(object sender, EventArgs e)
         {
             // Create zip, create package, create zip package, create package zip
-            ReferencedFileSave rfs = EditorLogic.CurrentReferencedFile;
+            ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
 
             string fileName = Zipper.CreateZip(rfs);
 

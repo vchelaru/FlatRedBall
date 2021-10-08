@@ -59,7 +59,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
             #region If there is a current StateSave
 
-            if (EditorLogic.CurrentStateSave != null)
+            if (GlueState.Self.CurrentStateSave != null)
             {
                 // Assume that it's a variable
                 contextMenu.MenuItems.Add(mSetDefaultMenuItem);
@@ -69,7 +69,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
             #region If there is a current CustomVariable
 
-            if (EditorLogic.CurrentCustomVariable != null)
+            if (GlueState.Self.CurrentCustomVariable != null)
             {
                 // Assume that it's a variable
                 contextMenu.MenuItems.Add(mSetDefaultMenuItem);
@@ -112,7 +112,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
             else if (GlueState.Self.CurrentElement != null)
             {
-                if (EditorLogic.CurrentTreeNode.IsRootCustomVariablesNode())
+                if (GlueState.Self.CurrentTreeNode.IsRootCustomVariablesNode())
                 {
                     CustomVariable customVariable = GlueState.Self.CurrentElement.GetCustomVariable(label);
 
@@ -156,9 +156,9 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                 mHighlightedCustomVariable.DefaultValue = null;
                 GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
             }
-            else if (EditorLogic.CurrentStateSave != null)
+            else if (GlueState.Self.CurrentStateSave != null)
             {
-                StateSave stateSave = EditorLogic.CurrentStateSave;
+                StateSave stateSave = GlueState.Self.CurrentStateSave;
 
                 string valueToChange = MainGlueWindow.Self.PropertyGrid.SelectedGridItem.Label;
                 if (valueToChange.Contains(" set"))
@@ -174,9 +174,9 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                     }
                 }
             }
-            else if (EditorLogic.CurrentCustomVariable != null)
+            else if (GlueState.Self.CurrentCustomVariable != null)
             {
-                EditorLogic.CurrentCustomVariable.DefaultValue = null;
+                GlueState.Self.CurrentCustomVariable.DefaultValue = null;
                 GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
             }
             else

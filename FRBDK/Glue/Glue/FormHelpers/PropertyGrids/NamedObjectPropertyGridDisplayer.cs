@@ -44,7 +44,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
         DisplayModes mDisplayMode;
 
-        static GlueStateSnapshot mGlueStateSnapshot;
+        static Plugins.ExportedInterfaces.GlueStateSnapshot mGlueStateSnapshot;
 
         #endregion
 
@@ -153,7 +153,7 @@ namespace FlatRedBall.Glue.GuiDisplay
         public NamedObjectPropertyGridDisplayer()
             : base()
         {
-            mGlueStateSnapshot = new GlueStateSnapshot();
+            mGlueStateSnapshot = new Plugins.ExportedInterfaces.GlueStateSnapshot();
             DisplayMode = DisplayModes.Regular;
         }
 

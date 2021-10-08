@@ -21,9 +21,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void RefreshUiForSelectedElement()
         {
-            if (EditorLogic.CurrentElementTreeNode != null)
+            if (GlueState.Self.CurrentElementTreeNode != null)
                 MainGlueWindow.Self.BeginInvoke(
-                    new EventHandler(delegate { EditorLogic.CurrentElementTreeNode.RefreshTreeNodes(); }));
+                    new EventHandler(delegate { GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes(); }));
             
         }
 
@@ -180,13 +180,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             var element = GlueState.Self.CurrentElement;
             if (element != null)
             {
-                if (EditorLogic.CurrentCustomVariable != null)
+                if (GlueState.Self.CurrentCustomVariable != null)
                 {
-                    EditorLogic.CurrentCustomVariable = element.GetCustomVariable(EditorLogic.CurrentCustomVariable.Name);
+                    GlueState.Self.CurrentCustomVariable = element.GetCustomVariable(GlueState.Self.CurrentCustomVariable.Name);
                 }
-                else if (EditorLogic.CurrentReferencedFile != null)
+                else if (GlueState.Self.CurrentReferencedFileSave != null)
                 {
-                    EditorLogic.CurrentReferencedFile = element.GetReferencedFileSave(EditorLogic.CurrentReferencedFile.Name);
+                    GlueState.Self.CurrentReferencedFileSave = element.GetReferencedFileSave(GlueState.Self.CurrentReferencedFileSave.Name);
                 }
             }
         }

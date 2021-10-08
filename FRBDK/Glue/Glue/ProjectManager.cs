@@ -810,7 +810,7 @@ namespace FlatRedBall.Glue
 
         private static void UpdateCurrentTreeNodeAndCodeAndSave()
         {
-            EditorLogic.CurrentElementTreeNode?.RefreshTreeNodes();
+            GlueState.Self.CurrentElementTreeNode?.RefreshTreeNodes();
         }
 
         private static CheckResult ReferenceVerificationHelper(IElement element, ref string cycleString, Stack<IElement> visitedElements)

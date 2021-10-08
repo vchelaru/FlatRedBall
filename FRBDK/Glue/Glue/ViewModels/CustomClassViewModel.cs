@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using FlatRedBall.Glue.CreatedClass;
 using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 
 namespace FlatRedBall.Glue.ViewModels
@@ -12,9 +13,9 @@ namespace FlatRedBall.Glue.ViewModels
     {
         public void HandleUseThisClassClick(CustomClassSave classToUse)
         {
-            ReferencedFileSave currentReferencedFile = EditorLogic.CurrentReferencedFile;
+            ReferencedFileSave currentReferencedFile = GlueState.Self.CurrentReferencedFileSave;
 
-            if (EditorLogic.CurrentReferencedFile != null)
+            if (GlueState.Self.CurrentReferencedFileSave != null)
             {
                 if (classToUse != null)
                 {

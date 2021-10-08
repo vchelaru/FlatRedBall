@@ -633,7 +633,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 Directory.CreateDirectory(ProjectManager.MakeAbsolute(directory, true));
 
-                EditorLogic.CurrentElementTreeNode?.RefreshTreeNodes();
+                GlueState.Self.CurrentElementTreeNode?.RefreshTreeNodes();
             }
             else if (treeNodeToAddTo.IsFolderInFilesContainerNode())
             {

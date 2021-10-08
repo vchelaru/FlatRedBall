@@ -305,7 +305,7 @@ namespace FlatRedBall.Glue.Controls
             }
             else if (GlueState.Self.CurrentScreenSave != null)
             {
-                availableEvents = ExposedEventManager.GetExposableEventsFor(EditorLogic.CurrentScreenSave, true);
+                availableEvents = ExposedEventManager.GetExposableEventsFor(GlueState.Self.CurrentScreenSave, true);
             }
 
             if (availableEvents != null)

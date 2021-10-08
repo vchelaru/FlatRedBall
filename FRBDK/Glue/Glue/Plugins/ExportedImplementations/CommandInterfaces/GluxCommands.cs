@@ -251,9 +251,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             string directory = null;
             var element = GlueState.Self.CurrentElement;
 
-            if (EditorLogic.CurrentTreeNode.IsDirectoryNode())
+            if (GlueState.Self.CurrentTreeNode.IsDirectoryNode())
             {
-                directory = EditorLogic.CurrentTreeNode.GetRelativePath().Replace("/", "\\");
+                directory = GlueState.Self.CurrentTreeNode.GetRelativePath().Replace("/", "\\");
             }
 
 

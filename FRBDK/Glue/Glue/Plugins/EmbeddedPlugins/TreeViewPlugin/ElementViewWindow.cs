@@ -367,25 +367,25 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 CodeWriter.GenerateCode(GlueState.Self.CurrentElement);
             }
-            else if (EditorLogic.CurrentReferencedFile != null)
+            else if (GlueState.Self.CurrentReferencedFileSave != null)
             {
-                ReferencedFileSave rfs = EditorLogic.CurrentReferencedFile;
+                ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
                 GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
                 if (rfs.IsCsvOrTreatedAsCsv)
                 {
-                    CsvCodeGenerator.GenerateAndSaveDataClass(EditorLogic.CurrentReferencedFile, rfs.CsvDelimiter);
+                    CsvCodeGenerator.GenerateAndSaveDataClass(GlueState.Self.CurrentReferencedFileSave, rfs.CsvDelimiter);
                 }
             }
 
             // Even though we may have generated a Screen/Entity, we still might want to see if we should update 
             // CSVs:
-            if (EditorLogic.CurrentReferencedFile != null)
+            if (GlueState.Self.CurrentReferencedFileSave != null)
             {
-                ReferencedFileSave rfs = EditorLogic.CurrentReferencedFile;
+                ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
                 if (rfs.Name.ToLower().EndsWith(".csv"))
                 {
-                    CsvCodeGenerator.GenerateAndSaveDataClass(EditorLogic.CurrentReferencedFile, rfs.CsvDelimiter);
+                    CsvCodeGenerator.GenerateAndSaveDataClass(GlueState.Self.CurrentReferencedFileSave, rfs.CsvDelimiter);
                 }
             }
 
@@ -429,11 +429,11 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static void UpdateCurrentObjectReferencedTreeNodes()
         {
-            if (EditorLogic.CurrentElementTreeNode != null)
+            if (GlueState.Self.CurrentElementTreeNode != null)
             {
-                EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
+                GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
             }
-            else if (EditorLogic.CurrentTreeNode != null && EditorLogic.CurrentTreeNode.Root().IsGlobalContentContainerNode())
+            else if (GlueState.Self.CurrentTreeNode != null && GlueState.Self.CurrentTreeNode.Root().IsGlobalContentContainerNode())
             {
                 ElementViewWindow.UpdateGlobalContentTreeNodes(false);
             }
@@ -793,7 +793,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     #region Double-clicked a file
                     string extension = FileManager.GetExtension(text);
                 
-                    if (EditorLogic.CurrentReferencedFile != null && !string.IsNullOrEmpty(extension))
+                    if (GlueState.Self.CurrentReferencedFileSave != null && !string.IsNullOrEmpty(extension))
                     {
                         HandleFileTreeNodeDoubleClick(text);
                         handled = true;
@@ -834,9 +834,9 @@ namespace FlatRedBall.Glue.FormHelpers
             string textExtension = FileManager.GetExtension(text);
             string sourceExtension = null;
 
-            if (EditorLogic.CurrentReferencedFile != null && !string.IsNullOrEmpty(EditorLogic.CurrentReferencedFile.SourceFile))
+            if (GlueState.Self.CurrentReferencedFileSave != null && !string.IsNullOrEmpty(GlueState.Self.CurrentReferencedFileSave.SourceFile))
             {
-                sourceExtension = FileManager.GetExtension(EditorLogic.CurrentReferencedFile.SourceFile);
+                sourceExtension = FileManager.GetExtension(GlueState.Self.CurrentReferencedFileSave.SourceFile);
             }
 
             var effectiveExtension = sourceExtension ?? textExtension;
@@ -844,7 +844,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             string applicationSetInGlue = "";
 
-            ReferencedFileSave currentReferencedFileSave = EditorLogic.CurrentReferencedFile;
+            ReferencedFileSave currentReferencedFileSave = GlueState.Self.CurrentReferencedFileSave;
             string fileName;
 
             if (currentReferencedFileSave != null && currentReferencedFileSave.OpensWith != "<DEFAULT>")

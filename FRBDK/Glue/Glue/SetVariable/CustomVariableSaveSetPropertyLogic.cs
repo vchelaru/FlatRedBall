@@ -417,7 +417,7 @@ namespace FlatRedBall.Glue.SetVariable
             var currentElement = GlueState.Self.CurrentElement;
             string whyItIsntValid = "";
             bool isNameValid = NameVerifier.IsCustomVariableNameValid(customVariable.Name, customVariable, currentElement, ref whyItIsntValid);
-            string newName = EditorLogic.CurrentCustomVariable.Name;
+            string newName = GlueState.Self.CurrentCustomVariable.Name;
 
             if (customVariable.GetIsVariableState() && oldName != newName)
             {

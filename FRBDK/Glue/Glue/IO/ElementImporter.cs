@@ -89,8 +89,8 @@ namespace FlatRedBall.Glue.IO
             openFileDialog.Multiselect = false;
             EntitySave es = GlueState.Self.CurrentEntitySave;
 
-            if (EditorLogic.CurrentTreeNode.IsRootEntityNode() ||
-                EditorLogic.CurrentTreeNode.IsFolderForEntities())
+            if (GlueState.Self.CurrentTreeNode.IsRootEntityNode() ||
+                GlueState.Self.CurrentTreeNode.IsFolderForEntities())
             {
                 openFileDialog.Filter = "Exported Entities (*.entz)|*.entz";
             }
@@ -190,10 +190,10 @@ namespace FlatRedBall.Glue.IO
             var shouldSave = false;
             GlueCommands.Self.DoOnUiThread(() =>
             {
-                if (moveToSelectedFolderTreeNode && EditorLogic.CurrentTreeNode != null && EditorLogic.CurrentTreeNode.IsFolderForEntities())
+                if (moveToSelectedFolderTreeNode && GlueState.Self.CurrentTreeNode != null && GlueState.Self.CurrentTreeNode.IsFolderForEntities())
                 {
                     EntityTreeNode entityTreeNode = GlueState.Self.Find.EntityTreeNode(entitySave);
-                    DragDropManager.Self.MoveEntityOn(entityTreeNode, EditorLogic.CurrentTreeNode);
+                    DragDropManager.Self.MoveEntityOn(entityTreeNode, GlueState.Self.CurrentTreeNode);
                     shouldSave = true;
                 }
             });

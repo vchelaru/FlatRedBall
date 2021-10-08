@@ -327,7 +327,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     var element = GlueState.Self.CurrentElement;
                     if(string.IsNullOrEmpty(directoryPath))
                     {
-                        directoryPath = EditorLogic.CurrentTreeNode.GetRelativePath();
+                        directoryPath = GlueState.Self.CurrentTreeNode.GetRelativePath();
                     }
             
 

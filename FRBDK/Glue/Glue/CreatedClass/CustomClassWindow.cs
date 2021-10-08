@@ -139,7 +139,7 @@ namespace FlatRedBall.Glue.Controls
 
         private void UseThisClassButton_Click(object sender, EventArgs e)
         {
-            ReferencedFileSave currentReferencedFile = EditorLogic.CurrentReferencedFile;
+            ReferencedFileSave currentReferencedFile = GlueState.Self.CurrentReferencedFileSave;
 
             viewModel.HandleUseThisClassClick(CurrentCustomClassSave);
 

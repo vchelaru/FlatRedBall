@@ -323,9 +323,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     string directory = "";
 
-                    if (EditorLogic.CurrentTreeNode?.IsDirectoryNode() == true)
+                    if (GlueState.Self.CurrentTreeNode?.IsDirectoryNode() == true)
                     {
-                        directory = EditorLogic.CurrentTreeNode.GetRelativePath();
+                        directory = GlueState.Self.CurrentTreeNode.GetRelativePath();
                         directory = directory.Replace('/', '\\');
                     }
 
@@ -494,7 +494,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         // Refresh the UI - it's refreshed above in CreateAndAddNewVariable,
                         // but we're changing the DefinedByBase property which changes the color
                         // of the variable so refresh it again
-                        EditorLogic.CurrentElementTreeNode.RefreshTreeNodes();
+                        GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
                     }
                     ElementViewWindow.ShowAllElementVariablesInPropertyGrid();
 
@@ -798,7 +798,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             #region Double-clicked a CustomVariable
             else if (selectedNode.IsCustomVariable())
             {
-                CustomVariable customVariable = EditorLogic.CurrentCustomVariable;
+                CustomVariable customVariable = GlueState.Self.CurrentCustomVariable;
 
                 if (!string.IsNullOrEmpty(customVariable.SourceObject))
                 {
@@ -818,7 +818,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             else if (selectedNode.IsEventResponseTreeNode())
             {
-                var ers = EditorLogic.CurrentEventResponseSave;
+                var ers = GlueState.Self.CurrentEventResponseSave;
 
                 if (!string.IsNullOrEmpty(ers.SourceObject))
                 {

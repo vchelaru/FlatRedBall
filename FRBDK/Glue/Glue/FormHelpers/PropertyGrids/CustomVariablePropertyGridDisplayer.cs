@@ -210,11 +210,11 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
             if (GlueState.Self.CurrentEntitySave != null)
             {
-                GlueState.Self.CurrentEntitySave.SetCustomVariable(EditorLogic.CurrentCustomVariable.Name, value);
+                GlueState.Self.CurrentEntitySave.SetCustomVariable(GlueState.Self.CurrentCustomVariable.Name, value);
             }
             else
             {
-                GlueState.Self.CurrentScreenSave.SetCustomVariable(EditorLogic.CurrentCustomVariable.Name, value);
+                GlueState.Self.CurrentScreenSave.SetCustomVariable(GlueState.Self.CurrentCustomVariable.Name, value);
 
             }
         }
