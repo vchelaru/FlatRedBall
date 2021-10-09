@@ -1076,7 +1076,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     StateSaveCategory newCategory = new StateSaveCategory();
                     newCategory.Name = tiw.Result;
-                    newCategory.SharesVariablesWithOtherCategories = false;
 
                     element.StateCategoryList.Add(newCategory);
 

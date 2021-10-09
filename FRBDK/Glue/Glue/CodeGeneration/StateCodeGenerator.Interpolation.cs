@@ -25,7 +25,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             StateCodeGenerator.GenerateInterpolateToStateMethod(element, codeBlock, "VariableState", sharedVariableStates);
             StateCodeGenerator.GenerateInterpolateBetweenMethod(element, codeBlock, "VariableState", sharedVariableStates);
 
-            foreach (StateSaveCategory category in element.StateCategoryList.Where((category)=> category.SharesVariablesWithOtherCategories == false))
+            foreach (StateSaveCategory category in element.StateCategoryList)
             {
                 StateCodeGenerator.GenerateInterpolateToStateMethod(element, codeBlock, category.Name, category.States);
                 StateCodeGenerator.GenerateInterpolateBetweenMethod(element, codeBlock, category.Name, category.States);

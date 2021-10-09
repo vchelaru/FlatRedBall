@@ -592,15 +592,8 @@ namespace FlatRedBall.Glue.Reflection
             }
             foreach (StateSaveCategory category in element.StateCategoryList)
             {
-                if (category.SharesVariablesWithOtherCategories == false)
-                {
-                    // That means this thing is its own variable:
-                    returnValues.Add(new MemberWithType { Member = "Current" + category.Name + "State", Type = "string" });
-                }
-                else
-                {
-                    shouldAddCurrentState = true;
-                }
+                // That means this thing is its own variable:
+                returnValues.Add(new MemberWithType { Member = "Current" + category.Name + "State", Type = "string" });
             }
 
             if (shouldAddCurrentState)

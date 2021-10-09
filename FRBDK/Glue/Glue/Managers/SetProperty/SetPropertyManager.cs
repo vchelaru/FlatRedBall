@@ -91,18 +91,6 @@ namespace FlatRedBall.Glue.SetVariable
 
             #endregion
 
-            #region StateCategory
-
-            else if (GlueState.Self.CurrentStateSaveCategory != null)
-            {
-                Container.Get<StateSaveCategorySetVariableLogic>().ReactToStateSaveCategoryChangedValue(
-                    GlueState.Self.CurrentStateSaveCategory, variableNameAsDisplayed, oldValue,
-                    GlueState.Self.CurrentElement, ref updateTreeView);
-
-            }
-
-            #endregion
-
             #region NamedObject
 
             else if (GlueState.Self.CurrentNamedObjectSave != null)

@@ -183,18 +183,6 @@ namespace FlatRedBall.Glue.GuiDisplay
                     listToFill.Add(state.Name);
 
                 }
-                foreach (StateSaveCategory ssc in sourceElement.StateCategoryList)
-                {
-                    if (ssc.SharesVariablesWithOtherCategories == true)
-                    {
-                        foreach (StateSave stateInCategory in ssc.States)
-                        {
-                            listToFill.Add(stateInCategory.Name);
-
-                        }
-                    }
-                }
-
             }
             else
             {
@@ -241,16 +229,6 @@ namespace FlatRedBall.Glue.GuiDisplay
                         foreach (StateSave state in element.States)
                         {
                             listToFill.Add(state.Name);
-                        }
-                        foreach (StateSaveCategory ssc in element.StateCategoryList)
-                        {
-                            if (ssc.SharesVariablesWithOtherCategories)
-                            {
-                                foreach (StateSave state in ssc.States)
-                                {
-                                    listToFill.Add(state.Name);
-                                }
-                            }
                         }
                     }
                     else

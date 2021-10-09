@@ -400,27 +400,7 @@ namespace FlatRedBall.Glue.SaveClasses
             //Check if shared
             if (element != null)
             {
-                if (category == null || category.SharesVariablesWithOtherCategories)
-                {
-                    //Check states not in category
-                    if (element.States.Any(otherState => otherState.Name == name && otherState != currentStateSave))
-                    {
-                        whyItIsntValid = "Conflicts with existing state";
-                        return false;
-                    }
-
-                    //Check categories that have sharing on
-                    foreach (var stateSaveCategory in from stateSaveCategory in element.StateCategoryList
-                                                      where stateSaveCategory.SharesVariablesWithOtherCategories
-                                                      from stateSave in stateSaveCategory.States
-                                                      where name == stateSave.Name && stateSave != currentStateSave
-                                                      select stateSaveCategory)
-                    {
-                        whyItIsntValid = "Conflicts with existing state in category " + stateSaveCategory.Name;
-                        return false;
-                    }
-                }
-                else if (category != null)
+                if (category != null)
                 {
                     if (category.States.Any(state => state.Name == name && state != currentStateSave))
                     {
@@ -438,7 +418,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 {
                     string categoryName = null;
 
-                    if (category != null && category.SharesVariablesWithOtherCategories == false)
+                    if (category != null)
                     {
                         categoryName = category.Name;
                     }

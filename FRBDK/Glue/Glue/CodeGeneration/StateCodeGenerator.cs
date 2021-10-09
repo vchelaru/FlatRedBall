@@ -66,7 +66,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             var category =
                 element.StateCategoryList.Find(
-                    cat => cat.Name == stateCategory && !cat.SharesVariablesWithOtherCategories);
+                    cat => cat.Name == stateCategory);
 
             if(category != null)
                 states.AddRange(category.States);
@@ -89,7 +89,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     }
                 }
 
-                foreach (var category in element.StateCategoryList.Where(category => !category.SharesVariablesWithOtherCategories && !names.ContainsKey(category.Name)))
+                foreach (var category in element.StateCategoryList.Where(category => !names.ContainsKey(category.Name)))
                 {
                     names.Add(category.Name, category);
                 }
@@ -567,7 +567,6 @@ namespace FlatRedBall.Glue.CodeGeneration
                 statesForThisCategory.Add(element.States[i]);
             }
 
-            statesForThisCategory.AddRange(element.StateCategoryList.Where(category => category.SharesVariablesWithOtherCategories).SelectMany(category => category.States));
             return statesForThisCategory;
         }
 
@@ -634,7 +633,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 codeBlock = GeneratePreloadStateContentForStateType(codeBlock, element, list, "VariableState");
 
-                foreach (StateSaveCategory category in element.StateCategoryList.Where((category) => category.SharesVariablesWithOtherCategories == false))
+                foreach (StateSaveCategory category in element.StateCategoryList)
                 {
                     codeBlock = GeneratePreloadStateContentForStateType(codeBlock, element, category.States, category.Name);
                 }
@@ -707,16 +706,6 @@ namespace FlatRedBall.Glue.CodeGeneration
                     if (baseElement.States.Count != 0)
                     {
                         return true;
-                    }
-                    else
-                    {
-                        foreach (StateSaveCategory category in baseElement.StateCategoryList)
-                        {
-                            if (category.SharesVariablesWithOtherCategories)
-                            {
-                                return true;
-                            }
-                        }
                     }
 
                 }
@@ -858,10 +847,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                             StateSaveCategory category = objectElement.GetStateCategoryRecursively(customVariable.Type);
 
-                            if (category != null && category.SharesVariablesWithOtherCategories == false)
-                            {
-                                typeName = category.Name;
-                            }
+                            typeName = category.Name;
+
                             valueAsString = objectElement.Name.Replace("/", ".").Replace("\\", ".") + "." + typeName + "." + valueAsString.Replace("\"", "");
                         }
                     }
@@ -921,14 +908,6 @@ namespace FlatRedBall.Glue.CodeGeneration
                 if (referencedElement.States.Count != 0)
                 {
                     stateName = referencedElement.States[0].Name;
-                }
-                else
-                {
-                    foreach (StateSaveCategory category in referencedElement.StateCategoryList.Where((category) => category.SharesVariablesWithOtherCategories == true && category.States.Count != 0))
-                    {
-                        stateName = category.States[0].Name;
-                        break;
-                    }
                 }
             }
             else

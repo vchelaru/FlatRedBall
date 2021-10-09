@@ -199,14 +199,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 foreach (var category in container.StateCategoryList.Where(item => item.States.Contains(stateSave)))
                 {
-                    if (category.SharesVariablesWithOtherCategories)
-                    {
-                        return "CurrentState";
-                    }
-                    else
-                    {
-                        return "Current" + category.Name + "State";
-                    }
+                    return "Current" + category.Name + "State";
                 }
             }
 
@@ -223,14 +216,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 foreach (var category in container.StateCategoryList.Where(item => item.States.Contains(stateSave)))
                 {
-                    if (category.SharesVariablesWithOtherCategories)
-                    {
-                        return "VariableState";
-                    }
-                    else
-                    {
-                        return category.Name;
-                    }
+                    return category.Name;
                 }
             }
 

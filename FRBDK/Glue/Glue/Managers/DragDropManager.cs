@@ -549,16 +549,8 @@ namespace FlatRedBall.Glue.Managers
                     // expose a variable that exposes the category
                     CustomVariable customVariable = new CustomVariable();
 
-                    if (category.SharesVariablesWithOtherCategories)
-                    {
-                        customVariable.Type = "VariableState";
-                        customVariable.Name = "CurrentState";
-                    }
-                    else
-                    {
-                        customVariable.Type = category.Name;
-                        customVariable.Name = "Current" + category.Name + "State";
-                    }
+                    customVariable.Type = category.Name;
+                    customVariable.Name = "Current" + category.Name + "State";
 
                     var element = targetNode.GetContainingElementTreeNode().Tag as GlueElement;
 

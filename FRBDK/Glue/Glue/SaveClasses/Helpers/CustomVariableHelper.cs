@@ -352,10 +352,6 @@ namespace FlatRedBall.Glue.SaveClasses.Helpers
                     {
                         return false;
                     }
-                    else if (container.StateCategoryList.FirstOrDefault(category => category.SharesVariablesWithOtherCategories == true) != null)
-                    {
-                        return false;
-                    }
                     else
                     {
                         return true;
@@ -365,7 +361,6 @@ namespace FlatRedBall.Glue.SaveClasses.Helpers
                 {
                     bool returnValue = container.StateCategoryList.FirstOrDefault(
                         category => 
-                            category.SharesVariablesWithOtherCategories == false && 
                             category.Name == customVariable.Type) == null;
 
                     return returnValue;

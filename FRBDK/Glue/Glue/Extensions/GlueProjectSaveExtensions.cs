@@ -24,7 +24,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 // The settings really don't matter, but let's simulate the real save here by using the same settings
                 JsonSerializerSettings settings = new JsonSerializerSettings();
                 settings.NullValueHandling = NullValueHandling.Ignore;
-                settings.DefaultValueHandling = DefaultValueHandling.Ignore;
+                settings.DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate;
                 serializedToString = JsonConvert.SerializeObject(glueProjectSave, Formatting.Indented, settings);
             }
             else
@@ -77,7 +77,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 JsonSerializerSettings settings = new JsonSerializerSettings();
                 settings.NullValueHandling = NullValueHandling.Ignore;
-                settings.DefaultValueHandling = DefaultValueHandling.Ignore;
+                settings.DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate;
                 var serialized = JsonConvert.SerializeObject(glueProjectSave, Formatting.Indented, settings);
                 FileManager.SaveText(serialized, fileName);
 

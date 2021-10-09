@@ -192,15 +192,12 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             // See update below for-loop
             foreach (StateSaveCategory category in element.StateCategoryList)
             {
-                if (!category.SharesVariablesWithOtherCategories)
+                // This doesn't share variables, so it may own the variable
+                foreach (StateSave stateSave in category.States)
                 {
-                    // This doesn't share variables, so it may own the variable
-                    foreach (StateSave stateSave in category.States)
+                    if (stateSave.AssignsVariable(variable))
                     {
-                        if (stateSave.AssignsVariable(variable))
-                        {
-                            return stateSave;
-                        }
+                        return stateSave;
                     }
                 }
             }

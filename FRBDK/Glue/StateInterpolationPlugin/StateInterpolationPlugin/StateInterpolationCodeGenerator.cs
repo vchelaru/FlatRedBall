@@ -162,14 +162,7 @@ namespace OfficialPlugins.StateInterpolation
             }
             foreach (StateSaveCategory category in element.StateCategoryList)
             {
-                if(category.SharesVariablesWithOtherCategories == false)
-                {
-                    toReturn.Add(category.Name);    
-                }
-                else if (!toReturn.Contains(defaultEnum))
-                {
-                    toReturn.Add(defaultEnum);
-                }
+                toReturn.Add(category.Name);    
             }
 
             return toReturn;

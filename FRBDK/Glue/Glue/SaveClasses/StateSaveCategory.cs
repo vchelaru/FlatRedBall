@@ -17,15 +17,9 @@ namespace FlatRedBall.Glue.SaveClasses
             set;
         }
 
-        public bool SharesVariablesWithOtherCategories
-        {
-            get;
-            set;
-        }
 
         public StateSaveCategory()
         {
-            SharesVariablesWithOtherCategories = true;
         }
 
         public StateSave GetState(string stateName)

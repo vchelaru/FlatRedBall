@@ -48,7 +48,7 @@ namespace FlatRedBall.Glue.SetVariable
             string name = parentObject.Name;
 
             string typeToMatch = "VariableState";
-            if (category != null && category.SharesVariablesWithOtherCategories == false)
+            if (category != null)
             {
                 typeToMatch = "Current" + category.Name + "State";
             }

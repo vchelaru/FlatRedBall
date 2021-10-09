@@ -422,15 +422,10 @@ namespace FlatRedBall.Glue.SaveClasses
             if (enumType == "VariableState")
             {
                 uses = element.States.Count != 0;
-
-                if (!uses)
-                {
-                    uses = element.StateCategoryList.Count(item => { return item.States.Count != 0 && item.SharesVariablesWithOtherCategories; }) != 0;
-                }
             }
             else
             {
-                uses = element.StateCategoryList.Count(item => { return item.SharesVariablesWithOtherCategories == false && item.Name == enumType; }) != 0;
+                uses = element.StateCategoryList.Count(item => { return item.Name == enumType; }) != 0;
             }
 
             if (!uses && !string.IsNullOrEmpty(element.BaseElement))
