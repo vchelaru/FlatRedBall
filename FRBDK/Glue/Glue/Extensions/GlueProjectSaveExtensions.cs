@@ -21,7 +21,11 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if(glueProjectSave.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
             {
-                serializedToString = JsonConvert.SerializeObject(glueProjectSave);
+                // The settings really don't matter, but let's simulate the real save here by using the same settings
+                JsonSerializerSettings settings = new JsonSerializerSettings();
+                settings.NullValueHandling = NullValueHandling.Ignore;
+                settings.DefaultValueHandling = DefaultValueHandling.Ignore;
+                serializedToString = JsonConvert.SerializeObject(glueProjectSave, Formatting.Indented, settings);
             }
             else
             {
@@ -71,7 +75,10 @@ namespace FlatRedBall.Glue.SaveClasses
             string convertedFileName = fileName.ConvertToPartialName(tag);
             if(glueProjectSave.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
             {
-                var serialized = JsonConvert.SerializeObject(glueProjectSave, Formatting.Indented);
+                JsonSerializerSettings settings = new JsonSerializerSettings();
+                settings.NullValueHandling = NullValueHandling.Ignore;
+                settings.DefaultValueHandling = DefaultValueHandling.Ignore;
+                var serialized = JsonConvert.SerializeObject(glueProjectSave, Formatting.Indented, settings);
                 FileManager.SaveText(serialized, fileName);
 
             }
