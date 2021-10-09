@@ -36,13 +36,7 @@ namespace FlatRedBall.IO
 
         #region Properties
 
-        public string Extension
-        {
-            get
-            {
-                return FileManager.GetExtension(Original);
-            }
-        }
+        public string Extension { get; private set; }
 
         public string StandardizedNoPathNoExtension
         {
@@ -62,44 +56,11 @@ namespace FlatRedBall.IO
 
         public string NoPath => FileManager.RemovePath(FullPath);
 
+        public string FullPath { get; private set; }
 
-        public string FullPath
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(Original))
-                {
-                    return FileManager.RemoveDotDotSlash(StandardizeInternal(""));
-                }
-                else
-                {
-                    return FileManager.RemoveDotDotSlash(StandardizeInternal(Original));
-                }
-            }
-        }
+        public string Standardized { get; private set; }
 
-        public string Standardized
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(Original))
-                {
-                    return FileManager.RemoveDotDotSlash(StandardizeInternal("")).ToLowerInvariant();
-                }
-                else
-                {
-                    return FileManager.RemoveDotDotSlash(StandardizeInternal(Original)).ToLowerInvariant();
-                }
-            }
-        }
-
-        public string StandardizedCaseSensitive
-        {
-            get
-            {
-                return FileManager.RemoveDotDotSlash(StandardizeInternal(Original));
-            }
-        }
+        public string StandardizedCaseSensitive { get; private set; }
 
         #endregion
 
@@ -110,6 +71,18 @@ namespace FlatRedBall.IO
         public FilePath(string path)
         {
             Original = path;
+            Standardized = string.IsNullOrEmpty(Original) 
+                    ? FileManager.RemoveDotDotSlash(StandardizeInternal("")).ToLowerInvariant()
+                    : FileManager.RemoveDotDotSlash(StandardizeInternal(Original)).ToLowerInvariant();
+
+            StandardizedCaseSensitive =
+                FileManager.RemoveDotDotSlash(StandardizeInternal(Original));
+
+            FullPath = string.IsNullOrEmpty(Original)
+                ? FileManager.RemoveDotDotSlash(StandardizeInternal(""))
+                : FileManager.RemoveDotDotSlash(StandardizeInternal(Original));
+
+            Extension = FileManager.GetExtension(Original);
         }
 
         public override bool Equals(object obj)
@@ -194,23 +167,13 @@ namespace FlatRedBall.IO
 
             if (!isNetwork)
             {
-                // Not sure what this is all about, but everything should be standardized:
-                //#if SILVERLIGHT
-                //                if (IsRelative(fileNameToFix) && mRelativeDirectory.Length > 1)
-                //                    fileNameToFix = mRelativeDirectory + fileNameToFix;
-
-                //#else
-
                 if (FileManager.IsRelative(fileNameToFix))
                 {
                     fileNameToFix = (FileManager.RelativeDirectory + fileNameToFix);
                     ReplaceSlashes(ref fileNameToFix);
                 }
-
-                //#endif
             }
 
-#if !XBOX360
             fileNameToFix = FileManager.RemoveDotDotSlash(fileNameToFix);
 
             if (fileNameToFix.StartsWith(".."))
@@ -218,7 +181,6 @@ namespace FlatRedBall.IO
                 throw new InvalidOperationException("Tried to remove all ../ but ended up with this: " + fileNameToFix);
             }
 
-#endif
             // It's possible that there will be double forward slashes.
             fileNameToFix = fileNameToFix.Replace("//", "/");
 
