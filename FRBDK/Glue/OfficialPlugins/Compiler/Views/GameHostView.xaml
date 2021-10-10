@@ -18,7 +18,7 @@
         <StackPanel x:Name="AlwaysVisibleStack" HorizontalAlignment="Right" Orientation="Horizontal">
             <Grid Visibility="{Binding MessageAboutEditModeDisabledVisibility}">
                 <Frame Background="Yellow" BorderBrush="DarkGray" BorderThickness="1"/>
-                <TextBlock Margin="3" VerticalAlignment="Center">Enable GlueView Edit in Settings for live edit</TextBlock>
+                <TextBlock Margin="3" VerticalAlignment="Center">Enable Game Embed and Edit in Settings</TextBlock>
             </Grid>
             <Button VerticalAlignment="Top" Width="24" Height="24" Click="GlueViewSettingsButtonClicked">
                 <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/Compiler/Icons/Settings.png"></Image>
