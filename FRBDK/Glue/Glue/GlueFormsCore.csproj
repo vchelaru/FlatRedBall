@@ -105,6 +105,7 @@
     <None Remove="Content\Icons\StretchAreaGum.gif" />
     <None Remove="Content\Icons\transparent.png" />
     <None Remove="Content\Icons\variable.png" />
+    <None Remove="Content\logo-512.png" />
     <None Remove="Plugins\EmbeddedPlugins\CameraPlugin\CameraIcon.png" />
     <None Remove="Plugins\EmbeddedPlugins\CameraPlugin\Icons\2DIcon.png" />
     <None Remove="Plugins\EmbeddedPlugins\CameraPlugin\Icons\3DIcon.png" />
@@ -204,6 +205,7 @@
     </EmbeddedResource>
     <Resource Include="Content\Icons\transparent.png" />
     <Resource Include="Content\Icons\variable.png" />
+    <Resource Include="Content\logo-512.png" />
     <Resource Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraIcon.png" />
     <Resource Include="Plugins\EmbeddedPlugins\CameraPlugin\Icons\2DIcon.png" />
     <Resource Include="Plugins\EmbeddedPlugins\CameraPlugin\Icons\3DIcon.png" />

@@ -13,6 +13,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using Glue;
+using GlueFormsCore.Controls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -111,8 +112,6 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
             var Help = AddTopLevelMenuItem("Help");
             {
-                Help.Add("About FlatRedBall", () => new AboutBox1().Show());
-                Help.DropDownItems.Add(new ToolStripSeparator());
                 Help.Add("Tutorials", () => Process.Start("http://flatredball.com/documentation/tutorials/"));
                 Help.Add("Report a Bug", () => Process.Start("https://github.com/vchelaru/flatredball/issues"));
             }
