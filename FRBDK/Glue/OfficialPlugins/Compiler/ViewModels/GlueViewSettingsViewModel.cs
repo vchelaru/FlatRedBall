@@ -8,7 +8,7 @@ namespace OfficialPlugins.Compiler.ViewModels
 {
     public class GlueViewSettingsViewModel : ViewModel
     {
-        public bool EnableGlueViewEdit
+        public bool EnableGameEmbedAndEdit
         {
             get => Get<bool>();
             set => Set(value);
@@ -44,7 +44,7 @@ namespace OfficialPlugins.Compiler.ViewModels
             this.PortNumber = model.PortNumber;
             this.ShowScreenBoundsWhenViewingEntities = model.ShowScreenBoundsWhenViewingEntities;
             this.GridSize = model.GridSize;
-            this.EnableGlueViewEdit = model.GenerateGlueControlManagerCode;
+            this.EnableGameEmbedAndEdit = model.GenerateGlueControlManagerCode;
 
         }
 
@@ -53,7 +53,7 @@ namespace OfficialPlugins.Compiler.ViewModels
             compilerSettings.PortNumber = this.PortNumber;
             compilerSettings.ShowScreenBoundsWhenViewingEntities = this.ShowScreenBoundsWhenViewingEntities;
             compilerSettings.GridSize = this.GridSize;
-            compilerSettings.GenerateGlueControlManagerCode = this.EnableGlueViewEdit;
+            compilerSettings.GenerateGlueControlManagerCode = this.EnableGameEmbedAndEdit;
 
         }
     }

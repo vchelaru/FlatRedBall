@@ -42,6 +42,7 @@ namespace OfficialPlugins.Compiler.Views
         {
             foreach(var category in DataUiGrid.Categories)
             {
+                category.Name = "";
                 foreach(var member in category.Members)
                 {
                     member.DisplayName = StringFunctions.InsertSpacesInCamelCaseString(member.DisplayName);
