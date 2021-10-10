@@ -45,6 +45,14 @@ namespace Npc
             //ProcessCommandLineArguments();
 
             this.DataContext = ViewModel;
+
+            this.Loaded += HandleLoaded;
+        }
+
+        private void HandleLoaded(object sender, RoutedEventArgs e)
+        {
+            ProjectNameTextBox.Focus();
+            ProjectNameTextBox.SelectAll();
         }
 
         public void ProcessCommandLineArguments(string arguments)
@@ -119,6 +127,11 @@ namespace Npc
             {
                 await BeginMakingProject();
             }
+            else if(e.Key == Key.Escape)
+            {
+                this.DialogResult = false;
+            }
         }
+
     }
 }

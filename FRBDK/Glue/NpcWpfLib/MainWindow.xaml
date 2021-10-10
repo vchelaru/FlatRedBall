@@ -29,7 +29,11 @@
             </Grid.RowDefinitions>
 
             <TextBlock FontWeight="Bold" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,10" >Project Name:</TextBlock>
-            <TextBox Height="20" VerticalAlignment="Top" Grid.Column="1" Text="{Binding ProjectName, UpdateSourceTrigger=PropertyChanged}" KeyDown="TextBox_KeyDown"></TextBox>
+            <TextBox Height="20" VerticalAlignment="Top" 
+                     Grid.Column="1" 
+                     x:Name="ProjectNameTextBox"
+                     Text="{Binding ProjectName, UpdateSourceTrigger=PropertyChanged}" 
+                     KeyDown="TextBox_KeyDown"></TextBox>
 
             <TextBlock FontWeight="Bold" Grid.Column="0" Grid.Row="1" Margin="0,0,16,10" >Platform:</TextBlock>
             <ComboBox VerticalAlignment="Top"  ItemsSource="{Binding AvailableProjects, Mode=OneWay}" 
