@@ -85,6 +85,11 @@ namespace GlueControl.Editing
 
         public TileShapeCollectionMarker(INameable owner, Models.NamedObjectSave namedObjectSave)
         {
+            if (namedObjectSave == null)
+            {
+                throw new ArgumentNullException(nameof(namedObjectSave));
+            }
+
             this.namedObjectSave = namedObjectSave;
             this.Owner = owner;
             currentTileHighlight = new AxisAlignedRectangle();

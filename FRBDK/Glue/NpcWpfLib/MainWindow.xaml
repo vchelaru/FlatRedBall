@@ -25,6 +25,7 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
 
@@ -80,11 +81,20 @@
                 <TextBlock FontStyle="Italic" FontSize="10" Foreground="{Binding FinalDirectoryForeground}" Text="{Binding ProjectLocationError}" TextWrapping="Wrap" Margin="15,4,0,0"></TextBlock>
             </StackPanel>
 
+            <TextBlock FontWeight="Bold" Grid.Row="7" Margin="0,0,16,10" >Open New Project Wizard:</TextBlock>
+            <CheckBox Grid.Row="7" Grid.Column="1" IsChecked="{Binding IsOpenNewProjectWizardChecked}">
+                <CheckBox.LayoutTransform>
+                    <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                </CheckBox.LayoutTransform>
+            </CheckBox>
+
+
+
             <Button 
                 VerticalAlignment="Bottom"
                 Margin="0,16,0,16"
                 Style="{StaticResource myStyle}"
-                Grid.Row="7" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Click="HandleMakeMyProjectClicked" Height="48">
+                Grid.Row="8" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Click="HandleMakeMyProjectClicked" Height="48">
                 <Button.Template>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <ContentControl>

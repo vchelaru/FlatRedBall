@@ -436,11 +436,11 @@ namespace GlueControl.Editing
 
         #region Selection
 
-        internal void Select(NamedObjectSave namedObject)
+        internal void Select(NamedObjectSave namedObject, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false)
         {
             CurrentNamedObjectSave = namedObject;
 
-            Select(namedObject?.InstanceName);
+            Select(namedObject?.InstanceName, addToExistingSelection, playBump, focusCameraOnObject);
         }
 
         internal void Select(string objectName, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false)

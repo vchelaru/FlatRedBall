@@ -162,10 +162,17 @@ namespace Npc.ViewModels
             set => Set(value);
         }
 
+        public bool IsOpenNewProjectWizardChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public NewProjectViewModel()
         {
             ProjectName = "MyProject";
             UseLocalCopy = false;
+            IsOpenNewProjectWizardChecked = true;
         }
 
         private string GetWhyIsntValid()

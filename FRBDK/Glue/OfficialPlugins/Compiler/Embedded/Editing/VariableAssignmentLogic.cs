@@ -159,7 +159,7 @@ namespace GlueControl.Editing
                     {
                         var nosToReselect = EditingManager.Self.CurrentNamedObjectSave;
                         // force re-selection to update visibility:
-                        EditingManager.Self.Select(null);
+                        EditingManager.Self.Select((NamedObjectSave)null);
                         EditingManager.Self.Select(nosToReselect);
                     }
                 }
