@@ -995,6 +995,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             var isMatchingList = currentList != null && currentList.IsList &&
                 currentList.SourceClassGenericType == addObjectViewModel.SourceClassType;
 
+            if(!isMatchingList && currentList != null)
+            {
+                var newAti = addObjectViewModel.SelectedAti;
+                isMatchingList = currentList.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection &&
+                    (newAti == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle ||
+                     newAti == AvailableAssetTypes.CommonAtis.Circle ||
+                     newAti == AvailableAssetTypes.CommonAtis.Polygon ||
+                     newAti == AvailableAssetTypes.CommonAtis.Line );
+
+            }
+
             if (!isMatchingList)
             {
                 currentList = ObjectFinder.Self.GetDefaultListToContain(addObjectViewModel.SourceClassType, elementToAddTo);

@@ -354,7 +354,14 @@ namespace OfficialPlugins.Compiler.Managers
                 AddObjectDtoResponse addResponse = null;
                 if(!string.IsNullOrEmpty(addResponseAsString))
                 {
-                    addResponse = JsonConvert.DeserializeObject<AddObjectDtoResponse>(addResponseAsString);
+                    try
+                    {
+                        addResponse = JsonConvert.DeserializeObject<AddObjectDtoResponse>(addResponseAsString);
+                    }
+                    catch(Exception e)
+                    {
+                        printOutput($"Error parsing string:\n\n{addResponseAsString}");
+                    }
                 }
 
                 if(addResponse?.WasObjectCreated == true)

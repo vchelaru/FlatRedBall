@@ -255,7 +255,7 @@ namespace OfficialPlugins.Compiler
                     if(CompilerViewModel.IsEditChecked)
                     {
                         var gameToGlueCommandsAsString = await CommandSending.CommandSender
-                            .SendCommand("GetCommands", GlueViewSettingsViewModel.PortNumber);
+                            .SendCommand("GetCommands", GlueViewSettingsViewModel.PortNumber, isImportant:false);
 
                         if (!string.IsNullOrEmpty(gameToGlueCommandsAsString))
                         {
@@ -302,6 +302,7 @@ namespace OfficialPlugins.Compiler
             if(compilerSettings == null)
             {
                 var random = new Random();
+                compilerSettings = new CompilerSettingsModel();
                 // randomize it a little to reduce the likelihood of it being the same as a different game.
                 // Before, it was always 8021
                 compilerSettings.PortNumber = 8000 + random.Next(1000);

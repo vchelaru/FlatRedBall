@@ -26,11 +26,21 @@ namespace OfficialPlugins.Compiler.CommandSending
 
         static string LastCommand;
         // Maybe we should have a bool here on whether to wait. if false, exit if the sendCommandSemaphore returns false
-        public static async Task<string> SendCommand(string text, int port)
+        public static async Task<string> SendCommand(string text, int port, bool isImportant = true)
         {
             try
             {
-                await sendCommandSemaphore.WaitAsync();
+                if(isImportant)
+                {
+                    await sendCommandSemaphore.WaitAsync();
+                }
+                else
+                {
+                    if(sendCommandSemaphore.Wait(0) == false)
+                    {
+                        return null;
+                    }
+                }
 
                 LastCommand = text;
 
