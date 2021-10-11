@@ -340,7 +340,7 @@ namespace GlueControl.Editing
 
             DoNudgeHotkeyLogic();
 
-            CopyPasteManager.DoHotkeyLogic(ItemsSelected);
+            CopyPasteManager.DoHotkeyLogic(ItemsSelected, ItemGrabbed);
 
             CameraLogic.DoHotkeyLogic();
 

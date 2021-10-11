@@ -70,10 +70,15 @@ namespace FlatRedBall.Glue.SaveClasses
                 namedObject.SourceClassType = typeOfNewObject;
                 namedObject.UpdateCustomProperties();
             }
-            else if (AvailableClassTypeConverter.IsFlatRedBallType(typeOfNewObject))
+            else if (AvailableClassTypeConverter.IsFlatRedBallType(typeOfNewObject) ||
+                namedObject.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle ||
+                namedObject.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Circle ||
+                namedObject.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Line ||
+                namedObject.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Polygon
+                )
             {
                 namedObject.SourceType = SourceType.FlatRedBallType;
-                namedObject.SourceClassType = typeOfNewObject;
+                //namedObject.SourceClassType = typeOfNewObject;
                 namedObject.UpdateCustomProperties();
             }
         }

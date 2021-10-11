@@ -20,7 +20,7 @@ namespace GlueControl.Editing
             get; set;
         } = new List<INameable>();
 
-        public void DoHotkeyLogic(List<INameable> selectedObjects)
+        public void DoHotkeyLogic(List<INameable> selectedObjects, PositionedObject itemGrabbed)
         {
             var keyboard = FlatRedBall.Input.InputManager.Keyboard;
 
@@ -33,34 +33,36 @@ namespace GlueControl.Editing
                 }
                 if (keyboard.KeyPushed(Keys.V) && CopiedObjects != null)
                 {
-                    HandlePaste();
+                    HandlePaste(itemGrabbed);
                 }
             }
         }
 
-        private void HandlePaste()
+        private void HandlePaste(PositionedObject itemGrabbed)
         {
+            List<PositionedObject> newObjects = new List<PositionedObject>();
             foreach (var copiedObject in CopiedObjects)
             {
+                PositionedObject instance = null;
                 if (copiedObject is Circle originalCircle)
                 {
-                    InstanceLogic.Self.HandleCreateCircleByGame(originalCircle);
+                    instance = InstanceLogic.Self.HandleCreateCircleByGame(originalCircle);
                 }
                 else if (copiedObject is AxisAlignedRectangle originalRectangle)
                 {
-                    InstanceLogic.Self.HandleCreateAxisAlignedRectangleByGame(originalRectangle);
+                    instance = InstanceLogic.Self.HandleCreateAxisAlignedRectangleByGame(originalRectangle);
                 }
                 else if (copiedObject is Polygon originalPolygon)
                 {
-                    InstanceLogic.Self.HandleCreatePolygonByGame(originalPolygon);
+                    instance = InstanceLogic.Self.HandleCreatePolygonByGame(originalPolygon);
                 }
                 else if (copiedObject is Sprite originalSprite)
                 {
-                    InstanceLogic.Self.HandleCreateSpriteByName(originalSprite);
+                    instance = InstanceLogic.Self.HandleCreateSpriteByName(originalSprite);
                 }
                 else if (copiedObject is Text originalText)
                 {
-                    InstanceLogic.Self.HandleCreateTextByName(originalText);
+                    instance = InstanceLogic.Self.HandleCreateTextByName(originalText);
                 }
                 else if (copiedObject is PositionedObject asPositionedObject) // positioned object, so entity?
                 {
@@ -70,7 +72,7 @@ namespace GlueControl.Editing
                         type = dynamicEntity.EditModeType;
                     }
                     // for now assume names are unique, not qualified
-                    var instance = InstanceLogic.Self.CreateInstanceByGame(
+                    instance = InstanceLogic.Self.CreateInstanceByGame(
                         type,
                         asPositionedObject);
                     instance.CreationSource = "Glue";
@@ -94,16 +96,37 @@ namespace GlueControl.Editing
                     }
                 }
 
+                if (instance != null)
+                {
+                    newObjects.Add(instance);
+                }
             }
 
-            if (CopiedObjects.Count > 0)
+            // If the user is dragging objects around and pasting them, then we won't select
+            // pasted objects. If the user does a simple copy/paste without dragging, then select
+            // the new object.
+            var shouldSelectNewObjectsInGame = itemGrabbed == null;
+
+            if (shouldSelectNewObjectsInGame)
             {
-                // If at least one object was copied, then we sent that one object over to Glue. Glue will
-                // automatically select newly-created objects, but we don't want that to happen when we copy/paste,
-                // so we re-send the select command on the first selected item. If only one item is selected, this will
-                // work perfectly. If not, then the first item is sent over, which is as good as we can do since Glue doesn't
-                // support multi-selection.
-                EditingManager.Self.RaiseObjectSelected();
+                var isFirst = true;
+                foreach (var newObject in newObjects)
+                {
+                    EditingManager.Self.Select(newObject.Name, addToExistingSelection: !isFirst );
+                    isFirst = false;
+                }
+            }
+            else
+            {
+                if (CopiedObjects.Count > 0)
+                {
+                    // If at least one object was copied, then we sent that one object over to Glue. Glue will
+                    // automatically select newly-created objects, but we don't want that to happen when we copy/paste,
+                    // so we re-send the select command on the first selected item. If only one item is selected, this will
+                    // work perfectly. If not, then the first item is sent over, which is as good as we can do since Glue doesn't
+                    // support multi-selection.
+                    EditingManager.Self.RaiseObjectSelected();
+                }
             }
         }
     }

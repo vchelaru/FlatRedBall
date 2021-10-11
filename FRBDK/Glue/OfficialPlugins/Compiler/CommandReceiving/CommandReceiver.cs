@@ -105,10 +105,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 GlueElement element = screen;
                 if (element == null)
                 {
-                    GlueCommands.Self.DoOnUiThread(() =>
-                    {
-                        element = GlueState.Self.CurrentElement;
-                    });
+                    element = GlueState.Self.CurrentElement;
                 }
 
                 var addObjectDto = JsonConvert.DeserializeObject<AddObjectDto>(dataAsString);

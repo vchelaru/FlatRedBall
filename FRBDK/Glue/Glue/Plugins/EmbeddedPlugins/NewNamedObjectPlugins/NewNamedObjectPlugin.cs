@@ -88,8 +88,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewNamedObjectPlugins
         {
             if (Is2D(element))
             {
-
-                nos.SetVariable("Radius", 16f);
+                if (nos.GetCustomVariable("Radius")?.Value == null)
+                {
+                    nos.SetVariable("Radius", 16f);
+                }
             }
         }
 
@@ -112,8 +114,16 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewNamedObjectPlugins
         {
             if (Is2D(element))
             {
-                nos.SetVariable("Width", 32f);
-                nos.SetVariable("Height", 32f);
+                // Don't overwrite it if it already has a value (like from a game)
+                if(nos.GetCustomVariable("Width")?.Value == null)
+                {
+                    nos.SetVariable("Width", 32f);
+                }
+
+                if (nos.GetCustomVariable("Height")?.Value == null)
+                {
+                    nos.SetVariable("Height", 32f);
+                }
             }
         }
 
@@ -121,7 +131,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewNamedObjectPlugins
         {
             if (Is2D(element))
             {
-                nos.SetVariable("TextureScale", 1.0f);
+                if (nos.GetCustomVariable("TextureScale")?.Value == null)
+                {
+                    nos.SetVariable("TextureScale", 1.0f);
+                }
 
 
             }
