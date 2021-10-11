@@ -284,7 +284,7 @@ namespace OfficialPlugins.Compiler
 
         private CompilerSettingsModel LoadOrCreateCompilerSettings()
         {
-            CompilerSettingsModel compilerSettings = new CompilerSettingsModel();
+            CompilerSettingsModel compilerSettings = null;
             var filePath = JsonSettingsFilePath;
             if (filePath.Exists())
             {
@@ -297,6 +297,14 @@ namespace OfficialPlugins.Compiler
                 {
                     // do nothing, it'll just get wiped out and re-saved later
                 }
+            }
+
+            if(compilerSettings == null)
+            {
+                var random = new Random();
+                // randomize it a little to reduce the likelihood of it being the same as a different game.
+                // Before, it was always 8021
+                compilerSettings.PortNumber = 8000 + random.Next(1000);
             }
 
             return compilerSettings;
