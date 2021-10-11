@@ -335,6 +335,11 @@ namespace FlatRedBall.Glue.SaveClasses
                 FixAllTypes(instruction);
             }
 
+            foreach(var property in instance.Properties)
+            {
+                FixAllTypes(property);
+            }
+
             foreach (NamedObjectSave contained in instance.ContainedObjects)
             {
                 contained.FixAllTypes();
@@ -380,6 +385,33 @@ namespace FlatRedBall.Glue.SaveClasses
                     }
                 }
                 instruction.Value = variableValue;
+            }
+        }
+
+        private static void FixAllTypes(PropertySave property)
+        {
+            if (!string.IsNullOrEmpty(property.Type) && property.Value != null)
+            {
+                object variableValue = property.Value;
+                if (property.Type == "int")
+                {
+                    if (variableValue is long asLong)
+                    {
+                        variableValue = (int)asLong;
+                    }
+                }
+                else if (property.Type == "float" || property.Type == "Single")
+                {
+                    if (variableValue is int asInt)
+                    {
+                        variableValue = (float)asInt;
+                    }
+                    else if (variableValue is double asDouble)
+                    {
+                        variableValue = (float)asDouble;
+                    }
+                }
+                property.Value = variableValue;
             }
         }
 

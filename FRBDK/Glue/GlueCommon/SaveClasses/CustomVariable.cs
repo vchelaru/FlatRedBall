@@ -216,7 +216,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 if (value == "<NONE>")
                 {
-                    Properties.SetValue("OverridingPropertyType", null);
+                    Properties.SetValue<string>("OverridingPropertyType", null);
                 }
                 else
                 {

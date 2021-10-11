@@ -17,6 +17,8 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Controls;
 using Npc.ViewModels;
 using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Managers;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Projects
 {
@@ -93,6 +95,8 @@ namespace FlatRedBall.Glue.Projects
                 // open the project
                 if(viewModel.IsOpenNewProjectWizardChecked)
                 {
+                    await TaskManager.Self.WaitForAllTasksFinished();
+
                     PluginManager.CallPluginMethod("New Project Wizard", "RunWizard");
                 }
             }

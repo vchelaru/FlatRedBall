@@ -860,7 +860,14 @@ namespace FlatRedBall.Glue.Elements
 
             if(propertyOnNos != null)
             {
-                return (T)((object)propertyOnNos.Value);
+                if( typeof(T).IsEnum && propertyOnNos.Value is long asLong )
+                {
+                    return (T)((object)(int)asLong);
+                }
+                else
+                {
+                    return (T)((object)propertyOnNos.Value);
+                }
             }
             else if(nos.DefinedByBase)
             {

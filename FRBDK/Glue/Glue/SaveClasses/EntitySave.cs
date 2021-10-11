@@ -246,7 +246,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    Properties.SetValue("ItemType", null);
+                    Properties.SetValue<string>("ItemType", null);
                 }
                 else
                 {

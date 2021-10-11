@@ -114,7 +114,7 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        public static void SetValue(this List<PropertySave> propertySaveList, string nameToSearchFor, object value)
+        public static void SetValue<T>(this List<PropertySave> propertySaveList, string nameToSearchFor, T value)
         {
 
             bool isDefault = IsValueDefault(value);
@@ -137,6 +137,25 @@ namespace FlatRedBall.Glue.SaveClasses
                     PropertySave newPropertySave = new PropertySave();
                     newPropertySave.Name = nameToSearchFor;
                     newPropertySave.Value = value;
+
+                    if(typeof(T) == typeof(int))
+                    {
+                        newPropertySave.Type = "int";
+                    }
+                    else if(typeof(T) == typeof(float))
+                    {
+                        newPropertySave.Type = "float";
+                    }
+                    else if (typeof(T) == typeof(decimal))
+                    {
+                        newPropertySave.Type = "decimal";
+                    }
+                    else
+                    {
+                        newPropertySave.Type = typeof(T).Name;
+                    }
+
+
                     propertySaveList.Add(newPropertySave);
                 }
             }
