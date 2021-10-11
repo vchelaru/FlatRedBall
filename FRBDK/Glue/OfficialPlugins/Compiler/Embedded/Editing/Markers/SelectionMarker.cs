@@ -558,7 +558,9 @@ namespace GlueControl.Editing
                 {
                     if (sideGrabbed == ResizeSide.None)
                     {
-                        LastUpdateMovement = ChangePositionBy(item, xChange, yChange);
+                        var keyboard = FlatRedBall.Input.InputManager.Keyboard;
+
+                        LastUpdateMovement = ChangePositionBy(item, xChange, yChange, keyboard.IsShiftDown);
                     }
                     else
                     {
@@ -572,25 +574,42 @@ namespace GlueControl.Editing
         }
 
 
-        private Vector3 ChangePositionBy(PositionedObject item, float xChange, float yChange)
+        private Vector3 ChangePositionBy(PositionedObject item, float xChange, float yChange, bool isShiftDown)
         {
             unsnappedItemPosition.X += xChange;
             unsnappedItemPosition.Y += yChange;
+
+            var positionConsideringShift = unsnappedItemPosition;
+
+            if (isShiftDown)
+            {
+                var xDifference = Math.Abs(unsnappedItemPosition.X - GrabbedPosition.X);
+                var yDifference = Math.Abs(unsnappedItemPosition.Y - GrabbedPosition.Y);
+
+                if (xDifference > yDifference)
+                {
+                    positionConsideringShift.Y = GrabbedPosition.Y;
+                }
+                else
+                {
+                    positionConsideringShift.X = GrabbedPosition.X;
+                }
+            }
 
             Vector3 changeAfterSnapping = Vector3.Zero;
 
             if (item.Parent == null)
             {
                 var before = item.Position;
-                item.X = MathFunctions.RoundFloat(unsnappedItemPosition.X, positionSnappingSize);
-                item.Y = MathFunctions.RoundFloat(unsnappedItemPosition.Y, positionSnappingSize);
+                item.X = MathFunctions.RoundFloat(positionConsideringShift.X, positionSnappingSize);
+                item.Y = MathFunctions.RoundFloat(positionConsideringShift.Y, positionSnappingSize);
                 changeAfterSnapping = item.Position - before;
             }
             else
             {
                 var before = item.RelativePosition;
-                item.RelativeX = MathFunctions.RoundFloat(unsnappedItemPosition.X, positionSnappingSize);
-                item.RelativeY = MathFunctions.RoundFloat(unsnappedItemPosition.Y, positionSnappingSize);
+                item.RelativeX = MathFunctions.RoundFloat(positionConsideringShift.X, positionSnappingSize);
+                item.RelativeY = MathFunctions.RoundFloat(positionConsideringShift.Y, positionSnappingSize);
                 changeAfterSnapping = item.RelativePosition - before;
             }
             return changeAfterSnapping;
@@ -780,7 +799,7 @@ namespace GlueControl.Editing
                     yChangeForPosition = scaleYChange * 2 * heightMultiple * yPositionMultiple;
                 }
             }
-            ChangePositionBy(item, xChangeForPosition, yChangeForPosition);
+            ChangePositionBy(item, xChangeForPosition, yChangeForPosition, FlatRedBall.Input.InputManager.Keyboard.IsShiftDown);
         }
 
         private static bool GetIfSetsTextureScale(PositionedObject item)
