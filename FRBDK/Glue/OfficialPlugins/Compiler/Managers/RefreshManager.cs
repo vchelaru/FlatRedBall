@@ -638,8 +638,16 @@ namespace OfficialPlugins.Compiler.Managers
                 dto.ObjectName = nos.InstanceName;
                 var responseAsstring = await CommandSender.Send(dto, GlueViewSettingsViewModel.PortNumber);
 
-                var response = JsonConvert.DeserializeObject<RemoveObjectDtoResponse>(responseAsstring);
-                if(response.DidScreenMatch && response.WasObjectRemoved == false)
+                RemoveObjectDtoResponse response = null;
+                try
+                {
+                    response = JsonConvert.DeserializeObject<RemoveObjectDtoResponse>(responseAsstring);
+                }
+                catch (Exception e)
+                {
+                    printOutput($"Error parsing response from game:\n\n{responseAsstring}");
+                }
+                if(response == null || (response.DidScreenMatch && response.WasObjectRemoved == false))
                 {
                     StopAndRestartTask(
                         $"Restarting because {nos} was deleted from Glue but not from game");
