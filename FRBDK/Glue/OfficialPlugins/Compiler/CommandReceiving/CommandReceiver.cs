@@ -116,19 +116,19 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 var oldName = addObjectDto.InstanceName;
 
                 #region Send the new name back to the game so the game uses the actual Glue name rather than the AutoName
-                    // do this before adding the NOS to Glue since adding the NOS to Glue results in an AddToList command
-                    // sent to the game, and we want the right name before the AddToList command
-                    var data = new GlueVariableSetData();
-                    data.Type = "string";
-                    data.VariableValue = newName;
-                    data.VariableName = "this." + oldName + ".Name";
-                    data.InstanceOwnerGameType = addObjectDto.ElementNameGame;
+                // do this before adding the NOS to Glue since adding the NOS to Glue results in an AddToList command
+                // sent to the game, and we want the right name before the AddToList command
+                var data = new GlueVariableSetData();
+                data.Type = "string";
+                data.VariableValue = newName;
+                data.VariableName = "this." + oldName + ".Name";
+                data.InstanceOwnerGameType = addObjectDto.ElementNameGame;
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                    // That's okay, this is fire-and-forget, we just send this back to the game and we don't care to await it
-                    CommandSender.Send(data, gamePortNumber);
+                // That's okay, this is fire-and-forget, we just send this back to the game and we don't care to await it
+                CommandSender.Send(data, gamePortNumber);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                    #endregion
+                #endregion
 
                 var nos = JsonConvert.DeserializeObject<NamedObjectSave>(dataAsString);
                 nos.InstanceName = newName;
@@ -161,16 +161,20 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         private static string GetNewName(GlueElement glueElement, AddObjectDto addObjectDto)
         {
-            string newName = null;
-            if(addObjectDto.SourceClassType.Contains('.'))
+            string newName = addObjectDto.CopyOriginalName;
+
+            if(string.IsNullOrEmpty(newName))
             {
-                var suffix = addObjectDto.SourceClassType.Substring(addObjectDto.SourceClassType.LastIndexOf('.') + 1);
-                newName = suffix + "1";
-            }
-            else
-            {
-                var lastSlash = addObjectDto.SourceClassType.LastIndexOf("\\");
-                newName = addObjectDto.SourceClassType.Substring(lastSlash + 1) + "1";
+                if(addObjectDto.SourceClassType.Contains('.'))
+                {
+                    var suffix = addObjectDto.SourceClassType.Substring(addObjectDto.SourceClassType.LastIndexOf('.') + 1);
+                    newName = suffix + "1";
+                }
+                else
+                {
+                    var lastSlash = addObjectDto.SourceClassType.LastIndexOf("\\");
+                    newName = addObjectDto.SourceClassType.Substring(lastSlash + 1) + "1";
+                }
             }
             while (glueElement.GetNamedObjectRecursively(newName) != null)
             {

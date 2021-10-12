@@ -7,6 +7,7 @@ using System.Xml.Serialization;
 using FlatRedBall.Utilities;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Events;
+using Newtonsoft.Json;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -99,6 +100,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
 
         [XmlIgnore]
+        [JsonIgnore]
         [Browsable(false)]
         public override string BaseObject
         {
@@ -138,6 +140,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         [Browsable(false)]
         [XmlIgnore]
+        [JsonIgnore]
         public string ContentManagerForCodeGeneration
         {
             get
@@ -161,6 +164,7 @@ namespace FlatRedBall.Glue.SaveClasses
         public override string BaseElement => BaseScreen;
 
         [XmlIgnore]
+        [JsonIgnore]
         [CategoryAttribute("Performance")]
         public bool IsLoadingScreen
         {

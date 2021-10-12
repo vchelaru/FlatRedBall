@@ -82,6 +82,7 @@ namespace GlueControl.Dtos
 
     public class AddObjectDto : GlueControl.Models.NamedObjectSave
     {
+        public string CopyOriginalName { get; set; }
         public string ElementNameGame { get; set; }
     }
 

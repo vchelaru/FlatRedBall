@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 
 namespace OfficialPlugins.Compiler.ViewModels
 {
@@ -232,6 +233,55 @@ namespace OfficialPlugins.Compiler.ViewModels
 
         [DependsOn(nameof(PlayOrEdit))]
         public Visibility FocusButtonVisibility => (PlayOrEdit == PlayOrEdit.Edit).ToVisibility();
+
+        public double LastWaitTimeInSeconds
+        {
+            get => Get<double>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(PlayOrEdit))]
+        [DependsOn(nameof(IsRunning))]
+        public Visibility ConnectedFrameVisibility
+        {
+            get => (PlayOrEdit == PlayOrEdit.Edit && IsRunning).ToVisibility();
+        }
+
+        [DependsOn(nameof(LastWaitTimeInSeconds))]
+        public string ConnectedString
+        {
+            get
+            {
+                if(LastWaitTimeInSeconds < 1)
+                {
+                    return $"Connected {LastWaitTimeInSeconds:0.0}";
+                }
+                else
+                {
+                    return $"Waiting for game {LastWaitTimeInSeconds:0.0}";
+                }
+            }
+        }
+
+        [DependsOn(nameof(LastWaitTimeInSeconds))]
+        public Brush ConnectedFrameBackgroundColor
+        {
+            get
+            {
+                if(LastWaitTimeInSeconds < 1)
+                {
+                    return Brushes.Green;
+                }
+                else if(LastWaitTimeInSeconds < 3)
+                {
+                    return Brushes.Yellow;
+                }
+                else
+                {
+                    return Brushes.Red;
+                }
+            }
+        }
 
         #endregion
 

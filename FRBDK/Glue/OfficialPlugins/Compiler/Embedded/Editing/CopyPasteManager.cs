@@ -44,25 +44,28 @@ namespace GlueControl.Editing
             foreach (var copiedObject in CopiedObjects)
             {
                 PositionedObject instance = null;
+
+                var copiedObjectName = copiedObject.Name;
+
                 if (copiedObject is Circle originalCircle)
                 {
-                    instance = InstanceLogic.Self.HandleCreateCircleByGame(originalCircle);
+                    instance = InstanceLogic.Self.HandleCreateCircleByGame(originalCircle, copiedObjectName);
                 }
                 else if (copiedObject is AxisAlignedRectangle originalRectangle)
                 {
-                    instance = InstanceLogic.Self.HandleCreateAxisAlignedRectangleByGame(originalRectangle);
+                    instance = InstanceLogic.Self.HandleCreateAxisAlignedRectangleByGame(originalRectangle, copiedObjectName);
                 }
                 else if (copiedObject is Polygon originalPolygon)
                 {
-                    instance = InstanceLogic.Self.HandleCreatePolygonByGame(originalPolygon);
+                    instance = InstanceLogic.Self.HandleCreatePolygonByGame(originalPolygon, copiedObjectName);
                 }
                 else if (copiedObject is Sprite originalSprite)
                 {
-                    instance = InstanceLogic.Self.HandleCreateSpriteByName(originalSprite);
+                    instance = InstanceLogic.Self.HandleCreateSpriteByName(originalSprite, copiedObjectName);
                 }
                 else if (copiedObject is Text originalText)
                 {
-                    instance = InstanceLogic.Self.HandleCreateTextByName(originalText);
+                    instance = InstanceLogic.Self.HandleCreateTextByName(originalText, copiedObjectName);
                 }
                 else if (copiedObject is PositionedObject asPositionedObject) // positioned object, so entity?
                 {
@@ -112,7 +115,7 @@ namespace GlueControl.Editing
                 var isFirst = true;
                 foreach (var newObject in newObjects)
                 {
-                    EditingManager.Self.Select(newObject.Name, addToExistingSelection: !isFirst );
+                    EditingManager.Self.Select(newObject.Name, addToExistingSelection: !isFirst);
                     isFirst = false;
                 }
             }

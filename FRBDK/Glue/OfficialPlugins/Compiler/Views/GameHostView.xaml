@@ -45,6 +45,13 @@
                 </Button>
             </StackPanel>
 
+            <Grid Margin="5,0,0,0" Visibility="{Binding ConnectedFrameVisibility}">
+                <Frame Background="{Binding ConnectedFrameBackgroundColor, FallbackValue=Red}">
+                    
+                </Frame>
+                <TextBlock VerticalAlignment="Center" Margin="4" Text="{Binding ConnectedString, FallbackValue=Connected}"></TextBlock>
+            </Grid>
+
         </StackPanel>
         <Grid x:Name="MainGrid" Grid.Row="1">
             <WindowsFormsHost x:Name="WinformsHost" SizeChanged="WinformsHost_SizeChanged">

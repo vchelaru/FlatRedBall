@@ -636,8 +636,10 @@ namespace OfficialPlugins.Compiler.Managers
                 dto.ElementNameGlue = //ToGameType((GlueElement)owner);
                     owner.Name;
                 dto.ObjectName = nos.InstanceName;
+                var timeBeforeSend = DateTime.Now;
                 var responseAsstring = await CommandSender.Send(dto, GlueViewSettingsViewModel.PortNumber);
-
+                var timeAfterSend = DateTime.Now;
+                printOutput($"Delete send took {timeAfterSend - timeBeforeSend}");
                 RemoveObjectDtoResponse response = null;
                 try
                 {
@@ -669,27 +671,21 @@ namespace OfficialPlugins.Compiler.Managers
                 (ViewModel.IsRunning && ViewModel.IsEditChecked)
             );
 
-        public void StopAndRestartTask(string reason)
+        public async void StopAndRestartTask(string reason)
         {
             if (CanRestart)
             {
+                if(!string.IsNullOrEmpty(reason))
+                {
+                    printOutput($"Restarting because: {reason}. Waiting for tasks to finish...");
+                }
+                await TaskManager.Self.WaitForAllTasksFinished();
                 var wasInEditMode = ViewModel.IsEditChecked;
-                TaskManager.Self.Add(
-                    () =>
-                    {
-                        if(!string.IsNullOrEmpty(reason))
-                        {
-                            printOutput($"Restarting because: {reason}");
-                        }
-                        var task = StopAndRestartImmediately(PortNumber);
-                        task.Wait();
-                        if(wasInEditMode)
-                        {
-                            ViewModel.IsEditChecked = true;
-                        }
-                    },
-                    stopRestartDetails,
-                    TaskExecutionPreference.AddOrMoveToEnd);
+                await StopAndRestartImmediately(PortNumber);
+                if(wasInEditMode)
+                {
+                    ViewModel.IsEditChecked = true;
+                }
             }
         }
 

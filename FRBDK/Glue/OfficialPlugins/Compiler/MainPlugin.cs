@@ -245,8 +245,10 @@ namespace OfficialPlugins.Compiler
         #endregion
 
         System.Threading.SemaphoreSlim getCommandsSemaphore = new System.Threading.SemaphoreSlim(1);
+        DateTime lastGetCall;
         private async void HandleTimerElapsed(object sender, ElapsedEventArgs e)
         {
+            this.CompilerViewModel.LastWaitTimeInSeconds = (DateTime.Now - lastGetCall).TotalSeconds;
             var isBusy = await getCommandsSemaphore.WaitAsync(0);
             if(!isBusy)
             {
@@ -254,13 +256,16 @@ namespace OfficialPlugins.Compiler
                 {
                     if(CompilerViewModel.IsEditChecked)
                     {
+                        lastGetCall = DateTime.Now;
                         var gameToGlueCommandsAsString = await CommandSending.CommandSender
                             .SendCommand("GetCommands", GlueViewSettingsViewModel.PortNumber, isImportant:false);
 
                         if (!string.IsNullOrEmpty(gameToGlueCommandsAsString))
                         {
-                            CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString, GlueViewSettingsViewModel.PortNumber);
+                            CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString,              GlueViewSettingsViewModel.PortNumber);
                         }
+
+                        this.CompilerViewModel.LastWaitTimeInSeconds = (DateTime.Now - lastGetCall).TotalSeconds;
                     }
                 }
                 catch
@@ -423,6 +428,7 @@ namespace OfficialPlugins.Compiler
             VariableSendingManager.Self.ViewModel = CompilerViewModel;
             VariableSendingManager.Self.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
 
+            CommandSender.PrintOutput = MainControl.PrintOutput;
 
             buildTab = base.CreateTab(MainControl, "Build", TabLocation.Bottom);
             buildTab.Show();

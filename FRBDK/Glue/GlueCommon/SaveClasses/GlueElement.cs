@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Events;
 using FlatRedBall.IO;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -73,10 +74,12 @@ namespace FlatRedBall.Glue.SaveClasses
 
         [Browsable(false)]
         [XmlIgnore]
+        [JsonIgnore]
         public bool HasChanged { get; set; }
 
         [Browsable(false)]
         [XmlIgnore]
+        [JsonIgnore]
         public IEnumerable<StateSave> AllStates
         {
             get
@@ -122,6 +125,7 @@ namespace FlatRedBall.Glue.SaveClasses
         /// </summary>
         [Browsable(false)]
         [XmlIgnore]
+        [JsonIgnore]
         public IEnumerable<NamedObjectSave> AllNamedObjects
         {
             get
@@ -165,6 +169,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         [Browsable(false)]
         [XmlIgnore]
+        [JsonIgnore]
         public bool HasStates
         {
             get
@@ -187,6 +192,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         [DisplayName("Name")]
         public string ClassName
         {
@@ -206,6 +212,7 @@ namespace FlatRedBall.Glue.SaveClasses
         public abstract string BaseElement { get; }
 
         [XmlIgnore]
+        [JsonIgnore]
         [Browsable(false)]
         public abstract string BaseObject
         {
@@ -213,6 +220,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         public int VerificationIndex
         {
             get;

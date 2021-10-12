@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.IO;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
+using Newtonsoft.Json;
 
 namespace FlatRedBall.Glue.Events
 {
@@ -16,6 +17,7 @@ namespace FlatRedBall.Glue.Events
     public class EventResponseSave
     {
         [XmlIgnore]
+        [JsonIgnore]
         public static EventResponseSaveToString ToStringDelegate;
 
         public string EventName

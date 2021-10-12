@@ -729,6 +729,7 @@ namespace GlueControl
             #region Create the AddObjectDto for the new object
 
             var addObjectDto = new Dtos.AddObjectDto();
+            addObjectDto.CopyOriginalName = original.Name;
             addObjectDto.InstanceName = newName;
             addObjectDto.SourceType = Models.SourceType.Entity;
             // todo - need to eventually include sub namespaces for entities in folders
@@ -861,7 +862,7 @@ namespace GlueControl
             return toReturn;
         }
 
-        public Circle HandleCreateCircleByGame(Circle originalCircle)
+        public Circle HandleCreateCircleByGame(Circle originalCircle, string copiedObjectName)
         {
             var newCircle = originalCircle.Clone();
             var newName = GetNameFor("Circle");
@@ -879,6 +880,7 @@ namespace GlueControl
 
             var addObjectDto = new Dtos.AddObjectDto();
             addObjectDto.InstanceName = newName;
+            addObjectDto.CopyOriginalName = copiedObjectName;
             addObjectDto.SourceType = Models.SourceType.FlatRedBallType;
             // todo - need to eventually include sub namespaces for entities in folders
             addObjectDto.SourceClassType = "FlatRedBall.Math.Geometry.Circle";
@@ -894,7 +896,7 @@ namespace GlueControl
             return newCircle;
         }
 
-        public AxisAlignedRectangle HandleCreateAxisAlignedRectangleByGame(AxisAlignedRectangle originalRectangle)
+        public AxisAlignedRectangle HandleCreateAxisAlignedRectangleByGame(AxisAlignedRectangle originalRectangle, string copiedObjectName)
         {
             var newRectangle = originalRectangle.Clone();
             var newName = GetNameFor("Rectangle");
@@ -912,6 +914,7 @@ namespace GlueControl
             #region Create the AddObjectDto for the new object
 
             var addObjectDto = new Dtos.AddObjectDto();
+            addObjectDto.CopyOriginalName = copiedObjectName;
             addObjectDto.InstanceName = newName;
             addObjectDto.SourceType = Models.SourceType.FlatRedBallType;
             // todo - need to eventually include sub namespaces for entities in folders
@@ -929,7 +932,7 @@ namespace GlueControl
             return newRectangle;
         }
 
-        public Polygon HandleCreatePolygonByGame(Polygon originalPolygon)
+        public Polygon HandleCreatePolygonByGame(Polygon originalPolygon, string copiedObjectName)
         {
             var newPolygon = originalPolygon.Clone();
             var newName = GetNameFor("Polygon");
@@ -946,6 +949,7 @@ namespace GlueControl
             #region Create the AddObjectDto for the new object
 
             var addObjectDto = new Dtos.AddObjectDto();
+            addObjectDto.CopyOriginalName = copiedObjectName;
             addObjectDto.InstanceName = newName;
             addObjectDto.SourceType = Models.SourceType.FlatRedBallType;
             // todo - need to eventually include sub namespaces for entities in folders
@@ -964,7 +968,7 @@ namespace GlueControl
             return newPolygon;
         }
 
-        public Sprite HandleCreateSpriteByName(Sprite originalSprite)
+        public Sprite HandleCreateSpriteByName(Sprite originalSprite, string copiedObjectName)
         {
             var newSprite = originalSprite.Clone();
             var newName = GetNameFor("Sprite");
@@ -980,6 +984,7 @@ namespace GlueControl
             #region Create the AddObjectDto for the new object
 
             var addObjectDto = new Dtos.AddObjectDto();
+            addObjectDto.CopyOriginalName = copiedObjectName;
             addObjectDto.InstanceName = newName;
             addObjectDto.SourceType = Models.SourceType.FlatRedBallType;
             addObjectDto.SourceClassType = "FlatRedBall.Sprite";
@@ -1083,7 +1088,7 @@ namespace GlueControl
             return newSprite;
         }
 
-        public Text HandleCreateTextByName(Text originalText)
+        public Text HandleCreateTextByName(Text originalText, string copiedObjectName)
         {
             var newText = originalText.Clone();
             var newName = GetNameFor("Text");
@@ -1098,6 +1103,7 @@ namespace GlueControl
             #region Create the AddObjectDto for the new object
 
             var addObjectDto = new Dtos.AddObjectDto();
+            addObjectDto.CopyOriginalName = copiedObjectName;
             addObjectDto.InstanceName = newName;
             addObjectDto.SourceType = Models.SourceType.FlatRedBallType;
             addObjectDto.SourceClassType = typeof(FlatRedBall.Graphics.Text).FullName;

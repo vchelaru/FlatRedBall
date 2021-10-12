@@ -11,6 +11,7 @@ using FlatRedBall.IO;
 using System.IO;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.Interfaces;
+using Newtonsoft.Json;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -63,6 +64,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         [CategoryAttribute("Inheritance and Interfaces")]
         public bool ImplementsICollidable
         {
@@ -134,6 +136,7 @@ namespace FlatRedBall.Glue.SaveClasses
         //}
 
         [XmlIgnore]
+        [JsonIgnore]
         [Browsable(false)]
         public override string BaseObject
         {
@@ -178,6 +181,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         [Category("Performance")]
         [XmlIgnore]
+        [JsonIgnore]
         public bool IsManuallyUpdated
         {
             get
@@ -205,6 +209,7 @@ namespace FlatRedBall.Glue.SaveClasses
         #region ScrollableEntityList Properties
 
         [XmlIgnore]
+        [JsonIgnore]
         [CategoryAttribute("Scrollable Entity List")]
         public bool IsScrollableEntityList
         {
@@ -219,6 +224,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         [Browsable(false)]
         [CategoryAttribute("Scrollable Entity List")]
         public VerticalOrHorizontal VerticalOrHorizontal
@@ -235,6 +241,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
 
         [XmlIgnore]
+        [JsonIgnore]
         [CategoryAttribute("Scrollable Entity List")]
         public string ItemType
         {
@@ -256,6 +263,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         [CategoryAttribute("Scrollable Entity List")]
         public float ListTopBound
         {
@@ -271,6 +279,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         [CategoryAttribute("Scrollable Entity List")]
         public float ListBottomBound
         {
@@ -285,6 +294,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         [CategoryAttribute("Scrollable Entity List")]
         public float SpacingBetweenItems
         {

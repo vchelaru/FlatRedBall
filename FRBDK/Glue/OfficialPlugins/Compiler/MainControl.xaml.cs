@@ -71,7 +71,12 @@ namespace OfficialPlugins.Compiler
 
             Glue.MainGlueWindow.Self.Invoke(() =>
             {
-                var paragraph = TextBox.Document.Blocks.Last() as Paragraph;
+                var paragraph = TextBox.Document.Blocks.LastOrDefault() as Paragraph;
+                if(paragraph == null)
+                {
+                    paragraph = new Paragraph();
+                    TextBox.Document.Blocks.Add(paragraph);
+                }
                 foreach (var line in split)
                 {
                     if(!string.IsNullOrWhiteSpace(line))

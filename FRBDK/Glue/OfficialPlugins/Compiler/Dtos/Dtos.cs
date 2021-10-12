@@ -79,6 +79,7 @@ namespace OfficialPlugins.Compiler.Dtos
 
     public class AddObjectDto : NamedObjectSave
     {
+        public string CopyOriginalName { get; set; }
         public string ElementNameGame { get; set; }
     }
 

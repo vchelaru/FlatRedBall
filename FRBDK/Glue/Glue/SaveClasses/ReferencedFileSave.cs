@@ -11,6 +11,7 @@ using FlatRedBall.Content;
 //using Microsoft.Xna.Framework.Content.Pipeline.Processors;
 using FlatRedBall.Glue.Interfaces;
 using SourceReferencingFile = FlatRedBall.Glue.Content.SourceReferencingFile;
+using Newtonsoft.Json;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -130,9 +131,11 @@ namespace FlatRedBall.Glue.SaveClasses
         #region Fields
 
         [XmlIgnore]
+        [JsonIgnore]
         public static ReferencedFileSaveToString ToStringDelegate;
 
         [XmlIgnore]
+        [JsonIgnore]
         public static char[] InvalidFileNameCharacters = new char[]{
             '\\',
             '/',
@@ -299,6 +302,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         [Browsable(false)]
         public List<SourceReferencingFile> SourceFileCache
         {
@@ -349,6 +353,7 @@ namespace FlatRedBall.Glue.SaveClasses
         //}
 
         [XmlIgnore]
+        [JsonIgnore]
         public bool IsDatabaseForLocalizing
         {
             get
@@ -362,6 +367,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         public bool UseContentPipeline
         {
             get
@@ -375,6 +381,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         //[XmlIgnore]
+        //[JsonIgnore]
         //public TextureProcessorOutputFormat TextureFormat
         //{
         //    get
@@ -391,6 +398,7 @@ namespace FlatRedBall.Glue.SaveClasses
         //public bool GenerateMipmaps
 
         [XmlIgnore]
+        [JsonIgnore]
         [CategoryAttribute("CSV")]
         public string UniformRowType
         {
@@ -418,6 +426,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         [Browsable(false)]
         public bool IsCsvOrTreatedAsCsv
         {

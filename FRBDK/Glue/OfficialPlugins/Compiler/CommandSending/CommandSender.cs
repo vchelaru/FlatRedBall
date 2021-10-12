@@ -14,6 +14,7 @@ namespace OfficialPlugins.Compiler.CommandSending
 {
     public static class CommandSender
     {
+        public static Action<string> PrintOutput { get; set; }
         static SemaphoreSlim sendCommandSemaphore = new SemaphoreSlim(1);
         public static async Task<string> Send(object dto, int port)
         {
@@ -32,7 +33,12 @@ namespace OfficialPlugins.Compiler.CommandSending
             {
                 if(isImportant)
                 {
+                    DateTime startWait = DateTime.Now;
                     await sendCommandSemaphore.WaitAsync();
+                    var waitEndTime = DateTime.Now;
+
+                    if(isImportant) PrintOutput($"Command: {text}");
+                    if(isImportant) PrintOutput($"Time waited for semaphore: {waitEndTime - startWait}");
                 }
                 else
                 {
@@ -63,18 +69,21 @@ namespace OfficialPlugins.Compiler.CommandSending
                 //        // throw away - no need to tell the user it failed
                 //    }
                 //});
-                const int timeoutDuration = 3000;
+                const int timeoutDuration = 1000;
                 var timeoutTask = Task.Delay(timeoutDuration);
                 var connectTask = client.ConnectAsync("127.0.0.1", port);
 
                 var completedTask = await Task.WhenAny(timeoutTask, connectTask);
                 if (completedTask == timeoutTask)
                 {
+                    if (isImportant) PrintOutput("Timed out waiting for connection");
                     client.Dispose();
                     isConnected = false;
                 }
                 else
                 {
+                    if (isImportant) PrintOutput("Connected fine.");
+
                     isConnected = true;
                 }
 
@@ -87,6 +96,7 @@ namespace OfficialPlugins.Compiler.CommandSending
                     string read = null;
                     try
                     {
+                        var steamStart = DateTime.Now;
                         // Stream string to server
                         Stream stm = client.GetStream();
                         //ASCIIEncoding asen = new ASCIIEncoding();
@@ -96,17 +106,27 @@ namespace OfficialPlugins.Compiler.CommandSending
                             text += "\n"; 
                         }
 
+                        var startWrite = DateTime.Now;
+                        if (isImportant) PrintOutput($"stream: {startWrite - steamStart}");
+
                         //byte[] ba = asen.GetBytes(input);
                         byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(text);
                         stm.Write(messageAsBytes, 0, messageAsBytes.Length);
 
 
+                        var endWrite = DateTime.Now;
+                        if (isImportant) PrintOutput($"write: {endWrite - startWrite}");
                         // give the server time to finish what it's doing:
                         //await Task.Delay((int)(1 * 60));
                         read = await ReadFromClient(client, client.GetStream());
+
+                        var endRead = DateTime.Now;
+
+                        if (isImportant) PrintOutput($"read: {endRead - endWrite}");
                     }
                     catch(Exception e)
                     {
+                        if (isImportant) PrintOutput($"Exception on get stream/write/read:\n{e}");
                         // do nothing...
                     }
                     return read;
@@ -153,7 +173,7 @@ namespace OfficialPlugins.Compiler.CommandSending
         {
             using var memoryStream = new MemoryStream();
             int totalBytesRead = 0;
-            TimeSpan timeout = TimeSpan.FromSeconds(10);
+            TimeSpan timeout = TimeSpan.FromSeconds(3);
             var timeStarted = DateTime.Now;
             int bytesRead = 0;
             do
