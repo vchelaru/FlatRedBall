@@ -222,12 +222,12 @@
     <Resource Include="Resources\Icons\MoveTabs\RightTab.png" />
     <Resource Include="Resources\Icons\MoveTabs\TopTab.png" />
     <Resource Include="Resources\test.png" />
-    <None Include="Resources\IEntityFactory.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\PoolList.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <EmbeddedResource Include="Resources\IEntityFactory.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\PoolList.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

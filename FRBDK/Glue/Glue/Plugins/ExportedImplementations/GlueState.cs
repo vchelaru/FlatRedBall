@@ -208,6 +208,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
+        public FilePath GlueExeDirectory
+        {
+            get
+            {
+                return System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            }
+        }
+
         public string ProjectNamespace
         {
             get

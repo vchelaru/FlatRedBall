@@ -313,31 +313,24 @@ namespace FlatRedBall.Glue.Parsing
 
         public static void AddGeneratedPerformanceTypes()
         {
-            string poolListFileName = FileManager.RelativeDirectory + @"Performance\PoolList.Generated.cs";
-            string iEntityFactoryFileName = FileManager.RelativeDirectory + @"Performance\IEntityFactory.Generated.cs";
+            string poolListFileName = GlueState.Self.CurrentGlueProjectDirectory + @"Performance\PoolList.Generated.cs";
+            string iEntityFactoryFileName = GlueState.Self.CurrentGlueProjectDirectory + @"Performance\IEntityFactory.Generated.cs";
 
-            // April 28, 2015
-            // We killed IPoolable
-            // from generated code as
-            // it moved into the engine.
-            // If anyone has old code we want
-            // to re-generate it to overwrite the
-            // file so the generated code uses the new
-            // namespace. Eventually we should bring this
-            // if-check back in, but for now, we'll leave it out:
-            //if (!FileManager.FileExists(poolListFileName) || !FileManager.FileExists(iEntityFactoryFileName))
-            {
-                // Vic says:  This could be optimized, but it might not be worth the extra complexity
-                // since this method is likely really fast.
-                string contents = System.IO.File.ReadAllText("Resources/PoolList.cs");
-                contents = CodeWriter.ReplaceNamespace(contents, ProjectManager.ProjectNamespace + ".Performance");
-                FileManager.SaveText(contents, poolListFileName);
 
-                contents = System.IO.File.ReadAllText("Resources/IEntityFactory.cs");
-                contents = CodeWriter.ReplaceNamespace(contents, ProjectManager.ProjectNamespace + ".Performance");
-                FileManager.SaveText(contents, iEntityFactoryFileName);
+            string embeddedResourcePrefix = "GlueFormsCore.Resources.";
+            var thisAssembly = typeof(FactoryCodeGenerator).Assembly;
 
-            }
+            var byteArray = FileManager.GetByteArrayFromEmbeddedResource(thisAssembly, embeddedResourcePrefix + "PoolList.cs");
+            var contents = System.Text.Encoding.Default.GetString(byteArray);
+            contents = CodeWriter.ReplaceNamespace(contents, ProjectManager.ProjectNamespace + ".Performance");
+            FileManager.SaveText(contents, poolListFileName);
+
+            byteArray = FileManager.GetByteArrayFromEmbeddedResource(thisAssembly, embeddedResourcePrefix + "IEntityFactory.cs");
+            contents = System.Text.Encoding.Default.GetString(byteArray);
+            contents = CodeWriter.ReplaceNamespace(contents, ProjectManager.ProjectNamespace + ".Performance");
+            FileManager.SaveText(contents, iEntityFactoryFileName);
+
+
 
             // These files may exist, but not be part of the project, so let's make sure that they are
             // part of the project
