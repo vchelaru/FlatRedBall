@@ -639,7 +639,7 @@ namespace OfficialPlugins.Compiler.Managers
                 var timeBeforeSend = DateTime.Now;
                 var responseAsstring = await CommandSender.Send(dto, GlueViewSettingsViewModel.PortNumber);
                 var timeAfterSend = DateTime.Now;
-                printOutput($"Delete send took {timeAfterSend - timeBeforeSend}");
+                printOutput($"Delete send took {timeAfterSend - timeBeforeSend}\n \n ");
                 RemoveObjectDtoResponse response = null;
                 try
                 {

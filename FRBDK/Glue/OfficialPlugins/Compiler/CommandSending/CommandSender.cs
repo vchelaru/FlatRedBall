@@ -29,6 +29,8 @@ namespace OfficialPlugins.Compiler.CommandSending
         // Maybe we should have a bool here on whether to wait. if false, exit if the sendCommandSemaphore returns false
         public static async Task<string> SendCommand(string text, int port, bool isImportant = true)
         {
+            var shouldPrint = isImportant && text?.StartsWith("SelectObjectDto:") == false;
+
             try
             {
                 if(isImportant)
@@ -37,13 +39,15 @@ namespace OfficialPlugins.Compiler.CommandSending
                     await sendCommandSemaphore.WaitAsync();
                     var waitEndTime = DateTime.Now;
 
-                    if(isImportant) PrintOutput($"Command: {text}");
-                    if(isImportant) PrintOutput($"Time waited for semaphore: {waitEndTime - startWait}");
+                    if(shouldPrint) PrintOutput($"\n===================================================\nCommand: {text}");
+                    if(shouldPrint) PrintOutput($"Time waited for semaphore: {waitEndTime - startWait}");
                 }
                 else
                 {
                     if(sendCommandSemaphore.Wait(0) == false)
                     {
+                        PrintOutput($"~~~Skipping due to semaphore saying to skip");
+
                         return null;
                     }
                 }
@@ -76,13 +80,13 @@ namespace OfficialPlugins.Compiler.CommandSending
                 var completedTask = await Task.WhenAny(timeoutTask, connectTask);
                 if (completedTask == timeoutTask)
                 {
-                    if (isImportant) PrintOutput("Timed out waiting for connection");
+                    if (shouldPrint) PrintOutput("Timed out waiting for connection");
                     client.Dispose();
                     isConnected = false;
                 }
                 else
                 {
-                    if (isImportant) PrintOutput("Connected fine.");
+                    if (shouldPrint) PrintOutput("Connected fine.");
 
                     isConnected = true;
                 }
@@ -98,35 +102,42 @@ namespace OfficialPlugins.Compiler.CommandSending
                     {
                         var steamStart = DateTime.Now;
                         // Stream string to server
-                        Stream stm = client.GetStream();
-                        //ASCIIEncoding asen = new ASCIIEncoding();
-
-                        if(!text.EndsWith("\n"))
+                        DateTime startWrite;
+                        using (Stream stm = client.GetStream())
                         {
-                            text += "\n"; 
+                            //ASCIIEncoding asen = new ASCIIEncoding();
+
+                            if (!text.EndsWith("\n"))
+                            {
+                                text += "\n";
+                            }
+
+                            startWrite = DateTime.Now;
+                            if (shouldPrint) PrintOutput($"stream: {startWrite - steamStart}");
+
+                            //byte[] ba = asen.GetBytes(input);
+                            byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(text);
+                            stm.Write(messageAsBytes, 0, messageAsBytes.Length);
+
+                            var endWrite = DateTime.Now;
+                            if (shouldPrint) PrintOutput($"write: {endWrite - startWrite}");
+
+                            // give the server time to finish what it's doing:
+                            await Task.Delay((int)(1 * 60));
+                            read = await ReadFromClient(client, stm);
+
+
+                            var endRead = DateTime.Now;
+
+                            if (shouldPrint) PrintOutput($"read: {endRead - endWrite}");
+                            if (shouldPrint) PrintOutput($"response: {read}\n-----------------------------------------------\n");
                         }
 
-                        var startWrite = DateTime.Now;
-                        if (isImportant) PrintOutput($"stream: {startWrite - steamStart}");
 
-                        //byte[] ba = asen.GetBytes(input);
-                        byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(text);
-                        stm.Write(messageAsBytes, 0, messageAsBytes.Length);
-
-
-                        var endWrite = DateTime.Now;
-                        if (isImportant) PrintOutput($"write: {endWrite - startWrite}");
-                        // give the server time to finish what it's doing:
-                        //await Task.Delay((int)(1 * 60));
-                        read = await ReadFromClient(client, client.GetStream());
-
-                        var endRead = DateTime.Now;
-
-                        if (isImportant) PrintOutput($"read: {endRead - endWrite}");
                     }
                     catch(Exception e)
                     {
-                        if (isImportant) PrintOutput($"Exception on get stream/write/read:\n{e}");
+                        if (shouldPrint) PrintOutput($"Exception on get stream/write/read:\n{e}");
                         // do nothing...
                     }
                     return read;

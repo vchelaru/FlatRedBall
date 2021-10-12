@@ -59,6 +59,31 @@ namespace FlatRedBall.Glue.SaveClasses
 
     public class NamedObjectSave : INameable, IPropertyListContainer
     {
+        /// <summary>
+        /// The name of the object in Glue. This will also be the name of the object in code, but it may be the name
+        /// of a field or property depending on other settings.
+        /// </summary>
+        [CategoryAttribute("\t\tInstance")]
+        public string InstanceName
+        {
+            get;
+            set;
+        }
+
+
+        string mSourceClassType;
+
+        [CategoryAttribute("Source")]
+        public string SourceClassType
+        {
+            get { return mSourceClassType; }
+            set
+            {
+                mSourceClassType = value;
+
+            }
+        }
+
         #region Fields
         [XmlIgnore]
         [JsonIgnore]
@@ -78,7 +103,7 @@ namespace FlatRedBall.Glue.SaveClasses
         private ReadOnlyCollection<TypedMemberBase> mTypedMembersReadOnly;
 
         [XmlElementAttribute("CustomProperty")]
-        public List<CustomVariableInNamedObject> InstructionSaves = new List<CustomVariableInNamedObject>();
+        public List<CustomVariableInNamedObject> InstructionSaves { get; set; } = new List<CustomVariableInNamedObject>();
 
 
         private List<String> mVariablesToRest = new List<String>();
@@ -202,18 +227,6 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        string mSourceClassType;
-
-        [CategoryAttribute("Source")]
-        public string SourceClassType
-        {
-            get { return mSourceClassType; }
-            set
-            {
-                mSourceClassType = value;
-
-            }
-        }
 
 
         string mSourceClassGenericType;
@@ -283,16 +296,6 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        /// <summary>
-        /// The name of the object in Glue. This will also be the name of the object in code, but it may be the name
-        /// of a field or property depending on other settings.
-        /// </summary>
-        [CategoryAttribute("\t\tInstance")]
-        public string InstanceName
-        {
-            get;
-            set;
-        }
 
         [XmlIgnore]
         [JsonIgnore]
