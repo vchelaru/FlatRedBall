@@ -38,16 +38,11 @@ namespace OfficialPlugins.Compiler.CommandSending
                     DateTime startWait = DateTime.Now;
                     await sendCommandSemaphore.WaitAsync();
                     var waitEndTime = DateTime.Now;
-
-                    if(shouldPrint) PrintOutput($"\n===================================================\nCommand: {text}");
-                    if(shouldPrint) PrintOutput($"Time waited for semaphore: {waitEndTime - startWait}");
                 }
                 else
                 {
                     if(sendCommandSemaphore.Wait(0) == false)
                     {
-                        PrintOutput($"~~~Skipping due to semaphore saying to skip");
-
                         return null;
                     }
                 }
@@ -86,8 +81,6 @@ namespace OfficialPlugins.Compiler.CommandSending
                 }
                 else
                 {
-                    if (shouldPrint) PrintOutput("Connected fine.");
-
                     isConnected = true;
                 }
 
@@ -103,34 +96,19 @@ namespace OfficialPlugins.Compiler.CommandSending
                         var steamStart = DateTime.Now;
                         // Stream string to server
                         DateTime startWrite;
+                        if (!text.EndsWith("\n"))
+                        {
+                            text += "\n";
+                        }
                         using (Stream stm = client.GetStream())
                         {
-                            //ASCIIEncoding asen = new ASCIIEncoding();
 
-                            if (!text.EndsWith("\n"))
-                            {
-                                text += "\n";
-                            }
-
-                            startWrite = DateTime.Now;
-                            if (shouldPrint) PrintOutput($"stream: {startWrite - steamStart}");
-
-                            //byte[] ba = asen.GetBytes(input);
                             byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(text);
                             stm.Write(messageAsBytes, 0, messageAsBytes.Length);
-
-                            var endWrite = DateTime.Now;
-                            if (shouldPrint) PrintOutput($"write: {endWrite - startWrite}");
-
                             // give the server time to finish what it's doing:
-                            await Task.Delay((int)(1 * 60));
+                            const int millisecondsToLetGameRespond = 60;
+                            await Task.Delay(millisecondsToLetGameRespond);
                             read = await ReadFromClient(client, stm);
-
-
-                            var endRead = DateTime.Now;
-
-                            if (shouldPrint) PrintOutput($"read: {endRead - endWrite}");
-                            if (shouldPrint) PrintOutput($"response: {read}\n-----------------------------------------------\n");
                         }
 
 
