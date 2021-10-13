@@ -91,16 +91,39 @@ namespace TMXGlueLib.DataTypes
 
         }
 
+        static List<AbstractMapLayer> GetAllMapLayers(TiledMapSave tiledMapSave)
+        {
+            var layers = new List<AbstractMapLayer>();
+            layers.AddRange(tiledMapSave.MapLayers);
+
+            foreach (var group in tiledMapSave.Group)
+            {
+                GetAllMapLayers(group, layers);
+            }
+
+            return layers;
+        }
+
+        static void GetAllMapLayers(LayerGroup layerGroup, List<AbstractMapLayer> layers)
+        {
+            layers.AddRange(layerGroup.MapLayers);
+            foreach (var group in layerGroup.Group)
+            {
+                GetAllMapLayers(group, layers);
+            }
+        }
+
         private static void CreateFromTiledMapSave(TiledMapSave tiledMapSave, string tmxDirectory, FileReferenceType referenceType,
             ReducedTileMapInfo reducedTileMapInfo)
         {
             ReducedLayerInfo reducedLayerInfo = null;
 
-            for (int i = 0; i < tiledMapSave.MapLayers.Count; i++)
+            var allLayers = GetAllMapLayers(tiledMapSave);
+            for (int i = 0; i < allLayers.Count; i++)
             {
                 string directory = tmxDirectory;
 
-                var tiledLayer = tiledMapSave.MapLayers[i];
+                var tiledLayer = allLayers[i];
 
                 string texture = null;
 
