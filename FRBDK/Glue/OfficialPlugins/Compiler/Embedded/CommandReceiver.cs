@@ -590,8 +590,16 @@ namespace GlueControl
             {
                 // we don't know if it can be moved. We'll assume it can, and when that screen is loaded, it will re-run that and...if it 
                 // fails, then I guess we'll figure out a way to communicate back to Glue that it needs to restart. Actually this may never
-                // happen because moving objects is done in the current screen, but I gues it's technically a possibility so I'll leave this
+                // happen because moving objects is done in the current screen, but I guess it's technically a possibility so I'll leave this
                 // comment here.
+                // Update October 12, 2021
+                // Actually we can move an object
+                // without selecting the current screen.
+                // This can be done through the "Add XXXX
+                // to GameScreen" option in Quick Actions. In
+                // this case, we assume all is okay, so let's return
+                // that the object was in fact moved.
+                toReturn.WasObjectMoved = true;
             }
 
             CommandReceiver.GlobalGlueToGameCommands.Add(dto);
