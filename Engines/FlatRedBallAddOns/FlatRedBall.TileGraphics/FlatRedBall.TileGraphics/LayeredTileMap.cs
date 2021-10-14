@@ -359,6 +359,15 @@ namespace FlatRedBall.TileGraphics
             return FromTiledMapSave(fileName, contentManager, tms);
         }
 
+        // from https://stackoverflow.com/questions/321370/how-can-i-convert-a-hex-string-to-a-byte-array
+        static byte[] StringToByteArray(string hex)
+        {
+            return Enumerable.Range(0, hex.Length)
+                             .Where(x => x % 2 == 0)
+                             .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+                             .ToArray();
+        }
+
         public static LayeredTileMap FromTiledMapSave(string tiledMapSaveFile, string contentManager, TiledMapSave tms)
         {
 
@@ -406,6 +415,16 @@ namespace FlatRedBall.TileGraphics
 
                         matchingLayer.Visible = mapLayer.visible == 1;
                         matchingLayer.Alpha = mapLayer.Opacity;
+
+                        if (!string.IsNullOrWhiteSpace(mapLayer.TintColor))
+                        {
+                            var removedHash = mapLayer.TintColor.Substring(1);
+                            var bytes = StringToByteArray(removedHash);
+
+                            matchingLayer.Red = (bytes[0])/255.0f;
+                            matchingLayer.Green = (bytes[1]) / 255.0f;
+                            matchingLayer.Blue = (bytes[2]) / 255.0f;
+                        }
                     }
                     else if (layer is mapObjectgroup objectLayer)
                     {
