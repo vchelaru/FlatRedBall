@@ -32,6 +32,23 @@ namespace GlueControl.Editing.Visuals
             }
         }
 
+        public Color Color
+        {
+            get => MainLine.Color;
+            set
+            {
+                MainLine.Color = value;
+                foreach (var line in FirstArrow)
+                {
+                    line.Color = value;
+                }
+                foreach (var line in SecondArrow)
+                {
+                    line.Color = value;
+                }
+            }
+        }
+
         public Arrow(bool firstArrow = false, bool secondArrow = true)
         {
             MainLine = ShapeManager.AddLine();

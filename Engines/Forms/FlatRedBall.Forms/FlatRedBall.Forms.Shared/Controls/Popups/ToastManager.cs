@@ -10,12 +10,20 @@ using System.Threading.Tasks;
 
 namespace FlatRedBall.Forms.Controls.Popups
 {
+    #region Classes
+
     class ToastInfo
     {
         public string Message { get; set; }
         public Layer FrbLayer { get; set; }
+        public double DurationInSeconds { get; set; }
     }
 
+    #endregion
+
+    /// <summary>
+    /// Object responsible for manging the lifecycle of toasts. This can be used to perform fire-and-forget showing of Toast objects.
+    /// </summary>
     public static class ToastManager 
     {
         static BlockingCollection<ToastInfo> toastMessages = new BlockingCollection<ToastInfo>();
@@ -29,6 +37,7 @@ namespace FlatRedBall.Forms.Controls.Popups
         static bool hasBeenStarted;
 #if !UWP
         // threading works differently in UWP. do we care? Is UWP going to live?
+
         static void Start()
         {
             if(!hasBeenStarted)
@@ -40,7 +49,7 @@ namespace FlatRedBall.Forms.Controls.Popups
         }
 #endif
 
-        public static void Show(string message, Layer frbLayer = null)
+        public static void Show(string message, Layer frbLayer = null, double durationInSeconds = 2.0)
         {
             if(!hasBeenStarted)
             {
@@ -56,7 +65,7 @@ namespace FlatRedBall.Forms.Controls.Popups
 #endif
             }
 
-            var toastInfo = new ToastInfo { Message = message, FrbLayer = frbLayer };
+            var toastInfo = new ToastInfo { Message = message, FrbLayer = frbLayer, DurationInSeconds = durationInSeconds};
 
             toastMessages.Add(toastInfo);
         }
@@ -74,7 +83,7 @@ namespace FlatRedBall.Forms.Controls.Popups
 
                 toast.Text = message.Message;
                 toast.Show(message.FrbLayer ?? DefaultToastLayer);
-                await Task.Delay(2000);
+                await Task.Delay( TimeSpan.FromSeconds(message.DurationInSeconds) );
                 toast.Close();
                 // so there's a small gap between toasts
                 await Task.Delay(100);

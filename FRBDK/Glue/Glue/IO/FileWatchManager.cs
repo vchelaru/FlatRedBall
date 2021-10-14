@@ -302,7 +302,12 @@ namespace FlatRedBall.Glue.IO
             bool isIgnored = false;
             reason = IgnoreReason.NotIgnored;
 
-            var projectDirectory = new FilePath(GlueState.Self.CurrentGlueProjectDirectory);
+            FilePath projectDirectory = null;
+            var glueProjectDirectory = GlueState.Self.CurrentGlueProjectDirectory;
+            if (glueProjectDirectory != null)
+            {
+                projectDirectory = new FilePath(GlueState.Self.CurrentGlueProjectDirectory);
+            }
 
             // early out:
             if(projectDirectory == null)

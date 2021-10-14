@@ -41,8 +41,10 @@ namespace GlueControl.Editing
         }
 
 
-        public static void Text(string text, Vector3 position)
+        public static void Text(string text, Vector3 position, Color? color = null)
         {
+            Color textColor = color ?? Color.White;
+
             // This screen is cleaning up, so don't make anymore objects:
             if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
@@ -63,11 +65,16 @@ namespace GlueControl.Editing
             textInstance.HorizontalAlignment = HorizontalAlignment.Center;
             textInstance.VerticalAlignment = VerticalAlignment.Center;
             textInstance.SetPixelPerfectScale(Camera.Main);
+            textInstance.Red = textColor.R / 255.0f;
+            textInstance.Green = textColor.G / 255.0f;
+            textInstance.Blue = textColor.B / 255.0f;
             nextText++;
         }
 
-        public static void Line(Vector3 point1, Vector3 point2)
+        public static void Line(Vector3 point1, Vector3 point2, Color? color = null)
         {
+            Color lineColor = color ?? Color.White;
+
             // This screen is cleaning up, so don't make anymore objects:
             if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
@@ -84,10 +91,11 @@ namespace GlueControl.Editing
             lineInstance.Name = $"EditorVisuals Line {nextLine}";
             lineInstance.Visible = true;
             lineInstance.SetFromAbsoluteEndpoints(point1, point2);
+            lineInstance.Color = lineColor;
             nextLine++;
         }
 
-        public static void Arrow(Vector3 point1, Vector3 point2)
+        public static void Arrow(Vector3 point1, Vector3 point2, Color? color = null)
         {
             // This screen is cleaning up, so don't make anymore objects:
             if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
@@ -106,6 +114,7 @@ namespace GlueControl.Editing
             //arrowInstance.Name = $"EditorVisuals Line {nextLine}";
             arrowInstance.Visible = true;
             arrowInstance.SetFromAbsoluteEndpoints(point1, point2);
+            arrowInstance.Color = color ?? Color.White;
             nextArrow++;
         }
 
@@ -135,8 +144,10 @@ namespace GlueControl.Editing
 
         }
 
-        public static void Rectangle(float width, float height, Vector3 centerPosition)
+        public static void Rectangle(float width, float height, Vector3 centerPosition, Color? color = null)
         {
+            Color rectColor = color ?? Color.White;
+
             // This screen is cleaning up, so don't make anymore objects:
             if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
@@ -156,7 +167,7 @@ namespace GlueControl.Editing
             rectangle.Width = width;
             rectangle.Height = height;
             rectangle.Position = centerPosition;
-
+            rectangle.Color = rectColor;
             nextRectangle++;
         }
 

@@ -718,9 +718,26 @@ namespace GlueControl
                         }
 
                         // apply it on the copy
-                        LateBinder.SetValueStatic(
-                            newInstance, instructionInOriginal.Member,
-                            valueToSet);
+                        // Note - Glue keeps old
+                        // variables around whenever
+                        // a type changes or even when
+                        // the type stays the same but a
+                        // variable is removed from the defining
+                        // type. Therefore, there could be orphan
+                        // variables on the NamedObjectSave which don't
+                        // exist on the class itself. Therefore, we need
+                        // to tolerate MemberAccessExceptions:
+                        try
+                        {
+                            LateBinder.SetValueStatic(
+                                newInstance, instructionInOriginal.Member,
+                                valueToSet);
+
+                        }
+                        catch (MemberAccessException)
+                        {
+                            // See above for an explanation on why this is okay
+                        }
 
                     }
                 }
@@ -1223,7 +1240,14 @@ namespace GlueControl
                 }
             }
 
-            FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(instance, variableName, variableValue);
+            try
+            {
+                FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(instance, variableName, variableValue);
+            }
+            catch (MemberAccessException)
+            {
+                // for info on why this exception is caught, search for MemberAccessException in this file
+            }
         }
 
         public void DestroyDynamicallyAddedInstances()

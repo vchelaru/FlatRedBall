@@ -169,6 +169,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     // file to disk.
                     try
                     {
+
                         ProjectManager.GlueProjectSave.TestSave("GLUE");
                     }
                     catch (Exception e)

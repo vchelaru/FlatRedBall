@@ -401,7 +401,10 @@ namespace FlatRedBall.Screens
 
             if (screen != null && screen != "")
             {
-                newScreen = (Screen)Activator.CreateInstance(typeOfScreen, new object[0]);
+                if(typeOfScreen.IsAbstract == false)
+                {
+                    newScreen = (Screen)Activator.CreateInstance(typeOfScreen, new object[0]);
+                }
             }
 
             if (newScreen != null)
