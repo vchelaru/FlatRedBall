@@ -40,6 +40,12 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>string</Type>
+      <Name>TextInstance.Text</Name>
+      <ExposedAsName>Text</ExposedAsName>
+      <SetsValue>false</SetsValue>
+    </Variable>
+    <Variable>
       <Type>float</Type>
       <Name>TextInstance.Width</Name>
       <Value xsi:type="xsd:float">1</Value>

@@ -9,6 +9,8 @@
   <RestrictToUnitValues>true</RestrictToUnitValues>
   <RestrictFileNamesForAndroid>false</RestrictFileNamesForAndroid>
   <Guides />
+  <ShowLocalizationInGum>true</ShowLocalizationInGum>
+  <CurrentLanguageIndex>0</CurrentLanguageIndex>
   <ScreenReference>
     <Name>GameScreenGum</Name>
     <ElementType>Screen</ElementType>
