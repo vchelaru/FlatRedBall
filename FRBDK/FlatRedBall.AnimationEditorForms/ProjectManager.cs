@@ -115,32 +115,54 @@ namespace FlatRedBall.AnimationEditorForms
 
                 // We can't do this because GlueProjectSave depends on MonoGame, and AnimationEditor uses XNA
                 //GlueProject = FileManager.XmlDeserialize<GlueProjectSave>(projectFile.FullPath);
-                var xElement = XElement.Load(projectFile.FullPath);
-
-                var screens = xElement.Elements("Screens").FirstOrDefault();
-                if(screens != null)
+                XElement xElement = null;
+                try
                 {
-                    foreach(var screen in screens.Elements())
-                    {
-                        var referencedFiles = screen.Elements("ReferencedFiles").FirstOrDefault();
-
-                        AddRfs(referencedFiles);
-                    }
+                    xElement = XElement.Load(projectFile.FullPath);
                 }
-                var entities = xElement.Elements("Entities").FirstOrDefault();
-                if(entities != null)
+                catch
                 {
-                    foreach(var entity in entities.Elements())
-                    {
-                        var referencedFiles = entity.Elements("ReferencedFiles").FirstOrDefault();
-                        AddRfs(referencedFiles);
-                    }
+                    // no biggie, just don't load it.
+                    // Update October 14, 2021
+                    // This is now broken due to the change from
+                    // GLUX to GLUJ. need to address this eventually...
                 }
-                var globalFiles = xElement.Elements("GlobalFiles").FirstOrDefault();
-                AddRfs(globalFiles);
 
-                ReferencedPngs = files.ToArray();
+                if(xElement != null)
+                {
+                    var screens = xElement.Elements("Screens").FirstOrDefault();
+                    if(screens != null)
+                    {
+                        foreach(var screen in screens.Elements())
+                        {
+                            var referencedFiles = screen.Elements("ReferencedFiles").FirstOrDefault();
 
+                            AddRfs(referencedFiles);
+                        }
+                    }
+                    var entities = xElement.Elements("Entities").FirstOrDefault();
+                    if(entities != null)
+                    {
+                        foreach(var entity in entities.Elements())
+                        {
+                            var referencedFiles = entity.Elements("ReferencedFiles").FirstOrDefault();
+                            AddRfs(referencedFiles);
+                        }
+                    }
+                    var globalFiles = xElement.Elements("GlobalFiles").FirstOrDefault();
+                    AddRfs(globalFiles);
+
+                    ReferencedPngs = files.ToArray();
+                }
+                else
+                {
+                    // we don't have a .glux, or we have a .gluj which we currently can't parse. We could just get
+                    // all .png files relative to the project directory, though
+                    ReferencedPngs = FileManager
+                        .GetAllFilesInDirectory(projectDirectory, "png")
+                        .Select(item => new FilePath(item))
+                        .ToArray();
+                }
 
             }
             else

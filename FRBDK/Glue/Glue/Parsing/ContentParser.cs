@@ -322,9 +322,16 @@ namespace EditorObjects.Parsing
                     case "achx":
 
                         AnimationChainListSave acls = null;
-                        acls = AnimationChainListSave.FromFile(filePath.FullPath);
-                        newReferencedFiles = acls.GetReferencedFiles(RelativeType.Absolute).Select(item => new FilePath(item)).ToList();
+                        try
+                        {
 
+                            acls = AnimationChainListSave.FromFile(filePath.FullPath);
+                            newReferencedFiles = acls.GetReferencedFiles(RelativeType.Absolute).Select(item => new FilePath(item)).ToList();
+                        }
+                        catch(Exception e)
+                        {
+                            throw new Exception($"Error parsing file {filePath}:\n{e}");
+                        }
                         break;
 
                     #endregion

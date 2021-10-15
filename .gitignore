@@ -50,3 +50,4 @@ FRBDK/NewProjectCreator/packages/
 .idea/
 .running*/
 FRBDK/BuildServerUploader/packages/
+FRBDK/AnimationEditor/packages/*
