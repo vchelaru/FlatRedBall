@@ -1,4 +1,5 @@
 #define SUPPORTS_XBOX_GAMEPADS
+#define SUPPORTS_TOUCH_SCREEN
 
 using System;
 using System.Collections.Generic;
@@ -66,13 +67,7 @@ namespace FlatRedBall.Input
         }
 #endif
 
-        public static TouchScreen TouchScreen
-        {
-            get
-            {
-                return mTouchScreen;
-            }
-        }
+        public static TouchScreen TouchScreen => mTouchScreen;
 
         #endregion
 

@@ -2546,7 +2546,7 @@ namespace FlatRedBall.Gui
                     {
                         UpdatePositionToMouse();
 
-#if WINDOWS_PHONE || MONODROID || IOS
+#if MONODROID || IOS
                         float xVelocity;
                         float yVelocity;
                         MathFunctions.ScreenToAbsoluteDistance(

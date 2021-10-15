@@ -1,6 +1,5 @@
 
-#if WINDOWS_PHONE || MONODROID || WINDOWS_8 || IOS
-
+#if MONODROID || IOS
 #define USE_TOUCH
 #endif
 
