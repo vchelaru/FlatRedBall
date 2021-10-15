@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Graphics;
 using FlatRedBall.Managers;
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Security.Principal;
@@ -33,7 +34,7 @@ namespace FlatRedBall.Forms.Controls.Popups
         /// be set back to null when the Screen is destroyed.
         /// </summary>
         public static Layer DefaultToastLayer { get; set; }
-
+        static IList liveToasts;
         static bool hasBeenStarted;
 #if !UWP
         // threading works differently in UWP. do we care? Is UWP going to live?
@@ -42,6 +43,10 @@ namespace FlatRedBall.Forms.Controls.Popups
         {
             if(!hasBeenStarted)
             {
+                // from:
+                // https://stackoverflow.com/questions/5874317/thread-safe-listt-property
+                // This seems to be the only one that supports add, remove, and foreach
+                liveToasts = ArrayList.Synchronized(new ArrayList());
                 hasBeenStarted = true;
                 var thread = new System.Threading.Thread(new ThreadStart(DoLoop));
                 thread.Start();
@@ -70,6 +75,15 @@ namespace FlatRedBall.Forms.Controls.Popups
             toastMessages.Add(toastInfo);
         }
 
+        public static void DestroyLiveToasts()
+        {
+            foreach(Toast item in liveToasts)
+            {
+                item.Close();
+            }
+            liveToasts.Clear();
+        }
+
         private static async void DoLoop()
         {
             Toast toast = null;
@@ -82,9 +96,11 @@ namespace FlatRedBall.Forms.Controls.Popups
                 }
 
                 toast.Text = message.Message;
+                liveToasts.Add(toast);
                 toast.Show(message.FrbLayer ?? DefaultToastLayer);
                 await Task.Delay( TimeSpan.FromSeconds(message.DurationInSeconds) );
                 toast.Close();
+                liveToasts.Remove(toast);
                 // so there's a small gap between toasts
                 await Task.Delay(100);
             }
