@@ -77,11 +77,15 @@ namespace FlatRedBall.Forms.Controls.Popups
 
         public static void DestroyLiveToasts()
         {
-            foreach(Toast item in liveToasts)
+            if(liveToasts != null)
             {
-                item.Close();
+                foreach(Toast item in liveToasts)
+                {
+                    item?.Close();
+                }
+
             }
-            liveToasts.Clear();
+            liveToasts?.Clear();
         }
 
         private static async void DoLoop()

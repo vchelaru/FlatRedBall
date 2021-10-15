@@ -864,6 +864,11 @@ namespace FlatRedBall.Glue.Elements
                 {
                     return (T)((object)(int)asLong);
                 }
+                // There seem to be some type leaks...Maybe from old projects.
+                else if(typeof(T) == typeof(int) && propertyOnNos.Value is long asLong2)
+                {
+                    return (T)((object)(int)asLong2);
+                }
                 else
                 {
                     return (T)((object)propertyOnNos.Value);

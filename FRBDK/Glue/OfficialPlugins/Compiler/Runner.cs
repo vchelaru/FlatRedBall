@@ -126,6 +126,12 @@ namespace OfficialPlugins.Compiler
                     }
                 }
             }
+            else if(ViewModel.IsRunning == false)
+            {
+                // we ahve a process, so let's mark the view model as running:
+                ViewModel.IsRunning = runningGameProcess != null;
+                ViewModel.DidRunnerStartProcess = DidRunnerStartProcess;
+            }
         }
 
         public Process TryFindGameProcess(bool mustHaveWindow = true)

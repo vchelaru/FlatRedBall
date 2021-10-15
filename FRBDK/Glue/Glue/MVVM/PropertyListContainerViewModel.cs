@@ -353,7 +353,16 @@ namespace FlatRedBall.Glue.MVVM
                     }
                     else if (type == typeof(int))
                     {
-                        SetInternal<int>(modelValue, viewModelPropertyName, converter);
+                        if(modelValue is long asLong)
+                        {
+                            // This can happen due to the JSON conversion
+                            SetInternal<int>((int)asLong, viewModelPropertyName, converter);
+
+                        }
+                        else
+                        {
+                            SetInternal<int>(modelValue, viewModelPropertyName, converter);
+                        }
 
                     }
                     else if (type == typeof(string))
@@ -408,7 +417,14 @@ namespace FlatRedBall.Glue.MVVM
                 toSet = converter.ConvertBack(toSet);
             }
 
-            Set<T>((T)toSet, propertyName);
+            try
+            {
+                Set<T>((T)toSet, propertyName);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
     }
 }
