@@ -100,15 +100,7 @@ namespace FlatRedBall.Input
         }
 
 
-#if !XBOX360
-
-        public MouseState MouseState
-        {
-            get
-            {
-                return mMouseState;
-            }
-        }
+        public MouseState MouseState => mMouseState;
 
         public bool Active
         {
@@ -170,7 +162,6 @@ namespace FlatRedBall.Input
             
             }
         }
-#endif
 
 
 #if !MONOGAME
@@ -490,20 +481,11 @@ namespace FlatRedBall.Input
 
         public bool ButtonReleased(MouseButtons button)
         {
-#if !XBOX360
-            // Silverlight has a null mMouseState at the beginning, so check for that.
             bool isMouseStateNull = false;
-
-#if SILVERLIGHT
-            isMouseStateNull = mMouseState == null;
-#endif
 
             if (mActive == false || isMouseStateNull)
                 return false;
 
-#if FRB_MDX
-            return mMouseButtonClicked[(int)button];
-#else
             switch (button)
             {
                 case MouseButtons.LeftButton:
@@ -512,59 +494,38 @@ namespace FlatRedBall.Input
                 case MouseButtons.RightButton:
                     return !InputManager.CurrentFrameInputSuspended &&
                         mMouseState.RightButton == ButtonState.Released && mLastFrameMouseState.RightButton == ButtonState.Pressed;
-#if !SILVERLIGHT
                 case MouseButtons.MiddleButton:
                     return !InputManager.CurrentFrameInputSuspended && mMouseState.MiddleButton == ButtonState.Released && mLastFrameMouseState.MiddleButton == ButtonState.Pressed;
                 case MouseButtons.XButton1:
                     return !InputManager.CurrentFrameInputSuspended && mMouseState.XButton1 == ButtonState.Released && mLastFrameMouseState.XButton1 == ButtonState.Pressed;
                 case MouseButtons.XButton2:
                     return !InputManager.CurrentFrameInputSuspended && mMouseState.XButton2 == ButtonState.Released && mLastFrameMouseState.XButton2 == ButtonState.Pressed;
-#endif
                 default:
                     return false;
             }
-#endif
-#else
-            return false;
-#endif
         }
 
 
         public bool ButtonDown(MouseButtons button)
         {
-#if XBOX360
-            return false;
-#else
             if (mActive == false)
                 return false;
 
-#if FRB_MDX
-            byte[] tempMouseButton = mMouseState.GetMouseButtons();
-            if (tempMouseButton != null && tempMouseButton.Length != 0)
-                return mMouseState.GetMouseButtons()[(int)button] != 0;
-            else
-                return false;
-#else
             switch (button)
             {
                 case MouseButtons.LeftButton:
                     return !InputManager.CurrentFrameInputSuspended && mMouseState.LeftButton == ButtonState.Pressed;
                 case MouseButtons.RightButton:
                     return !InputManager.CurrentFrameInputSuspended && mMouseState.RightButton == ButtonState.Pressed;
-#if !SILVERLIGHT                
                 case MouseButtons.MiddleButton:
                     return !InputManager.CurrentFrameInputSuspended && mMouseState.MiddleButton == ButtonState.Pressed;
                 case MouseButtons.XButton1:
                     return !InputManager.CurrentFrameInputSuspended && mMouseState.XButton1 == ButtonState.Pressed;
                 case MouseButtons.XButton2:
                     return !InputManager.CurrentFrameInputSuspended && mMouseState.XButton2 == ButtonState.Pressed;
-#endif                
                 default:
                     return false;
             }
-#endif
-#endif
-
         }
 
 #if !XBOX360
@@ -912,20 +873,14 @@ namespace FlatRedBall.Input
 
         public bool IsInGameWindow()
         {
-#if SILVERLIGHT
-            return Microsoft.Xna.Framework.Input.Mouse.IsOnGameWindow;
-
-#else
 
             // Not sure why we do greater than 0 instead of greater than or equal to
             // 0.  On W8 the cursor initially starts at 0,0 and that is in the window, 
             // so we want to consider 0 inside.
             return X >= 0 && X < FlatRedBallServices.ClientWidth &&
                 Y >= 0 && Y < FlatRedBallServices.ClientHeight;
-#endif
         }
 
-#if !SILVERLIGHT && !XBOX360 && !WINDOWS_PHONE
         public void SetScreenPosition(int newX, int newY)
         {
 #if XNA
@@ -945,27 +900,10 @@ namespace FlatRedBall.Input
             Microsoft.Xna.Framework.Input.Mouse.SetPosition(newX, newY);
 #endif
         }
-#endif
 
         public void ShowNativeWindowsCursor()
         {
-            if (mWindowsCursorVisible == false)
-            {
-#if FRB_MDX
-                System.Windows.Forms.Cursor.Show();
-                mWindowsCursorVisible = true;
-                try
-                {
-                    mMouseDevice.Unacquire();
-                    mMouseDevice.SetCooperativeLevel(mOwner, CooperativeLevelFlags.Foreground |
-                        CooperativeLevelFlags.NonExclusive);
-                    mMouseDevice.Acquire();
-                }
-                catch (Exception)
-                {
-                }
-#endif
-            }
+
         }
 
 
@@ -973,14 +911,10 @@ namespace FlatRedBall.Input
         {
             StringBuilder stringBuilder = new StringBuilder();
 
-#if !XBOX360
             stringBuilder.Append("Internal MouseState:").Append(mMouseState.ToString());
-#endif
             stringBuilder.Append("\nWorldX at 100 units: ").Append(mXAt100Units);
             stringBuilder.Append("\nWorldY at 100 units: ").Append(mYAt100Units);
-#if !SILVERLIGHT && !XBOX360
             stringBuilder.Append("\nScrollWheel: ").Append(ScrollWheelChange);
-#endif
             return stringBuilder.ToString();
         }
 
@@ -1095,154 +1029,22 @@ namespace FlatRedBall.Input
 
         #endregion
 
-#if !XBOX360
 
         #region Internal Methods
 
-#if FRB_MDX
-        // These methods are called when the user hides and shows the cursor.
-        // FlatRedBallServices calls these methods.
-        internal void ReacquireExclusive()
-        {
-            try
-            {
-                mMouseDevice.Unacquire();
-                mMouseDevice.SetCooperativeLevel(mOwner, CooperativeLevelFlags.Foreground |
-                    CooperativeLevelFlags.Exclusive);
-                mMouseDevice.Acquire();
-            }
-            catch (Exception)
-            {
-                // no big deal
-            }
-        }
-
-        internal void ReacquireNonExclusive()
-        {
-            try
-            {
-                mMouseDevice.Unacquire();
-                mMouseDevice.SetCooperativeLevel(mOwner, CooperativeLevelFlags.Foreground |
-                    CooperativeLevelFlags.NonExclusive);
-                mMouseDevice.Acquire();
-            }
-            catch (Exception)
-            {
-                // no big deal
-            }
-        }
-
-#endif
 
         internal void Update(float secondDifference, double currentTime)
         {
 
-#if SILVERLIGHT
-            // Vic says - The temporary is needed so that clicking and pushing works properly
-            
-            mLastFrameMouseState.X = mTemporaryMouseState.X;
-            mLastFrameMouseState.Y = mTemporaryMouseState.Y;
-            mLastFrameMouseState.LeftButton = mTemporaryMouseState.LeftButton;
-            mLastFrameMouseState.RightButton = mTemporaryMouseState.RightButton;
-
-
-            mTemporaryMouseState.X = mMouseState.X;
-            mTemporaryMouseState.Y = mMouseState.Y;
-            mTemporaryMouseState.LeftButton = mMouseState.LeftButton;
-            mTemporaryMouseState.RightButton = mMouseState.RightButton;
-
-
-#else
             mLastFrameMouseState = mMouseState;
-#endif
 
             mLastFrameRepositionX = mThisFrameRepositionX;
             mLastFrameRepositionY = mThisFrameRepositionY;
 
             mThisFrameRepositionX = 0;
             mThisFrameRepositionY = 0;
-#if FRB_MDX
-            mMouseBufferedData = null;
 
-            if (mMouseDevice.Properties.BufferSize != 0)
-            {
-
-                do
-                {// Try to get the current state
-                    try
-                    {
-                        if (mMouseBufferedData != null)
-                            mMouseBufferedData.Clear();
-
-                        mMouseState = mMouseDevice.CurrentMouseState;
-                        mMouseBufferedData = mMouseDevice.GetBufferedData();
-
-                        break; // everything's ok, so we get out
-                    }
-                    catch (DirectXException)
-                    { 	// let the application handle Windows messages
-                        try
-                        {
-                            System.Windows.Forms.Application.DoEvents();
-                        }
-                        catch (DirectXException)
-                        {
-                            continue;
-                        }
-                        // Try to get reacquire the mouse and don't care about exceptions
-                        try { mMouseDevice.Acquire(); }
-                        catch (InputLostException) { continue; }
-                        catch (OtherApplicationHasPriorityException) { break; }
-                    }
-                }
-                while (true); // Do this until it's successful
-            }
-
-            for (int i = 0; i < mMouseButtonClicked.Length; i++)
-            {
-                mMouseButtonClicked[i] = false;
-                mMouseButtonPushed[i] = false;
-                mDoubleClick[i] = false;
-                mDoublePush[i] = false;
-            }
-
-            if (mMouseBufferedData != null)
-            {
-                foreach (Microsoft.DirectX.DirectInput.BufferedData d in mMouseBufferedData)
-                {
-                    for (int i = 0; i < mMouseOffset.Length; i++)
-                    {
-                        if (d.Offset == (int)mMouseOffset[i])
-                        {
-                            if ((d.Data & 0x80) == 0)
-                            {
-                                mMouseButtonClicked[i] = true;
-
-                                if (TimeManager.CurrentTime - mLastClickTime[i] < .25f)
-                                    mDoubleClick[i] = true;
-
-                                mLastClickTime[i] = TimeManager.CurrentTime;
-                                break;
-                            }
-                            if ((d.Data & 0x80) == 0x80)
-                            {
-                                mMouseButtonPushed[i] = true;
-                                if (TimeManager.CurrentTime - mLastPushTime[i] < .25f)
-                                    mDoublePush[i] = true;
-
-                                mLastPushTime[i] = TimeManager.CurrentTime;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            mXVelocity = (mMouseState.X) / secondDifference;
-            mYVelocity = (mMouseState.Y) / secondDifference;
-#else
             XnaAndSilverlightSpecificUpdateLogic(secondDifference, currentTime);
-#endif
             //if (mClearUntilNextClick)
             //{
             //    if (ButtonReleased(MouseButtons.LeftButton))
@@ -1274,70 +1076,23 @@ namespace FlatRedBall.Input
 
         private void XnaAndSilverlightSpecificUpdateLogic(float secondDifference, double currentTime)
         {
-#if FRB_XNA
             mLastWheel = mMouseState.ScrollWheelValue;
-#endif
 
-#if SILVERLIGHT
             mMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
-
-            if (mMouseState == null)
+            if(MouseState.LeftButton == ButtonState.Pressed)
             {
-                // This is null the first frame.
-                mMouseState = new MouseState();
+                int m = 3;
             }
-#elif FRB_XNA
-            mMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
-
             if (ModifyMouseState != null)
             {
                 ModifyMouseState(ref mMouseState);
             }
 
 
-#if WINDOWS_8
-            // MonoGame behaves slightly 
-            // differently compared to XNA.
-            // If the user runs the game in full
-            // screen in XNA (on the PC) then the 
-            // back buffer size is set to the resolution
-            // of the game *as well as the display mode*.
-            // However, Windows 8 does not allow you to change
-            // the display mode, so the display mode always remains
-            // the native size of the device regardless of what the user
-            // does in regards to resolution and fullscreen.  The MonoGame
-            // team decided to not change this - they want to use the actual
-            // display mode, which means the mouse will always return values based
-            // on the current resolution.  This causes problems in FRB so I think I'm 
-            // going to scale it.
-            if (
-                (FlatRedBallServices.GraphicsOptions.ResolutionWidth != FlatRedBallServices.Game.Window.ClientBounds.Width ||
-                FlatRedBallServices.GraphicsOptions.ResolutionHeight != FlatRedBallServices.Game.Window.ClientBounds.Height)
-                )
-            {
-                float scaleX = FlatRedBallServices.GraphicsOptions.ResolutionWidth / (float)FlatRedBallServices.Game.Window.ClientBounds.Width;
-                float scaleY = FlatRedBallServices.GraphicsOptions.ResolutionHeight / (float)FlatRedBallServices.Game.Window.ClientBounds.Height;
-
-                mMouseState = new MouseState(
-                    FlatRedBall.Math.MathFunctions.RoundToInt(mMouseState.X * scaleX),
-                    FlatRedBall.Math.MathFunctions.RoundToInt(mMouseState.Y * scaleY),
-                    mMouseState.ScrollWheelValue,
-                    mMouseState.LeftButton,
-                    mMouseState.MiddleButton,
-                    mMouseState.RightButton,
-                    mMouseState.XButton1,
-                    mMouseState.XButton2);
-            }
-#endif
-
-
-#endif
 
             if (mWasJustCleared)
             {
-#if FRB_XNA
                 mLastWheel = mMouseState.ScrollWheelValue;
-#endif
                 mWasJustCleared = false;
             }
 
@@ -1380,20 +1135,6 @@ namespace FlatRedBall.Input
 
         #endregion
 
-        #region Private
-
-        // Not sure why this is here, but
-        // I don't think we use it
-        //struct VertexPositionNormal
-        //{
-        //    public Vector3 Position;
-        //    public Vector3 Normal;
-        //}
-
-
-        #endregion
-
-#endif
 
         #endregion
 

@@ -84,9 +84,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         /// </summary>
         /// <param name="action">The action to invoke</param>
         /// <param name="numberOfTimesToTry">The number of times to try</param>
-        public void TryMultipleTimes(Action action, int numberOfTimesToTry = 5)
+        /// <param name="msSleepBetweenAttempts">The number of milliseconds to sleep between each failed attempt.</param>
+        public void TryMultipleTimes(Action action, int numberOfTimesToTry = 5, int msSleepBetweenAttempts = 200)
         {
-            const int msSleep = 200;
             int failureCount = 0;
 
             while (failureCount < numberOfTimesToTry)
@@ -101,7 +101,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 catch (Exception e)
                 {
                     failureCount++;
-                    System.Threading.Thread.Sleep(msSleep);
+                    System.Threading.Thread.Sleep(msSleepBetweenAttempts);
                     if (failureCount >= numberOfTimesToTry)
                     {
                         throw e;

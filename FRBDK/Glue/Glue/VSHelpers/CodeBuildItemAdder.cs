@@ -275,31 +275,20 @@ namespace FlatRedBall.Glue.VSHelpers
 
             var names = assemblyContainingResource.GetManifestResourceNames();
 
-            const int maxFailures = 6;
-            int numberOfFailures = 0;
-            while (true)
+            const int maxFailures = 7;
+            try
             {
-                try
+                GlueCommands.Self.TryMultipleTimes(() =>
                 {
                     FileManager.SaveEmbeddedResource(assemblyContainingResource, resourceName.Replace("/", "."), destination);
                     succeeded = true;
-                    break;
-                }
-                catch (Exception e)
-                {
-                    numberOfFailures++;
+                }, maxFailures);
 
-                    if (numberOfFailures == maxFailures)
-                    {
-                        // failed - what do we do?
-                        PluginManager.ReceiveOutput("Failed to copy over file " + resourceName + " because of the following error:\n" + e.ToString());
-                        break;
-                    }
-                    else
-                    {
-                        System.Threading.Thread.Sleep(15);
-                    }
-                }
+            }
+            catch(Exception e)
+            {
+                // failed - what do we do?
+                PluginManager.ReceiveOutput("Failed to copy over file " + resourceName + " because of the following error:\n" + e.ToString());
             }
 
             if (succeeded)
@@ -314,31 +303,15 @@ namespace FlatRedBall.Glue.VSHelpers
                 {
                     contents = contents.Replace("$PROJECT_NAMESPACE$", ProjectManager.ProjectNamespace);
 
-                    numberOfFailures = 0;
-                    while (numberOfFailures < maxFailures)
+                    try
                     {
-                        try
-                        {
-                            System.IO.File.WriteAllText(destination, contents);
-                            break;
-                        }
-                        catch(Exception e)
-                        {
-                            numberOfFailures++;
-
-                            if(numberOfFailures == maxFailures)
-                            {
-                                PluginManager.ReceiveOutput("Failed to save file " + 
-                                    resourceName + " because of the following error:\n" +
-                                    e.ToString());
-
-                            }
-                            else
-                            {
-                                System.Threading.Thread.Sleep(30);
-
-                            }
-                        }
+                        GlueCommands.Self.TryMultipleTimes(() => System.IO.File.WriteAllText(destination, contents), maxFailures);
+                    }
+                    catch(Exception e)
+                    {
+                        PluginManager.ReceiveOutput("Failed to save file " + 
+                            resourceName + " because of the following error:\n" +
+                            e.ToString());
                     }
 
                 }

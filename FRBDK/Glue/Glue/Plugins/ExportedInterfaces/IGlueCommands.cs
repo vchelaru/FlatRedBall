@@ -19,7 +19,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
 
         void CloseGlue();
         void DoOnUiThread(Action action);
-        void TryMultipleTimes(Action action, int numberOfTimesToTry);
+        void TryMultipleTimes(Action action, int numberOfTimesToTry, int msSleepBetweenAttempts = 200);
 
         void PrintOutput(string output);
         void PrintError(string output);

@@ -909,7 +909,8 @@ namespace FlatRedBall.Gui
         #endregion
         public void GetCursorPositionForSprite(ref float x, ref float y, float absoluteZ)
         {
-            GetCursorPosition(out x, out y, absoluteZ);
+            x = WorldXAt(absoluteZ);
+            y = WorldYAt(absoluteZ);
 
             x += ObjectGrabbedRelativeX;
             y += ObjectGrabbedRelativeY;
@@ -2473,30 +2474,7 @@ namespace FlatRedBall.Gui
             }
         }
 
-		void TryHandleStaticPosition ()
-		{
-			if (StaticPosition)
-			{
-				// phasing out "si" Sprite:
-#if !XNA4
-				
-                        float xVelocity = si.XVelocity;
-                        float yVelocity = si.YVelocity;
 
-
-                        // May 12 2011: Not sure why but gotta invert the cursor values
-                        // when getting ScreenToAbsolute on a static position cursor in 
-                        // XNA.  Oh well, it works.
-                        MathFunctions.ScreenToAbsoluteDistance(
-                            -InputManager.Mouse.XChange,
-                            InputManager.Mouse.YChange,
-                            out xVelocity, out yVelocity, mCamera.Z - 100, mCamera);
-
-                        si.XVelocity = xVelocity;
-                        si.YVelocity = yVelocity;
-#endif
-			}
-		}
 
         // Made public so we can use this in our own events to modify the values.
         public bool UpdateValuesFromMouse()
@@ -2510,9 +2488,6 @@ namespace FlatRedBall.Gui
                 #region If using windows cursor
                 if (mUsingWindowsCursor)
                 {
-
-                    TryHandleStaticPosition ();
-
                     bool handled = false;
 
 #if SUPPORTS_TOUCH_SCREEN
@@ -2582,65 +2557,6 @@ namespace FlatRedBall.Gui
 #endif
                     }
                     #endregion
-
-
-                    #region static position so reposition the cursor
-                    else
-                    {
-#if !MONOGAME
-                        int screenX = 0;
-                        int screenY = 0;
-      //                  MathFunctions.AbsoluteToScreen(
-						//	si.X + mCamera.X,
-						//	si.Y + mCamera.Y,
-						//	mCamera.Z + 100,
-						//	ref screenX,
-						//	ref screenY,
-						//	mCamera, this.mOwner);
-
-						//System.Windows.Forms.Cursor.Position = 
-						//	new System.Drawing.Point(screenX, screenY);
-
-      //                  mScreenX = mOwner.PointToClient(System.Windows.Forms.Cursor.Position).X;
-      //                  mScreenY = mOwner.PointToClient(System.Windows.Forms.Cursor.Position).Y;
-
-                        throw new NotImplementedException();
-
-                        //MathFunctions.AbsoluteToWindow(
-                        //    si.X + mCamera.X,
-                        //    si.Y + mCamera.Y,
-                        //    mCamera.Z - 100,
-                        //    ref screenX,
-                        //    ref screenY,
-                        //    mCamera, false,
-                        //    GuiManager.XEdge,
-                        //    GuiManager.YEdge);
-
-                        if (FlatRedBallServices.Game != null)
-                        {
-                            throw new NotImplementedException();
-                            //InputManager.Mouse.SetScreenPosition(
-                            //    FlatRedBallServices.Game.Window.ClientBounds.X + screenX,
-                            //    FlatRedBallServices.Game.Window.ClientBounds.Y + screenY);
-                        }
-                        else
-                        {
-                            var windowLocation =
-                                System.Windows.Forms.Form.FromHandle(FlatRedBallServices.WindowHandle).Location;
-
-
-                            throw new NotImplementedException();
-
-                            //InputManager.Mouse.SetScreenPosition(
-                            //    windowLocation.X + screenX,
-                            //    windowLocation.Y + screenY);
-                        }
-
-
-#endif
-                    }
-                    #endregion
-
                 }
                 #endregion
 
@@ -2648,22 +2564,7 @@ namespace FlatRedBall.Gui
                 #region using an FRB-drawn cursor
                 else
                 {
-                    //XVelocity = sensitivity*InputManager.Mouse.XChange/25.0f;
-                    //YVelocity = -sensitivity * InputManager.Mouse.YChange / 25.0f;
                     ZVelocity = InputManager.Mouse.ScrollWheelChange;
-
-                    // acceleration logic
-
-                    //XVelocity *= 1 + System.Math.Abs(XVelocity);
-                    //YVelocity *= 1 + System.Math.Abs(YVelocity);
-
-                    //				}
-
-                    //if(StaticPosition == false)
-                    //{
-                    //    si.X += XVelocity;	
-                    //    si.Y += YVelocity;
-                    //}
                 }
                 #endregion
 
