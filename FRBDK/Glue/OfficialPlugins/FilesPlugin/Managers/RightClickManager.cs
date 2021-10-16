@@ -54,7 +54,7 @@ namespace OfficialPluginsCore.FilesPlugin.Managers
 
             if(container != null)
             {
-                throw new NotImplementedException("Bug Vic to implement this");
+                GlueCommands.Self.GluxCommands.AddReferencedFileToElement(newRfs, container);
             }
             else
             {

@@ -334,9 +334,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void AddReferencedFileToGlobalContent(ReferencedFileSave referencedFileSave)
         {
-
-            ProjectManager.GlueProjectSave.GlobalFiles.Add(referencedFileSave);
-            ProjectManager.GlueProjectSave.GlobalContentHasChanged = true;
+            var project = GlueState.Self.CurrentGlueProject;
+            project.GlobalFiles.Add(referencedFileSave);
+            project.GlobalContentHasChanged = true;
 
             GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(referencedFileSave);
 
@@ -964,7 +964,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void AddReferencedFileToElement(ReferencedFileSave rfs, GlueElement element)
         {
-            throw new NotImplementedException();
+            element.ReferencedFiles.Add(rfs);
+            element.HasChanged = true;
+
+            GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs);
+
+            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
         }
 
 

@@ -82,43 +82,7 @@ namespace GlueControl.Editing
             if (cursor.PrimaryDown || cursor.SecondaryDown)
             {
                 // If near the edges, move in that direction.
-                const float borderInPixels = 50;
-                var MaxVelocity = Camera.Main.OrthogonalHeight / 3;
-
-                var screenX = cursor.ScreenX;
-                var screenY = cursor.ScreenY;
-
-                var screenWidthInPixels = Camera.Main.DestinationRectangle.Width;
-                var screenHeightInPixels = Camera.Main.DestinationRectangle.Height;
-
-                float xMovementRatio = 0;
-                if (screenX < borderInPixels)
-                {
-                    xMovementRatio = -1 * ((borderInPixels - screenX) / borderInPixels);
-                }
-                else if (screenX > screenWidthInPixels - borderInPixels)
-                {
-                    xMovementRatio = (screenX - (screenWidthInPixels - borderInPixels)) / borderInPixels;
-                }
-
-                float yMovementRatio = 0;
-                if (screenY < borderInPixels)
-                {
-                    yMovementRatio = ((borderInPixels - screenY) / borderInPixels);
-                }
-                else if (screenY > screenHeightInPixels - borderInPixels)
-                {
-                    yMovementRatio = -1 * (screenY - (screenHeightInPixels - borderInPixels)) / borderInPixels;
-                }
-
-                if (xMovementRatio != 0)
-                {
-                    camera.X += xMovementRatio * MaxVelocity * TimeManager.SecondDifference;
-                }
-                if (yMovementRatio != 0)
-                {
-                    camera.Y += yMovementRatio * MaxVelocity * TimeManager.SecondDifference;
-                }
+                DoMouseDownScrollingLogic(cursor);
             }
 
             if (cursor.ZVelocity < 0)
@@ -134,6 +98,49 @@ namespace GlueControl.Editing
 
             CameraXMovement = camera.X - xBefore;
             CameraYMovement = camera.Y - yBefore;
+        }
+
+        private static void DoMouseDownScrollingLogic(Cursor cursor)
+        {
+            Camera camera = Camera.Main;
+
+            const float borderInPixels = 50;
+            var MaxVelocity = Camera.Main.OrthogonalHeight / 3;
+
+            var screenX = cursor.ScreenX - camera.LeftDestination;
+            var screenY = cursor.ScreenY - camera.TopDestination;
+
+            var screenWidthInPixels = camera.DestinationRectangle.Width;
+            var screenHeightInPixels = camera.DestinationRectangle.Height;
+
+            float xMovementRatio = 0;
+            if (screenX < borderInPixels)
+            {
+                xMovementRatio = -1 * ((borderInPixels - screenX) / borderInPixels);
+            }
+            else if (screenX > screenWidthInPixels - borderInPixels)
+            {
+                xMovementRatio = (screenX - (screenWidthInPixels - borderInPixels)) / borderInPixels;
+            }
+
+            float yMovementRatio = 0;
+            if (screenY < borderInPixels)
+            {
+                yMovementRatio = ((borderInPixels - screenY) / borderInPixels);
+            }
+            else if (screenY > screenHeightInPixels - borderInPixels)
+            {
+                yMovementRatio = -1 * (screenY - (screenHeightInPixels - borderInPixels)) / borderInPixels;
+            }
+
+            if (xMovementRatio != 0)
+            {
+                camera.X += xMovementRatio * MaxVelocity * TimeManager.SecondDifference;
+            }
+            if (yMovementRatio != 0)
+            {
+                camera.Y += yMovementRatio * MaxVelocity * TimeManager.SecondDifference;
+            }
         }
 
         public static void UpdateZoomLevelToCamera()

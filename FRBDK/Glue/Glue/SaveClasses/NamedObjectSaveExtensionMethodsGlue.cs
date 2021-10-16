@@ -66,8 +66,10 @@ namespace FlatRedBall.Glue.SaveClasses
             if (ObjectFinder.Self.GetEntitySave(typeOfNewObject) != null)
             {
                 namedObject.SourceType = SourceType.Entity;
-
-                namedObject.SourceClassType = typeOfNewObject;
+                if(string.IsNullOrEmpty( namedObject.SourceClassType))
+                {
+                    namedObject.SourceClassType = typeOfNewObject;
+                }
                 namedObject.UpdateCustomProperties();
             }
             else if (AvailableClassTypeConverter.IsFlatRedBallType(typeOfNewObject) ||
