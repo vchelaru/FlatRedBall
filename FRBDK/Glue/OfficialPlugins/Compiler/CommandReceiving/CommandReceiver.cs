@@ -74,6 +74,27 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             }
         }
 
+        private static ScreenSave GetCurrentInGameScreen(int gamePortNumber)
+        {
+            var screenNameTask = CommandSender.GetScreenName(gamePortNumber);
+            screenNameTask.Wait(6000);
+            var screenName = screenNameTask.Result; 
+
+            if(!string.IsNullOrEmpty(screenName))
+            {
+                // remove prefix:
+                var screensDotStart = screenName.IndexOf("Screens.");
+                screenName = screenName.Substring(screensDotStart).Replace(".", "\\");
+                var screen = ObjectFinder.Self.GetScreenSave(screenName);
+                return screen;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+
         #endregion
 
         #region Remove Object
@@ -185,7 +206,6 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         }
 
         #endregion
-
 
         #region Set Variable
 
@@ -335,26 +355,6 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         }
 
         #endregion
-
-        private static ScreenSave GetCurrentInGameScreen(int gamePortNumber)
-        {
-            var screenNameTask = CommandSender.GetScreenName(gamePortNumber);
-            screenNameTask.Wait(6000);
-            var screenName = screenNameTask.Result; 
-
-            if(!string.IsNullOrEmpty(screenName))
-            {
-                // remove prefix:
-                var screensDotStart = screenName.IndexOf("Screens.");
-                screenName = screenName.Substring(screensDotStart).Replace(".", "\\");
-                var screen = ObjectFinder.Self.GetScreenSave(screenName);
-                return screen;
-            }
-            else
-            {
-                return null;
-            }
-        }
 
         private static void HandleSelectObject(SelectObjectDto selectObjectDto)
         {
