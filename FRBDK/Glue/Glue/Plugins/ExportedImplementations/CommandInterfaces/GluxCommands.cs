@@ -898,9 +898,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public ReferencedFileSave GetReferencedFileSaveFromFile(string fileName)
         {
+            FilePath filePath = new FilePath(fileName);
+            if(FileManager.IsRelative(fileName))
+            {
+                filePath = GlueCommands.Self.GetAbsoluteFilePath(fileName);
+            }
+            return GetReferencedFileSaveFromFile(filePath);
+        }
+
+        public ReferencedFileSave GetReferencedFileSaveFromFile(FilePath filePath)
+        {
             ////////////////Early Out//////////////////////////////////
             var invalidPathChars = Path.GetInvalidPathChars();
-            if (invalidPathChars.Any(item => fileName.Contains(item)))
+            if (invalidPathChars.Any(item => filePath.FullPath.Contains(item)))
             {
                 // This isn't a RFS, because it's got a bad path. Early out here so that FileManager.IsRelative doesn't throw an exception
                 return null;
@@ -909,17 +919,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             //////////////End Early Out////////////////////////////////
 
 
-            fileName = fileName.ToLower();
-
-            if (FileManager.IsRelative(fileName))
-            {
-
-                fileName = ObjectFinder.Self.MakeAbsoluteContent(fileName);
-
-            }
-
-            fileName = FileManager.Standardize(fileName).ToLower();
-
             var project = ObjectFinder.Self.GlueProject;
             if (project != null)
             {
@@ -927,9 +926,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     foreach (ReferencedFileSave rfs in screenSave.ReferencedFiles)
                     {
-                        string absoluteRfsFile = FileManager.Standardize(ObjectFinder.Self.MakeAbsoluteContent(rfs.Name)).ToLower();
-
-                        if (absoluteRfsFile == fileName)
+                        var absoluteRfs = GlueCommands.Self.GetAbsoluteFilePath(rfs);
+                        if(absoluteRfs == filePath)
                         {
                             return rfs;
                         }
@@ -942,9 +940,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     {
                         foreach (ReferencedFileSave rfs in entitySave.ReferencedFiles)
                         {
-                            string absoluteRfsFile = FileManager.Standardize(ObjectFinder.Self.MakeAbsoluteContent(rfs.Name)).ToLower();
-
-                            if (absoluteRfsFile == fileName)
+                            var absoluteRfs = GlueCommands.Self.GetAbsoluteFilePath(rfs);
+                            if (absoluteRfs == filePath)
                             {
                                 return rfs;
                             }
@@ -954,9 +951,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 foreach (ReferencedFileSave rfs in project.GlobalFiles)
                 {
-                    string absoluteRfsFile = FileManager.Standardize(ObjectFinder.Self.MakeAbsoluteContent(rfs.Name)).ToLower();
-
-                    if (absoluteRfsFile == fileName)
+                    var absoluteRfs = GlueCommands.Self.GetAbsoluteFilePath(rfs);
+                    if (absoluteRfs == filePath)
                     {
                         return rfs;
                     }
@@ -965,15 +961,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             return null;
         }
-
-        public ReferencedFileSave GetReferencedFileSaveFromFile(FilePath filePath)
-        {
-            return GetReferencedFileSaveFromFile(filePath.FullPath);
-        }
-
-
-
-
 
         public void AddReferencedFileToElement(ReferencedFileSave rfs, GlueElement element)
         {

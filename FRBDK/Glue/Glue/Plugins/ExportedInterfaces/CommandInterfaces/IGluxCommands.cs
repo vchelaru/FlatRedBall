@@ -60,7 +60,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         ReferencedFileSave CreateReferencedFileSaveForExistingFile(IElement containerForFile, FilePath filePath, AssetTypeInfo ati = null);
 
-        ReferencedFileSave GetReferencedFileSaveFromFile(string fileName);
+        [Obsolete("Use GetReferencedFileSaveFromFile which takes a FilePath")]
+        ReferencedFileSave GetReferencedFileSaveFromFile(string filePath);
         ReferencedFileSave GetReferencedFileSaveFromFile(FilePath filePath);
 
         ReferencedFileSave AddSingleFileTo(string fileName, string rfsName, string extraCommandLineArguments,

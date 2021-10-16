@@ -317,7 +317,7 @@ namespace FlatRedBall.Glue
                 if (rfs.CreatesDictionary)
                 {
                     string fileName = rfs.Name;
-                    fileName = ProjectManager.MakeAbsolute(fileName);
+                    fileName = ProjectManager.MakeAbsolute(fileName, forceAsContent:true);
 
                     var rcr = CsvFileManager.CsvDeserializeToRuntime(fileName);
 
@@ -414,7 +414,8 @@ namespace FlatRedBall.Glue
             {
                 foreach (string name in customClass.CsvFilesUsingThis)
                 {
-                    ReferencedFileSave foundRfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(name);
+                    var filePath = GlueCommands.Self.GetAbsoluteFilePath(name);
+                    ReferencedFileSave foundRfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(filePath);
 
                     if (foundRfs == null)
                     {
@@ -837,7 +838,15 @@ namespace FlatRedBall.Glue
                 ReferencedFileSave rfs = null;
                 if (customClass.CsvFilesUsingThis.Count != 0)
                 {
-                    rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(customClass.CsvFilesUsingThis[0]);
+                    // let's find the first RCR that actually exists on disk, in case some RCRs were removed:
+                    foreach(var csvName in customClass.CsvFilesUsingThis)
+                    {
+                        rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(csvName);
+                        if(rfs != null)
+                        {
+                            break;
+                        }
+                    }
                 }
 
                 if (rfs != null)
