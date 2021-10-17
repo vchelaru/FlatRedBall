@@ -385,7 +385,7 @@ namespace FlatRedBallAddOns.Entities
             }
             else
             {
-                rootBlock.Line($"The project needs to be new enough, but it is on version {project.FileVersion}");
+                rootBlock.Line($"// The project is not new enough to support GlueView 2. It is on version {project.FileVersion}");
                 rootBlock.Line("//#define SUPPORTS_GLUEVIEW_2");
 
             }
