@@ -40,13 +40,12 @@ namespace GlueControl.Editing
             FlatRedBallServices.AddManager(new EditorVisuals());
         }
 
-
         public static void Text(string text, Vector3 position, Color? color = null)
         {
             Color textColor = color ?? Color.White;
 
             // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
             {
                 return;
             }
@@ -76,7 +75,7 @@ namespace GlueControl.Editing
             Color lineColor = color ?? Color.White;
 
             // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
             {
                 return;
             }
@@ -98,7 +97,7 @@ namespace GlueControl.Editing
         public static void Arrow(Vector3 point1, Vector3 point2, Color? color = null)
         {
             // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
             {
                 return;
             }
@@ -121,7 +120,7 @@ namespace GlueControl.Editing
         public static void Sprite(AnimationChain animationChain, Vector3 position, float textureScale = 1)
         {
             // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
             {
                 return;
             }
@@ -149,7 +148,7 @@ namespace GlueControl.Editing
             Color rectColor = color ?? Color.White;
 
             // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
             {
                 return;
             }

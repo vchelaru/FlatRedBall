@@ -57,38 +57,44 @@ namespace OfficialPlugins.PathPlugin.Managers
         {
             StringBuilder toReturn = new StringBuilder();
 
+            string ownerName = GetOwnerName(nos, memberName);
+
             var variable = nos.GetCustomVariable(memberName ?? PathsVariableName);
-
-            var nosElement = ObjectFinder.Self.GetElement(nos.SourceClassType);
-
-            string ownerName = nos.InstanceName;
-
-            if(nosElement != null)
-            {
-                // this is a tunneled variable
-                var customVariable = nosElement.CustomVariables.Find(item => item.Name == memberName);
-
-                if(!string.IsNullOrEmpty(customVariable?.SourceObject))
-                {
-                    ownerName += "." + customVariable.SourceObject;
-                }
-            }
-
             var variableValue = variable?.Value as string;
 
             toReturn.AppendLine($"{ownerName}.Clear();");
 
-            if(!string.IsNullOrEmpty(variableValue))
+            if (!string.IsNullOrEmpty(variableValue))
             {
                 var deserialized = JsonConvert.DeserializeObject<List<PathSegment>>(variableValue);
 
-                foreach(var item in deserialized)
+                foreach (var item in deserialized)
                 {
                     GenerateCodeForSegment(toReturn, ownerName, item);
                 }
             }
 
             return toReturn.ToString();
+        }
+
+        private static string GetOwnerName(NamedObjectSave nos, string memberName)
+        {
+            var nosElement = ObjectFinder.Self.GetElement(nos.SourceClassType);
+
+            string ownerName = nos.InstanceName;
+
+            if (nosElement != null)
+            {
+                // this is a tunneled variable
+                var customVariable = nosElement.CustomVariables.Find(item => item.Name == memberName);
+
+                if (!string.IsNullOrEmpty(customVariable?.SourceObject))
+                {
+                    ownerName += "." + customVariable.SourceObject;
+                }
+            }
+
+            return ownerName;
         }
 
         private static void GenerateCodeForSegment(StringBuilder toReturn, string ownerName, PathSegment item)

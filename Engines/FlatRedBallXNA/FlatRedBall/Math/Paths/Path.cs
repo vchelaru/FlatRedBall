@@ -446,30 +446,33 @@ namespace FlatRedBall.Math.Paths
 
         public void FromJson(string serializedSegments)
         {
-            var deserialized = ParseToSegmentList(serializedSegments);
-            Clear();
-            foreach (var item in deserialized)
+            if(!string.IsNullOrWhiteSpace(serializedSegments))
             {
-                if (item.SegmentType == SegmentType.Line)
+                var deserialized = ParseToSegmentList(serializedSegments);
+                Clear();
+                foreach (var item in deserialized)
                 {
-                    LineToRelative(item.EndX, item.EndY);
-                }
-                else if (item.SegmentType == SegmentType.Arc)
-                {
-                    var angle = item.ArcAngle;
-                    if(item.AngleUnit == AngleUnit.Degrees)
+                    if (item.SegmentType == SegmentType.Line)
                     {
-                        angle = Microsoft.Xna.Framework.MathHelper.ToRadians(angle);
+                        LineToRelative(item.EndX, item.EndY);
                     }
-                    ArcToRelative(item.EndX, item.EndY, angle);
-                }
-                else if(item.SegmentType == SegmentType.Move)
-                {
-                    MoveToRelative(item.EndX, item.EndY);
-                }
-                else
-                {
-                    // Unknown segment type...
+                    else if (item.SegmentType == SegmentType.Arc)
+                    {
+                        var angle = item.ArcAngle;
+                        if(item.AngleUnit == AngleUnit.Degrees)
+                        {
+                            angle = Microsoft.Xna.Framework.MathHelper.ToRadians(angle);
+                        }
+                        ArcToRelative(item.EndX, item.EndY, angle);
+                    }
+                    else if(item.SegmentType == SegmentType.Move)
+                    {
+                        MoveToRelative(item.EndX, item.EndY);
+                    }
+                    else
+                    {
+                        // Unknown segment type...
+                    }
                 }
             }
         }
