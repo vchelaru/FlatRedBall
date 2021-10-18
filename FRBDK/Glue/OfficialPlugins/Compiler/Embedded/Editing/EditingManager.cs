@@ -50,7 +50,7 @@ namespace GlueControl.Editing
         List<INameable> ItemsSelected = new List<INameable>();
         INameable ItemSelected => ItemsSelected.Count > 0 ? ItemsSelected[0] : null;
 
-        public GlueElement CurrentGlueElement { get; set; }
+        public GlueElement CurrentGlueElement { get; private set; }
         public NamedObjectSave CurrentNamedObjectSave { get; private set; }
 
         public ElementEditingMode ElementEditingMode { get; set; }
@@ -267,18 +267,13 @@ namespace GlueControl.Editing
                 {
                     var isCtrlDown = InputManager.Keyboard.IsCtrlDown;
 
-                    if (!isCtrlDown)
+                    NamedObjectSave nos = null;
+                    if (ItemOver?.Name != null)
                     {
-                        ItemsSelected.Clear();
+                        nos = CurrentGlueElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == ItemOver.Name);
                     }
 
-                    if (ItemOver != null)
-                    {
-                        ItemsSelected.Add(ItemOver);
-                    }
-                    AddAndDestroyMarkersAccordingToItemsSelected();
-                    MarkerFor(ItemOver)?.PlayBumpAnimation(SelectedItemExtraPadding,
-                        isSynchronized: ItemsSelected.Count > 1);
+                    Select(nos, addToExistingSelection: isCtrlDown, playBump: true);
 
                 }
                 if (ItemGrabbed != null)
@@ -432,6 +427,19 @@ namespace GlueControl.Editing
         public void UpdateDependencies()
         {
 
+        }
+
+        public void SetCurrentGlueElement(GlueElement glueElement)
+        {
+            var oldGlueElement = CurrentGlueElement;
+
+            CurrentGlueElement = glueElement;
+
+            if (CurrentNamedObjectSave != null && oldGlueElement?.AllNamedObjects.Contains(CurrentNamedObjectSave) == true)
+            {
+                var nameToFind = CurrentNamedObjectSave.InstanceName;
+                CurrentNamedObjectSave = glueElement?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == nameToFind);
+            }
         }
 
         #region Selection

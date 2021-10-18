@@ -259,13 +259,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 if (SourceType == SourceType.File)
                 {
-                    // special case - if the file is a .srgx 
-                    if (!string.IsNullOrEmpty(SourceFile) && FileManager.GetExtension(SourceFile) == "srgx")
-                    {
-                        return "SpriteRig";
-                    }
-
-                    else if (string.IsNullOrEmpty(SourceName) || SourceName == "<NONE>")
+                    if (string.IsNullOrEmpty(SourceName) || SourceName == "<NONE>")
                     {
                         return "";
                     }

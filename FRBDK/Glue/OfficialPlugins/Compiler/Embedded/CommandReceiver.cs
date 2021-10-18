@@ -162,6 +162,11 @@ namespace GlueControl
             if (dto.AssignOrRecordOnly == AssignOrRecordOnly.Assign)
             {
                 response = GlueControl.Editing.VariableAssignmentLogic.SetVariable(dto);
+
+                if (dto.GlueElement != null)
+                {
+                    Editing.EditingManager.Self.SetCurrentGlueElement(dto.GlueElement);
+                }
             }
             else
             {
@@ -212,7 +217,7 @@ namespace GlueControl
 
             bool isOwnerScreen = false;
 
-            Editing.EditingManager.Self.CurrentGlueElement = selectObjectDto.GlueElement;
+            Editing.EditingManager.Self.SetCurrentGlueElement(selectObjectDto.GlueElement);
 
             if (matchesCurrentScreen)
             {

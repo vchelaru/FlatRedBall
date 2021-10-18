@@ -145,6 +145,107 @@ namespace GlueControl.Models
             set;
         }
 
+        string mSourceName;
+
+        public string SourceName
+        {
+            get
+            {
+                return mSourceName;
+            }
+            set
+            {
+                mSourceName = value;
+            }
+        }
+
+        public string InstanceType
+        {
+            get
+            {
+                if (SourceType == SourceType.File)
+                {
+                    if (string.IsNullOrEmpty(SourceName) || SourceName == "<NONE>")
+                    {
+                        return "";
+                    }
+                    else
+                    {
+                        int openParenthesis = SourceName.LastIndexOf("(");
+                        int length = SourceName.Length - 1 - openParenthesis;
+
+                        return SourceName.Substring(openParenthesis + 1, length - 1);
+                    }
+                }
+                else if (SourceType == SourceType.Entity)
+                {
+                    if (SourceClassType == null)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        // Entities are stored as "Entity\WhateverEntity".  Let's remove tghe Entity part
+                        return FlatRedBall.IO.FileManager.RemovePath(SourceClassType);
+                    }
+                }
+                else
+                {
+                    return SourceClassType;
+                }
+            }
+        }
+
+        public string FieldName
+        {
+            get
+            {
+
+                //if (HasPublicProperty || SetByContainer)
+                //{
+                //    return "m" + InstanceName;
+                //}
+                //else
+                {
+                    return InstanceName;
+                }
+
+            }
+        }
+
+        public string ClassType
+        {
+            get
+            {
+                if (SourceType == SourceType.FlatRedBallType && !string.IsNullOrEmpty(InstanceType) &&
+                    InstanceType.Contains("<T>"))
+                {
+                    string genericType = SourceClassGenericType;
+
+                    if (genericType == null)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+
+                        if (genericType.Contains("\\"))
+                        {
+                            // The namespace is part of it, so let's remove it
+                            int lastSlash = genericType.LastIndexOf('\\');
+                            genericType = genericType.Substring(lastSlash + 1);
+                        }
+
+                        return InstanceType.Replace("<T>", "<" + genericType + ">");
+                    }
+                }
+                else
+                {
+                    return InstanceType;
+                }
+            }
+        }
+
         public List<NamedObjectSave> ContainedObjects
         {
             get;
@@ -180,6 +281,18 @@ namespace GlueControl.Models
             //// which probably matches what the user expects
             ////IndependentOfCamera = true;
             //IndependentOfCamera = false;
+        }
+
+        public override string ToString()
+        {
+            //if (ToStringDelegate != null)
+            //{
+            //    return ToStringDelegate(this);
+            //}
+            //else
+            {
+                return ClassType + " " + FieldName;
+            }
         }
     }
 

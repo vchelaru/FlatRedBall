@@ -57,6 +57,13 @@ namespace OfficialPlugins.Compiler.Dtos
         public string VariableValue { get; set; }
         public string Type { get; set; }
         public bool IsState { get; set; }
+
+        // Whenever a variable changes, there could be side effects. Sure, we could handle pushing that
+        // to the cached GlueElement in game, but why not just send the entire glue element. This will automatically
+        // cover all cases:
+        public ScreenSave ScreenSave { get; set; }
+        public EntitySave EntitySave { get; set; }
+        public GlueElement GlueElement => (GlueElement)ScreenSave ?? EntitySave;
     }
 
     public class GlueVariableSetDataResponse

@@ -415,6 +415,11 @@ namespace OfficialPlugins.Compiler.Managers
                     data.VariableName = rawMemberName;
                     data.AssignOrRecordOnly = assignOrRecordOnly;
                     data.IsState = isState;
+
+
+                    data.ScreenSave = currentElement as ScreenSave;
+                    data.EntitySave = currentElement as EntitySave;
+
                     if (!string.IsNullOrEmpty(variableOwningNosName))
                     {
                         data.VariableName = "this." + variableOwningNosName + "." + data.VariableName;
