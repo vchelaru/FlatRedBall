@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.SaveClasses;
 using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -31,6 +32,8 @@ namespace OfficialPlugins.Compiler.Dtos
     {
         public ScreenSave ScreenSave { get; set; }
         public EntitySave EntitySave { get; set; }
+
+        [JsonIgnore]
         public GlueElement GlueElement => (GlueElement)ScreenSave ?? EntitySave;
         public NamedObjectSave NamedObject { get; set; }
         public string ElementNameGlue { get; set; }
@@ -63,6 +66,8 @@ namespace OfficialPlugins.Compiler.Dtos
         // cover all cases:
         public ScreenSave ScreenSave { get; set; }
         public EntitySave EntitySave { get; set; }
+
+        [JsonIgnore]
         public GlueElement GlueElement => (GlueElement)ScreenSave ?? EntitySave;
     }
 
