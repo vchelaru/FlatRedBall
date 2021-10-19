@@ -109,7 +109,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
         #endregion
 
-        #region Glux Methods
+        #region Save Glux Methods
 
         /// <summary>
         /// Saves the glux if already in a task. Adds a glulx save task if not.
@@ -209,6 +209,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #endregion
 
+        #region Custom Classes
+
         public ValidationResponse AddNewCustomClass(string className, out CustomClassSave customClassSave)
         {
             ValidationResponse validationResponse = new ValidationResponse();
@@ -238,6 +240,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             return validationResponse;
         }
+
+        #endregion
 
         #region ReferencedFileSave
 
@@ -1119,6 +1123,26 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             var wasSelected = GlueState.Self.CurrentNamedObjectSave == namedObjectToRemove;
 
+            int indexInChild = -1;
+            NamedObjectSave containerOfRemoved = null;
+            var element = namedObjectToRemove.GetContainer();
+            if (wasSelected)
+            {
+                if (element.NamedObjects.Contains(namedObjectToRemove))
+                {
+                    indexInChild = element.NamedObjects.IndexOf(namedObjectToRemove);
+                }
+                else
+                {
+                    containerOfRemoved = element.NamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(namedObjectToRemove));
+
+                    if (containerOfRemoved != null)
+                    {
+                        indexInChild = containerOfRemoved.ContainedObjects.IndexOf(namedObjectToRemove);
+                    }
+                }
+            }
+
             // The additionalFilesToRemove is included for consistency with other methods.  It may be used later
 
             // There are the following things that need to happen:
@@ -1128,8 +1152,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // 4.  Update the variables for any NamedObjects that use this element containing this NamedObject
             // 5.  Find any Elements that contain NamedObjects that are DefinedByBase - if so, see if we should remove those or make them not DefinedByBase
             // 6.  Remove any events that tunnel into this.
-
-            var element = namedObjectToRemove.GetContainer();
 
             if (element != null)
             {
@@ -1164,13 +1186,16 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                 }
 
-               //  Remove any objects that use this as a layer
-                for (int i = 0; i < element.NamedObjects.Count; i++)
+                if(namedObjectToRemove.IsLayer)
                 {
-                    if (element.NamedObjects[i].LayerOn == namedObjectToRemove.InstanceName)
+                   //  Remove any objects that use this as a layer
+                    for (int i = 0; i < element.NamedObjects.Count; i++)
                     {
-                        removalInformation.AppendLine("Removed the following object from the deleted Layer: " + element.NamedObjects[i].ToString());
-                        element.NamedObjects[i].LayerOn = null;
+                        if (element.NamedObjects[i].LayerOn == namedObjectToRemove.InstanceName)
+                        {
+                            removalInformation.AppendLine("Removed the following object from the deleted Layer: " + element.NamedObjects[i].ToString());
+                            element.NamedObjects[i].LayerOn = null;
+                        }
                     }
                 }
 
@@ -1207,17 +1232,39 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (updateUi)
                 {
-                    if(wasSelected)
-                    {
-                        GlueCommands.Self.DoOnUiThread(() =>
-                        {
-                            GlueState.Self.CurrentNamedObjectSave = element.NamedObjects.LastOrDefault();
-                        });
-                    }
-
                     GlueCommands.Self.DoOnUiThread(() =>
                     {
                         GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+
+                        if(wasSelected)
+                        {
+                            List<NamedObjectSave> containerList = containerOfRemoved?.ContainedObjects ?? element.NamedObjects;
+
+                            if(containerList.Count == 0)
+                            {
+                                if(containerOfRemoved != null)
+                                {
+                                    GlueState.Self.CurrentNamedObjectSave = containerOfRemoved;
+                                }
+                                else
+                                {
+                                    // do nothing...
+                                }
+                            }
+                            else
+                            {
+                                if(indexInChild < containerList.Count)
+                                {
+                                    GlueState.Self.CurrentNamedObjectSave = containerList[indexInChild];
+                                }
+                                else
+                                {
+                                    GlueState.Self.CurrentNamedObjectSave = containerList.LastOrDefault();
+
+                                }
+
+                            }
+                        }
 
                         GlueCommands.Self.DialogCommands.FocusOnTreeView();
 
