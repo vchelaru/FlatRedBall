@@ -273,8 +273,15 @@ namespace GlueControl.Editing
                         nos = CurrentGlueElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == ItemOver.Name);
                     }
 
-                    Select(nos, addToExistingSelection: isCtrlDown, playBump: true);
-
+                    if (nos != null)
+                    {
+                        Select(nos, addToExistingSelection: isCtrlDown, playBump: true);
+                    }
+                    else
+                    {
+                        // this should't happen, but for now we tolerate it until the current is sent
+                        Select(nos, addToExistingSelection: isCtrlDown, playBump: true);
+                    }
                 }
                 if (ItemGrabbed != null)
                 {
@@ -438,6 +445,8 @@ namespace GlueControl.Editing
             if (CurrentNamedObjectSave != null && oldGlueElement?.AllNamedObjects.Contains(CurrentNamedObjectSave) == true)
             {
                 var nameToFind = CurrentNamedObjectSave.InstanceName;
+                // Note - this will fail if the this is being called as a result of a rename. Therefore, the caller is responsbile
+                // for re-selecting the NOS
                 CurrentNamedObjectSave = glueElement?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == nameToFind);
             }
         }

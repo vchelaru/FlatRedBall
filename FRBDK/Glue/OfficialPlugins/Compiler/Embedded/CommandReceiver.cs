@@ -161,11 +161,29 @@ namespace GlueControl
 
             if (dto.AssignOrRecordOnly == AssignOrRecordOnly.Assign)
             {
+                var selectedNos = Editing.EditingManager.Self.CurrentNamedObjectSave?.InstanceName;
+
+                var renamedSelectedObject = false;
+                if (selectedNos != null)
+                {
+                    var split = dto.VariableName.Split('.');
+
+                    renamedSelectedObject = split.Length == 3 &&
+                        split[1] == selectedNos &&
+                        split[2] == "Name";
+                }
+
                 response = GlueControl.Editing.VariableAssignmentLogic.SetVariable(dto);
 
                 if (dto.GlueElement != null)
                 {
                     Editing.EditingManager.Self.SetCurrentGlueElement(dto.GlueElement);
+                    if (renamedSelectedObject)
+                    {
+                        var newSelectedNos = Editing.EditingManager.Self.CurrentGlueElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == dto.VariableValue);
+
+                        EditingManager.Self.Select(newSelectedNos, addToExistingSelection: false, playBump: false);
+                    }
                 }
             }
             else
