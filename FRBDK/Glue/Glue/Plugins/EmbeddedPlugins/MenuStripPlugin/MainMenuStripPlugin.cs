@@ -112,17 +112,32 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
             var Help = AddTopLevelMenuItem("Help");
             {
-                Help.Add("Tutorials", () => Process.Start("http://flatredball.com/documentation/tutorials/"));
-                Help.Add("Report a Bug", () => Process.Start("https://github.com/vchelaru/flatredball/issues"));
+                Help.Add("Tutorials", () => OpenInBrowser("http://flatredball.com/documentation/tutorials/"));
+                Help.Add("Report a Bug", () => OpenInBrowser("https://github.com/vchelaru/flatredball/issues"));
             }
         }
 
+
+        private void OpenInBrowser(string url)
+        {
+            try
+            {
+                Process.Start(url);
+            }
+            catch
+            {
+                var message = 
+                    $"Could not open a browser to the URL:\n\n{url}\n\nTry entering the address in a browser manually.";
+
+                GlueCommands.Self.DialogCommands.ShowMessageBox(message);
+            }
+        }
 
         private void findFileReferencesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             TextInputWindow tiw = new TextInputWindow();
 
-            tiw.DisplayText = "Enter the file name with extension, but no path (for example \"myfile.png\")";
+            tiw.Message = "Enter the file name with extension, but no path (for example \"myfile.png\")";
 
 
 
