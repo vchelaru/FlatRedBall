@@ -508,9 +508,15 @@ namespace GlueControl.Editing
 
             ItemsSelected.Clear();
 
-            foreach (var name in names)
+            if (names.Length > 0)
             {
-                Select(name, addToExistingSelection: true, playBump);
+                var allnamedObjectSaves = CurrentGlueElement?.AllNamedObjects.ToArray();
+
+                foreach (var name in names)
+                {
+                    var matchingNos = allnamedObjectSaves.FirstOrDefault(item => item.InstanceName == name);
+                    Select(matchingNos, addToExistingSelection: true, playBump);
+                }
             }
         }
 

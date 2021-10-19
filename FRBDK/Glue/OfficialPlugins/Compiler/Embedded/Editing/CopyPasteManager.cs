@@ -112,10 +112,13 @@ namespace GlueControl.Editing
 
             if (shouldSelectNewObjectsInGame)
             {
+                var allNamedObjects = EditingManager.Self.CurrentGlueElement.AllNamedObjects.ToArray();
+
                 var isFirst = true;
                 foreach (var newObject in newObjects)
                 {
-                    EditingManager.Self.Select(newObject.Name, addToExistingSelection: !isFirst);
+                    var matchingNos = allNamedObjects.FirstOrDefault(item => item.InstanceName == newObject.Name);
+                    EditingManager.Self.Select(matchingNos, addToExistingSelection: !isFirst);
                     isFirst = false;
                 }
             }
