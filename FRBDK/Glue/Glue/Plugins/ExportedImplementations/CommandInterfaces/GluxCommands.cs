@@ -1117,8 +1117,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             StringBuilder removalInformation = new StringBuilder();
 
-            var wasSelected = false;
-            GlueCommands.Self.DoOnUiThread(() => wasSelected = GlueState.Self.CurrentNamedObjectSave == namedObjectToRemove);
+            var wasSelected = GlueState.Self.CurrentNamedObjectSave == namedObjectToRemove;
 
             // The additionalFilesToRemove is included for consistency with other methods.  It may be used later
 
