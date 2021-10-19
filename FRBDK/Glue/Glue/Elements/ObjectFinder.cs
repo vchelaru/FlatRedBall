@@ -441,6 +441,37 @@ namespace FlatRedBall.Glue.Elements
             return null;
         }
 
+        public List<GlueElement> GetAllElementsReferencingFile(string rfsName)
+        {
+            var returnList = new List<GlueElement>();
+
+            foreach (ScreenSave screenSave in GlueProject.Screens)
+            {
+                foreach (ReferencedFileSave rfs in screenSave.ReferencedFiles)
+                {
+                    if (rfs.Name == rfsName)
+                    {
+                        returnList.Add(screenSave);
+                        break;
+                    }
+                }
+            }
+
+            foreach (EntitySave entitySave in GlueProject.Entities)
+            {
+                foreach (ReferencedFileSave rfs in entitySave.ReferencedFiles)
+                {
+                    if (rfs.Name == rfsName)
+                    {
+                        returnList.Add(entitySave);
+                        break;
+                    }
+                }
+            }
+
+            return returnList;
+        }
+
         #endregion
 
         #region CSV
@@ -804,7 +835,7 @@ namespace FlatRedBall.Glue.Elements
 
         }
 
-        public  NamedObjectSave GetDefaultListToContain(string namedObjectSourceClassType, GlueElement containerElement)
+        public NamedObjectSave GetDefaultListToContain(string namedObjectSourceClassType, GlueElement containerElement)
         {
             var isNosShape = namedObjectSourceClassType == "FlatRedBall.Math.Geometry.Circle" ||
                               namedObjectSourceClassType == "FlatRedBall.Math.Geometry.AxisAlignedRectangle" ||
@@ -848,7 +879,30 @@ namespace FlatRedBall.Glue.Elements
             return null;
         }
 
+        public NamedObjectSave GetRootDefiningObject(NamedObjectSave derivedNos)
+        {
+            if(derivedNos.SetByDerived == false)
+            {
+                return derivedNos;
+            }
+            else
+            {
+                var container = GetElementContaining(derivedNos);
 
+                var baseContainer = GetBaseElement(container);
+
+                var nosInBase = baseContainer.AllNamedObjects.FirstOrDefault(item => item.InstanceName == derivedNos.InstanceName);
+
+                if(nosInBase == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return GetRootDefiningObject(nosInBase);
+                }
+            }
+        }
 
         #endregion
 
@@ -902,36 +956,6 @@ namespace FlatRedBall.Glue.Elements
 
         #endregion
 
-        public List<GlueElement> GetAllElementsReferencingFile(string rfsName)
-        {
-            var returnList = new List<GlueElement>();
-
-            foreach (ScreenSave screenSave in GlueProject.Screens)
-            {
-                foreach (ReferencedFileSave rfs in screenSave.ReferencedFiles)
-                {
-                    if (rfs.Name == rfsName)
-                    {
-                        returnList.Add(screenSave);
-                        break;
-                    }
-                }
-            }
-
-            foreach (EntitySave entitySave in GlueProject.Entities)
-            {
-                foreach (ReferencedFileSave rfs in entitySave.ReferencedFiles)
-                {
-                    if (rfs.Name == rfsName)
-                    {
-                        returnList.Add(entitySave);
-                        break;
-                    }
-                }
-            }
-
-            return returnList;
-        }
 
         public List<ReferencedFileSave> GetMatchingReferencedFiles(ReferencedFileSave rfs)
         {

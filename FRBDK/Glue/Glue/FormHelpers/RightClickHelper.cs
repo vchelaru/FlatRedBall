@@ -1336,8 +1336,29 @@ namespace FlatRedBall.Glue.FormHelpers
                     // test deep first
                     if (GlueState.Self.CurrentNamedObjectSave != null)
                     {
-                        GlueCommands.Self.GluxCommands
-                            .RemoveNamedObject(GlueState.Self.CurrentNamedObjectSave, true, true, filesToRemove);
+                        var nos = GlueState.Self.CurrentNamedObjectSave;
+
+                        var canDelete = true;
+
+                        if(nos.DefinedByBase)
+                        {
+                            var definingNos = ObjectFinder.Self.GetRootDefiningObject(nos);
+
+                            if(definingNos?.ExposedInDerived == true)
+                            {
+                                var message = $"The object {nos} cannot be deleted because a base object has it marked as ExposedInDerived";
+
+                                GlueCommands.Self.DialogCommands.ShowMessageBox(message);
+
+                                canDelete = false;
+                            }
+                        }
+
+                        if(canDelete)
+                        {
+                            GlueCommands.Self.GluxCommands
+                                .RemoveNamedObject(nos, true, true, filesToRemove);
+                        }
                         //ProjectManager.RemoveNamedObject(EditorLogic.CurrentNamedObject);
                     }
                     #endregion
