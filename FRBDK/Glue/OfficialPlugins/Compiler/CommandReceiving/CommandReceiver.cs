@@ -136,23 +136,6 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 string newName = GetNewName(element, addObjectDto);
                 var oldName = addObjectDto.InstanceName;
 
-                #region Send the new name back to the game so the game uses the actual Glue name rather than the AutoName
-                // do this before adding the NOS to Glue since adding the NOS to Glue results in an AddToList command
-                // sent to the game, and we want the right name before the AddToList command
-                var data = new GlueVariableSetData();
-                data.Type = "string";
-                data.VariableValue = newName;
-                data.VariableName = "this." + oldName + ".Name";
-                data.InstanceOwnerGameType = addObjectDto.ElementNameGame;
-
-                data.ScreenSave = element as ScreenSave;
-                data.EntitySave = element as EntitySave;
-
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                // That's okay, this is fire-and-forget, we just send this back to the game and we don't care to await it
-                CommandSender.Send(data, gamePortNumber);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                #endregion
 
                 var nos = JsonConvert.DeserializeObject<NamedObjectSave>(dataAsString);
                 nos.InstanceName = newName;
@@ -165,6 +148,40 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     variable.Type = typeName;
                     variable.Value = value;
                 }
+
+                #region Send the new name back to the game so the game uses the actual Glue name rather than the AutoName
+                // do this before adding the NOS to Glue since adding the NOS to Glue results in an AddToList command
+                // sent to the game, and we want the right name before the AddToList command
+                var data = new GlueVariableSetData();
+                data.Type = "string";
+                data.VariableValue = newName;
+                data.VariableName = "this." + oldName + ".Name";
+                data.InstanceOwnerGameType = addObjectDto.ElementNameGame;
+
+                // At this point the element does not contain the new nos
+                // We want it to, but we have to send the DTO to the game before
+                // calling GluxCommands.AddNamedObjectTo
+                // We can make a copy:
+                var serialized = JsonConvert.SerializeObject(element);
+
+                GlueElement clone = null;
+                if(element is ScreenSave)
+                {
+                    data.ScreenSave = JsonConvert.DeserializeObject<ScreenSave>(serialized);
+                }
+                else
+                {
+                    data.EntitySave = JsonConvert.DeserializeObject<EntitySave>(serialized);
+                }
+
+                data.GlueElement.NamedObjects.Add(nos);
+
+
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                // That's okay, this is fire-and-forget, we just send this back to the game and we don't care to await it
+                CommandSender.Send(data, gamePortNumber);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                #endregion
 
                 GlueCommands.Self.DoOnUiThread(() =>
                 {
