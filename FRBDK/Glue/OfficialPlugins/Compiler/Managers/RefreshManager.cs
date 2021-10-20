@@ -633,6 +633,10 @@ namespace OfficialPlugins.Compiler.Managers
             if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
                 var dto = new Dtos.RemoveObjectDto();
+
+                dto.ScreenSave = GlueState.Self.CurrentElement as ScreenSave;
+                dto.EntitySave = GlueState.Self.CurrentElement as EntitySave;
+
                 dto.ElementNameGlue = //ToGameType((GlueElement)owner);
                     owner.Name;
                 dto.ObjectName = nos.InstanceName;

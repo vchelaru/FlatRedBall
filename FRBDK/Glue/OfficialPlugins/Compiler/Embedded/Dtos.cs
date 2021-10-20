@@ -10,13 +10,23 @@ using GlueControl.Models;
 
 namespace GlueControl.Dtos
 {
-    public class RemoveObjectDto
+    public class UpdateCurrentElementDto
+    {
+        public ScreenSave ScreenSave { get; set; }
+        public EntitySave EntitySave { get; set; }
+
+        [JsonIgnore]
+        public GlueElement GlueElement => (GlueElement)ScreenSave ?? EntitySave;
+
+    }
+
+    public class RemoveObjectDto : UpdateCurrentElementDto
     {
         public string ElementNameGlue { get; set; }
         public string ObjectName { get; set; }
     }
 
-    class SetVariableDto
+    public class SetVariableDto
     {
         public string InstanceOwner { get; set; }
 
@@ -31,18 +41,14 @@ namespace GlueControl.Dtos
         public bool IsInEditMode { get; set; }
     }
 
-    class SelectObjectDto
+    class SelectObjectDto : UpdateCurrentElementDto
     {
-        public ScreenSave ScreenSave { get; set; }
-        public EntitySave EntitySave { get; set; }
-
-        [JsonIgnore]
-        public GlueElement GlueElement => (GlueElement)ScreenSave ?? EntitySave;
         public NamedObjectSave NamedObject { get; set; }
         public string ElementNameGlue { get; set; }
         public string StateName { get; set; }
         public string StateCategoryName { get; set; }
         public bool BringIntoFocus { get; set; }
+
     }
 
     public enum AssignOrRecordOnly
@@ -51,7 +57,7 @@ namespace GlueControl.Dtos
         RecordOnly
     }
 
-    public class GlueVariableSetData
+    public class GlueVariableSetData : UpdateCurrentElementDto
     {
         public AssignOrRecordOnly AssignOrRecordOnly { get; set; }
         /// <summary>
@@ -62,16 +68,7 @@ namespace GlueControl.Dtos
         public string VariableValue { get; set; }
         public string Type { get; set; }
         public bool IsState { get; set; }
-
-        // Whenever a variable changes, there could be side effects. Sure, we could handle pushing that
-        // to the cached GlueElement in game, but why not just send the entire glue element. This will automatically
-        // cover all cases:
-        public ScreenSave ScreenSave { get; set; }
-        public EntitySave EntitySave { get; set; }
-        [JsonIgnore]
-        public GlueElement GlueElement => (GlueElement)ScreenSave ?? EntitySave;
     }
-
 
     public class GlueVariableSetDataResponse
     {
@@ -91,7 +88,7 @@ namespace GlueControl.Dtos
         public float Z { get; set; }
     }
 
-    public class AddObjectDto : GlueControl.Models.NamedObjectSave
+    public class AddObjectDto : NamedObjectSave
     {
         public string CopyOriginalName { get; set; }
         public string ElementNameGame { get; set; }
@@ -115,12 +112,11 @@ namespace GlueControl.Dtos
         public string ContainerName { get; set; }
     }
 
-
     public class MoveObjectToContainerDtoResponse
     {
         public bool WasObjectMoved { get; set; }
     }
-    
+
     public class RemoveObjectDtoResponse
     {
         public bool WasObjectRemoved { get; set; }
@@ -134,19 +130,19 @@ namespace GlueControl.Dtos
 
     public class CreateNewEntityDto
     {
-        public Models.EntitySave EntitySave { get; set; }
+        public EntitySave EntitySave { get; set; }
     }
 
     public class CreateNewStateDto
     {
-        public Models.StateSave StateSave { get; set; }
+        public StateSave StateSave { get; set; }
         public string CategoryName { get; set; }
         public string ElementNameGame { get; set; }
     }
 
     public class ChangeStateVariableDto
     {
-        public Models.StateSave StateSave { get; set; }
+        public StateSave StateSave { get; set; }
         public string CategoryName { get; set; }
         public string ElementNameGame { get; set; }
         public string VariableName { get; set; }
@@ -156,7 +152,7 @@ namespace GlueControl.Dtos
     {
         public bool ShowSelectionBump { get; set; } = true;
     }
-    public class ReloadGlobalContentDto 
+    public class ReloadGlobalContentDto
     {
         public string StrippedGlobalContentFileName { get; set; }
     }
@@ -181,7 +177,6 @@ namespace GlueControl.Dtos
         public List<string> ElementsContainingFile { get; set; }
         public string StrippedFileName { get; set; }
     }
-
 
     public class SetBorderlessDto
     {

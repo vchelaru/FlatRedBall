@@ -7,7 +7,17 @@ using System.Text;
 
 namespace OfficialPlugins.Compiler.Dtos
 {
-    class RemoveObjectDto
+    public class UpdateCurrentElementDto
+    {
+        public ScreenSave ScreenSave { get; set; }
+        public EntitySave EntitySave { get; set; }
+
+        [JsonIgnore]
+        public GlueElement GlueElement => (GlueElement)ScreenSave ?? EntitySave;
+
+    }
+
+    public class RemoveObjectDto : UpdateCurrentElementDto
     {
         public string ElementNameGlue { get; set; }
         public string ObjectName { get; set; }
@@ -28,13 +38,8 @@ namespace OfficialPlugins.Compiler.Dtos
         public bool IsInEditMode { get; set; }
     }
 
-    class SelectObjectDto
+    class SelectObjectDto : UpdateCurrentElementDto
     {
-        public ScreenSave ScreenSave { get; set; }
-        public EntitySave EntitySave { get; set; }
-
-        [JsonIgnore]
-        public GlueElement GlueElement => (GlueElement)ScreenSave ?? EntitySave;
         public NamedObjectSave NamedObject { get; set; }
         public string ElementNameGlue { get; set; }
         public string StateName { get; set; }
@@ -49,7 +54,7 @@ namespace OfficialPlugins.Compiler.Dtos
         RecordOnly
     }
 
-    public class GlueVariableSetData
+    public class GlueVariableSetData : UpdateCurrentElementDto
     {
         public AssignOrRecordOnly AssignOrRecordOnly { get; set; }
         /// <summary>
@@ -60,15 +65,6 @@ namespace OfficialPlugins.Compiler.Dtos
         public string VariableValue { get; set; }
         public string Type { get; set; }
         public bool IsState { get; set; }
-
-        // Whenever a variable changes, there could be side effects. Sure, we could handle pushing that
-        // to the cached GlueElement in game, but why not just send the entire glue element. This will automatically
-        // cover all cases:
-        public ScreenSave ScreenSave { get; set; }
-        public EntitySave EntitySave { get; set; }
-
-        [JsonIgnore]
-        public GlueElement GlueElement => (GlueElement)ScreenSave ?? EntitySave;
     }
 
     public class GlueVariableSetDataResponse

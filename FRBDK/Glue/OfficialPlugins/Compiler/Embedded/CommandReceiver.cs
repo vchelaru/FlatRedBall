@@ -420,6 +420,8 @@ namespace GlueControl
         {
             var response = InstanceLogic.Self.HandleDeleteInstanceCommandFromGlue(removeObjectDto);
 
+            Editing.EditingManager.Self.SetCurrentGlueElement(removeObjectDto.GlueElement);
+
             CommandReceiver.GlobalGlueToGameCommands.Add(removeObjectDto);
 
             return response;

@@ -376,6 +376,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #endregion
 
+        #region Select Object
+
         private static void HandleSelectObject(SelectObjectDto selectObjectDto)
         {
 
@@ -416,6 +418,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 }
             }, "Selecting object from game command");
         }
+
+        #endregion
 
         private static async void HandleDto(ModifyCollisionDto dto)
         {
