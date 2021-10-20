@@ -51,7 +51,7 @@ namespace FlatRedBall.Glue.IO
                     {
                         if(!ProjectManager.WantsToClose)
                         {
-                            TaskManager.Self.OnUiThread(ReloadGlux);
+                            ReloadGlux();
                         }
                         handled = true;
                     }

@@ -313,7 +313,7 @@ namespace GlueFormsCore.Controls
 
             MainGlueWindow.Self.PropertyGrid.SelectedObject = null;
 
-            MainGlueWindow.Self.Text = "FlatRedBall";
+            GlueCommands.Self.DoOnUiThread(() => MainGlueWindow.Self.Text = "FlatRedBall");
             ProjectManager.WantsToClose = false;
             TaskManager.Self.RecordTaskHistory($"--Ending Close Project Command --");
 
