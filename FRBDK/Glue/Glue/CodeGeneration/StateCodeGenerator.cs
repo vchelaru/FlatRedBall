@@ -12,6 +12,7 @@ using System;
 using System.Linq;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.TypeConversions;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -342,6 +343,10 @@ namespace FlatRedBall.Glue.CodeGeneration
                         {
                             type = typeof(Graphics.Animation.AnimationChainList).FullName;
                             assignOnlyIfNonNull = true;
+                        }
+                        else if(type == nameof(Texture2D))
+                        {
+                            type = typeof(Texture2D).FullName;
                         }
                         rightSideOfEquals = $"GetFile(value.{variable.Name}) as {type}";
                     }

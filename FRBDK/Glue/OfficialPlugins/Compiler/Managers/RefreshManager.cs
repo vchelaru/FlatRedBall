@@ -93,6 +93,15 @@ namespace OfficialPlugins.Compiler.Managers
 
         public string GetGameTypeFor(GlueElement element)
         {
+            if(element == null)
+            {
+                throw new ArgumentNullException(nameof(element));
+            }
+            else if(element.Name == null)
+            {
+                throw new NullReferenceException(nameof(element.Name));
+            }
+
             return
                 GlueState.Self.ProjectNamespace + "." + element.Name.Replace("\\", ".");
         }
@@ -571,13 +580,17 @@ namespace OfficialPlugins.Compiler.Managers
         {
             var container = ObjectFinder.Self.GetElementContaining(category);
 
-            var dto = new ChangeStateVariableDto();
-            dto.StateSave = state;
-            dto.CategoryName = category?.Name;
-            dto.ElementNameGame = GetGameTypeFor(container);
-            dto.VariableName = variableName;
+            if(container != null)
+            {
+                var dto = new ChangeStateVariableDto();
+                dto.StateSave = state;
+                dto.CategoryName = category?.Name;
+                dto.ElementNameGame = GetGameTypeFor(container);
+                dto.VariableName = variableName;
 
-            await CommandSender.Send(dto, GlueViewSettingsViewModel.PortNumber);
+                await CommandSender.Send(dto, GlueViewSettingsViewModel.PortNumber);
+            }
+
         }
 
         #endregion
