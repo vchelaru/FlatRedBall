@@ -915,6 +915,17 @@ namespace GlueControl.Editing
                             convertedValue = 0f;
                         }
                         break;
+                    case "float?":
+                        if (!string.IsNullOrWhiteSpace(variableValue))
+                        {
+                            convertedValue = float.Parse(variableValue);
+                        }
+                        else
+                        {
+                            convertedValue = (float?)null;
+                        }
+                        break;
+
                     case "int":
                     case nameof(Int32):
                     case "System.Int32":
@@ -928,6 +939,20 @@ namespace GlueControl.Editing
                             convertedValue = 0;
                         }
                         break;
+
+                    case "int?":
+
+                        if (!string.IsNullOrWhiteSpace(variableValue))
+                        {
+                            convertedValue = int.Parse(variableValue);
+                        }
+                        else
+                        {
+                            convertedValue = (int?)null;
+                        }
+
+                        break;
+
                     case "bool":
                     case nameof(Boolean):
                     case "System.Boolean":
@@ -1050,7 +1075,7 @@ namespace GlueControl.Editing
                 return null;
             }
             ////////End Early Out/////////////
-            
+
             var splitType = qualifiedTypeName.Split('.');
 
             qualifiedTypeName = string.Join(".", splitType.Take(splitType.Length - 1).ToArray()) + "+" +

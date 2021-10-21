@@ -415,7 +415,21 @@ namespace FlatRedBall.Instructions.Reflection
                     return float.Parse(value, CultureInfo.InvariantCulture);
                 }
 
-#endregion
+                else if (desiredType == typeof(float?).FullName)
+                {
+                    if (string.IsNullOrWhiteSpace(value))
+                    {
+                        toReturn = (float?)null;
+                        handled = true;
+                    }
+                    else
+                    {
+                        handled = true;
+                        toReturn = float.Parse(value, CultureInfo.InvariantCulture);
+                    }
+                }
+
+                #endregion
 
                 #region double
 
