@@ -624,6 +624,10 @@ namespace FlatRedBall.Glue.Parsing
             {
                 return "int?";
             }
+            else if(qualifiedName.StartsWith("System.Nullable`1[[System.Single,"))
+            {
+                return "float?";
+            }
 
             return qualifiedName;
         }

@@ -32,6 +32,7 @@ namespace FlatRedBall.Glue.Reflection
         static string[] mAvailablePrimitives = new string[]{
             "<none>",
             "float",
+            "float?",
             "string",
             "bool",
 
