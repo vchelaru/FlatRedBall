@@ -10,6 +10,8 @@ namespace GlueControl.Editing.Visuals
 {
     public class Arrow
     {
+        #region Fields/Properties
+
         Line MainLine;
 
         List<Line> FirstArrow = new List<Line>();
@@ -49,6 +51,8 @@ namespace GlueControl.Editing.Visuals
             }
         }
 
+        #endregion
+
         public Arrow(bool firstArrow = false, bool secondArrow = true)
         {
             MainLine = ShapeManager.AddLine();
@@ -79,7 +83,7 @@ namespace GlueControl.Editing.Visuals
 
             if (FirstArrow.Count > 0)
             {
-                mainFirst += (Vector3.Right * ArrowSizeX).AtAngle(angle);
+                mainFirst += (Vector3.Right * ArrowSizeX).RotatedBy(angle);
                 var firstLineOffset = new Vector3(ArrowSizeX, 5, 0).RotatedBy(angle);
                 FirstArrow[0].SetFromAbsoluteEndpoints(first, first + firstLineOffset);
                 var secondLineOffset = new Vector3(ArrowSizeX, -5, 0).RotatedBy(angle);
@@ -91,7 +95,7 @@ namespace GlueControl.Editing.Visuals
             }
             if (SecondArrow.Count > 0)
             {
-                mainSecond += (Vector3.Right * ArrowSizeX).AtAngle(MathHelper.Pi - angle);
+                mainSecond += (Vector3.Left * ArrowSizeX).RotatedBy(angle);
 
                 var firstLineOffset = new Vector3(-ArrowSizeX, 5, 0).RotatedBy(angle);
                 SecondArrow[0].SetFromAbsoluteEndpoints(second, second + firstLineOffset);

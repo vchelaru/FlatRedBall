@@ -182,6 +182,9 @@ namespace FlatRedBall.Gui
 			}
 		}
 
+        /// <summary>
+        /// Gets the main cursor. If multiple cursors have been added to the GuiManager, returns the first one.
+        /// </summary>
         public static Cursor Cursor
         {
             get 
@@ -205,10 +208,7 @@ namespace FlatRedBall.Gui
             get { return mCursors; }
         }
 
-        public static Camera Camera
-        {
-            get { return SpriteManager.Camera; }
-        }
+        public static Camera Camera => Camera.Main;
 
         public static bool IsUIEnabled
         {
