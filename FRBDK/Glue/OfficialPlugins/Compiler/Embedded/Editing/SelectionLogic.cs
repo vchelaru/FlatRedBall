@@ -273,7 +273,17 @@ namespace GlueControl.Editing
                 {
                     var child = itemOver.Children[i];
 
-                    GetDimensionsForInner(child, ref minX, ref maxX, ref minY, ref maxY);
+                    var shouldConsiderChild = true;
+
+                    if (child is IVisible asIVisible)
+                    {
+                        shouldConsiderChild = asIVisible.Visible;
+                    }
+
+                    if (shouldConsiderChild)
+                    {
+                        GetDimensionsForInner(child, ref minX, ref maxX, ref minY, ref maxY);
+                    }
                 }
             }
         }
