@@ -111,10 +111,21 @@ namespace FlatRedBall
         }
 
         /// <summary>
-        /// Gets the current animationChain - retrieved through the CurrentChainIndex property.
+        /// Gets the current animationChain - retrieved through the CurrentChainIndex property. Setting this sets the CurrentChainName since rather than
+        /// a direct reference. Therefore, this chain must be contained in the AnimationChains list.
         /// </summary>
         public AnimationChain CurrentChain
         {
+            set
+            {
+#if DEBUG
+                if(AnimationChains.Contains(CurrentChain) == false)
+                {
+                    throw new InvalidOperationException("The AnimationChains list does not contain the assigned AnimationChain, so it cannot be set");
+                }
+#endif
+                CurrentChainName = value?.Name;
+            }
             get
             {
                 if (mCurrentChainIndex != -1 && mAnimationChains.Count > 0 && mCurrentChainIndex < mAnimationChains.Count)
