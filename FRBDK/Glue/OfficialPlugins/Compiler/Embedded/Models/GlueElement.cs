@@ -42,7 +42,7 @@ namespace GlueControl.Models
         {
             get;
             set;
-        }
+        } = new List<NamedObjectSave>();
     }
 
     public class EntitySave : GlueElement
