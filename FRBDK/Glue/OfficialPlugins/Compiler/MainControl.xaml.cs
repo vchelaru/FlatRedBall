@@ -69,29 +69,36 @@ namespace OfficialPlugins.Compiler
             // suppress warnings...
             var split = text.Split('\n');
 
-            Glue.MainGlueWindow.Self.Invoke(() =>
+            try
             {
-                var paragraph = TextBox.Document.Blocks.LastOrDefault() as Paragraph;
-                if(paragraph == null)
+                Glue.MainGlueWindow.Self.Invoke(() =>
                 {
-                    paragraph = new Paragraph();
-                    TextBox.Document.Blocks.Add(paragraph);
-                }
-                foreach (var line in split)
-                {
-                    if(!string.IsNullOrWhiteSpace(line))
+                    var paragraph = TextBox.Document.Blocks.LastOrDefault() as Paragraph;
+                    if(paragraph == null)
                     {
-                        var outputType = outputParser.GetOutputType(line);
-                        if(outputType != OutputType.Warning)
+                        paragraph = new Paragraph();
+                        TextBox.Document.Blocks.Add(paragraph);
+                    }
+                    foreach (var line in split)
+                    {
+                        if(!string.IsNullOrWhiteSpace(line))
                         {
-                            var color = outputType == OutputType.Error ? Brushes.Red : Brushes.Black;
-                            paragraph.Inlines.Add(new Run(line + "\r\n") { Foreground = color});
+                            var outputType = outputParser.GetOutputType(line);
+                            if(outputType != OutputType.Warning)
+                            {
+                                var color = outputType == OutputType.Error ? Brushes.Red : Brushes.Black;
+                                paragraph.Inlines.Add(new Run(line + "\r\n") { Foreground = color});
+                            }
                         }
                     }
-                }
 
-                TextBox.ScrollToEnd();
-            });
+                    TextBox.ScrollToEnd();
+                });
+            }
+            catch
+            {
+                // could be exiting the app so tolerate the error, don't show a message to the user
+            }
         }
 
         private void TextBox_KeyEnterUpdate(object sender, KeyEventArgs e)

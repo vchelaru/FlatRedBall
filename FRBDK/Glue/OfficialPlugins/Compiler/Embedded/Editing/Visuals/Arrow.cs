@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GlueControl.Editing.Visuals
 {
-    class Arrow
+    public class Arrow
     {
         Line MainLine;
 

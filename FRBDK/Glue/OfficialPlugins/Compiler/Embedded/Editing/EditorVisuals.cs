@@ -40,14 +40,14 @@ namespace GlueControl.Editing
             FlatRedBallServices.AddManager(new EditorVisuals());
         }
 
-        public static void Text(string text, Vector3 position, Color? color = null)
+        public static Text Text(string text, Vector3 position, Color? color = null)
         {
             Color textColor = color ?? Color.White;
 
             // This screen is cleaning up, so don't make anymore objects:
             if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
             {
-                return;
+                return null;
             }
             TryResetEveryFrameValues();
 
@@ -68,16 +68,17 @@ namespace GlueControl.Editing
             textInstance.Green = textColor.G / 255.0f;
             textInstance.Blue = textColor.B / 255.0f;
             nextText++;
+            return textInstance;
         }
 
-        public static void Line(Vector3 point1, Vector3 point2, Color? color = null)
+        public static Line Line(Vector3 point1, Vector3 point2, Color? color = null)
         {
             Color lineColor = color ?? Color.White;
 
             // This screen is cleaning up, so don't make anymore objects:
             if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
             {
-                return;
+                return null;
             }
             TryResetEveryFrameValues();
 
@@ -92,14 +93,16 @@ namespace GlueControl.Editing
             lineInstance.SetFromAbsoluteEndpoints(point1, point2);
             lineInstance.Color = lineColor;
             nextLine++;
+
+            return lineInstance;
         }
 
-        public static void Arrow(Vector3 point1, Vector3 point2, Color? color = null)
+        public static Arrow Arrow(Vector3 point1, Vector3 point2, Color? color = null)
         {
             // This screen is cleaning up, so don't make anymore objects:
             if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
             {
-                return;
+                return null;
             }
             TryResetEveryFrameValues();
 
@@ -115,14 +118,15 @@ namespace GlueControl.Editing
             arrowInstance.SetFromAbsoluteEndpoints(point1, point2);
             arrowInstance.Color = color ?? Color.White;
             nextArrow++;
+            return arrowInstance;
         }
 
-        public static void Sprite(AnimationChain animationChain, Vector3 position, float textureScale = 1)
+        public static Sprite Sprite(AnimationChain animationChain, Vector3 position, float textureScale = 1)
         {
             // This screen is cleaning up, so don't make anymore objects:
             if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
             {
-                return;
+                return null;
             }
 
             TryResetEveryFrameValues();
@@ -141,16 +145,17 @@ namespace GlueControl.Editing
 
             nextSprite++;
 
+            return sprite;
         }
 
-        public static void Rectangle(float width, float height, Vector3 centerPosition, Color? color = null)
+        public static AxisAlignedRectangle Rectangle(float width, float height, Vector3 centerPosition, Color? color = null)
         {
             Color rectColor = color ?? Color.White;
 
             // This screen is cleaning up, so don't make anymore objects:
             if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
             {
-                return;
+                return null;
             }
 
             TryResetEveryFrameValues();
@@ -168,6 +173,8 @@ namespace GlueControl.Editing
             rectangle.Position = centerPosition;
             rectangle.Color = rectColor;
             nextRectangle++;
+
+            return rectangle;
         }
 
         private static void TryResetEveryFrameValues()
