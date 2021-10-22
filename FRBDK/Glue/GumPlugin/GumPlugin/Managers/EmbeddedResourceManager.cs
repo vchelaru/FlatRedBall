@@ -111,7 +111,7 @@ namespace GumPlugin.Managers
             }
             else if(behavior == FileAdditionBehavior.IncludeNoFiles)
             {
-                TaskManager.Self.AddSync(() =>
+                TaskManager.Self.Add(() =>
                 {
                     mStateInterpolationItemAdder.PerformRemoveAndSave(assembly);
 
@@ -141,7 +141,7 @@ namespace GumPlugin.Managers
             }
             else // remove both:
             {
-                TaskManager.Self.AddSync(() =>
+                TaskManager.Self.Add(() =>
                 {
                     codeItemAdder.PerformRemoveAndSave(assemblyContainingResources);
 

@@ -16,7 +16,6 @@ namespace FlatRedBall.Glue.Managers
     {
         Fifo,
         Asap,
-        //AddIfNotYetAdded,
         AddOrMoveToEnd
     }
 
@@ -205,41 +204,19 @@ namespace FlatRedBall.Glue.Managers
         /// Adds an action to be executed, guaranteeing that no other actions will be executed at the same time as this.
         /// Actions added will be executed in the order they were added (fifo).
         /// </summary>
-        public void AddSync(Action action, string displayInfo)
-        {
-            AddSync(action, displayInfo, isHighPriority: false);
-        }
-
-        [Obsolete("Use Add, which allows specifying the priority")]
-        /// <summary>
-        /// Adds an action to be executed, guaranteeing that no other actions will be executed at the same time as this.
-        /// Actions added will be executed in the order they were added (fifo).
-        /// </summary>
-        /// <param name="action">The action to execute.</param>
-        /// <param name="displayInfo">The details of the task, to de bisplayed in the tasks window.</param>
-        /// <param name="isHighPriority">Whether to attempt to run the action immediately - useful for UI tasks</param>
-        public void AddSync(Action action, string displayInfo, bool isHighPriority)
-        {
-            TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo;
-
-            if(isHighPriority)
-            {
-                executionPreference = TaskExecutionPreference.Asap;
-            }
-
-            Add(action, displayInfo, executionPreference);
-        }
+        public void AddSync(Action action, string displayInfo) => Add(action, displayInfo);
 
         public void Add(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
         {
             var glueTask = new GlueTask();
             glueTask.Action = action;
             glueTask.DoOnUiThread = doOnUiThread;
-            AddInternal(displayInfo, executionPreference, glueTask);
+            glueTask.TaskExecutionPreference = executionPreference;
+            AddInternal(displayInfo, glueTask);
 
         }
 
-        private void AddInternal(string displayInfo, TaskExecutionPreference executionPreference, GlueTask glueTask)
+        private void AddInternal(string displayInfo, GlueTask glueTask)
         {
             glueTask.DisplayInfo = displayInfo;
 
@@ -249,19 +226,33 @@ namespace FlatRedBall.Glue.Managers
 
             lock (mSyncLockObject)
             {
-                if (executionPreference == TaskExecutionPreference.Asap)
+                if (glueTask.TaskExecutionPreference == TaskExecutionPreference.Asap)
                 {
                     if (mSyncedActions.Count > 0)
                     {
                         // don't insert at 0, finish the current task, but insert at 1:
-                        mSyncedActions.Insert(1, glueTask);
+                        var wasAdded = false;
+                        for(int i = 1; i < mSyncedActions.Count; i++)
+                        {
+                            if(mSyncedActions[i].TaskExecutionPreference != TaskExecutionPreference.Asap)
+                            {
+                                mSyncedActions.Insert(i, glueTask);
+                                wasAdded = true;
+                                break;
+                            }
+                        }
+
+                        if(!wasAdded)
+                        {
+                            mSyncedActions.Add(glueTask);
+                        }
                     }
                     else
                     {
                         mSyncedActions.Add(glueTask);
                     }
                 }
-                else if (executionPreference == TaskExecutionPreference.AddOrMoveToEnd)
+                else if (glueTask.TaskExecutionPreference == TaskExecutionPreference.AddOrMoveToEnd)
                 {
                     // There's a few possible situations:
                     // 1. This task is not present in the list at all. 

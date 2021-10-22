@@ -63,7 +63,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LocalizationPlugin
         {
 
 
-            TaskManager.Self.AddSync(() =>
+            TaskManager.Self.Add(() =>
             {
                 var glueCommands = Container.Get<IGlueCommands>();
                 var glueState = Container.Get<IGlueState>();

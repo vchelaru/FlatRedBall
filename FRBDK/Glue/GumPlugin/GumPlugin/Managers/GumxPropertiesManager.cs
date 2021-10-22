@@ -148,7 +148,7 @@ namespace GumPlugin.Managers
                 {
                     // If useAtlases is set to false, then that means that 
                     // a lot of new files need to be added to the project.
-                    TaskManager.Self.AddSync(
+                    TaskManager.Self.Add(
                         () =>
                         {
                             bool wasAnythingAdded = GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(gumRfs);

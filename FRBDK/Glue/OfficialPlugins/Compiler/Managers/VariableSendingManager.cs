@@ -142,6 +142,8 @@ namespace OfficialPlugins.Compiler.Managers
             {
                 try
                 {
+                    System.Diagnostics.Debug.WriteLine($"In task {changedMember} to {value}");
+
                     var task = TryPushVariable(nosName, changedMember, typeName, value, currentElement, assignOrRecordOnly, isState);
                     task.Wait();
                     var response = task.Result;
@@ -155,9 +157,7 @@ namespace OfficialPlugins.Compiler.Managers
                     {
                         // wasn't assigned, the game didn't know what to do, so restart
                         RefreshManager.Self.StopAndRestartTask($"Unhandled variable {changedMember} changed");
-
                     }
-
                 }
                 catch
                 {

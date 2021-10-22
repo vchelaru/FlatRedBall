@@ -557,6 +557,7 @@ namespace OfficialPlugins.Compiler.Managers
 
         internal void HandleNamedObjectValueChanged(string variableName, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly)
         {
+            var foundVariable = nos.GetCustomVariable(variableName);
             if(ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
                 VariableSendingManager.Self.HandleNamedObjectValueChanged(variableName, oldValue, nos, assignOrRecordOnly);

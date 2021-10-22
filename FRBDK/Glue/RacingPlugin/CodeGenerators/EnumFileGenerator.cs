@@ -12,7 +12,7 @@ namespace RacingPlugin.CodeGenerators
     {
         public void GenerateAndSaveEnumFile()
         {
-            TaskManager.Self.AddSync(() =>
+            TaskManager.Self.Add(() =>
             {
                 var contents = GenerateFileContents();
 

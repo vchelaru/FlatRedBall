@@ -362,7 +362,7 @@ namespace FlatRedBall.Glue.UnreferencedFiles
         private void RefreshUnreferencedProjectFiles()
         {
             IsStillScanning = true;
-            TaskManager.Self.AddSync(() =>
+            TaskManager.Self.Add(() =>
             {
                 UnreferencedFilesManager.Self.RefreshUnreferencedFiles(async: false);
                 var contentDirectory = GlueState.Self.ContentDirectory;

@@ -154,7 +154,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                 if(newValue)
                 {
-                    TaskManager.Self.AddSync(() => RemoveCodeForCsv(rfs), "Removing old CSV");
+                    TaskManager.Self.Add(() => RemoveCodeForCsv(rfs), "Removing old CSV");
 
                 }
                 else

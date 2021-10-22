@@ -84,12 +84,12 @@ namespace RacingPlugin.Controllers
             {
                 AddRacingVariables(entity);
 
-                TaskManager.Self.AddSync(AddCollisionHistoryFile, "Adding CollisionHistory.cs");
+                TaskManager.Self.Add(AddCollisionHistoryFile, "Adding CollisionHistory.cs");
             }
 
             if (shouldGenerateEntity)
             {
-                TaskManager.Self.AddSync(
+                TaskManager.Self.Add(
                     () => GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity),
                     "Generating " + entity.Name);
             }
@@ -97,7 +97,7 @@ namespace RacingPlugin.Controllers
 
             if (shouldAddRacingVariables)
             {
-                TaskManager.Self.AddSync(() =>
+                TaskManager.Self.Add(() =>
                 {
                     GlueCommands.Self.DoOnUiThread(() =>
                     {
@@ -110,7 +110,7 @@ namespace RacingPlugin.Controllers
 
             if (shouldGenerateCsv || shouldGenerateEntity || shouldAddRacingVariables)
             {
-                TaskManager.Self.AddAsyncTask(
+                TaskManager.Self.Add(
                     () =>
                     {
                         GlueCommands.Self.GluxCommands.SaveGlux();
