@@ -175,12 +175,14 @@ namespace OfficialPlugins.Compiler.ViewModels
         public List<string> GameSpeedList { get; set; } =
             new List<string>
             {
+                "1000%",
                 "500%",
                 "200%",
                 "100%",
                 "50%",
                 "25%",
-                "10%"
+                "10%",
+                "5%"
             };
 
         public string CurrentGameSpeed
