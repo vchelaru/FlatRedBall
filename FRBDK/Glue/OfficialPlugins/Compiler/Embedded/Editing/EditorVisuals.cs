@@ -47,7 +47,7 @@ namespace GlueControl.Editing
             // This screen is cleaning up, so don't make anymore objects:
             if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
             {
-                return null;
+                return new FlatRedBall.Graphics.Text();
             }
             TryResetEveryFrameValues();
 
@@ -78,7 +78,7 @@ namespace GlueControl.Editing
             // This screen is cleaning up, so don't make anymore objects:
             if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
             {
-                return null;
+                return new Line();
             }
             TryResetEveryFrameValues();
 
@@ -102,7 +102,7 @@ namespace GlueControl.Editing
             // This screen is cleaning up, so don't make anymore objects:
             if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
             {
-                return null;
+                return new Arrow();
             }
             TryResetEveryFrameValues();
 
@@ -126,7 +126,7 @@ namespace GlueControl.Editing
             // This screen is cleaning up, so don't make anymore objects:
             if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
             {
-                return null;
+                return new Sprite();
             }
 
             TryResetEveryFrameValues();
@@ -155,7 +155,7 @@ namespace GlueControl.Editing
             // This screen is cleaning up, so don't make anymore objects:
             if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
             {
-                return null;
+                return new AxisAlignedRectangle();
             }
 
             TryResetEveryFrameValues();
