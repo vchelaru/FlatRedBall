@@ -571,7 +571,6 @@ namespace GlueControl
             {
                 CameraLogic.RecordCameraForCurrentScreen();
 
-                FlatRedBall.Screens.ScreenManager.IsInEditMode = value;
                 FlatRedBall.Gui.GuiManager.Cursor.RequiresGameWindowInFocus = !value;
 
                 if (value)
@@ -591,7 +590,7 @@ namespace GlueControl
                 FlatRedBall.TileEntities.TileEntityInstantiator.CreationFunction =
                     InstanceLogic.Self.CreateEntity;
 
-                RestartScreenRerunCommands(applyRestartVariables: true, shouldRecordCameraPosition: false, forceCameraToPreviousState: true);
+                RestartScreenRerunCommands(applyRestartVariables: true, isInEditMode: value, shouldRecordCameraPosition: false, forceCameraToPreviousState: true);
             }
 #endif
         }
@@ -639,12 +638,16 @@ namespace GlueControl
 
         private static void HandleDto(RestartScreenDto dto)
         {
-            RestartScreenRerunCommands(applyRestartVariables: true, playBump: dto.ShowSelectionBump);
+            RestartScreenRerunCommands(applyRestartVariables: true, isInEditMode: FlatRedBall.Screens.ScreenManager.IsInEditMode, playBump: dto.ShowSelectionBump);
         }
 
-        private static void RestartScreenRerunCommands(bool applyRestartVariables, bool shouldRecordCameraPosition = true, bool forceCameraToPreviousState = false,
+        private static void RestartScreenRerunCommands(bool applyRestartVariables, bool isInEditMode,
+            bool shouldRecordCameraPosition = true,
+            bool forceCameraToPreviousState = false,
             bool playBump = true)
         {
+            ScreenManager.IsNextScreenInEditMode = isInEditMode;
+
             var screen =
                 FlatRedBall.Screens.ScreenManager.CurrentScreen;
             // user may go into edit mode after moving through a level and wouldn't want it to restart fully....or would they? What if they
@@ -656,6 +659,11 @@ namespace GlueControl
             // objects created in CustomInitialize cannot be modified by level editor.
             void BeforeCustomInitializeLogic(Screen newScreen)
             {
+                // We used to set this immediately whenever the DTO
+                // to switch into edit mode was received. However, this
+                // could result in the current screen running one Activity
+                // call in edit mode before it reloads itself. Therefore, we
+                // want to set the edit mode here:
                 GlueControlManager.Self.ReRunAllGlueToGameCommands();
                 ScreenManager.BeforeScreenCustomInitialize -= BeforeCustomInitializeLogic;
             }

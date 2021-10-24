@@ -54,7 +54,8 @@ namespace FlatRedBall.Screens
 
         private static Action<Screen> nextCallback;
 
-        public static bool IsInEditMode { get; set; }
+        public static bool IsInEditMode { get; private set; }
+        public static bool IsNextScreenInEditMode { get; set; }
 
         #endregion
 
@@ -170,7 +171,10 @@ namespace FlatRedBall.Screens
             }
             else
             {
-                mCurrentScreen.ActivityEditMode();
+                if(!mCurrentScreen.IsActivityFinished)
+                {
+                    mCurrentScreen.ActivityEditMode();
+                }
                 if(GlueViewLoadException != null)
                 {
                     FlatRedBall.Debugging.Debugger.Write(GlueViewLoadException.ToString());
@@ -398,6 +402,9 @@ namespace FlatRedBall.Screens
             {
                 throw new System.ArgumentException("There is no " + screen + " class defined in your project or linked assemblies.");
             }
+
+            IsInEditMode = IsNextScreenInEditMode;
+            IsNextScreenInEditMode = false;
 
             if (screen != null && screen != "")
             {
@@ -813,17 +820,13 @@ namespace FlatRedBall.Screens
 
                 if (ShapeManager.VisibleLines.Count != 0)
                 {
-                    var lineCount = ShapeManager.VisibleLines.Count;
-                    foreach(var line in PersistentLines)
+                    var lineListCopy = ShapeManager.VisibleLines
+                        .Except(PersistentLines)
+                        .ToList();
+
+                    if(lineListCopy.Count > 0)
                     {
-                        if(ShapeManager.VisibleLines.Contains(line))
-                        {
-                            lineCount--;
-                        }
-                    }
-                    if(lineCount != 0)
-                    {
-                        messages.Add("There are " + lineCount +
+                        messages.Add("There are " + lineListCopy.Count +
                             " visible Lines in the ShapeManager.  See \"FlatRedBall.Math.Geometry.ShapeManager.VisibleLines\"");
                     }
                 }

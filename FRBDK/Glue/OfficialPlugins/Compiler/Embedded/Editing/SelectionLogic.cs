@@ -128,7 +128,7 @@ namespace GlueControl.Editing
             {
                 foreach (var item in availableItems)
                 {
-                    if (IsRectangleSelectionOver(item))
+                    if (IsSelectable(item) && IsRectangleSelectionOver(item))
                     {
                         itemsOverToFill.Add(item);
                     }
@@ -177,7 +177,9 @@ namespace GlueControl.Editing
                 var width = RightSelect.Value - LeftSelect.Value;
                 var height = TopSelect.Value - BottomSelect.Value;
 
-                EditorVisuals.Rectangle(width, height, new Vector3(centerX, centerY, 0));
+                Color selectionColor = Color.LightBlue;
+
+                EditorVisuals.Rectangle(width, height, new Vector3(centerX, centerY, 0), selectionColor);
             }
             if (cursor.PrimaryClick)
             {

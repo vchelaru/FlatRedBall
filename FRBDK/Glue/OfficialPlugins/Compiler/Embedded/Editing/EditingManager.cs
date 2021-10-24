@@ -130,6 +130,7 @@ namespace GlueControl.Editing
                 CameraLogic.DoCursorCameraControllingLogic();
 
                 UpdateMarkers(didChangeItemOver);
+
             }
             else
             {
@@ -456,8 +457,6 @@ namespace GlueControl.Editing
                 var isFirst = true;
                 foreach (var itemOver in ItemsOver)
                 {
-                    //Select()
-
                     NamedObjectSave nos = null;
                     if (itemOver?.Name != null)
                     {
@@ -545,7 +544,7 @@ namespace GlueControl.Editing
 
                 if (playBump)
                 {
-                    MarkerFor(ItemSelected)?.PlayBumpAnimation(SelectedItemExtraPadding, isSynchronized: false);
+                    MarkerFor(foundObject)?.PlayBumpAnimation(SelectedItemExtraPadding, isSynchronized: false);
                 }
 
                 // do this right away so the handles don't pop out of existance when changing selection

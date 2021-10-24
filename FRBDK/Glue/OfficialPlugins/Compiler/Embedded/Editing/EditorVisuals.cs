@@ -42,6 +42,10 @@ namespace GlueControl.Editing
 
         public static Text Text(string text, Vector3 position, Color? color = null)
         {
+            if (position.Z == Camera.Main.Z)
+            {
+                position.Z = 0;
+            }
             Color textColor = color ?? Color.White;
 
             // This screen is cleaning up, so don't make anymore objects:
@@ -73,12 +77,22 @@ namespace GlueControl.Editing
 
         public static Line Line(Vector3 point1, Vector3 point2, Color? color = null)
         {
+            if (point1.Z == Camera.Main.Z)
+            {
+                point1.Z = 0;
+            }
+            if (point2.Z == Camera.Main.Z)
+            {
+                point2.Z = 0;
+            }
             Color lineColor = color ?? Color.White;
 
             // This screen is cleaning up, so don't make anymore objects:
             if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
             {
-                return new Line();
+                var tempLine = new Line();
+                tempLine.Name = "Temp line returned when screen is transitioning";
+                return tempLine;
             }
             TryResetEveryFrameValues();
 
@@ -99,6 +113,15 @@ namespace GlueControl.Editing
 
         public static Arrow Arrow(Vector3 point1, Vector3 point2, Color? color = null)
         {
+            if (point1.Z == Camera.Main.Z)
+            {
+                point1.Z = 0;
+            }
+            if (point2.Z == Camera.Main.Z)
+            {
+                point2.Z = 0;
+            }
+
             // This screen is cleaning up, so don't make anymore objects:
             if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
             {
@@ -123,6 +146,11 @@ namespace GlueControl.Editing
 
         public static Sprite Sprite(AnimationChain animationChain, Vector3 position, float textureScale = 1)
         {
+            if (position.Z == Camera.Main.Z)
+            {
+                position.Z = 0;
+            }
+
             // This screen is cleaning up, so don't make anymore objects:
             if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
             {
@@ -150,6 +178,11 @@ namespace GlueControl.Editing
 
         public static AxisAlignedRectangle Rectangle(float width, float height, Vector3 centerPosition, Color? color = null)
         {
+            if (centerPosition.Z == Camera.Main.Z)
+            {
+                centerPosition.Z = 0;
+            }
+
             Color rectColor = color ?? Color.White;
 
             // This screen is cleaning up, so don't make anymore objects:
