@@ -43,15 +43,18 @@ namespace GlueControl.Editing
         List<ISelectionMarker> SelectedMarkers = new List<ISelectionMarker>();
         SelectionMarker HighlightMarker;
 
-        INameable itemOver;
-        public INameable ItemOver => itemOver;
+        List<INameable> itemsOver = new List<INameable>();
+        public IEnumerable<INameable> ItemsOver => itemsOver;
 
-        PositionedObject ItemGrabbed;
+        PositionedObject itemGrabbed;
+        public PositionedObject ItemGrabbed => itemGrabbed;
         ResizeSide SideGrabbed = ResizeSide.None;
 
         List<INameable> itemsSelected = new List<INameable>();
+        List<INameable> itemsOverLastFrame = new List<INameable>();
         public IEnumerable<INameable> ItemsSelected => itemsSelected;
         INameable ItemSelected => itemsSelected.Count > 0 ? itemsSelected[0] : null;
+
 
         public GlueElement CurrentGlueElement { get; private set; }
         public NamedObjectSave CurrentNamedObjectSave { get; private set; }
@@ -102,13 +105,23 @@ namespace GlueControl.Editing
             {
                 Guides.UpdateGridLines();
 
-                var itemOverBefore = itemOver;
+                itemsOverLastFrame.Clear();
+                itemsOverLastFrame.AddRange(itemsOver);
                 var itemSelectedBefore = ItemSelected;
 
-                itemOver = SelectionLogic.GetInstanceOver(itemsSelected, SelectedMarkers, GuiManager.Cursor.PrimaryDoublePush, ElementEditingMode);
-                var didChangeItemOver = itemOverBefore != itemOver;
+                if(itemGrabbed == null)
+                {
+                    SelectionLogic.DoDragSelectLogic();
+                }
+
+                SelectionLogic.GetInstanceOver(itemsSelected, itemsOver, SelectedMarkers, GuiManager.Cursor.PrimaryDoublePush, ElementEditingMode);
+
+                var didChangeItemOver = itemsOverLastFrame.Any(item => !itemsOver.Contains(item)) ||
+                    itemsOver.Any(item => !itemsOverLastFrame.Contains(item));
 
                 DoGrabLogic();
+
+                DoRectangleSelectLogic();
 
                 DoReleaseLogic();
 
@@ -130,8 +143,8 @@ namespace GlueControl.Editing
                     SelectedMarkers.Clear();
                 }
                 itemsSelected.Clear();
-                itemOver = null;
-                ItemGrabbed = null;
+                itemsOver.Clear();
+                itemGrabbed = null;
 
             }
 #endif
@@ -147,7 +160,8 @@ namespace GlueControl.Editing
             }
 
             HighlightMarker.ExtraPaddingInPixels = 4;
-            HighlightMarker.Owner = itemOver;
+            // do we want to show multiple highlights? Probably?
+            HighlightMarker.Owner = itemsOver.FirstOrDefault();
             HighlightMarker.Update(SideGrabbed);
 
             UpdateSelectedMarkers();
@@ -162,7 +176,7 @@ namespace GlueControl.Editing
                 var item = itemsSelected[i];
 
                 marker.Update(SideGrabbed);
-                if (item == ItemGrabbed)
+                if (item == itemGrabbed)
                 {
                     moveVector = marker.LastUpdateMovement;
                 }
@@ -172,7 +186,7 @@ namespace GlueControl.Editing
             {
                 foreach (var item in itemsSelected)
                 {
-                    if (item != ItemGrabbed && item is PositionedObject itemAsPositionedObject)
+                    if (item != itemGrabbed && item is PositionedObject itemAsPositionedObject)
                     {
                         if (itemAsPositionedObject.Parent == null)
                         {
@@ -258,8 +272,9 @@ namespace GlueControl.Editing
 
             if (cursor.PrimaryPush)
             {
-                ItemGrabbed = itemOver as PositionedObject;
-                if (ItemGrabbed == null)
+                var itemOver = itemsOver.FirstOrDefault();
+                itemGrabbed = itemOver as PositionedObject;
+                if (itemGrabbed == null)
                 {
                     SideGrabbed = ResizeSide.None;
                 }
@@ -282,24 +297,24 @@ namespace GlueControl.Editing
                     }
                     else
                     {
-                        // this should't happen, but for now we tolerate it until the current is sent
-                        Select(nos, addToExistingSelection: isCtrlDown, playBump: true);
+                        // this shouldn't happen, but for now we tolerate it until the current is sent
+                        Select(itemOver?.Name, addToExistingSelection: isCtrlDown, playBump: true);
                     }
                 }
-                if (ItemGrabbed != null)
+                if (itemGrabbed != null)
                 {
                     foreach (var item in itemsSelected)
                     {
                         var marker = MarkerFor(item);
 
-                        marker.CanMoveItem = item == ItemGrabbed;
+                        marker.CanMoveItem = item == itemGrabbed;
 
                         marker.HandleCursorPushed();
                     }
 
-                    var markerOver = MarkerFor(ItemGrabbed) as SelectionMarker;
+                    var markerOver = MarkerFor(itemGrabbed) as SelectionMarker;
                     SideGrabbed = markerOver?.GetSideOver() ?? ResizeSide.None;
-                    ObjectSelected(ItemGrabbed);
+                    ObjectSelected(itemGrabbed);
                 }
             }
         }
@@ -315,7 +330,7 @@ namespace GlueControl.Editing
             }
             //////End Early Out
 
-            if (ItemGrabbed != null)
+            if (itemGrabbed != null)
             {
                 foreach (var item in itemsSelected)
                 {
@@ -325,7 +340,7 @@ namespace GlueControl.Editing
                 }
             }
 
-            ItemGrabbed = null;
+            itemGrabbed = null;
             SideGrabbed = ResizeSide.None;
         }
 
@@ -345,7 +360,7 @@ namespace GlueControl.Editing
 
             DoNudgeHotkeyLogic();
 
-            CopyPasteManager.DoHotkeyLogic(itemsSelected, ItemGrabbed);
+            CopyPasteManager.DoHotkeyLogic(itemsSelected, itemGrabbed);
 
             CameraLogic.DoHotkeyLogic();
 
@@ -430,6 +445,37 @@ namespace GlueControl.Editing
                             PropertyChanged(item, nameof(asPositionedObject.X), asPositionedObject.X);
                         }
                     }
+                }
+            }
+        }
+
+        private void DoRectangleSelectLogic()
+        {
+            if (SelectionLogic.PerformedRectangleSelection)
+            {
+                var isFirst = true;
+                foreach (var itemOver in ItemsOver)
+                {
+                    //Select()
+
+                    NamedObjectSave nos = null;
+                    if (itemOver?.Name != null)
+                    {
+                        nos = CurrentGlueElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == itemOver.Name);
+                    }
+
+                    if (nos != null)
+                    {
+                        Select(nos, addToExistingSelection: isFirst == false, playBump: true);
+                    }
+                    else
+                    {
+                        // this shouldn't happen, but for now we tolerate it until the current is sent
+                        Select(itemOver?.Name, addToExistingSelection: isFirst == false, playBump: true);
+                    }
+
+
+                    isFirst = false;
                 }
             }
         }

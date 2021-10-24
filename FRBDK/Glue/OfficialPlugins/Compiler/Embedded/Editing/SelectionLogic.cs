@@ -7,6 +7,7 @@ using FlatRedBall.Gui;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Utilities;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +18,29 @@ namespace GlueControl.Editing
 {
     public static class SelectionLogic
     {
-        static List<PositionedObject> tempPunchThroughList = new List<PositionedObject>();
+        #region Fields/Properties
 
-        public static INameable GetInstanceOver(List<INameable> currentEntities, List<ISelectionMarker> currentSelectionMarkers,
+        static List<PositionedObject> tempPunchThroughList = new List<PositionedObject>();
+        static Vector2 PushStartLocation;
+
+        public static float? LeftSelect { get; private set; }
+        public static float? RightSelect;
+        public static float? TopSelect;
+        public static float? BottomSelect;
+
+
+        public static bool PerformedRectangleSelection { get; private set; }
+
+        #endregion
+
+        public static void GetInstanceOver(List<INameable> currentEntities, List<INameable> itemsOverToFill, List<ISelectionMarker> currentSelectionMarkers,
             bool punchThrough, ElementEditingMode elementEditingMode)
         {
+            if (itemsOverToFill.Count > 0)
+            {
+                itemsOverToFill.Clear();
+            }
+
             INameable objectOver = null;
             if (currentEntities.Count > 0 && punchThrough == false)
             {
@@ -47,24 +66,29 @@ namespace GlueControl.Editing
                 tempPunchThroughList.Clear();
             }
 
+            IEnumerable<PositionedObject> availableItems = null;
+
             if (objectOver == null)
             {
-                IEnumerable<PositionedObject> availableItems = GetAvailableObjects(elementEditingMode);
+                availableItems = GetAvailableObjects(elementEditingMode);
 
                 if (availableItems != null)
                 {
                     foreach (PositionedObject objectAtI in availableItems)
                     {
-                        if (IsSelectable(objectAtI) && IsCursorOver(objectAtI))
+                        if (IsSelectable(objectAtI))
                         {
-                            if (punchThrough)
+                            if (IsCursorOver(objectAtI))
                             {
-                                tempPunchThroughList.Add(objectAtI);
-                            }
-                            else
-                            {
-                                objectOver = objectAtI;
-                                break;
+                                if (punchThrough)
+                                {
+                                    tempPunchThroughList.Add(objectAtI);
+                                }
+                                else
+                                {
+                                    objectOver = objectAtI;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -100,7 +124,66 @@ namespace GlueControl.Editing
                 }
             }
 
-            return objectOver;
+            if (PerformedRectangleSelection && availableItems != null)
+            {
+                foreach (var item in availableItems)
+                {
+                    if (IsRectangleSelectionOver(item))
+                    {
+                        itemsOverToFill.Add(item);
+                    }
+                }
+            }
+
+            if (objectOver != null)
+            {
+                itemsOverToFill.Add(objectOver);
+            }
+        }
+
+        internal static void DoDragSelectLogic()
+        {
+            var cursor = GuiManager.Cursor;
+
+            PerformedRectangleSelection = false;
+
+            if (cursor.PrimaryDown == false && !cursor.PrimaryClick)
+            {
+                LeftSelect = null;
+                RightSelect = null;
+                TopSelect = null;
+                BottomSelect = null;
+            }
+
+            if (cursor.PrimaryPush)
+            {
+                PushStartLocation = cursor.WorldPosition;
+                LeftSelect = null;
+                RightSelect = null;
+                TopSelect = null;
+                BottomSelect = null;
+            }
+            if (cursor.PrimaryDown)
+            {
+                LeftSelect = Math.Min(PushStartLocation.X, cursor.WorldX);
+                RightSelect = Math.Max(PushStartLocation.X, cursor.WorldX);
+
+                TopSelect = Math.Max(PushStartLocation.Y, cursor.WorldY);
+                BottomSelect = Math.Min(PushStartLocation.Y, cursor.WorldY);
+
+                var centerX = (LeftSelect.Value + RightSelect.Value) / 2.0f;
+                var centerY = (TopSelect.Value + BottomSelect.Value) / 2.0f;
+
+                var width = RightSelect.Value - LeftSelect.Value;
+                var height = TopSelect.Value - BottomSelect.Value;
+
+                EditorVisuals.Rectangle(width, height, new Vector3(centerX, centerY, 0));
+            }
+            if (cursor.PrimaryClick)
+            {
+                // get all things within this rect...
+                PerformedRectangleSelection = LeftSelect != RightSelect && TopSelect != BottomSelect;
+            }
         }
 
         public static IEnumerable<PositionedObject> GetAvailableObjects(ElementEditingMode elementEditingMode)
@@ -154,6 +237,19 @@ namespace GlueControl.Editing
                     worldY >= minY &&
                     worldY <= maxY;
         }
+
+        private static bool IsRectangleSelectionOver(PositionedObject item)
+        {
+            GetDimensionsFor(item, out float minX, out float maxX, out float minY, out float maxY);
+
+            return RightSelect != null &&
+                    RightSelect.Value >= minX &&
+                    LeftSelect.Value <= maxX &&
+                    TopSelect.Value >= minY &&
+                    BottomSelect.Value <= maxY;
+        }
+
+        #region Get Dimensions
 
         internal static void GetDimensionsFor(PositionedObject itemOver,
             out float minX, out float maxX, out float minY, out float maxY)
@@ -290,5 +386,7 @@ namespace GlueControl.Editing
                 }
             }
         }
+
+        #endregion
     }
 }
