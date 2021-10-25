@@ -569,19 +569,6 @@ namespace FlatRedBall
                 //await Task.Delay(1);
                 await Task.Yield();
             }
-//            return Task.Run(async() =>
-//            {
-//                while (CurrentScreenTime < time)
-//                {
-//                    await Task.Delay(1);
-////#if UWP
-////                    Task.Delay(1).Wait();
-////#else
-////                    System.Threading.Thread.Sleep(1);
-////#endif
-//                }
-//            });
-
         }
 
         /// <summary>

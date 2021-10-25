@@ -175,6 +175,7 @@ namespace OfficialPlugins.Compiler.ViewModels
         public List<string> GameSpeedList { get; set; } =
             new List<string>
             {
+                "4000%",
                 "2000%",
                 "1000%",
                 "500%",

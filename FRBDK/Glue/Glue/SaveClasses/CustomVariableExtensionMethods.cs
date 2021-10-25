@@ -230,28 +230,54 @@ namespace FlatRedBall.Glue.SaveClasses
             if (!string.IsNullOrEmpty(customVariable.Type) && customVariable.DefaultValue != null)
             {
                 object variableValue = customVariable.DefaultValue;
-                if (customVariable.Type == "int")
-                {
-                    if (variableValue is long asLong)
-                    {
-                        variableValue = (int)asLong;
-                    }
-                }
-                else if (customVariable.Type == "float" || customVariable.Type == "Single")
-                {
-                    if (variableValue is int asInt)
-                    {
-                        variableValue = (float)asInt;
-                    }
-                    else if (variableValue is double asDouble)
-                    {
-                        variableValue = (float)asDouble;
-                    }
-                }
+                var type = customVariable.Type;
+                variableValue = FixValue(variableValue, type);
                 customVariable.DefaultValue = variableValue;
             }
         }
 
+
+        public static object FixValue(object variableValue, string type)
+        {
+            if (type == "int")
+            {
+                if (variableValue is long asLong)
+                {
+                    variableValue = (int)asLong;
+                }
+            }
+            else if (type == "int?")
+            {
+                if (variableValue is long asLong)
+                {
+                    variableValue = (int?)asLong;
+                }
+            }
+            else if (type == "float" || type == "Single")
+            {
+                if (variableValue is int asInt)
+                {
+                    variableValue = (float)asInt;
+                }
+                else if (variableValue is double asDouble)
+                {
+                    variableValue = (float)asDouble;
+                }
+            }
+            else if (type == "float?")
+            {
+                if (variableValue is int asInt)
+                {
+                    variableValue = (float?)asInt;
+                }
+                else if (variableValue is double asDouble)
+                {
+                    variableValue = (float?)asDouble;
+                }
+            }
+
+            return variableValue;
+        }
 
         public static void FixEnumerationTypes(this CustomVariable customVariable)
         {

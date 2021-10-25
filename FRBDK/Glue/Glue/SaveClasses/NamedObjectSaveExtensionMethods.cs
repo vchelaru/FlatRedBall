@@ -366,51 +366,22 @@ namespace FlatRedBall.Glue.SaveClasses
             if (!string.IsNullOrEmpty(instruction.Type) && instruction.Value != null)
             {
                 object variableValue = instruction.Value;
-                if (instruction.Type == "int")
-                {
-                    if (variableValue is long asLong)
-                    {
-                        variableValue = (int)asLong;
-                    }
-                }
-                else if (instruction.Type == "float" || instruction.Type == "Single")
-                {
-                    if (variableValue is int asInt)
-                    {
-                        variableValue = (float)asInt;
-                    }
-                    else if (variableValue is double asDouble)
-                    {
-                        variableValue = (float)asDouble;
-                    }
-                }
+                var type = instruction.Type;
+                variableValue = CustomVariableExtensionMethods.FixValue(variableValue, type);
                 instruction.Value = variableValue;
             }
         }
+
 
         private static void FixAllTypes(PropertySave property)
         {
             if (!string.IsNullOrEmpty(property.Type) && property.Value != null)
             {
                 object variableValue = property.Value;
-                if (property.Type == "int")
-                {
-                    if (variableValue is long asLong)
-                    {
-                        variableValue = (int)asLong;
-                    }
-                }
-                else if (property.Type == "float" || property.Type == "Single")
-                {
-                    if (variableValue is int asInt)
-                    {
-                        variableValue = (float)asInt;
-                    }
-                    else if (variableValue is double asDouble)
-                    {
-                        variableValue = (float)asDouble;
-                    }
-                }
+                var type = property.Type;
+
+                variableValue = CustomVariableExtensionMethods.FixValue(variableValue, type);
+
                 property.Value = variableValue;
             }
         }
