@@ -109,7 +109,7 @@ namespace FlatRedBall.Glue.Managers
                 {
                     try
                     {
-                        toReturn += mSyncedActions[0].DisplayInfo;
+                        toReturn += mSyncedActions.FirstOrDefault()?.DisplayInfo;
                     }
                     catch
                     {

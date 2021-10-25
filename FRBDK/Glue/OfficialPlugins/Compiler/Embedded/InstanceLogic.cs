@@ -1208,6 +1208,13 @@ namespace GlueControl
                     variableValue = (int)asLong;
                 }
             }
+            else if (instruction.Type == "int?")
+            {
+                if (variableValue is long asLong)
+                {
+                    variableValue = (int?)asLong;
+                }
+            }
             else if (instruction.Type == "float" || instruction.Type == "Single")
             {
                 if (variableValue is int asInt)
@@ -1217,6 +1224,17 @@ namespace GlueControl
                 else if (variableValue is double asDouble)
                 {
                     variableValue = (float)asDouble;
+                }
+            }
+            else if (instruction.Type == "float?")
+            {
+                if (variableValue is int asInt)
+                {
+                    variableValue = (float?)asInt;
+                }
+                else if (variableValue is double asDouble)
+                {
+                    variableValue = (float?)asDouble;
                 }
             }
             else if (instruction.Type == typeof(FlatRedBall.Graphics.Animation.AnimationChainList).FullName ||

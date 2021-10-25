@@ -6,6 +6,7 @@ using FlatRedBall.Input;
 using FlatRedBall.Managers;
 using FlatRedBall.Math;
 using FlatRedBall.Screens;
+using FlatRedBall.TileCollisions;
 using FlatRedBall.Utilities;
 using GlueControl.Models;
 
@@ -109,7 +110,7 @@ namespace GlueControl.Editing
                 itemsOverLastFrame.AddRange(itemsOver);
                 var itemSelectedBefore = ItemSelected;
 
-                if(itemGrabbed == null)
+                if(itemGrabbed == null && ItemsSelected.All(item => item is TileShapeCollection == false))
                 {
                     SelectionLogic.DoDragSelectLogic();
                 }
