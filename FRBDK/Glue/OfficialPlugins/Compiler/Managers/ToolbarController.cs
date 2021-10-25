@@ -57,45 +57,53 @@ namespace OfficialPluginsCore.Compiler.Managers
 
         internal void HandleNewScreenCreated(ScreenSave screen)
         {
-            toolbarViewModel.AvailableScreens.Add(ScreenName(screen));
+            RefreshToolbarScreens();
         }
 
         internal void HandleScreenRemoved(ScreenSave screen, List<string> arg2)
         {
-            var name = ScreenName(screen);
-            if(toolbarViewModel.AvailableScreens.Contains(name))
-            {
-                toolbarViewModel.AvailableScreens.Remove(name);
-            }
+            RefreshToolbarScreens();
         }
 
         internal void HandleGluxLoaded()
         {
-            var screens = GlueState.Self.CurrentGlueProject.Screens.ToArray();
-            foreach(var screen in screens)
-            {
-                toolbarViewModel.AvailableScreens.Add(ScreenName(screen));
-            }
-
-            var startupScreen =
-                GlueState.Self.CurrentGlueProject.StartUpScreen;
-
-            if(!string.IsNullOrEmpty(startupScreen) && startupScreen.Length > "Screens\\".Length)
-            {
-
-                toolbarViewModel.StartupScreenName = 
-                    startupScreen.Substring("Screens\\".Length);
-            }
-
+            RefreshToolbarScreens();
         }
 
 
         internal void HandleGluxUnloaded()
         {
-            toolbarViewModel.AvailableScreens.Clear();
+            RefreshToolbarScreens();
             toolbarViewModel.StartupScreenName = null;
         }
         
+        void RefreshToolbarScreens()
+        {
+            toolbarViewModel.AvailableScreens.Clear();
+
+            if(GlueState.Self.CurrentGlueProject != null)
+            {
+                var sortedScreens = GlueState.Self.CurrentGlueProject.Screens
+                    .Select(item => ScreenName(item))
+                    .OrderBy(item => item)
+                    .ToArray();
+
+                foreach(var item in sortedScreens)
+                {
+                    toolbarViewModel.AvailableScreens.Add(item);
+                }
+
+                var startupScreen =
+                    GlueState.Self.CurrentGlueProject.StartUpScreen;
+
+                if(!string.IsNullOrEmpty(startupScreen) && startupScreen.Length > "Screens\\".Length)
+                {
+
+                    toolbarViewModel.StartupScreenName = 
+                        startupScreen.Substring("Screens\\".Length);
+                }
+            }
+        }
 
         string ScreenName(ScreenSave screen) => screen.Name.Substring("Screens\\".Length);
 
