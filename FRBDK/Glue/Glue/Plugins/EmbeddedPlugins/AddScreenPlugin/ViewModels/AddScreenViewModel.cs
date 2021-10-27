@@ -197,6 +197,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
 
         public AddScreenViewModel()
         {
+            IsAddMapLayeredTileMapChecked = true;
             IsAddListsForEntitiesChecked = true;
             AvailableTmxFiles = new ObservableCollection<string>();
             AvailableTmxFiles.CollectionChanged += (_,__) => NotifyPropertyChanged(nameof(AvailableTmxFiles));

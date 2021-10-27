@@ -44,8 +44,23 @@ namespace FlatRedBall.TileGraphics
 
         public int? NumberTilesWide { get; private set; }
         public int? NumberTilesTall { get; private set; }
-        public float? WidthPerTile { get; private set; }
-        public float? HeightPerTile { get; private set; }
+        
+        /// <summary>
+        /// The width in world units for each tile in the map.
+        /// </summary>
+        /// <remarks>
+        /// Normally this property is set when the LayeredTileMap
+        /// is loaded from a TMX file.</remarks>
+        public float? WidthPerTile { get; set; }
+
+        /// <summary>
+        /// The height in world units for each tile in the map.
+        /// </summary>
+        /// <remarks>
+        /// Normally this property is set when the LayeredTileMap
+        /// is loaded from a TMX file.</remarks>
+        public float? HeightPerTile { get; set; }
+
         public Dictionary<string, List<NamedValue>> TileProperties
         {
             get;
