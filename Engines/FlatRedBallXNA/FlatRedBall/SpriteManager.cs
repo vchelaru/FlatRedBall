@@ -199,7 +199,6 @@ namespace FlatRedBall
     }
     #endregion
 
-    #region XML Docs
     /// <summary>
     /// Static manager class which handles the management of Sprites, SpriteFrames, Cameras, and
     /// other PositionedObjects.
@@ -215,7 +214,6 @@ namespace FlatRedBall
     /// For example, Cameras are added and managed through the SpriteManager although they are a general
     /// rendering class which might belong in the Renderer or FlatRedBallServices class.
     /// </remarks>
-    #endregion
     public static class SpriteManager
     {
         #region Fields
