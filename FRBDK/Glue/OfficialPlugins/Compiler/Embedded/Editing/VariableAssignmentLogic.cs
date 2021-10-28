@@ -35,7 +35,7 @@ namespace GlueControl.Editing
                     FlatRedBall.Screens.ScreenManager.CurrentScreen;
 
                 var elementGameType = data.InstanceOwnerGameType;
-                var ownerType = typeof(VariableAssignmentLogic).Assembly.GetType(data.InstanceOwnerGameType);
+                var ownerGameType = typeof(VariableAssignmentLogic).Assembly.GetType(data.InstanceOwnerGameType);
                 Models.GlueElement ownerElement = null;
                 if (InstanceLogic.Self.CustomGlueElements.ContainsKey(elementGameType))
                 {
@@ -44,7 +44,7 @@ namespace GlueControl.Editing
 
 
                 var setOnEntity =
-                    (ownerType != null && typeof(PositionedObject).IsAssignableFrom(ownerType))
+                    (ownerGameType != null && typeof(PositionedObject).IsAssignableFrom(ownerGameType))
                     ||
                     ownerElement is Models.EntitySave;
 
@@ -53,7 +53,7 @@ namespace GlueControl.Editing
                     var variableNameOnObjectInInstance = data.VariableName.Substring("this.".Length);
                     if (forcedItem != null)
                     {
-                        if (CommandReceiver.DoTypesMatch(forcedItem, data.InstanceOwnerGameType, ownerType))
+                        if (CommandReceiver.DoTypesMatch(forcedItem, data.InstanceOwnerGameType, ownerGameType))
                         {
                             screen.ApplyVariable(variableNameOnObjectInInstance, variableValue, forcedItem);
                         }
@@ -69,10 +69,18 @@ namespace GlueControl.Editing
                         // value on all instances
                         foreach (var item in SpriteManager.ManagedPositionedObjects)
                         {
-                            if (CommandReceiver.DoTypesMatch(item, data.InstanceOwnerGameType, ownerType))
+                            if (CommandReceiver.DoTypesMatch(item, data.InstanceOwnerGameType, ownerGameType))
                             {
                                 //var targetInstance = GetTargetInstance(data, ref variableValue, screen);
-                                var targetInstance = screen.GetInstance(splitVariable[1] + ".Whatever", item);
+                                object targetInstance = null;
+                                if (setOnEntity)
+                                {
+                                    targetInstance = item;
+                                }
+                                else
+                                {
+                                    targetInstance = screen.GetInstance(splitVariable[1] + ".Whatever", item);
+                                }
                                 SetValueOnObjectInScreen(variableValue, response, screen, splitVariable[1], variableName, targetInstance as INameable);
                                 //SetValueOnObjectInScreen(variableNameOnObjectInInstance, variableValue, item);
                                 //screen.ApplyVariable(variableNameOnObjectInInstance, variableValue, item);
