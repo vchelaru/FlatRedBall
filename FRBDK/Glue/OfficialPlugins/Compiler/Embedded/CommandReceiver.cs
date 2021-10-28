@@ -255,6 +255,7 @@ namespace GlueControl
                 if (selectedNewScreen)
                 {
 #if SupportsEditMode
+                    ScreenManager.IsNextScreenInEditMode = ScreenManager.IsInEditMode;
 
                     void BeforeCustomInitializeLogic(Screen newScreen)
                     {
@@ -312,6 +313,8 @@ namespace GlueControl
                     if (!isAlreadyViewingThisEntity)
                     {
 #if SupportsEditMode
+                        ScreenManager.IsNextScreenInEditMode = ScreenManager.IsInEditMode;
+
                         void BeforeCustomInitializeLogic(Screen newScreen)
                         {
                             GlueControlManager.Self.ReRunAllGlueToGameCommands();

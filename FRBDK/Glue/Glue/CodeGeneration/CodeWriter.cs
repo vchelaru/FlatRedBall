@@ -455,6 +455,9 @@ namespace FlatRedBallAddOns.Entities
                 constructor = codeBlock.Constructor("public", elementName, "string contentManagerName, bool addToManagers", "base()");
                 constructor.Line("ContentManagerName = contentManagerName;");
 
+                // See below on why we do this here
+                CallElementComponentCodeGeneratorGenerateConstructor(element, constructor);
+
                 // The base will handle this
                 if (element.InheritsFromEntity() == false)
                 {
@@ -475,18 +478,29 @@ namespace FlatRedBallAddOns.Entities
                 }
 
                 constructor = codeBlock.Constructor("public", elementName, "", $"base ({contentManagerName})");
+
+                CallElementComponentCodeGeneratorGenerateConstructor(element, constructor);
             }
 
-            foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators)
+            // October 27 2021
+            // We used to call the code here, but that means it will get called after initialize on entityes.
+            // This can cause crashes with lists in entities, so we probably want this called before calling the 
+            // entity's Initialize
+            //CallElementComponentCodeGeneratorGenerateConstructor(element, constructor);
+
+            static void CallElementComponentCodeGeneratorGenerateConstructor(IElement element, ICodeBlock constructor)
             {
-                try
+                foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators)
                 {
-                    codeGenerator.GenerateConstructor(constructor, element);
-                }
-                catch (Exception e)
-                {
-                    GlueCommands.Self.PrintError(
-                        $"Error calling GenerateConstructor on {codeGenerator.GetType()}:\n{e}");
+                    try
+                    {
+                        codeGenerator.GenerateConstructor(constructor, element);
+                    }
+                    catch (Exception e)
+                    {
+                        GlueCommands.Self.PrintError(
+                            $"Error calling GenerateConstructor on {codeGenerator.GetType()}:\n{e}");
+                    }
                 }
             }
         }
