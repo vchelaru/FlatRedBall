@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objecttypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <objecttype name="BaseFactoryEntity" />
+  <objecttype name="BaseNotPooled" />
+  <objecttype name="BasePooledEntity" />
+  <objecttype name="ChildFactoryEntity" />
+  <objecttype name="ChildOfPositioningEntity" />
+  <objecttype name="CollidableShapesFromTmx" />
+  <objecttype name="CreatedByTiled">
+    <property name="TopOrBottom" type="Entities.StateEntity.TopOrBottom" />
+  </objecttype>
+  <objecttype name="CreatedByTiledType">
+    <property name="SetByDefaultInt" type="int" />
+    <property name="TopOrBottom" type="Entities.StateEntity.TopOrBottom" />
+  </objecttype>
+  <objecttype name="DerivedPooledFromNotPooled" />
+  <objecttype name="DerivedPooledFromPooled" />
+  <objecttype name="DrivedNotPooledFromBaseNotPooled" />
+  <objecttype name="EntityInFolder" />
+  <objecttype name="TiledEntityInFolder" />
+  <objecttype name="FactoryEntity">
+    <property name="Visible" type="bool" default="true" />
+  </objecttype>
+  <objecttype name="FactoryEntityDerived" />
+  <objecttype name="FactoryEntityWithNoList" />
+  <objecttype name="GrandchildFactoryEntity" />
+  <objecttype name="IWindowDerivedFromNoIWindow" />
+  <objecttype name="PooledDontInheritFromThis" />
+  <objecttype name="PooledEntityContainingEntity" />
+  <objecttype name="PooledEntityInheritFromSprite" />
+  <objecttype name="PooledWithInternalList" />
+  <objecttype name="PositioningEntity">
+    <property name="CircleX" type="float" default="2" />
+  </objecttype>
+  <objecttype name="RecyclableEntity" />
+  <objecttype name="ShapeEntityCreatedByOtherEntities" />
+  <objecttype name="TextInheritingEntity">
+    <property name="ThisAsTextRed" type="float" default="0.5" />
+    <property name="ThisAsTextAlpha" type="float" default="1" />
+    <property name="Visible" type="bool" />
+    <property name="CircleRadius" type="float" />
+  </objecttype>
+</objecttypes>

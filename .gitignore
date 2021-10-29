@@ -51,3 +51,5 @@ FRBDK/NewProjectCreator/packages/
 .running*/
 FRBDK/BuildServerUploader/packages/
 FRBDK/AnimationEditor/packages/*
+Tests/GlueTestProject/packages/*
+Tests/GlueTestProjectDesktopGl/packages/*

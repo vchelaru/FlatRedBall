@@ -1,0 +1,2 @@
+"Name (string, required)",MaxSpeed (System.Single),AccelerationTime (System.Single),DecelerationTime (System.Single),UpdateDirectionFromVelocity (System.Boolean),UsesAcceleration (bool)
+Something,True,7,6,6,True

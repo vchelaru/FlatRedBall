@@ -22,6 +22,10 @@ namespace GumPlugin.CodeGeneration
             }
         }
 
+        string GumScreenObjectNameFor(IElement element) => element.Name.EndsWith("\\GumScreen")
+            // Can't be named the same as its parent
+            ? "GumScreen_"
+            : "GumScreen";
 
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
         {
@@ -48,7 +52,7 @@ namespace GumPlugin.CodeGeneration
                     codeBlock.Line($"{formsObjectType} Forms;");
                 }
 
-                codeBlock.Line($"{rfs.RuntimeType} GumScreen;");
+                codeBlock.Line($"{rfs.RuntimeType} {GumScreenObjectNameFor(element)};");
 
             }
 
@@ -102,7 +106,7 @@ namespace GumPlugin.CodeGeneration
                 }
 
                 // also instantiate the Gum object which has a common alias\
-                codeBlock.Line($"GumScreen = {rfs.GetInstanceName()};");
+                codeBlock.Line($"{GumScreenObjectNameFor(element)} = {rfs.GetInstanceName()};");
 
             }
 

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="32" height="21" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#4688ba" nextlayerid="5" nextobjectid="13">
+ <tileset firstgid="1" name="PlatformerTiles" tilewidth="16" tileheight="16" tilecount="512" columns="32">
+  <image source="../Tilesets/PlatformerTiles.png" width="512" height="256"/>
+  <tile id="0">
+   <properties>
+    <property name="Name" value="Animated1"/>
+   </properties>
+   <animation>
+    <frame tileid="0" duration="100"/>
+    <frame tileid="32" duration="100"/>
+    <frame tileid="64" duration="100"/>
+    <frame tileid="96" duration="100"/>
+    <frame tileid="84" duration="100"/>
+    <frame tileid="52" duration="100"/>
+    <frame tileid="20" duration="100"/>
+    <frame tileid="21" duration="100"/>
+    <frame tileid="22" duration="100"/>
+    <frame tileid="23" duration="100"/>
+    <frame tileid="55" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="192" type="CreatedByTiledType">
+   <properties>
+    <property name="SetByDefaultInt" type="int" value="4"/>
+   </properties>
+  </tile>
+  <tile id="256">
+   <properties>
+    <property name="EntityToCreate" value="CreatedByTiled"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer id="1" name="BackgroundLayer1" width="32" height="21">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+3Q2wmDQBBAUZuIppD4KEQTC/HVhjEaG4naiMZyvPnza8mCy4LMhfOzAzOwjiNJkiRJx3SBCw9XC/d9BAgRWbif4I4H0t17jScavAzez1GgRGXoxk0xa9Hhjf6PXb9/0f2TWDH7YMCISWOnTpliNmPBF6uh+2dpAy0h/NOACgAA
+  </data>
+ </layer>
+ <layer id="2" name="GameplayLayer" width="32" height="21">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+2TUQqDMBBEJ0KxB7F+eAuh/56i98hfe5P2mJ01qQ0lbtMgEUoWHkbBnUxmMwEYAIvCdScPMu2kfyW3HfWr/+q/+k/XNwY48XkkPdy69e859av/kRwijJln9y/5Mwv7ykG4kM59V2sr/7m5lJ5/OacuoHT+vD44U+eTUvrUEK82wqwvMxPS4j1HKfO0VsZhNf3GnQU0pIdk6Od7ydHvT+5AmO98D3rve/iin4L0WMswwrLvZkN9pYfaU/v3CXt1TteACgAA
+  </data>
+ </layer>
+ <objectgroup id="3" name="EntityObjectLayer">
+  <object id="1" name="InObjectLayer1" gid="257" x="272" y="64" width="16" height="16">
+   <properties>
+    <property name="EntityToCreate" value="CreatedByTiled"/>
+   </properties>
+  </object>
+  <object id="2" gid="193" x="75" y="63" width="16" height="16"/>
+  <object id="3" gid="193" x="112" y="92" width="16" height="16"/>
+  <object id="4" gid="193" x="70" y="114" width="16" height="16"/>
+  <object id="5" name="RectEntityToCreate" x="110" y="-1" width="40" height="42">
+   <properties>
+    <property name="EntityToCreate" value="CollidableShapesFromTmx"/>
+   </properties>
+  </object>
+  <object id="7" name="RectType" x="179" y="2" width="40" height="42"/>
+  <object id="8" name="CircleEntityToCreate" x="135" y="50" width="37" height="37">
+   <properties>
+    <property name="EntityToCreate" value="CollidableShapesFromTmx"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="9" name="CircleType" type="CollidableShapesFromTmx" x="190" y="62" width="37" height="37">
+   <ellipse/>
+  </object>
+  <object id="10" name="PolyEntityToCreate" x="115" y="117">
+   <properties>
+    <property name="EntityToCreate" value="CollidableShapesFromTmx"/>
+   </properties>
+   <polygon points="0,0 -24,31 9,39 19,11"/>
+  </object>
+  <object id="11" name="PolyType" type="CollidableShapesFromTmx" x="223" y="114">
+   <polygon points="0,0 -24,31 9,39 19,11"/>
+  </object>
+  <object id="12" name="SetsTopOrBottom" gid="193" x="55" y="144" width="16" height="16">
+   <properties>
+    <property name="TopOrBottom" value="Top"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <layer id="4" name="ForegroundLayer" width="32" height="21">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NgGAWjYBSMglEwCkYBvYAyEKsMtCNGwSgYYAAAQyFEJYAKAAA=
+  </data>
+ </layer>
+</map>

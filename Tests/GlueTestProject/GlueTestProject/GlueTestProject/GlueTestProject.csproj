@@ -74,6 +74,7 @@
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
       <Private>False</Private>
     </Reference>
@@ -852,6 +853,46 @@
     <Compile Include="Factories\TiledEntityInFolderFactory.Generated.cs" />
     <Compile Include="FileAliases.Generated.cs" />
     <Compile Include="Forms\Controls\CustomUserControl.cs" />
+    <Compile Include="Forms\Screens\BaseGlueScreenNotBaseGumForms.cs" />
+    <Compile Include="Forms\Screens\BaseGlueScreenNotBaseGumForms.Generated.cs">
+      <DependentUpon>BaseGlueScreenNotBaseGumForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Screens\DerivedScreenGumForms.cs" />
+    <Compile Include="Forms\Screens\DerivedScreenGumForms.Generated.cs">
+      <DependentUpon>DerivedScreenGumForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Screens\GumScreenLayeredGumForms.cs" />
+    <Compile Include="Forms\Screens\GumScreenLayeredGumForms.Generated.cs">
+      <DependentUpon>GumScreenLayeredGumForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Screens\GumScreenNoGumIdbScreenGumForms.cs" />
+    <Compile Include="Forms\Screens\GumScreenNoGumIdbScreenGumForms.Generated.cs">
+      <DependentUpon>GumScreenNoGumIdbScreenGumForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Screens\InputScreenGumForms.cs" />
+    <Compile Include="Forms\Screens\InputScreenGumForms.Generated.cs">
+      <DependentUpon>InputScreenGumForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Screens\RenderTargetScreenGumForms.cs" />
+    <Compile Include="Forms\Screens\RenderTargetScreenGumForms.Generated.cs">
+      <DependentUpon>RenderTargetScreenGumForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Screens\ScreenLoadedAsGraphicalUiElementForms.cs" />
+    <Compile Include="Forms\Screens\ScreenLoadedAsGraphicalUiElementForms.Generated.cs">
+      <DependentUpon>ScreenLoadedAsGraphicalUiElementForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Screens\TestScreenForms.cs" />
+    <Compile Include="Forms\Screens\TestScreenForms.Generated.cs">
+      <DependentUpon>TestScreenForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Screens\TestScreenUnusedForms.cs" />
+    <Compile Include="Forms\Screens\TestScreenUnusedForms.Generated.cs">
+      <DependentUpon>TestScreenUnusedForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Screens\TileShapeCollectionScreenGumForms.cs" />
+    <Compile Include="Forms\Screens\TileShapeCollectionScreenGumForms.Generated.cs">
+      <DependentUpon>TileShapeCollectionScreenGumForms.cs</DependentUpon>
+    </Compile>
     <Compile Include="Game1.Custom.cs">
       <DependentUpon>Game1.cs</DependentUpon>
     </Compile>
@@ -895,10 +936,7 @@
     <Compile Include="GumRuntimes\ComponentContainingSpriteRuntime.Generated.cs">
       <DependentUpon>ComponentContainingSpriteRuntime.cs</DependentUpon>
     </Compile>
-    <Compile Include="GumRuntimes\componentfolder\InFolder1Runtime.cs" />
-    <Compile Include="GumRuntimes\componentfolder\InFolder1Runtime.Generated.cs">
-      <DependentUpon>InFolder1Runtime.cs</DependentUpon>
-    </Compile>
+    <Compile Include="GumRuntimes\ComponentFolder\InFolder1Runtime.Generated.cs" />
     <Compile Include="GumRuntimes\ComponentFolder\SameNameComponentRuntime.cs" />
     <Compile Include="GumRuntimes\ComponentFolder\SameNameComponentRuntime.Generated.cs">
       <DependentUpon>SameNameComponentRuntime.cs</DependentUpon>
@@ -1366,6 +1404,7 @@
     <Compile Include="TopDown\Enums.Generated.cs" />
     <Compile Include="TopDown\Interfaces.Generated.cs" />
     <Compile Include="TopDown\TopDownAiInput.Generated.cs" />
+    <Compile Include="TopDown\TopDownAiTargetLogic.Generated.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

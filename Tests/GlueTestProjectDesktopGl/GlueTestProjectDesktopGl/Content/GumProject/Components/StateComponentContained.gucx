@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ComponentSave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>StateComponentContained</Name>
+  <BaseType>Container</BaseType>
+  <State>
+    <Name>Default</Name>
+    <Variable>
+      <Type>Category1State</Type>
+      <Name>Category1State</Name>
+      <SetsValue>false</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>bool</Type>
+      <Name>IsXamarinFormsControl</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>State</Type>
+      <Name>State</Name>
+      <SetsValue>true</SetsValue>
+    </Variable>
+  </State>
+  <State>
+    <Name>State1</Name>
+  </State>
+  <State>
+    <Name>State2</Name>
+  </State>
+  <Category>
+    <Name>Category1</Name>
+    <State>
+      <Name>Categorized1</Name>
+    </State>
+    <State>
+      <Name>Categorized2</Name>
+    </State>
+  </Category>
+  <Behaviors />
+</ComponentSave>

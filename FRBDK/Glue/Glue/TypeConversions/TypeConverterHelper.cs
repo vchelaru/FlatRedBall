@@ -40,6 +40,10 @@ namespace FlatRedBall.Glue.TypeConversions
             converter.AddConversion("string", "long", "long.Parse(value)");
 
             converter.AddConversion("string", "string", "value");
+            converter.AddConversion("bool", "bool", "value");
+            converter.AddConversion("int", "int", "value");
+            converter.AddConversion("float", "float", "value");
+            converter.AddConversion("double", "double", "value");
 
             TypeConverters.Add("<default>", converter);
 

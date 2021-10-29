@@ -1,0 +1,7 @@
+StringID (required),English,French
+T_Hello,Hello,Bonjour
+// Commented out,asdf,qwer
+1 name!!,The name is something which won't compile,Glue should change the name to something that will
+another,jkhkjhkjh,ew
+,"This row does'nt have a StingID, so it shouldn't generate an entry in Strings.Generated.cs",
+T_Another,But this one should,

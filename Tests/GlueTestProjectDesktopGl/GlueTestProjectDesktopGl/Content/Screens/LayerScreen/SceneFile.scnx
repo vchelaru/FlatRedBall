@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SpriteEditorScene xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Camera>
+    <X>0</X>
+    <Y>0</Y>
+    <Z>-40</Z>
+    <Orthogonal>false</Orthogonal>
+    <OrthogonalHeight>600</OrthogonalHeight>
+    <OrthogonalWidth>-1</OrthogonalWidth>
+    <NearClipPlane>1</NearClipPlane>
+    <FarClipPlane>1000</FarClipPlane>
+  </Camera>
+  <Snapping>false</Snapping>
+  <PixelSize>0</PixelSize>
+  <Text>
+    <X>0</X>
+    <Y>0</Y>
+    <Z>0</Z>
+    <RotationX>0</RotationX>
+    <RotationY>0</RotationY>
+    <RotationZ>0</RotationZ>
+    <DisplayText>Text</DisplayText>
+    <Name>Text</Name>
+    <Scale>8</Scale>
+    <Spacing>8</Spacing>
+    <NewLineDistance>12</NewLineDistance>
+    <MaxWidth>INF</MaxWidth>
+    <MaxWidthBehavior>Chop</MaxWidthBehavior>
+    <VerticalAlignment>Center</VerticalAlignment>
+    <HorizontalAlignment>Left</HorizontalAlignment>
+    <Visible>true</Visible>
+    <CursorSelectable>true</CursorSelectable>
+    <Red>255</Red>
+    <Green>255</Green>
+    <Blue>255</Blue>
+    <ColorOperation>SelectArg2</ColorOperation>
+    <RelativeX>0</RelativeX>
+    <RelativeY>0</RelativeY>
+    <RelativeZ>0</RelativeZ>
+    <RelativeRotationX>0</RelativeRotationX>
+    <RelativeRotationY>0</RelativeRotationY>
+    <RelativeRotationZ>0</RelativeRotationZ>
+  </Text>
+  <AssetsRelativeToSceneFile>true</AssetsRelativeToSceneFile>
+  <CoordinateSystem>LeftHanded</CoordinateSystem>
+</SpriteEditorScene>

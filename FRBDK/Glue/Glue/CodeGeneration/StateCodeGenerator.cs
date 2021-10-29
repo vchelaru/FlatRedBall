@@ -289,7 +289,12 @@ namespace FlatRedBall.Glue.CodeGeneration
             if ((enumType == "VariableState" && DoesBaseHaveUncategorizedStates(element)) ||
                 (!string.IsNullOrEmpty(element.BaseElement) && GetAllStateCategoryNames(ObjectFinder.Self.GetElement(element.BaseElement), true).Any(category => category.Key == enumType)))
             {
-                setBlock.Else()
+                // October 29, 2021
+                // I dont' think we need
+                // an else anymore, we can
+                // just call into the base:
+                //setBlock.Else()
+                setBlock
                     .Line("base.Current" + variableNameModifier + "State = base.Current" + variableNameModifier + "State;");
             }
 
@@ -841,7 +846,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     if (namedObject != null)
                     {
-                        ObjectFinder.Self.GetElement(namedObject.SourceClassType);
+                        objectElement = ObjectFinder.Self.GetElement(namedObject.SourceClassType);
                     }
 
                     if (objectElement != null)

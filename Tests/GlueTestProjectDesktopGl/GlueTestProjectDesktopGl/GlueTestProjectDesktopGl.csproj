@@ -1,0 +1,2554 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{16B8562C-0A9E-4F71-A2CA-052340B95625}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GlueTestProject</RootNamespace>
+    <AssemblyName>GlueTestProject</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <MonoGamePlatform>DesktopGL</MonoGamePlatform>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\$(MonoGamePlatform)\$(Platform)\$(Configuration)\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\$(MonoGamePlatform)\$(Platform)\$(Configuration)\</OutputPath>
+    <DefineConstants>TRACE;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugWindows|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\DebugWindows\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA; WINDOWS</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\$(MonoGamePlatform)\$(Platform)\$(Configuration)\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA;</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\$(MonoGamePlatform)\$(Platform)\$(Configuration)\</OutputPath>
+    <DefineConstants>TRACE;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA;</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="CustomDataTypes\CustomDataType.cs" />
+    <Compile Include="DataTypes\ClassWithNoAssociatedCsvs.Generated.cs" />
+    <Compile Include="DataTypes\CreatedByExcel1.Generated.cs" />
+    <Compile Include="DataTypes\CsvForVariable.Generated.cs" />
+    <Compile Include="DataTypes\CsvLoadedToList.Generated.cs" />
+    <Compile Include="DataTypes\CsvManuallyLoadedForPropertyTest.Generated.cs" />
+    <Compile Include="DataTypes\CsvWithAnimationFrameSaveBase.Generated.cs" />
+    <Compile Include="DataTypes\CsvWithCustomTypes.Generated.cs" />
+    <Compile Include="DataTypes\CsvWithExtraCells.Generated.cs" />
+    <Compile Include="DataTypes\CustomClassForDupeTest.Generated.cs" />
+    <Compile Include="DataTypes\DataTypeForCsv.cs" />
+    <Compile Include="DataTypes\emptyMap1.Generated.cs" />
+    <Compile Include="DataTypes\GlobalCsv.Generated.cs" />
+    <Compile Include="DataTypes\HugeCsv.Generated.cs" />
+    <Compile Include="DataTypes\ListCsv.Generated.cs" />
+    <Compile Include="DataTypes\LoadedAtRuntimeFalseCsv.Generated.cs" />
+    <Compile Include="DataTypes\MovementValues.Generated.cs" />
+    <Compile Include="DataTypes\PlatformerValues.Generated.cs" />
+    <Compile Include="DataTypes\Resources.Generated.cs" />
+    <Compile Include="DataTypes\SharedClass1.Generated.cs" />
+    <Compile Include="DataTypes\Spreadsheet.Generated.cs" />
+    <Compile Include="DataTypes\SpreadsheetClass.Generated.cs" />
+    <Compile Include="DataTypes\SpreadsheetToReplace.Generated.cs" />
+    <Compile Include="DataTypes\Strings.Generated.cs" />
+    <Compile Include="DataTypes\TestSaveClass.cs" />
+    <Compile Include="DataTypes\TextureSettingsInfo.Generated.cs" />
+    <Compile Include="DataTypes\TileMapInfo.Generated.cs" />
+    <Compile Include="DataTypes\TmxWithLayersWithProperties.Generated.cs" />
+    <Compile Include="DataTypes\TmxWithTileProperties.Generated.cs" />
+    <Compile Include="DataTypes\TopDownValues.Generated.cs" />
+    <Compile Include="DataTypes\Waves.Generated.cs" />
+    <Compile Include="DataTypes\WithFileAtEnd.Generated.cs" />
+    <Compile Include="Entities\AndroidTests.cs" />
+    <Compile Include="Entities\AndroidTests.Generated.cs">
+      <DependentUpon>AndroidTests.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\AnimationChainEntity.cs" />
+    <Compile Include="Entities\AnimationChainEntity.Generated.cs">
+      <DependentUpon>AnimationChainEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\AttachedToCamera.cs" />
+    <Compile Include="Entities\AttachedToCamera.Generated.cs">
+      <DependentUpon>AttachedToCamera.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\AttachedToCameraCopy.cs" />
+    <Compile Include="Entities\AttachedToCameraCopy.Generated.cs">
+      <DependentUpon>AttachedToCameraCopy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\BaseEmitterEntity.cs" />
+    <Compile Include="Entities\BaseEmitterEntity.Generated.cs">
+      <DependentUpon>BaseEmitterEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\BaseEnityWithCategorizedStates.cs" />
+    <Compile Include="Entities\BaseEnityWithCategorizedStates.Generated.cs">
+      <DependentUpon>BaseEnityWithCategorizedStates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\BaseEntity.cs" />
+    <Compile Include="Entities\BaseEntity.Event.cs">
+      <DependentUpon>BaseEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\BaseEntity.Generated.cs">
+      <DependentUpon>BaseEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\BaseEntity.Generated.Event.cs">
+      <DependentUpon>BaseEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\BaseEntityWithNoStates.cs" />
+    <Compile Include="Entities\BaseEntityWithNoStates.Generated.cs">
+      <DependentUpon>BaseEntityWithNoStates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\BaseFactoryEntity.cs" />
+    <Compile Include="Entities\BaseFactoryEntity.Generated.cs">
+      <DependentUpon>BaseFactoryEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\BaseFolderedEntity\BaseFolderedEntity.cs" />
+    <Compile Include="Entities\BaseFolderedEntity\BaseFolderedEntity.Generated.cs">
+      <DependentUpon>BaseFolderedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\BaseNotPooled.cs" />
+    <Compile Include="Entities\BaseNotPooled.Generated.cs">
+      <DependentUpon>BaseNotPooled.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\BasePooledEntity.cs" />
+    <Compile Include="Entities\BasePooledEntity.Generated.cs">
+      <DependentUpon>BasePooledEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\BasePositioningEntity.cs" />
+    <Compile Include="Entities\BasePositioningEntity.Generated.cs">
+      <DependentUpon>BasePositioningEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\BaseStateEntityWithOnlyCategorized.cs" />
+    <Compile Include="Entities\BaseStateEntityWithOnlyCategorized.Generated.cs">
+      <DependentUpon>BaseStateEntityWithOnlyCategorized.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\BaseWithCollision.cs" />
+    <Compile Include="Entities\BaseWithCollision.Generated.cs">
+      <DependentUpon>BaseWithCollision.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CameraAttachedToThisEntity.cs" />
+    <Compile Include="Entities\CameraAttachedToThisEntity.Generated.cs">
+      <DependentUpon>CameraAttachedToThisEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CameraModifyingEntity.cs" />
+    <Compile Include="Entities\CameraModifyingEntity.Generated.cs">
+      <DependentUpon>CameraModifyingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ChildFactoryEntity.cs" />
+    <Compile Include="Entities\ChildFactoryEntity.Generated.cs">
+      <DependentUpon>ChildFactoryEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ChildOfPositioningEntity.cs" />
+    <Compile Include="Entities\ChildOfPositioningEntity.Generated.cs">
+      <DependentUpon>ChildOfPositioningEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CircleContainer.cs" />
+    <Compile Include="Entities\CircleContainer.Generated.cs">
+      <DependentUpon>CircleContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CircleContainerSetCircleInCustomVariables.cs" />
+    <Compile Include="Entities\CircleContainerSetCircleInCustomVariables.Generated.cs">
+      <DependentUpon>CircleContainerSetCircleInCustomVariables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CollidableEntity.cs" />
+    <Compile Include="Entities\CollidableEntity.Generated.cs">
+      <DependentUpon>CollidableEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CollidableShapesFromTmx.cs" />
+    <Compile Include="Entities\CollidableShapesFromTmx.Generated.cs">
+      <DependentUpon>CollidableShapesFromTmx.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CollisionEntity.cs" />
+    <Compile Include="Entities\CollisionEntity.Generated.cs">
+      <DependentUpon>CollisionEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CollisionPlayer.cs" />
+    <Compile Include="Entities\CollisionPlayer.Generated.cs">
+      <DependentUpon>CollisionPlayer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CollisionShip.cs" />
+    <Compile Include="Entities\CollisionShip.Generated.cs">
+      <DependentUpon>CollisionShip.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ConditionalCompilationEntity.cs" />
+    <Compile Include="Entities\ConditionalCompilationEntity.Generated.cs">
+      <DependentUpon>ConditionalCompilationEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ContainerOfFactoryEntityList.cs" />
+    <Compile Include="Entities\ContainerOfFactoryEntityList.Generated.cs">
+      <DependentUpon>ContainerOfFactoryEntityList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CreatedByTiled.cs" />
+    <Compile Include="Entities\CreatedByTiled.Generated.cs">
+      <DependentUpon>CreatedByTiled.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CreatedByTiledType.cs" />
+    <Compile Include="Entities\CreatedByTiledType.Generated.cs">
+      <DependentUpon>CreatedByTiledType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CsvEntity.cs" />
+    <Compile Include="Entities\CsvEntity.Event.cs">
+      <DependentUpon>CsvEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CsvEntity.Generated.cs">
+      <DependentUpon>CsvEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CsvEntity.Generated.Event.cs">
+      <DependentUpon>CsvEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CustomContentTypeEntity.cs" />
+    <Compile Include="Entities\CustomContentTypeEntity.Generated.cs">
+      <DependentUpon>CustomContentTypeEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DelayedInstantiationEntity.cs" />
+    <Compile Include="Entities\DelayedInstantiationEntity.Generated.cs">
+      <DependentUpon>DelayedInstantiationEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedCsvEntity.cs" />
+    <Compile Include="Entities\DerivedCsvEntity.Generated.cs">
+      <DependentUpon>DerivedCsvEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedEmitterEntity.cs" />
+    <Compile Include="Entities\DerivedEmitterEntity.Generated.cs">
+      <DependentUpon>DerivedEmitterEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedEntity.cs" />
+    <Compile Include="Entities\DerivedEntity.Event.cs">
+      <DependentUpon>DerivedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedEntity.Generated.cs">
+      <DependentUpon>DerivedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedEntity.Generated.Event.cs">
+      <DependentUpon>DerivedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedEntityOutOfFolder.cs" />
+    <Compile Include="Entities\DerivedEntityOutOfFolder.Generated.cs">
+      <DependentUpon>DerivedEntityOutOfFolder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedEventEntity.cs" />
+    <Compile Include="Entities\DerivedEventEntity.Generated.cs">
+      <DependentUpon>DerivedEventEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedFolderedEntity\DerivedFolderedEntity.cs" />
+    <Compile Include="Entities\DerivedFolderedEntity\DerivedFolderedEntity.Generated.cs">
+      <DependentUpon>DerivedFolderedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedFromBaseWithCategorizedStates.cs" />
+    <Compile Include="Entities\DerivedFromBaseWithCategorizedStates.Generated.cs">
+      <DependentUpon>DerivedFromBaseWithCategorizedStates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedFromBaseWithNoStates.cs" />
+    <Compile Include="Entities\DerivedFromBaseWithNoStates.Generated.cs">
+      <DependentUpon>DerivedFromBaseWithNoStates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedICollidable.cs" />
+    <Compile Include="Entities\DerivedICollidable.Generated.cs">
+      <DependentUpon>DerivedICollidable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedPooledFromNotPooled.cs" />
+    <Compile Include="Entities\DerivedPooledFromNotPooled.Generated.cs">
+      <DependentUpon>DerivedPooledFromNotPooled.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedPooledFromPooled.cs" />
+    <Compile Include="Entities\DerivedPooledFromPooled.Generated.cs">
+      <DependentUpon>DerivedPooledFromPooled.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedPositioningEntity.cs" />
+    <Compile Include="Entities\DerivedPositioningEntity.Generated.cs">
+      <DependentUpon>DerivedPositioningEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedStateEntity.cs" />
+    <Compile Include="Entities\DerivedStateEntity.Generated.cs">
+      <DependentUpon>DerivedStateEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DisabledObjectEntity.cs" />
+    <Compile Include="Entities\DisabledObjectEntity.Generated.cs">
+      <DependentUpon>DisabledObjectEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DrawableEntity.cs" />
+    <Compile Include="Entities\DrawableEntity.Generated.cs">
+      <DependentUpon>DrawableEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DrivedNotPooledFromBaseNotPooled.cs" />
+    <Compile Include="Entities\DrivedNotPooledFromBaseNotPooled.Generated.cs">
+      <DependentUpon>DrivedNotPooledFromBaseNotPooled.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EmitterAsContainerDerived.cs" />
+    <Compile Include="Entities\EmitterAsContainerDerived.Generated.cs">
+      <DependentUpon>EmitterAsContainerDerived.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EmitterAsContainerEntity.cs" />
+    <Compile Include="Entities\EmitterAsContainerEntity.Generated.cs">
+      <DependentUpon>EmitterAsContainerEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EmitterEntity.cs" />
+    <Compile Include="Entities\EmitterEntity.Generated.cs">
+      <DependentUpon>EmitterEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EmptyEntity.cs" />
+    <Compile Include="Entities\EmptyEntity.Generated.cs">
+      <DependentUpon>EmptyEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EntityFolder\BaseEntityInFolder.cs" />
+    <Compile Include="Entities\EntityFolder\BaseEntityInFolder.Generated.cs">
+      <DependentUpon>BaseEntityInFolder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EntityFolder\EntityInFolder.cs" />
+    <Compile Include="Entities\EntityFolder\EntityInFolder.Generated.cs">
+      <DependentUpon>EntityInFolder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EntityFolder\NewEntity.cs" />
+    <Compile Include="Entities\EntityFolder\NewEntity.Generated.cs">
+      <DependentUpon>NewEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EntityFolder\StateEntityInFolder.cs" />
+    <Compile Include="Entities\EntityFolder\StateEntityInFolder.Generated.cs">
+      <DependentUpon>StateEntityInFolder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EntityFolder\TiledEntityInFolder.cs" />
+    <Compile Include="Entities\EntityFolder\TiledEntityInFolder.Generated.cs">
+      <DependentUpon>TiledEntityInFolder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EntityForTestPlugin.cs" />
+    <Compile Include="Entities\EntityForTestPlugin.Generated.cs">
+      <DependentUpon>EntityForTestPlugin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EntityReferencingStateFromOther.cs" />
+    <Compile Include="Entities\EntityReferencingStateFromOther.Generated.cs">
+      <DependentUpon>EntityReferencingStateFromOther.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EventEntity.cs" />
+    <Compile Include="Entities\EventEntity.Event.cs">
+      <DependentUpon>EventEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EventEntity.Generated.cs">
+      <DependentUpon>EventEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EventEntity.Generated.Event.cs">
+      <DependentUpon>EventEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\FactoryEntity.cs" />
+    <Compile Include="Entities\FactoryEntity.Generated.cs">
+      <DependentUpon>FactoryEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\FactoryEntityDerived.cs" />
+    <Compile Include="Entities\FactoryEntityDerived.Generated.cs">
+      <DependentUpon>FactoryEntityDerived.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\FactoryEntityWithNoList.cs" />
+    <Compile Include="Entities\FactoryEntityWithNoList.Generated.cs">
+      <DependentUpon>FactoryEntityWithNoList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\FileReferencingEntity.cs" />
+    <Compile Include="Entities\FileReferencingEntity.Generated.cs">
+      <DependentUpon>FileReferencingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\FlatRedBallEntityContainer.cs" />
+    <Compile Include="Entities\FlatRedBallEntityContainer.Generated.cs">
+      <DependentUpon>FlatRedBallEntityContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\FlatRedBallTypeEntity.cs" />
+    <Compile Include="Entities\FlatRedBallTypeEntity.Generated.cs">
+      <DependentUpon>FlatRedBallTypeEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\GeneratedPartialUpdateEntity.cs" />
+    <Compile Include="Entities\GeneratedPartialUpdateEntity.Generated.cs">
+      <DependentUpon>GeneratedPartialUpdateEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\GlobalContentEntity.cs" />
+    <Compile Include="Entities\GlobalContentEntity.Generated.cs">
+      <DependentUpon>GlobalContentEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\GrandchildFactoryEntity.cs" />
+    <Compile Include="Entities\GrandchildFactoryEntity.Generated.cs">
+      <DependentUpon>GrandchildFactoryEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\GumComponentContainer.cs" />
+    <Compile Include="Entities\GumComponentContainer.Generated.cs">
+      <DependentUpon>GumComponentContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\GumRuntimeEntity.cs" />
+    <Compile Include="Entities\GumRuntimeEntity.Generated.cs">
+      <DependentUpon>GumRuntimeEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\HasPublicPropertyEntity.cs" />
+    <Compile Include="Entities\HasPublicPropertyEntity.Generated.cs">
+      <DependentUpon>HasPublicPropertyEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ICollidableBase.cs" />
+    <Compile Include="Entities\ICollidableBase.Generated.cs">
+      <DependentUpon>ICollidableBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ICollidableDerived.cs" />
+    <Compile Include="Entities\ICollidableDerived.Generated.cs">
+      <DependentUpon>ICollidableDerived.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IDrawableBatchEntity.cs" />
+    <Compile Include="Entities\IDrawableBatchEntity.Generated.cs">
+      <DependentUpon>IDrawableBatchEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IncompleteDefinitionEntity.cs" />
+    <Compile Include="Entities\IncompleteDefinitionEntity.Generated.cs">
+      <DependentUpon>IncompleteDefinitionEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\InheritingFromSpriteInheritingEntity.cs" />
+    <Compile Include="Entities\InheritingFromSpriteInheritingEntity.Generated.cs">
+      <DependentUpon>InheritingFromSpriteInheritingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\InListEntity.cs" />
+    <Compile Include="Entities\InListEntity.Generated.cs">
+      <DependentUpon>InListEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\InterpolationEntity.cs" />
+    <Compile Include="Entities\InterpolationEntity.Generated.cs">
+      <DependentUpon>InterpolationEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\InterpolationEntitySub.cs" />
+    <Compile Include="Entities\InterpolationEntitySub.Generated.cs">
+      <DependentUpon>InterpolationEntitySub.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IVisibleDerivedEntity.cs" />
+    <Compile Include="Entities\IVisibleDerivedEntity.Generated.cs">
+      <DependentUpon>IVisibleDerivedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IVisibleEntity.cs" />
+    <Compile Include="Entities\IVisibleEntity.Generated.cs">
+      <DependentUpon>IVisibleEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IVisibleFrbTypeInheritingEntity.cs" />
+    <Compile Include="Entities\IVisibleFrbTypeInheritingEntity.Generated.cs">
+      <DependentUpon>IVisibleFrbTypeInheritingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IWindowContainer.cs" />
+    <Compile Include="Entities\IWindowContainer.Generated.cs">
+      <DependentUpon>IWindowContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IWindowDerivedFromNoIWindow.cs" />
+    <Compile Include="Entities\IWindowDerivedFromNoIWindow.Event.cs">
+      <DependentUpon>IWindowDerivedFromNoIWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IWindowDerivedFromNoIWindow.Generated.cs">
+      <DependentUpon>IWindowDerivedFromNoIWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IWindowDerivedFromNoIWindow.Generated.Event.cs">
+      <DependentUpon>IWindowDerivedFromNoIWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IWindowDerivingEntity.cs" />
+    <Compile Include="Entities\IWindowDerivingEntity.Generated.cs">
+      <DependentUpon>IWindowDerivingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IWindowEntity.cs" />
+    <Compile Include="Entities\IWindowEntity.Event.cs">
+      <DependentUpon>IWindowEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IWindowEntity.Generated.cs">
+      <DependentUpon>IWindowEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IWindowEntity.Generated.Event.cs">
+      <DependentUpon>IWindowEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IWindowEntityWithExposedVariables.cs" />
+    <Compile Include="Entities\IWindowEntityWithExposedVariables.Event.cs">
+      <DependentUpon>IWindowEntityWithExposedVariables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IWindowEntityWithExposedVariables.Generated.cs">
+      <DependentUpon>IWindowEntityWithExposedVariables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IWindowEntityWithExposedVariables.Generated.Event.cs">
+      <DependentUpon>IWindowEntityWithExposedVariables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\LayerOwner.cs" />
+    <Compile Include="Entities\LayerOwner.Generated.cs">
+      <DependentUpon>LayerOwner.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ListEntity.cs" />
+    <Compile Include="Entities\ListEntity.Generated.cs">
+      <DependentUpon>ListEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\LoadedOnlyWhenReferenced.cs" />
+    <Compile Include="Entities\LoadedOnlyWhenReferenced.Generated.cs">
+      <DependentUpon>LoadedOnlyWhenReferenced.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ManuallyUpdateAllInCode.cs" />
+    <Compile Include="Entities\ManuallyUpdateAllInCode.Generated.cs">
+      <DependentUpon>ManuallyUpdateAllInCode.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ManuallyUpdatedEntity.cs" />
+    <Compile Include="Entities\ManuallyUpdatedEntity.Generated.cs">
+      <DependentUpon>ManuallyUpdatedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ManuallyUpdatedInheritFromSprite.cs" />
+    <Compile Include="Entities\ManuallyUpdatedInheritFromSprite.Generated.cs">
+      <DependentUpon>ManuallyUpdatedInheritFromSprite.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ManuallyUpdatedInheritFromSpriteNoAttach.cs" />
+    <Compile Include="Entities\ManuallyUpdatedInheritFromSpriteNoAttach.Generated.cs">
+      <DependentUpon>ManuallyUpdatedInheritFromSpriteNoAttach.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ManuallyUpdatedInheritFromText.cs" />
+    <Compile Include="Entities\ManuallyUpdatedInheritFromText.Generated.cs">
+      <DependentUpon>ManuallyUpdatedInheritFromText.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ManuallyUpdatedIsSprite.cs" />
+    <Compile Include="Entities\ManuallyUpdatedIsSprite.Generated.cs">
+      <DependentUpon>ManuallyUpdatedIsSprite.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ManuallyUpdatedSpriteIsContainer.cs" />
+    <Compile Include="Entities\ManuallyUpdatedSpriteIsContainer.Generated.cs">
+      <DependentUpon>ManuallyUpdatedSpriteIsContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\MoveToLayerDerivedEntity.cs" />
+    <Compile Include="Entities\MoveToLayerDerivedEntity.Generated.cs">
+      <DependentUpon>MoveToLayerDerivedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\MoveToLayerEntity.cs" />
+    <Compile Include="Entities\MoveToLayerEntity.Generated.cs">
+      <DependentUpon>MoveToLayerEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\NewEntity2.cs" />
+    <Compile Include="Entities\NewEntity2.Event.cs">
+      <DependentUpon>NewEntity2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\NewEntity2.Generated.cs">
+      <DependentUpon>NewEntity2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\NewEntity2.Generated.Event.cs">
+      <DependentUpon>NewEntity2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\NoInstantiationObjectContainer.cs" />
+    <Compile Include="Entities\NoInstantiationObjectContainer.Generated.cs">
+      <DependentUpon>NoInstantiationObjectContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\NoIWindowBase.cs" />
+    <Compile Include="Entities\NoIWindowBase.Generated.cs">
+      <DependentUpon>NoIWindowBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\NotUsedEntity1.cs" />
+    <Compile Include="Entities\NotUsedEntity1.Generated.cs">
+      <DependentUpon>NotUsedEntity1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\OptionallyAddedEntity.cs" />
+    <Compile Include="Entities\OptionallyAddedEntity.Generated.cs">
+      <DependentUpon>OptionallyAddedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PausingEntity.cs" />
+    <Compile Include="Entities\PausingEntity.Generated.cs">
+      <DependentUpon>PausingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PlatformerCharacterBase.cs" />
+    <Compile Include="Entities\PlatformerCharacterBase.Event.cs">
+      <DependentUpon>PlatformerCharacterBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PlatformerCharacterBase.Generated.cs">
+      <DependentUpon>PlatformerCharacterBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PlatformerCharacterBase.Generated.Event.cs">
+      <DependentUpon>PlatformerCharacterBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PlatformerPluginEntity.cs" />
+    <Compile Include="Entities\PlatformerPluginEntity.Generated.cs">
+      <DependentUpon>PlatformerPluginEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PlatformerPluginEntity2.cs" />
+    <Compile Include="Entities\PlatformerPluginEntity2.Generated.cs">
+      <DependentUpon>PlatformerPluginEntity2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PolygonEntity.cs" />
+    <Compile Include="Entities\PolygonEntity.Generated.cs">
+      <DependentUpon>PolygonEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PooledDontInheritFromThis.cs" />
+    <Compile Include="Entities\PooledDontInheritFromThis.Generated.cs">
+      <DependentUpon>PooledDontInheritFromThis.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PooledEntityContainingEntity.cs" />
+    <Compile Include="Entities\PooledEntityContainingEntity.Generated.cs">
+      <DependentUpon>PooledEntityContainingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PooledEntityInheritFromSprite.cs" />
+    <Compile Include="Entities\PooledEntityInheritFromSprite.Generated.cs">
+      <DependentUpon>PooledEntityInheritFromSprite.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PooledWithInternalList.cs" />
+    <Compile Include="Entities\PooledWithInternalList.Generated.cs">
+      <DependentUpon>PooledWithInternalList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PositionedEntity.cs" />
+    <Compile Include="Entities\PositionedEntity.Generated.cs">
+      <DependentUpon>PositionedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PositioningEntity.cs" />
+    <Compile Include="Entities\PositioningEntity.Generated.cs">
+      <DependentUpon>PositioningEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\RectangleContainer.cs" />
+    <Compile Include="Entities\RectangleContainer.Generated.cs">
+      <DependentUpon>RectangleContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\RecyclableEntity.cs" />
+    <Compile Include="Entities\RecyclableEntity.Generated.cs">
+      <DependentUpon>RecyclableEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\RemoveObjectsWhenInvisibleEntity.cs" />
+    <Compile Include="Entities\RemoveObjectsWhenInvisibleEntity.Generated.cs">
+      <DependentUpon>RemoveObjectsWhenInvisibleEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ResetVariableEntity.cs" />
+    <Compile Include="Entities\ResetVariableEntity.Generated.cs">
+      <DependentUpon>ResetVariableEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\SceneEntity.cs" />
+    <Compile Include="Entities\SceneEntity.Generated.cs">
+      <DependentUpon>SceneEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ScnxAttachmentTest.cs" />
+    <Compile Include="Entities\ScnxAttachmentTest.Generated.cs">
+      <DependentUpon>ScnxAttachmentTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ScrollableEntity.cs" />
+    <Compile Include="Entities\ScrollableEntity.Generated.cs">
+      <DependentUpon>ScrollableEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ScrollableListEntityNoItemType.cs" />
+    <Compile Include="Entities\ScrollableListEntityNoItemType.Generated.cs">
+      <DependentUpon>ScrollableListEntityNoItemType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\SetByContainerEntity.cs" />
+    <Compile Include="Entities\SetByContainerEntity.Generated.cs">
+      <DependentUpon>SetByContainerEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ShapeCollectionEntity.cs" />
+    <Compile Include="Entities\ShapeCollectionEntity.Generated.cs">
+      <DependentUpon>ShapeCollectionEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ShapeEntity.cs" />
+    <Compile Include="Entities\ShapeEntity.Generated.cs">
+      <DependentUpon>ShapeEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ShapeEntityCreatedByOtherEntities.cs" />
+    <Compile Include="Entities\ShapeEntityCreatedByOtherEntities.Generated.cs">
+      <DependentUpon>ShapeEntityCreatedByOtherEntities.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\SizingEntity.cs" />
+    <Compile Include="Entities\SizingEntity.Generated.cs">
+      <DependentUpon>SizingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\SoundEffectEntity.cs" />
+    <Compile Include="Entities\SoundEffectEntity.Generated.cs">
+      <DependentUpon>SoundEffectEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\SplineEntity.cs" />
+    <Compile Include="Entities\SplineEntity.Generated.cs">
+      <DependentUpon>SplineEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\SpriteEntity.cs" />
+    <Compile Include="Entities\SpriteEntity.Generated.cs">
+      <DependentUpon>SpriteEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\SpriteFrameInheritingEntity.cs" />
+    <Compile Include="Entities\SpriteFrameInheritingEntity.Generated.cs">
+      <DependentUpon>SpriteFrameInheritingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\SpriteFrameInheritingEntityZBuffered.cs" />
+    <Compile Include="Entities\SpriteFrameInheritingEntityZBuffered.Generated.cs">
+      <DependentUpon>SpriteFrameInheritingEntityZBuffered.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\SpriteInheritingEntity.cs" />
+    <Compile Include="Entities\SpriteInheritingEntity.Generated.cs">
+      <DependentUpon>SpriteInheritingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\StateEntity.cs" />
+    <Compile Include="Entities\StateEntity.Event.cs">
+      <DependentUpon>StateEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\StateEntity.Generated.cs">
+      <DependentUpon>StateEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\StateEntity.Generated.Event.cs">
+      <DependentUpon>StateEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\StateEntityChild.cs" />
+    <Compile Include="Entities\StateEntityChild.Generated.cs">
+      <DependentUpon>StateEntityChild.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\StateEntityContainer.cs" />
+    <Compile Include="Entities\StateEntityContainer.Generated.cs">
+      <DependentUpon>StateEntityContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\StateEntityExposedNoneVariable.cs" />
+    <Compile Include="Entities\StateEntityExposedNoneVariable.Generated.cs">
+      <DependentUpon>StateEntityExposedNoneVariable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\StateEntityWithoutCurrentStateVariable.cs" />
+    <Compile Include="Entities\StateEntityWithoutCurrentStateVariable.Generated.cs">
+      <DependentUpon>StateEntityWithoutCurrentStateVariable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\StaticVariableEntity.cs" />
+    <Compile Include="Entities\StaticVariableEntity.Generated.cs">
+      <DependentUpon>StaticVariableEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\TextEntity.cs" />
+    <Compile Include="Entities\TextEntity.Generated.cs">
+      <DependentUpon>TextEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\TextInheritingEntity.cs" />
+    <Compile Include="Entities\TextInheritingEntity.Generated.cs">
+      <DependentUpon>TextInheritingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\TextureContainer.cs" />
+    <Compile Include="Entities\TextureContainer.Generated.cs">
+      <DependentUpon>TextureContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\TexturePixelEntity.cs" />
+    <Compile Include="Entities\TexturePixelEntity.Generated.cs">
+      <DependentUpon>TexturePixelEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\TileEntity.cs" />
+    <Compile Include="Entities\TileEntity.Generated.cs">
+      <DependentUpon>TileEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ToBeDeleted.cs" />
+    <Compile Include="Entities\ToBeDeleted.Generated.cs">
+      <DependentUpon>ToBeDeleted.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\TopDownPluginEntity.cs" />
+    <Compile Include="Entities\TopDownPluginEntity.Generated.cs">
+      <DependentUpon>TopDownPluginEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\TunneledVariableEntity.cs" />
+    <Compile Include="Entities\TunneledVariableEntity.Generated.cs">
+      <DependentUpon>TunneledVariableEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\VariableEntity.cs" />
+    <Compile Include="Entities\VariableEntity.Generated.cs">
+      <DependentUpon>VariableEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\XmlEntity.cs" />
+    <Compile Include="Entities\XmlEntity.Generated.cs">
+      <DependentUpon>XmlEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ZBufferedEntity.cs" />
+    <Compile Include="Entities\ZBufferedEntity.Generated.cs">
+      <DependentUpon>ZBufferedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Factories\BaseFactoryEntityFactory.Generated.cs" />
+    <Compile Include="Factories\BaseNotPooledFactory.Generated.cs" />
+    <Compile Include="Factories\BasePooledEntityFactory.Generated.cs" />
+    <Compile Include="Factories\ChildFactoryEntityFactory.Generated.cs" />
+    <Compile Include="Factories\ChildOfPositioningEntityFactory.Generated.cs" />
+    <Compile Include="Factories\CollidableShapesFromTmxFactory.Generated.cs" />
+    <Compile Include="Factories\CreatedByTiledFactory.Generated.cs" />
+    <Compile Include="Factories\CreatedByTiledTypeFactory.Generated.cs" />
+    <Compile Include="Factories\DerivedPooledFromNotPooledFactory.Generated.cs" />
+    <Compile Include="Factories\DerivedPooledFromPooledFactory.Generated.cs" />
+    <Compile Include="Factories\DrivedNotPooledFromBaseNotPooledFactory.Generated.cs" />
+    <Compile Include="Factories\EntityInFolderFactory.Generated.cs" />
+    <Compile Include="Factories\FactoryEntityDerivedFactory.Generated.cs" />
+    <Compile Include="Factories\FactoryEntityWithNoListFactory.Generated.cs" />
+    <Compile Include="Factories\GrandchildFactoryEntityFactory.Generated.cs" />
+    <Compile Include="Factories\IWindowDerivedFromNoIWindowFactory.Generated.cs" />
+    <Compile Include="Factories\PooledDontInheritFromThisFactory.Generated.cs" />
+    <Compile Include="Factories\PooledEntityContainingEntityFactory.Generated.cs" />
+    <Compile Include="Factories\PooledEntityInheritFromSpriteFactory.Generated.cs" />
+    <Compile Include="Factories\PooledWithInternalListFactory.Generated.cs" />
+    <Compile Include="Factories\PositioningEntityFactory.Generated.cs" />
+    <Compile Include="Factories\RecyclableEntityFactory.Generated.cs" />
+    <Compile Include="Factories\ShapeEntityCreatedByOtherEntitiesFactory.Generated.cs" />
+    <Compile Include="Factories\TextInheritingEntityFactory.Generated.cs" />
+    <Compile Include="Factories\TiledEntityInFolderFactory.Generated.cs" />
+    <Compile Include="FileAliases.Generated.cs" />
+    <Compile Include="Forms\Controls\CustomUserControl.cs" />
+    <Compile Include="Forms\Screens\BaseGlueScreenNotBaseGumForms.cs" />
+    <Compile Include="Forms\Screens\BaseGlueScreenNotBaseGumForms.Generated.cs">
+      <DependentUpon>BaseGlueScreenNotBaseGumForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Screens\DerivedScreenGumForms.cs" />
+    <Compile Include="Forms\Screens\DerivedScreenGumForms.Generated.cs">
+      <DependentUpon>DerivedScreenGumForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Screens\GumScreenLayeredGumForms.cs" />
+    <Compile Include="Forms\Screens\GumScreenLayeredGumForms.Generated.cs">
+      <DependentUpon>GumScreenLayeredGumForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Screens\GumScreenNoGumIdbScreenGumForms.cs" />
+    <Compile Include="Forms\Screens\GumScreenNoGumIdbScreenGumForms.Generated.cs">
+      <DependentUpon>GumScreenNoGumIdbScreenGumForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Screens\InputScreenGumForms.cs" />
+    <Compile Include="Forms\Screens\InputScreenGumForms.Generated.cs">
+      <DependentUpon>InputScreenGumForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Screens\RenderTargetScreenGumForms.cs" />
+    <Compile Include="Forms\Screens\RenderTargetScreenGumForms.Generated.cs">
+      <DependentUpon>RenderTargetScreenGumForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Screens\ScreenLoadedAsGraphicalUiElementForms.cs" />
+    <Compile Include="Forms\Screens\ScreenLoadedAsGraphicalUiElementForms.Generated.cs">
+      <DependentUpon>ScreenLoadedAsGraphicalUiElementForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Screens\TestScreenForms.cs" />
+    <Compile Include="Forms\Screens\TestScreenForms.Generated.cs">
+      <DependentUpon>TestScreenForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Screens\TestScreenUnusedForms.cs" />
+    <Compile Include="Forms\Screens\TestScreenUnusedForms.Generated.cs">
+      <DependentUpon>TestScreenUnusedForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Screens\TileShapeCollectionScreenGumForms.cs" />
+    <Compile Include="Forms\Screens\TileShapeCollectionScreenGumForms.Generated.cs">
+      <DependentUpon>TileShapeCollectionScreenGumForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Game1.cs" />
+    <Compile Include="Game1.Generated.cs">
+      <DependentUpon>Game1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GlobalContent.Generated.cs" />
+    <Compile Include="GlueControl\CommandReceiver.Generated.cs" />
+    <Compile Include="GlueControl\Dtos.Generated.cs" />
+    <Compile Include="GlueControl\Editing\CameraLogic.Generated.cs" />
+    <Compile Include="GlueControl\Editing\CopyPasteManager.Generated.cs" />
+    <Compile Include="GlueControl\Editing\EditingManager.Generated.cs" />
+    <Compile Include="GlueControl\Editing\EditorVisuals.Generated.cs" />
+    <Compile Include="GlueControl\Editing\Guides.Generated.cs" />
+    <Compile Include="GlueControl\Editing\Markers\SelectionMarker.Generated.cs" />
+    <Compile Include="GlueControl\Editing\Markers\TileShapeCollectionMarker.Generated.cs" />
+    <Compile Include="GlueControl\Editing\MoveObjectToContainerLogic.Generated.cs" />
+    <Compile Include="GlueControl\Editing\SelectionLogic.Generated.cs" />
+    <Compile Include="GlueControl\Editing\VariableAssignmentLogic.Generated.cs" />
+    <Compile Include="GlueControl\Editing\Visuals\Arrow.Generated.cs" />
+    <Compile Include="GlueControl\Forms\ObjectCreationWindow.Generated.cs" />
+    <Compile Include="GlueControl\GlueControlManager.Generated.cs" />
+    <Compile Include="GlueControl\InstanceLogic.Generated.cs" />
+    <Compile Include="GlueControl\Models\CustomVariable.Generated.cs" />
+    <Compile Include="GlueControl\Models\GlueElement.Generated.cs" />
+    <Compile Include="GlueControl\Models\NamedObjectSave.Generated.cs" />
+    <Compile Include="GlueControl\Models\StateSave.Generated.cs" />
+    <Compile Include="GlueControl\Models\StateSaveCategory.Generated.cs" />
+    <Compile Include="GlueControl\Runtime\DynamicEntitys.Generated.cs" />
+    <Compile Include="GlueControl\Screens\EntityViewingScreen.Generated.cs" />
+    <Compile Include="GumRuntimes\AlignmentObjectRuntime.cs" />
+    <Compile Include="GumRuntimes\AlignmentObjectRuntime.Generated.cs">
+      <DependentUpon>AlignmentObjectRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\AnimatedComponentRuntime.cs" />
+    <Compile Include="GumRuntimes\AnimatedComponentRuntime.Generated.cs">
+      <DependentUpon>AnimatedComponentRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\BaseGlueScreenNotBaseGumRuntime.cs" />
+    <Compile Include="GumRuntimes\BaseGlueScreenNotBaseGumRuntime.Generated.cs">
+      <DependentUpon>BaseGlueScreenNotBaseGumRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\Behaviors\IButtonBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\ICheckBoxBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\IComboBoxBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\IListBoxBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\IListBoxItemBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\IRadioButtonBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\IScrollBarBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\IScrollViewerBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\ISliderBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\ITextBoxBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\IToggleBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\IUserControlBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\ChildStateComponentRuntime.cs" />
+    <Compile Include="GumRuntimes\ChildStateComponentRuntime.Generated.cs">
+      <DependentUpon>ChildStateComponentRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\CircleRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\ColoredComponentWithColoredStatesRuntime.cs" />
+    <Compile Include="GumRuntimes\ColoredComponentWithColoredStatesRuntime.Generated.cs">
+      <DependentUpon>ColoredComponentWithColoredStatesRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\ColoredRectangleRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\ComponentContainingSpriteRuntime.cs" />
+    <Compile Include="GumRuntimes\ComponentContainingSpriteRuntime.Generated.cs">
+      <DependentUpon>ComponentContainingSpriteRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\ComponentFolder\InFolder1Runtime.cs" />
+    <Compile Include="GumRuntimes\ComponentFolder\InFolder1Runtime.Generated.cs">
+      <DependentUpon>InFolder1Runtime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\ComponentFolder\SameNameComponentRuntime.cs" />
+    <Compile Include="GumRuntimes\ComponentFolder\SameNameComponentRuntime.Generated.cs">
+      <DependentUpon>SameNameComponentRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\ComponentFolder\StateComponentContainedFolderedRuntime.cs" />
+    <Compile Include="GumRuntimes\ComponentFolder\StateComponentContainedFolderedRuntime.Generated.cs">
+      <DependentUpon>StateComponentContainedFolderedRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\ComponentWithCustomInitializeRuntime.cs" />
+    <Compile Include="GumRuntimes\ComponentWithCustomInitializeRuntime.Generated.cs">
+      <DependentUpon>ComponentWithCustomInitializeRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\ContainerOfInFolderRuntime.cs" />
+    <Compile Include="GumRuntimes\ContainerOfInFolderRuntime.Generated.cs">
+      <DependentUpon>ContainerOfInFolderRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\ContainerRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\ButtonRuntime.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\ButtonRuntime.Generated.cs">
+      <DependentUpon>ButtonRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\DefaultForms\CheckBoxRuntime.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\CheckBoxRuntime.Generated.cs">
+      <DependentUpon>CheckBoxRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\DefaultForms\ColoredFrameRuntime.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\ColoredFrameRuntime.Generated.cs">
+      <DependentUpon>ColoredFrameRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\DefaultForms\ComboBoxRuntime.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\ComboBoxRuntime.Generated.cs">
+      <DependentUpon>ComboBoxRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\DefaultForms\ListBoxItemRuntime.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\ListBoxItemRuntime.Generated.cs">
+      <DependentUpon>ListBoxItemRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\DefaultForms\ListBoxRuntime.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\ListBoxRuntime.Generated.cs">
+      <DependentUpon>ListBoxRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\DefaultForms\RadioButtonRuntime.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\RadioButtonRuntime.Generated.cs">
+      <DependentUpon>RadioButtonRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\DefaultForms\ScrollBarRuntime.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\ScrollBarRuntime.Generated.cs">
+      <DependentUpon>ScrollBarRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\DefaultForms\ScrollBarThumbRuntime.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\ScrollBarThumbRuntime.Generated.cs">
+      <DependentUpon>ScrollBarThumbRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\DefaultForms\ScrollViewerRuntime.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\ScrollViewerRuntime.Generated.cs">
+      <DependentUpon>ScrollViewerRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\DefaultForms\SliderRuntime.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\SliderRuntime.Generated.cs">
+      <DependentUpon>SliderRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\DefaultForms\TextBoxRuntime.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\TextBoxRuntime.Generated.cs">
+      <DependentUpon>TextBoxRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\DefaultForms\ToggleButtonRuntime.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\ToggleButtonRuntime.Generated.cs">
+      <DependentUpon>ToggleButtonRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\DefaultForms\UserControlRuntime.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\UserControlRuntime.Generated.cs">
+      <DependentUpon>UserControlRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\DerivedScreenGumRuntime.cs" />
+    <Compile Include="GumRuntimes\DerivedScreenGumRuntime.Generated.cs">
+      <DependentUpon>DerivedScreenGumRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\Folder With Space\ComponentInFolderWithSpaceRuntime.cs" />
+    <Compile Include="GumRuntimes\Folder With Space\ComponentInFolderWithSpaceRuntime.Generated.cs">
+      <DependentUpon>ComponentInFolderWithSpaceRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\Folder1\FolderedEntity1Runtime.cs" />
+    <Compile Include="GumRuntimes\Folder1\FolderedEntity1Runtime.Generated.cs">
+      <DependentUpon>FolderedEntity1Runtime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\Folder2\FolderedEntity2Runtime.cs" />
+    <Compile Include="GumRuntimes\Folder2\FolderedEntity2Runtime.Generated.cs">
+      <DependentUpon>FolderedEntity2Runtime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\GumIdb.Generated.cs" />
+    <Compile Include="GumRuntimes\GumScreenLayeredGumRuntime.cs" />
+    <Compile Include="GumRuntimes\GumScreenLayeredGumRuntime.Generated.cs">
+      <DependentUpon>GumScreenLayeredGumRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\GumScreenNoGumIdbScreenGumRuntime.cs" />
+    <Compile Include="GumRuntimes\GumScreenNoGumIdbScreenGumRuntime.Generated.cs">
+      <DependentUpon>GumScreenNoGumIdbScreenGumRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\InheritFromInFolderRuntime.cs" />
+    <Compile Include="GumRuntimes\InheritFromInFolderRuntime.Generated.cs">
+      <DependentUpon>InheritFromInFolderRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\InputScreenGumRuntime.cs" />
+    <Compile Include="GumRuntimes\InputScreenGumRuntime.Generated.cs">
+      <DependentUpon>InputScreenGumRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\NineSliceButtonRuntime.cs" />
+    <Compile Include="GumRuntimes\NineSliceButtonRuntime.Generated.cs">
+      <DependentUpon>NineSliceButtonRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\NineSliceRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\ParentStateComponentRuntime.cs" />
+    <Compile Include="GumRuntimes\ParentStateComponentRuntime.Generated.cs">
+      <DependentUpon>ParentStateComponentRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\PolygonRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\RectangleRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\RenderTargetScreenGumRuntime.cs" />
+    <Compile Include="GumRuntimes\RenderTargetScreenGumRuntime.Generated.cs">
+      <DependentUpon>RenderTargetScreenGumRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\SameNameComponentRuntime.cs" />
+    <Compile Include="GumRuntimes\SameNameComponentRuntime.Generated.cs">
+      <DependentUpon>SameNameComponentRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\ScreenLoadedAsGraphicalUiElementRuntime.cs" />
+    <Compile Include="GumRuntimes\ScreenLoadedAsGraphicalUiElementRuntime.Generated.cs">
+      <DependentUpon>ScreenLoadedAsGraphicalUiElementRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\SpriteInheritingComponntRuntime.cs" />
+    <Compile Include="GumRuntimes\SpriteInheritingComponntRuntime.Generated.cs">
+      <DependentUpon>SpriteInheritingComponntRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\SpriteRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\StackingComponentRuntime.cs" />
+    <Compile Include="GumRuntimes\StackingComponentRuntime.Generated.cs">
+      <DependentUpon>StackingComponentRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\StateComponentContainedRuntime.cs" />
+    <Compile Include="GumRuntimes\StateComponentContainedRuntime.Generated.cs">
+      <DependentUpon>StateComponentContainedRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\StateComponentRuntime.cs" />
+    <Compile Include="GumRuntimes\StateComponentRuntime.Generated.cs">
+      <DependentUpon>StateComponentRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\SwitchRuntime.cs" />
+    <Compile Include="GumRuntimes\SwitchRuntime.Generated.cs">
+      <DependentUpon>SwitchRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\TestComponentRuntime.cs" />
+    <Compile Include="GumRuntimes\TestComponentRuntime.Generated.cs">
+      <DependentUpon>TestComponentRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\TestRectangleRuntime.cs" />
+    <Compile Include="GumRuntimes\TestRectangleRuntime.Generated.cs">
+      <DependentUpon>TestRectangleRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\TestScreenRuntime.cs" />
+    <Compile Include="GumRuntimes\TestScreenRuntime.Generated.cs">
+      <DependentUpon>TestScreenRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\TestScreenUnusedRuntime.cs" />
+    <Compile Include="GumRuntimes\TestScreenUnusedRuntime.Generated.cs">
+      <DependentUpon>TestScreenUnusedRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\TextRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\TextureSettingInStateComponentRuntime.cs" />
+    <Compile Include="GumRuntimes\TextureSettingInStateComponentRuntime.Generated.cs">
+      <DependentUpon>TextureSettingInStateComponentRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\TileShapeCollectionScreenGumRuntime.cs" />
+    <Compile Include="GumRuntimes\TileShapeCollectionScreenGumRuntime.Generated.cs">
+      <DependentUpon>TileShapeCollectionScreenGumRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\UsedToInheritFromTextComponentRuntime.cs" />
+    <Compile Include="GumRuntimes\UsedToInheritFromTextComponentRuntime.Generated.cs">
+      <DependentUpon>UsedToInheritFromTextComponentRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Performance\IEntityFactory.Generated.cs" />
+    <Compile Include="Performance\PoolList.Generated.cs" />
+    <Compile Include="Platformer\Enums.Generated.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RuntimeTypes\LinesOfText.cs" />
+    <Compile Include="RuntimeTypes\TestRuntimeClass.cs" />
+    <Compile Include="Screens\AnimationChainScreen.cs" />
+    <Compile Include="Screens\AnimationChainScreen.Generated.cs">
+      <DependentUpon>AnimationChainScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\AudioScreen.cs" />
+    <Compile Include="Screens\AudioScreen.Generated.cs">
+      <DependentUpon>AudioScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\BaseScreen.cs" />
+    <Compile Include="Screens\BaseScreen.Generated.cs">
+      <DependentUpon>BaseScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\CameraAttachScreen.cs" />
+    <Compile Include="Screens\CameraAttachScreen.Generated.cs">
+      <DependentUpon>CameraAttachScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\CollisionScreen.cs" />
+    <Compile Include="Screens\CollisionScreen.Generated.cs">
+      <DependentUpon>CollisionScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\CompilationTestScreen.cs" />
+    <Compile Include="Screens\CompilationTestScreen.Event.cs">
+      <DependentUpon>CompilationTestScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\CompilationTestScreen.Generated.cs">
+      <DependentUpon>CompilationTestScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\CompilationTestScreen.Generated.Event.cs">
+      <DependentUpon>CompilationTestScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\CsvScreen.cs" />
+    <Compile Include="Screens\CsvScreen.Event.cs">
+      <DependentUpon>CsvScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\CsvScreen.Generated.cs">
+      <DependentUpon>CsvScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\CsvScreen.Generated.Event.cs">
+      <DependentUpon>CsvScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\CursorTestScreen.cs" />
+    <Compile Include="Screens\CursorTestScreen.Generated.cs">
+      <DependentUpon>CursorTestScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\CustomContentTypeScreen.cs" />
+    <Compile Include="Screens\CustomContentTypeScreen.Generated.cs">
+      <DependentUpon>CustomContentTypeScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\CustomVariableScreen.cs" />
+    <Compile Include="Screens\CustomVariableScreen.Generated.cs">
+      <DependentUpon>CustomVariableScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\DerivedScreen.cs" />
+    <Compile Include="Screens\DerivedScreen.Generated.cs">
+      <DependentUpon>DerivedScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\DisabledObjectScreen.cs" />
+    <Compile Include="Screens\DisabledObjectScreen.Generated.cs">
+      <DependentUpon>DisabledObjectScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\EventScreen.cs" />
+    <Compile Include="Screens\EventScreen.Event.cs">
+      <DependentUpon>EventScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\EventScreen.Generated.cs">
+      <DependentUpon>EventScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\EventScreen.Generated.Event.cs">
+      <DependentUpon>EventScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\FactoryScreen.cs" />
+    <Compile Include="Screens\FactoryScreen.Generated.cs">
+      <DependentUpon>FactoryScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\FactoryScreenForListAddingChecks.cs" />
+    <Compile Include="Screens\FactoryScreenForListAddingChecks.Generated.cs">
+      <DependentUpon>FactoryScreenForListAddingChecks.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\FileScreen.cs" />
+    <Compile Include="Screens\FileScreen.Generated.cs">
+      <DependentUpon>FileScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\FirstScreen.cs" />
+    <Compile Include="Screens\FirstScreen.Generated.cs">
+      <DependentUpon>FirstScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\FlatRedBallTypeScreen.cs" />
+    <Compile Include="Screens\FlatRedBallTypeScreen.Generated.cs">
+      <DependentUpon>FlatRedBallTypeScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\FormsScreen.cs" />
+    <Compile Include="Screens\FormsScreen.Generated.cs">
+      <DependentUpon>FormsScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\GlobalContentScreen.cs" />
+    <Compile Include="Screens\GlobalContentScreen.Generated.cs">
+      <DependentUpon>GlobalContentScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\GumScreen.cs" />
+    <Compile Include="Screens\GumScreen.Generated.cs">
+      <DependentUpon>GumScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\GumScreenLayered.cs" />
+    <Compile Include="Screens\GumScreenLayered.Generated.cs">
+      <DependentUpon>GumScreenLayered.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\GumScreenNoGumIdbScreen.cs" />
+    <Compile Include="Screens\GumScreenNoGumIdbScreen.Generated.cs">
+      <DependentUpon>GumScreenNoGumIdbScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\InheritanceScreen.cs" />
+    <Compile Include="Screens\InheritanceScreen.Generated.cs">
+      <DependentUpon>InheritanceScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\InputScreen.cs" />
+    <Compile Include="Screens\InputScreen.Generated.cs">
+      <DependentUpon>InputScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\InstructionScreen.cs" />
+    <Compile Include="Screens\InstructionScreen.Generated.cs">
+      <DependentUpon>InstructionScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\IWindowScreen.cs" />
+    <Compile Include="Screens\IWindowScreen.Generated.cs">
+      <DependentUpon>IWindowScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\LastScreen.cs" />
+    <Compile Include="Screens\LastScreen.Generated.cs">
+      <DependentUpon>LastScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\LayerScreen.cs" />
+    <Compile Include="Screens\LayerScreen.Generated.cs">
+      <DependentUpon>LayerScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\ListScreen.cs" />
+    <Compile Include="Screens\ListScreen.Generated.cs">
+      <DependentUpon>ListScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\LoadingScreen.cs" />
+    <Compile Include="Screens\LoadingScreen.Generated.cs">
+      <DependentUpon>LoadingScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\LocalizationScreen.cs" />
+    <Compile Include="Screens\LocalizationScreen.Generated.cs">
+      <DependentUpon>LocalizationScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\ManuallyUpdatedScreen.cs" />
+    <Compile Include="Screens\ManuallyUpdatedScreen.Generated.cs">
+      <DependentUpon>ManuallyUpdatedScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\NodeNetworkScreen.cs" />
+    <Compile Include="Screens\NodeNetworkScreen.Generated.cs">
+      <DependentUpon>NodeNetworkScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\OptionallyCreatedObjectScreen.cs" />
+    <Compile Include="Screens\OptionallyCreatedObjectScreen.Generated.cs">
+      <DependentUpon>OptionallyCreatedObjectScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\PauseScreen.cs" />
+    <Compile Include="Screens\PauseScreen.Generated.cs">
+      <DependentUpon>PauseScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\PositioningScreen.cs" />
+    <Compile Include="Screens\PositioningScreen.Generated.cs">
+      <DependentUpon>PositioningScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\RenderTargetScreen.cs" />
+    <Compile Include="Screens\RenderTargetScreen.Generated.cs">
+      <DependentUpon>RenderTargetScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\RepeatingScreen.cs" />
+    <Compile Include="Screens\RepeatingScreen.Generated.cs">
+      <DependentUpon>RepeatingScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\SaveClassScreen.cs" />
+    <Compile Include="Screens\SaveClassScreen.Generated.cs">
+      <DependentUpon>SaveClassScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\ScreenAfterAsyncScreen.cs" />
+    <Compile Include="Screens\ScreenAfterAsyncScreen.Generated.cs">
+      <DependentUpon>ScreenAfterAsyncScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\ScreenBeforeAsyncScreen.cs" />
+    <Compile Include="Screens\ScreenBeforeAsyncScreen.Generated.cs">
+      <DependentUpon>ScreenBeforeAsyncScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\ScreenToLoadAsync.cs" />
+    <Compile Include="Screens\ScreenToLoadAsync.Generated.cs">
+      <DependentUpon>ScreenToLoadAsync.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\SizeScreen.cs" />
+    <Compile Include="Screens\SizeScreen.Generated.cs">
+      <DependentUpon>SizeScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\SlowLoadScreen.cs" />
+    <Compile Include="Screens\SlowLoadScreen.Generated.cs">
+      <DependentUpon>SlowLoadScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\SplashScreen.cs" />
+    <Compile Include="Screens\SplashScreen.Generated.cs">
+      <DependentUpon>SplashScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\SpriteSortScreen.cs" />
+    <Compile Include="Screens\SpriteSortScreen.Generated.cs">
+      <DependentUpon>SpriteSortScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\StateScreen.cs" />
+    <Compile Include="Screens\StateScreen.Generated.cs">
+      <DependentUpon>StateScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\TiledLevelScreen.cs" />
+    <Compile Include="Screens\TiledLevelScreen.Generated.cs">
+      <DependentUpon>TiledLevelScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\TileShapeCollectionScreen.cs" />
+    <Compile Include="Screens\TileShapeCollectionScreen.Generated.cs">
+      <DependentUpon>TileShapeCollectionScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\TmxScreen.cs" />
+    <Compile Include="Screens\TmxScreen.Generated.cs">
+      <DependentUpon>TmxScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\TransparencyRenderingScreen.cs" />
+    <Compile Include="Screens\TransparencyRenderingScreen.Generated.cs">
+      <DependentUpon>TransparencyRenderingScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\TunneledVariableScreen.cs" />
+    <Compile Include="Screens\TunneledVariableScreen.Generated.cs">
+      <DependentUpon>TunneledVariableScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\XmlScreen.cs" />
+    <Compile Include="Screens\XmlScreen.Generated.cs">
+      <DependentUpon>XmlScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\ZBufferedScreen.cs" />
+    <Compile Include="Screens\ZBufferedScreen.Generated.cs">
+      <DependentUpon>ZBufferedScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Setup\CameraSetup.cs" />
+    <Compile Include="TestFramework\ShouldExtensions.cs" />
+    <Compile Include="TileCollisions\CollidableListVsTileShapeCollectionRelationship.cs" />
+    <Compile Include="TileCollisions\CollidableVsTileShapeCollectionRelationship.cs" />
+    <Compile Include="TileCollisions\CollisionManagerTileShapeCollectionExtensions.cs" />
+    <Compile Include="TileCollisions\TileShapeCollection.cs" />
+    <Compile Include="TileEntities\TileEntityInstantiator.cs" />
+    <Compile Include="TileGraphics\AbstractMapLayer.cs" />
+    <Compile Include="TileGraphics\AnimationChainContainer.cs" />
+    <Compile Include="TileGraphics\ExternalTileset.cs" />
+    <Compile Include="TileGraphics\LayeredTileMap.cs" />
+    <Compile Include="TileGraphics\LayeredTileMapAnimation.cs" />
+    <Compile Include="TileGraphics\MapDrawableBatch.cs" />
+    <Compile Include="TileGraphics\MapLayer.cs" />
+    <Compile Include="TileGraphics\MapTileset.cs" />
+    <Compile Include="TileGraphics\MapTilesetTile.cs" />
+    <Compile Include="TileGraphics\NamedValue.cs" />
+    <Compile Include="TileGraphics\ReducedTileMapInfo.cs" />
+    <Compile Include="TileGraphics\ReducedTileMapInfo.TiledMapSave.cs">
+      <DependentUpon>ReducedTileMapInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TileGraphics\TileAnimation.cs" />
+    <Compile Include="TileGraphics\TileAnimationFrame.cs" />
+    <Compile Include="TileGraphics\TiledMapSave.Conversion.cs" />
+    <Compile Include="TileGraphics\TiledMapSave.Serialization.cs" />
+    <Compile Include="TileGraphics\TiledMapToShapeCollectionConverter.cs" />
+    <Compile Include="TileGraphics\TileNodeNetworkCreator.cs" />
+    <Compile Include="TileGraphics\Tileset.cs" />
+    <Compile Include="TileGraphics\TilesetExtensionMethods.cs" />
+    <Compile Include="TopDown\AnimationSet.Generated.cs" />
+    <Compile Include="TopDown\DirectionBasedAnimationLayer.Generated.cs" />
+    <Compile Include="TopDown\Enums.Generated.cs" />
+    <Compile Include="TopDown\Interfaces.Generated.cs" />
+    <Compile Include="TopDown\TopDownAiInput.Generated.cs" />
+    <Compile Include="TopDown\TopDownAiTargetLogic.Generated.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="FlatRedBall.Forms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\DesktopGl\Debug\FlatRedBall.Forms.dll</HintPath>
+    </Reference>
+    <Reference Include="GumCoreXnaPc, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\DesktopGl\Debug\GumCoreXnaPc.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoGame.Framework, Version=3.5.1.1679, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\DesktopGl\Debug\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="NVorbis, Version=0.8.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\DesktopGl\Debug\NVorbis.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\DesktopGl\Debug\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="StateInterpolation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\DesktopGl\Debug\StateInterpolation.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\shader.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="..\builtxnbs\desktopgl\entities\globalcontententity\burnorb.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>burnOrb</Name>
+      <Link>content\entities\globalcontententity\burnorb.xnb</Link>
+    </None>
+    <None Include="..\builtxnbs\desktopgl\entities\pausingentity\soundeffectfile.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SoundEffectFile</Name>
+      <Link>content\entities\pausingentity\soundeffectfile.xnb</Link>
+    </None>
+    <None Include="..\builtxnbs\desktopgl\entities\pausingentity\superhit.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>superHit</Name>
+      <Link>content\entities\pausingentity\superhit.xnb</Link>
+    </None>
+    <None Include="..\builtxnbs\desktopgl\entities\soundeffectentity\dogbarksoundeffect.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>DogBarkSoundEffect</Name>
+      <Link>content\entities\soundeffectentity\dogbarksoundeffect.xnb</Link>
+    </None>
+    <None Include="..\builtxnbs\desktopgl\entities\soundeffectentity\dogbarksoundeffect2.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>DogBarkSoundEffect2</Name>
+      <Link>content\entities\soundeffectentity\dogbarksoundeffect2.xnb</Link>
+    </None>
+    <None Include="..\builtxnbs\desktopgl\entities\soundeffectentity\soundeffectinstancefile.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SoundEffectInstanceFile</Name>
+      <Link>content\entities\soundeffectentity\soundeffectinstancefile.xnb</Link>
+    </None>
+    <None Include="..\builtxnbs\desktopgl\globalcontent\bearcontentpipeline.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>BearContentPipeline</Name>
+      <Link>content\globalcontent\bearcontentpipeline.xnb</Link>
+    </None>
+    <None Include="..\builtxnbs\desktopgl\globalcontent\dogbarksoundeffect.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>DogBarkSoundEffect</Name>
+      <Link>content\globalcontent\dogbarksoundeffect.xnb</Link>
+    </None>
+    <None Include="..\builtxnbs\desktopgl\globalcontent\dogbarksoundeffect2.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>DogBarkSoundEffect2</Name>
+      <Link>content\globalcontent\dogbarksoundeffect2.xnb</Link>
+    </None>
+    <None Include="..\builtxnbs\desktopgl\globalcontent\loadedonlywhenreferencedglobal.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>LoadedOnlyWhenReferencedGlobal</Name>
+      <Link>content\globalcontent\loadedonlywhenreferencedglobal.ogg</Link>
+    </None>
+    <None Include="..\builtxnbs\desktopgl\globalcontent\loadedonlywhenreferencedglobal.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>LoadedOnlyWhenReferencedGlobal</Name>
+      <Link>content\globalcontent\loadedonlywhenreferencedglobal.xnb</Link>
+    </None>
+    <None Include="..\builtxnbs\desktopgl\screens\audioscreen\boom.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>boom</Name>
+      <Link>content\screens\audioscreen\boom.xnb</Link>
+    </None>
+    <None Include="..\builtxnbs\desktopgl\screens\globalcontentscreen\menusong.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>MenuSong</Name>
+      <Link>content\screens\globalcontentscreen\menusong.ogg</Link>
+    </None>
+    <None Include="..\builtxnbs\desktopgl\screens\globalcontentscreen\menusong.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>MenuSong</Name>
+      <Link>content\screens\globalcontentscreen\menusong.xnb</Link>
+    </None>
+    <None Include="..\builtxnbs\desktopgl\screens\pausescreen\soundeffectinstancefile.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SoundEffectInstanceFile</Name>
+      <Link>content\screens\pausescreen\soundeffectinstancefile.xnb</Link>
+    </None>
+    <None Include="content\emitterlistfile.emix">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>EmitterListFile</Name>
+    </None>
+    <None Include="content\entities\androidtests\myassets.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>myassets</Name>
+    </None>
+    <None Include="content\entities\animationchainentity\animationchainlistfile.achx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>AnimationChainListFile</Name>
+    </None>
+    <None Include="content\entities\animationchainentity\animationchainlistfile2.achx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>AnimationChainListFile2</Name>
+    </None>
+    <None Include="content\entities\animationchainentity\lttp_npcs.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>lttp_npcs</Name>
+    </None>
+    <None Include="content\entities\animationchainentity\scenefile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="content\entities\baseentity\bobblebikerlogo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>BobbleBikerLogo</Name>
+    </None>
+    <None Include="content\entities\baseentity\staticfile1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>StaticFile1</Name>
+    </None>
+    <None Include="content\entities\csventity\csvforvariable.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CsvForVariable</Name>
+    </None>
+    <None Include="content\entities\csventity\csvloadedtolist.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CsvLoadedToList</Name>
+    </None>
+    <None Include="content\entities\csventity\csvwithcustomtypes.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CsvWithCustomTypes</Name>
+    </None>
+    <None Include="content\entities\csventity\csvwithextracells.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CsvWithExtraCells</Name>
+    </None>
+    <None Include="content\entities\csventity\redball.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>redball</Name>
+    </None>
+    <None Include="content\entities\csventity\sharedclassentitycsv.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SharedClassEntityCsv</Name>
+    </None>
+    <None Include="content\entities\csventity\withfileatendfile.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>WithFileAtEndFile</Name>
+    </None>
+    <None Include="content\entities\csventity\yellowball.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>yellowball</Name>
+    </None>
+    <None Include="content\entities\customcontenttypeentity\lineoftextfile.lin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>LineOfTextFile</Name>
+    </None>
+    <None Include="content\entities\customcontenttypeentity\loadedonlywhenreferencedfile.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>LoadedOnlyWhenReferencedFile</Name>
+    </None>
+    <None Include="content\entities\customcontenttypeentity\testruntimeclassfile.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TestRuntimeClassFile</Name>
+    </None>
+    <None Include="content\entities\derivedentity\bear.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Bear</Name>
+    </None>
+    <None Include="content\entities\derivedentity\shapecollectionfile.shcx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ShapeCollectionFile</Name>
+    </None>
+    <None Include="content\entities\emitterentity\emitterlistfile1.emix">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>EmitterListFile1</Name>
+    </None>
+    <None Include="content\entities\emitterentity\emitterloadedonlywhenreferenced.emix">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>EmitterLoadedOnlyWhenReferenced</Name>
+    </None>
+    <None Include="content\entities\emitterentity\redball.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>redball</Name>
+    </None>
+    <None Include="content\entities\entityfortestplugin\spreadsheetfile.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SpreadsheetFile</Name>
+    </None>
+    <None Include="content\entities\factoryentity\scenefile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="content\entities\filereferencingentity\bear.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Bear</Name>
+    </None>
+    <None Include="content\entities\filereferencingentity\bearclaws_attack.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>BearClaws_attack</Name>
+    </None>
+    <None Include="content\entities\filereferencingentity\folder1\emptytmx.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>EmptyTmx</Name>
+    </None>
+    <None Include="content\entities\filereferencingentity\folder1\slug.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Slug</Name>
+    </None>
+    <None Include="content\entities\filereferencingentity\folder2\slug.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Slug</Name>
+    </None>
+    <None Include="content\entities\filereferencingentity\projectspecificshcx.shcx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ProjectSpecificShcx</Name>
+    </None>
+    <None Include="content\entities\filereferencingentity\punchhit.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>punchhit</Name>
+    </None>
+    <None Include="content\entities\filereferencingentity\regularscene.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>RegularScene</Name>
+    </None>
+    <None Include="content\entities\filereferencingentity\running.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Running</Name>
+    </None>
+    <None Include="content\entities\filereferencingentity\sceneloadedonlywhenreferenced.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneLoadedOnlyWhenReferenced</Name>
+    </None>
+    <None Include="content\entities\filereferencingentity\textfile.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TextFile</Name>
+    </None>
+    <None Include="content\entities\flatredballtypeentity\scenefilewithsprite.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFileWithSprite</Name>
+    </None>
+    <None Include="content\entities\flatredballtypeentity\scenewithattachmentoffset.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneWithAttachmentOffset</Name>
+    </None>
+    <None Include="content\entities\globalcontententity\scenefile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="content\entities\incompletedefinitionentity\scenefile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="content\entities\layerowner\scenefile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="content\entities\layerowner\scenefile2.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile2</Name>
+    </None>
+    <None Include="content\entities\loadedonlywhenreferenced\scenefile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="content\entities\loadedonlywhenreferenced\shapecollectionoption1.shcx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ShapeCollectionOption1</Name>
+    </None>
+    <None Include="content\entities\loadedonlywhenreferenced\shapecollectionoption2.shcx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ShapeCollectionOption2</Name>
+    </None>
+    <None Include="content\entities\manuallyupdatedentity\scenefile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="content\entities\noiwindowbase\bear.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Bear</Name>
+    </None>
+    <None Include="content\entities\platformercharacterbase\animations.achx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Animations</Name>
+    </None>
+    <None Include="content\entities\platformercharacterbase\characters_7.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>characters_7</Name>
+    </None>
+    <None Include="content\entities\platformercharacterbase\movementvalues.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>MovementValues</Name>
+    </None>
+    <None Include="content\entities\platformerpluginentity2\platformervalues.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>PlatformerValues</Name>
+    </None>
+    <None Include="content\entities\platformerpluginentity\platformervalues.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>PlatformerValues</Name>
+    </None>
+    <None Include="content\entities\positioningentity\scenefile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="content\entities\sceneentity\scenefile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="content\entities\scnxattachmenttest\attachmentscnx.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>AttachmentScnx</Name>
+    </None>
+    <None Include="content\entities\shapeentity\shapecollectionfile.shcx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ShapeCollectionFile</Name>
+    </None>
+    <None Include="content\entities\splineentity\splinelistfile.splx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SplineListFile</Name>
+    </None>
+    <None Include="content\entities\spriteentity\monster.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Monster</Name>
+    </None>
+    <None Include="content\entities\spriteinheritingentity\bear.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Bear</Name>
+    </None>
+    <None Include="content\entities\stateentity\animationchainlistfile.achx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>AnimationChainListFile</Name>
+    </None>
+    <None Include="content\entities\stateentity\scenefile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="content\entities\textentity\badfont.fnt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>BadFont</Name>
+    </None>
+    <None Include="content\entities\textentity\bitmapfontfile.fnt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>BitmapFontFile</Name>
+    </None>
+    <None Include="content\entities\textentity\bitmapfontfile_0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>bitmapfontfile_0</Name>
+    </None>
+    <None Include="content\entities\textentity\nesfonttexture.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>nesfonttexture</Name>
+    </None>
+    <None Include="content\entities\texturecontainer\pipejuiceblue.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>pipejuiceblue</Name>
+    </None>
+    <None Include="content\entities\texturecontainer\sharedlogo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>sharedlogo</Name>
+    </None>
+    <None Include="content\entities\texturepixelentity\bear.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Bear</Name>
+    </None>
+    <None Include="content\entities\tileentity\tmxfile.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TmxFile</Name>
+    </None>
+    <None Include="content\entities\topdownpluginentity\topdownvalues.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TopDownValues</Name>
+    </None>
+    <None Include="content\entities\tunneledvariableentity\animationchainlistfile.achx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>AnimationChainListFile</Name>
+    </None>
+    <None Include="content\entities\variableentity\scenefileforsourcefileset.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFileForSourceFileSet</Name>
+    </None>
+    <None Include="content\entities\xmlentity\xmlfile.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>XMLFile</Name>
+    </None>
+    <None Include="content\folderatcontentroot\otherredball.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>OtherRedBall</Name>
+    </None>
+    <None Include="content\globalcontent\arrow01.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>arrow01</Name>
+    </None>
+    <None Include="content\globalcontent\book.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Book</Name>
+    </None>
+    <None Include="content\globalcontent\createdbyexcel1.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CreatedByExcel1</Name>
+    </None>
+    <None Include="content\globalcontent\csvfolder\spreadsheetfile1.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SpreadsheetFile1</Name>
+    </None>
+    <None Include="content\globalcontent\csvfolder\spreadsheetfile2.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SpreadsheetFile2</Name>
+    </None>
+    <None Include="content\globalcontent\emptyanimationforreload.achx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>EmptyAnimationForReload</Name>
+    </None>
+    <None Include="content\globalcontent\folderinglobalcontent\emptytmx.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>EmptyTmx</Name>
+    </None>
+    <None Include="content\globalcontent\folderinglobalcontent\scenefileinfolder.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFileInFolder</Name>
+    </None>
+    <None Include="content\globalcontent\globalbmfctofnt.fnt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>globalbmfctofnt</Name>
+    </None>
+    <None Include="content\globalcontent\globalbmfctofnt_0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>globalbmfctofnt_0</Name>
+    </None>
+    <None Include="content\globalcontent\globalcsv.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>GlobalCsv</Name>
+    </None>
+    <None Include="content\globalcontent\hugecsv.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>HugeCsv</Name>
+    </None>
+    <None Include="content\globalcontent\listcsv.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ListCsv</Name>
+    </None>
+    <None Include="content\globalcontent\loadedatruntimefalsecsv.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>LoadedAtRuntimeFalseCsv</Name>
+    </None>
+    <None Include="content\globalcontent\localizationdatabase.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>LocalizationDatabase</Name>
+    </None>
+    <None Include="content\globalcontent\notloadedtextfile.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>NotLoadedTextFile</Name>
+    </None>
+    <None Include="content\globalcontent\resources.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Resources</Name>
+    </None>
+    <None Include="content\globalcontent\sharedclassglobalcsv.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SharedClassGlobalCsv</Name>
+    </None>
+    <None Include="content\globalcontent\spreadsheettoreplace.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SpreadsheetToReplace</Name>
+    </None>
+    <None Include="content\globalcontent\texturesettingsinfo.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TextureSettingsInfo</Name>
+    </None>
+    <None Include="content\globalcontent\waves.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Waves</Name>
+    </None>
+    <None Include="content\gumproject\components\alignmentobject.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>alignmentobject</Name>
+    </None>
+    <None Include="content\gumproject\components\animatedcomponent.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>animatedcomponent</Name>
+    </None>
+    <None Include="content\gumproject\components\childstatecomponent.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>childstatecomponent</Name>
+    </None>
+    <None Include="content\gumproject\components\coloredcomponentwithcoloredstates.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>coloredcomponentwithcoloredstates</Name>
+    </None>
+    <None Include="content\gumproject\components\componentcontainingsprite.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>componentcontainingsprite</Name>
+    </None>
+    <None Include="content\gumproject\components\componentfolder\infolder1.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>infolder1</Name>
+    </None>
+    <None Include="content\gumproject\components\componentfolder\samenamecomponent.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>samenamecomponent</Name>
+    </None>
+    <None Include="content\gumproject\components\componentfolder\statecomponentcontainedfoldered.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>statecomponentcontainedfoldered</Name>
+    </None>
+    <None Include="content\gumproject\components\componentwithcustominitialize.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>componentwithcustominitialize</Name>
+    </None>
+    <None Include="content\gumproject\components\containerofinfolder.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>containerofinfolder</Name>
+    </None>
+    <None Include="content\gumproject\components\defaultforms\button.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>button</Name>
+    </None>
+    <None Include="content\gumproject\components\defaultforms\checkbox.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>checkbox</Name>
+    </None>
+    <None Include="content\gumproject\components\defaultforms\coloredframe.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>coloredframe</Name>
+    </None>
+    <None Include="content\gumproject\components\defaultforms\combobox.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>combobox</Name>
+    </None>
+    <None Include="content\gumproject\components\defaultforms\listbox.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>listbox</Name>
+    </None>
+    <None Include="content\gumproject\components\defaultforms\listboxitem.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>listboxitem</Name>
+    </None>
+    <None Include="content\gumproject\components\defaultforms\radiobutton.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>radiobutton</Name>
+    </None>
+    <None Include="content\gumproject\components\defaultforms\scrollbar.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>scrollbar</Name>
+    </None>
+    <None Include="content\gumproject\components\defaultforms\scrollbarthumb.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>scrollbarthumb</Name>
+    </None>
+    <None Include="content\gumproject\components\defaultforms\scrollviewer.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>scrollviewer</Name>
+    </None>
+    <None Include="content\gumproject\components\defaultforms\slider.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>slider</Name>
+    </None>
+    <None Include="content\gumproject\components\defaultforms\textbox.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>textbox</Name>
+    </None>
+    <None Include="content\gumproject\components\defaultforms\togglebutton.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>togglebutton</Name>
+    </None>
+    <None Include="content\gumproject\components\defaultforms\usercontrol.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>usercontrol</Name>
+    </None>
+    <None Include="content\gumproject\components\folder with space\componentinfolderwithspace.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>componentinfolderwithspace</Name>
+    </None>
+    <None Include="content\gumproject\components\folder1\folderedentity1.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>folderedentity1</Name>
+    </None>
+    <None Include="content\gumproject\components\folder2\folderedentity2.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>folderedentity2</Name>
+    </None>
+    <None Include="content\gumproject\components\inheritfrominfolder.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>inheritfrominfolder</Name>
+    </None>
+    <None Include="content\gumproject\components\nineslicebutton.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>nineslicebutton</Name>
+    </None>
+    <None Include="content\gumproject\components\parentstatecomponent.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>parentstatecomponent</Name>
+    </None>
+    <None Include="content\gumproject\components\samenamecomponent.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>samenamecomponent</Name>
+    </None>
+    <None Include="content\gumproject\components\spriteinheritingcomponnt.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>spriteinheritingcomponnt</Name>
+    </None>
+    <None Include="content\gumproject\components\stackingcomponent.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>stackingcomponent</Name>
+    </None>
+    <None Include="content\gumproject\components\star_particle.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>star_particle</Name>
+    </None>
+    <None Include="content\gumproject\components\statecomponent.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>statecomponent</Name>
+    </None>
+    <None Include="content\gumproject\components\statecomponentcontained.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>statecomponentcontained</Name>
+    </None>
+    <None Include="content\gumproject\components\switch.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>switch</Name>
+    </None>
+    <None Include="content\gumproject\components\testcomponent.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>testcomponent</Name>
+    </None>
+    <None Include="content\gumproject\components\testrectangle.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>testrectangle</Name>
+    </None>
+    <None Include="content\gumproject\components\texturesettinginstatecomponent.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>texturesettinginstatecomponent</Name>
+    </None>
+    <None Include="content\gumproject\components\usedtoinheritfromtextcomponent.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>usedtoinheritfromtextcomponent</Name>
+    </None>
+    <None Include="content\gumproject\fontcache\font18arial.fnt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>font18arial</Name>
+    </None>
+    <None Include="content\gumproject\fontcache\font18arial_0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>font18arial_0</Name>
+    </None>
+    <None Include="content\gumproject\fontcache\font18arial_nosmooth.fnt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>font18arial_nosmooth</Name>
+    </None>
+    <None Include="content\gumproject\fontcache\font18arial_nosmooth_0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>font18arial_nosmooth_0</Name>
+    </None>
+    <None Include="content\gumproject\fontcache\font18arial_o1.fnt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>font18arial_o1</Name>
+    </None>
+    <None Include="content\gumproject\fontcache\font18arial_o1_0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>font18arial_o1_0</Name>
+    </None>
+    <None Include="content\gumproject\fontcache\font18arial_o1_nosmooth.fnt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>font18arial_o1_nosmooth</Name>
+    </None>
+    <None Include="content\gumproject\fontcache\font18arial_o1_nosmooth_0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>font18arial_o1_nosmooth_0</Name>
+    </None>
+    <None Include="content\gumproject\gumproject.gumx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>GumProject</Name>
+    </None>
+    <None Include="content\gumproject\screens\basegluescreennotbasegum.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>basegluescreennotbasegum</Name>
+    </None>
+    <None Include="content\gumproject\screens\derivedscreengum.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>derivedscreengum</Name>
+    </None>
+    <None Include="content\gumproject\screens\gumscreenlayeredgum.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>gumscreenlayeredgum</Name>
+    </None>
+    <None Include="content\gumproject\screens\gumscreennogumidbscreengum.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>gumscreennogumidbscreengum</Name>
+    </None>
+    <None Include="content\gumproject\screens\inputscreengum.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>inputscreengum</Name>
+    </None>
+    <None Include="content\gumproject\screens\rendertargetscreengum.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>rendertargetscreengum</Name>
+    </None>
+    <None Include="content\gumproject\screens\screenloadedasgraphicaluielement.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>screenloadedasgraphicaluielement</Name>
+    </None>
+    <None Include="content\gumproject\screens\testscreen.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>testscreen</Name>
+    </None>
+    <None Include="content\gumproject\screens\testscreenunused.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>testscreenunused</Name>
+    </None>
+    <None Include="content\gumproject\screens\tileshapecollectionscreengum.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>tileshapecollectionscreengum</Name>
+    </None>
+    <None Include="content\gumproject\standards\circle.gutx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>circle</Name>
+    </None>
+    <None Include="content\gumproject\standards\coloredrectangle.gutx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>coloredrectangle</Name>
+    </None>
+    <None Include="content\gumproject\standards\component.gutx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>component</Name>
+    </None>
+    <None Include="content\gumproject\standards\container.gutx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>container</Name>
+    </None>
+    <None Include="content\gumproject\standards\nineslice.gutx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>nineslice</Name>
+    </None>
+    <None Include="content\gumproject\standards\polygon.gutx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>polygon</Name>
+    </None>
+    <None Include="content\gumproject\standards\rectangle.gutx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>rectangle</Name>
+    </None>
+    <None Include="content\gumproject\standards\sprite.gutx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>sprite</Name>
+    </None>
+    <None Include="content\gumproject\standards\standardgraphics\red_bottomcenter.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>red_bottomcenter</Name>
+    </None>
+    <None Include="content\gumproject\standards\standardgraphics\red_bottomleft.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>red_bottomleft</Name>
+    </None>
+    <None Include="content\gumproject\standards\standardgraphics\red_bottomright.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>red_bottomright</Name>
+    </None>
+    <None Include="content\gumproject\standards\standardgraphics\red_center.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>red_center</Name>
+    </None>
+    <None Include="content\gumproject\standards\standardgraphics\red_left.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>red_left</Name>
+    </None>
+    <None Include="content\gumproject\standards\standardgraphics\red_right.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>red_right</Name>
+    </None>
+    <None Include="content\gumproject\standards\standardgraphics\red_topcenter.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>red_topcenter</Name>
+    </None>
+    <None Include="content\gumproject\standards\standardgraphics\red_topleft.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>red_topleft</Name>
+    </None>
+    <None Include="content\gumproject\standards\standardgraphics\red_topright.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>red_topright</Name>
+    </None>
+    <None Include="content\gumproject\standards\text.gutx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>text</Name>
+    </None>
+    <None Include="content\gumproject\uispritesheet.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>uispritesheet</Name>
+    </None>
+    <None Include="content\loadedonlywhenreferencedscene.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>LoadedOnlyWhenReferencedScene</Name>
+    </None>
+    <None Include="content\redball.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>redball</Name>
+    </None>
+    <None Include="content\screens\csvscreen\csvcustomclass1.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CsvCustomClass1</Name>
+    </None>
+    <None Include="content\screens\csvscreen\csvcustomclass2.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CsvCustomClass2</Name>
+    </None>
+    <None Include="content\screens\csvscreen\csvmanuallyloadedforpropertytest.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CsvManuallyLoadedForPropertyTest</Name>
+    </None>
+    <None Include="content\screens\csvscreen\csvusingcustomdatafile.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CsvUsingCustomDataFile</Name>
+    </None>
+    <None Include="content\screens\csvscreen\csvwithanimationframesavebase.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CsvWithAnimationFrameSaveBase</Name>
+    </None>
+    <None Include="content\screens\csvscreen\customcsvclassloadedonlywhenreferenced.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CustomCsvClassLoadedOnlyWhenReferenced</Name>
+    </None>
+    <None Include="content\screens\csvscreen\sharedclassscreencsv.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SharedClassScreenCsv</Name>
+    </None>
+    <None Include="content\screens\csvscreen\spreadsheetfile.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SpreadsheetFile</Name>
+    </None>
+    <None Include="content\screens\customcontenttypescreen\lineoftextfile.lin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>LineOfTextFile</Name>
+    </None>
+    <None Include="content\screens\filescreen\book.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Book</Name>
+    </None>
+    <None Include="content\screens\filescreen\emitterfileloadedonlywhenreferenced.emix">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>EmitterFileLoadedOnlyWhenReferenced</Name>
+    </None>
+    <None Include="content\screens\filescreen\emitterlistfile1.emix">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>EmitterListFile1</Name>
+    </None>
+    <None Include="content\screens\filescreen\notaddedtomanagers.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>NotAddedToManagers</Name>
+    </None>
+    <None Include="content\screens\filescreen\redball.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>redball</Name>
+    </None>
+    <None Include="content\screens\filescreen\scenefile1.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile1</Name>
+    </None>
+    <None Include="content\screens\filescreen\scenefile2.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile2</Name>
+    </None>
+    <None Include="content\screens\filescreen\shapecollectionfile.shcx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ShapeCollectionFile</Name>
+    </None>
+    <None Include="content\screens\filescreen\staticguy.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>StaticGuy</Name>
+    </None>
+    <None Include="content\screens\firstscreen\animationchainlistfile.achx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>AnimationChainListFile</Name>
+    </None>
+    <None Include="content\screens\firstscreen\running.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>running</Name>
+    </None>
+    <None Include="content\screens\flatredballtypescreen\aura.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Aura</Name>
+    </None>
+    <None Include="content\screens\flatredballtypescreen\scenefile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="content\screens\flatredballtypescreen\sceneoption1.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneOption1</Name>
+    </None>
+    <None Include="content\screens\flatredballtypescreen\sceneoption2.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneOption2</Name>
+    </None>
+    <None Include="content\screens\flatredballtypescreen\shapecollectionfile.shcx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ShapeCollectionFile</Name>
+    </None>
+    <None Include="content\screens\globalcontentscreen\backgroundemitters.emix">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>BackgroundEmitters</Name>
+    </None>
+    <None Include="content\screens\globalcontentscreen\particle_bubble.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>particle_bubble</Name>
+    </None>
+    <None Include="content\screens\globalcontentscreen\particle_leaves.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>particle_leaves</Name>
+    </None>
+    <None Include="content\screens\globalcontentscreen\particle_smoke.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>particle_smoke</Name>
+    </None>
+    <None Include="content\screens\globalcontentscreen\particle_star.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>particle_star</Name>
+    </None>
+    <None Include="content\screens\globalcontentscreen\particle_wind.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>particle_wind</Name>
+    </None>
+    <None Include="content\screens\globalcontentscreen\scenefile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="content\screens\layerscreen\scenefile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="content\screens\localizationscreen\scenefile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="content\screens\localizationscreen\sceneforobjects.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneForObjects</Name>
+    </None>
+    <None Include="content\screens\localizationscreen\scenefortextobjectonly.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneForTextObjectOnly</Name>
+    </None>
+    <None Include="content\screens\nodenetworkscreen\layerednodenetwork.nntx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>LayeredNodeNetwork</Name>
+    </None>
+    <None Include="content\screens\nodenetworkscreen\nodenetworkfile.nntx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>NodeNetworkFile</Name>
+    </None>
+    <None Include="content\screens\repeatingscreen\emitterlistfile1.emix">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>EmitterListFile1</Name>
+    </None>
+    <None Include="content\screens\repeatingscreen\scenefile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="content\screens\saveclassscreen\scenesavefile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneSaveFile</Name>
+    </None>
+    <None Include="content\screens\screentoloadasync\frb1024.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Frb1024</Name>
+    </None>
+    <None Include="content\screens\screentoloadasync\logo2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Logo2</Name>
+    </None>
+    <None Include="content\screens\screentoloadasync\logo3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Logo3</Name>
+    </None>
+    <None Include="content\screens\splashscreen\frblogo512.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>frblogo512</Name>
+    </None>
+    <None Include="content\screens\splashscreen\scenefile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="content\screens\tiledlevelscreen\levels\level1.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Level1</Name>
+    </None>
+    <None Include="content\screens\tiledlevelscreen\tilesets\level1info.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Level1Info</Name>
+    </None>
+    <None Include="content\screens\tiledlevelscreen\tilesets\platformertiles.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>platformertiles</Name>
+    </None>
+    <None Include="content\screens\tileshapecollectionscreen\tiles.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>tiles</Name>
+    </None>
+    <None Include="content\screens\tileshapecollectionscreen\tileset.tsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>tileset</Name>
+    </None>
+    <None Include="content\screens\tileshapecollectionscreen\tmxfile.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TmxFile</Name>
+    </None>
+    <None Include="content\screens\tmxscreen\barontown.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>barontown</Name>
+    </None>
+    <None Include="content\screens\tmxscreen\emptymap1.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>emptyMap1</Name>
+    </None>
+    <None Include="content\screens\tmxscreen\finalfantasyscene.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>FinalFantasyScene</Name>
+    </None>
+    <None Include="content\screens\tmxscreen\rotatedtiletmx.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>RotatedTileTmx</Name>
+    </None>
+    <None Include="content\screens\tmxscreen\sheet_9.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>sheet_9</Name>
+    </None>
+    <None Include="content\screens\tmxscreen\testlevel2.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TestLevel2</Name>
+    </None>
+    <None Include="content\screens\tmxscreen\tilbtest.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TilbTest</Name>
+    </None>
+    <None Include="content\screens\tmxscreen\tilesetwithentities.tsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>tilesetwithentities</Name>
+    </None>
+    <None Include="content\screens\tmxscreen\tmxforobjectsourcefile.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TmxForObjectSourceFile</Name>
+    </None>
+    <None Include="content\screens\tmxscreen\tmxwithemptylayers.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TmxWithEmptyLayers</Name>
+    </None>
+    <None Include="content\screens\tmxscreen\tmxwithentities.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TmxWithEntities</Name>
+    </None>
+    <None Include="content\screens\tmxscreen\tmxwithlayerswithproperties.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TmxWithLayersWithProperties</Name>
+    </None>
+    <None Include="content\screens\tmxscreen\tmxwithshapes.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TmxWithShapes</Name>
+    </None>
+    <None Include="content\screens\tmxscreen\tmxwithtileproperties.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TmxWithTileProperties</Name>
+    </None>
+    <None Include="content\screens\tmxscreen\tmxwithtileshapecollectionlayers.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TmxWithTileShapeCollectionLayers</Name>
+    </None>
+    <None Include="content\screens\tmxscreen\withlargeobjectonfirstlayer.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>WithLargeObjectOnFirstLayer</Name>
+    </None>
+    <None Include="content\screens\transparencyrenderingscreen\colortest.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ColorTest</Name>
+    </None>
+    <None Include="content\screens\xmlscreen\xmlfilewithnobackingobject.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>XmlFileWithNoBackingObject</Name>
+    </None>
+    <None Include="content\simplescene.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SimpleScene</Name>
+    </None>
+    <None Include="content\simpleshapecollection.shcx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SimpleShapeCollection</Name>
+    </None>
+    <None Include="Libraries\DesktopGl\Debug\FlatRedBall.Forms.dll" />
+    <None Include="Libraries\DesktopGl\Debug\GumCoreXnaPc.dll" />
+    <None Include="Libraries\DesktopGl\Debug\StateInterpolation.dll" />
+    <None Include="Libraries\DesktopGl\Release\FlatRedBall.Forms.dll" />
+    <None Include="Libraries\DesktopGl\Release\GumCoreXnaPc.dll" />
+    <None Include="Libraries\DesktopGl\Release\StateInterpolation.dll" />
+    <Content Include="MonoGame.Framework.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libopenal.1.dylib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libSDL2-2.0.0.dylib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="x64\SDL2.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="x64\soft_oal.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="x86\SDL2.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="x86\soft_oal.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <EmbeddedResource Include="Icon.ico" />
+    <None Include="Libraries\DesktopGl\Debug\FlatRedBallDesktopGL.dll" />
+    <None Include="Libraries\DesktopGl\Debug\FlatRedBallDesktopGL.pdb" />
+    <None Include="Libraries\DesktopGl\Debug\Lidgren.Network.dll" />
+    <None Include="Libraries\DesktopGl\Debug\MonoGame.Framework.dll" />
+    <None Include="Libraries\DesktopGl\Debug\MonoGame.Framework.Net.dll" />
+    <None Include="Libraries\DesktopGl\Debug\NVorbis.dll" />
+    <None Include="Libraries\DesktopGl\Debug\OpenTK.dll" />
+    <None Include="Libraries\DesktopGl\Release\FlatRedBallDesktopGL.dll" />
+    <None Include="Libraries\DesktopGl\Release\FlatRedBallDesktopGL.pdb" />
+    <None Include="Libraries\DesktopGl\Release\Lidgren.Network.dll" />
+    <None Include="Libraries\DesktopGl\Release\MonoGame.Framework.dll" />
+    <None Include="Libraries\DesktopGl\Release\MonoGame.Framework.Net.dll" />
+    <None Include="Libraries\DesktopGl\Release\NVorbis.dll" />
+    <None Include="Libraries\DesktopGl\Release\OpenTK.dll" />
+    <Content Include="OpenTK.dll.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="x64\libopenal.so.1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="x64\libSDL2-2.0.so.0">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="x86\libopenal.so.1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="x86\libSDL2-2.0.so.0">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>12.0.3</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallDesktopGL.csproj">
+      <Project>{10bda06c-7269-4cce-ae2a-d445f414520a}</Project>
+      <Name>FlatRedBallDesktopGL</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

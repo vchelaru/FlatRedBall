@@ -333,12 +333,8 @@ namespace FlatRedBall
             get { return mAutomaticallyUpdatedSpritesReadOnly; }
         }
 
-        public static ReadOnlyCollection<Sprite> ManuallyUpdatedSprites
-        {
-            get { return mManuallyUpdatedSpritesReadOnly; }
-        }
+        public static ReadOnlyCollection<Sprite> ManuallyUpdatedSprites => mManuallyUpdatedSpritesReadOnly;
 
-        #region XML Docs
         /// <summary>
         /// Gets the default Camera.
         /// </summary>
@@ -347,7 +343,6 @@ namespace FlatRedBall
         /// used for all logic.  This Camera is automatically created by the engine,
         /// so single-camera applications do not need to instantiate their own Camera.
         /// </remarks>
-        #endregion
         static public Camera Camera
         {
             get
@@ -366,10 +361,8 @@ namespace FlatRedBall
 #endif
                 return mCameras[mCurrentCameraIndex];
             }
-            //get { return mCameras[0]; }
         }
 
-        #region XML Docs
         /// <summary>
         /// The List of all Cameras used by FlatRedBall.  Any Camera in this List is managed and
         /// renders according to its settings.
@@ -379,12 +372,7 @@ namespace FlatRedBall
         /// rendered.  There is no AddCamera method - simply adding the Camera to this list is sufficient
         /// for adding it to the engine.
         /// </remarks>
-        #endregion
-        public static PositionedObjectList<Camera> Cameras
-        {
-            get { return mCameras; }
-        }
-
+        public static PositionedObjectList<Camera> Cameras => mCameras; 
 
         #region XML Docs
         /// <summary>

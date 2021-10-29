@@ -1384,6 +1384,76 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Forms\Controls\CustomUserControl.cs">
       <Link>Forms\Controls\CustomUserControl.cs</Link>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Forms\Screens\BaseGlueScreenNotBaseGumForms.cs">
+      <Link>Forms\Screens\BaseGlueScreenNotBaseGumForms.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Forms\Screens\BaseGlueScreenNotBaseGumForms.Generated.cs">
+      <Link>Forms\Screens\BaseGlueScreenNotBaseGumForms.Generated.cs</Link>
+      <DependentUpon>BaseGlueScreenNotBaseGumForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Forms\Screens\DerivedScreenGumForms.cs">
+      <Link>Forms\Screens\DerivedScreenGumForms.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Forms\Screens\DerivedScreenGumForms.Generated.cs">
+      <Link>Forms\Screens\DerivedScreenGumForms.Generated.cs</Link>
+      <DependentUpon>DerivedScreenGumForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Forms\Screens\GumScreenLayeredGumForms.cs">
+      <Link>Forms\Screens\GumScreenLayeredGumForms.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Forms\Screens\GumScreenLayeredGumForms.Generated.cs">
+      <Link>Forms\Screens\GumScreenLayeredGumForms.Generated.cs</Link>
+      <DependentUpon>GumScreenLayeredGumForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Forms\Screens\GumScreenNoGumIdbScreenGumForms.cs">
+      <Link>Forms\Screens\GumScreenNoGumIdbScreenGumForms.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Forms\Screens\GumScreenNoGumIdbScreenGumForms.Generated.cs">
+      <Link>Forms\Screens\GumScreenNoGumIdbScreenGumForms.Generated.cs</Link>
+      <DependentUpon>GumScreenNoGumIdbScreenGumForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Forms\Screens\InputScreenGumForms.cs">
+      <Link>Forms\Screens\InputScreenGumForms.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Forms\Screens\InputScreenGumForms.Generated.cs">
+      <Link>Forms\Screens\InputScreenGumForms.Generated.cs</Link>
+      <DependentUpon>InputScreenGumForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Forms\Screens\RenderTargetScreenGumForms.cs">
+      <Link>Forms\Screens\RenderTargetScreenGumForms.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Forms\Screens\RenderTargetScreenGumForms.Generated.cs">
+      <Link>Forms\Screens\RenderTargetScreenGumForms.Generated.cs</Link>
+      <DependentUpon>RenderTargetScreenGumForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Forms\Screens\ScreenLoadedAsGraphicalUiElementForms.cs">
+      <Link>Forms\Screens\ScreenLoadedAsGraphicalUiElementForms.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Forms\Screens\ScreenLoadedAsGraphicalUiElementForms.Generated.cs">
+      <Link>Forms\Screens\ScreenLoadedAsGraphicalUiElementForms.Generated.cs</Link>
+      <DependentUpon>ScreenLoadedAsGraphicalUiElementForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Forms\Screens\TestScreenForms.cs">
+      <Link>Forms\Screens\TestScreenForms.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Forms\Screens\TestScreenForms.Generated.cs">
+      <Link>Forms\Screens\TestScreenForms.Generated.cs</Link>
+      <DependentUpon>TestScreenForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Forms\Screens\TestScreenUnusedForms.cs">
+      <Link>Forms\Screens\TestScreenUnusedForms.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Forms\Screens\TestScreenUnusedForms.Generated.cs">
+      <Link>Forms\Screens\TestScreenUnusedForms.Generated.cs</Link>
+      <DependentUpon>TestScreenUnusedForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Forms\Screens\TileShapeCollectionScreenGumForms.cs">
+      <Link>Forms\Screens\TileShapeCollectionScreenGumForms.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Forms\Screens\TileShapeCollectionScreenGumForms.Generated.cs">
+      <Link>Forms\Screens\TileShapeCollectionScreenGumForms.Generated.cs</Link>
+      <DependentUpon>TileShapeCollectionScreenGumForms.cs</DependentUpon>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Game1.cs">
       <Link>Game1.cs</Link>
     </Compile>
@@ -1481,12 +1551,8 @@
       <Link>GumRuntimes\ComponentContainingSpriteRuntime.Generated.cs</Link>
       <DependentUpon>ComponentContainingSpriteRuntime.cs</DependentUpon>
     </Compile>
-    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\componentfolder\InFolder1Runtime.cs">
-      <Link>GumRuntimes\componentfolder\InFolder1Runtime.cs</Link>
-    </Compile>
-    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\componentfolder\InFolder1Runtime.Generated.cs">
-      <Link>GumRuntimes\componentfolder\InFolder1Runtime.Generated.cs</Link>
-      <DependentUpon>InFolder1Runtime.cs</DependentUpon>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\ComponentFolder\InFolder1Runtime.Generated.cs">
+      <Link>GumRuntimes\ComponentFolder\InFolder1Runtime.Generated.cs</Link>
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\ComponentFolder\SameNameComponentRuntime.cs">
       <Link>GumRuntimes\ComponentFolder\SameNameComponentRuntime.cs</Link>
@@ -1703,10 +1769,10 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\RectangleRuntime.Generated.cs">
       <Link>GumRuntimes\RectangleRuntime.Generated.cs</Link>
     </Compile>
-    <Compile Include="..\..\gluetestproject\gluetestproject\GumRuntimes\RenderTargetScreenGumRuntime.cs">
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\RenderTargetScreenGumRuntime.cs">
       <Link>GumRuntimes\RenderTargetScreenGumRuntime.cs</Link>
     </Compile>
-    <Compile Include="..\..\gluetestproject\gluetestproject\GumRuntimes\RenderTargetScreenGumRuntime.Generated.cs">
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\RenderTargetScreenGumRuntime.Generated.cs">
       <Link>GumRuntimes\RenderTargetScreenGumRuntime.Generated.cs</Link>
       <DependentUpon>RenderTargetScreenGumRuntime.cs</DependentUpon>
     </Compile>
@@ -2344,6 +2410,9 @@
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\TopDown\TopDownAiInput.Generated.cs">
       <Link>TopDown\TopDownAiInput.Generated.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TopDown\TopDownAiTargetLogic.Generated.cs">
+      <Link>TopDown\TopDownAiTargetLogic.Generated.cs</Link>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -3184,16 +3253,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Font18Arial_o1_noSmooth_0</Name>
       <Link>content\gumproject\fontcache\font18arial_o1_nosmooth_0.png</Link>
-    </None>
-    <None Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\fontcache\font22arial.fnt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>font22arial</Name>
-      <Link>content\gumproject\fontcache\font22arial.fnt</Link>
-    </None>
-    <None Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\fontcache\font22arial_0.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>Font22Arial_0</Name>
-      <Link>content\gumproject\fontcache\font22arial_0.png</Link>
     </None>
     <None Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\gumproject.gumx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
