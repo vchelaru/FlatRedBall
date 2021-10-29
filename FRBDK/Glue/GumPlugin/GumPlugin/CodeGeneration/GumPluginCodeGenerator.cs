@@ -64,7 +64,10 @@ namespace GumPlugin.CodeGeneration
             isGlueScreen = element is FlatRedBall.Glue.SaveClasses.ScreenSave;
             hasGumScreen = GetIfContainsAnyGumScreenFiles(element);
             // technically all FRB projects now have forms, so let's just default that to true
-            hasForms = true;
+            hasForms = element.ReferencedFiles.Any(item =>
+            {
+                return item.RuntimeType?.EndsWith(".GraphicalUiElement") == true;
+            });
             // if it's derived, then the base will take care of it.
             var isDerivedScreen = !string.IsNullOrEmpty(element.BaseElement);
 

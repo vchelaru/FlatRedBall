@@ -3154,20 +3154,6 @@
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
-          <InstanceName>BaseEntityInstance</InstanceName>
-          <SourceClassType>Entities\BaseEntity</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsObject xsi:type="SourceType">Entity</ValueAsObject>
-            </PropertySave>
-          </Properties>
-          <SourceType>Entity</SourceType>
-          <AttachToContainer>true</AttachToContainer>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
           <InstanceName>NewDerived</InstanceName>
           <SourceClassType>Entities\DerivedEntity</SourceClassType>
           <Properties>
@@ -4177,22 +4163,6 @@
           <SourceType>FlatRedBallType</SourceType>
           <AttachToContainer>true</AttachToContainer>
           <Instantiate>false</Instantiate>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <InstanceName>BaseEntitySetByContainerInvalid</InstanceName>
-          <SourceClassType>Entities\BaseEntity</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsObject xsi:type="SourceType">Entity</ValueAsObject>
-            </PropertySave>
-          </Properties>
-          <SourceType>Entity</SourceType>
-          <SourceFile />
-          <SetByContainer>true</SetByContainer>
-          <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
@@ -11249,6 +11219,10 @@
   &lt;StateChains /&gt;
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
       </Properties>
       <NamedObjects>
         <NamedObjectSave>
@@ -15200,6 +15174,10 @@
   &lt;StateChains /&gt;
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
       </Properties>
       <NamedObjects>
         <NamedObjectSave>
@@ -15360,6 +15338,10 @@
         <PropertySave>
           <Name>IsPlatformer</Name>
           <ValueAsBool>true</ValueAsBool>
+        </PropertySave>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
         </PropertySave>
       </Properties>
       <NamedObjects>
@@ -19522,6 +19504,12 @@
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
+      <Properties>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
+      </Properties>
       <NamedObjects>
         <NamedObjectSave>
           <InstanceName>SpriteObject</InstanceName>
@@ -19745,6 +19733,10 @@
         <PropertySave>
           <Name>IsTopDown</Name>
           <ValueAsBool>true</ValueAsBool>
+        </PropertySave>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
         </PropertySave>
       </Properties>
       <NamedObjects>

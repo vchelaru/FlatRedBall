@@ -38,7 +38,7 @@ namespace GlueTestProject.Screens
 		{
             ReducedTileMapInfo.FastCreateFromTmx = true;
 
-            InitializeLevel("Level1");
+            //InitializeLevel("Level1");
 
 
             foreach (var item in Level1Info)
@@ -61,7 +61,7 @@ namespace GlueTestProject.Screens
             {
                 throw new Exception("Entities created from tiled object layers are not appearing in the screen's list with the right Z.");
             }
-            CurrentTileMap.ShapeCollections.Count.ShouldNotBe(0, "Because this TMX file contains shapes");
+            //CurrentTileMap.ShapeCollections.Count.ShouldNotBe(0, "Because this TMX file contains shapes");
 
             TestEntitiesCreatedFromShapes();
 

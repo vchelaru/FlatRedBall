@@ -42,7 +42,7 @@ namespace GlueTestProject.Screens
                 throw new Exception("Width values from Gum fles are not being assigned.  Expected width: " + 150 + " but got width " + TopButton.Width);
             }
 
-            var buttonBitmapFont = this.TopButton.GetTextRuntime().GetBitmapFont();
+            var buttonBitmapFont = this.TopButton.GetTextRuntime().BitmapFont;
             buttonBitmapFont.ShouldNotBe(null, "because Texts should have their BitmapFont assigned, but seem to not be");
 
             this.NineSliceInstance.InternalNineSlice.BottomLeftTexture.ShouldNotBe(this.NineSliceInstance.InternalNineSlice.CenterTexture,

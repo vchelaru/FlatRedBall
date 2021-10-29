@@ -27,11 +27,6 @@ namespace GlueTestProject.Screens
 
 		void CustomInitialize()
 		{
-            if (this.BaseEntitySetByContainerInvalid == null)
-            {
-                throw new Exception("Objects which are SetByContainer in Screens should be instantiated since Screens can't contained");
-            }
-
             if (this.CircleInvalidSetByContainer == null)
             {
                 throw new Exception("Objects which are SetByContainer in Screens should be instantiated since Screens can't contained");

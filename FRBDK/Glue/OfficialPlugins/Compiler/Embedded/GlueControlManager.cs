@@ -189,6 +189,7 @@ namespace GlueControl
 
                     return toReturn;
                 case nameof(GlueControl.Dtos.GetCameraPosition):
+                    toReturn = string.Empty;
 #if SupportsEditMode
 
                     isGet = true;

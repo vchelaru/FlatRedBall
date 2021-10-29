@@ -1018,7 +1018,10 @@
     <Compile Include="GumRuntimes\NineSliceButtonRuntime.Generated.cs">
       <DependentUpon>NineSliceButtonRuntime.cs</DependentUpon>
     </Compile>
-    <Compile Include="GumRuntimes\NineSliceRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\NineSliceRuntime.cs" />
+    <Compile Include="GumRuntimes\NineSliceRuntime.Generated.cs">
+      <DependentUpon>NineSliceRuntime.cs</DependentUpon>
+    </Compile>
     <Compile Include="GumRuntimes\ParentStateComponentRuntime.cs" />
     <Compile Include="GumRuntimes\ParentStateComponentRuntime.Generated.cs">
       <DependentUpon>ParentStateComponentRuntime.cs</DependentUpon>
@@ -1074,7 +1077,10 @@
     <Compile Include="GumRuntimes\TestScreenUnusedRuntime.Generated.cs">
       <DependentUpon>TestScreenUnusedRuntime.cs</DependentUpon>
     </Compile>
-    <Compile Include="GumRuntimes\TextRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\TextRuntime.cs" />
+    <Compile Include="GumRuntimes\TextRuntime.Generated.cs">
+      <DependentUpon>TextRuntime.cs</DependentUpon>
+    </Compile>
     <Compile Include="GumRuntimes\TextureSettingInStateComponentRuntime.cs" />
     <Compile Include="GumRuntimes\TextureSettingInStateComponentRuntime.Generated.cs">
       <DependentUpon>TextureSettingInStateComponentRuntime.cs</DependentUpon>

@@ -36,15 +36,6 @@ namespace GlueTestProject.Screens
 
             this.ContainerOfFactoryEntityListInstance.Destroy();
 
-            try
-            {
-                FactoryEntity factoryEntity = FactoryEntityFactory.CreateNew();
-            }
-            catch(Exception e)
-            {
-                throw new Exception("Destroying Entities also destroys factories if the Entity contains a list of a pooled type.  This shouldn't happen.");
-            }
-
             FactoryEntityDerivedFactory.Initialize(ContentManagerName);
             FactoryEntityDerived instance = FactoryEntityDerivedFactory.CreateNew();
             if (instance.AxisAlignedRectangleInstance.RelativeX != 5.0f)

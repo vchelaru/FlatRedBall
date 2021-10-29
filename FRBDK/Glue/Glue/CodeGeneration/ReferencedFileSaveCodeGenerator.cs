@@ -1688,6 +1688,8 @@ namespace FlatRedBall.Glue.CodeGeneration
                 // Therefore, the user will have to manually reload
                 item.IsDatabaseForLocalizing == false &&
                 item.LoadedAtRuntime &&
+                // This is static so the file must be shared static:
+                item.IsSharedStatic &&
                 GetIfFileCanBeReloaded(item)).ToList();
 
             foreach (var rfs in toLoopThrough)
