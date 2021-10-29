@@ -99,7 +99,7 @@ namespace GumPlugin.CodeGeneration
 
                 var rfs = GetGumScreenRfs(element);
 
-                if (hasForms)
+                if (hasForms && rfs?.RuntimeType != "FlatRedBall.Gum.GumIdb")
                 {
                     var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName, "Screens") +
                         "." + rfs.GetInstanceName() + "Forms";

@@ -15,15 +15,7 @@ namespace GlueTestProject
         {
             using (var game = new Game1())
             {
-                try
-                {
                     game.Run();
-                }
-                catch (Exception e)
-                {
-                    System.IO.File.WriteAllText("CrashInfo.txt", e.ToString());
-                    throw;
-                }
 
             }
         }
