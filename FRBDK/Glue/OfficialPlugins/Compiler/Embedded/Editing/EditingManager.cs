@@ -58,7 +58,7 @@ namespace GlueControl.Editing
 
 
         public GlueElement CurrentGlueElement { get; private set; }
-        public NamedObjectSave CurrentNamedObjectSave { get; private set; }
+        public List<NamedObjectSave> CurrentNamedObjects { get; private set; } = new List<NamedObjectSave>();
 
         public ElementEditingMode ElementEditingMode { get; set; }
 
@@ -243,7 +243,8 @@ namespace GlueControl.Editing
             ISelectionMarker newMarker = null;
             if (owner is FlatRedBall.TileCollisions.TileShapeCollection)
             {
-                newMarker = new TileShapeCollectionMarker(owner, CurrentNamedObjectSave);
+                // Assume with tile shape collections that only one object can be selected, so we can FirstOrDefault it:
+                newMarker = new TileShapeCollectionMarker(owner, CurrentNamedObjects.FirstOrDefault());
             }
             else
             {
@@ -283,10 +284,9 @@ namespace GlueControl.Editing
 
                 var clickedOnSelectedItem = itemsSelected.Contains(itemOver);
 
+                var isCtrlDown = InputManager.Keyboard.IsCtrlDown;
                 if (!clickedOnSelectedItem)
                 {
-                    var isCtrlDown = InputManager.Keyboard.IsCtrlDown;
-
                     NamedObjectSave nos = null;
                     if (itemOver?.Name != null)
                     {
@@ -303,6 +303,12 @@ namespace GlueControl.Editing
                         Select(itemOver?.Name, addToExistingSelection: isCtrlDown, playBump: true);
                     }
                 }
+                else if (isCtrlDown)
+                {
+                    // remove from selection:
+
+                }
+
                 if (itemGrabbed != null)
                 {
                     foreach (var item in itemsSelected)
@@ -491,20 +497,26 @@ namespace GlueControl.Editing
 
             CurrentGlueElement = glueElement;
 
-            if (CurrentNamedObjectSave != null && oldGlueElement?.AllNamedObjects.Contains(CurrentNamedObjectSave) == true)
-            {
-                var nameToFind = CurrentNamedObjectSave.InstanceName;
-                // Note - this will fail if the this is being called as a result of a rename. Therefore, the caller is responsbile
-                // for re-selecting the NOS
-                CurrentNamedObjectSave = glueElement?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == nameToFind);
-            }
+            var oldNames = CurrentNamedObjects.Select(item => item.InstanceName).ToArray();
+            CurrentNamedObjects.Clear();
+            var newNamedObjects = glueElement?.AllNamedObjects.Where(item => oldNames.Contains(item.FieldName)).ToArray();
+            // Note - this will fail if the this is being called as a result of a rename. Therefore, the caller is responsbile
+            // for re-selecting the NOS
+            CurrentNamedObjects.AddRange(newNamedObjects);
         }
 
         #region Selection
 
         internal void Select(NamedObjectSave namedObject, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false)
         {
-            CurrentNamedObjectSave = namedObject;
+            if (addToExistingSelection == false)
+            {
+                CurrentNamedObjects.Clear();
+            }
+            if (!CurrentNamedObjects.Contains(namedObject))
+            {
+                CurrentNamedObjects.Add(namedObject);
+            }
 
             Select(namedObject?.InstanceName, addToExistingSelection, playBump, focusCameraOnObject);
         }

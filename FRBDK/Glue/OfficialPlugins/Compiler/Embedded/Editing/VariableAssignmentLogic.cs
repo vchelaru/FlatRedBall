@@ -163,12 +163,12 @@ namespace GlueControl.Editing
 
                 if (response.WasVariableAssigned)
                 {
-                    if (EditingManager.Self.CurrentNamedObjectSave?.InstanceName == foundTileShapeCollection?.Name)
+                    var matchingNos = EditingManager.Self.CurrentNamedObjects.FirstOrDefault(item => item.InstanceName == foundTileShapeCollection?.Name);
+                    if (matchingNos != null)
                     {
-                        var nosToReselect = EditingManager.Self.CurrentNamedObjectSave;
                         // force re-selection to update visibility:
                         EditingManager.Self.Select((NamedObjectSave)null);
-                        EditingManager.Self.Select(nosToReselect);
+                        EditingManager.Self.Select(matchingNos);
                     }
                 }
                 didAttemptToAssign = true;
@@ -1075,6 +1075,7 @@ namespace GlueControl.Editing
                 return null;
             }
         }
+
         public static Type TryGetStateType(string qualifiedTypeName)
         {
             ///////// Early Out/////////////

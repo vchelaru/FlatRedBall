@@ -161,16 +161,21 @@ namespace GlueControl
 
             if (dto.AssignOrRecordOnly == AssignOrRecordOnly.Assign)
             {
-                var selectedNos = Editing.EditingManager.Self.CurrentNamedObjectSave?.InstanceName;
+                var selectedNosNames = Editing.EditingManager.Self.CurrentNamedObjects.Select(item => item.InstanceName)
+                    .ToArray();
 
                 var renamedSelectedObject = false;
-                if (selectedNos != null)
+                if (selectedNosNames.Length > 0)
                 {
                     var split = dto.VariableName.Split('.');
 
-                    renamedSelectedObject = split.Length == 3 &&
-                        split[1] == selectedNos &&
+                    var isAssigningName = split.Length == 3 &&
                         split[2] == "Name";
+
+                    if (isAssigningName)
+                    {
+                        renamedSelectedObject = selectedNosNames.Contains(split[1]);
+                    }
                 }
 
                 response = GlueControl.Editing.VariableAssignmentLogic.SetVariable(dto);
