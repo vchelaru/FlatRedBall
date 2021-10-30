@@ -76,7 +76,7 @@ namespace FlatRedBall.Glue.TypeConversions
 
             converter = new CustomTypeConverter();
             converter.AddConversion("float", "string",
-                "string.Format(\"{0}:{1}{2}\", ((int)value / 60).ToString(\"D1\"), ((int)value % 60).ToString(\"D2\"), (value - (int)value).ToString(\".00\"));");
+                "string.Format(\"{0}:{1}{2}\", ((int)value / 60).ToString(\"D1\"), ((int)value % 60).ToString(\"D2\"), (value - (int)value).ToString(\".00\"))");
             TypeConverters.Add("Minutes:Seconds.Hundredths", converter);
 
 

@@ -3022,6 +3022,23 @@
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
+        <NamedObjectSave>
+          <InstanceName>TextWithDefaultBitmapFont</InstanceName>
+          <SourceClassType>GumProject/Screens/TestScreen.gusx</SourceClassType>
+          <Properties>
+            <PropertySave>
+              <Name>SourceType</Name>
+              <ValueAsObject xsi:type="SourceType">File</ValueAsObject>
+              <Type>SourceType</Type>
+            </PropertySave>
+          </Properties>
+          <SourceType>File</SourceType>
+          <SourceFile>GumProject/Screens/TestScreen.gusx</SourceFile>
+          <SourceName>TextWithDefaultBitmapFont (GlueTestProject.GumRuntimes.TextRuntime)</SourceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>false</IndependentOfCamera>
+        </NamedObjectSave>
       </NamedObjects>
       <Name>Screens\GumScreen</Name>
       <CustomClassesForExport />
@@ -14414,6 +14431,10 @@
           <Name>IsManuallyUpdated</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
       </Properties>
       <NamedObjects>
         <NamedObjectSave>
@@ -18629,6 +18650,10 @@
           <Name>HasAdvancedInterpolations</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
       </Properties>
       <NamedObjects>
         <NamedObjectSave>
@@ -18693,6 +18718,14 @@
           <ExcludedVariables>
             <string>CurrentTopOrBottomState</string>
             <string>CurrentTypeState</string>
+            <string>CurrentState</string>
+            <string>CurrentCircleVisibilityState</string>
+            <string>VariableOnlySetInOneUncategorizedState</string>
+            <string>CurrentAdvancedInterpolationCategoryState</string>
+            <string>VariableToGetChangedByState</string>
+            <string>LongVariableWithVelocity</string>
+            <string>IntVariableWithVelocity</string>
+            <string>CurrentColorCategoryState</string>
           </ExcludedVariables>
           <Name>TopOrBottom</Name>
         </StateSaveCategory>
@@ -18719,7 +18752,9 @@
               <Name>BlueState</Name>
             </StateSave>
           </States>
-          <ExcludedVariables />
+          <ExcludedVariables>
+            <string>VariableToGetChangedByState</string>
+          </ExcludedVariables>
           <Name>ColorCategory</Name>
         </StateSaveCategory>
         <StateSaveCategory>
@@ -18745,7 +18780,9 @@
               <Name>CircleOff</Name>
             </StateSave>
           </States>
-          <ExcludedVariables />
+          <ExcludedVariables>
+            <string>VariableToGetChangedByState</string>
+          </ExcludedVariables>
           <Name>CircleVisibility</Name>
         </StateSaveCategory>
         <StateSaveCategory>
@@ -18759,7 +18796,9 @@
               <Name>Interpolate2</Name>
             </StateSave>
           </States>
-          <ExcludedVariables />
+          <ExcludedVariables>
+            <string>VariableToGetChangedByState</string>
+          </ExcludedVariables>
           <Name>InterpolationCategory</Name>
         </StateSaveCategory>
         <StateSaveCategory>
@@ -18773,7 +18812,9 @@
               <Name>Advanced2</Name>
             </StateSave>
           </States>
-          <ExcludedVariables />
+          <ExcludedVariables>
+            <string>VariableToGetChangedByState</string>
+          </ExcludedVariables>
           <Name>AdvancedInterpolationCategory</Name>
         </StateSaveCategory>
         <StateSaveCategory>
@@ -18787,7 +18828,9 @@
               <Name>TypeState2</Name>
             </StateSave>
           </States>
-          <ExcludedVariables />
+          <ExcludedVariables>
+            <string>VariableToGetChangedByState</string>
+          </ExcludedVariables>
           <Name>Type</Name>
         </StateSaveCategory>
       </StateCategoryList>

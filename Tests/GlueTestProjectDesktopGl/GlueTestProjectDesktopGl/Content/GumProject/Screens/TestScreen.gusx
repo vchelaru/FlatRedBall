@@ -809,6 +809,24 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>string</Type>
+      <Name>TextWithDefaultBitmapFont.Text</Name>
+      <Value xsi:type="xsd:string">I should have a bitmap font.</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>TextWithDefaultBitmapFont.X</Name>
+      <Value xsi:type="xsd:float">278</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>TextWithDefaultBitmapFont.Y</Name>
+      <Value xsi:type="xsd:float">314</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>float</Type>
       <Name>TopButton.Y</Name>
       <Value xsi:type="xsd:float">42</Value>
@@ -962,6 +980,11 @@
       </Variable>
     </State>
   </Category>
+  <Instance>
+    <Name>TextWithDefaultBitmapFont</Name>
+    <BaseType>Text</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
   <Instance>
     <Name>TopButton</Name>
     <BaseType>NineSliceButton</BaseType>

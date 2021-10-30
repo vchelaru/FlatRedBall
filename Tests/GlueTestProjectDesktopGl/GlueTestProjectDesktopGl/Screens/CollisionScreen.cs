@@ -220,6 +220,7 @@ namespace GlueTestProject.Screens
             corner.Width = 32;
             corner.Height = 32;
             corner.RepositionDirections = RepositionDirections.Left | RepositionDirections.Down;
+            corner.RepositionHalfSize = true;
             rectangles.AxisAlignedRectangles.Add(corner);
 
             var top = new AxisAlignedRectangle();

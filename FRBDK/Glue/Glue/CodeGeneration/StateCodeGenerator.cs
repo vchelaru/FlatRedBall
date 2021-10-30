@@ -121,7 +121,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             currentBlock.Line($"public string Name;");
 
-            var includedVariables = element.CustomVariables.Where(item => category?.ExcludedVariables.Contains(item.Name) == false)
+            var includedVariables = element.CustomVariables.Where(item => category == null || category?.ExcludedVariables.Contains(item.Name) == false)
                 .ToArray();
 
             foreach (var variable in includedVariables)
@@ -308,6 +308,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         private static void GenerateVariableAssignmentForDynamicState(IElement element, ICodeBlock setBlock, StateSaveCategory category)
         {
+            setBlock = setBlock.If("value != null");
             foreach (var variable in element.CustomVariables)
             {
                 var shouldInclude = false;
@@ -328,6 +329,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                     {
                         shouldInclude = true;
                     }
+                }
+                else
+                {
+                    // I guess if its the default state, we assign always?
+                    shouldInclude = true;
                 }
 
                 if (shouldInclude)

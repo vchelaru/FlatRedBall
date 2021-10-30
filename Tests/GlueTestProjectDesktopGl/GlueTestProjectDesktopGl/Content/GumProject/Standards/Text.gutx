@@ -102,6 +102,13 @@
     </Variable>
     <Variable>
       <Type>bool</Type>
+      <Name>IsBold</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <Category>Font</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>bool</Type>
       <Name>IsItalic</Name>
       <Value xsi:type="xsd:boolean">false</Value>
       <Category>Font</Category>

@@ -227,6 +227,7 @@ namespace GumPlugin.Managers
                         "{THIS}.Element.UpdateLayout();\n" +
                         // HACK!  There's a bug in the UpdateLayout that makes a single UpdateLayout not work right - a 2nd one fixes it. I'm adding this in temporarily until
                         // I have time to dig into the UpdateLayout to see why it's properly positioning all children.
+                        "{THIS}.Element.UpdateFontRecursive();\n" + 
                         "{THIS}.Element.UpdateLayout();\n" +
                         "}}";
 

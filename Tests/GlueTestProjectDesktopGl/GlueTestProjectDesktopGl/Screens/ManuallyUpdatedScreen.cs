@@ -43,7 +43,6 @@ namespace GlueTestProject.Screens
 
             SetManuallyUpdatedInheritFromSpriteNoAttachInstanceVariables();
 
-            SetEntityInListAttachedToObject();
 
             TestManuallyUpdatedEntityIneritingFromSprite();
         }
@@ -150,6 +149,7 @@ namespace GlueTestProject.Screens
             PositionedObject parent = new PositionedObject();
             var entity = new Entities.ManuallyUpdateAllInCode();
             entity.AttachTo(parent);
+            entity.RelativeX = 0;
             parent.X = 120;
             entity.RelativeXVelocity = inListRelativeXVelocity;
             timeAttachmentWasMade = TimeManager.CurrentTime;
@@ -170,6 +170,8 @@ namespace GlueTestProject.Screens
         {
             if (this.ActivityCallCount == 1)
             {
+                SetEntityInListAttachedToObject();
+
                 TextManager.AutomaticallyUpdatedTexts.Contains(manuallyUpdatedTextInCode).ShouldBe(false);
 
                 TextManager.AutomaticallyUpdatedTexts.Contains(ManuallyUpdatedText).ShouldBe(false);

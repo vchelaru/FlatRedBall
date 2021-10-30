@@ -1,0 +1,34 @@
+{
+  "UserEvents": {
+    "vchel": [
+      {
+        "NewName": " TestScreen.TextInstance2",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2021-10-29T20:43:28.4011608Z"
+      },
+      {
+        "NewName": " TestScreen.TextWithDefaultBitmapFont",
+        "OldName": " TestScreen.TextInstance2",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2021-10-29T20:43:51.6095394Z"
+      },
+      {
+        "NewName": " TestScreen.TextWithDefaultBitmapFont",
+        "OldName": " TestScreen.TextInstance2",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2021-10-29T20:43:51.6105391Z"
+      },
+      {
+        "NewName": " TestScreen.TextWithDefaultBitmapFont",
+        "OldName": " TestScreen.TextInstance2",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2021-10-29T20:43:51.6105391Z"
+      }
+    ]
+  }
+}

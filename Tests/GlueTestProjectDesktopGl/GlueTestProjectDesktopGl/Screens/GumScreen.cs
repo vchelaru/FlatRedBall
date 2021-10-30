@@ -42,6 +42,8 @@ namespace GlueTestProject.Screens
                 throw new Exception("Width values from Gum fles are not being assigned.  Expected width: " + 150 + " but got width " + TopButton.Width);
             }
 
+            TextWithDefaultBitmapFont.BitmapFont.ShouldNotBe(null, "Becuause texts with default fonts should fall back to the default BitmapFont object");
+
             var buttonBitmapFont = this.TopButton.GetTextRuntime().BitmapFont;
             buttonBitmapFont.ShouldNotBe(null, "because Texts should have their BitmapFont assigned, but seem to not be");
 
@@ -155,6 +157,9 @@ namespace GlueTestProject.Screens
             newTextWidth.ShouldBe(widthFromText + 10, "because the text should be 10 units larger than its children, which is the measured width");
 
             text.Text = "";
+            (text.RenderableComponent as Text).WrappedText.Count.ShouldBe(1);
+            (text.RenderableComponent as Text).WrappedText[0].ShouldBe("");
+
             text.GetAbsoluteWidth().ShouldBe(10, "because this has 10 + length of text, but there is no text");
 
             text.Width = 9;
