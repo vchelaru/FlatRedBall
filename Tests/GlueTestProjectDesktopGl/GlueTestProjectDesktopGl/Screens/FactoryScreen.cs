@@ -28,7 +28,7 @@ namespace GlueTestProject.Screens
 	{
 
 		void CustomInitialize()
-		{
+        {
             if (PooledDontInheritFromThisInstance.AxisAlignedRectangleInstance.RelativeX != 5)
             {
                 throw new Exception("Pooled values aren't getting proper relative values set.");
@@ -36,52 +36,13 @@ namespace GlueTestProject.Screens
 
             this.ContainerOfFactoryEntityListInstance.Destroy();
 
-            FactoryEntityDerivedFactory.Initialize(ContentManagerName);
-            FactoryEntityDerived instance = FactoryEntityDerivedFactory.CreateNew();
-            if (instance.AxisAlignedRectangleInstance.RelativeX != 5.0f)
-            {
-                throw new Exception("Pooled values aren't getting proper relative values set on derived.");
-            } 
-            
-            instance.AxisAlignedRectangleInstance.RelativeX = 10;
+            TestResetVariables();
 
-            instance.Destroy();
+            TestReaddToManagers();
 
-            instance = FactoryEntityDerivedFactory.CreateNew();
-            if (instance.AxisAlignedRectangleInstance.RelativeX != 5.0f)
-            {
-                throw new Exception("Reset varaibles aren't working");
-            }
-            instance.Destroy();
+            TestBaseNotPooled();
 
-            // Let's try addition/removal:
-            RecyclableEntity recyclableInstance = new RecyclableEntity();
-            recyclableInstance.Destroy();
-            recyclableInstance.ReAddToManagers(null);
-
-            recyclableInstance.Destroy();
-
-            BaseNotPooledFactory.Initialize(ContentManagerName);
-            BaseNotPooled notPooled = BaseNotPooledFactory.CreateNew();
-            notPooled.Destroy();
-
-
-            // According this bug:
-            // http://www.hostedredmine.com/issues/413966
-            // This may break:
-            DerivedPooledFromNotPooledFactory.Initialize(ContentManagerName);
-            var pooled = DerivedPooledFromNotPooledFactory.CreateNew();
-            if (!SpriteManager.ManagedPositionedObjects.Contains(pooled))
-            {
-                throw new Exception("Derived entities with pooling from base entities without are not being added to the engine on creation");
-            }
-            // Now try to destroy:
-            pooled.Destroy();
-            if(SpriteManager.ManagedPositionedObjects.Contains(pooled))
-            {
-                throw new Exception("Derived entities with pooling from base entities without are not being removed from the engine on destroy");
-            }
-
+            TestDerivedPooledFromNotPooled();
 
             BasePooledEntityFactory.CreateNew();
             DerivedPooledFromPooledFactory.CreateNew().Destroy();
@@ -97,6 +58,65 @@ namespace GlueTestProject.Screens
 
             TestFactoriesNotRequiringInitialize();
 
+            TestRecyclingCollidables();
+        }
+
+
+        private void TestDerivedPooledFromNotPooled()
+        {
+            // According this bug:
+            // http://www.hostedredmine.com/issues/413966
+            // This may break:
+            DerivedPooledFromNotPooledFactory.Initialize(ContentManagerName);
+            var pooled = DerivedPooledFromNotPooledFactory.CreateNew();
+            if (!SpriteManager.ManagedPositionedObjects.Contains(pooled))
+            {
+                throw new Exception("Derived entities with pooling from base entities without are not being added to the engine on creation");
+            }
+            // Now try to destroy:
+            pooled.Destroy();
+            if (SpriteManager.ManagedPositionedObjects.Contains(pooled))
+            {
+                throw new Exception("Derived entities with pooling from base entities without are not being removed from the engine on destroy");
+            }
+        }
+
+        private void TestBaseNotPooled()
+        {
+            BaseNotPooledFactory.Initialize(ContentManagerName);
+            BaseNotPooled notPooled = BaseNotPooledFactory.CreateNew();
+            notPooled.Destroy();
+        }
+
+        private static void TestReaddToManagers()
+        {
+            // Let's try addition/removal:
+            RecyclableEntity recyclableInstance = new RecyclableEntity();
+            recyclableInstance.Destroy();
+            recyclableInstance.ReAddToManagers(null);
+
+            recyclableInstance.Destroy();
+        }
+
+        private void TestResetVariables()
+        {
+            FactoryEntityDerivedFactory.Initialize(ContentManagerName);
+            FactoryEntityDerived instance = FactoryEntityDerivedFactory.CreateNew();
+            if (instance.AxisAlignedRectangleInstance.RelativeX != 5.0f)
+            {
+                throw new Exception("Pooled values aren't getting proper relative values set on derived.");
+            }
+
+            instance.AxisAlignedRectangleInstance.RelativeX = 10;
+
+            instance.Destroy();
+
+            instance = FactoryEntityDerivedFactory.CreateNew();
+            if (instance.AxisAlignedRectangleInstance.RelativeX != 5.0f)
+            {
+                throw new Exception("Reset varaibles aren't working");
+            }
+            instance.Destroy();
         }
 
         private void TestFactoriesNotRequiringInitialize()
@@ -104,6 +124,16 @@ namespace GlueTestProject.Screens
             // This makes sure that initialization is not needed for entities that are not pooled
             var toDestroy = FactoryEntityWithNoListFactory.CreateNew();
             toDestroy.Destroy(); 
+        }
+
+        private void TestRecyclingCollidables()
+        {
+            var instance = Factories.PooledCollidableFactory.CreateNew();
+            instance.Collision.Circles.Count.ShouldNotBe(0, "because this object should have a circle");
+            instance.Destroy();
+            var newInstance = Factories.PooledCollidableFactory.CreateNew();
+            newInstance.ShouldBe(instance, "because pooling should recycle");
+            newInstance.Collision.Circles.Count.ShouldNotBe(0, "because recycled collidables should get their lists filled again");
         }
 
         private void TestBaseChildGrandchildListAdditions()

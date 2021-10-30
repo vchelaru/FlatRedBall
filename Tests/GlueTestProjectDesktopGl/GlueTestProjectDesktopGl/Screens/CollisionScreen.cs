@@ -23,50 +23,30 @@ using Keys = Microsoft.Xna.Framework.Input.Keys;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
 using GlueTestProject.TestFramework;
+using FlatRedBall.Math;
 
 namespace GlueTestProject.Screens
 {
 	public partial class CollisionScreen
 	{
 		void CustomInitialize()
-		{
+        {
             MovableRectangle.X = 1;
 
             MovableRectangle.CollideAgainstMove(ImmovableRectangle, 0, 1);
 
-            if(MovableRectangle.X == 1)
+            if (MovableRectangle.X == 1)
             {
                 throw new Exception("CollideAgainstMove didn't move the movable rectangle");
             }
-            if(ImmovableRectangle.X != 0)
+            if (ImmovableRectangle.X != 0)
             {
                 throw new Exception("CollideAgainstMove moved an object when colliding against a 0 mass object");
             }
 
-            // try positive infinity:
-            MovableRectangle.X = 1;
-            MovableRectangle.CollideAgainstMove(ImmovableRectangle, 1, float.PositiveInfinity);
-            if (MovableRectangle.X == 1)
-            {
-                throw new Exception("CollideAgainstMove didn't move the movable rectangle");
-            }
-            if (ImmovableRectangle.X != 0)
-            {
-                throw new Exception("CollideAgainstMove moved an object with positive infinity");
-            }
+            TestPositiveInfinitySecondCollisionMass();
 
-
-            // Try positive infinity, call with the immovable:
-            MovableRectangle.X = 1;
-            ImmovableRectangle.CollideAgainstMove(MovableRectangle, float.PositiveInfinity, 1);
-            if (MovableRectangle.X == 1)
-            {
-                throw new Exception("CollideAgainstMove didn't move the movable rectangle");
-            }
-            if (ImmovableRectangle.X != 0)
-            {
-                throw new Exception("CollideAgainstMove moved an object with positive infinity");
-            }
+            TestPositiveInfinityFirstObjectCollisionMass();
 
             Test_L_RepositonDirection();
 
@@ -80,6 +60,68 @@ namespace GlueTestProject.Screens
 
             TestCollidedThisFrame();
 
+            TestCollisionRelationshipPreventDoubleCollision();
+
+        }
+
+        private void TestCollisionRelationshipPreventDoubleCollision()
+        {
+            PositionedObjectList<Entities.CollidableEntity> bulletList = new PositionedObjectList<Entities.CollidableEntity>();
+            bulletList.Add(new Entities.CollidableEntity());
+
+            PositionedObjectList<Entities.CollidableEntity> enemyList = new PositionedObjectList<Entities.CollidableEntity>();
+            enemyList.Add(new Entities.CollidableEntity());
+            enemyList.Add(new Entities.CollidableEntity());
+
+            var collisionRelationship = CollisionManager.Self.CreateRelationship(bulletList, enemyList);
+
+            int numberOfHits = 0;
+
+            collisionRelationship.CollisionOccurred += (bullet, enemy) =>
+            {
+                numberOfHits++;
+                bullet.Destroy();
+            };
+
+            collisionRelationship.DoCollisions();
+
+            numberOfHits.ShouldBe(1, "because the bullet is destroyed on the first collision, so it shouldn't hit the second enemy");
+
+            while(enemyList.Count > 0)
+            {
+                enemyList[0].Destroy();
+            }
+
+        }
+
+        private void TestPositiveInfinitySecondCollisionMass()
+        {
+            // try positive infinity:
+            MovableRectangle.X = 1;
+            MovableRectangle.CollideAgainstMove(ImmovableRectangle, 1, float.PositiveInfinity);
+            if (MovableRectangle.X == 1)
+            {
+                throw new Exception("CollideAgainstMove didn't move the movable rectangle");
+            }
+            if (ImmovableRectangle.X != 0)
+            {
+                throw new Exception("CollideAgainstMove moved an object with positive infinity");
+            }
+        }
+
+        private void TestPositiveInfinityFirstObjectCollisionMass()
+        {
+            // Try positive infinity, call with the immovable:
+            MovableRectangle.X = 1;
+            ImmovableRectangle.CollideAgainstMove(MovableRectangle, float.PositiveInfinity, 1);
+            if (MovableRectangle.X == 1)
+            {
+                throw new Exception("CollideAgainstMove didn't move the movable rectangle");
+            }
+            if (ImmovableRectangle.X != 0)
+            {
+                throw new Exception("CollideAgainstMove moved an object with positive infinity");
+            }
         }
 
         private void TestCollidedThisFrame()

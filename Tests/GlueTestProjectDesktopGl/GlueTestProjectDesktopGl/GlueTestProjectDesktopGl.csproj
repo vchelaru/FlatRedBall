@@ -600,6 +600,10 @@
     <Compile Include="Entities\PolygonEntity.Generated.cs">
       <DependentUpon>PolygonEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\PooledCollidable.cs" />
+    <Compile Include="Entities\PooledCollidable.Generated.cs">
+      <DependentUpon>PooledCollidable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\PooledDontInheritFromThis.cs" />
     <Compile Include="Entities\PooledDontInheritFromThis.Generated.cs">
       <DependentUpon>PooledDontInheritFromThis.cs</DependentUpon>
@@ -790,6 +794,7 @@
     <Compile Include="Factories\FactoryEntityWithNoListFactory.Generated.cs" />
     <Compile Include="Factories\GrandchildFactoryEntityFactory.Generated.cs" />
     <Compile Include="Factories\IWindowDerivedFromNoIWindowFactory.Generated.cs" />
+    <Compile Include="Factories\PooledCollidableFactory.Generated.cs" />
     <Compile Include="Factories\PooledDontInheritFromThisFactory.Generated.cs" />
     <Compile Include="Factories\PooledEntityContainingEntityFactory.Generated.cs" />
     <Compile Include="Factories\PooledEntityInheritFromSpriteFactory.Generated.cs" />

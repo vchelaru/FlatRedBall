@@ -1414,6 +1414,36 @@
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
+        <NamedObjectSave>
+          <InstanceName>PooledCollidableList</InstanceName>
+          <SourceClassType>FlatRedBall.Math.PositionedObjectList&lt;T&gt;</SourceClassType>
+          <Properties>
+            <PropertySave>
+              <Name>SourceType</Name>
+              <ValueAsObject xsi:type="SourceType">FlatRedBallType</ValueAsObject>
+              <Type>SourceType</Type>
+            </PropertySave>
+            <PropertySave>
+              <Name>SortAxis</Name>
+              <ValueAsInt>0</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>PartitionWidthHeight</Name>
+              <ValueAsFloat>32</ValueAsFloat>
+            </PropertySave>
+            <PropertySave>
+              <Name>IsSortListEveryFrameChecked</Name>
+              <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+          </Properties>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile>PositionedObjectList (Generic)</SourceFile>
+          <SourceClassGenericType>Entities\PooledCollidable</SourceClassGenericType>
+          <ExposedInDerived>true</ExposedInDerived>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>false</IndependentOfCamera>
+        </NamedObjectSave>
       </NamedObjects>
       <Name>Screens\FactoryScreen</Name>
       <CustomClassesForExport />
@@ -7756,6 +7786,10 @@
         <PropertySave>
           <Name>ImplementsICollidable</Name>
           <ValueAsBool>true</ValueAsBool>
+        </PropertySave>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
         </PropertySave>
       </Properties>
       <NamedObjects>
@@ -15649,6 +15683,107 @@
       <Source>GLUE</Source>
       <UseGlobalContent>false</UseGlobalContent>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
+      <CustomVariables>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+          </Properties>
+          <Name>X</Name>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+          </Properties>
+          <Name>Y</Name>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+          </Properties>
+          <Name>Z</Name>
+        </CustomVariable>
+      </CustomVariables>
+      <Properties>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
+        <PropertySave>
+          <Name>ImplementsICollidable</Name>
+          <ValueAsBool>true</ValueAsBool>
+          <Type>Boolean</Type>
+        </PropertySave>
+      </Properties>
+      <NamedObjects>
+        <NamedObjectSave>
+          <InstanceName>CircleInstance</InstanceName>
+          <SourceClassType>FlatRedBall.Math.Geometry.Circle</SourceClassType>
+          <Properties>
+            <PropertySave>
+              <Name>SourceType</Name>
+              <ValueAsObject xsi:type="SourceType">FlatRedBallType</ValueAsObject>
+              <Type>SourceType</Type>
+            </PropertySave>
+          </Properties>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>Radius</Member>
+            <ValueAsFloat>16</ValueAsFloat>
+          </CustomProperty>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile>Circle</SourceFile>
+          <HasPublicProperty>true</HasPublicProperty>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <VariablesToReset>
+            <string>X</string>
+            <string>Y</string>
+            <string>Z</string>
+            <string>XVelocity</string>
+            <string>YVelocity</string>
+            <string>ZVelocity</string>
+            <string>RotationX</string>
+            <string>RotationY</string>
+            <string>RotationZ</string>
+            <string>RotationXVelocity</string>
+            <string>RotationYVelocity</string>
+            <string>RotationZVelocity</string>
+          </VariablesToReset>
+          <IndependentOfCamera>false</IndependentOfCamera>
+        </NamedObjectSave>
+      </NamedObjects>
+      <Name>Entities\PooledCollidable</Name>
+      <CustomClassesForExport />
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
+      <CreatedByOtherEntities>true</CreatedByOtherEntities>
+      <PooledByFactory>true</PooledByFactory>
+      <Is2D>true</Is2D>
+    </EntitySave>
+    <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
+      <UseGlobalContent>false</UseGlobalContent>
+      <IsHiddenInTreeView>false</IsHiddenInTreeView>
+      <Properties>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
+      </Properties>
       <NamedObjects>
         <NamedObjectSave>
           <InstanceName>AxisAlignedRectangleInstance</InstanceName>
@@ -15851,6 +15986,10 @@
         <PropertySave>
           <Name>ImplementsICollidable</Name>
           <ValueAsBool>true</ValueAsBool>
+        </PropertySave>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
         </PropertySave>
       </Properties>
       <NamedObjects>
@@ -16116,6 +16255,10 @@
 &lt;StateChainCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;StateChains /&gt;
 &lt;/StateChainCollection&gt;</ValueAsString>
+        </PropertySave>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
         </PropertySave>
       </Properties>
       <NamedObjects>
@@ -16416,6 +16559,12 @@
           <Name>Z</Name>
         </CustomVariable>
       </CustomVariables>
+      <Properties>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
+      </Properties>
       <NamedObjects>
         <NamedObjectSave>
           <InstanceName>AxisAlignedRectangleInstance</InstanceName>
@@ -16915,6 +17064,12 @@
       <Source>GLUE</Source>
       <UseGlobalContent>false</UseGlobalContent>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
+      <Properties>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
+      </Properties>
       <NamedObjects>
         <NamedObjectSave>
           <InstanceName>CircleInstance</InstanceName>
@@ -17144,6 +17299,10 @@
           <Name>ItemType</Name>
           <ValueAsString>Entities\PooledDontInheritFromThis</ValueAsString>
         </PropertySave>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
       </Properties>
       <Name>Entities\ScrollableEntity</Name>
       <CustomClassesForExport />
@@ -17293,6 +17452,12 @@
           <Name>Z</Name>
         </CustomVariable>
       </CustomVariables>
+      <Properties>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
+      </Properties>
       <NamedObjects>
         <NamedObjectSave>
           <InstanceName>ShapeCollectionInstance</InstanceName>
@@ -17858,6 +18023,10 @@
   &lt;StateChains /&gt;
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
       </Properties>
       <NamedObjects>
         <NamedObjectSave>
@@ -17977,6 +18146,12 @@
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
+      <Properties>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
+      </Properties>
       <NamedObjects>
         <NamedObjectSave>
           <InstanceName>ObjectInstance</InstanceName>
@@ -18313,6 +18488,12 @@
           <Name>Z</Name>
         </CustomVariable>
       </CustomVariables>
+      <Properties>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
+      </Properties>
       <NamedObjects>
         <NamedObjectSave>
           <InstanceName>SpriteFrameInstance</InstanceName>
@@ -19181,6 +19362,12 @@
           <Name>NewState1</Name>
         </StateSave>
       </States>
+      <Properties>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
+      </Properties>
       <Name>Entities\StateEntityExposedNoneVariable</Name>
       <CustomClassesForExport />
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
@@ -19234,6 +19421,10 @@
 &lt;StateChainCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;StateChains /&gt;
 &lt;/StateChainCollection&gt;</ValueAsString>
+        </PropertySave>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
         </PropertySave>
       </Properties>
       <Name>Entities\StateEntityWithoutCurrentStateVariable</Name>
@@ -19315,6 +19506,12 @@
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
+      <Properties>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
+      </Properties>
       <NamedObjects>
         <NamedObjectSave>
           <InstanceName>TextInstance</InstanceName>
@@ -19517,6 +19714,12 @@
           <Name>State1</Name>
         </StateSave>
       </States>
+      <Properties>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
+      </Properties>
       <NamedObjects>
         <NamedObjectSave>
           <InstanceName>ThisAsText</InstanceName>
@@ -19649,6 +19852,12 @@
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
+      <Properties>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
+      </Properties>
       <NamedObjects>
         <NamedObjectSave>
           <InstanceName>SpriteInstance</InstanceName>
@@ -19745,6 +19954,12 @@
           <Name>Z</Name>
         </CustomVariable>
       </CustomVariables>
+      <Properties>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
+      </Properties>
       <NamedObjects>
         <NamedObjectSave>
           <InstanceName>EntireFile</InstanceName>
@@ -19774,6 +19989,12 @@
       <Source>GLUE</Source>
       <UseGlobalContent>false</UseGlobalContent>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
+      <Properties>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
+      </Properties>
       <Name>Entities\ToBeDeleted</Name>
       <CustomClassesForExport />
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
@@ -20576,6 +20797,12 @@
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
+      <Properties>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
+      </Properties>
       <Name>Entities\XmlEntity</Name>
       <CustomClassesForExport />
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
@@ -20595,6 +20822,10 @@
 &lt;StateChainCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;StateChains /&gt;
 &lt;/StateChainCollection&gt;</ValueAsString>
+        </PropertySave>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
         </PropertySave>
       </Properties>
       <NamedObjects>

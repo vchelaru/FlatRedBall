@@ -131,17 +131,19 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
             TryGenerateRemoveShapeCollectionFromManagers(codeBlock, element);
         }
 
-        private static void TryGenerateRemoveShapeCollectionFromManagers(ICodeBlock codeBlock, IElement element)
+        private static void TryGenerateRemoveShapeCollectionFromManagers(ICodeBlock codeBlock, IElement element, bool shouldClear = false)
         {
             if (ShouldGenerateCollisionCodeFor(element))
             {
-                codeBlock.Line("mGeneratedCollision.RemoveFromManagers(clearThis: false);");
+                codeBlock.Line($"mGeneratedCollision.RemoveFromManagers(clearThis: {shouldClear.ToString().ToLowerInvariant()});");
             }
         }
 
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
         {
-            TryGenerateRemoveShapeCollectionFromManagers(codeBlock, element);
+            // Added shouldClear:true on Oct 30, 2021 so that
+            // collision in a tight loop will effectively early-out
+            TryGenerateRemoveShapeCollectionFromManagers(codeBlock, element, shouldClear:true);
 
             return codeBlock;
         }
