@@ -305,8 +305,15 @@ namespace GlueControl.Editing
                 }
                 else if (isCtrlDown)
                 {
-                    // remove from selection:
-
+                    NamedObjectSave nos = null;
+                    if (itemOver?.Name != null)
+                    {
+                        nos = CurrentGlueElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == itemOver.Name);
+                    }
+                    if (nos != null)
+                    {
+                        RemoveFromSelection(nos);
+                    }
                 }
 
                 if (itemGrabbed != null)
@@ -569,6 +576,22 @@ namespace GlueControl.Editing
             {
                 Camera.Main.X = positionedObject.X;
                 Camera.Main.Y = positionedObject.Y;
+            }
+        }
+
+        void RemoveFromSelection(NamedObjectSave namedObject)
+        {
+            CurrentNamedObjects.Remove(namedObject);
+
+            var foundObject = SelectionLogic.GetAvailableObjects(ElementEditingMode)
+                ?.FirstOrDefault(item => item.Name == namedObject.InstanceName);
+
+            if (foundObject != null)
+            {
+                itemsSelected.Remove(foundObject);
+
+                AddAndDestroyMarkersAccordingToItemsSelected();
+
             }
         }
 
