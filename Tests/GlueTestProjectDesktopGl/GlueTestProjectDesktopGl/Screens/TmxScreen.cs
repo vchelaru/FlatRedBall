@@ -54,11 +54,9 @@ namespace GlueTestProject.Screens
 
 
             // Layer 0 should be called "LayerWithStuff"
-            if (TmxWithEmptyLayers.MapLayers[0].Name != "LayerWithStuff")
-            {
-                throw new Exception("Having empty layers can screw up Layer names.  " +
-                    "This layer should be named \"LayerWithStuff\" but it is instead named " + TmxWithEmptyLayers.MapLayers[0].Name);
-            }
+            TmxWithEmptyLayers.MapLayers[0].Name.ShouldBe("EmptyLayer", "because even empty layers should be included in the loaded TMX");
+            TmxWithEmptyLayers.MapLayers[1].Name.ShouldBe("LayerWithStuff", "because even empty layers should be included in the loaded TMX");
+
 
             TestRotatedTiles();
 

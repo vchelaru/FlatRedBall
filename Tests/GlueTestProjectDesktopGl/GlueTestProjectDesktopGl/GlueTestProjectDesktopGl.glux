@@ -4894,50 +4894,7 @@
           <SourceObject>InterpolationEntityInstance</SourceObject>
           <SourceObjectProperty>TextInstanceX</SourceObjectProperty>
         </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>VariableState</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>InterpolationEntityInstanceCurrentState</Name>
-          <SourceObject>InterpolationEntityInstance</SourceObject>
-          <SourceObjectProperty>CurrentState</SourceObjectProperty>
-        </CustomVariable>
       </CustomVariables>
-      <States>
-        <StateSave>
-          <InstructionSaves>
-            <InstructionSave>
-              <Type>Single</Type>
-              <Member>InterpolationEntityAlpha</Member>
-              <ValueAsFloat>1</ValueAsFloat>
-            </InstructionSave>
-            <InstructionSave>
-              <Type>Single</Type>
-              <Member>InterpolationEntityInstanceTextInstanceX</Member>
-              <ValueAsFloat>1</ValueAsFloat>
-            </InstructionSave>
-          </InstructionSaves>
-          <Name>InterpolationEntityOpaque</Name>
-        </StateSave>
-        <StateSave>
-          <InstructionSaves>
-            <InstructionSave>
-              <Type>Single</Type>
-              <Member>InterpolationEntityAlpha</Member>
-              <ValueAsFloat>0</ValueAsFloat>
-            </InstructionSave>
-            <InstructionSave>
-              <Type>Single</Type>
-              <Member>InterpolationEntityInstanceTextInstanceX</Member>
-              <ValueAsFloat>0</ValueAsFloat>
-            </InstructionSave>
-          </InstructionSaves>
-          <Name>InterpolationEntityTransparent</Name>
-        </StateSave>
-      </States>
       <NamedObjects>
         <NamedObjectSave>
           <InstanceName>LayerInstance</InstanceName>
@@ -5225,28 +5182,57 @@
         <StateSaveCategory>
           <States>
             <StateSave>
+              <InstructionSaves />
+              <Name>InterpolationInstanceTextSmall</Name>
+            </StateSave>
+            <StateSave>
+              <InstructionSaves />
+              <Name>InterpolationInstanceTextLarge</Name>
+            </StateSave>
+          </States>
+          <ExcludedVariables>
+            <string>InterpolationEntityAlpha</string>
+            <string>InterpolationEntityInstanceTextInstanceX</string>
+          </ExcludedVariables>
+          <Name>TextSizeCategory</Name>
+        </StateSaveCategory>
+        <StateSaveCategory>
+          <States>
+            <StateSave>
               <InstructionSaves>
                 <InstructionSave>
-                  <Type>String</Type>
-                  <Member>InterpolationEntityInstanceCurrentState</Member>
-                  <ValueAsString>Small</ValueAsString>
+                  <Type>Single</Type>
+                  <Member>InterpolationEntityAlpha</Member>
+                  <ValueAsFloat>1</ValueAsFloat>
+                </InstructionSave>
+                <InstructionSave>
+                  <Type>Single</Type>
+                  <Member>InterpolationEntityInstanceTextInstanceX</Member>
+                  <ValueAsFloat>1</ValueAsFloat>
                 </InstructionSave>
               </InstructionSaves>
-              <Name>InterpolationInstanceTextSmall</Name>
+              <Name>InterpolationEntityOpaque</Name>
             </StateSave>
             <StateSave>
               <InstructionSaves>
                 <InstructionSave>
-                  <Type>String</Type>
-                  <Member>InterpolationEntityInstanceCurrentState</Member>
-                  <ValueAsString>Big</ValueAsString>
+                  <Type>Single</Type>
+                  <Member>InterpolationEntityAlpha</Member>
+                  <ValueAsFloat>0</ValueAsFloat>
+                </InstructionSave>
+                <InstructionSave>
+                  <Type>Single</Type>
+                  <Member>InterpolationEntityInstanceTextInstanceX</Member>
+                  <ValueAsFloat>0</ValueAsFloat>
                 </InstructionSave>
               </InstructionSaves>
-              <Name>InterpolationInstanceTextLarge</Name>
+              <Name>InterpolationEntityTransparent</Name>
             </StateSave>
           </States>
-          <ExcludedVariables />
-          <Name>TextSizeCategory</Name>
+          <ExcludedVariables>
+            <string>StateVariablesSetThroughTunnelingCurrentState</string>
+          </ExcludedVariables>
+          <Name>OpaqueOrTransparent</Name>
         </StateSaveCategory>
       </StateCategoryList>
       <Name>Screens\StateScreen</Name>
@@ -5376,6 +5362,28 @@
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+        <NamedObjectSave>
+          <InstanceName>Map</InstanceName>
+          <SourceClassType>Screens/TiledLevelScreen/Levels/Level1.tmx</SourceClassType>
+          <Properties>
+            <PropertySave>
+              <Name>SourceType</Name>
+              <ValueAsObject xsi:type="SourceType">File</ValueAsObject>
+              <Type>SourceType</Type>
+            </PropertySave>
+          </Properties>
+          <CustomProperty>
+            <Type>bool</Type>
+            <Member>CreateEntitiesFromTiles</Member>
+            <ValueAsBool>true</ValueAsBool>
+          </CustomProperty>
+          <SourceType>File</SourceType>
+          <SourceFile>Screens/TiledLevelScreen/Levels/Level1.tmx</SourceFile>
+          <SourceName>Entire File (LayeredTileMap)</SourceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>false</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
       <Name>Screens\TiledLevelScreen</Name>
@@ -10751,6 +10759,12 @@
           <Name>State2</Name>
         </StateSave>
       </States>
+      <Properties>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
+      </Properties>
       <StateCategoryList>
         <StateSaveCategory>
           <States>
@@ -10892,16 +10906,6 @@
           <Properties>
             <PropertySave>
               <Name>Type</Name>
-              <ValueAsString>VariableState</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>CurrentState</Name>
-          <CreatesEvent>true</CreatesEvent>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
               <ValueAsString>float</ValueAsString>
             </PropertySave>
           </Properties>
@@ -10939,17 +10943,18 @@
           <SetByDerived>true</SetByDerived>
           <CreatesEvent>true</CreatesEvent>
         </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>Category1</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+          </Properties>
+          <Name>CurrentCategory1State</Name>
+          <CreatesEvent>true</CreatesEvent>
+        </CustomVariable>
       </CustomVariables>
-      <States>
-        <StateSave>
-          <InstructionSaves />
-          <Name>State1</Name>
-        </StateSave>
-        <StateSave>
-          <InstructionSaves />
-          <Name>State2</Name>
-        </StateSave>
-      </States>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -10957,6 +10962,10 @@
 &lt;StateChainCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;StateChains /&gt;
 &lt;/StateChainCollection&gt;</ValueAsString>
+        </PropertySave>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
         </PropertySave>
       </Properties>
       <NamedObjects>
@@ -11137,16 +11146,34 @@
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
+      <StateCategoryList>
+        <StateSaveCategory>
+          <States>
+            <StateSave>
+              <InstructionSaves />
+              <Name>State1</Name>
+            </StateSave>
+            <StateSave>
+              <InstructionSaves />
+              <Name>State2</Name>
+            </StateSave>
+          </States>
+          <ExcludedVariables>
+            <string>CircleX</string>
+            <string>InnerWidth</string>
+            <string>X</string>
+            <string>VariableToBeSetByInitializedEvent</string>
+            <string>ExposedInDerived</string>
+            <string>CurrentCategory1State</string>
+          </ExcludedVariables>
+          <Name>Category1</Name>
+        </StateSaveCategory>
+      </StateCategoryList>
       <Name>Entities\EventEntity</Name>
       <Events>
         <EventResponseSave>
           <EventName>AfterCircleXSet</EventName>
           <BeforeOrAfter>Before</BeforeOrAfter>
-        </EventResponseSave>
-        <EventResponseSave>
-          <EventName>AfterCurrentStateSet</EventName>
-          <SourceVariable>CurrentState</SourceVariable>
-          <BeforeOrAfter>After</BeforeOrAfter>
         </EventResponseSave>
         <EventResponseSave>
           <EventName>ListObjectCollectionChanged</EventName>
@@ -11194,6 +11221,11 @@
         <EventResponseSave>
           <EventName>AfterExposedInDerivedSet</EventName>
           <SourceVariable>ExposedInDerived</SourceVariable>
+          <BeforeOrAfter>After</BeforeOrAfter>
+        </EventResponseSave>
+        <EventResponseSave>
+          <EventName>AfterCurrentCategory1StateSet</EventName>
+          <SourceVariable>CurrentCategory1State</SourceVariable>
           <BeforeOrAfter>After</BeforeOrAfter>
         </EventResponseSave>
       </Events>
@@ -13032,42 +13064,14 @@
           <SourceObjectProperty>CurrentState</SourceObjectProperty>
         </CustomVariable>
       </CustomVariables>
-      <States>
-        <StateSave>
-          <InstructionSaves>
-            <InstructionSave>
-              <Type>Single</Type>
-              <Member>CircleInstanceRadius</Member>
-              <ValueAsFloat>64</ValueAsFloat>
-            </InstructionSave>
-            <InstructionSave>
-              <Type>String</Type>
-              <Member>InterpolationEntitySubInstanceCurrentState</Member>
-              <ValueAsString>Big</ValueAsString>
-            </InstructionSave>
-          </InstructionSaves>
-          <Name>Big</Name>
-        </StateSave>
-        <StateSave>
-          <InstructionSaves>
-            <InstructionSave>
-              <Type>Single</Type>
-              <Member>CircleInstanceRadius</Member>
-              <ValueAsFloat>16</ValueAsFloat>
-            </InstructionSave>
-            <InstructionSave>
-              <Type>String</Type>
-              <Member>InterpolationEntitySubInstanceCurrentState</Member>
-              <ValueAsString>Small</ValueAsString>
-            </InstructionSave>
-          </InstructionSaves>
-          <Name>Small</Name>
-        </StateSave>
-      </States>
       <Properties>
         <PropertySave>
           <Name>HasAdvancedInterpolations</Name>
           <ValueAsBool>true</ValueAsBool>
+        </PropertySave>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
         </PropertySave>
       </Properties>
       <NamedObjects>
@@ -13153,8 +13157,52 @@
               <Name>Opaque</Name>
             </StateSave>
           </States>
-          <ExcludedVariables />
+          <ExcludedVariables>
+            <string>CircleInstanceRadius</string>
+            <string>CurrentState</string>
+            <string>InterpolationEntitySubInstanceCurrentState</string>
+          </ExcludedVariables>
           <Name>TextValues</Name>
+        </StateSaveCategory>
+        <StateSaveCategory>
+          <States>
+            <StateSave>
+              <InstructionSaves>
+                <InstructionSave>
+                  <Type>Single</Type>
+                  <Member>CircleInstanceRadius</Member>
+                  <ValueAsFloat>64</ValueAsFloat>
+                </InstructionSave>
+                <InstructionSave>
+                  <Type>String</Type>
+                  <Member>InterpolationEntitySubInstanceCurrentState</Member>
+                  <ValueAsString>Big</ValueAsString>
+                </InstructionSave>
+              </InstructionSaves>
+              <Name>Big</Name>
+            </StateSave>
+            <StateSave>
+              <InstructionSaves>
+                <InstructionSave>
+                  <Type>Single</Type>
+                  <Member>CircleInstanceRadius</Member>
+                  <ValueAsFloat>16</ValueAsFloat>
+                </InstructionSave>
+                <InstructionSave>
+                  <Type>String</Type>
+                  <Member>InterpolationEntitySubInstanceCurrentState</Member>
+                  <ValueAsString>Small</ValueAsString>
+                </InstructionSave>
+              </InstructionSaves>
+              <Name>Small</Name>
+            </StateSave>
+          </States>
+          <ExcludedVariables>
+            <string>TextInstanceX</string>
+            <string>TextInstanceAlpha</string>
+            <string>CurrentState</string>
+          </ExcludedVariables>
+          <Name>SizeCategory</Name>
         </StateSaveCategory>
       </StateCategoryList>
       <Name>Entities\InterpolationEntity</Name>
@@ -18754,6 +18802,7 @@
           </States>
           <ExcludedVariables>
             <string>VariableToGetChangedByState</string>
+            <string>CurrentAdvancedInterpolationCategoryState</string>
           </ExcludedVariables>
           <Name>ColorCategory</Name>
         </StateSaveCategory>
@@ -18782,6 +18831,7 @@
           </States>
           <ExcludedVariables>
             <string>VariableToGetChangedByState</string>
+            <string>CurrentAdvancedInterpolationCategoryState</string>
           </ExcludedVariables>
           <Name>CircleVisibility</Name>
         </StateSaveCategory>
@@ -18798,6 +18848,7 @@
           </States>
           <ExcludedVariables>
             <string>VariableToGetChangedByState</string>
+            <string>CurrentAdvancedInterpolationCategoryState</string>
           </ExcludedVariables>
           <Name>InterpolationCategory</Name>
         </StateSaveCategory>
@@ -18814,6 +18865,7 @@
           </States>
           <ExcludedVariables>
             <string>VariableToGetChangedByState</string>
+            <string>CurrentAdvancedInterpolationCategoryState</string>
           </ExcludedVariables>
           <Name>AdvancedInterpolationCategory</Name>
         </StateSaveCategory>
@@ -18830,6 +18882,9 @@
           </States>
           <ExcludedVariables>
             <string>VariableToGetChangedByState</string>
+            <string>CurrentState</string>
+            <string>IntVariableWithVelocity</string>
+            <string>CurrentAdvancedInterpolationCategoryState</string>
           </ExcludedVariables>
           <Name>Type</Name>
         </StateSaveCategory>
@@ -20402,6 +20457,10 @@
 &lt;StateChainCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;StateChains /&gt;
 &lt;/StateChainCollection&gt;</ValueAsString>
+        </PropertySave>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
         </PropertySave>
       </Properties>
       <NamedObjects>

@@ -21,10 +21,7 @@ namespace GlueTestProject.Entities
             }
             
         }
-        void OnAfterCurrentStateSet (object sender, EventArgs e)
-        {
-            this.X = 5;
-        }
+
         void OnListObjectCollectionChanged (object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (this.ListObject.Count != 0)
@@ -75,6 +72,11 @@ namespace GlueTestProject.Entities
         {
             
         }
+        void OnAfterCurrentCategory1StateSet (object sender, EventArgs e) 
+        {
+            this.X = 5;
 
-	}
+        }
+
+    }
 }

@@ -494,7 +494,8 @@ namespace FlatRedBall.Glue.FormHelpers
 
             else if (targetNode.IsStateListNode())
             {
-                menu.Items.Add(mAddState);
+                // We no longer support uncategorized states. They are a mess!
+                //menu.Items.Add(mAddState);
                 menu.Items.Add(mAddStateCategory);
             }
 

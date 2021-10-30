@@ -19,8 +19,146 @@ namespace FlatRedBall.Glue.CodeGeneration
     public partial class StateCodeGenerator : ElementComponentCodeGenerator
     {
 
-        #region Generating Fields / Inner Classes
+        #region Create Inner Class
 
+        private static ICodeBlock CreateClassForStateCategory(ICodeBlock currentBlock, List<StateSave> statesForThisCategory, StateSaveCategory category, IElement element)
+        {
+            string categoryClassName = category?.Name ?? "VariableState";
+
+            // Update August 18, 2021
+            // We want to generate the
+            // class even if it doesn't
+            // have any states. This allows
+            // GView to inject states dynamically.
+            //if (statesForThisCategory.Count != 0)
+            string prefix = "public";
+
+            string postfix = null;
+            if (IsStateDefinedInBase(element, categoryClassName))
+            {
+                postfix = $" : {element.BaseElement.Replace("\\", ".")}.{categoryClassName}";
+            }
+
+
+            currentBlock = currentBlock.Class(prefix, categoryClassName, postfix);
+
+            currentBlock.Line($"public string Name;");
+
+            var includedVariables = element.CustomVariables.Where(item =>
+            {
+                return ShouldIncludeVariable(category, element, item);
+            })
+                .ToArray();
+
+            foreach (var variable in includedVariables)
+            {
+                string type = variable.Type;
+
+                if (variable.GetIsFile())
+                {
+                    type = "string";
+                }
+                else if (!string.IsNullOrEmpty(variable.OverridingPropertyType))
+                {
+                    type = variable.OverridingPropertyType;
+                }
+                else
+                {
+                    type = CustomVariableCodeGenerator.GetMemberTypeFor(variable, element);
+                }
+                currentBlock.Line($"public {type} {variable.Name};");
+            }
+
+            CreatePredefinedStateInstances(currentBlock, statesForThisCategory, element, categoryClassName, includedVariables);
+
+            currentBlock.Line($"public static Dictionary<string, {categoryClassName}> AllStates = new Dictionary<string, {categoryClassName}>");
+            var dictionaryBlock = currentBlock.Block();
+            dictionaryBlock.PostCodeLines.Add(new CodeLine(";"));
+
+            for (int i = 0; i < statesForThisCategory.Count; i++)
+            {
+                var state = statesForThisCategory[i];
+                dictionaryBlock.Line("{\"" + state.Name + "\", " + state.Name + "},");
+            }
+
+            currentBlock = currentBlock.End();
+
+            return currentBlock;
+        }
+
+        private static bool ShouldIncludeVariable(StateSaveCategory category, IElement element, CustomVariable item)
+        {
+            if (category == null)
+            {
+                var isState = item.GetIsVariableState(element);
+
+                // states setting other states causes lots of problems. Since uncategorized states can't exclude variables in the StateData world, we just won't
+                // set other states
+                return !isState;
+            }
+            else
+            {
+                return category?.ExcludedVariables.Contains(item.Name) == false;
+            }
+        }
+
+        private static void CreatePredefinedStateInstances(ICodeBlock currentBlock, List<StateSave> statesForThisCategory, IElement element, string categoryClassName, CustomVariable[] includedVariables)
+        {
+            for (int i = 0; i < statesForThisCategory.Count; i++)
+            {
+                var state = statesForThisCategory[i];
+                currentBlock.Line($"public static {categoryClassName} {state.Name} = new {categoryClassName}()");
+
+                var variableBlock = currentBlock.Block();
+
+                variableBlock.Line($"Name = \"{state.Name}\",");
+
+                foreach (var variable in includedVariables)
+                {
+                    var instruction = state.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name);
+
+                    var valueToSet = state.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name)?.Value
+                        ?? variable.DefaultValue;
+
+                    var shouldAssign = valueToSet != null;
+
+                    if(shouldAssign && valueToSet is string && ((string)valueToSet) == string.Empty)
+                    {
+                        if(variable.Type == "bool" ||
+                            variable.Type == "int" ||
+                            variable.Type == "float" ||
+                            variable.Type == "long" ||
+                            variable.Type == "byte" ||
+                            variable.Type == "double" ||
+                            variable.Type == "decimal"
+                            )
+                        {
+                            shouldAssign = false;
+                        }
+                    }
+
+                    if (shouldAssign)
+                    {
+                        var rightSide = GetRightSideAssignmentValueAsString(element, variable.Name, valueToSet);
+                        var matchingVariable = element.GetCustomVariableRecursively(variable.Name);
+                        if (matchingVariable?.GetIsFile() == true)
+                        {
+                            // If it's a file we are only going to reference the file name here as to not preload the file
+                            rightSide = $"\"{rightSide}\"";
+                        }
+
+                        variableBlock.Line($"{variable.Name} = {rightSide},");
+                    }
+                }
+                variableBlock.End().Line(";");
+            }
+        }
+
+        #endregion
+
+        #region Generating Fields / Properties
+
+        // Generates the fields AND PROPERTIES even though it's only called GenerateFields
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
 
@@ -49,142 +187,6 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
 
             return codeBlock;
-        }
-
-        public static List<StateSave> GetAllStatesForCategory(IElement element, string stateCategory)
-        {
-            var states = new List<StateSave>();
-
-            if (!string.IsNullOrEmpty(element.BaseElement))
-            {
-                IElement baseElement = ObjectFinder.Self.GetElement(element.BaseElement);
-
-                if (baseElement != null)
-                {
-                    states.AddRange(GetAllStatesForCategory(baseElement, stateCategory));
-                }
-            }
-
-            var category =
-                element.StateCategoryList.Find(
-                    cat => cat.Name == stateCategory);
-
-            if(category != null)
-                states.AddRange(category.States);
-
-            return states;
-        }
-
-        private static Dictionary<string, StateSaveCategory> GetAllStateCategoryNames(IElement element, bool includeInheritance)
-        {
-            var names = new Dictionary<string, StateSaveCategory>();
-            if (element != null)
-            {
-                if (!string.IsNullOrEmpty(element.BaseElement) && includeInheritance)
-                {
-                    var uncontained = GetAllStateCategoryNames(ObjectFinder.Self.GetElement(element.BaseElement), includeInheritance).Where(name => !names.ContainsKey(name.Key));
-
-                    foreach (var kvp in uncontained)
-                    {
-                        names.Add(kvp.Key, kvp.Value);
-                    }
-                }
-
-                foreach (var category in element.StateCategoryList.Where(category => !names.ContainsKey(category.Name)))
-                {
-                    names.Add(category.Name, category);
-                }
-            }
-            return names;
-        }
-
-        private static ICodeBlock CreateClassForStateCategory(ICodeBlock currentBlock, List<StateSave> statesForThisCategory, StateSaveCategory category, IElement element)
-        {
-            string categoryClassName = category?.Name ?? "VariableState";
-
-            // Update August 18, 2021
-            // We want to generate the
-            // class even if it doesn't
-            // have any states. This allows
-            // GView to inject states dynamically.
-            //if (statesForThisCategory.Count != 0)
-            string prefix = "public";
-
-            string postfix = null;
-            if (IsStateDefinedInBase(element, categoryClassName))
-            {
-                postfix = $" : {element.BaseElement.Replace("\\", ".")}.{categoryClassName}";
-            }
-
-
-            currentBlock = currentBlock.Class(prefix, categoryClassName, postfix);
-
-            currentBlock.Line($"public string Name;");
-
-            var includedVariables = element.CustomVariables.Where(item => category == null || category?.ExcludedVariables.Contains(item.Name) == false)
-                .ToArray();
-
-            foreach (var variable in includedVariables)
-            {
-                string type = variable.Type;
-
-                if (variable.GetIsFile())
-                {
-                    type = "string";
-                }
-                else
-                {
-                    type = CustomVariableCodeGenerator.GetMemberTypeFor(variable, element);
-                }
-                currentBlock.Line($"public {type} {variable.Name};");
-            }
-
-
-
-            for (int i = 0; i < statesForThisCategory.Count; i++)
-            {
-                var state = statesForThisCategory[i];
-                currentBlock.Line($"public static {categoryClassName} {state.Name} = new {categoryClassName}()");
-
-                var variableBlock = currentBlock.Block();
-
-                variableBlock.Line($"Name = \"{state.Name}\",");
-
-                foreach(var variable in includedVariables)
-                {
-                    var instruction = state.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name);
-
-                    var valueToSet = state.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name)?.Value
-                        ?? variable.DefaultValue;
-                    if(valueToSet != null)
-                    {
-                        var rightSide = GetRightSideAssignmentValueAsString(element, variable.Name, valueToSet);
-                        var matchingVariable = element.GetCustomVariableRecursively(variable.Name);
-                        if(matchingVariable?.GetIsFile() == true)
-                        {
-                            // If it's a file we are only going to reference the file name here as to not preload the file
-                            rightSide = $"\"{rightSide}\"";
-                        }
-
-                        variableBlock.Line($"{variable.Name} = {rightSide},");
-                    }
-                }
-                variableBlock.End().Line(";");
-            }
-
-            currentBlock.Line($"public static Dictionary<string, {categoryClassName}> AllStates = new Dictionary<string, {categoryClassName}>");
-            var dictionaryBlock = currentBlock.Block();
-            dictionaryBlock.PostCodeLines.Add(new CodeLine(";"));
-
-            for (int i = 0; i < statesForThisCategory.Count; i++)
-            {
-                var state = statesForThisCategory[i];
-                dictionaryBlock.Line("{\"" + state.Name + "\", " + state.Name + "},");
-            }
-
-            currentBlock = currentBlock.End();
-
-            return currentBlock;
         }
 
         private static ICodeBlock GenerateCurrentStateProperty(IElement element, ICodeBlock codeBlock, StateSaveCategory category, List<StateSave> states)
@@ -336,6 +338,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                     shouldInclude = true;
                 }
 
+                if(shouldInclude)
+                {
+                    shouldInclude = ShouldIncludeVariable(category, element, variable);
+                }
+
                 if (shouldInclude)
                 {
 
@@ -361,11 +368,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                         }
                         rightSideOfEquals = $"GetFile(value.{variable.Name}) as {type}";
                     }
-                    else if(!string.IsNullOrWhiteSpace(customVariable.OverridingPropertyType))
-                    {
-                        var value = TypeConverterHelper.Convert(customVariable, GetterOrSetter.Getter, "value." + variable.Name);
-                        rightSideOfEquals = value;
-                    }
+                    //else if(!string.IsNullOrWhiteSpace(customVariable.OverridingPropertyType))
+                    //{
+                    //    var value = TypeConverterHelper.Convert(customVariable, GetterOrSetter.Getter, "value." + variable.Name);
+                    //    rightSideOfEquals = value;
+                    //}
 
                     NamedObjectSave referencedNos = element.GetNamedObjectRecursively(customVariable.SourceObject);
                     if (referencedNos != null)
@@ -418,6 +425,58 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
             }
         }
+
+
+
+        public static List<StateSave> GetAllStatesForCategory(IElement element, string stateCategory)
+        {
+            var states = new List<StateSave>();
+
+            if (!string.IsNullOrEmpty(element.BaseElement))
+            {
+                IElement baseElement = ObjectFinder.Self.GetElement(element.BaseElement);
+
+                if (baseElement != null)
+                {
+                    states.AddRange(GetAllStatesForCategory(baseElement, stateCategory));
+                }
+            }
+
+            var category =
+                element.StateCategoryList.Find(
+                    cat => cat.Name == stateCategory);
+
+            if(category != null)
+                states.AddRange(category.States);
+
+            return states;
+        }
+
+        private static Dictionary<string, StateSaveCategory> GetAllStateCategoryNames(IElement element, bool includeInheritance)
+        {
+            var names = new Dictionary<string, StateSaveCategory>();
+            if (element != null)
+            {
+                if (!string.IsNullOrEmpty(element.BaseElement) && includeInheritance)
+                {
+                    var uncontained = GetAllStateCategoryNames(ObjectFinder.Self.GetElement(element.BaseElement), includeInheritance).Where(name => !names.ContainsKey(name.Key));
+
+                    foreach (var kvp in uncontained)
+                    {
+                        names.Add(kvp.Key, kvp.Value);
+                    }
+                }
+
+                foreach (var category in element.StateCategoryList.Where(category => !names.ContainsKey(category.Name)))
+                {
+                    names.Add(category.Name, category);
+                }
+            }
+            return names;
+        }
+
+
+
 
         private static bool IsStateDefinedInBase(IElement element, string enumName)
         {
@@ -863,9 +922,12 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                             StateSaveCategory category = objectElement.GetStateCategoryRecursively(customVariable.Type);
 
-                            typeName = category.Name;
+                            if(category != null)
+                            {
+                                typeName = category.Name;
 
-                            valueAsString = objectElement.Name.Replace("/", ".").Replace("\\", ".") + "." + typeName + "." + valueAsString.Replace("\"", "");
+                                valueAsString = objectElement.Name.Replace("/", ".").Replace("\\", ".") + "." + typeName + "." + valueAsString.Replace("\"", "");
+                            }
                         }
                     }
 
@@ -876,10 +938,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                         valueAsString,
                         customVariable);
 
-                    if(!string.IsNullOrEmpty(customVariable.OverridingPropertyType))
-                    {
-                        valueAsString = TypeConverterHelper.Convert(customVariable, GetterOrSetter.Setter, valueAsString);
-                    }
+                    // Conversion happens in the variable assignment on the instance, not in the state
+                    //if(!string.IsNullOrEmpty(customVariable.OverridingPropertyType))
+                    //{
+                    //    valueAsString = TypeConverterHelper.Convert(customVariable, GetterOrSetter.Setter, valueAsString);
+                    //}
                 }
             }
             else

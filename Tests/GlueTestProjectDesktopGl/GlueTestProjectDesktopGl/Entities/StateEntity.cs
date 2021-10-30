@@ -13,6 +13,7 @@ using BitmapFont = FlatRedBall.Graphics.BitmapFont;
 using Cursor = FlatRedBall.Gui.Cursor;
 using GuiManager = FlatRedBall.Gui.GuiManager;
 using FlatRedBall.Instructions;
+using GlueTestProject.TestFramework;
 
 #if FRB_XNA || SILVERLIGHT
 using Keys = Microsoft.Xna.Framework.Input.Keys;
@@ -35,6 +36,10 @@ namespace GlueTestProject.Entities
 
 		private void CustomInitialize()
 		{
+            var variableState = new VariableState();
+            var fieldThatShouldntExist = variableState.GetType().GetField("CurrentState");
+            fieldThatShouldntExist.ShouldBe(null, "because a state should not set itself");
+
             mHasCustomInitializeBeenCalled = true;
 
             mTimeCreated = TimeManager.CurrentTime;
@@ -118,7 +123,7 @@ namespace GlueTestProject.Entities
 
             mValues.Add(LongVariableWithVelocityModifiedByVelocity);
 
-            if (TimeManager.SecondsSince(mTimeCreated) > .4f)
+            if (TimeManager.SecondsSince(mTimeCreated) > .5f)
             {
                 if (CurrentInterpolationCategoryState != InterpolationCategory.Interpolate2)
                 {
@@ -164,7 +169,7 @@ namespace GlueTestProject.Entities
         {
             mIsVelocityTesting = true;
 
-            this.IntVariableWithVelocityVelocity = 5;
+            this.IntVariableWithVelocityVelocity = 6;
 
             this.Call(CheckVelocityIsApplying).After(timeToTake);
 

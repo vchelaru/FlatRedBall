@@ -66,7 +66,6 @@ namespace GlueTestProject.Screens
             TestingTextInterpolationInstance.CurrentTextValuesState = InterpolationEntity.TextValues.Transparent;
             TestingTextInterpolationInstance.InterpolateToState(InterpolationEntity.TextValues.Opaque, 1);
 
-
             this.DynamicallyAssignedSceneSourceFile = SceneOption1;
             if(this.DynamicallyAssignedSceneSourceFile != SceneOption1)
             {
@@ -205,7 +204,7 @@ namespace GlueTestProject.Screens
                 {
                     if (TestingTextInterpolationInstance.TextInstanceX == 0)
                     {
-                        throw new Exception("Text position interpolation over time doesn't work");
+                        throw new Exception("Text position interpolation over time doesn't work. This should be greater than 1 because InterpolateToState is called on this in CustomInitialize.");
                     }
 
                     if (TestingTextInterpolationInstance.TextInstanceAlpha == 0)

@@ -45,7 +45,7 @@ namespace GlueTestProject.Screens
             }
 
             // There is a script on this which sets the Entity's X to 5
-            this.EventEntityInstance.CurrentState = Entities.EventEntity.VariableState.State1;
+            this.EventEntityInstance.CurrentCategory1State = Entities.EventEntity.Category1.State1;
             if (FlatRedBall.Math.MathFunctions.RoundToInt(EventEntityInstance.X) != 5)
             {
                 throw new Exception("Events on States seem to not be working");

@@ -878,7 +878,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
                 if (customVariable.IsTunneling)
                 {
-                    IElement namedObjectElement = ObjectFinder.Self.GetIElement(referencedNos.SourceClassType);
+                    IElement namedObjectElement = ObjectFinder.Self.GetElement(referencedNos.SourceClassType);
                     if (namedObjectElement != null)
                     {
                         customVariableType = namedObjectElement.Name.Replace("\\", ".") + "." + customVariableType;

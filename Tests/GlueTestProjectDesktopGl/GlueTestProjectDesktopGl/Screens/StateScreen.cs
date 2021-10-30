@@ -56,7 +56,7 @@ namespace GlueTestProject.Screens
                 throw new Exception("The X value should be 64, but instead it's " + StateEntityWithoutCurrentStateVariableInstance.X + " which means CurrentState is set before variables.  It shouldn't be");
             }
 
-            this.InstanceTestingVelocity.StartVelocityTesting(.2f);
+            this.InstanceTestingVelocity.StartVelocityTesting(.25f);
 
             ChildEntity.CurrentState = StateEntityChild.VariableState.Fourth;
             if (ChildEntity.CurrentState != StateEntityChild.VariableState.Fourth)
@@ -133,7 +133,7 @@ namespace GlueTestProject.Screens
 		{
             // We do some things over time so we
             // need to wait a little bit.
-            if (this.ActivityCallCount > 10)
+            if (this.ActivityCallCount > 20)
             {
                 if (InterpolationEntityInstance.CircleInstanceRadius <= 16.4f)
                 {

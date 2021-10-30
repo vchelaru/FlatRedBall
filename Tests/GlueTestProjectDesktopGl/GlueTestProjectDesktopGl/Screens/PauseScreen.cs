@@ -77,9 +77,13 @@ namespace GlueTestProject.Screens
                 FlatRedBall.Glue.StateInterpolation.InterpolationType.Exponential,
                 FlatRedBall.Glue.StateInterpolation.Easing.Out);
 
+            InterpolationEntity.SizeCategory.Small.CircleInstanceRadius.ShouldBe(16);
+            InterpolationEntityInstance.CurrentSizeCategoryState = InterpolationEntity.SizeCategory.Small;
+            InterpolationEntityInstance.CircleInstanceRadius.ShouldBe(16);
+
             InterpolationEntityInstance.InterpolateToState(
-                InterpolationEntity.VariableState.Small,
-                InterpolationEntity.VariableState.Big,
+                InterpolationEntity.SizeCategory.Small,
+                InterpolationEntity.SizeCategory.Big,
                 interpolationTime, FlatRedBall.Glue.StateInterpolation.InterpolationType.Exponential,
                 FlatRedBall.Glue.StateInterpolation.Easing.Out);
 
@@ -154,9 +158,18 @@ namespace GlueTestProject.Screens
             if (this.ActivityCallCount > 45 && !mHasPerformedCheck)
             {
                 mHasPerformedCheck = true;
-                if (InterpolationEntityInstance.CurrentState != InterpolationEntity.VariableState.Big)
+                if (InterpolationEntityInstance.CurrentSizeCategoryState != InterpolationEntity.SizeCategory.Big)
                 {
-                    throw new Exception("Interpolation should work when paused, but it isn't");
+                    var message = "InterpolationEntityInstance has InterpolateToState called after the screen is paused. " +
+                        "Enough time should have passed to finish interpolation by now. Since the state is not Big, then either " +
+                        "interpolation is completely broken, or interpolation is not working when paused.";
+
+                    if(InterpolationEntityInstance.CircleInstanceRadius == 64)
+                    {
+                        message += "\nThe circle is the right radius, but the state didn't get assigned";
+                    }
+
+                    throw new Exception(message);
                 }
                 // Not sure if this is something we should allow or not...
                 //if (this.CurrentState != VariableState.After)

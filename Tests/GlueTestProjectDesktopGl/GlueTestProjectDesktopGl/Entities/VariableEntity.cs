@@ -46,6 +46,9 @@ namespace GlueTestProject.Entities
                 throw new Exception("Tunneling variables are not properly overriding base variables");
             }
 
+            var newState = new VariableEntity.VariableState();
+            newState.TimeTextInstanceDisplayText = 1.0f; // this should be a float because it references a float variable
+
 
             if (this.TextInheritingEntityInstance2.CircleRadius != 300)
             {

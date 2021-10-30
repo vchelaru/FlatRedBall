@@ -28,9 +28,9 @@ namespace GlueTestProject.Entities
 	{
 		private void CustomInitialize()
 		{
-            CurrentState = InterpolationEntity.VariableState.Small;
+            CurrentSizeCategoryState = InterpolationEntity.SizeCategory.Small;
             InterpolateToState(
-                InterpolationEntity.VariableState.Small, InterpolationEntity.VariableState.Big,
+                InterpolationEntity.SizeCategory.Small, InterpolationEntity.SizeCategory.Big,
                 .5, FlatRedBall.Glue.StateInterpolation.InterpolationType.Exponential, FlatRedBall.Glue.StateInterpolation.Easing.Out);
 
 		}
@@ -39,7 +39,7 @@ namespace GlueTestProject.Entities
 		{
             // make sure that the sub object is interpolating too
 
-            if (this.mVariableStateTweener.Position != 0 &&
+            if (this.mSizeCategoryTweener.Position != 0 &&
                 this.InterpolationEntitySubInstance.CircleInstanceRadius <= 5)
             {
                 throw new Exception("Advanced interpolation isn't impacting sub-entities that have advanced interpolation");
