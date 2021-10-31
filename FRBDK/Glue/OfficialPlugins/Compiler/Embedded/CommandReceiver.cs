@@ -164,7 +164,8 @@ namespace GlueControl
                 var selectedNosNames = Editing.EditingManager.Self.CurrentNamedObjects.Select(item => item.InstanceName)
                     .ToArray();
 
-                var renamedSelectedObject = false;
+                string oldName = null;
+                string newName = null;
                 if (selectedNosNames.Length > 0)
                 {
                     var split = dto.VariableName.Split('.');
@@ -172,10 +173,8 @@ namespace GlueControl
                     var isAssigningName = split.Length == 3 &&
                         split[2] == "Name";
 
-                    if (isAssigningName)
-                    {
-                        renamedSelectedObject = selectedNosNames.Contains(split[1]);
-                    }
+                    oldName = split[1];
+                    newName = dto.VariableValue;
                 }
 
                 response = GlueControl.Editing.VariableAssignmentLogic.SetVariable(dto);
@@ -183,11 +182,23 @@ namespace GlueControl
                 if (dto.GlueElement != null)
                 {
                     Editing.EditingManager.Self.SetCurrentGlueElement(dto.GlueElement);
-                    if (renamedSelectedObject)
+                    if (oldName != null && newName != null)
                     {
-                        var newSelectedNos = Editing.EditingManager.Self.CurrentGlueElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == dto.VariableValue);
+                        var renamedNos =
+                            Editing.EditingManager.Self.CurrentGlueElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == oldName);
 
-                        EditingManager.Self.Select(newSelectedNos, addToExistingSelection: false, playBump: false);
+                        if (renamedNos != null)
+                        {
+                            renamedNos.InstanceName = newName;
+                        }
+
+                        var renamedNameable =
+                            Editing.EditingManager.Self.ItemsSelected.FirstOrDefault(item => item.Name == oldName);
+
+                        if (renamedNameable != null)
+                        {
+                            renamedNameable.Name = newName;
+                        }
                     }
                 }
             }
