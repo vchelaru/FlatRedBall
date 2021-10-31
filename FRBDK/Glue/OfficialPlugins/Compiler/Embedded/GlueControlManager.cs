@@ -79,12 +79,12 @@ namespace GlueControl
                 listener.Start();
                 isRunning = true;
             }
-            catch(System.Net.Sockets.SocketException e)
+            catch (System.Net.Sockets.SocketException e)
             {
                 isGameAlreadyRunning = true;
             }
 
-            if(!isGameAlreadyRunning)
+            if (!isGameAlreadyRunning)
             {
                 while (isRunning)
                 {
@@ -348,8 +348,7 @@ namespace GlueControl
             var split = elementGameType.Split('.').ToList().Skip(1);
             dto.ElementNameGlue = string.Join("\\", split);
 
-            var message = $"{nameof(SelectObjectDto)}:{Newtonsoft.Json.JsonConvert.SerializeObject(dto)}";
-            SendCommandToGlue(message);
+            SendToGlue(dto);
         }
 
         public void SendToGlue(object dto)

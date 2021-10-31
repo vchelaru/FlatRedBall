@@ -80,7 +80,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             screenNameTask.Wait(6000);
             var screenName = screenNameTask.Result; 
 
-            if(!string.IsNullOrEmpty(screenName))
+            if(!string.IsNullOrEmpty(screenName) && screenName.Contains(".Screens."))
             {
                 // remove prefix:
                 var screensDotStart = screenName.IndexOf("Screens.");
@@ -127,6 +127,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 if (element == null)
                 {
                     element = GlueState.Self.CurrentElement;
+                    screen = GlueState.Self.CurrentScreenSave;
                 }
 
                 var addObjectDto = JsonConvert.DeserializeObject<AddObjectDto>(dataAsString);

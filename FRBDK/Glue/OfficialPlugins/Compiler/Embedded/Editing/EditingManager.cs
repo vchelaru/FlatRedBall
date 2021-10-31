@@ -290,7 +290,7 @@ namespace GlueControl.Editing
                     NamedObjectSave nos = null;
                     if (itemOver?.Name != null)
                     {
-                        nos = CurrentGlueElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == itemOver.Name);
+                        nos = CurrentGlueElement?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == itemOver.Name);
                     }
 
                     if (nos != null)
@@ -308,7 +308,7 @@ namespace GlueControl.Editing
                     NamedObjectSave nos = null;
                     if (itemOver?.Name != null)
                     {
-                        nos = CurrentGlueElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == itemOver.Name);
+                        nos = CurrentGlueElement?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == itemOver.Name);
                     }
                     if (nos != null)
                     {
@@ -504,7 +504,7 @@ namespace GlueControl.Editing
 
             CurrentGlueElement = glueElement;
 
-            var oldNames = CurrentNamedObjects.Select(item => item.InstanceName).ToArray();
+            var oldNames = CurrentNamedObjects.Where(item => item != null).Select(item => item.InstanceName).ToArray();
             CurrentNamedObjects.Clear();
             var newNamedObjects = glueElement?.AllNamedObjects.Where(item => oldNames.Contains(item.FieldName)).ToArray();
             // Note - this will fail if the this is being called as a result of a rename. Therefore, the caller is responsbile
