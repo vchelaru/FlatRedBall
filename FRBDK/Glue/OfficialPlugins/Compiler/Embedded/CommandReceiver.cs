@@ -173,8 +173,11 @@ namespace GlueControl
                     var isAssigningName = split.Length == 3 &&
                         split[2] == "Name";
 
-                    oldName = split[1];
-                    newName = dto.VariableValue;
+                    if (isAssigningName)
+                    {
+                        oldName = split[1];
+                        newName = dto.VariableValue;
+                    }
                 }
 
                 response = GlueControl.Editing.VariableAssignmentLogic.SetVariable(dto);
@@ -582,7 +585,7 @@ namespace GlueControl
 
         #region EditMode vs Play
 
-        private static void HandleDto(SetEditMode setEditMode)
+        private static object HandleDto(SetEditMode setEditMode)
         {
             var value = setEditMode.IsInEditMode;
 #if SupportsEditMode
@@ -611,6 +614,11 @@ namespace GlueControl
 
                 RestartScreenRerunCommands(applyRestartVariables: true, isInEditMode: value, shouldRecordCameraPosition: false, forceCameraToPreviousState: true);
             }
+
+            return new Dtos.GeneralCommandResponse
+            {
+                Succeeded = true,
+            };
 #endif
         }
 

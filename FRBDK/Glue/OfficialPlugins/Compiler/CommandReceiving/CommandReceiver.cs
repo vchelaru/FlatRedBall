@@ -52,25 +52,30 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 var action = command.Substring(0, firstColon);
                 var data = command.Substring(firstColon + 1);
 
-                switch(action)
+                TaskManager.Self.Add(() =>
                 {
-                    case nameof(AddObjectDto):
-                        HandleAddObject(data);
+                    switch(action)
+                    {
+                        case nameof(AddObjectDto):
+                            HandleAddObject(data);
 
-                        break;
-                    case nameof(SetVariableDto):
-                        HandleSetVariable(JsonConvert.DeserializeObject<SetVariableDto>(data));
-                        break;
-                    case nameof(SelectObjectDto):
-                        HandleSelectObject(JsonConvert.DeserializeObject<SelectObjectDto>(data));
-                        break;
-                    case nameof(RemoveObjectDto):
-                        HandleRemoveObject(JsonConvert.DeserializeObject<RemoveObjectDto>(data));
-                        break;
-                    case nameof(ModifyCollisionDto):
-                        HandleDto(JsonConvert.DeserializeObject<ModifyCollisionDto>(data));
-                        break;
-                }
+                            break;
+                        case nameof(SetVariableDto):
+                            HandleSetVariable(JsonConvert.DeserializeObject<SetVariableDto>(data));
+                            break;
+                        case nameof(SelectObjectDto):
+                            HandleSelectObject(JsonConvert.DeserializeObject<SelectObjectDto>(data));
+                            break;
+                        case nameof(RemoveObjectDto):
+                            HandleRemoveObject(JsonConvert.DeserializeObject<RemoveObjectDto>(data));
+                            break;
+                        case nameof(ModifyCollisionDto):
+                            HandleDto(JsonConvert.DeserializeObject<ModifyCollisionDto>(data));
+                            break;
+                    }
+                },
+                $"Processing command of type {action}");
+
             }
         }
 
@@ -422,7 +427,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #endregion
 
-        private static async void HandleDto(ModifyCollisionDto dto)
+        private static void HandleDto(ModifyCollisionDto dto)
         {
             string collisionTileTypeName;
             FlatRedBall.IO.FilePath tmxFilePath;

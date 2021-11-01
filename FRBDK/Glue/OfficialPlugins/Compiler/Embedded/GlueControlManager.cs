@@ -119,32 +119,46 @@ namespace GlueControl
 
         private async Task HandleClient(TcpClient client)
         {
-            StreamReader reader = new StreamReader(client.GetStream());
-            var stringBuilder = new StringBuilder();
-            while (reader.Peek() != -1)
-            {
-                stringBuilder.AppendLine(reader.ReadLine());
-            }
-
-            var response = await ProcessMessage(stringBuilder.ToString()?.Trim());
-            if (response == null)
-            {
-                response = "true";
-            }
-            byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(response);
             var clientStream = client.GetStream();
-
-            var length = messageAsBytes.Length;
-            var lengthAsBytes =
-                BitConverter.GetBytes(length);
-            clientStream.Write(lengthAsBytes, 0, 4);
-            if (messageAsBytes.Length > 0)
+            using (StreamReader reader = new StreamReader(clientStream))
             {
-                clientStream.Write(messageAsBytes, 0, messageAsBytes.Length);
+                var stringBuilder = new StringBuilder();
+                while (reader.Peek() != -1)
+                {
+                    stringBuilder.AppendLine(reader.ReadLine());
+                }
 
+                var threadId =
+    System.Threading.Thread.CurrentThread.ManagedThreadId;
+
+                var isPrimaryThread = FlatRedBallServices.IsThreadPrimary();
+
+                System.Diagnostics.Debug.WriteLine($"Before IsPrimary:{isPrimaryThread}  ThreadId:{threadId}");
+
+                var response = await ProcessMessage(stringBuilder.ToString()?.Trim());
+
+                isPrimaryThread = FlatRedBallServices.IsThreadPrimary();
+                System.Diagnostics.Debug.WriteLine($"After IsPrimary:{isPrimaryThread}  ThreadId:{threadId}");
+
+                if (response == null)
+                {
+                    response = "true";
+                }
+                byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(response);
+
+                var length = messageAsBytes.Length;
+                var lengthAsBytes =
+                    BitConverter.GetBytes(length);
+                clientStream.Write(lengthAsBytes, 0, 4);
+                if (messageAsBytes.Length > 0)
+                {
+                    clientStream.Write(messageAsBytes, 0, messageAsBytes.Length);
+
+                }
             }
 
         }
+
         #endregion
 
         #region Glue -> Game

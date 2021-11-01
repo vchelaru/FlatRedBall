@@ -25,6 +25,21 @@ namespace OfficialPlugins.Compiler.CommandSending
             return await SendCommand($"{dtoTypeName}:{serialized}", port);
         }
 
+        public static async Task<T> Send<T>(object dto, int port)
+        {
+            var responseString = await Send(dto, port);
+
+            try
+            {
+                return JsonConvert.DeserializeObject<T>(responseString);
+            }
+            catch
+            {
+                // no biggie
+                return default(T);
+            }
+        }
+
         static string LastCommand;
         // Maybe we should have a bool here on whether to wait. if false, exit if the sendCommandSemaphore returns false
         public static async Task<string> SendCommand(string text, int port, bool isImportant = true)
@@ -132,7 +147,7 @@ namespace OfficialPlugins.Compiler.CommandSending
 
         }
 
-        const int bufferSize = 1024;
+        const int bufferSize = 2048;
         static byte[] buffer = new byte[bufferSize];
         private static async Task<string> ReadFromClient(TcpClient client, Stream stm)
         {
@@ -158,20 +173,36 @@ namespace OfficialPlugins.Compiler.CommandSending
             //Console.ReadLine();
         }
 
+
+        static TimeSpan readFromClientTimeout = TimeSpan.FromSeconds(4);
+
         private static async Task<byte[]> GetByteArrayFromStream(Stream stm, int length)
         {
             using var memoryStream = new MemoryStream();
             int totalBytesRead = 0;
-            TimeSpan timeout = TimeSpan.FromSeconds(3);
+
             var timeStarted = DateTime.Now;
             int bytesRead = 0;
+
+
+            bool hasMoreToRead = totalBytesRead < length;
+            bool timedOut = DateTime.Now - timeStarted < readFromClientTimeout;
+
             do
             {
                 bytesRead = await stm.ReadAsync(buffer, 0, Math.Min(length, buffer.Length));
                 memoryStream.Write(buffer, 0, bytesRead);
                 totalBytesRead += bytesRead;
 
-            } while (totalBytesRead < length && DateTime.Now - timeStarted < timeout );
+                hasMoreToRead = totalBytesRead < length;
+                timedOut = DateTime.Now - timeStarted > readFromClientTimeout;
+
+            } while (hasMoreToRead && !timedOut);
+
+            if(timedOut)
+            {
+                int m = 3;
+            }
 
             var byteArray =
                 memoryStream.ToArray();
@@ -193,8 +224,7 @@ namespace OfficialPlugins.Compiler.CommandSending
             }
             catch (SocketException)
             {
-                // do nothing, may not have been able to communicate, just output
-                //control.PrintOutput("Could not get the game's screen, restarting game from startup screen");
+
             }
             return screenName;
         }

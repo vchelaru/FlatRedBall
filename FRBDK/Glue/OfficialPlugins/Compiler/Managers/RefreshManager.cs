@@ -19,6 +19,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using GeneralResponse = ToolsUtilities.GeneralResponse;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace OfficialPlugins.Compiler.Managers
@@ -602,10 +603,15 @@ namespace OfficialPlugins.Compiler.Managers
         {
             if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
-                bool handledByGame = false;
+                GeneralResponse generalResponse = GeneralResponse.UnsuccessfulWith("Unknown error");
                 string responseAsString = null;
                 var element = ObjectFinder.Self.GetElementContaining(objectMoving);
-                if(element != null)
+
+                if(element == null)
+                {
+                    generalResponse = GeneralResponse.UnsuccessfulWith("Could not find Glue Element containing {objectMoving}");
+                }
+                else
                 {
                     var dto = new MoveObjectToContainerDto
                     {
@@ -615,27 +621,36 @@ namespace OfficialPlugins.Compiler.Managers
 
                     };
 
-
                     responseAsString = await CommandSender.Send(dto, GlueViewSettingsViewModel.PortNumber);
 
-                    if(!string.IsNullOrEmpty(responseAsString))
+                    if(string.IsNullOrEmpty(responseAsString))
+                    {
+                        generalResponse = GeneralResponse.UnsuccessfulWith($"Sent the command to move {objectMoving} to {newContainer} but never got a response from the game");
+                    }
+                    else
                     {
                         try
                         {
                             var response = JsonConvert.DeserializeObject<MoveObjectToContainerDtoResponse>(responseAsString);
-                            handledByGame = response.WasObjectMoved;
+                            if(response.WasObjectMoved)
+                            {
+                                generalResponse = GeneralResponse.SuccessfulResponse;
+                            }
+                            else
+                            {
+                                generalResponse = GeneralResponse.UnsuccessfulWith($"Failed to move object to game. No extra info provided by game.");
+                            }
                         }
-                        catch
+                        catch(Exception e)
                         {
-                            handledByGame = false;
-                            Output.Print($"!!!Error parsing {responseAsString}");
+                            generalResponse = GeneralResponse.UnsuccessfulWith($"Failed to deserialie response:\n\n{responseAsString}\n\n{e}");
                         }
                     }
                 }
 
-                if(!handledByGame)
+                if(!generalResponse.Succeeded)
                 {
-                    StopAndRestartTask($"Restarting due to changed container for {objectMoving}");
+                    StopAndRestartTask($"Restarting due to changed container for {objectMoving}\n{generalResponse.Message}");
                 }
             }
         }

@@ -262,7 +262,8 @@ namespace OfficialPlugins.Compiler
 
                         if (!string.IsNullOrEmpty(gameToGlueCommandsAsString))
                         {
-                            CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString,              GlueViewSettingsViewModel.PortNumber);
+                            CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString,              
+                                GlueViewSettingsViewModel.PortNumber);
                         }
 
                         this.CompilerViewModel.LastWaitTimeInSeconds = (DateTime.Now - lastGetCall).TotalSeconds;
@@ -515,11 +516,24 @@ namespace OfficialPlugins.Compiler
                 case nameof(ViewModels.CompilerViewModel.PlayOrEdit):
 
                     var inEditMode = CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit;
-                    await CommandSending.CommandSender.Send(
+                    var response = await CommandSending.CommandSender.Send<Dtos.GeneralCommandResponse>(
                         new Dtos.SetEditMode { IsInEditMode = inEditMode },
                         GlueViewSettingsViewModel.PortNumber);
 
-                    if (inEditMode)
+                    if(response?.Succeeded != true)
+                    {
+                        var message = "Failed to change game/edit mode. ";
+                        if(response == null)
+                        {
+                            message += "Game sent no response back.";
+                        }
+                        else
+                        {
+                            message += response.Message;
+                        }
+                        MainControl.PrintOutput(message);
+                    }
+                    else if (inEditMode)
                     {
                         var currentEntity = GlueCommands.Self.DoOnUiThread<EntitySave>(() => GlueState.Self.CurrentEntitySave);
                         if(currentEntity != null)
