@@ -22,7 +22,7 @@ namespace GumPlugin.CodeGeneration
             }
         }
 
-        string GumScreenObjectNameFor(IElement element) => element.Name.EndsWith("\\GumScreen")
+        public static string GumScreenObjectNameFor(IElement element) => element.Name.EndsWith("\\GumScreen")
             // Can't be named the same as its parent
             ? "GumScreen_"
             : "GumScreen";
@@ -38,35 +38,19 @@ namespace GumPlugin.CodeGeneration
                 codeBlock.Line("FlatRedBall.Gum.GumIdb gumIdb;");
             }
 
-            if (isGlueScreen && hasGumScreen)
-            {
-                var rfs = GetGumScreenRfs(element);
-
-                var elementName = element.GetStrippedName();
-
-                 if(hasForms)
-                {
-                    var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName, "Screens") +
-                        "." + rfs.GetInstanceName() + "Forms";
-
-                    codeBlock.Line($"{formsObjectType} Forms;");
-                }
-
-                codeBlock.Line($"{rfs.RuntimeType} {GumScreenObjectNameFor(element)};");
-
-            }
-
             return codeBlock;
         }
 
-        private bool NeedsGumIdb(IElement element, out bool isGlueScreen, out bool hasGumScreen, out bool hasForms)
+        public static bool NeedsGumIdb(IElement element, out bool isGlueScreen, out bool hasGumScreen, out bool hasForms)
         {
             isGlueScreen = element is FlatRedBall.Glue.SaveClasses.ScreenSave;
             hasGumScreen = GetIfContainsAnyGumScreenFiles(element);
             // technically all FRB projects now have forms, so let's just default that to true
             hasForms = element.ReferencedFiles.Any(item =>
             {
-                return item.RuntimeType?.EndsWith(".GraphicalUiElement") == true;
+                return item.Name.EndsWith(".gusx") &&
+                    item.RuntimeType != "FlatRedBall.Gum.GumIdb";
+                //return item.RuntimeType?.EndsWith(".GraphicalUiElement") == true;
             });
             // if it's derived, then the base will take care of it.
             var isDerivedScreen = !string.IsNullOrEmpty(element.BaseElement);
@@ -98,16 +82,6 @@ namespace GumPlugin.CodeGeneration
 
 
                 var rfs = GetGumScreenRfs(element);
-
-                if (hasForms && rfs?.RuntimeType != "FlatRedBall.Gum.GumIdb")
-                {
-                    var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName, "Screens") +
-                        "." + rfs.GetInstanceName() + "Forms";
-                    var formsInstantiationLine =
-                        $"Forms = new {formsObjectType}({rfs.GetInstanceName()});";
-                    codeBlock.Line(formsInstantiationLine);
-                }
-
                 // also instantiate the Gum object which has a common alias\
                 codeBlock.Line($"{GumScreenObjectNameFor(element)} = {rfs.GetInstanceName()};");
 
@@ -220,7 +194,7 @@ namespace GumPlugin.CodeGeneration
             return false;
         }
 
-        private ReferencedFileSave GetGumScreenRfs(IElement element)
+        public static ReferencedFileSave GetGumScreenRfs(IElement element)
         {
             foreach (var file in element.ReferencedFiles)
             {
@@ -235,7 +209,7 @@ namespace GumPlugin.CodeGeneration
             return null;
         }
 
-        private bool GetIfContainsAnyGumScreenFiles(IElement element)
+        private static bool GetIfContainsAnyGumScreenFiles(IElement element)
         {
             return GetGumScreenRfs(element) != null;
         }
