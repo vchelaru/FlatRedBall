@@ -58,7 +58,8 @@ using FlatRedBall.Input;
 using FlatRedBall.Instructions;
 using FlatRedBall.AI.Pathfinding;
 using FlatRedBall.Graphics.Animation;
-using FlatRedBall.Graphics.Particle;
+using FlatRedBall.Gui;
+using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Localization;
 

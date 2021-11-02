@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using FlatRedBall.Graphics;
 
 #if FRB_MDX
 using Microsoft.DirectX;
@@ -865,5 +866,16 @@ namespace FlatRedBall.Math
         }
 
         #endregion
+    }
+
+    public static class PositionedObjectListExtensionMethods
+    {
+        public static void DestroyAll<T>(this PositionedObjectList<T> list) where T : PositionedObject, IDestroyable
+        {
+            for(int i = list.Count-1; i > -1; i--)
+            {
+                list[i].Destroy();
+            }
+        }
     }
 }
