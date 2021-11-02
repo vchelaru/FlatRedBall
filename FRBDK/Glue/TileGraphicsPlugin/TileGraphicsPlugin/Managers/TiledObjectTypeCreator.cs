@@ -33,7 +33,17 @@ namespace TileGraphicsPlugin.Managers
             fileContents = fileContents.Replace("</TiledObjectTypeSave>", "</objecttype>");
             fileContents = fileContents.Replace("<ArrayOfTiledObjectTypeSave", "<objecttypes");
             fileContents = fileContents.Replace("</ArrayOfTiledObjectTypeSave>", "</objecttypes>");
-            FlatRedBall.IO.FileManager.SaveText(fileContents, fileName.FullPath);
+
+            try
+            {
+                GlueCommands.Self.TryMultipleTimes(() => FlatRedBall.IO.FileManager.SaveText(fileContents, fileName.FullPath));
+            }
+            catch(System.IO.IOException)
+            {
+                // It's probably in use, so just output that it wasn't saved, we'll try again later
+                GlueCommands.Self.PrintOutput("Could not save Tiled XML file because it is in use. Will try again later. Reload the Glue project" +
+                    "to force a regeneration.");
+            }
         }
 
         public static FilePath GetTiledObjectTypeFileName()
