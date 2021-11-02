@@ -120,43 +120,95 @@ namespace GlueControl
         private async Task HandleClient(TcpClient client)
         {
             var clientStream = client.GetStream();
-            using (StreamReader reader = new StreamReader(clientStream))
+            var messageFromClient = await ReadFromClient(clientStream);
+
+            var response = await ProcessMessage(messageFromClient?.Trim());
+
+            if (response == null)
             {
-                var stringBuilder = new StringBuilder();
-                while (reader.Peek() != -1)
-                {
-                    stringBuilder.AppendLine(reader.ReadLine());
-                }
-
-                var threadId =
-    System.Threading.Thread.CurrentThread.ManagedThreadId;
-
-                var isPrimaryThread = FlatRedBallServices.IsThreadPrimary();
-
-                System.Diagnostics.Debug.WriteLine($"Before IsPrimary:{isPrimaryThread}  ThreadId:{threadId}");
-
-                var response = await ProcessMessage(stringBuilder.ToString()?.Trim());
-
-                isPrimaryThread = FlatRedBallServices.IsThreadPrimary();
-                System.Diagnostics.Debug.WriteLine($"After IsPrimary:{isPrimaryThread}  ThreadId:{threadId}");
-
-                if (response == null)
-                {
-                    response = "true";
-                }
-                byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(response);
-
-                var length = messageAsBytes.Length;
-                var lengthAsBytes =
-                    BitConverter.GetBytes(length);
-                clientStream.Write(lengthAsBytes, 0, 4);
-                if (messageAsBytes.Length > 0)
-                {
-                    clientStream.Write(messageAsBytes, 0, messageAsBytes.Length);
-
-                }
+                response = "true";
             }
 
+            WriteMessageToStream(clientStream, response);
+
+        }
+
+        const int bufferSize = 2048;
+        static byte[] buffer = new byte[bufferSize];
+        private static async Task<string> ReadFromClient(Stream stm)
+        {
+            //// Read response from server.
+            //var readTask = stm.ReadAsync(buffer, 0, buffer.Length);
+
+            byte[] intBytes = await GetByteArrayFromStream(stm, 4);
+            var length = BitConverter.ToInt32(intBytes, 0);
+
+            if (length > 0)
+            {
+                byte[] byteArray = await GetByteArrayFromStream(stm, length);
+                var response = Encoding.ASCII.GetString(byteArray, 0, (int)byteArray.Length);
+
+
+                return response;
+            }
+            else
+            {
+                return string.Empty;
+            }
+            //Console.ReadLine();
+        }
+
+        static TimeSpan readFromClientTimeout = TimeSpan.FromSeconds(4);
+
+        private static async Task<byte[]> GetByteArrayFromStream(Stream stm, int length)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                int totalBytesRead = 0;
+
+                var timeStarted = DateTime.Now;
+                int bytesRead = 0;
+
+
+                bool hasMoreToRead = totalBytesRead < length;
+                bool timedOut = DateTime.Now - timeStarted < readFromClientTimeout;
+
+                do
+                {
+                    bytesRead = await stm.ReadAsync(buffer, 0, Math.Min(length, buffer.Length));
+                    memoryStream.Write(buffer, 0, bytesRead);
+                    totalBytesRead += bytesRead;
+
+                    hasMoreToRead = totalBytesRead < length;
+                    timedOut = DateTime.Now - timeStarted > readFromClientTimeout;
+
+                } while (hasMoreToRead && !timedOut);
+
+                if (timedOut)
+                {
+                    int m = 3;
+                }
+
+                var byteArray =
+                    memoryStream.ToArray();
+                return byteArray;
+
+            }
+        }
+
+        private static void WriteMessageToStream(Stream clientStream, string message)
+        {
+            byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(message);
+
+            var length = messageAsBytes.Length;
+            var lengthAsBytes =
+                BitConverter.GetBytes(length);
+            clientStream.Write(lengthAsBytes, 0, 4);
+            if (messageAsBytes.Length > 0)
+            {
+                clientStream.Write(messageAsBytes, 0, messageAsBytes.Length);
+
+            }
         }
 
         #endregion

@@ -71,18 +71,6 @@ namespace OfficialPlugins.Compiler.CommandSending
 
                 var isConnected = false;
 
-                //await Task.Run(() =>
-                //{
-                //    try
-                //    {
-                //        client.Connect("127.0.0.1", port);
-                //        isConnected = true;
-                //    }
-                //    catch(Exception)
-                //    {
-                //        // throw away - no need to tell the user it failed
-                //    }
-                //});
                 const int timeoutDuration = 1000;
                 var timeoutTask = Task.Delay(timeoutDuration);
                 var connectTask = client.ConnectAsync("127.0.0.1", port);
@@ -99,31 +87,18 @@ namespace OfficialPlugins.Compiler.CommandSending
                     isConnected = true;
                 }
 
-
-
-
-
                 if (isConnected)
                 {
                     string read = null;
                     try
                     {
-                        var steamStart = DateTime.Now;
-                        // Stream string to server
-                        DateTime startWrite;
-                        if (!text.EndsWith("\n"))
-                        {
-                            text += "\n";
-                        }
                         using (Stream stm = client.GetStream())
                         {
-
-                            byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(text);
-                            stm.Write(messageAsBytes, 0, messageAsBytes.Length);
-                            // give the server time to finish what it's doing:
+                            WriteMessageToStream(stm, text);
                             const int millisecondsToLetGameRespond = 60;
                             await Task.Delay(millisecondsToLetGameRespond);
-                            read = await ReadFromClient(client, stm);
+                            read = await ReadFromClient(stm);
+                            client.Close();
                         }
 
 
@@ -147,9 +122,25 @@ namespace OfficialPlugins.Compiler.CommandSending
 
         }
 
+        private static void WriteMessageToStream(Stream clientStream, string message)
+        {
+            byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(message);
+
+            var length = messageAsBytes.Length;
+            var lengthAsBytes =
+                BitConverter.GetBytes(length);
+            clientStream.Write(lengthAsBytes, 0, 4);
+            if (messageAsBytes.Length > 0)
+            {
+                clientStream.Write(messageAsBytes, 0, messageAsBytes.Length);
+
+            }
+        }
+
+
         const int bufferSize = 2048;
         static byte[] buffer = new byte[bufferSize];
-        private static async Task<string> ReadFromClient(TcpClient client, Stream stm)
+        private static async Task<string> ReadFromClient(Stream stm)
         {
             //// Read response from server.
             //var readTask = stm.ReadAsync(buffer, 0, buffer.Length);
@@ -162,7 +153,6 @@ namespace OfficialPlugins.Compiler.CommandSending
                 byte[] byteArray = await GetByteArrayFromStream(stm, length);
                 var response = Encoding.ASCII.GetString(byteArray, 0, (int)byteArray.Length);
 
-                client.Close();
 
                 return response;
             }
