@@ -86,14 +86,14 @@ namespace GlueControl
 
             if (!isGameAlreadyRunning)
             {
+                TcpClient client = listener.AcceptTcpClient();
+                var stream = client.GetStream();
+
                 while (isRunning)
                 {
                     try
                     {
-                        TcpClient client = listener.AcceptTcpClient();
-                        await HandleClient(client);
-
-                        client.Close();
+                        await HandleStream(stream);
                     }
                     catch (System.Exception e)
                     {
@@ -117,9 +117,8 @@ namespace GlueControl
 
         }
 
-        private async Task HandleClient(TcpClient client)
+        private async Task HandleStream(Stream clientStream)
         {
-            var clientStream = client.GetStream();
             var messageFromClient = await ReadFromClient(clientStream);
 
             var response = await ProcessMessage(messageFromClient?.Trim());
@@ -141,13 +140,23 @@ namespace GlueControl
             //var readTask = stm.ReadAsync(buffer, 0, buffer.Length);
 
             byte[] intBytes = await GetByteArrayFromStream(stm, 4);
-            var length = BitConverter.ToInt32(intBytes, 0);
+            var messageLength = 0;
 
-            if (length > 0)
+            if (intBytes.Length > 0)
             {
-                byte[] byteArray = await GetByteArrayFromStream(stm, length);
-                var response = Encoding.ASCII.GetString(byteArray, 0, (int)byteArray.Length);
+                messageLength = BitConverter.ToInt32(intBytes, 0);
+            }
 
+            if (messageLength > 0)
+            {
+                byte[] byteArray = await GetByteArrayFromStream(stm, messageLength);
+                var response = Encoding.UTF8.GetString(byteArray, 0, (int)byteArray.Length);
+
+                if (!string.IsNullOrWhiteSpace(response) && response.Contains("}") && response[response.Length - 1] != '}')
+                {
+                    var messageCharacterCount = response.Length;
+                    int m = 3;
+                }
 
                 return response;
             }
@@ -160,34 +169,27 @@ namespace GlueControl
 
         static TimeSpan readFromClientTimeout = TimeSpan.FromSeconds(4);
 
-        private static async Task<byte[]> GetByteArrayFromStream(Stream stm, int length)
+        private static async Task<byte[]> GetByteArrayFromStream(Stream stm, int totalLength)
         {
             using (var memoryStream = new MemoryStream())
             {
                 int totalBytesRead = 0;
 
                 var timeStarted = DateTime.Now;
-                int bytesRead = 0;
+                int lastReadNumberOfBytes = 0;
 
+                int bytesLeftToRead = totalLength;
 
-                bool hasMoreToRead = totalBytesRead < length;
-                bool timedOut = DateTime.Now - timeStarted < readFromClientTimeout;
-
+                bool hasMoreToRead = totalBytesRead < totalLength;
                 do
                 {
-                    bytesRead = await stm.ReadAsync(buffer, 0, Math.Min(length, buffer.Length));
-                    memoryStream.Write(buffer, 0, bytesRead);
-                    totalBytesRead += bytesRead;
+                    lastReadNumberOfBytes = await stm.ReadAsync(buffer, 0, Math.Min(bytesLeftToRead, buffer.Length));
+                    memoryStream.Write(buffer, 0, lastReadNumberOfBytes);
+                    totalBytesRead += lastReadNumberOfBytes;
 
-                    hasMoreToRead = totalBytesRead < length;
-                    timedOut = DateTime.Now - timeStarted > readFromClientTimeout;
-
-                } while (hasMoreToRead && !timedOut);
-
-                if (timedOut)
-                {
-                    int m = 3;
-                }
+                    bytesLeftToRead -= lastReadNumberOfBytes;
+                    hasMoreToRead = bytesLeftToRead > 0;
+                } while (hasMoreToRead && lastReadNumberOfBytes != 0);
 
                 var byteArray =
                     memoryStream.ToArray();

@@ -14,6 +14,9 @@ namespace OfficialPlugins.Compiler.CommandSending
 {
     public static class CommandSender
     {
+
+        static Stream TcpClientStream;
+
         public static Action<string> PrintOutput { get; set; }
         static SemaphoreSlim sendCommandSemaphore = new SemaphoreSlim(1);
         public static async Task<string> Send(object dto, int port)
@@ -64,6 +67,44 @@ namespace OfficialPlugins.Compiler.CommandSending
 
                 LastCommand = text;
 
+                await ConnectIfNecessary(port, shouldPrint);
+
+
+                if (TcpClientStream != null)
+                {
+                    string read = null;
+                    try
+                    {
+                        WriteMessageToStream(TcpClientStream, text);
+                        const int millisecondsToLetGameRespond = 60;
+                        await Task.Delay(millisecondsToLetGameRespond);
+                        read = await ReadFromClient(TcpClientStream);
+                    }
+                    catch(Exception e)
+                    {
+                        if (shouldPrint) PrintOutput($"Exception on get stream/write/read:\n{e}");
+                        // do nothing...
+                        TcpClientStream = null;
+                    }
+                    return read;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            finally
+            {
+                sendCommandSemaphore.Release();
+            }
+
+        }
+
+        private static async Task ConnectIfNecessary(int port, bool shouldPrintTimeout)
+        {
+            if(TcpClientStream == null)
+            {
+
                 TcpClient client = new TcpClient();
 
                 // this takes ~2 seconds, according to this:
@@ -78,48 +119,17 @@ namespace OfficialPlugins.Compiler.CommandSending
                 var completedTask = await Task.WhenAny(timeoutTask, connectTask);
                 if (completedTask == timeoutTask)
                 {
-                    if (shouldPrint) PrintOutput("Timed out waiting for connection");
+                    if (shouldPrintTimeout) PrintOutput("Timed out waiting for connection");
                     client.Dispose();
                     isConnected = false;
+                    TcpClientStream = null;
                 }
                 else
                 {
                     isConnected = true;
-                }
-
-                if (isConnected)
-                {
-                    string read = null;
-                    try
-                    {
-                        using (Stream stm = client.GetStream())
-                        {
-                            WriteMessageToStream(stm, text);
-                            const int millisecondsToLetGameRespond = 60;
-                            await Task.Delay(millisecondsToLetGameRespond);
-                            read = await ReadFromClient(stm);
-                            client.Close();
-                        }
-
-
-                    }
-                    catch(Exception e)
-                    {
-                        if (shouldPrint) PrintOutput($"Exception on get stream/write/read:\n{e}");
-                        // do nothing...
-                    }
-                    return read;
-                }
-                else
-                {
-                    return null;
+                    TcpClientStream = client.GetStream();
                 }
             }
-            finally
-            {
-                sendCommandSemaphore.Release();
-            }
-
         }
 
         private static void WriteMessageToStream(Stream clientStream, string message)
@@ -151,7 +161,7 @@ namespace OfficialPlugins.Compiler.CommandSending
             if(length > 0)
             {
                 byte[] byteArray = await GetByteArrayFromStream(stm, length);
-                var response = Encoding.ASCII.GetString(byteArray, 0, (int)byteArray.Length);
+                var response = Encoding.UTF8.GetString(byteArray, 0, (int)byteArray.Length);
 
 
                 return response;
@@ -166,33 +176,26 @@ namespace OfficialPlugins.Compiler.CommandSending
 
         static TimeSpan readFromClientTimeout = TimeSpan.FromSeconds(4);
 
-        private static async Task<byte[]> GetByteArrayFromStream(Stream stm, int length)
+        private static async Task<byte[]> GetByteArrayFromStream(Stream stm, int totalLength)
         {
             using var memoryStream = new MemoryStream();
             int totalBytesRead = 0;
 
             var timeStarted = DateTime.Now;
-            int bytesRead = 0;
+            int lastReadNumberOfBytes = 0;
 
+            int bytesLeftToRead = totalLength;
 
-            bool hasMoreToRead = totalBytesRead < length;
-            bool timedOut = DateTime.Now - timeStarted < readFromClientTimeout;
-
+            bool hasMoreToRead = totalBytesRead < totalLength;
             do
             {
-                bytesRead = await stm.ReadAsync(buffer, 0, Math.Min(length, buffer.Length));
-                memoryStream.Write(buffer, 0, bytesRead);
-                totalBytesRead += bytesRead;
+                lastReadNumberOfBytes = await stm.ReadAsync(buffer, 0, Math.Min(bytesLeftToRead, buffer.Length));
+                memoryStream.Write(buffer, 0, lastReadNumberOfBytes);
+                totalBytesRead += lastReadNumberOfBytes;
 
-                hasMoreToRead = totalBytesRead < length;
-                timedOut = DateTime.Now - timeStarted > readFromClientTimeout;
-
-            } while (hasMoreToRead && !timedOut);
-
-            if(timedOut)
-            {
-                int m = 3;
-            }
+                bytesLeftToRead -= lastReadNumberOfBytes;
+                hasMoreToRead = bytesLeftToRead > 0;
+            } while (hasMoreToRead && lastReadNumberOfBytes != 0);
 
             var byteArray =
                 memoryStream.ToArray();
