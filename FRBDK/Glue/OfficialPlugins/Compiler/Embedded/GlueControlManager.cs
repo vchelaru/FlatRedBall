@@ -86,27 +86,37 @@ namespace GlueControl
 
             if (!isGameAlreadyRunning)
             {
-                TcpClient client = listener.AcceptTcpClient();
-                var stream = client.GetStream();
+                TcpClient client = null;
 
-                while (isRunning)
+                // This can throw an exception when the game is exiting:
+                try
                 {
-                    try
+                    client = listener.AcceptTcpClient();
+                }
+                catch { }
+                if (client != null)
+                {
+                    var stream = client.GetStream();
+
+                    while (isRunning)
                     {
-                        await HandleStream(stream);
-                    }
-                    catch (System.Exception e)
-                    {
-                        if (isRunning)
+                        try
                         {
-                            throw e;
+                            await HandleStream(stream);
+                        }
+                        catch (System.Exception e)
+                        {
+                            if (isRunning)
+                            {
+                                throw e;
+                            }
                         }
                     }
+
+                    isRunning = false;
+
+                    listener.Stop();
                 }
-
-                isRunning = false;
-
-                listener.Stop();
             }
         }
 
