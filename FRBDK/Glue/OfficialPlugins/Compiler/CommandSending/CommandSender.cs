@@ -14,23 +14,29 @@ namespace OfficialPlugins.Compiler.CommandSending
 {
     public static class CommandSender
     {
+        #region Fields/Properties
 
         static Stream TcpClientStream;
 
         public static Action<string> PrintOutput { get; set; }
         static SemaphoreSlim sendCommandSemaphore = new SemaphoreSlim(1);
-        public static async Task<string> Send(object dto, int port)
+
+        public static int PortNumber { get; set; }
+
+        #endregion
+
+        public static async Task<string> Send(object dto)
         {
             var dtoTypeName = dto.GetType().Name;
 
             var serialized = JsonConvert.SerializeObject(dto);
 
-            return await SendCommand($"{dtoTypeName}:{serialized}", port);
+            return await SendCommand($"{dtoTypeName}:{serialized}");
         }
 
-        public static async Task<T> Send<T>(object dto, int port)
+        public static async Task<T> Send<T>(object dto)
         {
-            var responseString = await Send(dto, port);
+            var responseString = await Send(dto);
 
             try
             {
@@ -43,9 +49,7 @@ namespace OfficialPlugins.Compiler.CommandSending
             }
         }
 
-        static string LastCommand;
-        // Maybe we should have a bool here on whether to wait. if false, exit if the sendCommandSemaphore returns false
-        public static async Task<string> SendCommand(string text, int port, bool isImportant = true)
+        public static async Task<string> SendCommand(string text, bool isImportant = true)
         {
             var shouldPrint = isImportant && text?.StartsWith("SelectObjectDto:") == false;
 
@@ -65,10 +69,7 @@ namespace OfficialPlugins.Compiler.CommandSending
                     }
                 }
 
-                LastCommand = text;
-
-                await ConnectIfNecessary(port, shouldPrint);
-
+                await ConnectIfNecessary(PortNumber, shouldPrint);
 
                 if (TcpClientStream != null)
                 {
@@ -213,7 +214,7 @@ namespace OfficialPlugins.Compiler.CommandSending
 
             try
             {
-                screenName = await CommandSending.CommandSender.SendCommand("GetCurrentScreen", portNumber);
+                screenName = await CommandSending.CommandSender.SendCommand("GetCurrentScreen");
             }
             catch (SocketException)
             {
@@ -228,7 +229,7 @@ namespace OfficialPlugins.Compiler.CommandSending
 
             try
             {
-                cameraPositionAsString = await CommandSending.CommandSender.Send(new Dtos.GetCameraPosition(), portNumber);
+                cameraPositionAsString = await CommandSending.CommandSender.Send(new Dtos.GetCameraPosition());
             }
             catch (SocketException)
             {

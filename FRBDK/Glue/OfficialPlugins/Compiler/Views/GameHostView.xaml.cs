@@ -3,6 +3,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using Glue;
 using GlueFormsCore.Controls;
 using OfficialPlugins.Compiler;
+using OfficialPlugins.Compiler.CommandSending;
 using OfficialPlugins.Compiler.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -92,40 +93,53 @@ namespace OfficialPlugins.GameHost.Views
         {
             SetParent(handle, winformsPanel.Handle);
             gameHandle = handle;
-            PluginManager.CallPluginMethod("Glue Compiler", "MakeGameBorderless", new object[] { true });
-            WindowRectangle rectangle = new WindowRectangle();
+            var succeededMakingGameBorderless = await MakeGameBorderless();
 
-            WindowMover.GetWindowRect(handle, out rectangle);
-
-            // I used to have this code check if the window was at 0,0,
-            // but that doesn't seem to actually work - the loop would run 
-            // indefinitely, continually changing the position of the cursor.
-            // Now I just do it 5 times and it seems to work
-            for(int i = 0; i < 5; i++)
+            if(succeededMakingGameBorderless)
             {
-                var delay = 180;
-                await Task.Delay(delay);
+                WindowRectangle rectangle = new WindowRectangle();
 
-                //var width = rectangle.Right - rectangle.Left;
-                //var height = rectangle.Bottom - rectangle.Top;
+                WindowMover.GetWindowRect(handle, out rectangle);
 
-                //var displaySettings = GlueState.Self.CurrentGlueProject?.DisplaySettings;
-                //if(displaySettings != null)
-                //{
-                //    width = FlatRedBall.Math.MathFunctions.RoundToInt (displaySettings.ResolutionWidth * displaySettings.Scale / 100.0);
-                //    height = FlatRedBall.Math.MathFunctions.RoundToInt(displaySettings.ResolutionHeight * displaySettings.Scale / 100.0);
-                //}
+                // I used to have this code check if the window was at 0,0,
+                // but that doesn't seem to actually work - the loop would run 
+                // indefinitely, continually changing the position of the cursor.
+                // Now I just do it 5 times and it seems to work
+                for (int i = 0; i < 5; i++)
+                {
+                    var delay = 180;
+                    await Task.Delay(delay);
 
-                var width = (int)WinformsHost.ActualWidth;
-                var height = (int)WinformsHost.ActualHeight;
+                    var width = (int)WinformsHost.ActualWidth;
+                    var height = (int)WinformsHost.ActualHeight;
 
-                WindowMover.MoveWindow(handle, 0, 0, width, height, true);
-
+                    WindowMover.MoveWindow(handle, 0, 0, width, height, true);
+                }
             }
-
         }
 
+        private static async Task<bool> MakeGameBorderless()
+        {
+            var attemptsToConnect = 0;
+            int maxAttempts = 6;
+            bool succeeded = false;
+            var dto = new Compiler.Dtos.SetBorderlessDto { IsBorderless = true };
 
+            do
+            {
+                var response = await CommandSender.Send(dto);
+
+                succeeded = !string.IsNullOrWhiteSpace(response);
+
+                if (!succeeded)
+                {
+                    await Task.Delay(15);
+                    attemptsToConnect++;
+                }
+            } while (succeeded == false && attemptsToConnect < maxAttempts);
+
+            return succeeded;
+        }
 
         public void AddChild(UIElement child)
         {

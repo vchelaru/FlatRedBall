@@ -31,6 +31,7 @@ using OfficialPlugins.Compiler.Dtos;
 using OfficialPlugins.Compiler.CommandSending;
 using System.Runtime.InteropServices;
 using OfficialPlugins.GameHost.Views;
+using OfficialPlugins.Compiler.Views;
 
 namespace OfficialPlugins.Compiler
 {
@@ -150,6 +151,8 @@ namespace OfficialPlugins.Compiler
                 CompilerViewModel, 
                 GlueViewSettingsViewModel,
                 glueViewSettingsTab);
+
+            //this.CreateAndAddTab(new TestControl(), "Test for Smitty");
         }
 
         private void AssignEvents()
@@ -231,15 +234,15 @@ namespace OfficialPlugins.Compiler
             return CompilerViewModel.IsEditChecked && CompilerViewModel.IsRunning;
         }
 
-        public async void MakeGameBorderless(bool isBorderless)
+        public async Task<string> MakeGameBorderless(bool isBorderless)
         {
             var dto = new Dtos.SetBorderlessDto
             {
                 IsBorderless = isBorderless
             };
 
-            await CommandSending.CommandSender
-                .Send(dto, GlueViewSettingsViewModel.PortNumber);
+            return await CommandSending.CommandSender
+                .Send(dto);
         }
 
         #endregion
@@ -258,7 +261,7 @@ namespace OfficialPlugins.Compiler
                     {
                         lastGetCall = DateTime.Now;
                         var gameToGlueCommandsAsString = await CommandSending.CommandSender
-                            .SendCommand("GetCommands", GlueViewSettingsViewModel.PortNumber, isImportant:false);
+                            .SendCommand("GetCommands", isImportant:false);
 
                         if (!string.IsNullOrEmpty(gameToGlueCommandsAsString))
                         {
@@ -337,6 +340,8 @@ namespace OfficialPlugins.Compiler
             var model = LoadOrCreateCompilerSettings();
             ignoreViewModelChanges = true;
             GlueViewSettingsViewModel.SetFrom(model);
+            CommandSender.PortNumber = GlueViewSettingsViewModel.PortNumber;
+
             CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableGameEmbedAndEdit;
             ignoreViewModelChanges = false;
 
@@ -457,6 +462,7 @@ namespace OfficialPlugins.Compiler
             {
                 case nameof(ViewModels.GlueViewSettingsViewModel.PortNumber):
                 case nameof(ViewModels.GlueViewSettingsViewModel.EnableGameEmbedAndEdit):
+                    CommandSender.PortNumber = GlueViewSettingsViewModel.PortNumber;
                     CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableGameEmbedAndEdit;
                     await HandlePortOrGenerateCheckedChanged(propertyName);
                     break;
@@ -479,7 +485,7 @@ namespace OfficialPlugins.Compiler
                 ShowScreenBoundsWhenViewingEntities = GlueViewSettingsViewModel.ShowScreenBoundsWhenViewingEntities
             };
 
-            await CommandSender.Send(dto, GlueViewSettingsViewModel.PortNumber);
+            await CommandSender.Send(dto);
         }
 
         private async void HandleCompilerViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -501,7 +507,7 @@ namespace OfficialPlugins.Compiler
                     await CommandSender.Send(new SetSpeedDto
                     {
                         SpeedPercentage = speedPercentage
-                    }, GlueViewSettingsViewModel.PortNumber);
+                    });
                     
                     break;
                 case nameof(ViewModels.CompilerViewModel.EffectiveIsRebuildAndRestartEnabled):
@@ -517,8 +523,7 @@ namespace OfficialPlugins.Compiler
 
                     var inEditMode = CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit;
                     var response = await CommandSending.CommandSender.Send<Dtos.GeneralCommandResponse>(
-                        new Dtos.SetEditMode { IsInEditMode = inEditMode },
-                        GlueViewSettingsViewModel.PortNumber);
+                        new Dtos.SetEditMode { IsInEditMode = inEditMode });
 
                     if(response?.Succeeded != true)
                     {

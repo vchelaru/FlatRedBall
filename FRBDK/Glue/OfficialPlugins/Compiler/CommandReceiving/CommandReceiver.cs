@@ -185,7 +185,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 // That's okay, this is fire-and-forget, we just send this back to the game and we don't care to await it
-                CommandSender.Send(data, gamePortNumber);
+                CommandSender.Send(data);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 #endregion
 
@@ -509,7 +509,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                             var playBump = true;
                             // tell the game that it should restart the screen quietly
     #pragma warning disable CS4014 // Do not await in add calls this can cause problems
-                            CommandSender.Send(new RestartScreenDto { ShowSelectionBump = playBump }, gamePortNumber);
+                            CommandSender.Send(new RestartScreenDto { ShowSelectionBump = playBump });
     #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                         },
                         "Copy TMX and restart screen",

@@ -429,7 +429,7 @@ namespace OfficialPlugins.Compiler.Managers
                         data.VariableName = "this." + data.VariableName;
                     }
 
-                    var responseAsString = await CommandSender.Send(data, GlueViewSettingsViewModel.PortNumber);
+                    var responseAsString = await CommandSender.Send(data);
 
                     if (!string.IsNullOrEmpty(responseAsString))
                     {

@@ -66,25 +66,25 @@ namespace OfficialPlugins.Compiler.Managers
             gameHostControl.RestartScreenClicked += async (not, used) =>
             {
                 compilerViewModel.IsPaused = false;
-                await CommandSender.Send(new RestartScreenDto(), glueViewSettingsViewModel.PortNumber);
+                await CommandSender.Send(new RestartScreenDto());
             };
 
             gameHostControl.AdvanceOneFrameClicked += async (not, used) =>
             {
-                await CommandSender.Send(new AdvanceOneFrameDto(), glueViewSettingsViewModel.PortNumber);
+                await CommandSender.Send(new AdvanceOneFrameDto());
             };
 
 
             gameHostControl.PauseClicked += async (not, used) =>
             {
                 compilerViewModel.IsPaused = true;
-                await CommandSender.Send(new TogglePauseDto(), glueViewSettingsViewModel.PortNumber);
+                await CommandSender.Send(new TogglePauseDto());
             };
 
             gameHostControl.UnpauseClicked += async (not, used) =>
             {
                 compilerViewModel.IsPaused = false;
-                await CommandSender.Send(new TogglePauseDto(), glueViewSettingsViewModel.PortNumber);
+                await CommandSender.Send(new TogglePauseDto());
             };
 
             gameHostControl.SettingsClicked += (not, used) =>
