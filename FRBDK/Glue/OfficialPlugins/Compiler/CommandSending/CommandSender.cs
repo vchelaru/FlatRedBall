@@ -25,18 +25,18 @@ namespace OfficialPlugins.Compiler.CommandSending
 
         #endregion
 
-        public static async Task<string> Send(object dto)
+        public static async Task<string> Send(object dto, bool isImportant = true)
         {
             var dtoTypeName = dto.GetType().Name;
 
             var serialized = JsonConvert.SerializeObject(dto);
 
-            return await SendCommand($"{dtoTypeName}:{serialized}");
+            return await SendCommand($"{dtoTypeName}:{serialized}", isImportant);
         }
 
-        public static async Task<T> Send<T>(object dto)
+        public static async Task<T> Send<T>(object dto, bool isImportant = true)
         {
-            var responseString = await Send(dto);
+            var responseString = await Send(dto, isImportant);
 
             try
             {
@@ -73,13 +73,17 @@ namespace OfficialPlugins.Compiler.CommandSending
 
                 if (TcpClientStream != null)
                 {
-                    string read = null;
+                    string stringFromClient = null;
                     try
                     {
-                        WriteMessageToStream(TcpClientStream, text);
-                        const int millisecondsToLetGameRespond = 60;
-                        await Task.Delay(millisecondsToLetGameRespond);
-                        read = await ReadFromClient(TcpClientStream);
+                        await WriteMessageToStream(TcpClientStream, text);
+
+                        stringFromClient = await ReadFromClient(TcpClientStream);
+                    }
+                    catch(IOException)
+                    {
+                        // this is expected, happens if the game is closed
+                        TcpClientStream = null;
                     }
                     catch(Exception e)
                     {
@@ -87,7 +91,7 @@ namespace OfficialPlugins.Compiler.CommandSending
                         // do nothing...
                         TcpClientStream = null;
                     }
-                    return read;
+                    return stringFromClient;
                 }
                 else
                 {
@@ -133,38 +137,37 @@ namespace OfficialPlugins.Compiler.CommandSending
             }
         }
 
-        private static void WriteMessageToStream(Stream clientStream, string message)
+        private static async Task WriteMessageToStream(Stream clientStream, string message)
         {
             byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(message);
 
-            var length = messageAsBytes.Length;
-            var lengthAsBytes =
-                BitConverter.GetBytes(length);
-            clientStream.Write(lengthAsBytes, 0, 4);
             if (messageAsBytes.Length > 0)
             {
-                clientStream.Write(messageAsBytes, 0, messageAsBytes.Length);
+                var lengthAsBytes =
+                    BitConverter.GetBytes(messageAsBytes.Length);
+                await clientStream.WriteAsync(lengthAsBytes, 0, lengthAsBytes.Length);
+                await clientStream.WriteAsync(messageAsBytes, 0, messageAsBytes.Length);
 
             }
         }
 
 
-        const int bufferSize = 2048;
-        static byte[] buffer = new byte[bufferSize];
         private static async Task<string> ReadFromClient(Stream stm)
         {
             //// Read response from server.
             //var readTask = stm.ReadAsync(buffer, 0, buffer.Length);
 
-            byte[] intBytes = await GetByteArrayFromStream(stm, 4);
+            byte[] intBytes = await GetByteArrayFromStream(stm, 4, new byte[4]);
             var length = BitConverter.ToInt32(intBytes, 0);
 
+            if(length > 1_000_000)
+            {
+                int m = 3;
+            }
             if(length > 0)
             {
                 byte[] byteArray = await GetByteArrayFromStream(stm, length);
-                var response = Encoding.UTF8.GetString(byteArray, 0, (int)byteArray.Length);
-
-
+                var response = Encoding.UTF8.GetString(byteArray, 0, length);
                 return response;
             }
             else
@@ -174,33 +177,16 @@ namespace OfficialPlugins.Compiler.CommandSending
             //Console.ReadLine();
         }
 
-
-        static TimeSpan readFromClientTimeout = TimeSpan.FromSeconds(4);
-
-        private static async Task<byte[]> GetByteArrayFromStream(Stream stm, int totalLength)
+        static byte[] defaultBuffer = new byte[1024 * 1024];
+        private static async Task<byte[]> GetByteArrayFromStream(Stream stm, int totalLength, byte[] buffer = null)
         {
-            using var memoryStream = new MemoryStream();
-            int totalBytesRead = 0;
-
-            var timeStarted = DateTime.Now;
-            int lastReadNumberOfBytes = 0;
-
-            int bytesLeftToRead = totalLength;
-
-            bool hasMoreToRead = totalBytesRead < totalLength;
-            do
+            if (buffer == null && totalLength > defaultBuffer.Length)
             {
-                lastReadNumberOfBytes = await stm.ReadAsync(buffer, 0, Math.Min(bytesLeftToRead, buffer.Length));
-                memoryStream.Write(buffer, 0, lastReadNumberOfBytes);
-                totalBytesRead += lastReadNumberOfBytes;
-
-                bytesLeftToRead -= lastReadNumberOfBytes;
-                hasMoreToRead = bytesLeftToRead > 0;
-            } while (hasMoreToRead && lastReadNumberOfBytes != 0);
-
-            var byteArray =
-                memoryStream.ToArray();
-            return byteArray;
+                defaultBuffer = new byte[totalLength];
+            }
+            buffer = buffer ?? defaultBuffer;
+            await stm.ReadAsync(buffer, 0, totalLength);
+            return buffer;
         }
 
         /// <summary>
@@ -208,7 +194,7 @@ namespace OfficialPlugins.Compiler.CommandSending
         /// </summary>
         /// <param name="portNumber">Game's port number</param>
         /// <returns>The screen name using screen name</returns>
-        internal static async Task<string> GetScreenName(int portNumber)
+        internal static async Task<string> GetScreenName()
         {
             string screenName = null;
 

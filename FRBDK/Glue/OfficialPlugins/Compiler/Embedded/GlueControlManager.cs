@@ -25,16 +25,13 @@ using FlatRedBall.Utilities;
 using Newtonsoft.Json;
 #endif
 
-
-
 namespace GlueControl
 {
-
     public class GlueControlManager
     {
         #region Classes
 
-        class GameToGlueCommand
+        public class GameToGlueCommand
         {
             public string Command { get; set; }
         }
@@ -45,7 +42,8 @@ namespace GlueControl
 
         bool isRunning;
         private TcpListener listener;
-        private ConcurrentQueue<GameToGlueCommand> GameToGlueCommands = new ConcurrentQueue<GameToGlueCommand>();
+        public static ConcurrentQueue<GameToGlueCommand> GameToGlueCommands { get; private set; }
+            = new ConcurrentQueue<GameToGlueCommand>();
         private GlueControl.Editing.EditingManager EditingManager;
 
 
@@ -89,20 +87,32 @@ namespace GlueControl
                 TcpClient client = null;
 
                 // This can throw an exception when the game is exiting:
-                try
-                {
-                    client = listener.AcceptTcpClient();
-                }
-                catch { }
-                if (client != null)
-                {
-                    var stream = client.GetStream();
 
-                    while (isRunning)
+                while (isRunning)
+                {
+                    if (client == null)
                     {
                         try
                         {
+                            client = listener.AcceptTcpClient();
+                        }
+                        catch
+                        {
+                            // so it doesn't spam:
+                            await Task.Delay(100);
+                        }
+                    }
+
+                    if (client != null)
+                    {
+                        var stream = client.GetStream();
+                        try
+                        {
                             await HandleStream(stream);
+                        }
+                        catch (IOException)
+                        {
+                            client = null;
                         }
                         catch (System.Exception e)
                         {
@@ -112,11 +122,11 @@ namespace GlueControl
                             }
                         }
                     }
-
-                    isRunning = false;
-
-                    listener.Stop();
                 }
+
+                isRunning = false;
+
+                listener.Stop();
             }
         }
 
@@ -142,32 +152,22 @@ namespace GlueControl
 
         }
 
-        const int bufferSize = 2048;
-        static byte[] buffer = new byte[bufferSize];
         private static async Task<string> ReadFromClient(Stream stm)
         {
             //// Read response from server.
             //var readTask = stm.ReadAsync(buffer, 0, buffer.Length);
 
-            byte[] intBytes = await GetByteArrayFromStream(stm, 4);
-            var messageLength = 0;
+            byte[] intBytes = await GetByteArrayFromStream(stm, 4, new byte[4]);
+            var length = BitConverter.ToInt32(intBytes, 0);
 
-            if (intBytes.Length > 0)
+            if (length > 1_000_000)
             {
-                messageLength = BitConverter.ToInt32(intBytes, 0);
+                int m = 3;
             }
-
-            if (messageLength > 0)
+            if (length > 0)
             {
-                byte[] byteArray = await GetByteArrayFromStream(stm, messageLength);
-                var response = Encoding.UTF8.GetString(byteArray, 0, (int)byteArray.Length);
-
-                if (!string.IsNullOrWhiteSpace(response) && response.Contains("}") && response[response.Length - 1] != '}')
-                {
-                    var messageCharacterCount = response.Length;
-                    int m = 3;
-                }
-
+                byte[] byteArray = await GetByteArrayFromStream(stm, length);
+                var response = Encoding.UTF8.GetString(byteArray, 0, length);
                 return response;
             }
             else
@@ -177,47 +177,27 @@ namespace GlueControl
             //Console.ReadLine();
         }
 
-        static TimeSpan readFromClientTimeout = TimeSpan.FromSeconds(4);
-
-        private static async Task<byte[]> GetByteArrayFromStream(Stream stm, int totalLength)
+        static byte[] defaultBuffer = new byte[1024 * 1024];
+        private static async Task<byte[]> GetByteArrayFromStream(Stream stm, int totalLength, byte[] buffer = null)
         {
-            using (var memoryStream = new MemoryStream())
+            if (buffer == null && totalLength > defaultBuffer.Length)
             {
-                int totalBytesRead = 0;
-
-                var timeStarted = DateTime.Now;
-                int lastReadNumberOfBytes = 0;
-
-                int bytesLeftToRead = totalLength;
-
-                bool hasMoreToRead = totalBytesRead < totalLength;
-                do
-                {
-                    lastReadNumberOfBytes = await stm.ReadAsync(buffer, 0, Math.Min(bytesLeftToRead, buffer.Length));
-                    memoryStream.Write(buffer, 0, lastReadNumberOfBytes);
-                    totalBytesRead += lastReadNumberOfBytes;
-
-                    bytesLeftToRead -= lastReadNumberOfBytes;
-                    hasMoreToRead = bytesLeftToRead > 0;
-                } while (hasMoreToRead && lastReadNumberOfBytes != 0);
-
-                var byteArray =
-                    memoryStream.ToArray();
-                return byteArray;
-
+                defaultBuffer = new byte[totalLength];
             }
+            buffer = buffer ?? defaultBuffer;
+            await stm.ReadAsync(buffer, 0, totalLength);
+            return buffer;
         }
 
         private static void WriteMessageToStream(Stream clientStream, string message)
         {
             byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(message);
 
-            var length = messageAsBytes.Length;
-            var lengthAsBytes =
-                BitConverter.GetBytes(length);
-            clientStream.Write(lengthAsBytes, 0, 4);
             if (messageAsBytes.Length > 0)
             {
+                var lengthAsBytes =
+                    BitConverter.GetBytes(messageAsBytes.Length);
+                clientStream.Write(lengthAsBytes, 0, lengthAsBytes.Length);
                 clientStream.Write(messageAsBytes, 0, messageAsBytes.Length);
 
             }
@@ -250,24 +230,8 @@ namespace GlueControl
                     isGet = true;
                     return screen?.GetType().FullName;
 
-                case "GetCommands":
-                    isGet = true;
-                    string toReturn = string.Empty;
-#if SupportsEditMode
-                    if (GameToGlueCommands.Count != 0)
-                    {
-                        List<string> tempList = new List<string>();
-                        while (GameToGlueCommands.TryDequeue(out GameToGlueCommand gameToGlueCommand))
-                        {
-                            tempList.Add(gameToGlueCommand.Command);
-                        }
-                        toReturn = Newtonsoft.Json.JsonConvert.SerializeObject(tempList.ToArray());
-                    }
-#endif
-
-                    return toReturn;
                 case nameof(GlueControl.Dtos.GetCameraPosition):
-                    toReturn = string.Empty;
+                    var toReturn = string.Empty;
 #if SupportsEditMode
 
                     isGet = true;
@@ -278,13 +242,16 @@ namespace GlueControl
                     toReturn = Newtonsoft.Json.JsonConvert.SerializeObject(getCameraPositionResponse);
 #endif
                     return toReturn;
-                    break;
             }
 
             var response = "true";
 
             if (!isGet)
             {
+                if (message.Contains(":") == false)
+                {
+                    int m = 3;
+                }
                 if (runSetImmediately)
                 {
                     response = ApplySetMessage(message) ?? null;

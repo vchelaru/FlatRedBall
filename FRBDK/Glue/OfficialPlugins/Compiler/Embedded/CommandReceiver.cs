@@ -814,6 +814,26 @@ namespace GlueControl
 
         #endregion
 
+        #region Get Commands
+
+        private static GetCommandsDtoResponse HandleDto(GetCommandsDto dto)
+        {
+            var responseDto = new GetCommandsDtoResponse();
+#if SupportsEditMode
+            if (GlueControlManager.GameToGlueCommands.Count != 0)
+            {
+                while (GlueControlManager.GameToGlueCommands.TryDequeue(out GlueControlManager.GameToGlueCommand gameToGlueCommand))
+                {
+                    responseDto.Commands.Add(gameToGlueCommand.Command);
+                }
+            }
+#endif
+
+            return responseDto;
+        }
+
+        #endregion
+
         private static void HandleDto(SetBorderlessDto dto)
         {
             FlatRedBallServices.Game.Window.IsBorderless = dto.IsBorderless;

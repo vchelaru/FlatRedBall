@@ -745,7 +745,7 @@ namespace OfficialPlugins.Compiler.Managers
                 {
                     try
                     {
-                        screenToRestartOn = await CommandSending.CommandSender.GetScreenName(portNumber);
+                        screenToRestartOn = await CommandSending.CommandSender.GetScreenName();
                     }
                     catch (AggregateException)
                     {

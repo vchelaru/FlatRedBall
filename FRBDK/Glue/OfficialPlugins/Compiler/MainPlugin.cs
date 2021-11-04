@@ -260,12 +260,12 @@ namespace OfficialPlugins.Compiler
                     if(CompilerViewModel.IsEditChecked)
                     {
                         lastGetCall = DateTime.Now;
-                        var gameToGlueCommandsAsString = await CommandSending.CommandSender
-                            .SendCommand("GetCommands", isImportant:false);
+                        var response = await CommandSending.CommandSender
+                            .Send<GetCommandsDtoResponse>(new GetCommandsDto(), isImportant:false);
 
-                        if (!string.IsNullOrEmpty(gameToGlueCommandsAsString))
+                        if (response?.Commands.Count > 0)
                         {
-                            CommandReceiver.HandleCommandsFromGame(gameToGlueCommandsAsString,              
+                            CommandReceiver.HandleCommandsFromGame(response.Commands,
                                 GlueViewSettingsViewModel.PortNumber);
                         }
 
@@ -547,7 +547,7 @@ namespace OfficialPlugins.Compiler
                         }
                         else
                         {
-                            var screenName = await CommandSending.CommandSender.GetScreenName(GlueViewSettingsViewModel.PortNumber);
+                            var screenName = await CommandSending.CommandSender.GetScreenName();
 
                             if (!string.IsNullOrEmpty(screenName))
                             {

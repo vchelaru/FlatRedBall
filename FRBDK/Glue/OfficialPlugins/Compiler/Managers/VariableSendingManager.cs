@@ -128,7 +128,7 @@ namespace OfficialPlugins.Compiler.Managers
             var ati = nos.GetAssetTypeInfo();
             string value;
 
-            var gameScreenName = await CommandSender.GetScreenName(GlueViewSettingsViewModel.PortNumber);
+            var gameScreenName = await CommandSender.GetScreenName();
             string glueScreenName = null;
             if(!string.IsNullOrEmpty(gameScreenName))
             {

@@ -174,18 +174,44 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                     catch (Exception e)
                     {
+                        var wasAbleToSaveError = false;
                         string errorLogLocation = FileManager.UserApplicationDataForThisApplication + "ExceptionInGlue.txt";
-
-                        GlueCommands.Self.DialogCommands.ShowMessageBox(
-                            "Error trying to save your Glue file.  Because of this error, Glue did not make any changes to the file on disk.\n\nAn error log has been saved here:\n" + errorLogLocation);
                         try
                         {
                             FileManager.SaveText(e.ToString(), errorLogLocation);
+                            wasAbleToSaveError = true;
                         }
                         catch
                         {
                             // If this fails that's okay, we're already in a failed state.
                         }
+
+                        var message = "Error trying to save your Glue file.  Because of this error, Glue did not make any changes to the file on disk.";
+                        if(wasAbleToSaveError)
+                        {
+                            message += "\n\nAn error log has been saved here:\n" + errorLogLocation;
+
+                            var mbmb = new MultiButtonMessageBoxWpf();
+                            mbmb.MessageText = message;
+                            mbmb.AddButton("Open Error File", true);
+                            mbmb.AddButton("Do nothing (Glue probably needs to be restarted)", false);
+
+                            if(mbmb.ShowDialog() == true)
+                            {
+                                var clickedResult = (bool)mbmb.ClickedResult;
+
+                                if(clickedResult)
+                                {
+                                    System.Diagnostics.Process.Start(errorLogLocation);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            message += "\n\nGlue should probably be restarted.";
+                            GlueCommands.Self.DialogCommands.ShowMessageBox(message);
+                        }
+
                         PluginManager.ReceiveError("Error saving glux:\n\n" + e.ToString());
 
                         MainGlueWindow.Self.HasErrorOccurred = true;

@@ -29,11 +29,9 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region General Functions
 
-        public static void HandleCommandsFromGame(string commandAsString, int gamePortNumber)
+        public static void HandleCommandsFromGame(List<string> commands, int gamePortNumber)
         {
-            var commandArray = JsonConvert.DeserializeObject<string[]>(commandAsString);
-
-            foreach (var command in commandArray)
+            foreach (var command in commands)
             {
                 HandleIndividualCommand(command, gamePortNumber);
             }
@@ -79,11 +77,9 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             }
         }
 
-        private static ScreenSave GetCurrentInGameScreen(int gamePortNumber)
+        private static async Task<ScreenSave> GetCurrentInGameScreen()
         {
-            var screenNameTask = CommandSender.GetScreenName(gamePortNumber);
-            screenNameTask.Wait(6000);
-            var screenName = screenNameTask.Result; 
+            var screenName = await CommandSender.GetScreenName();
 
             if(!string.IsNullOrEmpty(screenName) && screenName.Contains(".Screens."))
             {
@@ -104,30 +100,33 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region Remove Object
 
-        private static void HandleRemoveObject(RemoveObjectDto removeObjectDto)
+        private static async void HandleRemoveObject(RemoveObjectDto removeObjectDto)
         {
-            TaskManager.Self.Add(() =>
+            ScreenSave screen = await GetCurrentInGameScreen();
+            if(screen != null)
             {
-                ScreenSave screen = GetCurrentInGameScreen(gamePortNumber);
-
-                var nos = screen.GetNamedObjectRecursively(removeObjectDto.ObjectName);
-
-                if (nos != null)
+                TaskManager.Self.Add(() =>
                 {
-                    GlueCommands.Self.GluxCommands.RemoveNamedObject(nos);
-                }
-            }, "Handling removing object from screen");
+
+                    var nos = screen.GetNamedObjectRecursively(removeObjectDto.ObjectName);
+
+                    if (nos != null)
+                    {
+                        GlueCommands.Self.GluxCommands.RemoveNamedObject(nos);
+                    }
+                }, "Handling removing object from screen");
+            }
         }
 
         #endregion
 
         #region Add Object (including copy/paste
 
-        private static void HandleAddObject(string dataAsString)
+        private static async void HandleAddObject(string dataAsString)
         {
+            ScreenSave screen = await GetCurrentInGameScreen();
             TaskManager.Self.Add(() =>
             {
-                ScreenSave screen = GetCurrentInGameScreen(gamePortNumber);
                 GlueElement element = screen;
                 if (element == null)
                 {
@@ -170,7 +169,6 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 // We can make a copy:
                 var serialized = JsonConvert.SerializeObject(element);
 
-                GlueElement clone = null;
                 if(element is ScreenSave)
                 {
                     data.ScreenSave = JsonConvert.DeserializeObject<ScreenSave>(serialized);
@@ -183,10 +181,16 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 data.GlueElement.NamedObjects.Add(nos);
 
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                // That's okay, this is fire-and-forget, we just send this back to the game and we don't care to await it
-                CommandSender.Send(data);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                var renameResponseTask = CommandSender.Send<GlueVariableSetDataResponse>(data);
+                renameResponseTask.Wait();
+                var result = renameResponseTask.Result;
+
+                if(result == null || !string.IsNullOrEmpty(result.Exception) || result.WasVariableAssigned == false)
+                {
+                    int m = 3;
+                }
+
+
                 #endregion
 
                 GlueCommands.Self.DoOnUiThread(() =>
@@ -384,13 +388,13 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region Select Object
 
-        private static void HandleSelectObject(SelectObjectDto selectObjectDto)
+        private static async void HandleSelectObject(SelectObjectDto selectObjectDto)
         {
 
+            var screen = await GetCurrentInGameScreen();
             TaskManager.Self.Add(() =>
             {
                 NamedObjectSave nos = null;
-                var screen = GetCurrentInGameScreen(gamePortNumber);
 
                 if(screen == null)
                 {

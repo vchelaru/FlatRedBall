@@ -257,4 +257,16 @@ namespace GlueControl.Dtos
         public string Message { get; set; }
     }
     #endregion
+
+    #region GetCommandsDto
+    public class GetCommandsDto
+    {
+
+    }
+
+    public class GetCommandsDtoResponse
+    {
+        public List<string> Commands { get; set; } = new List<string>();
+    }
+    #endregion
 }

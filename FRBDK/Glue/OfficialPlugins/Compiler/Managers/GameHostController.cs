@@ -43,7 +43,7 @@ namespace OfficialPlugins.Compiler.Managers
             gameHostControl.RestartGameCurrentScreenClicked += async (not, used) =>
             {
                 var wasEditChecked = compilerViewModel.IsEditChecked;
-                var screenName = await CommandSending.CommandSender.GetScreenName(glueViewSettingsViewModel.PortNumber);
+                var screenName = await CommandSending.CommandSender.GetScreenName();
 
 
                 compilerViewModel.IsPaused = false;
