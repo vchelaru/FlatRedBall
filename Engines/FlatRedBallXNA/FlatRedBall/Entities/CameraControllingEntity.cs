@@ -45,6 +45,22 @@ namespace FlatRedBall.Entities
         public System.Collections.IList Targets { get; set; } = new List<PositionedObject>();
 
         /// <summary>
+        /// Sets a single target for following. If Targets has been previously set, this changes
+        /// the Targets to a new list.
+        /// </summary>
+        /// <remarks>
+        /// If the target is an Entity, then the entity is destroyed, it will be removed as the CameraControllingEntity target.
+        /// </remarks>
+        public PositionedObject Target
+        {
+            set
+            {
+                Targets = new PositionedObjectList<PositionedObject>();
+                Targets.Add(value);
+            }
+        }
+
+        /// <summary>
         /// The level map. If null, the camera will move without bounds. If set, the camera will not view positions outside of the map.
         /// </summary>
         public IPositionedSizedObject Map { get; set; }
