@@ -512,7 +512,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
         public void CollapseVariableManagement()
         {
             VariableManagementVisibility = Visibility.Collapsed;
-            TopSectionHeight = new GridLength(0);
+            TopSectionHeight = new GridLength(1);
 
         }
     }

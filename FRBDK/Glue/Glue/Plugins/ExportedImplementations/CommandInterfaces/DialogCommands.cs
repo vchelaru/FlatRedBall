@@ -760,9 +760,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
                 else
                 {
-                    IElement element = GlueState.Self.CurrentElement;
+                    var element = GlueState.Self.CurrentElement;
 
-                    StateSaveCategory newCategory = new StateSaveCategory();
+                    var newCategory = new StateSaveCategory();
                     newCategory.Name = tiw.Result;
 
                     foreach(var variable in element.CustomVariables)

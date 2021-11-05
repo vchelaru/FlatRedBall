@@ -41,7 +41,9 @@ namespace OfficialPluginsCore.PropertiesTabOldPlugin
 
             var shouldShow = selectedObject is ScreenSave ||
                 selectedObject is EntitySave ||
-                selectedObject is StateSaveCategory ||
+                // eventually we will get rid of this view alltogether.
+                // For now, removing it for StateSaveCategories.
+                //selectedObject is StateSaveCategory ||
                 selectedObject is StateSave ||
                 selectedObject is CustomVariable ||
                 selectedObject is NamedObjectSave ||

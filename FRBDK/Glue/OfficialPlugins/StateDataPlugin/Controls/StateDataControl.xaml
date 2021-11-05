@@ -8,58 +8,58 @@
              d:DesignHeight="200" d:DesignWidth="300">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="{Binding TopSectionHeight}"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
-
+            <RowDefinition Height="{Binding TopSectionHeight, Mode=TwoWay, FallbackValue=100}"></RowDefinition>
+            <RowDefinition Height="4"></RowDefinition>
+            
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <StackPanel>
-            <Grid>
+        <!---->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock>Category Name</TextBlock>
+                <TextBox Margin="5,0,0,0" Text="{Binding Name}" Width="100"></TextBox>
+            </StackPanel>
+            <Button 
+                    Visibility="{Binding ExpandVariableManagementButtonVisibility}"
+                    Click="ExpandVariableManagementClick" Grid.ColumnSpan="2" Width="20" HorizontalAlignment="Right"
+                    >...</Button>
+        </Grid>
+        <Grid Grid.Row="1" VerticalAlignment="Stretch" Visibility="{Binding VariableManagementVisibility}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="25"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Rectangle VerticalAlignment="Top" Height="1" Grid.ColumnSpan="3" Fill="Black"></Rectangle>
+
+            <TextBlock Margin="0,1,0,0">Variables</TextBlock>
+            <ListBox Grid.Row="1" SelectedItem="{Binding SelectedIncludedVariable}" ItemsSource="{Binding IncludedVariables}"></ListBox>
+            <StackPanel Grid.Column="1" Grid.Row="1">
+                <Button Click="ExcludeButtonClick">&gt;&gt;</Button>
+                <Button Click="IncludeButtonClick">&lt;&lt;</Button>
+            </StackPanel>
+            <Grid Grid.Column="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition></ColumnDefinition>
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock>Category Name</TextBlock>
-                    <TextBox Margin="5,0,0,0" Text="{Binding Name}" Width="100"></TextBox>
-                </StackPanel>
-                <Button 
-                        Visibility="{Binding ExpandVariableManagementButtonVisibility}"
-                        Click="ExpandVariableManagementClick" Grid.ColumnSpan="2" Margin="280,0,0,0"
-                        >...</Button>
+                <TextBlock  Margin="0,1,0,0" Grid.Column="0" Grid.ColumnSpan="2">Excluded Variables</TextBlock>
+                <Button Grid.Column="1" Width="20" Click="CollapseVariableManagementClick">X</Button>
             </Grid>
-            <Grid Height="100" Visibility="{Binding VariableManagementVisibility}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                    <ColumnDefinition Width="25"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                </Grid.RowDefinitions>
-                <Rectangle VerticalAlignment="Top" Height="1" Grid.ColumnSpan="3" Fill="Black"></Rectangle>
+            <ListBox Grid.Row="1" SelectedItem="{Binding SelectedExcludedVariable}" ItemsSource="{Binding ExcludedVariables}" Grid.Column="2" Grid.ColumnSpan="2"></ListBox>
+        </Grid>
 
-                <TextBlock Margin="0,1,0,0">Variables</TextBlock>
-                <ListBox Grid.Row="1" SelectedItem="{Binding SelectedIncludedVariable}" ItemsSource="{Binding IncludedVariables}"></ListBox>
-                <StackPanel Grid.Column="1" Grid.Row="1">
-                    <Button Click="ExcludeButtonClick">&gt;&gt;</Button>
-                    <Button Click="IncludeButtonClick">&lt;&lt;</Button>
-                </StackPanel>
-                <Grid Grid.Column="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition></ColumnDefinition>
-                        <ColumnDefinition Width="Auto"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock  Margin="0,1,0,0" Grid.Column="0" Grid.ColumnSpan="2">Excluded Variables</TextBlock>
-                    <Button Grid.Column="1" Width="20" Click="CollapseVariableManagementClick">X</Button>
-                </Grid>
-                <ListBox Grid.Row="1" SelectedItem="{Binding SelectedExcludedVariable}" ItemsSource="{Binding ExcludedVariables}" Grid.Column="2" Grid.ColumnSpan="2"></ListBox>
-            </Grid>
-        </StackPanel>
-
-        <GridSplitter Height="4" Grid.Row="1" 
+        <GridSplitter Height="4" Grid.Row="2" 
                       HorizontalAlignment="Stretch" 
                       VerticalAlignment="Center"
                       Visibility="{Binding VariableManagementVisibility}"></GridSplitter>
@@ -70,7 +70,7 @@
         in the codebehind.
         SelectedItem="{Binding SelectedState}"
                   SelectedIndex="{Binding SelectedIndex}"-->
-        <DataGrid Grid.Row="2"
+        <DataGrid Grid.Row="3"
             x:Name="DataGridInstance" 
                   ItemsSource="{Binding States}" 
                   IsSynchronizedWithCurrentItem="False"
