@@ -89,7 +89,7 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        public static void FixAllTypes(this StateSave instance)
+        public static void FixAllTypes(this StateSave instance, GlueElement owner)
         {
             instance.FixEnumerationTypes();
 
@@ -98,6 +98,14 @@ namespace FlatRedBall.Glue.SaveClasses
                 if (!string.IsNullOrEmpty(instruction.Type) && instruction.Value != null)
                 {
                     object variableValue = instruction.Value;
+
+                    var matchingVariable = owner.GetCustomVariable(instruction.Member);
+                    if( !string.IsNullOrWhiteSpace( matchingVariable?.Type ) && matchingVariable.Type != instruction.Type)
+                    {
+                        // The variable type has been changed, so let's update the state type:
+                        instruction.Type = matchingVariable.Type;
+                    }
+
                     var type = instruction.Type;
                     variableValue = CustomVariableExtensionMethods.FixValue(variableValue, type);
                     instruction.Value = variableValue;

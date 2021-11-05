@@ -245,17 +245,17 @@ namespace FlatRedBall.Glue.SaveClasses
             return toReturn;
         }
 
-        public static void FixAllTypes(this IElement instance)
+        public static void FixAllTypes(this GlueElement element)
         {
-            foreach (NamedObjectSave nos in instance.NamedObjects)
+            foreach (NamedObjectSave nos in element.NamedObjects)
             {
                 nos.FixAllTypes();
             }
-            foreach (StateSave state in instance.AllStates)
+            foreach (StateSave state in element.AllStates)
             {
-                state.FixAllTypes();
+                state.FixAllTypes(element);
             }
-            foreach (CustomVariable customVariable in instance.CustomVariables)
+            foreach (CustomVariable customVariable in element.CustomVariables)
             {
                 customVariable.FixAllTypes();
             }
