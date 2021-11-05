@@ -469,6 +469,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
         #endregion
 
+        #region ReferencedFile
+
         [Obsolete("This function does way too much. Moving this to GluxCommands")]
         public ReferencedFileSave CreateReferencedFileSaveForExistingFile(IElement containerForFile, string directoryInsideContainer, string absoluteFileName,
             PromptHandleEnum unknownTypeHandle, AssetTypeInfo ati, out string creationReport, out string errorMessage)
@@ -693,6 +695,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             return ProjectManager.ContentDirectory + resultNameInFolder;
         }
+
+        #endregion
 
         /// <summary>
         /// Updates the argument glueElement from its base types. This updates variables and named objects.

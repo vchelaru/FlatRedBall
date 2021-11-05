@@ -39,6 +39,7 @@ namespace FlatRedBall.Glue.Managers
         TreeNode ReferencedFileSaveTreeNode(ReferencedFileSave referencedFileSave);
 
         TreeNode TreeNodeByTagIn(object tag, TreeNodeCollection treeNodeCollection);
+        TreeNode TreeNodeByTag(object tag);
 
         TreeNode CustomVariableTreeNode(CustomVariable variable);
 
@@ -358,6 +359,21 @@ namespace FlatRedBall.Glue.Managers
                 }
             }
             return null;
+        }
+
+        public TreeNode TreeNodeByTag(object tag)
+        {
+            var found = TreeNodeByTagIn(tag, ElementViewWindow.ScreensTreeNode.Nodes);
+
+            if(found == null)
+            {
+                found = TreeNodeByTagIn(tag, ElementViewWindow.EntitiesTreeNode.Nodes);
+            }
+            if(found == null)
+            {
+                found = TreeNodeByTagIn(tag, ElementViewWindow.GlobalContentFileNode.Nodes);
+            }
+            return found;
         }
 
         public TreeNode CustomVariableTreeNode(CustomVariable variable)

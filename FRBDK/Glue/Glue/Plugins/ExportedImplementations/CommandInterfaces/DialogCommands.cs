@@ -775,6 +775,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
                     ElementViewWindow.GenerateSelectedElementCode();
 
+                    GlueState.Self.CurrentStateSaveCategory = newCategory;
+
                     GluxCommands.Self.SaveGlux();
 
                     // Nov 5, 2021 

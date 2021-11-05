@@ -58,10 +58,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
             get;
         }
 
-        StateSaveCategory CurrentStateSaveCategory
-        {
-            get;
-        }
+        StateSaveCategory CurrentStateSaveCategory { get; set; }
 
         ReferencedFileSave CurrentReferencedFileSave
         {
