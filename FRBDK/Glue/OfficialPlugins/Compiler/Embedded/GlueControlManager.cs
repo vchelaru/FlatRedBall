@@ -177,18 +177,50 @@ namespace GlueControl
             //Console.ReadLine();
         }
 
-        static byte[] defaultBuffer = new byte[1024 * 1024];
+        static byte[] defaultBuffer = new byte[8192];
         private static async Task<byte[]> GetByteArrayFromStream(Stream stm, int totalLength, byte[] buffer = null)
         {
-            if (buffer == null && totalLength > defaultBuffer.Length)
-            {
-                defaultBuffer = new byte[totalLength];
-            }
-            buffer = buffer ?? defaultBuffer;
-            await stm.ReadAsync(buffer, 0, totalLength);
-            return buffer;
-        }
+            byte[] toReturn = null;
 
+            using (var memoryStream = new MemoryStream())
+            {
+                buffer = buffer ?? defaultBuffer;
+                int bytesRead;
+                int bytesLeft = totalLength;
+                while (bytesLeft > 0 && (bytesRead = await stm.ReadAsync(buffer, 0, Math.Min(buffer.Length, bytesLeft))) > 0)
+                {
+                    memoryStream.Write(buffer, 0, bytesRead);
+                    bytesLeft -= bytesRead;
+                }
+                toReturn = memoryStream.ToArray();
+            }
+            return toReturn;
+            //var memoryStream = new MemoryStream();
+            //await stm.CopyToAsync(memoryStream, totalLength);
+            //memoryStream.Position = 0;
+
+            //var array =
+            //    memoryStream.ToArray();
+            //if(array.Length != totalLength)
+            //{
+            //    int m = 3;
+            //}
+            //return array;
+
+            //if (buffer == null && totalLength > defaultBuffer.Length)
+            //{
+            //    defaultBuffer = new byte[totalLength];
+            //}
+            //buffer = buffer ?? defaultBuffer;
+            //var amountRead = await stm.ReadAsync(buffer, 0, totalLength);
+
+            //if (amountRead != totalLength)
+            //{
+            //    int m = 3;
+            //}
+
+            //return buffer;
+        }
         private static void WriteMessageToStream(Stream clientStream, string message)
         {
             byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(message);

@@ -19,7 +19,7 @@ namespace OfficialPlugins.Compiler.CommandSending
         static Stream TcpClientStream;
 
         public static Action<string> PrintOutput { get; set; }
-        static SemaphoreSlim sendCommandSemaphore = new SemaphoreSlim(1);
+        static SemaphoreSlim sendCommandSemaphore = new SemaphoreSlim(1, 1);
 
         public static int PortNumber { get; set; }
 
@@ -53,22 +53,19 @@ namespace OfficialPlugins.Compiler.CommandSending
         {
             var shouldPrint = isImportant && text?.StartsWith("SelectObjectDto:") == false;
 
+            var isInSemaphore = sendCommandSemaphore.Wait(0);
+
+            if (!isImportant && !isInSemaphore)
+            {
+                return null;
+            }
+            if(!isInSemaphore)
+            {
+                await sendCommandSemaphore.WaitAsync();
+            }
+
             try
             {
-                if(isImportant)
-                {
-                    DateTime startWait = DateTime.Now;
-                    await sendCommandSemaphore.WaitAsync();
-                    var waitEndTime = DateTime.Now;
-                }
-                else
-                {
-                    if(sendCommandSemaphore.Wait(0) == false)
-                    {
-                        return null;
-                    }
-                }
-
                 await ConnectIfNecessary(PortNumber, shouldPrint);
 
                 if (TcpClientStream != null)
@@ -115,8 +112,6 @@ namespace OfficialPlugins.Compiler.CommandSending
                 // this takes ~2 seconds, according to this:
                 // https://github.com/dotnet/runtime/issues/31085
 
-                var isConnected = false;
-
                 const int timeoutDuration = 1000;
                 var timeoutTask = Task.Delay(timeoutDuration);
                 var connectTask = client.ConnectAsync("127.0.0.1", port);
@@ -126,12 +121,10 @@ namespace OfficialPlugins.Compiler.CommandSending
                 {
                     if (shouldPrintTimeout) PrintOutput("Timed out waiting for connection");
                     client.Dispose();
-                    isConnected = false;
                     TcpClientStream = null;
                 }
                 else
                 {
-                    isConnected = true;
                     TcpClientStream = client.GetStream();
                 }
             }
@@ -162,6 +155,9 @@ namespace OfficialPlugins.Compiler.CommandSending
 
             if(length > 1_000_000)
             {
+                var firstThousand = await GetByteArrayFromStream(stm, 1000);
+                var response = Encoding.UTF8.GetString(firstThousand, 0, firstThousand.Length);
+
                 int m = 3;
             }
             if(length > 0)
@@ -177,16 +173,37 @@ namespace OfficialPlugins.Compiler.CommandSending
             //Console.ReadLine();
         }
 
-        static byte[] defaultBuffer = new byte[1024 * 1024];
+        static byte[] defaultBuffer = new byte[8192];
+
         private static async Task<byte[]> GetByteArrayFromStream(Stream stm, int totalLength, byte[] buffer = null)
         {
-            if (buffer == null && totalLength > defaultBuffer.Length)
+            byte[] toReturn = null;
+
+            using (var memoryStream = new MemoryStream())
             {
-                defaultBuffer = new byte[totalLength];
+                buffer = buffer ?? defaultBuffer;
+                int bytesRead;
+                int bytesLeft = totalLength;
+                while (bytesLeft > 0 && (bytesRead = await stm.ReadAsync(buffer, 0, Math.Min(buffer.Length, bytesLeft))) > 0)
+                {
+                    memoryStream.Write(buffer, 0, bytesRead);
+                    bytesLeft -= bytesRead;
+                }
+                toReturn = memoryStream.ToArray();
             }
-            buffer = buffer ?? defaultBuffer;
-            await stm.ReadAsync(buffer, 0, totalLength);
-            return buffer;
+            return toReturn;
+
+            //if (buffer == null && totalLength > defaultBuffer.Length)
+            //{
+            //    defaultBuffer = new byte[totalLength];
+            //}
+            //buffer = buffer ?? defaultBuffer;
+            //var amountRead = await stm.ReadAsync(buffer, 0, totalLength);
+            //if(amountRead != totalLength)
+            //{
+            //    int m = 3;
+            //}
+            //return buffer;
         }
 
         /// <summary>

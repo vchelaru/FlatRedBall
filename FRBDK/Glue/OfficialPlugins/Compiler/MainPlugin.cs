@@ -247,19 +247,23 @@ namespace OfficialPlugins.Compiler
 
         #endregion
 
-        System.Threading.SemaphoreSlim getCommandsSemaphore = new System.Threading.SemaphoreSlim(1);
+        System.Threading.SemaphoreSlim getCommandsSemaphore = new System.Threading.SemaphoreSlim(1, 1);
         DateTime lastGetCall;
         private async void HandleTimerElapsed(object sender, ElapsedEventArgs e)
         {
             this.CompilerViewModel.LastWaitTimeInSeconds = (DateTime.Now - lastGetCall).TotalSeconds;
-            var isBusy = await getCommandsSemaphore.WaitAsync(0);
-            if(!isBusy)
+            var isBusy = (await getCommandsSemaphore.WaitAsync(0)) == false;
+
+            if (!isBusy)
             {
                 try
                 {
                     if(CompilerViewModel.IsEditChecked)
                     {
                         lastGetCall = DateTime.Now;
+
+
+
                         var response = await CommandSending.CommandSender
                             .Send<GetCommandsDtoResponse>(new GetCommandsDto(), isImportant:false);
 
@@ -268,7 +272,10 @@ namespace OfficialPlugins.Compiler
                             CommandReceiver.HandleCommandsFromGame(response.Commands,
                                 GlueViewSettingsViewModel.PortNumber);
                         }
+                        else
+                        {
 
+                        }
                         this.CompilerViewModel.LastWaitTimeInSeconds = (DateTime.Now - lastGetCall).TotalSeconds;
                     }
                 }
@@ -280,6 +287,12 @@ namespace OfficialPlugins.Compiler
                 {
                     getCommandsSemaphore.Release();
                 }
+
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("   isBusy = true");
+
             }
 
         }
