@@ -249,9 +249,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                 newVariable.Name = "Visible";
                 newVariable.Type = "bool";
 
-
-                RightClickHelper.CreateAndAddNewVariable(
-                    newVariable);
+                GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToCurrentElement(newVariable);
 
             }
         }

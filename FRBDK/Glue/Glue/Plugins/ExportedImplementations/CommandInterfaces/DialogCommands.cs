@@ -485,8 +485,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         newVariable.TypeConverter = typeConverter;
                     }
 
-
-                    RightClickHelper.CreateAndAddNewVariable(newVariable);
+                    GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToCurrentElement(newVariable);
 
                     if (isDefinedByBase)
                     {

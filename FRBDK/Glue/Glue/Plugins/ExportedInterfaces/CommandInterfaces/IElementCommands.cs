@@ -22,5 +22,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void AddEntity(EntitySave entitySave, bool suppressAlreadyExistingFileMessage);
         bool UpdateFromBaseType(GlueElement glueElement);
 
+        void AddCustomVariableToCurrentElement(CustomVariable newVariable, bool save = true);
     }
 }

@@ -2047,55 +2047,7 @@ namespace FlatRedBall.Glue.FormHelpers
             #endregion
         }
 
-        public static CustomVariable CreateAndAddNewVariable(CustomVariable newVariable, bool save = true)
-        {
-            IElement currentElement = GlueState.Self.CurrentElement;
 
-
-            currentElement.CustomVariables.Add(newVariable);
-
-            CustomVariableHelper.SetDefaultValueFor(newVariable, currentElement);
-
-            if (GlueState.Self.CurrentElementTreeNode != null)
-            {
-                GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
-
-            }
-
-            MainGlueWindow.Self.PropertyGrid.Refresh();
-
-
-            ElementViewWindow.GenerateSelectedElementCode();
-
-            UpdateInstanceCustomVariables(currentElement);
-
-            PluginManager.ReactToVariableAdded(newVariable);
-
-            if(save)
-            {
-                GluxCommands.Self.SaveGlux();
-            }
-
-            return newVariable;
-        }
-
-        public static void UpdateInstanceCustomVariables(IElement currentElement)
-        {
-            List<NamedObjectSave> namedObjectsToUpdate = null;
-
-            if (currentElement is EntitySave)
-            {
-                namedObjectsToUpdate = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(currentElement.Name);
-            }
-
-            if (namedObjectsToUpdate != null)
-            {
-                foreach (NamedObjectSave nos in namedObjectsToUpdate)
-                {
-                    nos.UpdateCustomProperties();
-                }
-            }
-        }
         
         private static void MoveToTopClick(object sender, EventArgs e)
         {

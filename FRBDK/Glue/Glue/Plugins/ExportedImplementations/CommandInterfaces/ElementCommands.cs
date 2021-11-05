@@ -23,11 +23,14 @@ using FlatRedBall.Glue.ViewModels;
 using Microsoft.Xna.Framework;
 using Glue;
 using FlatRedBall.Glue.SetVariable;
+using FlatRedBall.Glue.SaveClasses.Helpers;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
     class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
     {
+        #region Fields/Properties
+
         static ElementCommands mSelf;
         public static ElementCommands Self
         {
@@ -41,6 +44,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
+        #endregion
+
+        #region Add Screen
 
         public SaveClasses.ScreenSave AddScreen(string screenName)
         {
@@ -140,6 +146,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             GluxCommands.Self.SaveGlux();
         }
 
+        #endregion
+
+        #region Add Entity
 
         public SaveClasses.EntitySave AddEntity(string entityName, bool is2D = false)
         {
@@ -398,6 +407,67 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             GluxCommands.Self.SaveGlux();
         }
+
+        #endregion
+
+        #region Add CustomVariable
+
+        public void AddCustomVariableToCurrentElement(CustomVariable newVariable, bool save = true)
+        {
+            var currentElement = GlueState.Self.CurrentElement;
+
+            currentElement.CustomVariables.Add(newVariable);
+
+            // by default new variables should not be included in states. 
+            foreach(var category in currentElement.StateCategoryList)
+            {
+                if (!category.ExcludedVariables.Contains(newVariable.Name))
+                { 
+                    category.ExcludedVariables.Add(newVariable.Name);
+                }
+            }
+
+            CustomVariableHelper.SetDefaultValueFor(newVariable, currentElement);
+
+            if (GlueState.Self.CurrentElementTreeNode != null)
+            {
+                GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
+            }
+
+            MainGlueWindow.Self.PropertyGrid.Refresh();
+
+
+            ElementViewWindow.GenerateSelectedElementCode();
+
+            UpdateInstanceCustomVariables(currentElement);
+
+            PluginManager.ReactToVariableAdded(newVariable);
+
+            if(save)
+            {
+                GluxCommands.Self.SaveGlux();
+            }
+
+        }
+
+        private void UpdateInstanceCustomVariables(IElement currentElement)
+        {
+            List<NamedObjectSave> namedObjectsToUpdate = null;
+
+            if (currentElement is EntitySave)
+            {
+                namedObjectsToUpdate = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(currentElement.Name);
+            }
+
+            if (namedObjectsToUpdate != null)
+            {
+                foreach (NamedObjectSave nos in namedObjectsToUpdate)
+                {
+                    nos.UpdateCustomProperties();
+                }
+            }
+        }
+        #endregion
 
         [Obsolete("This function does way too much. Moving this to GluxCommands")]
         public ReferencedFileSave CreateReferencedFileSaveForExistingFile(IElement containerForFile, string directoryInsideContainer, string absoluteFileName,
