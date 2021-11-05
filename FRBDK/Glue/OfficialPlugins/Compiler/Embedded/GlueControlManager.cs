@@ -337,7 +337,7 @@ namespace GlueControl
 
         #region Game -> Glue
 
-        private void HandlePropertyChanged(INameable item, string propertyName, object newValue)
+        private void HandlePropertyChanged(List<PropertyChangeArgs> propertyChangeArgs)
         {
 #if SupportsEditMode
 
@@ -364,15 +364,22 @@ namespace GlueControl
 
             }
 
-            var dto = new SetVariableDto();
-            dto.InstanceOwner = ownerType;
-            dto.ObjectName = item.Name;
-            dto.VariableName = propertyName;
-            dto.VariableValue = newValue;
-            dto.Type = newValue?.GetType().Name;
-            var message = $"{nameof(SetVariableDto)}:{Newtonsoft.Json.JsonConvert.SerializeObject(dto)}";
+            var dtoList = new SetVariableDtoList();
 
-            SendCommandToGlue(message);
+            foreach(var change in propertyChangeArgs)
+            {
+                var dto = new SetVariableDto();
+                dto.InstanceOwner = ownerType;
+                dto.ObjectName = change.Nameable.Name;
+                dto.VariableName = change.PropertyName;
+                dto.VariableValue = change.PropertyValue;
+                dto.Type = change.PropertyValue?.GetType().Name;
+
+                dtoList.SetVariableList.Add(dto);
+            }
+
+
+            SendToGlue(dtoList);
 
             // the game used to set this itself, but the game doesn't know which screen defines an object
             // so let Glue hande that

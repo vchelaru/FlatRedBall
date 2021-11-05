@@ -61,6 +61,9 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                         case nameof(SetVariableDto):
                             HandleSetVariable(JsonConvert.DeserializeObject<SetVariableDto>(data));
                             break;
+                        case nameof(SetVariableDtoList):
+                            HandleSetVariableDtoList(JsonConvert.DeserializeObject<SetVariableDtoList>(data));
+                            break;
                         case nameof(SelectObjectDto):
                             HandleSelectObject(JsonConvert.DeserializeObject<SelectObjectDto>(data));
                             break;
@@ -239,7 +242,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region Set Variable
 
-        private static void HandleSetVariable(SetVariableDto setVariableDto)
+        private static void HandleSetVariable(SetVariableDto setVariableDto, bool regenerateAndSave = true)
         {
 
             TaskManager.Self.Add(() =>
@@ -270,12 +273,17 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                         // record only - this variable change came from the game, we don't want to re-assign it and wipe other active edits
                         AssignOrRecordOnly.RecordOnly)
                     );
-                    // this may not be the current screen:
-                    var nosParent = ObjectFinder.Self.GetElementContaining(nos);
 
-                    GlueCommands.Self.GluxCommands.SaveGlux();
-                    GlueCommands.Self.DoOnUiThread(GlueCommands.Self.RefreshCommands.RefreshVariables);
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(nosParent);
+                    if(regenerateAndSave)
+                    {
+
+                        // this may not be the current screen:
+                        var nosParent = ObjectFinder.Self.GetElementContaining(nos);
+
+                        GlueCommands.Self.GluxCommands.SaveGlux();
+                        GlueCommands.Self.DoOnUiThread(GlueCommands.Self.RefreshCommands.RefreshVariables);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(nosParent);
+                    }
 
                 }
             }, "Handling set variable from game", 
@@ -283,6 +291,36 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             // Update - if it's asap, then later commands can execute before earlier ones, so we need to still respect fifo. It will add delay but removes
             // the confusion.
             TaskExecutionPreference.Fifo);
+        }
+
+        private static void HandleSetVariableDtoList(SetVariableDtoList setVariableDtoList)
+        {
+            HashSet<NamedObjectSave> modifiedObjects = new HashSet<NamedObjectSave>();
+            foreach(var setVariableDto in setVariableDtoList.SetVariableList)
+            {
+                HandleSetVariable(setVariableDto, regenerateAndSave: false);
+                var type = string.Join('\\', setVariableDto.InstanceOwner.Split('.').Skip(1));
+
+                var element = ObjectFinder.Self.GetElement(type);
+                var nos = element.GetNamedObjectRecursively(setVariableDto.ObjectName);
+
+                modifiedObjects.Add(nos);
+            }
+
+            GlueCommands.Self.GluxCommands.SaveGlux();
+            GlueCommands.Self.DoOnUiThread(GlueCommands.Self.RefreshCommands.RefreshVariables);
+
+            HashSet<GlueElement> nosParents = new HashSet<GlueElement>();
+            foreach(var nos in modifiedObjects)
+            {
+                var nosParent = ObjectFinder.Self.GetElementContaining(nos);
+                nosParents.Add(nosParent);
+            }
+
+            foreach(var nosParent in nosParents)
+            {
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(nosParent);
+            }
         }
 
         private static object ConvertVariable(object value, ref string typeName, string variableName, NamedObjectSave owner,

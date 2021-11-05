@@ -357,35 +357,34 @@ namespace GlueControl.Editing
         {
             FlatRedBall.Utilities.INameable targetInstance = null;
 
-            var aarect = ShapeManager.VisibleRectangles.FirstOrDefault(item =>
-                item.Parent == null &&
-                item.Name == objectName);
-            if (aarect != null)
+            // This is the most likely to find (and end all other checks) so let's do that first.
+            if (targetInstance == null)
             {
-                targetInstance = aarect;
+                targetInstance = SpriteManager.ManagedPositionedObjects.FirstOrDefault(item =>
+                    item.Parent == null && item.Name == objectName);
+
             }
 
             if (targetInstance == null)
             {
-                var circle = ShapeManager.VisibleCircles.FirstOrDefault(item =>
+                targetInstance = ShapeManager.VisibleRectangles.FirstOrDefault(item =>
                     item.Parent == null &&
                     item.Name == objectName);
-                if (circle != null)
-                {
-                    targetInstance = circle;
-                }
+            }
+
+
+            if (targetInstance == null)
+            {
+                targetInstance = ShapeManager.VisibleCircles.FirstOrDefault(item =>
+                    item.Parent == null &&
+                    item.Name == objectName);
             }
 
             if (targetInstance == null)
             {
-                var polygon = ShapeManager.VisiblePolygons.FirstOrDefault(item =>
+                targetInstance = ShapeManager.VisiblePolygons.FirstOrDefault(item =>
                     item.Parent == null &&
                     item.Name == objectName);
-
-                if (polygon != null)
-                {
-                    targetInstance = polygon;
-                }
             }
 
             if (targetInstance == null)
@@ -404,13 +403,8 @@ namespace GlueControl.Editing
 
             if (targetInstance == null)
             {
-                var collisionRelationship = CollisionManager.Self.Relationships.FirstOrDefault(item =>
+                targetInstance = CollisionManager.Self.Relationships.FirstOrDefault(item =>
                     item.Name == objectName);
-
-                if (collisionRelationship != null)
-                {
-                    targetInstance = collisionRelationship;
-                }
             }
 
             if (targetInstance == null)
@@ -425,12 +419,15 @@ namespace GlueControl.Editing
                     item.Name == objectName);
             }
 
-            if (targetInstance == null)
-            {
-                object foundObject;
-                screen.GetInstance(objectName, screen, out _, out foundObject);
-                targetInstance = foundObject as INameable;
-            }
+            // This was originally how we got instances, but this adds a ton of overhead when dealing with screens
+            // which have lots of variable assignments. Instead, we just rely on the calls above and it makes performance
+            // way better. Specifically, with this code in, large copy paste blocks make the app unusable.
+            //if (targetInstance == null)
+            //{
+            //    object foundObject;
+            //    screen.GetInstance(objectName, screen, out _, out foundObject);
+            //    targetInstance = foundObject as INameable;
+            //}
 
             return targetInstance;
         }

@@ -1141,10 +1141,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             bool updateUi = true, List<string> additionalFilesToRemove = null)
         {
             // caller doesn't care, so we're going to new it here and just fill it, but throw it away
-            if(additionalFilesToRemove == null)
-            {
-                additionalFilesToRemove = new List<string>();
-            }
+            additionalFilesToRemove = additionalFilesToRemove ?? new List<string>();
+
             StringBuilder removalInformation = new StringBuilder();
 
             var wasSelected = GlueState.Self.CurrentNamedObjectSave == namedObjectToRemove;
@@ -1178,7 +1176,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // 4.  Update the variables for any NamedObjects that use this element containing this NamedObject
             // 5.  Find any Elements that contain NamedObjects that are DefinedByBase - if so, see if we should remove those or make them not DefinedByBase
             // 6.  Remove any events that tunnel into this.
+            TaskManager.Self.AddOrRunIfTasked(() =>
+                DoRemovalInternal(namedObjectToRemove, performSave, updateUi, additionalFilesToRemove, removalInformation, wasSelected, indexInChild, containerOfRemoved, element),
+                "Performing object removal logic");
+        }
 
+        private void DoRemovalInternal(NamedObjectSave namedObjectToRemove, bool performSave, bool updateUi, List<string> additionalFilesToRemove, StringBuilder removalInformation, bool wasSelected, int indexInChild, NamedObjectSave containerOfRemoved, GlueElement element)
+        {
             if (element != null)
             {
 
@@ -1212,9 +1216,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                 }
 
-                if(namedObjectToRemove.IsLayer)
+                if (namedObjectToRemove.IsLayer)
                 {
-                   //  Remove any objects that use this as a layer
+                    //  Remove any objects that use this as a layer
                     for (int i = 0; i < element.NamedObjects.Count; i++)
                     {
                         if (element.NamedObjects[i].LayerOn == namedObjectToRemove.InstanceName)
@@ -1262,13 +1266,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     {
                         GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
 
-                        if(wasSelected)
+                        if (wasSelected)
                         {
                             List<NamedObjectSave> containerList = containerOfRemoved?.ContainedObjects ?? element.NamedObjects;
 
-                            if(containerList.Count == 0)
+                            if (containerList.Count == 0)
                             {
-                                if(containerOfRemoved != null)
+                                if (containerOfRemoved != null)
                                 {
                                     GlueState.Self.CurrentNamedObjectSave = containerOfRemoved;
                                 }
@@ -1279,7 +1283,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                             }
                             else
                             {
-                                if(indexInChild < containerList.Count)
+                                if (indexInChild < containerList.Count)
                                 {
                                     GlueState.Self.CurrentNamedObjectSave = containerList[indexInChild];
                                 }
@@ -1312,7 +1316,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 PluginManager.ReactToObjectRemoved(element, namedObjectToRemove);
             }
 
-            if(element == null && GlueState.Self.CurrentElement != null)
+            if (element == null && GlueState.Self.CurrentElement != null)
             {
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(GlueState.Self.CurrentElement);
             }

@@ -29,6 +29,17 @@ namespace GlueControl.Editing
 
     #endregion
 
+    #region Classes
+
+    class PropertyChangeArgs
+    {
+        public INameable Nameable { get; set; }
+        public string PropertyName { get; set; }
+        public object PropertyValue { get; set; }
+    }
+
+    #endregion
+
     class EditingManager : IManager
     {
         #region Fields/Properties
@@ -56,6 +67,8 @@ namespace GlueControl.Editing
         public IEnumerable<INameable> ItemsSelected => itemsSelected;
         INameable ItemSelected => itemsSelected.Count > 0 ? itemsSelected[0] : null;
 
+        List<PropertyChangeArgs> bufferedChangeArgs = new List<PropertyChangeArgs>();
+        bool IsBuffering;
 
         public GlueElement CurrentGlueElement { get; private set; }
         public List<NamedObjectSave> CurrentNamedObjects { get; private set; } = new List<NamedObjectSave>();
@@ -72,7 +85,7 @@ namespace GlueControl.Editing
 
         #region Delegates/Events
 
-        public Action<INameable, string, object> PropertyChanged;
+        public Action<List<PropertyChangeArgs>> PropertyChanged;
         public Action<INameable> ObjectSelected;
 
         #endregion
@@ -253,8 +266,27 @@ namespace GlueControl.Editing
             newMarker.MakePersistent();
             newMarker.Name = "Selection Marker";
             newMarker.CanMoveItem = true;
-            newMarker.PropertyChanged += (item, variable, value) => PropertyChanged(item, variable, value);
+            newMarker.PropertyChanged += HandleMarkerPropertyChanged;
             return newMarker;
+        }
+
+        private void HandleMarkerPropertyChanged(INameable item, string variable, object value)
+        {
+            var changeArgs = new PropertyChangeArgs
+            {
+                Nameable = item,
+                PropertyName = variable,
+                PropertyValue = value
+            };
+
+            if (IsBuffering)
+            {
+                bufferedChangeArgs.Add(changeArgs);
+            }
+            else
+            {
+                PropertyChanged(new List<PropertyChangeArgs> { changeArgs });
+            }
         }
 
         ISelectionMarker MarkerFor(INameable item)
@@ -347,11 +379,19 @@ namespace GlueControl.Editing
 
             if (itemGrabbed != null)
             {
+                IsBuffering = true;
                 foreach (var item in itemsSelected)
                 {
                     var marker = MarkerFor(item);
 
                     marker.HandleCursorRelease();
+                }
+                IsBuffering = false;
+                if (bufferedChangeArgs.Count > 0)
+                {
+                    PropertyChanged(bufferedChangeArgs.ToList());
+
+                    bufferedChangeArgs.Clear();
                 }
             }
 
@@ -403,7 +443,15 @@ namespace GlueControl.Editing
                             {
                                 asPositionedObject.Y += shiftAmount;
                             }
-                            PropertyChanged(item, nameof(asPositionedObject.Y), asPositionedObject.Y);
+                            PropertyChanged(new List<PropertyChangeArgs>
+                            {
+                                new PropertyChangeArgs
+                                {
+                                    Nameable = item,
+                                    PropertyName = nameof(asPositionedObject.Y),
+                                    PropertyValue = asPositionedObject.Y
+                                }
+                            });
                         }
                     }
                 }
@@ -421,7 +469,15 @@ namespace GlueControl.Editing
                             {
                                 asPositionedObject.Y -= shiftAmount;
                             }
-                            PropertyChanged(item, nameof(asPositionedObject.Y), asPositionedObject.Y);
+                            PropertyChanged(new List<PropertyChangeArgs>
+                            {
+                                new PropertyChangeArgs
+                                {
+                                    Nameable = item,
+                                    PropertyName = nameof(asPositionedObject.Y),
+                                    PropertyValue = asPositionedObject.Y
+                                }
+                            });
                         }
                     }
                 }
@@ -439,7 +495,15 @@ namespace GlueControl.Editing
                             {
                                 asPositionedObject.X -= shiftAmount;
                             }
-                            PropertyChanged(item, nameof(asPositionedObject.X), asPositionedObject.X);
+                            PropertyChanged(new List<PropertyChangeArgs>
+                            {
+                                new PropertyChangeArgs
+                                {
+                                    Nameable = item,
+                                    PropertyName = nameof(asPositionedObject.X),
+                                    PropertyValue = asPositionedObject.X
+                                }
+                            });
                         }
                     }
                 }
@@ -457,7 +521,15 @@ namespace GlueControl.Editing
                             {
                                 asPositionedObject.X += shiftAmount;
                             }
-                            PropertyChanged(item, nameof(asPositionedObject.X), asPositionedObject.X);
+                            PropertyChanged(new List<PropertyChangeArgs>
+                            {
+                                new PropertyChangeArgs
+                                {
+                                    Nameable = item,
+                                    PropertyName = nameof(asPositionedObject.X),
+                                    PropertyValue = asPositionedObject.X
+                                }
+                            });
                         }
                     }
                 }

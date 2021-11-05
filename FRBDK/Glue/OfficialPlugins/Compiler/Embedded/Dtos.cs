@@ -40,6 +40,12 @@ namespace GlueControl.Dtos
         public object VariableValue { get; set; }
         public string Type { get; set; }
     }
+
+    public class SetVariableDtoList
+    {
+        public List<SetVariableDto> SetVariableList { get; set; } = new List<SetVariableDto>();
+    }
+
     #endregion
 
     #region SetEditMode

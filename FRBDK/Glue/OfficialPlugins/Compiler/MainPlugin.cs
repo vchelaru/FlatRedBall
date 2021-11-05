@@ -267,6 +267,10 @@ namespace OfficialPlugins.Compiler
                         var response = await CommandSending.CommandSender
                             .Send<GetCommandsDtoResponse>(new GetCommandsDto(), isImportant:false);
 
+
+                        var getTime = DateTime.Now;
+                        var getDuration = getTime - lastGetCall;
+
                         if (response?.Commands.Count > 0)
                         {
                             CommandReceiver.HandleCommandsFromGame(response.Commands,
@@ -276,7 +280,21 @@ namespace OfficialPlugins.Compiler
                         {
 
                         }
+
+                        var handleTime = DateTime.Now;
+                        var handleDuration = handleTime - getTime;
+
                         this.CompilerViewModel.LastWaitTimeInSeconds = (DateTime.Now - lastGetCall).TotalSeconds;
+
+                        if(this.CompilerViewModel.LastWaitTimeInSeconds > 1)
+                        {
+
+                            MainControl.PrintOutput(
+                                $"Warning - it took {this.CompilerViewModel.LastWaitTimeInSeconds:0.00} seconds to get " +
+                                $"{response?.Commands.Count}" +
+                                $"\n\tGet: {getDuration}" +
+                                $"\n\tHandle: {handleDuration}");
+                        }
                     }
                 }
                 catch
