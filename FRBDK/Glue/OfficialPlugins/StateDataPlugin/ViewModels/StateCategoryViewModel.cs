@@ -107,7 +107,11 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             }
         }
 
-
+        public GridLength TopSectionHeight
+        {
+            get => Get<GridLength>();
+            set => Set(value);
+        }
 
         #endregion
 
@@ -497,6 +501,19 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                 // I guess this isn't needed because the states in the tree view didn't change
                 //GlueCommands.Self.RefreshCommands.RefreshUi(this.category);
             }
+        }
+
+        public void ExpandVariableManagement()
+        {
+            VariableManagementVisibility = Visibility.Visible;
+            TopSectionHeight = new GridLength(100);
+        }
+
+        public void CollapseVariableManagement()
+        {
+            VariableManagementVisibility = Visibility.Collapsed;
+            TopSectionHeight = new GridLength(0);
+
         }
     }
 }

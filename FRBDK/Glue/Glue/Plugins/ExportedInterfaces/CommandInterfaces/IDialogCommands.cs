@@ -12,6 +12,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void ShowAddNewEventDialog(NamedObjectSave eventOwner);
         void ShowAddNewEventDialog(AddEventViewModel viewModel);
         void ShowLoadProjectDialog();
+        void ShowAddNewCategoryDialog();
 
         void ShowMessageBox(string message);
         void ShowYesNoMessageBox(string message, Action yesAction, Action noAction = null);

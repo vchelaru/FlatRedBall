@@ -1056,37 +1056,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static void AddStateCategoryClick(object sender, EventArgs e)
         {
-            // add category, addcategory, add state category
-            TextInputWindow tiw = new TextInputWindow();
-            tiw.DisplayText = "Enter a name for the new category";
-            tiw.Text = "New Category";
-
-            DialogResult result = tiw.ShowDialog(MainGlueWindow.Self);
-
-            if (result == DialogResult.OK)
-            {
-                string whyItIsntValid;
-
-                if(!NameVerifier.IsStateCategoryNameValid(tiw.Result, out whyItIsntValid))
-                {
-                    GlueGui.ShowMessageBox(whyItIsntValid);
-                }
-                else
-                {
-                    IElement element = GlueState.Self.CurrentElement;
-
-                    StateSaveCategory newCategory = new StateSaveCategory();
-                    newCategory.Name = tiw.Result;
-
-                    element.StateCategoryList.Add(newCategory);
-
-                    GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
-                    ElementViewWindow.GenerateSelectedElementCode();
-
-                    GluxCommands.Self.SaveGlux();
-                    GlueCommands.Self.ProjectCommands.SaveProjects();
-                }
-            }
+            GlueCommands.Self.DialogCommands.ShowAddNewCategoryDialog();
         }
 
         static void DuplicateClick(object sender, EventArgs e)

@@ -8,7 +8,9 @@
              d:DesignHeight="200" d:DesignWidth="300">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="{Binding TopSectionHeight}"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
+
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
@@ -22,10 +24,9 @@
                     <TextBlock>Category Name</TextBlock>
                     <TextBox Margin="5,0,0,0" Text="{Binding Name}" Width="100"></TextBox>
                 </StackPanel>
-                <Button Grid.Column="1" 
-                        Width="20" 
+                <Button 
                         Visibility="{Binding ExpandVariableManagementButtonVisibility}"
-                        Click="ExpandVariableManagementClick"
+                        Click="ExpandVariableManagementClick" Grid.ColumnSpan="2" Margin="280,0,0,0"
                         >...</Button>
             </Grid>
             <Grid Height="100" Visibility="{Binding VariableManagementVisibility}">
@@ -58,14 +59,18 @@
             </Grid>
         </StackPanel>
 
+        <GridSplitter Height="4" Grid.Row="1" 
+                      HorizontalAlignment="Stretch" 
+                      VerticalAlignment="Center"
+                      Visibility="{Binding VariableManagementVisibility}"></GridSplitter>
         <!--https://www.wpftutorial.net/DataGrid.html-->
-        
-                  <!--
+
+        <!--
         These don't work when selecting a cell. They do if selecting an entire row, so the binding is set up
         in the codebehind.
         SelectedItem="{Binding SelectedState}"
                   SelectedIndex="{Binding SelectedIndex}"-->
-        <DataGrid Grid.Row="1"
+        <DataGrid Grid.Row="2"
             x:Name="DataGridInstance" 
                   ItemsSource="{Binding States}" 
                   IsSynchronizedWithCurrentItem="False"

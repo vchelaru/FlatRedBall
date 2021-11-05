@@ -673,6 +673,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #endregion
 
+        #region Set Focus
+
         public void FocusTab(string dialogTitle)
         {
             bool TryFocus(IEnumerable<PluginTabPage> items)
@@ -705,11 +707,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin.MainExplorerPlugin.Self.ElementTreeView.Focus();
         }
 
-        public void SetFormOwner(Form form)
-        {
-            if (MainGlueWindow.Self != null)
-                form.Owner = MainGlueWindow.Self;
-        }
+        #endregion
 
         #region Show Message Box
 
@@ -741,7 +739,61 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #endregion
 
+        #region State Categories
 
+        public void ShowAddNewCategoryDialog()
+        {
+            // add category, addcategory, add state category
+            TextInputWindow tiw = new TextInputWindow();
+            tiw.Message = "Enter a name for the new category";
+            tiw.Text = "New Category";
+
+            DialogResult result = tiw.ShowDialog(MainGlueWindow.Self);
+
+            if (result == DialogResult.OK)
+            {
+                string whyItIsntValid;
+
+                if (!NameVerifier.IsStateCategoryNameValid(tiw.Result, out whyItIsntValid))
+                {
+                    GlueGui.ShowMessageBox(whyItIsntValid);
+                }
+                else
+                {
+                    IElement element = GlueState.Self.CurrentElement;
+
+                    StateSaveCategory newCategory = new StateSaveCategory();
+                    newCategory.Name = tiw.Result;
+
+                    foreach(var variable in element.CustomVariables)
+                    {
+                        // new categories should have all variables excluded initially.
+                        newCategory.ExcludedVariables.Add(variable.Name);
+                    }
+
+                    element.StateCategoryList.Add(newCategory);
+
+                    GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
+                    ElementViewWindow.GenerateSelectedElementCode();
+
+                    GluxCommands.Self.SaveGlux();
+
+                    // Nov 5, 2021 
+                    // Why save .csproj
+                    // files here? There's
+                    // no changes to the files...
+                    //GlueCommands.Self.ProjectCommands.SaveProjects();
+                }
+            }
+        }
+
+        #endregion
+
+        public void SetFormOwner(Form form)
+        {
+            if (MainGlueWindow.Self != null)
+                form.Owner = MainGlueWindow.Self;
+        }
 
         public List<T> ToList<T>(System.Collections.IList list)
         {

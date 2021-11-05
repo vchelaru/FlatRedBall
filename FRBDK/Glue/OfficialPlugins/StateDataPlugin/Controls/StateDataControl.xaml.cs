@@ -506,12 +506,13 @@ namespace OfficialPlugins.StateDataPlugin.Controls
 
         private void ExpandVariableManagementClick(object sender, RoutedEventArgs e)
         {
-            ViewModel.VariableManagementVisibility = Visibility.Visible;
+            ViewModel.ExpandVariableManagement();
+
         }
 
         private void CollapseVariableManagementClick(object sender, RoutedEventArgs e)
         {
-            ViewModel.VariableManagementVisibility = Visibility.Collapsed;
+            ViewModel.CollapseVariableManagement();
 
         }
     }
