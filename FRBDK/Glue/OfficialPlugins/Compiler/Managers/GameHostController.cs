@@ -40,6 +40,16 @@ namespace OfficialPlugins.Compiler.Managers
                 }
             };
 
+            gameHostControl.StartInEditModeClicked += async (not, used) =>
+            {
+                TaskManager.Self.Add(async () =>
+                {
+                    await runner.Run(preventFocus: false);
+                    compilerViewModel.IsEditChecked = true;
+
+                }, "Starting in edit mode", TaskExecutionPreference.AddOrMoveToEnd);
+            };
+
             gameHostControl.RestartGameCurrentScreenClicked += async (not, used) =>
             {
                 var wasEditChecked = compilerViewModel.IsEditChecked;

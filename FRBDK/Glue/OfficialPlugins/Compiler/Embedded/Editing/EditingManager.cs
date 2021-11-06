@@ -495,14 +495,17 @@ namespace GlueControl.Editing
                             {
                                 asPositionedObject.X -= shiftAmount;
                             }
+
+                            var args = new PropertyChangeArgs
+                            {
+                                Nameable = item,
+                                PropertyName = nameof(asPositionedObject.X),
+                                PropertyValue = asPositionedObject.X
+                            };
+
                             PropertyChanged(new List<PropertyChangeArgs>
                             {
-                                new PropertyChangeArgs
-                                {
-                                    Nameable = item,
-                                    PropertyName = nameof(asPositionedObject.X),
-                                    PropertyValue = asPositionedObject.X
-                                }
+                              args
                             });
                         }
                     }
@@ -572,6 +575,11 @@ namespace GlueControl.Editing
 
         public void SetCurrentGlueElement(GlueElement glueElement)
         {
+            if (CurrentNamedObjects.Any(item => item == null))
+            {
+                throw new Exception("There are null items in the CurrentNamedObjects, there shouldn't be!");
+            }
+
             var oldGlueElement = CurrentGlueElement;
 
             CurrentGlueElement = glueElement;

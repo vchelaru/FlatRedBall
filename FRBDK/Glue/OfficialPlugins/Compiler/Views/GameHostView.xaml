@@ -25,7 +25,23 @@
             </Button>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal">
+        <StackPanel   Orientation="Horizontal">
+
+            <Button Height="24" Width="24" 
+                    HorizontalAlignment="Left" 
+                    Visibility="{Binding WhileStoppedViewVisibility}"
+                    Click="PlayInEditModeClicked">
+                <Button.ToolTip>
+                    <ToolTip>
+                        <StackPanel>
+                            <TextBlock FontWeight="Bold">Run In Edit Mode</TextBlock>
+                            <TextBlock>Starts the game in edit mode on the startup screen.</TextBlock>
+                        </StackPanel>
+                    </ToolTip>
+                </Button.ToolTip>
+                <Image Source="/OfficialPluginsCore;component/Compiler/Icons/Edit.png" IsHitTestVisible="False" />
+            </Button>
+            
             <views:WhileRunningView  Height="Auto"
                     Visibility="{Binding WhileRunningViewVisibility}"
                     StopClicked="WhileRunningView_StopClicked"

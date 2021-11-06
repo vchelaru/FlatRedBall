@@ -72,6 +72,7 @@ namespace OfficialPlugins.GameHost.Views
         public event EventHandler UnpauseClicked;
         public event EventHandler SettingsClicked;
         public event EventHandler FocusOnSelectedObjectClicked;
+        public event EventHandler StartInEditModeClicked;
         #endregion
 
         public GameHostView()
@@ -190,6 +191,11 @@ namespace OfficialPlugins.GameHost.Views
         private void FocusButtonClicked(object sender, RoutedEventArgs e)
         {
             FocusOnSelectedObjectClicked?.Invoke(this, null);
+        }
+
+        private void PlayInEditModeClicked(object sender, RoutedEventArgs e)
+        {
+            StartInEditModeClicked?.Invoke(this, null);
         }
 
         private void WhileRunningView_PauseClicked(object sender, EventArgs e)
