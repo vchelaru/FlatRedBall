@@ -47,6 +47,9 @@ namespace FlatRedBall.Glue.Managers
                 case Keys.F12:
                     GlueCommands.Self.DialogCommands.GoToDefinitionOfSelection();
                     return true;
+                case Keys.Delete:
+                    RightClickHelper.RemoveFromProjectToolStripMenuItem();
+                    return true;
                 default:
                     return false;
             }

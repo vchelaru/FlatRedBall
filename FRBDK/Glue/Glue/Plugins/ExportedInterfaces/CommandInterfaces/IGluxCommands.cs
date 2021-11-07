@@ -110,6 +110,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
             List<string> additionalFilesToRemove = null);
         #endregion
 
+        #region Custom Variable
+
+        void RemoveCustomVariable(CustomVariable customVariable, List<string> additionalFilesToRemove);
+
+        #endregion
+
         #region Import
 
         GlueElement ImportScreenOrEntityFromFile(FilePath filePath);

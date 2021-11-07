@@ -28,6 +28,7 @@ using System.Text;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using GlueFormsCore.ViewModels;
+using GlueFormsCore.Managers;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -1387,6 +1388,45 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             PluginManager.ReactToChangedProperty(memberName, oldValue);
         }
 
+
+        #endregion
+
+        #region Custom Variable
+
+        public void RemoveCustomVariable(CustomVariable customVariable, List<string> additionalFilesToRemove)
+        {
+            // additionalFilesToRemove is added to keep this consistent with other remove methods
+
+            var element = ObjectFinder.Self.GetElementContaining(customVariable);
+
+            if (element == null || !element.CustomVariables.Contains(customVariable))
+            {
+                throw new ArgumentException();
+            }
+            else
+            {
+                element.CustomVariables.Remove(customVariable);
+                element.RefreshStatesToCustomVariables();
+
+                List<EventResponseSave> eventsReferencedByVariable = element.GetEventsOnVariable(customVariable.Name);
+
+                foreach (EventResponseSave ers in eventsReferencedByVariable)
+                {
+                    element.Events.Remove(ers);
+                }
+            }
+
+            GlueState.Self.CurrentElementTreeNode?.RefreshTreeNodes();
+
+            GlueCommands.Self.DialogCommands.FocusOnTreeView();
+
+
+            InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, element);
+
+            EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
+
+            PluginManager.ReactToVariableRemoved(customVariable);
+        }
 
         #endregion
 

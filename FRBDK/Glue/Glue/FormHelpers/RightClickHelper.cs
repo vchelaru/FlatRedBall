@@ -1393,7 +1393,8 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     else if (GlueState.Self.CurrentCustomVariable != null)
                     {
-                        ProjectManager.RemoveCustomVariable(GlueState.Self.CurrentCustomVariable, filesToRemove);
+                        GlueCommands.Self.GluxCommands.RemoveCustomVariable(
+                            GlueState.Self.CurrentCustomVariable, filesToRemove);
                         //ProjectManager.RemoveCustomVariable(EditorLogic.CurrentCustomVariable);
                     }
 

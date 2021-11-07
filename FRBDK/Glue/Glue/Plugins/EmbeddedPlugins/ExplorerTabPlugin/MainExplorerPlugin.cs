@@ -353,15 +353,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
 
         private void ElementTreeView_KeyDown(object sender, KeyEventArgs e)
         {
-            #region Delete key
-
-            if (e.KeyCode == Keys.Delete)
-            {
-                RightClickHelper.RemoveFromProjectToolStripMenuItem();
-            }
-            #endregion
-
-            else if (e.KeyCode == Keys.Enter)
+            if (e.KeyCode == Keys.Enter)
             {
                 ElementViewWindow.ElementDoubleClicked();
                 e.Handled = true;

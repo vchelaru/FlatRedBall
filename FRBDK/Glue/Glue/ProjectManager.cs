@@ -426,40 +426,6 @@ namespace FlatRedBall.Glue
             return false;
         }
 
-        public static void RemoveCustomVariable(CustomVariable customVariable, List<string> additionalFilesToRemove)
-        {
-            // additionalFilesToRemove is added to keep this consistent with other remove methods
-
-            var element = ObjectFinder.Self.GetElementContaining(customVariable);
-
-            if (element == null || !element.CustomVariables.Contains(customVariable))
-            {
-                throw new ArgumentException();
-            }
-            else
-            {
-                element.CustomVariables.Remove(customVariable);
-                element.RefreshStatesToCustomVariables();
-
-                List<EventResponseSave> eventsReferencedByVariable = element.GetEventsOnVariable(customVariable.Name);
-
-                foreach (EventResponseSave ers in eventsReferencedByVariable)
-                {
-                    element.Events.Remove(ers);
-                }
-            }
-            UpdateCurrentTreeNodeAndCodeAndSave();
-
-            InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, element);
-
-            EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
-
-            PluginManager.ReactToVariableRemoved(customVariable);
-        }
-
-
-
-
         internal static void RemoveItemFromProject(ProjectBase projectBaseToRemoveFrom, string itemName)
         {
             RemoveItemFromProject(projectBaseToRemoveFrom, itemName, true);
@@ -806,11 +772,6 @@ namespace FlatRedBall.Glue
 
             return name;
 
-        }
-
-        private static void UpdateCurrentTreeNodeAndCodeAndSave()
-        {
-            GlueState.Self.CurrentElementTreeNode?.RefreshTreeNodes();
         }
 
         private static CheckResult ReferenceVerificationHelper(IElement element, ref string cycleString, Stack<IElement> visitedElements)

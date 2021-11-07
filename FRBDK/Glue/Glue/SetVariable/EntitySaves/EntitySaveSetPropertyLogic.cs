@@ -195,7 +195,7 @@ namespace FlatRedBall.Glue.SetVariable
                 {
                     List<string> throwawayList = new List<string>();
 
-                    MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
+                    var mbmb = new MultiButtonMessageBox();
                     mbmb.MessageText = "This entity has a \"Visible\" variable exposed.  This variable is no longer valid.  What would you like to do?";
                     mbmb.AddButton("Remove this variable", DialogResult.Yes);
                     mbmb.AddButton("Keep this as a non-functional Variable (it will no longer control the object's visibility)", DialogResult.No);
@@ -204,7 +204,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                     if (result == DialogResult.Yes)
                     {
-                        ProjectManager.RemoveCustomVariable(variableToRemove, throwawayList);
+                        GlueCommands.Self.GluxCommands.RemoveCustomVariable(variableToRemove, throwawayList);
                     }
                     else
                     {
