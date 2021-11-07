@@ -365,6 +365,7 @@ namespace FlatRedBall.Glue.SetVariable
             }
             #endregion
 
+            #region Custom Variable
 
             else if (namedObjectSave?.GetCustomVariable(changedMember) != null)
             {
@@ -397,6 +398,8 @@ namespace FlatRedBall.Glue.SetVariable
                     }
                 }
             }
+
+            #endregion
 
             // If we changed BitmapFont and if the NOS is marked as PixelPerfect
             // and if it's a Text object, then we should set the Scale, Spacing, and
@@ -690,13 +693,12 @@ namespace FlatRedBall.Glue.SetVariable
 
         private void ReactToNamedObjectChangedInstanceName(NamedObjectSave namedObjectSave, object oldValueAsObject)
         {
-            if(namedObjectSave == null)
+            ///////////////////Early Out//////////////////////////////
+            if (namedObjectSave == null)
             {
                 throw new ArgumentNullException(nameof(namedObjectSave));
             }
             string oldValue = (string)oldValueAsObject;
-
-            #region Fail checks
 
             string whyItIsntValid;
 
@@ -706,106 +708,103 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 GlueGui.ShowMessageBox(whyItIsntValid);
                 namedObjectSave.InstanceName = oldValue;
+                return;
+            }
+            ///////////////End Early Out//////////////////////////////
+
+            var currentElement = GlueState.Self.CurrentElement;
+
+            string baseObject = currentElement?.BaseObject;
+            // See if the entity has a base and if the base contains this name
+            if (!string.IsNullOrEmpty(baseObject))
+            {
+                var baseNamedObjectContainer = ObjectFinder.Self.GetNamedObjectContainer(baseObject);
+
+                var baseNamedObject = baseNamedObjectContainer?.GetNamedObjectRecursively(namedObjectSave.InstanceName);
+
+                if (baseNamedObject != null)
+                {
+                    if (baseNamedObject.SetByDerived)
+                    {
+                        // There is a base element that has an object with the same
+                        // name as the derived element.  The derived doesn't have a same-named
+                        // object already, and the base is SetByDerived, so let's setup the derived
+                        // to use the base and notify the user.
+                        namedObjectSave.DefinedByBase = true;
+                        GlueCommands.Self.DialogCommands.ShowMessageBox("This object has the same name as\n\n" + baseNamedObject.ToString() + "\n\nIt is SetByDerived, " +
+                            "so Glue will use this as the base object for the object " + namedObjectSave.InstanceName);
+                    }
+                    else
+                    {
+                        GlueCommands.Self.DialogCommands.ShowMessageBox("A base object already has an object with this name");
+                        namedObjectSave.InstanceName = oldValue;
+                    }
+                }
 
             }
-            #endregion
 
-            else
+            if (currentElement != null)
             {
-                var currentElement = GlueState.Self.CurrentElement;
+                // See if any named objects in this instance use this for tunneling
 
-                string baseObject = currentElement?.BaseObject;
-                // See if the entity has a base and if the base contains this name
-                if (!string.IsNullOrEmpty(baseObject))
+                foreach (var customVariable in currentElement.CustomVariables)
                 {
-                    INamedObjectContainer baseNamedObjectContainer = ObjectFinder.Self.GetNamedObjectContainer(baseObject);
-
-                    NamedObjectSave baseNamedObject = baseNamedObjectContainer?.GetNamedObjectRecursively(namedObjectSave.InstanceName);
-
-                    if (baseNamedObject != null)
+                    if (!string.IsNullOrEmpty(customVariable.SourceObject) && customVariable.SourceObject == oldValue)
                     {
-                        if (baseNamedObject.SetByDerived)
-                        {
-                            // There is a base element that has an object with the same
-                            // name as the derived element.  The derived doesn't have a same-named
-                            // object already, and the base is SetByDerived, so let's setup the derived
-                            // to use the base and notify the user.
-                            namedObjectSave.DefinedByBase = true;
-                            MessageBox.Show("This object has the same name as\n\n" + baseNamedObject.ToString() + "\n\nIt is SetByDerived, " +
-                                "so Glue will use this as the base object for the object " + namedObjectSave.InstanceName);
-                        }
-                        else
-                        {
-                            System.Windows.Forms.MessageBox.Show("A base object already has an object with this name");
-                            namedObjectSave.InstanceName = oldValue;
-                        }
-                    }
+                        GlueCommands.Self.DialogCommands.ShowMessageBox("Changing the variable " + customVariable.Name + " so it uses " + namedObjectSave.InstanceName + " instead of " + (string)oldValue);
 
-                }
-
-                if (currentElement != null)
-                {
-                    // See if any named objects in this instance use this for tunneling
-
-                    foreach (CustomVariable customVariable in currentElement.CustomVariables)
-                    {
-                        if (!string.IsNullOrEmpty(customVariable.SourceObject) && customVariable.SourceObject == oldValue)
-                        {
-                            MessageBox.Show("Changing the variable " + customVariable.Name + " so it uses " + namedObjectSave.InstanceName + " instead of " + (string)oldValue);
-
-                            customVariable.SourceObject = namedObjectSave.InstanceName;
-                        }
-                    }
-
-                    // See if any events tunnel to this NOS
-                    foreach (EventResponseSave eventResponseSave in currentElement.Events)
-                    {
-                        if (!string.IsNullOrEmpty(eventResponseSave.SourceObject) && eventResponseSave.SourceObject == oldValue)
-                        {
-                            MessageBox.Show("Changing the Event " + eventResponseSave.EventName + " so it uses " + namedObjectSave.InstanceName + " instead of " + oldValue);
-
-                            eventResponseSave.SourceObject = namedObjectSave.InstanceName;
-                        }
-
+                        customVariable.SourceObject = namedObjectSave.InstanceName;
                     }
                 }
 
-                // If this is a layer, see if any other NOS's use this as their Layer
-                if (namedObjectSave.IsLayer)
+                // See if any events tunnel to this NOS
+                foreach (EventResponseSave eventResponseSave in currentElement.Events)
                 {
-                    List<NamedObjectSave> namedObjectList = GlueState.Self.CurrentElement.NamedObjects;
-
-                    string oldLayerName = (string)oldValue;
-
-                    foreach (NamedObjectSave nos in namedObjectList)
+                    if (!string.IsNullOrEmpty(eventResponseSave.SourceObject) && eventResponseSave.SourceObject == oldValue)
                     {
-                        nos.ReplaceLayerRecursively(oldLayerName, namedObjectSave.InstanceName);
+                        GlueCommands.Self.DialogCommands.ShowMessageBox("Changing the Event " + eventResponseSave.EventName + " so it uses " + namedObjectSave.InstanceName + " instead of " + oldValue);
+
+                        eventResponseSave.SourceObject = namedObjectSave.InstanceName;
+                    }
+
+                }
+            }
+
+            // If this is a layer, see if any other NOS's use this as their Layer
+            if (namedObjectSave.IsLayer)
+            {
+                List<NamedObjectSave> namedObjectList = GlueState.Self.CurrentElement.NamedObjects;
+
+                string oldLayerName = (string)oldValue;
+
+                foreach (NamedObjectSave nos in namedObjectList)
+                {
+                    nos.ReplaceLayerRecursively(oldLayerName, namedObjectSave.InstanceName);
+                }
+            }
+
+            var changedDerived = false;
+            if(namedObjectSave.ExposedInDerived || namedObjectSave.SetByDerived)
+            {
+                var derivedElements = ObjectFinder.Self.GetAllElementsThatInheritFrom(currentElement);
+
+                foreach(var derivedElement in derivedElements)
+                {
+                    var nosInDerived = derivedElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == oldValue && item.DefinedByBase);
+
+                    if (nosInDerived != null)
+                    {
+                        // new name:
+                        nosInDerived.InstanceName = namedObjectSave.InstanceName;
+                        changedDerived = true;
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(derivedElement);
+                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(derivedElement);
                     }
                 }
-
-                var changedDerived = false;
-                if(namedObjectSave.ExposedInDerived || namedObjectSave.SetByDerived)
-                {
-                    var derivedElements = ObjectFinder.Self.GetAllElementsThatInheritFrom(currentElement);
-
-                    foreach(var derivedElement in derivedElements)
-                    {
-                        var nosInDerived = derivedElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == oldValue && item.DefinedByBase);
-
-                        if (nosInDerived != null)
-                        {
-                            // new name:
-                            nosInDerived.InstanceName = namedObjectSave.InstanceName;
-                            changedDerived = true;
-                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(derivedElement);
-                            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(derivedElement);
-                        }
-                    }
-                }
-                if(changedDerived)
-                {
-                    GlueCommands.Self.GluxCommands.SaveGlux();
-                }
+            }
+            if(changedDerived)
+            {
+                GlueCommands.Self.GluxCommands.SaveGlux();
             }
         }
 
