@@ -2329,7 +2329,7 @@ namespace FlatRedBallAddOns.Entities
             }
         }
 
-        internal static List<FilePath> GetAllCodeFilesFor(IElement element)
+        public static List<FilePath> GetAllCodeFilesFor(IElement element)
         {
             string directory = FileManager.GetDirectory(ProjectManager.MakeAbsolute(element.Name));
 

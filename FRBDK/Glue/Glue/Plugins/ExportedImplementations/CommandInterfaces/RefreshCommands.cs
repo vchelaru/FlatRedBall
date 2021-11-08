@@ -57,7 +57,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        public void RefreshTreeNodeFor(IElement element)
+        public void RefreshTreeNodeFor(GlueElement element)
         {
             if (ProjectManager.ProjectBase != null)
             {
@@ -99,7 +99,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                             elementTreeNode?.RefreshTreeNodes();
                         }
                     }
-
+                    PluginManager.RefreshTreeNodeFor(element);
                 });
             }
         }

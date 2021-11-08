@@ -36,6 +36,7 @@ using Microsoft.Build.Framework;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
 using WpfTabControl = System.Windows.Controls.TabControl;
 using GlueFormsCore.Controls;
+using System.Runtime.CompilerServices;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -648,12 +649,12 @@ namespace FlatRedBall.Glue.Plugins
             CallMethodOnPlugin((plugin) =>
             {
                 var method = plugin.GetType().GetMethod(methodName);
-                if(method != null)
+                if (method != null)
                 {
-                    toReturn = method.Invoke(plugin, parameters:parameters);
+                    toReturn = method.Invoke(plugin, parameters: parameters);
                 }
-            }, $"CallPluginMethod {methodName}",
-            (plugin) => plugin.FriendlyName == pluginFriendlyName);
+            }, (plugin) => plugin.FriendlyName == pluginFriendlyName,
+            $"CallPluginMethod {methodName}");
 
             return toReturn;
         }
@@ -755,8 +756,8 @@ namespace FlatRedBall.Glue.Plugins
         {
             CallMethodOnPlugin(
                 (plugin) => plugin.AddNewFileOptionsHandler(newFileWindow),
-                nameof(AddNewFileOptions),
-                (plugin => plugin.AddNewFileOptionsHandler != null));
+                (plugin => plugin.AddNewFileOptionsHandler != null),
+                nameof(AddNewFileOptions));
         }
 
         internal static string CreateNewFile(AssetTypeInfo assetTypeInfo, object extraData, string directory, string name)
@@ -778,8 +779,8 @@ namespace FlatRedBall.Glue.Plugins
                                 created = true;
                             }
                         },
-                        nameof(CreateNewFile), 
-                        (plugin) => plugin.CreateNewFileHandler != null);
+                        (plugin) => plugin.CreateNewFileHandler != null,
+                        nameof(CreateNewFile));
                 }
             }
 
@@ -792,13 +793,13 @@ namespace FlatRedBall.Glue.Plugins
             CallMethodOnPlugin(plugin =>
             {
                 var assetTypes = plugin.GetAvailableAssetTypes(referencedFileSave);
-                if(assetTypes != null)
+                if (assetTypes != null)
                 {
                     listToReturn.AddRange(assetTypes);
                 }
             },
-            nameof(GetAvailableAssetTypes),
-            plugin => plugin.GetAvailableAssetTypes != null);
+            plugin => plugin.GetAvailableAssetTypes != null,
+            nameof(GetAvailableAssetTypes));
 
             return listToReturn;
         }
@@ -901,8 +902,8 @@ namespace FlatRedBall.Glue.Plugins
 
             CallMethodOnPlugin(
                 plugin => plugin.ReactToTreeViewRightClickHandler(rightClickedTreeNode, menuToModify),
-                nameof(ReactToStateCreated),
-                plugin => plugin.ReactToTreeViewRightClickHandler != null);
+                plugin => plugin.ReactToTreeViewRightClickHandler != null,
+                nameof(ReactToStateCreated));
 
             ResumeRelativeDirectory("ReactToTreeViewRightClick");
         }
@@ -911,24 +912,24 @@ namespace FlatRedBall.Glue.Plugins
         {
             CallMethodOnPlugin(
                 plugin => plugin.ReactToStateCreated(newState, category),
-                nameof(ReactToStateCreated),
-                plugin => plugin.ReactToStateCreated != null);
+                plugin => plugin.ReactToStateCreated != null,
+                nameof(ReactToStateCreated));
         }
 
         public static void ReactToStateVariableChanged(StateSave newState, StateSaveCategory category, string variableName)
         {
             CallMethodOnPlugin(
                 plugin => plugin.ReactToStateVariableChanged(newState, category, variableName),
-                nameof(ReactToStateVariableChanged),
-                plugin => plugin.ReactToStateVariableChanged != null);
+                plugin => plugin.ReactToStateVariableChanged != null,
+                nameof(ReactToStateVariableChanged));
         }
 
         internal static void ReactToStateNameChange(IElement element, string oldName, string newName)
         {
             CallMethodOnPlugin(
                 plugin => plugin.ReactToStateNameChangeHandler(element, oldName, newName),
-                nameof(ReactToStateNameChange),
-                plugin => plugin.ReactToStateNameChangeHandler != null);
+                plugin => plugin.ReactToStateNameChangeHandler != null,
+                nameof(ReactToStateNameChange));
 
         }
 
@@ -976,24 +977,24 @@ namespace FlatRedBall.Glue.Plugins
         {
             CallMethodOnPlugin(
                 (plugin) => plugin.ReactToFileRemoved(element, file),
-                nameof(ReactToFileRemoved),
-                (plugin) => plugin.ReactToFileRemoved != null);
+                (plugin) => plugin.ReactToFileRemoved != null,
+                nameof(ReactToFileRemoved));
         }
 
         internal static void ReactToEntityRemoved(EntitySave entity, List<string> filesToRemove)
         {
             CallMethodOnPlugin(
                 (plugin) => plugin.ReactToEntityRemoved(entity, filesToRemove),
-                nameof(ReactToEntityRemoved),
-                (plugin) => plugin.ReactToEntityRemoved != null);
+                (plugin) => plugin.ReactToEntityRemoved != null,
+                nameof(ReactToEntityRemoved));
         }
 
         internal static void ReactToScreenRemoved(ScreenSave screenSave, List<string> filesToRemove)
         {
             CallMethodOnPlugin(
                 (plugin) => plugin.ReactToScreenRemoved(screenSave, filesToRemove),
-                nameof(ReactToScreenRemoved),
-                plugin => plugin.ReactToScreenRemoved != null);
+                plugin => plugin.ReactToScreenRemoved != null,
+                nameof(ReactToScreenRemoved));
         }
 
         internal static void ReactToElementVariableChange(IElement element, CustomVariable variable)
@@ -1022,8 +1023,8 @@ namespace FlatRedBall.Glue.Plugins
             {
                 plugin.ReactToElementRenamed(elementToRename, oldName);
             },
-            nameof(ReactToElementRenamed),
-            plugin => plugin.ReactToElementRenamed != null);
+            plugin => plugin.ReactToElementRenamed != null,
+            nameof(ReactToElementRenamed));
         }
 
         public static void ReactToNewObject(NamedObjectSave newObject)
@@ -1032,8 +1033,8 @@ namespace FlatRedBall.Glue.Plugins
             {
                 plugin.ReactToNewObjectHandler(newObject);
             },
-            nameof(ReactToNewObject),
-            plugin => plugin.ReactToNewObjectHandler != null);
+            plugin => plugin.ReactToNewObjectHandler != null,
+            nameof(ReactToNewObject));
         }
 
         internal static void ReactToObjectRemoved(IElement element, NamedObjectSave removedObject)
@@ -1042,8 +1043,8 @@ namespace FlatRedBall.Glue.Plugins
             {
                 plugin.ReactToObjectRemoved(element, removedObject);
             },
-            nameof(ReactToNewObject),
-            plugin => plugin.ReactToObjectRemoved != null);
+            plugin => plugin.ReactToObjectRemoved != null,
+            nameof(ReactToNewObject));
             
         }
 
@@ -1053,8 +1054,8 @@ namespace FlatRedBall.Glue.Plugins
             {
                 plugin.NewScreenCreated(screen);
             },
-            nameof(ReactToNewScreenCreatedWithUi),
-            plugin => plugin.NewScreenCreated != null);
+            plugin => plugin.NewScreenCreated != null,
+            nameof(ReactToNewScreenCreatedWithUi));
         }
 
         /// <summary>
@@ -1067,8 +1068,8 @@ namespace FlatRedBall.Glue.Plugins
             {
                 plugin.NewEntityCreated(entitySave);
             },
-            nameof(ReactToNewEntityCreated),
-            plugin => plugin.NewEntityCreated != null);
+            plugin => plugin.NewEntityCreated != null,
+            nameof(ReactToNewEntityCreated));
         }
 
         internal static void ReactToNewEntityCreatedWithUi(EntitySave entitySave, AddEntityWindow window)
@@ -1077,8 +1078,8 @@ namespace FlatRedBall.Glue.Plugins
             {
                 plugin.NewEntityCreatedWithUi(entitySave, window);
             },
-            nameof(ReactToNewEntityCreatedWithUi),
-            plugin => plugin.NewEntityCreatedWithUi != null);
+            plugin => plugin.NewEntityCreatedWithUi != null,
+            nameof(ReactToNewEntityCreatedWithUi));
         }
 
         internal static void ReactToNewScreenCreatedWithUi(ScreenSave screen, AddScreenWindow addScreenWindow)
@@ -1087,8 +1088,8 @@ namespace FlatRedBall.Glue.Plugins
             {
                 plugin.NewScreenCreatedWithUi(screen, addScreenWindow);
             },
-            nameof(ReactToNewScreenCreatedWithUi),
-            plugin => plugin.NewScreenCreatedWithUi != null);
+            plugin => plugin.NewScreenCreatedWithUi != null,
+            nameof(ReactToNewScreenCreatedWithUi));
         }
 
         internal static void ReactToResolutionChanged()
@@ -1097,8 +1098,8 @@ namespace FlatRedBall.Glue.Plugins
             {
                 plugin.ResolutionChanged();
             },
-            nameof(ReactToResolutionChanged),
-            plugin => plugin.ResolutionChanged != null);
+            plugin => plugin.ResolutionChanged != null,
+            nameof(ReactToResolutionChanged));
         }
 
         public static void ReactToCreateCollisionRelationshipsBetween(NamedObjectSave firstNos, NamedObjectSave secondNos)
@@ -1107,8 +1108,8 @@ namespace FlatRedBall.Glue.Plugins
             {
                 plugin.ReactToCreateCollisionRelationshipsBetween(firstNos, secondNos);
             },
-            nameof(ReactToCreateCollisionRelationshipsBetween),
-            plugin => plugin.ReactToCreateCollisionRelationshipsBetween != null);
+            plugin => plugin.ReactToCreateCollisionRelationshipsBetween != null,
+            nameof(ReactToCreateCollisionRelationshipsBetween));
         }
 
         internal static bool OpenSolution(string solutionName)
@@ -1286,8 +1287,8 @@ namespace FlatRedBall.Glue.Plugins
             {
                 plugin.ReactToCodeFileChange(filePath);
             },
-            nameof(ReactToChangedCodeFile),
-            plugin => plugin.ReactToCodeFileChange != null);
+            plugin => plugin.ReactToCodeFileChange != null,
+            nameof(ReactToChangedCodeFile));
         }
 
         internal static void ReactToChangedFile(string fileName)
@@ -1337,8 +1338,8 @@ namespace FlatRedBall.Glue.Plugins
             {
                 plugin.ReactToBuiltFileChangeHandler(fileName);
             },
-                nameof(PluginBase.ReactToBuiltFileChangeHandler),
-                (plugin) => plugin.ReactToBuiltFileChangeHandler != null);
+                (plugin) => plugin.ReactToBuiltFileChangeHandler != null,
+                nameof(PluginBase.ReactToBuiltFileChangeHandler));
         }
 
         internal static void ReactToChangedStartupScreen()
@@ -1347,8 +1348,8 @@ namespace FlatRedBall.Glue.Plugins
             {
                 plugin.ReactToChangedStartupScreen();
             },
-            nameof(ReactToChangedStartupScreen),
-            plugin => plugin.ReactToChangedStartupScreen != null);
+            plugin => plugin.ReactToChangedStartupScreen != null,
+            nameof(ReactToChangedStartupScreen));
         }
 
         #region XML Docs
@@ -1574,8 +1575,8 @@ namespace FlatRedBall.Glue.Plugins
         {
             CallMethodOnPlugin(
                 (plugin) => plugin.ReactToNamedObjectChangedValue(changedMember, oldValue, namedObject),
-                nameof(ReactToNamedObjectChangedValue),
-                (plugin) => plugin.ReactToNamedObjectChangedValue != null);
+                (plugin) => plugin.ReactToNamedObjectChangedValue != null,
+                nameof(ReactToNamedObjectChangedValue));
         }
 
         internal static void ReactToReferencedFileChangedValue(string changedMember, object oldValue)
@@ -1584,8 +1585,8 @@ namespace FlatRedBall.Glue.Plugins
                 {
                     plugin.ReactToReferencedFileChangedValueHandler(changedMember, oldValue);
                 },
-                nameof(PluginBase.ReactToReferencedFileChangedValueHandler),
-                (plugin) => plugin.ReactToReferencedFileChangedValueHandler != null);
+                (plugin) => plugin.ReactToReferencedFileChangedValueHandler != null,
+                nameof(PluginBase.ReactToReferencedFileChangedValueHandler));
         }
 
         /// <summary>
@@ -1602,16 +1603,16 @@ namespace FlatRedBall.Glue.Plugins
             {
                 plugin.ReactToChangedPropertyHandler(changedMember, oldValue);
             },
-            nameof(PluginBase.ReactToChangedPropertyHandler),
-            (plugin) => plugin.ReactToChangedPropertyHandler != null);
+            (plugin) => plugin.ReactToChangedPropertyHandler != null,
+            nameof(PluginBase.ReactToChangedPropertyHandler));
         }
 
         internal static void ReactToGluxUnload(bool isExiting)
         {
             CallMethodOnPlugin(
                 plugin => plugin.ReactToUnloadedGlux(),
-                nameof(ReactToGluxUnload),
-                plugin => plugin.ReactToUnloadedGlux != null);
+                plugin => plugin.ReactToUnloadedGlux != null,
+                nameof(ReactToGluxUnload));
 
             // now we need to unregister code generators and other things automatically registered for plugins which are project-specific
             var projectSpecificPlugins = PluginManagerBase.GetProjectPluginManager().PluginContainers.Values;
@@ -1719,8 +1720,8 @@ namespace FlatRedBall.Glue.Plugins
             {
                 plugin.AdjustDisplayedScreen(screenSave, screenSaveDisplayer);
             },
-            nameof(AdjustDisplayedScreen),
-            plugin => plugin.AdjustDisplayedScreen != null);
+            plugin => plugin.AdjustDisplayedScreen != null,
+            nameof(AdjustDisplayedScreen));
         }
 
         internal static void ModifyAddEntityWindow(AddEntityWindow addEntityWindow)
@@ -1729,8 +1730,8 @@ namespace FlatRedBall.Glue.Plugins
             {
                 plugin.ModifyAddEntityWindow(addEntityWindow);
             },
-            nameof(ModifyAddEntityWindow),
-            plugin => plugin.ModifyAddEntityWindow != null);
+            plugin => plugin.ModifyAddEntityWindow != null,
+            nameof(ModifyAddEntityWindow));
         }
 
         internal static void ModifyAddScreenWindow(AddScreenWindow addScreenWindow)
@@ -1738,41 +1739,41 @@ namespace FlatRedBall.Glue.Plugins
 
             CallMethodOnPlugin(
                 (plugin) => plugin.ModifyAddScreenWindow(addScreenWindow),
-                nameof(ModifyAddScreenWindow),
-                plugin => plugin.ModifyAddScreenWindow != null);
+                plugin => plugin.ModifyAddScreenWindow != null,
+                nameof(ModifyAddScreenWindow));
         }
 
         internal static void AdjustDisplayedEntity(EntitySave entitySave, EntitySavePropertyGridDisplayer entitySaveDisplayer)
         {
             CallMethodOnPlugin(
-                delegate(PluginBase plugin)
+                delegate (PluginBase plugin)
                 {
                     plugin.AdjustDisplayedEntity(entitySave, entitySaveDisplayer);
                 },
-                nameof(AdjustDisplayedEntity),
-                plugin => plugin.AdjustDisplayedEntity != null);
+                plugin => plugin.AdjustDisplayedEntity != null,
+                nameof(AdjustDisplayedEntity));
         }
 
         internal static void AdjustDisplayedNamedObject(NamedObjectSave namedObject, NamedObjectPropertyGridDisplayer displayer)
         {
             CallMethodOnPlugin(
-                delegate(PluginBase plugin)
+                delegate (PluginBase plugin)
                 {
                     plugin.AdjustDisplayedNamedObject(namedObject, displayer);
                 },
-                nameof(AdjustDisplayedNamedObject),
-                plugin => plugin.AdjustDisplayedNamedObject != null);
+                plugin => plugin.AdjustDisplayedNamedObject != null,
+                nameof(AdjustDisplayedNamedObject));
         }
 
         internal static void AdjustDisplayedReferencedFile(ReferencedFileSave referencedFileSave, ReferencedFileSavePropertyGridDisplayer displayer)
         {
             CallMethodOnPlugin(
-                delegate(PluginBase plugin)
+                delegate (PluginBase plugin)
                 {
                     plugin.AdjustDisplayedReferencedFile(referencedFileSave, displayer);
                 },
-                nameof(AdjustDisplayedReferencedFile),
-                plugin => plugin.AdjustDisplayedReferencedFile != null);
+                plugin => plugin.AdjustDisplayedReferencedFile != null,
+                nameof(AdjustDisplayedReferencedFile));
         }
 
         static void CallMethodOnPluginNotUiThread(Action<PluginBase> methodToCall, string methodName)
@@ -1797,7 +1798,9 @@ namespace FlatRedBall.Glue.Plugins
             
         }
 
-        static void CallMethodOnPlugin(Action<PluginBase> methodToCall, string methodName, Predicate<PluginBase> predicate)
+
+
+        static void CallMethodOnPlugin(Action<PluginBase> methodToCall, Predicate<PluginBase> predicate, [CallerMemberName] string methodName = null)
         {
             foreach (PluginManager manager in mInstances)
             {
@@ -1968,8 +1971,8 @@ namespace FlatRedBall.Glue.Plugins
                 {
                     toReturn.AddRange(plugin.GetVariableDefinitionsForElement(element));
                 },
-                nameof(GetVariableDefinitionsFor),
-                plugin => plugin.GetVariableDefinitionsForElement != null);
+                plugin => plugin.GetVariableDefinitionsForElement != null,
+                nameof(GetVariableDefinitionsFor));
             return toReturn;
         }
 
@@ -1980,12 +1983,11 @@ namespace FlatRedBall.Glue.Plugins
             CallMethodOnPlugin(
                 (plugin) =>
                 {
-                    if(plugin.TryHandleTreeNodeDoubleClicked(treeNode))
+                    if (plugin.TryHandleTreeNodeDoubleClicked(treeNode))
                     {
                         handled = true;
                     }
                 },
-                nameof(TryHandleTreeNodeDoubleClicked),
                 plugin => plugin.TryHandleTreeNodeDoubleClicked != null);
 
 
@@ -1994,17 +1996,15 @@ namespace FlatRedBall.Glue.Plugins
 
         public static void ReactToFileBuildCommand(ReferencedFileSave rfs)
         {
-            CallMethodOnPlugin((plugin) =>
-            {
-                plugin.ReactToFileBuildCommand(rfs);
-            }, nameof(ReactToFileBuildCommand),
-            (plugin) => plugin.ReactToFileBuildCommand != null);
+            CallMethodOnPlugin(
+                (plugin) => plugin.ReactToFileBuildCommand(rfs),
+                (plugin) => plugin.ReactToFileBuildCommand != null);
         }
 
         public static void ReactToImportedElement(GlueElement newElement)
         {
-            CallMethodOnPlugin((plugin) => plugin.ReactToImportedElement(newElement),
-                nameof(ReactToImportedElement),
+            CallMethodOnPlugin(
+                (plugin) => plugin.ReactToImportedElement(newElement),
                 (plugin) => plugin.ReactToImportedElement != null);
         }
 
@@ -2012,7 +2012,6 @@ namespace FlatRedBall.Glue.Plugins
         {
             CallMethodOnPlugin(
                 (plugin) => plugin.ReactToObjectContainerChanged(objectMoved, newContainer),
-                nameof(ReactToObjectContainerChanged),
                 (plugin) => plugin.ReactToObjectContainerChanged != null);
         }
 
@@ -2020,7 +2019,6 @@ namespace FlatRedBall.Glue.Plugins
         {
             CallMethodOnPlugin(
                 (plugin) => plugin.ReactToMainWindowMoved(),
-                nameof(ReactToObjectContainerChanged),
                 (plugin) => plugin.ReactToMainWindowMoved != null);
         }
 
@@ -2028,8 +2026,14 @@ namespace FlatRedBall.Glue.Plugins
         {
             CallMethodOnPlugin(
                 (plugin) => plugin.ReactToMainWindowResizeEnd(),
-                nameof(ReactToObjectContainerChanged),
                 (plugin) => plugin.ReactToMainWindowResizeEnd != null);
+        }
+
+        public static void RefreshTreeNodeFor(GlueElement element)
+        {
+            CallMethodOnPlugin(
+                (plugin) => plugin.RefreshTreeNodeFor(element),
+                (plugin) => plugin.RefreshTreeNodeFor != null);
         }
 
         #endregion
@@ -2207,12 +2211,12 @@ namespace FlatRedBall.Glue.Plugins
             SaveRelativeDirectory();
 
             CallMethodOnPlugin(
-                delegate(PluginBase plugin)
+                delegate (PluginBase plugin)
                 {
                     plugin.ReactToLoadedSyncedProject(projectBase);
                 },
-                nameof(ReactToSyncedProjectLoad),
-                plugin => plugin.ReactToLoadedSyncedProject != null);
+                plugin => plugin.ReactToLoadedSyncedProject != null,
+                nameof(ReactToSyncedProjectLoad));
 
             ResumeRelativeDirectory(nameof(ReactToSyncedProjectLoad));
         }
@@ -2231,10 +2235,10 @@ namespace FlatRedBall.Glue.Plugins
                     {
                         toReturn = foundValue;
                     }
-                    
+
                 },
-                nameof(GetTypeConverter),
-                plugin => plugin.GetTypeConverter != null);
+                plugin => plugin.GetTypeConverter != null,
+                nameof(GetTypeConverter));
 
             ResumeRelativeDirectory(nameof(GetTypeConverter));
 
@@ -2258,8 +2262,8 @@ namespace FlatRedBall.Glue.Plugins
                         foundArgs = tempFoundArgs;
                     }
                 },
-                nameof(GetEventSignatureArgs),
-                plugin => plugin.GetEventSignatureArgs != null);
+                plugin => plugin.GetEventSignatureArgs != null,
+                nameof(GetEventSignatureArgs));
 
             type = foundType;
             args = foundArgs;
@@ -2274,10 +2278,10 @@ namespace FlatRedBall.Glue.Plugins
             CallMethodOnPlugin(
                 delegate (PluginBase plugin)
                 {
-                    plugin.WriteInstanceVariableAssignment(namedObject, codeBlock, instructionSave);   
+                    plugin.WriteInstanceVariableAssignment(namedObject, codeBlock, instructionSave);
                 },
-                nameof(WriteInstanceVariableAssignment),
-                plugin => plugin.WriteInstanceVariableAssignment != null);
+                plugin => plugin.WriteInstanceVariableAssignment != null,
+                nameof(WriteInstanceVariableAssignment));
 
             ResumeRelativeDirectory(nameof(WriteInstanceVariableAssignment));
         }

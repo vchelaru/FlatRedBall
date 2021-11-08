@@ -349,6 +349,12 @@ namespace FlatRedBall.Glue.Plugins
 
         public Action ReactToMainWindowMoved { get; protected set; }
         public Action ReactToMainWindowResizeEnd { get; protected set; }
+
+
+        // TreeNode Methods
+        public Action<GlueElement> RefreshTreeNodeFor;
+
+
         #endregion
 
         public abstract void StartUp();

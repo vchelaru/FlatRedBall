@@ -19,8 +19,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// the tree node is already created, and if the element's
         /// IsHiddenInTreeView is set to true.
         /// </summary>
-        /// <param name="element">IElement to update the tree node for</param>
-        void RefreshTreeNodeFor(IElement element);
+        /// <param name="element">GlueElement to update the tree node for</param>
+        void RefreshTreeNodeFor(GlueElement element);
 
         void RefreshUi(StateSaveCategory category);
 

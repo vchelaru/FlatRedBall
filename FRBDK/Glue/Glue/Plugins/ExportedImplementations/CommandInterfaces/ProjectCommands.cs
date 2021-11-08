@@ -643,10 +643,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             var containingElementNode = treeNodeToAddTo.GetContainingElementTreeNode();
 
-            IElement element = null;
+            GlueElement element = null;
             if (containingElementNode != null)
             {
-                element = containingElementNode.Tag as IElement;
+                element = containingElementNode.Tag as GlueElement;
             }
 
             if (containingElementNode == null)

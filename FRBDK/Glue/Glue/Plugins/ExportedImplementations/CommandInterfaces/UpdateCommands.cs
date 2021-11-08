@@ -20,7 +20,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             var glueCommands = GlueCommand;
 
-            glueCommands.RefreshCommands.RefreshTreeNodeFor(element);
+            glueCommands.RefreshCommands.RefreshTreeNodeFor(element as GlueElement);
             Application.DoEvents();
             glueCommands.RefreshCommands.RefreshSelection();
             Application.DoEvents();

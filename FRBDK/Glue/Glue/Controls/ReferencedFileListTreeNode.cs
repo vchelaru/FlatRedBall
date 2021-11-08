@@ -78,14 +78,6 @@ namespace FlatRedBall.Glue.Controls
 
         }
 
-        private TreeNode GetTreeNodeFor(ReferencedFileSave referencedFileSave, string currentPath, TreeNode treeNode)
-        {
-
-            return null;
-
-
-		}
-
         public void UpdateToReferencedFiles(List<ReferencedFileSave> referencedFiles, IElement container)
         {
 
@@ -163,9 +155,6 @@ namespace FlatRedBall.Glue.Controls
 
             this.Nodes.SortByTextConsideringDirectories(true);
         }
-
-
-
 
         private void RemoveTreeNodesForRemovedReferenceFileSavesIn(TreeNodeCollection treeNodeCollection, List<ReferencedFileSave> referencedFiles, IElement container)
         {

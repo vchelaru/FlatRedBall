@@ -682,7 +682,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                         nameof(NamedObjectSave.InstanceName), oldName);
 
 
-                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element as GlueElement);
                     GlueCommands.Self.GluxCommands.SaveGlux();
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element as GlueElement);
                 }
