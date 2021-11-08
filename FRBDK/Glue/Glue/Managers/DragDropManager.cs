@@ -1280,7 +1280,7 @@ namespace FlatRedBall.Glue.Managers
                 }
                 else
                 {
-                    ElementViewWindow.UpdateGlobalContentTreeNodes(false);
+                    GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
                 }
 
 

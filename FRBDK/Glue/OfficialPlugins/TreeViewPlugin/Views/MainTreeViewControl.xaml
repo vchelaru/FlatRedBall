@@ -15,6 +15,7 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         <Label>This is a test:</Label>
+
         <pt:TreeListBox Grid.Row="1" x:Name="MainTreeView" HierarchySource="{Binding Root}">
             <pt:TreeListBox.ItemTemplate>
                 <DataTemplate>
@@ -24,7 +25,7 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Image Grid.Column="0" Source="/folder.png" Margin="0 0 4 0"/>
+                        <Image Grid.Column="0" Source="{Binding ImageSource}" Width="18" Margin="0 0 4 0"/>
                         <pt:EditableTextBlock Grid.Column="1" Text="{Binding Text}" IsEditing="{Binding IsEditing}"/>
                     </Grid>
                 </DataTemplate>

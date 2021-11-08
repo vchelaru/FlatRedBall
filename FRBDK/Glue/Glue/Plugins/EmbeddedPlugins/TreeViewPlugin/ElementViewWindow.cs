@@ -438,7 +438,7 @@ namespace FlatRedBall.Glue.FormHelpers
             }
             else if (GlueState.Self.CurrentTreeNode != null && GlueState.Self.CurrentTreeNode.Root().IsGlobalContentContainerNode())
             {
-                ElementViewWindow.UpdateGlobalContentTreeNodes(false);
+                GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
             }
         }
 
@@ -483,7 +483,8 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-        public static void UpdateGlobalContentTreeNodes(bool performSave)
+        [Obsolete("Use GlueCommands.Self.RefreshCommands.RefreshGlobalContent()")]
+        public static void UpdateGlobalContentTreeNodes()
         {
             #region Loop through all referenced files.  Create a tree node if needed, or remove it from the project if the file doesn't exist.
 
@@ -561,12 +562,6 @@ namespace FlatRedBall.Glue.FormHelpers
             }
 
             #endregion
-
-            if (performSave)
-            {
-                GlueCommands.Self.ProjectCommands.SaveProjects();
-            }
-
         }
 
         private static void RemoveGlobalContentTreeNodesIfNecessary(TreeNode treeNode)
@@ -1002,7 +997,9 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (ProjectManager.GlueProjectSave.GlobalContentHasChanged)
             {
-                UpdateGlobalContentTreeNodes(true);
+                GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
+                GlueCommands.Self.ProjectCommands.SaveProjects();
+
                 GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
             }
         }

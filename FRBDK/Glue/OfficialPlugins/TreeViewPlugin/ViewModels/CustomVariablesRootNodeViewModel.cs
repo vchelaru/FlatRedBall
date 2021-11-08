@@ -22,6 +22,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 int indexToAddAt = Children.Count;
                 var text = GetDisplayTextForCustomVariable(glueElement.CustomVariables[indexToAddAt]);
                 var node = new NodeViewModel(this);
+                node.ImageSource = VariableIcon;
                 node.Tag = glueElement.CustomVariables[indexToAddAt];
                 node.Text = text;
                 Children.Add(node);

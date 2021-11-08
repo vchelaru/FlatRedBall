@@ -102,7 +102,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 if (LayersTreeNode == null)
                 {
                     LayersTreeNode = new NodeViewModel(this);
-
+                    LayersTreeNode.ImageSource = LayersIcon;
                     LayersTreeNode.Text = "Layers";
                     //LayersTreeNode.SelectedImageKey = "layerList.png";
                     //LayersTreeNode.ImageKey = "layerList.png";
@@ -163,6 +163,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 if (CollisionRelationshipTreeNode == null)
                 {
                     CollisionRelationshipTreeNode = new NodeViewModel(this);
+                    CollisionRelationshipTreeNode.ImageSource = CollisionIcon;
                     CollisionRelationshipTreeNode.Text = "Collision Relationships";
                     //CollisionRelationshipTreeNode.SelectedImageKey = "collisionRelationshipList.png";
                     //CollisionRelationshipTreeNode.ImageKey = "collisionRelationshipList.png";
@@ -250,6 +251,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         private static NodeViewModel CreateTreeNodeForNamedObjectAtIndex(NodeViewModel currentNode, int i, NamedObjectSave namedObject)
         {
             var treeNode = new NodeViewModel(currentNode);
+            treeNode.ImageSource = EntityInstanceIcon;
             treeNode.Tag = namedObject;
             treeNode.Text = namedObject.InstanceName;
             //treeNode.SelectedImageKey = "object.png";

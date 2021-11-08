@@ -149,7 +149,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void RefreshGlobalContent()
         {
-            ElementViewWindow.UpdateGlobalContentTreeNodes(false);
+            ElementViewWindow.UpdateGlobalContentTreeNodes();
+
+            PluginManager.RefreshGlobalContentTreeNode();
         }
 
         public void RefreshPropertyGrid()

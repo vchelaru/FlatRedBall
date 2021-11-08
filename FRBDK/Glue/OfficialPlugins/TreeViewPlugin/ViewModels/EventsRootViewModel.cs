@@ -22,6 +22,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 int indexAddingAt = this.Children.Count;
 
                 var node = new NodeViewModel(this);
+                node.ImageSource = EventIcon;
                 node.Text = glueElement.Events[indexAddingAt].EventName;
                 node.Tag = glueElement.Events[indexAddingAt];
                 this.Children.Add(node);

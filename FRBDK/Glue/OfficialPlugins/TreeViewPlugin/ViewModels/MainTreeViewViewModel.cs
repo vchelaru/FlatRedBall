@@ -149,6 +149,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                             GlobalContentRootNode;
                         nodeForFile = new NodeViewModel(nodeToAddTo);
                         nodeForFile.Text = FileManager.RemovePath(rfs.Name);
+                        nodeForFile.ImageSource = NodeViewModel.FileIcon;
 
                         //nodeForFile.ImageKey = "file.png";
                         //nodeForFile.SelectedImageKey = "file.png";

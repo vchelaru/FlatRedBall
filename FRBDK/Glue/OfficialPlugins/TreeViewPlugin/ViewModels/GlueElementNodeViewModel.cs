@@ -41,6 +41,15 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             CodeNode = new CodeRootViewModel(this, glueElement) { Text = "Code" };
             Children.Add(CodeNode);
 
+            if(glueElement is ScreenSave)
+            {
+                ImageSource = ScreenIcon;
+            }
+            else if(glueElement is EntitySave)
+            {
+                ImageSource = EntityIcon;
+            }
+
             IsExpanded = false;
         }
 

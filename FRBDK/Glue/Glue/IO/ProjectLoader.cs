@@ -484,7 +484,7 @@ namespace FlatRedBall.Glue.IO
 
                 SetInitWindowText("Updating global content");
 
-                ElementViewWindow.UpdateGlobalContentTreeNodes(false);
+                GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
 
                 // Screens and Entities have the membership of their files
                 // automatically updated when the tree nodes are created. This

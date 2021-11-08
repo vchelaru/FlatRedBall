@@ -55,6 +55,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 if (treeNode == null)
                 {
                     treeNode = new NodeViewModel(parentTreeNode);
+                    treeNode.ImageSource = StateIcon;
                     treeNode.Text = stateSave.Name;
                     treeNode.Tag = stateSave;
 

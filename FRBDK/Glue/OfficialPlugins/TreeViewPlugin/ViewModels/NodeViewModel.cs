@@ -8,16 +8,33 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace OfficialPlugins.TreeViewPlugin.ViewModels
 {
     public class NodeViewModel : ViewModel
     {
-
+        #region External DllImport
         [DllImport("Shlwapi.dll", CharSet = CharSet.Unicode)]
         private static extern int StrCmpLogicalW(string x, string y);
 
+        #endregion
+
         #region Fields/Properties
+
+        public static ImageSource CodeIcon;
+        public static ImageSource CollisionIcon;
+        public static ImageSource EntityIcon;
+        public static ImageSource EntityInstanceIcon;
+        public static ImageSource EventIcon;
+        public static ImageSource FileIcon;
+        public static ImageSource FolderClosedIcon;
+        public static ImageSource FolderOpenIcon;
+        public static ImageSource LayersIcon;
+        public static ImageSource ScreenIcon;
+        public static ImageSource StateIcon;
+        public static ImageSource VariableIcon;
 
         public object Tag { get; set; }
         
@@ -38,7 +55,12 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             this.Parent = null;
         }
 
-        //private Node Node;
+
+        public ImageSource ImageSource
+        {
+            get => Get<ImageSource>();
+            set => Set(value);
+        }
 
 
         private ObservableCollection<NodeViewModel> children = new ObservableCollection<NodeViewModel>();
@@ -82,6 +104,39 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         #endregion
 
+        static NodeViewModel()
+        {
+            CodeIcon = LoadIcon("icon_code");
+            CollisionIcon = LoadIcon("icon_collision");
+            EntityIcon = LoadIcon("icon_entity");
+            EntityInstanceIcon = LoadIcon("icon_entity_instance");
+            EventIcon = LoadIcon("icon_event");
+            FileIcon = LoadIcon("icon_file_standard");
+            FolderClosedIcon = LoadIcon("icon_folder");
+            FolderOpenIcon = LoadIcon("icon_folder_open");
+            LayersIcon = LoadIcon("icon_layers");
+            ScreenIcon = LoadIcon("icon_screen");
+            StateIcon = LoadIcon("icon_state");
+            VariableIcon = LoadIcon("icon_variable");
+
+            ImageSource LoadIcon(string iconName)
+            {
+                var location = $"/OfficialPluginsCore;component/TreeViewPlugin/Content/{iconName}.png";
+                var bitmapImage = new BitmapImage(new Uri(location, UriKind.Relative));
+                return bitmapImage;
+            }
+
+        }
+
+        public NodeViewModel(NodeViewModel parent)
+        {
+            //this.Node = Node;
+            this.Parent = parent;
+            this.IsExpanded = false;
+
+            ImageSource = FolderClosedIcon;
+        }
+
         public virtual void RefreshTreeNodes()
         {
 
@@ -105,12 +160,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         //    }
         //}
 
-        public NodeViewModel(NodeViewModel parent)
-        {
-            //this.Node = Node;
-            this.Parent = parent;
-            this.IsExpanded = true;
-        }
 
         public NodeViewModel AddChild()
         {
@@ -217,7 +266,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
         }
 
-        // Teh "Is" methods are added to make refactoring easier. Not sure if we eventually want to get rid of them:
+        #region "Is" methods
+
+        // The "Is" methods are added to make refactoring easier. Not sure if we eventually want to get rid of them:
         public bool IsDirectoryNode()
         {
             if (Parent == null)
@@ -280,6 +331,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         public bool IsElementNode() => Tag is GlueElement;
         public bool IsReferencedFile() => Tag is ReferencedFileSave;
+
+        #endregion
 
         public void SortByTextConsideringDirectories(ObservableCollection<NodeViewModel> treeNodeCollection = null, bool recursive = false)
         {

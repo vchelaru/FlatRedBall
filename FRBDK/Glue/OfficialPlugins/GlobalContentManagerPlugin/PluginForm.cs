@@ -126,7 +126,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
                             }
                         }
 
-                        ElementViewWindow.UpdateGlobalContentTreeNodes(false);
+                        GlueCommands.RefreshCommands.RefreshGlobalContent();
                     }
                     break;
             }

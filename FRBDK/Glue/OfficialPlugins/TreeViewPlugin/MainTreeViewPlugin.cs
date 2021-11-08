@@ -41,6 +41,12 @@ namespace OfficialPlugins.TreeViewPlugin
         {
             ReactToLoadedGluxEarly += HandleGluxLoaded;
             RefreshTreeNodeFor += HandleRefreshTreeNodeFor;
+            RefreshGlobalContentTreeNode += HandleRefreshGlobalContentTreeNode;
+        }
+
+        private void HandleRefreshGlobalContentTreeNode()
+        {
+            MainViewModel.RefreshGlobalContentTreeNodes();
         }
 
         private void HandleGluxLoaded()

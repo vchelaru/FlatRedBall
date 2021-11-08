@@ -39,6 +39,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 if (foundTreeNode == null)
                 {
                     var treeNode = new NodeViewModel(this);
+                    treeNode.ImageSource = CodeIcon;
                     treeNode.Text = text;
                     Children.Add(treeNode);
                 }

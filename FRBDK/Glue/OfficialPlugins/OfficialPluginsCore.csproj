@@ -96,6 +96,18 @@
     <None Remove="QuickActionPlugin\Views\Create Screen.png" />
     <None Remove="QuickActionPlugin\Views\Open Project.png" />
     <None Remove="QuickActionPlugin\Views\StartWizard.png" />
+    <None Remove="TreeViewPlugin\Content\icon_code.png" />
+    <None Remove="TreeViewPlugin\Content\icon_collision.png" />
+    <None Remove="TreeViewPlugin\Content\icon_entity.png" />
+    <None Remove="TreeViewPlugin\Content\icon_entity_instance.png" />
+    <None Remove="TreeViewPlugin\Content\icon_event.png" />
+    <None Remove="TreeViewPlugin\Content\icon_file_standard.png" />
+    <None Remove="TreeViewPlugin\Content\icon_folder.png" />
+    <None Remove="TreeViewPlugin\Content\icon_folder_open.png" />
+    <None Remove="TreeViewPlugin\Content\icon_layers.png" />
+    <None Remove="TreeViewPlugin\Content\icon_screen.png" />
+    <None Remove="TreeViewPlugin\Content\icon_state.png" />
+    <None Remove="TreeViewPlugin\Content\icon_variable.png" />
     <None Remove="Wizard\Icons\CheckIcon.png" />
     <None Remove="Wizard\Icons\Error.png" />
   </ItemGroup>
@@ -190,6 +202,18 @@
     <Resource Include="QuickActionPlugin\Views\Create Screen.png" />
     <Resource Include="QuickActionPlugin\Views\Open Project.png" />
     <Resource Include="QuickActionPlugin\Views\StartWizard.png" />
+    <Resource Include="TreeViewPlugin\Content\icon_code.png" />
+    <Resource Include="TreeViewPlugin\Content\icon_collision.png" />
+    <Resource Include="TreeViewPlugin\Content\icon_entity.png" />
+    <Resource Include="TreeViewPlugin\Content\icon_entity_instance.png" />
+    <Resource Include="TreeViewPlugin\Content\icon_event.png" />
+    <Resource Include="TreeViewPlugin\Content\icon_file_standard.png" />
+    <Resource Include="TreeViewPlugin\Content\icon_folder.png" />
+    <Resource Include="TreeViewPlugin\Content\icon_folder_open.png" />
+    <Resource Include="TreeViewPlugin\Content\icon_layers.png" />
+    <Resource Include="TreeViewPlugin\Content\icon_screen.png" />
+    <Resource Include="TreeViewPlugin\Content\icon_state.png" />
+    <Resource Include="TreeViewPlugin\Content\icon_variable.png" />
     <Resource Include="Wizard\Icons\CheckIcon.png" />
     <Resource Include="Wizard\Icons\Error.png" />
   </ItemGroup>
