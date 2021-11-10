@@ -52,8 +52,9 @@ namespace OfficialPlugins.TreeViewPlugin
         private void HandleItemSelected(TreeNode selectedTreeNode)
         {
             var tag = selectedTreeNode.Tag;
-            if(tag != null)
+            if(tag != null && SelectionLogic.IsUpdatingSelectionOnGlueEvent )
             {
+
                 SelectionLogic.SelectByTag(tag);
             }
         }

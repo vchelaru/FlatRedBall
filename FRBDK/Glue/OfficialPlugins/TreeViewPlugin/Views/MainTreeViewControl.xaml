@@ -16,7 +16,15 @@
         </Grid.RowDefinitions>
         <Label>This is a test:</Label>
 
-        <pt:TreeListBox SelectionMode="Single" Grid.Row="1" x:Name="MainTreeView" HierarchySource="{Binding Root}" MouseMove="MainTreeView_MouseMove">
+        <pt:TreeListBox SelectionMode="Single" 
+                        Grid.Row="1" 
+                        AllowDrop="True"
+                        PreviewMouseLeftButtonDown="MainTreeView_PreviewMouseLeftButtonDown"
+                        PreviewMouseMove="MainTreeView_PreviewMouseMove"
+                        Drop="MainTreeView_Drop"
+                        DragEnter="MainTreeView_DragEnter"
+                        x:Name="MainTreeView" HierarchySource="{Binding Root}"
+                        MouseMove="MainTreeView_MouseMove">
             <pt:TreeListBox.ContextMenu>
                 <ContextMenu x:Name="RightClickContextMenu">
                     <MenuItem Header="Hello"></MenuItem>
