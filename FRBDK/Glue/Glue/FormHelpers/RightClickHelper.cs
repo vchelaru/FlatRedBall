@@ -1095,9 +1095,9 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static void OnAddEntityInstanceClick(object sender, EventArgs e)
         {
-            ElementViewWindow.DragDropTreeNode(
-                MainExplorerPlugin.Self.ElementTreeView,
-                MainExplorerPlugin.Self.ElementTreeView.SelectedNode);
+            DragDropManager.DragDropTreeNode(
+                 new TreeNodeWrapper(MainExplorerPlugin.Self.ElementTreeView.SelectedNode), 
+                 ElementViewWindow.TreeNodeDraggedOff == null ? null : new TreeNodeWrapper(ElementViewWindow.TreeNodeDraggedOff));
 
 
             GlueCommands.Self.ProjectCommands.SaveProjects();

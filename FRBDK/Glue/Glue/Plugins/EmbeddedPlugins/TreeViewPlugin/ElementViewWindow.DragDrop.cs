@@ -132,126 +132,15 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
                 else
                 {
-
-
-                    DragDropTreeNode((TreeView)sender, targetNode);
+                    TreeNode nodeMoving = TreeNodeDraggedOff;
+                    DragDropManager.DragDropTreeNode(targetNode, nodeMoving);
                 }
             }
 
         }
 
-        internal static void DragDropTreeNode(TreeView treeView, TreeNode targetNode)
-        {
-#if !DEBUG
-            try
-#endif
-            {
-                #region Get the nodeMoving and targetNode
-                TreeNode nodeMoving = TreeNodeDraggedOff;
-
-                #endregion
-
-                bool shouldSaveGlux = false;
-
-                if (nodeMoving == targetNode || nodeMoving == null)
-                {
-                    // do nothing
-                }
-                else if (nodeMoving.IsEntityNode())
-                {
-                    DragDropManager.Self.MoveEntityOn(nodeMoving as EntityTreeNode, targetNode);
-                    shouldSaveGlux = true;
-
-                }
-                else if (nodeMoving.IsReferencedFile())
-                {
-                    DragDropManager.Self.MoveReferencedFile(nodeMoving, targetNode);
-                    shouldSaveGlux = true;
-                }
-                else if (nodeMoving.IsNamedObjectNode())
-                {
-                    DragDropManager.Self.MoveNamedObject(nodeMoving, targetNode);
-                    shouldSaveGlux = true;
-                }
-                else if (nodeMoving.IsStateNode())
-                {
-                    DragDropManager.Self.MoveState(nodeMoving, targetNode);
-                    shouldSaveGlux = true;
-                }
-                else if (nodeMoving.IsStateCategoryNode())
-                {
-                    DragDropManager.Self.MoveStateCategory(nodeMoving, targetNode);
-                    shouldSaveGlux = true;
-                }
-                else if (nodeMoving.IsCustomVariable())
-                {
-                    MoveCustomVariable(nodeMoving, targetNode);
-                    shouldSaveGlux = true;
-                }
-                if (shouldSaveGlux)
-                {
-                    GluxCommands.Self.SaveGlux();
-                }
-
-            }
-#if !DEBUG
-            catch (Exception exception)
-            {
-                System.Windows.Forms.MessageBox.Show("Error moving object: " + exception.ToString());
-            }
-#endif
-        }
-
-        private static void MoveCustomVariable(TreeNode nodeMoving, TreeNode targetNode)
-        {
-            CustomVariable customVariable = nodeMoving.Tag as CustomVariable;
-
-            if (targetNode.IsRootEventsNode())
-            {
-                // The user dragged a variable onto the events node, so they want to make
-                // an event for this.  We'll assume an "after" event since I think no one makes
-                // before events
-             
-
-                if (customVariable != null)
-                {
-                    customVariable.CreatesEvent = true;
-
-                    FlatRedBall.Glue.Events.EventResponseSave eventResponseSave = new Events.EventResponseSave();
-                    eventResponseSave.EventName = "After" + customVariable.Name + "Set";
-
-                    eventResponseSave.SourceObject = null;
-                    eventResponseSave.SourceObjectEvent = null;
-
-                    eventResponseSave.SourceVariable = customVariable.Name;
-                    eventResponseSave.BeforeOrAfter = BeforeOrAfter.After;
-
-                    eventResponseSave.DelegateType = null;
-
-                    RightClickHelper.AddEventToElementAndSave(GlueState.Self.CurrentElement, eventResponseSave);
-
-                }
-            }
-            else if (targetNode.IsRootCustomVariablesNode())
-            {
-                // let's see if the user is moving a variable from one element to another
-                var sourceElement = nodeMoving.GetContainingElementTreeNode().Tag as GlueElement;
-                var targetElement = targetNode.GetContainingElementTreeNode().Tag as GlueElement;
-
-                if (sourceElement != targetElement)
-                {
-                    // copying a variable from one element to another
-                    // eventually we need to add some error checking here.
-                    CustomVariable newVariable = customVariable.Clone();
-
-                    targetElement.CustomVariables.Add(newVariable);
 
 
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(targetElement);
-                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(targetElement);
-                }
-            }
-        }
 
         private static void DragDropFile(object sender, DragEventArgs e)
         {

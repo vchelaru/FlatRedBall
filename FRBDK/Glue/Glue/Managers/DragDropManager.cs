@@ -31,7 +31,7 @@ namespace FlatRedBall.Glue.Managers
     {
         #region Named Object
 
-        public void MoveNamedObject(TreeNode treeNodeMoving, TreeNode targetNode)
+        public void MoveNamedObject(ITreeNode treeNodeMoving, ITreeNode targetNode)
         {
             if (targetNode != null)
             {
@@ -280,7 +280,7 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        private static bool MoveObjectOnObjectsRoot(TreeNode treeNodeMoving, TreeNode targetNode, NamedObjectSave movingNos, bool succeeded)
+        private static bool MoveObjectOnObjectsRoot(ITreeNode treeNodeMoving, ITreeNode targetNode, NamedObjectSave movingNos, bool succeeded)
         {
             // Dropped it on the "Objects" tree node
 
@@ -489,9 +489,65 @@ namespace FlatRedBall.Glue.Managers
 
         #endregion
 
+        #region Custom Variable
+
+        private static void MoveCustomVariable(ITreeNode nodeMoving, ITreeNode targetNode)
+        {
+            CustomVariable customVariable = nodeMoving.Tag as CustomVariable;
+
+            if (targetNode.IsRootEventsNode())
+            {
+                // The user dragged a variable onto the events node, so they want to make
+                // an event for this.  We'll assume an "after" event since I think no one makes
+                // before events
+
+
+                if (customVariable != null)
+                {
+                    customVariable.CreatesEvent = true;
+
+                    FlatRedBall.Glue.Events.EventResponseSave eventResponseSave = new Events.EventResponseSave();
+                    eventResponseSave.EventName = "After" + customVariable.Name + "Set";
+
+                    eventResponseSave.SourceObject = null;
+                    eventResponseSave.SourceObjectEvent = null;
+
+                    eventResponseSave.SourceVariable = customVariable.Name;
+                    eventResponseSave.BeforeOrAfter = BeforeOrAfter.After;
+
+                    eventResponseSave.DelegateType = null;
+
+                    RightClickHelper.AddEventToElementAndSave(GlueState.Self.CurrentElement, eventResponseSave);
+
+                }
+            }
+            else if (targetNode.IsRootCustomVariablesNode())
+            {
+                // let's see if the user is moving a variable from one element to another
+                var sourceElement = nodeMoving.GetContainingElementTreeNode().Tag as GlueElement;
+                var targetElement = targetNode.GetContainingElementTreeNode().Tag as GlueElement;
+
+                if (sourceElement != targetElement)
+                {
+                    // copying a variable from one element to another
+                    // eventually we need to add some error checking here.
+                    CustomVariable newVariable = customVariable.Clone();
+
+                    targetElement.CustomVariables.Add(newVariable);
+
+
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(targetElement);
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(targetElement);
+                }
+            }
+        }
+
+
+        #endregion
+
         #region StateSave
 
-        internal void MoveState(TreeNode nodeMoving, TreeNode targetNode)
+        internal void MoveState(ITreeNode nodeMoving, ITreeNode targetNode)
         {
 
             var currentElement = GlueState.Self.CurrentElement;
@@ -536,7 +592,7 @@ namespace FlatRedBall.Glue.Managers
 
         #region StateSaveCategory
 
-        internal void MoveStateCategory(TreeNode nodeMoving, TreeNode targetNode)
+        internal void MoveStateCategory(ITreeNode nodeMoving, ITreeNode targetNode)
         {
             if (targetNode.IsRootCustomVariablesNode() || targetNode.IsCustomVariable())
             {
@@ -569,7 +625,7 @@ namespace FlatRedBall.Glue.Managers
 
         #region Entity
 
-        public TreeNode MoveEntityOn(EntityTreeNode treeNodeMoving, TreeNode targetNode)
+        public TreeNode MoveEntityOn(ITreeNode treeNodeMoving, ITreeNode targetNode)
         {
             TreeNode newTreeNode = null;
 
@@ -931,7 +987,7 @@ namespace FlatRedBall.Glue.Managers
 
         #region Referenced File
 
-        public void MoveReferencedFile(TreeNode treeNodeMoving, TreeNode targetNode)
+        public void MoveReferencedFile(ITreeNode treeNodeMoving, ITreeNode targetNode)
         {
             var response = GeneralResponse.SuccessfulResponse;
 
@@ -1406,5 +1462,64 @@ namespace FlatRedBall.Glue.Managers
 
         #endregion
 
+        #region General Calls
+        internal static void DragDropTreeNode(ITreeNode targetNode, ITreeNode nodeMoving)
+        {
+#if !DEBUG
+            try
+#endif
+            {
+                bool shouldSaveGlux = false;
+
+                if (nodeMoving == targetNode || nodeMoving == null)
+                {
+                    // do nothing
+                }
+                else if (nodeMoving.IsEntityNode())
+                {
+                    DragDropManager.Self.MoveEntityOn(nodeMoving, targetNode);
+                    shouldSaveGlux = true;
+
+                }
+                else if (nodeMoving.IsReferencedFile())
+                {
+                    DragDropManager.Self.MoveReferencedFile(nodeMoving, targetNode);
+                    shouldSaveGlux = true;
+                }
+                else if (nodeMoving.IsNamedObjectNode())
+                {
+                    DragDropManager.Self.MoveNamedObject(nodeMoving, targetNode);
+                    shouldSaveGlux = true;
+                }
+                else if (nodeMoving.IsStateNode())
+                {
+                    DragDropManager.Self.MoveState(nodeMoving, targetNode);
+                    shouldSaveGlux = true;
+                }
+                else if (nodeMoving.IsStateCategoryNode())
+                {
+                    DragDropManager.Self.MoveStateCategory(nodeMoving, targetNode);
+                    shouldSaveGlux = true;
+                }
+                else if (nodeMoving.IsCustomVariable())
+                {
+                    MoveCustomVariable(nodeMoving, targetNode);
+                    shouldSaveGlux = true;
+                }
+                if (shouldSaveGlux)
+                {
+                    GluxCommands.Self.SaveGlux();
+                }
+
+            }
+#if !DEBUG
+            catch (Exception exception)
+            {
+                System.Windows.Forms.MessageBox.Show("Error moving object: " + exception.ToString());
+            }
+#endif
+        }
+
+        #endregion
     }
 }
