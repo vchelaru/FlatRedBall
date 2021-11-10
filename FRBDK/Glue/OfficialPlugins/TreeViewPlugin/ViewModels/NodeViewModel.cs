@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue;
+using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
@@ -14,7 +15,7 @@ using System.Windows.Media.Imaging;
 
 namespace OfficialPlugins.TreeViewPlugin.ViewModels
 {
-    public class NodeViewModel : ViewModel
+    public class NodeViewModel : ViewModel, ITreeNode
     {
         #region External DllImport
         [DllImport("Shlwapi.dll", CharSet = CharSet.Unicode)]
@@ -42,6 +43,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public object Tag { get; set; }
         
         public NodeViewModel Parent { get; private set; }
+
+        ITreeNode ITreeNode.Parent => this.Parent;
 
         public bool HasItems
         {
@@ -204,25 +207,25 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         {
 
             #region Directory tree node
-            if (IsDirectoryNode())
+            if (((ITreeNode)this).IsDirectoryNode())
             {
-                if (Parent.IsRootEntityNode())
+                if (((ITreeNode)Parent).IsRootEntityNode())
                 {
                     return "Entities/" + Text + "/";
 
                 }
-                if (Parent.IsRootScreenNode())
+                if (((ITreeNode)Parent).IsRootScreenNode())
                 {
                     return "Screens/" + Text + "/";
 
                 }
-                else if (Parent.IsGlobalContentContainerNode())
+                else if (((ITreeNode)Parent).IsGlobalContentContainerNode())
                 {
 
                     string contentDirectory = ProjectManager.MakeAbsolute("GlobalContent", true);
 
                     string returnValue = contentDirectory + Text;
-                    if (IsDirectoryNode())
+                    if (((ITreeNode)this).IsDirectoryNode())
                     {
                         returnValue += "/";
                     }
@@ -241,7 +244,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             #region Global content container
 
-            else if (IsGlobalContentContainerNode())
+            else if (((ITreeNode)this).IsGlobalContentContainerNode())
             {
                 var returnValue = GlueState.Self.Find.GlobalContentFilesPath;
 
@@ -255,22 +258,22 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
             #endregion
 
-            else if (IsFilesContainerNode())
+            else if (((ITreeNode)this).IsFilesContainerNode())
             {
                 string valueToReturn = Parent.GetRelativePath();
 
 
                 return valueToReturn;
             }
-            else if (IsFolderInFilesContainerNode())
+            else if (((ITreeNode)this).IsFolderInFilesContainerNode())
             {
                 return Parent.GetRelativePath() + Text + "/";
             }
-            else if (IsElementNode())
+            else if (((ITreeNode)this).IsElementNode())
             {
                 return ((IElement)Tag).Name + "/";
             }
-            else if (IsReferencedFile())
+            else if (((ITreeNode)this).IsReferencedFile())
             {
                 string toReturn = Parent.GetRelativePath() + Text;
                 toReturn = toReturn.Replace("/", "\\");
@@ -291,74 +294,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         }
 
         public NodeViewModel Root() => Parent == null ? this : Parent.Root();
-
-        #region "Is" methods
-
-        // The "Is" methods are added to make refactoring easier. Not sure if we eventually want to get rid of them:
-        public bool IsDirectoryNode()
-        {
-            if (Parent == null)
-            {
-                return false;
-            }
-
-            if (this is GlueElementNodeViewModel)
-                return false;
-
-            if (Tag != null)
-            {
-                return false;
-            }
-
-            if (Parent.IsRootEntityNode() || Parent.IsGlobalContentContainerNode())
-                return true;
-
-
-            if (Parent.IsFilesContainerNode() || Parent.IsDirectoryNode())
-            {
-                return true;
-            }
-
-            else
-                return false;
-        }
-
-        public bool IsRootEntityNode() => Text == "Entities" && Parent == null;
-        public bool IsRootScreenNode() => Text == "Screens" && Parent == null;
-        
-
-        public bool IsEntityNode()
-        {
-            return Tag is EntitySave;
-        }
-
-        public bool IsScreenNode() => Tag is ScreenSave;
-
-        public bool IsGlobalContentContainerNode()
-        {
-            return Text == "Global Content Files" && Parent == null;
-        }
-
-        public bool IsFilesContainerNode()
-        {
-            var parentTreeNode = Parent;
-            return Text == "Files" && parentTreeNode != null &&
-                (parentTreeNode.IsEntityNode() || parentTreeNode.IsScreenNode());
-        }
-
-        public bool IsFolderInFilesContainerNode()
-        {
-            var parentTreeNode = Parent;
-
-            return Tag == null && parentTreeNode != null &&
-                (parentTreeNode.IsFilesContainerNode() || parentTreeNode.IsFolderInFilesContainerNode());
-
-        }
-
-        public bool IsElementNode() => Tag is GlueElement;
-        public bool IsReferencedFile() => Tag is ReferencedFileSave;
-
-        #endregion
 
         public void SortByTextConsideringDirectories(ObservableCollection<NodeViewModel> treeNodeCollection = null, bool recursive = false)
         {
@@ -410,7 +345,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 foreach (var node in treeNodeCollection)
                 {
-                    if (node.IsDirectoryNode())
+                    if (((ITreeNode)node).IsDirectoryNode())
                     {
                         SortByTextConsideringDirectories(node.Children, recursive);
                     }
@@ -421,8 +356,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         private static int TreeNodeComparer(NodeViewModel first, NodeViewModel second)
         {
-            bool isFirstDirectory = first.IsDirectoryNode();
-            bool isSecondDirectory = second.IsDirectoryNode();
+            bool isFirstDirectory = ((ITreeNode)first).IsDirectoryNode();
+            bool isSecondDirectory = ((ITreeNode)second).IsDirectoryNode();
 
             if (isFirstDirectory && !isSecondDirectory)
             {

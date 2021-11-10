@@ -327,9 +327,30 @@ namespace FlatRedBall.Glue.FormHelpers
 
             var sourceNode = ElementViewWindow.TreeNodeDraggedOff;
 
-            PopulateRightClickMenuItemsShared(new TreeNodeWrapper(targetNode), menuShowingAction, new TreeNodeWrapper( sourceNode));
+            TreeNodeWrapper wrapper = null;
+
+            if(sourceNode != null)
+            {
+                wrapper = new TreeNodeWrapper(sourceNode);
+            }
+
+            PopulateRightClickMenuItemsShared(new TreeNodeWrapper(targetNode), menuShowingAction, wrapper);
             
             PluginManager.ReactToTreeViewRightClick(targetNode, menu);
+        }
+
+        static List<GeneralToolStripMenuItem> ListToAddTo = null;
+        public static List<GeneralToolStripMenuItem> GetRightClickItems(ITreeNode targetNode, MenuShowingAction menuShowingAction)
+        {
+            List<GeneralToolStripMenuItem> listToFill = new List<GeneralToolStripMenuItem>();
+
+            ListToAddTo = listToFill;
+
+            PopulateRightClickMenuItemsShared(targetNode, menuShowingAction, null);
+
+            ListToAddTo = null;
+
+            return listToFill;
         }
 
         private static void PopulateRightClickMenuItemsShared(ITreeNode targetNode, MenuShowingAction menuShowingAction, ITreeNode sourceNode)
@@ -386,7 +407,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     AddItem(mExportElement);
                     AddItem(mFindAllReferences);
 
-                    EntitySave entitySave = ((EntityTreeNode)targetNode).EntitySave;
+                    EntitySave entitySave = targetNode.Tag as  EntitySave;
 
                     if (entitySave.PooledByFactory)
                     {
@@ -717,34 +738,77 @@ namespace FlatRedBall.Glue.FormHelpers
         }
 
         static ContextMenuStrip menu => MainGlueWindow.Self.mElementContextMenu;
-        static ToolStripMenuItem Add(string text, Action action, string shortcutDisplay = null)
+        static void Add(string text, Action action, string shortcutDisplay = null)
         {
-            var tsmi = new ToolStripMenuItem(text);
-            tsmi.Click += (not, used) => action();
-            tsmi.ShortcutKeyDisplayString = shortcutDisplay;
-            menu.Items.Add(tsmi);
-            return tsmi;
+            if(ListToAddTo != null)
+            {
+                var item = new GeneralToolStripMenuItem
+                {
+                    Text = text,
+                    Click = (not, used) => action(),
+                    ShortcutKeyDisplayString = shortcutDisplay
+                };
+
+                ListToAddTo.Add(item);
+            }
+            else
+            {
+                var tsmi = new ToolStripMenuItem(text);
+                tsmi.Click += (not, used) => action();
+                tsmi.ShortcutKeyDisplayString = shortcutDisplay;
+                menu.Items.Add(tsmi);
+
+            }
         }
 
-        static ToolStripMenuItem AddEvent(string text, EventHandler eventHandler, string shortcutDisplay = null)
+        static void AddEvent(string text, EventHandler eventHandler, string shortcutDisplay = null)
         {
-            var tsmi = new ToolStripMenuItem(text);
-            tsmi.Click += eventHandler;
-            tsmi.ShortcutKeyDisplayString = shortcutDisplay;
-            menu.Items.Add(tsmi);
-
-            return tsmi;
+            if(ListToAddTo != null)
+            {
+                var item = new GeneralToolStripMenuItem
+                {
+                    Text = text,
+                    Click = eventHandler,
+                    ShortcutKeyDisplayString = shortcutDisplay
+                };
+                ListToAddTo.Add(item);
+            }
+            else
+            {
+                var tsmi = new ToolStripMenuItem(text);
+                tsmi.Click += eventHandler;
+                tsmi.ShortcutKeyDisplayString = shortcutDisplay;
+                menu.Items.Add(tsmi);
+            }
         }
 
         static void AddItem(GeneralToolStripMenuItem generalItem)
         {
-            var tsmi = generalItem.ToTsmi();
-            menu.Items.Add(tsmi);
+            if(ListToAddTo != null)
+            {
+                ListToAddTo.Add(generalItem);
+            }
+            else
+            {
+                var tsmi = generalItem.ToTsmi();
+                menu.Items.Add(tsmi);
+
+            }
         }
 
         static void AddSeparator()
         {
-            menu.Items.Add("-");
+            if(ListToAddTo != null)
+            {
+                ListToAddTo.Add(new GeneralToolStripMenuItem
+                {
+                    Text = "-"
+                });
+            }
+            else
+            {
+                menu.Items.Add("-");
+            }
         }
 
 

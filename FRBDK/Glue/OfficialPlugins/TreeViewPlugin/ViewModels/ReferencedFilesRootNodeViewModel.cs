@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue;
+using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using System;
@@ -156,7 +157,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 return currentNode;
             }
 
-            if (currentNode.IsFilesContainerNode())
+            if (((ITreeNode)currentNode).IsFilesContainerNode())
             {
                 string currentNodeDirectory = FileManager.Standardize(currentNode.GetRelativePath(), null, false);
 
@@ -183,7 +184,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 {
                     var subNode = currentNode.Children[i];
 
-                    if (subNode.Text == nameToSearchFor && subNode.IsFolderInFilesContainerNode())
+                    if (subNode.Text == nameToSearchFor && ((ITreeNode)subNode).IsFolderInFilesContainerNode())
                     {
                         return GetNodeForDirectory(directory.Substring(indexOfSlash + 1), subNode);
                     }
@@ -231,7 +232,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
                 foreach (var subNode in treeNode.Children)
                 {
-                    if (subNode.IsFolderInFilesContainerNode())
+                    if (((ITreeNode)subNode).IsFolderInFilesContainerNode())
                     {
                         string subDirectory = subNode.GetRelativePath();
 
@@ -254,7 +255,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 ReferencedFileSave referencedFileSave = currentNodeList[i].Tag as ReferencedFileSave;
 
-                if (currentNodeList[i].IsFolderInFilesContainerNode())
+                if (((ITreeNode)currentNodeList[i]).IsFolderInFilesContainerNode())
                 {
                     RemoveTreeNodesForRemovedReferenceFileSavesIn(currentNodeList[i].Children, referencedFiles, container);
                 }

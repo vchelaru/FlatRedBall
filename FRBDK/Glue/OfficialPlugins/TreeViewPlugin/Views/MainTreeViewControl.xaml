@@ -17,6 +17,14 @@
         <Label>This is a test:</Label>
 
         <pt:TreeListBox SelectionMode="Single" Grid.Row="1" x:Name="MainTreeView" HierarchySource="{Binding Root}" MouseMove="MainTreeView_MouseMove">
+            <pt:TreeListBox.ContextMenu>
+                <ContextMenu x:Name="RightClickContextMenu">
+                    <MenuItem Header="Hello"></MenuItem>
+                    <MenuItem Header="Hello2"></MenuItem>
+                    <MenuItem Header="Hello3"></MenuItem>
+                    <MenuItem Header="Hello4"></MenuItem>
+                </ContextMenu>
+            </pt:TreeListBox.ContextMenu>
             <pt:TreeListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid>

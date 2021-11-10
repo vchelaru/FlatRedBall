@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue;
+using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using OfficialPlugins.TreeViewPlugin.Models;
@@ -348,14 +349,15 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     }
                 }
 
-                bool isGlobalContent = parentTreeNode.Root().IsGlobalContentContainerNode();
+                ITreeNode root = parentTreeNode.Root();
+                bool isGlobalContent = root.IsGlobalContentContainerNode();
 
 
                 for (int i = parentTreeNode.Children.Count - 1; i > -1; i--)
                 {
                     var treeNode = parentTreeNode.Children[i];
 
-                    if (treeNode.IsDirectoryNode())
+                    if (((ITreeNode)treeNode).IsDirectoryNode())
                     {
 
                         string directory = ProjectManager.MakeAbsolute(treeNode.GetRelativePath(), isGlobalContent);
@@ -405,7 +407,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 {
                     var subNode = containingNode.Children[i];
 
-                    if (subNode.IsDirectoryNode() && subNode.Text.ToLower() == rootDirectory.ToLower())
+                    if (((ITreeNode)subNode).IsDirectoryNode() && subNode.Text.ToLower() == rootDirectory.ToLower())
                     {
                         // use the containingDirectory here
                         if (indexOfSlash == -1 || indexOfSlash == containingDirection.Length - 1)
@@ -544,7 +546,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         private static void RemoveGlobalContentTreeNodesIfNecessary(NodeViewModel treeNode)
         {
-            if (treeNode.IsDirectoryNode())
+            if (((ITreeNode)treeNode).IsDirectoryNode())
             {
                 string directory = treeNode.GetRelativePath();
 

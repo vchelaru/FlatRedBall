@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace GlueFormsCore.FormHelpers
 {
-    class GeneralToolStripMenuItem
+    public class GeneralToolStripMenuItem
     {
         public GeneralToolStripMenuItem() { }
 
