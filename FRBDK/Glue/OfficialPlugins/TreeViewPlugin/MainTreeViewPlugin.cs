@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
+using OfficialPlugins.TreeViewPlugin.Logic;
 using OfficialPlugins.TreeViewPlugin.ViewModels;
 using OfficialPlugins.TreeViewPlugin.Views;
 using PropertyTools.Wpf;
@@ -8,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Text;
+using System.Windows.Forms;
 
 namespace OfficialPlugins.TreeViewPlugin
 {
@@ -29,8 +31,9 @@ namespace OfficialPlugins.TreeViewPlugin
         {
             var mainView = new MainTreeViewControl();
 
-
             mainView.DataContext = MainViewModel;
+
+            SelectionLogic.Initialize(MainViewModel, mainView);
 
             AssignEvents();
 
@@ -42,6 +45,17 @@ namespace OfficialPlugins.TreeViewPlugin
             ReactToLoadedGluxEarly += HandleGluxLoaded;
             RefreshTreeNodeFor += HandleRefreshTreeNodeFor;
             RefreshGlobalContentTreeNode += HandleRefreshGlobalContentTreeNode;
+
+            this.ReactToItemSelectHandler += HandleItemSelected;
+        }
+
+        private void HandleItemSelected(TreeNode selectedTreeNode)
+        {
+            var tag = selectedTreeNode.Tag;
+            if(tag != null)
+            {
+                SelectionLogic.SelectByTag(tag);
+            }
         }
 
         private void HandleRefreshGlobalContentTreeNode()
@@ -60,5 +74,7 @@ namespace OfficialPlugins.TreeViewPlugin
             MainViewModel.RefreshTreeNodeFor(element);
             
         }
+
+
     }
 }

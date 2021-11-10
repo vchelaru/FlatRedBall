@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
@@ -163,7 +164,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 if (CollisionRelationshipTreeNode == null)
                 {
                     CollisionRelationshipTreeNode = new NodeViewModel(this);
-                    CollisionRelationshipTreeNode.ImageSource = CollisionIcon;
+                    CollisionRelationshipTreeNode.ImageSource = CollisionsIcon;
                     CollisionRelationshipTreeNode.Text = "Collision Relationships";
                     //CollisionRelationshipTreeNode.SelectedImageKey = "collisionRelationshipList.png";
                     //CollisionRelationshipTreeNode.ImageKey = "collisionRelationshipList.png";
@@ -248,18 +249,30 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             return null;
         }
 
-        private static NodeViewModel CreateTreeNodeForNamedObjectAtIndex(NodeViewModel currentNode, int i, NamedObjectSave namedObject)
+        private static NodeViewModel CreateTreeNodeForNamedObjectAtIndex(NodeViewModel parentNode, int i, NamedObjectSave namedObject)
         {
-            var treeNode = new NodeViewModel(currentNode);
-            treeNode.ImageSource = EntityInstanceIcon;
+            var treeNode = new NodeViewModel(parentNode);
             treeNode.Tag = namedObject;
             treeNode.Text = namedObject.InstanceName;
+
+            if(namedObject.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Layer)
+            {
+                treeNode.ImageSource = LayerIcon;
+            }
+            else if(namedObject.IsCollisionRelationship())
+            {
+                treeNode.ImageSource = CollisionIcon;
+            }
+            else
+            {
+                treeNode.ImageSource = EntityInstanceIcon;
+            }
             //treeNode.SelectedImageKey = "object.png";
             //treeNode.ImageKey = "object.png";
 
             treeNode.Tag = namedObject;
 
-            currentNode.Children.Insert(i, treeNode);
+            parentNode.Children.Insert(i, treeNode);
             return treeNode;
         }
 

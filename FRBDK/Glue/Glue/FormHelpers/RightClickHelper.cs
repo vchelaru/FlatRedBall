@@ -39,149 +39,330 @@ using Microsoft.Xna.Framework;
 using EditorObjects.IoC;
 using FlatRedBall.Glue.SetVariable;
 using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
+using GlueFormsCore.FormHelpers;
 
 namespace FlatRedBall.Glue.FormHelpers
 {
+    #region Enums
+
     public enum MenuShowingAction
     {
         RegularRightClick,
         RightButtonDrag
     }
 
+    #endregion
+
+    public interface ITreeNode
+    {
+        object Tag { get; set; }
+
+        ITreeNode Parent { get; }
+
+        string Text { get;  }
+
+        public bool IsDirectoryNode()
+        {
+            if (Parent == null)
+            {
+                return false;
+            }
+
+            if (Tag != null)
+            {
+                return false;
+            }
+
+            if (Parent.IsRootEntityNode() || Parent.IsGlobalContentContainerNode())
+                return true;
+
+
+            if (Parent.IsFilesContainerNode() || Parent.IsDirectoryNode())
+            {
+                return true;
+            }
+
+            else
+                return false;
+        }
+
+        public bool IsRootEntityNode() => Text == "Entities" && Parent == null;
+        public bool IsRootScreenNode() => Text == "Screens" && Parent == null;
+
+
+        public bool IsEntityNode()
+        {
+            return Tag is EntitySave;
+        }
+
+        public bool IsScreenNode() => Tag is ScreenSave;
+
+        public bool IsGlobalContentContainerNode()
+        {
+            return Text == "Global Content Files" && Parent == null;
+        }
+
+        public bool IsFilesContainerNode()
+        {
+            var parentTreeNode = Parent;
+            return Text == "Files" && parentTreeNode != null &&
+                (parentTreeNode.IsEntityNode() || parentTreeNode.IsScreenNode());
+        }
+
+        public bool IsFolderInFilesContainerNode()
+        {
+            var parentTreeNode = Parent;
+
+            return Tag == null && parentTreeNode != null &&
+                (parentTreeNode.IsFilesContainerNode() || parentTreeNode.IsFolderInFilesContainerNode());
+
+        }
+
+        public bool IsElementNode() => Tag is GlueElement;
+        public bool IsReferencedFile() => Tag is ReferencedFileSave;
+
+        public bool IsRootObjectNode()
+        {
+            return Text == "Objects" && Tag == null;
+        }
+
+        public ITreeNode GetContainingElementTreeNode()
+        {
+            if (IsElementNode())
+            {
+                return this;
+            }
+            else if (Parent == null)
+            {
+                return null;
+            }
+            else
+            {
+                return Parent.GetContainingElementTreeNode();
+            }
+        }
+        public bool IsRootLayerNode()
+        {
+            return Text == "Layers" &&
+                Parent != null &&
+                Tag == null &&
+                Parent.IsRootNamedObjectNode();
+        }
+
+        public bool IsRootNamedObjectNode()
+        {
+            return Text == "Objects" &&
+                Parent != null &&
+                (Parent.IsEntityNode() || Parent.IsScreenNode());
+        }
+
+        public bool IsRootCustomVariablesNode()
+        {
+            return Parent != null &&
+                Text == "Variables";
+
+        }
+
+        public bool IsRootEventsNode()
+        {
+            return Parent != null &&
+                (Parent.IsEntityNode() || Parent.IsScreenNode()) &&
+                Text == "Events";
+        }
+
+        public bool IsNamedObjectNode()
+        {
+            return Tag is NamedObjectSave;
+        }
+
+        public bool IsCustomVariable()
+        {
+            return Tag is CustomVariable;
+        }
+
+        public bool IsCodeNode()
+        {
+            return Tag == null && Text.EndsWith(".cs");
+        }
+
+        public bool IsRootCodeNode()
+        {
+
+            return Tag == null && Text == "Code" &&
+                Parent != null && Parent.IsElementNode();
+        }
+
+        public bool IsStateListNode()
+        {
+            var parentTreeNode = Parent;
+            return Text == "States" && parentTreeNode != null &&
+                (parentTreeNode.IsEntityNode() || parentTreeNode.IsScreenNode());
+        }
+
+        public bool IsStateCategoryNode()
+        {
+            return Tag is StateSaveCategory;
+        }
+
+        public bool IsStateNode()
+        {
+            return Tag is StateSave;
+        }
+
+        public bool IsEventResponseTreeNode()
+        {
+            return Tag is EventResponseSave;
+
+        }
+
+        public ITreeNode Root => Parent?.Root ?? this;
+    }
+
+    public class TreeNodeWrapper : ITreeNode
+    {
+        TreeNode treeNode;
+        public TreeNodeWrapper(TreeNode treeNode)
+        {
+            this.treeNode = treeNode;
+        }
+
+        public object Tag
+        {
+            get => treeNode.Tag;
+            set => treeNode.Tag = value;
+        }
+
+        public ITreeNode Parent => treeNode == null ? (ITreeNode)null : new TreeNodeWrapper(treeNode.Parent);
+
+        public string Text => treeNode.Text;
+    }
+
     public static class RightClickHelper
     {
         #region Fields
 
-        static ToolStripMenuItem addScreenToolStripMenuItem;
+        static GeneralToolStripMenuItem addScreenToolStripMenuItem;
 
-        static ToolStripMenuItem addFileToolStripMenuItem;
-        static ToolStripMenuItem newFileToolStripMenuItem;
-        static ToolStripMenuItem existingFileToolStripMenuItem;
-        static ToolStripMenuItem viewInExplorerToolStripMenuItem;
+        static GeneralToolStripMenuItem addFileToolStripMenuItem;
+        static GeneralToolStripMenuItem newFileToolStripMenuItem;
+        static GeneralToolStripMenuItem existingFileToolStripMenuItem;
+        static GeneralToolStripMenuItem viewInExplorerToolStripMenuItem;
 
-        static ToolStripMenuItem openWithDEFAULTToolStripMenuItem;
-
-
-        static ToolStripMenuItem setAsStartUpScreenToolStripMenuItem;
-
-        static ToolStripMenuItem addObjectToolStripMenuItem;
-        static ToolStripMenuItem addEntityToolStripMenuItem;
-        static ToolStripMenuItem removeFromProjectToolStripMenuItem;
-
-        static ToolStripMenuItem addVariableToolStripMenuItem;
-
-        static ToolStripMenuItem editResetVariablesToolStripMenuItem;
-
-        static ToolStripMenuItem addFolderToolStripMenuItem;
-
-        static ToolStripMenuItem ignoreDirectoryToolStripMenuItem;
-
-        static ToolStripMenuItem setCreatedClassToolStripMenuItem;
+        static GeneralToolStripMenuItem openWithDEFAULTToolStripMenuItem;
 
 
-        static ToolStripMenuItem mMoveToTop;
-        static ToolStripMenuItem mMoveToBottom;
+        static GeneralToolStripMenuItem setAsStartUpScreenToolStripMenuItem;
 
-        static ToolStripMenuItem mMoveUp;
-        static ToolStripMenuItem mMoveDown;
-        static ToolStripMenuItem mMakeRequiredAtStartup;
-        static ToolStripMenuItem mRebuildFile;
+        static GeneralToolStripMenuItem addObjectToolStripMenuItem;
+        static GeneralToolStripMenuItem addEntityToolStripMenuItem;
+        static GeneralToolStripMenuItem removeFromProjectToolStripMenuItem;
 
-        static ToolStripMenuItem mViewSourceInExplorer;
+        static GeneralToolStripMenuItem addVariableToolStripMenuItem;
 
-        static ToolStripMenuItem mViewCodeFolderInExplorer;
-        static ToolStripMenuItem mViewContentFilesInExplorer;
+        static GeneralToolStripMenuItem editResetVariablesToolStripMenuItem;
 
-        static ToolStripMenuItem mFindAllReferences;
+        static GeneralToolStripMenuItem addFolderToolStripMenuItem;
 
-        static ToolStripMenuItem mDeleteFolder;
-        static ToolStripMenuItem mRenameFolder;
+        static GeneralToolStripMenuItem ignoreDirectoryToolStripMenuItem;
 
-        static ToolStripMenuItem mDuplicate;
+        static GeneralToolStripMenuItem setCreatedClassToolStripMenuItem;
 
-        static ToolStripMenuItem mAddState;
-        static ToolStripMenuItem mAddStateCategory;
 
-        static ToolStripMenuItem mAddResetVariablesForPooling;
+        static GeneralToolStripMenuItem mMoveToTop;
+        static GeneralToolStripMenuItem mMoveToBottom;
 
-        static ToolStripMenuItem mFillValuesFromDefault;
+        static GeneralToolStripMenuItem mMoveUp;
+        static GeneralToolStripMenuItem mMoveDown;
+        static GeneralToolStripMenuItem mMakeRequiredAtStartup;
+        static GeneralToolStripMenuItem mRebuildFile;
 
-        static ToolStripMenuItem mUseContentPipeline;
+        static GeneralToolStripMenuItem mViewSourceInExplorer;
 
-        static ToolStripMenuItem mRemoveFromProjectQuick;
-        static ToolStripMenuItem mCreateNewFileForMissingFile;
+        static GeneralToolStripMenuItem mViewCodeFolderInExplorer;
+        static GeneralToolStripMenuItem mViewContentFilesInExplorer;
 
-        static ToolStripMenuItem mViewFileLoadOrder;
+        static GeneralToolStripMenuItem mFindAllReferences;
 
-        static ToolStripMenuItem mCreateZipPackage;
-        static ToolStripMenuItem mExportElement;
-        static ToolStripMenuItem mImportElement;
-        static ToolStripMenuItem createDerivedScreen;
+        static GeneralToolStripMenuItem mDeleteFolder;
+        static GeneralToolStripMenuItem mRenameFolder;
 
-        static ToolStripMenuItem mAddEventMenuItem;
+        static GeneralToolStripMenuItem mDuplicate;
 
-        static ToolStripMenuItem mRefreshTreeNodesMenuItem;
+        static GeneralToolStripMenuItem mAddState;
+        static GeneralToolStripMenuItem mAddStateCategory;
 
-        static ToolStripMenuItem mAddEntityInstance;
-        static ToolStripMenuItem mAddEntityList;
+        static GeneralToolStripMenuItem mAddResetVariablesForPooling;
 
-        static ToolStripMenuItem mCopyToBuildFolder;
+        static GeneralToolStripMenuItem mFillValuesFromDefault;
 
-        static ToolStripMenuItem reGenerateCodeToolStripMenuItem;
+        static GeneralToolStripMenuItem mUseContentPipeline;
 
-        static ToolStripMenuItem addLayeritem;
+        static GeneralToolStripMenuItem mRemoveFromProjectQuick;
+        static GeneralToolStripMenuItem mCreateNewFileForMissingFile;
+
+        static GeneralToolStripMenuItem mViewFileLoadOrder;
+
+        static GeneralToolStripMenuItem mCreateZipPackage;
+        static GeneralToolStripMenuItem mExportElement;
+        static GeneralToolStripMenuItem mImportElement;
+        static GeneralToolStripMenuItem createDerivedScreen;
+
+        static GeneralToolStripMenuItem mAddEventMenuItem;
+
+        static GeneralToolStripMenuItem mRefreshTreeNodesMenuItem;
+
+        static GeneralToolStripMenuItem mAddEntityInstance;
+        static GeneralToolStripMenuItem mAddEntityList;
+
+        static GeneralToolStripMenuItem mCopyToBuildFolder;
+
+        static GeneralToolStripMenuItem reGenerateCodeToolStripMenuItem;
+
+        static GeneralToolStripMenuItem addLayeritem;
         #endregion
 
-
-
-        ///////////////////////////////////////////////////////////
         public static void PopulateRightClickItems(TreeNode targetNode, MenuShowingAction menuShowingAction = MenuShowingAction.RegularRightClick)
         {
-
-            MainExplorerPlugin.Self.ElementTreeView.SelectedNode = targetNode;
-            MainGlueWindow form = MainGlueWindow.Self;
-
-            ContextMenuStrip menu = MainGlueWindow.Self.mElementContextMenu;
-
             menu.Items.Clear();
+
             var sourceNode = ElementViewWindow.TreeNodeDraggedOff;
 
+            PopulateRightClickMenuItemsShared(new TreeNodeWrapper(targetNode), menuShowingAction, new TreeNodeWrapper( sourceNode));
+            
+            PluginManager.ReactToTreeViewRightClick(targetNode, menu);
+        }
 
+        private static void PopulateRightClickMenuItemsShared(ITreeNode targetNode, MenuShowingAction menuShowingAction, ITreeNode sourceNode)
+        {
             #region IsScreenNode
 
             if (targetNode.IsScreenNode())
             {
                 if (menuShowingAction == MenuShowingAction.RightButtonDrag)
                 {
-                    if(sourceNode.IsEntityNode())
+                    if (sourceNode.IsEntityNode())
                     {
-                        menu.Items.Add(mAddEntityInstance);
-                        menu.Items.Add(mAddEntityList);
-                    }   
+                        AddEvent("Add Entity Instance", OnAddEntityInstanceClick);
+                        AddEvent("Add Entity List", OnAddEntityListClick);
+                    }
                 }
                 else
                 {
-                    menu.Items.Add(setAsStartUpScreenToolStripMenuItem);
-                    menu.Items.Add(mMakeRequiredAtStartup);
-                    mExportElement.Text = "Export Screen";
-                    menu.Items.Add(mExportElement);
-                    menu.Items.Add(createDerivedScreen);
+                    Add("Set as StartUp Screen", SetStartupScreen);
+                    AddEvent(GlueState.Self.CurrentScreenSave.IsRequiredAtStartup
+                        ? "Remove StartUp Requirement"
+                        : "Make Required at StartUp", MakeRequiredAtStartupClick);
 
-                    AddRemoveFromProjectItems(form, menu);
+                    AddEvent("Export Screen", ExportElementClick);
 
-                    if (GlueState.Self.CurrentScreenSave.IsRequiredAtStartup)
-                    {
-                        mMakeRequiredAtStartup.Text = "Remove StartUp Requirement";
-                    }
-                    else
-                    {
-                        mMakeRequiredAtStartup.Text = "Make Required at StartUp";
-                    }
+                    AddEvent("Create Derived (Level) Screen", HandleCreateDerivedScreenClicked);
 
+                    AddRemoveFromProjectItems();
 
-                    menu.Items.Add("-");
-                    menu.Items.Add(mFindAllReferences);
-                    menu.Items.Add(mRefreshTreeNodesMenuItem);
+                    AddSeparator();
+
+                    AddEvent("Find all references to this", FindAllReferencesClick);
+                    AddItem(mRefreshTreeNodesMenuItem);
                 }
             }
 
@@ -193,25 +374,25 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 if (menuShowingAction == MenuShowingAction.RightButtonDrag && sourceNode.IsEntityNode())
                 {
-                    menu.Items.Add(mAddEntityInstance);
-                    menu.Items.Add(mAddEntityList);
+                    AddItem(mAddEntityInstance);
+                    AddItem(mAddEntityList);
                 }
                 else
                 {
-                    AddRemoveFromProjectItems(form, menu);
+                    AddRemoveFromProjectItems();
 
-                    menu.Items.Add("-");
+                    AddSeparator();
                     mExportElement.Text = "Export Entity";
-                    menu.Items.Add(mExportElement);
-                    menu.Items.Add(mFindAllReferences);
+                    AddItem(mExportElement);
+                    AddItem(mFindAllReferences);
 
                     EntitySave entitySave = ((EntityTreeNode)targetNode).EntitySave;
 
                     if (entitySave.PooledByFactory)
                     {
-                        menu.Items.Add(mAddResetVariablesForPooling);
+                        AddItem(mAddResetVariablesForPooling);
                     }
-                    menu.Items.Add(mRefreshTreeNodesMenuItem);
+                    AddItem(mRefreshTreeNodesMenuItem);
                 }
             }
 
@@ -221,13 +402,13 @@ namespace FlatRedBall.Glue.FormHelpers
 
             else if (targetNode.IsFilesContainerNode() || targetNode.IsFolderInFilesContainerNode())
             {
-                menu.Items.Add(addFileToolStripMenuItem);
-                menu.Items.Add(addFolderToolStripMenuItem);
-                menu.Items.Add("-");
-                menu.Items.Add(viewInExplorerToolStripMenuItem);
+                AddItem(addFileToolStripMenuItem);
+                AddItem(addFolderToolStripMenuItem);
+                AddSeparator();
+                AddItem(viewInExplorerToolStripMenuItem);
                 if (targetNode.IsFolderInFilesContainerNode())
                 {
-                    menu.Items.Add(mDeleteFolder);
+                    AddItem(mDeleteFolder);
                 }
             }
 
@@ -242,17 +423,17 @@ namespace FlatRedBall.Glue.FormHelpers
                 if (targetNode.GetContainingElementTreeNode() != null && ElementViewWindow.TreeNodeDraggedOff != null)
                 {
                     isSameObject = targetNode.GetContainingElementTreeNode().Tag ==
-                    ElementViewWindow.TreeNodeDraggedOff.Tag as ElementCommands;
+                    sourceNode.Tag as ElementCommands;
                 }
 
                 if (menuShowingAction == MenuShowingAction.RightButtonDrag && !isSameObject && sourceNode.IsEntityNode())
                 {
-                    menu.Items.Add(mAddEntityInstance);
-                    menu.Items.Add(mAddEntityList);
+                    AddItem(mAddEntityInstance);
+                    AddItem(mAddEntityList);
                 }
                 else
                 {
-                    menu.Items.Add(addObjectToolStripMenuItem);
+                    AddItem(addObjectToolStripMenuItem);
                 }
             }
 
@@ -260,9 +441,9 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #region IsRootLayerNode
 
-            else if(targetNode.IsRootLayerNode())
+            else if (targetNode.IsRootLayerNode())
             {
-                menu.Items.Add(addLayeritem);
+                AddItem(addLayeritem);
             }
 
 
@@ -271,44 +452,44 @@ namespace FlatRedBall.Glue.FormHelpers
             #region IsGlobalContentContainerNode
             else if (targetNode.IsGlobalContentContainerNode())
             {
-                menu.Items.Add(addFileToolStripMenuItem);
-                menu.Items.Add(addFolderToolStripMenuItem);
-                menu.Items.Add(reGenerateCodeToolStripMenuItem);
+                AddItem(addFileToolStripMenuItem);
+                AddItem(addFolderToolStripMenuItem);
+                AddItem(reGenerateCodeToolStripMenuItem);
 
-                menu.Items.Add(viewInExplorerToolStripMenuItem);
+                AddItem(viewInExplorerToolStripMenuItem);
 
-                menu.Items.Add(mViewFileLoadOrder);
+                AddItem(mViewFileLoadOrder);
             }
             #endregion
 
             #region IsRootEntityNode
             else if (targetNode.IsRootEntityNode())
             {
-                menu.Items.Add(addEntityToolStripMenuItem);
+                AddItem(addEntityToolStripMenuItem);
 
                 mImportElement.Text = "Import Entity";
-                menu.Items.Add(mImportElement);
+                AddItem(mImportElement);
 
-                menu.Items.Add(addFolderToolStripMenuItem);
+                AddItem(addFolderToolStripMenuItem);
             }
             #endregion
 
             #region IsRootScreenNode
             else if (targetNode.IsRootScreenNode())
             {
-                menu.Items.Add(addScreenToolStripMenuItem);
+                AddItem(addScreenToolStripMenuItem);
 
                 mImportElement.Text = "Import Screen";
-                menu.Items.Add(mImportElement);
+                AddItem(mImportElement);
 
             }
             #endregion
-            
+
             #region IsRootCustomVariables
 
             else if (targetNode.IsRootCustomVariablesNode())
             {
-                menu.Items.Add(addVariableToolStripMenuItem);
+                AddItem(addVariableToolStripMenuItem);
             }
 
             #endregion
@@ -316,7 +497,7 @@ namespace FlatRedBall.Glue.FormHelpers
             #region IsRootEventNode
             else if (targetNode.IsRootEventsNode())
             {
-                menu.Items.Add(mAddEventMenuItem);
+                AddItem(mAddEventMenuItem);
             }
             #endregion
 
@@ -324,23 +505,23 @@ namespace FlatRedBall.Glue.FormHelpers
 
             else if (targetNode.IsNamedObjectNode())
             {
-                AddRemoveFromProjectItems(form, menu);
+                AddRemoveFromProjectItems();
 
-                menu.Items.Add(editResetVariablesToolStripMenuItem);
-                menu.Items.Add(mFindAllReferences);
+                AddItem(editResetVariablesToolStripMenuItem);
+                AddItem(mFindAllReferences);
 
-                menu.Items.Add("-");
+                AddSeparator();
 
-                menu.Items.Add(mDuplicate);
+                AddItem(mDuplicate);
 
-                menu.Items.Add("-");
+                AddSeparator();
 
-                menu.Items.Add(mMoveToTop);
-                menu.Items.Add(mMoveUp);
-                menu.Items.Add(mMoveDown);
-                menu.Items.Add(mMoveToBottom);
+                AddItem(mMoveToTop);
+                AddItem(mMoveUp);
+                AddItem(mMoveDown);
+                AddItem(mMoveToBottom);
 
-                menu.Items.Add("-");
+                AddSeparator();
 
                 var currentNamedObject = GlueState.Self.CurrentNamedObjectSave;
 
@@ -351,18 +532,18 @@ namespace FlatRedBall.Glue.FormHelpers
                     var shouldAdd = true;
                     var genericEntityType = ObjectFinder.Self.GetEntitySave(currentNamedObject.SourceClassGenericType);
                     var isAbstractEntity = genericEntityType?.AllNamedObjects.Any(item => item.SetByDerived) == true;
-                    if(isAbstractEntity)
+                    if (isAbstractEntity)
                     {
                         shouldAdd = false;
                     }
-                    if(shouldAdd)
+                    if (shouldAdd)
                     {
-                        menu.Items.Add(addObjectToolStripMenuItem);
+                        AddItem(addObjectToolStripMenuItem);
                     }
                 }
-                else if(currentNamedObject?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection)
+                else if (currentNamedObject?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection)
                 {
-                    menu.Items.Add(addObjectToolStripMenuItem);
+                    AddItem(addObjectToolStripMenuItem);
                 }
 
             }
@@ -372,42 +553,42 @@ namespace FlatRedBall.Glue.FormHelpers
             #region IsReferencedFileNode
             else if (targetNode.IsReferencedFile())
             {
-                menu.Items.Add(viewInExplorerToolStripMenuItem);
-                menu.Items.Add(mFindAllReferences);
-                menu.Items.Add("Copy path to clipboard", null, HandleCopyToClipboardClick);
-                menu.Items.Add("-");
+                AddItem(viewInExplorerToolStripMenuItem);
+                AddItem(mFindAllReferences);
+                AddEvent("Copy path to clipboard", HandleCopyToClipboardClick);
+                AddSeparator();
 
-                menu.Items.Add(mCreateZipPackage);
+                AddItem(mCreateZipPackage);
 
-                menu.Items.Add("-");
+                AddSeparator();
 
-                AddRemoveFromProjectItems(form, menu);
+                AddRemoveFromProjectItems();
 
-                menu.Items.Add(mUseContentPipeline);
-                //menu.Items.Add(form.openWithDEFAULTToolStripMenuItem);
+                AddItem(mUseContentPipeline);
+                //AddItem(form.openWithDEFAULTToolStripMenuItem);
 
                 ReferencedFileSave rfs = (ReferencedFileSave)targetNode.Tag;
 
                 if (FileManager.GetExtension(rfs.Name) == "csv" || rfs.TreatAsCsv)
                 {
-                    menu.Items.Add("-");
-                    menu.Items.Add(setCreatedClassToolStripMenuItem);
-                    menu.Items.Add(reGenerateCodeToolStripMenuItem);
+                    AddSeparator();
+                    AddItem(setCreatedClassToolStripMenuItem);
+                    AddItem(reGenerateCodeToolStripMenuItem);
                 }
 
 
                 if (!string.IsNullOrEmpty(rfs.SourceFile) || rfs.SourceFileCache?.Count > 0)
                 {
-                    menu.Items.Add("-");
-                    menu.Items.Add(mViewSourceInExplorer);
-                    menu.Items.Add(mRebuildFile);
+                    AddSeparator();
+                    AddItem(mViewSourceInExplorer);
+                    AddItem(mRebuildFile);
                 }
 
-                menu.Items.Add(mCopyToBuildFolder);
+                AddItem(mCopyToBuildFolder);
 
                 if (!File.Exists(ProjectManager.MakeAbsolute(rfs.Name, true)))
                 {
-                    menu.Items.Add(mCreateNewFileForMissingFile);
+                    AddItem(mCreateNewFileForMissingFile);
                 }
             }
 
@@ -416,19 +597,19 @@ namespace FlatRedBall.Glue.FormHelpers
             #region IsCustomVariable
             else if (targetNode.IsCustomVariable())
             {
-                AddRemoveFromProjectItems(form, menu);
+                AddRemoveFromProjectItems();
 
-                menu.Items.Add("-");
+                AddSeparator();
 
 
-                menu.Items.Add(mFindAllReferences);
+                AddItem(mFindAllReferences);
 
-                menu.Items.Add("-");
-                    
-                menu.Items.Add(mMoveToTop);
-                menu.Items.Add(mMoveUp);
-                menu.Items.Add(mMoveDown);
-                menu.Items.Add(mMoveToBottom);
+                AddSeparator();
+
+                AddItem(mMoveToTop);
+                AddItem(mMoveUp);
+                AddItem(mMoveDown);
+                AddItem(mMoveToBottom);
             }
 
             #endregion
@@ -437,8 +618,8 @@ namespace FlatRedBall.Glue.FormHelpers
             else if (targetNode.IsCodeNode())
             {
 
-                menu.Items.Add(viewInExplorerToolStripMenuItem);
-                menu.Items.Add(reGenerateCodeToolStripMenuItem);
+                AddItem(viewInExplorerToolStripMenuItem);
+                AddItem(reGenerateCodeToolStripMenuItem);
             }
 
             #endregion
@@ -447,7 +628,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             else if (targetNode.IsRootCodeNode())
             {
-                menu.Items.Add(reGenerateCodeToolStripMenuItem);
+                AddItem(reGenerateCodeToolStripMenuItem);
             }
 
 
@@ -456,35 +637,35 @@ namespace FlatRedBall.Glue.FormHelpers
             #region IsDirectoryNode
             else if (targetNode.IsDirectoryNode())
             {
-                //menu.Items.Add(form.viewInExplorerToolStripMenuItem);
-                menu.Items.Add(mViewContentFilesInExplorer);
-                menu.Items.Add(mViewCodeFolderInExplorer);
-                menu.Items.Add("-");
+                //AddItem(form.viewInExplorerToolStripMenuItem);
+                AddItem(mViewContentFilesInExplorer);
+                AddItem(mViewCodeFolderInExplorer);
+                AddSeparator();
 
 
-                menu.Items.Add(addFolderToolStripMenuItem);
+                AddItem(addFolderToolStripMenuItem);
 
-                bool isEntityContainingFolder = targetNode.Root().IsRootEntityNode();
+                bool isEntityContainingFolder = targetNode.Root.IsRootEntityNode();
 
                 if (isEntityContainingFolder)
                 {
-                    menu.Items.Add(addEntityToolStripMenuItem);
+                    AddItem(addEntityToolStripMenuItem);
 
                     mImportElement.Text = "Import Entity";
-                    menu.Items.Add(mImportElement);
+                    AddItem(mImportElement);
                 }
                 else
                 {
                     // If not in the Entities tree structure, assume global content
-                    menu.Items.Add(addFileToolStripMenuItem);
+                    AddItem(addFileToolStripMenuItem);
                 }
 
-                menu.Items.Add("-");
+                AddSeparator();
 
-                menu.Items.Add(mDeleteFolder);
-                if(isEntityContainingFolder)
+                AddItem(mDeleteFolder);
+                if (isEntityContainingFolder)
                 {
-                    menu.Items.Add(mRenameFolder);
+                    AddItem(mRenameFolder);
                 }
             }
 
@@ -495,8 +676,8 @@ namespace FlatRedBall.Glue.FormHelpers
             else if (targetNode.IsStateListNode())
             {
                 // We no longer support uncategorized states. They are a mess!
-                //menu.Items.Add(mAddState);
-                menu.Items.Add(mAddStateCategory);
+                //AddItem(mAddState);
+                AddItem(mAddStateCategory);
             }
 
             #endregion
@@ -504,8 +685,8 @@ namespace FlatRedBall.Glue.FormHelpers
             #region IsStateCategoryNode
             else if (targetNode.IsStateCategoryNode())
             {
-                menu.Items.Add(mAddState);
-                AddRemoveFromProjectItems(form, menu);
+                AddItem(mAddState);
+                AddRemoveFromProjectItems();
 
             }
             #endregion
@@ -514,12 +695,12 @@ namespace FlatRedBall.Glue.FormHelpers
 
             else if (targetNode.IsStateNode())
             {
-                AddRemoveFromProjectItems(form, menu);
+                AddRemoveFromProjectItems();
 
-                menu.Items.Add("-");
-                menu.Items.Add(mDuplicate);
-                menu.Items.Add("-");
-                menu.Items.Add(mFillValuesFromDefault);
+                AddSeparator();
+                AddItem(mDuplicate);
+                AddSeparator();
+                AddItem(mFillValuesFromDefault);
             }
 
             #endregion
@@ -528,13 +709,44 @@ namespace FlatRedBall.Glue.FormHelpers
 
             else if (targetNode.IsEventResponseTreeNode())
             {
-                AddRemoveFromProjectItems(form, menu);
+                AddRemoveFromProjectItems();
 
             }
 
             #endregion
-            PluginManager.ReactToTreeViewRightClick(targetNode, menu);
         }
+
+        static ContextMenuStrip menu => MainGlueWindow.Self.mElementContextMenu;
+        static ToolStripMenuItem Add(string text, Action action, string shortcutDisplay = null)
+        {
+            var tsmi = new ToolStripMenuItem(text);
+            tsmi.Click += (not, used) => action();
+            tsmi.ShortcutKeyDisplayString = shortcutDisplay;
+            menu.Items.Add(tsmi);
+            return tsmi;
+        }
+
+        static ToolStripMenuItem AddEvent(string text, EventHandler eventHandler, string shortcutDisplay = null)
+        {
+            var tsmi = new ToolStripMenuItem(text);
+            tsmi.Click += eventHandler;
+            tsmi.ShortcutKeyDisplayString = shortcutDisplay;
+            menu.Items.Add(tsmi);
+
+            return tsmi;
+        }
+
+        static void AddItem(GeneralToolStripMenuItem generalItem)
+        {
+            var tsmi = generalItem.ToTsmi();
+            menu.Items.Add(tsmi);
+        }
+
+        static void AddSeparator()
+        {
+            menu.Items.Add("-");
+        }
+
 
         public static ReferencedFileSave AddSingleFile(string fullFileName, ref bool cancelled, IElement elementToAddTo = null)
         {
@@ -543,55 +755,34 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static void Initialize()
         {
-            addScreenToolStripMenuItem = new ToolStripMenuItem();
-            addScreenToolStripMenuItem.Name = "addScreenToolStripMenuItem";
-            addScreenToolStripMenuItem.Text = "Add Screen";
+            addScreenToolStripMenuItem = new GeneralToolStripMenuItem("Add Screen");           
             addScreenToolStripMenuItem.Click += (not, used) => GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog();
 
-            setAsStartUpScreenToolStripMenuItem = new ToolStripMenuItem();
-            setAsStartUpScreenToolStripMenuItem.Name = "setAsStartUpScreenToolStripMenuItem";
-            setAsStartUpScreenToolStripMenuItem.Text = "Set as StartUp Screen";
+            setAsStartUpScreenToolStripMenuItem = new GeneralToolStripMenuItem("Set as StartUp Screen");
             setAsStartUpScreenToolStripMenuItem.Click += (not, used) =>
             {
-                var selectedNode = GlueState.Self.CurrentTreeNode;
-                if (selectedNode != null)
-                {
-                    GlueCommands.Self.GluxCommands.StartUpScreenName =
-                        GlueState.Self.CurrentScreenSave?.Name;
-                //    ElementViewWindow.StartUpScreenTreeNode = selectedNode;
-                }
+                SetStartupScreen();
             };
 
-            addEntityToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            addEntityToolStripMenuItem.Name = "addEntityToolStripMenuItem";
-            addEntityToolStripMenuItem.Text = "Add Entity";
+            addEntityToolStripMenuItem = new GeneralToolStripMenuItem("Add Entity");
             addEntityToolStripMenuItem.Click += (not, used) => GlueCommands.Self.DialogCommands.ShowAddNewEntityDialog();
 
-            addFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            addFolderToolStripMenuItem.Name = "addFolderToolStripMenuItem";
-            addFolderToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            addFolderToolStripMenuItem.Text = "Add Folder";
+            addFolderToolStripMenuItem = new GeneralToolStripMenuItem("Add Folder");
             addFolderToolStripMenuItem.Click += (not, used) => RightClickHelper.AddFolderClick(); 
             
-            addObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            addObjectToolStripMenuItem.Name = "addObjectToolStripMenuItem";
+            addObjectToolStripMenuItem = new GeneralToolStripMenuItem();
             addObjectToolStripMenuItem.Text = "Add Object";
             addObjectToolStripMenuItem.Click += (not, used) => GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog();
 
-            ignoreDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            ignoreDirectoryToolStripMenuItem.Name = "ignoreDirectoryToolStripMenuItem";
-            ignoreDirectoryToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            ignoreDirectoryToolStripMenuItem = new GeneralToolStripMenuItem();
             ignoreDirectoryToolStripMenuItem.Text = "Ignore Directory";
             ignoreDirectoryToolStripMenuItem.Click += (not, used) => RightClickHelper.IgnoreDirectoryClick();
 
-            existingFileToolStripMenuItem = new ToolStripMenuItem();
-            existingFileToolStripMenuItem.Name = "existingFileToolStripMenuItem";
+            existingFileToolStripMenuItem = new GeneralToolStripMenuItem();
             existingFileToolStripMenuItem.Text = "Existing File";
             existingFileToolStripMenuItem.Click += (not, used) => AddExistingFileManager.Self.AddExistingFileClick();
 
-            setCreatedClassToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            setCreatedClassToolStripMenuItem.Name = "setCreatedClassToolStripMenuItem";
-            setCreatedClassToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            setCreatedClassToolStripMenuItem = new GeneralToolStripMenuItem();
             setCreatedClassToolStripMenuItem.Text = "Set Created Class";
             setCreatedClassToolStripMenuItem.Click += (not, used) =>
             {
@@ -606,51 +797,39 @@ namespace FlatRedBall.Glue.FormHelpers
             };
             
 
-            openWithDEFAULTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            openWithDEFAULTToolStripMenuItem.Name = "openWithDEFAULTToolStripMenuItem";
+            openWithDEFAULTToolStripMenuItem = new GeneralToolStripMenuItem();
             openWithDEFAULTToolStripMenuItem.Text = "Open with...";
 
-            newFileToolStripMenuItem = new ToolStripMenuItem();
-            newFileToolStripMenuItem.Name = "newFileToolStripMenuItem";
-            newFileToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            newFileToolStripMenuItem = new GeneralToolStripMenuItem();
             newFileToolStripMenuItem.Text = "New File";
             newFileToolStripMenuItem.Click += (not, used) => GlueCommands.Self.DialogCommands.ShowAddNewFileDialog(); 
 
-            addFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            addFileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            addFileToolStripMenuItem = new GeneralToolStripMenuItem();
+            addFileToolStripMenuItem.DropDownItems.AddRange(new GeneralToolStripMenuItem[] {
             newFileToolStripMenuItem,
             existingFileToolStripMenuItem});
 
-            addFileToolStripMenuItem.Name = "addFileToolStripMenuItem";
             addFileToolStripMenuItem.Text = "Add File";
             // this didn't do anything before I migrated it here. What does it do?
             //addFileToolStripMenuItem.Click += new System.EventHandler(this.addFileToolStripMenuItem_Click);
 
-            viewInExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            viewInExplorerToolStripMenuItem.Name = "viewInExplorerToolStripMenuItem";
-            viewInExplorerToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            viewInExplorerToolStripMenuItem = new GeneralToolStripMenuItem();
             viewInExplorerToolStripMenuItem.Text = "View in explorer";
             viewInExplorerToolStripMenuItem.Click += (not, used) => RightClickHelper.ViewInExplorerClick();
 
-            removeFromProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            removeFromProjectToolStripMenuItem.Name = "removeFromProjectToolStripMenuItem";
-            removeFromProjectToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            removeFromProjectToolStripMenuItem = new GeneralToolStripMenuItem();
             removeFromProjectToolStripMenuItem.Text = "Remove from project";
             removeFromProjectToolStripMenuItem.Click += (not, used) => RightClickHelper.RemoveFromProjectToolStripMenuItem(); 
 
-            mMoveToTop = new ToolStripMenuItem("^^ Move To Top");
+            mMoveToTop = new GeneralToolStripMenuItem("^^ Move To Top");
             mMoveToTop.ShortcutKeyDisplayString = "Alt+Shift+Up";
             mMoveToTop.Click += new System.EventHandler(MoveToTopClick);
 
-            addVariableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            addVariableToolStripMenuItem.Name = "addVariableToolStripMenuItem";
-            addVariableToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            addVariableToolStripMenuItem = new GeneralToolStripMenuItem();
             addVariableToolStripMenuItem.Text = "Add Variable";
             addVariableToolStripMenuItem.Click += (not, used) => GlueCommands.Self.DialogCommands.ShowAddNewVariableDialog();
 
-            editResetVariablesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            editResetVariablesToolStripMenuItem.Name = "editResetVariablesToolStripMenuItem";
-            editResetVariablesToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            editResetVariablesToolStripMenuItem = new GeneralToolStripMenuItem();
             editResetVariablesToolStripMenuItem.Text = "Edit Reset Variables";
             editResetVariablesToolStripMenuItem.Click += (not, used) =>
             {
@@ -680,6 +859,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     StringFunctions.RemoveDuplicates(nos.VariablesToReset);
                     GluxCommands.Self.SaveGlux();
 
+
                     ElementViewWindow.GenerateSelectedElementCode();
 
 
@@ -687,101 +867,111 @@ namespace FlatRedBall.Glue.FormHelpers
             };
             
 
-            mMoveUp = new ToolStripMenuItem("^ Move Up");
+            mMoveUp = new GeneralToolStripMenuItem("^ Move Up");
             mMoveUp.ShortcutKeyDisplayString = "Alt+Up";
             mMoveUp.Click += new System.EventHandler(MoveUpClick);
 
-            mMoveDown = new ToolStripMenuItem("v Move Down");
+            mMoveDown = new GeneralToolStripMenuItem("v Move Down");
             mMoveDown.ShortcutKeyDisplayString = "Alt+Down";
             mMoveDown.Click += new System.EventHandler(MoveDownClick);
 
-            mMoveToBottom = new ToolStripMenuItem("vv Move To Bottom");
+            mMoveToBottom = new GeneralToolStripMenuItem("vv Move To Bottom");
             mMoveToBottom.ShortcutKeyDisplayString = "Alt+Shift+Down";
             mMoveToBottom.Click += new System.EventHandler(MoveToBottomClick);
 
-            mMakeRequiredAtStartup = new ToolStripMenuItem("Make Required at StartUp");
+            mMakeRequiredAtStartup = new GeneralToolStripMenuItem("Make Required at StartUp");
             mMakeRequiredAtStartup.Click += new EventHandler(MakeRequiredAtStartupClick);
 
-            mRebuildFile = new ToolStripMenuItem("Rebuild File");
+            mRebuildFile = new GeneralToolStripMenuItem("Rebuild File");
             mRebuildFile.Click += RebuildFileClick;
 
-            mViewSourceInExplorer = new ToolStripMenuItem("View source file in explorer");
+            mViewSourceInExplorer = new GeneralToolStripMenuItem("View source file in explorer");
             mViewSourceInExplorer.Click += new EventHandler(ViewSourceInExplorerClick);
 
-            mFindAllReferences = new ToolStripMenuItem("Find all references to this");
+            mFindAllReferences = new GeneralToolStripMenuItem("Find all references to this");
             mFindAllReferences.Click += new EventHandler(FindAllReferencesClick);
 
-            mViewCodeFolderInExplorer = new ToolStripMenuItem("View code folder");
+            mViewCodeFolderInExplorer = new GeneralToolStripMenuItem("View code folder");
             mViewCodeFolderInExplorer.Click += new EventHandler(ViewCodeFolderInExplorerClick);
 
-            mViewContentFilesInExplorer = new ToolStripMenuItem("View content folder");
+            mViewContentFilesInExplorer = new GeneralToolStripMenuItem("View content folder");
             mViewContentFilesInExplorer.Click += new EventHandler(ViewContentFolderInExplorer);
 
-            mDeleteFolder = new ToolStripMenuItem("Delete Folder");
+            mDeleteFolder = new GeneralToolStripMenuItem("Delete Folder");
             mDeleteFolder.Click += new EventHandler(DeleteFolderClick);
 
-            mRenameFolder = new ToolStripMenuItem("Rename Folder");
+            mRenameFolder = new GeneralToolStripMenuItem("Rename Folder");
             mRenameFolder.Click += HandleRenameFolderClick;
 
-            mDuplicate = new ToolStripMenuItem("Duplicate");
+            mDuplicate = new GeneralToolStripMenuItem("Duplicate");
             mDuplicate.Click += new EventHandler(DuplicateClick);
 
-            mAddState = new ToolStripMenuItem("Add State");
+            mAddState = new GeneralToolStripMenuItem("Add State");
             mAddState.Click += new EventHandler(AddStateClick);
 
-            mAddStateCategory = new ToolStripMenuItem("Add State Category");
+            mAddStateCategory = new GeneralToolStripMenuItem("Add State Category");
             mAddStateCategory.Click += new EventHandler(AddStateCategoryClick);
 
-            mAddResetVariablesForPooling = new ToolStripMenuItem("Add Reset Variables For Pooling");
+            mAddResetVariablesForPooling = new GeneralToolStripMenuItem("Add Reset Variables For Pooling");
             mAddResetVariablesForPooling.Click += new EventHandler(mAddResetVariablesForPooling_Click);
 
-            mFillValuesFromDefault = new ToolStripMenuItem("Fill Values From Variables");
+            mFillValuesFromDefault = new GeneralToolStripMenuItem("Fill Values From Variables");
             mFillValuesFromDefault.Click += new EventHandler(mFillValuesFromVariables_Click);
 
-            mRemoveFromProjectQuick = new ToolStripMenuItem("Remove from project quick (ONLY IF YOU KNOW WHAT YOU'RE DOING!)");
+            mRemoveFromProjectQuick = new GeneralToolStripMenuItem("Remove from project quick (ONLY IF YOU KNOW WHAT YOU'RE DOING!)");
             mRemoveFromProjectQuick.Click += new EventHandler(RemoveFromProjectQuick);
 
-            mUseContentPipeline = new ToolStripMenuItem("Toggle Use Content Pipeline");
+            mUseContentPipeline = new GeneralToolStripMenuItem("Toggle Use Content Pipeline");
             mUseContentPipeline.Click += new EventHandler(mUseContentPipeline_Click);
 
-            mCreateNewFileForMissingFile = new ToolStripMenuItem("Create new file for missing file");
+            mCreateNewFileForMissingFile = new GeneralToolStripMenuItem("Create new file for missing file");
             mCreateNewFileForMissingFile.Click += new EventHandler(CreateNewFileForMissingFileClick);
 
-            mViewFileLoadOrder = new ToolStripMenuItem("View File Order");
+            mViewFileLoadOrder = new GeneralToolStripMenuItem("View File Order");
             mViewFileLoadOrder.Click += new EventHandler(ViewFileOrderClick);
 
-            mCreateZipPackage = new ToolStripMenuItem("Create Zip Package");
+            mCreateZipPackage = new GeneralToolStripMenuItem("Create Zip Package");
             mCreateZipPackage.Click += new EventHandler(CreateZipPackageClick);
 
-            mExportElement = new ToolStripMenuItem("Export Screen");
+            mExportElement = new GeneralToolStripMenuItem("Export Screen");
             mExportElement.Click += new EventHandler(ExportElementClick);
 
-            createDerivedScreen = new ToolStripMenuItem("Create Derived (Level) Screen");
+            createDerivedScreen = new GeneralToolStripMenuItem("Create Derived (Level) Screen");
             createDerivedScreen.Click += HandleCreateDerivedScreenClicked;
 
-            mImportElement = new ToolStripMenuItem("Import Screen");
+            mImportElement = new GeneralToolStripMenuItem("Import Screen");
             mImportElement.Click += new EventHandler(ImportElementClick);
 
-            mAddEventMenuItem = new ToolStripMenuItem("Add Event");
+            mAddEventMenuItem = new GeneralToolStripMenuItem("Add Event");
             mAddEventMenuItem.Click += new EventHandler(AddEventClicked);
 
-            mRefreshTreeNodesMenuItem = new ToolStripMenuItem("Refresh UI");
+            mRefreshTreeNodesMenuItem = new GeneralToolStripMenuItem("Refresh UI");
             mRefreshTreeNodesMenuItem.Click += new EventHandler(OnRefreshTreeNodesClick);
 
-            mAddEntityInstance = new ToolStripMenuItem("Add Entity Instance");
+            mAddEntityInstance = new GeneralToolStripMenuItem("Add Entity Instance");
             mAddEntityInstance.Click += new EventHandler(OnAddEntityInstanceClick);
 
-            mAddEntityList = new ToolStripMenuItem("Add Entity List");
+            mAddEntityList = new GeneralToolStripMenuItem("Add Entity List");
             mAddEntityList.Click += new EventHandler(OnAddEntityListClick);
 
-            mCopyToBuildFolder = new ToolStripMenuItem("Copy to build folder");
+            mCopyToBuildFolder = new GeneralToolStripMenuItem("Copy to build folder");
             mCopyToBuildFolder.Click += HandleCopyToBuildFolder;
 
-            reGenerateCodeToolStripMenuItem = new ToolStripMenuItem("Re-Generate Code");
+            reGenerateCodeToolStripMenuItem = new GeneralToolStripMenuItem("Re-Generate Code");
             reGenerateCodeToolStripMenuItem.Click += HandleReGenerateCodeClick;
 
-            addLayeritem = new ToolStripMenuItem("Add Layer");
+            addLayeritem = new GeneralToolStripMenuItem("Add Layer");
             addLayeritem.Click += HandleAddLayerClick;
+        }
+
+        private static void SetStartupScreen()
+        {
+            var selectedNode = GlueState.Self.CurrentTreeNode;
+            if (selectedNode != null)
+            {
+                GlueCommands.Self.GluxCommands.StartUpScreenName =
+                    GlueState.Self.CurrentScreenSave?.Name;
+            }
         }
 
         private static void HandleCreateDerivedScreenClicked(object sender, EventArgs e)
@@ -934,9 +1124,9 @@ namespace FlatRedBall.Glue.FormHelpers
         }
 
 
-        private static void AddRemoveFromProjectItems(MainGlueWindow form, ContextMenuStrip menu)
+        private static void AddRemoveFromProjectItems()
         {
-            menu.Items.Add(removeFromProjectToolStripMenuItem);
+            AddItem(removeFromProjectToolStripMenuItem);
 
             if (GlueState.Self.CurrentReferencedFileSave != null ||
                 GlueState.Self.CurrentNamedObjectSave != null ||
@@ -964,7 +1154,7 @@ namespace FlatRedBall.Glue.FormHelpers
             }
             if ((Control.ModifierKeys & Keys.Shift) != 0)
             {
-                menu.Items.Add(mRemoveFromProjectQuick);
+                AddItem(mRemoveFromProjectQuick);
             }
         }
 

@@ -144,7 +144,10 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
         {
             if (e.Button == MouseButtons.Right)
             {
-                RightClickHelper.PopulateRightClickItems(ElementTreeView.GetNodeAt(e.X, e.Y));
+                var node = ElementTreeView.GetNodeAt(e.X, e.Y);
+                MainExplorerPlugin.Self.ElementTreeView.SelectedNode = node;
+
+                RightClickHelper.PopulateRightClickItems(node);
             }
         }
 

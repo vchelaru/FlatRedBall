@@ -592,5 +592,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
         }
 
+        public NodeViewModel GetTreeNodeByTag(object tag)
+        {
+            var found =
+                ScreenRootNode.GetNodeByTag(tag) ??
+                EntityRootNode.GetNodeByTag(tag) ??
+                GlobalContentRootNode.GetNodeByTag(tag);
+            return found;
+        }
     }
 }

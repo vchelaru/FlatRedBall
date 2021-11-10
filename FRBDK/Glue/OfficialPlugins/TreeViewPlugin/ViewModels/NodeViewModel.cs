@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using OfficialPlugins.TreeViewPlugin.Logic;
 using OfficialPlugins.TreeViewPlugin.Models;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         #region Fields/Properties
 
         public static ImageSource CodeIcon;
+        public static ImageSource CollisionsIcon;
         public static ImageSource CollisionIcon;
         public static ImageSource EntityIcon;
         public static ImageSource EntityInstanceIcon;
@@ -32,6 +34,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public static ImageSource FolderClosedIcon;
         public static ImageSource FolderOpenIcon;
         public static ImageSource LayersIcon;
+        public static ImageSource LayerIcon;
         public static ImageSource ScreenIcon;
         public static ImageSource StateIcon;
         public static ImageSource VariableIcon;
@@ -93,7 +96,14 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public bool IsSelected
         {
             get => Get<bool>();
-            set => Set(value);
+            set
+            {
+                if (Set(value) && value)
+                {
+
+                    SelectionLogic.HandleSelected(this);
+                }
+            }
         }
 
         public int Level
@@ -104,10 +114,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         #endregion
 
+        #region Constructors
+
         static NodeViewModel()
         {
             CodeIcon = LoadIcon("icon_code");
             CollisionIcon = LoadIcon("icon_collision");
+            CollisionsIcon = LoadIcon("icon_collisions");
             EntityIcon = LoadIcon("icon_entity");
             EntityInstanceIcon = LoadIcon("icon_entity_instance");
             EventIcon = LoadIcon("icon_event");
@@ -115,6 +128,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             FolderClosedIcon = LoadIcon("icon_folder");
             FolderOpenIcon = LoadIcon("icon_folder_open");
             LayersIcon = LoadIcon("icon_layers");
+            LayerIcon = LoadIcon("icon_layer");
             ScreenIcon = LoadIcon("icon_screen");
             StateIcon = LoadIcon("icon_state");
             VariableIcon = LoadIcon("icon_variable");
@@ -128,6 +142,15 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         }
 
+        internal void ExpandParentsRecursively()
+        {
+            if(Parent != null)
+            {
+                Parent.IsExpanded = true;
+                Parent.ExpandParentsRecursively();
+            }
+        }
+
         public NodeViewModel(NodeViewModel parent)
         {
             //this.Node = Node;
@@ -136,6 +159,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             ImageSource = FolderClosedIcon;
         }
+
+        #endregion
 
         public virtual void RefreshTreeNodes()
         {
@@ -159,7 +184,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         //        }
         //    }
         //}
-
 
         public NodeViewModel AddChild()
         {
@@ -265,6 +289,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 return textToReturn;
             }
         }
+
+        public NodeViewModel Root() => Parent == null ? this : Parent.Root();
 
         #region "Is" methods
 
@@ -415,6 +441,30 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
         }
 
-        public NodeViewModel Root() => Parent == null ? this : Parent.Root();
+        internal NodeViewModel GetNodeByTag(object tag)
+        {
+            if(tag == this.Tag)
+            {
+                return this;
+            }
+            else
+            {
+                foreach(var child in Children)
+                {
+                    var node = child.GetNodeByTag(tag);
+
+                    if(node != null)
+                    {
+                        return node;
+                    }
+                }
+            }
+            return null;
+        }
+
+        public override string ToString()
+        {
+            return Text;
+        }
     }
 }

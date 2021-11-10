@@ -16,7 +16,7 @@
         </Grid.RowDefinitions>
         <Label>This is a test:</Label>
 
-        <pt:TreeListBox Grid.Row="1" x:Name="MainTreeView" HierarchySource="{Binding Root}">
+        <pt:TreeListBox SelectionMode="Single" Grid.Row="1" x:Name="MainTreeView" HierarchySource="{Binding Root}" MouseMove="MainTreeView_MouseMove">
             <pt:TreeListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid>

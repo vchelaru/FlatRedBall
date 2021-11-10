@@ -110,7 +110,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
-        public StateSave CurrentStateSave => snapshot.CurrentStateSave;
+        public StateSave CurrentStateSave
+        {
+            get => snapshot.CurrentStateSave;
+            set
+            {
+                var treeNode = GlueState.Self.Find.TreeNodeByTag(value);
+                if (treeNode != null)
+                {
+                    CurrentTreeNode = treeNode;
+                }
+            }
+        }
 
         public StateSaveCategory CurrentStateSaveCategory
         {

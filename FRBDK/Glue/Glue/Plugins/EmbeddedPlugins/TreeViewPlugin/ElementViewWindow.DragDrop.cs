@@ -22,6 +22,7 @@ using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.ViewModels;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.Managers;
+using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
 
 namespace FlatRedBall.Glue.FormHelpers
 {
@@ -123,6 +124,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 if (ButtonUsed == MouseButtons.Right)
                 {
+                    MainExplorerPlugin.Self.ElementTreeView.SelectedNode = targetNode;
 
                     RightClickHelper.PopulateRightClickItems(targetNode, MenuShowingAction.RightButtonDrag);
                     MainGlueWindow.Self.mElementContextMenu.Show(new Point(e.X, e.Y));

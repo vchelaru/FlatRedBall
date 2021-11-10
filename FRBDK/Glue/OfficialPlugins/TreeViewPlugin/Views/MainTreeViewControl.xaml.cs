@@ -25,5 +25,13 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
 
         }
+
+        // This makes the selection not happen on push+move as explained here:
+        // https://stackoverflow.com/questions/2645265/wpf-listbox-click-and-drag-selects-other-items
+        private void MainTreeView_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+                (sender as ListBox).ReleaseMouseCapture();
+        }
     }
 }
