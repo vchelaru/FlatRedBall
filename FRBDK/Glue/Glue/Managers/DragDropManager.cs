@@ -87,7 +87,7 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        private bool DragDropNosOnNos(TreeNode treeNodeMoving, TreeNode targetNode, NamedObjectSave targetNos, NamedObjectSave movingNos, bool succeeded)
+        private bool DragDropNosOnNos(ITreeNode treeNodeMoving, ITreeNode targetNode, NamedObjectSave targetNos, NamedObjectSave movingNos, bool succeeded)
         {
             var targetAti = targetNos.GetAssetTypeInfo();
             string targetClassType = targetAti?.FriendlyName;
@@ -373,7 +373,7 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        private static bool MoveObjectOnRootCustomVariablesNode(TreeNode treeNodeMoving, TreeNode targetNode)
+        private static bool MoveObjectOnRootCustomVariablesNode(ITreeNode treeNodeMoving, ITreeNode targetNode)
         {
             bool succeeded = true;
 
@@ -393,7 +393,7 @@ namespace FlatRedBall.Glue.Managers
             return succeeded;
         }
 
-        private static bool DragDropNosOnRootEventsNode(TreeNode treeNodeMoving, TreeNode targetNode)
+        private static bool DragDropNosOnRootEventsNode(ITreeNode treeNodeMoving, ITreeNode targetNode)
         {
             bool succeeded = true;
 
@@ -413,7 +413,7 @@ namespace FlatRedBall.Glue.Managers
             return succeeded;
         }
 
-        private static GeneralResponse HandleDropOnList(TreeNode treeNodeMoving, TreeNode targetNode, NamedObjectSave targetNos, NamedObjectSave movingNos)
+        private static GeneralResponse HandleDropOnList(ITreeNode treeNodeMoving, ITreeNode targetNode, NamedObjectSave targetNos, NamedObjectSave movingNos)
         {
             var toReturn = GeneralResponse.SuccessfulResponse;
 
@@ -421,7 +421,7 @@ namespace FlatRedBall.Glue.Managers
                 toReturn.Succeeded = true;
 
                 // Get the old parent of the moving NOS
-                TreeNode parentTreeNode = treeNodeMoving.Parent;
+                var parentTreeNode = treeNodeMoving.Parent;
                 if (parentTreeNode.IsNamedObjectNode())
                 {
                     NamedObjectSave parentNos = parentTreeNode.Tag as NamedObjectSave;
@@ -432,8 +432,8 @@ namespace FlatRedBall.Glue.Managers
                 {
                     GlueState.Self.CurrentElement.NamedObjects.Remove(movingNos);
                 }
-                parentTreeNode.Nodes.Remove(treeNodeMoving);
-                targetNode.Nodes.Add(treeNodeMoving);
+                parentTreeNode.Remove(treeNodeMoving);
+                targetNode.Add(treeNodeMoving);
                 // Add the NOS to the tree node moving on
                 targetNos.ContainedObjects.Add(movingNos);
 
@@ -443,7 +443,7 @@ namespace FlatRedBall.Glue.Managers
             return toReturn;
         }
 
-        private GeneralResponse HandleDropOnShapeCollection(TreeNode treeNodeMoving, TreeNode targetNode, NamedObjectSave targetNos, NamedObjectSave movingNos)
+        private GeneralResponse HandleDropOnShapeCollection(ITreeNode treeNodeMoving, ITreeNode targetNode, NamedObjectSave targetNos, NamedObjectSave movingNos)
         {
             var toReturn = GeneralResponse.SuccessfulResponse;
 
@@ -455,7 +455,7 @@ namespace FlatRedBall.Glue.Managers
             }
             else
             {
-                TreeNode parentTreeNode = treeNodeMoving.Parent;
+                var parentTreeNode = treeNodeMoving.Parent;
                 if (parentTreeNode.IsNamedObjectNode())
                 {
                     NamedObjectSave parentNos = parentTreeNode.Tag as NamedObjectSave;
@@ -467,8 +467,8 @@ namespace FlatRedBall.Glue.Managers
                     var currentElement = GlueState.Self.CurrentElement;
                     currentElement.NamedObjects.Remove(movingNos);
                 }
-                parentTreeNode.Nodes.Remove(treeNodeMoving);
-                targetNode.Nodes.Add(treeNodeMoving);
+                parentTreeNode.Remove(treeNodeMoving);
+                targetNode.Add(treeNodeMoving);
                 targetNos.ContainedObjects.Add(movingNos);
 
                 PluginManager.ReactToObjectContainerChanged(movingNos, targetNos);
@@ -652,7 +652,7 @@ namespace FlatRedBall.Glue.Managers
                 }
 
                 // If the entity has any SetByDerived objects, then it's abstract so don't allow it!
-                var entity = treeNodeMoving.EntitySave;
+                var entity = treeNodeMoving.Tag as EntitySave;
                 var isAbstract = entity.AllNamedObjects.Any(item => item.SetByDerived);
                 if(isAbstract)
                 {
@@ -681,7 +681,7 @@ namespace FlatRedBall.Glue.Managers
                 }
                 if (targetNamedObjectSave.IsLayer)
                 {
-                    TreeNode parent = targetNode.Parent;
+                    var parent = targetNode.Parent;
 
                     newTreeNode = MoveEntityOn(treeNodeMoving, parent);
 
@@ -693,11 +693,11 @@ namespace FlatRedBall.Glue.Managers
                     // Make sure that the two types match
                     string listType = targetNamedObjectSave.SourceClassGenericType;
 
-                    var entity = treeNodeMoving.EntitySave;
+                    var entity = treeNodeMoving.Tag as EntitySave;
 
                     bool isOfTypeOrInherits =
                         listType == entity.Name ||
-                        treeNodeMoving.EntitySave.InheritsFrom(listType);
+                        (treeNodeMoving.Tag as EntitySave).InheritsFrom(listType);
 
                     if (isOfTypeOrInherits == false)
                     {
@@ -758,17 +758,17 @@ namespace FlatRedBall.Glue.Managers
 
             else if (targetNode.IsGlobalContentContainerNode())
             {
-                AskAndAddAllContainedRfsToGlobalContent(treeNodeMoving.SaveObject);
+                AskAndAddAllContainedRfsToGlobalContent(treeNodeMoving.Tag as IElement);
             }
 
             return newTreeNode;
         }
 
-        static void MoveEntityToDirectory(EntityTreeNode treeNodeMoving, TreeNode targetNode)
+        static void MoveEntityToDirectory(ITreeNode treeNodeMoving, ITreeNode targetNode)
         {
             bool succeeded = true;
 
-            EntitySave entitySave = treeNodeMoving.EntitySave;
+            EntitySave entitySave = treeNodeMoving.Tag as EntitySave;
 
             string newRelativeDirectory = targetNode.GetRelativePath();
 
@@ -804,9 +804,9 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        private TreeNode MoveEntityOntoElement(EntityTreeNode treeNodeMoving, TreeNode targetNode, TreeNode newTreeNode)
+        private TreeNode MoveEntityOntoElement(ITreeNode treeNodeMoving, ITreeNode targetNode, ITreeNode newTreeNode)
         {
-            EntitySave entitySaveMoved = treeNodeMoving.EntitySave;
+            EntitySave entitySaveMoved = treeNodeMoving.Tag as EntitySave;
 
             #region Get the IElement elementToCreateIn
 

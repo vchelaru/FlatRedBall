@@ -61,6 +61,8 @@ namespace FlatRedBall.Glue.FormHelpers
 
         string Text { get;  }
 
+        #region "Is" methods
+
         public bool IsDirectoryNode()
         {
             if (Parent == null)
@@ -215,12 +217,18 @@ namespace FlatRedBall.Glue.FormHelpers
 
         }
 
+        #endregion
+
+        void Remove(ITreeNode child);
+        void Add(ITreeNode child);
+
         public ITreeNode Root => Parent?.Root ?? this;
     }
 
     public class TreeNodeWrapper : ITreeNode
     {
         TreeNode treeNode;
+
         public TreeNodeWrapper(TreeNode treeNode)
         {
             this.treeNode = treeNode;
@@ -235,6 +243,30 @@ namespace FlatRedBall.Glue.FormHelpers
         public ITreeNode Parent => treeNode == null ? (ITreeNode)null : new TreeNodeWrapper(treeNode.Parent);
 
         public string Text => treeNode.Text;
+
+        public void Add(ITreeNode child)
+        {
+            if(child is TreeNodeWrapper treeNodeWrapper)
+            {
+                this.treeNode.Nodes.Add(treeNodeWrapper.treeNode);
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
+        }
+
+        public void Remove(ITreeNode child)
+        {
+            if (child is TreeNodeWrapper treeNodeWrapper)
+            {
+                this.treeNode.Nodes.Remove(treeNodeWrapper.treeNode);
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
+        }
     }
 
     public static class RightClickHelper
