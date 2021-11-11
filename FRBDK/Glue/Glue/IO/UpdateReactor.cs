@@ -418,7 +418,7 @@ namespace FlatRedBall.Glue.IO
             // Now that everything is done we want to re-select the same object (if we can)
             if (parentElement != null)
             {
-                IElement newElement = ObjectFinder.Self.GetIElement(parentElement.Name);
+                var newElement = ObjectFinder.Self.GetElement(parentElement.Name);
 
                 if (newElement != null)
                 {
@@ -431,8 +431,8 @@ namespace FlatRedBall.Glue.IO
                                  NamedObjectSave newNos = newElement.GetNamedObject(((NamedObjectSave)selectedObject).InstanceName);
 
                                  // forces a refresh:
-                                 ElementViewWindow.SelectedNode = null;
-                                 ElementViewWindow.SelectedNode = GlueState.Self.Find.NamedObjectTreeNode(newNos);
+                                 GlueState.Self.CurrentNamedObjectSave = null;
+                                 GlueState.Self.CurrentNamedObjectSave = newNos;
 
                              }));
 

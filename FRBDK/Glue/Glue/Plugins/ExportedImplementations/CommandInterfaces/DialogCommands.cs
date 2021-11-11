@@ -859,7 +859,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     if (namedObjectSave != null)
                     {
-                        GlueState.Self.CurrentTreeNode = GlueState.Self.Find.NamedObjectTreeNode(namedObjectSave);
+                        GlueState.Self.CurrentNamedObjectSave = namedObjectSave;
                     }
 
                 }
@@ -879,7 +879,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     if (namedObjectSave != null)
                     {
-                        GlueState.Self.CurrentTreeNode = GlueState.Self.Find.NamedObjectTreeNode(namedObjectSave);
+                        GlueState.Self.CurrentNamedObjectSave = namedObjectSave;
                     }
                 }
             }

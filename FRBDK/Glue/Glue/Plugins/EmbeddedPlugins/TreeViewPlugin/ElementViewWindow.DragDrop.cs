@@ -171,7 +171,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (targetNode == null)
             {
-                ElementViewWindow.SelectedNode = nodeDroppedOn;
+                ElementViewWindow.SelectedNodeOld = nodeDroppedOn;
 
                 var droppedFiles = (string[])e.Data.GetData("FileDrop");
 
@@ -213,7 +213,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 foreach (var fileName in filesToAdd)
                 {
                     // First select the entity
-                    ElementViewWindow.SelectedNode = targetNode;
+                    ElementViewWindow.SelectedNodeOld = targetNode;
 
 
                     var element = GlueState.Self.CurrentElement;

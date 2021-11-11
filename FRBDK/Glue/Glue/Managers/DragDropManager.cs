@@ -95,6 +95,9 @@ namespace FlatRedBall.Glue.Managers
             bool canBeMovedInList = false;
             bool canBeCollidable = false;
 
+
+            var element = ObjectFinder.Self.GetElementContaining(targetNos);
+
             #region Failure cases
 
             if (string.IsNullOrEmpty(targetClassType))
@@ -115,6 +118,9 @@ namespace FlatRedBall.Glue.Managers
                     succeeded = true;
                     movingNos.LayerOn = targetNos.InstanceName;
                     MainGlueWindow.Self.PropertyGrid.Refresh();
+
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+                    GlueState.Self.CurrentNamedObjectSave = movingNos;
                 }
             }
 
@@ -136,6 +142,7 @@ namespace FlatRedBall.Glue.Managers
                     MessageBox.Show($"Could not drop {movingNos} on {targetNos}");
 
                 }
+
                 succeeded = response.Succeeded;
             }
 
@@ -234,6 +241,7 @@ namespace FlatRedBall.Glue.Managers
 
             if(succeeded)
             {
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
                 GlueState.Self.CurrentNamedObjectSave = movingNos;
             }
 
@@ -732,6 +740,10 @@ namespace FlatRedBall.Glue.Managers
                         NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToList(namedObject, 
                             currentNosList);
 
+                        // If the tree node doesn't exist yet, this selection won't work:
+                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(
+                            GlueState.Self.CurrentElement);
+
                         GlueState.Self.CurrentNamedObjectSave = namedObject;
 
                         if (namedObject.SourceClassType != entity.Name)
@@ -834,14 +846,7 @@ namespace FlatRedBall.Glue.Managers
                 //    MessageBox.Show("Create a new Object in\n\n" + elementToCreateIn.Name + "\n\nusing\n\n\t" + entitySaveMoved.Name + "?", "Create new Object?", MessageBoxButtons.YesNo);
 
                 NamedObjectSave newNamedObject = CreateNewNamedObjectInElement(elementToCreateIn, entitySaveMoved);
-                if(treeNodeMoving is TreeNodeWrapper)
-                {
-                    newTreeNode = TreeNodeWrapper.CreateOrNull( GlueState.Self.Find.NamedObjectTreeNode(newNamedObject));
-                }
-                else
-                {
-                    throw new NotImplementedException("Vic asks - why do we need to return a tree node here?");
-                }
+                newTreeNode = GlueState.Self.Find.NamedObjectTreeNode(newNamedObject);
                 GlueState.Self.CurrentNamedObjectSave = newNamedObject;
             }
             return newTreeNode;
@@ -1114,8 +1119,7 @@ namespace FlatRedBall.Glue.Managers
                             }
                             else if (newlyCreatedFile != null)
                             {
-                                GlueCommands.Self.TreeNodeCommands.SelectTreeNode(newlyCreatedFile);
-
+                                GlueState.Self.CurrentReferencedFileSave = newlyCreatedFile;
                             }
                         }
                     }
@@ -1464,7 +1468,8 @@ namespace FlatRedBall.Glue.Managers
         #endregion
 
         #region General Calls
-        internal static void DragDropTreeNode(ITreeNode targetNode, ITreeNode nodeMoving)
+
+        public static void DragDropTreeNode(ITreeNode targetNode, ITreeNode nodeMoving)
         {
 #if !DEBUG
             try

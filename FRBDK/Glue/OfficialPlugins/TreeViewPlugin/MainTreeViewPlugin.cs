@@ -72,8 +72,12 @@ namespace OfficialPlugins.TreeViewPlugin
 
         private void HandleRefreshTreeNodeFor(GlueElement element)
         {
+            var currentNode = SelectionLogic.CurrentNode;
             MainViewModel.RefreshTreeNodeFor(element);
-            
+            if(currentNode?.Tag != null)
+            {
+                SelectionLogic.SelectByTag(currentNode.Tag);
+            }
         }
 
 

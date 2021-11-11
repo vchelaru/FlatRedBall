@@ -155,41 +155,38 @@ namespace FlatRedBall.Glue.Controls
 
             TreeNode treeNode = null;
 
+            var glueState = GlueState.Self;
             if (highlightedObject == null)
             {
                 // do nothing
             }
-            else if (highlightedObject is ScreenSave)
+            else if (highlightedObject is ScreenSave screenSave)
             {
-                treeNode = GlueState.Self.Find.ScreenTreeNode((ScreenSave)highlightedObject);
+                glueState.CurrentScreenSave = screenSave;
             }
-            else if (highlightedObject is EntitySave)
+            else if (highlightedObject is EntitySave entitySave)
             {
-                treeNode = GlueState.Self.Find.EntityTreeNode((EntitySave)highlightedObject);
+                glueState.CurrentEntitySave = entitySave;
             }
-            else if (highlightedObject is NamedObjectSave)
+            else if (highlightedObject is NamedObjectSave namedObjectSave)
             {
-                treeNode = GlueState.Self.Find.NamedObjectTreeNode((NamedObjectSave)highlightedObject);
+                glueState.CurrentNamedObjectSave = namedObjectSave;
             }
-            else if (highlightedObject is ReferencedFileSave)
+            else if (highlightedObject is ReferencedFileSave referencedFileSave)
             {
-                treeNode = GlueState.Self.Find.ReferencedFileSaveTreeNode((ReferencedFileSave)highlightedObject);
+                glueState.CurrentReferencedFileSave = referencedFileSave;
             }
-            else if (highlightedObject is CustomVariable)
+            else if (highlightedObject is CustomVariable customVariable)
             {
-                treeNode = GlueState.Self.Find.CustomVariableTreeNode((CustomVariable)highlightedObject);
+                glueState.CurrentCustomVariable = customVariable;
             }
-            else if (highlightedObject is StateSave)
+            else if (highlightedObject is StateSave state)
             {
-                treeNode = GlueState.Self.Find.StateTreeNode((StateSave)highlightedObject);
+                glueState.CurrentStateSave = state;
             }
-            else if (highlightedObject is EventResponseSave)
+            else if (highlightedObject is EventResponseSave eventResponse)
             {
-                treeNode = GlueState.Self.Find.EventResponseTreeNode((EventResponseSave)highlightedObject);
-            }
-            if (treeNode != null)
-            {
-                ElementViewWindow.SelectedNode = treeNode;
+                glueState.CurrentEventResponseSave = eventResponse;
             }
         }
 

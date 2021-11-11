@@ -347,6 +347,8 @@ namespace FlatRedBall.Glue.FormHelpers
     {
         TreeNode treeNode;
 
+        public TreeNode TreeNode => treeNode;
+
         public TreeNodeWrapper(TreeNode treeNode)
         {
             this.treeNode = treeNode;
@@ -1529,7 +1531,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     ElementViewWindow.GenerateSelectedElementCode();
 
-                    GlueCommands.Self.TreeNodeCommands.SelectTreeNode(newState);
+                    GlueState.Self.CurrentStateSave = newState;
 
                     GluxCommands.Self.SaveGlux();
                     GlueCommands.Self.ProjectCommands.SaveProjects();
@@ -1571,8 +1573,8 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #endregion
 
-            TreeNode treeNodeForNamedObject = GlueState.Self.Find.NamedObjectTreeNode(namedObjectToDuplicate);
-            TreeNode parentTreeNode = treeNodeForNamedObject.Parent;
+            var treeNodeForNamedObject = GlueState.Self.Find.NamedObjectTreeNode(namedObjectToDuplicate);
+            var parentTreeNode = treeNodeForNamedObject.Parent;
 
             #region Get the container
 

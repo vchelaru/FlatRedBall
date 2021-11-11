@@ -513,6 +513,7 @@ namespace Glue
 
         }
 
+        [Obsolete("Use MainPanelControl.Self.ReactToCloseProject")]
         public static void CloseProject(bool shouldSave, bool isExiting, InitializationWindow initWindow = null)
         {
             MainWpfControl.ReactToCloseProject(shouldSave, isExiting, initWindow);

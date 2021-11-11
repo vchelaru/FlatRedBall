@@ -27,6 +27,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System.Reflection;
 using GlueSaveClasses;
 using GluePropertyGridClasses.Interfaces;
+using GlueFormsCore.Controls;
 
 namespace FlatRedBall.Glue.IO
 {
@@ -595,7 +596,7 @@ namespace FlatRedBall.Glue.IO
         {
             if (ProjectManager.ProjectBase != null)
             {
-                MainGlueWindow.CloseProject(shouldSave:false, isExiting:false, initWindow: mCurrentInitWindow);
+                MainPanelControl.Self.ReactToCloseProject(shouldSave: false, isExiting: false, initWindow: mCurrentInitWindow);
             }
         }
 

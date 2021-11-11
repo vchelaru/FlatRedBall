@@ -167,7 +167,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
         }
 
 
-        public static void SelectByTag(object value)
+        public static async void SelectByTag(object value)
         {
             if(value == null)
             {
@@ -183,10 +183,12 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             {
                 var treeNode = mainViewModel.GetTreeNodeByTag(value);
 
-                if (treeNode != null && treeNode != currentNode)
+                if (treeNode != null && (treeNode.IsSelected == false || treeNode != currentNode))
                 {
-                    treeNode.ExpandParentsRecursively();
                     treeNode.IsSelected = true;
+                    treeNode.ExpandParentsRecursively();
+                    // If we don't do this, sometimes it doesn't scroll into view...
+                    await System.Threading.Tasks.Task.Delay(100);
                     mainView.MainTreeView.ScrollIntoView(treeNode);
                 }
 

@@ -105,7 +105,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 }
                 else
                 {
-                    CurrentTreeNode = GlueState.Self.Find.NamedObjectTreeNode(value);
+                    CurrentTreeNode =  GlueState.Self.Find.TreeNodeByTag(value);
                 }
             }
         }
@@ -155,7 +155,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             {
                 TreeNode treeNode = GlueState.Self.Find.EventResponseTreeNode(value);
 
-                ElementViewWindow.SelectedNode = treeNode;
+                ElementViewWindow.SelectedNodeOld = treeNode;
 
             }
         }

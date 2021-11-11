@@ -163,7 +163,7 @@ namespace FlatRedBall.Glue.FormHelpers
             get { return mGlobalContentNode; }
         }
 
-        public static TreeNode SelectedNode
+        public static TreeNode SelectedNodeOld
         {
             get
             {
@@ -172,6 +172,15 @@ namespace FlatRedBall.Glue.FormHelpers
             set
             {
                 MainExplorerPlugin.Self.ElementTreeView.SelectedNode = value;
+            }
+        }
+
+        public static ITreeNode SelectedNode
+        {
+            get => TreeNodeWrapper.CreateOrNull(SelectedNodeOld);
+            set 
+            {
+                SelectedNodeOld = ((TreeNodeWrapper)value)?.TreeNode;
             }
         }
 
@@ -227,7 +236,7 @@ namespace FlatRedBall.Glue.FormHelpers
         public static void AfterSelect()
         {
             // tree node click
-            TreeNode node = SelectedNode;
+            TreeNode node = SelectedNodeOld;
 
             // Snapshot should come first so everyone can update to the snapshot
             GlueState.Self.TakeSnapshot();
@@ -778,7 +787,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static void ElementDoubleClicked()
         {
-            TreeNode selectedNode = SelectedNode;
+            TreeNode selectedNode = SelectedNodeOld;
 
             if (selectedNode != null)
             {

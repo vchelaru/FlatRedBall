@@ -34,7 +34,7 @@ namespace FlatRedBall.Glue.Managers
 
         string GlobalContentFilesPath { get; }
 
-        TreeNode NamedObjectTreeNode(NamedObjectSave namedObjectSave);
+        ITreeNode NamedObjectTreeNode(NamedObjectSave namedObjectSave);
 
         TreeNode ReferencedFileSaveTreeNode(ReferencedFileSave referencedFileSave);
 
@@ -299,19 +299,19 @@ namespace FlatRedBall.Glue.Managers
             return ElementViewWindow.GlobalContentFileNode;
         }
 
-        public TreeNode NamedObjectTreeNode(NamedObjectSave namedObjectSave)
+        public ITreeNode NamedObjectTreeNode(NamedObjectSave namedObjectSave)
         {
             IElement container = namedObjectSave.GetContainer();
 
             if (container is ScreenSave)
             {
                 ScreenTreeNode screenTreeNode = GlueState.Self.Find.ScreenTreeNode((ScreenSave)container);
-                return screenTreeNode.GetTreeNodeFor(namedObjectSave);
+                return TreeNodeWrapper.CreateOrNull( screenTreeNode.GetTreeNodeFor(namedObjectSave));
             }
             else if (container is EntitySave)
             {
                 EntityTreeNode entityTreeNode = GlueState.Self.Find.EntityTreeNode((EntitySave)container);
-                return entityTreeNode.GetTreeNodeFor(namedObjectSave);
+                return TreeNodeWrapper.CreateOrNull(entityTreeNode.GetTreeNodeFor(namedObjectSave));
             }
             else
             {

@@ -260,7 +260,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
             TreeNode entityNode = GlueState.Self.Find.EntityTreeNode(baseName);
 
-            ElementViewWindow.SelectedNode = entityNode;
+            ElementViewWindow.SelectedNodeOld = entityNode;
         }
 
         private static void UseCustomRectangleClick(object sender, EventArgs e)

@@ -67,7 +67,7 @@ namespace FlatRedBall.Glue.Navigation
                 mIgnoreNextForwardClear = true;
                 MainGlueWindow.Self.BeginInvoke(new EventHandler(delegate
                 {
-                    ElementViewWindow.SelectedNode = toGoTo;
+                    ElementViewWindow.SelectedNodeOld = toGoTo;
                     // We want it to go to the back
                     //mTreeNodeStack.Pop();
                     UpdateNavigateButtons();
@@ -81,7 +81,7 @@ namespace FlatRedBall.Glue.Navigation
             if (mTreeNodeStack.Count != 0)
             {
                 var toGoTo = mTreeNodeStack.Pop();
-                mForwardNodeStack.Push(ElementViewWindow.SelectedNode);
+                mForwardNodeStack.Push(ElementViewWindow.SelectedNodeOld);
                 //((TreeNodeCommands)GlueCommands.Self.TreeNodeCommands).SelectTreeNode(toGoTo);
                 // the select will have added, so pop it off immediately
                 // We invoke it here instead of using the commands because we need to pop right after the select
@@ -89,7 +89,7 @@ namespace FlatRedBall.Glue.Navigation
 
                 MainGlueWindow.Self.BeginInvoke(new EventHandler(delegate 
                     { 
-                        ElementViewWindow.SelectedNode = toGoTo; 
+                        ElementViewWindow.SelectedNodeOld = toGoTo; 
                     
                         mTreeNodeStack.Pop();
                         UpdateNavigateButtons();

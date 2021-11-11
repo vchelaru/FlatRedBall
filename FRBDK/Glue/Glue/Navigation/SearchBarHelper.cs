@@ -489,13 +489,13 @@ namespace FlatRedBall.Glue.Navigation
             {
                 if (selectedObject is ScreenSave)
                 {
-                    ElementViewWindow.SelectedNode = GlueState.Self.Find.ScreenTreeNode((ScreenSave)selectedObject);
-                    foundSomething = ElementViewWindow.SelectedNode != null;
+                    ElementViewWindow.SelectedNodeOld = GlueState.Self.Find.ScreenTreeNode((ScreenSave)selectedObject);
+                    foundSomething = ElementViewWindow.SelectedNodeOld != null;
                 }
                 else if (selectedObject is EntitySave)
                 {
-                    ElementViewWindow.SelectedNode = GlueState.Self.Find.EntityTreeNode((EntitySave)selectedObject);
-                    foundSomething = ElementViewWindow.SelectedNode != null;
+                    ElementViewWindow.SelectedNodeOld = GlueState.Self.Find.EntityTreeNode((EntitySave)selectedObject);
+                    foundSomething = ElementViewWindow.SelectedNodeOld != null;
                 }
                 else if (selectedObject is NamedObjectSave)
                 {
@@ -504,38 +504,38 @@ namespace FlatRedBall.Glue.Navigation
                 }
                 else if (selectedObject is ReferencedFileSave)
                 {
-                    ElementViewWindow.SelectedNode = GlueState.Self.Find.ReferencedFileSaveTreeNode((ReferencedFileSave)selectedObject);
-                    foundSomething = ElementViewWindow.SelectedNode != null;
+                    ElementViewWindow.SelectedNodeOld = GlueState.Self.Find.ReferencedFileSaveTreeNode((ReferencedFileSave)selectedObject);
+                    foundSomething = ElementViewWindow.SelectedNodeOld != null;
                 }
                 else if (selectedObject is StateSave)
                 {
-                    ElementViewWindow.SelectedNode = GlueState.Self.Find.StateTreeNode((StateSave)selectedObject);
-                    foundSomething = ElementViewWindow.SelectedNode != null;
+                    ElementViewWindow.SelectedNodeOld = GlueState.Self.Find.StateTreeNode((StateSave)selectedObject);
+                    foundSomething = ElementViewWindow.SelectedNodeOld != null;
                 }
                 else if (selectedObject is CustomVariable)
                 {
-                    ElementViewWindow.SelectedNode = GlueState.Self.Find.CustomVariableTreeNode((CustomVariable)selectedObject);
-                    foundSomething = ElementViewWindow.SelectedNode != null;
+                    ElementViewWindow.SelectedNodeOld = GlueState.Self.Find.CustomVariableTreeNode((CustomVariable)selectedObject);
+                    foundSomething = ElementViewWindow.SelectedNodeOld != null;
                 }
                 else if (selectedObject is EventResponseSave)
                 {
-                    ElementViewWindow.SelectedNode = GlueState.Self.Find.EventResponseTreeNode((EventResponseSave)selectedObject);
-                    foundSomething = ElementViewWindow.SelectedNode != null;
+                    ElementViewWindow.SelectedNodeOld = GlueState.Self.Find.EventResponseTreeNode((EventResponseSave)selectedObject);
+                    foundSomething = ElementViewWindow.SelectedNodeOld != null;
                 }
                 else if (selectedObject is StateSaveCategory)
                 {
-                    ElementViewWindow.SelectedNode = GlueState.Self.Find.StateCategoryTreeNode((StateSaveCategory)selectedObject);
+                    ElementViewWindow.SelectedNodeOld = GlueState.Self.Find.StateCategoryTreeNode((StateSaveCategory)selectedObject);
 
-                    foundSomething = ElementViewWindow.SelectedNode != null;
+                    foundSomething = ElementViewWindow.SelectedNodeOld != null;
                 }
             }
             if (foundSomething)
             {
-                ElementViewWindow.SelectedNode.Expand();
+                ElementViewWindow.SelectedNodeOld.Expand();
 
                 // Sometimes the selected object isn't selected
                 // This line seems to solve it.
-                ElementViewWindow.SelectedNode = ElementViewWindow.SelectedNode;
+                ElementViewWindow.SelectedNodeOld = ElementViewWindow.SelectedNodeOld;
             }
 
             MainExplorerPlugin.Self.SearchListBox.Visibility = System.Windows.Visibility.Collapsed;

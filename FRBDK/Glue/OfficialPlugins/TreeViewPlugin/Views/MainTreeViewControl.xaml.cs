@@ -36,6 +36,19 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 (sender as ListBox).ReleaseMouseCapture();
         }
 
+        #region Hotkey
+
+        private void MainTreeView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(HotkeyManager.Self.TryHandleKeys(e))
+            {
+                e.Handled = true;
+            }
+        }
+
+        #endregion
+
+        #region Drag+drop
         Point startPoint;
         private void MainTreeView_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -53,17 +66,11 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance))
             {
                 // Get the dragged ListViewItem
-                var listView = sender as TreeListBox;
-                var listViewItem =
-                    FindAnchestor<TreeListBox>((DependencyObject)e.OriginalSource);
-
-                // Find the data behind the ListViewItem
-                var contact = listView.ItemContainerGenerator.
-                    ItemFromContainer(listViewItem);
+                var vm = (e.OriginalSource as FrameworkElement).DataContext as NodeViewModel;
 
                 // Initialize the drag & drop operation
-                DataObject dragData = new DataObject("myFormat", contact);
-                DragDrop.DoDragDrop(listViewItem, dragData, DragDropEffects.Move);
+                DataObject dragData = new DataObject("NodeViewModel", vm);
+                DragDrop.DoDragDrop(e.OriginalSource as DependencyObject, dragData, DragDropEffects.Move);
             }
         }
 
@@ -85,9 +92,15 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         private void MainTreeView_Drop(object sender, DragEventArgs e)
         {
-            var contact = e.Data.GetData("myFormat");
-            var listView = sender as TreeListBox;
-            //listView.Items.Add(contact);
+            var objectDragged = e.Data.GetData("NodeViewModel");
+
+            var targetNode = (e.OriginalSource as FrameworkElement).DataContext as NodeViewModel;
+
+            if(objectDragged is NodeViewModel treeNodeMoving)
+            {
+                // do something here...
+                DragDropManager.DragDropTreeNode(targetNode, treeNodeMoving);
+            }
         }
 
         private void MainTreeView_DragEnter(object sender, DragEventArgs e)
@@ -98,13 +111,6 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 e.Effects = DragDropEffects.None;
             }
         }
-
-        private void MainTreeView_KeyDown(object sender, KeyEventArgs e)
-        {
-            if(HotkeyManager.Self.TryHandleKeys(e))
-            {
-                e.Handled = true;
-            }
-        }
+        #endregion
     }
 }

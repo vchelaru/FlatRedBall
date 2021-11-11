@@ -222,10 +222,14 @@ namespace GlueFormsCore.Controls
 
         System.Timers.Timer FileWatchTimer;
 
+        public static MainPanelControl Self { get; private set; }
+
         #endregion
 
         public MainPanelControl()
         {
+            Self = this;
+
             InitializeComponent();
 
             InitializeThemes();

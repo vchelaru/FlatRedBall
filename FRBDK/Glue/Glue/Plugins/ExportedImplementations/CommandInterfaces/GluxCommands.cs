@@ -310,7 +310,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 ElementViewWindow.UpdateChangedElements();
 
-                ElementViewWindow.SelectedNode = GlueState.Self.Find.ReferencedFileSaveTreeNode(rfs);
+                ElementViewWindow.SelectedNodeOld = GlueState.Self.Find.ReferencedFileSaveTreeNode(rfs);
 
                 PluginManager.ReactToNewFile(rfs);
 
