@@ -394,7 +394,7 @@ namespace FlatRedBall.Glue.IO
                                 // Gotta regen this and update the UI and refresh the PropertyGrid if it's selected
                                 GlueCommands.Self.UpdateCommands.Update(replacement);
 
-                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(element);
+                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                             }
 						}
 						else

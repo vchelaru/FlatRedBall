@@ -1,4 +1,5 @@
-﻿using OfficialPlugins.TreeViewPlugin.ViewModels;
+﻿using FlatRedBall.Glue.Managers;
+using OfficialPlugins.TreeViewPlugin.ViewModels;
 using PropertyTools.Wpf;
 using System;
 using System.Collections.Generic;
@@ -95,6 +96,14 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 sender == e.Source)
             {
                 e.Effects = DragDropEffects.None;
+            }
+        }
+
+        private void MainTreeView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(HotkeyManager.Self.TryHandleKeys(e))
+            {
+                e.Handled = true;
             }
         }
     }

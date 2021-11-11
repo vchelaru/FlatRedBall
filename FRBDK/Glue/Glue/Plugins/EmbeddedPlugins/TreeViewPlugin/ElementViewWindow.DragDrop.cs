@@ -133,7 +133,8 @@ namespace FlatRedBall.Glue.FormHelpers
                 else
                 {
                     TreeNode nodeMoving = TreeNodeDraggedOff;
-                    DragDropManager.DragDropTreeNode(targetNode, nodeMoving);
+                    DragDropManager.DragDropTreeNode(
+                        TreeNodeWrapper.CreateOrNull(targetNode), TreeNodeWrapper.CreateOrNull(nodeMoving));
                 }
             }
 

@@ -56,9 +56,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void GenerateElementCode(GlueElement element)
         {
-            string taskName = nameof(GenerateElementCodeTask) + " " + element.ToString();
+            string taskName = nameof(GenerateElementCode) + " " + element.ToString();
 
             TaskManager.Self.AddOrRunIfTasked(() => CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
+                taskName,
+                TaskExecutionPreference.AddOrMoveToEnd);
+        }
+
+        public void GenerateElementCodeTask(GlueElement element)
+        {
+            string taskName = nameof(GenerateElementCodeTask) + " " + element.ToString();
+
+            TaskManager.Self.Add(() => CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
                 taskName,
                 TaskExecutionPreference.AddOrMoveToEnd);
         }
@@ -77,15 +86,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     GenerateElementCodeTask(element);
                 }
             }
-        }
-
-        public void GenerateElementCodeTask(GlueElement element)
-        {
-            string taskName = nameof(GenerateElementCodeTask) + " " + element.ToString();
-
-            TaskManager.Self.Add(() => CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
-                taskName,
-                TaskExecutionPreference.AddOrMoveToEnd);
         }
 
         public void GenerateGlobalContentCode()

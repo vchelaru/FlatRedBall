@@ -182,7 +182,8 @@ namespace FlatRedBall.Glue.IO
         }
 
         private static void ImportEntity(string unpackDirectory, List<string> filesToAddToContent, 
-            List<string> codeFilesInZip, string elementName, string extension, bool moveToSelectedFolderTreeNode, ref string desiredNamespace, ref GlueElement newElement)
+            List<string> codeFilesInZip, string elementName, string extension, 
+            bool moveToSelectedFolderTreeNode, ref string desiredNamespace, ref GlueElement newElement)
         {
             string targetCs = ImportElement<EntitySave>(unpackDirectory, filesToAddToContent, codeFilesInZip, elementName, extension, ref desiredNamespace, ref newElement);
             EntitySave entitySave = (EntitySave)newElement;
@@ -203,6 +204,7 @@ namespace FlatRedBall.Glue.IO
 
             if(shouldSave)
             {
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(newElement);
                 GluxCommands.Self.SaveGlux();
             }
 

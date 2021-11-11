@@ -28,7 +28,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         public override void RefreshTreeNodes()
         {
-            string relativeDirectory = this.GetRelativePath();
+            string relativeDirectory = ((ITreeNode)this).GetRelativePath();
 
 
             AddDirectoryNodesRecursively(ProjectManager.MakeAbsolute(relativeDirectory, true), this);
@@ -44,7 +44,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
                 if (nodeForFile == null)
                 {
-                    string thisAbsolute = ProjectManager.MakeAbsolute(this.GetRelativePath(), true);
+                    string thisAbsolute = ProjectManager.MakeAbsolute(((ITreeNode)this).GetRelativePath(), true);
                     string fullFile = ProjectManager.MakeAbsolute(file.GetRelativePath(), true);
                     string directoryNodeToFind = FileManager.GetDirectory(fullFile);
                     directoryNodeToFind = FileManager.MakeRelative(directoryNodeToFind, thisAbsolute);
@@ -159,7 +159,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             if (((ITreeNode)currentNode).IsFilesContainerNode())
             {
-                string currentNodeDirectory = FileManager.Standardize(currentNode.GetRelativePath(), null, false);
+                string currentNodeDirectory = FileManager.Standardize(((ITreeNode)currentNode).GetRelativePath(), null, false);
 
                 directory = FileManager.Standardize(directory, null, false);
 
@@ -211,7 +211,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
                         // See if there is already a tree node with this name
                         string directoryRelativeToThisTreeNode = FileManager.MakeRelative(
-                            directory, ProjectManager.MakeAbsolute(treeNode.GetRelativePath(), true)) + "/";
+                            directory, ProjectManager.MakeAbsolute(((ITreeNode)treeNode).GetRelativePath(), true)) + "/";
 
                         var existingTreeNode = GetNodeForDirectory(directoryRelativeToThisTreeNode, treeNode);
 
@@ -234,7 +234,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 {
                     if (((ITreeNode)subNode).IsFolderInFilesContainerNode())
                     {
-                        string subDirectory = subNode.GetRelativePath();
+                        string subDirectory = ((ITreeNode)subNode).GetRelativePath();
 
                         subDirectory = ProjectManager.MakeAbsolute(subDirectory, true);
 
@@ -294,7 +294,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     elementNameWithTypePrefix = "GlobalContentFiles\\" + elementNameWithTypePrefix;
                 }
 
-                string treeNodeRelativePath = treeNodeCollection[i].GetRelativePath().Replace("/", "\\");
+                string treeNodeRelativePath = ((ITreeNode)treeNodeCollection[i]).GetRelativePath().Replace("/", "\\");
 
 
                 bool isInSameCategory = false;

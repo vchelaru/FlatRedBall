@@ -294,8 +294,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             if (indexOfTreeNode != i)
             {
-                currentNode.Children.Remove(treeNode);
+                treeNode.Parent.Remove(treeNode);
                 currentNode.Children.Insert(i, treeNode);
+                treeNode.Parent = currentNode;
             }
         }
 

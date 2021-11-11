@@ -217,12 +217,130 @@ namespace FlatRedBall.Glue.FormHelpers
 
         }
 
+        public bool IsFolderForGlobalContentFiles()
+        {
+            if (Parent == null)
+            {
+                return false;
+            }
+
+            var parent = Parent;
+
+            while (parent != null)
+            {
+                if (parent.IsGlobalContentContainerNode())
+                {
+                    return true;
+                }
+                else
+                {
+                    parent = parent.Parent;
+                }
+            }
+
+            return false;
+        }
+
         #endregion
 
         void Remove(ITreeNode child);
         void Add(ITreeNode child);
 
         public ITreeNode Root => Parent?.Root ?? this;
+
+        public string GetRelativePath()
+        {
+
+            #region Directory tree node
+            if (((ITreeNode)this).IsDirectoryNode())
+            {
+                if (((ITreeNode)Parent).IsRootEntityNode())
+                {
+                    return "Entities/" + Text + "/";
+
+                }
+                if (((ITreeNode)Parent).IsRootScreenNode())
+                {
+                    return "Screens/" + Text + "/";
+
+                }
+                else if (((ITreeNode)Parent).IsGlobalContentContainerNode())
+                {
+
+                    string contentDirectory = ProjectManager.MakeAbsolute("GlobalContent", true);
+
+                    string returnValue = contentDirectory + Text;
+                    if (((ITreeNode)this).IsDirectoryNode())
+                    {
+                        returnValue += "/";
+                    }
+                    // But we want to make this relative to the project, so let's do that
+                    returnValue = ProjectManager.MakeRelativeContent(returnValue);
+
+                    return returnValue;
+                }
+                else
+                {
+                    // It's a tree node, so make it have a "/" at the end
+                    return Parent.GetRelativePath() + Text + "/";
+                }
+            }
+            #endregion
+
+            #region Global content container
+
+            else if (((ITreeNode)this).IsGlobalContentContainerNode())
+            {
+                var returnValue = GlueState.Self.Find.GlobalContentFilesPath;
+
+
+                // But we want to make this relative to the project, so let's do that
+                returnValue = ProjectManager.MakeRelativeContent(returnValue);
+
+
+
+                return returnValue;
+            }
+            #endregion
+
+            else if (((ITreeNode)this).IsFilesContainerNode())
+            {
+                string valueToReturn = Parent.GetRelativePath();
+
+
+                return valueToReturn;
+            }
+            else if (((ITreeNode)this).IsFolderInFilesContainerNode())
+            {
+                return Parent.GetRelativePath() + Text + "/";
+            }
+            else if (((ITreeNode)this).IsElementNode())
+            {
+                return ((IElement)Tag).Name + "/";
+            }
+            else if (((ITreeNode)this).IsReferencedFile())
+            {
+                string toReturn = Parent.GetRelativePath() + Text;
+                toReturn = toReturn.Replace("/", "\\");
+                return toReturn;
+            }
+            else
+            {
+                // Improve this to handle embeded stuff
+                string textToReturn = Text;
+
+                if (string.IsNullOrEmpty(FlatRedBall.IO.FileManager.GetExtension(textToReturn)))
+                {
+                    textToReturn += "/";
+                }
+
+                return textToReturn;
+            }
+        }
+
+        ITreeNode FindByName(string name);
+
+        void RemoveGlobalContentTreeNodesIfDoesntExist(ITreeNode treeNode);
     }
 
     public class TreeNodeWrapper : ITreeNode
@@ -244,6 +362,18 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public string Text => treeNode.Text;
 
+        internal static ITreeNode CreateOrNull(TreeNode targetNode)
+        {
+            if(targetNode != null)
+            {
+                return new TreeNodeWrapper(targetNode);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public void Add(ITreeNode child)
         {
             if(child is TreeNodeWrapper treeNodeWrapper)
@@ -256,6 +386,21 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
+        public ITreeNode FindByName(string name)
+        {
+            TreeNode matchingNode = null;
+            foreach(TreeNode node in treeNode.Nodes)
+            {
+                if(node.Text == name)
+                {
+                    matchingNode = node;
+                    break;
+                }
+            }
+
+            return CreateOrNull(matchingNode);
+        }
+
         public void Remove(ITreeNode child)
         {
             if (child is TreeNodeWrapper treeNodeWrapper)
@@ -265,6 +410,57 @@ namespace FlatRedBall.Glue.FormHelpers
             else
             {
                 throw new InvalidOperationException();
+            }
+        }
+
+        public void RemoveGlobalContentTreeNodesIfDoesntExist(ITreeNode treeNode)
+        {
+            var innerTreeNode = ((TreeNodeWrapper)treeNode).treeNode;
+            if (((ITreeNode)treeNode).IsDirectoryNode())
+            {
+                string directory = treeNode.GetRelativePath();
+
+                directory = ProjectManager.MakeAbsolute(directory, true);
+
+
+                if (!Directory.Exists(directory))
+                {
+                    // The directory isn't here anymore, so kill it!
+                    treeNode.Parent.Remove(treeNode);
+
+                }
+                else
+                {
+                    // The directory is valid, but let's check subdirectories
+                    for (int i = innerTreeNode.Nodes.Count - 1; i > -1; i--)
+                    {
+                        RemoveGlobalContentTreeNodesIfDoesntExist( CreateOrNull( innerTreeNode.Nodes[i]));
+                    }
+                }
+            }
+            else // assume content for now
+            {
+
+                ReferencedFileSave referencedFileSave = treeNode.Tag as ReferencedFileSave;
+
+                if (!ProjectManager.GlueProjectSave.GlobalFiles.Contains(referencedFileSave))
+                {
+                    treeNode.Parent.Remove(treeNode);
+                }
+                else
+                {
+                    // The RFS may be contained, but see if the file names match
+                    string rfsName = FileManager.Standardize(referencedFileSave.Name, null, false).ToLower();
+                    string treeNodeFile = FileManager.Standardize(treeNode.GetRelativePath(), null, false).ToLower();
+
+                    // We first need to make sure that the file is part of GlobalContentFiles.
+                    // If it is, then we may have tree node in the wrong folder, so let's get rid
+                    // of it.  If it doesn't start with globalcontent/ then we shouldn't remove it here.
+                    if (rfsName.StartsWith("globalcontent/") && rfsName != treeNodeFile)
+                    {
+                        treeNode.Parent.Remove(treeNode);
+                    }
+                }
             }
         }
     }
@@ -473,10 +669,11 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 bool isSameObject = false;
 
-                if (targetNode.GetContainingElementTreeNode() != null && ElementViewWindow.TreeNodeDraggedOff != null)
+                var elementForTreeNode = targetNode.GetContainingElementTreeNode()?.Tag;
+
+                if (elementForTreeNode != null && sourceNode != null)
                 {
-                    isSameObject = targetNode.GetContainingElementTreeNode().Tag ==
-                    sourceNode.Tag as ElementCommands;
+                    isSameObject = elementForTreeNode == sourceNode?.Tag;
                 }
 
                 if (menuShowingAction == MenuShowingAction.RightButtonDrag && !isSameObject && sourceNode.IsEntityNode())
@@ -1796,12 +1993,12 @@ namespace FlatRedBall.Glue.FormHelpers
                         if (GlueState.Self.CurrentScreenSave != null)
                         {
                             var screen = GlueState.Self.CurrentScreenSave;
-                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(screen);
+                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screen);
                         }
                         else if (GlueState.Self.CurrentEntitySave != null)
                         {
                             var entity = GlueState.Self.CurrentEntitySave;
-                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(entity);
+                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
                         }
                         else if (GlueState.Self.CurrentReferencedFileSave != null)
                         {
@@ -2355,7 +2552,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 {
                     listToRemoveFrom.Remove(objectToRemove);
                     listToRemoveFrom.Insert(0, objectToRemove);
-                    PostMoveActivity(GlueState.Self.CurrentTreeNode);
+                    PostMoveActivity();
                 }
                 return true;
             }
@@ -2412,7 +2609,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     listToRemoveFrom.Insert(newIndex, objectToRemove);
 
-                    PostMoveActivity(GlueState.Self.CurrentTreeNode);
+                    PostMoveActivity();
 
                     return true;
                 }
@@ -2442,7 +2639,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 {
                     listToRemoveFrom.Remove(objectToRemove);
                     listToRemoveFrom.Insert(listToRemoveFrom.Count, objectToRemove);
-                    PostMoveActivity(GlueState.Self.CurrentTreeNode);
+                    PostMoveActivity();
                 }
                 return true;
             }
@@ -2497,10 +2694,11 @@ namespace FlatRedBall.Glue.FormHelpers
         }
 
 
-        private static void PostMoveActivity(TreeNode namedObjectTreeNode)
+        private static void PostMoveActivity()
         {
             // do this before refreshing the tree nodes
-            var tag = namedObjectTreeNode.Tag;
+            var currentCustomVariable = GlueState.Self.CurrentCustomVariable;
+            var currentNamedObjectSave = GlueState.Self.CurrentNamedObjectSave;
 
             GlueState.Self.CurrentElement.RefreshStatesToCustomVariables();
 
@@ -2519,7 +2717,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     elementsToRegen.Add(candidateToAdd);
                 }
-
             }
 
             foreach (var elementToRegen in elementsToRegen)
@@ -2528,13 +2725,13 @@ namespace FlatRedBall.Glue.FormHelpers
             }
 
             // I think the variables are complete remade. I could make it preserve them, but it's easier to do this:
-            if(tag is CustomVariable)
+            if(currentCustomVariable != null)
             {
-                GlueState.Self.CurrentCustomVariable = tag as CustomVariable;
+                GlueState.Self.CurrentCustomVariable = currentCustomVariable;
             }
-            else
+            else if(currentNamedObjectSave != null)
             {
-                ElementViewWindow.SelectedNode = namedObjectTreeNode;
+                GlueState.Self.CurrentNamedObjectSave = currentNamedObjectSave;
             }
 
             GluxCommands.Self.SaveGlux();
@@ -2711,11 +2908,9 @@ namespace FlatRedBall.Glue.FormHelpers
 
         private static void UpdateCurrentElementTreeNode()
         {
-            BaseElementTreeNode containerTreeNode = GlueState.Self.CurrentElementTreeNode;
-
-            containerTreeNode.RefreshTreeNodes();
-
-            CodeWriter.GenerateCode(containerTreeNode.SaveObject);
+            var element = GlueState.Self.CurrentElement;
+            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
         }
 
 

@@ -198,7 +198,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 var treeNode = GlobalContentRootNode.Children[i];
 
-                RemoveGlobalContentTreeNodesIfNecessary(treeNode);
+                treeNode.RemoveGlobalContentTreeNodesIfDoesntExist(treeNode);
             }
 
             #endregion
@@ -355,7 +355,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
                 for (int i = parentTreeNode.Children.Count - 1; i > -1; i--)
                 {
-                    var treeNode = parentTreeNode.Children[i];
+                    ITreeNode treeNode = parentTreeNode.Children[i];
 
                     if (((ITreeNode)treeNode).IsDirectoryNode())
                     {
@@ -540,56 +540,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 {
 
                     return TreeNodeForDirectoryOrEntityNode(containingDirectory, GlobalContentRootNode);
-                }
-            }
-        }
-
-        private static void RemoveGlobalContentTreeNodesIfNecessary(NodeViewModel treeNode)
-        {
-            if (((ITreeNode)treeNode).IsDirectoryNode())
-            {
-                string directory = treeNode.GetRelativePath();
-
-                directory = ProjectManager.MakeAbsolute(directory, true);
-
-
-                if (!Directory.Exists(directory))
-                {
-                    // The directory isn't here anymore, so kill it!
-                    treeNode.Parent.Children.Remove(treeNode);
-
-                }
-                else
-                {
-                    // The directory is valid, but let's check subdirectories
-                    for (int i = treeNode.Children.Count - 1; i > -1; i--)
-                    {
-                        RemoveGlobalContentTreeNodesIfNecessary(treeNode.Children[i]);
-                    }
-                }
-            }
-            else // assume content for now
-            {
-
-                ReferencedFileSave referencedFileSave = treeNode.Tag as ReferencedFileSave;
-
-                if (!ProjectManager.GlueProjectSave.GlobalFiles.Contains(referencedFileSave))
-                {
-                    treeNode.Parent.Children.Remove(treeNode);
-                }
-                else
-                {
-                    // The RFS may be contained, but see if the file names match
-                    string rfsName = FileManager.Standardize(referencedFileSave.Name, null, false).ToLower();
-                    string treeNodeFile = FileManager.Standardize(treeNode.GetRelativePath(), null, false).ToLower();
-
-                    // We first need to make sure that the file is part of GlobalContentFiles.
-                    // If it is, then we may have tree node in the wrong folder, so let's get rid
-                    // of it.  If it doesn't start with globalcontent/ then we shouldn't remove it here.
-                    if (rfsName.StartsWith("globalcontent/") && rfsName != treeNodeFile)
-                    {
-                        treeNode.Parent.Children.Remove(treeNode);
-                    }
                 }
             }
         }

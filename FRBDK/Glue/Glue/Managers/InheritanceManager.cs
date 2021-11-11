@@ -147,7 +147,7 @@ namespace GlueFormsCore.Managers
 
                 foreach (var screen in screensToRegenerate)
                 {
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(screen);
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screen);
                 }
 
                 List<CustomVariable> variablesBefore = new List<CustomVariable>();

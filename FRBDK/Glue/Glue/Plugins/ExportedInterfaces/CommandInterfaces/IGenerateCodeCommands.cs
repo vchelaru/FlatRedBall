@@ -15,6 +15,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void GenerateCurrentElementCode();
 
         void GenerateElementCode(GlueElement element);
+        [Obsolete("Use GenerateElementCode because that will automatically task if necessary")]
         void GenerateElementCodeTask(GlueElement element);
 
         void GenerateGlobalContentCode();

@@ -3,11 +3,14 @@ using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.IO;
 using OfficialPlugins.TreeViewPlugin.Logic;
 using OfficialPlugins.TreeViewPlugin.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Media;
@@ -42,7 +45,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         public object Tag { get; set; }
         
-        public NodeViewModel Parent { get; private set; }
+        // Not sure if we should have the setter be private or if it's okay to assign this. I think 
+        // the amount that interacts with the NodeViewModel is very limited so for now we can leave it as public
+        public NodeViewModel Parent { get; set; }
 
         ITreeNode ITreeNode.Parent => this.Parent;
 
@@ -203,95 +208,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             return vm;
         }
 
-        public string GetRelativePath()
-        {
-
-            #region Directory tree node
-            if (((ITreeNode)this).IsDirectoryNode())
-            {
-                if (((ITreeNode)Parent).IsRootEntityNode())
-                {
-                    return "Entities/" + Text + "/";
-
-                }
-                if (((ITreeNode)Parent).IsRootScreenNode())
-                {
-                    return "Screens/" + Text + "/";
-
-                }
-                else if (((ITreeNode)Parent).IsGlobalContentContainerNode())
-                {
-
-                    string contentDirectory = ProjectManager.MakeAbsolute("GlobalContent", true);
-
-                    string returnValue = contentDirectory + Text;
-                    if (((ITreeNode)this).IsDirectoryNode())
-                    {
-                        returnValue += "/";
-                    }
-                    // But we want to make this relative to the project, so let's do that
-                    returnValue = ProjectManager.MakeRelativeContent(returnValue);
-
-                    return returnValue;
-                }
-                else
-                {
-                    // It's a tree node, so make it have a "/" at the end
-                    return Parent.GetRelativePath() + Text + "/";
-                }
-            }
-            #endregion
-
-            #region Global content container
-
-            else if (((ITreeNode)this).IsGlobalContentContainerNode())
-            {
-                var returnValue = GlueState.Self.Find.GlobalContentFilesPath;
-
-
-                // But we want to make this relative to the project, so let's do that
-                returnValue = ProjectManager.MakeRelativeContent(returnValue);
-
-
-
-                return returnValue;
-            }
-            #endregion
-
-            else if (((ITreeNode)this).IsFilesContainerNode())
-            {
-                string valueToReturn = Parent.GetRelativePath();
-
-
-                return valueToReturn;
-            }
-            else if (((ITreeNode)this).IsFolderInFilesContainerNode())
-            {
-                return Parent.GetRelativePath() + Text + "/";
-            }
-            else if (((ITreeNode)this).IsElementNode())
-            {
-                return ((IElement)Tag).Name + "/";
-            }
-            else if (((ITreeNode)this).IsReferencedFile())
-            {
-                string toReturn = Parent.GetRelativePath() + Text;
-                toReturn = toReturn.Replace("/", "\\");
-                return toReturn;
-            }
-            else
-            {
-                // Improve this to handle embeded stuff
-                string textToReturn = Text;
-
-                if (string.IsNullOrEmpty(FlatRedBall.IO.FileManager.GetExtension(textToReturn)))
-                {
-                    textToReturn += "/";
-                }
-
-                return textToReturn;
-            }
-        }
 
         public NodeViewModel Root() => Parent == null ? this : Parent.Root();
 
@@ -400,6 +316,78 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public override string ToString()
         {
             return Text;
+        }
+
+        public void Remove(ITreeNode child)
+        {
+            var childAsViewModel = child as NodeViewModel;
+
+            this.Children.Remove(childAsViewModel);
+            childAsViewModel.Parent = null;
+        }
+
+        public void Add(ITreeNode child)
+        {
+            var childAsViewModel = child as NodeViewModel;
+            this.Children.Add(childAsViewModel);
+            childAsViewModel.Parent = this;
+        }
+
+        public ITreeNode FindByName(string name)
+        {
+            return this.Children.FirstOrDefault(item => item.Text == name);
+        }
+
+
+        public void RemoveGlobalContentTreeNodesIfDoesntExist(ITreeNode treeNode)
+        {
+            var vm = treeNode as NodeViewModel;
+            if (((ITreeNode)treeNode).IsDirectoryNode())
+            {
+                string directory = treeNode.GetRelativePath();
+
+                directory = ProjectManager.MakeAbsolute(directory, true);
+
+
+                if (!Directory.Exists(directory))
+                {
+                    // The directory isn't here anymore, so kill it!
+                    treeNode.Parent.Remove(treeNode);
+
+                }
+                else
+                {
+                    // The directory is valid, but let's check subdirectories
+                    for (int i = vm.Children.Count - 1; i > -1; i--)
+                    {
+                        RemoveGlobalContentTreeNodesIfDoesntExist(vm.Children[i]);
+                    }
+                }
+            }
+            else // assume content for now
+            {
+
+                ReferencedFileSave referencedFileSave = treeNode.Tag as ReferencedFileSave;
+
+                if (!ProjectManager.GlueProjectSave.GlobalFiles.Contains(referencedFileSave))
+                {
+                    treeNode.Parent.Remove(treeNode);
+                }
+                else
+                {
+                    // The RFS may be contained, but see if the file names match
+                    string rfsName = FileManager.Standardize(referencedFileSave.Name, null, false).ToLower();
+                    string treeNodeFile = FileManager.Standardize(treeNode.GetRelativePath(), null, false).ToLower();
+
+                    // We first need to make sure that the file is part of GlobalContentFiles.
+                    // If it is, then we may have tree node in the wrong folder, so let's get rid
+                    // of it.  If it doesn't start with globalcontent/ then we shouldn't remove it here.
+                    if (rfsName.StartsWith("globalcontent/") && rfsName != treeNodeFile)
+                    {
+                        treeNode.Parent.Remove(treeNode);
+                    }
+                }
+            }
         }
     }
 }

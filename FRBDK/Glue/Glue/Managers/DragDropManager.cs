@@ -31,7 +31,7 @@ namespace FlatRedBall.Glue.Managers
     {
         #region Named Object
 
-        public void MoveNamedObject(ITreeNode treeNodeMoving, ITreeNode targetNode)
+        private void MoveNamedObject(ITreeNode treeNodeMoving, ITreeNode targetNode)
         {
             if (targetNode != null)
             {
@@ -51,9 +51,9 @@ namespace FlatRedBall.Glue.Managers
                 {
                     MoveObjectOnRootCustomVariablesNode(treeNodeMoving, targetNode);
                 }
-                else if (targetNode.Tag is IElement)
+                else if (targetNode.Tag is GlueElement glueElement)
                 {
-                    succeeded = DragDropNosIntoElement(movingNos, targetNode.Tag as IElement);
+                    succeeded = DragDropNosIntoElement(movingNos, glueElement);
                 }
                 else if (targetNode.IsRootEventsNode())
                 {
@@ -286,8 +286,8 @@ namespace FlatRedBall.Glue.Managers
 
             // Let's see if it's the Objects that contains node or another one
 
-            IElement parentOfMovingNos = movingNos.GetContainer();
-            IElement elementMovingInto = ((BaseElementTreeNode)targetNode.Parent).SaveObject;
+            var parentOfMovingNos = movingNos.GetContainer();
+            var elementMovingInto = (targetNode.Parent).Tag as GlueElement;
 
             if (parentOfMovingNos == elementMovingInto)
             {
@@ -317,7 +317,7 @@ namespace FlatRedBall.Glue.Managers
             return succeeded;
         }
 
-        private static bool DragDropNosIntoElement(NamedObjectSave movingNos, IElement elementMovingInto)
+        private static bool DragDropNosIntoElement(NamedObjectSave movingNos, GlueElement elementMovingInto)
         {
             bool succeeded = true;
 
@@ -350,8 +350,8 @@ namespace FlatRedBall.Glue.Managers
                 // the same thing.
                 clonedNos.LayerOn = null;
 
-                BaseElementTreeNode treeNodeForElementMovedInto = GlueState.Self.Find.ElementTreeNode(elementMovingInto);
-                treeNodeForElementMovedInto.RefreshTreeNodes();
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementMovingInto);
+
                 GlueCommands.Self.GenerateCodeCommands
                     .GenerateElementAndReferencedObjectCodeTask(elementMovingInto as GlueElement);
 
@@ -480,7 +480,7 @@ namespace FlatRedBall.Glue.Managers
         {
             element.NamedObjects.Add(newNamedObject);
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(element);
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
 
             // run after generated code so plugins like level editor work off latest code
             PluginManager.ReactToNewObject(newNamedObject);
@@ -625,9 +625,9 @@ namespace FlatRedBall.Glue.Managers
 
         #region Entity
 
-        public TreeNode MoveEntityOn(ITreeNode treeNodeMoving, ITreeNode targetNode)
+        public ITreeNode MoveEntityOn(ITreeNode treeNodeMoving, ITreeNode targetNode)
         {
-            TreeNode newTreeNode = null;
+            ITreeNode newTreeNode = null;
 
             #region Moving the Entity into (or out of) a directory
             if (targetNode.IsDirectoryNode() || targetNode.IsRootEntityNode())
@@ -685,7 +685,6 @@ namespace FlatRedBall.Glue.Managers
 
                     newTreeNode = MoveEntityOn(treeNodeMoving, parent);
 
-                    // this created a new NamedObjectSave.  Let's put that on the Layer
                     DragDropManager.Self.MoveNamedObject(newTreeNode, targetNode);
                 }
                 else
@@ -780,20 +779,15 @@ namespace FlatRedBall.Glue.Managers
             // adjust the UI
             if (succeeded)
             {
-                treeNodeMoving.Parent.Nodes.Remove(treeNodeMoving);
-                targetNode.Nodes.Add(treeNodeMoving);
-
-
-                treeNodeMoving.GeneratedCodeFile = newName + ".Generated.cs";
-                treeNodeMoving.CodeFile = newName + ".cs";
-                treeNodeMoving.Text = FileManager.RemovePath(newName);
-
+                treeNodeMoving.Parent.Remove(treeNodeMoving);
+                targetNode.Add(treeNodeMoving);
             }
 
             // Generate and save
             if (succeeded)
             {
-                // 7: Save it!
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(entitySave);
+
                 GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
                 CodeWriter.GenerateCode(entitySave);
 
@@ -804,7 +798,7 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        private TreeNode MoveEntityOntoElement(ITreeNode treeNodeMoving, ITreeNode targetNode, ITreeNode newTreeNode)
+        private ITreeNode MoveEntityOntoElement(ITreeNode treeNodeMoving, ITreeNode targetNode, ITreeNode newTreeNode)
         {
             EntitySave entitySaveMoved = treeNodeMoving.Tag as EntitySave;
 
@@ -814,12 +808,12 @@ namespace FlatRedBall.Glue.Managers
 
             if (targetNode.IsRootNamedObjectNode())
             {
-                BaseElementTreeNode baseElementTreeNode = targetNode.Parent as BaseElementTreeNode;
-                elementToCreateIn = baseElementTreeNode.SaveObject;
+                var parent = targetNode.Parent;
+                elementToCreateIn = parent.Tag as GlueElement;
             }
             else
             {
-                elementToCreateIn = ((BaseElementTreeNode)targetNode).SaveObject;
+                elementToCreateIn = targetNode.Tag as GlueElement;
             }
 
             #endregion
@@ -830,7 +824,7 @@ namespace FlatRedBall.Glue.Managers
             {
                 var namedObjectNode = ElementViewWindow.GetTreeNodeFor(listOfThisType);
                 // move it onto this
-                MoveEntityOn(treeNodeMoving, namedObjectNode);
+                MoveEntityOn(treeNodeMoving, TreeNodeWrapper.CreateOrNull(namedObjectNode));
             }
             else
             {
@@ -840,7 +834,14 @@ namespace FlatRedBall.Glue.Managers
                 //    MessageBox.Show("Create a new Object in\n\n" + elementToCreateIn.Name + "\n\nusing\n\n\t" + entitySaveMoved.Name + "?", "Create new Object?", MessageBoxButtons.YesNo);
 
                 NamedObjectSave newNamedObject = CreateNewNamedObjectInElement(elementToCreateIn, entitySaveMoved);
-                newTreeNode = GlueState.Self.Find.NamedObjectTreeNode(newNamedObject);
+                if(treeNodeMoving is TreeNodeWrapper)
+                {
+                    newTreeNode = TreeNodeWrapper.CreateOrNull( GlueState.Self.Find.NamedObjectTreeNode(newNamedObject));
+                }
+                else
+                {
+                    throw new NotImplementedException("Vic asks - why do we need to return a tree node here?");
+                }
                 GlueState.Self.CurrentNamedObjectSave = newNamedObject;
             }
             return newTreeNode;
@@ -997,9 +998,9 @@ namespace FlatRedBall.Glue.Managers
             }
             // If the user drops a file on a Screen or Entity, let's allow them to
             // complete the operation on the Files node
-            if (targetNode is BaseElementTreeNode)
+            if (targetNode.Tag is GlueElement)
             {
-                targetNode = ((BaseElementTreeNode)targetNode).FilesTreeNode;
+                targetNode = targetNode.FindByName("Files");
             }
 
             ReferencedFileSave referencedFileSave = treeNodeMoving.Tag as ReferencedFileSave;
@@ -1031,7 +1032,7 @@ namespace FlatRedBall.Glue.Managers
                     }
                     else
                     {
-                        DragAddFileToGlobalContent(treeNodeMoving, referencedFileSave);
+                        DragAddFileToGlobalContent(referencedFileSave);
                         // This means the user wants to add the file
                         // to global content.
                     }
@@ -1061,7 +1062,7 @@ namespace FlatRedBall.Glue.Managers
                 {
                     // See if we're moving the RFS from one Element to another
                     IElement container = ObjectFinder.Self.GetElementContaining(referencedFileSave);
-                    TreeNode elementTreeNodeDroppingIn = targetNode.GetContainingElementTreeNode();
+                    var elementTreeNodeDroppingIn = targetNode.GetContainingElementTreeNode();
                     IElement elementDroppingIn = null;
                     if (elementTreeNodeDroppingIn != null)
                     {
@@ -1093,7 +1094,7 @@ namespace FlatRedBall.Glue.Managers
                         if (response.Succeeded)
                         {
 
-                            ElementViewWindow.SelectedNode = targetNode;
+                            GlueState.Self.CurrentReferencedFileSave = referencedFileSave;
 
                             string absoluteFileName = ProjectManager.MakeAbsolute(referencedFileSave.Name, true);
                             string creationReport;
@@ -1133,7 +1134,7 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        private static void DragAddFileToGlobalContent(TreeNode treeNodeMoving, ReferencedFileSave referencedFileSave)
+        private static void DragAddFileToGlobalContent(ReferencedFileSave referencedFileSave)
         {
             if (referencedFileSave.GetContainerType() == ContainerType.None)
             {
@@ -1346,9 +1347,9 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        private static GeneralResponse HandleDroppingFileOnObjectInSameElement(TreeNode targetNode, ReferencedFileSave referencedFileSave)
+        private static GeneralResponse HandleDroppingFileOnObjectInSameElement(ITreeNode targetNode, ReferencedFileSave referencedFileSave)
         {
-            var namedObject = ((NamedObjectSave)targetNode.Tag);
+            var namedObject = (NamedObjectSave)targetNode.Tag;
 
             var response = GeneralResponse.SuccessfulResponse;
 
@@ -1506,8 +1507,20 @@ namespace FlatRedBall.Glue.Managers
                     MoveCustomVariable(nodeMoving, targetNode);
                     shouldSaveGlux = true;
                 }
+
+
+
                 if (shouldSaveGlux)
                 {
+
+                    var treeNodeToRefresh = targetNode.GetContainingElementTreeNode();
+                    var elementToRefresh = treeNodeToRefresh.Tag as GlueElement;
+                    if (elementToRefresh != null)
+                    {
+                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementToRefresh);
+                    }
+
+
                     GluxCommands.Self.SaveGlux();
                 }
 

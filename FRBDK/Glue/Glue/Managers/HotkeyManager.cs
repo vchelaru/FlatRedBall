@@ -55,7 +55,7 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        internal bool TryHandleKeys(System.Windows.Input.KeyEventArgs e)
+        public bool TryHandleKeys(System.Windows.Input.KeyEventArgs e)
         {
             var ctrlDown = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
             var altDown = (Keyboard.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt;
@@ -123,6 +123,9 @@ namespace FlatRedBall.Glue.Managers
                     return true;
                 case Key.F12:
                     GlueCommands.Self.DialogCommands.GoToDefinitionOfSelection();
+                    return true;
+                case Key.Delete:
+                    RightClickHelper.RemoveFromProjectToolStripMenuItem();
                     return true;
             }
 

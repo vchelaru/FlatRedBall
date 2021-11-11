@@ -169,13 +169,27 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
 
         public static void SelectByTag(object value)
         {
-            var treeNode = mainViewModel.GetTreeNodeByTag(value);
-
-            if (treeNode != null && treeNode != currentNode)
+            if(value == null)
             {
-                treeNode.ExpandParentsRecursively();
-                treeNode.IsSelected = true;
-                mainView.MainTreeView.ScrollIntoView(treeNode);
+                if(currentNode != null)
+                {
+                    SelectionLogic.IsUpdatingSelectionOnGlueEvent = false;
+                    currentNode.IsSelected = false;
+                    currentNode = null;
+                    SelectionLogic.IsUpdatingSelectionOnGlueEvent = true;
+                }
+            }
+            else
+            {
+                var treeNode = mainViewModel.GetTreeNodeByTag(value);
+
+                if (treeNode != null && treeNode != currentNode)
+                {
+                    treeNode.ExpandParentsRecursively();
+                    treeNode.IsSelected = true;
+                    mainView.MainTreeView.ScrollIntoView(treeNode);
+                }
+
             }
 
 
