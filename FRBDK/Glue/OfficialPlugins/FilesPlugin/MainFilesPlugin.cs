@@ -12,6 +12,7 @@ using OfficialPlugins.FilesPlugin.ViewModels;
 using System.ComponentModel.Composition;
 using FlatRedBall.Glue.Controls;
 using OfficialPluginsCore.FilesPlugin.Managers;
+using FlatRedBall.Glue.FormHelpers;
 
 namespace OfficialPlugins.FilesPlugin
 {
@@ -55,7 +56,7 @@ namespace OfficialPlugins.FilesPlugin
                 RightClickManager.HandleRightClick;
         }
 
-        private void HandleItemSelected(TreeNode selectedTreeNode)
+        private void HandleItemSelected(ITreeNode selectedTreeNode)
         {
             ReferencedFileSave rfs = null;
             if(selectedTreeNode != null)

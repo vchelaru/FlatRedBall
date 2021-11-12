@@ -193,9 +193,9 @@ namespace FlatRedBall.Glue.IO
             {
                 if (moveToSelectedFolderTreeNode && GlueState.Self.CurrentTreeNode != null && GlueState.Self.CurrentTreeNode.IsFolderForEntities())
                 {
-                    var entityTreeNode = GlueState.Self.Find.EntityTreeNode(entitySave);
-                    DragDropManager.Self.MoveEntityOn(
-                        new TreeNodeWrapper(entityTreeNode), new TreeNodeWrapper( GlueState.Self.CurrentTreeNode));
+                    var directory = GlueState.Self.CurrentTreeNode.GetRelativePath();
+                    GlueCommands.Self.GluxCommands.MoveEntityToDirectory(entitySave, directory);
+
                     shouldSave = true;
                 }
             });

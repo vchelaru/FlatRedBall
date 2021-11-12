@@ -204,7 +204,7 @@ namespace FlatRedBall.Glue.FormHelpers
             bool wasFocused = mTreeView?.Focused == true;
             if (!SuppressSelectionEvents)
             {
-                PluginManager.ReactToItemSelect(node);
+                PluginManager.ReactToItemSelect(TreeNodeWrapper.CreateOrNull( node ));
             }
             // ReactivelySetItemViewVisibility may add or remove controls, and as a result the
             // list view may lose focus. We dont' want that to happen so we will explicitly put
@@ -215,7 +215,7 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-
+        // Vic asks - why is this in the ElementViewWindow? That's weird...
         public static void ShowAllElementVariablesInPropertyGrid()
         {
             var element = GlueState.Self.CurrentElement;
@@ -428,11 +428,11 @@ namespace FlatRedBall.Glue.FormHelpers
 
             var entityTreeNode = GlueState.Self.Find.EntityTreeNode(entitySave);
 
-            TreeNode parentTreeNode = entityTreeNode.Parent;
+            var parentTreeNode = entityTreeNode.Parent;
 
             bool wasSelected = MainExplorerPlugin.Self.ElementTreeView.SelectedNode == entityTreeNode;
 
-            parentTreeNode.Nodes.SortByTextConsideringDirectories();
+            parentTreeNode.SortByTextConsideringDirectories();
 
             if (wasSelected)
             {

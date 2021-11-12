@@ -385,6 +385,7 @@ namespace FlatRedBall.Glue.IO
                                     ProjectManager.GlueProjectSave.Entities[indexInOld] = newGlueProjectSave.Entities[indexInNew];
                                 }
 
+
                                 var treeNode = GlueState.Self.Find.ElementTreeNode(element);
 
 

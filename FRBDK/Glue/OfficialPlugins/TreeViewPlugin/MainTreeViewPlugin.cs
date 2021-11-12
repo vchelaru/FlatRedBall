@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Plugins;
+﻿using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPlugins.TreeViewPlugin.Logic;
@@ -54,7 +55,7 @@ namespace OfficialPlugins.TreeViewPlugin
             this.ReactToItemSelectHandler += HandleItemSelected;
         }
 
-        private void HandleItemSelected(TreeNode selectedTreeNode)
+        private void HandleItemSelected(ITreeNode selectedTreeNode)
         {
             var tag = selectedTreeNode?.Tag;
             if(SelectionLogic.IsUpdatingSelectionOnGlueEvent )

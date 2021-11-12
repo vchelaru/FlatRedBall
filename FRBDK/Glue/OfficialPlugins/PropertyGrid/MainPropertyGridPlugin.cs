@@ -47,7 +47,7 @@ namespace OfficialPlugins.VariableDisplay
 
         private void HandleLoadedGlux()
         {
-            HandleItemSelect(GlueState.Self.CurrentTreeNode);
+            HandleItemSelect(TreeNodeWrapper.CreateOrNull( GlueState.Self.CurrentTreeNode));
         }
 
         private void HandleRefreshProperties(string changedMember, object oldValue)
@@ -79,7 +79,7 @@ namespace OfficialPlugins.VariableDisplay
             //RefreshLogic.RefreshGrid(variableGrid.DataUiGrid);
         }
 
-        private void HandleItemSelect(System.Windows.Forms.TreeNode selectedTreeNode)
+        private void HandleItemSelect(ITreeNode selectedTreeNode)
         {
             if(GlueState.Self.CurrentNamedObjectSave != null)
             {

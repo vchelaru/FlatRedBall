@@ -549,7 +549,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        public void AddDirectory(string folderName, TreeNode treeNodeToAddTo)
+        public void AddDirectory(string folderName, ITreeNode treeNodeToAddTo)
         {
 
             if (treeNodeToAddTo.IsGlobalContentContainerNode())

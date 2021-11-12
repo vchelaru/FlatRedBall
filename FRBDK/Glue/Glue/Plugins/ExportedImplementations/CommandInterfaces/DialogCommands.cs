@@ -500,7 +500,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     if (GlueState.Self.CurrentElement != null)
                     {
-                        PluginManager.ReactToItemSelect(GlueState.Self.CurrentTreeNode);
+                        PluginManager.ReactToItemSelect(TreeNodeWrapper.CreateOrNull( GlueState.Self.CurrentTreeNode));
                     }
                 }
             }
@@ -613,7 +613,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(addScreenWindow.Result);
 
                     GlueState.Self.CurrentElement = screen;
-                    GlueState.Self.CurrentElementTreeNode?.Expand();
 
                     PluginManager.ReactToNewScreenCreatedWithUi(screen, addScreenWindow);
 
@@ -893,9 +892,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (!string.IsNullOrEmpty(baseObject))
                 {
-                    IElement baseElement = ObjectFinder.Self.GetIElement(baseObject);
+                    var baseElement = ObjectFinder.Self.GetElement(baseObject);
 
-                    GlueState.Self.CurrentTreeNode = GlueState.Self.Find.ElementTreeNode(baseElement);
+                    GlueState.Self.CurrentElement = baseElement;
                 }
             }
 

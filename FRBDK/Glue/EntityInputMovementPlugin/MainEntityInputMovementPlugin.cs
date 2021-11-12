@@ -10,6 +10,7 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Controls;
 using EntityInputMovementPlugin.ViewModels;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.FormHelpers;
 
 namespace EntityInputMovementPlugin
 {
@@ -128,7 +129,7 @@ namespace EntityInputMovementPlugin
             return didChangeGlux;
         }
 
-        private void HandleItemSelected(System.Windows.Forms.TreeNode selectedTreeNode)
+        private void HandleItemSelected(ITreeNode selectedTreeNode)
         {
             bool shouldShow = GlueState.Self.CurrentEntitySave != null &&
                 // So this only shows if the entity itself is selected:

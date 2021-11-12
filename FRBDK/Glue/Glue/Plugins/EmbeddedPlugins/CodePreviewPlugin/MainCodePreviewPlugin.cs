@@ -39,7 +39,6 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.CodePreviewPlugin
             this.CodePreviewTextBox.ReadOnly = true;
             this.CodePreviewTextBox.WordWrap = false;
 
-            this.ReactToItemSelectHandler += HandleItemSelected;
 
             CodeTab.Hide();
 
@@ -61,20 +60,6 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.CodePreviewPlugin
                     }
                 }
             }
-        }
-
-        private void HandleItemSelected(TreeNode selectedTreeNode)
-        {
-            bool isCode = !string.IsNullOrEmpty(CurrentCodeFile);
-
-            //if(isCode)
-            //{
-            //    ShowTab(CodeTab);
-            //}
-            //else
-            //{
-            //    this.RemoveTab(CodeTab);
-            //}
         }
     }
 }

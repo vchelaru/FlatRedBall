@@ -343,7 +343,7 @@ namespace EntityPerformancePlugin
         }
 
 
-        private void HandleGlueItemSelected(TreeNode selectedTreeNode)
+        private void HandleGlueItemSelected(ITreeNode selectedTreeNode)
         {
             var shouldShow = selectedTreeNode?.IsEntityNode() == true || selectedTreeNode?.IsRootNamedObjectNode() == true;
 
@@ -366,7 +366,6 @@ namespace EntityPerformancePlugin
 
         private void RefreshView()
         {
-            var selectedTreeNode = GlueState.Self.CurrentTreeNode;
             saveOnViewModelChanges = false;
             {
                 if (GlueState.Self.CurrentEntitySave != null && mainControl != null)

@@ -30,6 +30,7 @@ using GumPluginCore.Managers;
 using FlatRedBall.Glue.Controls;
 using GumPluginCore.ViewModels;
 using GumPlugin.DataGeneration;
+using FlatRedBall.Glue.FormHelpers;
 
 namespace GumPlugin
 {
@@ -534,7 +535,7 @@ namespace GumPlugin
             }
         }
 
-        private void HandleItemSelected(TreeNode selectedTreeNode)
+        private void HandleItemSelected(ITreeNode selectedTreeNode)
         {
             bool shouldShowTab = GetIfShouldShowTab(selectedTreeNode);
 
@@ -572,12 +573,10 @@ namespace GumPlugin
             }
         }
 
-        private bool GetIfShouldShowTab(TreeNode selectedTreeNode)
+        private bool GetIfShouldShowTab(ITreeNode selectedTreeNode)
         {
-            if(selectedTreeNode != null && selectedTreeNode.Tag is ReferencedFileSave)
+            if(selectedTreeNode?.Tag is ReferencedFileSave rfs)
             {
-                var rfs = selectedTreeNode.Tag as ReferencedFileSave;
-
                 return FileManager.GetExtension( rfs.Name ) == "gumx";
             }
 

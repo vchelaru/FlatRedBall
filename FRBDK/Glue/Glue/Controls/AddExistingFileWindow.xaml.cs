@@ -67,7 +67,6 @@ namespace FlatRedBall.Glue.Controls
                 if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     var element = GlueState.Self.CurrentElement;
-                    string directoryOfTreeNode = GlueState.Self.CurrentTreeNode.GetRelativePath();
 
                     ViewModel.Files.Clear();
                     ViewModel.Files.AddRange(openFileDialog.FileNames.Select(item => new FilePath(item)));

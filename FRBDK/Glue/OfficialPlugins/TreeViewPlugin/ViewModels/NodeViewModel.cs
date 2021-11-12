@@ -211,6 +211,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         public NodeViewModel Root() => Parent == null ? this : Parent.Root();
 
+        void ITreeNode.SortByTextConsideringDirectories() => this.SortByTextConsideringDirectories();
         public void SortByTextConsideringDirectories(ObservableCollection<NodeViewModel> treeNodeCollection = null, bool recursive = false)
         {
             if(treeNodeCollection == null)
@@ -317,6 +318,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         {
             return Text;
         }
+
+        ITreeNode ITreeNode.FindByTagRecursive(object tag) => this.GetNodeByTag(tag);
 
         public void Remove(ITreeNode child)
         {

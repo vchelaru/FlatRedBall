@@ -35,6 +35,7 @@ using TiledPluginCore.Controllers;
 using TiledPluginCore.Managers;
 using TiledPluginCore.Views;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.FormHelpers;
 
 namespace TileGraphicsPlugin
 {
@@ -496,7 +497,7 @@ namespace TileGraphicsPlugin
             return false;
         }
         
-        private void HandleItemSelect(TreeNode treeNode)
+        private void HandleItemSelect(ITreeNode treeNode)
         {
             bool shouldRemove = true;
 

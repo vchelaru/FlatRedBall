@@ -4,6 +4,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
@@ -38,7 +39,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
             }
         }
 
-        private void HandleItemSelected(System.Windows.Forms.TreeNode selectedTreeNode)
+        private void HandleItemSelected(ITreeNode selectedTreeNode)
         {
             var file = GlueState.Self.CurrentReferencedFileSave;
 

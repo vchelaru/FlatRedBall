@@ -68,8 +68,7 @@ namespace FlatRedBall.Glue.FormHelpers
         [Obsolete("Use RefreshCommands.RefreshPropertyGrid")]
         public static void UpdateDisplayedPropertyGridProperties()
         {
-
-            TreeNode node = GlueState.Self.CurrentTreeNode;
+            var node = TreeNodeWrapper.CreateOrNull( GlueState.Self.CurrentTreeNode);
 
             ///////////////Early Out/////////////////////
             if (node == null)
@@ -78,45 +77,43 @@ namespace FlatRedBall.Glue.FormHelpers
             }
             ////////////End Early Out///////////////////
 
-            if (node.IsNamedObjectNode())
+            var glueState = GlueState.Self;
+
+            if (glueState.CurrentNamedObjectSave != null)
             {
                 PropertyGridHelper.UpdateNamedObjectDisplay();
             }
-            else if (node.IsReferencedFile())
+            else if (glueState.CurrentReferencedFileSave != null)
             {
                 PropertyGridHelper.UpdateReferencedFileSaveDisplay();
             }
-            else if (node.IsEventResponseTreeNode())
+            else if (glueState.CurrentEventResponseSave != null)
             {
                 PropertyGridHelper.UpdateEventResponseSaveDisplayer();
             }
-            else if (node.IsEntityNode())
-            {
-                PropertyGridHelper.UpdateEntitySaveDisplay();
-            }
-            else if (node.IsScreenNode())
-            {
-                PropertyGridHelper.UpdateScreenSaveDisplay();
-            }
-            else if (node.IsCustomVariable())
+            else if (glueState.CurrentCustomVariable != null)
             {
                 PropertyGridHelper.UpdateCustomVariableDisplay();
             }
-            else if (node.IsStateNode())
+            else if (glueState.CurrentStateSave != null)
             {
                 PropertyGridHelper.UpdateStateSaveDisplay();
             }
-            else if (node.IsStateCategoryNode())
+            else if (glueState.CurrentStateSaveCategory != null)
             {
                 PropertyGridHelper.UpdateStateCategorySave();
+            }
+            else if (glueState.CurrentEntitySave != null)
+            {
+                PropertyGridHelper.UpdateEntitySaveDisplay();
+            }
+            else if (glueState.CurrentScreenSave != null)
+            {
+                PropertyGridHelper.UpdateScreenSaveDisplay();
             }
             else if (node.IsGlobalContentContainerNode() && ProjectManager.GlueProjectSave != null)
             {
                 MainGlueWindow.Self.PropertyGrid.SelectedObject = ProjectManager.GlueProjectSave.GlobalContentSettingsSave;
-            }
-            else if (node.IsRootCustomVariablesNode())
-            {
-                ElementViewWindow.ShowAllElementVariablesInPropertyGrid();
             }
             else
             {

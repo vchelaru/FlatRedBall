@@ -22,7 +22,7 @@ namespace FlatRedBall.Glue.Managers
 
         BaseElementTreeNode ElementTreeNode(IElement element);
 
-        EntityTreeNode EntityTreeNode(EntitySave entitySave);
+        ITreeNode EntityTreeNode(EntitySave entitySave);
 
         ScreenTreeNode ScreenTreeNode(string screenFileName);
 
@@ -111,11 +111,11 @@ namespace FlatRedBall.Glue.Managers
             }
             else
             {
-                return EntityTreeNode(element as EntitySave);
+                return TreeNodeByTag(element) as BaseElementTreeNode;
             }
         }
 
-        public EntityTreeNode EntityTreeNode(EntitySave entitySave)
+        public ITreeNode EntityTreeNode(EntitySave entitySave)
         {
             // Vic says: I don't know why I had code duplication here, but let's fix it:
             //return GetEntityTreeNode(entitySave.Name);
@@ -135,12 +135,12 @@ namespace FlatRedBall.Glue.Managers
                     EntityTreeNode asEntityTreeNode = treeNodeToAddTo.Nodes[i] as EntityTreeNode;
                     if (asEntityTreeNode.EntitySave == entitySave)
                     {
-                        return asEntityTreeNode;
+                        return TreeNodeWrapper.CreateOrNull( asEntityTreeNode);
                     }
                 }
             }
 
-            return null;
+            return TreeNodeWrapper.CreateOrNull(null);
         }
 
         public ScreenTreeNode ScreenTreeNode(string screenFileName)
@@ -195,7 +195,8 @@ namespace FlatRedBall.Glue.Managers
             else if (container is EntitySave)
             {
                 var entityTreeNode = GlueState.Self.Find.EntityTreeNode((EntitySave)container);
-                return TreeNodeWrapper.CreateOrNull(entityTreeNode.GetTreeNodeFor(namedObjectSave));
+
+                return entityTreeNode.FindByTagRecursive(namedObjectSave);
             }
             else
             {
@@ -221,6 +222,11 @@ namespace FlatRedBall.Glue.Managers
             }
             return null;
         }
+
+        //ITreeNode ITreeNode.FindByTagRecursive(object tag)
+        //{
+        //    return this.TreeNodeByTag(tag);
+        //}
 
         public TreeNode TreeNodeByTag(object tag)
         {

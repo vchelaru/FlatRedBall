@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
+using FlatRedBall.Glue.FormHelpers;
 
 namespace OfficialPlugins.Compiler.Managers
 {
@@ -509,7 +510,7 @@ namespace OfficialPlugins.Compiler.Managers
 
         #region Selected Object
 
-        internal async void HandleItemSelected(TreeNode selectedTreeNode)
+        internal async void HandleItemSelected(ITreeNode selectedTreeNode)
         {
             if(IgnoreNextObjectSelect)
             {

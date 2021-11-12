@@ -16,6 +16,7 @@ using FlatRedBall.Glue.CodeGeneration;
 using Newtonsoft.Json;
 using static DialogTreePlugin.SaveClasses.DialogTreeRaw;
 using DialogTreePluginCore.Managers;
+using FlatRedBall.Glue.FormHelpers;
 
 namespace DialogTreePlugin
 {
@@ -107,7 +108,7 @@ namespace DialogTreePlugin
             }
         }
 
-        private void HandleItemSelected(TreeNode selectedTreeNode)
+        private void HandleItemSelected(ITreeNode selectedTreeNode)
         {
             bool shouldShow = GlueState.Self.CurrentReferencedFileSave != null &&
                 selectedTreeNode?.Tag == GlueState.Self.CurrentReferencedFileSave &&

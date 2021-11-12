@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
@@ -71,7 +72,7 @@ namespace RacingPlugin
             }
         }
 
-        private void HandleItemSelected(TreeNode selectedTreeNode)
+        private void HandleItemSelected(ITreeNode selectedTreeNode)
         {
             bool shouldShow = GlueState.Self.CurrentEntitySave != null &&
                 // So this only shows if the entity itself is selected:

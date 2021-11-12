@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Events;
+using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
@@ -200,7 +201,7 @@ namespace OfficialPlugins.CollisionPlugin
             }
         }
 
-        private void HandleTreeViewItemSelected(TreeNode selectedTreeNode)
+        private void HandleTreeViewItemSelected(ITreeNode selectedTreeNode)
         {
             var selectedNos = GlueState.Self.CurrentNamedObjectSave;
 

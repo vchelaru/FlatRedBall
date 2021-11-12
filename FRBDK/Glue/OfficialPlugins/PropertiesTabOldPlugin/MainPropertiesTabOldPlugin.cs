@@ -35,7 +35,7 @@ namespace OfficialPluginsCore.PropertiesTabOldPlugin
             HandleItemSelected(null);
         }
 
-        private void HandleItemSelected(TreeNode selectedTreeNode)
+        private void HandleItemSelected(ITreeNode selectedTreeNode)
         {
             var selectedObject = selectedTreeNode?.Tag;
 

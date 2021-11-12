@@ -428,7 +428,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             CustomVariableHelper.SetDefaultValueFor(newVariable, currentElement);
 
-            if (GlueState.Self.CurrentElementTreeNode != null)
+            if (GlueState.Self.CurrentElement != null)
             {
                 GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
             }

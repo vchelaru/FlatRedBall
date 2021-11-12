@@ -37,6 +37,7 @@ using GeneralResponse = ToolsUtilities.GeneralResponse;
 using WpfTabControl = System.Windows.Controls.TabControl;
 using GlueFormsCore.Controls;
 using System.Runtime.CompilerServices;
+using FlatRedBall.Glue.FormHelpers;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -1204,7 +1205,7 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
-        internal static void ReactToItemSelect(TreeNode selectedTreeNode)
+        internal static void ReactToItemSelect(ITreeNode selectedTreeNode)
         {
             //CenterTab.SuspendLayout();
 

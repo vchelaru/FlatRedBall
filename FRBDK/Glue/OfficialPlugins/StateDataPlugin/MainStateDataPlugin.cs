@@ -54,7 +54,7 @@ namespace OfficialPlugins.StateDataPlugin
             GlueCommands.Self.RefreshCommands.RefreshErrorsFor(stateErrorReporter);
         }
 
-        private void HandleReactToItemSelect(TreeNode selectedTreeNode)
+        private void HandleReactToItemSelect(ITreeNode selectedTreeNode)
         {
             if(GlueState.Self.CurrentTreeNode?.IsStateCategoryNode() == true)
             {

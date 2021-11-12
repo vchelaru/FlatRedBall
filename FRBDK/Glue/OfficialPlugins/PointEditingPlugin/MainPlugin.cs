@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -40,7 +41,7 @@ namespace OfficialPlugins.PointEditingPlugin
             }
         }
 
-        private void HandleItemSelected(TreeNode selectedTreeNode)
+        private void HandleItemSelected(ITreeNode selectedTreeNode)
         {
             NamedObjectSave namedObjectSave = null;
 

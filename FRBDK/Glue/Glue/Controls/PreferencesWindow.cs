@@ -70,17 +70,14 @@ namespace FlatRedBall.Glue.Controls
 
             if (!changed) return;
 
-            foreach (var entityTreeNode in
-                ElementViewWindow.AllEntities.Where(entity => CheckIfNodeNeedsUpdate(entity.SaveObject)))
+            foreach (var entity in GlueState.Self.CurrentGlueProject.Entities)
             {
-                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(entityTreeNode.Tag as GlueElement);
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(entity);
             }
 
-            foreach (var screenTreeNode in
-                ElementViewWindow.AllScreens.Where(screen => CheckIfNodeNeedsUpdate(screen.SaveObject)))
+            foreach (var screen in GlueState.Self.CurrentGlueProject.Screens)
             {
-                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screenTreeNode.Tag as GlueElement);
-
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screen);
             }
         }
 	}

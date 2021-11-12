@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
@@ -104,7 +105,7 @@ namespace OfficialPlugins.SongPlugin
             this.ReactToItemSelectHandler += HandleItemSelected;
         }
 
-        private void HandleItemSelected(TreeNode selectedTreeNode)
+        private void HandleItemSelected(ITreeNode selectedTreeNode)
         {
             var rfs = GlueState.Self.CurrentReferencedFileSave;
 

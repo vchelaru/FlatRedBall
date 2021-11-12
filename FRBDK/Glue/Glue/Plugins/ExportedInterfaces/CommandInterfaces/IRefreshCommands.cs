@@ -11,6 +11,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// </summary>
         void RefreshCurrentElementTreeNode();
 
+        /// <summary>
+        /// Refreshes the entire tree node view
+        /// </summary>
         void RefreshTreeNodes();
 
         /// <summary>

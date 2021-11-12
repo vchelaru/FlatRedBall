@@ -61,66 +61,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 GlueCommands.Self.DoOnUiThread(() =>
                 {
-                    var elementTreeNode = GlueState.Self.Find.ElementTreeNode(element);
-
-                    if(elementTreeNode == null)
-                    {
-                        if(!element.IsHiddenInTreeView)
-                        {
-                            if(element is ScreenSave screen)
-                            {
-                                elementTreeNode = AddScreenInternal(screen);
-                            }
-                            else if(element is EntitySave entitySave)
-                            {
-                                elementTreeNode = ElementViewWindow.AddEntity(entitySave);
-                            }
-                            elementTreeNode?.RefreshTreeNodes();
-                        }
-                    }
-                    else
-                    {
-                        if(element.IsHiddenInTreeView)
-                        {
-                            // remove it!
-                            if (element is ScreenSave screen)
-                            {
-                                ElementViewWindow.RemoveScreen(screen);
-                            }
-                            else if (element is EntitySave entitySave)
-                            {
-                                ElementViewWindow.RemoveEntity(entitySave);
-                            }
-                        }
-                        else
-                        {
-                            elementTreeNode?.RefreshTreeNodes();
-                        }
-                    }
                     PluginManager.RefreshTreeNodeFor(element);
                 });
             }
         }
-
-        BaseElementTreeNode AddScreenInternal(ScreenSave screenSave)
-        {
-            string screenFileName = screenSave.Name + ".cs";
-            string screenFileWithoutExtension = FileManager.RemoveExtension(screenFileName);
-
-            var screenTreeNode = new ScreenTreeNode(FileManager.RemovePath(screenFileWithoutExtension));
-            screenTreeNode.CodeFile = screenFileName;
-
-            ElementViewWindow.ScreensTreeNode.Nodes.Add(screenTreeNode);
-            ElementViewWindow.ScreensTreeNode.Nodes.SortByTextConsideringDirectories();
-
-            string generatedFile = screenFileWithoutExtension + ".Generated.cs";
-            screenTreeNode.GeneratedCodeFile = generatedFile;
-
-            screenTreeNode.SaveObject = screenSave;
-
-            return screenTreeNode;
-        }
-
 
         public void RefreshUi(StateSaveCategory category)
         {
@@ -132,11 +76,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 if(element != null)
                 {
                     treeNode = GlueState.Self.Find.ElementTreeNode(element);
-
                 }
-
-
-
             }
 
             if(treeNode != null)
@@ -147,8 +87,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void RefreshGlobalContent()
         {
-            ElementViewWindow.UpdateGlobalContentTreeNodes();
-
             PluginManager.RefreshGlobalContentTreeNode();
         }
 
