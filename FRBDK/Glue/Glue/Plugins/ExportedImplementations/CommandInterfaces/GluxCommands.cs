@@ -768,7 +768,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                     if (regenerateCode)
                     {
-                        ElementViewWindow.GenerateSelectedElementCode();
+                        GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
                     }
                 });
 

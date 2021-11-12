@@ -372,37 +372,6 @@ namespace FlatRedBall.Glue.FormHelpers
         }
 
 
-     
-        public static void GenerateSelectedElementCode()
-        {
-            if (GlueState.Self.CurrentElement != null)
-            {
-                CodeWriter.GenerateCode(GlueState.Self.CurrentElement);
-            }
-            else if (GlueState.Self.CurrentReferencedFileSave != null)
-            {
-                ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
-                GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
-
-                if (rfs.IsCsvOrTreatedAsCsv)
-                {
-                    CsvCodeGenerator.GenerateAndSaveDataClass(GlueState.Self.CurrentReferencedFileSave, rfs.CsvDelimiter);
-                }
-            }
-
-            // Even though we may have generated a Screen/Entity, we still might want to see if we should update 
-            // CSVs:
-            if (GlueState.Self.CurrentReferencedFileSave != null)
-            {
-                ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
-                if (rfs.Name.ToLower().EndsWith(".csv"))
-                {
-                    CsvCodeGenerator.GenerateAndSaveDataClass(GlueState.Self.CurrentReferencedFileSave, rfs.CsvDelimiter);
-                }
-            }
-
-        }
-
         public static void Invoke(Delegate method)
         {
             mTreeView.Invoke(method);

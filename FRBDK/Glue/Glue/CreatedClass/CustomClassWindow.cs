@@ -152,7 +152,7 @@ namespace FlatRedBall.Glue.Controls
         {
             this.Close();
 
-            ElementViewWindow.GenerateSelectedElementCode();
+            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
             GlueCommands.Self.GenerateCodeCommands.GenerateCustomClassesCode();
 

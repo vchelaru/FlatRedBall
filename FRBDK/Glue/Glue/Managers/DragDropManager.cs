@@ -74,8 +74,7 @@ namespace FlatRedBall.Glue.Managers
                 {
                     if (GlueState.Self.CurrentElement != null)
                     {
-                        ElementViewWindow.GenerateSelectedElementCode();
-
+                        GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
                     }
                     else
                     {
@@ -752,7 +751,7 @@ namespace FlatRedBall.Glue.Managers
                             namedObject.UpdateCustomProperties();
                         }
 
-                        ElementViewWindow.GenerateSelectedElementCode();
+                        GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
                         // run after generated code so plugins like level editor work off latest code
                         PluginManager.ReactToNewObject(namedObject);

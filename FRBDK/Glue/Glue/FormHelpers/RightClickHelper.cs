@@ -476,7 +476,7 @@ namespace FlatRedBall.Glue.FormHelpers
         static GeneralToolStripMenuItem addFileToolStripMenuItem;
         static GeneralToolStripMenuItem newFileToolStripMenuItem;
         static GeneralToolStripMenuItem existingFileToolStripMenuItem;
-        static GeneralToolStripMenuItem viewInExplorerToolStripMenuItem;
+        
 
         static GeneralToolStripMenuItem openWithDEFAULTToolStripMenuItem;
 
@@ -541,9 +541,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static GeneralToolStripMenuItem mRefreshTreeNodesMenuItem;
 
-        static GeneralToolStripMenuItem mAddEntityInstance;
-        static GeneralToolStripMenuItem mAddEntityList;
-
         static GeneralToolStripMenuItem mCopyToBuildFolder;
 
         static GeneralToolStripMenuItem reGenerateCodeToolStripMenuItem;
@@ -593,8 +590,8 @@ namespace FlatRedBall.Glue.FormHelpers
                 {
                     if (sourceNode.IsEntityNode())
                     {
-                        AddEvent("Add Entity Instance", OnAddEntityInstanceClick);
-                        AddEvent("Add Entity List", OnAddEntityListClick);
+                        Add("Add Entity Instance", () => OnAddEntityInstanceClick(targetNode, sourceNode));
+                        Add("Add Entity List", () => OnAddEntityListClick(sourceNode));
                     }
                 }
                 else
@@ -625,6 +622,12 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 if (menuShowingAction == MenuShowingAction.RightButtonDrag && sourceNode.IsEntityNode())
                 {
+                    var mAddEntityInstance = new GeneralToolStripMenuItem("Add Entity Instance");
+                    mAddEntityInstance.Click += (not, used) => OnAddEntityInstanceClick(targetNode, sourceNode);
+
+                    var mAddEntityList = new GeneralToolStripMenuItem("Add Entity List");
+                    mAddEntityList.Click += (not, used) => OnAddEntityListClick(sourceNode);
+
                     AddItem(mAddEntityInstance);
                     AddItem(mAddEntityList);
                 }
@@ -656,7 +659,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 AddItem(addFileToolStripMenuItem);
                 AddItem(addFolderToolStripMenuItem);
                 AddSeparator();
-                AddItem(viewInExplorerToolStripMenuItem);
+                Add("View in explorer", () => RightClickHelper.ViewInExplorerClick());
                 if (targetNode.IsFolderInFilesContainerNode())
                 {
                     AddItem(mDeleteFolder);
@@ -680,6 +683,12 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 if (menuShowingAction == MenuShowingAction.RightButtonDrag && !isSameObject && sourceNode.IsEntityNode())
                 {
+                    var mAddEntityInstance = new GeneralToolStripMenuItem("Add Entity Instance");
+                    mAddEntityInstance.Click += (not, used) => OnAddEntityInstanceClick(targetNode, sourceNode);
+
+                    var mAddEntityList = new GeneralToolStripMenuItem("Add Entity List");
+                    mAddEntityList.Click += (not, used) => OnAddEntityListClick(sourceNode);
+
                     AddItem(mAddEntityInstance);
                     AddItem(mAddEntityList);
                 }
@@ -708,7 +717,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 AddItem(addFolderToolStripMenuItem);
                 AddItem(reGenerateCodeToolStripMenuItem);
 
-                AddItem(viewInExplorerToolStripMenuItem);
+                Add("View in explorer", () => RightClickHelper.ViewInExplorerClick());
 
                 AddItem(mViewFileLoadOrder);
             }
@@ -805,7 +814,7 @@ namespace FlatRedBall.Glue.FormHelpers
             #region IsReferencedFileNode
             else if (targetNode.IsReferencedFile())
             {
-                AddItem(viewInExplorerToolStripMenuItem);
+                Add("View in explorer", () => RightClickHelper.ViewInExplorerClick());
                 AddItem(mFindAllReferences);
                 AddEvent("Copy path to clipboard", HandleCopyToClipboardClick);
                 AddSeparator();
@@ -870,7 +879,7 @@ namespace FlatRedBall.Glue.FormHelpers
             else if (targetNode.IsCodeNode())
             {
 
-                AddItem(viewInExplorerToolStripMenuItem);
+                Add("View in explorer", () => RightClickHelper.ViewInExplorerClick());
                 AddItem(reGenerateCodeToolStripMenuItem);
             }
 
@@ -1108,10 +1117,7 @@ namespace FlatRedBall.Glue.FormHelpers
             // this didn't do anything before I migrated it here. What does it do?
             //addFileToolStripMenuItem.Click += new System.EventHandler(this.addFileToolStripMenuItem_Click);
 
-            viewInExplorerToolStripMenuItem = new GeneralToolStripMenuItem();
-            viewInExplorerToolStripMenuItem.Text = "View in explorer";
-            viewInExplorerToolStripMenuItem.Click += (not, used) => RightClickHelper.ViewInExplorerClick();
-
+            
             removeFromProjectToolStripMenuItem = new GeneralToolStripMenuItem();
             removeFromProjectToolStripMenuItem.Text = "Remove from project";
             removeFromProjectToolStripMenuItem.Click += (not, used) => RightClickHelper.RemoveFromProjectToolStripMenuItem(); 
@@ -1154,10 +1160,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     StringFunctions.RemoveDuplicates(nos.VariablesToReset);
                     GluxCommands.Self.SaveGlux();
 
-
-                    ElementViewWindow.GenerateSelectedElementCode();
-
-
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
                 }
             };
             
@@ -1243,12 +1246,6 @@ namespace FlatRedBall.Glue.FormHelpers
             mRefreshTreeNodesMenuItem = new GeneralToolStripMenuItem("Refresh UI");
             mRefreshTreeNodesMenuItem.Click += new EventHandler(OnRefreshTreeNodesClick);
 
-            mAddEntityInstance = new GeneralToolStripMenuItem("Add Entity Instance");
-            mAddEntityInstance.Click += new EventHandler(OnAddEntityInstanceClick);
-
-            mAddEntityList = new GeneralToolStripMenuItem("Add Entity List");
-            mAddEntityList.Click += new EventHandler(OnAddEntityListClick);
-
             mCopyToBuildFolder = new GeneralToolStripMenuItem("Copy to build folder");
             mCopyToBuildFolder.Click += HandleCopyToBuildFolder;
 
@@ -1312,11 +1309,11 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-        static void OnAddEntityListClick(object sender, EventArgs e)
+        static void OnAddEntityListClick(ITreeNode nodeMoving)
         {
             DragDropManager.Self.CreateNewNamedObjectInElement(
                 GlueState.Self.CurrentElement,
-                (EntitySave)ElementViewWindow.TreeNodeDraggedOff.Tag,
+                nodeMoving.Tag as EntitySave,
                 true);
 
             GlueCommands.Self.ProjectCommands.SaveProjects();
@@ -1324,11 +1321,11 @@ namespace FlatRedBall.Glue.FormHelpers
 
         }
 
-        static void OnAddEntityInstanceClick(object sender, EventArgs e)
+        static void OnAddEntityInstanceClick(ITreeNode nodeDroppedOn, ITreeNode nodeMoving)
         {
             DragDropManager.DragDropTreeNode(
-                 new TreeNodeWrapper(MainExplorerPlugin.Self.ElementTreeView.SelectedNode), 
-                 ElementViewWindow.TreeNodeDraggedOff == null ? null : new TreeNodeWrapper(ElementViewWindow.TreeNodeDraggedOff));
+                 nodeDroppedOn, 
+                 nodeMoving);
 
 
             GlueCommands.Self.ProjectCommands.SaveProjects();
@@ -1398,7 +1395,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 CodeWriter.AddEventGeneratedCodeFileForElement(currentElement);
             }
 
-            ElementViewWindow.GenerateSelectedElementCode();
+            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
             GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
 
@@ -1475,7 +1472,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 MainGlueWindow.Self.PropertyGrid.Refresh();
 
-                ElementViewWindow.GenerateSelectedElementCode();
+                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
                 GluxCommands.Self.SaveGlux();
             }
@@ -1529,7 +1526,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     PluginManager.ReactToStateCreated(newState, category);
 
-                    ElementViewWindow.GenerateSelectedElementCode();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
                     GlueState.Self.CurrentStateSave = newState;
 
@@ -1687,7 +1684,14 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
             }
 
-            ElementViewWindow.UpdateCurrentObjectReferencedTreeNodes();
+            if (GlueState.Self.CurrentElement != null)
+            {
+                GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
+            }
+            else if (GlueState.Self.CurrentReferencedFileSave != null)
+            {
+                GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
+            }
             CodeWriter.GenerateCode(GlueState.Self.CurrentElement);
             GlueCommands.Self.ProjectCommands.SaveProjects();
             GluxCommands.Self.SaveGlux();
@@ -2167,7 +2171,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     locationToShow = ProjectManager.MakeAbsolute(rfs.Name);
 
                 }
-                else if (GlueState.Self.CurrentTreeNode.IsDirectoryNode() || GlueState.Self.CurrentTreeNode == ElementViewWindow.GlobalContentFileNode)
+                else if (GlueState.Self.CurrentTreeNode.IsDirectoryNode() || GlueState.Self.CurrentTreeNode.IsGlobalContentContainerNode())
                 {
                     locationToShow = ProjectManager.MakeAbsolute(GlueState.Self.CurrentTreeNode.GetRelativePath(), true);
                 }
@@ -2513,7 +2517,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 if (currentElement != null)
                 {
-                    ElementViewWindow.GenerateSelectedElementCode();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
                 }
 
 

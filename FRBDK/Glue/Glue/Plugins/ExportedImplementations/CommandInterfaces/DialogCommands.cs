@@ -773,7 +773,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     element.StateCategoryList.Add(newCategory);
 
                     GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-                    ElementViewWindow.GenerateSelectedElementCode();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
                     GlueState.Self.CurrentStateSaveCategory = newCategory;
 

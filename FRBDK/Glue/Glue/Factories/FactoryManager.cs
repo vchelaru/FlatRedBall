@@ -138,7 +138,7 @@ namespace FlatRedBall.Glue.Factories
 
                 GluxCommands.Self.SaveGlux();
 
-                ElementViewWindow.GenerateSelectedElementCode();
+                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
             }
             else
             {

@@ -322,7 +322,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             if (needsRefreshAndSave)
             {
                 MainGlueWindow.Self.PropertyGrid.Refresh();
-                ElementViewWindow.GenerateSelectedElementCode();
+                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
                 GluxCommands.Self.SaveGlux();
             }
 
@@ -437,7 +437,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             MainGlueWindow.Self.PropertyGrid.Refresh();
 
 
-            ElementViewWindow.GenerateSelectedElementCode();
+            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
             UpdateInstanceCustomVariables(currentElement);
 
