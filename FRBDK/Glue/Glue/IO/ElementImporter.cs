@@ -193,7 +193,7 @@ namespace FlatRedBall.Glue.IO
             {
                 if (moveToSelectedFolderTreeNode && GlueState.Self.CurrentTreeNode != null && GlueState.Self.CurrentTreeNode.IsFolderForEntities())
                 {
-                    EntityTreeNode entityTreeNode = GlueState.Self.Find.EntityTreeNode(entitySave);
+                    var entityTreeNode = GlueState.Self.Find.EntityTreeNode(entitySave);
                     DragDropManager.Self.MoveEntityOn(
                         new TreeNodeWrapper(entityTreeNode), new TreeNodeWrapper( GlueState.Self.CurrentTreeNode));
                     shouldSave = true;

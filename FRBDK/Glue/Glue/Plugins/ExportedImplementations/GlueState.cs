@@ -440,9 +440,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
                 while (treeNode != null)
                 {
-                    if (treeNode is BaseElementTreeNode && ((BaseElementTreeNode)treeNode).SaveObject is ScreenSave)
+                    if (treeNode.Tag is ScreenSave)
                     {
-                        return ((BaseElementTreeNode)treeNode).SaveObject as ScreenSave;
+                        return treeNode.Tag as ScreenSave;
                     }
                     else
                     {

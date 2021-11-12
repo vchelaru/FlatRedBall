@@ -415,10 +415,10 @@ namespace FlatRedBall.Glue.FormHelpers
 
             for (int i = 0; i < directoryTreeNode.Nodes.Count; i++)
             {
-                EntityTreeNode entityTreeNode = directoryTreeNode.Nodes[i] as EntityTreeNode;
+                var entityTreeNode = directoryTreeNode.Nodes[i];
 
 
-                if (entityTreeNode != null && entityTreeNode.EntitySave == entityToRemove)
+                if (entityTreeNode.Tag == entityToRemove)
                 {
                     directoryTreeNode.Nodes.RemoveAt(i);
                     break;
@@ -430,7 +430,7 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             for (int i = 0; i < mScreenNode.Nodes.Count; i++)
             {
-                if (((BaseElementTreeNode)mScreenNode.Nodes[i]).SaveObject == screenToRemove)
+                if ((mScreenNode.Nodes[i]).Tag == screenToRemove)
                 {
                     mScreenNode.Nodes.RemoveAt(i);
                     break;
@@ -454,7 +454,7 @@ namespace FlatRedBall.Glue.FormHelpers
         public static void UpdateNodeToListIndex(EntitySave entitySave)
         {
 
-            EntityTreeNode entityTreeNode = GlueState.Self.Find.EntityTreeNode(entitySave);
+            var entityTreeNode = GlueState.Self.Find.EntityTreeNode(entitySave);
 
             TreeNode parentTreeNode = entityTreeNode.Parent;
 

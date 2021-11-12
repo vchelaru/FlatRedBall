@@ -195,7 +195,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 GluxCommands.Self.SaveGlux();
             }
-            else if (targetNode is ScreenTreeNode || targetNode is EntityTreeNode)
+            else if (targetNode.Tag is ScreenSave || targetNode.Tag is EntitySave)
             {
                 bool any = false;
 

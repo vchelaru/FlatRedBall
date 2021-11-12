@@ -394,7 +394,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
                 else if (treeNodeInQuestion.Nodes[i].IsDirectoryNode())
                 {
-                    foreach (EntityTreeNode entityTreeNode in treeNodeInQuestion.Nodes[i].AllEntitiesIn())
+                    foreach (var entityTreeNode in treeNodeInQuestion.Nodes[i].AllEntitiesIn())
                     {
                         yield return entityTreeNode;
                     }

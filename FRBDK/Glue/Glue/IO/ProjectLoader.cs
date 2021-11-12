@@ -183,7 +183,7 @@ namespace FlatRedBall.Glue.IO
                 SetInitWindowText("Cleaning extra Screens and Entities");
 
 
-                foreach (ScreenTreeNode screenNode in ElementViewWindow.AllScreens)
+                foreach (var screenNode in ElementViewWindow.AllScreens)
                 {
                     if (screenNode.SaveObject == null)
                     {
@@ -195,7 +195,7 @@ namespace FlatRedBall.Glue.IO
                     }
                 }
 
-                foreach (EntityTreeNode entityNode in ElementViewWindow.AllEntities)
+                foreach (var entityNode in ElementViewWindow.AllEntities)
                 {
                     if (entityNode.EntitySave == null)
                     {
@@ -617,38 +617,6 @@ namespace FlatRedBall.Glue.IO
                 }
             }
             return closeInitWindow;
-        }
-
-        private void CreateEntityTreeNodes()
-        {
-            for (int i = 0; i < ProjectManager.GlueProjectSave.Entities.Count; i++)
-            {
-                EntitySave entitySave = ProjectManager.GlueProjectSave.Entities[i];
-
-                EntityTreeNode entityTreeNode = GlueState.Self.Find.EntityTreeNode(entitySave.Name);
-                entityTreeNode.RefreshTreeNodes();
-            }
-        }
-
-        private void CreateScreenTreeNodes()
-        {
-            for (int i = 0; i < ProjectManager.GlueProjectSave.Screens.Count; i++)
-            {
-                ScreenSave screenSave = ProjectManager.GlueProjectSave.Screens[i];
-
-                ScreenTreeNode screenTreeNode = GlueState.Self.Find.ScreenTreeNode(ProjectManager.GlueProjectSave.Screens[i].Name);
-
-                // This could be null if the Screen is marked as hidden
-                if(screenTreeNode != null)
-                {
-                    if (ProjectManager.GlueProjectSave.Screens[i].IsRequiredAtStartup)
-                    {
-                        screenTreeNode.BackColor = ElementViewWindow.RequiredScreenColor;
-                    }
-
-                    screenTreeNode.RefreshTreeNodes();
-                }
-            }
         }
 
         private bool DeserializeGlueProjectInternal(string projectFileName, string glueProjectFile)

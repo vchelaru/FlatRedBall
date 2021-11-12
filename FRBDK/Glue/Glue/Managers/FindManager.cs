@@ -263,13 +263,11 @@ namespace FlatRedBall.Glue.Managers
 
             for (int i = 0; i < ElementViewWindow.ScreensTreeNode.Nodes.Count; i++)
             {
-                if (ElementViewWindow.ScreensTreeNode.Nodes[i] is ScreenTreeNode)
+                if (ElementViewWindow.ScreensTreeNode.Nodes[i].Tag is ScreenSave screenSave)
                 {
-                    ScreenTreeNode asScreenTreeNode = ElementViewWindow.ScreensTreeNode.Nodes[i] as ScreenTreeNode;
-
-                    if (asScreenTreeNode.SaveObject.Name == screenFileName)
+                    if (screenSave.Name == screenFileName)
                     {
-                        return asScreenTreeNode;
+                        return ElementViewWindow.ScreensTreeNode.Nodes[i] as ScreenTreeNode;
                     }
                 }
             }
@@ -305,12 +303,12 @@ namespace FlatRedBall.Glue.Managers
 
             if (container is ScreenSave)
             {
-                ScreenTreeNode screenTreeNode = GlueState.Self.Find.ScreenTreeNode((ScreenSave)container);
+                var screenTreeNode = GlueState.Self.Find.ScreenTreeNode((ScreenSave)container);
                 return TreeNodeWrapper.CreateOrNull( screenTreeNode.GetTreeNodeFor(namedObjectSave));
             }
             else if (container is EntitySave)
             {
-                EntityTreeNode entityTreeNode = GlueState.Self.Find.EntityTreeNode((EntitySave)container);
+                var entityTreeNode = GlueState.Self.Find.EntityTreeNode((EntitySave)container);
                 return TreeNodeWrapper.CreateOrNull(entityTreeNode.GetTreeNodeFor(namedObjectSave));
             }
             else

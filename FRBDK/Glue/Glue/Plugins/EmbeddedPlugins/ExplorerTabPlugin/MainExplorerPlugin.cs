@@ -201,12 +201,12 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
                 {
                     GlueState.Self.Clipboard.CopiedObject = GlueState.Self.CurrentNamedObjectSave;
                 }
-                else if (GlueState.Self.CurrentEntitySave != null && ElementTreeView.SelectedNode is EntityTreeNode)
+                else if (GlueState.Self.CurrentEntitySave != null && ElementTreeView.SelectedNode.Tag is EntitySave)
                 {
                     // copy ElementSave
                     GlueState.Self.Clipboard.CopiedObject = GlueState.Self.CurrentEntitySave;
                 }
-                else if (GlueState.Self.CurrentScreenSave != null && ElementTreeView.SelectedNode is ScreenTreeNode)
+                else if (GlueState.Self.CurrentScreenSave != null && ElementTreeView.SelectedNode.Tag is ScreenSave)
                 {
                     // copy ScreenSave
                     GlueState.Self.Clipboard.CopiedObject = GlueState.Self.CurrentScreenSave;

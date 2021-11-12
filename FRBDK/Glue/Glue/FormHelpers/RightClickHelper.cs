@@ -356,13 +356,13 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public object Tag
         {
-            get => treeNode.Tag;
+            get => treeNode?.Tag;
             set => treeNode.Tag = value;
         }
 
-        public ITreeNode Parent => treeNode == null ? (ITreeNode)null : new TreeNodeWrapper(treeNode.Parent);
+        public ITreeNode Parent => TreeNodeWrapper.CreateOrNull(treeNode.Parent);
 
-        public string Text => treeNode.Text;
+        public string Text => treeNode?.Text;
 
         internal static ITreeNode CreateOrNull(TreeNode targetNode)
         {
@@ -1582,11 +1582,11 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (parentTreeNode.IsRootNamedObjectNode() && parentTreeNode.Parent.IsEntityNode())
             {
-                container = ((EntityTreeNode)parentTreeNode.Parent).SaveObject;
+                container = parentTreeNode.Parent.Tag as EntitySave;
             }
             else if (parentTreeNode.IsRootNamedObjectNode() && parentTreeNode.Parent.IsScreenNode())
             {
-                container = ((ScreenTreeNode)parentTreeNode.Parent).SaveObject;
+                container = parentTreeNode.Parent.Tag as ScreenSave;
             }
             else if (parentTreeNode.IsNamedObjectNode())
             {
@@ -2433,10 +2433,9 @@ namespace FlatRedBall.Glue.FormHelpers
                 {
                     GetAllEntitySavesIn(subNode, allEntitySaves);
                 }
-                else if (subNode is EntityTreeNode)
+                else if (subNode.Tag is EntitySave asEntitySave)
                 {
-                    EntityTreeNode asEntityTreeNode = subNode as EntityTreeNode;
-                    allEntitySaves.Add(asEntityTreeNode.EntitySave);
+                    allEntitySaves.Add(asEntitySave);
                 }
             }
         }
