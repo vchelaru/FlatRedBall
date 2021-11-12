@@ -21,7 +21,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
     public class GlueStateSnapshot
     {
         public TreeNode CurrentTreeNode;
-        public BaseElementTreeNode CurrentElementTreeNode;
         public GlueElement CurrentElement;
         public EntitySave CurrentEntitySave;
         public ScreenSave CurrentScreenSave;
@@ -57,8 +56,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 MainExplorerPlugin.Self.ElementTreeView.SelectedNode = value;
             }
         }
-
-        public BaseElementTreeNode CurrentElementTreeNode => snapshot.CurrentElementTreeNode;
 
         public GlueElement CurrentElement
         {
@@ -378,10 +375,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             return ObjectFinder.Self.GetAllReferencedFiles();
         }
 
-        public void TakeSnapshot(TreeNode selectedTreeNode)
+        void TakeSnapshot(TreeNode selectedTreeNode)
         {
             snapshot.CurrentTreeNode = selectedTreeNode;
-            snapshot.CurrentElementTreeNode = GetCurrentElementTreeNodeFromSelection();
             snapshot.CurrentElement = GetCurrentElementFromSelection();
             snapshot.CurrentEntitySave = GetCurrentEntitySaveFromSelection();
             snapshot.CurrentScreenSave = GetCurrentScreenSaveFromSelection();
@@ -393,22 +389,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             snapshot.CurrentEventResponseSave = GetCurrentEventResponseSaveFromSelection();
 
 
-            BaseElementTreeNode GetCurrentElementTreeNodeFromSelection()
-            {
-                var treeNode = selectedTreeNode;
-                while (treeNode != null)
-                {
-                    if (treeNode is BaseElementTreeNode)
-                    {
-                        return ((BaseElementTreeNode)treeNode);
-                    }
-                    else
-                    {
-                        treeNode = treeNode.Parent;
-                    }
-                }
-                return null;
-            }
             GlueElement GetCurrentElementFromSelection()
             {
                 return (GlueElement)GetCurrentEntitySaveFromSelection() ?? GetCurrentScreenSaveFromSelection();

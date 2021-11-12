@@ -321,20 +321,9 @@ namespace FlatRedBall.Glue.IO
         private static async void ReloadGlux()
         {
             object selectedObject = null;
-            IElement parentElement = null;
             PluginManager.ReceiveOutput("Reloading Glue Project");
 
-            TaskManager.Self.OnUiThread(() =>
-            {
-                if (GlueState.Self.CurrentTreeNode != null)
-                {
-                    selectedObject = GlueState.Self.CurrentTreeNode.Tag;
-                    if (selectedObject is NamedObjectSave)
-                    {
-                        parentElement = ((NamedObjectSave)selectedObject).GetContainer();
-                    }
-                }
-            });
+            var parentElement = GlueState.Self.CurrentNamedObjectSave?.GetContainer();
 
             bool usingQuickReload = true;
 

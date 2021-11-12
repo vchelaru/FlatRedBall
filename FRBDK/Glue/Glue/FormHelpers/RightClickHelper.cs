@@ -646,7 +646,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static GeneralToolStripMenuItem mCopyToBuildFolder;
 
-        static GeneralToolStripMenuItem reGenerateCodeToolStripMenuItem;
+        
 
         static GeneralToolStripMenuItem addLayeritem;
         #endregion
@@ -818,7 +818,7 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 AddItem(addFileToolStripMenuItem);
                 Add("Add Folder", () => RightClickHelper.AddFolderClick(targetNode));
-                AddItem(reGenerateCodeToolStripMenuItem);
+                Add("Re-Generate Code", () => HandleReGenerateCodeClick(targetNode));
 
                 Add("View in explorer", () => RightClickHelper.ViewInExplorerClick(targetNode));
 
@@ -937,7 +937,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 {
                     AddSeparator();
                     AddItem(setCreatedClassToolStripMenuItem);
-                    AddItem(reGenerateCodeToolStripMenuItem);
+                    Add("Re-Generate Code", () => HandleReGenerateCodeClick(targetNode));
                 }
 
 
@@ -983,7 +983,7 @@ namespace FlatRedBall.Glue.FormHelpers
             {
 
                 Add("View in explorer", () => RightClickHelper.ViewInExplorerClick(targetNode));
-                AddItem(reGenerateCodeToolStripMenuItem);
+                Add("Re-Generate Code", () => HandleReGenerateCodeClick(targetNode));
             }
 
             #endregion
@@ -992,7 +992,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             else if (targetNode.IsRootCodeNode())
             {
-                AddItem(reGenerateCodeToolStripMenuItem);
+                Add("Re-Generate Code", () => HandleReGenerateCodeClick(targetNode));
             }
 
 
@@ -1341,8 +1341,7 @@ namespace FlatRedBall.Glue.FormHelpers
             mCopyToBuildFolder = new GeneralToolStripMenuItem("Copy to build folder");
             mCopyToBuildFolder.Click += HandleCopyToBuildFolder;
 
-            reGenerateCodeToolStripMenuItem = new GeneralToolStripMenuItem("Re-Generate Code");
-            reGenerateCodeToolStripMenuItem.Click += HandleReGenerateCodeClick;
+            
 
             addLayeritem = new GeneralToolStripMenuItem("Add Layer");
             addLayeritem.Click += HandleAddLayerClick;
@@ -1367,9 +1366,58 @@ namespace FlatRedBall.Glue.FormHelpers
 
 
 
-        private static void HandleReGenerateCodeClick(object sender, EventArgs e)
+        private static void HandleReGenerateCodeClick(ITreeNode treeNode)
         {
-            ReGenerateCodeForSelectedElement();
+
+            // re-generate regenerate re generate regenerate code re generate code re-generate code
+            if (GlueState.Self.CurrentReferencedFileSave != null)
+            {
+                ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
+
+                var isCsv =
+                    FileManager.GetExtension(rfs.Name) == "csv" || (FileManager.GetExtension(rfs.Name) == "txt" && rfs.TreatAsCsv);
+
+                var shouldGenerateCsvDataClass =
+                    isCsv && !rfs.IsDatabaseForLocalizing;
+
+                if (shouldGenerateCsvDataClass)
+                {
+                    CsvCodeGenerator.GenerateAndSaveDataClass(rfs, rfs.CsvDelimiter);
+                    GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
+                    GluxCommands.Self.SaveGlux();
+                }
+
+            }
+            else if(GlueState.Self.CurrentElement != null)
+            {
+                // We used to allow regeneration of non-generated files
+                // But people accidentally click this, and it means you have
+                // to be careful when you right-click.  That sucks.  Now, Glue 
+                // cannot regenerate the non-generated code file.
+
+
+                var currentElement = GlueState.Self.CurrentElement;
+
+                if (currentElement != null)
+                {
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                }
+
+
+                foreach (VisualStudioProject project in ProjectManager.SyncedProjects)
+                {
+                    project.ClearPendingTranslations();
+
+                    ((VisualStudioProject)project.CodeProject).AddCodeBuildItem(treeNode.Text);
+
+                    project.PerformPendingTranslations();
+                }
+            }
+            else // global content container?
+            {
+                GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
+            }
         }
 
         private static void HandleAddLayerClick(object sender, EventArgs e)
@@ -2544,73 +2592,7 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-
-        internal static void ReGenerateCodeForSelectedElement()
-        {
-            // re-generate regenerate re generate regenerate code re generate code re-generate code
-            if (GlueState.Self.CurrentTreeNode.IsGlobalContentContainerNode())
-            {
-                GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
-            }
-
-            #region This is a content file
-
-            else if (GlueState.Self.CurrentTreeNode.IsReferencedFile())
-            {
-                ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
-
-                var isCsv = 
-                    FileManager.GetExtension(rfs.Name) == "csv" || (FileManager.GetExtension(rfs.Name) == "txt" && rfs.TreatAsCsv);
-
-                var shouldGenerateCsvDataClass =
-                    isCsv && !rfs.IsDatabaseForLocalizing;
-
-                if (shouldGenerateCsvDataClass)
-                {
-                    CsvCodeGenerator.GenerateAndSaveDataClass(rfs, rfs.CsvDelimiter);
-                    GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
-                    GlueCommands.Self.ProjectCommands.SaveProjects();
-                    GluxCommands.Self.SaveGlux();
-                }
-
-            }
-
-            #endregion
-
-            #region Else, it's a code file
-
-            else
-            {
-                // We used to allow regeneration of non-generated files
-                // But people accidentally click this, and it means you have
-                // to be careful when you right-click.  That sucks.  Now, Glue 
-                // cannot regenerate the non-generated code file.
-
-
-                var currentElement = GlueState.Self.CurrentElement;
-
-                if (currentElement != null)
-                {
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-                }
-
-
-                foreach (VisualStudioProject project in ProjectManager.SyncedProjects)
-                {
-                    project.ClearPendingTranslations();
-
-                    ((VisualStudioProject)project.CodeProject).AddCodeBuildItem(GlueState.Self.CurrentTreeNode.Text);
-
-                    project.PerformPendingTranslations();
-                }
-
-            }
-
-            #endregion
-        }
-
-
-        
+       
         private static void MoveToTopClick(object sender, EventArgs e)
         {
             MoveToTop();
@@ -2957,14 +2939,13 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static void CreateNewFileForMissingFileClick(object sender, EventArgs e)
         {
-            TreeNode treeNode = GlueState.Self.CurrentTreeNode;
-
-            string extension = FileManager.GetExtension(treeNode.Text);
+            var rfs = GlueState.Self.CurrentReferencedFileSave;
+            string extension = FileManager.GetExtension(rfs.Name);
 
             AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromExtension(extension);
 
-            string resultNameInFolder = FileManager.RemoveExtension(FileManager.RemovePath(treeNode.Text));
-            string directory = FileManager.GetDirectory(ProjectManager.MakeAbsolute(treeNode.Text, true));
+            string resultNameInFolder = FileManager.RemoveExtension(FileManager.RemovePath(rfs.Name));
+            string directory = FileManager.GetDirectory(ProjectManager.MakeAbsolute(rfs.Name, true));
 
             PluginManager.CreateNewFile(
                 ati, false, directory, resultNameInFolder);

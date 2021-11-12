@@ -146,7 +146,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region Global content container node
 
-            else if (GlueState.Self.CurrentTreeNode.Root().IsGlobalContentContainerNode())
+            else if (TreeNodeWrapper.CreateOrNull(GlueState.Self.CurrentTreeNode).Root.IsGlobalContentContainerNode())
             {
                 Container.Get<GlobalContentSetVariableLogic>().ReactToGlobalContentChangedValue(
                     variableNameAsDisplayed, oldValue, ref updateTreeView);

@@ -44,22 +44,5 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.CodePreviewPlugin
 
         }
 
-        string CurrentCodeFile
-        {
-            get
-            {
-                TreeNode treeNode = GlueState.Self.CurrentTreeNode;
-                {
-                    if (treeNode != null && treeNode.Text.EndsWith(".cs"))
-                    {
-                        return treeNode.Text;
-                    }
-                    else
-                    {
-                        return "";
-                    }
-                }
-            }
-        }
     }
 }

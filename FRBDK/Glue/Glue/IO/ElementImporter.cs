@@ -89,8 +89,10 @@ namespace FlatRedBall.Glue.IO
             openFileDialog.Multiselect = false;
             EntitySave es = GlueState.Self.CurrentEntitySave;
 
-            if (GlueState.Self.CurrentTreeNode.IsRootEntityNode() ||
-                GlueState.Self.CurrentTreeNode.IsFolderForEntities())
+            var currentNode = TreeNodeWrapper.CreateOrNull(GlueState.Self.CurrentTreeNode);
+
+            if (currentNode?.IsRootEntityNode() == true ||
+                currentNode?.IsFolderForEntities() == true)
             {
                 openFileDialog.Filter = "Exported Entities (*.entz)|*.entz";
             }
@@ -191,9 +193,10 @@ namespace FlatRedBall.Glue.IO
             var shouldSave = false;
             GlueCommands.Self.DoOnUiThread(() =>
             {
-                if (moveToSelectedFolderTreeNode && GlueState.Self.CurrentTreeNode != null && GlueState.Self.CurrentTreeNode.IsFolderForEntities())
+                var treeNode = TreeNodeWrapper.CreateOrNull(GlueState.Self.CurrentTreeNode);
+                if (moveToSelectedFolderTreeNode && treeNode?.IsFolderForEntities() == true)
                 {
-                    var directory = GlueState.Self.CurrentTreeNode.GetRelativePath();
+                    var directory = treeNode.GetRelativePath();
                     GlueCommands.Self.GluxCommands.MoveEntityToDirectory(entitySave, directory);
 
                     shouldSave = true;
