@@ -379,8 +379,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static void RemoveEntity(EntitySave entityToRemove)
         {
-            var directoryTreeNode = GlueState.Self.Find.TreeNodeForDirectory(
-                FileManager.GetDirectory(entityToRemove.Name));
+            var directoryTreeNode = TreeNodeForDirectory(FileManager.GetDirectory(entityToRemove.Name));
 
             for (int i = 0; i < directoryTreeNode.Nodes.Count; i++)
             {
@@ -395,6 +394,66 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
+        static TreeNode TreeNodeForDirectory(string containingDirectory)
+        {
+            bool isEntity = true;
+
+            // Let's see if this thing is really an Entity
+
+
+            string relativeToProject = FileManager.Standardize(containingDirectory).ToLower();
+
+            if (FileManager.IsRelativeTo(relativeToProject, FileManager.RelativeDirectory))
+            {
+                relativeToProject = FileManager.MakeRelative(relativeToProject);
+            }
+            else if (ProjectManager.ContentProject != null)
+            {
+                relativeToProject = FileManager.MakeRelative(relativeToProject, ProjectManager.ContentProject.GetAbsoluteContentFolder());
+            }
+
+            if (relativeToProject.StartsWith("content/globalcontent") || relativeToProject.StartsWith("globalcontent")
+                )
+            {
+                isEntity = false;
+            }
+
+            if (isEntity)
+            {
+                if (!FileManager.IsRelative(containingDirectory))
+                {
+                    containingDirectory = FileManager.MakeRelative(containingDirectory,
+                        FileManager.RelativeDirectory + "Entities/");
+                }
+
+                return GlueState.Self.Find.TreeNodeForDirectoryOrEntityNode(containingDirectory, ElementViewWindow.EntitiesTreeNode);
+            }
+            else
+            {
+                string subdirectory = FileManager.RelativeDirectory;
+
+                if (ProjectManager.ContentProject != null)
+                {
+                    subdirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder();
+                }
+                subdirectory += "GlobalContent/";
+
+
+                containingDirectory = FileManager.MakeRelative(containingDirectory, subdirectory);
+
+                if (containingDirectory == "")
+                {
+                    return ElementViewWindow.GlobalContentFileNode;
+                }
+                else
+                {
+
+                    return GlueState.Self.Find.TreeNodeForDirectoryOrEntityNode(containingDirectory, ElementViewWindow.GlobalContentFileNode);
+                }
+            }
+        }
+
+
         public static void RemoveScreen(ScreenSave screenToRemove)
         {
             for (int i = 0; i < mScreenNode.Nodes.Count; i++)
@@ -406,18 +465,6 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
             }
 
-        }
-
-        public static void UpdateCurrentObjectReferencedTreeNodes()
-        {
-            if (GlueState.Self.CurrentElement != null)
-            {
-                GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-            }
-            else if (GlueState.Self.CurrentTreeNode != null && GlueState.Self.CurrentTreeNode.Root().IsGlobalContentContainerNode())
-            {
-                GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
-            }
         }
 
         public static void UpdateNodeToListIndex(EntitySave entitySave)
@@ -433,7 +480,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (wasSelected)
             {
-                MainExplorerPlugin.Self.ElementTreeView.SelectedNode = entityTreeNode;
+                GlueState.Self.CurrentEntitySave = entitySave;
             }
         }
 
@@ -487,7 +534,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                         string absoluteRfs = ProjectManager.MakeAbsolute(rfs.Name, true);
 
-                        TreeNode nodeToAddTo = GlueState.Self.Find.TreeNodeForDirectory(FileManager.GetDirectory(absoluteRfs));
+                        TreeNode nodeToAddTo = TreeNodeForDirectory(FileManager.GetDirectory(absoluteRfs));
 
                         if (nodeToAddTo == null)
                         {

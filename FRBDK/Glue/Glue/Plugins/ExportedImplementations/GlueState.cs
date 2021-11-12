@@ -90,7 +90,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             get => snapshot.CurrentReferencedFileSave;
             set
             {
-                CurrentTreeNode = GlueState.Self.Find.ReferencedFileSaveTreeNode(value);
+                CurrentTreeNode = GlueState.Self.Find.TreeNodeByTag(value);
             }
         }
 
@@ -142,7 +142,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
             set
             {
-                CurrentTreeNode = GlueState.Self.Find.CustomVariableTreeNode(value);
+                CurrentTreeNode = GlueState.Self.Find.TreeNodeByTag(value);
 
             }
 
@@ -153,10 +153,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             get => snapshot.CurrentEventResponseSave;
             set
             {
-                TreeNode treeNode = GlueState.Self.Find.EventResponseTreeNode(value);
-
-                ElementViewWindow.SelectedNodeOld = treeNode;
-
+                CurrentTreeNode = GlueState.Self.Find.TreeNodeByTag(value);
             }
         }
 

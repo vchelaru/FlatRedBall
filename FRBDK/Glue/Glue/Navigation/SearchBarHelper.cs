@@ -487,46 +487,45 @@ namespace FlatRedBall.Glue.Navigation
             bool foundSomething = false;
             if (MainExplorerPlugin.Self.SearchListBox.Visibility == System.Windows.Visibility.Visible)
             {
-                if (selectedObject is ScreenSave)
+                if (selectedObject is ScreenSave screen)
                 {
-                    ElementViewWindow.SelectedNodeOld = GlueState.Self.Find.ScreenTreeNode((ScreenSave)selectedObject);
-                    foundSomething = ElementViewWindow.SelectedNodeOld != null;
+                    GlueState.Self.CurrentScreenSave = screen;
+                    foundSomething = true;
                 }
-                else if (selectedObject is EntitySave)
+                else if (selectedObject is EntitySave entity)
                 {
-                    ElementViewWindow.SelectedNodeOld = GlueState.Self.Find.EntityTreeNode((EntitySave)selectedObject);
-                    foundSomething = ElementViewWindow.SelectedNodeOld != null;
+                    GlueState.Self.CurrentEntitySave = entity;
+                    foundSomething = true;
                 }
-                else if (selectedObject is NamedObjectSave)
+                else if (selectedObject is NamedObjectSave namedObject)
                 {
-                    ElementViewWindow.SelectedNode = GlueState.Self.Find.NamedObjectTreeNode((NamedObjectSave)selectedObject);
-                    foundSomething = ElementViewWindow.SelectedNode != null;
+                    GlueState.Self.CurrentNamedObjectSave = namedObject;
+                    foundSomething = true;
                 }
-                else if (selectedObject is ReferencedFileSave)
+                else if (selectedObject is ReferencedFileSave referencedFile)
                 {
-                    ElementViewWindow.SelectedNodeOld = GlueState.Self.Find.ReferencedFileSaveTreeNode((ReferencedFileSave)selectedObject);
-                    foundSomething = ElementViewWindow.SelectedNodeOld != null;
+                    GlueState.Self.CurrentReferencedFileSave = referencedFile;
+                    foundSomething = true;
                 }
-                else if (selectedObject is StateSave)
+                else if (selectedObject is StateSave stateSave)
                 {
-                    ElementViewWindow.SelectedNodeOld = GlueState.Self.Find.StateTreeNode((StateSave)selectedObject);
-                    foundSomething = ElementViewWindow.SelectedNodeOld != null;
+                    GlueState.Self.CurrentStateSave = stateSave;                    
+                    foundSomething = true;
                 }
-                else if (selectedObject is CustomVariable)
+                else if (selectedObject is CustomVariable customVariable)
                 {
-                    ElementViewWindow.SelectedNodeOld = GlueState.Self.Find.CustomVariableTreeNode((CustomVariable)selectedObject);
-                    foundSomething = ElementViewWindow.SelectedNodeOld != null;
+                    GlueState.Self.CurrentCustomVariable = customVariable;
+                    foundSomething = true;
                 }
-                else if (selectedObject is EventResponseSave)
+                else if (selectedObject is EventResponseSave eventResponse)
                 {
-                    ElementViewWindow.SelectedNodeOld = GlueState.Self.Find.EventResponseTreeNode((EventResponseSave)selectedObject);
-                    foundSomething = ElementViewWindow.SelectedNodeOld != null;
+                    GlueState.Self.CurrentEventResponseSave = eventResponse;
+                    foundSomething = true;
                 }
-                else if (selectedObject is StateSaveCategory)
+                else if (selectedObject is StateSaveCategory stateSaveCategory)
                 {
-                    ElementViewWindow.SelectedNodeOld = GlueState.Self.Find.StateCategoryTreeNode((StateSaveCategory)selectedObject);
-
-                    foundSomething = ElementViewWindow.SelectedNodeOld != null;
+                    GlueState.Self.CurrentStateSaveCategory = stateSaveCategory;
+                    foundSomething = true;
                 }
             }
             if (foundSomething)

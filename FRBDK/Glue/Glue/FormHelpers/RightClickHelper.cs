@@ -2327,7 +2327,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     foreach (ReferencedFileSave rfs in allReferencedFileSaves)
                     {
-                        MainExplorerPlugin.Self.ElementTreeView.SelectedNode = GlueState.Self.Find.ReferencedFileSaveTreeNode(rfs);
+                        GlueState.Self.CurrentReferencedFileSave = rfs;
                         // I guess we won't ask to delete here, but maybe eventually we want to?
                         RemoveFromProjectOptionalSaveAndRegenerate(rfs == allReferencedFileSaves[allReferencedFileSaves.Count - 1], false, false);
                     }

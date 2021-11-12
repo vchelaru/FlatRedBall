@@ -16,15 +16,11 @@ namespace FlatRedBall.Glue.Managers
     public interface IFindManager
     {
 
-        TreeNode TreeNodeForDirectory(string containingDirectory);
-
         TreeNode TreeNodeForDirectoryOrEntityNode(string containingDirection, TreeNode containingNode);
 
         TreeNode TreeNodeByDirectory(string containingDirection, TreeNode containingNode);
 
         BaseElementTreeNode ElementTreeNode(IElement element);
-
-        EntityTreeNode EntityTreeNode(string entityFileName);
 
         EntityTreeNode EntityTreeNode(EntitySave entitySave);
 
@@ -36,16 +32,8 @@ namespace FlatRedBall.Glue.Managers
 
         ITreeNode NamedObjectTreeNode(NamedObjectSave namedObjectSave);
 
-        TreeNode ReferencedFileSaveTreeNode(ReferencedFileSave referencedFileSave);
-
         TreeNode TreeNodeByTagIn(object tag, TreeNodeCollection treeNodeCollection);
         TreeNode TreeNodeByTag(object tag);
-
-        TreeNode CustomVariableTreeNode(CustomVariable variable);
-
-        TreeNode EventResponseTreeNode(EventResponseSave eventResponse);
-
-        TreeNode StateTreeNode(StateSave stateSave);
 
         //TreeNode FindCustomVariableInEntities(CustomVariable variable, TreeNodeCollection nodeCollection);
 
@@ -70,64 +58,6 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        public TreeNode TreeNodeForDirectory(string containingDirectory)
-        {
-            bool isEntity = true;
-
-            // Let's see if this thing is really an Entity
-
-
-            string relativeToProject = FileManager.Standardize(containingDirectory).ToLower();
-
-            if (FileManager.IsRelativeTo(relativeToProject, FileManager.RelativeDirectory))
-            {
-                relativeToProject = FileManager.MakeRelative(relativeToProject);
-            }
-            else if (ProjectManager.ContentProject != null)
-            {
-                relativeToProject = FileManager.MakeRelative(relativeToProject, ProjectManager.ContentProject.GetAbsoluteContentFolder());
-            }
-
-            if (relativeToProject.StartsWith("content/globalcontent") || relativeToProject.StartsWith("globalcontent")
-                )
-            {
-                isEntity = false;
-            }
-
-            if (isEntity)
-            {
-                if (!FileManager.IsRelative(containingDirectory))
-                {
-                    containingDirectory = FileManager.MakeRelative(containingDirectory,
-                        FileManager.RelativeDirectory + "Entities/");
-                }
-
-                return TreeNodeForDirectoryOrEntityNode(containingDirectory, ElementViewWindow.EntitiesTreeNode);
-            }
-            else
-            {
-                string subdirectory = FileManager.RelativeDirectory;
-
-                if (ProjectManager.ContentProject != null)
-                {
-                    subdirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder();
-                }
-                subdirectory += "GlobalContent/";
-
-
-                containingDirectory = FileManager.MakeRelative(containingDirectory, subdirectory);
-
-                if (containingDirectory == "")
-                {
-                    return ElementViewWindow.GlobalContentFileNode;
-                }
-                else
-                {
-
-                    return TreeNodeForDirectoryOrEntityNode(containingDirectory, ElementViewWindow.GlobalContentFileNode);
-                }
-            }
-        }
 
         public TreeNode TreeNodeForDirectoryOrEntityNode(string containingDirection, TreeNode containingNode)
         {
@@ -190,43 +120,6 @@ namespace FlatRedBall.Glue.Managers
             {
                 return EntityTreeNode(element as EntitySave);
             }
-        }
-
-        public EntityTreeNode EntityTreeNode(string entityFileName)
-        {
-
-
-
-            string directory = FileManager.MakeRelative(FileManager.GetDirectory(entityFileName));
-
-            directory = directory.Substring("Entities/".Length);
-
-            TreeNode containingTreeNode = null;
-
-            if (!string.IsNullOrEmpty(directory))
-            {
-                containingTreeNode = GlueState.Self.Find.TreeNodeForDirectoryOrEntityNode(
-                 directory, ElementViewWindow.EntitiesTreeNode);
-            }
-            else
-            {
-                containingTreeNode = ElementViewWindow.EntitiesTreeNode;
-            }
-
-            for (int i = 0; i < containingTreeNode.Nodes.Count; i++)
-            {
-                if (containingTreeNode.Nodes[i] is EntityTreeNode)
-                {
-                    EntityTreeNode asEntityTreeNode = containingTreeNode.Nodes[i] as EntityTreeNode;
-
-                    if (asEntityTreeNode.EntitySave.Name == entityFileName)
-                    {
-                        return asEntityTreeNode;
-                    }
-                }
-            }
-
-            return null;
         }
 
         public EntityTreeNode EntityTreeNode(EntitySave entitySave)
@@ -317,29 +210,6 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        public TreeNode ReferencedFileSaveTreeNode(ReferencedFileSave referencedFileSave)
-        {
-            IElement container = referencedFileSave.GetContainer();
-
-            if (container == null)
-            {
-                return TreeNodeByTagIn(referencedFileSave, ElementViewWindow.GlobalContentFileNode.Nodes);
-            }
-            else if (container is ScreenSave)
-            {
-                ScreenTreeNode screenTreeNode = GlueState.Self.Find.ScreenTreeNode((ScreenSave)container);
-                return screenTreeNode?.GetTreeNodeFor(referencedFileSave);
-            }
-            else if (container is EntitySave)
-            {
-                EntityTreeNode entityTreeNode = GlueState.Self.Find.EntityTreeNode((EntitySave)container);
-                return entityTreeNode?.GetTreeNodeFor(referencedFileSave);
-            }
-
-            return null;
-
-        }
-
         public TreeNode TreeNodeByTagIn(object tag, TreeNodeCollection treeNodeCollection)
         {
             foreach (TreeNode treeNode in treeNodeCollection)
@@ -372,62 +242,6 @@ namespace FlatRedBall.Glue.Managers
                 found = TreeNodeByTagIn(tag, ElementViewWindow.GlobalContentFileNode.Nodes);
             }
             return found;
-        }
-
-        public TreeNode CustomVariableTreeNode(CustomVariable variable)
-        {
-            TreeNode foundNode = null;
-
-            foreach (ScreenTreeNode treeNode in ElementViewWindow.ScreensTreeNode.Nodes)
-            {
-                foundNode = treeNode.GetTreeNodeFor(variable);
-                if (foundNode != null)
-                {
-                    return foundNode;
-                }
-            }
-
-            TreeNodeCollection nodeCollection = ElementViewWindow.EntitiesTreeNode.Nodes;
-
-
-            // This could contain directories
-
-
-            foundNode = FindCustomVariableInEntities(variable, nodeCollection);
-
-            return foundNode;
-
-        }
-
-        public TreeNode EventResponseTreeNode(EventResponseSave eventResponse)
-        {
-            TreeNode foundNode = null;
-
-            foreach (ScreenTreeNode treeNode in ElementViewWindow.ScreensTreeNode.Nodes)
-            {
-                foundNode = treeNode.GetTreeNodeFor(eventResponse);
-                if (foundNode != null)
-                {
-                    return foundNode;
-                }
-            }
-
-            TreeNodeCollection nodeCollection = ElementViewWindow.EntitiesTreeNode.Nodes;
-            foundNode = FindEventResponseSaveInEntities(eventResponse, nodeCollection);
-
-            return foundNode;
-        }
-
-        public TreeNode StateTreeNode(StateSave stateSave)
-        {
-            TreeNode treeNode = TreeNodeByTagIn(stateSave, ElementViewWindow.ScreensTreeNode.Nodes);
-
-            if (treeNode == null)
-            {
-                treeNode = TreeNodeByTagIn(stateSave, ElementViewWindow.EntitiesTreeNode.Nodes);
-            }
-
-            return treeNode;
         }
 
         private TreeNode FindCustomVariableInEntities(CustomVariable variable, TreeNodeCollection nodeCollection)

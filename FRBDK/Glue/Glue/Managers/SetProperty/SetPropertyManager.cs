@@ -182,7 +182,14 @@ namespace FlatRedBall.Glue.SetVariable
             // is called.
             if (updateTreeView)
             {
-                ElementViewWindow.UpdateCurrentObjectReferencedTreeNodes();
+                if (GlueState.Self.CurrentElement != null)
+                {
+                    GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
+                }
+                else if (GlueState.Self.CurrentReferencedFileSave != null)
+                {
+                    GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
+                }
             }
             else
             {

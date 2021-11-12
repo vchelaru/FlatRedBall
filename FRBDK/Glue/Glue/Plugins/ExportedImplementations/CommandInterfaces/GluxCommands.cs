@@ -309,8 +309,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
 
                 ElementViewWindow.UpdateChangedElements();
-
-                ElementViewWindow.SelectedNodeOld = GlueState.Self.Find.ReferencedFileSaveTreeNode(rfs);
+                GlueState.Self.CurrentReferencedFileSave = rfs;
 
                 PluginManager.ReactToNewFile(rfs);
 
@@ -786,37 +785,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // to reuse code and make things reactive, but this has gotten
                 // slow on bigger projects.
                 //ElementViewWindow.UpdateGlobalContentTreeNodes(false); // don't save here because projects will get saved below 
-
-                Action refreshUiAction = () =>
-                {
-                    TreeNode treeNode = GlueState.Self.Find.ReferencedFileSaveTreeNode(referencedFileToRemove);
-                    if (treeNode != null)
-                    {
-                        // treeNode can be null if the user presses delete + enter really really fast, stacking 2 remove
-                        // actions
-                        if (treeNode.Tag != referencedFileToRemove)
-                        {
-                            throw new Exception("Error removing the tree node - the selected tree node doesn't reference the file being removed");
-                        }
-
-                        treeNode.Parent.Nodes.Remove(treeNode);
-                    }
-                };
-
-                MainGlueWindow.Self.Invoke((MethodInvoker)delegate
-                {
-                    refreshUiAction();
-                }
-                    );
-
+                GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
 
                 GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
                 var elements = ObjectFinder.Self.GetAllElementsReferencingFile(referencedFileToRemove.Name);
 
-                foreach (var element in elements)
+                if (regenerateCode)
                 {
-                    if (regenerateCode)
+                    foreach (var element in elements)
                     {
                         CodeWriter.GenerateCode(element);
                     }

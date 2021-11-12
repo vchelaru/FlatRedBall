@@ -821,9 +821,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (nos.SourceType == SourceType.Entity)
                 {
-                    TreeNode entityNode = GlueState.Self.Find.EntityTreeNode(nos.SourceClassType);
-
-                    GlueState.Self.CurrentTreeNode = entityNode;
+                    GlueState.Self.CurrentEntitySave = ObjectFinder.Self.GetEntitySave(nos.SourceClassType);
 
                 }
                 else if (nos.SourceType == SourceType.FlatRedBallType && nos.IsGenericType)
@@ -833,16 +831,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     if (genericEntityType != null)
                     {
-                        GlueState.Self.CurrentTreeNode = GlueState.Self.Find.EntityTreeNode(genericEntityType);
+                        GlueState.Self.CurrentEntitySave = genericEntityType;
                     }
 
                 }
                 else if (nos.SourceType == SourceType.File && !string.IsNullOrEmpty(nos.SourceFile))
                 {
                     ReferencedFileSave rfs = nos.GetContainer().GetReferencedFileSave(nos.SourceFile);
-                    TreeNode treeNode = GlueState.Self.Find.ReferencedFileSaveTreeNode(rfs);
-
-                    GlueState.Self.CurrentTreeNode = treeNode;
+                    GlueState.Self.CurrentReferencedFileSave = rfs;
                 }
             }
 
