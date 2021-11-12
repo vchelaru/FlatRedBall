@@ -311,7 +311,7 @@ namespace FlatRedBall.Glue.Managers
                     container.ContainedObjects.Remove(movingNos);
                     AddExistingNamedObjectToElement(
                         GlueState.Self.CurrentElement, movingNos);
-                    GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
+                    GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
 
                     IElement elementToRegenerate = targetNode.Parent.Tag as IElement;
 
@@ -624,7 +624,7 @@ namespace FlatRedBall.Glue.Managers
 
                     GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
-                    GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
+                    GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
                 }
             }
         }
@@ -1337,7 +1337,7 @@ namespace FlatRedBall.Glue.Managers
                 // The new 1:  Update 
                 if (GlueState.Self.CurrentElement != null)
                 {
-                    GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
+                    GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
                 }
                 else
                 {

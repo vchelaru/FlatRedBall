@@ -441,9 +441,9 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static void UpdateCurrentObjectReferencedTreeNodes()
         {
-            if (GlueState.Self.CurrentElementTreeNode != null)
+            if (GlueState.Self.CurrentElement != null)
             {
-                GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
+                GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
             }
             else if (GlueState.Self.CurrentTreeNode != null && GlueState.Self.CurrentTreeNode.Root().IsGlobalContentContainerNode())
             {
@@ -982,12 +982,8 @@ namespace FlatRedBall.Glue.FormHelpers
                                     where entitySave.HasChanged 
                                     select entitySave)
             {
-                var elementTreeNode = GlueState.Self.Find.ElementTreeNode(element);
-                if (elementTreeNode != null)
-                {
-                    elementTreeNode.RefreshTreeNodes();
-                    CodeWriter.GenerateCode(element);
-                }
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                 element.HasChanged = false;
             }
 
@@ -995,12 +991,8 @@ namespace FlatRedBall.Glue.FormHelpers
                                     where screenSave.HasChanged 
                                     select screenSave)
             {
-                var elementTreeNode = GlueState.Self.Find.ElementTreeNode(element);
-                if (elementTreeNode != null)
-                {
-                    elementTreeNode.RefreshTreeNodes();
-                    CodeWriter.GenerateCode(element);
-                }
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                 element.HasChanged = false;
             }
 

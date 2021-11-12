@@ -58,7 +58,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             namedObjectList.ContainedObjects.Add(namedObject);
 
-            GlueState.Self.CurrentElementTreeNode?.RefreshTreeNodes();
+            GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
 
             // Since it's part of a list we know its type
             string typeOfNewObject = namedObjectList.SourceClassGenericType;

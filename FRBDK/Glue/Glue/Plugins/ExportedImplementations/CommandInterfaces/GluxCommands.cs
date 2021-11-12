@@ -762,9 +762,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 MainGlueWindow.Self.Invoke(() =>
                 {
-                    if (GlueState.Self.CurrentElementTreeNode != null)
+                    if (GlueState.Self.CurrentElement != null)
                     {
-                        GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
+                        GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
                     }
                     if (regenerateCode)
                     {
@@ -1416,7 +1416,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            GlueState.Self.CurrentElementTreeNode?.RefreshTreeNodes();
+            GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
 
             GlueCommands.Self.DialogCommands.FocusOnTreeView();
 
@@ -1527,7 +1527,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // Let's get all the TreeNodes to regenerate.
                 // We want to store them in a list so we only generate
                 // each tree node once.
-                List<BaseElementTreeNode> treeNodesForElementsToRegenerate = new List<BaseElementTreeNode>();
+                var elementsToRegenerate = new HashSet<GlueElement>();
 
                 foreach (NamedObjectSave nos in namedObjects)
                 {
@@ -1541,13 +1541,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         nos.SourceClassType = newName;
                     }
 
-                    IElement element = nos.GetContainer();
-
-                    BaseElementTreeNode treeNode = GlueState.Self.Find.ElementTreeNode(element);
-                    if (!treeNodesForElementsToRegenerate.Contains(treeNode))
-                    {
-                        treeNodesForElementsToRegenerate.Add(treeNode);
-                    }
+                    var element = nos.GetContainer();
+                    elementsToRegenerate.Add(element);
                 }
 
 
@@ -1556,18 +1551,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     if (esToTestForInheritance.BaseEntity == oldName)
                     {
                         esToTestForInheritance.BaseEntity = newName;
-
-                        BaseElementTreeNode treeNode = GlueState.Self.Find.EntityTreeNode(esToTestForInheritance);
-                        if (!treeNodesForElementsToRegenerate.Contains(treeNode))
-                        {
-                            treeNodesForElementsToRegenerate.Add(treeNode);
-                        }
+                        elementsToRegenerate.Add(esToTestForInheritance);
                     }
                 }
 
-                foreach (BaseElementTreeNode treeNode in treeNodesForElementsToRegenerate)
+                foreach (var element in elementsToRegenerate)
                 {
-                    CodeWriter.GenerateCode(treeNode.SaveObject);
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                 }
             }
 

@@ -7,9 +7,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
     public interface IRefreshCommands
     {
         /// <summary>
-        /// Refreshes everything for the selected TreeNode
+        /// Refreshes the selected element TreeNode
         /// </summary>
-        void RefreshUiForSelectedElement();
+        void RefreshCurrentElementTreeNode();
 
         void RefreshTreeNodes();
 

@@ -136,7 +136,7 @@ namespace TopDownPlugin.Controllers
                     GlueCommands.Self.DoOnUiThread(() =>
                     {
                         GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-                        GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
+                        GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
                     });
 
                 }, "Refreshing UI after top down plugin values changed");

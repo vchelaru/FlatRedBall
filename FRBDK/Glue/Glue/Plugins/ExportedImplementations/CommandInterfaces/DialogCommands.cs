@@ -493,7 +493,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         // Refresh the UI - it's refreshed above in CreateAndAddNewVariable,
                         // but we're changing the DefinedByBase property which changes the color
                         // of the variable so refresh it again
-                        GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
+                        GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
                     }
                     ElementViewWindow.ShowAllElementVariablesInPropertyGrid();
 
@@ -772,7 +772,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     element.StateCategoryList.Add(newCategory);
 
-                    GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
+                    GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
                     ElementViewWindow.GenerateSelectedElementCode();
 
                     GlueState.Self.CurrentStateSaveCategory = newCategory;

@@ -55,13 +55,13 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static bool IsScreenNode(this TreeNode treeNodeInQuestion)
         {
-            return treeNodeInQuestion is BaseElementTreeNode && ((BaseElementTreeNode)treeNodeInQuestion).SaveObject is ScreenSave;
+            return treeNodeInQuestion.Tag is ScreenSave;
 
         }
 
         public static bool IsEntityNode(this TreeNode treeNodeInQuestion)
         {
-            return treeNodeInQuestion is EntityTreeNode;
+            return treeNodeInQuestion.Tag is EntitySave;
         }
 
         public static bool IsElementNode(this TreeNode treeNodeInQuestion)

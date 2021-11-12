@@ -19,12 +19,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         // out of Glue, not in, so instead we're going to go through
         public static Action RefreshErrorsAction { get; set; }
 
-        public void RefreshUiForSelectedElement()
+        public void RefreshCurrentElementTreeNode()
         {
-            if (GlueState.Self.CurrentElementTreeNode != null)
-                MainGlueWindow.Self.BeginInvoke(
-                    new EventHandler(delegate { GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes(); }));
-            
+            var element = GlueState.Self.CurrentElement;
+            RefreshTreeNodeFor(element);
         }
 
         public void RefreshTreeNodes()
@@ -95,7 +93,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                             }
                         }
                         else
-                        { 
+                        {
                             elementTreeNode?.RefreshTreeNodes();
                         }
                     }

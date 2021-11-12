@@ -431,7 +431,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (GlueState.Self.CurrentElementTreeNode != null)
             {
-                GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
+                GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
             }
 
             MainGlueWindow.Self.PropertyGrid.Refresh();

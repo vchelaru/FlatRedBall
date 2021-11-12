@@ -16,11 +16,15 @@ namespace OfficialPlugins.TreeViewPlugin
     [Export(typeof(PluginBase))]
     class MainTreeViewPlugin : PluginBase
     {
+        #region Fields/Properties
+
         public override string FriendlyName => "Tree View Plugin";
 
         public override Version Version => new Version(1, 0);
 
         MainTreeViewViewModel MainViewModel = new MainTreeViewViewModel();
+
+        #endregion
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
@@ -43,6 +47,7 @@ namespace OfficialPlugins.TreeViewPlugin
         private void AssignEvents()
         {
             ReactToLoadedGluxEarly += HandleGluxLoaded;
+            ReactToUnloadedGlux += HandleUnloadedGlux;
             RefreshTreeNodeFor += HandleRefreshTreeNodeFor;
             RefreshGlobalContentTreeNode += HandleRefreshGlobalContentTreeNode;
 
@@ -68,6 +73,11 @@ namespace OfficialPlugins.TreeViewPlugin
         {
             MainViewModel.AddDirectoryNodes();
             MainViewModel.RefreshGlobalContentTreeNodes();
+        }
+
+        private void HandleUnloadedGlux()
+        {
+            MainViewModel.Clear();
         }
 
         private void HandleRefreshTreeNodeFor(GlueElement element)

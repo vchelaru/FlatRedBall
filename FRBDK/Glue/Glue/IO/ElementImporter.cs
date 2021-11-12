@@ -160,7 +160,7 @@ namespace FlatRedBall.Glue.IO
             {
                 GlueState.Self.CurrentElement = newElement;
 
-                GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
+                GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
             });
 
             GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();

@@ -267,7 +267,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             if (GlueState.Self.CurrentElement == container)
             {
-                GlueCommands.Self.TreeNodeCommands.RefreshCurrentElementTreeNode();
+                GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
             }
 
             GlueState.Self.CurrentNamedObjectSave = newNos;

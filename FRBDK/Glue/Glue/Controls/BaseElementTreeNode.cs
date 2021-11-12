@@ -182,6 +182,7 @@ namespace FlatRedBall.Glue.Controls
             }
         }
 
+        [Obsolete("Don't call this, it won't refresh the new tree node. Instead use the RefreshCommands")]
         public void RefreshTreeNodes()
         {
             if(SaveObject == null)

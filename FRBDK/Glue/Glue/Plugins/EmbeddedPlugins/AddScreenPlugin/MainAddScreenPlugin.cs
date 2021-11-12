@@ -245,8 +245,8 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
 
             if (shouldSave)
             {
-                GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
-                GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(newScreen);
+                GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(newScreen);
                 GlueCommands.Self.GluxCommands.SaveGlux();
                 if(newScreen.Name == GlueCommands.Self.GluxCommands.StartUpScreenName)
                 {

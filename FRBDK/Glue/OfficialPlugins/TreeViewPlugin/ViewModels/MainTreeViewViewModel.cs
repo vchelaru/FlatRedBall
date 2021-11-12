@@ -86,6 +86,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         #endregion
 
+        #region Refresh
+
         internal void RefreshTreeNodeFor(GlueElement element)
         {
             var elementTreeNode = GetElementTreeNode(element);
@@ -204,6 +206,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             #endregion
 
         }
+
+        #endregion
 
         private NodeViewModel AddEntityTreeNode(EntitySave entitySave)
         {
@@ -551,6 +555,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 EntityRootNode.GetNodeByTag(tag) ??
                 GlobalContentRootNode.GetNodeByTag(tag);
             return found;
+        }
+
+        public void Clear()
+        {
+            ScreenRootNode.Children.Clear();
+            EntityRootNode.Children.Clear();
+            GlobalContentRootNode.Children.Clear();
         }
     }
 }

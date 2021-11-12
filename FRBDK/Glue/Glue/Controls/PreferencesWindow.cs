@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.SaveClasses;
 using System.Drawing;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.Controls
 {
@@ -69,16 +70,17 @@ namespace FlatRedBall.Glue.Controls
 
             if (!changed) return;
 
-            foreach (var entity in
+            foreach (var entityTreeNode in
                 ElementViewWindow.AllEntities.Where(entity => CheckIfNodeNeedsUpdate(entity.SaveObject)))
             {
-                entity.RefreshTreeNodes();
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(entityTreeNode.Tag as GlueElement);
             }
 
-            foreach (var screen in
+            foreach (var screenTreeNode in
                 ElementViewWindow.AllScreens.Where(screen => CheckIfNodeNeedsUpdate(screen.SaveObject)))
             {
-                screen.RefreshTreeNodes();
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screenTreeNode.Tag as GlueElement);
+
             }
         }
 	}

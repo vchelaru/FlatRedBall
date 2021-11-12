@@ -1337,7 +1337,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static void OnRefreshTreeNodesClick(object sender, EventArgs e)
         {
-            GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
+            GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
         }
 
         [Obsolete("Use GlueCommands.DialogCommands.ShowAddNewEventDialog")]
@@ -1400,7 +1400,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             ElementViewWindow.GenerateSelectedElementCode();
 
-            GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
+            GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
 
             GluxCommands.Self.SaveGlux();
 
@@ -1525,7 +1525,7 @@ namespace FlatRedBall.Glue.FormHelpers
                         element.States.Add(newState);
                     }
 
-                    GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
+                    GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
 
                     PluginManager.ReactToStateCreated(newState, category);
 
@@ -1640,8 +1640,7 @@ namespace FlatRedBall.Glue.FormHelpers
             }
 
 
-
-            ElementViewWindow.UpdateCurrentObjectReferencedTreeNodes();
+            GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
 
             GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
@@ -1828,7 +1827,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                         AskToRemoveCustomVariablesWithoutState(GlueState.Self.CurrentElement);
 
-                        GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
+                        GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
 
                         PluginManager.ReactToStateRemoved(GlueState.Self.CurrentElement, name);
 
@@ -1843,7 +1842,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     {
                         GlueState.Self.CurrentElement.StateCategoryList.Remove(GlueState.Self.CurrentStateSaveCategory);
 
-                        GlueState.Self.CurrentElementTreeNode.RefreshTreeNodes();
+                        GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
 
                         GluxCommands.Self.SaveGlux();
                     }
@@ -1892,7 +1891,7 @@ namespace FlatRedBall.Glue.FormHelpers
                         var eventResponse = GlueState.Self.CurrentEventResponseSave;
                         GlueState.Self.CurrentElement.Events.Remove(eventResponse);
                         PluginManager.ReactToEventResponseRemoved(element, eventResponse);
-                        GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
+                        GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
                     }
                     #endregion
 
@@ -2904,7 +2903,7 @@ namespace FlatRedBall.Glue.FormHelpers
             PluginManager.CreateNewFile(
                 ati, false, directory, resultNameInFolder);
 
-            GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
+            GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
         }
 
         private static void UpdateCurrentElementTreeNode()

@@ -45,7 +45,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.RfsSorting
                 });
 
                 GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-                GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
+                GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
                 GlueCommands.Self.ProjectCommands.SaveProjects();
             }
         }

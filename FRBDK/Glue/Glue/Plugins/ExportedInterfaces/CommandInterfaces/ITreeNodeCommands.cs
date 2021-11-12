@@ -61,7 +61,5 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <typeparam name="T">Type of value object</typeparam>
         T GetProperty<T>(IElement element, string name);
 
-        void RefreshCurrentElementTreeNode();
-
     }
 }

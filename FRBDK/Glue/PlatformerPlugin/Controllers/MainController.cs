@@ -169,7 +169,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             if(shouldAddPlatformerVariables)
             {
                 GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-                GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
+                GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
             }
 
             if (shouldGenerateCsv || shouldGenerateEntity || shouldAddPlatformerVariables)

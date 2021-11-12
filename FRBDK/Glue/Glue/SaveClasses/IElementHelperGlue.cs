@@ -26,7 +26,7 @@ namespace FlatRedBall.Glue.SaveClasses
         /// </summary>
         /// <param name="elementToRename">The element to rename.</param>
         /// <param name="value">The desired name without the type prefix.</param>
-        public static void RenameElement(this IElement elementToRename, string value)
+        public static void RenameElement(this GlueElement elementToRename, string value)
         {
             bool isValid = true;
             string whyItIsntValid;
@@ -122,15 +122,7 @@ namespace FlatRedBall.Glue.SaveClasses
                     GlueCommands.Self.GluxCommands.SaveGlux();
 
 
-                    TreeNode treeNode = GlueState.Self.Find.ElementTreeNode(elementToRename);
-                    if (treeNode is ScreenTreeNode)
-                    {
-                        ((ScreenTreeNode)treeNode).RefreshTreeNodes();
-                    }
-                    else if (treeNode is EntityTreeNode)
-                    {
-                        ((EntityTreeNode)treeNode).RefreshTreeNodes();
-                    }
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementToRename);
 
                     if (elementToRename is EntitySave)
                     {

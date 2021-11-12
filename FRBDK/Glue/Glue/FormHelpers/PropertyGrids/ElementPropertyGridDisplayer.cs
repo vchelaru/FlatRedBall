@@ -16,7 +16,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
     {
         protected void SetClassName(object sender, MemberChangeArgs args)
         {
-            ((IElement)Instance).RenameElement((string)args.Value);
+            ((GlueElement)Instance).RenameElement((string)args.Value);
         }
 
         protected void HandleMemberSet(object sender, MemberChangeArgs args)

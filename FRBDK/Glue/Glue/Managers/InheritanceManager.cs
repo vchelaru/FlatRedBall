@@ -49,8 +49,7 @@ namespace GlueFormsCore.Managers
                     GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(entitySave);
 
                     // Update the tree nodes
-                    EntityTreeNode treeNode = GlueState.Self.Find.EntityTreeNode(entitySave);
-                    treeNode.RefreshTreeNodes();
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(entitySave);
 
                     if (regenerateCode)
                     {
@@ -80,8 +79,7 @@ namespace GlueFormsCore.Managers
                     ScreenSave screenSave = derivedScreens[i];
                     GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(screenSave);
 
-                    ScreenTreeNode treeNode = GlueState.Self.Find.ScreenTreeNode(screenSave);
-                    treeNode.RefreshTreeNodes();
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screenSave);
 
                     if (regenerateCode)
                     {

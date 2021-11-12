@@ -529,8 +529,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                 if (element.ReferencedFiles.Contains(fileSave))
                 {
-                    BaseElementTreeNode node = GlueState.Self.Find.ElementTreeNode(element);
-                    node.RefreshTreeNodes();
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
                 }
             }
         }

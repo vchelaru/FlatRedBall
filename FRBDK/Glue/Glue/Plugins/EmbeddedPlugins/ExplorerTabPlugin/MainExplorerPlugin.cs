@@ -247,7 +247,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
                     //ProjectManager.GlueProjectSave.Entities.Add(newEntitySave);
                     GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(newEntitySave);
 
-                    GlueState.Self.Find.EntityTreeNode(newEntitySave).RefreshTreeNodes();
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(newEntitySave);
                 }
                 else if (GlueState.Self.Clipboard.CopiedScreen != null)
                 {
@@ -266,7 +266,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
 
                     GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(newScreenSave);
 
-                    GlueState.Self.Find.ScreenTreeNode(newScreenSave).RefreshTreeNodes();
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(newScreenSave);
                 }
                 else if (GlueState.Self.Clipboard.CopiedNamedObject != null)
                 {
