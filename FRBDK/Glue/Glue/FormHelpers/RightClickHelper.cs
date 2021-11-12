@@ -59,7 +59,9 @@ namespace FlatRedBall.Glue.FormHelpers
 
         ITreeNode Parent { get; }
 
-        string Text { get;  }
+        string Text { get; set; }
+
+        IEnumerable<ITreeNode> Children { get; }
 
         #region "Is" methods
 
@@ -241,6 +243,60 @@ namespace FlatRedBall.Glue.FormHelpers
             return false;
         }
 
+        public bool IsChildOfGlobalContent()
+        {
+            if (Parent == null)
+            {
+                return false;
+            }
+
+            if (Parent.IsGlobalContentContainerNode())
+            {
+                return true;
+            }
+            else
+            {
+                return Parent.IsChildOfGlobalContent();
+            }
+        }
+
+        public bool IsChildOfRootEntityNode()
+        {
+            if (Parent == null)
+            {
+                return false;
+            }
+            else if (Parent.IsRootEntityNode())
+            {
+                return true;
+            }
+            else
+            {
+                return Parent.IsChildOfRootEntityNode();
+            }
+        }
+
+
+        public bool IsFolderForEntities()
+        {
+            //TODO:  this fails when deleting a folder inside files.  We gotta fix that.  Try deleting the Palette folders in CreepBase in Baron
+            
+            var parent = Parent;
+
+            if (parent == null)
+            {
+                return false;
+            }
+
+            if (parent.IsFilesContainerNode())
+            {
+                return false;
+            }
+
+            return Tag == null &&
+                IsChildOfRootEntityNode();
+        }
+
         #endregion
 
         void Remove(ITreeNode child);
@@ -366,7 +422,11 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public ITreeNode Parent => TreeNodeWrapper.CreateOrNull(treeNode.Parent);
 
-        public string Text => treeNode?.Text;
+        public string Text
+        {
+            get => treeNode?.Text;
+            set => treeNode.Text = value;
+        }
 
         public static ITreeNode CreateOrNull(TreeNode targetNode)
         {
@@ -501,6 +561,17 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             treeNode.Nodes.SortByTextConsideringDirectories();
         }
+
+        IEnumerable<ITreeNode> ITreeNode.Children
+        {
+            get
+            {
+                foreach(TreeNode item in treeNode.Nodes)
+                {
+                    yield return CreateOrNull(item);
+                }
+            }
+        }
     }
 
     public static class RightClickHelper
@@ -543,13 +614,10 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static GeneralToolStripMenuItem mViewSourceInExplorer;
 
-        static GeneralToolStripMenuItem mViewCodeFolderInExplorer;
-        static GeneralToolStripMenuItem mViewContentFilesInExplorer;
-
         static GeneralToolStripMenuItem mFindAllReferences;
 
-        static GeneralToolStripMenuItem mDeleteFolder;
-        static GeneralToolStripMenuItem mRenameFolder;
+        
+        
 
         static GeneralToolStripMenuItem mDuplicate;
 
@@ -694,10 +762,10 @@ namespace FlatRedBall.Glue.FormHelpers
                 AddItem(addFileToolStripMenuItem);
                 Add("Add Folder", () => RightClickHelper.AddFolderClick(targetNode));
                 AddSeparator();
-                Add("View in explorer", () => RightClickHelper.ViewInExplorerClick());
+                Add("View in explorer", () => RightClickHelper.ViewInExplorerClick(targetNode));
                 if (targetNode.IsFolderInFilesContainerNode())
                 {
-                    AddItem(mDeleteFolder);
+                    Add("Delete Folder", () => DeleteFolderClick(targetNode));
                 }
             }
 
@@ -752,7 +820,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 Add("Add Folder", () => RightClickHelper.AddFolderClick(targetNode));
                 AddItem(reGenerateCodeToolStripMenuItem);
 
-                Add("View in explorer", () => RightClickHelper.ViewInExplorerClick());
+                Add("View in explorer", () => RightClickHelper.ViewInExplorerClick(targetNode));
 
                 AddItem(mViewFileLoadOrder);
             }
@@ -849,7 +917,7 @@ namespace FlatRedBall.Glue.FormHelpers
             #region IsReferencedFileNode
             else if (targetNode.IsReferencedFile())
             {
-                Add("View in explorer", () => RightClickHelper.ViewInExplorerClick());
+                Add("View in explorer", () => RightClickHelper.ViewInExplorerClick(targetNode));
                 AddItem(mFindAllReferences);
                 AddEvent("Copy path to clipboard", HandleCopyToClipboardClick);
                 AddSeparator();
@@ -914,7 +982,7 @@ namespace FlatRedBall.Glue.FormHelpers
             else if (targetNode.IsCodeNode())
             {
 
-                Add("View in explorer", () => RightClickHelper.ViewInExplorerClick());
+                Add("View in explorer", () => RightClickHelper.ViewInExplorerClick(targetNode));
                 AddItem(reGenerateCodeToolStripMenuItem);
             }
 
@@ -934,8 +1002,8 @@ namespace FlatRedBall.Glue.FormHelpers
             else if (targetNode.IsDirectoryNode())
             {
                 //AddItem(form.viewInExplorerToolStripMenuItem);
-                AddItem(mViewContentFilesInExplorer);
-                AddItem(mViewCodeFolderInExplorer);
+                Add("View content folder", () => ViewContentFolderInExplorer(targetNode));
+                Add("View code folder", () => ViewCodeFolderInExplorerClick(targetNode));
                 AddSeparator();
 
 
@@ -958,10 +1026,10 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 AddSeparator();
 
-                AddItem(mDeleteFolder);
+                Add("Delete Folder", () => DeleteFolderClick(targetNode));
                 if (isEntityContainingFolder)
                 {
-                    AddItem(mRenameFolder);
+                    Add("Rename Folder", () => HandleRenameFolderClick(targetNode));
                 }
             }
 
@@ -1219,17 +1287,11 @@ namespace FlatRedBall.Glue.FormHelpers
             mFindAllReferences = new GeneralToolStripMenuItem("Find all references to this");
             mFindAllReferences.Click += new EventHandler(FindAllReferencesClick);
 
-            mViewCodeFolderInExplorer = new GeneralToolStripMenuItem("View code folder");
-            mViewCodeFolderInExplorer.Click += new EventHandler(ViewCodeFolderInExplorerClick);
+            
 
-            mViewContentFilesInExplorer = new GeneralToolStripMenuItem("View content folder");
-            mViewContentFilesInExplorer.Click += new EventHandler(ViewContentFolderInExplorer);
+            
 
-            mDeleteFolder = new GeneralToolStripMenuItem("Delete Folder");
-            mDeleteFolder.Click += new EventHandler(DeleteFolderClick);
-
-            mRenameFolder = new GeneralToolStripMenuItem("Rename Folder");
-            mRenameFolder.Click += HandleRenameFolderClick;
+            
 
             mDuplicate = new GeneralToolStripMenuItem("Duplicate");
             mDuplicate.Click += new EventHandler(DuplicateClick);
@@ -2165,7 +2227,7 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-        internal static void ViewInExplorerClick()
+        internal static void ViewInExplorerClick(ITreeNode targetNode)
         {
 
             if(GlueState.Self.CurrentGlueProject == null)
@@ -2186,13 +2248,13 @@ namespace FlatRedBall.Glue.FormHelpers
                     locationToShow = ProjectManager.MakeAbsolute(rfs.Name);
 
                 }
-                else if (GlueState.Self.CurrentTreeNode.IsDirectoryNode() || GlueState.Self.CurrentTreeNode.IsGlobalContentContainerNode())
+                else if (targetNode.IsDirectoryNode() || targetNode.IsGlobalContentContainerNode())
                 {
-                    locationToShow = ProjectManager.MakeAbsolute(GlueState.Self.CurrentTreeNode.GetRelativePath(), true);
+                    locationToShow = ProjectManager.MakeAbsolute(targetNode.GetRelativePath(), true);
                 }
-                else if (GlueState.Self.CurrentTreeNode.IsFilesContainerNode() || GlueState.Self.CurrentTreeNode.IsFolderInFilesContainerNode())
+                else if (targetNode.IsFilesContainerNode() || targetNode.IsFolderInFilesContainerNode())
                 {
-                    string relativePath = GlueState.Self.CurrentTreeNode.GetRelativePath();
+                    string relativePath = targetNode.GetRelativePath();
 
                     // Victor Chelaru April 11, 2013
                     // RelativePath already includes "Screens/"
@@ -2212,9 +2274,9 @@ namespace FlatRedBall.Glue.FormHelpers
                         Directory.CreateDirectory(locationToShow);
                     }
                 }
-                else if (GlueState.Self.CurrentTreeNode.Text.EndsWith(".cs"))
+                else if (targetNode.Text.EndsWith(".cs"))
                 {
-                    locationToShow = ProjectManager.MakeAbsolute(GlueState.Self.CurrentTreeNode.GetRelativePath(), false);
+                    locationToShow = ProjectManager.MakeAbsolute(targetNode.GetRelativePath(), false);
 
                 }
 
@@ -2255,12 +2317,12 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-        static void ViewContentFolderInExplorer(object sender, EventArgs e)
+        static void ViewContentFolderInExplorer(ITreeNode targetNode)
         {
 
-            if (GlueState.Self.CurrentTreeNode.IsDirectoryNode())
+            if (targetNode.IsDirectoryNode())
             {
-                string locationToShow = ProjectManager.MakeAbsolute(GlueState.Self.CurrentTreeNode.GetRelativePath(), true);
+                string locationToShow = ProjectManager.MakeAbsolute(targetNode.GetRelativePath(), true);
 
                 if(System.IO.Directory.Exists(locationToShow))
                 {
@@ -2287,19 +2349,19 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-        static void DeleteFolderClick(object sender, EventArgs e)
+        static void DeleteFolderClick(ITreeNode targetNode)
         {
             // delete folder, deletefolder
 
             bool forceContent = false;
 
-            if (GlueState.Self.CurrentTreeNode.IsChildOfGlobalContent() ||
-                GlueState.Self.CurrentTreeNode.IsFolderInFilesContainerNode())
+            if (targetNode.IsChildOfGlobalContent() ||
+                targetNode.IsFolderInFilesContainerNode())
             {
                 forceContent = true;
             }
 
-            string absolutePath = ProjectManager.MakeAbsolute(GlueState.Self.CurrentTreeNode.GetRelativePath(), forceContent);
+            string absolutePath = ProjectManager.MakeAbsolute(targetNode.GetRelativePath(), forceContent);
 
             string[] files = null;
             string[] directories = null;
@@ -2321,12 +2383,12 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (shouldDelete == DialogResult.Yes)
             {
-                if (GlueState.Self.CurrentTreeNode.IsChildOfRootEntityNode() && GlueState.Self.CurrentTreeNode.IsFolderForEntities())
+                if (targetNode.IsChildOfRootEntityNode() && targetNode.IsFolderForEntities())
                 {
                     // We have to remove all contained Entities
                     // from the project.
                     List<EntitySave> allEntitySaves = new List<EntitySave>();
-                    GetAllEntitySavesIn(GlueState.Self.CurrentTreeNode, allEntitySaves);
+                    GetAllEntitySavesIn(targetNode, allEntitySaves);
 
                     foreach (EntitySave entitySave in allEntitySaves)
                     {
@@ -2335,10 +2397,10 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     }
                 }
-                else if (GlueState.Self.CurrentTreeNode.IsFolderInFilesContainerNode())
+                else if (targetNode.IsFolderInFilesContainerNode())
                 {
                     List<ReferencedFileSave> allReferencedFileSaves = new List<ReferencedFileSave>();
-                    GetAllReferencedFileSavesIn(GlueState.Self.CurrentTreeNode, allReferencedFileSaves);
+                    GetAllReferencedFileSavesIn(targetNode, allReferencedFileSaves);
 
                     foreach (ReferencedFileSave rfs in allReferencedFileSaves)
                     {
@@ -2353,10 +2415,8 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-        static void HandleRenameFolderClick(object sender, EventArgs e)
+        static void HandleRenameFolderClick(ITreeNode treeNode)
         {
-            var treeNode = GlueState.Self.CurrentTreeNode;
-
             var inputWindow = new TextInputWindow();
             inputWindow.Message = "Enter new folder name";
             inputWindow.Result = treeNode.Text;
@@ -2442,9 +2502,9 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-        static void GetAllEntitySavesIn(TreeNode treeNode, List<EntitySave> allEntitySaves)
+        static void GetAllEntitySavesIn(ITreeNode treeNode, List<EntitySave> allEntitySaves)
         {
-            foreach (TreeNode subNode in treeNode.Nodes)
+            foreach (var subNode in treeNode.Children)
             {
                 if (subNode.IsDirectoryNode())
                 {
@@ -2457,9 +2517,9 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-        static void GetAllReferencedFileSavesIn(TreeNode treeNode, List<ReferencedFileSave> allReferencedFileSaves)
+        static void GetAllReferencedFileSavesIn(ITreeNode treeNode, List<ReferencedFileSave> allReferencedFileSaves)
         {
-            foreach (TreeNode subNode in treeNode.Nodes)
+            foreach (var subNode in treeNode.Children)
             {
                 if (subNode.IsDirectoryNode())
                 {
@@ -2473,11 +2533,11 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-        static void ViewCodeFolderInExplorerClick(object sender, EventArgs e)
+        static void ViewCodeFolderInExplorerClick(ITreeNode targetNode)
         {
-            if (GlueState.Self.CurrentTreeNode.IsDirectoryNode())
+            if (targetNode.IsDirectoryNode())
             {
-                string locationToShow = FileManager.RelativeDirectory + GlueState.Self.CurrentTreeNode.GetRelativePath();
+                string locationToShow = FileManager.RelativeDirectory + targetNode.GetRelativePath();
 
                 locationToShow = locationToShow.Replace("/", "\\");
                 Process.Start("explorer.exe", "/select," + locationToShow);

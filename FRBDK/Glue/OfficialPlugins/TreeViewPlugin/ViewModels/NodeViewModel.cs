@@ -85,6 +85,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
         }
 
+        IEnumerable<ITreeNode> ITreeNode.Children => children;
+
         public string Text 
         {
             get => Get<string>();
