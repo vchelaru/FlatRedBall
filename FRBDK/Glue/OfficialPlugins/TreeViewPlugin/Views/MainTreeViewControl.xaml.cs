@@ -1,4 +1,6 @@
-﻿using FlatRedBall.Glue.Managers;
+﻿using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Managers;
+using OfficialPlugins.TreeViewPlugin.Logic;
 using OfficialPlugins.TreeViewPlugin.ViewModels;
 using PropertyTools.Wpf;
 using System;
@@ -16,11 +18,25 @@ using System.Windows.Shapes;
 
 namespace OfficialPlugins.TreeViewPlugin.Views
 {
+
+
     /// <summary>
     /// Interaction logic for MainTreeViewControl.xaml
     /// </summary>
     public partial class MainTreeViewControl : UserControl
     {
+        #region Enums
+
+        public enum LeftOrRight
+        {
+            Left,
+            Right
+        }
+
+        #endregion
+
+        LeftOrRight ButtonPressed;
+
         public MainTreeViewControl()
         {
             InitializeComponent();
@@ -61,45 +77,23 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             Point mousePos = e.GetPosition(null);
             Vector diff = startPoint - mousePos;
 
-            if (e.LeftButton == MouseButtonState.Pressed &&
+            var isMouseButtonPressed =
+                e.LeftButton == MouseButtonState.Pressed ||
+                e.RightButton == MouseButtonState.Pressed;
+
+            if (isMouseButtonPressed &&
                 (Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
                 Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance))
             {
+                ButtonPressed = e.LeftButton == MouseButtonState.Pressed ?
+                    LeftOrRight.Left : LeftOrRight.Right;
+
                 // Get the dragged ListViewItem
                 var vm = (e.OriginalSource as FrameworkElement).DataContext as NodeViewModel;
 
                 // Initialize the drag & drop operation
                 DataObject dragData = new DataObject("NodeViewModel", vm);
                 DragDrop.DoDragDrop(e.OriginalSource as DependencyObject, dragData, DragDropEffects.Move);
-            }
-        }
-
-        // Helper to search up the VisualTree
-        private static T FindAnchestor<T>(DependencyObject current)
-            where T : DependencyObject
-        {
-            do
-            {
-                if (current is T)
-                {
-                    return (T)current;
-                }
-                current = VisualTreeHelper.GetParent(current);
-            }
-            while (current != null);
-            return null;
-        }
-
-        private void MainTreeView_Drop(object sender, DragEventArgs e)
-        {
-            var objectDragged = e.Data.GetData("NodeViewModel");
-
-            var targetNode = (e.OriginalSource as FrameworkElement).DataContext as NodeViewModel;
-
-            if(objectDragged is NodeViewModel treeNodeMoving)
-            {
-                // do something here...
-                DragDropManager.DragDropTreeNode(targetNode, treeNodeMoving);
             }
         }
 
@@ -111,6 +105,64 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 e.Effects = DragDropEffects.None;
             }
         }
+
+        private void MainTreeView_Drop(object sender, DragEventArgs e)
+        {
+            var objectDragged = e.Data.GetData("NodeViewModel");
+
+            var targetNode = (e.OriginalSource as FrameworkElement).DataContext as NodeViewModel;
+
+            if(objectDragged is NodeViewModel treeNodeMoving)
+            {
+                if(ButtonPressed == LeftOrRight.Left || targetNode == treeNodeMoving)
+                {
+                    // do something here...
+                    DragDropManager.DragDropTreeNode(targetNode, treeNodeMoving);
+                }
+                else
+                {
+                    SelectionLogic.SelectByTag(targetNode.Tag);
+
+                    var items = RightClickHelper.GetRightClickItems(targetNode, MenuShowingAction.RightButtonDrag, treeNodeMoving);
+
+
+                    RightClickContextMenu.Items.Clear();
+
+                    foreach (var item in items)
+                    {
+                        var wpfItem = CreateWpfItemFor(item);
+                        RightClickContextMenu.Items.Add(wpfItem);
+                    }
+                    RightClickContextMenu.IsOpen = true;// test this
+
+                }
+            }
+        }
+
+
+        public object CreateWpfItemFor(GlueFormsCore.FormHelpers.GeneralToolStripMenuItem item)
+        {
+            if (item.Text == "-")
+            {
+                var separator = new Separator();
+                return separator;
+            }
+            else
+            {
+                var menuItem = new MenuItem();
+                menuItem.Header = item.Text;
+                menuItem.Click += (not, used) => item.Click(menuItem, null);
+
+                foreach (var child in item.DropDownItems)
+                {
+                    var wpfItem = CreateWpfItemFor(child);
+                    menuItem.Items.Add(wpfItem);
+                }
+
+                return menuItem;
+            }
+        }
+
         #endregion
     }
 }

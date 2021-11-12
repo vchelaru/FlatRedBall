@@ -53,6 +53,8 @@ namespace FlatRedBall.Glue.FormHelpers
 
     #endregion
 
+    #region ITreeNode Interface
+
     public interface ITreeNode
     {
         object Tag { get; set; }
@@ -403,6 +405,8 @@ namespace FlatRedBall.Glue.FormHelpers
         void SortByTextConsideringDirectories();
     }
 
+    #endregion
+
     public class TreeNodeWrapper : ITreeNode
     {
         TreeNode treeNode;
@@ -670,13 +674,13 @@ namespace FlatRedBall.Glue.FormHelpers
         }
 
         static List<GeneralToolStripMenuItem> ListToAddTo = null;
-        public static List<GeneralToolStripMenuItem> GetRightClickItems(ITreeNode targetNode, MenuShowingAction menuShowingAction)
+        public static List<GeneralToolStripMenuItem> GetRightClickItems(ITreeNode targetNode, MenuShowingAction menuShowingAction, ITreeNode treeNodeMoving = null)
         {
             List<GeneralToolStripMenuItem> listToFill = new List<GeneralToolStripMenuItem>();
 
             ListToAddTo = listToFill;
 
-            PopulateRightClickMenuItemsShared(targetNode, menuShowingAction, null);
+            PopulateRightClickMenuItemsShared(targetNode, menuShowingAction, treeNodeMoving);
 
             ListToAddTo = null;
 

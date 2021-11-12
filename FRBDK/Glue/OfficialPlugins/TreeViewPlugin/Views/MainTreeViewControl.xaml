@@ -44,7 +44,9 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <Image Grid.Column="0" Source="{Binding ImageSource}" Width="18" Margin="0 0 4 0"/>
-                        <pt:EditableTextBlock Grid.Column="1" Text="{Binding Text}" IsEditing="{Binding IsEditing}"/>
+                        <pt:EditableTextBlock Grid.Column="1" Text="{Binding Text}" 
+                                              FontWeight="{Binding FontWeight}" 
+                                              IsEditing="{Binding IsEditing}"/>
                     </Grid>
                 </DataTemplate>
             </pt:TreeListBox.ItemTemplate>

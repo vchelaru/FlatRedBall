@@ -138,33 +138,12 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
 
             foreach (var item in items)
             {
-                var wpfItem = CreateWpfItemFor(item);
+                var wpfItem = mainView.CreateWpfItemFor(item);
                 mainView.RightClickContextMenu.Items.Add(wpfItem);
             }
         }
 
-        private static object CreateWpfItemFor(GlueFormsCore.FormHelpers.GeneralToolStripMenuItem item)
-        {
-            if (item.Text == "-")
-            {
-                var separator = new Separator();
-                return separator;
-            }
-            else
-            {
-                var menuItem = new MenuItem();
-                menuItem.Header = item.Text;
-                menuItem.Click += (not, used) => item.Click(menuItem, null);
 
-                foreach(var child in item.DropDownItems)
-                {
-                    var wpfItem = CreateWpfItemFor(child);
-                    menuItem.Items.Add(wpfItem);
-                }
-
-                return menuItem;
-            }
-        }
 
 
         public static async void SelectByTag(object value)

@@ -86,6 +86,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // if statement is here to prevent unnecessary saves
                 if (GlueState.Self.CurrentGlueProject.StartUpScreen != value)
                 {
+                    var oldStartupScreen = GlueState.Self.CurrentGlueProject.Screens
+                        .FirstOrDefault(item => item.Name == GlueState.Self.CurrentGlueProject.StartUpScreen);
+
+
                     GlueState.Self.CurrentGlueProject.StartUpScreen = value;
                     GluxCommands.Self.SaveGlux();
                     if (string.IsNullOrEmpty(ProjectManager.GameClassFileName))
@@ -101,6 +105,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     var screen = GlueState.Self.CurrentGlueProject.Screens
                         .FirstOrDefault(item => item.Name == value);
 
+                    if(oldStartupScreen != null)
+                    {
+                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(oldStartupScreen);
+                    }
                     GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screen);
 
                     PluginManager.ReactToChangedStartupScreen();

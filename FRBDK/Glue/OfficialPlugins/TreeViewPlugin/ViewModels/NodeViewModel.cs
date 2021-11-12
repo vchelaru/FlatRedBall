@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -26,7 +27,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         #endregion
 
-        #region Fields/Properties
+        #region Static ImageSource Members
 
         public static ImageSource CodeIcon;
         public static ImageSource CollisionsIcon;
@@ -40,8 +41,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public static ImageSource LayersIcon;
         public static ImageSource LayerIcon;
         public static ImageSource ScreenIcon;
+        public static ImageSource ScreenStartupIcon;
         public static ImageSource StateIcon;
         public static ImageSource VariableIcon;
+
+        #endregion
+
+        #region Fields/Properties
 
         public object Tag { get; set; }
         
@@ -66,6 +72,11 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             this.Parent = null;
         }
 
+        public FontWeight FontWeight
+        {
+            get => Get<FontWeight>();
+            set => Set(value);
+        }
 
         public ImageSource ImageSource
         {
@@ -140,6 +151,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             LayersIcon = LoadIcon("icon_layers");
             LayerIcon = LoadIcon("icon_layer");
             ScreenIcon = LoadIcon("icon_screen");
+            ScreenStartupIcon = LoadIcon("icon_screen_startup");
             StateIcon = LoadIcon("icon_state");
             VariableIcon = LoadIcon("icon_variable");
 
@@ -152,20 +164,14 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         }
 
-        internal void ExpandParentsRecursively()
-        {
-            if(Parent != null)
-            {
-                Parent.IsExpanded = true;
-                Parent.ExpandParentsRecursively();
-            }
-        }
 
         public NodeViewModel(NodeViewModel parent)
         {
             //this.Node = Node;
             this.Parent = parent;
             this.IsExpanded = false;
+
+            FontWeight = FontWeights.Normal;
 
             ImageSource = FolderClosedIcon;
         }
@@ -177,23 +183,22 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         }
 
-        //private void LoadChildren()
-        //{
-        //    if (children == null)
-        //    {
-        //        children = new ObservableCollection<NodeViewModel>();
-        //        var cc = this.Node as CompositeNode;
-        //        if (cc != null)
-        //        {
-        //            foreach (var child in cc.Children)
-        //            {
-        //                // Debug.WriteLine("Creating VM for " + child.Name);
-        //                children.Add(new NodeViewModel(child, this));
-        //                // Thread.Sleep(1);
-        //            }
-        //        }
-        //    }
-        //}
+        #region Parent-based Methods
+
+        internal void ExpandParentsRecursively()
+        {
+            if(Parent != null)
+            {
+                Parent.IsExpanded = true;
+                Parent.ExpandParentsRecursively();
+            }
+        }
+
+        public NodeViewModel Root() => Parent == null ? this : Parent.Root();
+
+        #endregion
+
+        #region Children-based methods
 
         public NodeViewModel AddChild()
         {
@@ -210,8 +215,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             return vm;
         }
 
-
-        public NodeViewModel Root() => Parent == null ? this : Parent.Root();
 
         void ITreeNode.SortByTextConsideringDirectories() => this.SortByTextConsideringDirectories();
         public void SortByTextConsideringDirectories(ObservableCollection<NodeViewModel> treeNodeCollection = null, bool recursive = false)
@@ -316,13 +319,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             return null;
         }
 
-        public override string ToString()
-        {
-            return Text;
-        }
-
-        ITreeNode ITreeNode.FindByTagRecursive(object tag) => this.GetNodeByTag(tag);
-
         public void Remove(ITreeNode child)
         {
             var childAsViewModel = child as NodeViewModel;
@@ -342,7 +338,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         {
             return this.Children.FirstOrDefault(item => item.Text == name);
         }
-
 
         public void RemoveGlobalContentTreeNodesIfDoesntExist(ITreeNode treeNode)
         {
@@ -394,5 +389,15 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 }
             }
         }
+        
+        #endregion
+
+        public override string ToString()
+        {
+            return Text;
+        }
+
+        ITreeNode ITreeNode.FindByTagRecursive(object tag) => this.GetNodeByTag(tag);
+
     }
 }

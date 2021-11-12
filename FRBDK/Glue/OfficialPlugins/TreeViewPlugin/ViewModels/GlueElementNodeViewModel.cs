@@ -1,7 +1,9 @@
-﻿using FlatRedBall.Glue.SaveClasses;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows;
 
 namespace OfficialPlugins.TreeViewPlugin.ViewModels
 {
@@ -58,6 +60,22 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             base.RefreshTreeNodes();
 
             Text = glueElement.GetStrippedName();
+
+            if(Tag is ScreenSave asScreenSave)
+            {
+                var startupScreen = GlueState.Self.CurrentGlueProject.StartUpScreen;
+
+                if(startupScreen == asScreenSave.Name)
+                {
+                    ImageSource = ScreenStartupIcon;
+                    FontWeight = FontWeights.Bold;
+                }
+                else
+                {
+                    ImageSource = ScreenIcon;
+                    FontWeight = FontWeights.Normal;
+                }
+            }
 
             foreach(var node in Children)
             {
