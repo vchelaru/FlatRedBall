@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue;
 using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using OfficialPlugins.TreeViewPlugin.Models;
@@ -110,7 +111,10 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
             else
             {
-                if (element.IsHiddenInTreeView)
+                var isInProject =
+                    GlueState.Self.CurrentGlueProject.Screens.Contains(element) ||
+                    GlueState.Self.CurrentGlueProject.Entities.Contains(element);
+                if (element.IsHiddenInTreeView || isInProject == false)
                 {
                     // remove it!
                     if (element is ScreenSave screen)

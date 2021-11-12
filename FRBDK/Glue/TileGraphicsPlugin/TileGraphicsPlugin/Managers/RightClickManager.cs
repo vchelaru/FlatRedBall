@@ -17,7 +17,7 @@ namespace TileGraphicsPlugin.Managers
             
             if(!shouldShowMenu)
             {
-                bool isPartOfScreen = rightClickedTreeNode.GetContainingElementTreeNode().IsScreenNode();
+                var isPartOfScreen = rightClickedTreeNode.GetContainingElementTreeNode()?.IsScreenNode() == true;
 
                 if(isPartOfScreen)
                 {

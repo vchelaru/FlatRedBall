@@ -1162,11 +1162,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             if (element != null)
             {
-
-                if (!namedObjectToRemove.RemoveSelfFromNamedObjectList(element.NamedObjects))
-                {
-                    throw new ArgumentException();
-                }
+                var removedItselfFromList = namedObjectToRemove.RemoveSelfFromNamedObjectList(element.NamedObjects);
+                // November 12, 2021
+                // This used to be an indication of a problem. Now it's okay because removal
+                // is done tasked, and that means the object could have changed in the meantime.
+                // We should tolerate:
+                //if (!removedItselfFromList)
+                //{
+                    //throw new ArgumentException($"Tried to remove {namedObjectToRemove} from {element} but it wasn't removed from anything.");
+                //}
 
                 #region Remove all CustomVariables that reference the removed NamedObject
                 for (int i = element.CustomVariables.Count - 1; i > -1; i--)

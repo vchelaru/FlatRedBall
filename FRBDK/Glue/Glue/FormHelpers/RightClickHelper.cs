@@ -1810,7 +1810,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 if (reallyRemoveResult == DialogResult.Yes)
                 {
-                    var deletedElement = false;
+                    GlueElement deletedElement = null;
                     #region If is NamedObjectSave
                     // test deep first
                     if (GlueState.Self.CurrentNamedObjectSave != null)
@@ -1926,7 +1926,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     {
                         var screenToRemove = GlueState.Self.CurrentScreenSave;
                         RemoveScreen(screenToRemove, filesToRemove);
-                        deletedElement = true;
+                        deletedElement = screenToRemove;
                     }
 
                     #endregion
@@ -1935,9 +1935,10 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     else if (GlueState.Self.CurrentEntitySave != null)
                     {
+                        var entityToRemove = GlueState.Self.CurrentEntitySave;
                         RemoveEntity(GlueState.Self.CurrentEntitySave, filesToRemove);
                         //ProjectManager.RemoveEntity(EditorLogic.CurrentEntitySave);
-                        deletedElement = true;
+                        deletedElement = entityToRemove;
 
                     }
 
@@ -2013,9 +2014,11 @@ namespace FlatRedBall.Glue.FormHelpers
                     // a "refresh nodes" method is called, which may remove unneeded
                     // nodes, but event raising is suppressed. Therefore, we have to explicitly 
                     // do it here:
-                    if(deletedElement)
+                    if(deletedElement != null)
                     {
                         GlueCommands.Self.RefreshCommands.RefreshTreeNodes();
+                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(deletedElement);
+
                     }
                     else
                     {

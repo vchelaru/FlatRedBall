@@ -249,7 +249,7 @@ namespace FlatRedBall.Glue.Controls
                 Color color;
                 if(asScreen.IsRequiredAtStartup)
                 {
-                    color = ElementViewWindow.RegularBackgroundColor;
+                    color = ElementViewWindow.RequiredScreenColor;
                 }
                 else if(GlueState.Self.CurrentGlueProject?.StartUpScreen == asScreen.Name)
                 {
@@ -257,7 +257,7 @@ namespace FlatRedBall.Glue.Controls
                 }
                 else
                 {
-                    color = ElementViewWindow.RequiredScreenColor;
+                    color = ElementViewWindow.RegularBackgroundColor;
                 }
                 if(BackColor != color)
                 {

@@ -35,9 +35,16 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.TreeViewPlugin
         {
             var elementTreeNode = GlueState.Self.Find.ElementTreeNode(element);
 
+            var project = GlueState.Self.CurrentGlueProject;
+
+            var shouldShow = !element.IsHiddenInTreeView &&
+                (
+                (element is ScreenSave asScreen && project.Screens.Contains(asScreen)) ||
+                (element is EntitySave asEntity && project.Entities.Contains(asEntity)));
+
             if (elementTreeNode == null)
             {
-                if (!element.IsHiddenInTreeView)
+                if (shouldShow)
                 {
                     if (element is ScreenSave screen)
                     {
@@ -52,7 +59,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.TreeViewPlugin
             }
             else
             {
-                if (element.IsHiddenInTreeView)
+                if (!shouldShow)
                 {
                     // remove it!
                     if (element is ScreenSave screen)
