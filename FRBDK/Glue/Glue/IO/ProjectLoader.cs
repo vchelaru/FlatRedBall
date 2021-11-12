@@ -504,21 +504,6 @@ namespace FlatRedBall.Glue.IO
                 SetInitWindowText("Setting StartUp Screen");
 
 
-                #region Set the Startup Screen
-
-                if (!string.IsNullOrEmpty(ProjectManager.GlueProjectSave.StartUpScreen))
-                {
-                    TreeNode startUpTreeNode = GlueState.Self.Find.ScreenTreeNode(ProjectManager.GlueProjectSave.StartUpScreen);
-
-                    ElementViewWindow.StartUpScreenTreeNode = startUpTreeNode;
-
-                    if (startUpTreeNode == null)
-                    {
-                        ProjectManager.GlueProjectSave.StartUpScreen = "";
-                    }
-                }
-
-                #endregion
 
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("Performance code");

@@ -129,14 +129,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // Now we only want to do it if there are no
             // other Screens.  Otherwise they can just use
             // GlueView.
-            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screenSave);
             if (glueProject.Screens.Count == 1)
             {
-                ElementViewWindow.StartUpScreenTreeNode =
-                    GlueState.Self.Find.ElementTreeNode(screenSave);
+                GlueState.Self.CurrentGlueProject.StartUpScreen = screenSave.Name;
             }
+            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screenSave);
 
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(screenSave);
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screenSave);
 
             PluginManager.ReactToNewScreenCreated(screenSave);
 

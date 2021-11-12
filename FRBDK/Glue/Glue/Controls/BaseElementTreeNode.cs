@@ -28,6 +28,7 @@ using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Performance.Measurement;
 using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.Controls
 {
@@ -201,8 +202,6 @@ namespace FlatRedBall.Glue.Controls
             {
                 try
                 {
-                    Section.GetAndStartContextAndTime("Text");
-
                     #region Set this Text
                     if (Text != FileManager.RemovePath(SaveObject.Name))
                     {
@@ -210,42 +209,20 @@ namespace FlatRedBall.Glue.Controls
                     }
                     #endregion
 
-                    Section.EndContextAndTime();
-                    Section.GetAndStartContextAndTime("UpdateToReferencedFiles");
+                    UpdateBackgroundColor();
 
                     mFilesTreeNode.UpdateToReferencedFiles(mSaveObject.ReferencedFiles, SaveObject);
 
-
-                    Section.EndContextAndTime();
-                    Section.GetAndStartContextAndTime("UpdateToNamedObjectSaves");
-
                     mObjectsTreeNode.UpdateToNamedObjectSaves(mSaveObject);
-
-
-                    Section.EndContextAndTime();
-                    Section.GetAndStartContextAndTime("UpdateToStates");
 
                     mStateListTreeNode.UpdateToStates(mSaveObject.States, mSaveObject.StateCategoryList);
 
-                    Section.EndContextAndTime();
-                    Section.GetAndStartContextAndTime("UpdateVariablesTreeNode");
-
                     UpdateVariablesTreeNode();
-
-
-                    Section.EndContextAndTime();
-                    Section.GetAndStartContextAndTime("UpdateEventsTreeNode");
 
                     UpdateEventsTreeNode();
 
-
-                    Section.EndContextAndTime();
-                    Section.GetAndStartContextAndTime("UpdateCodeTreeNodes");
-
                     UpdateCodeTreeNodes();
 
-
-                    Section.EndContextAndTime();
                     break;
                 }
                 catch (Exception e)
@@ -263,6 +240,30 @@ namespace FlatRedBall.Glue.Controls
 
             ElementViewWindow.SuppressSelectionEvents = false;
 
+        }
+
+        private void UpdateBackgroundColor()
+        {
+            if(SaveObject is ScreenSave asScreen)
+            {
+                Color color;
+                if(asScreen.IsRequiredAtStartup)
+                {
+                    color = ElementViewWindow.RegularBackgroundColor;
+                }
+                else if(GlueState.Self.CurrentGlueProject?.StartUpScreen == asScreen.Name)
+                {
+                    color = ElementViewWindow.StartupScreenColor;
+                }
+                else
+                {
+                    color = ElementViewWindow.RequiredScreenColor;
+                }
+                if(BackColor != color)
+                {
+                    BackColor = color;
+                }
+            }
         }
 
         private void UpdateVariablesTreeNode()

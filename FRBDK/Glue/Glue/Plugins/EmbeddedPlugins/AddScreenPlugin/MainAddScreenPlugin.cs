@@ -248,11 +248,6 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                 GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(newScreen);
                 GlueCommands.Self.GluxCommands.SaveGlux();
-                if(newScreen.Name == GlueCommands.Self.GluxCommands.StartUpScreenName)
-                {
-
-                    ElementViewWindow.StartUpScreenTreeNode = GlueState.Self.CurrentElementTreeNode;
-                }
             }
         }
 

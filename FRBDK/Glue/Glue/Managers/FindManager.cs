@@ -32,14 +32,7 @@ namespace FlatRedBall.Glue.Managers
 
         ITreeNode NamedObjectTreeNode(NamedObjectSave namedObjectSave);
 
-        TreeNode TreeNodeByTagIn(object tag, TreeNodeCollection treeNodeCollection);
         TreeNode TreeNodeByTag(object tag);
-
-        //TreeNode FindCustomVariableInEntities(CustomVariable variable, TreeNodeCollection nodeCollection);
-
-        //TreeNode FindEventResponseSaveInEntities(EventResponseSave eventResponse, TreeNodeCollection nodeCollection);
-
-        TreeNode StateCategoryTreeNode(StateSaveCategory category);
 
         string ContentPathFor(IElement element);
 
@@ -242,71 +235,6 @@ namespace FlatRedBall.Glue.Managers
                 found = TreeNodeByTagIn(tag, ElementViewWindow.GlobalContentFileNode.Nodes);
             }
             return found;
-        }
-
-        private TreeNode FindCustomVariableInEntities(CustomVariable variable, TreeNodeCollection nodeCollection)
-        {
-            TreeNode foundNode = null;
-
-            foreach (TreeNode treeNode in nodeCollection)
-            {
-                if (treeNode is EntityTreeNode)
-                {
-                    foundNode = ((EntityTreeNode)treeNode).GetTreeNodeFor(variable);
-                    if (foundNode != null)
-                    {
-                        break;
-                    }
-                }
-                else
-                {
-                    foundNode = FindCustomVariableInEntities(variable, treeNode.Nodes);
-                    if (foundNode != null)
-                    {
-                        break;
-                    }
-                }
-            }
-            return foundNode;
-        }
-
-        private TreeNode FindEventResponseSaveInEntities(EventResponseSave eventResponse, TreeNodeCollection nodeCollection)
-        {
-            TreeNode foundNode = null;
-
-            foreach (TreeNode treeNode in nodeCollection)
-            {
-                if (treeNode is EntityTreeNode)
-                {
-                    foundNode = ((EntityTreeNode)treeNode).GetTreeNodeFor(eventResponse);
-                    if (foundNode != null)
-                    {
-                        break;
-                    }
-                }
-                else
-                {
-                    foundNode = FindEventResponseSaveInEntities(eventResponse, treeNode.Nodes);
-                    if (foundNode != null)
-                    {
-                        break;
-                    }
-                }
-            }
-            return foundNode;
-        }
-
-        public TreeNode StateCategoryTreeNode(StateSaveCategory category)
-        {
-            TreeNode treeNode = TreeNodeByTagIn(category, ElementViewWindow.ScreensTreeNode.Nodes);
-
-            if (treeNode == null)
-            {
-                treeNode = TreeNodeByTagIn(category, ElementViewWindow.EntitiesTreeNode.Nodes);
-            }
-
-            return treeNode;
-
         }
 
         public string ContentPathFor(IElement element)

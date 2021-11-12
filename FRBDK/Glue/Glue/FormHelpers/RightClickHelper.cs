@@ -599,7 +599,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     Add("Set as StartUp Screen", SetStartupScreen);
                     AddEvent(GlueState.Self.CurrentScreenSave.IsRequiredAtStartup
                         ? "Remove StartUp Requirement"
-                        : "Make Required at StartUp", MakeRequiredAtStartupClick);
+                        : "Make Required at StartUp", ToggleRequiredAtStartupClick);
 
                     AddEvent("Export Screen", ExportElementClick);
 
@@ -1178,7 +1178,7 @@ namespace FlatRedBall.Glue.FormHelpers
             mMoveToBottom.Click += new System.EventHandler(MoveToBottomClick);
 
             mMakeRequiredAtStartup = new GeneralToolStripMenuItem("Make Required at StartUp");
-            mMakeRequiredAtStartup.Click += new EventHandler(MakeRequiredAtStartupClick);
+            mMakeRequiredAtStartup.Click += new EventHandler(ToggleRequiredAtStartupClick);
 
             mRebuildFile = new GeneralToolStripMenuItem("Rebuild File");
             mRebuildFile.Click += RebuildFileClick;
@@ -1557,6 +1557,7 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             // Duplicate duplicate named object, copy named object, copy object
             NamedObjectSave namedObjectToDuplicate = GlueState.Self.CurrentNamedObjectSave;
+            var element = ObjectFinder.Self.GetElementContaining(namedObjectToDuplicate);
 
             NamedObjectSave newNamedObject = namedObjectToDuplicate.Clone();
 
@@ -1570,70 +1571,48 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #endregion
 
-            var treeNodeForNamedObject = GlueState.Self.Find.NamedObjectTreeNode(namedObjectToDuplicate);
-            var parentTreeNode = treeNodeForNamedObject.Parent;
-
-            #region Get the container
-
-            GlueElement container = null;
-
-            if (parentTreeNode.IsRootNamedObjectNode() && parentTreeNode.Parent.IsEntityNode())
+            NamedObjectSave parentNos = element
+                .NamedObjects
+                .FirstOrDefault(item => item.ContainedObjects.Contains(namedObjectToDuplicate));
+            
+            if(parentNos != null)
             {
-                container = parentTreeNode.Parent.Tag as EntitySave;
-            }
-            else if (parentTreeNode.IsRootNamedObjectNode() && parentTreeNode.Parent.IsScreenNode())
-            {
-                container = parentTreeNode.Parent.Tag as ScreenSave;
-            }
-            else if (parentTreeNode.IsNamedObjectNode())
-            {
-                // handled below
-            }
-            #endregion
-
-
-            if (container != null)
-            {
-                int indexToInsertAt = 1 + container.NamedObjects.IndexOf(namedObjectToDuplicate);
-
-                while (container.GetNamedObjectRecursively(newNamedObject.InstanceName) != null)
-                {
-                    newNamedObject.InstanceName = StringFunctions.IncrementNumberAtEnd(newNamedObject.InstanceName);
-                }
-
-                container.NamedObjects.Insert(indexToInsertAt, newNamedObject);
-            }
-            else
-            {
-                NamedObjectSave list = parentTreeNode.Tag as NamedObjectSave;
-
                 bool IsShapeCollection(NamedObjectSave nos)
                 {
                     return nos.SourceType == SourceType.FlatRedBallType &&
                         (nos.SourceClassType == "ShapeCollection" || nos.SourceClassType == "FlatRedBall.Math.Geometry.ShapeCollection");
                 }
 
-                if (list != null && (list.IsList || IsShapeCollection(list)))
+                if (parentNos != null && (parentNos.IsList || IsShapeCollection(parentNos)))
                 {
-                    int indexToInsertAt = 1 + list.ContainedObjects.IndexOf(namedObjectToDuplicate);
+                    int indexToInsertAt = 1 + parentNos.ContainedObjects.IndexOf(namedObjectToDuplicate);
 
-                    container = GlueState.Self.CurrentElement;
 
-                    while (container.GetNamedObjectRecursively(newNamedObject.InstanceName) != null)
+                    while (element.GetNamedObjectRecursively(newNamedObject.InstanceName) != null)
                     {
                         newNamedObject.InstanceName = StringFunctions.IncrementNumberAtEnd(newNamedObject.InstanceName);
                     }
 
-                    list.ContainedObjects.Insert(indexToInsertAt, newNamedObject);
+                    parentNos.ContainedObjects.Insert(indexToInsertAt, newNamedObject);
+                }
+            }
+            else
+            {
+                int indexToInsertAt = 1 + element.NamedObjects.IndexOf(namedObjectToDuplicate);
 
+                while (element.GetNamedObjectRecursively(newNamedObject.InstanceName) != null)
+                {
+                    newNamedObject.InstanceName = StringFunctions.IncrementNumberAtEnd(newNamedObject.InstanceName);
                 }
 
+                element.NamedObjects.Insert(indexToInsertAt, newNamedObject);
             }
+
 
             if(newNamedObject.SetByDerived)
             {
                 GlueFormsCore.SetVariable.NamedObjectSaves.SetByDerivedSetLogic.ReactToChangedSetByDerived(
-                    newNamedObject, container);
+                    newNamedObject, element);
             }
 
 
@@ -2835,10 +2814,11 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-        static void MakeRequiredAtStartupClick(object sender, EventArgs e)
+        static void ToggleRequiredAtStartupClick(object sender, EventArgs e)
         {
             ScreenSave screenSave = GlueState.Self.CurrentScreenSave;
 
+            List<ScreenSave> screensToRefresh = new List<ScreenSave>();
 
             ScreenTreeNode treeNode = null;
 
@@ -2848,14 +2828,8 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 if (isAlreadyRequired)
                 {
-                    // It's required which means no other Screen is required.  That was easy
                     screenSave.IsRequiredAtStartup = false;
-                    treeNode =
-                        GlueState.Self.Find.ScreenTreeNode(screenSave);
-
-                    treeNode.BackColor = ElementViewWindow.RegularBackgroundColor;
-
-                    CodeWriter.GenerateCode(screenSave);
+                    screensToRefresh.Add(screenSave);
                 }
                 else
                 {
@@ -2865,27 +2839,20 @@ namespace FlatRedBall.Glue.FormHelpers
                     {
                         if (screenInProject.IsRequiredAtStartup)
                         {
+                            screensToRefresh.Add(screenInProject);
                             screenInProject.IsRequiredAtStartup = false;
-
-                            treeNode =
-                                GlueState.Self.Find.ScreenTreeNode(screenInProject);
-
-                            treeNode.BackColor = ElementViewWindow.RegularBackgroundColor;
-                            CodeWriter.GenerateCode(screenInProject);
-
                             break;
                         }
                     }
-
                     screenSave.IsRequiredAtStartup = true;
-
-                    treeNode =
-                        GlueState.Self.Find.ScreenTreeNode(screenSave);
-
-                    treeNode.BackColor = ElementViewWindow.RequiredScreenColor;
-                    CodeWriter.GenerateCode(screenSave);
-
                 }
+
+                foreach(var screen in screensToRefresh)
+                {
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screen);
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screen);
+                }
+
 
                 GlueCommands.Self.GenerateCodeCommands.GenerateStartupScreenCode();
 

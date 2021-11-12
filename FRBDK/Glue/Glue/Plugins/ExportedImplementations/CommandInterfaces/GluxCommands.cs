@@ -101,8 +101,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     var screen = GlueState.Self.CurrentGlueProject.Screens
                         .FirstOrDefault(item => item.Name == value);
 
-                    ElementViewWindow.StartUpScreenTreeNode =
-                        ElementViewWindow.GetTreeNodeFor(screen);
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screen);
 
                     PluginManager.ReactToChangedStartupScreen();
                 }

@@ -45,8 +45,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static TreeView mTreeView;
 
-        static TreeNode mStartUpScreen;
-
         #region Screen Node Colors
 
         public static Color StartupScreenColor = Color.DarkRed;
@@ -115,48 +113,6 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             get { return mDirectoriesToIgnore; }
         }
-
-        public static TreeNode StartUpScreenTreeNode
-        {
-            get => mStartUpScreen;
-            set
-            {
-                if (value != mStartUpScreen)
-                {
-                    if (mStartUpScreen != null)
-                    {
-                        mStartUpScreen.BackColor = RegularBackgroundColor;
-                        // un-bold the previous startup
-                    }
-
-                    mStartUpScreen = value;
-
-                    if (mStartUpScreen != null)
-                    {
-                        // now bold the current startup
-                        mStartUpScreen.BackColor = StartupScreenColor;
-
-                        ProjectManager.StartUpScreen = ((ScreenSave)mStartUpScreen.Tag).Name;
-                    }
-
-                    // Changing the startup screen will change the NextScreen for the
-                    // required screen, so we have to regenerate that code now
-                    foreach (ScreenSave screenInProject in ProjectManager.GlueProjectSave.Screens)
-                    {
-                        if (screenInProject.IsRequiredAtStartup)
-                        {
-                            CodeWriter.GenerateCode(screenInProject);
-                            break;
-                        }
-                    }
-
-
-                }
-
-            }
-        }
-
-
 
         public static TreeNode GlobalContentFileNode
         {
