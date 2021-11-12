@@ -194,8 +194,6 @@ namespace FlatRedBall.Glue.FormHelpers
             // tree node click
             TreeNode node = SelectedNodeOld;
 
-            // Snapshot should come first so everyone can update to the snapshot
-            GlueState.Self.TakeSnapshot();
 
             // Do this after taking the snapshot:
             // This should update to a plugin at some point....

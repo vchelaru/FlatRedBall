@@ -51,6 +51,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             get => snapshot.CurrentTreeNode;
             set
             {
+
+                // Snapshot should come first so everyone can update to the snapshot
+                GlueState.Self.TakeSnapshot(value);
                 MainExplorerPlugin.Self.ElementTreeView.SelectedNode = value;
             }
         }
@@ -80,7 +83,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             get => snapshot.CurrentScreenSave;
             set
             {
-                MainExplorerPlugin.Self.ElementTreeView.SelectedNode =
+                CurrentTreeNode =
                     GlueState.Self.Find.ScreenTreeNode(value);
             }
         }
@@ -375,10 +378,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             return ObjectFinder.Self.GetAllReferencedFiles();
         }
 
-        public void TakeSnapshot()
+        public void TakeSnapshot(TreeNode selectedTreeNode)
         {
-            var selectedTreeNode = MainExplorerPlugin.Self.ElementTreeView.SelectedNode;
-
             snapshot.CurrentTreeNode = selectedTreeNode;
             snapshot.CurrentElementTreeNode = GetCurrentElementTreeNodeFromSelection();
             snapshot.CurrentElement = GetCurrentElementFromSelection();

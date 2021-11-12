@@ -710,6 +710,16 @@ namespace GumPlugin
 
                 EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
 
+                if (control == null)
+                {
+                    control = new GumControl();
+                    viewModel = new GumViewModel();
+                    viewModel.PropertyChanged += HandleViewModelPropertyChanged;
+                    control.DataContext = viewModel;
+
+                    tab = this.CreateTab(control, "Gum Properties");
+                }
+
                 // show the tab for the new file:
                 tab.Focus();
 
