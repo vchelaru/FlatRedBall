@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.Events;
+using FlatRedBall.Glue.FormHelpers;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
 {
@@ -14,7 +15,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
             get;
         }
 
-        System.Windows.Forms.TreeNode CurrentTreeNode
+        ITreeNode CurrentTreeNode
         {
             get;
         }
@@ -104,7 +105,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
             set;
         }
 
-        public System.Windows.Forms.TreeNode CurrentTreeNode
+        public ITreeNode CurrentTreeNode
         {
             get;
             set;

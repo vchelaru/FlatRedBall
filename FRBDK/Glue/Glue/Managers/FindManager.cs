@@ -32,7 +32,7 @@ namespace FlatRedBall.Glue.Managers
 
         ITreeNode NamedObjectTreeNode(NamedObjectSave namedObjectSave);
 
-        TreeNode TreeNodeByTag(object tag);
+        ITreeNode TreeNodeByTag(object tag);
 
         string ContentPathFor(IElement element);
 
@@ -228,7 +228,7 @@ namespace FlatRedBall.Glue.Managers
         //    return this.TreeNodeByTag(tag);
         //}
 
-        public TreeNode TreeNodeByTag(object tag)
+        public ITreeNode TreeNodeByTag(object tag)
         {
             var found = TreeNodeByTagIn(tag, ElementViewWindow.ScreensTreeNode.Nodes);
 
@@ -240,7 +240,7 @@ namespace FlatRedBall.Glue.Managers
             {
                 found = TreeNodeByTagIn(tag, ElementViewWindow.GlobalContentFileNode.Nodes);
             }
-            return found;
+            return TreeNodeWrapper.CreateOrNull( found);
         }
 
         public string ContentPathFor(IElement element)

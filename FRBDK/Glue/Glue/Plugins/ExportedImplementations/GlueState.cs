@@ -20,7 +20,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 {
     public class GlueStateSnapshot
     {
-        public TreeNode CurrentTreeNode;
+        public ITreeNode CurrentTreeNode;
         public GlueElement CurrentElement;
         public EntitySave CurrentEntitySave;
         public ScreenSave CurrentScreenSave;
@@ -45,7 +45,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         GlueStateSnapshot snapshot = new GlueStateSnapshot();
 
-        public TreeNode CurrentTreeNode
+        public ITreeNode CurrentTreeNode
         {
             get => snapshot.CurrentTreeNode;
             set
@@ -53,7 +53,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
                 // Snapshot should come first so everyone can update to the snapshot
                 GlueState.Self.TakeSnapshot(value);
-                MainExplorerPlugin.Self.ElementTreeView.SelectedNode = value;
+                if(value is TreeNodeWrapper asWrapper)
+                {
+                    MainExplorerPlugin.Self.ElementTreeView.SelectedNode = asWrapper.TreeNode;
+                }
             }
         }
 
@@ -62,7 +65,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             get => snapshot.CurrentElement;
             set
             {
-                var treeNode = GlueState.Self.Find.ElementTreeNode(value);
+                var treeNode = GlueState.Self.Find.TreeNodeByTag(value);
 
                 CurrentTreeNode = treeNode;
             }
@@ -80,8 +83,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             get => snapshot.CurrentScreenSave;
             set
             {
-                CurrentTreeNode =
-                    GlueState.Self.Find.ScreenTreeNode(value);
+                CurrentTreeNode = GlueState.Self.Find.TreeNodeByTag(value);
             }
         }
 
@@ -375,7 +377,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             return ObjectFinder.Self.GetAllReferencedFiles();
         }
 
-        void TakeSnapshot(TreeNode selectedTreeNode)
+        void TakeSnapshot(ITreeNode selectedTreeNode)
         {
             snapshot.CurrentTreeNode = selectedTreeNode;
             snapshot.CurrentElement = GetCurrentElementFromSelection();

@@ -500,7 +500,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     if (GlueState.Self.CurrentElement != null)
                     {
-                        PluginManager.ReactToItemSelect(TreeNodeWrapper.CreateOrNull( GlueState.Self.CurrentTreeNode));
+                        PluginManager.ReactToItemSelect(GlueState.Self.CurrentTreeNode);
                     }
                 }
             }
@@ -810,7 +810,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void GoToDefinitionOfSelection()
         {
-            TreeNode selectedNode = GlueState.Self.CurrentTreeNode;
+            var selectedNode = GlueState.Self.CurrentTreeNode;
 
             #region Double-clicked a named object
 

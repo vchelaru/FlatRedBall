@@ -112,7 +112,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
             else if (GlueState.Self.CurrentElement != null)
             {
-                if (TreeNodeWrapper.CreateOrNull( GlueState.Self.CurrentTreeNode).IsRootCustomVariablesNode())
+                if (GlueState.Self.CurrentTreeNode.IsRootCustomVariablesNode())
                 {
                     CustomVariable customVariable = GlueState.Self.CurrentElement.GetCustomVariable(label);
 

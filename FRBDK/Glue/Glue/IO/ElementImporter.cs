@@ -89,7 +89,7 @@ namespace FlatRedBall.Glue.IO
             openFileDialog.Multiselect = false;
             EntitySave es = GlueState.Self.CurrentEntitySave;
 
-            var currentNode = TreeNodeWrapper.CreateOrNull(GlueState.Self.CurrentTreeNode);
+            var currentNode = GlueState.Self.CurrentTreeNode;
 
             if (currentNode?.IsRootEntityNode() == true ||
                 currentNode?.IsFolderForEntities() == true)
@@ -193,7 +193,7 @@ namespace FlatRedBall.Glue.IO
             var shouldSave = false;
             GlueCommands.Self.DoOnUiThread(() =>
             {
-                var treeNode = TreeNodeWrapper.CreateOrNull(GlueState.Self.CurrentTreeNode);
+                var treeNode = GlueState.Self.CurrentTreeNode;
                 if (moveToSelectedFolderTreeNode && treeNode?.IsFolderForEntities() == true)
                 {
                     var directory = treeNode.GetRelativePath();

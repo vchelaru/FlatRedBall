@@ -68,7 +68,7 @@ namespace FlatRedBall.Glue.FormHelpers
         [Obsolete("Use RefreshCommands.RefreshPropertyGrid")]
         public static void UpdateDisplayedPropertyGridProperties()
         {
-            var node = TreeNodeWrapper.CreateOrNull( GlueState.Self.CurrentTreeNode);
+            var node = GlueState.Self.CurrentTreeNode;
 
             ///////////////Early Out/////////////////////
             if (node == null)

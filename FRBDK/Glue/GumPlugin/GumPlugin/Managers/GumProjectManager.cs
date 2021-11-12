@@ -85,7 +85,8 @@ namespace GumPlugin.Managers
                 string gumProjectDirectory = GlueState.Self.ContentDirectory + "GumProject/";
                 EmbeddedResourceManager.Self.SaveEmptyProject(gumProjectDirectory);
 
-                GlueState.Self.CurrentTreeNode = FlatRedBall.Glue.FormHelpers.ElementViewWindow.GlobalContentFileNode;
+                GlueState.Self.CurrentTreeNode = FlatRedBall.Glue.FormHelpers.TreeNodeWrapper.CreateOrNull(
+                    FlatRedBall.Glue.FormHelpers.ElementViewWindow.GlobalContentFileNode);
 
                 bool userCancelled = false;
 

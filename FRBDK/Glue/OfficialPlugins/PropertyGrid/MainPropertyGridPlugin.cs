@@ -47,7 +47,7 @@ namespace OfficialPlugins.VariableDisplay
 
         private void HandleLoadedGlux()
         {
-            HandleItemSelect(TreeNodeWrapper.CreateOrNull( GlueState.Self.CurrentTreeNode));
+            HandleItemSelect( GlueState.Self.CurrentTreeNode);
         }
 
         private void HandleRefreshProperties(string changedMember, object oldValue)
