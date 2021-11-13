@@ -7377,6 +7377,12 @@
           <Name>Z</Name>
         </CustomVariable>
       </CustomVariables>
+      <Properties>
+        <PropertySave>
+          <Name>InputDevice</Name>
+          <ValueAsInt>0</ValueAsInt>
+        </PropertySave>
+      </Properties>
       <Name>Entities\BaseFolderedEntity\BaseFolderedEntity</Name>
       <CustomClassesForExport />
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>

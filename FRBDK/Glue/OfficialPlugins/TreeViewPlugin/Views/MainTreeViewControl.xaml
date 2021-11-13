@@ -20,11 +20,25 @@
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <StackPanel>
-                <TextBox 
-                    Text="{Binding SearchBoxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                    KeyDown="TextBox_KeyDown"
-                    ></TextBox>
-                <TextBlock TextWrapping="Wrap" FontSize="10" Visibility="{Binding TipsVisibility}">Begin a search with "f ", "e ", "s ", "o ", or "v " (letter then space) to filter results.</TextBlock>
+                <Grid>
+                    <TextBox 
+                        Text="{Binding SearchBoxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                        
+                        KeyDown="TextBox_KeyDown"
+                        GotFocus="TextBox_GotFocus"
+                        LostFocus="TextBox_LostFocus"
+                        ></TextBox>
+                    <TextBlock IsHitTestVisible="False" 
+                               Foreground="Gray" 
+                               Margin="3,0,3,0" 
+                               Visibility="{Binding SearchPlaceholderVisibility}"
+                               x:Name="PlaceholderText" 
+                               >Search...</TextBlock>
+                </Grid>
+                <TextBlock TextWrapping="Wrap" FontSize="10" 
+                           Visibility="{Binding TipsVisibility}"
+                           Text="{Binding FilterResultsInfo}"
+                           ></TextBlock>
             </StackPanel>
             <Button x:Name="ClearSearchButton" Width="18" Height="20" VerticalAlignment="Top" Grid.Column="1" Click="ClearSearchButton_Click"
                     Visibility="{Binding SearchButtonVisibility}"

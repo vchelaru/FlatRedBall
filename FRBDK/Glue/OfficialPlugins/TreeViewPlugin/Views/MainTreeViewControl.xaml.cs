@@ -194,5 +194,15 @@ namespace OfficialPlugins.TreeViewPlugin.Views
         {
             ViewModel.SearchBoxText = string.Empty;
         }
+
+        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            ViewModel.IsSearchBoxFocused = true;
+        }
+
+        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            ViewModel.IsSearchBoxFocused = false;
+        }
     }
 }

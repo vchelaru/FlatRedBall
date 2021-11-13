@@ -24,7 +24,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         NodeViewModel EntityRootNode;
         NodeViewModel GlobalContentRootNode;
 
-
         public NodeViewModel RootModel { get; set; }
 
         public IEnumerable Root
@@ -46,6 +45,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public string Title { get; set; }
 
         public int Count { get; set; }
+
 
         public static string SearchText;
         public static string PrefixText;
@@ -87,11 +87,31 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
         }
 
+        public bool IsSearchBoxFocused
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         [DependsOn(nameof(SearchBoxText))]
         public Visibility SearchButtonVisibility => (!string.IsNullOrEmpty(SearchBoxText)).ToVisibility();
 
+        [DependsOn(nameof(IsSearchBoxFocused))]
+        public Visibility TipsVisibility => IsSearchBoxFocused.ToVisibility();
+
         [DependsOn(nameof(SearchBoxText))]
-        public Visibility TipsVisibility => (!string.IsNullOrEmpty(SearchBoxText)).ToVisibility();
+        public string FilterResultsInfo =>
+            SearchBoxText?.StartsWith("f ") == true ? "Filtered to Files..." :
+            SearchBoxText?.StartsWith("e ") == true ? "Filtered to Entities..." :
+            SearchBoxText?.StartsWith("s ") == true ? "Filtered to Screens..." :
+            SearchBoxText?.StartsWith("o ") == true ? "Filtered to Objects..." :
+            SearchBoxText?.StartsWith("v ") == true ? "Filtered to Variables..." :
+            "Begin a search with \"f \", \"e \", \"s \", \"o \", or \"v \" (letter then space) to filter results.";
+
+        [DependsOn(nameof(IsSearchBoxFocused))]
+        [DependsOn(nameof(SearchBoxText))]
+        public Visibility SearchPlaceholderVisibility =>
+            (IsSearchBoxFocused == false && string.IsNullOrWhiteSpace(SearchBoxText)).ToVisibility();
 
         #endregion
 
@@ -332,18 +352,11 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         }
 
-
-        private NodeViewModel GetElementTreeNode(GlueElement element)
+        public void Clear()
         {
-            if (element is ScreenSave)
-            {
-                return ScreenRootNode.Children.FirstOrDefault(item => item.Tag == element);
-            }
-            else if(element is EntitySave)
-            {
-                return EntityRootNode.Children.FirstOrDefault(item => item.Tag == element);
-            }
-            return null;
+            ScreenRootNode.Children.Clear();
+            EntityRootNode.Children.Clear();
+            GlobalContentRootNode.Children.Clear();
         }
 
         public void Select(int count)
@@ -435,6 +448,21 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
         }
 
+        #region Search for Nodes
+
+        private NodeViewModel GetElementTreeNode(GlueElement element)
+        {
+            if (element is ScreenSave)
+            {
+                return ScreenRootNode.Children.FirstOrDefault(item => item.Tag == element);
+            }
+            else if(element is EntitySave)
+            {
+                return EntityRootNode.Children.FirstOrDefault(item => item.Tag == element);
+            }
+            return null;
+        }
+
         public NodeViewModel TreeNodeForDirectoryOrEntityNode(string containingDirection, NodeViewModel containingNode)
         {
             if (string.IsNullOrEmpty(containingDirection))
@@ -446,7 +474,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 return TreeNodeByDirectory(containingDirection, containingNode);
             }
         }
-
 
         public NodeViewModel TreeNodeByDirectory(string containingDirection, NodeViewModel containingNode)
         {
@@ -615,6 +642,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             return found;
         }
 
+        #endregion
+
         private void PushSearchToContainedObject()
         {
             VisibleRoot.Clear();
@@ -636,31 +665,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 GlobalContentRootNode.UpdateToSearch();
             }
 
-        }
-
-        private void PushSearchToContainedObject(NodeViewModel model, string searchBoxText)
-        {
-            //model.DirectlyMatchesSearch = string.IsNullOrWhiteSpace(searchBoxText) || model.Text?.Contains(searchBoxText) == true;
-
-            //foreach(var item in model.Children)
-            //{
-            //    PushSearchToContainedObject(item, searchBoxText);
-            //}
-
-            //var isVisible = model.Tag == null ||
-            //    model.DirectlyMatchesSearch ||
-            //    IsAnySubItemVisible(model);
-
-            //model.Visibility = isVisible.ToVisibility();
-        }
-
-
-
-        public void Clear()
-        {
-            ScreenRootNode.Children.Clear();
-            EntityRootNode.Children.Clear();
-            GlobalContentRootNode.Children.Clear();
         }
     }
 }
