@@ -108,6 +108,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             SearchBoxText?.StartsWith("v ") == true ? "Filtered to Variables..." :
             "Begin a search with \"f \", \"e \", \"s \", \"o \", or \"v \" (letter then space) to filter results.";
 
+
         [DependsOn(nameof(IsSearchBoxFocused))]
         [DependsOn(nameof(SearchBoxText))]
         public Visibility SearchPlaceholderVisibility =>
@@ -283,6 +284,15 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             #endregion
 
+        }
+
+        internal void RefreshDirectoryNodes()
+        {
+            AddDirectoryNodes(GlueState.Self.CurrentGlueProjectDirectory + "Entities/", EntityRootNode);
+
+            string contentDirectory = GlueState.Self.ContentDirectory;
+
+            AddDirectoryNodes(contentDirectory + "GlobalContent/", GlobalContentRootNode);
         }
 
         #endregion

@@ -182,13 +182,13 @@ namespace FlatRedBall.Glue.IO
                             try
                             {
                                 // It's a directory, so let's just rebuild our directory TreeNodes
-                                ElementViewWindow.AddDirectoryNodes();
+                                GlueCommands.Self.RefreshCommands.RefreshDirectoryTreeNodes();
                             }
                             catch(System.IO.IOException)
                             {
                                 // this could be because something else is accessing the directory, so sleep, try again
                                 System.Threading.Thread.Sleep(100);
-                                ElementViewWindow.AddDirectoryNodes();
+                                GlueCommands.Self.RefreshCommands.RefreshDirectoryTreeNodes();
                             }
                         });
                     }
@@ -375,10 +375,7 @@ namespace FlatRedBall.Glue.IO
                                 }
 
 
-                                var treeNode = GlueState.Self.Find.ElementTreeNode(element);
-
-
-                                treeNode.SaveObject = replacement;
+                                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
 
 
                                 // Gotta regen this and update the UI and refresh the PropertyGrid if it's selected

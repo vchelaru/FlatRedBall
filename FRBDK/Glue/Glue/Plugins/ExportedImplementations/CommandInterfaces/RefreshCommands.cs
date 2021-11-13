@@ -166,7 +166,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void RefreshDirectoryTreeNodes()
         {
+            // todo - this should move to a different loation
             ElementViewWindow.AddDirectoryNodes();
+
+            PluginManager.RefreshDirectoryTreeNodes();
         }
     }
 }

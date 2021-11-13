@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPlugins.TreeViewPlugin.Logic;
@@ -54,6 +55,7 @@ namespace OfficialPlugins.TreeViewPlugin
             ReactToUnloadedGlux += HandleUnloadedGlux;
             RefreshTreeNodeFor += HandleRefreshTreeNodeFor;
             RefreshGlobalContentTreeNode += HandleRefreshGlobalContentTreeNode;
+            RefreshDirectoryTreeNodes += HandleRefreshDirectoryTreeNodes;
 
             this.ReactToItemSelectHandler += HandleItemSelected;
         }
@@ -96,6 +98,10 @@ namespace OfficialPlugins.TreeViewPlugin
             }
         }
 
-
+        private void HandleRefreshDirectoryTreeNodes()
+        {
+            MainViewModel.RefreshDirectoryNodes();
+            
+        }
     }
 }

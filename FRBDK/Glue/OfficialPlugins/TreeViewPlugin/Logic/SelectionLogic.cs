@@ -111,17 +111,19 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             }
             else if(tag == null)
             {
-                var element = ((ITreeNode)nodeViewModel).GetContainingElementTreeNode()?.Tag;
+                //var element = ((ITreeNode)nodeViewModel).GetContainingElementTreeNode()?.Tag;
 
-                if (element is EntitySave)
-                {
-                    GlueState.Self.CurrentEntitySave = element as EntitySave;
+                //if (element is EntitySave)
+                //{
+                //    GlueState.Self.CurrentEntitySave = element as EntitySave;
 
-                }
-                else if(element is ScreenSave)
-                {
-                    GlueState.Self.CurrentScreenSave = element as ScreenSave;
-                }
+                //}
+                //else if(element is ScreenSave)
+                //{
+                //    GlueState.Self.CurrentScreenSave = element as ScreenSave;
+                //}
+                // cheating, this will eventually go away:
+                ElementViewWindow.SelectByRelativePath((nodeViewModel as ITreeNode).GetRelativePath());
             }
 
             RefreshRightClickMenu();

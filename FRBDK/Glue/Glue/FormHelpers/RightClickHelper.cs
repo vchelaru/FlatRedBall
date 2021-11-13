@@ -362,7 +362,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             else if (((ITreeNode)this).IsFilesContainerNode())
             {
-                string valueToReturn = Parent.GetRelativePath();
+                string valueToReturn = Parent.GetRelativePath() + this.Text + "/";
 
 
                 return valueToReturn;
@@ -370,10 +370,6 @@ namespace FlatRedBall.Glue.FormHelpers
             else if (((ITreeNode)this).IsFolderInFilesContainerNode())
             {
                 return Parent.GetRelativePath() + Text + "/";
-            }
-            else if (((ITreeNode)this).IsElementNode())
-            {
-                return ((IElement)Tag).Name + "/";
             }
             else if (((ITreeNode)this).IsReferencedFile())
             {
@@ -383,15 +379,17 @@ namespace FlatRedBall.Glue.FormHelpers
             }
             else
             {
-                // Improve this to handle embeded stuff
-                string textToReturn = Text;
-
-                if (string.IsNullOrEmpty(FlatRedBall.IO.FileManager.GetExtension(textToReturn)))
+                if(Parent == null)
                 {
-                    textToReturn += "/";
+                    string valueToReturn = this.Text + "/";
+                    return valueToReturn;
                 }
+                else
+                {
+                    string valueToReturn = Parent.GetRelativePath() + this.Text + "/";
+                    return valueToReturn;
 
-                return textToReturn;
+                }
             }
         }
 
@@ -648,7 +646,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static GeneralToolStripMenuItem mCreateZipPackage;
         static GeneralToolStripMenuItem mExportElement;
-        static GeneralToolStripMenuItem mImportElement;
         static GeneralToolStripMenuItem createDerivedScreen;
 
         static GeneralToolStripMenuItem mAddEventMenuItem;
@@ -842,8 +839,7 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 AddItem(addEntityToolStripMenuItem);
 
-                mImportElement.Text = "Import Entity";
-                AddItem(mImportElement);
+                Add("Import Entity", () => ImportElementClick(targetNode));
 
                 Add("Add Folder", () => RightClickHelper.AddFolderClick(targetNode));
             }
@@ -854,8 +850,7 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 AddItem(addScreenToolStripMenuItem);
 
-                mImportElement.Text = "Import Screen";
-                AddItem(mImportElement);
+                Add("Import Screen", () => ImportElementClick(targetNode));
 
             }
             #endregion
@@ -1026,8 +1021,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 {
                     AddItem(addEntityToolStripMenuItem);
 
-                    mImportElement.Text = "Import Entity";
-                    AddItem(mImportElement);
+                    Add("Import Entity", () => ImportElementClick(targetNode));
                 }
                 else
                 {
@@ -1339,9 +1333,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
             createDerivedScreen = new GeneralToolStripMenuItem("Create Derived (Level) Screen");
             createDerivedScreen.Click += HandleCreateDerivedScreenClicked;
-
-            mImportElement = new GeneralToolStripMenuItem("Import Screen");
-            mImportElement.Click += new EventHandler(ImportElementClick);
 
             mAddEventMenuItem = new GeneralToolStripMenuItem("Add Event");
             mAddEventMenuItem.Click += new EventHandler(AddEventClicked);
@@ -2475,6 +2466,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 System.IO.Directory.Delete(absolutePath, true);
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodes();
+                GlueCommands.Self.RefreshCommands.RefreshDirectoryTreeNodes();
             }
         }
 
@@ -3010,9 +3002,9 @@ namespace FlatRedBall.Glue.FormHelpers
             ElementExporter.ExportElement(GlueState.Self.CurrentElement, GlueState.Self.CurrentGlueProject);
         }
 
-        static void ImportElementClick(object sender, EventArgs e)
+        static void ImportElementClick(ITreeNode targetTreeNode)
         {
-            ElementImporter.ShowImportElementUi();
+            ElementImporter.ShowImportElementUi(targetTreeNode);
         }
 
 

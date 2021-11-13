@@ -79,7 +79,7 @@ namespace FlatRedBall.Glue.IO
             }
         }
 
-        public static void ShowImportElementUi()
+        public static void ShowImportElementUi(ITreeNode currentTreeNode)
         {
 
             // import screen, import entity, import element
@@ -87,12 +87,9 @@ namespace FlatRedBall.Glue.IO
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
             openFileDialog.Multiselect = false;
-            EntitySave es = GlueState.Self.CurrentEntitySave;
 
-            var currentNode = GlueState.Self.CurrentTreeNode;
-
-            if (currentNode?.IsRootEntityNode() == true ||
-                currentNode?.IsFolderForEntities() == true)
+            if (currentTreeNode?.IsRootEntityNode() == true ||
+                currentTreeNode?.IsFolderForEntities() == true)
             {
                 openFileDialog.Filter = "Exported Entities (*.entz)|*.entz";
             }

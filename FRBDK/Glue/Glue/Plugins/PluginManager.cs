@@ -2044,6 +2044,13 @@ namespace FlatRedBall.Glue.Plugins
                 (plugin) => plugin.RefreshGlobalContentTreeNode != null);
         }
 
+        public static void RefreshDirectoryTreeNodes()
+        {
+            CallMethodOnPlugin(
+                (plugin) => plugin.RefreshDirectoryTreeNodes(),
+                (plugin) => plugin.RefreshDirectoryTreeNodes != null);
+        }
+
         #endregion
 
         internal static bool TryHandleException(Exception exception)

@@ -921,14 +921,11 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-
         public static BaseElementTreeNode GetTreeNodeFor(ScreenSave screenSave) => 
             AllScreens.FirstOrDefault(item => item.Tag == screenSave);
 
-
         public static BaseElementTreeNode GetTreeNodeFor(EntitySave entitySave) =>
             AllEntities.FirstOrDefault(item => item.Tag == entitySave);
-
 
         public static TreeNode GetTreeNodeFor(NamedObjectSave nos)
         {
@@ -937,6 +934,74 @@ namespace FlatRedBall.Glue.FormHelpers
             var parentTreeNode = GetTreeNodeFor(parent);
 
             return parentTreeNode?.GetTreeNodeFor(nos);
+        }
+
+        public static void SelectByRelativePath(string relativePath)
+        {
+            var start = StartOfRelative(relativePath, out string remainder);
+
+            TreeNode treeNode;
+            if(start == "Screens")
+            {
+                treeNode = ScreensTreeNode;
+            }
+            else if(start == "Entities")
+            {
+                treeNode = EntitiesTreeNode;
+            }
+            else
+            {
+                treeNode = GlobalContentFileNode;
+            }
+
+
+            if(string.IsNullOrEmpty(remainder))
+            {
+                SelectedNodeOld = treeNode;
+            }
+            else
+            {
+                SelectedNodeOld = GetByRelativePath(remainder, treeNode);
+
+            }
+        }
+
+        static TreeNode GetByRelativePath(string path, TreeNode treeNode)
+        {
+            var start = StartOfRelative(path, out string remainder);
+
+            var matchingChild = treeNode.Nodes.FirstOrDefault(item => item.Text == start);
+
+            if(matchingChild != null)
+            {
+                if (string.IsNullOrEmpty(remainder))
+                {
+                    return matchingChild;
+                }
+                else
+                {
+                    return GetByRelativePath(remainder, matchingChild);
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        static string StartOfRelative(string relativePath, out string remainder)
+        {
+            if(relativePath.Contains('/'))
+            {
+                var indexOfSlash = relativePath.IndexOf('/');
+                remainder = relativePath.Substring(indexOfSlash + 1);
+                return relativePath.Substring(0, indexOfSlash);
+            }
+            else
+            {
+                remainder = string.Empty;
+                return relativePath;
+            }
         }
 
         #endregion

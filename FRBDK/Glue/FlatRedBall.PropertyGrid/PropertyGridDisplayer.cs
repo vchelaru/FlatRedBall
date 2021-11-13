@@ -638,7 +638,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
         private PropertyDescriptorCollection PopulateFromPgmList(PropertyDescriptorCollection pdc, List<PropertyGridMember> list)
         {
-            foreach (PropertyGridMember pgm in list)
+            foreach (PropertyGridMember pgm in list.ToArray())
             {
 
                 TypeConverter converter = pgm.GetTypeConverter();

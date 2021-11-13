@@ -354,7 +354,7 @@ namespace FlatRedBall.Glue.Plugins
         // TreeNode Methods
         public Action<GlueElement> RefreshTreeNodeFor;
         public Action RefreshGlobalContentTreeNode;
-
+        public Action RefreshDirectoryTreeNodes;
 
         #endregion
 

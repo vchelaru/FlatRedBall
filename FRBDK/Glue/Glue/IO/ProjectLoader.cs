@@ -127,7 +127,7 @@ namespace FlatRedBall.Glue.IO
                 // this will make other threads work properly:
                 FileManager.DefaultRelativeDirectory = FileManager.RelativeDirectory;
 
-                GlueCommands.Self.DoOnUiThread( () => ElementViewWindow.AddDirectoryNodes());
+                GlueCommands.Self.DoOnUiThread( () => GlueCommands.Self.RefreshCommands.RefreshDirectoryTreeNodes());
 
                 #region Load the GlueProjectSave file if one exists
 
