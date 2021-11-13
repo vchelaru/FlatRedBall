@@ -33,6 +33,10 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.TreeViewPlugin
 
         private void HandleRefreshTreeNode(GlueElement element)
         {
+            if(element == null)
+            {
+                throw new ArgumentNullException(nameof(element));
+            }
             var elementTreeNode = GlueState.Self.Find.ElementTreeNode(element);
 
             var project = GlueState.Self.CurrentGlueProject;

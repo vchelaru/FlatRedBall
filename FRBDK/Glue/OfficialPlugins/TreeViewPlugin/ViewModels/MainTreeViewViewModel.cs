@@ -8,6 +8,7 @@ using OfficialPlugins.TreeViewPlugin.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -32,7 +33,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             private set;
         }
 
-        public IEnumerable VisibleRoot => Root;
+        public ObservableCollection<NodeViewModel> VisibleRoot { get; private set; } = new ObservableCollection<NodeViewModel>();
 
         public IEnumerable Children
         {
@@ -47,6 +48,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public int Count { get; set; }
 
         public static string SearchText;
+        public static string PrefixText;
+
         public string SearchBoxText
         {
             get => Get<string>();
@@ -54,7 +57,31 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 if (Set(value))
                 {
-                    SearchText = value?.ToLowerInvariant();
+                    PrefixText = String.Empty;
+                    if (string.IsNullOrEmpty(value))
+                    {
+                        SearchText = String.Empty;
+                    }
+                    else
+                    {
+                        if(
+                            value.StartsWith("f ") ||
+                            value.StartsWith("e ") ||
+                            value.StartsWith("s ") ||
+                            value.StartsWith("o ") ||
+                            value.StartsWith("v ")
+                            )
+                        {
+                            SearchText = value.ToLowerInvariant().Substring(2);
+                            PrefixText = value.Substring(0, 1);
+
+                        }
+                        else
+                        {
+                            SearchText = value?.ToLowerInvariant();
+                        }
+
+                    }
                     PushSearchToContainedObject();
                 }
             }
@@ -62,6 +89,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         [DependsOn(nameof(SearchBoxText))]
         public Visibility SearchButtonVisibility => (!string.IsNullOrEmpty(SearchBoxText)).ToVisibility();
+
+        [DependsOn(nameof(SearchBoxText))]
+        public Visibility TipsVisibility => (!string.IsNullOrEmpty(SearchBoxText)).ToVisibility();
 
         #endregion
 
@@ -82,8 +112,11 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 ScreenRootNode,
                 GlobalContentRootNode,
             };
+
+            PushSearchToContainedObject();
+
             //this.AddRecursive(ScreenRootNode, 4, 4);
-            this.Title = "TreeListBox (N=" + this.Count + ")";
+            //this.Title = "TreeListBox (N=" + this.Count + ")";
             
         }
 
@@ -584,9 +617,25 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         private void PushSearchToContainedObject()
         {
-            ScreenRootNode.UpdateToSearch();
-            EntityRootNode.UpdateToSearch();
-            GlobalContentRootNode.UpdateToSearch();
+            VisibleRoot.Clear();
+
+            if(PrefixText != "s")
+            {
+                VisibleRoot.Add(EntityRootNode);
+                EntityRootNode.UpdateToSearch();
+            }
+
+            if(PrefixText != "e")
+            {
+                VisibleRoot.Add(ScreenRootNode);
+                ScreenRootNode.UpdateToSearch();
+            }
+            if(PrefixText != "s" && PrefixText != "e" && PrefixText != "o" && PrefixText != "v")
+            {
+                VisibleRoot.Add(GlobalContentRootNode);
+                GlobalContentRootNode.UpdateToSearch();
+            }
+
         }
 
         private void PushSearchToContainedObject(NodeViewModel model, string searchBoxText)

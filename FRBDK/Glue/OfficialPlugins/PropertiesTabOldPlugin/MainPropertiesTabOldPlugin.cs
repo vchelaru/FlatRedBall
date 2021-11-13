@@ -53,6 +53,10 @@ namespace OfficialPluginsCore.PropertiesTabOldPlugin
             if(shouldShow)
             {
                 pluginTab.Show();
+
+                // Do this after taking the snapshot:
+                // This should update to a plugin at some point....
+                PropertyGridHelper.UpdateDisplayedPropertyGridProperties();
             }
             else
             {

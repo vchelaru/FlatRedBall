@@ -19,13 +19,16 @@
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBox 
-                Text="{Binding SearchBoxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                KeyDown="TextBox_KeyDown"
-                ></TextBox>
-            <Button x:Name="ClearSearchButton" Width="18" Grid.Column="1" Click="ClearSearchButton_Click"
+            <StackPanel>
+                <TextBox 
+                    Text="{Binding SearchBoxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                    KeyDown="TextBox_KeyDown"
+                    ></TextBox>
+                <TextBlock TextWrapping="Wrap" FontSize="10" Visibility="{Binding TipsVisibility}">Begin a search with "f ", "e ", "s ", "o ", or "v " (letter then space) to filter results.</TextBlock>
+            </StackPanel>
+            <Button x:Name="ClearSearchButton" Width="18" Height="20" VerticalAlignment="Top" Grid.Column="1" Click="ClearSearchButton_Click"
                     Visibility="{Binding SearchButtonVisibility}"
-                    >x</Button>
+                    >X</Button>
         </Grid>
 
         <pt:TreeListBox x:Name="MainTreeView" 

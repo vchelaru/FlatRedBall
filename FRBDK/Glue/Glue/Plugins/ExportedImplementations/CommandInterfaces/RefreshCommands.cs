@@ -57,6 +57,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void RefreshTreeNodeFor(GlueElement element)
         {
+            if(element == null)
+            {
+                throw new NotImplementedException();
+            }
             if (ProjectManager.ProjectBase != null)
             {
                 GlueCommands.Self.DoOnUiThread(() =>

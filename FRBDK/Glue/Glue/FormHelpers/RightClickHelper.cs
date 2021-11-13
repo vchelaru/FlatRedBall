@@ -158,13 +158,12 @@ namespace FlatRedBall.Glue.FormHelpers
         public bool IsRootNamedObjectNode()
         {
             return Text == "Objects" &&
-                Parent != null &&
-                (Parent.IsEntityNode() || Parent.IsScreenNode());
+                Parent?.Tag is GlueElement;
         }
 
         public bool IsRootCustomVariablesNode()
         {
-            return Parent != null &&
+            return Parent?.Tag is GlueElement &&
                 Text == "Variables";
 
         }
@@ -194,11 +193,11 @@ namespace FlatRedBall.Glue.FormHelpers
         public bool IsRootCodeNode()
         {
 
-            return Tag == null && Text == "Code" &&
-                Parent != null && Parent.IsElementNode();
+            return Text == "Code" &&
+                Parent?.Tag is GlueElement;
         }
 
-        public bool IsStateListNode()
+        public bool IsRootStateNode()
         {
             var parentTreeNode = Parent;
             return Text == "States" && parentTreeNode != null &&
@@ -407,6 +406,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
     #endregion
 
+    #region TreeNodeWrapper class
     public class TreeNodeWrapper : ITreeNode
     {
         TreeNode treeNode;
@@ -576,7 +576,14 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
             }
         }
+
+        public override string ToString()
+        {
+            return $"{Text} {Tag}";
+        }
     }
+
+    #endregion
 
     public static class RightClickHelper
     {
@@ -1041,7 +1048,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #region IsStateListNode
 
-            else if (targetNode.IsStateListNode())
+            else if (targetNode.IsRootStateNode())
             {
                 // We no longer support uncategorized states. They are a mess!
                 //AddItem(mAddState);
@@ -2134,9 +2141,13 @@ namespace FlatRedBall.Glue.FormHelpers
                         GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(deletedElement);
 
                     }
-                    else
+                    else if(glueState.CurrentElement != null)
                     {
                         GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(glueState.CurrentElement);
+                    }
+                    else
+                    {
+                        GlueCommands.Self.RefreshCommands.RefreshGlobalContent() ;
                     }
 
 

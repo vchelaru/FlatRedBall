@@ -5821,14 +5821,6 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
-          <Name>Screens/TmxScreen/TestLevel2.scnx</Name>
-          <IsSharedStatic>true</IsSharedStatic>
-          <SourceFile>Screens/TmxScreen/TestLevel2.tmx</SourceFile>
-          <BuildTool>*.tmx -&gt; tmxtoscnx.exe -&gt; *.scnx</BuildTool>
-          <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
-          <ProjectsToExcludeFrom />
-        </ReferencedFileSave>
-        <ReferencedFileSave>
           <Name>Screens/TmxScreen/emptyMap1.csv</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <SourceFile>Screens/TmxScreen/emptyMap1.tmx</SourceFile>
@@ -5848,20 +5840,6 @@
           <IsSharedStatic>true</IsSharedStatic>
           <BuildTool>&lt;None&gt;</BuildTool>
           <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
-          <ProjectsToExcludeFrom />
-        </ReferencedFileSave>
-        <ReferencedFileSave>
-          <Name>Screens/TmxScreen/TmxWithLayersWithProperties.csv</Name>
-          <IsSharedStatic>true</IsSharedStatic>
-          <SourceFile>Screens/TmxScreen/TmxWithLayersWithProperties.tmx</SourceFile>
-          <BuildTool>*.tmx -&gt; TmxToCSV.exe -&gt; *.csv</BuildTool>
-          <ProjectsToExcludeFrom />
-        </ReferencedFileSave>
-        <ReferencedFileSave>
-          <Name>Screens/TmxScreen/TmxWithTileProperties.csv</Name>
-          <IsSharedStatic>true</IsSharedStatic>
-          <SourceFile>Screens/TmxScreen/TmxWithTileProperties.tmx</SourceFile>
-          <BuildTool>*.tmx -&gt; TmxToCSV.exe -&gt; *.csv</BuildTool>
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
@@ -11977,14 +11955,6 @@
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <HasPublicProperty>true</HasPublicProperty>
-          <RuntimeType>FlatRedBall.Scene</RuntimeType>
-          <ProjectsToExcludeFrom />
-        </ReferencedFileSave>
-        <ReferencedFileSave>
-          <Name>Entities/FileReferencingEntity/Folder1/EmptyTmx.scnx</Name>
-          <IsSharedStatic>true</IsSharedStatic>
-          <SourceFile>GlobalContent/FolderInGlobalContent/EmptyTmx.tmx</SourceFile>
-          <BuildTool>*.tmx -&gt; tmxtoscnx.exe -&gt; *.scnx</BuildTool>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
@@ -21613,14 +21583,6 @@
       <ProjectsToExcludeFrom />
     </ReferencedFileSave>
     <ReferencedFileSave>
-      <Name>GlobalContent/FolderInGlobalContent/EmptyTmx.scnx</Name>
-      <IsSharedStatic>true</IsSharedStatic>
-      <HasPublicProperty>true</HasPublicProperty>
-      <SourceFile>GlobalContent/FolderInGlobalContent/EmptyTmx.tmx</SourceFile>
-      <BuildTool>*.tmx -&gt; tmxtoscnx.exe -&gt; *.scnx</BuildTool>
-      <ProjectsToExcludeFrom />
-    </ReferencedFileSave>
-    <ReferencedFileSave>
       <Name>GlobalContent/TextureSettingsInfo.csv</Name>
       <IsSharedStatic>true</IsSharedStatic>
       <HasPublicProperty>true</HasPublicProperty>
@@ -21884,7 +21846,7 @@
   </CustomClasses>
   <ApplyToFixedResolutionPlatforms>false</ApplyToFixedResolutionPlatforms>
   <ExternallyBuiltFileDirectory>../../</ExternallyBuiltFileDirectory>
-  <FileVersion>0</FileVersion>
+  <FileVersion>2</FileVersion>
   <PluginData>
     <RequiredPlugins>
       <PluginRequirement>

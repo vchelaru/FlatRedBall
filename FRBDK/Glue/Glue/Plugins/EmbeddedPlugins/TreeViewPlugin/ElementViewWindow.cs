@@ -195,9 +195,7 @@ namespace FlatRedBall.Glue.FormHelpers
             TreeNode node = SelectedNodeOld;
 
             GlueState.Self.CurrentTreeNode = TreeNodeWrapper.CreateOrNull(node);
-            // Do this after taking the snapshot:
-            // This should update to a plugin at some point....
-            PropertyGridHelper.UpdateDisplayedPropertyGridProperties();
+
 
             bool wasFocused = mTreeView?.Focused == true;
 

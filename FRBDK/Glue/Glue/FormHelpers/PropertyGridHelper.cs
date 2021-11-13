@@ -73,6 +73,8 @@ namespace FlatRedBall.Glue.FormHelpers
             ///////////////Early Out/////////////////////
             if (node == null)
             {
+                MainGlueWindow.Self.PropertyGrid.SelectedObject = null;
+
                 return;
             }
             ////////////End Early Out///////////////////

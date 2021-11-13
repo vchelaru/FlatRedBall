@@ -25,6 +25,8 @@ namespace OfficialPlugins.TreeViewPlugin
 
         MainTreeViewViewModel MainViewModel = new MainTreeViewViewModel();
 
+        PluginTab pluginTab;
+
         #endregion
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
@@ -40,9 +42,10 @@ namespace OfficialPlugins.TreeViewPlugin
 
             SelectionLogic.Initialize(MainViewModel, mainView);
 
+            pluginTab = CreateTab(mainView, "Explorer (beta)", TabLocation.Left);
+            pluginTab.CanClose = false;
             AssignEvents();
 
-            CreateAndAddTab(mainView, "Explorer (beta)", TabLocation.Left);
         }
 
         private void AssignEvents()
@@ -72,12 +75,14 @@ namespace OfficialPlugins.TreeViewPlugin
 
         private void HandleGluxLoaded()
         {
+            pluginTab.Show();
             MainViewModel.AddDirectoryNodes();
             MainViewModel.RefreshGlobalContentTreeNodes();
         }
 
         private void HandleUnloadedGlux()
         {
+            pluginTab.Hide();
             MainViewModel.Clear();
         }
 

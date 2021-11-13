@@ -420,31 +420,115 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         public void UpdateToSearch()
         {
+            IndirectlyMatchesSearch = false;
+            DirectlyMatchesSearch = false;
+
             DirectlyMatchesSearch = string.IsNullOrEmpty(MainTreeViewViewModel.SearchText) || Text.ToLowerInvariant().Contains(MainTreeViewViewModel.SearchText);
 
-            var forceExpand = !string.IsNullOrWhiteSpace(MainTreeViewViewModel.SearchText);
-
-            bool childIndirectlyMatches = false;
-            foreach(var child in Children)
+            if (DirectlyMatchesSearch && !string.IsNullOrEmpty(MainTreeViewViewModel.PrefixText))
             {
-                child.UpdateToSearch();
-                childIndirectlyMatches |= child.IndirectlyMatchesSearch;
-            }
-
-            IndirectlyMatchesSearch = DirectlyMatchesSearch || childIndirectlyMatches;
-
-            if(IndirectlyMatchesSearch && forceExpand)
-            {
-                IsExpanded = true;
-            }
-
-            VisibleChildren.Clear();
-            foreach(var child in Children)
-            {
-                var shouldAdd = child.IndirectlyMatchesSearch;
-                if(shouldAdd)
+                if (Tag != null)
                 {
-                    VisibleChildren.Add(child);
+                    switch (MainTreeViewViewModel.PrefixText)
+                    {
+                        case "f":
+                            DirectlyMatchesSearch = Tag is ReferencedFileSave;
+                            break;
+                        case "e":
+                            DirectlyMatchesSearch = Tag is EntitySave;
+                            break;
+                        case "s":
+                            DirectlyMatchesSearch = Tag is ScreenSave;
+                            break;
+                        case "o":
+                            DirectlyMatchesSearch = Tag is NamedObjectSave;
+                            break;
+                        case "v":
+                            DirectlyMatchesSearch = Tag is CustomVariable;
+                            break;
+                    }
+                }
+            }
+
+            bool forceExclude = false;
+            if ((IndirectlyMatchesSearch || DirectlyMatchesSearch) && !string.IsNullOrEmpty(MainTreeViewViewModel.PrefixText))
+            {
+                if (Tag == null)
+                {
+                    var asITreeNode = this as ITreeNode;
+                    switch (MainTreeViewViewModel.PrefixText)
+                    {
+                        case "f":
+                            if(asITreeNode.IsRootCodeNode() || asITreeNode.IsRootObjectNode() || asITreeNode.IsRootCustomVariablesNode() || asITreeNode.IsRootStateNode() || asITreeNode.IsRootEventsNode())
+                            {
+                                forceExclude = true;
+                            }
+                            break;
+                        case "e":
+                            if(asITreeNode.IsRootScreenNode() || asITreeNode.IsGlobalContentContainerNode())
+                            {
+                                forceExclude = true;
+                            }
+                            break;
+                        case "s":
+                            if (asITreeNode.IsRootEntityNode() || asITreeNode.IsGlobalContentContainerNode())
+                            {
+                                forceExclude = true;
+                            }
+                            break;
+                        case "o":
+                            if (asITreeNode.IsRootCodeNode() || asITreeNode.IsFilesContainerNode() || asITreeNode.IsRootCustomVariablesNode() || asITreeNode.IsRootStateNode() || asITreeNode.IsRootEventsNode())
+                            {
+                                forceExclude = true;
+                            }
+                            break;
+                        case "v":
+                            if (asITreeNode.IsRootCodeNode() || asITreeNode.IsRootObjectNode() || asITreeNode.IsFilesContainerNode() || asITreeNode.IsRootStateNode() || asITreeNode.IsRootEventsNode())
+                            {
+                                forceExclude = true;
+                            }
+                            break;
+                    }
+                }
+            }
+
+            if(forceExclude)
+            {
+                DirectlyMatchesSearch = false;
+                IndirectlyMatchesSearch = false;
+            }
+            else
+            {
+                var forceExpand = !string.IsNullOrWhiteSpace(MainTreeViewViewModel.SearchText);
+
+                bool childIndirectlyMatches = false;
+                foreach(var child in Children)
+                {
+                    child.UpdateToSearch();
+                    childIndirectlyMatches |= child.IndirectlyMatchesSearch;
+                }
+
+                IndirectlyMatchesSearch = DirectlyMatchesSearch || childIndirectlyMatches;
+
+                if(IndirectlyMatchesSearch && forceExpand)
+                {
+                    IsExpanded = true;
+                }
+
+                VisibleChildren.Clear();
+                foreach(var child in Children)
+                {
+                    var shouldAdd = child.IndirectlyMatchesSearch;
+                    if(shouldAdd)
+                    {
+                        VisibleChildren.Add(child);
+                    }
+                }
+
+                if(Tag == null && VisibleChildren.Count == 0 && !string.IsNullOrWhiteSpace(MainTreeViewViewModel.PrefixText))
+                {
+                    IndirectlyMatchesSearch = false;
+                    DirectlyMatchesSearch = false;
                 }
             }
 

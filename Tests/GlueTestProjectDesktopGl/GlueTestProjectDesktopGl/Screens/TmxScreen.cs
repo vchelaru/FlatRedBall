@@ -45,7 +45,7 @@ namespace GlueTestProject.Screens
             scene.Shift(new Vector3(0, 0, 0));
             scene.AddToManagers();
 
-            TestLevel2.X -= 530;
+            //TestLevel2.X -= 530;
 
             if (string.IsNullOrEmpty(TilbTest.MapLayers[0].Name))
             {

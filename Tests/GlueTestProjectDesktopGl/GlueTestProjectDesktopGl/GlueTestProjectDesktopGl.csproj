@@ -97,8 +97,6 @@
     <Compile Include="DataTypes\TestSaveClass.cs" />
     <Compile Include="DataTypes\TextureSettingsInfo.Generated.cs" />
     <Compile Include="DataTypes\TileMapInfo.Generated.cs" />
-    <Compile Include="DataTypes\TmxWithLayersWithProperties.Generated.cs" />
-    <Compile Include="DataTypes\TmxWithTileProperties.Generated.cs" />
     <Compile Include="DataTypes\TopDownValues.Generated.cs" />
     <Compile Include="DataTypes\Waves.Generated.cs" />
     <Compile Include="DataTypes\WithFileAtEnd.Generated.cs" />
@@ -1597,10 +1595,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>BearClaws_attack</Name>
     </None>
-    <None Include="content\entities\filereferencingentity\folder1\emptytmx.scnx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>EmptyTmx</Name>
-    </None>
     <None Include="content\entities\filereferencingentity\folder1\slug.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Slug</Name>
@@ -1808,10 +1802,6 @@
     <None Include="content\globalcontent\emptyanimationforreload.achx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>EmptyAnimationForReload</Name>
-    </None>
-    <None Include="content\globalcontent\folderinglobalcontent\emptytmx.scnx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>EmptyTmx</Name>
     </None>
     <None Include="content\globalcontent\folderinglobalcontent\scenefileinfolder.scnx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -2421,10 +2411,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>sheet_9</Name>
     </None>
-    <None Include="content\screens\tmxscreen\testlevel2.scnx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>TestLevel2</Name>
-    </None>
     <None Include="content\screens\tmxscreen\tilbtest.tmx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TilbTest</Name>
@@ -2445,17 +2431,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TmxWithEntities</Name>
     </None>
-    <None Include="content\screens\tmxscreen\tmxwithlayerswithproperties.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>TmxWithLayersWithProperties</Name>
-    </None>
     <None Include="content\screens\tmxscreen\tmxwithshapes.tmx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TmxWithShapes</Name>
-    </None>
-    <None Include="content\screens\tmxscreen\tmxwithtileproperties.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>TmxWithTileProperties</Name>
     </None>
     <None Include="content\screens\tmxscreen\tmxwithtileshapecollectionlayers.tmx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

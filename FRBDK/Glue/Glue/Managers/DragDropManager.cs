@@ -565,7 +565,7 @@ namespace FlatRedBall.Glue.Managers
             var sourceContainer = nodeMoving.GetContainingElementTreeNode().Tag as GlueElement;
             var targetContainer = targetNode.GetContainingElementTreeNode().Tag as GlueElement;
 
-            if (targetNode.IsStateCategoryNode() || targetNode.IsStateListNode())
+            if (targetNode.IsStateCategoryNode() || targetNode.IsRootStateNode())
             {
                 if (sourceContainer == targetContainer)
                 {
