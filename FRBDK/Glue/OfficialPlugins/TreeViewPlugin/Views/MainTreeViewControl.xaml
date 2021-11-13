@@ -14,13 +14,26 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <Label>This is a test:</Label>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBox 
+                Text="{Binding SearchBoxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                KeyDown="TextBox_KeyDown"
+                ></TextBox>
+            <Button x:Name="ClearSearchButton" Width="18" Grid.Column="1" Click="ClearSearchButton_Click"
+                    Visibility="{Binding SearchButtonVisibility}"
+                    >x</Button>
+        </Grid>
 
         <pt:TreeListBox x:Name="MainTreeView" 
                         Grid.Row="1" 
                         SelectionMode="Single" 
                         AllowDrop="True"
-                        HierarchySource="{Binding Root}"
+                        HierarchySource="{Binding VisibleRoot}"
+                        ChildrenPath="VisibleChildren"
                         KeyDown="MainTreeView_KeyDown"
                         PreviewMouseLeftButtonDown="MainTreeView_PreviewMouseLeftButtonDown"
                         PreviewMouseMove="MainTreeView_PreviewMouseMove"
@@ -37,7 +50,7 @@
             </pt:TreeListBox.ContextMenu>
             <pt:TreeListBox.ItemTemplate>
                 <DataTemplate>
-                    <Grid>
+                    <Grid Visibility="{Binding Visibility}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>

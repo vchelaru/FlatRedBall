@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue;
 using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
@@ -10,10 +11,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Windows;
 
 namespace OfficialPlugins.TreeViewPlugin.ViewModels
 {
-    class MainTreeViewViewModel
+    class MainTreeViewViewModel : ViewModel
     {
         #region Fields/Properties
 
@@ -30,6 +32,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             private set;
         }
 
+        public IEnumerable VisibleRoot => Root;
+
         public IEnumerable Children
         {
             get
@@ -41,6 +45,23 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public string Title { get; set; }
 
         public int Count { get; set; }
+
+        public static string SearchText;
+        public string SearchBoxText
+        {
+            get => Get<string>();
+            set
+            {
+                if (Set(value))
+                {
+                    SearchText = value?.ToLowerInvariant();
+                    PushSearchToContainedObject();
+                }
+            }
+        }
+
+        [DependsOn(nameof(SearchBoxText))]
+        public Visibility SearchButtonVisibility => (!string.IsNullOrEmpty(SearchBoxText)).ToVisibility();
 
         #endregion
 
@@ -560,6 +581,31 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 GlobalContentRootNode.GetNodeByTag(tag);
             return found;
         }
+
+        private void PushSearchToContainedObject()
+        {
+            ScreenRootNode.UpdateToSearch();
+            EntityRootNode.UpdateToSearch();
+            GlobalContentRootNode.UpdateToSearch();
+        }
+
+        private void PushSearchToContainedObject(NodeViewModel model, string searchBoxText)
+        {
+            //model.DirectlyMatchesSearch = string.IsNullOrWhiteSpace(searchBoxText) || model.Text?.Contains(searchBoxText) == true;
+
+            //foreach(var item in model.Children)
+            //{
+            //    PushSearchToContainedObject(item, searchBoxText);
+            //}
+
+            //var isVisible = model.Tag == null ||
+            //    model.DirectlyMatchesSearch ||
+            //    IsAnySubItemVisible(model);
+
+            //model.Visibility = isVisible.ToVisibility();
+        }
+
+
 
         public void Clear()
         {

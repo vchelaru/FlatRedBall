@@ -19,6 +19,13 @@ using System.Windows.Media.Imaging;
 
 namespace OfficialPlugins.TreeViewPlugin.ViewModels
 {
+    public enum SearchVisibility
+    {
+        MatchExplicitly,
+        HaveVisibileChildren,
+        MatchOrHaveVisibleChildren
+    }
+
     public class NodeViewModel : ViewModel, ITreeNode
     {
         #region External DllImport
@@ -84,6 +91,12 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             set => Set(value);
         }
 
+        public Visibility Visibility
+        {
+            get => Get<Visibility>();
+            set => Set(value);
+        }
+
 
         private ObservableCollection<NodeViewModel> children = new ObservableCollection<NodeViewModel>();
 
@@ -95,6 +108,11 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 return children;
             }
         }
+
+        public ObservableCollection<NodeViewModel> VisibleChildren
+        {
+            get; set;
+        } = new ObservableCollection<NodeViewModel>();
 
         IEnumerable<ITreeNode> ITreeNode.Children => children;
 
@@ -133,6 +151,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             set => Set(value);
         }
 
+        public bool DirectlyMatchesSearch { get; set; }
+        public bool IndirectlyMatchesSearch { get; set; }
+
         #endregion
 
         #region Constructors
@@ -167,6 +188,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         public NodeViewModel(NodeViewModel parent)
         {
+            Visibility = Visibility.Visible;
             //this.Node = Node;
             this.Parent = parent;
             this.IsExpanded = false;
@@ -174,13 +196,15 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             FontWeight = FontWeights.Normal;
 
             ImageSource = FolderClosedIcon;
+
+            children.CollectionChanged += (not, used) => UpdateToSearch();
         }
 
         #endregion
 
         public virtual void RefreshTreeNodes()
         {
-
+            UpdateToSearch();
         }
 
         #region Parent-based Methods
@@ -389,7 +413,43 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 }
             }
         }
-        
+
+        #endregion
+
+        #region Search-based
+
+        public void UpdateToSearch()
+        {
+            DirectlyMatchesSearch = string.IsNullOrEmpty(MainTreeViewViewModel.SearchText) || Text.ToLowerInvariant().Contains(MainTreeViewViewModel.SearchText);
+
+            var forceExpand = !string.IsNullOrWhiteSpace(MainTreeViewViewModel.SearchText);
+
+            bool childIndirectlyMatches = false;
+            foreach(var child in Children)
+            {
+                child.UpdateToSearch();
+                childIndirectlyMatches |= child.IndirectlyMatchesSearch;
+            }
+
+            IndirectlyMatchesSearch = DirectlyMatchesSearch || childIndirectlyMatches;
+
+            if(IndirectlyMatchesSearch && forceExpand)
+            {
+                IsExpanded = true;
+            }
+
+            VisibleChildren.Clear();
+            foreach(var child in Children)
+            {
+                var shouldAdd = child.IndirectlyMatchesSearch;
+                if(shouldAdd)
+                {
+                    VisibleChildren.Add(child);
+                }
+            }
+
+        }
+
         #endregion
 
         public override string ToString()

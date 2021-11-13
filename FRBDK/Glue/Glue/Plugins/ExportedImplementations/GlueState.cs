@@ -53,7 +53,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
                 // Snapshot should come first so everyone can update to the snapshot
                 GlueState.Self.TakeSnapshot(value);
-                if(value is TreeNodeWrapper asWrapper)
+
+                if (!ElementViewWindow.SuppressSelectionEvents)
+                {
+                    PluginManager.ReactToItemSelect(value);
+                }
+
+                if (value is TreeNodeWrapper asWrapper)
                 {
                     MainExplorerPlugin.Self.ElementTreeView.SelectedNode = asWrapper.TreeNode;
                 }
@@ -401,9 +407,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
                 while (treeNode != null)
                 {
-                    if (treeNode is EntityTreeNode)
+                    if (treeNode.Tag is EntitySave entitySave)
                     {
-                        return ((EntityTreeNode)treeNode).EntitySave;
+                        return entitySave;
                     }
                     else
                     {
@@ -420,9 +426,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
                 while (treeNode != null)
                 {
-                    if (treeNode.Tag is ScreenSave)
+                    if (treeNode.Tag is ScreenSave screenSave)
                     {
-                        return treeNode.Tag as ScreenSave;
+                        return screenSave;
                     }
                     else
                     {
@@ -436,9 +442,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             {
                 var treeNode = selectedTreeNode;
 
-                if (treeNode != null && treeNode.Tag != null && treeNode.Tag is ReferencedFileSave)
+                if (treeNode != null && treeNode.Tag != null && treeNode.Tag is ReferencedFileSave rfs)
                 {
-                    return (ReferencedFileSave)treeNode.Tag;
+                    return rfs;
                 }
                 else
                 {
@@ -453,9 +459,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 {
                     return null;
                 }
-                else if (treeNode.Tag != null && treeNode.Tag is NamedObjectSave)
+                else if (treeNode.Tag != null && treeNode.Tag is NamedObjectSave nos)
                 {
-                    return (NamedObjectSave)treeNode.Tag;
+                    return nos;
                 }
                 else
                 {
@@ -517,9 +523,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 {
                     return null;
                 }
-                else if (treeNode.Tag != null && treeNode.Tag is EventResponseSave)
+                else if (treeNode.Tag != null && treeNode.Tag is EventResponseSave eventResponse)
                 {
-                    return (EventResponseSave)treeNode.Tag;
+                    return eventResponse;
                 }
                 else
                 {

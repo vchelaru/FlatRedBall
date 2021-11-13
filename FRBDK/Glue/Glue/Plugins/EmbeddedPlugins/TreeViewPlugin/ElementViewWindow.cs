@@ -194,16 +194,13 @@ namespace FlatRedBall.Glue.FormHelpers
             // tree node click
             TreeNode node = SelectedNodeOld;
 
-
+            GlueState.Self.CurrentTreeNode = TreeNodeWrapper.CreateOrNull(node);
             // Do this after taking the snapshot:
             // This should update to a plugin at some point....
             PropertyGridHelper.UpdateDisplayedPropertyGridProperties();
 
             bool wasFocused = mTreeView?.Focused == true;
-            if (!SuppressSelectionEvents)
-            {
-                PluginManager.ReactToItemSelect(TreeNodeWrapper.CreateOrNull( node ));
-            }
+
             // ReactivelySetItemViewVisibility may add or remove controls, and as a result the
             // list view may lose focus. We dont' want that to happen so we will explicitly put
             // focus on the control:

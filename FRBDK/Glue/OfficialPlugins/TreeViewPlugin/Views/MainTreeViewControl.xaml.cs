@@ -37,6 +37,8 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         LeftOrRight ButtonPressed;
 
+        MainTreeViewViewModel ViewModel => DataContext as MainTreeViewViewModel;
+
         public MainTreeViewControl()
         {
             InitializeComponent();
@@ -82,6 +84,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 e.RightButton == MouseButtonState.Pressed;
 
             if (isMouseButtonPressed &&
+                
                 (Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
                 Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance))
             {
@@ -91,9 +94,12 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 // Get the dragged ListViewItem
                 var vm = (e.OriginalSource as FrameworkElement).DataContext as NodeViewModel;
 
-                // Initialize the drag & drop operation
-                DataObject dragData = new DataObject("NodeViewModel", vm);
-                DragDrop.DoDragDrop(e.OriginalSource as DependencyObject, dragData, DragDropEffects.Move);
+                if(vm != null)
+                {
+                    // Initialize the drag & drop operation
+                    DataObject dragData = new DataObject("NodeViewModel", vm);
+                    DragDrop.DoDragDrop(e.OriginalSource as DependencyObject, dragData, DragDropEffects.Move);
+                }
             }
         }
 
@@ -118,6 +124,10 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 {
                     // do something here...
                     DragDropManager.DragDropTreeNode(targetNode, treeNodeMoving);
+                    if(ButtonPressed == LeftOrRight.Right)
+                    {
+                        RightClickContextMenu.IsOpen = true;// test this
+                    }
                 }
                 else
                 {
@@ -151,7 +161,14 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             {
                 var menuItem = new MenuItem();
                 menuItem.Header = item.Text;
-                menuItem.Click += (not, used) => item.Click(menuItem, null);
+                menuItem.Click += (not, used) =>
+                {
+                    if(item?.Click == null)
+                    {
+                        int m = 3;
+                    }
+                    item?.Click?.Invoke(menuItem, null);
+                };
 
                 foreach (var child in item.DropDownItems)
                 {
@@ -164,5 +181,18 @@ namespace OfficialPlugins.TreeViewPlugin.Views
         }
 
         #endregion
+
+        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Escape)
+            {
+                ViewModel.SearchBoxText = string.Empty;
+            }
+        }
+
+        private void ClearSearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.SearchBoxText = string.Empty;
+        }
     }
 }
