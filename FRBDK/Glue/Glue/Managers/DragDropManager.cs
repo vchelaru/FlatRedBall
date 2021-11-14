@@ -1111,7 +1111,16 @@ namespace FlatRedBall.Glue.Managers
                                                                             out creationReport,
                                                                             out errorMessage);
 
-                            ElementViewWindow.UpdateChangedElements();
+                            if(GlueState.Self.CurrentElement != null)
+                            {
+                                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(GlueState.Self.CurrentElement);
+                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(GlueState.Self.CurrentElement);
+                            }
+                            else
+                            {
+                                GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
+                                GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
+                            }
 
                             if (!String.IsNullOrEmpty(errorMessage))
                             {

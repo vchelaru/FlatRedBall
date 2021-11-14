@@ -362,7 +362,11 @@ namespace FlatRedBall.Glue.FormHelpers
 
             else if (((ITreeNode)this).IsFilesContainerNode())
             {
-                string valueToReturn = Parent.GetRelativePath() + this.Text + "/";
+                // don't append "Files" here, because adding "Files" causes problems when searching for files
+
+                //string valueToReturn = Parent.GetRelativePath() + this.Text + "/";
+                string valueToReturn = Parent.GetRelativePath();
+
 
 
                 return valueToReturn;

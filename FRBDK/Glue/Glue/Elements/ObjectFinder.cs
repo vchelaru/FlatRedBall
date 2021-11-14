@@ -381,7 +381,7 @@ namespace FlatRedBall.Glue.Elements
 
         bool IsContainedInListOrAsChild(List<NamedObjectSave> namedObjects, NamedObjectSave objectToFind)
         {
-            foreach (NamedObjectSave nos in namedObjects)
+            foreach (NamedObjectSave nos in namedObjects.ToArray())
             {
                 if (nos == objectToFind || IsContainedInListOrAsChild(nos.ContainedObjects, objectToFind))
                 {

@@ -560,25 +560,26 @@ namespace TileGraphicsPlugin
                 nodeNetworkTab?.Hide();
             }
 
-            if(LevelScreenController.Self.GetIfShouldShow())
-            {
-                if(levelTab == null)
-                {
-                    var view = LevelScreenController.Self.GetView();
+            // Levels are dead, long live inherited levels!
+            //if(LevelScreenController.Self.GetIfShouldShow())
+            //{
+            //    if(levelTab == null)
+            //    {
+            //        var view = LevelScreenController.Self.GetView();
 
-                    levelTab = base.CreateTab(view, "Levels");
-                }
+            //        levelTab = base.CreateTab(view, "Levels");
+            //    }
 
-                LevelScreenController.Self.RefreshViewModelTo(GlueState.Self.CurrentScreenSave);
+            //    LevelScreenController.Self.RefreshViewModelTo(GlueState.Self.CurrentScreenSave);
 
-                levelTab.Show();
-                LevelScreenController.Self.HandleTabShown();
-                // prob don't focus it, it's rare the user needs to mess with this
-            }
-            else if(levelTab != null)
-            {
-                levelTab?.Hide();
-            }
+            //    levelTab.Show();
+            //    LevelScreenController.Self.HandleTabShown();
+            //    // prob don't focus it, it's rare the user needs to mess with this
+            //}
+            //else if(levelTab != null)
+            //{
+            //    levelTab?.Hide();
+            //}
         }
 
         private void ReactToRfsSelected(ReferencedFileSave rfs)

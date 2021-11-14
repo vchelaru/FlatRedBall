@@ -1010,33 +1010,5 @@ namespace FlatRedBall.Glue.FormHelpers
 
         #endregion
 
-        public static void UpdateChangedElements()
-        {
-            foreach (var element in from entitySave in ProjectManager.GlueProjectSave.Entities 
-                                    where entitySave.HasChanged 
-                                    select entitySave)
-            {
-                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
-                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-                element.HasChanged = false;
-            }
-
-            foreach (var element in from screenSave in ProjectManager.GlueProjectSave.Screens 
-                                    where screenSave.HasChanged 
-                                    select screenSave)
-            {
-                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
-                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-                element.HasChanged = false;
-            }
-
-            if (ProjectManager.GlueProjectSave.GlobalContentHasChanged)
-            {
-                GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
-                GlueCommands.Self.ProjectCommands.SaveProjects();
-
-                GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
-            }
-        }
     }
 }

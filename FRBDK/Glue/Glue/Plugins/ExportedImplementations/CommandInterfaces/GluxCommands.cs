@@ -314,8 +314,16 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     CsvCodeGenerator.GenerateAndSaveDataClass(rfs, AvailableDelimiters.Comma);
                 }
 
-
-                ElementViewWindow.UpdateChangedElements();
+                if (GlueState.Self.CurrentElement != null)
+                {
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(GlueState.Self.CurrentElement);
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(GlueState.Self.CurrentElement);
+                }
+                else
+                {
+                    GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
+                }
                 GlueState.Self.CurrentReferencedFileSave = rfs;
 
                 PluginManager.ReactToNewFile(rfs);
@@ -501,13 +509,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 TaskManager.Self.OnUiThread(() =>
                 {
-                    ElementViewWindow.UpdateChangedElements();
+                    if (GlueState.Self.CurrentElement != null)
+                    {
+                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(GlueState.Self.CurrentElement);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(GlueState.Self.CurrentElement);
+                    }
+                    else
+                    {
+                        GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
+                        GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
+                    }
                 });
 
-                if (sourceElement == null)
-                {
-                    GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
-                }
                 TaskManager.Self.Add(() => GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(toReturn), $"Updating file membership for file {toReturn}");
                 PluginManager.ReactToNewFile(toReturn);
                 GluxCommands.Self.SaveGlux();
@@ -697,7 +710,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateCode = true)
         {
+            TaskManager.Self.AddOrRunIfTasked(() =>
+                RemoveReferencedFileInternal(referencedFileToRemove, additionalFilesToRemove, regenerateCode),
+                $"Removing referenced file {referencedFileToRemove}");
+        }
 
+        public void RemoveReferencedFileInternal(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateCode = true)
+        { 
             var isContained = GlueState.Self.Find.IfReferencedFileSaveIsReferenced(referencedFileToRemove);
             /////////////////////////Early Out//////////////////////////////
             if (!isContained)
@@ -736,15 +755,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     var nos = container.NamedObjects[i];
                     if (nos.SourceType == SourceType.File && nos.SourceFile == referencedFileToRemove.Name)
                     {
-                        if(nos.DefinedByBase)
+                        GlueCommands.Self.DoOnUiThread(() =>
                         {
-                            // don't remove it, just tell the user that the object will be broken until fixed
-                            GlueCommands.Self.DialogCommands.ShowMessageBox($"The object {nos} is using the file {referencedFileToRemove}\n\n" +
-                                $"The project may be broken until this object is fixed");
-                        }
-                        else
-                        {
-                            MainGlueWindow.Self.Invoke(() =>
+                            if (nos.DefinedByBase)
+                            {
+                                // don't remove it, just tell the user that the object will be broken until fixed
+                                GlueCommands.Self.DialogCommands.ShowMessageBox($"The object {nos} is using the file {referencedFileToRemove}, but the file is being removed.\n\n" +
+                                    $"The project may be broken until this object is fixed");
+                            }
+                            else
                             {
                                 // Ask the user what to do here - remove it?  Keep it and not compile?
                                 var mbmb = new MultiButtonMessageBoxWpf();
@@ -759,8 +778,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                                 {
                                     container.NamedObjects.RemoveAt(i);
                                 }
-                            });
-                        }
+                            }
+
+                        });
 
                     }
                     nos.ResetVariablesReferencing(referencedFileToRemove);
