@@ -500,6 +500,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     if (GlueState.Self.CurrentElement != null)
                     {
+                        // Vic asks = why do we call ReactToItemSelect instead of setting the custom variable. Is it to force a refresh?
+                        // On because actually people usually don't want to select the variable because it's rare to actually modify the variable
+                        // through its properties. Instead, it's more common to select the variables and use the variables tab
+                        //GlueState.Self.CurrentCustomVariable = newVariable;
                         PluginManager.ReactToItemSelect(GlueState.Self.CurrentTreeNode);
                     }
                 }
