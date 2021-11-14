@@ -2126,24 +2126,27 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     #endregion
 
-                    // Nodes aren't directly removed in the code above. Instead, 
-                    // a "refresh nodes" method is called, which may remove unneeded
-                    // nodes, but event raising is suppressed. Therefore, we have to explicitly 
-                    // do it here:
-                    if(deletedElement != null)
+                    TaskManager.Self.AddOrRunIfTasked(() =>
                     {
-                        GlueCommands.Self.RefreshCommands.RefreshTreeNodes();
-                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(deletedElement);
+                        // Nodes aren't directly removed in the code above. Instead, 
+                        // a "refresh nodes" method is called, which may remove unneeded
+                        // nodes, but event raising is suppressed. Therefore, we have to explicitly 
+                        // do it here:
+                        if(deletedElement != null)
+                        {
+                            GlueCommands.Self.RefreshCommands.RefreshTreeNodes();
+                            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(deletedElement);
 
-                    }
-                    else if(glueState.CurrentElement != null)
-                    {
-                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(glueState.CurrentElement);
-                    }
-                    else
-                    {
-                        GlueCommands.Self.RefreshCommands.RefreshGlobalContent() ;
-                    }
+                        }
+                        else if(glueState.CurrentElement != null)
+                        {
+                            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(glueState.CurrentElement);
+                        }
+                        else
+                        {
+                            GlueCommands.Self.RefreshCommands.RefreshGlobalContent() ;
+                        }
+                    }, "Refreshing tree nodes");
 
 
                     if (saveAndRegenerate)
@@ -2281,7 +2284,13 @@ namespace FlatRedBall.Glue.FormHelpers
                 string folderName = tiw.Result;
                 GlueCommands.Self.ProjectCommands.AddDirectory(folderName, targetNode);
 
+                var newNode = targetNode.Children.FirstOrDefault(item => item.Text == folderName);
+
+                GlueState.Self.CurrentTreeNode = newNode;
+
                 targetNode.SortByTextConsideringDirectories();
+
+
             }
         }
 

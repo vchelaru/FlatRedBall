@@ -7,6 +7,7 @@ using OfficialPlugins.TreeViewPlugin.Views;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace OfficialPlugins.TreeViewPlugin.Logic
@@ -132,6 +133,12 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
 
         }
 
+        internal static async void SelectByPath(string path)
+        {
+            var treeNode = mainViewModel.GetTreeNodeByRelativePath(path);
+            await SelectByTreeNode(treeNode);
+        }
+
         private static void RefreshRightClickMenu()
         {
             var items = RightClickHelper.GetRightClickItems(currentNode, MenuShowingAction.RegularRightClick);
@@ -145,14 +152,19 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             }
         }
 
-
-
-
         public static async void SelectByTag(object value)
         {
-            if(value == null)
+            NodeViewModel treeNode = value == null ? null : mainViewModel.GetTreeNodeByTag(value);
+
+            await SelectByTreeNode(treeNode);
+
+        }
+
+        public static async Task SelectByTreeNode(NodeViewModel treeNode)
+        {
+            if (treeNode == null)
             {
-                if(currentNode != null)
+                if (currentNode != null)
                 {
                     SelectionLogic.IsUpdatingSelectionOnGlueEvent = false;
                     currentNode.IsSelected = false;
@@ -162,8 +174,6 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             }
             else
             {
-                var treeNode = mainViewModel.GetTreeNodeByTag(value);
-
                 if (treeNode != null && (treeNode.IsSelected == false || treeNode != currentNode))
                 {
                     treeNode.IsSelected = true;
@@ -177,10 +187,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
                 mainView.MainTreeView.ScrollIntoView(treeNode);
 
             }
-
-
         }
-
 
         public static void Initialize(MainTreeViewViewModel mainViewModel, MainTreeViewControl mainView)
         {

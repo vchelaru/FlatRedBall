@@ -65,8 +65,14 @@ namespace OfficialPlugins.TreeViewPlugin
             var tag = selectedTreeNode?.Tag;
             if(SelectionLogic.IsUpdatingSelectionOnGlueEvent )
             {
-
-                SelectionLogic.SelectByTag(tag);
+                if(tag != null)
+                {
+                    SelectionLogic.SelectByTag(tag);
+                }
+                else
+                {
+                    SelectionLogic.SelectByPath(selectedTreeNode.GetRelativePath());
+                }
             }
         }
 

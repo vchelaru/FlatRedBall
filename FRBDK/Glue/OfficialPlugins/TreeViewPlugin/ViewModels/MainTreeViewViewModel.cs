@@ -229,7 +229,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
         }
 
-        private NodeViewModel GetTreeNodeByRelativePath(string relativePath)
+        public NodeViewModel GetTreeNodeByRelativePath(string relativePath)
         {
             var start = StartOfRelative(relativePath, out string remainder);
 

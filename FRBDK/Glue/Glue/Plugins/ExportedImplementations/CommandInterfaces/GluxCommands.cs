@@ -791,6 +791,16 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     if (GlueState.Self.CurrentElement != null)
                     {
                         GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
+
+                        if(GlueState.Self.CurrentElement.ReferencedFiles.Count > 0)
+                        {
+                            GlueState.Self.CurrentReferencedFileSave = GlueState.Self.CurrentElement.ReferencedFiles.LastOrDefault();
+                        }
+                        else
+                        {
+                            // This should refresh the selection...
+                            GlueState.Self.CurrentElement = GlueState.Self.CurrentElement;
+                        }
                     }
                     if (regenerateCode)
                     {
