@@ -1473,7 +1473,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             bool succeeded = true;
 
-            string targetDirectory = FileManager.RelativeDirectory + newRelativeDirectory;
+            string targetDirectory = GlueState.Self.CurrentGlueProjectDirectory + newRelativeDirectory;
             string oldName = entitySave.Name;
             string newName = newRelativeDirectory.Replace("/", "\\") + entitySave.ClassName;
             succeeded = MoveEntityCodeFilesToDirectory(entitySave, targetDirectory);

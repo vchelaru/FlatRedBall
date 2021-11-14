@@ -787,12 +787,13 @@ namespace FlatRedBall.Glue.Managers
             // modify data and files
             succeeded = GlueCommands.Self.GluxCommands.MoveEntityToDirectory(entitySave, newRelativeDirectory);
 
-            // adjust the UI
-            if (succeeded)
-            {
-                treeNodeMoving.Parent.Remove(treeNodeMoving);
-                targetNode.Add(treeNodeMoving);
-            }
+            //// adjust the UI
+            // Update November 14, 2021 - RefreshTreeNodeFor should handle this
+            //if (succeeded)
+            //{
+            //    treeNodeMoving.Parent.Remove(treeNodeMoving);
+            //    targetNode.Add(treeNodeMoving);
+            //}
 
             // Generate and save
             if (succeeded)
@@ -1517,8 +1518,12 @@ namespace FlatRedBall.Glue.Managers
                 if (shouldSaveGlux)
                 {
 
-                    var treeNodeToRefresh = targetNode.GetContainingElementTreeNode();
-                    var elementToRefresh = treeNodeToRefresh.Tag as GlueElement;
+                    var treeNodeToRefresh = targetNode.Tag is GlueElement ? targetNode : targetNode.GetContainingElementTreeNode();
+                    if(treeNodeToRefresh == null)
+                    {
+                        treeNodeToRefresh = nodeMoving.Tag is GlueElement ? nodeMoving : nodeMoving.GetContainingElementTreeNode();
+                    }
+                    var elementToRefresh = treeNodeToRefresh?.Tag as GlueElement;
                     if (elementToRefresh != null)
                     {
                         GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementToRefresh);

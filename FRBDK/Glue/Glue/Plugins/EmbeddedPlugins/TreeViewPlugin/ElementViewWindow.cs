@@ -938,14 +938,20 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static void SelectByRelativePath(string relativePath)
         {
+            TreeNode treeNode = GetTreeNodeByRelativePath(relativePath);
+            SelectedNodeOld = treeNode;
+        }
+
+        public static TreeNode GetTreeNodeByRelativePath(string relativePath)
+        {
             var start = StartOfRelative(relativePath, out string remainder);
 
             TreeNode treeNode;
-            if(start == "Screens")
+            if (start == "Screens")
             {
                 treeNode = ScreensTreeNode;
             }
-            else if(start == "Entities")
+            else if (start == "Entities")
             {
                 treeNode = EntitiesTreeNode;
             }
@@ -955,15 +961,13 @@ namespace FlatRedBall.Glue.FormHelpers
             }
 
 
-            if(string.IsNullOrEmpty(remainder))
-            {
-                SelectedNodeOld = treeNode;
-            }
-            else
-            {
-                SelectedNodeOld = GetByRelativePath(remainder, treeNode);
 
+            if (!string.IsNullOrEmpty(remainder))
+            {
+                treeNode = GetByRelativePath(remainder, treeNode);
             }
+
+            return treeNode;
         }
 
         static TreeNode GetByRelativePath(string path, TreeNode treeNode)

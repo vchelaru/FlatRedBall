@@ -52,13 +52,17 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.TreeViewPlugin
                 {
                     if (element is ScreenSave screen)
                     {
-                        elementTreeNode = AddScreenInternal(screen);
+                        elementTreeNode = TreeNodeWrapper.CreateOrNull( AddScreenInternal(screen));
                     }
                     else if (element is EntitySave entitySave)
                     {
-                        elementTreeNode = ElementViewWindow.AddEntity(entitySave);
+                        elementTreeNode = TreeNodeWrapper.CreateOrNull(ElementViewWindow.AddEntity(entitySave));
                     }
-                    elementTreeNode?.RefreshTreeNodes();
+
+                    if(elementTreeNode is TreeNodeWrapper wrapper && wrapper.TreeNode is BaseElementTreeNode baseElementTreeNode)
+                    {
+                        baseElementTreeNode.RefreshTreeNodes();
+                    }
                 }
             }
             else
@@ -77,7 +81,25 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.TreeViewPlugin
                 }
                 else
                 {
-                    elementTreeNode?.RefreshTreeNodes();
+                    var treeNodeRelativeDirectory = elementTreeNode.GetRelativePath();
+
+                    var elementNameModified = element.Name.Replace("\\", "/") + "/";
+
+                    if(treeNodeRelativeDirectory != elementNameModified)
+                    {
+                        var desiredFolderForElement = FileManager.GetDirectory(element.Name, RelativeType.Relative);
+
+                        var newParentTreeNode = ElementViewWindow.GetTreeNodeByRelativePath(desiredFolderForElement);
+
+                        elementTreeNode.Parent.Remove(elementTreeNode);
+
+                        newParentTreeNode.Nodes.Add((elementTreeNode as TreeNodeWrapper).TreeNode);
+                    }
+
+                    if (elementTreeNode is TreeNodeWrapper wrapper && wrapper.TreeNode is BaseElementTreeNode baseElementTreeNode)
+                    {
+                        baseElementTreeNode.RefreshTreeNodes();
+                    }
                 }
             }
         }

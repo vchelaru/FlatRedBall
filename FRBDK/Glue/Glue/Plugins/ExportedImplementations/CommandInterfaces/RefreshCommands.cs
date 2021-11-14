@@ -72,20 +72,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void RefreshUi(StateSaveCategory category)
         {
-            BaseElementTreeNode treeNode = null;
+
+            ITreeNode treeNode = null;
             if (ProjectManager.ProjectBase != null)
             {
                 var element = Elements.ObjectFinder.Self.GetElementContaining(category);
-
-                if(element != null)
-                {
-                    treeNode = GlueState.Self.Find.ElementTreeNode(element);
-                }
-            }
-
-            if(treeNode != null)
-            {
-                MainGlueWindow.Self.BeginInvoke(new EventHandler(delegate { treeNode.RefreshStateCategoryUi(category); }));
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
             }
         }
 

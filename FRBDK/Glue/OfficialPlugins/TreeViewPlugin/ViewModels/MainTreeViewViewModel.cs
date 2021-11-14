@@ -166,11 +166,22 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         internal void RefreshTreeNodeFor(GlueElement element)
         {
+            if (element == null)
+            {
+                throw new ArgumentNullException(nameof(element));
+            }
             var elementTreeNode = GetElementTreeNode(element);
+
+            var project = GlueState.Self.CurrentGlueProject;
+
+            var shouldShow = !element.IsHiddenInTreeView &&
+                (
+                (element is ScreenSave asScreen && project.Screens.Contains(asScreen)) ||
+                (element is EntitySave asEntity && project.Entities.Contains(asEntity)));
 
             if (elementTreeNode == null)
             {
-                if (!element.IsHiddenInTreeView)
+                if (shouldShow)
                 {
                     if (element is ScreenSave screen)
                     {
@@ -186,25 +197,98 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
             else
             {
-                var isInProject =
-                    GlueState.Self.CurrentGlueProject.Screens.Contains(element) ||
-                    GlueState.Self.CurrentGlueProject.Entities.Contains(element);
-                if (element.IsHiddenInTreeView || isInProject == false)
+                if (!shouldShow)
                 {
-                    // remove it!
-                    if (element is ScreenSave screen)
-                    {
-                        ScreenRootNode.Children.Remove(elementTreeNode);
-                    }
-                    else if (element is EntitySave entitySave)
-                    {
-                        EntityRootNode.Children.Remove(elementTreeNode);
-                    }
+                    elementTreeNode.Parent?.Children.Remove(elementTreeNode);
                 }
                 else
                 {
+                    var treeNodeRelativeDirectory = ((ITreeNode) elementTreeNode).GetRelativePath();
+
+                    var elementNameModified = element.Name.Replace("\\", "/") + "/";
+
+                    if (treeNodeRelativeDirectory != elementNameModified)
+                    {
+                        var desiredFolderForElement = FileManager.GetDirectory(element.Name, RelativeType.Relative);
+
+                        var newParentTreeNode = GetTreeNodeByRelativePath(desiredFolderForElement);
+
+                        elementTreeNode.Parent.Remove(elementTreeNode);
+
+                        newParentTreeNode.Add(elementTreeNode);
+                        elementTreeNode.Parent = newParentTreeNode;
+                    }
+
+
                     elementTreeNode?.RefreshTreeNodes();
                 }
+            }
+        }
+
+        private NodeViewModel GetTreeNodeByRelativePath(string relativePath)
+        {
+            var start = StartOfRelative(relativePath, out string remainder);
+
+            NodeViewModel treeNode;
+            if (start == "Screens")
+            {
+                treeNode = ScreenRootNode;
+            }
+            else if (start == "Entities")
+            {
+                treeNode = EntityRootNode;
+            }
+            else
+            {
+                treeNode = GlobalContentRootNode;
+            }
+
+
+
+            if (!string.IsNullOrEmpty(remainder))
+            {
+                treeNode = GetByRelativePath(remainder, treeNode);
+            }
+
+            return treeNode;
+        }
+
+
+        static NodeViewModel GetByRelativePath(string path, NodeViewModel treeNode)
+        {
+            var start = StartOfRelative(path, out string remainder);
+
+            var matchingChild = treeNode.Children.FirstOrDefault(item => item.Text == start);
+
+            if (matchingChild != null)
+            {
+                if (string.IsNullOrEmpty(remainder))
+                {
+                    return matchingChild;
+                }
+                else
+                {
+                    return GetByRelativePath(remainder, matchingChild);
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        static string StartOfRelative(string relativePath, out string remainder)
+        {
+            if (relativePath.Contains('/'))
+            {
+                var indexOfSlash = relativePath.IndexOf('/');
+                remainder = relativePath.Substring(indexOfSlash + 1);
+                return relativePath.Substring(0, indexOfSlash);
+            }
+            else
+            {
+                remainder = string.Empty;
+                return relativePath;
             }
         }
 
@@ -462,15 +546,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         private NodeViewModel GetElementTreeNode(GlueElement element)
         {
-            if (element is ScreenSave)
-            {
-                return ScreenRootNode.Children.FirstOrDefault(item => item.Tag == element);
-            }
-            else if(element is EntitySave)
-            {
-                return EntityRootNode.Children.FirstOrDefault(item => item.Tag == element);
-            }
-            return null;
+            return GetTreeNodeByTag(element);
         }
 
         public NodeViewModel TreeNodeForDirectoryOrEntityNode(string containingDirection, NodeViewModel containingNode)

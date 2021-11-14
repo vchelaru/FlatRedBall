@@ -20,7 +20,7 @@ namespace FlatRedBall.Glue.Managers
 
         TreeNode TreeNodeByDirectory(string containingDirection, TreeNode containingNode);
 
-        BaseElementTreeNode ElementTreeNode(IElement element);
+        ITreeNode ElementTreeNode(IElement element);
 
         ITreeNode EntityTreeNode(EntitySave entitySave);
 
@@ -103,15 +103,15 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        public BaseElementTreeNode ElementTreeNode(IElement element)
+        public ITreeNode ElementTreeNode(IElement element)
         {
             if (element is ScreenSave)
             {
-                return ScreenTreeNode(element as ScreenSave);
+                return TreeNodeWrapper.CreateOrNull( ScreenTreeNode(element as ScreenSave));
             }
             else
             {
-                return TreeNodeByTag(element) as BaseElementTreeNode;
+                return TreeNodeByTag(element);
             }
         }
 
