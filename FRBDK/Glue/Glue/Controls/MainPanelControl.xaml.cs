@@ -375,7 +375,12 @@ namespace GlueFormsCore.Controls
 
         private void UserControl_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (HotkeyManager.Self.TryHandleKeys(e))
+            // If this is coming from a text box, don't try to apply hotkeys
+            // Maybe in the future we want to be selective, like only apply certain
+            // hotkeys (ctrl+f) but not others (delete)?
+            var shouldTryHandlingHotkey = e.OriginalSource is TextBox == false;
+
+            if (shouldTryHandlingHotkey && HotkeyManager.Self.TryHandleKeys(e))
             {
                 e.Handled = true;
             }
