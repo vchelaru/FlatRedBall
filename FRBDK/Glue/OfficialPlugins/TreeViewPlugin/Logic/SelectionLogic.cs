@@ -168,10 +168,13 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
                 {
                     treeNode.IsSelected = true;
                     treeNode.ExpandParentsRecursively();
-                    // If we don't do this, sometimes it doesn't scroll into view...
-                    await System.Threading.Tasks.Task.Delay(100);
-                    mainView.MainTreeView.ScrollIntoView(treeNode);
                 }
+                // If we don't do this, sometimes it doesn't scroll into view...
+                await System.Threading.Tasks.Task.Delay(120);
+
+                mainView.MainTreeView.UpdateLayout();
+
+                mainView.MainTreeView.ScrollIntoView(treeNode);
 
             }
 

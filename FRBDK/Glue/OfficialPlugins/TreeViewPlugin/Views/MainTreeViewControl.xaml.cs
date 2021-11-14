@@ -42,7 +42,8 @@ namespace OfficialPlugins.TreeViewPlugin.Views
         public MainTreeViewControl()
         {
             InitializeComponent();
-
+            
+            
 
         }
 
@@ -190,9 +191,19 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             }
         }
 
-        private void ClearSearchButton_Click(object sender, RoutedEventArgs e)
+        private async void ClearSearchButton_Click(object sender, RoutedEventArgs e)
         {
+            var whatWasSelected = SelectionLogic.CurrentNode?.Tag;
+
             ViewModel.SearchBoxText = string.Empty;
+            ViewModel.ScreenRootNode.IsExpanded = false;
+            ViewModel.EntityRootNode.IsExpanded = false;
+            ViewModel.GlobalContentRootNode.IsExpanded = false;
+            if (whatWasSelected != null)
+            {
+                SelectionLogic.SelectByTag(whatWasSelected);
+                SelectionLogic.CurrentNode.ExpandParentsRecursively();
+            }
         }
 
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)

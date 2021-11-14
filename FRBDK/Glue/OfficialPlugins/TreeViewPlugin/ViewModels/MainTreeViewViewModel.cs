@@ -20,9 +20,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
     {
         #region Fields/Properties
 
-        NodeViewModel ScreenRootNode;
-        NodeViewModel EntityRootNode;
-        NodeViewModel GlobalContentRootNode;
+        public NodeViewModel ScreenRootNode { get; private set; }
+        public NodeViewModel EntityRootNode { get; private set; }
+        public NodeViewModel GlobalContentRootNode { get; private set; }
 
         public NodeViewModel RootModel { get; set; }
 
@@ -97,7 +97,11 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public Visibility SearchButtonVisibility => (!string.IsNullOrEmpty(SearchBoxText)).ToVisibility();
 
         [DependsOn(nameof(IsSearchBoxFocused))]
-        public Visibility TipsVisibility => IsSearchBoxFocused.ToVisibility();
+        [DependsOn(nameof(SearchBoxText))]
+        public Visibility TipsVisibility => 
+            (IsSearchBoxFocused || 
+             // Consider the SearchTextBox, or else clicking off to select a tree view will adjust the size of the area above the list box, causing a mis-click
+             !string.IsNullOrWhiteSpace(SearchBoxText)).ToVisibility();
 
         [DependsOn(nameof(SearchBoxText))]
         public string FilterResultsInfo =>

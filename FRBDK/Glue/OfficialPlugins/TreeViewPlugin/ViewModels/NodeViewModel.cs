@@ -523,6 +523,10 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     {
                         VisibleChildren.Add(child);
                     }
+                    else
+                    {
+                        child.IsExpanded = false;
+                    }
                 }
 
                 if(Tag == null && VisibleChildren.Count == 0 && !string.IsNullOrWhiteSpace(MainTreeViewViewModel.PrefixText))
