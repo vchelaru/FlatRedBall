@@ -727,6 +727,7 @@ namespace FlatRedBall.Math.Splines
                 while (mSplinePoints.Count > mSplinePointsCircles.Count)
                 {
                     Circle newCircle = ShapeManager.AddCircle();
+                    newCircle.Name = $"Spline {Name} Circle";
                     mSplinePointsCircles.Add(newCircle);
                 }
 
@@ -749,6 +750,7 @@ namespace FlatRedBall.Math.Splines
                 while (numberOfRectangles > mPathRectangles.Count)
                 {
                     AxisAlignedRectangle aar = ShapeManager.AddAxisAlignedRectangle();
+                    aar.Name = $"Splne {Name} Rectangle";
                     mPathRectangles.Add(aar);
                 }
 

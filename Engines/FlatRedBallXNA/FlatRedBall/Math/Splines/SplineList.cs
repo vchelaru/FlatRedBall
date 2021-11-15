@@ -25,6 +25,17 @@ namespace FlatRedBall.Math.Splines
 			set;
         }
 
+        public bool Visible
+        {
+            set
+            {
+                foreach(var spline in this)
+                {
+                    spline.Visible = value;
+                }
+            }
+        }
+
         #region XML Docs
         /// <summary>
         /// Instantiates an empty SplineList
