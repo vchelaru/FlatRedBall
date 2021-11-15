@@ -422,12 +422,15 @@ namespace GlueControl.Editing
             // This was originally how we got instances, but this adds a ton of overhead when dealing with screens
             // which have lots of variable assignments. Instead, we just rely on the calls above and it makes performance
             // way better. Specifically, with this code in, large copy paste blocks make the app unusable.
-            //if (targetInstance == null)
-            //{
-            //    object foundObject;
-            //    screen.GetInstance(objectName, screen, out _, out foundObject);
-            //    targetInstance = foundObject as INameable;
-            //}
+            // Update - but there are things like Paths which do not exist in any manager, but which may be edited, so we 
+            // still need to have this in. Maybe we can make copy/paste faster some other way without removing this....
+            if (targetInstance == null)
+            {
+                object foundObject;
+                screen.GetInstance(objectName, screen, out _, out foundObject);
+                targetInstance = foundObject as INameable;
+            }
+
 
             return targetInstance;
         }

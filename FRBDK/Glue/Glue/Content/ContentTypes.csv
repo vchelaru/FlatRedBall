@@ -10,7 +10,7 @@ Sprite Rig (.srgx),,QualifiedType = FlatRedBall.ManagedSpriteGroups.SpriteRig,Fl
 Node Network (.nntx),TRUE,QualifiedType = FlatRedBall.AI.Pathfinding.NodeNetwork,FlatRedBall.Content.AI.Pathfinding.NodeNetworkSave,nntx,,,,,,,,,,this.Visible = false,,FALSE,,,,FALSE,,,,"FindByName(""OBJECTNAME"")",FALSE,FALSE,,FALSE,FALSE,,NodeNetworkImporter,NodeNetworkProcessor,FALSE,,
 Spreadsheet (.csv),,,,csv,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-Spline List (.splx),,QualifiedType = FlatRedBall.Math.Splines.SplineList,FlatRedBall.Content.Math.Splines.SplineSaveList,splx,,,,,,,,,,,,FALSE,,,,FALSE,,,,"FindByName(""OBJECTNAME"")",FALSE,TRUE,,FALSE,FALSE,,,,FALSE,,
+Spline List (.splx),,QualifiedType = FlatRedBall.Math.Splines.SplineList,FlatRedBall.Content.Math.Splines.SplineSaveList,splx,,,,,,,,,,this.Visible = false,,FALSE,,,,FALSE,,,,"FindByName(""OBJECTNAME"")",FALSE,TRUE,,FALSE,FALSE,,,,FALSE,,
 Text (.txt),,QualifiedType = System.String,,txt,,,,,,,,,,,,FALSE,,,,FALSE,,,,,FALSE,FALSE,,TRUE,TRUE,,,,FALSE,,
 XML File (.xml),,,,xml,,,,,,,,,,,,FALSE,,,,FALSE,,,,,FALSE,FALSE,,FALSE,FALSE,,,,FALSE,,
 Texture (.bmp),,QualifiedType = Microsoft.Xna.Framework.Graphics.Texture2D,,bmp,,,,,,,,,,,,FALSE,,,,FALSE,,,,,FALSE,FALSE,,FALSE,FALSE,,TextureImporter,TextureProcessor,FALSE,,

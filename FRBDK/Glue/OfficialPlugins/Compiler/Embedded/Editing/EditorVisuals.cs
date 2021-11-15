@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FlatRedBall.Graphics.Animation;
+using FlatRedBall.Math.Paths;
 
 namespace GlueControl.Editing
 {
@@ -30,6 +31,9 @@ namespace GlueControl.Editing
 
         static int nextRectangle = 0;
         static List<AxisAlignedRectangle> Rectangles = new List<AxisAlignedRectangle>();
+
+        static int nextPolygon = 0;
+        static List<Polygon> Polygons = new List<Polygon>();
 
         static double lastFrameReset;
 
@@ -210,6 +214,82 @@ namespace GlueControl.Editing
             return rectangle;
         }
 
+        public static Polygon Polygon(Vector3 centerPosition, Color? color = null)
+        {
+            if (centerPosition.Z == Camera.Main.Z)
+            {
+                centerPosition.Z = 0;
+            }
+
+            Color polygonColor = color ?? Color.White;
+
+            // This screen is cleaning up, so don't make anymore objects:
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
+            {
+                return new Polygon();
+            }
+
+            TryResetEveryFrameValues();
+
+            if (nextPolygon == Polygons.Count)
+            {
+                Polygons.Add(ShapeManager.AddPolygon());
+            }
+
+            var polygon = Polygons[nextPolygon];
+            polygon.Name = $"EditorVisuals Polygon {nextPolygon}";
+            polygon.Visible = true;
+            polygon.Position = centerPosition;
+            polygon.Color = polygonColor;
+            nextPolygon++;
+
+            return polygon;
+        }
+
+        public static Polygon DrawPath(Path path)
+        {
+
+            var pathPolygon = Polygon(Vector3.Zero);
+
+
+            if (path != null && path.TotalLength > 0)
+            {
+                var points = GetPoints(path, flipHorizontally: false);
+                pathPolygon.Points = points;
+            }
+
+            return pathPolygon;
+        }
+
+        public static List<FlatRedBall.Math.Geometry.Point> GetPoints(Path pathInstance, bool flipHorizontally)
+        {
+            var points = new List<FlatRedBall.Math.Geometry.Point>();
+
+            const float pointFrequency = 4;
+            var pathLength = pathInstance.TotalLength;
+
+            for (float f = 0; f < pathLength; f += pointFrequency)
+            {
+                var pointAtLength = pathInstance.PointAtLength(f);
+
+                var point = new FlatRedBall.Math.Geometry.Point
+                {
+                    X = pointAtLength.X,
+                    Y = pointAtLength.Y
+                };
+
+                if (flipHorizontally)
+                {
+                    point.X *= -1;
+                }
+
+                points.Add(point);
+            }
+
+            //pathPolygon.Points = points;
+            return points;
+        }
+
         private static void TryResetEveryFrameValues()
         {
             if (lastFrameReset != TimeManager.CurrentTime)
@@ -236,11 +316,16 @@ namespace GlueControl.Editing
                 {
                     rectangle.Visible = false;
                 }
+                foreach (var polygon in Polygons)
+                {
+                    polygon.Visible = false;
+                }
                 nextText = 0;
                 nextArrow = 0;
                 nextLine = 0;
                 nextSprite = 0;
                 nextRectangle = 0;
+                nextPolygon = 0;
             }
         }
 
@@ -275,6 +360,12 @@ namespace GlueControl.Editing
                 ShapeManager.Remove(rectangle);
             }
             Rectangles.Clear();
+
+            foreach (var polygon in Polygons)
+            {
+                ShapeManager.Remove(polygon);
+            }
+            Polygons.Clear();
         }
 
         public void Update()
