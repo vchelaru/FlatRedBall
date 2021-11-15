@@ -589,6 +589,19 @@ namespace GlueControl
         {
             var value = setEditMode.IsInEditMode;
 #if SupportsEditMode
+
+            var response = new Dtos.GeneralCommandResponse
+            {
+                Succeeded = true,
+            };
+
+            if (ScreenManager.CurrentScreen == null)
+            {
+                response.Succeeded = false;
+                response.Message = "The ScreenManager.CurrentScreen is null, so the screen cannot be restarted. Is the screen you are viewing abstract (such as GameScreen)? If so, this may be why the Screen hasn't been created.";
+
+            }
+
             if (value != FlatRedBall.Screens.ScreenManager.IsInEditMode)
             {
                 CameraLogic.RecordCameraForCurrentScreen();
@@ -615,14 +628,12 @@ namespace GlueControl
                 RestartScreenRerunCommands(applyRestartVariables: true, isInEditMode: value, shouldRecordCameraPosition: false, forceCameraToPreviousState: true);
             }
 
-            return new Dtos.GeneralCommandResponse
-            {
-                Succeeded = true,
-            };
+            return response;
 #endif
         }
 
         #endregion
+
 
         #region Move to Container
 
