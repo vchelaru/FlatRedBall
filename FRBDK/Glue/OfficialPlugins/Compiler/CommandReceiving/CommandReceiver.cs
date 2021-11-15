@@ -307,20 +307,24 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 modifiedObjects.Add(nos);
             }
 
-            GlueCommands.Self.GluxCommands.SaveGlux();
-            GlueCommands.Self.DoOnUiThread(GlueCommands.Self.RefreshCommands.RefreshVariables);
-
-            HashSet<GlueElement> nosParents = new HashSet<GlueElement>();
-            foreach(var nos in modifiedObjects)
+            TaskManager.Self.Add(() =>
             {
-                var nosParent = ObjectFinder.Self.GetElementContaining(nos);
-                nosParents.Add(nosParent);
-            }
+                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.DoOnUiThread(GlueCommands.Self.RefreshCommands.RefreshVariables);
 
-            foreach(var nosParent in nosParents)
-            {
-                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(nosParent);
-            }
+                HashSet<GlueElement> nosParents = new HashSet<GlueElement>();
+                foreach(var nos in modifiedObjects)
+                {
+                    var nosParent = ObjectFinder.Self.GetElementContaining(nos);
+                    nosParents.Add(nosParent);
+                }
+
+                foreach(var nosParent in nosParents)
+                {
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(nosParent);
+                }
+            }, $"Wrapping up assignment of {setVariableDtoList.SetVariableList.Count} variables");
+
         }
 
         private static object ConvertVariable(object value, ref string typeName, string variableName, NamedObjectSave owner,

@@ -69,9 +69,13 @@ namespace OfficialPlugins.TreeViewPlugin
                 {
                     SelectionLogic.SelectByTag(tag);
                 }
-                else
+                else if(selectedTreeNode != null)
                 {
                     SelectionLogic.SelectByPath(selectedTreeNode.GetRelativePath());
+                }
+                else
+                {
+                    SelectionLogic.SelectByTreeNode(null);
                 }
             }
         }
