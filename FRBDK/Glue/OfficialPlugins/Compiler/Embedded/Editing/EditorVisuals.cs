@@ -229,6 +229,13 @@ namespace GlueControl.Editing
                 return new Polygon();
             }
 
+            TryResetEveryFrameValues();
+
+            if (nextPolygon == Polygons.Count)
+            {
+                Polygons.Add(ShapeManager.AddPolygon());
+            }
+
             var polygon = Polygons[nextPolygon];
             polygon.Name = $"EditorVisuals Polygon {nextPolygon}";
             polygon.Visible = true;

@@ -237,7 +237,7 @@ namespace FlatRedBall.Math.Paths
 
             float radius;
 
-            if (intersection == null)
+            if (intersection == null || intersection == first || intersection == second)
             {
                 radius = (first - second).Length()/2.0f;
                 segment.CircleCenter = (first + second) / 2.0f;
