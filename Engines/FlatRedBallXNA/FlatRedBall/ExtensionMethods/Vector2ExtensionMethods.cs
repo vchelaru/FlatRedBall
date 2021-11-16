@@ -52,6 +52,19 @@ namespace Microsoft.Xna.Framework
             }
         }
 
+        public static Vector2 NormalizedOrRight(this Vector2 vector)
+        {
+            if (vector.X != 0 || vector.Y != 0)
+            {
+                vector.Normalize();
+                return vector;
+            }
+            else
+            {
+                return new Vector2(1,0);
+            }
+        }
+
         /// <summary>
         /// Returns a normalized vector. Throws an exception if the argument vector has a length of 0.
         /// </summary>
