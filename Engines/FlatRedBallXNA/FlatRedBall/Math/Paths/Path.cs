@@ -569,7 +569,7 @@ namespace FlatRedBall.Math.Paths
                 case nameof(PathSegment.EndX):
                 case nameof(PathSegment.EndY):
                 case nameof(PathSegment.ArcAngle):
-                    parsedValue = float.Parse(v2);
+                    parsedValue = float.Parse(v2, System.Globalization.CultureInfo.InvariantCulture);
                     apply = true;
                     break;
                 case nameof(PathSegment.AngleUnit):
