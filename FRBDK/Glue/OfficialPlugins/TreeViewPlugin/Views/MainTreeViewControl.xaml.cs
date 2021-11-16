@@ -239,5 +239,10 @@ namespace OfficialPlugins.TreeViewPlugin.Views
         {
             ViewModel.IsSearchBoxFocused = false;
         }
+
+        private void MainTreeView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            // todo - look at ElementViewWindow.cs ElementDoubleClick, extract that into common code
+        }
     }
 }
