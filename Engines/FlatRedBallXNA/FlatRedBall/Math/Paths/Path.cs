@@ -94,20 +94,13 @@ namespace FlatRedBall.Math.Paths
 
         #endregion
 
-        public void Clear()
-        {
-            Segments.Clear();
-            TotalLength = 0;
-            currentX = 0;
-            currentY = 0;
-        }
+        #region Adding Segments
 
         public void MoveTo(float x, float y)
         {
             var segment = GetSegmentToAbsolutePoint( x, y, SegmentType.Move);
             segment.CalculatedLength = 0;
         }
-
         public void MoveToRelative(float x, float y)
         {
             var segment = GetSegmentToAbsolutePoint(currentX + x, currentY + y, SegmentType.Move);
@@ -134,6 +127,23 @@ namespace FlatRedBall.Math.Paths
             Segments.Add(pathSegment);
             TotalLength += pathSegment.CalculatedLength;
 
+        }
+        PathSegment GetSegmentToAbsolutePoint(float absoluteX, float absoluteY, SegmentType segmentType)
+        {
+            var pathSegment = new PathSegment();
+
+            pathSegment.SegmentType = segmentType;
+
+            pathSegment.StartX = currentX;
+            pathSegment.StartY = currentY;
+
+            pathSegment.EndX = absoluteX;
+            pathSegment.EndY = absoluteY;
+
+            currentX = pathSegment.EndX;
+            currentY = pathSegment.EndY;
+
+            return pathSegment;
         }
 
         public void ShiftBy(float x, float y)
@@ -173,24 +183,6 @@ namespace FlatRedBall.Math.Paths
             TotalLength += pathSegment.CalculatedLength;
 
         }
-
-        public void FlipHorizontally(float xToFlipAbout = 0)
-        {
-            foreach(var segment in this.Segments)
-            {
-                segment.ArcAngle = segment.ArcAngle * -1;
-
-                var centerOffset = segment.CircleCenter.X - xToFlipAbout;
-                segment.CircleCenter.X = xToFlipAbout - centerOffset;
-
-                var endXOffset = segment.EndX - xToFlipAbout;
-                segment.EndX = xToFlipAbout - endXOffset;
-
-                var startXOffset = segment.StartX - xToFlipAbout;
-                segment.StartX = xToFlipAbout - startXOffset;
-            }
-        }
-
         void AssignArcLength(PathSegment segment)
         {
             var first = new Vector2(segment.StartX, segment.StartY);
@@ -367,24 +359,34 @@ namespace FlatRedBall.Math.Paths
             //}
 
         }
+        #endregion
 
-        PathSegment GetSegmentToAbsolutePoint(float absoluteX, float absoluteY, SegmentType segmentType)
+        public void Clear()
         {
-            var pathSegment = new PathSegment();
-
-            pathSegment.SegmentType = segmentType;
-
-            pathSegment.StartX = currentX;
-            pathSegment.StartY = currentY;
-
-            pathSegment.EndX = absoluteX;
-            pathSegment.EndY = absoluteY;
-
-            currentX = pathSegment.EndX;
-            currentY = pathSegment.EndY;
-
-            return pathSegment;
+            Segments.Clear();
+            TotalLength = 0;
+            currentX = 0;
+            currentY = 0;
         }
+
+        public void FlipHorizontally(float xToFlipAbout = 0)
+        {
+            foreach(var segment in this.Segments)
+            {
+                segment.ArcAngle = segment.ArcAngle * -1;
+
+                var centerOffset = segment.CircleCenter.X - xToFlipAbout;
+                segment.CircleCenter.X = xToFlipAbout - centerOffset;
+
+                var endXOffset = segment.EndX - xToFlipAbout;
+                segment.EndX = xToFlipAbout - endXOffset;
+
+                var startXOffset = segment.StartX - xToFlipAbout;
+                segment.StartX = xToFlipAbout - startXOffset;
+            }
+        }
+
+        #region Point, Length, Tangent at XXXX
 
         public Vector2 PointAtLength(float length)
         {
@@ -443,6 +445,32 @@ namespace FlatRedBall.Math.Paths
 
             return lengthSoFar;
         }
+
+        /// <summary>
+        /// Returns the tangent unit vector at the argument length. If the tangent cannot be calculated, then a unit vector
+        /// pointing to the right will be returned (a unit vector at angle 0).
+        /// </summary>
+        /// <remarks>
+        /// The tangent is calculated by looking slightly in front and slightly behind the path. Therefore, values near sharp corners,
+        /// or paths with wavy paths may return incorrect values.
+        /// </remarks>
+        /// <param name="length">The location along the Path.</param>
+        /// <param name="epsilon">The amount of distance to look in front and behind. Values which are very wavy may require a smaller epsilon. Paths with very large values may require a larger epsilon.</param>
+        /// <returns>A tangent unit vector, or a unit vector pointing to the right if a tangent cannot be calculated.</returns>
+        public Vector2 TangentAtLength(float length, float epsilon = 0.1f)
+        {
+            var startValue = length - epsilon;
+            var endValue = length + epsilon;
+
+            if (startValue < 0) startValue = 0;
+            if (endValue > TotalLength) endValue = TotalLength;
+
+            var tangent = PointAtLength(endValue) - PointAtLength(startValue);
+
+            return tangent.NormalizedOrRight();
+        }
+
+        #endregion
 
         public void FromJson(string serializedSegments)
         {
