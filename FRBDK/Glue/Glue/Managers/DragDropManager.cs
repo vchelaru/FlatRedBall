@@ -247,7 +247,6 @@ namespace FlatRedBall.Glue.Managers
             return succeeded;
         }
 
-
         private GeneralResponse HandleCreateCollisionRelationship(NamedObjectSave movingNos, NamedObjectSave targetNos)
         {
             PluginManager.ReactToCreateCollisionRelationshipsBetween(movingNos, targetNos);
@@ -1472,6 +1471,80 @@ namespace FlatRedBall.Glue.Managers
             }
 
             return true;
+        }
+
+        #endregion
+
+        #region External File
+
+        public void HandleDropExternalFileOnTreeNode(FilePath[] droppedFiles, ITreeNode targetNode)
+        {
+            ITreeNode directoryNode = null;
+            ITreeNode nodeDroppedOn = targetNode;
+            while (targetNode != null && !targetNode.IsEntityNode() && !targetNode.IsScreenNode())
+            {
+                if (directoryNode == null && targetNode.IsDirectoryNode())
+                    directoryNode = targetNode;
+
+                targetNode = targetNode.Parent;
+            }
+
+            var directoryPath = directoryNode == null ? null : directoryNode.GetRelativePath();
+
+            bool userCancelled = false;
+            if (targetNode == null)
+            {
+                GlueState.Self.CurrentTreeNode = targetNode;
+
+                foreach (var fileName in droppedFiles)
+                {
+                    string extension = fileName.Extension;
+
+                    if (extension == "entz" || extension == "scrz")
+                    {
+                        ElementImporter.ImportElementFromFile(fileName.FullPath, true);
+                    }
+                    else if (extension == "plug")
+                    {
+                        Plugins.PluginManager.InstallPlugin(InstallationType.ForUser, fileName.FullPath);
+                    }
+                    else
+                    {
+                        AddExistingFileManager.Self.AddSingleFile(fileName, ref userCancelled);
+                    }
+                }
+
+                GluxCommands.Self.SaveGlux();
+            }
+            else if (targetNode.Tag is ScreenSave || targetNode.Tag is EntitySave)
+            {
+                bool any = false;
+                foreach (var fileName in droppedFiles)
+                {
+                    // First select the entity
+                    GlueState.Self.CurrentTreeNode = targetNode;
+
+                    if (string.IsNullOrEmpty(directoryPath))
+                    {
+                        directoryPath = targetNode.GetRelativePath();
+                    }
+
+
+                    var element = GlueState.Self.CurrentElement;
+                    FlatRedBall.Glue.Managers.TaskManager.Self.Add(() =>
+                    {
+                        var newRfs = AddExistingFileManager.Self.AddSingleFile(fileName.FullPath, ref userCancelled, element, directoryPath);
+
+                        GlueCommands.Self.DoOnUiThread(() => GlueCommands.Self.SelectCommands.Select(newRfs));
+                    },
+                        "Add file " + fileName);
+                    any = true;
+                }
+                if (any)
+                {
+                    GluxCommands.Self.SaveGlux();
+                }
+            }
         }
 
         #endregion

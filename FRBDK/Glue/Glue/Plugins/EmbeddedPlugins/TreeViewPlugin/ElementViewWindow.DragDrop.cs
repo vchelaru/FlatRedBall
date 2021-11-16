@@ -148,100 +148,17 @@ namespace FlatRedBall.Glue.FormHelpers
             TreeNode targetNode = null;
 
             TreeView tree = (TreeView)sender;
-            TreeNode directoryNode = null;
 
 
             Point pt = new Point(e.X, e.Y);
             pt = tree.PointToClient(pt);
             targetNode = tree.GetNodeAt(pt);
 
-            TreeNode nodeDroppedOn = targetNode;
+            FilePath[] droppedFiles = ((string[])e.Data.GetData("FileDrop"))
+                .Select(item => new FilePath(item))
+                .ToArray();
 
-            while (targetNode != null && !targetNode.IsEntityNode() && !targetNode.IsScreenNode())
-            {
-                if (directoryNode == null && targetNode.IsDirectoryNode())
-                    directoryNode = targetNode;
-
-                targetNode = targetNode.Parent;
-            }
-
-            var directoryPath = directoryNode == null ? null : directoryNode.GetRelativePath();
-
-            bool userCancelled = false;
-
-            if (targetNode == null)
-            {
-                ElementViewWindow.SelectedNodeOld = nodeDroppedOn;
-
-                var droppedFiles = (string[])e.Data.GetData("FileDrop");
-
-                foreach (var fileName in droppedFiles)
-                {
-                    string extension = FileManager.GetExtension(fileName);
-
-                    if (extension == "entz" || extension == "scrz")
-                    {
-                        ElementImporter.ImportElementFromFile(fileName, true);
-                    }
-                    else if(extension == "plug")
-                    {
-                        Plugins.PluginManager.InstallPlugin(InstallationType.ForUser, fileName);
-                    }
-                    else
-                    {
-                        AddExistingFileManager.Self.AddSingleFile(fileName, ref userCancelled);
-                    }
-                }
-
-                GluxCommands.Self.SaveGlux();
-            }
-            else if (targetNode.Tag is ScreenSave || targetNode.Tag is EntitySave)
-            {
-                bool any = false;
-
-                var filesToAdd = ((string[])e.Data.GetData("FileDrop"))
-                    .Select(item => new FilePath(item));
-
-                // gather all dependencies
-                // reverse loop and we'll add at the end
-                foreach(var file in filesToAdd)
-                {
-
-                }
-
-
-                foreach (var fileName in filesToAdd)
-                {
-                    // First select the entity
-                    ElementViewWindow.SelectedNodeOld = targetNode;
-
-
-                    var element = GlueState.Self.CurrentElement;
-                    if(string.IsNullOrEmpty(directoryPath))
-                    {
-                        directoryPath = targetNode.GetRelativePath();
-                    }
-            
-
-                    FlatRedBall.Glue.Managers.TaskManager.Self.Add(() =>
-                        {
-                            var newRfs = AddExistingFileManager.Self.AddSingleFile(fileName.FullPath, ref userCancelled, element, directoryPath);
-
-                            GlueCommands.Self.DoOnUiThread(() => GlueCommands.Self.SelectCommands.Select(newRfs));
-                        },
-                        "Add file " + fileName);
-                    any = true;
-                }
-                if (any)
-                {
-                    GluxCommands.Self.SaveGlux();
-                }
-            }
+            DragDropManager.Self.HandleDropExternalFileOnTreeNode(droppedFiles, TreeNodeWrapper.CreateOrNull( targetNode));
         }
-
-
-
-
-
     }
 }

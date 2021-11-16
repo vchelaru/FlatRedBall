@@ -1,10 +1,12 @@
 ﻿using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.IO;
 using OfficialPlugins.TreeViewPlugin.Logic;
 using OfficialPlugins.TreeViewPlugin.ViewModels;
 using PropertyTools.Wpf;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -115,17 +117,40 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         private void MainTreeView_Drop(object sender, DragEventArgs e)
         {
+            if(e.Data.GetDataPresent("FileDrop"))
+            {
+                HandleDropFileFromExplorerWindow(e);
+            }
+            else
+            {
+                HandleDropTreeNodeOnTreeNode(e);
+            }
+        }
+
+        private void HandleDropFileFromExplorerWindow(DragEventArgs e)
+        {
+            FilePath[] droppedFiles = ((string[])e.Data.GetData("FileDrop"))
+                .Select(item => new FilePath(item))
+                .ToArray();
+
+            var targetNode = (e.OriginalSource as FrameworkElement).DataContext as NodeViewModel;
+
+            DragDropManager.Self.HandleDropExternalFileOnTreeNode(droppedFiles, targetNode);
+        }
+
+        private void HandleDropTreeNodeOnTreeNode(DragEventArgs e)
+        {
             var objectDragged = e.Data.GetData("NodeViewModel");
 
             var targetNode = (e.OriginalSource as FrameworkElement).DataContext as NodeViewModel;
 
-            if(objectDragged is NodeViewModel treeNodeMoving)
+            if (objectDragged is NodeViewModel treeNodeMoving)
             {
-                if(ButtonPressed == LeftOrRight.Left || targetNode == treeNodeMoving)
+                if (ButtonPressed == LeftOrRight.Left || targetNode == treeNodeMoving)
                 {
                     // do something here...
                     DragDropManager.DragDropTreeNode(targetNode, treeNodeMoving);
-                    if(ButtonPressed == LeftOrRight.Right)
+                    if (ButtonPressed == LeftOrRight.Right)
                     {
                         RightClickContextMenu.IsOpen = true;// test this
                     }
@@ -149,7 +174,6 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 }
             }
         }
-
 
         public object CreateWpfItemFor(GlueFormsCore.FormHelpers.GeneralToolStripMenuItem item)
         {
