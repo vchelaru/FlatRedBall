@@ -600,7 +600,7 @@ namespace GlueControl.Editing
             {
                 CurrentNamedObjects.Clear();
             }
-            if (!CurrentNamedObjects.Contains(namedObject))
+            if (namedObject != null && !CurrentNamedObjects.Contains(namedObject))
             {
                 CurrentNamedObjects.Add(namedObject);
             }
