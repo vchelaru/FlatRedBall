@@ -51,7 +51,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             get => snapshot.CurrentTreeNode;
             set
             {
-                MainExplorerPlugin.Self.ElementTreeView.SelectedNode = value;
+                GlueCommands.Self.DoOnUiThread(() => MainExplorerPlugin.Self.ElementTreeView.SelectedNode = value);
             }
         }
 

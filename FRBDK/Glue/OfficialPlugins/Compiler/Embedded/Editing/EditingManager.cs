@@ -575,14 +575,14 @@ namespace GlueControl.Editing
 
         public void SetCurrentGlueElement(GlueElement glueElement)
         {
-            if (CurrentNamedObjects.Any(item => item == null))
+            if (glueElement?.AllNamedObjects.Any(item => item == null) == true)
             {
-                throw new Exception("There are null items in the CurrentNamedObjects, there shouldn't be!");
+                throw new ArgumentException($"There are null items in the the glueElement being sent over, there shouldn't be!\n{glueElement}");
             }
-
             var oldGlueElement = CurrentGlueElement;
 
             CurrentGlueElement = glueElement;
+
 
             var oldNames = CurrentNamedObjects.Where(item => item != null).Select(item => item.InstanceName).ToArray();
             CurrentNamedObjects.Clear();

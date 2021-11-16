@@ -254,7 +254,18 @@ namespace GlueControl
 
             bool isOwnerScreen = false;
 
-            Editing.EditingManager.Self.SetCurrentGlueElement(selectObjectDto.GlueElement);
+            try
+            {
+                Editing.EditingManager.Self.SetCurrentGlueElement(selectObjectDto.GlueElement);
+            }
+            catch (ArgumentException e)
+            {
+                var message =
+                    $"The command to select {selectObjectDto.NamedObject} in {selectObjectDto.GlueElement} " +
+                    $"threw an exception because the Glue object has a null object.  Inner details:{e}";
+
+                throw new ArgumentException(message);
+            }
 
             if (matchesCurrentScreen)
             {
@@ -404,6 +415,7 @@ namespace GlueControl
         }
 
         #endregion
+
 
         #region Rename
 
