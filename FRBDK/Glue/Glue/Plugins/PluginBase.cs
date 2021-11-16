@@ -100,7 +100,7 @@ namespace FlatRedBall.Glue.Plugins
 
         public void Focus()
         {
-            Page.Focus();
+            GlueCommands.Self.DoOnUiThread(() => Page.Focus());
             Page.LastTimeClicked = DateTime.Now;
         }
 

@@ -340,6 +340,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public ReferencedFileSave AddReferencedFileToGlobalContent(string fileToAdd, bool useFullPathAsName)
         {
+
             if (FileManager.IsRelative(fileToAdd) == false)
             {
                 throw new ArgumentException("The argument fileToAdd must be relative to the Glue project");
@@ -382,6 +383,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void AddReferencedFileToGlobalContent(ReferencedFileSave referencedFileSave)
         {
+            if(TaskManager.Self.IsInTask() == false)
+            {
+                int m = 3;
+            }
             var project = GlueState.Self.CurrentGlueProject;
             project.GlobalFiles.Add(referencedFileSave);
             project.GlobalContentHasChanged = true;

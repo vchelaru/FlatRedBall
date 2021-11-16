@@ -61,7 +61,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
                 if (value is TreeNodeWrapper asWrapper)
                 {
-                    MainExplorerPlugin.Self.ElementTreeView.SelectedNode = asWrapper.TreeNode;
+                    GlueCommands.Self.DoOnUiThread(() => MainExplorerPlugin.Self.ElementTreeView.SelectedNode = value);
                 }
             }
         }
