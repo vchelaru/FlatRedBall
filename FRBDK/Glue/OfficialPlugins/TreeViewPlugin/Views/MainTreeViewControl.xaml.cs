@@ -64,7 +64,13 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         private void MainTreeView_KeyDown(object sender, KeyEventArgs e)
         {
-            if(HotkeyManager.Self.TryHandleKeys(e))
+            if(e.Key == Key.Enter)
+            {
+                var selectedNode = SelectionLogic.CurrentNode;
+                GlueCommands.Self.TreeNodeCommands.HandleTreeNodeDoubleClicked(selectedNode);
+                e.Handled = true;
+            }
+            else if(HotkeyManager.Self.TryHandleKeys(e))
             {
                 e.Handled = true;
             }
