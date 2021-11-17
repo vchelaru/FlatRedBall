@@ -544,7 +544,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         private TreeNode FindByTagRecursiveInner(TreeNode treeNode, object tag)
         {
-            foreach (TreeNode child in this.treeNode.Nodes)
+            foreach (TreeNode child in treeNode.Nodes)
             {
                 if (child.Tag == tag)
                 {

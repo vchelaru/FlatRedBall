@@ -668,7 +668,7 @@ namespace FlatRedBall.Glue.Managers
                 
                 if (isValidDrop)
                 {
-                    newTreeNode = MoveEntityOntoElement(treeNodeMoving, targetNode, newTreeNode);
+                    newTreeNode = MoveEntityOntoElement(treeNodeMoving, targetNode);
                 }
             }
 
@@ -809,8 +809,9 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        private ITreeNode MoveEntityOntoElement(ITreeNode treeNodeMoving, ITreeNode targetNode, ITreeNode newTreeNode)
+        private ITreeNode MoveEntityOntoElement(ITreeNode treeNodeMoving, ITreeNode targetNode)
         {
+            ITreeNode newTreeNode = null;
             EntitySave entitySaveMoved = treeNodeMoving.Tag as EntitySave;
 
             #region Get the IElement elementToCreateIn
