@@ -5,6 +5,7 @@ using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 
 namespace OfficialPlugins.TreeViewPlugin.ViewModels
@@ -31,7 +32,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             string relativeDirectory = ((ITreeNode)this).GetRelativePath();
 
 
-            AddDirectoryNodesRecursively(ProjectManager.MakeAbsolute(relativeDirectory, true), this);
+            AddAndRemoveDirectoryNodesRecursively(ProjectManager.MakeAbsolute(relativeDirectory, true), this);
 
 
 
@@ -194,7 +195,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
         }
 
-        private void AddDirectoryNodesRecursively(string currentDirectory, NodeViewModel treeNode)
+        private void AddAndRemoveDirectoryNodesRecursively(string currentDirectory, NodeViewModel treeNode)
         {
             if (System.IO.Directory.Exists(currentDirectory))
             {
@@ -230,7 +231,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 #endregion
 
 
-                foreach (var subNode in treeNode.Children)
+                foreach (var subNode in treeNode.Children.ToArray())
                 {
                     if (((ITreeNode)subNode).IsFolderInFilesContainerNode())
                     {
@@ -238,13 +239,17 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
                         subDirectory = ProjectManager.MakeAbsolute(subDirectory, true);
 
-                        AddDirectoryNodesRecursively(subDirectory, subNode);
+                        AddAndRemoveDirectoryNodesRecursively(subDirectory, subNode);
 
                     }
 
                 }
             }
-
+            else if((treeNode as ITreeNode).IsFilesContainerNode() == false &&
+                (treeNode as ITreeNode).IsGlobalContentContainerNode() == false)
+            {
+                treeNode.Parent.Remove(treeNode);
+            }
         }
 
         private void RemoveTreeNodesForRemovedReferenceFileSavesIn(ObservableCollection<NodeViewModel> currentNodeList, List<ReferencedFileSave> referencedFiles, IElement container)
