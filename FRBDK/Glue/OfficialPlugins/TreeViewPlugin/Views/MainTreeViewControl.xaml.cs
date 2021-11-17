@@ -1,11 +1,14 @@
 ﻿using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 using OfficialPlugins.TreeViewPlugin.Logic;
 using OfficialPlugins.TreeViewPlugin.ViewModels;
 using PropertyTools.Wpf;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -243,6 +246,8 @@ namespace OfficialPlugins.TreeViewPlugin.Views
         private void MainTreeView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             // todo - look at ElementViewWindow.cs ElementDoubleClick, extract that into common code
+            var selectedNode = SelectionLogic.CurrentNode;
+            GlueCommands.Self.TreeNodeCommands.HandleTreeNodeDoubleClicked(selectedNode);
         }
     }
 }

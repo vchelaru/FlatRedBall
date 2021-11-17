@@ -26,6 +26,7 @@ using System.Collections.ObjectModel;
 using GlueFormsCore.Controls;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.FormHelpers;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -335,7 +336,7 @@ namespace FlatRedBall.Glue.Plugins
 
         public Action<NamedObjectSave, NamedObjectSave> ReactToCreateCollisionRelationshipsBetween { get; protected set; }
 
-        public Func<TreeNode, bool> TryHandleTreeNodeDoubleClicked { get; protected set; }
+        public Func<ITreeNode, bool> TryHandleTreeNodeDoubleClicked { get; protected set; }
 
         public Action<ReferencedFileSave> ReactToFileBuildCommand { get; protected set; }
 

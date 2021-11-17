@@ -1977,7 +1977,7 @@ namespace FlatRedBall.Glue.Plugins
             return toReturn;
         }
 
-        public static bool TryHandleTreeNodeDoubleClicked(TreeNode treeNode)
+        public static bool TryHandleTreeNodeDoubleClicked(ITreeNode treeNode)
         {
             bool handled = false;
 

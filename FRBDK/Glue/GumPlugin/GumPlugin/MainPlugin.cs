@@ -379,7 +379,7 @@ namespace GumPlugin
             }
         }
 
-        private bool HandleTreeNodeDoubleClicked(TreeNode arg)
+        private bool HandleTreeNodeDoubleClicked(ITreeNode arg)
         {
             var nos = arg.Tag as NamedObjectSave;
 

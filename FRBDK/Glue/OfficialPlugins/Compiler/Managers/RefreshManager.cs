@@ -234,7 +234,7 @@ namespace OfficialPlugins.Compiler.Managers
             }
         }
 
-        internal bool HandleTreeNodeDoubleClicked(TreeNode arg)
+        internal bool HandleTreeNodeDoubleClicked(ITreeNode arg)
         {
             if(arg.Tag is NamedObjectSave asNos)
             {

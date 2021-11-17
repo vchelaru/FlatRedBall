@@ -124,7 +124,8 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
                 //    GlueState.Self.CurrentScreenSave = element as ScreenSave;
                 //}
                 // cheating, this will eventually go away:
-                ElementViewWindow.SelectByRelativePath((nodeViewModel as ITreeNode).GetRelativePath());
+                //ElementViewWindow.SelectByRelativePath((nodeViewModel as ITreeNode).GetRelativePath());
+                GlueState.Self.CurrentTreeNode = nodeViewModel;
             }
 
             RefreshRightClickMenu();

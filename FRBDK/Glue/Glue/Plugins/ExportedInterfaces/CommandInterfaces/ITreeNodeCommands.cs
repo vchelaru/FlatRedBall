@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.SaveClasses;
+﻿using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
@@ -61,5 +62,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <typeparam name="T">Type of value object</typeparam>
         T GetProperty<T>(IElement element, string name);
 
+        void HandleTreeNodeDoubleClicked(ITreeNode treeNode);
     }
 }
