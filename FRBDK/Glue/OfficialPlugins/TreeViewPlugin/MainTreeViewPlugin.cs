@@ -60,7 +60,7 @@ namespace OfficialPlugins.TreeViewPlugin
             this.ReactToItemSelectHandler += HandleItemSelected;
         }
 
-        private void HandleItemSelected(ITreeNode selectedTreeNode)
+        private async void HandleItemSelected(ITreeNode selectedTreeNode)
         {
             var tag = selectedTreeNode?.Tag;
             if(SelectionLogic.IsUpdatingSelectionOnGlueEvent )
@@ -69,13 +69,17 @@ namespace OfficialPlugins.TreeViewPlugin
                 {
                     SelectionLogic.SelectByTag(tag);
                 }
+                else if(selectedTreeNode is NodeViewModel vm)
+                {
+                    await SelectionLogic.SelectByTreeNode(vm);
+                }
                 else if(selectedTreeNode != null)
                 {
                     SelectionLogic.SelectByPath(selectedTreeNode.GetRelativePath());
                 }
                 else
                 {
-                    SelectionLogic.SelectByTreeNode(null);
+                    await SelectionLogic.SelectByTreeNode(null);
                 }
             }
         }

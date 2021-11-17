@@ -135,7 +135,10 @@ namespace FlatRedBall.Glue.Managers
         private static void HandleDeletePressed()
         {
             var treeNode = GlueState.Self.CurrentTreeNode;
-            if(treeNode.IsFilesContainerNode() || treeNode.IsFolderInFilesContainerNode() || treeNode.IsDirectoryNode())
+            if(
+                // Don't try to delete the root Files folder
+                //treeNode.IsFilesContainerNode() || 
+                treeNode.IsFolderInFilesContainerNode() || treeNode.IsDirectoryNode())
             {
                 RightClickHelper.DeleteFolderClick(treeNode);
             }
