@@ -2416,7 +2416,7 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-        static void DeleteFolderClick(ITreeNode targetNode)
+        public static void DeleteFolderClick(ITreeNode targetNode)
         {
             // delete folder, deletefolder
 

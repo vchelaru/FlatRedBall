@@ -48,12 +48,13 @@ namespace FlatRedBall.Glue.Managers
                     GlueCommands.Self.DialogCommands.GoToDefinitionOfSelection();
                     return true;
                 case Keys.Delete:
-                    RightClickHelper.RemoveFromProjectToolStripMenuItem();
+                    HandleDeletePressed();
                     return true;
                 default:
                     return false;
             }
         }
+
 
         public bool TryHandleKeys(System.Windows.Input.KeyEventArgs e)
         {
@@ -125,11 +126,23 @@ namespace FlatRedBall.Glue.Managers
                     GlueCommands.Self.DialogCommands.GoToDefinitionOfSelection();
                     return true;
                 case Key.Delete:
-                    RightClickHelper.RemoveFromProjectToolStripMenuItem();
+                    HandleDeletePressed();
                     return true;
             }
 
             return false;
+        }
+        private static void HandleDeletePressed()
+        {
+            var treeNode = GlueState.Self.CurrentTreeNode;
+            if(treeNode.IsFilesContainerNode() || treeNode.IsFolderInFilesContainerNode() || treeNode.IsDirectoryNode())
+            {
+                RightClickHelper.DeleteFolderClick(treeNode);
+            }
+            else
+            {
+                RightClickHelper.RemoveFromProjectToolStripMenuItem();
+            }
         }
     }
 }
