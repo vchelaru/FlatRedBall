@@ -21,7 +21,8 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
 
         static NodeViewModel currentNode;
 
-        public static bool IsUpdatingSelectionOnGlueEvent = true;
+        public static bool IsUpdatingThisSelectionOnGlueEvent = true;
+        public static bool IsPushingSelectionOutToGlue = true;
 
         public static NodeViewModel CurrentNode
         {
@@ -72,65 +73,69 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
 
         public static void HandleSelected(NodeViewModel nodeViewModel)
         {
-            IsUpdatingSelectionOnGlueEvent = false;
+            IsUpdatingThisSelectionOnGlueEvent = false;
 
             currentNode = nodeViewModel;
 
-            var tag = nodeViewModel.Tag;
+            if(IsPushingSelectionOutToGlue)
+            {
+                var tag = nodeViewModel.Tag;
 
-            if (tag is NamedObjectSave nos)
-            {
-                GlueState.Self.CurrentNamedObjectSave = nos;
-            }
-            else if (tag is ReferencedFileSave rfs)
-            {
-                GlueState.Self.CurrentReferencedFileSave = rfs;
-            }
-            else if (tag is CustomVariable variable)
-            {
-                GlueState.Self.CurrentCustomVariable = variable;
-            }
-            else if (tag is EventResponseSave eventResponse)
-            {
-                GlueState.Self.CurrentEventResponseSave = eventResponse;
-            }
-            else if (tag is StateSave state)
-            {
-                GlueState.Self.CurrentStateSave = state;
-            }
-            else if (tag is StateSaveCategory stateCategory)
-            {
-                GlueState.Self.CurrentStateSaveCategory = stateCategory;
-            }
-            else if (tag is EntitySave entitySave)
-            {
-                GlueState.Self.CurrentEntitySave = entitySave;
-            }
-            else if (tag is ScreenSave screenSave)
-            {
-                GlueState.Self.CurrentScreenSave = screenSave;
-            }
-            else if(tag == null)
-            {
-                //var element = ((ITreeNode)nodeViewModel).GetContainingElementTreeNode()?.Tag;
+                if (tag is NamedObjectSave nos)
+                {
+                    GlueState.Self.CurrentNamedObjectSave = nos;
+                }
+                else if (tag is ReferencedFileSave rfs)
+                {
+                    GlueState.Self.CurrentReferencedFileSave = rfs;
+                }
+                else if (tag is CustomVariable variable)
+                {
+                    GlueState.Self.CurrentCustomVariable = variable;
+                }
+                else if (tag is EventResponseSave eventResponse)
+                {
+                    GlueState.Self.CurrentEventResponseSave = eventResponse;
+                }
+                else if (tag is StateSave state)
+                {
+                    GlueState.Self.CurrentStateSave = state;
+                }
+                else if (tag is StateSaveCategory stateCategory)
+                {
+                    GlueState.Self.CurrentStateSaveCategory = stateCategory;
+                }
+                else if (tag is EntitySave entitySave)
+                {
+                    GlueState.Self.CurrentEntitySave = entitySave;
+                }
+                else if (tag is ScreenSave screenSave)
+                {
+                    GlueState.Self.CurrentScreenSave = screenSave;
+                }
+                else if(tag == null)
+                {
+                    //var element = ((ITreeNode)nodeViewModel).GetContainingElementTreeNode()?.Tag;
 
-                //if (element is EntitySave)
-                //{
-                //    GlueState.Self.CurrentEntitySave = element as EntitySave;
+                    //if (element is EntitySave)
+                    //{
+                    //    GlueState.Self.CurrentEntitySave = element as EntitySave;
 
-                //}
-                //else if(element is ScreenSave)
-                //{
-                //    GlueState.Self.CurrentScreenSave = element as ScreenSave;
-                //}
-                // cheating, this will eventually go away:
-                //ElementViewWindow.SelectByRelativePath((nodeViewModel as ITreeNode).GetRelativePath());
-                GlueState.Self.CurrentTreeNode = nodeViewModel;
+                    //}
+                    //else if(element is ScreenSave)
+                    //{
+                    //    GlueState.Self.CurrentScreenSave = element as ScreenSave;
+                    //}
+                    // cheating, this will eventually go away:
+                    //ElementViewWindow.SelectByRelativePath((nodeViewModel as ITreeNode).GetRelativePath());
+                    GlueState.Self.CurrentTreeNode = nodeViewModel;
+                }
             }
+
 
             RefreshRightClickMenu();
 
-            IsUpdatingSelectionOnGlueEvent = true;
+            IsUpdatingThisSelectionOnGlueEvent = true;
 
         }
 
@@ -167,10 +172,10 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             {
                 if (currentNode != null)
                 {
-                    SelectionLogic.IsUpdatingSelectionOnGlueEvent = false;
+                    SelectionLogic.IsUpdatingThisSelectionOnGlueEvent = false;
                     currentNode.IsSelected = false;
                     currentNode = null;
-                    SelectionLogic.IsUpdatingSelectionOnGlueEvent = true;
+                    SelectionLogic.IsUpdatingThisSelectionOnGlueEvent = true;
                 }
             }
             else

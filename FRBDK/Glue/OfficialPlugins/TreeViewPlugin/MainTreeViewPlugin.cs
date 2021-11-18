@@ -63,9 +63,11 @@ namespace OfficialPlugins.TreeViewPlugin
         private async void HandleItemSelected(ITreeNode selectedTreeNode)
         {
             var tag = selectedTreeNode?.Tag;
-            if(SelectionLogic.IsUpdatingSelectionOnGlueEvent )
+            if(SelectionLogic.IsUpdatingThisSelectionOnGlueEvent )
             {
-                if(tag != null)
+                var wasPushingSelection = SelectionLogic.IsPushingSelectionOutToGlue;
+                SelectionLogic.IsPushingSelectionOutToGlue = false;
+                if (tag != null)
                 {
                     SelectionLogic.SelectByTag(tag);
                 }
@@ -81,6 +83,8 @@ namespace OfficialPlugins.TreeViewPlugin
                 {
                     await SelectionLogic.SelectByTreeNode(null);
                 }
+                SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
+
             }
         }
 
