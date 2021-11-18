@@ -125,14 +125,16 @@ namespace FlatRedBall.Glue.Managers
                 case Key.F12:
                     GlueCommands.Self.DialogCommands.GoToDefinitionOfSelection();
                     return true;
-                case Key.Delete:
-                    HandleDeletePressed();
+                // Handle this in the tree view itself, otherwise all other controls
+                // start raising this
+                //case Key.Delete:
+                //    HandleDeletePressed();
                     return true;
             }
 
             return false;
         }
-        private static void HandleDeletePressed()
+        public static void HandleDeletePressed()
         {
             var treeNode = GlueState.Self.CurrentTreeNode;
             if(

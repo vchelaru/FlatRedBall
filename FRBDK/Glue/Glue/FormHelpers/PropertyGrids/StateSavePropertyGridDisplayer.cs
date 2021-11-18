@@ -66,10 +66,13 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
         private void UpdateIncludedAndExcluded(StateSave instance)
         {
             ResetToDefault();
-
+            IElement element = ObjectFinder.Self.GetElementContaining(instance);
+            if(element == null)
+            {
+                return;
+            }
             ExcludeMember("InstructionSaves");
             ExcludeMember("NamedObjectPropertyOverrides");
-            IElement element = ObjectFinder.Self.GetElementContaining(instance);
 
                         
             for (int i = 0; i < element.CustomVariables.Count; i++)

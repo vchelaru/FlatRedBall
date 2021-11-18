@@ -70,6 +70,11 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 GlueCommands.Self.TreeNodeCommands.HandleTreeNodeDoubleClicked(selectedNode);
                 e.Handled = true;
             }
+            else if(e.Key == Key.Delete)
+            {
+                HotkeyManager.HandleDeletePressed();
+                e.Handled = true;
+            }
             else if(HotkeyManager.Self.TryHandleKeys(e))
             {
                 e.Handled = true;
