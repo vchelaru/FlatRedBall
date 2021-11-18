@@ -47,14 +47,11 @@ namespace FlatRedBall.Glue.SaveClasses
 
             #region Set the existing instruction's value if there is one already
 
-            foreach (InstructionSave instructionSave in stateSave.InstructionSaves)
+            var foundInstruction = stateSave.InstructionSaves.FirstOrDefault(item => item.Member == variableName);
+            if(foundInstruction != null)
             {
-                if (instructionSave.Member == variableName)
-                {
-                    wasFound = true;
-                    instructionSave.Value = valueToSet;
-                    break;
-                }
+                wasFound = true;
+                foundInstruction.Value = valueToSet;
             }
 
             #endregion
@@ -63,23 +60,12 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 IElement container = ObjectFinder.Self.GetElementContaining(stateSave);
 
-                CustomVariable variable = null;
-
-                foreach (CustomVariable containedVariable in container.CustomVariables)
-                {
-                    if (containedVariable.Name == variableName)
-                    {
-                        variable = containedVariable;
-                        break;
-                    }
-                }
-
-
+                CustomVariable variable = container.CustomVariables.FirstOrDefault(item => item.Name == variableName);
 
                 InstructionSave instructionSave = new InstructionSave();
                 instructionSave.Value = valueToSet; // make it the default
 
-                instructionSave.Type = valueToSet.GetType().Name;
+                instructionSave.Type = variable?.Type ?? valueToSet.GetType().Name;
                 instructionSave.Member = variableName;
 			    // Create a new instruction
 

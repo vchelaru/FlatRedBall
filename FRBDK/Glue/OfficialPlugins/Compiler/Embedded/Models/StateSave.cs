@@ -15,7 +15,7 @@ namespace GlueControl.Models
             set;
         }
 
-        public List<InstructionSave> InstructionSaves = new List<InstructionSave>();
+        public List<InstructionSave> InstructionSaves { get; set; } = new List<InstructionSave>();
 
     }
 }

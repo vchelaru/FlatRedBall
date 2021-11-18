@@ -14,22 +14,13 @@ namespace FlatRedBall.Glue.SaveClasses
     [TypeConverter(typeof(SerializableExpandableObjectConverter))]
     public class StateSave
     {
-        #region Fields
-
-        public List<InstructionSave> InstructionSaves = new List<InstructionSave>();
-
-        #endregion
-
-        #region Properties
-
 
         public string Name
         {
             get;
             set;
         }
-
-        #endregion
+        public List<InstructionSave> InstructionSaves { get; set; } = new List<InstructionSave>();
 
         [XmlIgnore]
         [JsonIgnore]

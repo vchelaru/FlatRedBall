@@ -7,15 +7,15 @@ namespace FlatRedBall.Glue.SaveClasses
 {
     public class StateSaveCategory
     {
-        public List<StateSave> States = new List<StateSave>();
-
-        public List<string> ExcludedVariables { get; set; } = new List<string>();
-
         public string Name
         {
             get;
             set;
         }
+
+        public List<StateSave> States { get; set; } = new List<StateSave>();
+
+        public List<string> ExcludedVariables { get; set; } = new List<string>();
 
 
         public StateSaveCategory()
