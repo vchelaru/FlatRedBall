@@ -706,7 +706,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     if (sourceNode.IsEntityNode())
                     {
                         Add("Add Entity Instance", () => OnAddEntityInstanceClick(targetNode, sourceNode));
-                        Add("Add Entity List", () => OnAddEntityListClick(sourceNode));
+                        Add("Add Entity List", () => OnAddEntityListClick(targetNode, sourceNode));
                     }
                 }
                 else
@@ -741,7 +741,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     mAddEntityInstance.Click += (not, used) => OnAddEntityInstanceClick(targetNode, sourceNode);
 
                     var mAddEntityList = new GeneralToolStripMenuItem("Add Entity List");
-                    mAddEntityList.Click += (not, used) => OnAddEntityListClick(sourceNode);
+                    mAddEntityList.Click += (not, used) => OnAddEntityListClick(targetNode, sourceNode);
 
                     AddItem(mAddEntityInstance);
                     AddItem(mAddEntityList);
@@ -802,7 +802,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     mAddEntityInstance.Click += (not, used) => OnAddEntityInstanceClick(targetNode, sourceNode);
 
                     var mAddEntityList = new GeneralToolStripMenuItem("Add Entity List");
-                    mAddEntityList.Click += (not, used) => OnAddEntityListClick(sourceNode);
+                    mAddEntityList.Click += (not, used) => OnAddEntityListClick(targetNode, sourceNode);
 
                     AddItem(mAddEntityInstance);
                     AddItem(mAddEntityList);
@@ -1455,10 +1455,10 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-        static void OnAddEntityListClick(ITreeNode nodeMoving)
+        static void OnAddEntityListClick(ITreeNode nodeDroppedOn, ITreeNode nodeMoving)
         {
             DragDropManager.Self.CreateNewNamedObjectInElement(
-                GlueState.Self.CurrentElement,
+                nodeDroppedOn.GetContainingElementTreeNode().Tag as GlueElement,
                 nodeMoving.Tag as EntitySave,
                 true);
 
