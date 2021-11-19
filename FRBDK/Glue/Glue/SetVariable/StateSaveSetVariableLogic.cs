@@ -13,7 +13,7 @@ namespace FlatRedBall.Glue.SetVariable
     // Made public for unit tests
     public class StateSaveSetVariableLogic
     {
-        public void ReactToStateSaveChangedValue(StateSave stateSave, StateSaveCategory category, string changedMember, object oldValue, IElement parentObject, ref bool updateTreeView)
+        public void ReactToStateSaveChangedValue(StateSave stateSave, StateSaveCategory category, string changedMember, object oldValue, GlueElement stateOwner, ref bool updateTreeView)
         {
             if (changedMember != "Name")
             {
@@ -33,19 +33,16 @@ namespace FlatRedBall.Glue.SetVariable
                 }
                 else
                 {
-                    ReactToStateNameChange(oldValue, stateSave, category, parentObject);
+                    ReactToStateNameChange((string)oldValue, stateSave, category, stateOwner);
                 }
             }
         }
 
-        private static void ReactToStateNameChange(object oldValue, StateSave stateSave, StateSaveCategory category, IElement parentObject)
+        private static void ReactToStateNameChange(string oldValue, StateSave stateSave, StateSaveCategory category, GlueElement stateOwner)
         {
-            PluginManager.ReactToStateNameChange(parentObject as IElement, (string)oldValue, stateSave.Name);
+            PluginManager.ReactToStateNameChange(stateOwner, oldValue, stateSave.Name);
 
-
-            IElement parentAsElement = parentObject as IElement;
-
-            string name = parentObject.Name;
+            string name = stateOwner.Name;
 
             string typeToMatch = "VariableState";
             if (category != null)
@@ -53,8 +50,8 @@ namespace FlatRedBall.Glue.SetVariable
                 typeToMatch = "Current" + category.Name + "State";
             }
 
-            var matchingVariables = from variable in parentAsElement.CustomVariables
-                                    where variable.DefaultValue == oldValue &&
+            var matchingVariables = from variable in stateOwner.CustomVariables
+                                    where (variable.DefaultValue as string) == oldValue &&
                                     variable.Type == typeToMatch
                                     select variable;
 
@@ -63,52 +60,37 @@ namespace FlatRedBall.Glue.SetVariable
                 variable.DefaultValue = stateSave.Name;
             }
 
-            string variableName = stateSave.GetExposedVariableName(parentObject);
-            string variableType = stateSave.GetEnumTypeName(parentObject);
+            string variableName = stateSave.GetExposedVariableName(stateOwner);
+            string variableType = stateSave.GetEnumTypeName(stateOwner);
 
-            // Find any NOSs that use the ParentObject as their type
-            foreach (ScreenSave screenSave in ObjectFinder.Self.GlueProject.Screens)
+            var objectsReferencingElement = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(stateOwner);
+
+            HashSet<GlueElement> objectsToRegenerate = new HashSet<GlueElement>();
+
+            foreach (var nos in objectsReferencingElement)
             {
-                var customQuery = from nos in screenSave.AllNamedObjects
-                                    where nos.SourceType == SourceType.Entity &&
-                                    nos.SourceClassType == name
-                                    select nos;
-
-                foreach (var nos in customQuery)
+                var shouldRegenerate = false;
+                if (nos.CurrentState == oldValue)
                 {
-                    if (nos.CurrentState == (oldValue as string))
-                    {
-                        nos.CurrentState = stateSave.Name;
-                    }
-                    foreach (var variable in nos.InstructionSaves.Where(item => item.Member == variableName && (item.Value as string) == (oldValue as string)))
-                    {
-                        variable.Value = stateSave.Name;
-                    }
+                    nos.CurrentState = stateSave.Name;
+                    shouldRegenerate = true;
+                }
+                foreach (var variable in nos.InstructionSaves.Where(item => item.Member == variableName && (item.Value as string) == oldValue))
+                {
+                    variable.Value = stateSave.Name;
+                    shouldRegenerate = true;
+                }
+                if(shouldRegenerate)
+                {
+                    objectsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(nos));
                 }
             }
 
-            foreach (EntitySave entitySave in ObjectFinder.Self.GlueProject.Entities)
+            foreach(var element in objectsToRegenerate)
             {
-                var customQuery = from nos in entitySave.AllNamedObjects
-                                    where nos.SourceType == SourceType.Entity &&
-                                    nos.SourceClassType == name
-                                    select nos;
-
-                foreach (var nos in customQuery)
-                {
-                    if (nos.CurrentState == (oldValue as string))
-                    {
-
-                        nos.CurrentState = stateSave.Name;
-                    }
-                    foreach (var variable in nos.InstructionSaves.Where(item => item.Member == variableName && (item.Value as string) == (oldValue as string)))
-                    {
-                        variable.Value = stateSave.Name;
-                    }
-                }
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
             }
+
         }
-
-
     }
 }

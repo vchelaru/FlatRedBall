@@ -80,12 +80,15 @@ namespace OfficialPluginsCore.Wizard.Managers
             {
                 AddTask("Add Player", async () =>
                 {
-                    var playerEntity = await HandleAddPlayerEntity(vm);
-                    if(playerEntity == null)
+                    TaskManager.Self.Add(() =>
                     {
-                        throw new InvalidOperationException("Need to specify playerEntity");
-                    }
-                    HandleAddPlayerInstance(vm, gameScreen, solidCollisionNos, cloudCollisionNos, playerEntity);
+                        var playerEntity = HandleAddPlayerEntity(vm);
+                        if (playerEntity == null)
+                        {
+                            throw new InvalidOperationException("Need to specify playerEntity");
+                        }
+                        HandleAddPlayerInstance(vm, gameScreen, solidCollisionNos, cloudCollisionNos, playerEntity);
+                    }, "Adding player entity", TaskExecutionPreference.Asap);
                 });
             }
 
@@ -344,13 +347,15 @@ namespace OfficialPluginsCore.Wizard.Managers
             return gameScreen;
         }
 
-        private static async Task<EntitySave> HandleAddPlayerEntity(WizardData vm)
+        private static EntitySave HandleAddPlayerEntity(WizardData vm)
         {
             EntitySave playerEntity;
 
             if (vm.PlayerCreationType == PlayerCreationType.ImportEntity)
             {
-                playerEntity = await ImportPlayerEntity(vm);
+                var importTask = ImportPlayerEntity(vm);
+                importTask.Wait();
+                playerEntity = importTask.Result;
             }
             else // create from options
             {

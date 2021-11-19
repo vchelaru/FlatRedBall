@@ -49,7 +49,7 @@
                         Grid.Row="1" 
                         SelectionMode="Single" 
                         AllowDrop="True"
-                        VirtualizingStackPanel.IsVirtualizing="True" 
+                        VirtualizingStackPanel.IsVirtualizing="False" 
                         HierarchySource="{Binding VisibleRoot}"
                         ChildrenPath="VisibleChildren"
                         KeyDown="MainTreeView_KeyDown"

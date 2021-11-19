@@ -1229,6 +1229,7 @@
       </CustomVariables>
       <States>
         <StateSave>
+          <Name>FirstState</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>float</Type>
@@ -1236,9 +1237,9 @@
               <ValueAsFloat>0</ValueAsFloat>
             </InstructionSave>
           </InstructionSaves>
-          <Name>FirstState</Name>
         </StateSave>
         <StateSave>
+          <Name>SecondState</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>float</Type>
@@ -1246,7 +1247,6 @@
               <ValueAsFloat>4</ValueAsFloat>
             </InstructionSave>
           </InstructionSaves>
-          <Name>SecondState</Name>
         </StateSave>
       </States>
       <NamedObjects>
@@ -1810,8 +1810,10 @@
       </NamedObjects>
       <StateCategoryList>
         <StateSaveCategory>
+          <Name>SceneFileSettingCategory</Name>
           <States>
             <StateSave>
+              <Name>SetSceneFile1</Name>
               <InstructionSaves>
                 <InstructionSave>
                   <Type>Scene</Type>
@@ -1819,9 +1821,9 @@
                   <ValueAsString>SceneFile1</ValueAsString>
                 </InstructionSave>
               </InstructionSaves>
-              <Name>SetSceneFile1</Name>
             </StateSave>
             <StateSave>
+              <Name>SetSceneFile2</Name>
               <InstructionSaves>
                 <InstructionSave>
                   <Type>Scene</Type>
@@ -1829,11 +1831,9 @@
                   <ValueAsString>SceneFile2</ValueAsString>
                 </InstructionSave>
               </InstructionSaves>
-              <Name>SetSceneFile2</Name>
             </StateSave>
           </States>
           <ExcludedVariables />
-          <Name>SceneFileSettingCategory</Name>
         </StateSaveCategory>
       </StateCategoryList>
       <Name>Screens\FileScreen</Name>
@@ -4432,12 +4432,12 @@
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
       <States>
         <StateSave>
-          <InstructionSaves />
           <Name>Before</Name>
+          <InstructionSaves />
         </StateSave>
         <StateSave>
-          <InstructionSaves />
           <Name>After</Name>
+          <InstructionSaves />
         </StateSave>
       </States>
       <Properties>
@@ -4979,6 +4979,7 @@
       </CustomVariables>
       <States>
         <StateSave>
+          <Name>Opaque</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>float</Type>
@@ -4986,9 +4987,9 @@
               <ValueAsFloat>1</ValueAsFloat>
             </InstructionSave>
           </InstructionSaves>
-          <Name>Opaque</Name>
         </StateSave>
         <StateSave>
+          <Name>Transparent</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>float</Type>
@@ -4996,7 +4997,6 @@
               <ValueAsFloat>0</ValueAsFloat>
             </InstructionSave>
           </InstructionSaves>
-          <Name>Transparent</Name>
         </StateSave>
       </States>
       <NamedObjects>
@@ -5401,25 +5401,27 @@
       </NamedObjects>
       <StateCategoryList>
         <StateSaveCategory>
+          <Name>TextSizeCategory</Name>
           <States>
             <StateSave>
-              <InstructionSaves />
               <Name>InterpolationInstanceTextSmall</Name>
+              <InstructionSaves />
             </StateSave>
             <StateSave>
-              <InstructionSaves />
               <Name>InterpolationInstanceTextLarge</Name>
+              <InstructionSaves />
             </StateSave>
           </States>
           <ExcludedVariables>
             <string>InterpolationEntityAlpha</string>
             <string>InterpolationEntityInstanceTextInstanceX</string>
           </ExcludedVariables>
-          <Name>TextSizeCategory</Name>
         </StateSaveCategory>
         <StateSaveCategory>
+          <Name>OpaqueOrTransparent</Name>
           <States>
             <StateSave>
+              <Name>InterpolationEntityOpaque</Name>
               <InstructionSaves>
                 <InstructionSave>
                   <Type>float</Type>
@@ -5432,9 +5434,9 @@
                   <ValueAsFloat>1</ValueAsFloat>
                 </InstructionSave>
               </InstructionSaves>
-              <Name>InterpolationEntityOpaque</Name>
             </StateSave>
             <StateSave>
+              <Name>InterpolationEntityTransparent</Name>
               <InstructionSaves>
                 <InstructionSave>
                   <Type>float</Type>
@@ -5447,13 +5449,11 @@
                   <ValueAsFloat>0</ValueAsFloat>
                 </InstructionSave>
               </InstructionSaves>
-              <Name>InterpolationEntityTransparent</Name>
             </StateSave>
           </States>
           <ExcludedVariables>
             <string>StateVariablesSetThroughTunnelingCurrentState</string>
           </ExcludedVariables>
-          <Name>OpaqueOrTransparent</Name>
         </StateSaveCategory>
       </StateCategoryList>
       <Name>Screens\StateScreen</Name>
@@ -5695,6 +5695,14 @@
               <Name>CollisionTileSize</Name>
               <ValueAsFloat>16</ValueAsFloat>
             </PropertySave>
+            <PropertySave>
+              <Name>InnerSizeWidth</Name>
+              <ValueAsFloat>800</ValueAsFloat>
+            </PropertySave>
+            <PropertySave>
+              <Name>InnerSizeHeight</Name>
+              <ValueAsFloat>600</ValueAsFloat>
+            </PropertySave>
           </Properties>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile />
@@ -5726,6 +5734,14 @@
             <PropertySave>
               <Name>CollisionTileSize</Name>
               <ValueAsFloat>16</ValueAsFloat>
+            </PropertySave>
+            <PropertySave>
+              <Name>InnerSizeWidth</Name>
+              <ValueAsFloat>800</ValueAsFloat>
+            </PropertySave>
+            <PropertySave>
+              <Name>InnerSizeHeight</Name>
+              <ValueAsFloat>600</ValueAsFloat>
             </PropertySave>
           </Properties>
           <SourceType>FlatRedBallType</SourceType>
@@ -5762,6 +5778,18 @@
             <PropertySave>
               <Name>SourceTmxName</Name>
               <ValueAsString>TmxFile</ValueAsString>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionTileSize</Name>
+              <ValueAsFloat>16</ValueAsFloat>
+            </PropertySave>
+            <PropertySave>
+              <Name>InnerSizeWidth</Name>
+              <ValueAsFloat>800</ValueAsFloat>
+            </PropertySave>
+            <PropertySave>
+              <Name>InnerSizeHeight</Name>
+              <ValueAsFloat>600</ValueAsFloat>
             </PropertySave>
           </Properties>
           <SourceType>FlatRedBallType</SourceType>
@@ -6343,6 +6371,7 @@
       </CustomVariables>
       <States>
         <StateSave>
+          <Name>AnimationSettingState</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>AnimationChainList</Type>
@@ -6350,7 +6379,6 @@
               <ValueAsString>AnimationChainListFile</ValueAsString>
             </InstructionSave>
           </InstructionSaves>
-          <Name>AnimationSettingState</Name>
         </StateSave>
       </States>
       <Properties>
@@ -6779,8 +6807,10 @@
       </Properties>
       <StateCategoryList>
         <StateSaveCategory>
+          <Name>Category1</Name>
           <States>
             <StateSave>
+              <Name>Category1State</Name>
               <InstructionSaves>
                 <InstructionSave>
                   <Type>float</Type>
@@ -6823,9 +6853,9 @@
                   <ValueAsString>Name1 in GlobalCsv.csv</ValueAsString>
                 </InstructionSave>
               </InstructionSaves>
-              <Name>Category1State</Name>
             </StateSave>
             <StateSave>
+              <Name>Category1State2</Name>
               <InstructionSaves>
                 <InstructionSave>
                   <Type>float</Type>
@@ -6868,15 +6898,15 @@
                   <ValueAsString>Name3 in GlobalCsv.csv</ValueAsString>
                 </InstructionSave>
               </InstructionSaves>
-              <Name>Category1State2</Name>
             </StateSave>
           </States>
           <ExcludedVariables />
-          <Name>Category1</Name>
         </StateSaveCategory>
         <StateSaveCategory>
+          <Name>Category2</Name>
           <States>
             <StateSave>
+              <Name>Category2State</Name>
               <InstructionSaves>
                 <InstructionSave>
                   <Type>float</Type>
@@ -6884,9 +6914,9 @@
                   <ValueAsFloat>4</ValueAsFloat>
                 </InstructionSave>
               </InstructionSaves>
-              <Name>Category2State</Name>
             </StateSave>
             <StateSave>
+              <Name>Category2State2</Name>
               <InstructionSaves>
                 <InstructionSave>
                   <Type>float</Type>
@@ -6894,11 +6924,9 @@
                   <ValueAsFloat>6</ValueAsFloat>
                 </InstructionSave>
               </InstructionSaves>
-              <Name>Category2State2</Name>
             </StateSave>
           </States>
           <ExcludedVariables />
-          <Name>Category2</Name>
         </StateSaveCategory>
       </StateCategoryList>
       <Name>Entities\BaseEnityWithCategorizedStates</Name>
@@ -7214,18 +7242,20 @@
       </NamedObjects>
       <StateCategoryList>
         <StateSaveCategory>
+          <Name>Category1</Name>
           <States>
             <StateSave>
-              <InstructionSaves />
               <Name>CategorizedState1</Name>
+              <InstructionSaves />
             </StateSave>
           </States>
           <ExcludedVariables />
-          <Name>Category1</Name>
         </StateSaveCategory>
         <StateSaveCategory>
+          <Name>CategoryThatSetsTunneledStateVariables</Name>
           <States>
             <StateSave>
+              <Name>TunneledState1</Name>
               <InstructionSaves>
                 <InstructionSave>
                   <Type>ColorCategory</Type>
@@ -7233,9 +7263,9 @@
                   <ValueAsString>RedState</ValueAsString>
                 </InstructionSave>
               </InstructionSaves>
-              <Name>TunneledState1</Name>
             </StateSave>
             <StateSave>
+              <Name>TunneledState2</Name>
               <InstructionSaves>
                 <InstructionSave>
                   <Type>ColorCategory</Type>
@@ -7243,11 +7273,9 @@
                   <ValueAsString>BlueState</ValueAsString>
                 </InstructionSave>
               </InstructionSaves>
-              <Name>TunneledState2</Name>
             </StateSave>
           </States>
           <ExcludedVariables />
-          <Name>CategoryThatSetsTunneledStateVariables</Name>
         </StateSaveCategory>
       </StateCategoryList>
       <Name>Entities\BaseEntity</Name>
@@ -7600,14 +7628,14 @@
       </Properties>
       <StateCategoryList>
         <StateSaveCategory>
+          <Name>SomeCategory</Name>
           <States>
             <StateSave>
-              <InstructionSaves />
               <Name>StateInCategory</Name>
+              <InstructionSaves />
             </StateSave>
           </States>
           <ExcludedVariables />
-          <Name>SomeCategory</Name>
         </StateSaveCategory>
       </StateCategoryList>
       <Name>Entities\BaseStateEntityWithOnlyCategorized</Name>
@@ -8816,6 +8844,7 @@
       </CustomVariables>
       <States>
         <StateSave>
+          <Name>State1</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>float</Type>
@@ -8828,9 +8857,9 @@
               <ValueAsBool>false</ValueAsBool>
             </InstructionSave>
           </InstructionSaves>
-          <Name>State1</Name>
         </StateSave>
         <StateSave>
+          <Name>State2</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>float</Type>
@@ -8843,7 +8872,6 @@
               <ValueAsBool>true</ValueAsBool>
             </InstructionSave>
           </InstructionSaves>
-          <Name>State2</Name>
         </StateSave>
       </States>
       <Properties>
@@ -10171,14 +10199,14 @@
       </Properties>
       <StateCategoryList>
         <StateSaveCategory>
+          <Name>SomeCategoryInDerived</Name>
           <States>
             <StateSave>
-              <InstructionSaves />
               <Name>SomeCategoryInDerivedState</Name>
+              <InstructionSaves />
             </StateSave>
           </States>
           <ExcludedVariables />
-          <Name>SomeCategoryInDerived</Name>
         </StateSaveCategory>
       </StateCategoryList>
       <Name>Entities\DerivedFromBaseWithCategorizedStates</Name>
@@ -10196,8 +10224,8 @@
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
       <States>
         <StateSave>
-          <InstructionSaves />
           <Name>SomeState</Name>
+          <InstructionSaves />
         </StateSave>
       </States>
       <Properties>
@@ -10215,24 +10243,24 @@
       </Properties>
       <StateCategoryList>
         <StateSaveCategory>
+          <Name>CategoryThatShares</Name>
           <States>
             <StateSave>
-              <InstructionSaves />
               <Name>ThatShares1</Name>
+              <InstructionSaves />
             </StateSave>
           </States>
           <ExcludedVariables />
-          <Name>CategoryThatShares</Name>
         </StateSaveCategory>
         <StateSaveCategory>
+          <Name>CategoryThatDoesntShare</Name>
           <States>
             <StateSave>
-              <InstructionSaves />
               <Name>DoesntShare1</Name>
+              <InstructionSaves />
             </StateSave>
           </States>
           <ExcludedVariables />
-          <Name>CategoryThatDoesntShare</Name>
         </StateSaveCategory>
       </StateCategoryList>
       <Name>Entities\DerivedFromBaseWithNoStates</Name>
@@ -10526,8 +10554,8 @@
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
       <States>
         <StateSave>
-          <InstructionSaves />
           <Name>Derived1</Name>
+          <InstructionSaves />
         </StateSave>
       </States>
       <Properties>
@@ -10588,6 +10616,7 @@
       </CustomVariables>
       <States>
         <StateSave>
+          <Name>First</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>CircleVisibility</Type>
@@ -10600,9 +10629,9 @@
               <ValueAsFloat>1</ValueAsFloat>
             </InstructionSave>
           </InstructionSaves>
-          <Name>First</Name>
         </StateSave>
         <StateSave>
+          <Name>Second</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>CircleVisibility</Type>
@@ -10615,7 +10644,6 @@
               <ValueAsFloat>0</ValueAsFloat>
             </InstructionSave>
           </InstructionSaves>
-          <Name>Second</Name>
         </StateSave>
       </States>
       <Properties>
@@ -11178,12 +11206,12 @@
       </CustomVariables>
       <States>
         <StateSave>
-          <InstructionSaves />
           <Name>State1</Name>
+          <InstructionSaves />
         </StateSave>
         <StateSave>
-          <InstructionSaves />
           <Name>State2</Name>
+          <InstructionSaves />
         </StateSave>
       </States>
       <Properties>
@@ -11194,18 +11222,18 @@
       </Properties>
       <StateCategoryList>
         <StateSaveCategory>
+          <Name>Category1</Name>
           <States>
             <StateSave>
-              <InstructionSaves />
               <Name>Categorized1</Name>
+              <InstructionSaves />
             </StateSave>
             <StateSave>
-              <InstructionSaves />
               <Name>Categorized2</Name>
+              <InstructionSaves />
             </StateSave>
           </States>
           <ExcludedVariables />
-          <Name>Category1</Name>
         </StateSaveCategory>
       </StateCategoryList>
       <Name>Entities\EntityFolder\StateEntityInFolder</Name>
@@ -11579,14 +11607,15 @@
       </NamedObjects>
       <StateCategoryList>
         <StateSaveCategory>
+          <Name>Category1</Name>
           <States>
             <StateSave>
-              <InstructionSaves />
               <Name>State1</Name>
+              <InstructionSaves />
             </StateSave>
             <StateSave>
-              <InstructionSaves />
               <Name>State2</Name>
+              <InstructionSaves />
             </StateSave>
           </States>
           <ExcludedVariables>
@@ -11597,7 +11626,6 @@
             <string>ExposedInDerived</string>
             <string>CurrentCategory1State</string>
           </ExcludedVariables>
-          <Name>Category1</Name>
         </StateSaveCategory>
       </StateCategoryList>
       <Name>Entities\EventEntity</Name>
@@ -12099,6 +12127,7 @@
       </CustomVariables>
       <States>
         <StateSave>
+          <Name>FirstState</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>float</Type>
@@ -12106,9 +12135,9 @@
               <ValueAsFloat>1</ValueAsFloat>
             </InstructionSave>
           </InstructionSaves>
-          <Name>FirstState</Name>
         </StateSave>
         <StateSave>
+          <Name>SecondState</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>float</Type>
@@ -12116,7 +12145,6 @@
               <ValueAsFloat>0</ValueAsFloat>
             </InstructionSave>
           </InstructionSaves>
-          <Name>SecondState</Name>
         </StateSave>
       </States>
       <Properties>
@@ -13634,8 +13662,10 @@
       </NamedObjects>
       <StateCategoryList>
         <StateSaveCategory>
+          <Name>TextValues</Name>
           <States>
             <StateSave>
+              <Name>Transparent</Name>
               <InstructionSaves>
                 <InstructionSave>
                   <Type>float</Type>
@@ -13648,9 +13678,9 @@
                   <ValueAsFloat>0</ValueAsFloat>
                 </InstructionSave>
               </InstructionSaves>
-              <Name>Transparent</Name>
             </StateSave>
             <StateSave>
+              <Name>Opaque</Name>
               <InstructionSaves>
                 <InstructionSave>
                   <Type>float</Type>
@@ -13663,7 +13693,6 @@
                   <ValueAsFloat>1</ValueAsFloat>
                 </InstructionSave>
               </InstructionSaves>
-              <Name>Opaque</Name>
             </StateSave>
           </States>
           <ExcludedVariables>
@@ -13671,11 +13700,12 @@
             <string>CurrentState</string>
             <string>InterpolationEntitySubInstanceCurrentState</string>
           </ExcludedVariables>
-          <Name>TextValues</Name>
         </StateSaveCategory>
         <StateSaveCategory>
+          <Name>SizeCategory</Name>
           <States>
             <StateSave>
+              <Name>Big</Name>
               <InstructionSaves>
                 <InstructionSave>
                   <Type>float</Type>
@@ -13688,9 +13718,9 @@
                   <ValueAsString>Big</ValueAsString>
                 </InstructionSave>
               </InstructionSaves>
-              <Name>Big</Name>
             </StateSave>
             <StateSave>
+              <Name>Small</Name>
               <InstructionSaves>
                 <InstructionSave>
                   <Type>float</Type>
@@ -13703,7 +13733,6 @@
                   <ValueAsString>Small</ValueAsString>
                 </InstructionSave>
               </InstructionSaves>
-              <Name>Small</Name>
             </StateSave>
           </States>
           <ExcludedVariables>
@@ -13711,7 +13740,6 @@
             <string>TextInstanceAlpha</string>
             <string>CurrentState</string>
           </ExcludedVariables>
-          <Name>SizeCategory</Name>
         </StateSaveCategory>
       </StateCategoryList>
       <Name>Entities\InterpolationEntity</Name>
@@ -13778,6 +13806,7 @@
       </CustomVariables>
       <States>
         <StateSave>
+          <Name>Big</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>float</Type>
@@ -13785,9 +13814,9 @@
               <ValueAsFloat>200</ValueAsFloat>
             </InstructionSave>
           </InstructionSaves>
-          <Name>Big</Name>
         </StateSave>
         <StateSave>
+          <Name>Small</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>float</Type>
@@ -13795,7 +13824,6 @@
               <ValueAsFloat>5</ValueAsFloat>
             </InstructionSave>
           </InstructionSaves>
-          <Name>Small</Name>
         </StateSave>
       </States>
       <Properties>
@@ -14252,6 +14280,7 @@
       </CustomVariables>
       <States>
         <StateSave>
+          <Name>EnabledState</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>bool</Type>
@@ -14259,9 +14288,9 @@
               <ValueAsBool>true</ValueAsBool>
             </InstructionSave>
           </InstructionSaves>
-          <Name>EnabledState</Name>
         </StateSave>
         <StateSave>
+          <Name>DisabledState</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>bool</Type>
@@ -14269,7 +14298,6 @@
               <ValueAsBool>false</ValueAsBool>
             </InstructionSave>
           </InstructionSaves>
-          <Name>DisabledState</Name>
         </StateSave>
       </States>
       <Properties>
@@ -17048,6 +17076,7 @@
       </CustomVariables>
       <States>
         <StateSave>
+          <Name>BurstlyVisible</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>float</Type>
@@ -17055,9 +17084,9 @@
               <ValueAsFloat>175</ValueAsFloat>
             </InstructionSave>
           </InstructionSaves>
-          <Name>BurstlyVisible</Name>
         </StateSave>
         <StateSave>
+          <Name>BurstlyInvisible</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>float</Type>
@@ -17065,7 +17094,6 @@
               <ValueAsFloat>200</ValueAsFloat>
             </InstructionSave>
           </InstructionSaves>
-          <Name>BurstlyInvisible</Name>
         </StateSave>
       </States>
       <Properties>
@@ -19454,6 +19482,7 @@
       </CustomVariables>
       <States>
         <StateSave>
+          <Name>First</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>float</Type>
@@ -19461,9 +19490,9 @@
               <ValueAsFloat>8</ValueAsFloat>
             </InstructionSave>
           </InstructionSaves>
-          <Name>First</Name>
         </StateSave>
         <StateSave>
+          <Name>Second</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>float</Type>
@@ -19471,9 +19500,9 @@
               <ValueAsFloat>4</ValueAsFloat>
             </InstructionSave>
           </InstructionSaves>
-          <Name>Second</Name>
         </StateSave>
         <StateSave>
+          <Name>StateThatSetsOtherState</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>CircleVisibility</Type>
@@ -19481,9 +19510,9 @@
               <ValueAsString>CircleOn</ValueAsString>
             </InstructionSave>
           </InstructionSaves>
-          <Name>StateThatSetsOtherState</Name>
         </StateSave>
         <StateSave>
+          <Name>StateThatOverridesVariable</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>int</Type>
@@ -19491,9 +19520,9 @@
               <ValueAsInt>4</ValueAsInt>
             </InstructionSave>
           </InstructionSaves>
-          <Name>StateThatOverridesVariable</Name>
         </StateSave>
         <StateSave>
+          <Name>StateThatSetsOneStateVariable</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>float</Type>
@@ -19501,11 +19530,10 @@
               <ValueAsFloat>19</ValueAsFloat>
             </InstructionSave>
           </InstructionSaves>
-          <Name>StateThatSetsOneStateVariable</Name>
         </StateSave>
         <StateSave>
-          <InstructionSaves />
           <Name>StateThatSetsNoVariables</Name>
+          <InstructionSaves />
         </StateSave>
       </States>
       <Properties>
@@ -19563,8 +19591,10 @@
       </NamedObjects>
       <StateCategoryList>
         <StateSaveCategory>
+          <Name>TopOrBottom</Name>
           <States>
             <StateSave>
+              <Name>Top</Name>
               <InstructionSaves>
                 <InstructionSave>
                   <Type>float</Type>
@@ -19572,9 +19602,9 @@
                   <ValueAsFloat>10</ValueAsFloat>
                 </InstructionSave>
               </InstructionSaves>
-              <Name>Top</Name>
             </StateSave>
             <StateSave>
+              <Name>Bottom</Name>
               <InstructionSaves>
                 <InstructionSave>
                   <Type>float</Type>
@@ -19582,7 +19612,6 @@
                   <ValueAsFloat>-10</ValueAsFloat>
                 </InstructionSave>
               </InstructionSaves>
-              <Name>Bottom</Name>
             </StateSave>
           </States>
           <ExcludedVariables>
@@ -19597,11 +19626,12 @@
             <string>IntVariableWithVelocity</string>
             <string>CurrentColorCategoryState</string>
           </ExcludedVariables>
-          <Name>TopOrBottom</Name>
         </StateSaveCategory>
         <StateSaveCategory>
+          <Name>ColorCategory</Name>
           <States>
             <StateSave>
+              <Name>RedState</Name>
               <InstructionSaves>
                 <InstructionSave>
                   <Type>Color</Type>
@@ -19609,9 +19639,9 @@
                   <ValueAsString>Red</ValueAsString>
                 </InstructionSave>
               </InstructionSaves>
-              <Name>RedState</Name>
             </StateSave>
             <StateSave>
+              <Name>BlueState</Name>
               <InstructionSaves>
                 <InstructionSave>
                   <Type>Color</Type>
@@ -19619,18 +19649,18 @@
                   <ValueAsString>Blue</ValueAsString>
                 </InstructionSave>
               </InstructionSaves>
-              <Name>BlueState</Name>
             </StateSave>
           </States>
           <ExcludedVariables>
             <string>VariableToGetChangedByState</string>
             <string>CurrentAdvancedInterpolationCategoryState</string>
           </ExcludedVariables>
-          <Name>ColorCategory</Name>
         </StateSaveCategory>
         <StateSaveCategory>
+          <Name>CircleVisibility</Name>
           <States>
             <StateSave>
+              <Name>CircleOn</Name>
               <InstructionSaves>
                 <InstructionSave>
                   <Type>bool</Type>
@@ -19638,9 +19668,9 @@
                   <ValueAsBool>true</ValueAsBool>
                 </InstructionSave>
               </InstructionSaves>
-              <Name>CircleOn</Name>
             </StateSave>
             <StateSave>
+              <Name>CircleOff</Name>
               <InstructionSaves>
                 <InstructionSave>
                   <Type>bool</Type>
@@ -19648,58 +19678,57 @@
                   <ValueAsBool>false</ValueAsBool>
                 </InstructionSave>
               </InstructionSaves>
-              <Name>CircleOff</Name>
             </StateSave>
           </States>
           <ExcludedVariables>
             <string>VariableToGetChangedByState</string>
             <string>CurrentAdvancedInterpolationCategoryState</string>
           </ExcludedVariables>
-          <Name>CircleVisibility</Name>
         </StateSaveCategory>
         <StateSaveCategory>
-          <States>
-            <StateSave>
-              <InstructionSaves />
-              <Name>Interpolate1</Name>
-            </StateSave>
-            <StateSave>
-              <InstructionSaves />
-              <Name>Interpolate2</Name>
-            </StateSave>
-          </States>
-          <ExcludedVariables>
-            <string>VariableToGetChangedByState</string>
-            <string>CurrentAdvancedInterpolationCategoryState</string>
-          </ExcludedVariables>
           <Name>InterpolationCategory</Name>
-        </StateSaveCategory>
-        <StateSaveCategory>
           <States>
             <StateSave>
+              <Name>Interpolate1</Name>
               <InstructionSaves />
-              <Name>Advanced1</Name>
             </StateSave>
             <StateSave>
+              <Name>Interpolate2</Name>
               <InstructionSaves />
-              <Name>Advanced2</Name>
             </StateSave>
           </States>
           <ExcludedVariables>
             <string>VariableToGetChangedByState</string>
             <string>CurrentAdvancedInterpolationCategoryState</string>
           </ExcludedVariables>
-          <Name>AdvancedInterpolationCategory</Name>
         </StateSaveCategory>
         <StateSaveCategory>
+          <Name>AdvancedInterpolationCategory</Name>
           <States>
             <StateSave>
+              <Name>Advanced1</Name>
               <InstructionSaves />
-              <Name>TypeState1</Name>
             </StateSave>
             <StateSave>
+              <Name>Advanced2</Name>
               <InstructionSaves />
+            </StateSave>
+          </States>
+          <ExcludedVariables>
+            <string>VariableToGetChangedByState</string>
+            <string>CurrentAdvancedInterpolationCategoryState</string>
+          </ExcludedVariables>
+        </StateSaveCategory>
+        <StateSaveCategory>
+          <Name>Type</Name>
+          <States>
+            <StateSave>
+              <Name>TypeState1</Name>
+              <InstructionSaves />
+            </StateSave>
+            <StateSave>
               <Name>TypeState2</Name>
+              <InstructionSaves />
             </StateSave>
           </States>
           <ExcludedVariables>
@@ -19708,7 +19737,6 @@
             <string>IntVariableWithVelocity</string>
             <string>CurrentAdvancedInterpolationCategoryState</string>
           </ExcludedVariables>
-          <Name>Type</Name>
         </StateSaveCategory>
       </StateCategoryList>
       <Name>Entities\StateEntity</Name>
@@ -19733,12 +19761,12 @@
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
       <States>
         <StateSave>
-          <InstructionSaves />
           <Name>Third</Name>
+          <InstructionSaves />
         </StateSave>
         <StateSave>
-          <InstructionSaves />
           <Name>Fourth</Name>
+          <InstructionSaves />
         </StateSave>
       </States>
       <Properties>
@@ -19756,34 +19784,34 @@
       </Properties>
       <StateCategoryList>
         <StateSaveCategory>
-          <States>
-            <StateSave>
-              <InstructionSaves />
-              <Name>Circle3</Name>
-            </StateSave>
-          </States>
-          <ExcludedVariables />
           <Name>CircleVisibility</Name>
-        </StateSaveCategory>
-        <StateSaveCategory>
           <States>
             <StateSave>
+              <Name>Circle3</Name>
               <InstructionSaves />
-              <Name>GreenState</Name>
             </StateSave>
           </States>
           <ExcludedVariables />
+        </StateSaveCategory>
+        <StateSaveCategory>
           <Name>ColorCategory</Name>
-        </StateSaveCategory>
-        <StateSaveCategory>
           <States>
             <StateSave>
+              <Name>GreenState</Name>
               <InstructionSaves />
-              <Name>Left</Name>
             </StateSave>
           </States>
           <ExcludedVariables />
+        </StateSaveCategory>
+        <StateSaveCategory>
           <Name>TopOrBottom</Name>
+          <States>
+            <StateSave>
+              <Name>Left</Name>
+              <InstructionSaves />
+            </StateSave>
+          </States>
+          <ExcludedVariables />
         </StateSaveCategory>
       </StateCategoryList>
       <Name>Entities\StateEntityChild</Name>
@@ -19839,6 +19867,7 @@
       </CustomVariables>
       <States>
         <StateSave>
+          <Name>First</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>VariableState</Type>
@@ -19846,9 +19875,9 @@
               <ValueAsString>First</ValueAsString>
             </InstructionSave>
           </InstructionSaves>
-          <Name>First</Name>
         </StateSave>
         <StateSave>
+          <Name>Second</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>VariableState</Type>
@@ -19856,7 +19885,6 @@
               <ValueAsString>Second</ValueAsString>
             </InstructionSave>
           </InstructionSaves>
-          <Name>Second</Name>
         </StateSave>
       </States>
       <Properties>
@@ -20005,8 +20033,8 @@
       </CustomVariables>
       <States>
         <StateSave>
-          <InstructionSaves />
           <Name>NewState1</Name>
+          <InstructionSaves />
         </StateSave>
       </States>
       <Properties>
@@ -20041,6 +20069,7 @@
       </CustomVariables>
       <States>
         <StateSave>
+          <Name>Left</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>float</Type>
@@ -20048,9 +20077,9 @@
               <ValueAsFloat>-10</ValueAsFloat>
             </InstructionSave>
           </InstructionSaves>
-          <Name>Left</Name>
         </StateSave>
         <StateSave>
+          <Name>Right</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>float</Type>
@@ -20058,7 +20087,6 @@
               <ValueAsFloat>10</ValueAsFloat>
             </InstructionSave>
           </InstructionSaves>
-          <Name>Right</Name>
         </StateSave>
       </States>
       <Properties>
@@ -20263,9 +20291,9 @@
       </NamedObjects>
       <StateCategoryList>
         <StateSaveCategory>
+          <Name>StateCategory</Name>
           <States />
           <ExcludedVariables />
-          <Name>StateCategory</Name>
         </StateSaveCategory>
       </StateCategoryList>
       <Name>Entities\TextEntity</Name>
@@ -20355,6 +20383,7 @@
       </CustomVariables>
       <States>
         <StateSave>
+          <Name>State1</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>float</Type>
@@ -20362,7 +20391,6 @@
               <ValueAsFloat>1</ValueAsFloat>
             </InstructionSave>
           </InstructionSaves>
-          <Name>State1</Name>
         </StateSave>
       </States>
       <Properties>
@@ -20414,9 +20442,9 @@
       </NamedObjects>
       <StateCategoryList>
         <StateSaveCategory>
+          <Name>StateCategory</Name>
           <States />
           <ExcludedVariables />
-          <Name>StateCategory</Name>
         </StateSaveCategory>
       </StateCategoryList>
       <Name>Entities\TextInheritingEntity</Name>
@@ -20964,6 +20992,7 @@
       </CustomVariables>
       <States>
         <StateSave>
+          <Name>PixelSize1</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>float</Type>
@@ -20971,9 +21000,9 @@
               <ValueAsFloat>1</ValueAsFloat>
             </InstructionSave>
           </InstructionSaves>
-          <Name>PixelSize1</Name>
         </StateSave>
         <StateSave>
+          <Name>PixelSize2</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>float</Type>
@@ -20981,9 +21010,9 @@
               <ValueAsFloat>2</ValueAsFloat>
             </InstructionSave>
           </InstructionSaves>
-          <Name>PixelSize2</Name>
         </StateSave>
         <StateSave>
+          <Name>VisibleTrue</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>bool</Type>
@@ -20991,9 +21020,9 @@
               <ValueAsBool>true</ValueAsBool>
             </InstructionSave>
           </InstructionSaves>
-          <Name>VisibleTrue</Name>
         </StateSave>
         <StateSave>
+          <Name>VisibleFalse</Name>
           <InstructionSaves>
             <InstructionSave>
               <Type>bool</Type>
@@ -21001,7 +21030,6 @@
               <ValueAsBool>false</ValueAsBool>
             </InstructionSave>
           </InstructionSaves>
-          <Name>VisibleFalse</Name>
         </StateSave>
       </States>
       <Properties>
@@ -21318,8 +21346,8 @@
       </CustomVariables>
       <States>
         <StateSave>
-          <InstructionSaves />
           <Name>TestState</Name>
+          <InstructionSaves />
         </StateSave>
       </States>
       <Properties>

@@ -129,7 +129,7 @@ namespace FlatRedBall.Glue.Managers
                 // start raising this
                 //case Key.Delete:
                 //    HandleDeletePressed();
-                    return true;
+                    //return true;
             }
 
             return false;

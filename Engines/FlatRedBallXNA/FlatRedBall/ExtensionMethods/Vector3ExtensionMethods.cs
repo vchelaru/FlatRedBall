@@ -133,7 +133,7 @@ namespace Microsoft.Xna.Framework
         /// <returns>The resulting vector in the same direction as the argument of the desired length, or a vector of 0 length if the argument has 0 length.</returns>
         public static Vector3 AtLength(this Vector3 vector3, float length)
         {
-            return vector3.NormalizedOrZero() * length;
+            return vector3.NormalizedOrRight() * length;
         }
 
         public static Vector3 AtAngle(this Vector3 vector3, float angleRadians)
