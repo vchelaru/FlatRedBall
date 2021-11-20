@@ -43,7 +43,7 @@ namespace OfficialPlugins.TreeViewPlugin
 
             SelectionLogic.Initialize(MainViewModel, mainView);
 
-            pluginTab = CreateTab(mainView, "Explorer (beta)", TabLocation.Left);
+            pluginTab = CreateTab(mainView, "Explorer", TabLocation.Left);
             pluginTab.CanClose = false;
             AssignEvents();
 
