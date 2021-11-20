@@ -2619,24 +2619,25 @@ namespace FlatRedBall.Glue.FormHelpers
 
         }
 
-        public static bool MoveToTop()
+        public static void MoveToTop()
         {
-            object objectToRemove;
-            IList listToRemoveFrom;
-            IList listForIndexing;
-            GetObjectAndListForMoving(out objectToRemove, out listToRemoveFrom, out listForIndexing);
-            if (listToRemoveFrom != null)
+            TaskManager.Self.Add(() =>
             {
-                int index = listToRemoveFrom.IndexOf(objectToRemove);
-                if (index > 0)
+                object objectToRemove;
+                IList listToRemoveFrom;
+                IList listForIndexing;
+                GetObjectAndListForMoving(out objectToRemove, out listToRemoveFrom, out listForIndexing);
+                if (listToRemoveFrom != null)
                 {
-                    listToRemoveFrom.Remove(objectToRemove);
-                    listToRemoveFrom.Insert(0, objectToRemove);
-                    PostMoveActivity();
+                    int index = listToRemoveFrom.IndexOf(objectToRemove);
+                    if (index > 0)
+                    {
+                        listToRemoveFrom.Remove(objectToRemove);
+                        listToRemoveFrom.Insert(0, objectToRemove);
+                        PostMoveActivity();
+                    }
                 }
-                return true;
-            }
-            return false;
+            }, "Moving to top", TaskExecutionPreference.Asap);
         }
 
         private static void MoveUpClick(object sender, EventArgs e)
@@ -2649,53 +2650,53 @@ namespace FlatRedBall.Glue.FormHelpers
             MoveSelectedObjectDown();
         }
 
-        public static bool MoveSelectedObjectUp()
+        public static void MoveSelectedObjectUp()
         {
             int direction = -1;
-            return MoveObjectInDirection(direction);
+            MoveObjectInDirection(direction);
         }
 
-        public static bool MoveSelectedObjectDown()
+        public static void MoveSelectedObjectDown()
         {
             int direction = 1;
-            return MoveObjectInDirection(direction);
+            MoveObjectInDirection(direction);
         }
 
-        private static bool MoveObjectInDirection(int direction)
+        private static void MoveObjectInDirection(int direction)
         {
-            object objectToRemove;
-            IList listToRemoveFrom;
-            IList listForIndexing;
-            GetObjectAndListForMoving(out objectToRemove, out listToRemoveFrom, out listForIndexing);
-            if (listToRemoveFrom != null)
+            TaskManager.Self.Add(() =>
             {
-                int index = listToRemoveFrom.IndexOf(objectToRemove);
+                object objectToRemove;
+                IList listToRemoveFrom;
+                IList listForIndexing;
+                GetObjectAndListForMoving(out objectToRemove, out listToRemoveFrom, out listForIndexing);
+                if (listToRemoveFrom != null)
+                {
+                    int index = listToRemoveFrom.IndexOf(objectToRemove);
                 
-                var oldIndexInListForIndexing = listForIndexing.IndexOf(objectToRemove);
-                var newIndexInListForIndexing = oldIndexInListForIndexing + direction;
+                    var oldIndexInListForIndexing = listForIndexing.IndexOf(objectToRemove);
+                    var newIndexInListForIndexing = oldIndexInListForIndexing + direction;
 
-                object objectToMoveBeforeOrAfter = objectToRemove;
-                if(newIndexInListForIndexing >= 0 && newIndexInListForIndexing < listForIndexing.Count)
-                {
-                    objectToMoveBeforeOrAfter = listForIndexing[newIndexInListForIndexing];
+                    object objectToMoveBeforeOrAfter = objectToRemove;
+                    if(newIndexInListForIndexing >= 0 && newIndexInListForIndexing < listForIndexing.Count)
+                    {
+                        objectToMoveBeforeOrAfter = listForIndexing[newIndexInListForIndexing];
+                    }
+
+                    //int newIndex = index + direction;
+                    int newIndex = listToRemoveFrom .IndexOf(objectToMoveBeforeOrAfter);
+
+                    if (newIndex >= 0 && newIndex < listToRemoveFrom.Count)
+                    {
+                        listToRemoveFrom.Remove(objectToRemove);
+
+                        listToRemoveFrom.Insert(newIndex, objectToRemove);
+
+                        PostMoveActivity();
+                    }
                 }
 
-                //int newIndex = index + direction;
-                int newIndex = listToRemoveFrom .IndexOf(objectToMoveBeforeOrAfter);
-
-                if (newIndex >= 0 && newIndex < listToRemoveFrom.Count)
-                {
-                    listToRemoveFrom.Remove(objectToRemove);
-
-                    listToRemoveFrom.Insert(newIndex, objectToRemove);
-
-                    PostMoveActivity();
-
-                    return true;
-                }
-            }
-
-            return false;
+            }, "Moving object up or down", TaskExecutionPreference.Asap);
         }
 
 
@@ -2704,26 +2705,27 @@ namespace FlatRedBall.Glue.FormHelpers
             MoveToBottom();
         }
 
-        public static bool MoveToBottom()
+        public static void MoveToBottom()
         {
-            object objectToRemove;
-            IList listToRemoveFrom;
-            IList throwaway;
-            GetObjectAndListForMoving(out objectToRemove, out listToRemoveFrom, out throwaway);
-            if (listToRemoveFrom != null)
+            TaskManager.Self.Add(() =>
             {
-
-                int index = listToRemoveFrom.IndexOf(objectToRemove);
-
-                if (index < listToRemoveFrom.Count - 1)
+                object objectToRemove;
+                IList listToRemoveFrom;
+                IList throwaway;
+                GetObjectAndListForMoving(out objectToRemove, out listToRemoveFrom, out throwaway);
+                if (listToRemoveFrom != null)
                 {
-                    listToRemoveFrom.Remove(objectToRemove);
-                    listToRemoveFrom.Insert(listToRemoveFrom.Count, objectToRemove);
-                    PostMoveActivity();
+
+                    int index = listToRemoveFrom.IndexOf(objectToRemove);
+
+                    if (index < listToRemoveFrom.Count - 1)
+                    {
+                        listToRemoveFrom.Remove(objectToRemove);
+                        listToRemoveFrom.Insert(listToRemoveFrom.Count, objectToRemove);
+                        PostMoveActivity();
+                    }
                 }
-                return true;
-            }
-            return false;
+            }, "Moving to bottom", TaskExecutionPreference.Asap);
         }
 
         private static void GetObjectAndListForMoving(out object objectToMove, 
@@ -2774,7 +2776,7 @@ namespace FlatRedBall.Glue.FormHelpers
         }
 
 
-        private static void PostMoveActivity()
+        private static async void PostMoveActivity()
         {
             // do this before refreshing the tree nodes
             var currentCustomVariable = GlueState.Self.CurrentCustomVariable;
@@ -2804,13 +2806,16 @@ namespace FlatRedBall.Glue.FormHelpers
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(elementToRegen as GlueElement);
             }
 
+            await System.Threading.Tasks.Task.Delay(10);
             // I think the variables are complete remade. I could make it preserve them, but it's easier to do this:
-            if(currentCustomVariable != null)
+            if (currentCustomVariable != null)
             {
+                //GlueState.Self.CurrentCustomVariable = null;
                 GlueState.Self.CurrentCustomVariable = currentCustomVariable;
             }
             else if(currentNamedObjectSave != null)
             {
+                //GlueState.Self.CurrentNamedObjectSave = null;
                 GlueState.Self.CurrentNamedObjectSave = currentNamedObjectSave;
             }
 

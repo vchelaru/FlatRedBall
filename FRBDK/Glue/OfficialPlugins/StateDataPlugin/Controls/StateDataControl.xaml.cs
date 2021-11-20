@@ -97,6 +97,8 @@ namespace OfficialPlugins.StateDataPlugin.Controls
     /// </summary>
     public partial class StateDataControl : UserControl
     {
+        #region Fields/Properties
+
         int? CurrentRowIndex
         {
             get
@@ -119,6 +121,8 @@ namespace OfficialPlugins.StateDataPlugin.Controls
         }
 
         StateCategoryViewModel ViewModel => DataContext as StateCategoryViewModel;
+
+        #endregion
 
         public StateDataControl()
         {
@@ -384,10 +388,10 @@ namespace OfficialPlugins.StateDataPlugin.Controls
             {
                 // in case something changes in deleteRow:
                 List<StateVmPath> pathsToDelete = new List<StateVmPath>();
-
                 foreach(var cell in DataGridInstance.SelectedCells)
                 {
                     var rowVm = cell.Item as StateViewModel;
+                    
 
                     var column = cell.Column;
 
@@ -464,6 +468,15 @@ namespace OfficialPlugins.StateDataPlugin.Controls
 
                 rowVm.Variables[number].Value = null;
             }
+
+
+            // Update November 20, 2021
+            // When deleting a state, the grid doesn't update. Not sure why. I
+            // will eventually want to move to an external editor for states anyway,
+            // so I'll just "hack" a solution by resetting the VM on a delete:
+            var dataContext = this.DataContext;
+            this.DataContext = null;
+            this.DataContext = dataContext;
         }
 
         private string GetColumnBindingPath(DataGridColumn column)

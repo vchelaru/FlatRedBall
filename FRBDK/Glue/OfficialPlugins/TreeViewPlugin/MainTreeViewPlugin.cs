@@ -112,7 +112,24 @@ namespace OfficialPlugins.TreeViewPlugin
             MainViewModel.RefreshTreeNodeFor(element);
             if(currentNode?.Tag != null)
             {
+                // November 20, 2021
+                // When a tree node is
+                // refreshed, we want to
+                // re-select the same tree
+                // node as before. Since the
+                // app-level selection should
+                // not have changed, we don't want
+                // to push this change out to Glue.
+                // Doing so causes unexpected side effects
+                // such as the state data tab refreshing its
+                // current category and recreating its viewmodel
+                // in the middle of a view model change.
+
+                var wasPushingSelection = SelectionLogic.IsPushingSelectionOutToGlue;
+                SelectionLogic.IsPushingSelectionOutToGlue = false;
                 SelectionLogic.SelectByTag(currentNode.Tag);
+                SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
+
             }
         }
 

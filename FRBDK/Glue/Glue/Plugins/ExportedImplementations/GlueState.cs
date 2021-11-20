@@ -51,18 +51,23 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             set
             {
 
+
+                var isSame = value == snapshot?.CurrentTreeNode;
+
                 // Snapshot should come first so everyone can update to the snapshot
                 GlueState.Self.TakeSnapshot(value);
-
                 if (!ElementViewWindow.SuppressSelectionEvents)
                 {
                     PluginManager.ReactToItemSelect(value);
                 }
 
-                if (value is TreeNodeWrapper asWrapper)
+                if (value is TreeNodeWrapper asWrapper && !isSame)
                 {
                     //GlueCommands.Self.DoOnUiThread(() => MainExplorerPlugin.Self.ElementTreeView.SelectedNode = value);
-                    GlueCommands.Self.DoOnUiThread(() => MainExplorerPlugin.Self.ElementTreeView.SelectedNode = asWrapper.TreeNode);
+                    GlueCommands.Self.DoOnUiThread(() =>
+                    {
+                        MainExplorerPlugin.Self.ElementTreeView.SelectedNode = asWrapper.TreeNode;
+                    });
                 }
             }
         }
