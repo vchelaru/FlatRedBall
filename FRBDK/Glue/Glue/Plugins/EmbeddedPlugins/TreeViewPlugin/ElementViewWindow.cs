@@ -77,10 +77,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         #region Properties
 
-        public static TreeNode EntitiesTreeNode
-        {
-            get { return mEntityNode; }
-        }
+        public static TreeNode EntitiesTreeNode => mEntityNode;
 
         public static TreeNode ScreensTreeNode
         {

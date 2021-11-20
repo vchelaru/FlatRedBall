@@ -5,34 +5,75 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPlugins.TreeViewPlugin.Views" xmlns:pt="http://propertytools.org/wpf"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="350">
     <UserControl.Resources>
-        
+
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto" x:Name="ButtonsToolBar"></RowDefinition>
+            <RowDefinition Height="Auto" x:Name="SearchBoxRow"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <Grid>
+        <StackPanel Orientation="Horizontal">
+            <Button Click="BackButtonClicked" Width="24" Margin="2,2,0,2">
+                <Button.ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold">Back (ALT + &lt;-)</TextBlock>
+                        <TextBlock>Selects the previously-selected item</TextBlock>
+                    </StackPanel>
+                </Button.ToolTip>
+                <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/TreeViewPlugin/Content/icon_back.png">
+
+                </Image>
+            </Button>
+            <Button Click="NextButtonClicked" Width="24" Margin="2,2,0,2">
+                <Button.ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold">Forward (ALT + -&gt;)</TextBlock>
+                        <TextBlock>Selects the next item in the selection stack</TextBlock>
+                    </StackPanel>
+                </Button.ToolTip>
+                <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/TreeViewPlugin/Content/icon_forward.png">
+
+                </Image>
+            </Button>
+            <Button Click="CollapseAllClicked" Width="24" Margin="2,2,0,2">
+                <Button.ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold">Collapse All</TextBlock>
+                        <TextBlock>Collapses all folders and containers</TextBlock>
+                    </StackPanel>
+                </Button.ToolTip>
+                <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/TreeViewPlugin/Content/icon_contract.png">
+                    
+                </Image>
+            </Button>
+
+        </StackPanel>
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <StackPanel>
                 <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="21*"/>
+                        <ColumnDefinition Width="62*"/>
+                    </Grid.ColumnDefinitions>
                     <TextBox 
                         Text="{Binding SearchBoxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                         
                         KeyDown="TextBox_KeyDown"
                         GotFocus="TextBox_GotFocus"
-                        LostFocus="TextBox_LostFocus"
+                        LostFocus="TextBox_LostFocus" Grid.ColumnSpan="2"
                         ></TextBox>
                     <TextBlock IsHitTestVisible="False" 
                                Foreground="Gray" 
                                Margin="3,0,3,0" 
                                Visibility="{Binding SearchPlaceholderVisibility}"
-                               x:Name="PlaceholderText" 
+                               x:Name="PlaceholderText" Grid.ColumnSpan="2" 
                                >Search...</TextBlock>
                 </Grid>
                 <TextBlock TextWrapping="Wrap" FontSize="10" 
@@ -46,7 +87,7 @@
         </Grid>
 
         <pt:TreeListBox x:Name="MainTreeView" 
-                        Grid.Row="1" 
+                        Grid.Row="2" 
                         SelectionMode="Single" 
                         AllowDrop="True"
                         VirtualizingStackPanel.IsVirtualizing="False" 

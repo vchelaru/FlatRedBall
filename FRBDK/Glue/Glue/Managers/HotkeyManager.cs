@@ -31,14 +31,17 @@ namespace FlatRedBall.Glue.Managers
                     TreeNodeStackManager.Self.GoForward();
                     return true;
                 case Keys.Alt | Keys.Up:
-                    return RightClickHelper.MoveSelectedObjectUp();
-
+                    RightClickHelper.MoveSelectedObjectUp();
+                    return true;
                 case Keys.Alt | Keys.Down:
-                    return RightClickHelper.MoveSelectedObjectDown();
+                    RightClickHelper.MoveSelectedObjectDown();
+                    return true;
                 case Keys.Alt | Keys.Shift | Keys.Down:
-                    return RightClickHelper.MoveToBottom();
+                    RightClickHelper.MoveToBottom();
+                    return true;
                 case Keys.Alt | Keys.Shift | Keys.Up:
-                    return RightClickHelper.MoveToTop();
+                    RightClickHelper.MoveToTop();
+                    return true;
                 case Keys.F5:
                     PluginManager.CallPluginMethod(
                         "Glue Compiler",

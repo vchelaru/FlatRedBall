@@ -19,12 +19,16 @@ using System.Windows.Media.Imaging;
 
 namespace OfficialPlugins.TreeViewPlugin.ViewModels
 {
+    #region Enums
+
     public enum SearchVisibility
     {
         MatchExplicitly,
         HaveVisibileChildren,
         MatchOrHaveVisibleChildren
     }
+
+    #endregion
 
     public class NodeViewModel : ViewModel, ITreeNode
     {
@@ -102,11 +106,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         public ObservableCollection<NodeViewModel> Children
         {
-            get
-            {
-                //this.LoadChildren();
-                return children;
-            }
+            get => children;
         }
 
         public ObservableCollection<NodeViewModel> VisibleChildren
@@ -205,6 +205,16 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public virtual void RefreshTreeNodes()
         {
             UpdateToSearch();
+        }
+
+
+        internal void CollapseRecursively()
+        {
+            this.IsExpanded = false;
+            foreach(var child in this.Children)
+            {
+                child.CollapseRecursively();
+            }
         }
 
         #region Parent-based Methods
@@ -516,18 +526,53 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 }
 
                 VisibleChildren.Clear();
-                foreach(var child in Children)
+
+                int expectedVisibleChildrenCount = 0;
+
+                for(int i = 0; i < children.Count; i++)
                 {
-                    var shouldAdd = child.IndirectlyMatchesSearch;
-                    if(shouldAdd)
+                    var child = children[i];
+                    var shouldBeIncluded = child.IndirectlyMatchesSearch;
+                    if(shouldBeIncluded)
                     {
-                        VisibleChildren.Add(child);
+                        expectedVisibleChildrenCount++;
+
+                        if (i >= VisibleChildren.Count)
+                        {
+                            // it's being added at the end:
+                            VisibleChildren.Add(child);
+                        }
+                        else if(VisibleChildren[i] != child)
+                        {
+                            var oldIndex = VisibleChildren.IndexOf(child);
+                            if(oldIndex > -1)
+                            {
+                                VisibleChildren.Move(oldIndex, i);
+                            }
+                            else
+                            {
+                                VisibleChildren.Insert(i, child);
+                            }
+
+                            //if(VisibleChildren.Contains(child))
+                            //{
+                            //    VisibleChildren.Remove(child);
+                            //}
+                        }
                     }
                     else
                     {
+                        if(VisibleChildren.Contains(child))
+                        {
+                            VisibleChildren.Remove(child);
+                        }
                         child.IsExpanded = false;
                     }
                 }
+
+                // At this point all the visible children should match the normal Children, at least up to the
+                // Children.Count. If there are any extra VisibleTreeNodes, then they've been removed so let's get rid of them:
+                while(VisibleChildren.Count > expectedVisibleChildrenCount)
 
                 if(Tag == null && VisibleChildren.Count == 0 && !string.IsNullOrWhiteSpace(MainTreeViewViewModel.PrefixText))
                 {
@@ -537,6 +582,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
 
         }
+
 
         #endregion
 

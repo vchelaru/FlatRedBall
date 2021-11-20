@@ -92,7 +92,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
         {
             var window = new ExplorerView();
 
-            ExplorerTab = this.CreateTab(window, "Explorer", TabLocation.Left);
+            ExplorerTab = this.CreateTab(window, "Explorer (old)", TabLocation.Left);
 
             ExplorerTab.CanClose = false;
 
