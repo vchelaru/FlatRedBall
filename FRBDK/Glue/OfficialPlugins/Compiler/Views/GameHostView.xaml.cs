@@ -198,6 +198,11 @@ namespace OfficialPlugins.GameHost.Views
             StartInEditModeClicked?.Invoke(this, null);
         }
 
+        private void WhileRunningView_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private void WhileRunningView_PauseClicked(object sender, EventArgs e)
         {
             PauseClicked?.Invoke(this, null);

@@ -207,6 +207,16 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             UpdateToSearch();
         }
 
+
+        internal void CollapseRecursively()
+        {
+            this.IsExpanded = false;
+            foreach(var child in this.Children)
+            {
+                child.CollapseRecursively();
+            }
+        }
+
         #region Parent-based Methods
 
         internal void ExpandParentsRecursively()
@@ -572,6 +582,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
 
         }
+
 
         #endregion
 

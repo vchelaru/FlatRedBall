@@ -281,6 +281,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
         }
 
+
+
         static string StartOfRelative(string relativePath, out string remainder)
         {
             if (relativePath.Contains('/'))
@@ -543,6 +545,14 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                         }
                     }
                 }
+            }
+        }
+
+        internal void CollapseAll()
+        {
+            foreach(var node in VisibleRoot)
+            {
+                node.CollapseRecursively();
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
@@ -259,6 +260,21 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             // todo - look at ElementViewWindow.cs ElementDoubleClick, extract that into common code
             var selectedNode = SelectionLogic.CurrentNode;
             GlueCommands.Self.TreeNodeCommands.HandleTreeNodeDoubleClicked(selectedNode);
+        }
+
+        private void BackButtonClicked(object sender, RoutedEventArgs e)
+        {
+            TreeNodeStackManager.Self.GoBack();
+        }
+
+        private void NextButtonClicked(object sender, RoutedEventArgs e)
+        {
+            TreeNodeStackManager.Self.GoForward();
+        }
+
+        private void CollapseAllClicked(object sender, RoutedEventArgs e)
+        {
+            ViewModel.CollapseAll();
         }
     }
 }
