@@ -40,16 +40,17 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         #endregion
 
+        #region Fields/Properties
+
         LeftOrRight ButtonPressed;
 
         MainTreeViewViewModel ViewModel => DataContext as MainTreeViewViewModel;
 
+        #endregion
+
         public MainTreeViewControl()
         {
             InitializeComponent();
-            
-            
-
         }
 
         // This makes the selection not happen on push+move as explained here:
@@ -221,6 +222,8 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         #endregion
 
+        #region Searching
+
         private void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if(e.Key == Key.Escape)
@@ -229,7 +232,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             }
         }
 
-        private async void ClearSearchButton_Click(object sender, RoutedEventArgs e)
+        private void ClearSearchButton_Click(object sender, RoutedEventArgs e)
         {
             var whatWasSelected = SelectionLogic.CurrentNode?.Tag;
 
@@ -253,6 +256,8 @@ namespace OfficialPlugins.TreeViewPlugin.Views
         {
             ViewModel.IsSearchBoxFocused = false;
         }
+
+        #endregion
 
         private void MainTreeView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {

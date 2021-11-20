@@ -2977,6 +2977,10 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             var element = GlueState.Self.CurrentElement;
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+            // Vic says - this seems wasteful and dishonest. I don't think this call
+            // should generate code. Need to search the usage of this and see if
+            // anywhere depends on it. If so, add explicit calls to generate code, then eventually
+            // remove this.
             GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
         }
 
