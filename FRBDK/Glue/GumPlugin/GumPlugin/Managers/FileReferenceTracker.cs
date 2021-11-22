@@ -122,9 +122,10 @@ namespace GumPlugin.Managers
             }
         }
 
-        private void GetFilesReferencedBy(ElementSave element, TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill, ProjectOrDisk projectOrDisk)
+        private void GetFilesReferencedBy(ElementSave element, List<string> listToFill, ProjectOrDisk projectOrDisk)
         {
-            if(!string.IsNullOrEmpty(element.FileName) && projectOrDisk == ProjectOrDisk.Disk)
+            TopLevelOrRecursive topLevelOrRecursive = TopLevelOrRecursive.TopLevel;
+            if (!string.IsNullOrEmpty(element.FileName) && projectOrDisk == ProjectOrDisk.Disk)
             {
                 var fileWithoutExtension = FileManager.RemoveExtension(element.FileName);
 
@@ -170,7 +171,7 @@ namespace GumPlugin.Managers
 
                     if (topLevelOrRecursive == TopLevelOrRecursive.Recursive)
                     {
-                        GetFilesReferencedBy(referencedElement, topLevelOrRecursive, listToFill, projectOrDisk);
+                        GetFilesReferencedBy(referencedElement, listToFill, projectOrDisk);
                     }
                 }
             }
@@ -283,14 +284,18 @@ namespace GumPlugin.Managers
                 isParentElementText = baseStandardElement?.Name == "Text";
             }
 
-            foreach (var variable in state.Variables.Where(item => 
+            var fontVariables = state.Variables.Where(item =>
                 (item.GetRootName() == "Font" ||
-                    item.GetRootName() == "FontSize" || 
+                    item.GetRootName() == "FontSize" ||
                     item.GetRootName() == "OutlineThickness" ||
+                    item.GetRootName() == "IsItalic" ||
+                    item.GetRootName() == "IsBold" ||
                     item.GetRootName() == "UseFontSmoothing"
-                    ) 
+                    )
                 && item.Value != null
-                ))
+                );
+
+            foreach (var variable in fontVariables)
             {
                 string prefix = null;
 
@@ -343,12 +348,17 @@ namespace GumPlugin.Managers
                         var fontNameVariableName = prefix + "Font";
                         var fontOutlineVariableName = prefix + "OutlineThickness";
                         var fontSmoothingVariableName = prefix + "UseFontSmoothing";
+                        var isBoldVariableName = prefix + "IsBold";
+                        var isItalicVariableName = prefix + "IsItalic";
 
 
                         int fontSizeValue = rvf.GetValue<int>(fontSizeVariableName);
                         string fontNameValue = rvf.GetValue<string>(fontNameVariableName);
                         int outlineThickness = rvf.GetValue<int>(fontOutlineVariableName);
                         bool useFontSmoothing = rvf.GetValue<bool>(fontSmoothingVariableName);
+                        
+                        bool isBold = rvf.GetValue<bool>(isBoldVariableName);
+                        bool isItalic = rvf.GetValue<bool>(isItalicVariableName);
 
                         string additionalInfo = null;
                         if(includeReferenceInfo)
@@ -356,18 +366,19 @@ namespace GumPlugin.Managers
                             additionalInfo = $" by {variable} in {state}";
                         }
 
-                        TryAddFontFromSizeAndName(topLevelOrRecursive, listToFill, fontSizeValue, fontNameValue, outlineThickness, useFontSmoothing, additionalInfo);
+                        TryAddFontFromSizeAndName(topLevelOrRecursive, listToFill, fontSizeValue, fontNameValue, outlineThickness, useFontSmoothing, isBold, isItalic, additionalInfo);
                     }
                 }
             }
         }
 
-        private static void TryAddFontFromSizeAndName(TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill, int fontSizeValue, string fontNameValue, int outlineThickness, bool useFontSmoothing, string suffix)
+        private static void TryAddFontFromSizeAndName(TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill, 
+            int fontSizeValue, string fontNameValue, int outlineThickness, bool useFontSmoothing, bool isBold, bool isItalic,  string suffix)
         {
             if (!string.IsNullOrEmpty(fontNameValue))
             {
                 // copy this to get rid of XNA nonsense, will need to update this if we ever add more font support
-                string fontFileName = GetFontCacheFileNameFor(fontSizeValue, fontNameValue, outlineThickness, useFontSmoothing);
+                string fontFileName = GetFontCacheFileNameFor(fontSizeValue, fontNameValue, outlineThickness, useFontSmoothing,  isItalic, isBold);
 
                 fontFileName = FileManager.RelativeDirectory + fontFileName;
 
@@ -392,7 +403,7 @@ namespace GumPlugin.Managers
             }
         }
 
-        static string GetFontCacheFileNameFor(int fontSize, string fontName, int outline, bool useFontSmoothing)
+        static string GetFontCacheFileNameFor(int fontSize, string fontName, int outline, bool useFontSmoothing, bool isItalic, bool isBold)
         {
             string fileName = null;
 
@@ -409,6 +420,16 @@ namespace GumPlugin.Managers
             if (useFontSmoothing == false)
             {
                 fileName += "_noSmooth";
+            }
+
+            if (isItalic)
+            {
+                fileName += "_Italic";
+            }
+
+            if (isBold)
+            {
+                fileName += "_Bold";
             }
 
             fileName += ".fnt";
@@ -457,7 +478,7 @@ namespace GumPlugin.Managers
             // refresh files quickly:
             try
             {
-                GetReferencesInProjectOrDisk(fileName, TopLevelOrRecursive.TopLevel, listToFill, projectOrDisk);
+                GetReferencesInProjectOrDisk(fileName, listToFill, projectOrDisk);
             }
             catch(Exception e)
             {
@@ -472,7 +493,7 @@ namespace GumPlugin.Managers
 
             List<string> stringListToFill = new List<string>();
 
-            var respnse = GetReferencesInProjectOrDisk(filePath.Standardized, TopLevelOrRecursive.TopLevel,
+            var respnse = GetReferencesInProjectOrDisk(filePath.Standardized,
                 stringListToFill, projectOrDisk);
 
             listToFill.AddRange(stringListToFill
@@ -481,7 +502,7 @@ namespace GumPlugin.Managers
             return respnse;
         }
 
-        private GeneralResponse GetReferencesInProjectOrDisk(string fileName, TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill, ProjectOrDisk projectOrDisk)
+        private GeneralResponse GetReferencesInProjectOrDisk(string fileName, List<string> listToFill, ProjectOrDisk projectOrDisk)
         {
             GeneralResponse generalResponse = GeneralResponse.SuccessfulResponse;
 
@@ -502,7 +523,7 @@ namespace GumPlugin.Managers
                 {
                     absoluteFileName = FileManager.RelativeDirectory + absoluteFileName;
                 }
-
+                var topLevelOrRecursive = TopLevelOrRecursive.TopLevel;
                 string errors = null;
                 if (System.IO.File.Exists(absoluteFileName))
                 {
@@ -536,7 +557,7 @@ namespace GumPlugin.Managers
                                     gumComponentSave.FileName = absoluteFileName;
                                     // See an explanation for this in LoadGumxIfNecessaryFromDirectory
                                     gumComponentSave.Initialize(gumComponentSave.DefaultState);
-                                    GetFilesReferencedBy(gumComponentSave, topLevelOrRecursive, listToFill, projectOrDisk);
+                                    GetFilesReferencedBy(gumComponentSave, listToFill, projectOrDisk);
                                 }
                                 catch (Exception e)
                                 {
@@ -555,7 +576,7 @@ namespace GumPlugin.Managers
                                     // See an explanation for this in LoadGumxIfNecessaryFromDirectory
                                     gumScreenSave.Initialize(gumScreenSave.DefaultState);
 
-                                    GetFilesReferencedBy(gumScreenSave, topLevelOrRecursive, listToFill, projectOrDisk);
+                                    GetFilesReferencedBy(gumScreenSave, listToFill, projectOrDisk);
                                 }
                                 catch (Exception e)
                                 {
@@ -574,7 +595,7 @@ namespace GumPlugin.Managers
                                     // See an explanation for this in LoadGumxIfNecessaryFromDirectory
                                     standardElementSave.Initialize(standardElementSave.DefaultState);
 
-                                    GetFilesReferencedBy(standardElementSave, topLevelOrRecursive, listToFill, projectOrDisk);
+                                    GetFilesReferencedBy(standardElementSave, listToFill, projectOrDisk);
                                 }
                                 catch (Exception e)
                                 {
