@@ -36,7 +36,6 @@ namespace FlatRedBall.Glue.IO
         #region Fields
 
         static ProjectLoader mSelf;
-        private static InitializationWindow mCurrentInitWindow;
         private static string mLastLoadedFilename; //to prevent projects from loading/syncing twice
 
         #endregion
@@ -65,7 +64,7 @@ namespace FlatRedBall.Glue.IO
         #endregion
 
         
-        public async Task LoadProject(string projectFileName, InitializationWindow initializationWindow = null)
+        public async Task LoadProject(string projectFileName, InitializationWindowWpf initializationWindow = null)
         {
             TimeManager.Initialize();
             var topSection = Section.GetAndStartContextAndTime("All");
@@ -81,10 +80,13 @@ namespace FlatRedBall.Glue.IO
 
             FileWatchManager.PerformFlushing = false;
 
-            bool closeInitWindow = PrepareInitializationWindow(initializationWindow);
+            bool closeInitWindow = PrepareInitializationWindow(ref initializationWindow);
 
             // close the project before turning off task processing...
-            ClosePreviousProject(projectFileName);
+            if (ProjectManager.ProjectBase != null)
+            {
+                MainPanelControl.Self.ReactToCloseProject(shouldSave: false, isExiting: false, initWindow: initializationWindow);
+            }
 
             // Vic says - do we really want to wait for this to finish?
             // If we do this, we can't run everything on a separate thread
@@ -95,7 +97,7 @@ namespace FlatRedBall.Glue.IO
             TaskManager.Self.IsTaskProcessingEnabled = false;
             TaskManager.Self.RecordTaskHistory($"--Starting to load project {projectFileName}--");
 
-            SetInitWindowText("Loading code project");
+            SetInitWindowText("Loading code project", initializationWindow);
 
             var result = ProjectCreator.CreateProject(projectFileName);
             ProjectManager.ProjectBase = (VisualStudioProject)result.Project;
@@ -119,7 +121,7 @@ namespace FlatRedBall.Glue.IO
                 }
 
 
-                SetInitWindowText("Finding Game class");
+                SetInitWindowText("Finding Game class", initializationWindow);
 
 
                 FileWatchManager.UpdateToProjectDirectory();
@@ -176,11 +178,11 @@ namespace FlatRedBall.Glue.IO
                     //GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeSync();
                     //ProjectManager.SaveProjects();
                 }
-                PerformGluxLoad(projectFileName, glueProjectFile.FullPath);
+                PerformGluxLoad(projectFileName, glueProjectFile.FullPath, initializationWindow);
 
                 #endregion
 
-                SetInitWindowText("Cleaning extra Screens and Entities");
+                SetInitWindowText("Cleaning extra Screens and Entities", initializationWindow);
 
 
                 foreach (var screenNode in ElementViewWindow.AllScreens)
@@ -226,7 +228,7 @@ namespace FlatRedBall.Glue.IO
             }
             if (closeInitWindow)
             {
-                GlueCommands.Self.DoOnUiThread(() => mCurrentInitWindow.Close());
+                GlueCommands.Self.DoOnUiThread(() => initializationWindow.Close());
             }
 
 
@@ -347,14 +349,14 @@ namespace FlatRedBall.Glue.IO
             return FileManager.Standardize(Assembly.GetAssembly(typeof(MainGlueWindow)).Location.ToLowerInvariant());
         }
 
-        private void PerformGluxLoad(string projectFileName, string glueProjectFile)
+        private void PerformGluxLoad(string projectFileName, string glueProjectFile, InitializationWindowWpf initializationWindow)
         {
-            SetInitWindowText("Loading Glue Project");
+            SetInitWindowText("Loading Glue Project", initializationWindow);
 
 
             bool succeeded = true;
 
-            succeeded = DeserializeGlueProjectInternal(projectFileName, glueProjectFile);
+            succeeded = DeserializeGlueProjectInternal(projectFileName, glueProjectFile, initializationWindow);
 
             if (succeeded)
             {
@@ -366,7 +368,7 @@ namespace FlatRedBall.Glue.IO
 
                 IdentifyAdditionalAssetTypes();
 
-                SetInitWindowText("Finding and fixing .glux errors");
+                SetInitWindowText("Finding and fixing .glux errors", initializationWindow);
                 ProjectManager.GlueProjectSave.FixErrors(true);
                 ProjectManager.GlueProjectSave.RemoveInvalidStatesFromNamedObjects(true);
 
@@ -379,7 +381,7 @@ namespace FlatRedBall.Glue.IO
 
                 ProjectManager.LoadOrCreateProjectSpecificSettings(FileManager.GetDirectory(projectFileName));
 
-                SetInitWindowText("Notifying plugins of project...");
+                SetInitWindowText("Notifying plugins of project...", initializationWindow);
 
                 Section.GetAndStartContextAndTime("PluginManager Init");
 
@@ -395,7 +397,7 @@ namespace FlatRedBall.Glue.IO
 
                 Section.GetAndStartContextAndTime("Add items");
 
-                SetInitWindowText("Creating project view...");
+                SetInitWindowText("Creating project view...", initializationWindow);
                 
 
                 //AddEmptyTreeItems();
@@ -413,24 +415,24 @@ namespace FlatRedBall.Glue.IO
                 // Update May 4, 2011 Part 2:  The SourceFileCache is used when building files.  So instead, the refreshing
                 // of the source file cache will also build a file if it encounters a missing file.  This should greatly reduce
                 // popup count.
-                SetInitWindowText("Refreshing Source File Cache...");
+                SetInitWindowText("Refreshing Source File Cache...", initializationWindow);
                 RefreshSourceFileCache();
 
-                SetInitWindowText("Checking for additional missing files...");
+                SetInitWindowText("Checking for additional missing files...", initializationWindow);
 
-                SetInitWindowText("Building out of date external files...");
+                SetInitWindowText("Building out of date external files...", initializationWindow);
                 BuildAllOutOfDateFiles();
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("RefreshGlobalContentDirectory");
 
-                SetInitWindowText("Refreshing global content dictionary...");
+                SetInitWindowText("Refreshing global content dictionary...", initializationWindow);
                 ReferencedFileSaveCodeGenerator.RefreshGlobalContentDictionary();
                 GlobalContentCodeGenerator.SuppressGlobalContentDictionaryRefresh = true;
 
                 Section.EndContextAndTime();
 
                 Section.GetAndStartContextAndTime("Screens");
-                SetInitWindowText("Creating tree nodes...");
+                SetInitWindowText("Creating tree nodes...", initializationWindow);
                 //CreateScreenTreeNodes();
                 Section.EndContextAndTime();
 
@@ -468,14 +470,14 @@ namespace FlatRedBall.Glue.IO
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("PrepareSyncedProjects");
 
-                PrepareSyncedProjects(projectFileName);
+                PrepareSyncedProjects(projectFileName, initializationWindow);
 
                 mLastLoadedFilename = projectFileName;
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("MakeGeneratedItemsNested");
 
                 // This should happen after loading synced projects
-                SetInitWindowText("Nesting generated items");
+                SetInitWindowText("Nesting generated items", initializationWindow);
                 GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("GlobalContent");
@@ -483,7 +485,7 @@ namespace FlatRedBall.Glue.IO
 
                 #region Update GlobalContent UI and code
 
-                SetInitWindowText("Updating global content");
+                SetInitWindowText("Updating global content", initializationWindow);
 
                 GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
 
@@ -501,7 +503,7 @@ namespace FlatRedBall.Glue.IO
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("Startup");
 
-                SetInitWindowText("Setting StartUp Screen");
+                SetInitWindowText("Setting StartUp Screen", initializationWindow);
 
 
 
@@ -513,13 +515,13 @@ namespace FlatRedBall.Glue.IO
                 Section.EndContextAndTime();
 
 
-                SetInitWindowText("Notifying Plugins of startup");
+                SetInitWindowText("Notifying Plugins of startup", initializationWindow);
 
 
-                PluginManager.ReactToLoadedGlux(ProjectManager.GlueProjectSave, glueProjectFile, SetInitWindowText);
+                PluginManager.ReactToLoadedGlux(ProjectManager.GlueProjectSave, glueProjectFile, (newString) => SetInitWindowText(newString, initializationWindow));
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("GenerateAllCode");
-                SetInitWindowText("Generating all code");
+                SetInitWindowText("Generating all code", initializationWindow);
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
                 Section.EndContextAndTime();
 
@@ -577,34 +579,26 @@ namespace FlatRedBall.Glue.IO
             }
         }
 
-        private static void ClosePreviousProject(string projectFileName)
+        private static bool PrepareInitializationWindow(ref InitializationWindowWpf initializationWindow)
         {
-            if (ProjectManager.ProjectBase != null)
-            {
-                MainPanelControl.Self.ReactToCloseProject(shouldSave: false, isExiting: false, initWindow: mCurrentInitWindow);
-            }
-        }
-
-        private static bool PrepareInitializationWindow(InitializationWindow initializationWindow)
-        {
-            mCurrentInitWindow = initializationWindow;
             bool closeInitWindow = false;
 
-            if (mCurrentInitWindow == null)
+            if (initializationWindow == null)
             {
                 closeInitWindow = true;
 
-                mCurrentInitWindow = new InitializationWindow();
+                initializationWindow = new InitializationWindowWpf();
 
                 if (GlueGui.ShowGui)
                 {
-                    TaskManager.Self.OnUiThread(() => mCurrentInitWindow.Show(MainGlueWindow.Self));
+                    initializationWindow.Show();
+                    
                 }
             }
             return closeInitWindow;
         }
 
-        private bool DeserializeGlueProjectInternal(string projectFileName, string glueProjectFile)
+        private bool DeserializeGlueProjectInternal(string projectFileName, string glueProjectFile, InitializationWindowWpf initializationWindow)
         {
             bool succeeded = true;
             try
@@ -634,7 +628,7 @@ namespace FlatRedBall.Glue.IO
                 mbmb.AddButton("Test for conflicts", DialogResult.Yes);
 
                 DialogResult result = mbmb.ShowDialog(MainGlueWindow.Self);
-                mCurrentInitWindow.Close();
+                initializationWindow.Close();
 
                 switch (result)
                 {
@@ -667,11 +661,11 @@ namespace FlatRedBall.Glue.IO
             return succeeded;
         }
 
-        public void SetInitWindowText(string subtext)
+        public void SetInitWindowText(string subtext, InitializationWindowWpf initializationWindow)
         {
-            if (mCurrentInitWindow != null)
+            if (initializationWindow != null)
             {
-                mCurrentInitWindow.SubMessage = subtext;
+                initializationWindow.SubMessage = subtext;
                 Application.DoEvents();
             }
         }
@@ -908,9 +902,9 @@ namespace FlatRedBall.Glue.IO
             }
         }
 
-        private void PrepareSyncedProjects(string projectFileName)
+        private void PrepareSyncedProjects(string projectFileName, InitializationWindowWpf initializationWindow)
         {
-            SetInitWindowText("Loading synced projects Entities");
+            SetInitWindowText("Loading synced projects Entities", initializationWindow);
             for (int i = ProjectManager.GlueProjectSave.SyncedProjects.Count - 1; i > -1; i--)
             {
                 string projectName;

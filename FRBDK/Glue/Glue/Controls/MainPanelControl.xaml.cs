@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue;
+using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
@@ -247,8 +248,19 @@ namespace GlueFormsCore.Controls
 
         }
 
-        public void ReactToCloseProject(bool shouldSave, bool isExiting, InitializationWindow initWindow = null)
+        public void ReactToCloseProject(bool shouldSave, bool isExiting, InitializationWindowWpf initWindow = null)
         {
+            var didCreateOwnInitWindow = false;
+            if(initWindow == null)
+            {
+                didCreateOwnInitWindow = true;
+                initWindow = new InitializationWindowWpf();
+
+                // EVentually we want to convert this to WPF...
+                //GlueGui.ShowWindow(initWindow, MainGlueWindow.Self);
+                initWindow.Show();
+            }
+
             MainPanelControl.IsExiting = isExiting;
             TaskManager.Self.RecordTaskHistory($"--Received Close Project Command --");
 
@@ -321,6 +333,10 @@ namespace GlueFormsCore.Controls
             ProjectManager.WantsToClose = false;
             TaskManager.Self.RecordTaskHistory($"--Ending Close Project Command --");
 
+            if(didCreateOwnInitWindow)
+            {
+                initWindow.Close();
+            }
         }
 
         private void CreateFileWatchTimer()

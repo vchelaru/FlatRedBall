@@ -38,7 +38,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
             {
                 File.Add("New Project", GlueCommands.Self.ProjectCommands.CreateNewProject);
                 File.Add("Load Project...", GlueCommands.Self.DialogCommands.ShowLoadProjectDialog);
-                File.Add("Close Project", () => MainGlueWindow.CloseProject(true, false));
+                File.Add("Close Project", () => MainPanelControl.Self.ReactToCloseProject(shouldSave:true, isExiting:false));
             }
 
             var Edit = AddTopLevelMenuItem("Edit");

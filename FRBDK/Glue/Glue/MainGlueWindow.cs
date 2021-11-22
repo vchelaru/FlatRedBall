@@ -235,11 +235,11 @@ namespace Glue
 
             AddErrorReporters();
 
-            InitializationWindow initializationWindow = new InitializationWindow();
+            var initializationWindow = new InitializationWindowWpf();
 
             // Initialize GlueGui before using it:
             GlueGui.Initialize(mMenu);
-            GlueGui.ShowWindow(initializationWindow, this);
+            initializationWindow.Show();
 
             initializationWindow.Message = "Initializing Glue Systems";
             Application.DoEvents();
@@ -420,7 +420,7 @@ namespace Glue
             EditorObjects.IoC.Container.Set<GlueErrorManager>(new GlueErrorManager());
         }
 
-        private async Task LoadProjectConsideringSettingsAndArgs(InitializationWindow initializationWindow)
+        private async Task LoadProjectConsideringSettingsAndArgs(InitializationWindowWpf initializationWindow)
         {
             // This must be called after setting the GlueSettingsSave
             string csprojToLoad;
@@ -444,7 +444,7 @@ namespace Glue
             PluginManager.PrintPreInitializeOutput();
         }
 
-        private void LoadGlueSettings(InitializationWindow initializationWindow)
+        private void LoadGlueSettings(InitializationWindowWpf initializationWindow)
         {
             string settingsFileLocation = GlueSettingsSave.SettingsFileName;
             if (FileManager.FileExists(settingsFileLocation))
@@ -513,13 +513,6 @@ namespace Glue
 
         }
 
-        [Obsolete("Use MainPanelControl.Self.ReactToCloseProject")]
-        public static void CloseProject(bool shouldSave, bool isExiting, InitializationWindow initWindow = null)
-        {
-            MainWpfControl.ReactToCloseProject(shouldSave, isExiting, initWindow);
-
-        }
-
         private async void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             ProjectManager.WantsToClose = true;
@@ -532,7 +525,7 @@ namespace Glue
             await TaskManager.Self.WaitForAllTasksFinished();
 
             PluginManager.ReactToGlueClose();
-            CloseProject(true, true);
+            MainWpfControl.ReactToCloseProject(true, true);
         }
     }
 }

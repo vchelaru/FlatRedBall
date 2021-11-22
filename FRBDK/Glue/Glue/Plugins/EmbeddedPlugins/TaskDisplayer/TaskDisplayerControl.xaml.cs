@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlatRedBall.Glue.Managers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
         {
             InitializeComponent();
 
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            for(int i = 0; i < 10; i++)
+            {
+                TaskManager.Self.Add(() => System.Threading.Thread.Sleep(1000), $"Debug thread sleep {i}");
+            }
         }
     }
 }
