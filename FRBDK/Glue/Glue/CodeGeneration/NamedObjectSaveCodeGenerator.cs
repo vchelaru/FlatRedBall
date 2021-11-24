@@ -38,6 +38,8 @@ namespace FlatRedBall.Glue.CodeGeneration
     {
         public static Dictionary<string, string> ReusableEntireFileRfses { get; set; }
 
+        #region Fields
+
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
             codeBlock.Line("");
@@ -51,6 +53,91 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             return codeBlock;
         }
+
+        public static void GenerateFieldAndPropertyForNamedObject(NamedObjectSave namedObjectSave, ICodeBlock codeBlock)
+        {
+
+            string typeName = GetQualifiedTypeName(namedObjectSave);
+
+            CodeGenerationType codeGenerationType = GetFieldCodeGenerationType(namedObjectSave);
+
+            if (codeGenerationType == CodeGenerationType.OnlyContainedObjects)
+            {
+                // Since the base defines it, we don't want to define the object here; however,
+                // any objects that it contains will not be defined by base, so we do need to loop
+                // through contained NamedObjectSaves and define those.  We also want to create variable
+                // reset fields.
+                CreateVariableResetField(namedObjectSave, typeName, codeBlock);
+
+                foreach (NamedObjectSave childNos in namedObjectSave.ContainedObjects)
+                {
+                    GenerateFieldAndPropertyForNamedObject(childNos, codeBlock);
+                }
+            }
+
+            else if(codeGenerationType == CodeGenerationType.Full)
+            {
+                AddIfConditionalSymbolIfNecesssary(codeBlock, namedObjectSave);
+
+                #region Get the Access Modifier
+                string accessModifier = "private";
+
+
+
+                if (namedObjectSave.SetByDerived || namedObjectSave.ExposedInDerived)
+                {
+                    accessModifier = "protected";
+                }
+
+                #endregion
+
+                string variableName = namedObjectSave.FieldName;
+                codeBlock.Line(StringHelper.SpaceStrings(accessModifier, typeName, variableName) + ";");
+
+                #region If should create public property
+
+                bool shouldCreateProperty = namedObjectSave.HasPublicProperty || namedObjectSave.SetByContainer;
+
+                if (shouldCreateProperty)
+                {
+                    var prop = codeBlock.Property(StringHelper.SpaceStrings("public", typeName),
+                                                  namedObjectSave.InstanceName);
+                    prop.Get()
+                        .Line("return " + variableName + ";");
+                    if (namedObjectSave.SetByContainer)
+                    {
+                        prop.Set()
+                            .Line(variableName + " = value;");
+                    }
+                    else if (namedObjectSave.SetByDerived)
+                    {
+                        prop.Set("protected")
+                            .Line(variableName + " = value;");
+                    }
+                    else
+                    {
+                        // This should still have a private setter to not break
+                        // internal code
+                        prop.Set("private")
+                         .Line(variableName + " = value;");
+                    }
+                }
+                #endregion
+
+                CreateVariableResetField(namedObjectSave, typeName, codeBlock);
+
+                // If this NamedObjectSave has children, then create fields for those too
+                foreach (NamedObjectSave childNos in namedObjectSave.ContainedObjects)
+                {
+                    GenerateFieldAndPropertyForNamedObject(childNos, codeBlock);
+                }
+                AddEndIfIfNecessary(codeBlock, namedObjectSave);
+            }
+        }
+
+        #endregion
+
+        #region Instantiate
 
         public override ICodeBlock GenerateConstructor(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
@@ -68,6 +155,93 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
+        public static void WriteCodeForNamedObjectInitialize(NamedObjectSave namedObject, IElement saveObject,
+            ICodeBlock codeBlock, string overridingContainerName, bool inConstructor = false)
+        {
+            var referencedFilesAlreadyUsingFullFile = ReusableEntireFileRfses;
+
+            CodeGenerationType codeGenerationType = GetInitializeCodeGenerationType(namedObject, saveObject);
+
+            #region ///////////////////////EARLY OUT///////////////////////////////
+
+            if (codeGenerationType == CodeGenerationType.Nothing)
+            {
+                codeBlock.Line($"// Not instantiating for {namedObject} because properties on the object prevent it");
+                return;
+            }
+
+            #endregion ////////////////////////END EARLY OUT///////////////////////
+
+            AddIfConditionalSymbolIfNecesssary(codeBlock, namedObject);
+
+            bool instantiateInConstructor = namedObject.ShouldInstantiateInConstructor();
+
+            bool succeeded = true;
+
+            #region Perform instantiation
+
+            if (!namedObject.InstantiatedByBase)
+            {
+                // Ensure that the nos is only instantiated where it should be. Since this method
+                // can be called for the constructor or Initialize() method, we need to check that
+                // we're in the proper place for generating the instantiation code.
+                if (inConstructor == instantiateInConstructor)
+                {
+                    succeeded = GenerateInstantiationOrAssignment(
+                        namedObject, saveObject, codeBlock, overridingContainerName, referencedFilesAlreadyUsingFullFile);
+                }
+                // If the nos is a list, was instantiated in the constructor, and we aren't in the
+                // constructor, then we should clear any items out of it before anything new is
+                // added in. This isn't necessary for scenes, but it's needed for pooled entities.
+                if (namedObject.IsList && instantiateInConstructor && !inConstructor)
+                {
+                    codeBlock.Line($"{namedObject.FieldName}.Clear();");
+                }
+            }
+            else
+            {
+                codeBlock.Line($"// skipping instantiation of {namedObject} because it has its InstantiatedByBase set to true");
+            }
+            #endregion
+
+            if (succeeded)
+            {
+
+                #region Set the SetEvents for any variable change
+
+                for (int i = 0; i < namedObject.InstructionSaves.Count; i++)
+                {
+
+                    CustomVariableInNamedObject customVariable = namedObject.InstructionSaves[i];
+
+                    if (!string.IsNullOrEmpty(customVariable.EventOnSet) &&
+                        ExposedVariableManager.IsExposedVariable(customVariable.Member, namedObject)
+                        )
+                    {
+                        codeBlock.Line(namedObject.InstanceName + "." + customVariable.Member + "SetEvent += " +
+                                       customVariable.EventOnSet + ";");
+                    }
+                }
+
+                #endregion
+
+                if (!inConstructor)
+                {
+                    // Text specific initialization and contained object initialization should only
+                    // take place in the regular Initialize() method and never in the constructor.
+
+                    WriteTextSpecificInitialization(namedObject, saveObject, codeBlock, referencedFilesAlreadyUsingFullFile);
+
+                    foreach (NamedObjectSave containedNos in namedObject.ContainedObjects)
+                    {
+                        WriteCodeForNamedObjectInitialize(containedNos, saveObject, codeBlock, null);
+                    }
+                }
+            }
+
+            AddEndIfIfNecessary(codeBlock, namedObject);
+        }
+
         public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
 
@@ -83,69 +257,72 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 WriteCodeForNamedObjectInitialize(nos, element, codeBlock, null);
             }
-            //// We're going to do all "Entire File" NOS's first so that they aren't null before 
-            //for (int i = 0; i < element.NamedObjects.Count; i++)
-            //{
-            //    NamedObjectSave nos = element.NamedObjects[i];
-
-            //    if (nos.IsEntireFile)
-            //    {
-            //        WriteCodeForNamedObjectInitialize(nos, element, codeBlock, null);
-            //    }
-            //}
-
-            //// Now do non-entire files:
-            //for (int i = 0; i < element.NamedObjects.Count; i++)
-            //{
-            //    NamedObjectSave nos = element.NamedObjects[i];
-
-            //    if (!nos.IsEntireFile)
-            //    {
-            //        WriteCodeForNamedObjectInitialize(nos, element, codeBlock, null);
-
-            //    }
-            //}
-
-
 
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateInitializeLate(ICodeBlock codeBlock, IElement element)
+        #endregion
+
+        #region Assign Variables
+
+        /// <summary>
+        /// Generates variable assignment, this is used in PostInitialize
+        /// </summary>
+        /// <param name="namedObject"></param>
+        /// <param name="codeBlock"></param>
+        public static void GenerateVariableAssignment(NamedObjectSave namedObject, ICodeBlock codeBlock)
         {
-            // Now add anything that is part of a list to the list it belongs in
-            // Update June 1, 2012
-            // This used to be in GenerateInitialize
-            // but was moved to GenerateInitializeLate
-            // because we want addition to lists to be done
-            // after all events for list modification have been
-            // assigned - and that's done in GenerateInitialize by
-            // the event code generator.
-            // Update Sept 24, 2012
-            // This used to be here, but we want to move it into PostInitialize
-            // because the object may be added to a list that is initialized in the
-            // base.Initialize call 
-            //for (int i = 0; i < element.NamedObjects.Count; i++)
-            //{
-            //    NamedObjectSave nos = element.NamedObjects[i];
 
-            //    foreach (NamedObjectSave containedNos in nos.ContainedObjects)
-            //    {
-            //        if (!containedNos.InstantiatedByBase && !containedNos.IsDisabled && containedNos.Instantiate)
-            //        {
-            //            bool shouldSkip = containedNos.SourceType == SourceType.File &&
-            //                string.IsNullOrEmpty(containedNos.SourceFile);
-            //            if (!shouldSkip)
-            //            {
-            //                codeBlock.Line(nos.InstanceName + ".Add(" + containedNos.InstanceName + ");");
-            //            }
-            //        }
-            //    }
-            //}
+            List<CustomVariableInNamedObject> variables = namedObject.InstructionSaves;
+            var ati = namedObject.GetAssetTypeInfo();
 
-            return codeBlock;
+            var variableDefinitions = ati?.VariableDefinitions;
+            
+
+            if (variableDefinitions != null)
+            {
+                // 
+                variables = variables.OrderBy(item =>
+                    {
+                        var matching = variableDefinitions.FirstOrDefault(definition => definition.Name == item.Member);
+
+                        if(matching == null)
+                        {
+                            return -1;
+                        }
+                        else
+                        {
+                            return variableDefinitions.IndexOf(matching);
+                        }
+                    })
+                    .ToList();
+
+            }
+
+            foreach (var instructionSave in variables)
+            {
+                GlueElement element = null;
+
+                if (namedObject.SourceType == SourceType.Entity)
+                {
+                    element = ObjectFinder.Self.GetElement(namedObject.SourceClassType);
+                }
+
+                var shouldGenerateVariableAssignment =
+                    ExposedVariableManager.IsExposedVariable(instructionSave.Member, namedObject) ||
+                    (element != null && element.GetCustomVariableRecursively(instructionSave.Member) != null) ||
+                    // Could be something set by container:
+                    (element != null && element.GetNamedObjectRecursively(instructionSave.Member) != null) ||
+                    variableDefinitions?.Any(item => item.Name == instructionSave.Member) == true;
+
+                if (shouldGenerateVariableAssignment)
+                {
+                    CustomVariableCodeGenerator.AppendAssignmentForCustomVariableInInstance(namedObject, codeBlock, instructionSave);
+                }
+            }
         }
 
+        #endregion
 
         public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
@@ -272,93 +449,6 @@ namespace FlatRedBall.Glue.CodeGeneration
             #endregion
 
             return codeBlock;
-        }
-
-        public static void WriteCodeForNamedObjectInitialize(NamedObjectSave namedObject, IElement saveObject,
-            ICodeBlock codeBlock, string overridingContainerName, bool inConstructor = false)
-        {
-            var referencedFilesAlreadyUsingFullFile = ReusableEntireFileRfses;
-
-            CodeGenerationType codeGenerationType = GetInitializeCodeGenerationType(namedObject, saveObject);
-
-            #region ///////////////////////EARLY OUT///////////////////////////////
-
-            if (codeGenerationType == CodeGenerationType.Nothing)
-            {
-                codeBlock.Line($"// Not instantiating for {namedObject} because properties on the object prevent it");
-                return;
-            }
-
-            #endregion ////////////////////////END EARLY OUT///////////////////////
-
-            AddIfConditionalSymbolIfNecesssary(codeBlock, namedObject);
-
-            bool instantiateInConstructor = namedObject.ShouldInstantiateInConstructor();
-
-            bool succeeded = true;
-
-            #region Perform instantiation
-
-            if (!namedObject.InstantiatedByBase)
-            {
-                // Ensure that the nos is only instantiated where it should be. Since this method
-                // can be called for the constructor or Initialize() method, we need to check that
-                // we're in the proper place for generating the instantiation code.
-                if (inConstructor == instantiateInConstructor)
-                {
-                    succeeded = GenerateInstantiationOrAssignment(
-                        namedObject, saveObject, codeBlock, overridingContainerName, referencedFilesAlreadyUsingFullFile);
-                }
-                // If the nos is a list, was instantiated in the constructor, and we aren't in the
-                // constructor, then we should clear any items out of it before anything new is
-                // added in. This isn't necessary for scenes, but it's needed for pooled entities.
-                if (namedObject.IsList && instantiateInConstructor && !inConstructor)
-                {
-                    codeBlock.Line($"{namedObject.FieldName}.Clear();");
-                }
-            }
-            else
-            {
-                codeBlock.Line($"// skipping instantiation of {namedObject} because it has its InstantiatedByBase set to true");
-            }
-            #endregion
-
-            if (succeeded)
-            {
-
-                #region Set the SetEvents for any variable change
-
-                for (int i = 0; i < namedObject.InstructionSaves.Count; i++)
-                {
-
-                    CustomVariableInNamedObject customVariable = namedObject.InstructionSaves[i];
-
-                    if (!string.IsNullOrEmpty(customVariable.EventOnSet) &&
-                        ExposedVariableManager.IsExposedVariable(customVariable.Member, namedObject)
-                        )
-                    {
-                        codeBlock.Line(namedObject.InstanceName + "." + customVariable.Member + "SetEvent += " +
-                                       customVariable.EventOnSet + ";");
-                    }
-                }
-
-                #endregion
-
-                if (!inConstructor)
-                {
-                    // Text specific initialization and contained object initialization should only
-                    // take place in the regular Initialize() method and never in the constructor.
-
-                    WriteTextSpecificInitialization(namedObject, saveObject, codeBlock, referencedFilesAlreadyUsingFullFile);
-
-                    foreach (NamedObjectSave containedNos in namedObject.ContainedObjects)
-                    {
-                        WriteCodeForNamedObjectInitialize(containedNos, saveObject, codeBlock, null);
-                    }
-                }
-            }
-
-            AddEndIfIfNecessary(codeBlock, namedObject);
         }
 
 
@@ -1067,86 +1157,6 @@ namespace FlatRedBall.Glue.CodeGeneration
             return false;
         }
 
-        public static void GenerateFieldAndPropertyForNamedObject(NamedObjectSave namedObjectSave, ICodeBlock codeBlock)
-        {
-
-            string typeName = GetQualifiedTypeName(namedObjectSave);
-
-            CodeGenerationType codeGenerationType = GetFieldCodeGenerationType(namedObjectSave);
-
-            if (codeGenerationType == CodeGenerationType.OnlyContainedObjects)
-            {
-                // Since the base defines it, we don't want to define the object here; however,
-                // any objects that it contains will not be defined by base, so we do need to loop
-                // through contained NamedObjectSaves and define those.  We also want to create variable
-                // reset fields.
-                CreateVariableResetField(namedObjectSave, typeName, codeBlock);
-
-                foreach (NamedObjectSave childNos in namedObjectSave.ContainedObjects)
-                {
-                    GenerateFieldAndPropertyForNamedObject(childNos, codeBlock);
-                }
-            }
-
-            else if(codeGenerationType == CodeGenerationType.Full)
-            {
-                AddIfConditionalSymbolIfNecesssary(codeBlock, namedObjectSave);
-
-                #region Get the Access Modifier
-                string accessModifier = "private";
-
-
-
-                if (namedObjectSave.SetByDerived || namedObjectSave.ExposedInDerived)
-                {
-                    accessModifier = "protected";
-                }
-
-                #endregion
-
-                string variableName = namedObjectSave.FieldName;
-                codeBlock.Line(StringHelper.SpaceStrings(accessModifier, typeName, variableName) + ";");
-
-                #region If should create public property
-
-                bool shouldCreateProperty = namedObjectSave.HasPublicProperty || namedObjectSave.SetByContainer;
-
-                if (shouldCreateProperty)
-                {
-                    var prop = codeBlock.Property(StringHelper.SpaceStrings("public", typeName),
-                                                  namedObjectSave.InstanceName);
-                    prop.Get()
-                        .Line("return " + variableName + ";");
-                    if (namedObjectSave.SetByContainer)
-                    {
-                        prop.Set()
-                            .Line(variableName + " = value;");
-                    }
-                    else if (namedObjectSave.SetByDerived)
-                    {
-                        prop.Set("protected")
-                            .Line(variableName + " = value;");
-                    }
-                    else
-                    {
-                        // This should still have a private setter to not break
-                        // internal code
-                        prop.Set("private")
-                         .Line(variableName + " = value;");
-                    }
-                }
-                #endregion
-
-                CreateVariableResetField(namedObjectSave, typeName, codeBlock);
-
-                // If this NamedObjectSave has children, then create fields for those too
-                foreach (NamedObjectSave childNos in namedObjectSave.ContainedObjects)
-                {
-                    GenerateFieldAndPropertyForNamedObject(childNos, codeBlock);
-                }
-                AddEndIfIfNecessary(codeBlock, namedObjectSave);
-            }
-        }
 
         public static CodeGenerationType GetFieldCodeGenerationType(NamedObjectSave namedObjectSave)
         {
@@ -1787,59 +1797,6 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-
-        /// <summary>
-        /// Generates variable assignment, this is used in PostInitialize
-        /// </summary>
-        /// <param name="namedObject"></param>
-        /// <param name="codeBlock"></param>
-        public static void GenerateVariableAssignment(NamedObjectSave namedObject, ICodeBlock codeBlock)
-        {
-
-            IEnumerable<CustomVariableInNamedObject> enumerable = namedObject.InstructionSaves;
-            var ati = namedObject.GetAssetTypeInfo();
-
-            var variableDefinitions = ati?.VariableDefinitions;
-            
-
-            if (variableDefinitions != null)
-            {
-                enumerable = enumerable.OrderBy(item =>
-                    {
-                        var matching = variableDefinitions.FirstOrDefault(definition => definition.Name == item.Member);
-
-                        if(matching == null)
-                        {
-                            return -1;
-                        }
-                        else
-                        {
-                            return variableDefinitions.IndexOf(matching);
-                        }
-                    });
-
-            }
-
-            foreach (var instructionSave in enumerable)
-            {
-                IElement element = null;
-
-                if (namedObject.SourceType == SourceType.Entity)
-                {
-                    element = ObjectFinder.Self.GetIElement(namedObject.SourceClassType);
-                }
-
-
-                if (ExposedVariableManager.IsExposedVariable(instructionSave.Member, namedObject) ||
-                    (element != null && element.GetCustomVariableRecursively(instructionSave.Member) != null) ||
-                    // Could be something set by container:
-                    (element != null && element.GetNamedObjectRecursively(instructionSave.Member) != null)
-                    )
-                {
-                    CustomVariableCodeGenerator.AppendAssignmentForCustomVariableInInstance(namedObject, codeBlock, instructionSave);
-                }
-            }
-        }
 
 
         public static void AddUsingsForNamedObjects(List<string> usingsToAdd, IElement SaveObject)
