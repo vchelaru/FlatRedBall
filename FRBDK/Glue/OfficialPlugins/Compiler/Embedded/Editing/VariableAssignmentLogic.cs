@@ -73,7 +73,8 @@ namespace GlueControl.Editing
                             {
                                 //var targetInstance = GetTargetInstance(data, ref variableValue, screen);
                                 object targetInstance = null;
-                                if (setOnEntity)
+                                // If there's 2 variables, then it's like "this.Width"
+                                if (setOnEntity && splitVariable.Length == 2)
                                 {
                                     targetInstance = item;
                                 }

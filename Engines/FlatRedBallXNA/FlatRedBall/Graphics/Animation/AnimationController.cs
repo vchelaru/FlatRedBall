@@ -93,8 +93,17 @@ namespace FlatRedBall.Graphics.Animation
 
             AnimatedObject.PlayAnimation(animationToSet);
         }
+
+        /// <summary>
+        /// Instantiates a new layer and adds it to the Layers collection.
+        /// </summary>
+        /// <returns>The newly-created Layer.</returns>
+        public AnimationLayer AddLayer()
+        {
+            var layer = new AnimationLayer();
+            this.Layers.Add(layer);
+            return layer;
+        }
     }
-
-
 
 }
