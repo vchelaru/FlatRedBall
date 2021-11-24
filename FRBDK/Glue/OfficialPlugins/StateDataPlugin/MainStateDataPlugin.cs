@@ -20,6 +20,7 @@ namespace OfficialPlugins.StateDataPlugin
     [Export(typeof(PluginBase))]
     public class MainStateDataPlugin : PluginBase
     {
+        #region Fields/Properties
         StateDataControl control;
         PluginTab tab;
 
@@ -33,6 +34,8 @@ namespace OfficialPlugins.StateDataPlugin
         {
             get { return new Version(0, 2, 0); }
         }
+
+        #endregion
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {

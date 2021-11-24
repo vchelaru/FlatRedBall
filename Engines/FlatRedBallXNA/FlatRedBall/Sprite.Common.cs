@@ -104,10 +104,14 @@ namespace FlatRedBall
             }
         }
 
+        /// <summary>
+        /// Gets or sets the speed multiplier when playing animations. A value of 1 makes animations play at normal speed.
+        /// A value of 2 will play animations twice as fast.
+        /// </summary>
         public float AnimationSpeed
         {
-            get { return mAnimationSpeed; }
-            set { mAnimationSpeed = value; }
+            get => mAnimationSpeed; 
+            set => mAnimationSpeed = value;
         }
 
         /// <summary>
@@ -119,7 +123,7 @@ namespace FlatRedBall
             set
             {
 #if DEBUG
-                if(AnimationChains.Contains(CurrentChain) == false)
+                if(AnimationChains.Contains(value) == false)
                 {
                     throw new InvalidOperationException("The AnimationChains list does not contain the assigned AnimationChain, so it cannot be set");
                 }
@@ -137,9 +141,12 @@ namespace FlatRedBall
             }
         }
 
+        /// <summary>
+        /// Gets and sets the index of the current AnimationChain in the Sprite's AnimationChains list.
+        /// </summary>
         public int CurrentChainIndex
         {
-            get { return mCurrentChainIndex; }
+            get => mCurrentChainIndex;
             set
             {
                 bool wasChangd = mCurrentChainIndex != value;

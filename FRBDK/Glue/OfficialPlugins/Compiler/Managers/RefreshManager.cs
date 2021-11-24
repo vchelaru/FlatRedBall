@@ -583,15 +583,29 @@ namespace OfficialPlugins.Compiler.Managers
         {
             var container = ObjectFinder.Self.GetElementContaining(category);
 
+            ChangeStateVariableDto dto = null;
             if(container != null)
             {
-                var dto = new ChangeStateVariableDto();
+                dto = new ChangeStateVariableDto();
                 dto.StateSave = state;
                 dto.CategoryName = category?.Name;
                 dto.ElementNameGame = GetGameTypeFor(container);
                 dto.VariableName = variableName;
 
+            }
+            if(dto != null)
+            {
                 await CommandSender.Send(dto);
+
+                // This forces the game to refresh the view according to the current state.
+                if (ViewModel.IsEditChecked && 
+                    (state == GlueState.Self.CurrentStateSave || category == GlueState.Self.CurrentStateSaveCategory))
+                {
+                    await PushGlueSelectionToGame(
+                        forcedCategoryName:category?.Name, 
+                        forcedStateName:state?.Name,
+                        forcedElement:container);
+                }
             }
 
         }

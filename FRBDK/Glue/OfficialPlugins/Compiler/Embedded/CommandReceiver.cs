@@ -228,6 +228,13 @@ namespace GlueControl
             var stateSave = dto.StateSave;
 
             ReplaceStateWithNewState(elementGameType, categoryName, stateSave);
+
+            // stop all movement in case the state assigned movement
+            foreach (var item in SpriteManager.ManagedPositionedObjects)
+            {
+                item.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
+                item.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
+            }
         }
 
         #endregion
@@ -411,6 +418,13 @@ namespace GlueControl
                 var stateProperty = entityType.GetProperty(propertyName);
 
                 stateProperty.SetValue(entity, stateInstance);
+
+                // stop all movement in case the state assigned movement
+                foreach (var item in SpriteManager.ManagedPositionedObjects)
+                {
+                    item.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
+                    item.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
+                }
             }
         }
 

@@ -194,7 +194,6 @@ namespace OfficialPlugins.Compiler
             this.TryHandleTreeNodeDoubleClicked += RefreshManager.Self.HandleTreeNodeDoubleClicked;
         }
 
-
         #endregion
 
         #region Public events (called externally)
