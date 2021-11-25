@@ -11,11 +11,15 @@ using System.Windows;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 {
+    #region Enums
+
     public enum Perspective
     {
         Perspective2D,
         Perspective3D
     }
+
+    #endregion
 
     public class DisplaySettingsViewModel : ViewModel
     {
@@ -26,14 +30,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         }
 
         [DependsOn(nameof(GenerateDisplayCode))]
-        public Visibility AllPropertiesVisibility
-        {
-            get
-            {
-                if (GenerateDisplayCode) return Visibility.Visible;
-                else return Visibility.Collapsed;
-            }
-        }
+        public Visibility AllPropertiesVisibility => GenerateDisplayCode.ToVisibility();
 
         #region Filtering
 
@@ -416,6 +413,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         public DisplaySettings ToDisplaySettings()
         {
             DisplaySettings toReturn = new DisplaySettings();
+
+            toReturn.SetDefaults();
 
             toReturn.Name = this.Name;
 

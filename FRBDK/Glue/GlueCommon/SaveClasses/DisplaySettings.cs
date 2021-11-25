@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
+    #region Enums
+
     public enum ResizeBehavior
     {
         StretchVisibleArea,
@@ -19,13 +21,15 @@ namespace FlatRedBall.Glue.SaveClasses
         Height
     }
 
+    #endregion
+
     public class DisplaySettings
     {
-        public string Name { get; set; } = "Custom";
+        public string Name { get; set; }
+        public bool GenerateDisplayCode { get; set; } 
 
         public bool Is2D { get; set; }
 
-        public bool GenerateDisplayCode { get; set; } = true;
 
         public int ResolutionWidth { get; set; }
         public int ResolutionHeight { get; set; }
@@ -40,13 +44,24 @@ namespace FlatRedBall.Glue.SaveClasses
         public bool RunInFullScreen { get; set; }
         public bool AllowWindowResizing { get; set; }
 
-        public int Scale { get; set; } = 100;
-        public int ScaleGum { get; set; } = 100;
+        public int Scale { get; set; }
+        public int ScaleGum { get; set; }
         public ResizeBehavior ResizeBehavior { get; set; }
         public ResizeBehavior ResizeBehaviorGum { get; set; }
-        public WidthOrHeight DominantInternalCoordinates { get; set; } = WidthOrHeight.Height;
+        public WidthOrHeight DominantInternalCoordinates { get; set; }
 
-        public int TextureFilter { get; set; } = (int)Microsoft.Xna.Framework.Graphics.TextureFilter.Linear;
+        public int TextureFilter { get; set; }
+
+        public void SetDefaults()
+        {
+            Name = "Custom";
+            GenerateDisplayCode = true;
+            Scale = 100;
+            ScaleGum = 100;
+
+            DominantInternalCoordinates = WidthOrHeight.Height;
+            TextureFilter = (int)Microsoft.Xna.Framework.Graphics.TextureFilter.Linear;
+        }
 
         public override string ToString()
         {
