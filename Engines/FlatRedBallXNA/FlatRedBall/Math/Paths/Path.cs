@@ -6,9 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-// not built in to .NET until .net 5...
+// This is not built in to .NET until .net 5...
 //using System.Text.Json;
-
+// So until FRB moves to .NET 5, Path will do custom
+// serialization/deserialization.
 namespace FlatRedBall.Math.Paths
 {
     #region Enums
@@ -45,6 +46,9 @@ namespace FlatRedBall.Math.Paths
 
         Vector2 End => new Vector2(EndX, EndY);
 
+        /// <summary>
+        /// The angle of the arc, which may be in degrees or radians depending on the AngleUnit value.
+        /// </summary>
         public float ArcAngle;
         public Vector2 CircleCenter;
 
@@ -167,15 +171,26 @@ namespace FlatRedBall.Math.Paths
         public void ArcTo(float endX, float endY, float signedAngleRadians)
         {
             var pathSegment = GetSegmentToAbsolutePoint(endX, endY, SegmentType.Arc);
+            pathSegment.AngleUnit = AngleUnit.Radians;
             pathSegment.ArcAngle = signedAngleRadians;
             AssignArcLength(pathSegment);
             Segments.Add(pathSegment);
             TotalLength += pathSegment.CalculatedLength;
 
+        }
+        public void ArcToDegrees(float endX, float endY, float signedAngleDegrees)
+        {
+            var pathSegment = GetSegmentToAbsolutePoint(endX, endY, SegmentType.Arc);
+            pathSegment.AngleUnit = AngleUnit.Degrees;
+            pathSegment.ArcAngle = signedAngleDegrees;
+            AssignArcLength(pathSegment);
+            Segments.Add(pathSegment);
+            TotalLength += pathSegment.CalculatedLength;
         }
         public void ArcToRelative(float endX, float endY, float signedAngleRadians)
         {
             var pathSegment = GetSegmentToAbsolutePoint(currentX + endX, currentY + endY, SegmentType.Arc);
+            pathSegment.AngleUnit = AngleUnit.Radians;
             pathSegment.ArcAngle = signedAngleRadians;
 
             AssignArcLength(pathSegment);
@@ -183,6 +198,17 @@ namespace FlatRedBall.Math.Paths
             TotalLength += pathSegment.CalculatedLength;
 
         }
+        public void ArcToRelativeDegrees(float endX, float endY, float signedAngleDegrees)
+        {
+            var pathSegment = GetSegmentToAbsolutePoint(currentX + endX, currentY + endY, SegmentType.Arc);
+            pathSegment.AngleUnit = AngleUnit.Degrees;
+            pathSegment.ArcAngle = signedAngleDegrees;
+
+            AssignArcLength(pathSegment);
+            Segments.Add(pathSegment);
+            TotalLength += pathSegment.CalculatedLength;
+        }
+
         void AssignArcLength(PathSegment segment)
         {
             var first = new Vector2(segment.StartX, segment.StartY);
@@ -190,8 +216,12 @@ namespace FlatRedBall.Math.Paths
 
             var firstToSecond = second - first;
 
-            var firstTangent = firstToSecond.RotatedBy(-segment.ArcAngle / 2);
-            var secondTangent = firstToSecond.RotatedBy(segment.ArcAngle / 2);
+            var angleInRadians = segment.AngleUnit == AngleUnit.Radians 
+                ? segment.ArcAngle
+                : MathHelper.ToRadians(segment.ArcAngle);
+
+            var firstTangent = firstToSecond.RotatedBy(-angleInRadians / 2);
+            var secondTangent = firstToSecond.RotatedBy(angleInRadians / 2);
 
             // normal of (x,y) is (y, -x)
             var firstNormal = new Vector2(firstTangent.Y, -firstTangent.X);
@@ -241,7 +271,7 @@ namespace FlatRedBall.Math.Paths
                 radius = (first - segment.CircleCenter).Length();
             }
 
-            segment.CalculatedLength = System.Math.Abs(radius * segment.ArcAngle);
+            segment.CalculatedLength = System.Math.Abs(radius * angleInRadians);
 
         }
 
@@ -361,6 +391,9 @@ namespace FlatRedBall.Math.Paths
         }
         #endregion
 
+        /// <summary>
+        /// Clears all contained segments, resets the TotalLength to 0, and sets the current X and Y values for the next segment to 0.
+        /// </summary>
         public void Clear()
         {
             Segments.Clear();
@@ -471,6 +504,8 @@ namespace FlatRedBall.Math.Paths
         }
 
         #endregion
+
+        #region JSON Serialization
 
         public void FromJson(string serializedSegments)
         {
@@ -611,5 +646,8 @@ namespace FlatRedBall.Math.Paths
                 LateBinder.SetValueStatic(segment, propertyName, parsedValue);
             }
         }
+
+        #endregion
+
     }
 }
