@@ -100,6 +100,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         {
             DisplaySettings settings = new DisplaySettings();
 
+            settings.SetDefaults();
+
             settings.TextureFilter = (int)TextureFilter.Point;
             settings.AllowWindowResizing = false;
             settings.AspectRatioHeight = 9;
