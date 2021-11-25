@@ -35,10 +35,7 @@ namespace OfficialPlugins.VariableDisplay
             defaultCategory.FontSize = 14;
             categories.Add(defaultCategory);
 
-            if(assetTypeInfo == null)
-            {
-                assetTypeInfo = instance.GetAssetTypeInfo();
-            }
+            assetTypeInfo = assetTypeInfo ?? instance.GetAssetTypeInfo();
 
             // not sure if this is needed:
             if (instance.TypedMembers.Count == 0)
@@ -47,8 +44,6 @@ namespace OfficialPlugins.VariableDisplay
             }
 
             CreateCategoriesAndVariables(instance, container, categories, assetTypeInfo);
-
-
 
             if (assetTypeInfo != null)
             {
@@ -123,7 +118,7 @@ namespace OfficialPlugins.VariableDisplay
                         {
                             typedMember = TypedMemberBase.GetTypedMember(variableDefinition.Name, type);
 
-                            InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember, ati, variableDefinition);
+                            InstanceMember instanceMember = CreateInstanceMember(instance, container, variableDefinition.Name, type, typedMember, ati, variableDefinition);
 
 
                             if (instanceMember != null)
@@ -171,6 +166,16 @@ namespace OfficialPlugins.VariableDisplay
                             baseVariableDefinition = ownerNosAti?.VariableDefinitions
                                 .FirstOrDefault(item => item.Name == variableInElement.SourceObjectProperty);
                         }
+                        else if(variableInElement != null)
+                        {
+                            // we can create a new VariableDefinition here with the category:
+                            baseVariableDefinition = new VariableDefinition();
+                            //todo - may need to use culture invariant here...
+                            //baseVariableDefinition.DefaultValue = variableInElement.DefaultValue?.To;
+                            baseVariableDefinition.Name = variableInElement.Name;
+                            baseVariableDefinition.Category = variableInElement.Category;
+                            baseVariableDefinition.Type = variableInElement.Type;
+                        }
                     }
                     AddForTypedMember(instance, container, categories, ati, typedMember, baseVariableDefinition);
                 }
@@ -189,7 +194,7 @@ namespace OfficialPlugins.VariableDisplay
             AssetTypeInfo ati, TypedMemberBase typedMember, VariableDefinition variableDefinition = null)
         {
             variableDefinition = variableDefinition ?? ati?.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
-            InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember, ati, variableDefinition);
+            InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember.MemberName, typedMember.MemberType, typedMember, ati, variableDefinition);
 
             var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember, variableDefinition);
 
@@ -445,10 +450,16 @@ namespace OfficialPlugins.VariableDisplay
             return categoryToAddTo;
         }
 
-        private static InstanceMember CreateInstanceMember(NamedObjectSave instance, IElement container, 
+        private static InstanceMember CreateInstanceMember(NamedObjectSave instance, 
+            IElement container, 
+            // memberName is contained in typedMember, but we want to move away from TypedMemberBase so this extra
+            // parameter will help that.
+            string memberName,
+            // Same here
+            Type memberType,
             TypedMemberBase typedMember, AssetTypeInfo ati, VariableDefinition variableDefinition)
         {
-            bool shouldBeSkipped = GetIfShouldBeSkipped(typedMember, instance, ati);
+            bool shouldBeSkipped = GetIfShouldBeSkipped(memberName, instance, ati);
 
             DataGridItem instanceMember = null;
 
@@ -458,8 +469,6 @@ namespace OfficialPlugins.VariableDisplay
                      container, instance, typedMember);
 
                 bool isObjectInFile = typeConverter is IObjectsInFileConverter;
-
-                var memberType = typedMember.MemberType;
 
                 if (isObjectInFile)
                 {
@@ -511,8 +520,8 @@ namespace OfficialPlugins.VariableDisplay
 
                 instanceMember.FirstGridLength = new System.Windows.GridLength(140);
 
-                instanceMember.UnmodifiedVariableName = typedMember.MemberName;
-                string displayName = StringFunctions.InsertSpacesInCamelCaseString(typedMember.MemberName);
+                instanceMember.UnmodifiedVariableName = memberName;
+                string displayName = StringFunctions.InsertSpacesInCamelCaseString(memberName);
                 instanceMember.DisplayName = displayName;
 
                 instanceMember.TypeConverter = typeConverter;
@@ -555,13 +564,13 @@ namespace OfficialPlugins.VariableDisplay
                 instanceMember.CustomGetTypeEvent += (throwaway) => memberType;
 
 
-                instanceMember.IsDefault = instance.GetCustomVariable(typedMember.MemberName) == null;
+                instanceMember.IsDefault = instance.GetCustomVariable(memberName) == null;
 
-                AssignCustomGetEvent(instance, typedMember, variableDefinition, instanceMember);
+                AssignCustomGetEvent(instance, memberName, memberType, variableDefinition, instanceMember);
 
                 instanceMember.CustomSetEvent += (owner, value) =>
                 {
-                    //NamedObjectVariableChangeLogic.ReactToValueSet(instance, typedMember.MemberName, value, out bool makeDefault);
+                    //NamedObjectVariableChangeLogic.ReactToValueSet(instance, memberName, value, out bool makeDefault);
 
                     //static void ReactToValueSet(NamedObjectSave instance, string memberName, object value, out bool makeDefault)
                     //{
@@ -570,7 +579,7 @@ namespace OfficialPlugins.VariableDisplay
                     //
                     bool makeDefault = false;
                     var ati = instance.GetAssetTypeInfo();
-                    var foundVariable = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
+                    var foundVariable = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);
                     if (foundVariable?.Type == nameof(AnimationChainList))
                     {
                         if (value is string && ((string)value) == "<NONE>")
@@ -588,7 +597,7 @@ namespace OfficialPlugins.VariableDisplay
                     instanceMember.IsDefault = makeDefault;
 
 
-                    PerformStandardVariableAssignments(instance, typedMember.MemberName, value);
+                    PerformStandardVariableAssignments(instance, memberName, value);
 
                     static void PerformStandardVariableAssignments(NamedObjectSave instance, string memberName, object value)
                     {
@@ -612,7 +621,7 @@ namespace OfficialPlugins.VariableDisplay
 
                         if (currentElement != null)
                         {
-                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(currentElement);
+                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(currentElement);
                         }
                     }
 
@@ -630,7 +639,7 @@ namespace OfficialPlugins.VariableDisplay
                         // June 29 2021 - this used to get called whenever
                         // IsDefault is set to either true or false, but we
                         // only want to call MakeDefault if the value is set to true.
-                        MakeDefault(instance, typedMember.MemberName);
+                        MakeDefault(instance, memberName);
 
                     }
                 };
@@ -639,7 +648,7 @@ namespace OfficialPlugins.VariableDisplay
                 {
                     if (newValue is string && string.IsNullOrEmpty(newValue as string))
                     {
-                        MakeDefault(instance, typedMember.MemberName);
+                        MakeDefault(instance, memberName);
                     }
                 };
 
@@ -650,9 +659,9 @@ namespace OfficialPlugins.VariableDisplay
                     {
                         variableToTunnel = variableDefinition?.Name;
                     }
-                    else if (typedMember != null)
+                    else if (!string.IsNullOrWhiteSpace(memberName))
                     {
-                        variableToTunnel = typedMember.MemberName;
+                        variableToTunnel = memberName;
                     }
                     GlueCommands.Self.DialogCommands.ShowAddNewVariableDialog(
                         FlatRedBall.Glue.Controls.CustomVariableType.Tunneled,
@@ -663,14 +672,12 @@ namespace OfficialPlugins.VariableDisplay
             return instanceMember;
         }
 
-        private static void AssignCustomGetEvent(NamedObjectSave instance, TypedMemberBase typedMember, VariableDefinition variableDefinition, DataGridItem instanceMember)
+        private static void AssignCustomGetEvent(NamedObjectSave instance, string memberName, Type memberType, VariableDefinition variableDefinition, DataGridItem instanceMember)
         {
-            var memberType = typedMember.MemberType;
-
             instanceMember.CustomGetEvent += (throwaway) =>
             {
 
-                var instruction = instance.GetCustomVariable(typedMember.MemberName);
+                var instruction = instance.GetCustomVariable(memberName);
 
                 if (instruction == null)
                 {
@@ -678,7 +685,7 @@ namespace OfficialPlugins.VariableDisplay
                     var element = ObjectFinder.Self.GetElement(instance);
                     if(element != null)
                     {
-                        var variable = element.GetCustomVariableRecursively(typedMember.MemberName);
+                        var variable = element.GetCustomVariableRecursively(memberName);
                         if(variable != null)
                         {
                             return variable.DefaultValue;
@@ -760,18 +767,15 @@ namespace OfficialPlugins.VariableDisplay
         /// <param name="instance">The NamedObjectSave owning the variable.</param>
         /// <param name="ati">The Asset Typ Info for the NamedObjectSave.</param>
         /// <returns>Whether to skip the variable.</returns>
-        private static bool GetIfShouldBeSkipped(TypedMemberBase typedMember, NamedObjectSave instance, AssetTypeInfo ati)
+        private static bool GetIfShouldBeSkipped(string name, NamedObjectSave instance, AssetTypeInfo ati)
         {
             ///////////////////Early Out////////////////////////
-            if(typedMember == null)
+            if(string.IsNullOrEmpty(name))
             {
                 return true;
             }
 
             //////////////////End Early Out//////////////////////
-
-
-            var name = typedMember.MemberName;
 
             if (ati != null)
             {

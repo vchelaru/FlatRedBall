@@ -25,6 +25,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
         {
             Type memberType = typedMember.MemberType;
             string memberName = typedMember.MemberName;
+            string customType = typedMember.CustomTypeName;
 
             TypeConverter typeConverter = null;
 
@@ -51,7 +52,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
 
                     handled = true;
                 }
-                else if(typedMember.MemberType?.Name == "Sprite")
+                else if(memberType?.Name == "Sprite")
                 {
                     var nosTypeConverter = new AvailableNamedObjectsAndFiles(container);
                     nosTypeConverter.NamedObjectTypeRestriction = "FlatRedBall.Sprite";
@@ -77,7 +78,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
                 if (instance.DoesMemberNeedToBeSetByContainer(memberName))
                 {
                     var availableNamedObjectsAndFiles = new AvailableNamedObjectsAndFiles(container);
-                    availableNamedObjectsAndFiles.NamedObjectTypeRestriction = typedMember.MemberType.FullName;
+                    availableNamedObjectsAndFiles.NamedObjectTypeRestriction = memberType.FullName;
                     typeConverter = availableNamedObjectsAndFiles;
                 }
                 else if (memberType.IsEnum)
@@ -89,13 +90,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
                     typeConverter = new AvailableColorTypeConverter();
                     memberType = typeof(string);
                 }
-                else if (IsTypeFile(typedMember))
+                else if (IsTypeFile(memberType, customType))
                 {
                     AvailableFileStringConverter availableFileStringConverter = new AvailableFileStringConverter(container);
                     availableFileStringConverter.QualifiedRuntimeTypeName = memberType.FullName;
-                    if(!string.IsNullOrEmpty( typedMember.CustomTypeName ))
+                    if(!string.IsNullOrEmpty(customType))
                     {
-                        availableFileStringConverter.QualifiedRuntimeTypeName = typedMember.CustomTypeName;
+                        availableFileStringConverter.QualifiedRuntimeTypeName = customType;
                     }
                     availableFileStringConverter.RemovePathAndExtension = true;
                     typeConverter = availableFileStringConverter;
@@ -124,6 +125,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
 
             //}
 
+            // November 25, 2021
+            // Vic asks = what does this code do? Nothing...is it a bug?
             if (wasTypeModified)
             {
                 memberType = oldType;
@@ -134,10 +137,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
         }
 
 
-        private static bool IsTypeFile(TypedMemberBase typedMember)
+        private static bool IsTypeFile(Type memberType, string customTypeName)
         {
-            var memberType = typedMember.MemberType;
-
             // old (hardcoded) code:
             //return memberType == typeof(Microsoft.Xna.Framework.Graphics.Texture2D) ||
             //        memberType == typeof(FlatRedBall.Graphics.BitmapFont) ||
@@ -158,8 +159,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
                     return true;
                 }
 
-                if(!string.IsNullOrEmpty(typedMember.CustomTypeName) && 
-                    ati.QualifiedRuntimeTypeName.QualifiedType == typedMember.CustomTypeName)
+                if(!string.IsNullOrEmpty(customTypeName) && 
+                    ati.QualifiedRuntimeTypeName.QualifiedType == customTypeName)
                 {
                     return true;
                 }

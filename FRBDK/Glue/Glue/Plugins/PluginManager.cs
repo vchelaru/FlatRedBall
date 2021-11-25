@@ -2252,8 +2252,7 @@ namespace FlatRedBall.Glue.Plugins
                     }
 
                 },
-                plugin => plugin.GetTypeConverter != null,
-                nameof(GetTypeConverter));
+                plugin => plugin.GetTypeConverter != null);
 
             ResumeRelativeDirectory(nameof(GetTypeConverter));
 

@@ -81,8 +81,8 @@ namespace FlatRedBall
 
         public bool Animate
         {
-            get { return mAnimate; }
-            set { mAnimate = value; }
+            get => mAnimate;
+            set => mAnimate = value;
         }
 
         [ExportOrder(4)]

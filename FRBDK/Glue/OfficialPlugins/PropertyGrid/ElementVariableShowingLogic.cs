@@ -24,11 +24,18 @@ namespace OfficialPlugins.VariableDisplay
             grid.Categories.Clear();
 
             List<MemberCategory> categories = new List<MemberCategory>();
-            var categoryName = "Variables";
 
-            CreateAndAddCategory(categories, categoryName);
+            CreateAndAddCategory(categories, "Variables");
             CreateInstanceMembersForVariables(element, categories);
 
+            AddAlternatingColors(grid, categories);
+
+            grid.Refresh();
+
+        }
+
+        private static void AddAlternatingColors(DataUiGrid grid, List<MemberCategory> categories)
+        {
             var dictionary = MainPanelControl.ResourceDictionary;
             const byte brightness = 227;
             var color = Color.FromRgb(brightness, brightness, brightness);
@@ -40,14 +47,11 @@ namespace OfficialPlugins.VariableDisplay
             foreach (var category in categories)
             {
                 category.SetAlternatingColors(
-                    new SolidColorBrush(color), 
+                    new SolidColorBrush(color),
                     Brushes.Transparent);
 
                 grid.Categories.Add(category);
             }
-
-            grid.Refresh();
-
         }
 
         private static MemberCategory CreateAndAddCategory(List<MemberCategory> categories, string categoryName)
