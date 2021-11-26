@@ -580,11 +580,19 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
                 if (CurrentMovementType == MovementType.Air)
                 {
-                    if(AfterDoubleJump == null)
-                    {
-                        throw new InvalidOperationException(""The player is attempting to perform a double-jump, "" +
-                            ""but the AfterDoubleJump variable is not set. If you are using glue, select this entity and change the After Double Jump variable."");
-                    }
+                    // November 26, 2021
+                    // We used to check if AfterDoubleJump 
+                    // is null, and if so, throw an exception.
+                    // In the past if the player wanted to jump
+                    // in the air, a double jump was needed. But
+                    // Now we want to support wall jumping, which means
+                    // that the user can jump off walls and not have a double
+                    // jump. Removing this error.
+                    //if(AfterDoubleJump == null)
+                    //{
+                    //    throw new InvalidOperationException(""The player is attempting to perform a double-jump, "" +
+                    //        ""but the AfterDoubleJump variable is not set. If you are using glue, select this entity and change the After Double Jump variable."");
+                    //}
                     mHasDoubleJumped = true ;
                 }
                 if(CurrentMovementType == MovementType.Ground && CurrentMovement.CanClimb)
