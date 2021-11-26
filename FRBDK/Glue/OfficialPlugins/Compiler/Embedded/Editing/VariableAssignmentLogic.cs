@@ -273,6 +273,8 @@ namespace GlueControl.Editing
 
             #endregion
 
+            #region Polygon.Points
+
             if (!didAttemptToAssign && variableName == "Points" && targetInstance is Polygon targetPolygon)
             {
                 List<Point> points = variableValue as List<Point>;
@@ -289,6 +291,9 @@ namespace GlueControl.Editing
                 }
             }
 
+            #endregion
+
+            #region Path.Path
 
             if (!didAttemptToAssign && variableName == "Path" && targetInstance is FlatRedBall.Math.Paths.Path asPath)
             {
@@ -296,6 +301,8 @@ namespace GlueControl.Editing
                 didAttemptToAssign = true;
                 response.WasVariableAssigned = true;
             }
+
+            #endregion
 
             if (!didAttemptToAssign)
             {
@@ -309,6 +316,14 @@ namespace GlueControl.Editing
                     variableName = TryConvertVariableNameToExposedVariableName(variableName, targetInstance);
                     response.WasVariableAssigned = screen.ApplyVariable(variableName, variableValue, targetInstance);
                 }
+
+                if (response.WasVariableAssigned && targetInstance is PositionedObject targetAsPositionedObject)
+                {
+                    // make sure we 0-out velocity or acceleration, which could get set as a consequence of setting a variable (such as setting the movement values on a platformer)
+                    targetAsPositionedObject.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
+                    targetAsPositionedObject.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
+                }
+
                 didAttemptToAssign = true;
             }
         }
