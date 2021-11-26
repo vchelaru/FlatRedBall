@@ -169,7 +169,7 @@ namespace FlatRedBall.Glue.SetVariable
             if (GlueState.Self.CurrentElement != null)
             {
                 GlueCommands.Self.GenerateCodeCommands
-                    .GenerateElementAndReferencedObjectCodeTask(GlueState.Self.CurrentElement);
+                    .GenerateElementAndReferencedObjectCode(GlueState.Self.CurrentElement);
             }
             else if (GlueState.Self.CurrentReferencedFileSave != null)
             {

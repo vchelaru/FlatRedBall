@@ -15,13 +15,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void GenerateCurrentElementCode();
 
         void GenerateElementCode(GlueElement element);
-        [Obsolete("Use GenerateElementCode because that will automatically task if necessary")]
-        void GenerateElementCodeTask(GlueElement element);
 
         void GenerateGlobalContentCode();
         void GenerateGlobalContentCodeTask();
 
-        void GenerateElementAndReferencedObjectCodeTask(GlueElement element);
+        void GenerateElementAndReferencedObjectCode(GlueElement element);
 
 
         string GetNamespaceForElement(GlueElement element);

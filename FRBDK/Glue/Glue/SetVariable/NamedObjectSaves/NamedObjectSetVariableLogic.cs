@@ -797,7 +797,7 @@ namespace FlatRedBall.Glue.SetVariable
                         // new name:
                         nosInDerived.InstanceName = namedObjectSave.InstanceName;
                         changedDerived = true;
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(derivedElement);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(derivedElement);
                         GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(derivedElement);
                     }
                 }

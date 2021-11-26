@@ -63,27 +63,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 TaskExecutionPreference.AddOrMoveToEnd);
         }
 
-        public void GenerateElementCodeTask(GlueElement element)
-        {
-            string taskName = nameof(GenerateElementCodeTask) + " " + element.ToString();
-
-            TaskManager.Self.Add(() => CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
-                taskName,
-                TaskExecutionPreference.AddOrMoveToEnd);
-        }
-
-        public void GenerateElementAndReferencedObjectCodeTask(GlueElement element)
+        public void GenerateElementAndReferencedObjectCode(GlueElement element)
         {
             if (element != null)
             {
-                GenerateElementCodeTask(element);
+                GenerateElementCode(element);
 
                 var namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(element);
 
                 foreach (var nos in namedObjects)
                 {
                     var nosElement = ObjectFinder.Self.GetElementContaining(nos);
-                    GenerateElementCodeTask(element);
+                    GenerateElementCode(element);
                 }
             }
         }

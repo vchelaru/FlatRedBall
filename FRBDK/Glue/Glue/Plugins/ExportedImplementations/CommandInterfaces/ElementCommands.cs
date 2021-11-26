@@ -400,7 +400,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(entitySave);
 
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(entitySave);
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entitySave);
 
             GlueCommands.Self.ProjectCommands.SaveProjects();
 

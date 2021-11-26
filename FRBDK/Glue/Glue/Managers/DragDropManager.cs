@@ -330,9 +330,20 @@ namespace FlatRedBall.Glue.Managers
             // moving to another element, so let's copy
             NamedObjectSave clonedNos = movingNos.Clone();
 
-            UpdateNosAfterDragDrop(clonedNos, elementMovingInto);
+            UpdateNosAttachmentAfterDragDrop(clonedNos, elementMovingInto);
 
-            elementMovingInto.NamedObjects.Add(clonedNos);
+            clonedNos.InstanceName = IncrementNumberAtEndOfNewObject(elementMovingInto, clonedNos.InstanceName);
+
+            var listOfThisType = ObjectFinder.Self.GetDefaultListToContain(clonedNos, elementMovingInto);
+
+            if(listOfThisType != null)
+            {
+                listOfThisType.ContainedObjects.Add(clonedNos);
+            }
+            else
+            {
+                elementMovingInto.NamedObjects.Add(clonedNos);
+            }
 
             var referenceCheck = ProjectManager.VerifyReferenceGraph(elementMovingInto);
 
@@ -359,14 +370,14 @@ namespace FlatRedBall.Glue.Managers
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementMovingInto);
 
                 GlueCommands.Self.GenerateCodeCommands
-                    .GenerateElementAndReferencedObjectCodeTask(elementMovingInto as GlueElement);
+                    .GenerateElementAndReferencedObjectCode(elementMovingInto as GlueElement);
 
                 MessageBox.Show("Copied\n" + movingNos + "\n\nto\n" + clonedNos);
             }
             return succeeded;
         }
 
-        private static void UpdateNosAfterDragDrop(NamedObjectSave clonedNos, IElement elementMovingInto)
+        private static void UpdateNosAttachmentAfterDragDrop(NamedObjectSave clonedNos, IElement elementMovingInto)
         {
             if (elementMovingInto is EntitySave)
             {
@@ -863,7 +874,7 @@ namespace FlatRedBall.Glue.Managers
             if (elementToCreateIn is EntitySave && ((EntitySave)elementToCreateIn).ImplementsIVisible && !blueprintEntity.ImplementsIVisible)
             {
                 var mbmb = new MultiButtonMessageBoxWpf();
-                mbmb.MessageText = "The Entity\n\n" + blueprintEntity + 
+                mbmb.MessageText = "The Entity\n\n" + blueprintEntity +
                     "\n\nDoes not Implement IVisible, but the Entity it is being dropped in does.  " +
                     "What would you like to do?";
 
@@ -874,7 +885,7 @@ namespace FlatRedBall.Glue.Managers
 
                 DialogResult result = DialogResult.Cancel;
 
-                if(mbmb.ClickedResult != null  && dialogResult == true)
+                if (mbmb.ClickedResult != null && dialogResult == true)
                 {
                     result = (DialogResult)mbmb.ClickedResult;
                 }
@@ -883,7 +894,7 @@ namespace FlatRedBall.Glue.Managers
                 {
                     blueprintEntity.ImplementsIVisible = true;
                     GlueCommands.Self.GenerateCodeCommands
-                        .GenerateElementAndReferencedObjectCodeTask(blueprintEntity);
+                        .GenerateElementAndReferencedObjectCode(blueprintEntity);
                 }
 
             }
@@ -916,22 +927,28 @@ namespace FlatRedBall.Glue.Managers
 
             #region Set the name for the new NamedObject
 
-            // get an acceptable name for the new object
-            if (elementToCreateIn.GetNamedObjectRecursively(addObjectViewModel.ObjectName) != null)
-            {
-                addObjectViewModel.ObjectName += "2";
-            }
-
-            while (elementToCreateIn.GetNamedObjectRecursively(addObjectViewModel.ObjectName) != null)
-            {
-                addObjectViewModel.ObjectName = StringFunctions.IncrementNumberAtEnd(addObjectViewModel.ObjectName);
-            }
+            addObjectViewModel.ObjectName = IncrementNumberAtEndOfNewObject(elementToCreateIn, addObjectViewModel.ObjectName);
 
 
             #endregion
 
             return GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel,
                 elementToCreateIn as GlueElement, null);
+        }
+
+        private static string IncrementNumberAtEndOfNewObject(IElement elementToCreateIn, string objectName)
+        {
+            // get an acceptable name for the new object
+            if (elementToCreateIn.GetNamedObjectRecursively(objectName) != null)
+            {
+                objectName += "2";
+            }
+
+            while (elementToCreateIn.GetNamedObjectRecursively(objectName) != null)
+            {
+                objectName = StringFunctions.IncrementNumberAtEnd(objectName);
+            }
+            return objectName;
         }
 
         private static void AskAndAddAllContainedRfsToGlobalContent(IElement element)
