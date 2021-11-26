@@ -78,12 +78,6 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             codeBlock.Line("/// </summary>");
             codeBlock.Line("double mTimeJumpPushed = double.NegativeInfinity;");
 
-            codeBlock.Line("/// <summary>");
-            codeBlock.Line("/// The MovementValues which were active when the user last jumped.");
-            codeBlock.Line("/// These are used to determine the upward velocity to apply while");
-            codeBlock.Line("/// the user holds the jump button.");
-            codeBlock.Line("/// </summary>");
-            codeBlock.Line("DataTypes.PlatformerValues mValuesJumpedWith;");
 
             codeBlock.Line("/// <summary>");
             codeBlock.Line("/// See property for information.");
@@ -114,6 +108,14 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
 
             codeBlock.Line("#region Platformer Properties");
+
+
+            codeBlock.Line("/// <summary>");
+            codeBlock.Line("/// The MovementValues which were active when the user last jumped.");
+            codeBlock.Line("/// These are used to determine the upward velocity to apply while");
+            codeBlock.Line("/// the user holds the jump button.");
+            codeBlock.Line("/// </summary>");
+            codeBlock.Line("public DataTypes.PlatformerValues ValuesJumpedWith { get; set; }");
 
             codeBlock.Line("public bool WasOnGroundLastFrame{ get; private set; }");
 
@@ -270,25 +272,25 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
             BeforeGroundMovementSet += (newValue) => 
             {
-                if(mGroundMovement != null && mGroundMovement == mValuesJumpedWith)
+                if(mGroundMovement != null && mGroundMovement == ValuesJumpedWith)
                 {
-                    mValuesJumpedWith = newValue;
+                    ValuesJumpedWith = newValue;
                 }
             };
 
             BeforeAirMovementSet += (newValue) => 
             {
-                if(mAirMovement != null && mAirMovement == mValuesJumpedWith)
+                if(mAirMovement != null && mAirMovement == ValuesJumpedWith)
                 {
-                    mValuesJumpedWith = newValue;
+                    ValuesJumpedWith = newValue;
                 }
             };
 
             BeforeAfterDoubleJumpSet += (newValue) =>  
             {
-                if(mAfterDoubleJump != null && mAfterDoubleJump == mValuesJumpedWith)
+                if(mAfterDoubleJump != null && mAfterDoubleJump == ValuesJumpedWith)
                 {
-                    mValuesJumpedWith = newValue;
+                    ValuesJumpedWith = newValue;
                 }
             };
             
@@ -569,7 +571,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
                 mTimeJumpPushed = CurrentTime;
                 this.YVelocity = CurrentMovement.JumpVelocity;
-                mValuesJumpedWith = CurrentMovement;
+                ValuesJumpedWith = CurrentMovement;
 
                 mCanContinueToApplyJumpToHold = true;
 
@@ -606,20 +608,20 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             double secondsSincePush = CurrentTime - mTimeJumpPushed;
 
             // This needs to be done before checking if the user can continue to apply jump to hold
-            if (mValuesJumpedWith != null && mValuesJumpedWith.JumpApplyByButtonHold &&
+            if (ValuesJumpedWith != null && ValuesJumpedWith.JumpApplyByButtonHold &&
 				(!JumpInput.IsDown || mHitHead)
                 )
             {
                 mCanContinueToApplyJumpToHold = false;
             }
 
-            if (mValuesJumpedWith != null && 
+            if (ValuesJumpedWith != null && 
                 mCanContinueToApplyJumpToHold &&
-                secondsSincePush < mValuesJumpedWith.JumpApplyLength &&
-				(mValuesJumpedWith.JumpApplyByButtonHold == true && JumpInput.IsDown)
+                secondsSincePush < ValuesJumpedWith.JumpApplyLength &&
+				(ValuesJumpedWith.JumpApplyByButtonHold == true && JumpInput.IsDown)
                 )
             {
-                this.YVelocity = mValuesJumpedWith.JumpVelocity;
+                this.YVelocity = ValuesJumpedWith.JumpVelocity;
             }
             else
             {
