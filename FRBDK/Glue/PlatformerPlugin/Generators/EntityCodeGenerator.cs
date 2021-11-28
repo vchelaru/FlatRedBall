@@ -798,9 +798,22 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                     bool shouldApplyCollision = true;
                     if (isCloudCollision)
                     {
-                        if (this.Y <= positionBeforeCollision.Y)
+                        var yReposition = this.Y - positionBeforeCollision.Y;
+                        if (yReposition <= 0)
                         {
                             shouldApplyCollision = false;
+                        }
+                        else
+                        {
+                            // rewind 1 frame and see if the gaps are bigger than the reposition
+                            var thisYDistanceMovedThisFrame = (TimeManager.SecondDifference * velocityBeforeCollision.Y);
+                            var otherYDistanceMovedThisFrame = 0f;
+                            if (objectCollidedAgainst != null)
+                            {
+                                otherYDistanceMovedThisFrame = (TimeManager.SecondDifference * objectCollidedAgainst.TopParent.YVelocity);
+                            }
+
+                            shouldApplyCollision = yReposition < (-thisYDistanceMovedThisFrame + otherYDistanceMovedThisFrame);
                         }
                     }
 
@@ -820,6 +833,11 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                         if (this.Y < lastY)
                         {
                             mHitHead = true;
+                        }
+                        if(isCloudCollision)
+                        {
+                            this.X = positionBeforeCollision.X;
+                            this.Velocity.X = velocityBeforeCollision.X;
                         }
                     }
                     else
