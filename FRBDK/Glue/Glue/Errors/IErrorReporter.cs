@@ -6,6 +6,15 @@ using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Errors
 {
+    /// <summary>
+    /// Interface for implementing an error reporter.
+    /// </summary>
+    /// <example>
+    /// Each plugin Glue can include its own IErrorReporter implementation.
+    /// The IErrorReporter implementation is responsible for returning all errors
+    /// for the project. Once an individual error is returned through the ErrorReporter,
+    /// it can resolve itself by overriding properties and methods provided by ErrorViewModel.
+    /// </example>
     public interface IErrorReporter
     {
         ErrorViewModel[] GetAllErrors();
