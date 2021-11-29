@@ -9,6 +9,8 @@ namespace FlatRedBall.Input
     /// Base class for creating customizable input. This class provides default implementations
     /// for all IInputDevice properties. Games can freely implement properties as needed
     /// by overriding the virtual Get methods.
+    /// 
+    /// By default a new InputDeviceBase instance can be used as a device which always returns 0 and false.
     /// </summary>
     /// <remarks>
     /// The overridable methods will only be read one time per frame, and only if the InputDeviceBase
