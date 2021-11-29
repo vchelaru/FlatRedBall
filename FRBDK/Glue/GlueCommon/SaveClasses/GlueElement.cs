@@ -121,7 +121,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
         /// <summary>
         /// A flattened IEnumerable of all named objects stored on this element. This includes top-level named objects and
-        /// named objects contained in lists.
+        /// named objects contained in lists. This does not return objects from base objects unless they also appear in this
+        /// object list.
         /// </summary>
         [Browsable(false)]
         [XmlIgnore]

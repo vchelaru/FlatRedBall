@@ -10,6 +10,10 @@ using System.Windows.Input;
 
 namespace FlatRedBall.Glue.Errors
 {
+    /// <summary>
+    /// Base class for reporting an error in Glue. For implementation examples, see the 
+    /// IErrorReporter interface.
+    /// </summary>
     public class ErrorViewModel : ViewModel
     {
         public string UniqueId
