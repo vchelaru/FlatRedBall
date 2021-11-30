@@ -374,6 +374,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             #endregion
 
+            GlobalContentRootNode.SortByTextConsideringDirectories(recursive: true);
+
         }
 
         internal void RefreshDirectoryNodes()

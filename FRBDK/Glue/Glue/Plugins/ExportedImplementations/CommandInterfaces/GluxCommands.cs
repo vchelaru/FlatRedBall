@@ -532,7 +532,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 TaskManager.Self.Add(() => GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(toReturn), $"Updating file membership for file {toReturn}");
                 PluginManager.ReactToNewFile(toReturn);
                 GluxCommands.Self.SaveGlux();
-                TaskManager.Self.Add(GluxCommands.Self.ProjectCommands.SaveProjects, "Saving projects after adding file");
+                GluxCommands.Self.ProjectCommands.SaveProjects();
 
             }
 
