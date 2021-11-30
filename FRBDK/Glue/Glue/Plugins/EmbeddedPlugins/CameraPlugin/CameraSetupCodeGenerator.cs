@@ -697,6 +697,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                     ifStatement = resetMethod.If("Data.AspectRatio != null")
                         .Line(
                             $"SetAspectRatioTo(Data.AspectRatio.Value, Data.DominantInternalCoordinates, Data.ResolutionWidth, Data.ResolutionHeight);");
+
+                    if(GetIfHasGumProject())
+                    {
+                        resetMethod.Line("ResetGumResolutionValues();");
+                    }
                 }
             }
         }
