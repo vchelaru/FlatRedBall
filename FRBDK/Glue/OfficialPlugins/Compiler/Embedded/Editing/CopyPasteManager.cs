@@ -3,6 +3,7 @@ using FlatRedBall.Graphics;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Utilities;
+using GlueControl.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -20,7 +21,12 @@ namespace GlueControl.Editing
             get; set;
         } = new List<INameable>();
 
-        public void DoHotkeyLogic(List<INameable> selectedObjects, PositionedObject itemGrabbed)
+        List<NamedObjectSave> CopiedNamedObjects
+        {
+            get; set;
+        } = new List<NamedObjectSave>();
+
+        public void DoHotkeyLogic(List<INameable> selectedObjects, List<NamedObjectSave> selectedNamedObjects, PositionedObject itemGrabbed)
         {
             var keyboard = FlatRedBall.Input.InputManager.Keyboard;
 
@@ -29,7 +35,10 @@ namespace GlueControl.Editing
                 if (keyboard.KeyPushed(Keys.C))
                 {
                     CopiedObjects.Clear();
+                    CopiedNamedObjects.Clear();
+
                     CopiedObjects.AddRange(selectedObjects);
+                    CopiedNamedObjects.AddRange(selectedNamedObjects);
                 }
                 if (keyboard.KeyPushed(Keys.V) && CopiedObjects != null)
                 {

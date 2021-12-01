@@ -347,7 +347,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             return (gameScreen, solidCollisionNos, cloudCollisionNos);
         }
 
-        private static EntitySave HandleAddPlayerEntity(WizardData vm)
+        private static async Task<EntitySave> HandleAddPlayerEntity(WizardData vm)
         {
             EntitySave playerEntity;
 
@@ -385,10 +385,6 @@ namespace OfficialPluginsCore.Wizard.Managers
                     }
                 }
 
-            }
-            else
-            {
-                int m = 3;
             }
 
             return playerEntity;
