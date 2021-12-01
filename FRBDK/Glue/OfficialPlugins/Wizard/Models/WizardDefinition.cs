@@ -34,6 +34,7 @@ namespace OfficialPluginsCore.Wizard.Models
         public void CreatePages()
         {
             ViewModel = new WizardData();
+            ViewModel.ApplyDefaults();
 
             {
                 var formsData = new WizardPage(ViewModel);

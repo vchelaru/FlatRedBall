@@ -320,8 +320,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             PluginManager.ReactToNewEntityCreated(newElement);
             if (needsRefreshAndSave)
             {
-                MainGlueWindow.Self.PropertyGrid.Refresh();
-                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                GlueCommands.Self.DoOnUiThread(() =>
+                {
+                    MainGlueWindow.Self.PropertyGrid.Refresh();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                });
                 GluxCommands.Self.SaveGlux();
             }
 

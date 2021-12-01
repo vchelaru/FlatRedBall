@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -16,6 +17,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
 {
@@ -96,7 +98,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             }
         }
 
-        public static NamedObjectSave AddCollision(ScreenSave screen, string name, bool setFromMapObject = true)
+        public static async Task<NamedObjectSave> AddCollision(ScreenSave screen, string name, bool setFromMapObject = true)
         {
             var addObjectViewModel = new AddObjectViewModel();
             addObjectViewModel.ForcedElementToAddTo = screen;
@@ -104,17 +106,26 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             addObjectViewModel.SourceClassType = "FlatRedBall.TileCollisions.TileShapeCollection";
             addObjectViewModel.ObjectName = name;
 
-            var nos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, screen, null);
-            nos.SetByDerived = true;
+            NamedObjectSave nos = null;
 
-            if(setFromMapObject)
+            var task = TaskManager.Self.AddOrRunIfTasked(() =>
             {
+                nos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, screen, null);
+                nos.SetByDerived = true;
 
-                const int FromType = 4;
-                nos.Properties.SetValue("CollisionCreationOptions", FromType);
-                nos.Properties.SetValue("SourceTmxName", "Map");
-                nos.Properties.SetValue("CollisionTileTypeName", name);
-            }
+                if (setFromMapObject)
+                {
+
+                    const int FromType = 4;
+                    nos.Properties.SetValue("CollisionCreationOptions", FromType);
+                    nos.Properties.SetValue("SourceTmxName", "Map");
+                    nos.Properties.SetValue("CollisionTileTypeName", name);
+                }
+
+            }, "Adding collision {}");
+
+            await TaskManager.Self.WaitForTaskToFinish(task);
+
             return nos;
         }
 
@@ -144,7 +155,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             }
         }
 
-        private void ApplyViewModelToScreen(ScreenSave newScreen, AddScreenViewModel viewModel)
+        private async void ApplyViewModelToScreen(ScreenSave newScreen, AddScreenViewModel viewModel)
         {
 
             var shouldSave = false;
@@ -161,12 +172,12 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                     }
                     if (viewModel.IsAddSolidCollisionShapeCollectionChecked)
                     {
-                        AddCollision(newScreen, "SolidCollision");
+                        await AddCollision(newScreen, "SolidCollision");
                         shouldSave = true;
                     }
                     if (viewModel.IsAddCloudCollisionShapeCollectionChecked)
                     {
-                        AddCollision(newScreen, "CloudCollision");
+                        await AddCollision(newScreen, "CloudCollision");
                         shouldSave = true;
                     }
 

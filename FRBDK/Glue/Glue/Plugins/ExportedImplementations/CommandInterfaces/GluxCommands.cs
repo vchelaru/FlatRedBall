@@ -212,7 +212,27 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                                     if(clickedResult)
                                     {
-                                        System.Diagnostics.Process.Start(errorLogLocation);
+                                        try
+                                        {
+                                            //System.Diagnostics.Process.Start(errorLogLocation);
+                                            var p = new System.Diagnostics.Process();
+                                            p.StartInfo = new System.Diagnostics.ProcessStartInfo(errorLogLocation)
+                                            {
+                                                UseShellExecute = true
+                                            };
+                                            p.Start();
+                                        }
+                                        catch
+                                        {
+                                            try
+                                            {
+                                                System.Diagnostics.Process.Start(FileManager.GetDirectory( errorLogLocation));
+                                            }
+                                            catch
+                                            {
+                                                // do nothing
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -1116,6 +1136,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void AddNamedObjectTo(NamedObjectSave newNos, GlueElement element, NamedObjectSave listToAddTo = null)
         {
+            if(TaskManager.Self.IsInTask() == false)
+            {
+                int m = 3;
+            }
             var ati = newNos.GetAssetTypeInfo();
 
             if (listToAddTo != null)
@@ -1153,10 +1177,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 PluginManager.ReactToObjectContainerChanged(newNos, listToAddTo);
             }
-            MainGlueWindow.Self.PropertyGrid.Refresh();
-            PropertyGridHelper.UpdateNamedObjectDisplay();
-            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
-            GlueState.Self.CurrentNamedObjectSave = newNos;
+
+            GlueCommands.Self.DoOnUiThread(() =>
+            {
+                MainGlueWindow.Self.PropertyGrid.Refresh();
+                PropertyGridHelper.UpdateNamedObjectDisplay();
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+                GlueState.Self.CurrentNamedObjectSave = newNos;
+            });
 
         }
 

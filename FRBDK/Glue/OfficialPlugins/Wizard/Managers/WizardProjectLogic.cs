@@ -70,9 +70,12 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             if (vm.AddGameScreen)
             {
-                Add("Add GameScreen", () =>
+                AddTask("Add GameScreen", async () =>
                 {
-                    gameScreen = HandleAddGameScreen(vm, ref solidCollisionNos, ref cloudCollisionNos);
+                    var response = await HandleAddGameScreen(vm);
+                    gameScreen = response.gameScreen;
+                    solidCollisionNos = response.solidCollision;
+                    cloudCollisionNos = response.cloudCollisionNos;
                 });
             }
 
@@ -80,20 +83,14 @@ namespace OfficialPluginsCore.Wizard.Managers
             {
                 AddTask("Add Player", async () =>
                 {
-                    TaskManager.Self.Add(() =>
-                    {
-                        var playerEntity = HandleAddPlayerEntity(vm);
-                        if (playerEntity == null)
-                        {
-                            throw new InvalidOperationException("Need to specify playerEntity");
-                        }
-                        HandleAddPlayerInstance(vm, gameScreen, solidCollisionNos, cloudCollisionNos, playerEntity);
-                    }, "Adding player entity", TaskExecutionPreference.Asap);
+                    var playerEntity = await HandleAddPlayerEntity(vm);
+
+                    TaskManager.Self.AddOrRunIfTasked(() => HandleAddPlayerInstance(vm, gameScreen, solidCollisionNos, cloudCollisionNos, playerEntity), "Adding player instance");
                 });
             }
 
             // Create the levels *after* the player, so the player gets exposed in the levels
-            if (vm.CreateLevels)
+            if (vm.AddGameScreen && vm.CreateLevels)
             {
                 Add("Create Levels", () =>
                     HandleCreateLevels(vm, gameScreen));
@@ -324,27 +321,30 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
         }
 
-        private static ScreenSave HandleAddGameScreen(WizardData vm, ref NamedObjectSave solidCollisionNos, ref NamedObjectSave cloudCollisionNos)
+        private static async Task<(ScreenSave gameScreen, NamedObjectSave solidCollision, NamedObjectSave cloudCollisionNos)> HandleAddGameScreen(WizardData vm)
         {
             ScreenSave gameScreen = GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("GameScreen");
+            NamedObjectSave solidCollisionNos = null;
+            NamedObjectSave cloudCollisionNos = null;
+
             if (vm.AddTiledMap)
             {
-                MainAddScreenPlugin.AddMapObject(gameScreen);
+                TaskManager.Self.AddOrRunIfTasked(() => MainAddScreenPlugin.AddMapObject(gameScreen), "Adding map object");
             }
 
             if (vm.AddSolidCollision)
             {
-                solidCollisionNos = MainAddScreenPlugin.AddCollision(gameScreen, "SolidCollision",
+                solidCollisionNos = await MainAddScreenPlugin.AddCollision(gameScreen, "SolidCollision",
                     setFromMapObject: vm.AddTiledMap);
             }
             if (vm.AddCloudCollision)
             {
-                cloudCollisionNos = MainAddScreenPlugin.AddCollision(gameScreen, "CloudCollision",
+                cloudCollisionNos = await MainAddScreenPlugin.AddCollision(gameScreen, "CloudCollision",
                     setFromMapObject: vm.AddTiledMap);
             }
 
 
-            return gameScreen;
+            return (gameScreen, solidCollisionNos, cloudCollisionNos);
         }
 
         private static EntitySave HandleAddPlayerEntity(WizardData vm)
@@ -359,7 +359,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
             else // create from options
             {
-                playerEntity = CreatePlayerEntityFromOptions(vm);
+                playerEntity = await CreatePlayerEntityFromOptions(vm);
             }
 
             if(playerEntity != null)
@@ -385,6 +385,10 @@ namespace OfficialPluginsCore.Wizard.Managers
                     }
                 }
 
+            }
+            else
+            {
+                int m = 3;
             }
 
             return playerEntity;
@@ -418,9 +422,10 @@ namespace OfficialPluginsCore.Wizard.Managers
             return playerEntity;
         }
 
-        private static EntitySave CreatePlayerEntityFromOptions(WizardData vm)
+        private static async Task<EntitySave> CreatePlayerEntityFromOptions(WizardData vm)
         {
-            EntitySave playerEntity;
+
+            EntitySave playerEntity = null;
             var addEntityVm = new AddEntityViewModel();
             addEntityVm.Name = "Player";
 
@@ -441,7 +446,11 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             addEntityVm.IsSpriteChecked = vm.AddPlayerSprite;
 
-            playerEntity = GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(addEntityVm);
+            var task = TaskManager.Self.AddOrRunIfTasked(() => 
+                playerEntity = GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(addEntityVm),
+                "Adding Player Entity");
+
+            await TaskManager.Self.WaitForTaskToFinish(task);
 
             return playerEntity;
         }
