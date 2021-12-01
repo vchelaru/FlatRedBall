@@ -275,6 +275,11 @@ namespace OfficialPluginsCore.Wizard.Models
 
         public WizardData()
         {
+
+        }
+
+        public void ApplyDefaults()
+        { 
             AddGameScreen = true;
             AddTiledMap = true;
             AddSolidCollision = true;
