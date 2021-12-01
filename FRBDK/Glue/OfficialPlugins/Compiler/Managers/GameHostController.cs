@@ -44,8 +44,12 @@ namespace OfficialPlugins.Compiler.Managers
             {
                 TaskManager.Self.Add(async () =>
                 {
-                    await runner.Run(preventFocus: false);
-                    compilerViewModel.IsEditChecked = true;
+                    var succeeded = await Compile();
+                    if(succeeded)
+                    {
+                        await runner.Run(preventFocus: false);
+                        compilerViewModel.IsEditChecked = true;
+                    }
 
                 }, "Starting in edit mode", TaskExecutionPreference.AddOrMoveToEnd);
             };
