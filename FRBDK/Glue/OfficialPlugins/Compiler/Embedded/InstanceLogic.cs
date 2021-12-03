@@ -1195,6 +1195,8 @@ namespace GlueControl
 
             Type stateType = VariableAssignmentLogic.TryGetStateType(instruction.Type);
 
+            var valueAsString = variableValue as string;
+
             if (variableValue is string)
             {
                 variableValue = VariableAssignmentLogic.ConvertStringToType(instruction.Type, valueAsString, stateType != null);
