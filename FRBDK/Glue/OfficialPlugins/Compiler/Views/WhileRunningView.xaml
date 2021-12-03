@@ -52,22 +52,40 @@
             </Button.ToolTip>
 
         </Button>
-        <StackPanel Height="24" VerticalAlignment="Top" Orientation="Horizontal" Margin="8,0,8,0" Visibility="{Binding PauseButtonVisibility}">
-            <Button Height="18" Width="18" Click="SpeedDecreaseClicked">
-                <TextBlock Margin="0,-3,0,0">
-                    -
-                </TextBlock>
-            </Button>
-            <Image  Source="/OfficialPluginsCore;component/Compiler/Icons/SlowMotion.png" Height="16"></Image>
-            <TextBlock VerticalAlignment="Center" Text="{Binding CurrentGameSpeed, FallbackValue=100%}"></TextBlock>
-            <Button Height="18" Width="18" Click="SpeedIncreaseClicked">
-                <TextBlock Margin="0,-3,0,0">
-                    +
-                </TextBlock>
-            </Button>
-        </StackPanel>
+
+        <Grid>
+            <Button IsHitTestVisible="False"></Button>
+            <StackPanel Height="24" VerticalAlignment="Top" Orientation="Horizontal" Margin="3,0,3,0" Visibility="{Binding PauseButtonVisibility}">
+                <Button Height="18" Width="18" Click="SpeedDecreaseClicked" Background="Transparent" BorderBrush="Transparent">
+                    <Button.ToolTip>
+                        <ToolTip>
+                            <StackPanel>
+                                <TextBlock FontWeight="Bold">Slow Down</TextBlock>
+                                <TextBlock>Reudces game speed (makes it run in slow-motion)</TextBlock>
+                            </StackPanel>
+                        </ToolTip>
+                    </Button.ToolTip>
+                    <Image  Source="/OfficialPluginsCore;component/Compiler/Icons/icon_minus.png"></Image>
+                </Button>
+                <Image  Source="/OfficialPluginsCore;component/Compiler/Icons/SlowMotion.png" Height="16" Margin="0,0,-3,0"></Image>
+                <TextBlock VerticalAlignment="Center" Text="{Binding CurrentGameSpeed, FallbackValue=100%}" Margin="0,0,2,0"></TextBlock>
+                <Button Height="18" Width="18" Click="SpeedIncreaseClicked" Background="Transparent" BorderBrush="Transparent">
+                    <Button.ToolTip>
+                        <ToolTip>
+                            <StackPanel>
+                                <TextBlock FontWeight="Bold">Speed Up</TextBlock>
+                                <TextBlock>Increases game speed (makes it run in fast-forward)</TextBlock>
+                            </StackPanel>
+                        </ToolTip>
+                    </Button.ToolTip>
+                    <Image  Source="/OfficialPluginsCore;component/Compiler/Icons/icon_plus.png"></Image>
+                </Button>
+            </StackPanel>
+            
+        </Grid>
         <Button Height="24" VerticalAlignment="Top" Style="{DynamicResource ButtonStyleDark}" Margin="0,0,6,0" MinWidth="22"
                 Visibility="{Binding UnpauseButtonVisibility}"
+                
                 Click="HandleUnpauseClicked"
             >
             <Image Source="/OfficialPluginsCore;component/Compiler/Icons/Unpause.png" Margin="3"></Image>
@@ -96,7 +114,7 @@
             </Button.ToolTip>
         </Button>
         <Button Height="24" VerticalAlignment="Top" Margin="0,0,6,0" Click="HandleStopClicked">
-            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/stop.png" Margin="3"></Image>
+            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/stop.png" Margin="1"></Image>
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -106,18 +124,6 @@
                 </ToolTip>
             </Button.ToolTip>
         </Button>
-
-        <!--<Button Margin="0,0,6,0" Click="HandleRestartGameClicked">
-            <Image Source="../icons/RestartGame.png"></Image>
-            <Button.ToolTip>
-                <ToolTip>
-                    <StackPanel>
-                        <TextBlock FontWeight="Bold">Restart Game</TextBlock>
-                        <TextBlock>Kills, builds, and runs the game</TextBlock>
-                    </StackPanel>
-                </ToolTip>
-            </Button.ToolTip>
-        </Button>-->
 
         <Button Height="24" VerticalAlignment="Top" Margin="0,0,6,0" Click="HandleRestartGameCurrentScreenClicked"
                 Visibility="{Binding WhileRunningViewVisibility}">

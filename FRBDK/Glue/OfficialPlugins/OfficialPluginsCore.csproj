@@ -59,6 +59,8 @@
     <None Remove="Compiler\Icons\FocusOnSelection.png" />
     <None Remove="Compiler\Icons\HotReload.pdn" />
     <None Remove="Compiler\Icons\HotReload.png" />
+    <None Remove="Compiler\Icons\icon_minus.png" />
+    <None Remove="Compiler\Icons\icon_plus.png" />
     <None Remove="Compiler\Icons\Pause.png" />
     <None Remove="Compiler\Icons\play.png" />
     <None Remove="Compiler\Icons\RestartGame.png" />
@@ -145,6 +147,8 @@
     <Resource Include="Compiler\Icons\Edit.png" />
     <Resource Include="Compiler\Icons\EditDeselected.png" />
     <Resource Include="Compiler\Icons\FocusOnSelection.png" />
+    <Resource Include="Compiler\Icons\icon_minus.png" />
+    <Resource Include="Compiler\Icons\icon_plus.png" />
     <Resource Include="Compiler\Icons\Run.png" />
     <Resource Include="Compiler\Icons\RunDeselected.png" />
     <Resource Include="Compiler\Icons\Settings.png" />
@@ -174,10 +178,8 @@
     <Resource Include="CollisionPlugin\Icons\PartitionEnabled.png" />
     <Resource Include="Compiler\Icons\AdvanceOneFrame.png" />
     <Resource Include="Compiler\Icons\build.png" />
-    <Resource Include="Compiler\Icons\HotReload.png" />
     <Resource Include="Compiler\Icons\Pause.png" />
     <Resource Include="Compiler\Icons\play.png" />
-    <Resource Include="Compiler\Icons\RestartGame.png" />
     <Resource Include="Compiler\Icons\RestartGameOnCurrentScreen.png" />
     <Resource Include="Compiler\Icons\RestartScreen.png" />
     <Resource Include="Compiler\Icons\SlowMotion.png" />

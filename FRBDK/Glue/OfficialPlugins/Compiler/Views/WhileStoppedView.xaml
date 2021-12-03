@@ -18,17 +18,6 @@
                 </ToolTip>
             </Button.ToolTip>
         </Button>
-        <Button Grid.Column="1" Margin="3,0,0,0" Click="HandleRunClick">
-            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/play.png"></Image>
-            <Button.ToolTip>
-                <ToolTip>
-                    <StackPanel>
-                        <TextBlock FontWeight="Bold">Run Game</TextBlock>
-                        <TextBlock>Builds and runs the current game project</TextBlock>
-                    </StackPanel>
-                </ToolTip>
-            </Button.ToolTip>
-        </Button>
         <TextBox Grid.Column="2" Margin="3,0,0,0" Width="150" 
                  Text="{Binding Configuration}"></TextBox>
     </StackPanel>
