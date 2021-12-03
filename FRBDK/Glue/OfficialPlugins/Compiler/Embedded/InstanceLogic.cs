@@ -471,7 +471,7 @@ namespace GlueControl
 
             foreach (var instruction in deserialized.InstructionSaves)
             {
-                AssignVariable(newObject, instruction);
+                AssignVariable(newObject, instruction, convertFileNamesToObjects:true);
             }
         }
 
@@ -1188,7 +1188,7 @@ namespace GlueControl
 
         #endregion
 
-        public void AssignVariable(object instance, FlatRedBall.Content.Instructions.InstructionSave instruction)
+        public void AssignVariable(object instance, FlatRedBall.Content.Instructions.InstructionSave instruction, bool convertFileNamesToObjects)
         {
             string variableName = instruction.Member;
             object variableValue = instruction.Value;
@@ -1199,7 +1199,8 @@ namespace GlueControl
 
             if (variableValue is string)
             {
-                variableValue = VariableAssignmentLogic.ConvertStringToType(instruction.Type, valueAsString, stateType != null);
+                // only convert this if the instance is 
+                variableValue = VariableAssignmentLogic.ConvertStringToType(instruction.Type, valueAsString, stateType != null, convertFileNamesToObjects);
             }
             else if (stateType != null && variableValue is string && !string.IsNullOrWhiteSpace(valueAsString))
             {
@@ -1244,8 +1245,14 @@ namespace GlueControl
                 }
             }
             else if (instruction.Type == typeof(FlatRedBall.Graphics.Animation.AnimationChainList).FullName ||
-                instruction.Type == typeof(Microsoft.Xna.Framework.Graphics.Texture2D).FullName ||
-                instruction.Type == typeof(Microsoft.Xna.Framework.Color).FullName)
+                instruction.Type == typeof(Microsoft.Xna.Framework.Graphics.Texture2D).FullName)
+            {
+                if (convertFileNamesToObjects && variableValue is string asString && !string.IsNullOrWhiteSpace(asString))
+                {
+                    variableValue = Editing.VariableAssignmentLogic.ConvertStringToType(instruction.Type, asString, false);
+                }
+            }
+            else if (instruction.Type == typeof(Microsoft.Xna.Framework.Color).FullName)
             {
                 if (variableValue is string asString && !string.IsNullOrWhiteSpace(asString))
                 {

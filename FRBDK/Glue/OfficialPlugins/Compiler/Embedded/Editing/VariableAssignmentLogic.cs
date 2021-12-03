@@ -881,7 +881,38 @@ namespace GlueControl.Editing
             return variableValue;
         }
 
-        public static object ConvertStringToType(string type, string variableValue, bool isState)
+        static object GetFileFromUnqualifiedName(string unqualifiedName)
+        {
+            var file = GlobalContent.GetFile(unqualifiedName);
+
+            if (file == null && FlatRedBall.Screens.ScreenManager.CurrentScreen != null)
+            {
+                var getFileMethod = FlatRedBall.Screens.ScreenManager.CurrentScreen.GetType().GetMethod("GetFile");
+
+
+                if (getFileMethod != null)
+                {
+                    file = getFileMethod.Invoke(null, new object[] { unqualifiedName });
+                }
+            }
+
+            // Or is it in the entity being viewed?
+            if (file == null && FlatRedBall.Screens.ScreenManager.CurrentScreen is Screens.EntityViewingScreen entityViewingScreen)
+            {
+                var entity = entityViewingScreen.CurrentEntity;
+
+                var getFileMethod = entity?.GetType().GetMethod("GetFile");
+
+                if (getFileMethod != null)
+                {
+                    file = getFileMethod.Invoke(null, new object[] { unqualifiedName });
+                }
+            }
+
+            return file;
+        }
+
+        public static object ConvertStringToType(string type, string variableValue, bool isState, bool convertFileNamesToObjects = true)
         {
             object convertedValue = variableValue;
             const string inWithSpaces = " in ";
@@ -913,13 +944,18 @@ namespace GlueControl.Editing
 
                 var csvName = variableValue.Substring(startOfCsvName).Split('.')[0];
 
-                // does this thing exist in GlobalContent?
-                var file = GlobalContent.GetFile(csvName);
+                var file = GetFileFromUnqualifiedName(csvName);
 
-                if (file != null && file is IDictionary asDictionary)
+                if (file is IDictionary asDictionary)
                 {
                     var itemInCsv = variableValue.Substring(0, indexOfIn);
                     convertedValue = asDictionary[itemInCsv];
+                }
+
+                if (convertedValue is string)
+                {
+                    // If we got here and it's a string, that's bad, so let's just set it to null
+                    convertedValue = null;
                 }
             }
             else
@@ -1017,26 +1053,37 @@ namespace GlueControl.Editing
                         break;
                     case "Texture2D":
                     case "Microsoft.Xna.Framework.Graphics.Texture2D":
-                        if (!string.IsNullOrWhiteSpace(variableValue))
+                        if (convertFileNamesToObjects)
                         {
-                            convertedValue = FlatRedBallServices.Load<Microsoft.Xna.Framework.Graphics.Texture2D>(
-                                variableValue, FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName);
-                        }
-                        else
-                        {
-                            convertedValue = (Microsoft.Xna.Framework.Graphics.Texture2D)null;
+                            if (!string.IsNullOrWhiteSpace(variableValue))
+                            {
+                                convertedValue = FlatRedBallServices.Load<Microsoft.Xna.Framework.Graphics.Texture2D>(
+                                    variableValue, FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName);
+                            }
+                            else
+                            {
+                                convertedValue = (Microsoft.Xna.Framework.Graphics.Texture2D)null;
+                            }
                         }
                         break;
                     case "FlatRedBall.Graphics.Animation.AnimationChainList":
                     case "AnimationChainList":
-                        if (!string.IsNullOrWhiteSpace(variableValue))
+                        if (convertFileNamesToObjects)
                         {
-                            convertedValue = FlatRedBallServices.Load<FlatRedBall.Graphics.Animation.AnimationChainList>(
-                                variableValue, FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName);
-                        }
-                        else
-                        {
-                            convertedValue = (FlatRedBall.Graphics.Animation.AnimationChainList)null;
+                            if (!string.IsNullOrWhiteSpace(variableValue))
+                            {
+                                // try unqualified first:
+                                convertedValue = GetFileFromUnqualifiedName(variableValue);
+                                if (convertedValue == null)
+                                {
+                                    convertedValue = FlatRedBallServices.Load<FlatRedBall.Graphics.Animation.AnimationChainList>(
+                                        variableValue, FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName);
+                                }
+                            }
+                            else
+                            {
+                                convertedValue = (FlatRedBall.Graphics.Animation.AnimationChainList)null;
+                            }
                         }
                         break;
                     case nameof(Microsoft.Xna.Framework.Graphics.TextureAddressMode):

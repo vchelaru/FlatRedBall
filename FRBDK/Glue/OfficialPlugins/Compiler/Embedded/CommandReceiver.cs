@@ -575,7 +575,7 @@ namespace GlueControl
                 // there's no need to handle that here?
                 foreach (var instruction in newStateSave.InstructionSaves)
                 {
-                    InstanceLogic.Self.AssignVariable(existingState, instruction);
+                    InstanceLogic.Self.AssignVariable(existingState, instruction, convertFileNamesToObjects: false);
                 }
             }
         }
