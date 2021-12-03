@@ -496,6 +496,10 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                 if (vm.CollideAgainstCloudCollision && vm.AddCloudCollision)
                 {
+                    if(cloudCollisionNos == null)
+                    {
+                        throw new NullReferenceException(nameof(cloudCollisionNos));
+                    }
                     PluginManager.ReactToCreateCollisionRelationshipsBetween(playerList, cloudCollisionNos);
 
                     var nos = gameScreen.GetNamedObject("PlayerListVsCloudCollision");
@@ -508,8 +512,12 @@ namespace OfficialPluginsCore.Wizard.Managers
                     PluginManager.CallPluginMethod("Collision Plugin", "FixNamedObjectCollisionType", nos);
                 }
 
-                if (vm.CollideAgainstSolidCollision)
+                if (vm.CollideAgainstSolidCollision && vm.AddSolidCollision)
                 {
+                    if(solidCollisionNos == null)
+                    {
+                        throw new NullReferenceException(nameof(solidCollisionNos));
+                    }
                     PluginManager.ReactToCreateCollisionRelationshipsBetween(playerList, solidCollisionNos);
 
                     var nos = gameScreen.GetNamedObject("PlayerListVsSolidCollision");
