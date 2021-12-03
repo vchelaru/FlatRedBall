@@ -53,9 +53,9 @@
 
         </Button>
 
-        <Grid>
+        <Grid  Visibility="{Binding PauseButtonVisibility}">
             <Button IsHitTestVisible="False"></Button>
-            <StackPanel Height="24" VerticalAlignment="Top" Orientation="Horizontal" Margin="3,0,3,0" Visibility="{Binding PauseButtonVisibility}">
+            <StackPanel Height="24" VerticalAlignment="Top" Orientation="Horizontal" Margin="3,0,3,0" >
                 <Button Height="18" Width="18" Click="SpeedDecreaseClicked" Background="Transparent" BorderBrush="Transparent">
                     <Button.ToolTip>
                         <ToolTip>
