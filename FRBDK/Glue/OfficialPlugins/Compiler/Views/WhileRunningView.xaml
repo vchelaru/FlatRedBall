@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:OfficialPlugins.Compiler.Views"
              mc:Ignorable="d" 
              d:Height="28"
-             Width="Auto" Padding="2,2,2,2">
+             Width="Auto">
     <StackPanel Orientation="Horizontal">
 
         <Grid>
@@ -53,7 +53,7 @@
             
         </Grid>
 
-        <Button Width="24" VerticalAlignment="Center" Margin="2,0,0,0" MinWidth="22" 
+        <Button Width="24" VerticalAlignment="Stretch" Margin="2,0,0,0" MinWidth="24" 
                 Visibility="{Binding PauseButtonVisibility}"
                 Click="HandlePauseClicked"
             >
@@ -71,7 +71,7 @@
 
         <Grid  Visibility="{Binding PauseButtonVisibility}" Margin="2,0,0,0">
             <Button IsHitTestVisible="False"></Button>
-            <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Margin="3,0,3,0" >
+            <StackPanel VerticalAlignment="Stretch" Orientation="Horizontal" Margin="3,0,3,0" >
                 <Button Height="18" Width="18" Click="SpeedDecreaseClicked" Background="Transparent" BorderBrush="Transparent">
                     <Button.ToolTip>
                         <ToolTip>

@@ -10,24 +10,24 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="28"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
 
         <!--put this before the while running view so it doesn't block the view on narrow screens-->
-        <StackPanel x:Name="AlwaysVisibleStack" HorizontalAlignment="Right" Orientation="Horizontal">
+        <StackPanel x:Name="AlwaysVisibleStack" HorizontalAlignment="Right" Orientation="Horizontal" Margin="2">
             <Grid Visibility="{Binding MessageAboutEditModeDisabledVisibility}">
                 <Frame Background="Yellow" BorderBrush="DarkGray" BorderThickness="1"/>
                 <TextBlock Margin="3" VerticalAlignment="Center">Enable Game Embed and Edit in Settings</TextBlock>
             </Grid>
-            <Button VerticalAlignment="Top" Width="24" Height="24" Click="GlueViewSettingsButtonClicked">
+            <Button VerticalAlignment="Top" Width="24" Click="GlueViewSettingsButtonClicked">
                 <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/Compiler/Icons/Settings.png"></Image>
             </Button>
         </StackPanel>
 
-        <StackPanel   Orientation="Horizontal">
+        <StackPanel Margin="2"  Orientation="Horizontal">
 
-            <Button Height="24" Width="24" Margin="2" 
+            <Button Width="24"
                     HorizontalAlignment="Left" 
                     Visibility="{Binding WhileStoppedViewVisibility}"
                     Click="PlayInEditModeClicked">
@@ -42,8 +42,7 @@
                 <Image Source="/OfficialPluginsCore;component/Compiler/Icons/Edit.png" IsHitTestVisible="False" />
             </Button>
             
-            <views:WhileRunningView 
-                    Height="32" Padding="2"
+            <views:WhileRunningView Margin="2,0,0,0"
                     Visibility="{Binding WhileRunningViewVisibility}"
                     StopClicked="WhileRunningView_StopClicked"
                     RestartGameClicked="WhileRunningView_RestartGameClicked"
@@ -55,7 +54,7 @@
                     >
             
             </views:WhileRunningView>
-            <StackPanel Orientation="Horizontal" Margin="6,0,0,0"
+            <StackPanel Orientation="Horizontal" Margin="2,0,0,0"
                         Visibility="{Binding WhileRunningViewVisibility}">
                 <Button Click="FocusButtonClicked" Visibility="{Binding FocusButtonVisibility}">
                     <Image  IsHitTestVisible="False" Source="/OfficialPluginsCore;component/Compiler/Icons/FocusOnSelection.png"></Image>
