@@ -5,39 +5,55 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPlugins.Compiler.Views"
              mc:Ignorable="d" 
-             Height="Auto" Width="Auto">
+             d:Height="28"
+             Width="Auto" Padding="2,2,2,2">
     <StackPanel Orientation="Horizontal">
 
-        <ToggleButton IsChecked="{Binding IsPlayChecked}" Height="24" Width="24" Visibility="{Binding GlueViewCommandUiVisibility}">
-            <ToggleButton.ToolTip>
-                <ToolTip>
-                    <StackPanel>
-                        <TextBlock FontWeight="Bold">Running Mode</TextBlock>
-                        <TextBlock>The game will run regularly with no editor interaction.</TextBlock>
-                    </StackPanel>
-                </ToolTip>
-            </ToggleButton.ToolTip>
-            <Grid>
-                <Image Source="/OfficialPluginsCore;component/Compiler/Icons/Run.png" Visibility="{Binding RunIconVisibility}"/>
-                <Image Source="/OfficialPluginsCore;component/Compiler/Icons/RunDeselected.png" Visibility="{Binding RunDisabledIconVisibility}"/>
-            </Grid>
-        </ToggleButton>
-        <ToggleButton IsChecked="{Binding IsEditChecked}" Margin="0,0,10,0" Height="24" Width="24" Visibility="{Binding GlueViewCommandUiVisibility}">
-            <ToggleButton.ToolTip>
-                <ToolTip>
-                    <StackPanel>
-                        <TextBlock FontWeight="Bold">Edit Mode</TextBlock>
-                        <TextBlock>The game will run in edit mode enabling live editing of screens and entities.</TextBlock>
-                    </StackPanel>
-                </ToolTip>
-            </ToggleButton.ToolTip>
-            <Grid>
-                <Image Source="/OfficialPluginsCore;component/Compiler/Icons/Edit.png" Visibility="{Binding EditIconVisibility}"/>
-                <Image Source="/OfficialPluginsCore;component/Compiler/Icons/EditDeselected.png" Visibility="{Binding EditDisabledIconVisibility}"/>
-            </Grid>
-        </ToggleButton>
+        <Grid>
+            <Button IsHitTestVisible="False">
+            
+            </Button>
+            <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Margin="3,2,3,2">
 
-        <Button Width="24" Height="24" VerticalAlignment="Top" Margin="0,0,6,0" MinWidth="22" 
+            <ToggleButton IsChecked="{Binding IsPlayChecked}" Width="24" 
+                        Visibility="{Binding GlueViewCommandUiVisibility}" 
+                        Background="Transparent" BorderBrush="Transparent"
+                        VerticalContentAlignment="Stretch">
+                <ToggleButton.ToolTip>
+                    <ToolTip>
+                        <StackPanel>
+                            <TextBlock FontWeight="Bold">Running Mode</TextBlock>
+                            <TextBlock>The game will run regularly with no editor interaction.</TextBlock>
+                        </StackPanel>
+                    </ToolTip>
+                </ToggleButton.ToolTip>
+                <Grid>
+                    <Image Source="/OfficialPluginsCore;component/Compiler/Icons/Run.png" Margin="0,0,0,0"/>
+                    <Rectangle Height="1" Fill="#3978A8" HorizontalAlignment="Stretch"  VerticalAlignment="Bottom" Visibility="{Binding RunIconVisibility}"></Rectangle>
+                </Grid>
+            </ToggleButton>
+            <ToggleButton IsChecked="{Binding IsEditChecked}" Margin="0,0,0,0" Width="24" 
+                        Visibility="{Binding GlueViewCommandUiVisibility}" 
+                        Background="Transparent" BorderBrush="Transparent"
+                        VerticalContentAlignment="Stretch">
+                <ToggleButton.ToolTip>
+                    <ToolTip>
+                        <StackPanel>
+                            <TextBlock FontWeight="Bold">Edit Mode</TextBlock>
+                            <TextBlock>The game will run in edit mode enabling live editing of screens and entities.</TextBlock>
+                        </StackPanel>
+                    </ToolTip>
+                </ToggleButton.ToolTip>
+                <Grid VerticalAlignment="Stretch">
+                    <Image Source="/OfficialPluginsCore;component/Compiler/Icons/Edit.png" Margin="0,0,0,0"/>
+                    <Rectangle Height="1" Fill="#3978A8" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Visibility="{Binding EditIconVisibility}"></Rectangle>
+                </Grid>
+            </ToggleButton>
+        </StackPanel>
+            
+        </Grid>
+
+        <Button Width="24" VerticalAlignment="Center" Margin="2,0,0,0" MinWidth="22" 
                 Visibility="{Binding PauseButtonVisibility}"
                 Click="HandlePauseClicked"
             >
@@ -53,9 +69,9 @@
 
         </Button>
 
-        <Grid  Visibility="{Binding PauseButtonVisibility}">
+        <Grid  Visibility="{Binding PauseButtonVisibility}" Margin="2,0,0,0">
             <Button IsHitTestVisible="False"></Button>
-            <StackPanel Height="24" VerticalAlignment="Top" Orientation="Horizontal" Margin="3,0,3,0" >
+            <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Margin="3,0,3,0" >
                 <Button Height="18" Width="18" Click="SpeedDecreaseClicked" Background="Transparent" BorderBrush="Transparent">
                     <Button.ToolTip>
                         <ToolTip>
@@ -83,7 +99,7 @@
             </StackPanel>
             
         </Grid>
-        <Button Height="24" VerticalAlignment="Top" Style="{DynamicResource ButtonStyleDark}" Margin="0,0,6,0" MinWidth="22"
+        <Button VerticalAlignment="Center" Style="{DynamicResource ButtonStyleDark}" Margin="2,0,0,0" MinWidth="22"
                 Visibility="{Binding UnpauseButtonVisibility}"
                 
                 Click="HandleUnpauseClicked"
@@ -99,7 +115,7 @@
             </Button.ToolTip>
         </Button>
 
-        <Button Height="24" VerticalAlignment="Top" Margin="0,0,6,0" MinWidth="22"
+        <Button VerticalAlignment="Center" Margin="2,0,0,0" MinWidth="22"
                 Visibility="{Binding UnpauseButtonVisibility}"
                 Click="HandleAdvanceOneFrameClicked"
         >
@@ -113,7 +129,7 @@
                 </ToolTip>
             </Button.ToolTip>
         </Button>
-        <Button Height="24" VerticalAlignment="Top" Margin="0,0,6,0" Click="HandleStopClicked">
+        <Button VerticalAlignment="Center" Margin="2,0,0,0" Click="HandleStopClicked">
             <Image Source="/OfficialPluginsCore;component/Compiler/Icons/stop.png" Margin="1"></Image>
             <Button.ToolTip>
                 <ToolTip>
@@ -125,7 +141,7 @@
             </Button.ToolTip>
         </Button>
 
-        <Button Height="24" VerticalAlignment="Top" Margin="0,0,6,0" Click="HandleRestartGameCurrentScreenClicked"
+        <Button VerticalAlignment="Center" Margin="2,0,0,0" Click="HandleRestartGameCurrentScreenClicked"
                 Visibility="{Binding WhileRunningViewVisibility}">
             <Image Source="/OfficialPluginsCore;component/Compiler/Icons/RestartGameOnCurrentScreen.png" Margin="1"></Image>
             <Button.ToolTip>
@@ -139,7 +155,7 @@
         </Button>
 
 
-        <Button Height="24" VerticalAlignment="Top"  Margin="0,0,6,0" Click="HandleRestartScreenClicked"
+        <Button VerticalAlignment="Center"  Margin="2,0,0,0" Click="HandleRestartScreenClicked"
                 Visibility="{Binding GlueViewCommandUiVisibility}">
             <Image Source="/OfficialPluginsCore;component/Compiler/Icons/RestartScreen.png" Margin="1"></Image>
             <Button.ToolTip>

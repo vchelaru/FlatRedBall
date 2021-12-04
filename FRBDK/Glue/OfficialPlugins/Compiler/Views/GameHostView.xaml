@@ -27,7 +27,7 @@
 
         <StackPanel   Orientation="Horizontal">
 
-            <Button Height="24" Width="24" 
+            <Button Height="24" Width="24" Margin="2" 
                     HorizontalAlignment="Left" 
                     Visibility="{Binding WhileStoppedViewVisibility}"
                     Click="PlayInEditModeClicked">
@@ -42,7 +42,8 @@
                 <Image Source="/OfficialPluginsCore;component/Compiler/Icons/Edit.png" IsHitTestVisible="False" />
             </Button>
             
-            <views:WhileRunningView  Height="Auto"
+            <views:WhileRunningView 
+                    Height="32" Padding="2"
                     Visibility="{Binding WhileRunningViewVisibility}"
                     StopClicked="WhileRunningView_StopClicked"
                     RestartGameClicked="WhileRunningView_RestartGameClicked"
@@ -56,12 +57,12 @@
             </views:WhileRunningView>
             <StackPanel Orientation="Horizontal" Margin="6,0,0,0"
                         Visibility="{Binding WhileRunningViewVisibility}">
-                <Button Height="24" Click="FocusButtonClicked" Visibility="{Binding FocusButtonVisibility}">
+                <Button Click="FocusButtonClicked" Visibility="{Binding FocusButtonVisibility}">
                     <Image  IsHitTestVisible="False" Source="/OfficialPluginsCore;component/Compiler/Icons/FocusOnSelection.png"></Image>
                 </Button>
             </StackPanel>
 
-            <Grid Margin="5,0,0,0" Visibility="{Binding ConnectedFrameVisibility}">
+            <Grid Margin="5,0,0,0" Visibility="Collapsed">
                 <Frame Background="{Binding ConnectedFrameBackgroundColor, FallbackValue=Red}">
                     
                 </Frame>
