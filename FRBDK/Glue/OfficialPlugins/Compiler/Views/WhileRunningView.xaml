@@ -57,7 +57,7 @@
                 Visibility="{Binding PauseButtonVisibility}"
                 Click="HandlePauseClicked"
             >
-            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/Pause.png" Margin="0,3"></Image>
+            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/Pause.png" Margin="0"></Image>
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -119,7 +119,7 @@
                 Visibility="{Binding UnpauseButtonVisibility}"
                 Click="HandleAdvanceOneFrameClicked"
         >
-            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/AdvanceOneFrame.png" Margin="3"></Image>
+            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/AdvanceOneFrame.png" Margin="0"></Image>
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -143,7 +143,7 @@
 
         <Button VerticalAlignment="Center" Margin="2,0,0,0" Click="HandleRestartGameCurrentScreenClicked"
                 Visibility="{Binding WhileRunningViewVisibility}">
-            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/RestartGameOnCurrentScreen.png" Margin="1"></Image>
+            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/RestartGameOnCurrentScreen.png" Margin="0"></Image>
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>

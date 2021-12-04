@@ -16,7 +16,7 @@ namespace OfficialPluginsCore.Wizard.Models
     {
         Platformer,
         Topdown,
-        None
+        None,
     }
 
     public enum CollisionType
@@ -260,6 +260,9 @@ namespace OfficialPluginsCore.Wizard.Models
         } = new List<string>();
 
         #endregion
+
+        // Vic says - this is easy to do, but do we want to support more than this like having entire serialized screens?
+        public List<string> AdditionalNonGameScreens { get; set; } = new List<string>();
 
         //public Dictionary<string, NamedObjectSave> NamedObjectSaves
         //{

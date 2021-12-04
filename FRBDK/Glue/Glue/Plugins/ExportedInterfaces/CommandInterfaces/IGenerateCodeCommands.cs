@@ -5,7 +5,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
     public interface IGenerateCodeCommands
     {
-        void GenerateAllCodeTask();
         void GenerateAllCode();
 
         /// <summary>

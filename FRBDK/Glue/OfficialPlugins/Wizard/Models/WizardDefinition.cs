@@ -43,15 +43,21 @@ namespace OfficialPluginsCore.Wizard.Models
                 page.PlatformerClicked += () =>
                 {
                     ViewModel.PlayerControlType = GameType.Platformer;
-                    // all other defaults apply
-                    //Show(FormsDataList.Last());
                     DoneClicked();
                 };
                 page.TopDownClicked += () =>
                 {
                     ViewModel.PlayerControlType = GameType.Topdown;
-                    // all other defaults apply
-                    //Show(FormsDataList.Last());
+                    DoneClicked();
+                };
+                page.FormsClicked += () =>
+                {
+                    ViewModel.AddGameScreen = false;
+                    ViewModel.AddPlayerEntity = false;
+                    ViewModel.CreateLevels = false;
+                    ViewModel.AddGum = true;
+                    ViewModel.AddFlatRedBallForms = true;
+                    ViewModel.AdditionalNonGameScreens.Add("MainMenu");
                     DoneClicked();
                 };
 

@@ -522,7 +522,7 @@ namespace FlatRedBall.Glue.IO
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("GenerateAllCode");
                 SetInitWindowText("Generating all code", initializationWindow);
-                GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
+                GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
                 Section.EndContextAndTime();
 
                 GlobalContentCodeGenerator.SuppressGlobalContentDictionaryRefresh = false;

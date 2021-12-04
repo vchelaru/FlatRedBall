@@ -184,7 +184,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
 
                     // todo - eventually may need to handle variables renaming here
                     GlueCommands.Self.RefreshCommands.RefreshUi(this.category);
-                    GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
                     GlueCommands.Self.GluxCommands.SaveGlux();
                     break;
             }
@@ -222,7 +222,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                     var variableViewModel = e.NewItems[0] as StateVariableViewModel;
                     ApplyViewModelVariableToStateAtIndex(variableViewModel.Value, index, stateSave);
 
-                    GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
                     GlueCommands.Self.GluxCommands.SaveGlux();
 
                 }
@@ -462,7 +462,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                     this.States.RemoveAt(oldSelectedIndex);
 
                     GlueCommands.Self.RefreshCommands.RefreshUi(this.category);
-                    GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
                     GlueCommands.Self.GluxCommands.SaveGlux();
                     // Victor Chelaru June 8, 2018
                     // I can't get this to select, not sure why.
@@ -496,7 +496,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                 category.ExcludedVariables.Clear();
                 category.ExcludedVariables.AddRange(this.ExcludedVariables);
 
-                GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
+                GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
                 GlueCommands.Self.GluxCommands.SaveGlux();
                 // I guess this isn't needed because the states in the tree view didn't change
                 //GlueCommands.Self.RefreshCommands.RefreshUi(this.category);

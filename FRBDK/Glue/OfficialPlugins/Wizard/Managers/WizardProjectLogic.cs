@@ -102,6 +102,12 @@ namespace OfficialPluginsCore.Wizard.Managers
                     ApplyCameraController(vm, gameScreen));
             }
 
+            if(vm.AdditionalNonGameScreens?.Count > 0)
+            {
+                Add("Adding Additional Screens", () =>
+                    AddAdditionalScreens(vm));
+            }
+
             if(vm.ElementImportUrls.Count > 0)
             {
                 Add("Importing Screens/Entities", () =>
@@ -116,7 +122,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             Add("Regenerating All Code", () =>
             {
-                GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
+                GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
 
             });
 
@@ -607,6 +613,14 @@ namespace OfficialPluginsCore.Wizard.Managers
                     }
 
                 }
+            }
+        }
+
+        private static void AddAdditionalScreens(WizardData vm)
+        {
+            foreach (var screenName in vm.AdditionalNonGameScreens)
+            {
+                TaskManager.Self.Add(() => GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(screenName), $"Adding screen {screenName}");
             }
         }
 

@@ -29,17 +29,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 );
         }
 
-        public void GenerateAllCodeTask()
-        {
-
-            TaskManager.Self.Add(
-                () => GenerateAllCodeSync(),
-                "Generating all code",
-                TaskExecutionPreference.AddOrMoveToEnd
-
-                );
-        }
-
         public void GenerateCurrentElementCode()
         {
             GlueElement element = null;
@@ -125,11 +114,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             CameraSetupCodeGenerator.GenerateCallInGame1(ProjectManager.GameClassFileName, true);
 
-            //Parallel.For(0, layer.data[0].tiles.Count, (count) =>
-            GlueCommands.PrintOutput("Starting to generate all Screens");
-
-            // make sure the user hasn't exited the program
-
             foreach (var screen in glueProject.Screens)
             {
                 #region Check for exiting the function becuase Glue is closing
@@ -142,12 +126,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 #endregion
 
-
                 CodeWriter.GenerateCode(screen);
-
             }
 
-            GlueCommands.PrintOutput("Done generating Screens, starting Entities");
 
             // not sure which is faster:
             // Currently the referenced file dictionary makes this not work well:
@@ -178,11 +159,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 CodeWriter.GenerateCode(entity);
             }
 
-
-
-
-            PluginManager.ReceiveOutput("Done generating Entities, starting GlobalContent");
-
             #region Check for exiting the function becuase Glue is closing
 
             if (ProjectManager.WantsToClose)
@@ -195,8 +171,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
-
-
             #region Check for exiting the function becuase Glue is closing
 
             if (ProjectManager.WantsToClose)
@@ -208,14 +182,16 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             #endregion
 
             CsvCodeGenerator.RegenerateAllCsvs();
+
             CsvCodeGenerator.GenerateAllCustomClasses(glueProject);
 
-            if(glueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.AddedGeneratedGame1)
+            GlueCommands.GenerateCodeCommands.GenerateStartupScreenCode();
+
+            if (glueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.AddedGeneratedGame1)
             {
                 GlueCommands.GenerateCodeCommands.GenerateGame1();
             }
 
-            GlueCommands.PrintOutput("Done with all generation");
 
         }
 

@@ -21,6 +21,7 @@ namespace OfficialPlugins.Wizard.Views
         public event Action PlatformerClicked;
         public event Action TopDownClicked;
         public event Action CustomClicked;
+        public event Action FormsClicked;
         public event Action JsonConfigurationClicked;
 
         public NewWizardWelcomePage()
@@ -29,6 +30,8 @@ namespace OfficialPlugins.Wizard.Views
         }
 
         private void PlatformerButtonClicked(object sender, RoutedEventArgs e) => PlatformerClicked();
+
+        private void FormsButtonClicked(object sender, RoutedEventArgs e) => FormsClicked();
 
         private void TopDownButtonClicked(object sender, RoutedEventArgs e) => TopDownClicked();
 
