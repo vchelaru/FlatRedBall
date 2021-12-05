@@ -87,6 +87,8 @@ namespace FlatRedBall.AnimationEditorForms
             InitializeComponent();
 
             this.animationsListToolBar1.AddAnimationClick += AddAnimationToolStripMenuItem_Click;
+            this.animationsListToolBar1.ExpandAllClick += TreeViewManager.Self.HandleExpandAllTreeView;
+            this.animationsListToolBar1.CollapseAllClick += TreeViewManager.Self.HandleCollapseAllTreeView;
 
             CreateViewModel();
 

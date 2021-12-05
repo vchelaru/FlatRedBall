@@ -7,11 +7,25 @@
              mc:Ignorable="d" 
              d:DesignHeight="35">
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+
         <Button Click="AddButton_Click">
             <Button.ToolTip>
                 <TextBlock>Add Animation</TextBlock>
             </Button.ToolTip>
-            <Image Source="/FlatRedBall.AnimationEditorForms;component/Content/BluePlus.png"></Image>
+            <Image Source="/FlatRedBall.AnimationEditorForms;component/Content/AnimationListToolBar/icon_plus.png"></Image>
+        </Button>
+
+        <Button Click="ExpandAll_Click">
+            <Button.ToolTip>
+                <TextBlock>Expand All</TextBlock>
+            </Button.ToolTip>
+            <Image Source="/FlatRedBall.AnimationEditorForms;component/Content/AnimationListToolBar/icon_expand.png"></Image>
+        </Button>
+        <Button Click="CollapseAll_Click">
+            <Button.ToolTip>
+                <TextBlock>Collapse All</TextBlock>
+            </Button.ToolTip>
+            <Image Source="/FlatRedBall.AnimationEditorForms;component/Content/AnimationListToolBar/icon_contract.png"></Image>
         </Button>
     </StackPanel>
 </UserControl>

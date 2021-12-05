@@ -304,6 +304,9 @@
     <Resource Include="Content\BluePlus.png" />
     <EmbeddedResource Include="Content\AddCursor.cur" />
     <Resource Include="Content\MagicWand.png" />
+    <Resource Include="Content\AnimationListToolBar\icon_contract.png" />
+    <Resource Include="Content\AnimationListToolBar\icon_expand.png" />
+    <Resource Include="Content\AnimationListToolBar\icon_plus.png" />
     <Content Include="Libraries\Jillzhang.GifUtility.dll" />
   </ItemGroup>
   <ItemGroup>

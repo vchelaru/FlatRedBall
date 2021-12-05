@@ -93,6 +93,16 @@ namespace FlatRedBall.AnimationEditorForms
             
         }
 
+        internal void HandleExpandAllTreeView(object sender, EventArgs e)
+        {
+            this.mTreeView.ExpandAll();
+        }
+
+        internal void HandleCollapseAllTreeView(object sender, EventArgs e)
+        {
+            this.mTreeView.CollapseAll();
+        }
+
         private void AddReorderOptions()
         {
             var mMoveToTop = new ToolStripMenuItem("^^ Move To Top");

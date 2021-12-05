@@ -21,6 +21,8 @@ namespace FlatRedBall.AnimationEditorForms.Controls
     public partial class AnimationsListToolBar : UserControl
     {
         public event EventHandler AddAnimationClick;
+        public event EventHandler ExpandAllClick;
+        public event EventHandler CollapseAllClick;
 
         public AnimationsListToolBar()
         {
@@ -30,6 +32,16 @@ namespace FlatRedBall.AnimationEditorForms.Controls
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
             AddAnimationClick?.Invoke(this, null);
+        }
+
+        private void ExpandAll_Click(object sender, RoutedEventArgs e)
+        {
+            ExpandAllClick?.Invoke(this, null);
+        }
+
+        private void CollapseAll_Click(object sender, RoutedEventArgs e)
+        {
+            CollapseAllClick?.Invoke(this, null);
         }
     }
 }
