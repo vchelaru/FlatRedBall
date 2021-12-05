@@ -1329,7 +1329,8 @@ namespace FlatRedBall.Glue.Managers
                     projectBase = ProjectManager.ContentProject;
                 }
 
-                ProjectManager.RemoveItemFromProject(projectBase, oldNodeText, false);
+                var oldFileRelativeToProject = FileManager.MakeRelative(oldFileName, projectBase.Directory);
+                ProjectManager.RemoveItemFromProject(projectBase, oldFileRelativeToProject, false);
                 projectBase.AddContentBuildItem(targetFile);
                 foreach (KeyValuePair<string, string> kvp in mOldNewDependencyFileDictionary)
                 {
