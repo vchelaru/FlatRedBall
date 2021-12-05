@@ -1031,7 +1031,8 @@ namespace FlatRedBall.Glue.Managers
                 !targetNode.IsFolderInFilesContainerNode() &&
                 !targetNode.IsFolderForGlobalContentFiles() &&
                 !targetNode.IsNamedObjectNode() &&
-                !targetNode.IsRootNamedObjectNode())
+                !targetNode.IsRootNamedObjectNode() &&
+                !targetNode.IsGlobalContentContainerNode())
             {
                 response.Fail(@"Can't drop this file here");
             }
