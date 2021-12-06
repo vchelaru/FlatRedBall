@@ -439,11 +439,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             MainGlueWindow.Self.PropertyGrid.Refresh();
 
 
-            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-
             UpdateInstanceCustomVariables(currentElement);
 
             PluginManager.ReactToVariableAdded(newVariable);
+
+            // Generate code after PluginMangager.React so that the code can include any changes made by plugins.
+            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
             if(save)
             {
