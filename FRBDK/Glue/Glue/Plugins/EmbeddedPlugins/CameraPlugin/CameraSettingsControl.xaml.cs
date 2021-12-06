@@ -231,5 +231,83 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 
 
         }
+
+        private void AspectRatioDropdownClick(object sender, RoutedEventArgs e)
+        {
+            AspectRatioDropDown.Items.Clear();
+            void Add(decimal aspectWide, decimal aspectTall, string alternativeText = null)
+            {
+                var vm = new AspectRatioDropDownViewModel(aspectWide, aspectTall, alternativeText);
+                var menuItem = new MenuItem();
+                menuItem.Header = vm;
+                menuItem.Click += (not, used) =>
+                {
+                    ViewModel.AspectRatioWidth = aspectWide;
+                    ViewModel.AspectRatioHeight = aspectTall;
+                };
+                AspectRatioDropDown.Items.Add(menuItem);
+            }
+
+            var calculated = CalculateCurrentAspectRatio();
+
+            if(calculated.AspectWide != 0)
+            {
+                Add(calculated.AspectWide, calculated.AspectTall, $"Match current ({calculated.AspectWide}:{calculated.AspectTall})");
+            }
+
+            Add(4, 3);
+            Add(16, 9);
+            Add(21, 9);
+
+            AspectRatioDropDown.IsOpen = true;
+
+        }
+
+        private (decimal AspectWide, decimal AspectTall) CalculateCurrentAspectRatio()
+        {
+            if(ViewModel.ResolutionHeight <= 0 || ViewModel.ResolutionWidth <= 0)
+            {
+                return (1, 1);
+            }
+
+            var aspectToMatch = ViewModel.ResolutionWidth / (decimal)ViewModel.ResolutionHeight;
+
+            if(ViewModel.ResolutionWidth == ViewModel.ResolutionHeight)
+            {
+                return (1, 1);
+            }
+            else if(ViewModel.ResolutionHeight > ViewModel.ResolutionWidth)
+            {
+                for(decimal height = 1; height < 50; height++)
+                {
+                    for (decimal width = 1; width <= height; width++)
+                    {
+                        var calculatedAspect = width / height;
+
+                        if(calculatedAspect == aspectToMatch)
+                        {
+                            return (width, height);
+                        }
+                    }
+                }
+            }
+            else if(ViewModel.ResolutionWidth > ViewModel.ResolutionHeight)
+            {
+                for (decimal width = 1; width <= 50; width++)
+                {
+                    for (decimal height = 1; height < width; height++)
+                    {
+                        var calculatedAspect = width / height;
+
+                        if (calculatedAspect == aspectToMatch)
+                        {
+                            return (width, height);
+                        }
+                    }
+                }
+            }
+
+            return (0,0);
+        }
     }
 }

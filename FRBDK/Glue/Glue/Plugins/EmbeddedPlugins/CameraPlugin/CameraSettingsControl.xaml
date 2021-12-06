@@ -60,6 +60,21 @@
                             <TextBox Height="18" Width="40" Text="{Binding AspectRatioWidth}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"/>
                             <TextBlock Margin="3,0,3,0"><Run Text=":"/></TextBlock>
                             <TextBox Height="18" Width="40" Text="{Binding AspectRatioHeight}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"/>
+                            <MenuItem Width="19" Height="22" Padding="0" Margin="3, 0, 0, 0">
+                                <MenuItem.Icon>
+                                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                        <Button HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="-3,-3,0,-3" Click="AspectRatioDropdownClick">
+                                            <Polygon HorizontalAlignment="Center" VerticalAlignment="Center" Points="0,0 10,0, 5,6" Stroke="Black" Fill="Black" />
+
+                                        </Button>
+                                    </Grid>
+                                </MenuItem.Icon>
+                                <MenuItem.ContextMenu>
+                                    <ContextMenu x:Name="AspectRatioDropDown">
+
+                                    </ContextMenu>
+                                </MenuItem.ContextMenu>
+                            </MenuItem>
                         </StackPanel>
                             
                         <!--This only shows if the user's aspect ratio doesn't match the entered resolution aspect ratio-->
