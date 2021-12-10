@@ -539,7 +539,7 @@ namespace FlatRedBall.Content
 					loadedAsset = textureContentLoader.Load(assetName);
 				}
 
-#region Scene
+				#region Scene
 
 				else if (typeof(T) == typeof(FlatRedBall.Scene))
 				{
@@ -557,9 +557,9 @@ namespace FlatRedBall.Content
 					return (T)sceneAsObject;
 				}
 
-#endregion
+				#endregion
 
-#region EmitterList
+				#region EmitterList
 
 				else if (typeof(T) == typeof(EmitterList))
 				{
@@ -573,9 +573,9 @@ namespace FlatRedBall.Content
 
 				}
 
-#endregion
+				#endregion
 
-#region Image
+				#region Image
 #if !MONOGAME
 				else if (typeof(T) == typeof(Image))
 				{
@@ -590,7 +590,7 @@ namespace FlatRedBall.Content
 
 				}
 #endif
-#endregion
+				#endregion
 
 #region BitmapList
 #if !XBOX360 && !SILVERLIGHT && !WINDOWS_PHONE && !MONOGAME

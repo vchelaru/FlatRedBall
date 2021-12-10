@@ -323,6 +323,10 @@ namespace FlatRedBall.Math
 
         }
 
+        /// <summary>
+        /// Fills a list of indexes containing where the Z values change. 
+        /// </summary>
+        /// <param name="zBreaks">The list of indexes to fill.</param>
         public void GetZBreaks(List<int> zBreaks)
         {
             zBreaks.Clear();
@@ -337,6 +341,33 @@ namespace FlatRedBall.Math
             }
         }
 
+        /// <summary>
+        /// Performs the argument action on each instance in this list. This performs a forward loop,
+        /// so it may skip instances if Destroy is called in the argument Action.
+        /// </summary>
+        /// <seealso cref="ForEachReverse(Action{T})"/>
+        /// <param name="action">The action to perform on each instance in this.</param>
+        public void ForEach(Action<T> action)
+        {
+            var count = this.Count;
+            for(int i = 0; i < this.Count; i++)
+            {
+                action(this[i]);
+            }
+        }
+
+        /// <summary>
+        /// Performans the argument action on each instance in this list. This performs a reverse loop,
+        /// allowing Destroy to be called.
+        /// </summary>
+        /// <param name="action">The action to perform on each instance in this list.</param>
+        public void ForEachReverse(Action<T> action)
+        {
+            for(int i = this.Count - 1; i > -1; i--)
+            {
+                action(this[i]);
+            }
+        }
 
         #region Shift methods (move all obects by a set amount)
 
