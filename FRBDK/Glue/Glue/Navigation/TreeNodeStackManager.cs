@@ -15,9 +15,6 @@ namespace FlatRedBall.Glue.Navigation
     {
         #region Fields/Properties
 
-        System.Windows.Controls.Button BackButton;
-        System.Windows.Controls.Button ForwardButton;
-
         Stack<ITreeNode> mTreeNodeStack = new Stack<ITreeNode>();
         Stack<ITreeNode> mForwardNodeStack = new Stack<ITreeNode>();
         bool mIgnoreNextForwardClear;
@@ -26,20 +23,6 @@ namespace FlatRedBall.Glue.Navigation
         public bool CanGoBack => mTreeNodeStack.Count != 0;
 
         #endregion
-
-        public void Initialize(System.Windows.Controls.Button backButton, System.Windows.Controls.Button forwardButton)
-        {
-            BackButton = backButton;
-            ForwardButton = forwardButton;
-
-            UpdateNavigateButtons();
-        }
-
-        private void UpdateNavigateButtons()
-        {
-            BackButton.IsEnabled = CanGoBack;
-            ForwardButton.IsEnabled = CanGoForward;
-        }
 
         public void Push(ITreeNode treeNode)
         {
@@ -52,7 +35,6 @@ namespace FlatRedBall.Glue.Navigation
             {
                 mIgnoreNextForwardClear = false;
             }
-            UpdateNavigateButtons();
         }
 
         public void GoForward()
@@ -71,7 +53,6 @@ namespace FlatRedBall.Glue.Navigation
                     //GlueState.Self.SetCurrentTreeNode(toGoTo, recordState: false);
                     GlueState.Self.CurrentTreeNode = toGoTo;
 
-                    UpdateNavigateButtons();
                 }));
             }
         }
@@ -90,8 +71,6 @@ namespace FlatRedBall.Glue.Navigation
                 MainGlueWindow.Self.BeginInvoke(new EventHandler(delegate 
                 {
                     GlueState.Self.SetCurrentTreeNode(toGoTo, recordState: false);
-                    UpdateNavigateButtons();
-
                 }));
             }
         }

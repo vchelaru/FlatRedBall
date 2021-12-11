@@ -153,8 +153,6 @@ namespace FlatRedBall.Glue.Controls
         {
             object highlightedObject = listBox1.SelectedItem;
 
-            TreeNode treeNode = null;
-
             var glueState = GlueState.Self;
             if (highlightedObject == null)
             {

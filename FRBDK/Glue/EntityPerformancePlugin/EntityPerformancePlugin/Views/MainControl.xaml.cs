@@ -21,13 +21,7 @@ namespace EntityPerformancePlugin.Views
     /// </summary>
     public partial class MainControl : UserControl
     {
-        private MainViewModel ViewModel
-        {
-            get
-            {
-                return (MainViewModel)this.DataContext;
-            }
-        }
+        private MainViewModel ViewModel => DataContext as MainViewModel;
 
 
         public MainControl()
