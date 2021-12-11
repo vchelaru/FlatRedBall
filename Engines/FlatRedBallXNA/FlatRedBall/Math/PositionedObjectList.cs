@@ -349,7 +349,6 @@ namespace FlatRedBall.Math
         /// <param name="action">The action to perform on each instance in this.</param>
         public void ForEach(Action<T> action)
         {
-            var count = this.Count;
             for(int i = 0; i < this.Count; i++)
             {
                 action(this[i]);
