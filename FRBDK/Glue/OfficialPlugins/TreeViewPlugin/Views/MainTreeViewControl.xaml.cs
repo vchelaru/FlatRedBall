@@ -83,6 +83,11 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             }
         }
 
+        public void FocusSearchBox()
+        {
+            SearchTextBox.Focus();
+        }
+
         #endregion
 
         #region Drag+drop

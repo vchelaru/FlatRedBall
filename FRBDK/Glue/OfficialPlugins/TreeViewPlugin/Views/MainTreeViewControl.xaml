@@ -63,8 +63,8 @@
                         <ColumnDefinition Width="62*"/>
                     </Grid.ColumnDefinitions>
                     <TextBox 
+                        x:Name="SearchTextBox"
                         Text="{Binding SearchBoxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                        
                         KeyDown="TextBox_KeyDown"
                         GotFocus="TextBox_GotFocus"
                         LostFocus="TextBox_LostFocus" Grid.ColumnSpan="2"

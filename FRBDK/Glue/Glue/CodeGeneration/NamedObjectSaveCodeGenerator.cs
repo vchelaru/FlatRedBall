@@ -1976,7 +1976,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                         #region There is an ATI - it's a type defined in the ContentTypes.csv file in Glue
                         if (ati != null)
                         {
-                            bool isLayered = BaseElementTreeNode.IsOnOwnLayer(element)
+                            bool isLayered = CodeWriter.IsOnOwnLayer(element)
                                 || !string.IsNullOrEmpty(namedObject.LayerOn);
 
                             if(namedObject.IsManuallyUpdated && !string.IsNullOrEmpty(ati.AddManuallyUpdatedMethod))

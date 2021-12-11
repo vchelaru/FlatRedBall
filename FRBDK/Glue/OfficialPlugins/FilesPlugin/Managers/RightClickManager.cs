@@ -1,7 +1,9 @@
-﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+﻿using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using FlatRedBall.Utilities;
+using GlueFormsCore.FormHelpers;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,15 +13,14 @@ namespace OfficialPluginsCore.FilesPlugin.Managers
 {
     static class RightClickManager
     {
-        internal static void HandleRightClick(TreeNode rightClickedTreeNode, ContextMenuStrip menuToModify)
+        internal static void HandleRightClick(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> menuToModify)
         {
             var tag = rightClickedTreeNode.Tag;
 
             if(tag is ReferencedFileSave rfs)
             {
-                menuToModify.Items.Add(
+                menuToModify.Add(
                     $"Duplicate file",
-                    null,
                     (not, used) => HandleDuplicate(rfs));
             }
         }

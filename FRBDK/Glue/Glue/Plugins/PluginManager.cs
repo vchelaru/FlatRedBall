@@ -38,6 +38,7 @@ using WpfTabControl = System.Windows.Controls.TabControl;
 using GlueFormsCore.Controls;
 using System.Runtime.CompilerServices;
 using FlatRedBall.Glue.FormHelpers;
+using GlueFormsCore.FormHelpers;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -897,14 +898,13 @@ namespace FlatRedBall.Glue.Plugins
 
         }
 
-        internal static void ReactToTreeViewRightClick(TreeNode rightClickedTreeNode, ContextMenuStrip menuToModify)
+        internal static void ReactToTreeViewRightClick(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> menuToModify)
         {
             SaveRelativeDirectory();
 
             CallMethodOnPlugin(
                 plugin => plugin.ReactToTreeViewRightClickHandler(rightClickedTreeNode, menuToModify),
-                plugin => plugin.ReactToTreeViewRightClickHandler != null,
-                nameof(ReactToStateCreated));
+                plugin => plugin.ReactToTreeViewRightClickHandler != null);
 
             ResumeRelativeDirectory("ReactToTreeViewRightClick");
         }
@@ -2056,6 +2056,13 @@ namespace FlatRedBall.Glue.Plugins
             CallMethodOnPlugin(
                 plugin => plugin.FocusOnTreeView(),
                 plugin => plugin.FocusOnTreeView != null);
+        }
+
+        public static void ReactToCtrlF()
+        {
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToCtrlF(),
+                plugin => plugin.ReactToCtrlF != null);
         }
 
         #endregion

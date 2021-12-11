@@ -265,10 +265,7 @@ namespace Glue
                 }
                 catch (Exception excep)
                 {
-                    TaskManager.Self.AddAsyncTask(() => 
-                        GlueGui.ShowException("Could not load assemblies - you probably need to rebuild Glue.", "Error", excep),
-                        "Show error message about not being able to load assemblies");
-
+                    GlueGui.ShowException("Could not load assemblies - you probably need to rebuild Glue.", "Error", excep);
                     return;
                 }
             }

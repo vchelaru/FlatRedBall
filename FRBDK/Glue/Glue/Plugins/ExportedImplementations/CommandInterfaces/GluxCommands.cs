@@ -1676,8 +1676,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            ElementViewWindow.RemoveEntity(entityToRemove);
-
             ProjectManager.RemoveCodeFilesForElement(filesThatCouldBeRemoved, entityToRemove);
 
             GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
@@ -1746,10 +1744,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            TaskManager.Self.OnUiThread(() =>
-            {
-                ElementViewWindow.RemoveScreen(screenToRemove);
-            });
             IElement element = screenToRemove;
 
             PluginManager.ReactToScreenRemoved(screenToRemove, filesThatCouldBeRemoved);

@@ -40,6 +40,8 @@ namespace OfficialPlugins.TreeViewPlugin
 
         public override void StartUp()
         {
+            var findManager = new FindManager(MainViewModel);
+            GlueState.Self.Find = findManager;
             mainView = new MainTreeViewControl();
 
             mainView.DataContext = MainViewModel;
@@ -60,6 +62,7 @@ namespace OfficialPlugins.TreeViewPlugin
             RefreshGlobalContentTreeNode += HandleRefreshGlobalContentTreeNode;
             RefreshDirectoryTreeNodes += HandleRefreshDirectoryTreeNodes;
             FocusOnTreeView += HandleFocusOnTreeView;
+            ReactToCtrlF += HandleCtrlF;
             this.ReactToItemSelectHandler += HandleItemSelected;
         }
 
@@ -148,6 +151,11 @@ namespace OfficialPlugins.TreeViewPlugin
         private void HandleFocusOnTreeView()
         {
             this.mainView?.Focus();
+        }
+
+        private void HandleCtrlF()
+        {
+            mainView.FocusSearchBox();
         }
     }
 }

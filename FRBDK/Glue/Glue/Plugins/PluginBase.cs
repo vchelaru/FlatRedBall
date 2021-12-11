@@ -359,6 +359,8 @@ namespace FlatRedBall.Glue.Plugins
 
         public Action FocusOnTreeView;
 
+        public Action ReactToCtrlF;
+
         #endregion
 
         public abstract void StartUp();

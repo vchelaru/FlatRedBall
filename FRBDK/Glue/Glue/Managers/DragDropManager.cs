@@ -689,89 +689,7 @@ namespace FlatRedBall.Glue.Managers
 
             else if (targetNode.IsNamedObjectNode())
             {
-                // Allow drop only if it's a list or Layer
-                NamedObjectSave targetNamedObjectSave = targetNode.Tag as NamedObjectSave;
-
-                if (!targetNamedObjectSave.IsList && !targetNamedObjectSave.IsLayer)
-                {
-                    MessageBox.Show("The target is not a List or Layer so we can't add an Object to it.", "Target not valid");
-                }
-                if (targetNamedObjectSave.IsLayer)
-                {
-                    var parent = targetNode.Parent;
-
-                    newTreeNode = MoveEntityOn(treeNodeMoving, parent);
-
-                    DragDropManager.Self.MoveNamedObject(newTreeNode, targetNode);
-                }
-                else
-                {
-                    // Make sure that the two types match
-                    string listType = targetNamedObjectSave.SourceClassGenericType;
-
-                    var entity = treeNodeMoving.Tag as EntitySave;
-
-                    bool isOfTypeOrInherits =
-                        listType == entity.Name ||
-                        (treeNodeMoving.Tag as EntitySave).InheritsFrom(listType);
-
-                    if (isOfTypeOrInherits == false)
-                    {
-                        MessageBox.Show("The target list type is of type\n\n" +
-                            listType +
-                            "\n\nBut the Entity is of type\n\n" +
-                            entity.Name +
-                            "\n\nCould not add an instance to the list", "Could not add instance");
-                    }
-                    else
-                    {
-                        var namedObject = new NamedObjectSave();
-
-                        if(GlueState.Self.CurrentGlueProject.FileVersion >= 
-                            (int)GlueProjectSave.GluxVersions.ListsHaveAssociateWithFactoryBool)
-                        {
-                            namedObject.AssociateWithFactory = true;
-                        }
-                        namedObject.InstanceName =
-                            FileManager.RemovePath(entity.Name) + "1";
-
-                        StringFunctions.MakeNameUnique<NamedObjectSave>(
-                            namedObject, targetNamedObjectSave.ContainedObjects);
-
-                        // Not sure if we need to set this or not, but I think 
-                        // any instance added to a list will not be defined by base
-                        namedObject.DefinedByBase = false;
-
-                        // make sure that the target list is the current
-                        GlueState.Self.CurrentNamedObjectSave = targetNamedObjectSave;
-
-                        var currentNosList = GlueState.Self.CurrentNamedObjectSave;
-                        NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToList(namedObject, 
-                            currentNosList);
-
-                        // If the tree node doesn't exist yet, this selection won't work:
-                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(
-                            GlueState.Self.CurrentElement);
-
-                        GlueState.Self.CurrentNamedObjectSave = namedObject;
-
-                        if (namedObject.SourceClassType != entity.Name)
-                        {
-                            namedObject.SourceClassType = entity.Name;
-                            namedObject.UpdateCustomProperties();
-                        }
-
-                        GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-
-                        // run after generated code so plugins like level editor work off latest code
-                        PluginManager.ReactToNewObject(namedObject);
-                        PluginManager.ReactToObjectContainerChanged(namedObject, currentNosList);
-
-                        // Don't save the Glux, the caller of this method will take care of it
-                        // GluxCommands.Self.SaveGlux();
-                    }
-
-                }
+                newTreeNode = MoveEntityOnNamedObject(treeNodeMoving, targetNode);
             }
 
             #endregion
@@ -779,6 +697,96 @@ namespace FlatRedBall.Glue.Managers
             else if (targetNode.IsGlobalContentContainerNode())
             {
                 AskAndAddAllContainedRfsToGlobalContent(treeNodeMoving.Tag as IElement);
+            }
+
+            return newTreeNode;
+        }
+
+        private ITreeNode MoveEntityOnNamedObject(ITreeNode treeNodeMoving, ITreeNode targetNode)
+        {
+            ITreeNode newTreeNode = null;
+            var entity = treeNodeMoving.Tag as EntitySave;
+
+            // Allow drop only if it's a list or Layer
+            NamedObjectSave targetNamedObjectSave = targetNode.Tag as NamedObjectSave;
+
+            if (!targetNamedObjectSave.IsList && !targetNamedObjectSave.IsLayer)
+            {
+                MessageBox.Show("The target is not a List or Layer so we can't add an Object to it.", "Target not valid");
+            }
+            if (targetNamedObjectSave.IsLayer)
+            {
+                var parent = targetNode.Parent;
+
+                newTreeNode = MoveEntityOn(treeNodeMoving, parent);
+
+                DragDropManager.Self.MoveNamedObject(newTreeNode, targetNode);
+            }
+            else
+            {
+                // Make sure that the two types match
+                string listType = targetNamedObjectSave.SourceClassGenericType;
+
+                bool isOfTypeOrInherits =
+                    listType == entity.Name ||
+                    entity.InheritsFrom(listType);
+
+                if (isOfTypeOrInherits == false)
+                {
+                    MessageBox.Show("The target list type is of type\n\n" +
+                        listType +
+                        "\n\nBut the Entity is of type\n\n" +
+                        entity.Name +
+                        "\n\nCould not add an instance to the list", "Could not add instance");
+                }
+                else
+                {
+                    var namedObject = new NamedObjectSave();
+
+                    if (GlueState.Self.CurrentGlueProject.FileVersion >=
+                        (int)GlueProjectSave.GluxVersions.ListsHaveAssociateWithFactoryBool)
+                    {
+                        namedObject.AssociateWithFactory = true;
+                    }
+                    namedObject.InstanceName =
+                        FileManager.RemovePath(entity.Name) + "1";
+
+                    StringFunctions.MakeNameUnique<NamedObjectSave>(
+                        namedObject, targetNamedObjectSave.ContainedObjects);
+
+                    // Not sure if we need to set this or not, but I think 
+                    // any instance added to a list will not be defined by base
+                    namedObject.DefinedByBase = false;
+
+                    // make sure that the target list is the current
+                    GlueState.Self.CurrentNamedObjectSave = targetNamedObjectSave;
+
+                    var currentNosList = GlueState.Self.CurrentNamedObjectSave;
+                    NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToList(namedObject,
+                        currentNosList);
+
+                    // If the tree node doesn't exist yet, this selection won't work:
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(
+                        GlueState.Self.CurrentElement);
+
+                    GlueState.Self.CurrentNamedObjectSave = namedObject;
+
+                    if (namedObject.SourceClassType != entity.Name)
+                    {
+                        namedObject.SourceClassType = entity.Name;
+                        namedObject.UpdateCustomProperties();
+                    }
+
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+
+                    // run after generated code so plugins like level editor work off latest code
+                    PluginManager.ReactToNewObject(namedObject);
+                    PluginManager.ReactToObjectContainerChanged(namedObject, currentNosList);
+
+                    // Don't save the Glux, the caller of this method will take care of it
+                    // GluxCommands.Self.SaveGlux();
+                }
+
             }
 
             return newTreeNode;
@@ -845,9 +853,10 @@ namespace FlatRedBall.Glue.Managers
 
             if(listOfThisType != null)
             {
-                var namedObjectNode = ElementViewWindow.GetTreeNodeFor(listOfThisType);
+
+                var namedObjectNode = GlueState.Self.Find.TreeNodeByTag(listOfThisType);
                 // move it onto this
-                MoveEntityOn(treeNodeMoving, TreeNodeWrapper.CreateOrNull(namedObjectNode));
+                MoveEntityOn(treeNodeMoving, namedObjectNode);
             }
             else
             {

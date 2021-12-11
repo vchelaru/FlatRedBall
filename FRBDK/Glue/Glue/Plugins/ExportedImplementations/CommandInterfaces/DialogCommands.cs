@@ -495,7 +495,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         // of the variable so refresh it again
                         GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
                     }
-                    ElementViewWindow.ShowAllElementVariablesInPropertyGrid();
 
 
                     if (GlueState.Self.CurrentElement != null)

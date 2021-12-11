@@ -1,10 +1,12 @@
 ﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.ViewModels;
+using GlueFormsCore.FormHelpers;
 using GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin;
 using GlueFormsCore.ViewModels;
 using Newtonsoft.Json;
@@ -169,12 +171,11 @@ namespace OfficialPluginsCore.Wizard
             this.ReactToTreeViewRightClickHandler += HandleTreeViewRightClick;
         }
 
-        private void HandleTreeViewRightClick(TreeNode rightClickedTreeNode, ContextMenuStrip menuToModify)
+        private void HandleTreeViewRightClick(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> menuToModify)
         {
             if(rightClickedTreeNode.Tag is NamedObjectSave nos)
             {
-                var tsmi = new ToolStripMenuItem("Copy Object JSON to Clipboard");
-                tsmi.Click += (not, used) =>
+                menuToModify.Add("Copy Object JSON to Clipboard", (not, used) =>
                 {
                     var jsonSettings = new JsonSerializerSettings();
                     jsonSettings.Formatting = Formatting.Indented;
@@ -182,8 +183,7 @@ namespace OfficialPluginsCore.Wizard
                     var serialized = JsonConvert.SerializeObject(nos, jsonSettings);
 
                     Clipboard.SetText(serialized);
-                };
-                menuToModify.Items.Add(tsmi);
+                });
             }
         }
 

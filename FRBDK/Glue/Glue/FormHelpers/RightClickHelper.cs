@@ -348,8 +348,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             else if (((ITreeNode)this).IsGlobalContentContainerNode())
             {
-                var returnValue = GlueState.Self.Find.GlobalContentFilesPath;
-
+                var returnValue = ProjectManager.ProjectBase.GetAbsoluteContentFolder() + "GlobalContent/"; 
 
                 // But we want to make this relative to the project, so let's do that
                 returnValue = ProjectManager.MakeRelativeContent(returnValue);
@@ -404,185 +403,6 @@ namespace FlatRedBall.Glue.FormHelpers
         ITreeNode FindByTagRecursive(object tag);
 
         void SortByTextConsideringDirectories();
-    }
-
-    #endregion
-
-    #region TreeNodeWrapper class
-    public class TreeNodeWrapper : ITreeNode
-    {
-        TreeNode treeNode;
-
-        public TreeNode TreeNode => treeNode;
-
-        public TreeNodeWrapper(TreeNode treeNode)
-        {
-            this.treeNode = treeNode;
-        }
-
-        public object Tag
-        {
-            get => treeNode?.Tag;
-            set => treeNode.Tag = value;
-        }
-
-        public ITreeNode Parent => TreeNodeWrapper.CreateOrNull(treeNode.Parent);
-
-        public string Text
-        {
-            get => treeNode?.Text;
-            set => treeNode.Text = value;
-        }
-
-        public static ITreeNode CreateOrNull(TreeNode targetNode)
-        {
-            if(targetNode != null)
-            {
-                return new TreeNodeWrapper(targetNode);
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public void Add(ITreeNode child)
-        {
-            if(child is TreeNodeWrapper treeNodeWrapper)
-            {
-                this.treeNode.Nodes.Add(treeNodeWrapper.treeNode);
-            }
-            else
-            {
-                throw new InvalidOperationException();
-            }
-        }
-
-        public ITreeNode FindByName(string name)
-        {
-            TreeNode matchingNode = null;
-            foreach(TreeNode node in treeNode.Nodes)
-            {
-                if(node.Text == name)
-                {
-                    matchingNode = node;
-                    break;
-                }
-            }
-
-            return CreateOrNull(matchingNode);
-        }
-
-        public void Remove(ITreeNode child)
-        {
-            if (child is TreeNodeWrapper treeNodeWrapper)
-            {
-                this.treeNode.Nodes.Remove(treeNodeWrapper.treeNode);
-            }
-            else
-            {
-                throw new InvalidOperationException();
-            }
-        }
-
-        public void RemoveGlobalContentTreeNodesIfDoesntExist(ITreeNode treeNode)
-        {
-            var innerTreeNode = ((TreeNodeWrapper)treeNode).treeNode;
-            if (((ITreeNode)treeNode).IsDirectoryNode())
-            {
-                string directory = treeNode.GetRelativePath();
-
-                directory = ProjectManager.MakeAbsolute(directory, true);
-
-
-                if (!Directory.Exists(directory))
-                {
-                    // The directory isn't here anymore, so kill it!
-                    treeNode.Parent.Remove(treeNode);
-
-                }
-                else
-                {
-                    // The directory is valid, but let's check subdirectories
-                    for (int i = innerTreeNode.Nodes.Count - 1; i > -1; i--)
-                    {
-                        RemoveGlobalContentTreeNodesIfDoesntExist( CreateOrNull( innerTreeNode.Nodes[i]));
-                    }
-                }
-            }
-            else // assume content for now
-            {
-
-                ReferencedFileSave referencedFileSave = treeNode.Tag as ReferencedFileSave;
-
-                if (!ProjectManager.GlueProjectSave.GlobalFiles.Contains(referencedFileSave))
-                {
-                    treeNode.Parent.Remove(treeNode);
-                }
-                else
-                {
-                    // The RFS may be contained, but see if the file names match
-                    string rfsName = FileManager.Standardize(referencedFileSave.Name, null, false).ToLower();
-                    string treeNodeFile = FileManager.Standardize(treeNode.GetRelativePath(), null, false).ToLower();
-
-                    // We first need to make sure that the file is part of GlobalContentFiles.
-                    // If it is, then we may have tree node in the wrong folder, so let's get rid
-                    // of it.  If it doesn't start with globalcontent/ then we shouldn't remove it here.
-                    if (rfsName.StartsWith("globalcontent/") && rfsName != treeNodeFile)
-                    {
-                        treeNode.Parent.Remove(treeNode);
-                    }
-                }
-            }
-        }
-
-        public ITreeNode FindByTagRecursive(object tag)
-        {
-            return TreeNodeWrapper.CreateOrNull( FindByTagRecursiveInner(treeNode, tag));
-            
-        }
-
-        private TreeNode FindByTagRecursiveInner(TreeNode treeNode, object tag)
-        {
-            foreach (TreeNode child in treeNode.Nodes)
-            {
-                if (child.Tag == tag)
-                {
-                    return child;
-                }
-                else
-                {
-                    var inner = FindByTagRecursiveInner(child, tag);
-
-                    if(inner != null)
-                    {
-                        return inner;
-                    }
-                }
-            }
-            return null;
-        }
-
-        public void SortByTextConsideringDirectories()
-        {
-            treeNode.Nodes.SortByTextConsideringDirectories();
-        }
-
-        IEnumerable<ITreeNode> ITreeNode.Children
-        {
-            get
-            {
-                foreach(TreeNode item in treeNode.Nodes)
-                {
-                    yield return CreateOrNull(item);
-                }
-            }
-        }
-
-        public override string ToString()
-        {
-            return $"{Text} {Tag}";
-        }
     }
 
     #endregion
@@ -663,23 +483,15 @@ namespace FlatRedBall.Glue.FormHelpers
         static GeneralToolStripMenuItem addLayeritem;
         #endregion
 
-        public static void PopulateRightClickItems(TreeNode targetNode, MenuShowingAction menuShowingAction = MenuShowingAction.RegularRightClick)
-        {
-            menu.Items.Clear();
+        //public static void PopulateRightClickItems(TreeNode targetNode, MenuShowingAction menuShowingAction = MenuShowingAction.RegularRightClick)
+        //{
+        //    menu.Items.Clear();
 
-            var sourceNode = ElementViewWindow.TreeNodeDraggedOff;
-
-            TreeNodeWrapper wrapper = null;
-
-            if(sourceNode != null)
-            {
-                wrapper = new TreeNodeWrapper(sourceNode);
-            }
-
-            PopulateRightClickMenuItemsShared(new TreeNodeWrapper(targetNode), menuShowingAction, wrapper);
+        //    var wrapper = TreeNodeWrapper.CreateOrNull(ElementViewWindow.TreeNodeDraggedOff);
+        //    PopulateRightClickMenuItemsShared(new TreeNodeWrapper(targetNode), menuShowingAction, wrapper);
             
-            PluginManager.ReactToTreeViewRightClick(targetNode, menu);
-        }
+        //    PluginManager.ReactToTreeViewRightClick(targetNode, menu);
+        //}
 
         static List<GeneralToolStripMenuItem> ListToAddTo = null;
         public static List<GeneralToolStripMenuItem> GetRightClickItems(ITreeNode targetNode, MenuShowingAction menuShowingAction, ITreeNode treeNodeMoving = null)
@@ -689,6 +501,8 @@ namespace FlatRedBall.Glue.FormHelpers
             ListToAddTo = listToFill;
 
             PopulateRightClickMenuItemsShared(targetNode, menuShowingAction, treeNodeMoving);
+
+            PluginManager.ReactToTreeViewRightClick(targetNode, listToFill);
 
             ListToAddTo = null;
 
@@ -1089,7 +903,6 @@ namespace FlatRedBall.Glue.FormHelpers
             #endregion
         }
 
-        static ContextMenuStrip menu => MainGlueWindow.Self.mElementContextMenu;
         static void Add(string text, Action action, string shortcutDisplay = null)
         {
             if(ListToAddTo != null)
@@ -1105,11 +918,7 @@ namespace FlatRedBall.Glue.FormHelpers
             }
             else
             {
-                var tsmi = new ToolStripMenuItem(text);
-                tsmi.Click += (not, used) => action();
-                tsmi.ShortcutKeyDisplayString = shortcutDisplay;
-                menu.Items.Add(tsmi);
-
+                throw new NotImplementedException("Need a ListToAddTo assigned");
             }
         }
 
@@ -1127,10 +936,7 @@ namespace FlatRedBall.Glue.FormHelpers
             }
             else
             {
-                var tsmi = new ToolStripMenuItem(text);
-                tsmi.Click += eventHandler;
-                tsmi.ShortcutKeyDisplayString = shortcutDisplay;
-                menu.Items.Add(tsmi);
+                throw new NotImplementedException("Need a ListToAddTo assigned");
             }
         }
 
@@ -1142,9 +948,7 @@ namespace FlatRedBall.Glue.FormHelpers
             }
             else
             {
-                var tsmi = generalItem.ToTsmi();
-                menu.Items.Add(tsmi);
-
+                throw new NotImplementedException("Need a ListToAddTo assigned");
             }
         }
 
@@ -1159,7 +963,7 @@ namespace FlatRedBall.Glue.FormHelpers
             }
             else
             {
-                menu.Items.Add("-");
+                throw new NotImplementedException("Need a ListToAddTo assigned");
             }
         }
 
@@ -2921,8 +2725,6 @@ namespace FlatRedBall.Glue.FormHelpers
             ScreenSave screenSave = GlueState.Self.CurrentScreenSave;
 
             List<ScreenSave> screensToRefresh = new List<ScreenSave>();
-
-            ScreenTreeNode treeNode = null;
 
             if (screenSave != null)
             {

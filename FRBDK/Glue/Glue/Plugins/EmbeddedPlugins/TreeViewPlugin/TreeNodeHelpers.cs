@@ -199,7 +199,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static bool IsGlobalContentContainerNode(this TreeNode treeNodeInQuestion)
         {
-            return treeNodeInQuestion == ElementViewWindow.GlobalContentFileNode;
+            return false;// treeNodeInQuestion == ElementViewWindow.GlobalContentFileNode;
         }
 
         public static bool IsFolderForGlobalContentFiles(this TreeNode treeNodeInQuestion)
@@ -303,9 +303,6 @@ namespace FlatRedBall.Glue.FormHelpers
                 return false;
             }
 
-            if (treeNodeInQuestion is EntityTreeNode)
-                return false;
-
             if (treeNodeInQuestion.Tag != null)
             {
                 return false;
@@ -384,23 +381,23 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-        public static IEnumerable<EntityTreeNode> AllEntitiesIn(this TreeNode treeNodeInQuestion)
-        {
-            for (int i = 0; i < treeNodeInQuestion.Nodes.Count; i++)
-            {
-                if (treeNodeInQuestion.Nodes[i] is EntityTreeNode)
-                {
-                    yield return (EntityTreeNode)treeNodeInQuestion.Nodes[i];
-                }
-                else if (treeNodeInQuestion.Nodes[i].IsDirectoryNode())
-                {
-                    foreach (var entityTreeNode in treeNodeInQuestion.Nodes[i].AllEntitiesIn())
-                    {
-                        yield return entityTreeNode;
-                    }
-                }
-            }
-        }
+        //public static IEnumerable<EntityTreeNode> AllEntitiesIn(this TreeNode treeNodeInQuestion)
+        //{
+        //    for (int i = 0; i < treeNodeInQuestion.Nodes.Count; i++)
+        //    {
+        //        if (treeNodeInQuestion.Nodes[i] is EntityTreeNode)
+        //        {
+        //            yield return (EntityTreeNode)treeNodeInQuestion.Nodes[i];
+        //        }
+        //        else if (treeNodeInQuestion.Nodes[i].IsDirectoryNode())
+        //        {
+        //            foreach (var entityTreeNode in treeNodeInQuestion.Nodes[i].AllEntitiesIn())
+        //            {
+        //                yield return entityTreeNode;
+        //            }
+        //        }
+        //    }
+        //}
 
         public static string GetRelativePath(this TreeNode treeNodeInQuestion)
         {
@@ -450,7 +447,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             else if (treeNodeInQuestion.IsGlobalContentContainerNode())
             {
-                var returnValue = GlueState.Self.Find.GlobalContentFilesPath;
+                var returnValue = ProjectManager.ProjectBase.GetAbsoluteContentFolder() + "GlobalContent/";
 
 
                 // But we want to make this relative to the project, so let's do that

@@ -74,20 +74,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
             // Snapshot should come first so everyone can update to the snapshot
             GlueState.Self.TakeSnapshot(value);
-            if (!ElementViewWindow.SuppressSelectionEvents)
-            {
-                PluginManager.ReactToItemSelect(value);
-            }
 
-            if (value is TreeNodeWrapper asWrapper && !isSame)
-            {
-                //GlueCommands.Self.DoOnUiThread(() => MainExplorerPlugin.Self.ElementTreeView.SelectedNode = value);
-                GlueCommands.Self.DoOnUiThread(() =>
-                {
-                    MainExplorerPlugin.Self.ElementTreeView.SelectedNode = asWrapper.TreeNode;
-                });
-            }
-
+            PluginManager.ReactToItemSelect(value);
         }
 
         public GlueElement CurrentElement
@@ -209,7 +197,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         public IFindManager Find
         {
             get;
-            private set;
+            set;
         }
         public States.Clipboard Clipboard
         {
@@ -321,7 +309,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public GlueState()
         {
-            Find = new FindManager();
+            // find will be assigned by plugins
             Clipboard = new States.Clipboard();
 
             System.Windows.Data.BindingOperations.EnableCollectionSynchronization(

@@ -1046,7 +1046,7 @@ namespace FlatRedBallAddOns.Entities
             
         }
 
-        static bool IsOnOwnLayer(IElement element)
+        public static bool IsOnOwnLayer(IElement element)
         {
             if (element is EntitySave)
             {

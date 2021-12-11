@@ -12,11 +12,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
     class TreeNodeCommands : ITreeNodeCommands
     {
-        public void SelectTreeNode(TreeNode treeNode)
-        {
-            MainGlueWindow.Self.BeginInvoke(new EventHandler(delegate { ElementViewWindow.SelectedNodeOld = treeNode; }));
-        }
-
         public void SetProperty<T>(string name, T value)
         {
             if(GlueState.Self.CurrentEntitySave != null)
