@@ -15,9 +15,12 @@ using FlatRedBall.Glue.IO;
 using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Navigation;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 {
+    #region GlueStateSnapshot
+
     public class GlueStateSnapshot
     {
         public ITreeNode CurrentTreeNode;
@@ -32,6 +35,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         public EventResponseSave CurrentEventResponseSave;
 
     }
+
+    #endregion
 
     public class GlueState : IGlueState
     {
@@ -50,26 +55,39 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             get => snapshot.CurrentTreeNode;
             set
             {
-
-
-                var isSame = value == snapshot?.CurrentTreeNode;
-
-                // Snapshot should come first so everyone can update to the snapshot
-                GlueState.Self.TakeSnapshot(value);
-                if (!ElementViewWindow.SuppressSelectionEvents)
-                {
-                    PluginManager.ReactToItemSelect(value);
-                }
-
-                if (value is TreeNodeWrapper asWrapper && !isSame)
-                {
-                    //GlueCommands.Self.DoOnUiThread(() => MainExplorerPlugin.Self.ElementTreeView.SelectedNode = value);
-                    GlueCommands.Self.DoOnUiThread(() =>
-                    {
-                        MainExplorerPlugin.Self.ElementTreeView.SelectedNode = asWrapper.TreeNode;
-                    });
-                }
+                UpdateToSetTreeNode(value, recordState:true);
             }
+        }
+
+        public void SetCurrentTreeNode(ITreeNode treeNode, bool recordState) =>
+            UpdateToSetTreeNode(treeNode, recordState);
+
+        private void UpdateToSetTreeNode(ITreeNode value, bool recordState)
+        {
+            var isSame = value == snapshot?.CurrentTreeNode;
+
+            // push before taking a snapshot, so that the "old" one is pushed
+            if (!isSame && snapshot?.CurrentTreeNode != null && recordState)
+            {
+                TreeNodeStackManager.Self.Push(snapshot.CurrentTreeNode);
+            }
+
+            // Snapshot should come first so everyone can update to the snapshot
+            GlueState.Self.TakeSnapshot(value);
+            if (!ElementViewWindow.SuppressSelectionEvents)
+            {
+                PluginManager.ReactToItemSelect(value);
+            }
+
+            if (value is TreeNodeWrapper asWrapper && !isSame)
+            {
+                //GlueCommands.Self.DoOnUiThread(() => MainExplorerPlugin.Self.ElementTreeView.SelectedNode = value);
+                GlueCommands.Self.DoOnUiThread(() =>
+                {
+                    MainExplorerPlugin.Self.ElementTreeView.SelectedNode = asWrapper.TreeNode;
+                });
+            }
+
         }
 
         public GlueElement CurrentElement

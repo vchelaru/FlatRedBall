@@ -16,7 +16,7 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <Button Click="BackButtonClicked" Width="24" Margin="2,2,0,2">
+            <Button IsEnabled="{Binding IsBackButtonEnabled}" Click="BackButtonClicked" Width="24" Margin="2,2,0,2">
                 <Button.ToolTip>
                     <StackPanel>
                         <TextBlock FontWeight="Bold">Back (ALT + &lt;-)</TextBlock>
@@ -27,7 +27,7 @@
 
                 </Image>
             </Button>
-            <Button Click="NextButtonClicked" Width="24" Margin="2,2,0,2">
+            <Button Click="NextButtonClicked" IsEnabled="{Binding IsForwardButtonEnabled}"  Width="24" Margin="2,2,0,2">
                 <Button.ToolTip>
                     <StackPanel>
                         <TextBlock FontWeight="Bold">Forward (ALT + -&gt;)</TextBlock>

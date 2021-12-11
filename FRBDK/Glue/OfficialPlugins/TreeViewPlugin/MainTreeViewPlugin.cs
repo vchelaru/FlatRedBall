@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
@@ -24,6 +25,8 @@ namespace OfficialPlugins.TreeViewPlugin
 
         public override Version Version => new Version(1, 0);
 
+        MainTreeViewControl mainView;
+
         MainTreeViewViewModel MainViewModel = new MainTreeViewViewModel();
 
         PluginTab pluginTab;
@@ -37,7 +40,7 @@ namespace OfficialPlugins.TreeViewPlugin
 
         public override void StartUp()
         {
-            var mainView = new MainTreeViewControl();
+            mainView = new MainTreeViewControl();
 
             mainView.DataContext = MainViewModel;
 
@@ -56,7 +59,7 @@ namespace OfficialPlugins.TreeViewPlugin
             RefreshTreeNodeFor += HandleRefreshTreeNodeFor;
             RefreshGlobalContentTreeNode += HandleRefreshGlobalContentTreeNode;
             RefreshDirectoryTreeNodes += HandleRefreshDirectoryTreeNodes;
-
+            FocusOnTreeView += HandleFocusOnTreeView;
             this.ReactToItemSelectHandler += HandleItemSelected;
         }
 
@@ -86,6 +89,9 @@ namespace OfficialPlugins.TreeViewPlugin
                 SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
 
             }
+
+            MainViewModel.IsForwardButtonEnabled = TreeNodeStackManager.Self.CanGoForward;
+            MainViewModel.IsBackButtonEnabled = TreeNodeStackManager.Self.CanGoBack;
         }
 
         private void HandleRefreshGlobalContentTreeNode()
@@ -137,6 +143,11 @@ namespace OfficialPlugins.TreeViewPlugin
         {
             MainViewModel.RefreshDirectoryNodes();
             
+        }
+
+        private void HandleFocusOnTreeView()
+        {
+            this.mainView?.Focus();
         }
     }
 }

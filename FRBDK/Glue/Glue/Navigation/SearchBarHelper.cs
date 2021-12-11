@@ -20,18 +20,13 @@ namespace FlatRedBall.Glue.Navigation
 
         private const int EM_SETCUEBANNER = 0x1501;
         private const int EM_GETCUEBANNER = 0x1502;
+        private static TreeView TreeView;
 
         #endregion
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern Int32 SendMessage(IntPtr hWnd, int msg,
         int wParam, [MarshalAs(UnmanagedType.LPWStr)] string lParam);
-
-        public static void Initialize(System.Windows.Forms.TextBox textBox, string text = "Search... (CTRL + F)")
-        {
-            SetCueText(textBox, text);
-        }
-
 
 
         public static void SearchBarTextChange(string text)
@@ -357,7 +352,10 @@ namespace FlatRedBall.Glue.Navigation
             }
         }
 
-
+        public static void Initialize(System.Windows.Forms.TreeView treeView)
+        {
+            TreeView = treeView;
+        }
 
         private static string DetermineWhatIsShown(string text, out bool showScreens, out bool showEntities, out bool showObjects, out bool showFiles, out bool showStates, out bool showVariables, out bool showEvents, out bool showCategories)
         {
@@ -603,7 +601,7 @@ namespace FlatRedBall.Glue.Navigation
                 Keyboard.Focus(MainExplorerPlugin.Self.ElementTreeViewContainer);
 
                 MainExplorerPlugin.Self.ElementTreeViewContainer.Focus();
-                MainExplorerPlugin.Self.ElementTreeView.Focus();
+                TreeView.Focus();
             }
         }
 
@@ -642,7 +640,7 @@ namespace FlatRedBall.Glue.Navigation
                 e.Handled = true;
                 e.SuppressKeyPress = true;
 
-                MainExplorerPlugin.Self.ElementTreeView.Focus();
+                TreeView.Focus();
                 //TextBoxLeave(MainExplorerPlugin.Self.SearchTextbox);
 
             }

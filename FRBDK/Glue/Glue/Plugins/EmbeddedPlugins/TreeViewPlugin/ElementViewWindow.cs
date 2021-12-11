@@ -413,47 +413,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
         }
 
-        public static void UpdateNodeToListIndex(EntitySave entitySave)
-        {
-
-            var entityTreeNode = GlueState.Self.Find.EntityTreeNode(entitySave);
-
-            var parentTreeNode = entityTreeNode.Parent;
-
-            bool wasSelected = MainExplorerPlugin.Self.ElementTreeView.SelectedNode == entityTreeNode;
-
-            parentTreeNode.SortByTextConsideringDirectories();
-
-            if (wasSelected)
-            {
-                GlueState.Self.CurrentEntitySave = entitySave;
-            }
-        }
-
-        public static void UpdateNodeToListIndex(ScreenSave screenSave)
-        {
-            ScreenTreeNode screenTreeNode = GlueState.Self.Find.ScreenTreeNode(screenSave);
-
-            //////// Early Out////////////
-            if(screenTreeNode == null)
-            {
-                return;
-            }
-            //////End Early Out///////////
-
-            bool wasSelected = MainExplorerPlugin.Self.ElementTreeView.SelectedNode == screenTreeNode;
-
-            int desiredIndex = ProjectManager.GlueProjectSave.Screens.IndexOf(screenSave);
-
-            mScreenNode.Nodes.Remove(screenTreeNode);
-            mScreenNode.Nodes.Insert(desiredIndex, screenTreeNode);
-
-            if (wasSelected)
-            {
-                MainExplorerPlugin.Self.ElementTreeView.SelectedNode = screenTreeNode;
-            }
-        }
-
         [Obsolete("Use GlueCommands.Self.RefreshCommands.RefreshGlobalContent()")]
         public static void UpdateGlobalContentTreeNodes()
         {

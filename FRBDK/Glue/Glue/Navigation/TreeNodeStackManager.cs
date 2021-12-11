@@ -13,16 +13,19 @@ namespace FlatRedBall.Glue.Navigation
 {
     public class TreeNodeStackManager : Singleton<TreeNodeStackManager>
     {
-        TreeNode mCurentTreeNode;
-        //Button mBackButton;
-        //Button mForwardButton;
+        #region Fields/Properties
 
         System.Windows.Controls.Button BackButton;
         System.Windows.Controls.Button ForwardButton;
 
-        Stack<TreeNode> mTreeNodeStack = new Stack<TreeNode>();
-        Stack<TreeNode> mForwardNodeStack = new Stack<TreeNode>();
+        Stack<ITreeNode> mTreeNodeStack = new Stack<ITreeNode>();
+        Stack<ITreeNode> mForwardNodeStack = new Stack<ITreeNode>();
         bool mIgnoreNextForwardClear;
+
+        public bool CanGoForward => mForwardNodeStack.Count != 0;
+        public bool CanGoBack => mTreeNodeStack.Count != 0;
+
+        #endregion
 
         public void Initialize(System.Windows.Controls.Button backButton, System.Windows.Controls.Button forwardButton)
         {
@@ -34,11 +37,11 @@ namespace FlatRedBall.Glue.Navigation
 
         private void UpdateNavigateButtons()
         {
-            BackButton.IsEnabled = mTreeNodeStack.Count > 0;
-            ForwardButton.IsEnabled = mForwardNodeStack.Count > 0;
+            BackButton.IsEnabled = CanGoBack;
+            ForwardButton.IsEnabled = CanGoForward;
         }
 
-        public void Push(TreeNode treeNode)
+        public void Push(ITreeNode treeNode)
         {
             mTreeNodeStack.Push(treeNode);
             if (!mIgnoreNextForwardClear)
@@ -50,14 +53,11 @@ namespace FlatRedBall.Glue.Navigation
                 mIgnoreNextForwardClear = false;
             }
             UpdateNavigateButtons();
-
         }
-
-
 
         public void GoForward()
         {
-            if (mForwardNodeStack.Count != 0)
+            if (CanGoForward)
             {
                 var toGoTo = mForwardNodeStack.Pop();
                 //mForwardNodeStack.Push(toGoTo);
@@ -67,11 +67,11 @@ namespace FlatRedBall.Glue.Navigation
                 mIgnoreNextForwardClear = true;
                 MainGlueWindow.Self.BeginInvoke(new EventHandler(delegate
                 {
-                    ElementViewWindow.SelectedNodeOld = toGoTo;
-                    // We want it to go to the back
-                    //mTreeNodeStack.Pop();
-                    UpdateNavigateButtons();
+                    // Call the normal selection which will push to bck
+                    //GlueState.Self.SetCurrentTreeNode(toGoTo, recordState: false);
+                    GlueState.Self.CurrentTreeNode = toGoTo;
 
+                    UpdateNavigateButtons();
                 }));
             }
         }
@@ -81,23 +81,19 @@ namespace FlatRedBall.Glue.Navigation
             if (mTreeNodeStack.Count != 0)
             {
                 var toGoTo = mTreeNodeStack.Pop();
-                mForwardNodeStack.Push(ElementViewWindow.SelectedNodeOld);
+                mForwardNodeStack.Push(GlueState.Self.CurrentTreeNode) ;
                 //((TreeNodeCommands)GlueCommands.Self.TreeNodeCommands).SelectTreeNode(toGoTo);
                 // the select will have added, so pop it off immediately
                 // We invoke it here instead of using the commands because we need to pop right after the select
                 mIgnoreNextForwardClear = true;
 
                 MainGlueWindow.Self.BeginInvoke(new EventHandler(delegate 
-                    { 
-                        ElementViewWindow.SelectedNodeOld = toGoTo; 
-                    
-                        mTreeNodeStack.Pop();
-                        UpdateNavigateButtons();
+                {
+                    GlueState.Self.SetCurrentTreeNode(toGoTo, recordState: false);
+                    UpdateNavigateButtons();
 
-                    }));
+                }));
             }
         }
-
-
     }
 }

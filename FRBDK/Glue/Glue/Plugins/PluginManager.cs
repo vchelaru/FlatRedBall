@@ -2051,6 +2051,13 @@ namespace FlatRedBall.Glue.Plugins
                 (plugin) => plugin.RefreshDirectoryTreeNodes != null);
         }
 
+        public static void ReactToFocusOnTreeView()
+        {
+            CallMethodOnPlugin(
+                plugin => plugin.FocusOnTreeView(),
+                plugin => plugin.FocusOnTreeView != null);
+        }
+
         #endregion
 
         internal static bool TryHandleException(Exception exception)

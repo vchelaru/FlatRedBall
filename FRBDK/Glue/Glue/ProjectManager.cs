@@ -508,21 +508,6 @@ namespace FlatRedBall.Glue
         }
 
 
-        public static void SortAndUpdateUI(EntitySave entitySave)
-        {
-            mGlueProjectSave.Entities.SortByName();
-
-            ElementViewWindow.UpdateNodeToListIndex(entitySave);
-        }
-
-        public static void SortAndUpdateUI(ScreenSave screenSave)
-        {
-            mGlueProjectSave.Screens.SortByName();
-
-            //ElementViewWindow.UpdateNodeToListIndex(screenSave);
-            ElementViewWindow.ScreensTreeNode.Nodes.SortByTextConsideringDirectories();
-        }
-
         public static CheckResult StatusCheck()
         {
             //if (IdeManager.HasOnlyExpress)

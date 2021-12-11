@@ -706,7 +706,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
         public void FocusOnTreeView()
         {
-            GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin.MainExplorerPlugin.Self.ElementTreeView.Focus();
+            PluginManager.ReactToFocusOnTreeView();
         }
 
         #endregion

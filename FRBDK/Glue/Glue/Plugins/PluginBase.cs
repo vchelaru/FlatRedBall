@@ -357,6 +357,8 @@ namespace FlatRedBall.Glue.Plugins
         public Action RefreshGlobalContentTreeNode;
         public Action RefreshDirectoryTreeNodes;
 
+        public Action FocusOnTreeView;
+
         #endregion
 
         public abstract void StartUp();

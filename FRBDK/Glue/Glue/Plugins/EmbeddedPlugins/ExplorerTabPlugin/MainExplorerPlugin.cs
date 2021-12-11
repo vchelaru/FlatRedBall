@@ -32,7 +32,6 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
         public System.Windows.Controls.ListBox SearchListBox;
         public System.Windows.Forms.TreeView ElementTreeView;
         public System.Windows.FrameworkElement ElementTreeViewContainer;
-        private System.Windows.Forms.ToolTip ElementViewWindowToolTip;
         public System.Windows.Controls.TextBox SearchTextbox;
 
 
@@ -72,7 +71,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
             //this.ElementTreeView.SelectedImageIndex = 0;
             //this.ElementTreeView.TabIndex = 0;
             this.ElementTreeView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.ElementTreeView_ItemDrag);
-            this.ElementTreeView.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.ElementTreeView_BeforeSelect);
+            //this.ElementTreeView.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.ElementTreeView_BeforeSelect);
             this.ElementTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.ElementTreeView_AfterSelect);
             this.ElementTreeView.DragDrop += new System.Windows.Forms.DragEventHandler(this.ElementTreeView_DragDrop);
             this.ElementTreeView.DragEnter += new System.Windows.Forms.DragEventHandler(this.ElementTreeView_DragEnter);
@@ -95,7 +94,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
             ExplorerTab = this.CreateTab(window, "Explorer (old)", TabLocation.Left);
 
             ExplorerTab.CanClose = false;
-
+            SearchBarHelper.Initialize(ElementTreeView);
             window.TreeViewHost.Child = this.ElementTreeView;
             ElementTreeViewContainer = window.TreeViewHost;
 
@@ -303,24 +302,6 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin
 
                 //ElementTreeView_DragDrop(node, DragDropEffects.Move | DragDropEffects.Copy);
                 tree.DoDragDrop(node, DragDropEffects.Move | DragDropEffects.Copy);
-            }
-        }
-
-        private void ElementTreeView_BeforeSelect(object sender, TreeViewCancelEventArgs e)
-        {
-            if (this.ElementTreeView.SelectedNode != null
-
-                // August 31 2019
-                // If the user drag+dropped off a tree node, then as they move over
-                // other nodes they will get selected. We don't want to record that as
-                // a movement.
-                // Actually this value doesn't get nulled out when dropping a node, so 
-                // can't use this now. Oh well, I won't bother with fixing this for now, 
-                // I thought it would be a quick fix...
-                // && ElementViewWindow.TreeNodeDraggedOff == null
-                )
-            {
-                TreeNodeStackManager.Self.Push(ElementTreeView.SelectedNode);
             }
         }
 
