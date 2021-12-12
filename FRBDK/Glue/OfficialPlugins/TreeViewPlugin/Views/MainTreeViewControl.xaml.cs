@@ -249,7 +249,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             if (whatWasSelected != null)
             {
                 SelectionLogic.SelectByTag(whatWasSelected);
-                SelectionLogic.CurrentNode.ExpandParentsRecursively();
+                SelectionLogic.CurrentNode?.ExpandParentsRecursively();
             }
         }
 

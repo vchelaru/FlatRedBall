@@ -374,7 +374,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             var source = System.Windows.PresentationSource.FromVisual(MainGlueWindow.MainWpfControl);
 
 
-            double mousePositionX = MainGlueWindow.MousePosition.X;
+            double mousePositionX = Control.MousePosition.X;
             double mousePositionY = MainGlueWindow.MousePosition.Y;
 
             if (source != null)
