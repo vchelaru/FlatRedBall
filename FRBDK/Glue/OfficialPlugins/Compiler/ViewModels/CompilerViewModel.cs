@@ -166,6 +166,12 @@ namespace OfficialPlugins.Compiler.ViewModels
 
         public string Configuration { get; set; }
 
+        public bool IsPrintMsBuildCommandChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public List<string> GameSpeedList { get; set; } =
             new List<string>
             {

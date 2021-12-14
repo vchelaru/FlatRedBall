@@ -49,8 +49,8 @@ namespace OfficialPlugins.Compiler
             }
         }
 
-        internal async Task<bool> Compile(Action<string> printOutput, Action<string> printError,  
-            string configuration = "Debug")
+        internal async Task<bool> Compile(Action<string> printOutput, Action<string> printError,
+            string configuration = "Debug", bool printMsBuildCommand = false)
         {
             var shouldCompile = true;
 
@@ -99,6 +99,11 @@ namespace OfficialPlugins.Compiler
                         "/nologo " +
                         "/verbosity:minimal";
 
+                    if(printMsBuildCommand)
+                    {
+                        printOutput?.Invoke($"{msBuildPath} {arguments}");
+                    }
+
                     succeeded = await StartMsBuildWithParameters(printOutput, printError, startOutput, endOutput, arguments, msBuildPath);
                 }
 
@@ -125,6 +130,11 @@ namespace OfficialPlugins.Compiler
                         "/m " +
                         "/nologo " +
                         "/verbosity:minimal";
+
+                    if (printMsBuildCommand)
+                    {
+                        printOutput?.Invoke($"{msBuildPath} {arguments}");
+                    }
 
                     succeeded = await StartMsBuildWithParameters(printOutput, printError, startOutput, endOutput, arguments, msBuildPath);
                 }

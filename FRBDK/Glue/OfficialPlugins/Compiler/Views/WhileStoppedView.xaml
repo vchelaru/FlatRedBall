@@ -20,5 +20,6 @@
         </Button>
         <TextBox Grid.Column="2" Margin="3,0,0,0" Width="150" 
                  Text="{Binding Configuration}"></TextBox>
+        <CheckBox VerticalAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding IsPrintMsBuildCommandChecked}">Print MSBuild Command</CheckBox>
     </StackPanel>
 </UserControl>

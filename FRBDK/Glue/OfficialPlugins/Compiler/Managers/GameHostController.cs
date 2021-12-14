@@ -142,7 +142,8 @@ namespace OfficialPlugins.Compiler.Managers
             var toReturn = await compiler.Compile(
                 mainControl.PrintOutput,
                 mainControl.PrintOutput,
-                compilerViewModel.Configuration);
+                compilerViewModel.Configuration,
+                compilerViewModel.IsPrintMsBuildCommandChecked);
             compilerViewModel.IsCompiling = false;
             return toReturn;
         }
