@@ -166,12 +166,6 @@ namespace OfficialPlugins.Compiler.ViewModels
 
         public string Configuration { get; set; }
 
-        public Visibility CompileContentButtonVisibility
-        {
-            get => Get<Visibility>();
-            set => Set(value);
-        }
-
         public List<string> GameSpeedList { get; set; } =
             new List<string>
             {

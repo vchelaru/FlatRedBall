@@ -315,7 +315,6 @@ namespace OfficialPlugins.Compiler
         }
         private void HandleGluxUnloaded()
         {
-            CompilerViewModel.CompileContentButtonVisibility = Visibility.Collapsed;
             CompilerViewModel.HasLoadedGlux = false;
 
             ToolbarController.Self.HandleGluxUnloaded();
@@ -365,8 +364,6 @@ namespace OfficialPlugins.Compiler
 
         private void HandleGluxLoaded()
         {
-            UpdateCompileContentVisibility();
-
             var model = LoadOrCreateCompilerSettings();
             ignoreViewModelChanges = true;
             GlueViewSettingsViewModel.SetFrom(model);
@@ -392,38 +389,6 @@ namespace OfficialPlugins.Compiler
             }
 
             GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
-        }
-
-        private void UpdateCompileContentVisibility()
-        {
-            bool shouldShowCompileContentButton = false;
-
-            if (GlueState.Self.CurrentMainProject != null)
-            {
-                shouldShowCompileContentButton = GlueState.Self.CurrentMainProject != GlueState.Self.CurrentMainContentProject;
-
-                if (!shouldShowCompileContentButton)
-                {
-                    foreach (var mainSyncedProject in GlueState.Self.SyncedProjects)
-                    {
-                        if (mainSyncedProject != mainSyncedProject.ContentProject)
-                        {
-                            shouldShowCompileContentButton = true;
-                            break;
-                        }
-                    }
-                }
-
-            }
-
-            if (shouldShowCompileContentButton)
-            {
-                CompilerViewModel.CompileContentButtonVisibility = Visibility.Visible;
-            }
-            else
-            {
-                CompilerViewModel.CompileContentButtonVisibility = Visibility.Collapsed;
-            }
         }
 
         private void CreateToolbar()
@@ -673,11 +638,6 @@ namespace OfficialPlugins.Compiler
             };
 
 
-            MainControl.BuildContentClicked += delegate
-            {
-                BuildContent(OutputSuccessOrFailure);
-            };
-
             MainControl.RunClicked += async (not, used) =>
             {
                 var succeeded = await GameHostController.Self.Compile();
@@ -721,11 +681,6 @@ namespace OfficialPlugins.Compiler
                 MainControl.PrintOutput($"{DateTime.Now.ToLongTimeString()} Build failed");
 
             }
-        }
-
-        private void BuildContent(Action<bool> afterCompile = null)
-        {
-            compiler.BuildContent(MainControl.PrintOutput, MainControl.PrintOutput, afterCompile, CompilerViewModel.Configuration);
         }
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
