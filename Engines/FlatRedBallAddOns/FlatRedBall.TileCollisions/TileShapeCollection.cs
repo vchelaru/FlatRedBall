@@ -979,7 +979,10 @@ namespace FlatRedBall.TileCollisions
                 }
             }
 
-            UpdateLShapedPassNeighbors(positionedObject as AARect, rectangleLeftOf, rectangleUpLeft, rectangleAbove, rectangleUpRight, rectangleRightOf, rectangleDownRight, rectangleBelow, rectangleDownLeft);
+            if (positionedObject is AARect asAaRect)
+            {
+                UpdateLShapedPassNeighbors(asAaRect, rectangleLeftOf, rectangleUpLeft, rectangleAbove, rectangleUpRight, rectangleRightOf, rectangleDownRight, rectangleBelow, rectangleDownLeft);
+            }
 
             if (updateNeighbors)
             {
