@@ -715,18 +715,30 @@ namespace FlatRedBall.TileGraphics
                     var tilesetTileGid = tilesetTile.id + tileset.Firstgid;
                     foreach (var tilesetObject in tilesetTile.Objects.@object)
                     {
-                        var name = layer.Name;
+                        const bool applyVisibility = false;
+                        TiledMapToShapeCollectionConverter.ConvertTiledObjectToFrbShape(tilesetObject, applyVisibility, out polygon, out rectangle, out circle);
 
-                        TiledMapToShapeCollectionConverter.ConvertTiledObjectToFrbShape(tilesetObject, out polygon, out rectangle, out circle);
-                        if (rectangle != null)
+                        var hasShape = polygon != null || rectangle != null || circle != null;
+
+
+                        TileCollisions.TileShapeCollection collection = null;
+                        if (hasShape)
                         {
                             var collectionName = layer.Name;
-                            if (tilesetObject.Type != null && separateOnTileType)
+                            if (!string.IsNullOrWhiteSpace(tilesetObject.Type))
                             {
-                                collectionName += "_" + tilesetObject.Type;
+                                collectionName = tilesetObject.Type;
                             }
-                            var collection = GetOrAddTileShapeCollection(collectionName, collisionDictionary);
+                            else if (!string.IsNullOrWhiteSpace(tilesetTile.Type))
+                            {
+                                collectionName = tilesetTile.Type;
+                            }
+                            collection = GetOrAddTileShapeCollection(collectionName, collisionDictionary);
                             collection.GridSize = tileDimension;
+                        }
+
+                        if (rectangle != null)
+                        {
                             rectangle.Z = z;
                             if (sortOnY)
                             {
@@ -751,13 +763,6 @@ namespace FlatRedBall.TileGraphics
                         }
                         else if (polygon != null)
                         {
-                            var collectionName = layer.Name;
-                            if (tilesetObject.Type != null && separateOnTileType)
-                            {
-                                collectionName += "_" + tilesetObject.Type;
-                            }
-                            var collection = GetOrAddTileShapeCollection(collectionName, collisionDictionary);
-                            collection.GridSize = tileDimension;
 
                             // For tile polygons we want them to be centered on the tile.
                             // To do this, we shift all points by its position:
