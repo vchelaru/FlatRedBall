@@ -103,6 +103,12 @@ namespace OfficialPlugins.Compiler.ViewModels
                 }
             }
         }
+
+        [DependsOn(nameof(WhileStoppedViewVisibility))]
+        [DependsOn(nameof(IsGenerateGlueControlManagerInGame1Checked))]
+        public Visibility RunInEditModeButtonVisibility =>
+            (WhileStoppedViewVisibility == Visibility.Visible && IsGenerateGlueControlManagerInGame1Checked).ToVisibility();
+
         public bool IsPaused
         {
             get => Get<bool>();
