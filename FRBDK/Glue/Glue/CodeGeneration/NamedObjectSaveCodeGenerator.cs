@@ -137,7 +137,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #endregion
 
-        #region Instantiate
+        #region Instantiate/Initialize
 
         public override ICodeBlock GenerateConstructor(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
@@ -248,10 +248,10 @@ namespace FlatRedBall.Glue.CodeGeneration
             // Do the named object saves
 
             var sortedNamedObjects = element.NamedObjects
+                // These will be done "late"
+                .Where(item => item.IsCollisionRelationship() == false)
                 // entire files first
-                .OrderBy(item => item.IsEntireFile == false)
-                // collision relationships last
-                .ThenBy(item => item.IsCollisionRelationship());
+                .OrderBy(item => item.IsEntireFile == false);
 
             foreach(var nos in sortedNamedObjects)
             {
@@ -259,6 +259,20 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
 
             return codeBlock;
+        }
+
+        // Relationships need to be assigned after all other objects. To do that, we'll explicitly call this from CodeWriter
+        public static void GenerateCollisionRelationships(ICodeBlock codeBlock, IElement element)
+        {
+            var sortedNamedObjects = element.NamedObjects
+                 .Where(item => item.IsCollisionRelationship())
+                 // entire files first
+                 .OrderBy(item => item.IsEntireFile == false);
+
+            foreach (var nos in sortedNamedObjects)
+            {
+                WriteCodeForNamedObjectInitialize(nos, element, codeBlock, null);
+            }
         }
 
         #endregion

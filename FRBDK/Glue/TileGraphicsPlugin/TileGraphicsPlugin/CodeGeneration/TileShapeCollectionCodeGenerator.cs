@@ -15,8 +15,19 @@ namespace TileGraphicsPlugin.CodeGeneration
 {
     class TileShapeCollectionCodeGenerator : ElementComponentCodeGenerator
     {
+        public TileShapeCollectionCodeGenerator()
+        {
+            InitializeCategory = "Collision Objects";
+        }
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
+        {
+            return codeBlock;
+        }
+
         public override ICodeBlock GenerateInitializeLate(ICodeBlock codeBlock, IElement element)
         {
+            // Vic says - I think we have to generate late so we can reference other objects that may be assigned in the initialize function,
+            // but we need to make sure this happens before 
             NamedObjectSave[] tileShapeCollections = GetAllTileShapeCollectionNamedObjectsInElement(element);
 
             foreach (var tileShapeCollection in tileShapeCollections)
@@ -124,10 +135,14 @@ namespace TileGraphicsPlugin.CodeGeneration
                     $" ?? new FlatRedBall.TileCollisions.TileShapeCollection();";
 
             }
-            else
+            // If it comes from map collision, don't creat a new instance, we'll do a straight assignment
+            else if (creationOptions == CollisionCreationOptions.FromMapCollision)
+            {
+                return string.Empty;
+            }
+            else 
             {
                 return $"{namedObjectSave.FieldName} = new FlatRedBall.TileCollisions.TileShapeCollection(); {namedObjectSave.FieldName}.Name = \"{namedObjectSave.InstanceName}\";";
-
 
             }
 
@@ -209,9 +224,22 @@ namespace TileGraphicsPlugin.CodeGeneration
                         // not handled:
                         GenerateFromLayerCollision(namedObjectSave, ifBlock);
                         break;
+                    case CollisionCreationOptions.FromMapCollision:
+                        GenerateFromMapCollision(namedObjectSave, codeBlock);
+
+                        break;
                 }
             }
 
+            void GenerateFromMapCollision(NamedObjectSave namedObjectSave, ICodeBlock codeBlock)
+            {
+                var mapName = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.SourceTmxName));
+                var tmxCollisionName = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.TmxCollisionName));
+
+                var instanceName = namedObjectSave.FieldName;
+                codeBlock.Line($"{instanceName} = {mapName}.Collisions.FirstOrDefault(item => item.Name == \"{tmxCollisionName}\");");
+
+            }
         }
 
         private void GenerateFromLayerCollision(NamedObjectSave namedObjectSave, ICodeBlock codeBlock)

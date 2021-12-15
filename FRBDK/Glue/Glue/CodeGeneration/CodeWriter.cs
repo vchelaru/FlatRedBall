@@ -705,7 +705,7 @@ namespace FlatRedBallAddOns.Entities
 
         }
         
-        internal static ICodeBlock GenerateInitialize(IElement saveObject, ICodeBlock codeBlock)
+        internal static ICodeBlock GenerateInitialize(GlueElement saveObject, ICodeBlock codeBlock)
         {
             string initializePre = null;
             string initializeMethodCall = null;
@@ -762,7 +762,6 @@ namespace FlatRedBallAddOns.Entities
 
 
 
-
             foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators)
             {
                 try
@@ -774,6 +773,8 @@ namespace FlatRedBallAddOns.Entities
                     GlueCommands.Self.PrintError($"Error calling GenerateInitializeLate on {codeGenerator.GetType()}:\n{e}");
                 }
             }
+
+            NamedObjectSaveCodeGenerator.GenerateCollisionRelationships(codeBlock, saveObject);
 
             if (saveObject is ScreenSave)
             {

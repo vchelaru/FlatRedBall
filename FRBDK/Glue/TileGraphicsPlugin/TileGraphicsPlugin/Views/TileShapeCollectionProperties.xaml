@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TileGraphicsPlugin.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="760" d:DesignWidth="300">
+             d:DesignWidth="300">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         
         <Grid>
@@ -104,6 +104,27 @@
                             
                             </StackPanel>
                         </GroupBox>
+                    </StackPanel>
+
+                    <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
+                                 HorizontalAlignment="Left"
+                                 IsEnabled="{Binding IsEntireViewEnabled}"
+                                 IsChecked="{Binding IsFromMapCollisionChecked}">From TMX Collision (use tileset shapes)</RadioButton>
+                    <StackPanel x:Name="TmxCollisionStackPanel" Margin="10, 0, 0, 0"  IsEnabled="{Binding IsEntireViewEnabled}"
+                                Visibility="{Binding FromTmxCollisionVisibility}">
+                        <TextBlock>Source TMX File/Object:</TextBlock>
+                        <ComboBox Width="200" HorizontalAlignment="Left"
+                                  ItemsSource="{Binding TmxObjectNames}"
+                                  SelectedItem="{Binding SourceTmxName}"></ComboBox>
+                        <TextBlock Margin="0,5,0,0">Type:</TextBlock>
+                        <ComboBox x:Name="TmxCollisionComboBox" 
+                                  IsEditable="True"
+                                  HorizontalAlignment="Left" Width="200" 
+                                  Text="{Binding TmxCollisionName}"
+                                  ItemsSource="{Binding AvailableTmxCollisions}"
+                                 KeyUp="TextBox_KeyEnterUpdate"></ComboBox>
+                        <!--<CheckBox VerticalContentAlignment="Center" IsChecked="{Binding RemoveTilesAfterCreatingCollision}">Remove Tiles</CheckBox>-->
+
                     </StackPanel>
 
                     <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"

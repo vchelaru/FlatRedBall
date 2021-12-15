@@ -19,7 +19,11 @@ namespace TileGraphicsPlugin.ViewModels
         BorderOutline,
         FromProperties,
         FromType,
-        FromLayer
+        FromLayer,
+        /// <summary>
+        /// Uses the Collision object inside the TMX, enabling the use of partial shapes instead of full square shapes
+        /// </summary>
+        FromMapCollision
     }
 
     public enum BorderOutlineType
@@ -201,6 +205,66 @@ namespace TileGraphicsPlugin.ViewModels
         }
         #endregion
 
+        #region From Tmx Collision
+
+        [DependsOn(nameof(CollisionCreationOptions))]
+        public bool IsFromMapCollisionChecked
+        {
+            get => CollisionCreationOptions == CollisionCreationOptions.FromMapCollision;
+            set
+            {
+                if (value)
+                {
+                    CollisionCreationOptions = CollisionCreationOptions.FromMapCollision;
+                }
+            }
+        }
+
+        [DependsOn(nameof(CollisionCreationOptions))]
+        public Visibility FromTmxCollisionVisibility => (CollisionCreationOptions == CollisionCreationOptions.FromMapCollision).ToVisibility();
+
+        public ObservableCollection<string> AvailableTmxCollisions
+        {
+            get => Get<ObservableCollection<string>>();
+            set => Set(value);
+        }
+
+        // add collision layer selection here
+        [SyncedProperty]
+        public string TmxCollisionName
+        {
+            get => Get<string>();
+            set => SetAndPersist(value);
+        }
+
+        #endregion
+
+        #region From Type
+
+        [DependsOn(nameof(CollisionCreationOptions))]
+        public bool IsFromTypeChecked
+        {
+            get => CollisionCreationOptions == CollisionCreationOptions.FromType; 
+            set
+            {
+                if (value)
+                {
+                    CollisionCreationOptions = CollisionCreationOptions.FromType;
+                }
+            }
+        }
+
+        [DependsOn(nameof(CollisionCreationOptions))]
+        public Visibility FromTypeVisibility => (CollisionCreationOptions == CollisionCreationOptions.FromType).ToVisibility();
+
+        public ObservableCollection<string> AvailableTypes
+        {
+            get => Get<ObservableCollection<string>>(); 
+            set => Set(value); 
+        } 
+
+        #endregion
+
         #region From Properties
 
         [DependsOn(nameof(CollisionCreationOptions))]
@@ -228,34 +292,6 @@ namespace TileGraphicsPlugin.ViewModels
             get => Get<string>(); 
             set => SetAndPersist(value); 
         }
-
-        #endregion
-
-        #region From Type
-
-        [DependsOn(nameof(CollisionCreationOptions))]
-        public bool IsFromTypeChecked
-        {
-            get => CollisionCreationOptions == CollisionCreationOptions.FromType; 
-            set
-            {
-                if (value)
-                {
-                    CollisionCreationOptions = CollisionCreationOptions.FromType;
-                }
-            }
-        }
-
-        [DependsOn(nameof(CollisionCreationOptions))]
-        public Visibility FromTypeVisibility => CollisionCreationOptions == CollisionCreationOptions.FromType ?
-                    Visibility.Visible :
-                    Visibility.Collapsed;
-
-        public ObservableCollection<string> AvailableTypes
-        {
-            get => Get<ObservableCollection<string>>(); 
-            set => Set(value); 
-        } 
 
         #endregion
 
@@ -346,6 +382,7 @@ namespace TileGraphicsPlugin.ViewModels
         public TileShapeCollectionPropertiesViewModel()
         {
             AvailableTypes = new ObservableCollection<string>();
+            AvailableTmxCollisions = new ObservableCollection<string>();
 
         }
     }

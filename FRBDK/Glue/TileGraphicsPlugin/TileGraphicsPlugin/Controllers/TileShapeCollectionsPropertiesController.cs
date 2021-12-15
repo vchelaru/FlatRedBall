@@ -78,6 +78,25 @@ namespace TileGraphicsPlugin.Controllers
             }
         }
 
+
+        private void RefreshAvailableCollisionObjectNames()
+        {
+            viewModel.AvailableTypes.Clear();
+            var tmxName = viewModel.SourceTmxName;
+
+            var types = GetAvailableTypes(tmxName).ToList();
+
+            types.AddRange(GetAvailableLayers(tmxName).ToList());
+
+            types.Sort();
+
+            // todo - apply hashset to the view model
+            foreach (var item in types)
+            {
+                viewModel.AvailableTmxCollisions.Add(item);
+            }
+        }
+
         public static HashSet<string> GetAvailableLayers(string tmxName)
         {
             List<ReferencedFileSave> rfses = GetRfses(tmxName);
@@ -225,6 +244,8 @@ namespace TileGraphicsPlugin.Controllers
             viewModel.DefinedByBase = namedObject.DefinedByBase;
 
             RefreshAvailableTypes();
+
+            RefreshAvailableCollisionObjectNames();
 
             view.DataContext = viewModel;
         }
