@@ -237,7 +237,9 @@ namespace TileGraphicsPlugin.CodeGeneration
                 var tmxCollisionName = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.TmxCollisionName));
 
                 var instanceName = namedObjectSave.FieldName;
-                codeBlock.Line($"{instanceName} = {mapName}.Collisions.FirstOrDefault(item => item.Name == \"{tmxCollisionName}\");");
+                // If we do FirstOrDefault this doesn't fail, but codegen will fail later on. This gives a more informative error
+                //codeBlock.Line($"{instanceName} = {mapName}.Collisions.FirstOrDefault(item => item.Name == \"{tmxCollisionName}\");");
+                codeBlock.Line($"{instanceName} = {mapName}.Collisions.First(item => item.Name == \"{tmxCollisionName}\");");
 
             }
         }
