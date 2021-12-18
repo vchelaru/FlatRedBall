@@ -232,7 +232,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\FloatRectangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\Frustum.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\ICollidable.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\InputManager.Common.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\IPressableInput.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\I1DInput.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\I2DInput.cs" />
