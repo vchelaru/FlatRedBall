@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using FlatRedBall.Gui;
@@ -97,10 +98,18 @@ namespace FlatRedBall.Input
         }
 
 #if SUPPORTS_XBOX_GAMEPADS
-        public static Xbox360GamePad[] Xbox360GamePads
-        {
-            get { return mXbox360GamePads; }
-        }
+
+        /// <summary>
+        /// Returns an array of Xbox360GamePads. 
+        /// </summary>
+        /// <remarks>
+        /// This name was created when the Xbox360 was the only controller type supported by XNA. Since then, many devices
+        /// implement X Input, and newer hardware such as Xbox One also appear in this array when connected.
+        /// </remarks>
+        public static Xbox360GamePad[] Xbox360GamePads => mXbox360GamePads;
+
+        static Xbox360GamePad[] mConnectedXbox360GamePads;
+        public static Xbox360GamePad[] ConnectedXbox360GamePads => mConnectedXbox360GamePads;
 #endif
 
         public static TouchScreen TouchScreen => mTouchScreen;
@@ -238,7 +247,14 @@ namespace FlatRedBall.Input
                         ControllerConnectionEvent(null,
                                 new ControllerConnectionEventArgs(i, mXbox360GamePads[i].IsConnected));
                     mControllerConnectedStatus[i] = mXbox360GamePads[i].IsConnected;
+
+                    mConnectedXbox360GamePads = Xbox360GamePads.Where(item => item.IsConnected).ToArray();
                 }
+            }
+
+            if(mConnectedXbox360GamePads == null)
+            {
+                mConnectedXbox360GamePads = Xbox360GamePads.Where(item => item.IsConnected).ToArray();
             }
         }
 
@@ -387,7 +403,10 @@ namespace FlatRedBall.Input
 
         private static void PerformXbox360GamePadUpdate()
         {
-            CheckControllerConnectionChange();
+            // Dec 18, 2021 - why do we check this before making updates. 
+            // If we do it before, we'll miss the first frame of the game
+            // if gamepads are connected:
+            //CheckControllerConnectionChange();
 
             if (mUpdateXbox360GamePads)
             {
@@ -404,6 +423,7 @@ namespace FlatRedBall.Input
                 PlatformSpecificXbox360GamePadUpdate();
             }
 
+            CheckControllerConnectionChange();
         }
 
         #endregion
