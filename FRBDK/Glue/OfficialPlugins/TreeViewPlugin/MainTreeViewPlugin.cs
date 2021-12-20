@@ -117,8 +117,10 @@ namespace OfficialPlugins.TreeViewPlugin
 
         private void HandleRefreshTreeNodeFor(GlueElement element)
         {
+            var oldTag = SelectionLogic.CurrentNode?.Tag;
             var currentNode = SelectionLogic.CurrentNode;
             MainViewModel.RefreshTreeNodeFor(element);
+
             if(currentNode?.Tag != null)
             {
                 // November 20, 2021
@@ -135,7 +137,8 @@ namespace OfficialPlugins.TreeViewPlugin
                 // in the middle of a view model change.
 
                 var wasPushingSelection = SelectionLogic.IsPushingSelectionOutToGlue;
-                SelectionLogic.IsPushingSelectionOutToGlue = false;
+                // If the tag changed, push it back out:
+                SelectionLogic.IsPushingSelectionOutToGlue = oldTag != currentNode?.Tag;
                 SelectionLogic.SelectByTag(currentNode.Tag);
                 SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
 

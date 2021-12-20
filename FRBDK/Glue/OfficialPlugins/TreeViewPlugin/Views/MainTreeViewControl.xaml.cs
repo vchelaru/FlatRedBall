@@ -165,7 +165,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
             var targetNode = (e.OriginalSource as FrameworkElement).DataContext as NodeViewModel;
 
-            if (objectDragged is NodeViewModel treeNodeMoving)
+            if (objectDragged is NodeViewModel treeNodeMoving && targetNode != null)
             {
                 if (ButtonPressed == LeftOrRight.Left || targetNode == treeNodeMoving)
                 {

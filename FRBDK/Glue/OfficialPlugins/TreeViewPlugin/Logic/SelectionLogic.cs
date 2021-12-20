@@ -75,9 +75,13 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
         {
             IsUpdatingThisSelectionOnGlueEvent = false;
 
+            var didSelectionChange = currentNode?.Tag != nodeViewModel?.Tag;
             currentNode = nodeViewModel;
 
-            if(IsPushingSelectionOutToGlue)
+            if(IsPushingSelectionOutToGlue
+                // The node can change if the user deletes a tree node and then a new one
+                // automatically gets re-selected. In this case, we do still want to push the selection out.
+                || didSelectionChange)
             {
                 var tag = nodeViewModel.Tag;
 
