@@ -118,6 +118,7 @@ namespace OfficialPlugins.TreeViewPlugin
         private void HandleRefreshTreeNodeFor(GlueElement element)
         {
             var oldTag = SelectionLogic.CurrentNode?.Tag;
+            var oldNode = SelectionLogic.CurrentNode;
             var currentNode = SelectionLogic.CurrentNode;
             MainViewModel.RefreshTreeNodeFor(element);
 
@@ -142,7 +143,14 @@ namespace OfficialPlugins.TreeViewPlugin
                 SelectionLogic.SelectByTag(currentNode.Tag);
                 SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
 
+                // This can happen if the last item in a category (like a variable) is removed. If so, push
+                // the change out:
+                if (SelectionLogic.CurrentNode == null && GlueState.Self.CurrentTreeNode != null)
+                {
+                    GlueState.Self.CurrentTreeNode = null;
+                }
             }
+            
         }
 
         private void HandleRefreshDirectoryTreeNodes()
