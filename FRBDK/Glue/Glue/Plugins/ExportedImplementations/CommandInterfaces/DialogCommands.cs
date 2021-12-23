@@ -260,6 +260,21 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (askAreYouSure)
                 {
+                    var window = new RemoveObjectWindow();
+                    var viewModel = new RemoveObjectViewModel();
+                    viewModel.SetFrom(namedObjectToRemove);
+
+                    var objectsToRemove = new List<string>();
+
+                    FillWithObjectsToRemove(objectsToRemove);
+
+                    viewModel.ObjectsToRemove.AddRange(objectsToRemove);
+
+                    var showDialogResult = window.ShowDialog();
+
+                    reallyRemoveResult = showDialogResult == true ?  DialogResult.Yes : DialogResult.No;
+
+                    window.DataContext = viewModel;
                     string message = "Are you sure you want to remove this:\n\n" + namedObjectToRemove.ToString();
 
                     reallyRemoveResult =
@@ -270,7 +285,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             
 
-            if (canDelete)
+            if (canDelete && reallyRemoveResult == DialogResult.Yes)
             {
                 GlueCommands.Self.GluxCommands
                     .RemoveNamedObject(namedObjectToRemove, true, true, filesToRemove);
