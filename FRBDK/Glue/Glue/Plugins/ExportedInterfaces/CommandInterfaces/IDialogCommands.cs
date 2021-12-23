@@ -6,8 +6,25 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
     public interface IDialogCommands
     {
+        #region File
+
         ReferencedFileSave ShowAddNewFileDialog(AddNewFileViewModel viewModel = null);
+
+        #endregion
+
+        #region Entity
+
         void ShowAddNewEntityDialog();
+
+        #endregion
+
+        #region NamedObjectSave
+
+        void AskToRemoveObject(NamedObjectSave namedObjectToRemove, bool saveAndRegenerate = true);
+
+
+        #endregion
+
         void ShowAddNewScreenDialog();
         void ShowAddNewEventDialog(NamedObjectSave eventOwner);
         void ShowAddNewEventDialog(AddEventViewModel viewModel);

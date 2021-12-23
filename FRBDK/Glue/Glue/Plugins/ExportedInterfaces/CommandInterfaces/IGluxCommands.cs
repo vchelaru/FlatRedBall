@@ -106,6 +106,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         void SetVariableOn(NamedObjectSave nos, string memberName, object value);
 
+
         void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSave = true, bool updateUi = true,
             List<string> additionalFilesToRemove = null);
         #endregion

@@ -21,6 +21,7 @@ using GlueFormsCore.Controls;
 using FlatRedBall.Glue.VSHelpers;
 using GlueFormsCore.Extensions;
 using System.Runtime.InteropServices;
+using FlatRedBall.Glue.IO;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -229,6 +230,157 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             var dialogResult = wpf.ShowDialog();
             return dialogResult;
         }
+
+        public void AskToRemoveObject(NamedObjectSave namedObjectToRemove, bool saveAndRegenerate = true)
+        {
+            // Search terms: removefromproject, remove from project, remove file, remove referencedfilesave
+            List<string> filesToRemove = new List<string>();
+
+            DialogResult reallyRemoveResult = DialogResult.Yes;
+
+            var canDelete = true;
+
+            if (namedObjectToRemove.DefinedByBase)
+            {
+                var definingNos = ObjectFinder.Self.GetRootDefiningObject(namedObjectToRemove);
+
+                if (definingNos?.ExposedInDerived == true)
+                {
+                    var message = $"The object {namedObjectToRemove} cannot be deleted because a base object has it marked as ExposedInDerived";
+
+                    GlueCommands.Self.DialogCommands.ShowMessageBox(message);
+
+                    canDelete = false;
+                }
+            }
+
+            if(canDelete)
+            {
+                var askAreYouSure = true;
+
+                if (askAreYouSure)
+                {
+                    string message = "Are you sure you want to remove this:\n\n" + namedObjectToRemove.ToString();
+
+                    reallyRemoveResult =
+                        MessageBox.Show(message, "Remove?", MessageBoxButtons.YesNo);
+                }
+            }
+
+
+            
+
+            if (canDelete)
+            {
+                GlueCommands.Self.GluxCommands
+                    .RemoveNamedObject(namedObjectToRemove, true, true, filesToRemove);
+
+                if (filesToRemove.Count != 0 && true /*askToDeleteFiles*/)
+                {
+
+                    for (int i = 0; i < filesToRemove.Count; i++)
+                    {
+                        if (FileManager.IsRelative(filesToRemove[i]))
+                        {
+                            filesToRemove[i] = ProjectManager.MakeAbsolute(filesToRemove[i]);
+                        }
+                        filesToRemove[i] = filesToRemove[i].Replace("\\", "/");
+                    }
+
+                    StringFunctions.RemoveDuplicates(filesToRemove, true);
+
+                    var lbw = new ListBoxWindowWpf();
+
+                    string messageString = "What would you like to do with the following files:\n";
+                    lbw.Message = messageString;
+
+                    foreach (string s in filesToRemove)
+                    {
+
+                        lbw.AddItem(s);
+                    }
+                    lbw.ClearButtons();
+                    lbw.AddButton("Nothing - leave them as part of the game project", DialogResult.No);
+                    lbw.AddButton("Remove them from the project but keep the files", DialogResult.OK);
+                    lbw.AddButton("Remove and delete the files", DialogResult.Yes);
+
+                    var dialogShowResult = lbw.ShowDialog();
+                    DialogResult result = (DialogResult)lbw.ClickedOption;
+
+                    if (result == DialogResult.OK || result == DialogResult.Yes)
+                    {
+                        foreach (string file in filesToRemove)
+                        {
+                            FilePath fileName = ProjectManager.MakeAbsolute(file);
+                            // This file may have been removed
+                            // in windows explorer, and now removed
+                            // from Glue.  Check to prevent a crash.
+
+                            GlueCommands.Self.ProjectCommands.RemoveFromProjects(fileName, false);
+                        }
+                    }
+
+                    if (result == DialogResult.Yes)
+                    {
+                        foreach (string file in filesToRemove)
+                        {
+                            string fileName = ProjectManager.MakeAbsolute(file);
+                            // This file may have been removed
+                            // in windows explorer, and now removed
+                            // from Glue.  Check to prevent a crash.
+                            if (System.IO.File.Exists(fileName))
+                            {
+                                FileHelper.DeleteFile(fileName);
+                            }
+                        }
+                    }
+                }
+
+                TaskManager.Self.AddOrRunIfTasked(() =>
+                {
+                    var glueState = GlueState.Self;
+
+                    // Nodes aren't directly removed in the code above. Instead, 
+                    // a "refresh nodes" method is called, which may remove unneeded
+                    // nodes, but event raising is suppressed. Therefore, we have to explicitly 
+                    // do it here:
+                    if (glueState.CurrentElement != null)
+                    {
+                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(glueState.CurrentElement);
+                    }
+                    else
+                    {
+                        GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
+                    }
+                }, "Refreshing tree nodes");
+
+
+                if (saveAndRegenerate)
+                {
+                    if (GlueState.Self.CurrentScreenSave != null)
+                    {
+                        var screen = GlueState.Self.CurrentScreenSave;
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screen);
+                    }
+                    else if (GlueState.Self.CurrentEntitySave != null)
+                    {
+                        var entity = GlueState.Self.CurrentEntitySave;
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
+                    }
+                    else if (GlueState.Self.CurrentReferencedFileSave != null)
+                    {
+                        GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCodeTask();
+
+                        // Vic asks - do we have to do anything else here?  I don't think so...
+                    }
+
+
+                    GluxCommands.Self.ProjectCommands.SaveProjects();
+                    GluxCommands.Self.SaveGlux();
+                }
+            }
+        }
+
 
         #endregion
 
