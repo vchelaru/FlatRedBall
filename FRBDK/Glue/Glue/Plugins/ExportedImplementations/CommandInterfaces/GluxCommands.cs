@@ -1233,6 +1233,30 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 "Performing object removal logic");
         }
 
+        class ObjectsToRemove
+        {
+            public List<NamedObjectSave> NamedObjects { get; set; } = new List<NamedObjectSave>();
+            public List<CustomVariable> CustomVariables { get; set; } = new List<CustomVariable>();
+            public List<EventResponseSave> EventResponses { get; set; } = new List<EventResponseSave>();
+
+        }
+
+        ObjectsToRemove GetObjectsToRemoveIfRemoving(NamedObjectSave namedObject, GlueElement owner)
+        {
+            var toReturn = new ObjectsToRemove();
+
+            toReturn.NamedObjects.AddRange(namedObject.ContainedObjects);
+
+
+            var customVariablesToRemove = owner.CustomVariables
+                .Where(item => item.SourceObject == namedObjectToRemove.InstanceName)
+                .ToArray();
+
+            toReturn.CustomVariables.AddRange()
+
+            return toReturn;
+        }
+
         private void DoRemovalInternal(NamedObjectSave namedObjectToRemove, bool performSave, bool updateUi, List<string> additionalFilesToRemove, StringBuilder removalInformation, bool wasSelected, int indexInChild, NamedObjectSave containerOfRemoved, GlueElement element)
         {
             if (element != null)
@@ -1244,20 +1268,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // We should tolerate:
                 //if (!removedItselfFromList)
                 //{
-                    //throw new ArgumentException($"Tried to remove {namedObjectToRemove} from {element} but it wasn't removed from anything.");
+                //throw new ArgumentException($"Tried to remove {namedObjectToRemove} from {element} but it wasn't removed from anything.");
                 //}
 
                 #region Remove all CustomVariables that reference the removed NamedObject
-                for (int i = element.CustomVariables.Count - 1; i > -1; i--)
+
+                var customVariablesToRemove = element.CustomVariables
+                    .Where(item => item.SourceObject == namedObjectToRemove.InstanceName)
+                    .ToArray();
+
+                foreach (var variable in customVariablesToRemove)
                 {
-                    CustomVariable variable = element.CustomVariables[i];
-
-                    if (variable.SourceObject == namedObjectToRemove.InstanceName)
-                    {
-                        removalInformation.AppendLine("Removed variable " + variable.ToString());
-
-                        element.CustomVariables.RemoveAt(i);
-                    }
+                    removalInformation.AppendLine("Removed variable " + variable.ToString());
+                    element.CustomVariables.Remove(variable);
                 }
                 #endregion
 
