@@ -62,6 +62,7 @@ using FlatRedBall.Gui;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Localization;
+using Microsoft.Xna.Framework;
 
 
 
@@ -109,6 +110,7 @@ using FlatRedBall.AI.Pathfinding;
 using FlatRedBall.Graphics.Animation;
 using FlatRedBall.Graphics.Particle;
 using FlatRedBall.Math.Geometry;
+using Microsoft.Xna.Framework;
 
 namespace FlatRedBallAddOns.Entities
 {
@@ -310,11 +312,9 @@ namespace FlatRedBallAddOns.Entities
 
             #region Extra stuff if it's an EntitySave
 
-            if (element is EntitySave)
+            if (element is EntitySave entitySave)
             {
-                EntitySave entitySave = element as EntitySave;
-
-                string fileContents = contentsToSave;
+                var fileContents = contentsToSave;
                 string fileName = FileManager.RelativeDirectory + element.Name + ".Generated.cs";
                 bool shouldSave = false;
 
@@ -326,7 +326,7 @@ namespace FlatRedBallAddOns.Entities
 
 
                 EntitySave rootEntitySave;
-                List<string> inheritanceList = InheritanceCodeWriter.Self.GetInheritanceList(element, entitySave, out rootEntitySave);
+                List<string> inheritanceList = InheritanceCodeWriter.Self.GetInheritanceList(entitySave, out rootEntitySave);
                 InheritanceCodeWriter.Self.RemoveCallsForInheritance(entitySave, inheritsFromEntity, rootEntitySave, ref fileContents, ref shouldSave);
 
                 #endregion
@@ -517,7 +517,7 @@ namespace FlatRedBallAddOns.Entities
 
                 EntitySave rootEntitySave;
                 List<string> inheritanceList = 
-                    InheritanceCodeWriter.Self.GetInheritanceList(element, entitySave, out rootEntitySave);
+                    InheritanceCodeWriter.Self.GetInheritanceList(entitySave, out rootEntitySave);
 
                 foreach (string inheritance in inheritanceList)
                 {
@@ -532,7 +532,7 @@ namespace FlatRedBallAddOns.Entities
                 }
 
             }
-            else
+            else // Screen
             {
                 bool inherits = !string.IsNullOrEmpty(element.BaseElement) && element.BaseElement != "<NONE>";
                 if (inherits)
@@ -1265,20 +1265,35 @@ namespace FlatRedBallAddOns.Entities
                 currentBlock = currentBlock.If("FlatRedBall.Screens.ScreenManager.IsInEditMode");
 
             }
-            foreach(var nos in saveObject.NamedObjects)
+
+            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.IEntityInFrb)
             {
-                if(!nos.DefinedByBase && !nos.IsDisabled)
+                if(saveObject is ScreenSave && !saveObject.InheritsFromElement())
                 {
-                    if(nos.SourceType == SourceType.Entity)
+                    var foreachBlock = currentBlock.ForEach($"var item in FlatRedBall.SpriteManager.ManagedPositionedObjects");
+                    var foreachIfBlock = foreachBlock.If("item is FlatRedBall.Entities.IEntity entity");
+                    foreachIfBlock.Line("entity.ActivityEditMode();");
+                }
+            }
+            else
+            {
+                // Old version (before file version 10 in Dec 24 2021) required code gen to call custom activity.
+                foreach(var nos in saveObject.NamedObjects)
+                {
+                    if(!nos.DefinedByBase && !nos.IsDisabled)
                     {
-                        currentBlock.Line($"{nos.InstanceName}.ActivityEditMode();");
-                    }
-                    else if(nos.IsList && ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType) != null)
-                    {
-                        var foreachBlock = currentBlock.ForEach($"var item in {nos.InstanceName}");
-                        foreachBlock.Line($"item.ActivityEditMode();");
+                        if(nos.SourceType == SourceType.Entity)
+                        {
+                            currentBlock.Line($"{nos.InstanceName}.ActivityEditMode();");
+                        }
+                        else if(nos.IsList && ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType) != null)
+                        {
+                            var foreachBlock = currentBlock.ForEach($"var item in {nos.InstanceName}");
+                            foreachBlock.Line($"item.ActivityEditMode();");
+                        }
                     }
                 }
+
             }
             currentBlock.Line("CustomActivityEditMode();");
 
