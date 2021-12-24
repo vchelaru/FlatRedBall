@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlatRedBall.Glue.MVVM;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,13 +16,13 @@ using System.Windows.Shapes;
 
 namespace FlatRedBall.Glue.Controls
 {
-
-
     /// <summary>
     /// Interaction logic for CustomizableTextInputWindow.xaml
     /// </summary>
     public partial class CustomizableTextInputWindow : Window
     {
+        #region Fields/Properties
+
         public string Message
         {
             get => (string)this.Label.Content;
@@ -33,6 +34,10 @@ namespace FlatRedBall.Glue.Controls
             get => TextBox.Text;
             set => TextBox.Text = value;
         }
+
+        public event EventHandler CustomOkClicked;
+
+        #endregion
 
         public CustomizableTextInputWindow()
         {
@@ -48,6 +53,8 @@ namespace FlatRedBall.Glue.Controls
             // not sure why this is so high
             //this.Top = point.Y - this.Height/2;
             this.Top = point.Y - 50;
+
+            ValidationLabel.Visibility = Visibility.Hidden;
         }
 
         public void HighlghtText()
@@ -69,7 +76,21 @@ namespace FlatRedBall.Glue.Controls
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = true;
+            HandleOk();
+        }
+
+        private void HandleOk()
+        {
+            if (CustomOkClicked == null)
+            {
+                this.DialogResult = true;
+            }
+            else
+            {
+                CustomOkClicked(this, null);
+
+
+            }
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
@@ -86,7 +107,7 @@ namespace FlatRedBall.Glue.Controls
                     e.Handled = true;
                     break;
                 case Key.Enter:
-                    this.DialogResult = true;
+                    HandleOk();
                     e.Handled = true;
                     break;
             }

@@ -541,13 +541,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 height = 64;
             }
 
-            var scaledX = MainGlueWindow.Self.LogicalToDeviceUnits(MainGlueWindow.MousePosition.X);
-
             var source = System.Windows.PresentationSource.FromVisual(MainGlueWindow.MainWpfControl);
 
 
             double mousePositionX = Control.MousePosition.X;
-            double mousePositionY = MainGlueWindow.MousePosition.Y;
+            double mousePositionY = Control.MousePosition.Y;
 
             if (source != null)
             {
@@ -766,9 +764,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             name = StringFunctions.MakeStringUnique(name,
                 allScreenNames, 2);
 
-            addScreenWindow.Result = name;
-
             addScreenWindow.HighlghtText();
+
+            var viewModel = new AddScreenViewModel();
+            viewModel.ScreenName = name;
+            addScreenWindow.DataContext = viewModel;
 
             PluginManager.ModifyAddScreenWindow(addScreenWindow);
 

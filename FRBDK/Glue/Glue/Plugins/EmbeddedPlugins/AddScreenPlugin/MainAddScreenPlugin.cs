@@ -155,7 +155,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             }
         }
 
-        private async void ApplyViewModelToScreen(ScreenSave newScreen, AddScreenViewModel viewModel)
+        private async void ApplyViewModelToScreen(ScreenSave newScreen, ViewModels.AddScreenViewModel viewModel)
         {
 
             var shouldSave = false;
