@@ -1,6 +1,7 @@
 ﻿using OfficialPlugins.Compiler.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,9 +25,10 @@ namespace OfficialPlugins.Compiler.Views
     {
         public GlueViewSettingsViewModel ViewModel
         {
-            get => this.DataUiGrid.Instance as GlueViewSettingsViewModel;
+            get => DataContext as GlueViewSettingsViewModel;
             set
             {
+                this.DataContext = value;
                 this.DataUiGrid.Instance = value;
                 CustomizeDisplay();
             }
@@ -46,6 +48,14 @@ namespace OfficialPlugins.Compiler.Views
                 foreach(var member in category.Members)
                 {
                     member.DisplayName = StringFunctions.InsertSpacesInCamelCaseString(member.DisplayName);
+                }
+
+                var whatToRemove = category.Members
+                    .FirstOrDefault(item => item.Name == nameof(GlueViewSettingsViewModel.ShowWindowDefenderUi));
+
+                if(whatToRemove != null)
+                {
+                    category.Members.Remove(whatToRemove);
                 }
             }
         }

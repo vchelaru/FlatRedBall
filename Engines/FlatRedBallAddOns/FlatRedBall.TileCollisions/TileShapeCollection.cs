@@ -498,6 +498,12 @@ namespace FlatRedBall.TileCollisions
             return GetRectangleAtPosition(x, y);
         }
 
+        /// <summary>
+        /// Returns the AxisAlignedRectangle at the argument worldX and worldY position. If no rectangle is located at this position, null is returned.
+        /// </summary>
+        /// <param name="worldX">The world X coordinate</param>
+        /// <param name="worldY">The world Y coordinate</param>
+        /// <returns>The AxisAlignedRectangle at the location, or null if none is found.</returns>
         public AxisAlignedRectangle GetRectangleAtPosition(float worldX, float worldY)
         {
             float middleOfTileX = MathFunctions.RoundFloat(worldX, GridSize, LeftSeedX + GridSize / 2.0f);
