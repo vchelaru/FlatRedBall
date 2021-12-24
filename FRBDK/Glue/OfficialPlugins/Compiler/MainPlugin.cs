@@ -54,6 +54,7 @@ namespace OfficialPlugins.Compiler
 
         PluginTab buildTab;
         PluginTab glueViewSettingsTab;
+        GlueViewSettings glueViewSettingsView;
 
         Game1GlueControlGenerator game1GlueControlGenerator;
 
@@ -317,6 +318,8 @@ namespace OfficialPlugins.Compiler
         {
             CompilerViewModel.HasLoadedGlux = false;
 
+            glueViewSettingsTab.Hide();
+
             ToolbarController.Self.HandleGluxUnloaded();
         }
 
@@ -368,6 +371,7 @@ namespace OfficialPlugins.Compiler
             ignoreViewModelChanges = true;
             GlueViewSettingsViewModel.SetFrom(model);
             CommandSender.PortNumber = GlueViewSettingsViewModel.PortNumber;
+            glueViewSettingsView.DataUiGrid.Refresh();
 
             CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableGameEmbedAndEdit;
             ignoreViewModelChanges = false;
@@ -435,10 +439,10 @@ namespace OfficialPlugins.Compiler
             buildTab.Show();
 
 
-            var glueViewSettingsView = new Views.GlueViewSettings();
+            glueViewSettingsView = new Views.GlueViewSettings();
             glueViewSettingsView.ViewModel = GlueViewSettingsViewModel;
 
-            glueViewSettingsTab = base.CreateTab(glueViewSettingsView, "GlueView Settings");
+            glueViewSettingsTab = base.CreateTab(glueViewSettingsView, "Editor Settings");
 
             AssignControlEvents();
         }
