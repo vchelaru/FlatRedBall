@@ -263,22 +263,25 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     var window = new RemoveObjectWindow();
                     var viewModel = new RemoveObjectViewModel();
                     viewModel.SetFrom(namedObjectToRemove);
+                    var owner = ObjectFinder.Self.GetElementContaining(namedObjectToRemove);
+                    var objectsToRemove = GluxCommands.GetObjectsToRemoveIfRemoving(namedObjectToRemove, owner);
 
-                    var objectsToRemove = new List<string>();
+                    viewModel.ObjectsToRemove.AddRange(objectsToRemove.CustomVariables.Select(item => item.ToString()));
+                    viewModel.ObjectsToRemove.AddRange(objectsToRemove.SubObjectsInList.Select(item => item.ToString()));
+                    viewModel.ObjectsToRemove.AddRange(objectsToRemove.CollisionRelationships.Select(item => item.ToString()));
+                    viewModel.ObjectsToRemove.AddRange(objectsToRemove.DerivedNamedObjects.Select(item => item.ToString()));
+                    viewModel.ObjectsToRemove.AddRange(objectsToRemove.EventResponses.Select(item => item.ToString()));
 
-                    FillWithObjectsToRemove(objectsToRemove);
-
-                    viewModel.ObjectsToRemove.AddRange(objectsToRemove);
+                    window.DataContext = viewModel;
 
                     var showDialogResult = window.ShowDialog();
 
                     reallyRemoveResult = showDialogResult == true ?  DialogResult.Yes : DialogResult.No;
 
-                    window.DataContext = viewModel;
-                    string message = "Are you sure you want to remove this:\n\n" + namedObjectToRemove.ToString();
+                    //string message = "Are you sure you want to remove this:\n\n" + namedObjectToRemove.ToString();
 
-                    reallyRemoveResult =
-                        MessageBox.Show(message, "Remove?", MessageBoxButtons.YesNo);
+                    //reallyRemoveResult =
+                    //    MessageBox.Show(message, "Remove?", MessageBoxButtons.YesNo);
                 }
             }
 

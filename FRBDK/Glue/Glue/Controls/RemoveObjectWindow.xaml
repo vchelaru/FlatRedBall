@@ -9,14 +9,14 @@
     <StackPanel Margin="6">
         <Label Content="{Binding WouldYouLikeToDeleteMessage, FallbackValue='Would you like to delete XXXX?'}"></Label>
         <StackPanel Margin="5" Visibility="{Binding ObjectsToRemoveVisibility}">
-            <Label>The following objects will also be deleted:</Label>
+            <Label>The following items will also be deleted:</Label>
             <ListBox Height="100" ItemsSource="{Binding ObjectsToRemove}">
                 
             </ListBox>
         </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button>Delete</Button>
-            <Button Margin="5,0,0,0" >Cancel</Button>
+            <Button Click="DeleteButton_Click" IsDefault="True">Delete</Button>
+            <Button Click="CancelButton_Click" IsCancel="True" Margin="5,0,0,0" >Cancel</Button>
         </StackPanel>
     </StackPanel>
 </Window>

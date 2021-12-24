@@ -32,6 +32,17 @@ using GlueFormsCore.Managers;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
+    public class ObjectsToRemove
+    {
+        public List<NamedObjectSave> DerivedNamedObjects { get; set; } = new List<NamedObjectSave>();
+        public List<NamedObjectSave> SubObjectsInList { get; set; } = new List<NamedObjectSave>();
+        public List<NamedObjectSave> CollisionRelationships { get; set; } = new List<NamedObjectSave>();
+
+        public List<CustomVariable> CustomVariables { get; set; } = new List<CustomVariable>();
+        public List<EventResponseSave> EventResponses { get; set; } = new List<EventResponseSave>();
+
+    }
+
     class GluxCommands : IGluxCommands
     {
         #region Fields
@@ -1233,26 +1244,63 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 "Performing object removal logic");
         }
 
-        class ObjectsToRemove
-        {
-            public List<NamedObjectSave> NamedObjects { get; set; } = new List<NamedObjectSave>();
-            public List<CustomVariable> CustomVariables { get; set; } = new List<CustomVariable>();
-            public List<EventResponseSave> EventResponses { get; set; } = new List<EventResponseSave>();
 
-        }
 
-        ObjectsToRemove GetObjectsToRemoveIfRemoving(NamedObjectSave namedObject, GlueElement owner)
+        public static ObjectsToRemove GetObjectsToRemoveIfRemoving(NamedObjectSave namedObject, GlueElement owner)
         {
             var toReturn = new ObjectsToRemove();
 
-            toReturn.NamedObjects.AddRange(namedObject.ContainedObjects);
+            toReturn.SubObjectsInList.AddRange(namedObject.ContainedObjects);
 
+            // Only check the top level 
+            foreach(var item in owner.NamedObjects)
+            {
+                if(item.IsCollisionRelationship())
+                {
+                    var matches = 
+                        item.Properties.GetValue<string>("FirstCollisionName") == namedObject.FieldName ||
+                        item.Properties.GetValue<string>("SecondCollisionName") == namedObject.FieldName
+                        ;
+
+                    if(matches)
+                    {
+                        toReturn.CollisionRelationships.Add(item);
+                    }
+                }
+            }
+
+            List<IElement> derivedElements = new List<IElement>();
+            derivedElements.AddRange(ObjectFinder.Self.GetAllElementsThatInheritFrom(owner as EntitySave));
+
+            List<NamedObjectSave> derivedNamedObjectsToRemove = new List<NamedObjectSave>();
+
+            foreach (IElement derivedElement in derivedElements)
+            {
+                // At this point, namedObjectToRemove is already removed from the current Element, so this will only
+                // return NamedObjects that exist in the derived.
+                NamedObjectSave derivedNamedObject = derivedElement.GetNamedObjectRecursively(namedObject.InstanceName);
+
+                if (derivedNamedObject != null && derivedNamedObject != namedObject && derivedNamedObject.DefinedByBase)
+                {
+                    toReturn.DerivedNamedObjects.Add(derivedNamedObject);
+                }
+            }
+
+            
 
             var customVariablesToRemove = owner.CustomVariables
-                .Where(item => item.SourceObject == namedObjectToRemove.InstanceName)
+                .Where(item => item.SourceObject == namedObject.InstanceName)
                 .ToArray();
 
-            toReturn.CustomVariables.AddRange()
+            toReturn.CustomVariables.AddRange(customVariablesToRemove);
+
+            var eventsToRemove = owner.Events
+                .Where(item => item.SourceObject == namedObject.InstanceName)
+                .ToArray();
+
+            toReturn.EventResponses.AddRange(eventsToRemove);
+
+
 
             return toReturn;
         }
@@ -1271,13 +1319,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 //throw new ArgumentException($"Tried to remove {namedObjectToRemove} from {element} but it wasn't removed from anything.");
                 //}
 
+                var objectsToRemove = GetObjectsToRemoveIfRemoving(namedObjectToRemove, element);
+
+
                 #region Remove all CustomVariables that reference the removed NamedObject
 
-                var customVariablesToRemove = element.CustomVariables
-                    .Where(item => item.SourceObject == namedObjectToRemove.InstanceName)
-                    .ToArray();
-
-                foreach (var variable in customVariablesToRemove)
+                foreach (var variable in objectsToRemove.CustomVariables)
                 {
                     removalInformation.AppendLine("Removed variable " + variable.ToString());
                     element.CustomVariables.Remove(variable);
@@ -1285,14 +1332,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 #endregion
 
                 // Remove any events that use this
-                for (int i = element.Events.Count - 1; i > -1; i--)
+                foreach (var ers in objectsToRemove.EventResponses)
                 {
-                    EventResponseSave ers = element.Events[i];
-                    if (ers.SourceObject == namedObjectToRemove.InstanceName)
-                    {
-                        removalInformation.AppendLine("Removed event " + ers.ToString());
-                        element.Events.RemoveAt(i);
-                    }
+                    removalInformation.AppendLine("Removed event " + ers.ToString());
+                    element.Events.Remove(ers);
                 }
 
                 if (namedObjectToRemove.IsLayer)
@@ -1310,33 +1353,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 element.RefreshStatesToCustomVariables();
 
-                #region Ask the user what to do with all NamedObjects that are DefinedByBase
-
-                List<IElement> derivedElements = new List<IElement>();
-                if (element is EntitySave)
+                foreach (var derivedNamedObject in objectsToRemove.CollisionRelationships)
                 {
-                    derivedElements.AddRange(ObjectFinder.Self.GetAllEntitiesThatInheritFrom(element as EntitySave));
-                }
-                else
-                {
-                    derivedElements.AddRange(ObjectFinder.Self.GetAllScreensThatInheritFrom(element as ScreenSave));
+                    // Delete it
+                    RemoveNamedObject(derivedNamedObject, performSave, updateUi, additionalFilesToRemove);
                 }
 
-                foreach (IElement derivedElement in derivedElements)
+                foreach (var derivedNamedObject in objectsToRemove.DerivedNamedObjects)
                 {
-                    // At this point, namedObjectToRemove is already removed from the current Element, so this will only
-                    // return NamedObjects that exist in the derived.
-                    NamedObjectSave derivedNamedObject = derivedElement.GetNamedObjectRecursively(namedObjectToRemove.InstanceName);
-
-                    if (derivedNamedObject != null && derivedNamedObject != namedObjectToRemove && derivedNamedObject.DefinedByBase)
-                    {
-                        // Delete it
-                        RemoveNamedObject(derivedNamedObject, performSave, updateUi, additionalFilesToRemove);
-
-                    }
-
+                    // Delete it
+                    RemoveNamedObject(derivedNamedObject, performSave, updateUi, additionalFilesToRemove);
                 }
-                #endregion
 
 
                 if (updateUi)
