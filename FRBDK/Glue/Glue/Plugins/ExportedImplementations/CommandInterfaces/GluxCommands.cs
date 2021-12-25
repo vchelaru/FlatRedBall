@@ -1726,7 +1726,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            ProjectManager.RemoveCodeFilesForElement(filesThatCouldBeRemoved, entityToRemove);
+            FillWithCodeFilesForElement(filesThatCouldBeRemoved, entityToRemove);
 
             GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
 
@@ -1799,7 +1799,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             PluginManager.ReactToScreenRemoved(screenToRemove, filesThatCouldBeRemoved);
 
 
-            ProjectManager.RemoveCodeFilesForElement(filesThatCouldBeRemoved, element);
+            FillWithCodeFilesForElement(filesThatCouldBeRemoved, element);
 
 
             GlueCommands.Self.ProjectCommands.SaveProjects();
@@ -1828,6 +1828,39 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     GluxCommands.Self.RemoveReferencedFile(rfs, filesThatCouldBeRemoved);
                 }
+            }
+        }
+
+        static void FillWithCodeFilesForElement(List<string> filesThatCouldBeRemoved, IElement element)
+        {
+            string elementName = element.Name;
+
+
+            
+            filesThatCouldBeRemoved.Add(elementName + ".cs");
+
+            
+            filesThatCouldBeRemoved.Add(elementName + ".Generated.cs");
+
+            string eventFile = elementName + ".Event.cs";
+            string absoluteEvent = ProjectManager.MakeAbsolute(eventFile);
+            if (System.IO.File.Exists(absoluteEvent))
+            {
+                filesThatCouldBeRemoved.Add(eventFile);
+            }
+
+            string generatedEventFile = elementName + ".Generated.Event.cs";
+            string absoluteGeneratedEventFile = ProjectManager.MakeAbsolute(generatedEventFile);
+            if (System.IO.File.Exists(absoluteGeneratedEventFile))
+            {
+                filesThatCouldBeRemoved.Add(generatedEventFile);
+            }
+
+            string factoryName = "Factories/" + FileManager.RemovePath(elementName) + "Factory.Generated.cs";
+            string absoluteFactoryNameFile = ProjectManager.MakeAbsolute(factoryName);
+            if (System.IO.File.Exists(absoluteFactoryNameFile))
+            {
+                filesThatCouldBeRemoved.Add(absoluteFactoryNameFile);
             }
         }
 

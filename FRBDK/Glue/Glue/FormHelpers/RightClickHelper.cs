@@ -40,6 +40,7 @@ using EditorObjects.IoC;
 using FlatRedBall.Glue.SetVariable;
 using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
 using GlueFormsCore.FormHelpers;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.FormHelpers
 {
@@ -1688,7 +1689,7 @@ namespace FlatRedBall.Glue.FormHelpers
             RemoveFromProjectOptionalSaveAndRegenerate(false, true, true);
         }
 
-        private static void RemoveFromProjectOptionalSaveAndRegenerate(bool saveAndRegenerate, bool askAreYouSure, bool askToDeleteFiles)
+        private static async Task RemoveFromProjectOptionalSaveAndRegenerate(bool saveAndRegenerate, bool askAreYouSure, bool askToDeleteFiles)
         {
             // delete object, remove object, DeleteObject, RemoveObject, remove from project, 
             // remove from screen, remove from entity, remove file
@@ -1825,8 +1826,13 @@ namespace FlatRedBall.Glue.FormHelpers
                         else if (GlueState.Self.CurrentScreenSave != null)
                         {
                             var screenToRemove = GlueState.Self.CurrentScreenSave;
-                            RemoveScreen(screenToRemove, filesToRemove);
-                            deletedElement = screenToRemove;
+                            await TaskManager.Self.AddOrRunAndWaitToFinish(() =>
+                            {
+                                RemoveScreen(screenToRemove, filesToRemove);
+                                deletedElement = screenToRemove;
+
+                            }, "Removing Screen");
+
                         }
 
                         #endregion
@@ -1836,9 +1842,12 @@ namespace FlatRedBall.Glue.FormHelpers
                         else if (GlueState.Self.CurrentEntitySave != null)
                         {
                             var entityToRemove = GlueState.Self.CurrentEntitySave;
-                            RemoveEntity(GlueState.Self.CurrentEntitySave, filesToRemove);
-                            //ProjectManager.RemoveEntity(EditorLogic.CurrentEntitySave);
-                            deletedElement = entityToRemove;
+                            await TaskManager.Self.AddOrRunAndWaitToFinish(() =>
+                            {
+                                RemoveEntity(GlueState.Self.CurrentEntitySave, filesToRemove);
+                                //ProjectManager.RemoveEntity(EditorLogic.CurrentEntitySave);
+                                deletedElement = entityToRemove;
+                            }, "Removing Entity");
 
                         }
 
@@ -1877,46 +1886,44 @@ namespace FlatRedBall.Glue.FormHelpers
                             lbw.AddButton("Remove and delete the files", DialogResult.Yes);
 
                             var dialogShowResult = lbw.ShowDialog();
-                            DialogResult result = (DialogResult)lbw.ClickedOption;
 
-                            if (result == DialogResult.OK || result == DialogResult.Yes)
+                            if(lbw.ClickedOption is DialogResult result)
                             {
-                                foreach (string file in filesToRemove)
+                                if (result == DialogResult.OK || result == DialogResult.Yes)
                                 {
-                                    FilePath fileName = ProjectManager.MakeAbsolute(file);
-                                    // This file may have been removed
-                                    // in windows explorer, and now removed
-                                    // from Glue.  Check to prevent a crash.
-
-                                    GlueCommands.Self.ProjectCommands.RemoveFromProjects(fileName, false);
-                                }
-                            }
-
-                            if (result == DialogResult.Yes)
-                            {
-                                foreach (string file in filesToRemove)
-                                {
-                                    string fileName = ProjectManager.MakeAbsolute(file);
-                                    // This file may have been removed
-                                    // in windows explorer, and now removed
-                                    // from Glue.  Check to prevent a crash.
-                                    if (File.Exists(fileName))
+                                    await TaskManager.Self.AddOrRunAndWaitToFinish(() =>
                                     {
-                                        FileHelper.DeleteFile(fileName);
-                                    }
+                                        foreach (var file in filesToRemove)
+                                        {
+                                            FilePath filePath = ProjectManager.MakeAbsolute(file);
+                                            // This file may have been removed
+                                            // in windows explorer, and now removed
+                                            // from Glue.  Check to prevent a crash.
+
+                                            GlueCommands.Self.ProjectCommands.RemoveFromProjects(filePath, false);
+
+                                            if (result == DialogResult.Yes && filePath.Exists())
+                                            {
+                                                FileHelper.DeleteFile(filePath.FullPath);
+                                            }
+                                        }
+                                        GluxCommands.Self.ProjectCommands.SaveProjects();
+
+                                    }, "Removing files");
                                 }
+
                             }
                         }
 
                         #endregion
 
-                        TaskManager.Self.AddOrRunIfTasked(() =>
+                        await TaskManager.Self.AddOrRunAndWaitToFinish(() =>
                         {
-                        // Nodes aren't directly removed in the code above. Instead, 
-                        // a "refresh nodes" method is called, which may remove unneeded
-                        // nodes, but event raising is suppressed. Therefore, we have to explicitly 
-                        // do it here:
-                        if (deletedElement != null)
+                            // Nodes aren't directly removed in the code above. Instead, 
+                            // a "refresh nodes" method is called, which may remove unneeded
+                            // nodes, but event raising is suppressed. Therefore, we have to explicitly 
+                            // do it here:
+                            if (deletedElement != null)
                             {
                                 GlueCommands.Self.RefreshCommands.RefreshTreeNodes();
                                 GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(deletedElement);

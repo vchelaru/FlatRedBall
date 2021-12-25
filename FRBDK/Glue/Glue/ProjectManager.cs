@@ -468,46 +468,6 @@ namespace FlatRedBall.Glue
             }
         }
         
-        public static void RemoveCodeFilesForElement(List<string> filesThatCouldBeRemoved, IElement element)
-        {
-            string elementName = element.Name;
-
-
-            GlueCommands.Self.ProjectCommands.RemoveFromProjectsTask(
-                GlueState.Self.CurrentGlueProjectDirectory + elementName + ".cs");
-            filesThatCouldBeRemoved.Add(elementName + ".cs");
-
-            // gotta also remove the generated file
-            GlueCommands.Self.ProjectCommands.RemoveFromProjectsTask(
-                GlueState.Self.CurrentGlueProjectDirectory + elementName + ".Generated.cs");
-            filesThatCouldBeRemoved.Add(elementName + ".Generated.cs");
-
-            string eventFile = elementName + ".Event.cs";
-            string absoluteEvent = MakeAbsolute(eventFile);
-            GlueCommands.Self.ProjectCommands.RemoveFromProjectsTask(absoluteEvent);
-            if (System.IO.File.Exists(absoluteEvent))
-            {
-                filesThatCouldBeRemoved.Add(eventFile);
-            }
-
-            string generatedEventFile = elementName + ".Generated.Event.cs";
-            string absoluteGeneratedEventFile = MakeAbsolute(generatedEventFile);
-            GlueCommands.Self.ProjectCommands.RemoveFromProjectsTask(absoluteGeneratedEventFile);
-            if (System.IO.File.Exists(absoluteGeneratedEventFile))
-            {
-                filesThatCouldBeRemoved.Add(generatedEventFile);
-            }
-
-            string factoryName = "Factories/" + FileManager.RemovePath(elementName) + "Factory.Generated.cs";
-            string absoluteFactoryNameFile = MakeAbsolute(factoryName);
-            GlueCommands.Self.ProjectCommands.RemoveFromProjectsTask(absoluteFactoryNameFile);
-            if (System.IO.File.Exists(absoluteFactoryNameFile))
-            {
-                filesThatCouldBeRemoved.Add(absoluteFactoryNameFile);
-            }
-        }
-
-
         public static CheckResult StatusCheck()
         {
             //if (IdeManager.HasOnlyExpress)

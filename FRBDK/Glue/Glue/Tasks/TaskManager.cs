@@ -203,6 +203,30 @@ namespace FlatRedBall.Glue.Managers
             return didWait;
         }
 
+
+        [Obsolete("Use Add, which allows specifying the priority")]
+        /// <summary>
+        /// Adds an action to be executed, guaranteeing that no other actions will be executed at the same time as this.
+        /// Actions added will be executed in the order they were added (fifo).
+        /// </summary>
+        public void AddSync(Action action, string displayInfo) => Add(action, displayInfo);
+
+        public GlueTask Add(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
+        {
+            var glueTask = new GlueTask();
+            glueTask.Action = action;
+            glueTask.DoOnUiThread = doOnUiThread;
+            glueTask.TaskExecutionPreference = executionPreference;
+            AddInternal(displayInfo, glueTask);
+            return glueTask;
+        }
+
+        public Task AddOrRunAndWaitToFinish(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
+        {
+            var glueTask = AddOrRunIfTasked(action, displayInfo, executionPreference, doOnUiThread);
+            return WaitForTaskToFinish(glueTask);
+        }
+
         public async Task WaitForTaskToFinish(GlueTask glueTask)
         {
             if(glueTask == null)
@@ -229,23 +253,6 @@ namespace FlatRedBall.Glue.Managers
                     await Task.Delay(150);
                 }
             }
-        }
-
-        [Obsolete("Use Add, which allows specifying the priority")]
-        /// <summary>
-        /// Adds an action to be executed, guaranteeing that no other actions will be executed at the same time as this.
-        /// Actions added will be executed in the order they were added (fifo).
-        /// </summary>
-        public void AddSync(Action action, string displayInfo) => Add(action, displayInfo);
-
-        public GlueTask Add(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
-        {
-            var glueTask = new GlueTask();
-            glueTask.Action = action;
-            glueTask.DoOnUiThread = doOnUiThread;
-            glueTask.TaskExecutionPreference = executionPreference;
-            AddInternal(displayInfo, glueTask);
-            return glueTask;
         }
 
         private void AddInternal(string displayInfo, GlueTask glueTask)
@@ -472,7 +479,7 @@ namespace FlatRedBall.Glue.Managers
 
         public bool IsInTask() => TaskManager.Self.SyncTaskThreadId != null && System.Threading.Thread.CurrentThread.ManagedThreadId == TaskManager.Self.SyncTaskThreadId;
 
-        public GlueTask AddOrRunIfTasked(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo)
+        public GlueTask AddOrRunIfTasked(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
         {
             if (IsInTask())
             {
@@ -482,7 +489,7 @@ namespace FlatRedBall.Glue.Managers
             }
             else
             {
-                return TaskManager.Self.Add(action, displayInfo, executionPreference);
+                return TaskManager.Self.Add(action, displayInfo, executionPreference, doOnUiThread);
             }
         }
 
