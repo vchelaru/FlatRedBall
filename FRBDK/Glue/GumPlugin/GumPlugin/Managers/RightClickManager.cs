@@ -88,7 +88,7 @@ namespace GumPlugin.Managers
             {
                 var newMenuItem = new GeneralToolStripMenuItem($"Create New Gum Screen for {FileManager.RemovePath(screen.Name)}");
                 menuToModify.Add(newMenuItem);
-                newMenuItem.Click += (not, used) => AppCommands.Self.AddScreenForGlueScreen(screen);
+                newMenuItem.Click += (not, used) => GumPluginCommands.Self.AddScreenForGlueScreen(screen);
             }
         }
 
@@ -132,11 +132,11 @@ namespace GumPlugin.Managers
 
                     string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
 
-                    AppCommands.Self.AddComponentToGumProject(gumComponent);
+                    GumPluginCommands.Self.AddComponentToGumProject(gumComponent);
 
-                    AppCommands.Self.SaveGumx(saveAllElements: false);
+                    GumPluginCommands.Self.SaveGumx(saveAllElements: false);
 
-                    AppCommands.Self.SaveComponent(gumComponent);
+                    GumPluginCommands.Self.SaveComponent(gumComponent);
 
 
 

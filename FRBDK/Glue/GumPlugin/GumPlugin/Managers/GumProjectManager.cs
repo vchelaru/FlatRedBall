@@ -132,7 +132,7 @@ namespace GumPlugin.Managers
                     GlueState.Self.CurrentReferencedFileSave = rfs;
                     ReloadGumProject();
 
-                    AppCommands.Self.UpdateGumToGlueResolution();
+                    GumPluginCommands.Self.UpdateGumToGlueResolution();
 
                 }
             }

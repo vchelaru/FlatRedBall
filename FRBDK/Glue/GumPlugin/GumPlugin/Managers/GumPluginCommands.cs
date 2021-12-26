@@ -14,8 +14,10 @@ using Polenter.Serialization;
 
 namespace GumPlugin.Managers
 {
-    public class AppCommands : Singleton<AppCommands>
+    public class GumPluginCommands : Singleton<GumPluginCommands>
     {
+        #region File Commands
+
         public void SaveGumx(bool saveAllElements = false)
         {
             TaskManager.Self.AddOrRunIfTasked(() =>
@@ -26,6 +28,10 @@ namespace GumPlugin.Managers
                 GlueCommands.Self.TryMultipleTimes(() => AppState.Self.GumProjectSave.Save(gumProjectFileName, saveAllElements));
             }, "Saving gum projects");
         }
+
+        #endregion
+
+        #region Component
 
         internal void AddComponent(FilePath filePath)
         {
@@ -50,40 +56,16 @@ namespace GumPlugin.Managers
 
         }
 
-        internal void AddScreenToGumProject(ScreenSave gumScreen)
+        internal void SaveComponent(ComponentSave gumComponent)
         {
-            AppState.Self.GumProjectSave.Screens.Add(gumScreen);
-            var elementReference = new ElementReference
-            {
-                ElementType = ElementType.Screen,
-                Name = gumScreen.Name
-            };
-            AppState.Self.GumProjectSave.ScreenReferences.Add(elementReference);
-            AppState.Self.GumProjectSave.ScreenReferences.Sort((first, second) => first.Name.CompareTo(second.Name));
-            FlatRedBall.Glue.Plugins.PluginManager.ReceiveOutput("Added Gum screen " + gumScreen.Name);
+            string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
 
-        }
+            var directory = FileManager.GetDirectory(gumProjectFileName) + ElementReference.ComponentSubfolder + "/";
+            string componentFileName =
+                directory + gumComponent.Name + "." + GumProjectSave.ComponentExtension;
 
-        internal void AddBehavior(BehaviorSave behavior)
-        {
-            AppState.Self.GumProjectSave.Behaviors.Add(behavior);
-            var behaviorReference = new BehaviorReference
-            {
-                Name = behavior.Name
-            };
-            AppState.Self.GumProjectSave.BehaviorReferences.Add(behaviorReference);
-            AppState.Self.GumProjectSave.BehaviorReferences.Sort((first, second) =>
-            {
-                if (first.Name == null)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return first.Name.CompareTo(second.Name);
-                }
-            });
-            FlatRedBall.Glue.Plugins.PluginManager.ReceiveOutput("Added Gum behavior " + behavior.Name);
+
+            gumComponent.Save(componentFileName);
 
         }
 
@@ -106,6 +88,24 @@ namespace GumPlugin.Managers
             }
 
             return found;
+        }
+
+        #endregion
+
+        #region Screen
+
+        internal void AddScreenToGumProject(ScreenSave gumScreen)
+        {
+            AppState.Self.GumProjectSave.Screens.Add(gumScreen);
+            var elementReference = new ElementReference
+            {
+                ElementType = ElementType.Screen,
+                Name = gumScreen.Name
+            };
+            AppState.Self.GumProjectSave.ScreenReferences.Add(elementReference);
+            AppState.Self.GumProjectSave.ScreenReferences.Sort((first, second) => first.Name.CompareTo(second.Name));
+            FlatRedBall.Glue.Plugins.PluginManager.ReceiveOutput("Added Gum screen " + gumScreen.Name);
+
         }
 
         internal bool IsScreenFileReferenced(FilePath screenFilePath)
@@ -143,30 +143,70 @@ namespace GumPlugin.Managers
 
         }
 
-        internal void SaveComponent(ComponentSave gumComponent)
+        public string GetGumScreenNameFor(FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen) => FileManager.RemovePath(glueScreen.Name) + "Gum";
+
+        internal void AddScreenForGlueScreen(FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen)
         {
-            string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
+            string gumScreenName = GetGumScreenNameFor(glueScreen);
 
-            var directory = FileManager.GetDirectory(gumProjectFileName) + ElementReference.ComponentSubfolder + "/";
-            string componentFileName =
-                directory + gumComponent.Name + "." + GumProjectSave.ComponentExtension;
+            bool exists = AppState.Self.GumProjectSave.Screens.Any(item => item.Name == gumScreenName);
+            if (!exists)
+            {
+                Gum.DataTypes.ScreenSave gumScreen = new Gum.DataTypes.ScreenSave();
+                gumScreen.Initialize(StandardElementsManager.Self.GetDefaultStateFor("Screen"));
+                gumScreen.Name = gumScreenName;
 
+                string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
 
-            gumComponent.Save(componentFileName);
+                AddScreenToGumProject(gumScreen);
+
+                SaveGumx(saveAllElements: false);
+
+                SaveScreen(gumScreen);
+
+            }
+            // Select the screen to add the file to this
+            GlueState.Self.CurrentScreenSave = glueScreen;
+
+            RightClickManager.Self.AddScreenByName(gumScreenName, glueScreen);
+        }
+
+        internal void RemoveScreen(ScreenSave gumScreen, bool save = true)
+        {
+            AppState.Self.GumProjectSave.Screens.Remove(gumScreen);
+            AppState.Self.GumProjectSave.ScreenReferences.RemoveAll(item => item.Name == gumScreen.Name);
+
+            if(save)
+            {
+                SaveGumx();
+            }
 
         }
 
-        internal void SaveStandardElement(StandardElementSave gumStandardElement)
+        #endregion
+
+        #region Behavior
+
+        internal void AddBehavior(BehaviorSave behavior)
         {
-            string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
-
-            var directory = FileManager.GetDirectory(gumProjectFileName) + ElementReference.StandardSubfolder + "/";
-            string standardsFileName =
-                directory + gumStandardElement.Name + "." + GumProjectSave.StandardExtension;
-
-            gumStandardElement.Save(standardsFileName);
-            //var serializer = new SharpSerializer();
-            //serializer.Serialize(gumStandardElement, standardsFileName);
+            AppState.Self.GumProjectSave.Behaviors.Add(behavior);
+            var behaviorReference = new BehaviorReference
+            {
+                Name = behavior.Name
+            };
+            AppState.Self.GumProjectSave.BehaviorReferences.Add(behaviorReference);
+            AppState.Self.GumProjectSave.BehaviorReferences.Sort((first, second) =>
+            {
+                if (first.Name == null)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return first.Name.CompareTo(second.Name);
+                }
+            });
+            FlatRedBall.Glue.Plugins.PluginManager.ReceiveOutput("Added Gum behavior " + behavior.Name);
 
         }
 
@@ -181,30 +221,20 @@ namespace GumPlugin.Managers
 
         }
 
-        internal void AddScreenForGlueScreen(FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen)
+        #endregion
+
+        internal void SaveStandardElement(StandardElementSave gumStandardElement)
         {
-            string gumScreenName = FileManager.RemovePath(glueScreen.Name) + "Gum";
+            string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
 
-            bool exists = AppState.Self.GumProjectSave.Screens.Any(item => item.Name == gumScreenName);
-            if (!exists)
-            {
-                Gum.DataTypes.ScreenSave gumScreen = new Gum.DataTypes.ScreenSave();
-                gumScreen.Initialize(StandardElementsManager.Self.GetDefaultStateFor("Screen"));
-                gumScreen.Name = gumScreenName;
+            var directory = FileManager.GetDirectory(gumProjectFileName) + ElementReference.StandardSubfolder + "/";
+            string standardsFileName =
+                directory + gumStandardElement.Name + "." + GumProjectSave.StandardExtension;
 
-                string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
+            gumStandardElement.Save(standardsFileName);
+            //var serializer = new SharpSerializer();
+            //serializer.Serialize(gumStandardElement, standardsFileName);
 
-                AppCommands.Self.AddScreenToGumProject(gumScreen);
-
-                AppCommands.Self.SaveGumx(saveAllElements: false);
-
-                AppCommands.Self.SaveScreen(gumScreen);
-
-            }
-            // Select the screen to add the file to this
-            GlueState.Self.CurrentScreenSave = glueScreen;
-
-            RightClickManager.Self.AddScreenByName(gumScreenName, glueScreen);
         }
 
         internal void UpdateGumToGlueResolution()
@@ -223,7 +253,7 @@ namespace GumPlugin.Managers
                         gumProject.DefaultCanvasWidth = displaySettings.ResolutionWidth;
                         gumProject.DefaultCanvasHeight = displaySettings.ResolutionHeight;
 
-                        AppCommands.Self.SaveGumx();
+                        GumPluginCommands.Self.SaveGumx();
                     }
 
                 }

@@ -300,7 +300,7 @@ namespace GumPlugin
 
         #endregion
 
-        #region Methods
+        #region Initialize/Assing Events
 
         public override void StartUp()
         {
@@ -357,6 +357,7 @@ namespace GumPlugin
             this.ReactToItemSelectHandler += HandleItemSelected;
 
             this.NewScreenCreated += HandleNewScreen;
+            this.ReactToScreenRemoved += HandleScreenRemoved;
 
             this.GetEventSignatureArgs += HandleGetEventSignatureArgs;
 
@@ -371,11 +372,16 @@ namespace GumPlugin
             this.ResolutionChanged += HandleResolutionChanged;
         }
 
+
+        #endregion
+
+        #region Methods
+
         private void HandleResolutionChanged()
         {
             if(viewModel?.IsMatchGameResolutionInGumChecked == true)
             {
-                AppCommands.Self.UpdateGumToGlueResolution();
+                GumPluginCommands.Self.UpdateGumToGlueResolution();
             }
         }
 
@@ -531,7 +537,28 @@ namespace GumPlugin
 
             if(createGumScreen && AppState.Self.GumProjectSave != null)
             {
-                AppCommands.Self.AddScreenForGlueScreen(newGlueScreen);
+                GumPluginCommands.Self.AddScreenForGlueScreen(newGlueScreen);
+            }
+        }
+
+
+        private void HandleScreenRemoved(FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen, List<string> listToFillWithAdditionalFilesToRemove)
+        {
+            if(AppState.Self.GumProjectSave != null)
+            {
+                var gumScreenName = GumPluginCommands.Self.GetGumScreenNameFor(glueScreen);
+
+                var gumScreen = AppState.Self.GumProjectSave.Screens.FirstOrDefault(item => item.Name == gumScreenName);
+
+                if (gumScreen != null)
+                {
+                    GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
+                        $"Delete the Gum Screen {gumScreen.Name}\nfor {glueScreen}?", 
+                        () => GumPluginCommands.Self.RemoveScreen(gumScreen));
+
+                }
+
+
             }
         }
 
@@ -812,7 +839,7 @@ namespace GumPlugin
 
                 UpdateGumParentProject();
 
-                AppCommands.Self.UpdateGumToGlueResolution();
+                GumPluginCommands.Self.UpdateGumToGlueResolution();
             }
         }
 
@@ -837,7 +864,7 @@ namespace GumPlugin
                 {
                     gumProject.ParentProjectRoot = new FilePath(GlueState.Self.CurrentGlueProjectDirectory).RelativeTo(AppState.Self.GumProjectFolder);
 
-                    AppCommands.Self.SaveGumx();
+                    GumPluginCommands.Self.SaveGumx();
                 }
             }
         }
