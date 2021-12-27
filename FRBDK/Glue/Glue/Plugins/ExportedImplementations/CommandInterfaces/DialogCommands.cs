@@ -795,27 +795,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        public void ShowCreateDerivedScreenDialog(ScreenSave baseScreen)
-        {
-            var popup = new TextInputWindow();
-            popup.Message = "Enter new screen (level) name";
-            var dialogResult = popup.ShowDialog();
-
-            if (dialogResult == DialogResult.OK)
-            {
-                var newScreenName = popup.Result;
-
-                var screen = new ScreenSave();
-                screen.Name = @"Screens\" + newScreenName;
-                screen.BaseScreen = baseScreen.Name;
-
-                GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(screen);
-
-                GlueState.Self.CurrentScreenSave = screen;
-                screen.UpdateFromBaseType();
-            }
-        }
-
         #endregion
 
         #region Event
