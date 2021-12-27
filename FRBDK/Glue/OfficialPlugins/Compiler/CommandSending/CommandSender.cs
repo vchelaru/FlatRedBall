@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
+using OfficialPlugins.Compiler.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,7 +22,8 @@ namespace OfficialPlugins.Compiler.CommandSending
         public static Action<string> PrintOutput { get; set; }
         static SemaphoreSlim sendCommandSemaphore = new SemaphoreSlim(1, 1);
 
-        public static int PortNumber { get; set; }
+        public static GlueViewSettingsViewModel GlueViewSettingsViewModel { get; set; }
+        public static CompilerViewModel CompilerViewModel { get; set; }
 
         #endregion
 
@@ -49,9 +51,29 @@ namespace OfficialPlugins.Compiler.CommandSending
             }
         }
 
-        public static async Task<string> SendCommand(string text, bool isImportant = true)
+        private static async Task<string> SendCommand(string text, bool isImportant = true)
         {
             var shouldPrint = isImportant && text?.StartsWith("SelectObjectDto:") == false;
+
+            if(isImportant && CompilerViewModel.IsPrintEditorToGameCheckboxChecked)
+            {
+
+                if(CompilerViewModel.IsShowParametersChecked && CompilerViewModel.CommandParameterCheckboxVisibility == System.Windows.Visibility.Visible)
+                {
+                    PrintOutput(text);
+                    PrintOutput("------------------------------------------");
+                }
+                else
+                {
+                    string prefix = text;
+                    if(text.Contains(":"))
+                    {
+                        var indexOfColon = text.IndexOf(":");
+                        prefix = text.Substring(0, indexOfColon);
+                    }
+                    PrintOutput(prefix);
+                }
+            }
 
             var isInSemaphore = sendCommandSemaphore.Wait(0);
 
@@ -66,7 +88,7 @@ namespace OfficialPlugins.Compiler.CommandSending
 
             try
             {
-                await ConnectIfNecessary(PortNumber, shouldPrint);
+                await ConnectIfNecessary(GlueViewSettingsViewModel.PortNumber, shouldPrint);
 
                 if (TcpClientStream != null)
                 {

@@ -22,6 +22,18 @@
                 >
             </views:WhileStoppedView>
 
+            <CheckBox HorizontalAlignment="Center" 
+                      HorizontalContentAlignment="Center" 
+                      Visibility="{Binding EditorToGameCheckboxVisibility}"
+                      IsChecked="{Binding IsPrintEditorToGameCheckboxChecked}"
+                      >Show Editor->Game Commands</CheckBox>
+
+            <CheckBox HorizontalAlignment="Center" 
+                      HorizontalContentAlignment="Center" 
+                      Visibility="{Binding CommandParameterCheckboxVisibility}"
+                      IsChecked="{Binding IsShowParametersChecked}"
+                      >Show Parameters</CheckBox>
+
         </WrapPanel>
 
         <RichTextBox Grid.Row="2" ScrollViewer.VerticalScrollBarVisibility="Auto" 

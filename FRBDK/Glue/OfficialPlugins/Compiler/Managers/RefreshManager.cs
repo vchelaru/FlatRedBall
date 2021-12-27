@@ -538,6 +538,12 @@ namespace OfficialPlugins.Compiler.Managers
             {
                 dto.ScreenSave = element as ScreenSave;
                 dto.EntitySave = element as EntitySave;
+
+                if(element.IsAbstract)
+                {
+                    dto.BackupElementNameGlue = GetFirstDerivedFor(element)?.Name;
+                }
+
                 dto.BringIntoFocus = bringIntoFocus;
                 dto.NamedObject = nos;
                 dto.ElementNameGlue = element.Name;

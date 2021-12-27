@@ -293,6 +293,27 @@ namespace OfficialPlugins.Compiler.ViewModels
             }
         }
 
+        [DependsOn(nameof(IsRunning))]
+        [DependsOn(nameof(IsGenerateGlueControlManagerInGame1Checked))]
+        public Visibility EditorToGameCheckboxVisibility => (IsRunning && IsGenerateGlueControlManagerInGame1Checked).ToVisibility();
+
+        public bool IsPrintEditorToGameCheckboxChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(EditorToGameCheckboxVisibility))]
+        [DependsOn(nameof(IsPrintEditorToGameCheckboxChecked))]
+        public Visibility CommandParameterCheckboxVisibility =>
+            (EditorToGameCheckboxVisibility == Visibility.Visible && IsPrintEditorToGameCheckboxChecked).ToVisibility();
+
+        public bool IsShowParametersChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         #endregion
 
         #region Constructor

@@ -370,7 +370,6 @@ namespace OfficialPlugins.Compiler
             var model = LoadOrCreateCompilerSettings();
             ignoreViewModelChanges = true;
             GlueViewSettingsViewModel.SetFrom(model);
-            CommandSender.PortNumber = GlueViewSettingsViewModel.PortNumber;
             glueViewSettingsView.DataUiGrid.Refresh();
 
             CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableGameEmbedAndEdit;
@@ -433,6 +432,8 @@ namespace OfficialPlugins.Compiler
             VariableSendingManager.Self.ViewModel = CompilerViewModel;
             VariableSendingManager.Self.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
 
+            CommandSender.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
+            CommandSender.CompilerViewModel = CompilerViewModel;
             CommandSender.PrintOutput = MainControl.PrintOutput;
 
             buildTab = base.CreateTab(MainControl, "Build", TabLocation.Bottom);
@@ -461,7 +462,6 @@ namespace OfficialPlugins.Compiler
             {
                 case nameof(ViewModels.GlueViewSettingsViewModel.PortNumber):
                 case nameof(ViewModels.GlueViewSettingsViewModel.EnableGameEmbedAndEdit):
-                    CommandSender.PortNumber = GlueViewSettingsViewModel.PortNumber;
                     CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableGameEmbedAndEdit;
                     await HandlePortOrGenerateCheckedChanged(propertyName);
                     break;
