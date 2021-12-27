@@ -1095,7 +1095,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 currentList);
         }
 
-        public NamedObjectSave AddNewNamedObjectTo(AddObjectViewModel addObjectViewModel, GlueElement element, NamedObjectSave listToAddTo = null)
+        public NamedObjectSave AddNewNamedObjectTo(AddObjectViewModel addObjectViewModel, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true)
         {
             if (element == null)
             {
@@ -1139,14 +1139,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             newNos.Properties.AddRange(addObjectViewModel.Properties);
 
-            AddNamedObjectTo(newNos, element, listToAddTo);
+            AddNamedObjectTo(newNos, element, listToAddTo, selectNewNos);
 
             GluxCommands.Self.SaveGlux();
 
             return newNos;
         }
 
-        public void AddNamedObjectTo(NamedObjectSave newNos, GlueElement element, NamedObjectSave listToAddTo = null)
+        public void AddNamedObjectTo(NamedObjectSave newNos, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true)
         {
             if(TaskManager.Self.IsInTask() == false)
             {
@@ -1195,7 +1195,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 MainGlueWindow.Self.PropertyGrid.Refresh();
                 PropertyGridHelper.UpdateNamedObjectDisplay();
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
-                GlueState.Self.CurrentNamedObjectSave = newNos;
+
+                if(selectNewNos)
+                {
+                    GlueState.Self.CurrentNamedObjectSave = newNos;
+                }
             });
 
         }

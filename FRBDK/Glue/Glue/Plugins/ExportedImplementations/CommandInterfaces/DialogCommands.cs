@@ -459,7 +459,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region EntitySave
 
-        public void ShowAddNewEntityDialog()
+        public async void ShowAddNewEntityDialog()
         {
             // search:  addentity, add entity
             if (ProjectManager.GlueProjectSave == null)
@@ -515,9 +515,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         {
                             var entity = GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(viewModel, directory);
 
-                            TaskManager.Self.AddOrRunIfTasked(() =>
+                            await TaskManager.Self.AddOrRunAndWaitToFinish(() =>
                                 PluginManager.ReactToNewEntityCreatedWithUi(entity, window),
-                                "Calling plugin ReactToNewEntityCreatedWithUi");
+                                "Calling plugin ReactToNewEntityCreatedWithUi", doOnUiThread:true);
+
+                            GlueState.Self.CurrentEntitySave = entity;
                         }
                     }
                 }
