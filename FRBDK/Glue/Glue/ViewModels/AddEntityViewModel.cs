@@ -13,22 +13,7 @@ namespace GlueFormsCore.ViewModels
         public string Name
         {
             get => Get<string>();
-            set
-            {
-                if (Set(value))
-                {
-                    var isValid = NameVerifier.IsEntityNameValid(value, null, out string whyIsntValid);
-
-                    if (!isValid)
-                    {
-                        FailureText = whyIsntValid;
-                    }
-                    else
-                    {
-                        FailureText = null;
-                    }
-                }
-            }
+            set => Set(value);
         }
 
 
@@ -104,10 +89,22 @@ namespace GlueFormsCore.ViewModels
             }
         }
 
+        [DependsOn(nameof(Name))]
         public string FailureText
         {
-            get => Get<string>();
-            set => Set(value);
+            get
+            {
+                var isValid = NameVerifier.IsEntityNameValid(Name, null, out string whyIsntValid);
+
+                if (!isValid)
+                {
+                    return whyIsntValid;
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
 
         [DependsOn(nameof(FailureText))]

@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Utilities;
+using GlueFormsCore.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +39,8 @@ namespace FlatRedBall.Glue.Controls
                 return listToReturn;
             }
         }
+
+        AddEntityViewModel ViewModel => DataContext as AddEntityViewModel;
 
         #endregion
 
