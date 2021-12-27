@@ -523,6 +523,9 @@ namespace OfficialPlugins.Compiler.Managers
 
         }
 
+        static bool IsAbstract(IElement element) => element.AllNamedObjects.Any(item => item.SetByDerived);
+
+
         public async Task PushGlueSelectionToGame(string forcedCategoryName = null, string forcedStateName = null, GlueElement forcedElement = null, bool bringIntoFocus = false)
         {
             var element = forcedElement ?? GlueState.Self.CurrentElement;
@@ -539,21 +542,36 @@ namespace OfficialPlugins.Compiler.Managers
                 dto.ScreenSave = element as ScreenSave;
                 dto.EntitySave = element as EntitySave;
 
-                if(element.IsAbstract)
+                bool isAbstract = IsAbstract(element);
+
+                if (isAbstract)
                 {
-                    dto.BackupElementNameGlue = GetFirstDerivedFor(element)?.Name;
+                    var derived = ObjectFinder.Self.GetAllDerivedElementsRecursive(element)
+                        .Where(item => !IsAbstract(item))
+                        .OrderBy(item => item.Name)
+                        .FirstOrDefault();
+
+
+                    dto.BackupElementNameGlue = derived?.Name;
                 }
 
-                dto.BringIntoFocus = bringIntoFocus;
-                dto.NamedObject = nos;
-                dto.ElementNameGlue = element.Name;
-                dto.StateName = forcedStateName ??
-                    GlueState.Self.CurrentStateSave?.Name;
+                var canSend = !isAbstract || !string.IsNullOrEmpty(dto.BackupElementNameGlue);
 
-                dto.StateCategoryName = forcedCategoryName ??
-                    GlueState.Self.CurrentStateSaveCategory?.Name;
+                    // If its abstract and there's no derived, don't try to select it
+                if(canSend)
+                {
+                    dto.BringIntoFocus = bringIntoFocus;
+                    dto.NamedObject = nos;
+                    dto.ElementNameGlue = element.Name;
+                    dto.StateName = forcedStateName ??
+                        GlueState.Self.CurrentStateSave?.Name;
 
-                await CommandSender.Send(dto);
+                    dto.StateCategoryName = forcedCategoryName ??
+                        GlueState.Self.CurrentStateSaveCategory?.Name;
+
+                    await CommandSender.Send(dto);
+
+                }
             }
 
         }

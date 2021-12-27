@@ -252,10 +252,17 @@ namespace GlueControl
 
         private static void HandleDto(SelectObjectDto selectObjectDto)
         {
+
+            // if it matches, don't fall back to the backup element
             bool matchesCurrentScreen =
                 GetIfMatchesCurrentScreen(selectObjectDto.ElementNameGlue, out System.Type ownerType, out Screen currentScreen);
 
-            var elementNameGlue = selectObjectDto.ElementNameGlue;
+            string elementNameGlue = selectObjectDto.BackupElementNameGlue ?? selectObjectDto.ElementNameGlue;
+            if (matchesCurrentScreen)
+            {
+                elementNameGlue = selectObjectDto.ElementNameGlue;
+            }
+
             string ownerTypeName = GlueToGameElementName(elementNameGlue);
             ownerType = typeof(CommandReceiver).Assembly.GetType(ownerTypeName);
 
@@ -382,6 +389,8 @@ namespace GlueControl
                 }
             }
         }
+
+
 
         private static void SelectState(string stateName, string stateCategoryName)
         {
