@@ -537,11 +537,11 @@ namespace FlatRedBall.TileCollisions
             float keyValueAfter = keyValue + halfGridSize;
 
             int startInclusive = mShapes.Polygons.GetFirstAfter(keyValueBefore, mSortAxis,
-                0, mShapes.AxisAlignedRectangles.Count);
+                0, mShapes.Polygons.Count);
 
 
             int endExclusive = mShapes.Polygons.GetFirstAfter(keyValueAfter, mSortAxis,
-                0, mShapes.AxisAlignedRectangles.Count);
+                0, mShapes.Polygons.Count);
 
             var left = middleOfTileX - halfGridSize;
             var right = middleOfTileX + halfGridSize;
