@@ -471,7 +471,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static GeneralToolStripMenuItem mCreateZipPackage;
         static GeneralToolStripMenuItem mExportElement;
-        static GeneralToolStripMenuItem createDerivedScreen;
 
         static GeneralToolStripMenuItem mAddEventMenuItem;
 
@@ -533,7 +532,10 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     AddEvent("Export Screen", ExportElementClick);
 
-                    AddEvent("Create Derived (Level) Screen", HandleCreateDerivedScreenClicked);
+                    if(targetNode.Tag is ScreenSave screenSave && screenSave.Name == "Screens\\GameScreen")
+                    {
+                        AddEvent("Create Level Screen", (not, used) => GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog());
+                    }
 
                     AddRemoveFromProjectItems();
 
@@ -1140,8 +1142,6 @@ namespace FlatRedBall.Glue.FormHelpers
             mExportElement = new GeneralToolStripMenuItem("Export Screen");
             mExportElement.Click += new EventHandler(ExportElementClick);
 
-            createDerivedScreen = new GeneralToolStripMenuItem("Create Derived (Level) Screen");
-            createDerivedScreen.Click += HandleCreateDerivedScreenClicked;
 
             mAddEventMenuItem = new GeneralToolStripMenuItem("Add Event");
             mAddEventMenuItem.Click += new EventHandler(AddEventClicked);
@@ -1167,15 +1167,6 @@ namespace FlatRedBall.Glue.FormHelpers
                     currentScreen.Name;
             }
         }
-
-        private static void HandleCreateDerivedScreenClicked(object sender, EventArgs e)
-        {
-            var baseScreen = GlueState.Self.CurrentScreenSave;
-
-            GlueCommands.Self.DialogCommands.ShowCreateDerivedScreenDialog(baseScreen);
-        }
-
-
 
         private static void HandleReGenerateCodeClick(ITreeNode treeNode)
         {

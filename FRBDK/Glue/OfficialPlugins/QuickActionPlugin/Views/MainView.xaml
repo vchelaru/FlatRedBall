@@ -118,14 +118,6 @@
 
                     </local:TitleImageButton>
 
-                    <!--This is handled by Add Screen-->
-                    <!--<local:QuickActionButton
-                        x:Name="AddLevelButton"
-                        Title="Add Level"
-                        Details="Create a new Screen inheriting from GameScreen."
-                        Clicked="AddLevelButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Views/Add Level Screen.png">
-                    </local:QuickActionButton>-->
-
                     <local:TitleImageButton
                         x:Name="AddEntityButton"
                         Title="Add Entity"

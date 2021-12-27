@@ -58,23 +58,6 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
 
         #endregion
 
-        private void AddLevelButton_Clicked(object sender, RoutedEventArgs e)
-        {
-            var gameScreen = GlueState.Self.CurrentGlueProject.Screens.FirstOrDefault(
-                item => item.Name == GameScreenName);
-
-            if(gameScreen == null)
-            {
-                GlueCommands.Self.DialogCommands.ShowMessageBox("Could not find screen called GameScreen to use as the base screen for a new level screen.");
-
-            }
-            else
-            {
-                GlueCommands.Self.DialogCommands.ShowCreateDerivedScreenDialog(gameScreen);
-                AnyButtonClicked();
-            }
-        }
-
         private void AddEntityButton_Clicked(object sender, RoutedEventArgs e)
         {
             GlueCommands.Self.DialogCommands.ShowAddNewEntityDialog();
