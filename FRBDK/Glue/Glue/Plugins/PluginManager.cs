@@ -1207,24 +1207,9 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToItemSelect(ITreeNode selectedTreeNode)
         {
-            //CenterTab.SuspendLayout();
-
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToItemSelectHandler != null);
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-                        PluginBase plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToItemSelectHandler(selectedTreeNode);
-                            },container, "Failed in ReactToItemSelect");
-                    }
-                }
-            }
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToItemSelectHandler(selectedTreeNode),
+                plugin => plugin.ReactToItemSelectHandler != null);
 
             ShowMostRecentTabFor(TabControlViewModel.TopTabItems, 
                 (item) => TabControlViewModel.TopSelectedTab = item);
@@ -1240,9 +1225,6 @@ namespace FlatRedBall.Glue.Plugins
 
             ShowMostRecentTabFor(TabControlViewModel.RightTabItems,
                 (item) => TabControlViewModel.RightSelectedTab = item);
-
-            //CenterTab.ResumeLayout();
-
         }
 
         private static void ShowMostRecentTabFor(IEnumerable<PluginTabPage> items, Action<PluginTabPage> action)

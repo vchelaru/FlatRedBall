@@ -75,7 +75,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             // Snapshot should come first so everyone can update to the snapshot
             GlueState.Self.TakeSnapshot(value);
 
-            PluginManager.ReactToItemSelect(value);
+            // If we don't check for isSame, then selecting the same tree node will result in double-selects in the game.
+            if(!isSame)
+            {
+                PluginManager.ReactToItemSelect(value);
+            }
         }
 
         public GlueElement CurrentElement
