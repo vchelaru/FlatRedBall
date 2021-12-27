@@ -764,7 +764,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             name = StringFunctions.MakeStringUnique(name,
                 allScreenNames, 2);
 
-            addScreenWindow.HighlghtText();
 
             var viewModel = new AddScreenViewModel();
             viewModel.ScreenName = name;

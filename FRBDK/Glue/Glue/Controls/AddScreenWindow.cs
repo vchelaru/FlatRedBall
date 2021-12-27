@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
@@ -57,6 +58,13 @@ namespace FlatRedBall.Glue.Controls
                     this.DialogResult = true;
                 }
             };
+
+            this.Loaded += HandleLoaded;
+        }
+
+        private void HandleLoaded(object sender, RoutedEventArgs e)
+        {
+            HighlghtText();
         }
     }
 }
