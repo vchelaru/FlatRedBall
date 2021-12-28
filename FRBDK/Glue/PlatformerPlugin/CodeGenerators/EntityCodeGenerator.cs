@@ -36,6 +36,9 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
             codeBlock.Line("#region Platformer Fields");
 
+            codeBlock.Line("public bool IsPlatformingEnabled = true;");
+
+
             codeBlock.Line("/// <summary>");
             codeBlock.Line("/// See property for information.");
             codeBlock.Line("/// </summary>");
@@ -331,6 +334,11 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
         private void UpdateCurrentMovement()
         {
+            if(IsPlatformingEnabled == false)
+            {
+                return;
+            }
+
             if(mCurrentMovement ?.MaxSpeedX > 0)
             {
                 lastNonZeroPlatformerHorizontalMaxSpeed = mCurrentMovement.MaxSpeedX;
@@ -1029,13 +1037,9 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             }
             /////////////////End Early Out/////////////////////////////
 
-            codeBlock.Line(
-@"
-            ApplyInput();
-
-            DetermineMovementValues();
-");
-
+            var ifBlock = codeBlock.If("IsPlatformingEnabled");
+            ifBlock.Line("ApplyInput();");
+            ifBlock.Line("DetermineMovementValues();");
 
             return base.GenerateActivity(codeBlock, element);
         }
