@@ -628,7 +628,14 @@ namespace GumPlugin
                 bool isInGlobalContent = GlueState.Self.CurrentGlueProject.GlobalFiles.Contains(newFile);
                 if (!isInGlobalContent)
                 {
-                    MessageBox.Show("The Gum project file (.gumx) should be added to global content. Not doing so may cause runtime errors.");
+                    MessageBox.Show("The Gum project file (.gumx) can only be added to global content.");
+
+                    var container = FlatRedBall.Glue.Elements.ObjectFinder.Self.GetElementContaining(newFile);
+
+                    if(container != null)
+                    {
+                        container.ReferencedFiles.Remove(newFile);
+                    }
                 }
                 else
                 {
