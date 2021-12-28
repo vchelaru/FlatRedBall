@@ -112,6 +112,16 @@ namespace FlatRedBall.Input
             }
         }
 
+        float Zero() => 0;
+        public DelegateBased2DInput(Func<float> x, Func<float> y)
+        {
+            this.x = x;
+            this.y = y;
+            this.xVelocity = Zero;
+            this.yVelocity = Zero;
+        }
+
+
         public DelegateBased2DInput(Func<float> x, Func<float> y, Func<float> xVelocity, Func<float> yVelocity)
         {
             this.x = x;
