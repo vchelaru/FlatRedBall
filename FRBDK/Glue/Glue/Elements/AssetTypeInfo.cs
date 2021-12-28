@@ -275,6 +275,12 @@ namespace FlatRedBall.Glue.Elements
         /// By default this is false, which means that files added to Glue will be added to the content project.
         /// </summary>
         public bool ExcludeFromContentProject;
+
+        /// <summary>
+        /// Additional data which may be added by a plugin, such as the Gum plugin adding the ElementSave.
+        /// </summary>
+        public object Tag { get; set; }
+
         #endregion
 
         #region Properties

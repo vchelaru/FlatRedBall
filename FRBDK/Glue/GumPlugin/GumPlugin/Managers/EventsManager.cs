@@ -32,14 +32,16 @@ namespace GumPlugin.Managers
             {
                 string strippedName = FileManager.RemoveExtension(FileManager.RemovePath(namedObject.SourceFile));
 
-                var element = AppState.Self.AllLoadedElements.FirstOrDefault(item =>
-                    item.Name.ToLowerInvariant() == strippedName.ToLowerInvariant());
+                var element = 
+                    namedObject.GetAssetTypeInfo()?.Tag as ElementSave ??
+                    AppState.Self.AllLoadedElements.FirstOrDefault(item =>
+                        item.Name.ToLowerInvariant() == strippedName.ToLowerInvariant());
 
                 if(element != null)
                 {
                     string instanceName = namedObject.SourceNameWithoutParenthesis;
 
-                    if (instanceName != "this")
+                    if (!string.IsNullOrEmpty(instanceName) && instanceName != "this")
                     {
                         var instance = element.Instances.FirstOrDefault(item => item.Name == instanceName);
                         element = Gum.Managers.ObjectFinder.Self.GetElementSave(instance);
@@ -79,35 +81,55 @@ namespace GumPlugin.Managers
                     var element = AppState.Self.AllLoadedElements.FirstOrDefault(item =>
                         item.Name.ToLowerInvariant() == strippedName.ToLowerInvariant());
 
-                    if (element != null)
+                    AssignShouldBoolsForAti(namedObject, ref shouldAddEventsForThis, ref shouldAddEventsForChildren, element);
+                }
+            }
+            else if(namedObject.SourceType == SourceType.FlatRedBallType || namedObject.SourceType == SourceType.Gum)
+            {
+                var ati = namedObject.GetAssetTypeInfo();
+
+                var isGumAti = AssetTypeInfoManager.Self.IsAssetTypeInfoGum(ati);
+
+                if(isGumAti)
+                {
+                    var element = ati.Tag as ElementSave;
+
+                    AssignShouldBoolsForAti(namedObject, ref shouldAddEventsForThis, ref shouldAddEventsForChildren, element);
+                }
+            }
+
+            static void AssignShouldBoolsForAti(NamedObjectSave namedObject, ref bool shouldAddEventsForThis, ref bool shouldAddEventsForChildren, ElementSave element)
+            {
+                if (element != null)
+                {
+                    string instanceName = namedObject.SourceNameWithoutParenthesis;
+
+                    object hasEventsAsObject;
+                    object exposeChildrenEventsAsObject;
+
+                    // Instance can be null if we are dealing with a Glue NamedObjectSave with a Gum (or FlatRedBall) source type rather than File.
+                    // In this case it's an instance created wholely in Glue rather than an object gabbed out of Gum.
+                    if (string.IsNullOrEmpty(instanceName) || instanceName == "this")
                     {
-                        string instanceName = namedObject.SourceNameWithoutParenthesis;
+                        hasEventsAsObject = element.GetValueFromThisOrBase("HasEvents");
+                        exposeChildrenEventsAsObject = element.GetValueFromThisOrBase("ExposeChildrenEvents");
 
-                        object hasEventsAsObject;
-                        object exposeChildrenEventsAsObject;
+                    }
+                    else
+                    {
+                        var instance = element.Instances.FirstOrDefault(item => item.Name == instanceName);
 
-                        if (instanceName == "this")
-                        {
-                            hasEventsAsObject = element.GetValueFromThisOrBase("HasEvents");
-                            exposeChildrenEventsAsObject = element.GetValueFromThisOrBase("ExposeChildrenEvents");
+                        hasEventsAsObject = instance.GetValueFromThisOrBase(element, "HasEvents");
+                        exposeChildrenEventsAsObject = instance.GetValueFromThisOrBase(element, "ExposeChildrenEvents");
+                    }
 
-                        }
-                        else
-                        {
-                            var instance = element.Instances.FirstOrDefault(item => item.Name == instanceName);
-
-                            hasEventsAsObject = instance.GetValueFromThisOrBase(element, "HasEvents");
-                            exposeChildrenEventsAsObject = instance.GetValueFromThisOrBase(element, "ExposeChildrenEvents");
-                        }
-
-                        if (hasEventsAsObject != null && hasEventsAsObject is bool)
-                        {
-                            shouldAddEventsForThis = (bool)hasEventsAsObject;
-                        }
-                        if (exposeChildrenEventsAsObject != null && exposeChildrenEventsAsObject is bool)
-                        {
-                            shouldAddEventsForChildren = (bool)exposeChildrenEventsAsObject;
-                        }
+                    if (hasEventsAsObject != null && hasEventsAsObject is bool)
+                    {
+                        shouldAddEventsForThis = (bool)hasEventsAsObject;
+                    }
+                    if (exposeChildrenEventsAsObject != null && exposeChildrenEventsAsObject is bool)
+                    {
+                        shouldAddEventsForChildren = (bool)exposeChildrenEventsAsObject;
                     }
                 }
             }

@@ -2300,41 +2300,11 @@ namespace FlatRedBall.Glue.Plugins
         {
             SaveRelativeDirectory();
 
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                var plugins = pluginManager.ImportedPlugins.Where(plugin =>
-                {
-                    return plugin.AddEventsForObject != null &&
-                    pluginManager.mPluginContainers[plugin].IsEnabled;
-                });
+            CallMethodOnPlugin(
+                plugin => plugin.AddEventsForObject(namedObjectSave, listToFill),
+                plugin => plugin.AddEventsForObject != null);
 
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-
-
-                    if (HandleExceptions)
-                    {
-                        try
-                        {
-                            plugin.AddEventsForObject(namedObjectSave, listToFill);
-
-                        }
-                        catch (Exception e)
-                        {
-                            container.Fail(e, "Failed in AddEventsForObject");
-                        }
-                    }
-                    else
-                    {
-                        plugin.AddEventsForObject(namedObjectSave, listToFill);
-                    }
-
-
-                }
-            }
             ResumeRelativeDirectory("AddEventsForObject");
-
         }
 
 
@@ -2342,7 +2312,6 @@ namespace FlatRedBall.Glue.Plugins
 
         static void SaveRelativeDirectory()
         {
-
             mOldRelativeDirectories.Push(FileManager.RelativeDirectory);
         }
 
