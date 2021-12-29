@@ -88,7 +88,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #endregion
 
+        #region CustomClass
+
         ValidationResponse AddNewCustomClass(string className, out CustomClassSave customClassSave);
+
+        #endregion
 
         #region Screens
 
@@ -113,7 +117,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #region Custom Variable
 
-        void RemoveCustomVariable(CustomVariable customVariable, List<string> additionalFilesToRemove);
+        void RemoveCustomVariable(CustomVariable customVariable, List<string> additionalFilesToRemove = null);
+
+        #endregion
+
+        #region StateSaveCategory
+
+        void RemoveStateSaveCategory(StateSaveCategory category);
 
         #endregion
 

@@ -1668,11 +1668,11 @@ namespace FlatRedBall.Glue.FormHelpers
         //    }
         //}
 
-        internal static void RemoveFromProjectToolStripMenuItem()
+        internal static async Task RemoveFromProjectToolStripMenuItem()
         {
             bool saveAndRegenerate = true;
 
-            RemoveFromProjectOptionalSaveAndRegenerate(saveAndRegenerate, true, true);
+            await RemoveFromProjectOptionalSaveAndRegenerate(saveAndRegenerate, true, true);
         }
 
         private static void RemoveFromProjectQuick(object sender, EventArgs e)
@@ -1680,7 +1680,7 @@ namespace FlatRedBall.Glue.FormHelpers
             RemoveFromProjectOptionalSaveAndRegenerate(false, true, true);
         }
 
-        private static async Task RemoveFromProjectOptionalSaveAndRegenerate(bool saveAndRegenerate, bool askAreYouSure, bool askToDeleteFiles)
+        private static async Task RemoveFromProjectOptionalSaveAndRegenerate(bool saveAndRegenerate = true, bool askAreYouSure = true, bool askToDeleteFiles = true)
         {
             // delete object, remove object, DeleteObject, RemoveObject, remove from project, 
             // remove from screen, remove from entity, remove file
@@ -1756,11 +1756,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                         else if (GlueState.Self.CurrentStateSaveCategory != null)
                         {
-                            GlueState.Self.CurrentElement.StateCategoryList.Remove(GlueState.Self.CurrentStateSaveCategory);
-
-                            GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-
-                            GluxCommands.Self.SaveGlux();
+                            GlueCommands.Self.GluxCommands.RemoveStateSaveCategory(GlueState.Self.CurrentStateSaveCategory);
                         }
 
                         #endregion

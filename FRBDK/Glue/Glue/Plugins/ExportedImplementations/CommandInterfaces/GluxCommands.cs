@@ -1505,7 +1505,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region Custom Variable
 
-        public void RemoveCustomVariable(CustomVariable customVariable, List<string> additionalFilesToRemove)
+        public void RemoveCustomVariable(CustomVariable customVariable, List<string> additionalFilesToRemove = null)
         {
             // additionalFilesToRemove is added to keep this consistent with other remove methods
 
@@ -1528,7 +1528,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
+            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
 
             GlueCommands.Self.DialogCommands.FocusOnTreeView();
 
@@ -1538,6 +1538,46 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
 
             PluginManager.ReactToVariableRemoved(customVariable);
+        }
+
+        #endregion
+
+        #region StateSaveCategory
+
+        public void RemoveStateSaveCategory(StateSaveCategory category)
+        {
+            var owner = ObjectFinder.Self.GetElementContaining(category);
+            GlueState.Self.CurrentElement.StateCategoryList.Remove(category);
+
+            var project = GlueState.Self.CurrentGlueProject;
+
+            var qualifiedCategoryName = owner.Name.Replace("\\", ".") + "." + category.Name;
+
+
+
+            var screenVariables = project.Screens
+                .SelectMany(item => item.CustomVariables)
+                .Where(item => item.Type == qualifiedCategoryName);
+            var entityVariables = project.Entities
+                .SelectMany(item => item.CustomVariables)
+                .Where(item => item.Type == qualifiedCategoryName);
+
+            var combined = screenVariables.Concat(entityVariables).ToArray();
+
+            HashSet<GlueElement> impactedObjects = new HashSet<GlueElement>();
+
+            foreach(var variable in combined)
+            {
+                GlueCommands.Self.PrintOutput($"Removing {variable} because it references the category {category.Name}");
+                GlueCommands.Self.GluxCommands.RemoveCustomVariable(variable);
+            }
+
+            if (owner != null)
+            {
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(owner);
+            }
+
+            GluxCommands.Self.SaveGlux();
         }
 
         #endregion
