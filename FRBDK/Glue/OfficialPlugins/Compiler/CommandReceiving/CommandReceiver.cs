@@ -316,7 +316,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 foreach(var nos in modifiedObjects)
                 {
                     var nosParent = ObjectFinder.Self.GetElementContaining(nos);
-                    nosParents.Add(nosParent);
+                    if(nosParent != null)
+                    {
+                        nosParents.Add(nosParent);
+                    }
                 }
 
                 foreach(var nosParent in nosParents)
