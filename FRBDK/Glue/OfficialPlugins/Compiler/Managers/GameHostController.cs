@@ -61,8 +61,11 @@ namespace OfficialPlugins.Compiler.Managers
             gameHostControl.RestartGameCurrentScreenClicked += async (not, used) =>
             {
                 var wasEditChecked = compilerViewModel.IsEditChecked;
+                // This is the screen that the game is currently on...
                 var screenName = await CommandSending.CommandSender.GetScreenName();
-
+                // ...but we may not want to restart on this screen if it's the edit entity screen:
+                var isEntityViewingScreen = screenName == "GlueControl.Screens.EntityViewingScreen";
+                var screenCommandLineArg = isEntityViewingScreen ? null : screenName;
 
                 compilerViewModel.IsPaused = false;
                 runner.KillGameProcess();
@@ -70,11 +73,16 @@ namespace OfficialPlugins.Compiler.Managers
                 GeneralResponse runResponse = GeneralResponse.UnsuccessfulResponse;
                 if (compileSucceeded)
                 {
-                    runResponse = await runner.Run(preventFocus: false, screenName);
+                    runResponse = await runner.Run(preventFocus: false, screenCommandLineArg);
                 }
                 if (wasEditChecked && runResponse.Succeeded)
                 {
                     compilerViewModel.IsEditChecked = true;
+
+                    if(isEntityViewingScreen)
+                    {
+                        await RefreshManager.Self.PushGlueSelectionToGame();
+                    }
                 }
 
                 if(!runResponse.Succeeded)
