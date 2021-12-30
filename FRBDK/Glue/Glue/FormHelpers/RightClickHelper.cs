@@ -1279,13 +1279,6 @@ namespace FlatRedBall.Glue.FormHelpers
             GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
         }
 
-        [Obsolete("Use GlueCommands.DialogCommands.ShowAddNewEventDialog")]
-        public static void ShowAddEventWindow(NamedObjectSave objectToTunnelInto)
-        {
-            GlueCommands.Self.DialogCommands.ShowAddNewEventDialog(objectToTunnelInto);
-
-        }
-
         static void AddEventClicked(object sender, EventArgs e)
         {
             // add event, new event, add new event

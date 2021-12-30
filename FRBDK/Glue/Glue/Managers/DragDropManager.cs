@@ -422,9 +422,7 @@ namespace FlatRedBall.Glue.Managers
 
             if (succeeded)
             {
-                // show the add new variable window and select this object
-                RightClickHelper.ShowAddEventWindow(treeNodeMoving.Tag as NamedObjectSave);
-
+                GlueCommands.Self.DialogCommands.ShowAddNewEventDialog(treeNodeMoving.Tag as NamedObjectSave);
             }
 
             return succeeded;
