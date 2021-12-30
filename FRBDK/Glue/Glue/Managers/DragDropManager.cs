@@ -613,6 +613,12 @@ namespace FlatRedBall.Glue.Managers
             {
                 // The user drag+dropped a state category into the variables
                 // Let's make sure that it's all in the same Element though:
+                // Update December 30, 2021 - Glue now supports variables which
+                // are a state category which comes from a different entity/screen.
+                // I don't want to uncomment this right now because that may require
+                // some additional testing, but I'm putting this comment here so that
+                // in the future it's clear that this was an old rule which could be removed
+                // with proper testing.
                 if (targetNode.GetContainingElementTreeNode() == nodeMoving.GetContainingElementTreeNode())
                 {
                     StateSaveCategory category = nodeMoving.Tag as StateSaveCategory;
@@ -625,13 +631,8 @@ namespace FlatRedBall.Glue.Managers
 
                     var element = targetNode.GetContainingElementTreeNode().Tag as GlueElement;
 
-                    element.CustomVariables.Add(customVariable);
-
-                    InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, element);
-
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-
-                    GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
+                    GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElement(
+                        customVariable, element);
                 }
             }
         }

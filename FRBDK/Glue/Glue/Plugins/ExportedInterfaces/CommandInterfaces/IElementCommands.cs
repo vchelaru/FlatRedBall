@@ -23,5 +23,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         bool UpdateFromBaseType(GlueElement glueElement);
 
         void AddCustomVariableToCurrentElement(CustomVariable newVariable, bool save = true);
+        void AddCustomVariableToElement(CustomVariable newVariable, GlueElement element, bool save = true);
     }
 }

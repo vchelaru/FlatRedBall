@@ -150,6 +150,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #endregion
 
+        #region Directory
+
         public static bool IsDirectoryNameValid(string directory, out string whyItIsntValid)
         {
             whyItIsntValid = "";
@@ -159,6 +161,10 @@ namespace FlatRedBall.Glue.SaveClasses
             bool returnValue = string.IsNullOrEmpty(whyItIsntValid);
             return returnValue;
         }
+
+        #endregion
+
+        #region Referenced File Save
 
         public static bool IsReferencedFileNameValid(string name, AssetTypeInfo ati, ReferencedFileSave rfs, IElement container, out string whyItIsntValid)
         {
@@ -232,36 +238,6 @@ namespace FlatRedBall.Glue.SaveClasses
             return returnValue;
         }
 
-        internal static bool IsCustomClassNameValid(string name, out string whyItIsntValid)
-        {
-            whyItIsntValid = "";
-
-            CheckForCommonImproperNames(name, ref whyItIsntValid);
-
-            if (ObjectFinder.Self.GetScreenSave("Screens\\" + name) != null)
-            {
-                whyItIsntValid = "There is already an Screen named " + name;
-            }
-            else if (GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile("Screens\\" + name) != null)
-            {
-                whyItIsntValid = "There is already a file named " + name;
-            }
-            else if (mReservedClassNames.Contains(name))
-            {
-                whyItIsntValid = "The name " + name + " is a reserved class name, so it can't be used for a Screen";
-            }
-            else if (ObjectFinder.Self.GetEntitySaveUnqualified(name) != null)
-            {
-                whyItIsntValid = "There is already an Entity named " + name + ".\n\n" +
-                    "Glue recommends naming the Class something different than existing Entities.";
-            }
-            else if (name == ProjectManager.ProjectNamespace)
-            {
-                whyItIsntValid = "The class cannot be named the same as the root namespace (which is usually the same name as the project)";
-            }
-            return string.IsNullOrEmpty(whyItIsntValid);
-        }
-
         private static void CheckForRfsWithMatchingFileName(IElement container, string name, ReferencedFileSave rfsToSkip, ref string whyItIsntValid)
         {
 
@@ -297,6 +273,39 @@ namespace FlatRedBall.Glue.SaveClasses
                 }
             }
         }
+
+        #endregion
+
+        internal static bool IsCustomClassNameValid(string name, out string whyItIsntValid)
+        {
+            whyItIsntValid = "";
+
+            CheckForCommonImproperNames(name, ref whyItIsntValid);
+
+            if (ObjectFinder.Self.GetScreenSave("Screens\\" + name) != null)
+            {
+                whyItIsntValid = "There is already an Screen named " + name;
+            }
+            else if (GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile("Screens\\" + name) != null)
+            {
+                whyItIsntValid = "There is already a file named " + name;
+            }
+            else if (mReservedClassNames.Contains(name))
+            {
+                whyItIsntValid = "The name " + name + " is a reserved class name, so it can't be used for a Screen";
+            }
+            else if (ObjectFinder.Self.GetEntitySaveUnqualified(name) != null)
+            {
+                whyItIsntValid = "There is already an Entity named " + name + ".\n\n" +
+                    "Glue recommends naming the Class something different than existing Entities.";
+            }
+            else if (name == ProjectManager.ProjectNamespace)
+            {
+                whyItIsntValid = "The class cannot be named the same as the root namespace (which is usually the same name as the project)";
+            }
+            return string.IsNullOrEmpty(whyItIsntValid);
+        }
+
 
 
         /// <summary>
@@ -591,7 +600,26 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
+        public static bool IsEventNameValid(string name, IElement currentElement, out string failureMessage)
+        {
+            bool didFailureOccur = false;
 
+            string whyItIsntValid = "";
+            didFailureOccur = NameVerifier.IsCustomVariableNameValid(name, null, currentElement, ref whyItIsntValid) == false;
+            failureMessage = null;
+            if (didFailureOccur)
+            {
+                failureMessage = whyItIsntValid;
+
+            }
+            if (ExposedVariableManager.IsReservedPositionedPositionedObjectMember(name) && currentElement is EntitySave)
+            {
+                didFailureOccur = true;
+                failureMessage = "The variable\n\n" + name + "\n\nis reserved by FlatRedBall.";
+            }
+
+            return didFailureOccur;
+        }
 
 
 

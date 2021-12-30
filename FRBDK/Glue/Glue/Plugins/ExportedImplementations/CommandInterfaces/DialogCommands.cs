@@ -579,25 +579,25 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (addVariableWindow.ShowDialog(MainGlueWindow.Self) == DialogResult.OK)
             {
-                HandleAddVariableOk(addVariableWindow);
+                GlueElement currentElement = GlueState.Self.CurrentElement;
+                HandleAddVariableOk(addVariableWindow.GetViewModel(), currentElement);
             }
         }
 
-        private static void HandleAddVariableOk(AddVariableWindow addVariableWindow)
+        private static void HandleAddVariableOk(AddCustomVariableViewModel viewModel, GlueElement currentElement)
         {
-            string resultName = addVariableWindow.ResultName;
-            IElement currentElement = GlueState.Self.CurrentElement;
+            string resultName = viewModel.VariableName;
             string failureMessage;
 
-            bool didFailureOccur = IsVariableInvalid(addVariableWindow, resultName, currentElement, out failureMessage);
+            bool didFailureOccur = IsVariableInvalid(viewModel, currentElement, out failureMessage);
 
 
             if (!didFailureOccur)
             {
-                if (!string.IsNullOrEmpty(addVariableWindow.TunnelingObject) && string.IsNullOrEmpty(addVariableWindow.TunnelingVariable))
+                if (!string.IsNullOrEmpty(viewModel.TunnelingObject) && string.IsNullOrEmpty(viewModel.TunnelingVariable))
                 {
                     didFailureOccur = true;
-                    failureMessage = $"You must select a variable on {addVariableWindow.TunnelingObject}";
+                    failureMessage = $"You must select a variable on {viewModel.TunnelingObject}";
                 }
             }
 
@@ -631,15 +631,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (canCreate)
                 {
-                    string type = addVariableWindow.ResultType;
-                    string sourceObject = addVariableWindow.TunnelingObject;
+                    string type = viewModel.ResultType;
+                    string sourceObject = viewModel.TunnelingObject;
                     string sourceObjectProperty = null;
                     if (!string.IsNullOrEmpty(sourceObject))
                     {
-                        sourceObjectProperty = addVariableWindow.TunnelingVariable;
+                        sourceObjectProperty = viewModel.TunnelingVariable;
                     }
-                    string overridingType = addVariableWindow.OverridingType;
-                    string typeConverter = addVariableWindow.TypeConverter;
+                    string overridingType = viewModel.OverridingType;
+                    string typeConverter = viewModel.TypeConverter;
 
                     CustomVariable newVariable = new CustomVariable();
                     newVariable.Name = resultName;
@@ -647,7 +647,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     newVariable.SourceObject = sourceObject;
                     newVariable.SourceObjectProperty = sourceObjectProperty;
 
-                    newVariable.IsShared = addVariableWindow.IsStatic;
+                    newVariable.IsShared = viewModel.IsStatic;
+                    newVariable.DefinedByBase = isDefinedByBase;
 
 
 
@@ -658,35 +659,16 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
 
                     GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToCurrentElement(newVariable);
-
-                    if (isDefinedByBase)
-                    {
-                        newVariable.DefinedByBase = isDefinedByBase;
-                        // Refresh the UI - it's refreshed above in CreateAndAddNewVariable,
-                        // but we're changing the DefinedByBase property which changes the color
-                        // of the variable so refresh it again
-                        GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-                    }
-
-
-                    if (GlueState.Self.CurrentElement != null)
-                    {
-                        // Vic asks = why do we call ReactToItemSelect instead of setting the custom variable. Is it to force a refresh?
-                        // On because actually people usually don't want to select the variable because it's rare to actually modify the variable
-                        // through its properties. Instead, it's more common to select the variables and use the variables tab
-                        //GlueState.Self.CurrentCustomVariable = newVariable;
-                        PluginManager.ReactToItemSelect(GlueState.Self.CurrentTreeNode);
-                    }
                 }
             }
         }
 
-        public static bool IsVariableInvalid(AddVariableWindow addVariableWindow, string resultName, IElement currentElement, out string failureMessage)
+        public static bool IsVariableInvalid(AddCustomVariableViewModel viewModel, IElement currentElement, out string failureMessage)
         {
             bool didFailureOccur = false;
 
             string whyItIsntValid = "";
-
+            var resultName = viewModel.VariableName;
             didFailureOccur = NameVerifier.IsCustomVariableNameValid(resultName, null, currentElement, ref whyItIsntValid) == false;
             failureMessage = null;
             if (didFailureOccur)
@@ -694,12 +676,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 failureMessage = whyItIsntValid;
 
             }
-            else if (addVariableWindow != null && NameVerifier.DoesTunneledVariableAlreadyExist(addVariableWindow.TunnelingObject, addVariableWindow.TunnelingVariable, currentElement))
+            else if (NameVerifier.DoesTunneledVariableAlreadyExist(viewModel.TunnelingObject, viewModel.TunnelingVariable, currentElement))
             {
                 didFailureOccur = true;
-                failureMessage = "There is already a variable that is modifying " + addVariableWindow.TunnelingVariable + " on " + addVariableWindow.TunnelingObject;
+                failureMessage = "There is already a variable that is modifying " + viewModel.TunnelingVariable + " on " + viewModel.TunnelingObject;
             }
-            else if (addVariableWindow != null && IsUserTryingToCreateNewWithExposableName(addVariableWindow.ResultName, addVariableWindow.DesiredVariableType == CustomVariableType.Exposed))
+            else if (viewModel != null && IsUserTryingToCreateNewWithExposableName(viewModel.VariableName, viewModel.DesiredVariableType == CustomVariableType.Exposed))
             {
                 didFailureOccur = true;
                 failureMessage = "The variable\n\n" + resultName + "\n\nis an expoable variable.  Please use a different variable name or select the variable through the Expose tab";

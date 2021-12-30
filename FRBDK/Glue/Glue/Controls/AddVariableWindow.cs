@@ -17,6 +17,7 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.GuiDisplay;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.AddVariablePlugin.ViewModels;
+using GlueFormsCore.ViewModels;
 
 namespace FlatRedBall.Glue.Controls
 {
@@ -342,6 +343,20 @@ namespace FlatRedBall.Glue.Controls
             }
         }
 
+        public AddCustomVariableViewModel GetViewModel()
+        {
+            var viewModel = new AddCustomVariableViewModel();
+            viewModel.VariableName = this.ResultName;
+            viewModel.TunnelingObject = this.TunnelingObject;
+            viewModel.TunnelingVariable = this.TunnelingVariable;
+            viewModel.ResultType = this.ResultType;
+            viewModel.OverridingType = this.OverridingType;
+            viewModel.TypeConverter = this.TypeConverter;
+            viewModel.IsStatic = this.IsStatic;
+            viewModel.DesiredVariableType = this.DesiredVariableType;
+
+            return viewModel;
+        }
 
 
         private void TunnelingVariableComboBox_SelectedIndexChanged(object sender, EventArgs e)

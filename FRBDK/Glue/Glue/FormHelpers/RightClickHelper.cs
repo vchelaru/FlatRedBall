@@ -1296,7 +1296,8 @@ namespace FlatRedBall.Glue.FormHelpers
             IElement currentElement = GlueState.Self.CurrentElement;
 
             string failureMessage;
-            bool isInvalid = DialogCommands.IsVariableInvalid(null, resultName, currentElement, out failureMessage);
+            bool isInvalid = NameVerifier.IsEventNameValid(resultName,
+                currentElement, out failureMessage);
 
             if (isInvalid)
             {
