@@ -21,6 +21,7 @@ namespace FlatRedBall.Glue.Managers
         public void AddExistingFileClick()
         {
             var viewModel = new AddExistingFileViewModel();
+            var element = GlueState.Self.CurrentElement;
             FillWithFiles(viewModel);
 
 
@@ -31,7 +32,6 @@ namespace FlatRedBall.Glue.Managers
 
             if(result == true)
             {
-                var element = GlueState.Self.CurrentElement;
                 string directoryOfTreeNode = GlueState.Self.CurrentTreeNode.GetRelativePath();
                 bool userCancelled = false;
 
