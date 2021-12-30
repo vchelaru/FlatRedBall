@@ -1984,10 +1984,10 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 message += "\n\nDo you really want to remove this Entity?";
 
-                result = MessageBox.Show(message, "Are you sure?", MessageBoxButtons.YesNo);
+                GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message,
+                    () => GlueCommands.Self.GluxCommands.RemoveEntity(entityToRemove, filesThatCouldBeRemoved));
             }
-
-            if (result == DialogResult.Yes)
+            else
             {
                 GlueCommands.Self.GluxCommands.RemoveEntity(entityToRemove, filesThatCouldBeRemoved);
             }

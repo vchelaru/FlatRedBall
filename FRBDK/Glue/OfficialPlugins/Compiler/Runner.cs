@@ -157,64 +157,85 @@ namespace OfficialPlugins.Compiler
 
             foundAlreadyRunningProcess = false;
             string exeLocation = GetGameExeLocation();
+            ToolsUtilities.GeneralResponse<Process> startResponse = ToolsUtilities.GeneralResponse<Process>.UnsuccessfulResponse;
 
             if (System.IO.File.Exists(exeLocation))
             {
-                StartProcess(preventFocus, runArguments, exeLocation);
+                startResponse = await StartProcess(preventFocus, runArguments, exeLocation);
 
-                runningGameProcess = TryFindGameProcess();
-                int numberOfTimesToTryGettingProcess = 50;
-                int timesTried = 0;
-                while (runningGameProcess == null)
+                if(startResponse.Succeeded)
                 {
-                    // didn't find it, so let's wait a little and try again:
-
-                    await Task.Delay(50);
-
                     runningGameProcess = TryFindGameProcess();
-
-                    timesTried++;
-
-                    if (timesTried >= numberOfTimesToTryGettingProcess)
+                    int numberOfTimesToTryGettingProcess = 50;
+                    int timesTried = 0;
+                    while (runningGameProcess == null)
                     {
-                        break;
-                    }
-                }
+                        // didn't find it, so let's wait a little and try again:
 
+                        await Task.Delay(50);
 
-                if (runningGameProcess != null)
-                {
+                        runningGameProcess = TryFindGameProcess();
 
-                    runningGameProcess.EnableRaisingEvents = true;
-                    runningGameProcess.Exited += HandleProcessExit;
-                    toReturn = GeneralResponse.SuccessfulResponse;
+                        timesTried++;
 
-                    // wait for a handle
-                    int numberOfTimesToTry = 60;
-                    for (int i = 0; i < numberOfTimesToTry; i++)
-                    {
-                        var id = runningGameProcess?.MainWindowHandle;
-
-                        if (id == null || id == IntPtr.Zero)
+                        if (timesTried >= numberOfTimesToTryGettingProcess)
                         {
-
-                            await Task.Delay(100);
-                            continue;
+                            break;
                         }
                     }
 
-                    global::Glue.MainGlueWindow.Self.Invoke(() =>
-                    {
-                        ViewModel.IsRunning = runningGameProcess != null;
-                        ViewModel.DidRunnerStartProcess = DidRunnerStartProcess;
 
-                        AfterSuccessfulRun();
-                    });
+                    if (runningGameProcess != null)
+                    {
+
+                        runningGameProcess.EnableRaisingEvents = true;
+                        runningGameProcess.Exited += HandleProcessExit;
+                        toReturn = GeneralResponse.SuccessfulResponse;
+
+                        // wait for a handle
+                        int numberOfTimesToTry = 60;
+                        for (int i = 0; i < numberOfTimesToTry; i++)
+                        {
+                            var id = runningGameProcess?.MainWindowHandle;
+
+                            if (id == null || id == IntPtr.Zero)
+                            {
+
+                                await Task.Delay(100);
+                                continue;
+                            }
+                        }
+
+                        global::Glue.MainGlueWindow.Self.Invoke(() =>
+                        {
+                            ViewModel.IsRunning = runningGameProcess != null;
+                            ViewModel.DidRunnerStartProcess = DidRunnerStartProcess;
+
+                            AfterSuccessfulRun();
+                        });
+                    }
+                    else
+                    {
+                        toReturn.Succeeded = false;
+                        toReturn.Message = $"Found the game .exe, but couldn't get it to launch. PreventFocus: {preventFocus}";
+
+                        if(startResponse.Data != null)
+                        {
+                            if(startResponse.Data.HasExited && startResponse.Data.ExitCode != 0)
+                            {
+                                var message = await GetCrashMessage();
+
+                                if(!string.IsNullOrEmpty(message))
+                                {
+                                    toReturn.Message += "\n" + message;
+                                }
+                            }
+                        }
+                    }
                 }
                 else
                 {
-                    toReturn.Succeeded = false;
-                    toReturn.Message = $"Found the game .exe, but couldn't get it to launch. PreventFocus: {preventFocus}";
+                    toReturn = startResponse;
                 }
             }
             else
@@ -245,11 +266,13 @@ namespace OfficialPlugins.Compiler
             }
         }
 
-        private static void StartProcess(bool preventFocus, string runArguments, string exeLocation)
+        private static async Task<ToolsUtilities.GeneralResponse<Process>> StartProcess(bool preventFocus, string runArguments, string exeLocation)
         {
             if(preventFocus)
             {
                 Win32ProcessStarter.StartProcessPreventFocus(runArguments, exeLocation);
+                // we don't know, so just assume all went okay:
+                return ToolsUtilities.GeneralResponse<Process>.SuccessfulResponse;
             }
             else
             {
@@ -257,7 +280,31 @@ namespace OfficialPlugins.Compiler
                 startInfo.FileName = exeLocation;
                 startInfo.WorkingDirectory = FileManager.GetDirectory(exeLocation);
                 startInfo.Arguments = runArguments;
-                System.Diagnostics.Process.Start(startInfo);
+                var process = System.Diagnostics.Process.Start(startInfo);
+
+                // December 30, 2021
+                // Vic thought - we should
+                // wait here to know why it failed
+                // if it crashed immediately. The problem
+                // is that a crash may take some time to write
+                // the problem that occurred to a text file, and 
+                // waiting and checking this here could be really slow.
+                // Therefore, we'll return the process as part of the response
+                var hasExited = process?.HasExited == true;
+
+                if (hasExited && process?.ExitCode != 0)
+                {
+                    var message = await GetCrashMessage();
+                    var response = ToolsUtilities.GeneralResponse<Process>.UnsuccessfulWith(message);
+                    response.Data = process;
+                    return response;
+                }
+                else
+                {
+                    var response = ToolsUtilities.GeneralResponse<Process>.SuccessfulResponse;
+                    response.Data = process;
+                    return response;
+                }
             }
         }
 
@@ -281,27 +328,9 @@ namespace OfficialPlugins.Compiler
             {
                 if(process.ExitCode != 0)
                 {
-                    await Task.Delay(1);
-
-                    string exeLocation = GetGameExeLocation();
-
-                    if(!string.IsNullOrEmpty(exeLocation))
+                    string message = await GetCrashMessage();
+                    if (!string.IsNullOrEmpty(message))
                     {
-                        var directory = FileManager.GetDirectory(exeLocation);
-                        var logFile = directory + "CrashInfo.txt";
-
-                        string message = string.Empty;
-                        if(System.IO.File.Exists(logFile))
-                        {
-                            var contents = System.IO.File.ReadAllText(logFile);
-                            message = $"The game has crashed:\n\n{contents}";
-                        }
-                        else
-                        {
-                            message = "Oh no! The game crashed. Run from Visual Studio for more information on the error.";
-                        }
-
-                        // await a seocnd to see if the crash.txt file gets written...
                         System.Windows.MessageBox.Show(message);
                     }
                 }
@@ -328,6 +357,34 @@ namespace OfficialPlugins.Compiler
             }
         }
 
+        private static async Task<string> GetCrashMessage()
+        {
+            string exeLocation = GetGameExeLocation();
+
+            string message = string.Empty;
+            if (!string.IsNullOrEmpty(exeLocation))
+            {
+                // await a little to see if the crash.txt file gets written...
+                await Task.Delay(2);
+
+                var directory = FileManager.GetDirectory(exeLocation);
+                var logFile = directory + "CrashInfo.txt";
+
+                if (System.IO.File.Exists(logFile))
+                {
+                    var contents = System.IO.File.ReadAllText(logFile);
+                    message = $"The game has crashed:\n\n{contents}";
+                }
+                else
+                {
+                    message = "Oh no! The game crashed. Run from Visual Studio for more information on the error.";
+                }
+
+            }
+
+            return message;
+        }
+
         internal void KillGameProcess(Process process = null)
         {
             process = process ?? runningGameProcess;
@@ -338,6 +395,11 @@ namespace OfficialPlugins.Compiler
                 try
                 {
                     process.Kill();
+                    var maxWaitTimeMs = 1000;
+                    if(process.HasExited == false)
+                    {
+                        process.WaitForExit(maxWaitTimeMs);
+                    }
                 }
                 catch
                 {

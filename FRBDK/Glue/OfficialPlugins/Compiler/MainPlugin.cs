@@ -258,7 +258,7 @@ namespace OfficialPlugins.Compiler
             {
                 try
                 {
-                    if(CompilerViewModel.IsEditChecked)
+                    if(CompilerViewModel.IsEditChecked && CompilerViewModel.IsRunning)
                     {
                         lastGetCall = DateTime.Now;
 

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using ToolsUtilities;
 
 namespace OfficialPlugins.Compiler.Managers
 {
@@ -47,8 +48,11 @@ namespace OfficialPlugins.Compiler.Managers
                     var succeeded = await Compile();
                     if(succeeded)
                     {
-                        await runner.Run(preventFocus: false);
-                        compilerViewModel.IsEditChecked = true;
+                        var runResponse = await runner.Run(preventFocus: false);
+                        if(runResponse.Succeeded)
+                        {
+                            compilerViewModel.IsEditChecked = true;
+                        }
                     }
 
                 }, "Starting in edit mode", TaskExecutionPreference.AddOrMoveToEnd);
@@ -62,18 +66,20 @@ namespace OfficialPlugins.Compiler.Managers
 
                 compilerViewModel.IsPaused = false;
                 runner.KillGameProcess();
-                var succeeded = await Compile();
-
-                if (succeeded)
+                var compileSucceeded = await Compile();
+                GeneralResponse runResponse = GeneralResponse.UnsuccessfulResponse;
+                if (compileSucceeded)
                 {
-                    if (succeeded)
-                    {
-                        await runner.Run(preventFocus: false, screenName);
-                        if (wasEditChecked)
-                        {
-                            compilerViewModel.IsEditChecked = true;
-                        }
-                    }
+                    runResponse = await runner.Run(preventFocus: false, screenName);
+                }
+                if (wasEditChecked && runResponse.Succeeded)
+                {
+                    compilerViewModel.IsEditChecked = true;
+                }
+
+                if(!runResponse.Succeeded)
+                {
+                    mainControl.PrintOutput(runResponse.Message);
                 }
             };
 

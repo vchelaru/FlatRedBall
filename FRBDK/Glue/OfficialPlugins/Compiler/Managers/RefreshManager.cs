@@ -743,7 +743,7 @@ namespace OfficialPlugins.Compiler.Managers
                 (ViewModel.IsRunning && ViewModel.IsEditChecked)
             );
 
-        public async void StopAndRestartTask(string reason)
+        public async Task StopAndRestartTask(string reason)
         {
             if (CanRestart)
             {
@@ -810,7 +810,9 @@ namespace OfficialPlugins.Compiler.Managers
                 {
                     if(!DoesTaskManagerHaveAnotherRestartTask())
                     {
-                        var response = await runner.Run(preventFocus: true, runArguments: screenToRestartOn);
+                        // If we aren't generating Glue, then the game will not be embedded, so prevent focus
+                        var preventFocus = ViewModel.IsGenerateGlueControlManagerInGame1Checked == false;
+                        var response = await runner.Run(preventFocus, screenToRestartOn);
                         if(response.Succeeded == false)
                         {
                             printError(response.Message);

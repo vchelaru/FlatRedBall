@@ -49,7 +49,11 @@ namespace OfficialPlugins.Compiler.ViewModels
                     // If the game either stops or restarts, no longer paused
                     IsPaused = false;
                     CurrentGameSpeed = "100%";
-                    PlayOrEdit = PlayOrEdit.Play;
+                    if(value)
+                    {
+                        // no need to push this if we stopped the game from running
+                        PlayOrEdit = PlayOrEdit.Play;
+                    }
                 }
             }
         }
