@@ -351,13 +351,7 @@ namespace FlatRedBall.Glue.SetVariable
                         File.Move(oldFilePath.FullPath, newFilePath.FullPath);
                     }
 
-                    string rfsType = rfs.RuntimeType;
-                    if (rfsType != null && rfsType.Contains("."))
-                    {
-                        // We dont want the fully qualified type.
-                        rfsType = FileManager.GetExtension(rfsType);
-                    }
-                    UpdateObjectsUsingFile(container, oldName, rfs, rfsType);
+                    UpdateObjectsUsingFile(container, oldName, rfs);
 
                     RegenerateCodeAndUpdateUiAccordingToRfsRename(oldName, newName, rfs);
 
@@ -372,26 +366,26 @@ namespace FlatRedBall.Glue.SetVariable
             }
         }
 
-        private static void UpdateObjectsUsingFile(IElement element, string oldName, ReferencedFileSave rfs, string rfsType)
+        private static void UpdateObjectsUsingFile(IElement element, string oldName, ReferencedFileSave rfs)
         {
             string newName = rfs.Name;
             string oldNameUnqualified = FileManager.RemoveExtension(FileManager.RemovePath(oldName));
             string newNameUnqualified = FileManager.RemoveExtension(FileManager.RemovePath(newName));
             if (element != null)
             {
-                AdjustAccordingToRenamedRfs(element, oldName, rfsType, newName, oldNameUnqualified, newNameUnqualified);
+                AdjustAccordingToRenamedRfs(element, oldName, rfs, newName, oldNameUnqualified, newNameUnqualified);
             }
             foreach (IElement derived in ObjectFinder.Self.GetAllElementsThatInheritFrom(element))
             {
-                AdjustAccordingToRenamedRfs(derived, oldName, rfsType, newName, oldNameUnqualified, newNameUnqualified);
+                AdjustAccordingToRenamedRfs(derived, oldName, rfs, newName, oldNameUnqualified, newNameUnqualified);
             }
         }
 
-        private static void AdjustAccordingToRenamedRfs(IElement element, string oldName, string rfsType, string newName, string oldNameUnqualified, string newNameUnqualified)
+        private static void AdjustAccordingToRenamedRfs(IElement element, string oldName, ReferencedFileSave rfs, string newName, string oldNameUnqualified, string newNameUnqualified)
         {
             foreach (NamedObjectSave nos in element.GetAllNamedObjectsRecurisvely())
             {
-                UpdateObjectToRenamedFile(oldName, newName, nos, rfsType);
+                UpdateObjectToRenamedFile(oldName, newName, nos, rfs);
             }
 
             foreach (CustomVariable cv in element.CustomVariables.Where(item =>  item.DefaultValue is string && ((string)item.DefaultValue) == oldNameUnqualified))
@@ -408,7 +402,7 @@ namespace FlatRedBall.Glue.SetVariable
             }
         }
 
-        private static void UpdateObjectToRenamedFile(string oldName, string newName, NamedObjectSave nos, string rfsType)
+        private static void UpdateObjectToRenamedFile(string oldName, string newName, NamedObjectSave nos, ReferencedFileSave rfs)
         {
             if (nos.SourceType == SourceType.Entity && nos.SourceFile == oldName)
             {
@@ -420,7 +414,26 @@ namespace FlatRedBall.Glue.SetVariable
             // see if any variables use this
             foreach (var customVariable in nos.InstructionSaves)
             {
-                if (customVariable.Value is string && (customVariable.Value as string) == oldNameUnqualified && customVariable.Type.ToLower() == rfsType.ToLower())
+                // December 29, 2021
+                // This code used to only
+                // compare against unqualified
+                // RuntimeTypes. I believe this is
+                // because older Glue would always use
+                // unqualified names, but newer Glue uses
+                // qualified names in most places. We'll check
+                // for both in case there are any older projects.
+                string rfsType = rfs.RuntimeType;
+                string rfsTypeUnqualified = rfsType;
+                if (rfsType != null && rfsType.Contains("."))
+                {
+                    rfsTypeUnqualified = FileManager.GetExtension(rfsType);
+                }
+
+                var matches =
+                    customVariable.Value is string && (customVariable.Value as string) == oldNameUnqualified && 
+                        (customVariable.Type.ToLower() == rfsType.ToLower() ||
+                            customVariable.Type.ToLower() == rfsTypeUnqualified.ToLower());
+                if (matches)
                 {
                     customVariable.Value = newNameUnqualified;
                     Plugins.PluginManager.ReceiveOutput("Changed " + nos.InstanceName + "." + customVariable.Member + " from " + oldNameUnqualified + " to " + newNameUnqualified);
