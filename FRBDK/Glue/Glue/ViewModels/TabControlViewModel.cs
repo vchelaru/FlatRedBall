@@ -27,7 +27,7 @@ namespace GlueFormsCore.ViewModels
         public Dictionary<Type, PluginTabPage> TabsForTypes { get; private set; } = new Dictionary<Type, PluginTabPage>();
         public void SetTabForCurrentType(PluginTabPage tab)
         {
-            var selectedType = GlueState.Self.CurrentTreeNode.Tag?.GetType();
+            var selectedType = GlueState.Self.CurrentTreeNode?.Tag?.GetType();
 
             if(selectedType != null)
             {
