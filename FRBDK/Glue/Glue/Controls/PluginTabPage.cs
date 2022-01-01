@@ -186,8 +186,11 @@ namespace FlatRedBall.Glue.Controls
 
         public void RecordLastClick()
         {
-            LastTimeClicked = DateTime.Now;
-            ParentTabControl?.SetTabForCurrentType(this);
+            if(TabControlViewModel.IsRecordingSelection)
+            {
+                LastTimeClicked = DateTime.Now;
+                ParentTabControl?.SetTabForCurrentType(this);
+            }
         }
 
         public override string ToString()

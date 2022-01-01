@@ -38,6 +38,7 @@ namespace GlueFormsCore.ViewModels
 
     public class TabControlViewModel : ViewModel
     {
+        public static bool IsRecordingSelection { get; set; } = true;
         #region Fields/Properties
 
         public TabContainerViewModel TopTabItems { get; private set; } =    new TabContainerViewModel();
