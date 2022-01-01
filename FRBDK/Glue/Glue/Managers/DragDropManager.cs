@@ -538,23 +538,52 @@ namespace FlatRedBall.Glue.Managers
             }
             else if (targetNode.IsRootCustomVariablesNode())
             {
-                // let's see if the user is moving a variable from one element to another
-                var sourceElement = nodeMoving.GetContainingElementTreeNode().Tag as GlueElement;
-                var targetElement = targetNode.GetContainingElementTreeNode().Tag as GlueElement;
-
-                if (sourceElement != targetElement)
-                {
-                    // copying a variable from one element to another
-                    // eventually we need to add some error checking here.
-                    CustomVariable newVariable = customVariable.Clone();
-
-                    targetElement.CustomVariables.Add(newVariable);
-
-
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(targetElement);
-                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(targetElement);
-                }
+                MoveVariableOnVariablesRootNode(nodeMoving, targetNode);
             }
+            else if(targetNode.IsStateCategoryNode())
+            {
+                MoveVariableOnStateCategory(nodeMoving.Tag as CustomVariable, targetNode.Tag as StateSaveCategory);
+            }
+        }
+
+        private static void MoveVariableOnVariablesRootNode(ITreeNode nodeMoving, ITreeNode targetNode)
+        {
+            CustomVariable customVariable = nodeMoving.Tag as CustomVariable;
+
+            // let's see if the user is moving a variable from one element to another
+            var sourceElement = nodeMoving.GetContainingElementTreeNode().Tag as GlueElement;
+            var targetElement = targetNode.GetContainingElementTreeNode().Tag as GlueElement;
+
+            if (sourceElement != targetElement)
+            {
+                // copying a variable from one element to another
+                // eventually we need to add some error checking here.
+                CustomVariable newVariable = customVariable.Clone();
+
+                targetElement.CustomVariables.Add(newVariable);
+
+
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(targetElement);
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(targetElement);
+            }
+        }
+
+        private static void MoveVariableOnStateCategory(CustomVariable customVariable, StateSaveCategory stateSaveCategory)
+        {
+            TaskManager.Self.AddOrRunIfTasked(() =>
+            {
+                if (stateSaveCategory.ExcludedVariables.Contains(customVariable.Name))
+                {
+                    stateSaveCategory.ExcludedVariables.Remove(customVariable.Name);
+                }
+                var container = ObjectFinder.Self.GetElementContaining(stateSaveCategory);
+
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container);
+                GlueCommands.Self.GluxCommands.SaveGlux();
+
+                GlueCommands.Self.PrintOutput($"Including variable {customVariable.Name} in category {stateSaveCategory.Name}");
+            }, $"Including variable {customVariable.Name} in category {stateSaveCategory.Name}", TaskExecutionPreference.Asap);
         }
 
 
