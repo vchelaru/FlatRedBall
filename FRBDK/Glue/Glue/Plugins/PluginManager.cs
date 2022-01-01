@@ -39,6 +39,7 @@ using GlueFormsCore.Controls;
 using System.Runtime.CompilerServices;
 using FlatRedBall.Glue.FormHelpers;
 using GlueFormsCore.FormHelpers;
+using GlueFormsCore.ViewModels;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -71,22 +72,6 @@ namespace FlatRedBall.Glue.Plugins
         #endregion
 
         private static MenuStrip mMenuStrip;
-
-        // not sure who should provide access to these tabs, but
-        // we want to make it easier to get access to them instead
-        // of having to explicitly define plugin types tied to certain
-        // sides:
-        //public static TabControl TopTab { get; private set; }
-        //public static TabControl LeftTab { get; private set; }
-        //public static TabControl BottomTab { get; private set; }
-        //public static TabControl RightTab { get; private set; }
-        //public static TabControl CenterTab { get; private set; }
-
-        //public static WpfTabControl TopTabControl { get; private set; }
-        //public static WpfTabControl BottomTabControl { get; private set; }
-        //public static WpfTabControl LeftTabControl { get; private set; }
-        //public static WpfTabControl RightTabControl { get; private set; }
-        //public static WpfTabControl CenterTabControl { get; private set; }
 
         public static TabControlViewModel TabControlViewModel { get; private set; }
 
@@ -861,35 +846,9 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
-        //internal static void SetTabs(TabControl top, TabControl bottom, TabControl left, TabControl right, TabControl center)
-        //{
-        //    TopTab = top;
-        //    LeftTab = left;
-        //    RightTab = right;
-        //    BottomTab = bottom;
-        //    CenterTab = center;
-
-        //    SetEvent(TopTab);
-        //    SetEvent(LeftTab);
-        //    SetEvent(RightTab);
-        //    SetEvent(BottomTab);
-        //    SetEvent(CenterTab);
-
-        //    void SetEvent(TabControl control)
-        //    {
-        //        control.SelectedIndexChanged += (not, used) =>
-        //        {
-        //            var selectedTab = (control.SelectedTab as PluginTabPage);
-        //            selectedTab?.TabSelected?.Invoke();
-        //        };
-        //    }
-        //}
-
         internal static void SetTabs(TabControlViewModel tabControlViewModel)
         {
             TabControlViewModel = tabControlViewModel;
-
-            // todo - do we need to subscribe to something to raise the tab event?
         }
 
         internal static void SetToolbarTray(ToolbarControl toolbar)
@@ -1211,33 +1170,7 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToItemSelectHandler(selectedTreeNode),
                 plugin => plugin.ReactToItemSelectHandler != null);
 
-            ShowMostRecentTabFor(TabControlViewModel.TopTabItems, 
-                (item) => TabControlViewModel.TopSelectedTab = item);
-
-            ShowMostRecentTabFor(TabControlViewModel.BottomTabItems, 
-                (item) => TabControlViewModel.BottomSelectedTab = item);
-
-            ShowMostRecentTabFor(TabControlViewModel.LeftTabItems,
-                (item) => TabControlViewModel.LeftSelectedTab = item);
-
-            ShowMostRecentTabFor(TabControlViewModel.CenterTabItems,
-                (item) => TabControlViewModel.CenterSelectedTab = item);
-
-            ShowMostRecentTabFor(TabControlViewModel.RightTabItems,
-                (item) => TabControlViewModel.RightSelectedTab = item);
-        }
-
-        private static void ShowMostRecentTabFor(IEnumerable<PluginTabPage> items, Action<PluginTabPage> action)
-        {
-            if (items.Count() > 1)
-            {
-                var ordered = items.OrderByDescending(item => item.LastTimeClicked).ToList();
-
-                if (ordered[0].LastTimeClicked != ordered[1].LastTimeClicked)
-                {
-                    action(ordered[0]);
-                }
-            }
+            TabControlViewModel.UpdateToSelection(selectedTreeNode);
 
         }
 

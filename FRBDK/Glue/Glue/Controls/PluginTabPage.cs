@@ -13,20 +13,16 @@ using FlatRedBall.Glue.MVVM;
 //using System.Windows.Forms;
 using FlatRedBall.Glue.Plugins;
 using GlueFormsCore.Controls;
+using GlueFormsCore.ViewModels;
 
 namespace FlatRedBall.Glue.Controls
 {
-    public class PluginTabPage : 
-        System.Windows.Controls.TabItem
-        //TabPage
+    public class PluginTabPage : System.Windows.Controls.TabItem
     {
-        public delegate void ClosedByUserDelegate(object sender);
-        public event ClosedByUserDelegate ClosedByUser;
-
-        public Action TabSelected;
+        #region Fields/properties
 
         TextBlock textBlock;
-        //TextBlock closeX;
+
         Button closeButton;
 
         MenuItem moveMenuItem;
@@ -39,7 +35,7 @@ namespace FlatRedBall.Glue.Controls
             set => textBlock.Text = value;
         }
 
-        public ObservableCollection<PluginTabPage> ParentTabControl
+        public TabContainerViewModel ParentTabControl
         {
             get; set;
         }
@@ -47,7 +43,7 @@ namespace FlatRedBall.Glue.Controls
         public DateTime LastTimeClicked
         {
             get;
-            set;
+            private set;
         }
 
         public bool DrawX
@@ -55,6 +51,18 @@ namespace FlatRedBall.Glue.Controls
             get => closeButton.Visibility == System.Windows.Visibility.Visible;
             set => closeButton.Visibility = value.ToVisibility();
         }
+
+        #endregion
+
+        #region Events/Delegates
+
+        public delegate void ClosedByUserDelegate(object sender);
+
+        public event ClosedByUserDelegate ClosedByUser;
+
+        public Action TabSelected;
+
+        #endregion
 
         public PluginTabPage() : base()
         {
@@ -103,6 +111,12 @@ namespace FlatRedBall.Glue.Controls
             //closeMenuItem = new MenuItem("Close");
             //closeMenuItem.Click += (not, used) => RightClickCloseClicked?.Invoke(this, null);
 
+        }
+
+        protected override void OnSelected(RoutedEventArgs e)
+        {
+            base.OnSelected(e);
+            RecordLastClick();
         }
 
         private void HandleMouseDown(object sender, MouseButtonEventArgs e)
@@ -168,6 +182,17 @@ namespace FlatRedBall.Glue.Controls
         public void CloseTabByUser()
         {
             ClosedByUser?.Invoke(this);
+        }
+
+        public void RecordLastClick()
+        {
+            LastTimeClicked = DateTime.Now;
+            ParentTabControl?.SetTabForCurrentType(this);
+        }
+
+        public override string ToString()
+        {
+            return Title;
         }
     }
 }

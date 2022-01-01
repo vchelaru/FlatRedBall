@@ -812,18 +812,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void FocusTab(string dialogTitle)
         {
-            bool TryFocus(IEnumerable<PluginTabPage> items)
+            bool TryFocus(TabContainerViewModel items)
             {
-                foreach (var tabPage in items)
+                foreach (var tabPage in items.Tabs)
                 {
                     if (tabPage.Title == dialogTitle)
                     {
                         tabPage.IsSelected = true;
-                        //control.SelectedTab = tabPage;
-                        //if(tabPage is PluginTabPage)
-                        {
-                            tabPage.LastTimeClicked = DateTime.Now;
-                        }
+                        tabPage.RecordLastClick();
                         return true;
                     }
                 }
