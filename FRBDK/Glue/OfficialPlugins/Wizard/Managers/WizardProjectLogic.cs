@@ -76,6 +76,11 @@ namespace OfficialPluginsCore.Wizard.Managers
                     gameScreen = response.gameScreen;
                     solidCollisionNos = response.solidCollision;
                     cloudCollisionNos = response.cloudCollisionNos;
+
+                    if(vm.IsAddGumScreenToLayerVisible && vm.AddGameScreenGumToHudLayer)
+                    {
+                        await HandleAddGumScreenToLayer(gameScreen);
+                    }
                 });
             }
 
@@ -191,6 +196,23 @@ namespace OfficialPluginsCore.Wizard.Managers
             // just in case, refresh everything
             GlueCommands.Self.RefreshCommands.RefreshTreeNodes();
 
+        }
+
+        private async Task<NamedObjectSave> HandleAddGumScreenToLayer(ScreenSave gameScreen)
+        {
+            // create an object named GumScreen, add it, and then 
+            var namedObjectSave = new NamedObjectSave();
+            namedObjectSave.InstanceName = "GumScreen";
+            namedObjectSave.SourceType = SourceType.File;
+            namedObjectSave.SourceFile = "gumproject/Screens/GameScreenGum.gusx";
+            namedObjectSave.SourceName = "Entire File (GameScreenGumRuntime)";
+            namedObjectSave.LayerOn = "HudLayer";
+
+            await TaskManager.Self.AddOrRunAndWaitToFinish(
+                () => GlueCommands.Self.GluxCommands.AddNamedObjectTo(namedObjectSave, gameScreen),
+                $"Adding {namedObjectSave.InstanceName} to {gameScreen.Name}");
+
+            return namedObjectSave;
         }
 
         private void ImportAdditionalObjects(string namedObjectSavesSerialized)

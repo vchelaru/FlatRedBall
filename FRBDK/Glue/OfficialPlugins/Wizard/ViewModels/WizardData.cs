@@ -230,7 +230,19 @@ namespace OfficialPluginsCore.Wizard.Models
             get => Get<bool>();
             set => Set(value);
         }
+        
         public bool AddFlatRedBallForms
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(AddGameScreen))]
+        [DependsOn(nameof(AddHudLayer))]
+        [DependsOn(nameof(AddGum))]
+        public bool IsAddGumScreenToLayerVisible => AddGameScreen && AddHudLayer && AddGum;
+
+        public bool AddGameScreenGumToHudLayer
         {
             get => Get<bool>();
             set => Set(value);
@@ -315,6 +327,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
             AddGum = true;
             AddFlatRedBallForms = true;
+            AddGameScreenGumToHudLayer = true;
 
             AddCameraController = true;
             FollowPlayersWithCamera = true;
