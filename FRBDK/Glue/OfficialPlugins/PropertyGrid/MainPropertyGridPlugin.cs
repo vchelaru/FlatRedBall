@@ -180,7 +180,20 @@ namespace OfficialPlugins.VariableDisplay
 
             if(isFile && ati != null)
             {
-                ati = FlatRedBall.IO.FileManager.CloneObject<AssetTypeInfo>(ati);
+                try
+                {
+                    var oldTag = ati.Tag;
+                    ati = FlatRedBall.IO.FileManager.CloneObject<AssetTypeInfo>(ati);
+                    // The tag isn't cloned through serialization since that may cause 
+                    // exceptions. But at runtime we may need the tag so we'll copy it over.
+                    // The purpose of cloning is to wipe the variables, but we still want the
+                    // rest of the ATI (including its tag) to be the same.
+                    ati.Tag = oldTag;
+                }
+                catch(Exception e)
+                {
+                    int m = 3;
+                }
                 foreach(var variable in ati.VariableDefinitions)
                 {
                     variable.DefaultValue = null;
