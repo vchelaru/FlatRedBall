@@ -349,8 +349,33 @@ namespace OfficialPluginsCore.Wizard.Managers
                     setFromMapObject: vm.AddTiledMap);
             }
 
+            if(vm.AddHudLayer)
+            {
+                await AddHudLayer(gameScreen);
+            }
+
 
             return (gameScreen, solidCollisionNos, cloudCollisionNos);
+        }
+
+        private static async Task<NamedObjectSave> AddHudLayer(ScreenSave gameScreen)
+        {
+            var addObjectViewModel = new AddObjectViewModel();
+            addObjectViewModel.ForcedElementToAddTo = gameScreen;
+            addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+            addObjectViewModel.SourceClassType = "FlatRedBall.Graphics.Layer";
+            addObjectViewModel.ObjectName = "HudLayer";
+
+            NamedObjectSave nos = null;
+
+            var task = TaskManager.Self.AddOrRunIfTasked(() =>
+            {
+                nos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, gameScreen, null);
+            }, "Adding Layer to Screen");
+
+            await TaskManager.Self.WaitForTaskToFinish(task);
+
+            return nos;
         }
 
         private static async Task<EntitySave> HandleAddPlayerEntity(WizardData vm)

@@ -122,7 +122,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                     nos.Properties.SetValue("CollisionTileTypeName", name);
                 }
 
-            }, "Adding collision {}");
+            }, $"Adding collision {name}");
 
             await TaskManager.Self.WaitForTaskToFinish(task);
 

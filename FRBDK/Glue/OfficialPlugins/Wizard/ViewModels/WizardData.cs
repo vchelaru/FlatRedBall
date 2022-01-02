@@ -82,6 +82,12 @@ namespace OfficialPluginsCore.Wizard.Models
             set => Set(value);
         }
 
+        public bool AddHudLayer
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         #endregion
 
         #region Player Entity
@@ -287,6 +293,7 @@ namespace OfficialPluginsCore.Wizard.Models
             AddTiledMap = true;
             AddSolidCollision = true;
             AddCloudCollision = true;
+            AddHudLayer = true;
 
             AddPlayerEntity = true;
 

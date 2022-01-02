@@ -511,6 +511,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         private static void PopulateRightClickMenuItemsShared(ITreeNode targetNode, MenuShowingAction menuShowingAction, ITreeNode sourceNode)
         {
+
             #region IsScreenNode
 
             if (targetNode.IsScreenNode())
@@ -714,7 +715,10 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 AddSeparator();
 
-                var currentNamedObject = GlueState.Self.CurrentNamedObjectSave;
+                // In case something has changed which can happen mid wizard
+                //var currentNamedObject = GlueState.Self.CurrentNamedObjectSave;
+                var currentNamedObject = targetNode.Tag as NamedObjectSave;
+                //GlueState.Self.CurrentNamedObjectSave;
 
                 if (currentNamedObject.IsList &&
                     !string.IsNullOrEmpty(currentNamedObject.SourceClassGenericType) &&

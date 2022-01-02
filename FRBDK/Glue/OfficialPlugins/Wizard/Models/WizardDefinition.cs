@@ -125,6 +125,7 @@ namespace OfficialPluginsCore.Wizard.Models
                 formsData.AddBoolValue("Add SolidCollision", nameof(ViewModel.AddSolidCollision), nameof(ViewModel.AddGameScreen));
                 formsData.AddBoolValue("Add CloudCollision", nameof(ViewModel.AddCloudCollision), nameof(ViewModel.AddGameScreen));
 
+                formsData.AddBoolValue("Add HUD Layer", nameof(ViewModel.AddHudLayer), nameof(ViewModel.AddGameScreen));
 
 
                 FormsDataList.Add(formsData);
