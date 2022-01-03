@@ -221,7 +221,7 @@ namespace GlueFormsCore.ViewModels
 
         internal void UpdateToSelection(ITreeNode selectedTreeNode)
         {
-            var selectedType = selectedTreeNode.Tag?.GetType();
+            var selectedType = selectedTreeNode?.Tag?.GetType();
 
             ShowMostRecentTabFor(TopTabItems,
                 (item) => TopSelectedTab = item, 
