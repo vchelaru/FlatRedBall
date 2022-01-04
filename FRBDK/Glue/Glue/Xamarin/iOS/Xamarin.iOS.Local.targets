@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">	
+	<UsingTask TaskName="Xamarin.iOS.Tasks.CompileEntitlements" AssemblyFile="Xamarin.iOS.Tasks.dll" />
+	<UsingTask TaskName="Xamarin.iOS.Tasks.UnpackLibraryResources" AssemblyFile="Xamarin.iOS.Tasks.dll" />
+	<UsingTask TaskName="Xamarin.iOS.Local.Tasks.CollectDynamicFrameworks" AssemblyFile="Xamarin.iOS.Local.Tasks.dll" />
+	<UsingTask TaskName="Xamarin.iOS.Local.Tasks.CompileLocalAppManifest" AssemblyFile="Xamarin.iOS.Local.Tasks.dll" />
+	<UsingTask TaskName="Xamarin.iOS.Local.Tasks.DetectLocalSigningIdentity" AssemblyFile="Xamarin.iOS.Local.Tasks.dll" />
+	<UsingTask TaskName="Xamarin.iOS.Local.Tasks.LocalCodesign" AssemblyFile="Xamarin.iOS.Local.Tasks.dll" />
+	<UsingTask TaskName="Xamarin.iOS.Local.Tasks.PrepareLocalAppBundle" AssemblyFile="Xamarin.iOS.Local.Tasks.dll" />
+	<UsingTask TaskName="Xamarin.iOS.Local.Tasks.UnpackLocalFrameworks" AssemblyFile="Xamarin.iOS.Local.Tasks.dll" />
+	
+	<Import Project="Xamarin.iOS.Local.props" />
+
+	<Import Project="$(MSBuildThisFileDirectory)Xamarin.Messaging.Build.targets" Condition="Exists('$(MSBuildThisFileDirectory)Xamarin.Messaging.Build.targets') And '$(MessagingBuildTargetsImported)' != 'true'" />
+	<Import Project="$(MSBuildThisFileDirectory)Xamarin.Messaging.Apple.targets" Condition="Exists('$(MSBuildThisFileDirectory)Xamarin.Messaging.Apple.targets') And '$(MessagingAppleTargetsImported)' != 'true'" />
+	
+	<Target Name="_DetectLocalSigningIdentity" AfterTargets="_DetectAppManifest" 
+		Condition="'$(_CanOutputAppBundle)' == 'true' And '$(IsHotRestartBuild)' == 'true' And '$(IsHotRestartEnvironmentReady)' == 'true'" >
+		
+		<DetectLocalSigningIdentity 
+			AppManifest="$(_AppManifest)"
+			ProvisioningProfile="$(CodesignProvision)"
+			SigningKey="$(CodesignKey)">
+
+			<Output TaskParameter="DetectedAppId" PropertyName="_AppIdentifier" />
+			<Output TaskParameter="DetectedBundleId" PropertyName="_BundleIdentifier" />
+			<Output TaskParameter="DetectedAppDisplayName" PropertyName="_AppDisplayName" />
+			<Output TaskParameter="DetectedCodeSigningPath" PropertyName="_CodeSigningPath" />
+			<Output TaskParameter="DetectedProvisioningProfileId" PropertyName="_ProvisioningProfileId" />
+			<Output TaskParameter="DetectedProvisioningProfilePath" PropertyName="_ProvisioningProfilePath" />
+		</DetectLocalSigningIdentity>
+	</Target>
+
+	<Target Name="_CollectLocalBundleResources" Condition="'$(IsHotRestartBuild)' == 'true'">
+		<CollectBundleResources
+			OptimizePropertyLists="$(OptimizePropertyLists)"
+			OptimizePNGs="$(OptimizePNGs)"
+			BundleResources="@(Content);@(BundleResource)"
+			ProjectDir="$(MSBuildProjectDirectory)"
+			ResourcePrefix="$(IPhoneResourcePrefix)">
+
+			<Output TaskParameter="BundleResourcesWithLogicalNames" ItemName="_LocalBundleResourceWithLogicalName"/>
+		</CollectBundleResources>
+	</Target>
+
+	<Target Name="_UnpackLocalLibraryResources" DependsOnTargets="_CollectLocalBundleResources"
+		Condition="'$(_CanOutputAppBundle)' == 'true' And '$(IsHotRestartBuild)' == 'true'" >
+
+		<UnpackLibraryResources
+			Prefix="monotouch"
+			NoOverwrite="@(_LocalBundleResourceWithLogicalName)"
+			IntermediateOutputPath="$(DeviceSpecificIntermediateOutputPath)"
+			TargetFrameworkDirectory="$(TargetFrameworkDirectory)"
+			ReferencedLibraries="@(ReferencePath);@(ReferenceDependencyPaths);@(_ReferencesFromNuGetPackages)">
+
+			<Output TaskParameter="BundleResourcesWithLogicalNames" ItemName="_LocalBundleResourceWithLogicalName" />
+		</UnpackLibraryResources>
+	</Target>
+
+	<!-- Gets the list of assemblies that may contain frameworks -->
+	<Target Name="_CollectFrameworkAssemblies" Condition="'$(_CanOutputAppBundle)' == 'true' And '$(IsHotRestartBuild)' == 'true'">
+		<ItemGroup>
+			<AssembliesWithFrameworks Include="@(ReferenceCopyLocalPaths)" Condition="'%(Extension)' == '.dll'"
+																Exclude="@(ReferenceSatellitePaths)"/>
+		</ItemGroup>
+	</Target>
+
+	<Target Name="_UnpackFrameworkAssemblies" 
+		Condition="'$(_CanOutputAppBundle)' == 'true' And '$(IsHotRestartBuild)' == 'true' And '$(UnpackLocalFrameworks)' == 'true'"
+		Inputs="@(AssembliesWithFrameworks)"
+		Outputs="@(AssembliesWithFrameworks -> '$(DeviceSpecificIntermediateOutputPath)UnpackedFrameworks\%(Filename)%(Extension).stamp')" >
+
+		<UnpackLocalFrameworks
+			ReferencedAssemblies="@(AssembliesWithFrameworks)"
+			IntermediateOutputPath="$(DeviceSpecificIntermediateOutputPath)">
+
+			<Output TaskParameter="Frameworks" ItemName="_UnpackedFramework" />
+		</UnpackLocalFrameworks>
+
+		<MakeDir Directories="$(DeviceSpecificIntermediateOutputPath)UnpackedFrameworks"/>
+		
+		<Touch AlwaysCreate="true" Files="@(AssembliesWithFrameworks -> '$(DeviceSpecificIntermediateOutputPath)UnpackedFrameworks\%(Filename)%(Extension).stamp')" >
+			<Output TaskParameter="TouchedFiles" ItemName="FileWrites" />
+		</Touch>
+	</Target>
+
+	<Target Name="_CollectLocalFrameworks" >
+		<ItemGroup>
+			<_LocalFrameworks Include="@(None -> '%(RootDir)%(Directory)')" Condition="$([System.String]::new('%(Directory)').EndsWith('.framework\'))" KeepDuplicates="false" />
+			<_LocalFrameworks Include="@(_UnpackedFramework);@(NativeReference)" KeepDuplicates="false" />
+			<_LocalFrameworkExecutables Include="@(_LocalFrameworks -> '%(FullPath)\%(Filename)')" 
+																	Outputs="$(DeviceSpecificIntermediateOutputPath)DynamicFrameworks\%(Filename)%(Extension).stamp" KeepDuplicates="false" />
+		</ItemGroup>
+	</Target>
+
+	<PropertyGroup>
+		<_CollectDynamicFrameworksDependsOn>
+			_CollectFrameworkAssemblies;
+			_UnpackFrameworkAssemblies;
+			_CollectLocalFrameworks;
+		</_CollectDynamicFrameworksDependsOn>
+	</PropertyGroup>
+	
+	<Target Name="_CollectDynamicFrameworks" DependsOnTargets="$(_CollectDynamicFrameworksDependsOn)"
+		Condition="'$(_CanOutputAppBundle)' == 'true' And '$(IsHotRestartBuild)' == 'true'"
+		Inputs="@(_LocalFrameworkExecutables)"
+		Outputs="@(_LocalFrameworkExecutables -> '%(Outputs)')" >
+
+		<CollectDynamicFrameworks
+			Frameworks="@(_LocalFrameworks)" >
+
+			<Output TaskParameter="DynamicFrameworks" ItemName="_DynamicFrameworks" />
+		</CollectDynamicFrameworks>
+
+		<MakeDir Directories="$(DeviceSpecificIntermediateOutputPath)DynamicFrameworks"/>
+		
+		<Touch AlwaysCreate="true" Files="@(_LocalFrameworks -> '$(DeviceSpecificIntermediateOutputPath)DynamicFrameworks\%(Filename)%(Extension).stamp')" >
+			<Output TaskParameter="TouchedFiles" ItemName="FileWrites" />
+		</Touch>
+
+		<ItemGroup>
+			<_LocalFrameworkFiles Include="%(_DynamicFrameworks.FullPath)\**\*.*" Condition="'%(_DynamicFrameworks.FullPath)' != ''" KeepDuplicates="false" >
+				<FrameworkDir>%(FrameworkDir)</FrameworkDir>
+			</_LocalFrameworkFiles>
+		</ItemGroup>
+	</Target>
+
+	<PropertyGroup>
+		<_CreateLocalCachedBundleDependsOn>
+			_PrepareLocalAppBundle;
+			_CompileLocalAppManifest;
+			_CompileLocalEntitlements;
+		</_CreateLocalCachedBundleDependsOn>
+	</PropertyGroup>
+
+	<Target Name="_CreateLocalCachedBundle" DependsOnTargets="$(_CreateLocalCachedBundleDependsOn)" />
+	
+	<!-- Creates local app bundle and collects files to copy -->
+	<Target Name="_PrepareLocalAppBundle" DependsOnTargets="_GenerateBuildSessionId" 
+					Condition="'$(_CanOutputAppBundle)' == 'true' And '$(IsAppExtension)' == 'false' And '$(IsHotRestartBuild)' == 'true'">
+
+		<!--Create app bundle dir and get its path-->
+		<PrepareLocalAppBundle 
+			AppBundleName="$(_AppBundleName)"
+			SessionId="$(BuildSessionId)" 
+			ShouldExtract="true">
+
+			<Output TaskParameter="AppBundlePath" PropertyName="LocalAppBundlePath" />
+		</PrepareLocalAppBundle>
+
+		<!-- Delete the build signature to force XMA do a full build next time -->
+		<Delete Files="$(BuildSignatureFile)" Condition="Exists('$(BuildSignatureFile)')"	/>
+
+		<ItemGroup>
+			<_FilesToLocalBundle Include="$(LocalAppBundlePath)\Extracted" />
+			
+			<_FilesToLocalContent Include="@(MainAssembly);" >
+				<DestinationSubDirectory></DestinationSubDirectory>
+			</_FilesToLocalContent>
+
+			<_FilesToLocalContent Include="@(_FilesToLocalContent -> '%(RootDir)%(Directory)%(Filename).pdb')"
+													 Condition="Exists('%(RootDir)%(Directory)%(Filename).pdb')" />
+
+			<_FilesToLocalContent Include="@(ReferenceCopyLocalPaths -> Distinct())" Condition="Exists('$(LocalAppBundlePath)\%(Filename)%(Extension)') == 'false'"/>
+		</ItemGroup>
+	</Target>
+
+	<Target Name="_CompileLocalAppManifest"
+		Condition="'$(_CanOutputAppBundle)' == 'true' And '$(IsHotRestartBuild)' == 'true'"
+		Inputs="$(_AppManifest);$(LocalAppBundlePath)\Extracted"
+		Outputs="$(LocalSignedAppDir)$(_AppManifest);$(LocalSignedAppDir)Extracted">
+
+		<CompileLocalAppManifest
+			AppBundlePath="$(LocalAppBundlePath)"
+			AppManifestPath="$(_AppManifest)" />
+	</Target>
+
+	<Target Name="_CompileLocalEntitlements"
+		Condition="'$(_CanOutputAppBundle)' == 'true' And '$(IsHotRestartBuild)' == 'true'"
+		Inputs="$(CodesignEntitlements);$(_ProvisioningProfilePath);$(LocalAppBundlePath)\Extracted"
+		Outputs="$(LocalSignedAppDir)archived-expanded-entitlements.xcent;$(LocalSignedAppDir)Extracted">
+
+		<CompileEntitlements
+			AppBundleDir="$(LocalAppBundlePath)"
+			AppIdentifier="$(_AppIdentifier)"
+			BundleIdentifier="$(_BundleIdentifier)"
+			Entitlements="$(CodesignEntitlements)"
+			CompiledEntitlements="$(DeviceSpecificIntermediateOutputPath)Entitlements.xcent"
+			IsAppExtension="$(IsAppExtension)"
+			ProvisioningProfile="$(_ProvisioningProfileId)"
+			SdkIsSimulator="False"
+			SdkPlatform="iPhoneOS"
+			SdkVersion="12.2"
+			SdkDevPath=" "
+			TargetFrameworkMoniker="$(TargetFrameworkMoniker)" />
+	</Target>
+
+	<Target Name="_CopyFilesToLocalBundle"
+		Condition="'$(_CanOutputAppBundle)' == 'true' And '$(IsAppExtension)' == 'false' And '$(IsHotRestartBuild)' == 'true'"
+		DependsOnTargets="_CreateLocalCachedBundle;_UnpackLocalLibraryResources"
+		Inputs="@(_LocalBundleResourceWithLogicalName);@(_FilesToLocalBundle)"
+		Outputs="@(_LocalBundleResourceWithLogicalName -> '$(LocalSignedAppDir)%(LogicalName)');
+			@(_FilesToLocalBundle -> '$(LocalSignedAppDir)%(Filename)%(Extension)')">
+
+		<!-- Copy Bundle resources -->
+		<Copy SourceFiles="@(_LocalBundleResourceWithLogicalName)"
+        DestinationFiles="@(_LocalBundleResourceWithLogicalName -> '$(LocalSignedAppDir)\%(LogicalName)')"
+        SkipUnchangedFiles="true"
+        Condition="'@(_LocalBundleResourceWithLogicalName)' != ''">
+
+			<Output TaskParameter="DestinationFiles" ItemName="FileWrites"/>
+		</Copy>
+
+		<Copy SourceFiles="@(_FilesToLocalBundle)"
+        DestinationFiles="@(_FilesToLocalBundle -> '$(LocalSignedAppDir)\%(Filename)%(Extension)')"
+        SkipUnchangedFiles="true"
+        Condition="'@(_FilesToLocalBundle)' != ''">
+
+			<Output TaskParameter="DestinationFiles" ItemName="FileWrites"/>
+		</Copy>
+
+		<MakeDir Directories="$(LocalContentStampDir)"/>
+		<Touch AlwaysCreate="true" Files="$(LocalContentStampDir)$(_AppBundleName).stamp" />
+	</Target>
+
+	<Target Name="_CopyFilesToLocalContent"
+		Condition="'$(_CanOutputAppBundle)' == 'true' And '$(IsAppExtension)' == 'false' And '$(IsHotRestartBuild)' == 'true'"
+		DependsOnTargets="_CreateLocalCachedBundle"
+		Inputs="@(_FilesToLocalContent)"
+		Outputs="@(_FilesToLocalContent -> '$(LocalContentDir)%(DestinationSubDirectory)%(FileName)%(Extension)');
+			@(_FilesToLocalContent -> '$(LocalAppContentDir)%(DestinationSubDirectory)%(FileName)%(Extension)')">
+
+		<MakeDir Directories="$(LocalContentDir)"/>
+		<MakeDir Directories="$(LocalAppContentDir)"/>
+
+		<!-- Copy assemblies and debug symbols into incremental Content folder -->
+		<Copy SourceFiles="@(_FilesToLocalContent)"
+        DestinationFiles="@(_FilesToLocalContent -> '$(LocalContentDir)%(DestinationSubDirectory)%(FileName)%(Extension)')"
+        SkipUnchangedFiles="true"
+        Condition="'@(_FilesToLocalContent)' != ''">
+
+			<Output TaskParameter="DestinationFiles" ItemName="FileWrites"/>
+		</Copy>
+
+		<!-- Copy assemblies and debug symbols into app bundle's content folder -->
+		<Copy SourceFiles="@(_FilesToLocalContent)"
+      DestinationFiles="@(_FilesToLocalContent -> '$(LocalAppContentDir)%(DestinationSubDirectory)%(FileName)%(Extension)')"
+      SkipUnchangedFiles="true"
+      Condition="'@(_FilesToLocalContent)' != ''">
+
+			<Output TaskParameter="DestinationFiles" ItemName="FileWrites"/>
+		</Copy>
+
+		<MakeDir Directories="$(LocalContentStampDir)"/>
+		<MakeDir Directories="@(_FilesToLocalContent -> '$(LocalContentStampDir)%(DestinationSubDirectory)')"/>
+		
+		<Touch AlwaysCreate="true" Files="@(_FilesToLocalContent -> '$(LocalContentStampDir)%(DestinationSubDirectory)%(FileName)%(Extension).stamp')" />
+	</Target>
+
+	<Target Name="_CopyFrameworksToLocalBundle"
+		Condition="'$(_CanOutputAppBundle)' == 'true' And '$(IsAppExtension)' == 'false' And '$(IsHotRestartBuild)' == 'true'"
+		DependsOnTargets="_CreateLocalCachedBundle;_CollectDynamicFrameworks"
+		Inputs="@(_LocalFrameworkFiles)"
+		Outputs="@(_LocalFrameworkFiles -> '$(LocalSignedAppDir)Frameworks\%(FrameworkDir)%(RecursiveDir)%(Filename)%(Extension)')">
+
+		<!-- Copy frameworks -->
+		<Copy SourceFiles="@(_LocalFrameworkFiles)"
+				DestinationFiles="@(_LocalFrameworkFiles -> '$(LocalAppBundlePath)\Frameworks\%(FrameworkDir)%(RecursiveDir)%(Filename)%(Extension)')"
+				SkipUnchangedFiles="true"
+				Condition="'@(_LocalFrameworkFiles)' != ''">
+
+			<Output TaskParameter="DestinationFiles" ItemName="FileWrites"/>
+		</Copy>
+	</Target>
+
+	<Target Name="_CollectCodeSignLocalInputs">
+		<ItemGroup>
+			<_CodeSignLocalInputs Include="$(_AppManifest)" Outputs="$(LocalSignedAppDir)$(_AppManifest)" />
+			<_CodeSignLocalInputs Include="$(CodesignEntitlements)" Outputs="$(LocalSignedAppDir)$(CodesignEntitlements)" />
+			<_CodeSignLocalInputs Include="$(_ProvisioningProfilePath)" Outputs="$(LocalSignedAppDir)embedded.mobileprovision" />
+			<_CodeSignLocalInputs Include="@(_LocalFrameworkFiles)" Outputs="$(LocalAppBundlePath)\Frameworks\%(_LocalFrameworkFiles.FrameworkDir)%(RecursiveDir)%(Filename)%(Extension)" />
+			<_CodeSignLocalInputs Include="$(LocalAppBundlePath)\Extracted" Outputs="$(LocalSignedAppDir)Extracted" />
+		</ItemGroup>
+	</Target>
+
+	<PropertyGroup>
+		<_CreateLocalOutputBundleDependsOn>
+			_CodesignLocalAppBundle;
+			_CopyFilesToLocalBundle;
+			_CopyFilesToLocalContent;
+		</_CreateLocalOutputBundleDependsOn>
+	</PropertyGroup>
+
+	<Target Name="_CreateLocalOutputBundle" Condition="'$(IsHotRestartEnvironmentReady)' == 'true'" DependsOnTargets="$(_CreateLocalOutputBundleDependsOn)" 
+					AfterTargets="_CodesignAppBundle" />
+	
+	<Target Name="_CodesignLocalAppBundle"
+		Condition="'$(_CanOutputAppBundle)' == 'true' And '$(IsAppExtension)' == 'false' And '$(IsHotRestartBuild)' == 'true'"
+		DependsOnTargets="_CreateLocalCachedBundle;_CopyFrameworksToLocalBundle;_CollectCodeSignLocalInputs"
+		Inputs="@(_CodeSignLocalInputs)"
+		Outputs="@(_CodeSignLocalInputs -> '%(Outputs)')">
+		
+		<LocalCodesign
+			AppBundlePath="$(LocalAppBundlePath)"
+			BundleIdentifier="$(_BundleIdentifier)"
+			CodeSigningPath="$(_CodeSigningPath)"
+			ProvisioningProfilePath="$(_ProvisioningProfilePath)" />
+	</Target>
+
+	<PropertyGroup>
+		<CleanDependsOn>
+			$(CleanDependsOn);
+			_CleanLocalBundle
+		</CleanDependsOn>
+	</PropertyGroup>
+
+	<Target Name="_CleanLocalBundle" DependsOnTargets="_GenerateBuildSessionId" >
+		<!-- Gets the bundle path -->
+		<PrepareLocalAppBundle 
+			Condition="'$(IsHotRestartBuild)' == 'true'"
+			AppBundleName="$(_AppBundleName)"
+			SessionId="$(BuildSessionId)" 
+			ShouldExtract="false">
+
+			<Output TaskParameter="AppBundlePath" PropertyName="LocalAppBundlePath" />
+		</PrepareLocalAppBundle>
+		
+		<RemoveDir Directories="$(LocalAppBundlePath)" />
+		<RemoveDir Directories="$(LocalSignedAppOutputDir)" />
+		<RemoveDir Directories="$(DeviceSpecificIntermediateOutputPath)UnpackedFrameworks" />
+		<RemoveDir Directories="$(DeviceSpecificIntermediateOutputPath)DynamicFrameworks" />
+	</Target>
+</Project>
