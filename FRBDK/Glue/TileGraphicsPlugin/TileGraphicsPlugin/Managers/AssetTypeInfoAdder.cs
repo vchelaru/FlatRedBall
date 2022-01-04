@@ -17,6 +17,8 @@ namespace TileGraphicsPlugin
 {
     public class AssetTypeInfoAdder : Singleton<AssetTypeInfoAdder>
     {
+        #region Fields/Properties
+
         AssetTypeInfo tmxAssetTypeInfo;
         AssetTypeInfo tileShapeCollectionAssetTypeInfo;
         AssetTypeInfo tileNodeNetworkAssetTypeInfo;
@@ -25,14 +27,11 @@ namespace TileGraphicsPlugin
         {
             get
             {
-                if(tmxAssetTypeInfo == null)
-                {
-                    tmxAssetTypeInfo = CreateAtiForRawTmx();
-                }
-
+                tmxAssetTypeInfo = tmxAssetTypeInfo ?? CreateAtiForRawTmx();
                 return tmxAssetTypeInfo;
             }
         }
+
         public AssetTypeInfo TileShapeCollectionAssetTypeInfo
         {
             get
@@ -56,6 +55,8 @@ namespace TileGraphicsPlugin
                 return tileNodeNetworkAssetTypeInfo;
             }
         }
+
+        #endregion
 
         public void UpdateAtiCsvPresence()
         {
@@ -166,6 +167,15 @@ namespace TileGraphicsPlugin
                 Type = "bool",
                 DefaultValue = "false",
                 Category = "Entities and Collision",
+                UsesCustomCodeGeneration = true
+            });
+
+            toReturn.VariableDefinitions.Add(new VariableDefinition
+            {
+                Name = "ShiftMapToMoveGameplayLayerToZ0",
+                Type = "bool",
+                DefaultValue = "false",
+                Category = "Position",
                 UsesCustomCodeGeneration = true
             });
 

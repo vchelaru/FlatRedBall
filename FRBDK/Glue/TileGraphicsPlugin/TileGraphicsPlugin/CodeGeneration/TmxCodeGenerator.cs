@@ -29,10 +29,15 @@ namespace TileGraphicsPlugin.CodeGeneration
 
             foreach(var nos in element.NamedObjects)
             {
-                // not sure if we need this for files, but for now
-                // going to implement just on NOS's since that's the 
-                // preferred pattern.
-                GenerateCreateEntitiesCode(nos, codeBlock);
+                if(nos.GetAssetTypeInfo().Extension == "tmx")
+                {
+                    // not sure if we need this for files, but for now
+                    // going to implement just on NOS's since that's the 
+                    // preferred pattern.
+                    GenerateCreateEntitiesCode(nos, codeBlock);
+
+                    GenerateShiftZ0Code(nos, codeBlock);
+                }
             }
 
 
@@ -51,6 +56,22 @@ namespace TileGraphicsPlugin.CodeGeneration
                     $"FlatRedBall.TileEntities.TileEntityInstantiator.CreateEntitiesFrom({nos.InstanceName});");
 
             }
+        }
+
+        private void GenerateShiftZ0Code(NamedObjectSave nos, ICodeBlock codeBlock)
+        {
+            var shouldGenerate = nos.DefinedByBase == false &&
+                nos.GetCustomVariable("ShiftMapToMoveGameplayLayerToZ0")?.Value as bool? == true;
+
+            if(shouldGenerate)
+            {
+                var gameplayLayerVarName = $"{nos.InstanceName}_gameplayLayer";
+                codeBlock.Line($"var {gameplayLayerVarName} = {nos.InstanceName}.MapLayers.FindByName(\"GameplayLayer\");");
+
+                codeBlock = codeBlock.If($"{gameplayLayerVarName} != null");
+                codeBlock = codeBlock.Line($"{gameplayLayerVarName}.ForceUpdateDependencies();");
+                codeBlock = codeBlock.Line($"{nos.InstanceName}.Z = -{gameplayLayerVarName}.Z;");
+            }                   
         }
 
         private void GenerateAddToManagers(ICodeBlock codeBlock, ReferencedFileSave file)
