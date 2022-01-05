@@ -29,7 +29,7 @@ namespace TileGraphicsPlugin.CodeGeneration
 
             foreach(var nos in element.NamedObjects)
             {
-                if(nos.GetAssetTypeInfo().Extension == "tmx")
+                if(nos.GetAssetTypeInfo()?.Extension == "tmx")
                 {
                     // not sure if we need this for files, but for now
                     // going to implement just on NOS's since that's the 
