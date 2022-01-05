@@ -27,6 +27,12 @@ namespace OfficialPlugins.Compiler.CodeGeneration
                 codeBlock.Line($"glueControlManager = new GlueControl.GlueControlManager({PortNumber});");
                 codeBlock.Line("glueControlManager.Start();");
                 codeBlock.Line("this.Exiting += (not, used) => glueControlManager.Kill();");
+
+                // Vic says - We run all Glue commands before running custom initialize. The reason is - custom initialize
+                // may make modifications to objects that are created by glue commands (such as assigning acceleration to objects
+                // in a list), but it is unlikely that scripts will make modifications to objects created in CustomInitialize because
+                // objects created in CustomInitialize cannot be modified by level editor.
+                codeBlock.Line("FlatRedBall.Screens.ScreenManager.BeforeScreenCustomInitialize += (newScreen) => glueControlManager.ReRunAllGlueToGameCommands();");
             }
         }
     }
