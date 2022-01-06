@@ -116,10 +116,6 @@ namespace FlatRedBall.Forms.Controls
             {
                 // the user provided a list box item, so just use that directly instead of creating a new one
                 item = o as ListBoxItem;
-                // let's hope the item doesn't already have this event - if the user recycles them that could be a problem...
-                item.Selected += HandleItemSelected;
-                item.GotFocus += HandleItemFocused;
-                item.Clicked += HandleListBoxItemClicked;
             }
             else
             {
@@ -127,13 +123,16 @@ namespace FlatRedBall.Forms.Controls
 
                 item = CreateNewListBoxItem(visual);
 
-                item.Selected += HandleItemSelected;
-                item.GotFocus += HandleItemFocused;
-                item.Clicked += HandleListBoxItemClicked;
-
                 item.UpdateToObject(o);
+
                 item.BindingContext = o;
+
             }
+            // If the iuser added a ListBoxItem as a parameter,
+            // let's hope the item doesn't already have this event - if the user recycles them that could be a problem...
+            item.Selected += HandleItemSelected;
+            item.GotFocus += HandleItemFocused;
+            item.Clicked += HandleListBoxItemClicked;
 
             return item;
         }
@@ -142,7 +141,12 @@ namespace FlatRedBall.Forms.Controls
         {
             if(FrameworkElementTemplate != null)
             {
-                return FrameworkElementTemplate.CreateContent() as ListBoxItem;
+                var item = FrameworkElementTemplate.CreateContent();
+                if(item != null && item is ListBoxItem == false)
+                {
+                    throw new InvalidOperationException($"Could not create an item of type {item.GetType()} because it must inherit from ListBoxItem.");
+                }
+                return item as ListBoxItem;
             }
             else
             {

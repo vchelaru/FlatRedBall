@@ -408,6 +408,9 @@ namespace GumPlugin.CodeGeneration
         {
             string baseCall = null;
 
+            // Create a no-arg constructor for VisualTemplates
+            currentBlock.Constructor("public", runtimeClassName, "", "this(true, true)");
+
             bool hasBase = !string.IsNullOrEmpty(elementSave.BaseType);
 
             if(hasBase)
