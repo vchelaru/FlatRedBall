@@ -19,7 +19,7 @@ namespace GlueFormsCore.SetVariable.NamedObjectSaves
             if (namedObjectSave.SourceType == SourceType.Entity &&
                 !string.IsNullOrEmpty(namedObjectSave.SourceClassType))
             {
-                if (ProjectManager.VerifyReferenceGraph(ObjectFinder.Self.GetEntitySave(namedObjectSave.SourceClassType)) == ProjectManager.CheckResult.Failed)
+                if (ProjectManager.CheckForCircularObjectReferences(ObjectFinder.Self.GetEntitySave(namedObjectSave.SourceClassType)) == ProjectManager.CheckResult.Failed)
                     namedObjectSave.SetByDerived = !namedObjectSave.SetByDerived;
             }
 

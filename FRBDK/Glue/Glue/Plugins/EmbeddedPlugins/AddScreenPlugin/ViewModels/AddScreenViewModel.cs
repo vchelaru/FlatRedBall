@@ -26,6 +26,8 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
 
     class AddScreenViewModel : ViewModel
     {
+        #region General Values
+
         public AddScreenType AddScreenType
         {
             get => Get<AddScreenType>();
@@ -38,9 +40,15 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
             set => Set(value);
         }
 
+        #endregion
+
         #region Level Screen
 
-        
+        #region Level Screen Radio
+
+        [DependsOn(nameof(HasGameScreen))]
+        public Visibility LevelScreenOptionUiVisibility => HasGameScreen.ToVisibility();
+
         [DependsOn(nameof(AddScreenType))]
         public bool IsLevelScreen
         {
@@ -54,23 +62,63 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
             }
         }
 
-        [DependsOn(nameof(HasGameScreen))]
-        public Visibility LevelScreenOptionUiVisibility => HasGameScreen.ToVisibility();
-
-        [DependsOn(nameof(HasGameScreen))]
-        public Visibility GameScreenOptionUiVisibility => (!HasGameScreen).ToVisibility();
-
-
         [DependsOn(nameof(AddScreenType))]
         [DependsOn(nameof(HasGameScreen))]
         public Visibility LevelScreenUiVisibility => (HasGameScreen && IsLevelScreen).ToVisibility();
 
+        #endregion
+
+        #region Screen Properties
+
+        public bool InheritFromGameScreen
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsSetAsStartupChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        #endregion
+
+        #region Entities
+
+        [DependsOn(nameof(InheritFromGameScreen))]
+        public Visibility LevelScreenEntitiesGroupVisibility => InheritFromGameScreen.ToVisibility();
+
+        public bool IsCopyEntitiesFromOtherLevelChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(IsCopyEntitiesFromOtherLevelChecked))]
+        public Visibility CopyEntitiesVisibility => IsCopyEntitiesFromOtherLevelChecked.ToVisibility();
+
+        public ObservableCollection<string> AvailableLevels
+        {
+            get; private set;
+        } = new ObservableCollection<string>();
+
+        public string SelectedCopyEntitiesFromLevel
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        #endregion
+
+        #region Tiled
 
         public TmxOptions TmxOptions
         {
             get => Get<TmxOptions>();
             set => Set(value);
         }
+
 
 
         [DependsOn(nameof(TmxOptions))]
@@ -115,22 +163,15 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
 
         [DependsOn(nameof(TmxOptions))]
         public Visibility TmxComboBoxVisibility => (TmxOptions == TmxOptions.CopiedTmx).ToVisibility();
+        #endregion
 
-        public bool InheritFromGameScreen
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
-        public bool IsSetAsStartupChecked
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
 
         #endregion
 
         #region Game Screen (Base Level Screen)
+
+        [DependsOn(nameof(HasGameScreen))]
+        public Visibility GameScreenOptionUiVisibility => (!HasGameScreen).ToVisibility();
 
         [DependsOn(nameof(HasGameScreen))]
         public bool CanAddBaseLevelScreen => !HasGameScreen;

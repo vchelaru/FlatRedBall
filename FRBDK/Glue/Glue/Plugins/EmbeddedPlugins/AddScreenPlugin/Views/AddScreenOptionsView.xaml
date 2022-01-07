@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="350" d:DesignWidth="300">
+             d:DesignHeight="450" d:DesignWidth="300">
     <Grid>
         <StackPanel>
             <RadioButton Visibility="{Binding LevelScreenOptionUiVisibility}" IsEnabled="{Binding CanAddLevelScreen}" IsChecked="{Binding IsLevelScreen}">Level Screen</RadioButton>
@@ -16,6 +16,13 @@
                                   IsChecked="{Binding InheritFromGameScreen}">Inherit from GameScreen</CheckBox>
                         <CheckBox VerticalContentAlignment="Center"
                                   IsChecked="{Binding IsSetAsStartupChecked}">Set as StartUp Screen (first screen when running)</CheckBox>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="Entities" Visibility="{Binding LevelScreenEntitiesGroupVisibility}">
+                    <StackPanel>
+                        <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsCopyEntitiesFromOtherLevelChecked}">Copy Entities From Other Level</CheckBox>
+                        <ComboBox Margin="20,0,0,6" Visibility="{Binding CopyEntitiesVisibility}" ItemsSource="{Binding AvailableLevels, Mode=OneWay}" SelectedItem="{Binding SelectedCopyEntitiesFromLevel}"></ComboBox>
+
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Header="Tiled">

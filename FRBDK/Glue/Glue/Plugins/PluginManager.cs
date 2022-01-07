@@ -40,6 +40,8 @@ using System.Runtime.CompilerServices;
 using FlatRedBall.Glue.FormHelpers;
 using GlueFormsCore.FormHelpers;
 using GlueFormsCore.ViewModels;
+using System.Threading.Tasks;
+using FlatRedBall.Glue.Managers;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -1010,12 +1012,11 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToNewScreenCreated(ScreenSave screen)
         {
-            CallMethodOnPlugin((plugin) =>
+            CallMethodOnPlugin(plugin =>
             {
                 plugin.NewScreenCreated(screen);
             },
-            plugin => plugin.NewScreenCreated != null,
-            nameof(ReactToNewScreenCreatedWithUi));
+            plugin => plugin.NewScreenCreated != null);
         }
 
         /// <summary>
@@ -1042,14 +1043,11 @@ namespace FlatRedBall.Glue.Plugins
             nameof(ReactToNewEntityCreatedWithUi));
         }
 
-        internal static void ReactToNewScreenCreatedWithUi(ScreenSave screen, AddScreenWindow addScreenWindow)
+        internal static Task ReactToNewScreenCreatedWithUiAsync(ScreenSave screen, AddScreenWindow addScreenWindow)
         {
-            CallMethodOnPlugin((plugin) =>
-            {
-                plugin.NewScreenCreatedWithUi(screen, addScreenWindow);
-            },
-            plugin => plugin.NewScreenCreatedWithUi != null,
-            nameof(ReactToNewScreenCreatedWithUi));
+            return CallMethodOnPluginAsync(
+                plugin => plugin.NewScreenCreatedWithUi(screen, addScreenWindow),
+                plugin => plugin.NewScreenCreatedWithUi != null);
         }
 
         internal static void ReactToResolutionChanged()
@@ -1732,7 +1730,7 @@ namespace FlatRedBall.Glue.Plugins
                     plugins = plugins.Where(item => predicate(item));
                 }
 
-                var pluginArray = plugins.ToArray();
+                PluginBase[] pluginArray = plugins.ToArray();
 
                 foreach (var plugin in pluginArray)
                 {
@@ -1747,6 +1745,39 @@ namespace FlatRedBall.Glue.Plugins
                     }
                 }
             }
+        }
+
+        static Task CallMethodOnPluginAsync(Action<PluginBase> methodToCall, Predicate<PluginBase> predicate, [CallerMemberName] string methodName = null)
+        {
+            var task = TaskManager.Self.AddOrRunAndWaitToFinish(() =>
+            {
+                foreach (PluginManager manager in mInstances)
+                {
+                    var plugins = manager.PluginContainers.Keys.Where(plugin => plugin is PluginBase)
+                        .Select(item => item as PluginBase);
+                    if (predicate != null)
+                    {
+                        plugins = plugins.Where(item => predicate(item));
+                    }
+
+                    PluginBase[] pluginArray = plugins.ToArray();
+
+                    foreach (var plugin in pluginArray)
+                    {
+                        PluginContainer container = manager.PluginContainers[plugin];
+
+                        if (container.IsEnabled)
+                        {
+                            PluginCommand(() =>
+                            {
+                                methodToCall(plugin);
+                            }, container, "Failed in " + methodName);
+                        }
+                    }
+                }
+            }, methodName);
+
+            return task;
         }
 
         private static void PluginCommandNotUiThread(Action action, PluginContainer container, string message)

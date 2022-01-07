@@ -29,9 +29,13 @@ using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using GlueFormsCore.ViewModels;
 using GlueFormsCore.Managers;
+//using FlatRedBall.Utilities;
+//using ToolsUtilities;
+using GeneralResponse = ToolsUtilities.GeneralResponse;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
+    #region ObjectsToRemove Class
     public class ObjectsToRemove
     {
         public List<NamedObjectSave> DerivedNamedObjects { get; set; } = new List<NamedObjectSave>();
@@ -42,6 +46,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public List<EventResponseSave> EventResponses { get; set; } = new List<EventResponseSave>();
 
     }
+    #endregion
 
     class GluxCommands : IGluxCommands
     {
@@ -1251,6 +1256,88 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 "Performing object removal logic");
         }
 
+        public GeneralResponse CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool save = true)
+        {
+            bool succeeded = true;
+
+            //// moving to another element, so let's copy
+            NamedObjectSave clonedNos = nos.Clone();
+
+            UpdateNosAttachmentAfterDragDrop(clonedNos, targetElement);
+
+            //clonedNos.InstanceName = IncrementNumberAtEndOfNewObject(elementMovingInto, clonedNos.InstanceName);
+            FlatRedBall.Utilities.StringFunctions.MakeNameUnique(
+                clonedNos, targetElement.AllNamedObjects);
+
+            var listOfThisType = ObjectFinder.Self.GetDefaultListToContain(clonedNos, targetElement);
+
+            if (listOfThisType != null)
+            {
+                listOfThisType.ContainedObjects.Add(clonedNos);
+            }
+            else
+            {
+                targetElement.NamedObjects.Add(clonedNos);
+            }
+
+            var referenceCheck = ProjectManager.CheckForCircularObjectReferences(targetElement);
+
+            var generalResponse = new GeneralResponse();
+
+            if (referenceCheck == ProjectManager.CheckResult.Failed)
+            {
+                generalResponse.Message = $"Could not copy {nos} because it would result in a circular reference";
+                succeeded = false;
+                // VerifyReferenceGraph (currently) shows a popup so we don't have to here
+                //MessageBox.Show("This movement would result in a circular reference");
+                if (listOfThisType != null)
+                {
+                    listOfThisType.ContainedObjects.Remove(clonedNos);
+                }
+                else
+                {
+                    targetElement.NamedObjects.Remove(clonedNos);
+                }
+            }
+
+            if (succeeded)
+            {
+                // If an object which was on a Layer
+                // is moved into another Element, then
+                // the cloned object probably shouldn't
+                // be on a layer.  Not sure if we want to 
+                // see if there is a Layer with the same-name
+                // but we maybe shouldn't assume that they mean
+                // the same thing.
+                clonedNos.LayerOn = null;
+
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(targetElement);
+
+                GlueCommands.Self.GenerateCodeCommands
+                    .GenerateElementAndReferencedObjectCode(targetElement as GlueElement);
+
+                if(save)
+                {
+                    GlueCommands.Self.GluxCommands.SaveGlux();
+                }
+            }
+
+            generalResponse.Succeeded = succeeded;
+            return generalResponse;
+        }
+
+        private static void UpdateNosAttachmentAfterDragDrop(NamedObjectSave clonedNos, GlueElement elementMovingInto)
+        {
+            if (elementMovingInto is EntitySave)
+            {
+                clonedNos.AttachToCamera = false;
+                clonedNos.AttachToContainer = true;
+            }
+            else if (elementMovingInto is ScreenSave)
+            {
+                clonedNos.AttachToContainer = false;
+            }
+        }
 
 
         public static ObjectsToRemove GetObjectsToRemoveIfRemoving(NamedObjectSave namedObject, GlueElement owner)

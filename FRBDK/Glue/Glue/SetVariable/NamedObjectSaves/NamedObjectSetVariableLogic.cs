@@ -191,7 +191,7 @@ namespace FlatRedBall.Glue.SetVariable
                 if (namedObjectSave.SourceType == SourceType.Entity &&
                     !string.IsNullOrEmpty(namedObjectSave.SourceClassType))
                 {
-                    if (ProjectManager.VerifyReferenceGraph(ObjectFinder.Self.GetEntitySave(namedObjectSave.SourceClassType)) == ProjectManager.CheckResult.Failed)
+                    if (ProjectManager.CheckForCircularObjectReferences(ObjectFinder.Self.GetEntitySave(namedObjectSave.SourceClassType)) == ProjectManager.CheckResult.Failed)
                         namedObjectSave.SetByContainer = !namedObjectSave.SetByContainer;
                 }
 
@@ -626,7 +626,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                     // If the EntitySave is null then that probably means that the Entity has been renamed and this hasn't
                     // been pushed to the project yet.
-                    if (entitySave != null && ProjectManager.VerifyReferenceGraph(entitySave) == ProjectManager.CheckResult.Failed)
+                    if (entitySave != null && ProjectManager.CheckForCircularObjectReferences(entitySave) == ProjectManager.CheckResult.Failed)
                     {
                         namedObjectSave.SourceClassType = (string)oldValue;
                     }

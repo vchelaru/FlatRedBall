@@ -714,7 +714,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region Screen
 
-        public void ShowAddNewScreenDialog()
+        public async void ShowAddNewScreenDialog()
         {
             //////////////Early Out////////////
             if (ProjectManager.GlueProjectSave == null)
@@ -772,7 +772,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     GlueState.Self.CurrentElement = screen;
 
-                    PluginManager.ReactToNewScreenCreatedWithUi(screen, addScreenWindow);
+                    await PluginManager.ReactToNewScreenCreatedWithUiAsync(screen, addScreenWindow);
 
                 }
 

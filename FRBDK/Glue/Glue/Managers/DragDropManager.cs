@@ -325,56 +325,18 @@ namespace FlatRedBall.Glue.Managers
 
         private static bool DragDropNosIntoElement(NamedObjectSave movingNos, GlueElement elementMovingInto)
         {
-            bool succeeded = true;
+            var response = GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(movingNos, elementMovingInto,
+                save:false);
 
-            // moving to another element, so let's copy
-            NamedObjectSave clonedNos = movingNos.Clone();
-
-            UpdateNosAttachmentAfterDragDrop(clonedNos, elementMovingInto);
-
-            clonedNos.InstanceName = IncrementNumberAtEndOfNewObject(elementMovingInto, clonedNos.InstanceName);
-
-            var listOfThisType = ObjectFinder.Self.GetDefaultListToContain(clonedNos, elementMovingInto);
-
-            if(listOfThisType != null)
+            if(response.Succeeded)
             {
-                listOfThisType.ContainedObjects.Add(clonedNos);
+                GlueCommands.Self.PrintOutput("Copied\n" + movingNos + "\n\nto\n" + elementMovingInto);
             }
             else
             {
-                elementMovingInto.NamedObjects.Add(clonedNos);
+                GlueCommands.Self.DialogCommands.ShowMessageBox(response.Message);
             }
-
-            var referenceCheck = ProjectManager.VerifyReferenceGraph(elementMovingInto);
-
-            if (referenceCheck == ProjectManager.CheckResult.Failed)
-            {
-                succeeded = false;
-                // VerifyReferenceGraph (currently) shows a popup so we don't have to here
-                //MessageBox.Show("This movement would result in a circular reference");
-
-                elementMovingInto.NamedObjects.Remove(clonedNos);
-            }
-
-            if (succeeded)
-            {
-                // If an object which was on a Layer
-                // is moved into another Element, then
-                // the cloned object probably shouldn't
-                // be on a layer.  Not sure if we want to 
-                // see if there is a Layer with the same-name
-                // but we maybe shouldn't assume that they mean
-                // the same thing.
-                clonedNos.LayerOn = null;
-
-                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementMovingInto);
-
-                GlueCommands.Self.GenerateCodeCommands
-                    .GenerateElementAndReferencedObjectCode(elementMovingInto as GlueElement);
-
-                MessageBox.Show("Copied\n" + movingNos + "\n\nto\n" + clonedNos);
-            }
-            return succeeded;
+            return response.Succeeded;
         }
 
         private static void UpdateNosAttachmentAfterDragDrop(NamedObjectSave clonedNos, IElement elementMovingInto)

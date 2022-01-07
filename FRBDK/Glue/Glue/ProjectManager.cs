@@ -655,7 +655,7 @@ namespace FlatRedBall.Glue
 
 
 
-        internal static CheckResult VerifyReferenceGraph(IElement element)
+        internal static CheckResult CheckForCircularObjectReferences(IElement element)
         {
 
             if (mGlueProjectSave != null && element != null)
@@ -668,10 +668,6 @@ namespace FlatRedBall.Glue
 
                 if (ReferenceVerificationHelper(element, ref resultString, visitedEntities) == CheckResult.Failed)
                 {
-                    MessageBox.Show("This assignment has created a reference creation cycle of the following path:\n\n" +
-                        resultString +
-                        "\nThe assignment will be undone.");
-
                     return CheckResult.Failed;
                 }
 

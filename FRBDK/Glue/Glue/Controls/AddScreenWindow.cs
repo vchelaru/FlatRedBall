@@ -10,6 +10,10 @@ using System.Windows.Data;
 
 namespace FlatRedBall.Glue.Controls
 {
+    /// <summary>
+    /// The window class for adding a new screen. Plugins (such as MainAddScreenPlugin) can customize this by adding
+    /// additional views.
+    /// </summary>
     public class AddScreenWindow : CustomizableTextInputWindow
     {
         GlueFormsCore.ViewModels.AddScreenViewModel ViewModel => DataContext as GlueFormsCore.ViewModels.AddScreenViewModel;
