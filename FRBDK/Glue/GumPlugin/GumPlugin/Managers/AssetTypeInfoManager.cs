@@ -670,10 +670,22 @@ namespace GumPlugin.Managers
 
         public void UnloadProjectSpecificAtis()
         {
-
             foreach(var item in AssetTypesForThisProject)
             {
-                AvailableAssetTypes.Self.RemoveAssetType(item);
+                if(AvailableAssetTypes.Self.AllAssetTypes.Contains(item))
+                {
+                    AvailableAssetTypes.Self.RemoveAssetType(item);
+                }
+                else
+                {
+                    var existing = AvailableAssetTypes.Self.AllAssetTypes.FirstOrDefault(candidate =>
+                        item.QualifiedRuntimeTypeName.QualifiedType == candidate.QualifiedRuntimeTypeName.QualifiedType);
+
+                    if(existing != null)
+                    {
+                        AvailableAssetTypes.Self.RemoveAssetType(existing);
+                    }
+                }
 
             }
 
