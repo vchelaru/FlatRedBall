@@ -720,7 +720,7 @@ namespace GlueControl
                 }
 
                 // Even though the camera is reset properly, Gum zoom isn't. Calling this fixes Gum zoom:
-                CameraLogic.UpdateCameraToZoomLevel();
+                CameraLogic.UpdateCameraToZoomLevel(zoomAroundCursorPosition: false, forceTo100: !isInEditMode);
 
                 if (FlatRedBall.Screens.ScreenManager.IsInEditMode)
                 {
