@@ -41,7 +41,7 @@ namespace Npc
 
             string folderName = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\FlatRedBallProjects\";
             ViewModel.ProjectLocation = folderName;
-
+            ViewModel.IsCancelButtonVisible = true;
             //ProcessCommandLineArguments();
 
             this.DataContext = ViewModel;

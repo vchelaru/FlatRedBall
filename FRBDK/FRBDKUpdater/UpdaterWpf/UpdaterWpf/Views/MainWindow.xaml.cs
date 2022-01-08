@@ -37,6 +37,12 @@ namespace UpdaterWpf.Views
 
         public GeneralResponse GeneralResponse { get; private set; }
 
+        public Visibility CancelButtonVisibility
+        {
+            get => CancelButton.Visibility;
+            set => CancelButton.Visibility = value;
+        }
+
         public string UserMessage
         {
             get
@@ -109,6 +115,7 @@ namespace UpdaterWpf.Views
             try
             {
                 downloadResponse = await downloader.PerformDownload(cts.Token);
+                CancelButton.Visibility = Visibility.Hidden;
                 await DownloaderOnDownloadComplete(downloadResponse);
             }
             catch(OperationCanceledException)
@@ -205,6 +212,11 @@ namespace UpdaterWpf.Views
         private void Window_Closed(object sender, EventArgs e)
         {
             cancellationTokenSource?.Cancel();
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.DialogResult = false;
         }
     }
 }

@@ -150,6 +150,8 @@ namespace Npc.ViewModels
             }
         }
 
+        public bool IsCancelButtonVisible { get; set; } = false;
+
         public ObservableCollection<PlatformProjectInfo> AvailableProjects
         {
             get;

@@ -330,6 +330,10 @@ namespace Npc
             //return succeeded;
 
             var window = new UpdaterWpf.Views.MainWindow(whereToSaveSettings, urs);
+            window.CancelButtonVisibility = viewModel.IsCancelButtonVisible
+                ? System.Windows.Visibility.Visible
+                : System.Windows.Visibility.Collapsed;
+
             var result = window.ShowDialog();
 
             if(result == null)

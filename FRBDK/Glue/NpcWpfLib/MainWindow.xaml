@@ -94,7 +94,8 @@
                 VerticalAlignment="Bottom"
                 Margin="0,16,0,16"
                 Style="{StaticResource myStyle}"
-                Grid.Row="8" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Click="HandleMakeMyProjectClicked" Height="48">
+                Grid.Row="8" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" 
+                Click="HandleMakeMyProjectClicked" Height="48">
                 <Button.Template>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <ContentControl>

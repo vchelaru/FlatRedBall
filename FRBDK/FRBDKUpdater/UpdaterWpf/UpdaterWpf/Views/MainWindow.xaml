@@ -20,6 +20,10 @@
                      Maximum="100">
         </ProgressBar>
         <TextBlock x:Name="SpeedLabel" Grid.Row="1"></TextBlock>
-        <!--<Button x:Name="CloseButton" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Right" MinWidth="100">Close</Button>-->
+        <Button x:Name="CancelButton" Grid.Row="2" 
+                VerticalAlignment="Bottom" 
+                HorizontalAlignment="Right" 
+                Click="CancelButton_Click"
+                MinWidth="100">Cancel</Button>
     </Grid>
 </Window>
