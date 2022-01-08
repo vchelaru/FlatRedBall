@@ -186,7 +186,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                 var renameResponseTask = CommandSender.Send<GlueVariableSetDataResponse>(data);
                 renameResponseTask.Wait();
-                var result = renameResponseTask.Result;
+                var result = renameResponseTask.Result?.Data;
 
                 if(result == null || !string.IsNullOrEmpty(result.Exception) || result.WasVariableAssigned == false)
                 {

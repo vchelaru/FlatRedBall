@@ -241,8 +241,8 @@ namespace OfficialPlugins.Compiler
                 IsBorderless = isBorderless
             };
 
-            return await CommandSending.CommandSender
-                .Send(dto);
+            var sendResponse = await CommandSending.CommandSender.Send(dto);
+            return sendResponse.Succeeded ? sendResponse.Data : String.Empty;
         }
 
         #endregion
@@ -263,9 +263,10 @@ namespace OfficialPlugins.Compiler
                         lastGetCall = DateTime.Now;
 
 
-
-                        var response = await CommandSending.CommandSender
+                        var sendResponse = 
+                            await CommandSending.CommandSender
                             .Send<GetCommandsDtoResponse>(new GetCommandsDto(), isImportant:false);
+                        var response = sendResponse?.Data;
 
 
                         var getTime = DateTime.Now;
@@ -521,8 +522,8 @@ namespace OfficialPlugins.Compiler
                 case nameof(ViewModels.CompilerViewModel.PlayOrEdit):
 
                     var inEditMode = CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit;
-                    var response = await CommandSending.CommandSender.Send<Dtos.GeneralCommandResponse>(
-                        new Dtos.SetEditMode { IsInEditMode = inEditMode });
+                    var dto = new Dtos.SetEditMode { IsInEditMode = inEditMode };
+                    var response = await CommandSending.CommandSender.Send<Dtos.GeneralCommandResponse>(dto);
 
                     if(response?.Succeeded != true)
                     {
@@ -536,6 +537,13 @@ namespace OfficialPlugins.Compiler
                             message += response.Message;
                         }
                         MainControl.PrintOutput(message);
+                    }
+                    else if(CommandSender.IsConnected == false)
+                    {
+                        if(inEditMode)
+                        {
+                            int m = 3;
+                        }
                     }
                     else if (inEditMode)
                     {

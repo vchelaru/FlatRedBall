@@ -429,7 +429,8 @@ namespace OfficialPlugins.Compiler.Managers
                         data.VariableName = "this." + data.VariableName;
                     }
 
-                    var responseAsString = await CommandSender.Send(data);
+                    var sendGeneralResponse = await CommandSender.Send(data);
+                    var responseAsString = sendGeneralResponse.Succeeded ? sendGeneralResponse.Data : string.Empty;
 
                     if (!string.IsNullOrEmpty(responseAsString))
                     {

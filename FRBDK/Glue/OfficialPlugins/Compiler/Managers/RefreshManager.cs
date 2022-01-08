@@ -360,7 +360,12 @@ namespace OfficialPlugins.Compiler.Managers
                     addObjectDto.ElementNameGame = GetGameTypeFor(containerElement);
                 }
 
-                var addResponseAsString = await CommandSender.Send(addObjectDto);
+                var sendResponse = await CommandSender.Send(addObjectDto);
+                string addResponseAsString = null;
+                if(sendResponse.Succeeded)
+                {
+                    addResponseAsString = sendResponse.Data;
+                }
 
                 AddObjectDtoResponse addResponse = null;
                 if(!string.IsNullOrEmpty(addResponseAsString))
@@ -660,7 +665,8 @@ namespace OfficialPlugins.Compiler.Managers
 
                     };
 
-                    responseAsString = await CommandSender.Send(dto);
+                    var sendResponse = await CommandSender.Send(dto);
+                    responseAsString = sendResponse.Succeeded ? sendResponse.Data : string.Empty;
 
                     if(string.IsNullOrEmpty(responseAsString))
                     {
@@ -709,7 +715,8 @@ namespace OfficialPlugins.Compiler.Managers
                     owner.Name;
                 dto.ObjectName = nos.InstanceName;
                 var timeBeforeSend = DateTime.Now;
-                var responseAsstring = await CommandSender.Send(dto);
+                var sendResponse = await CommandSender.Send(dto);
+                var responseAsstring = sendResponse.Succeeded ? sendResponse.Data : null;
                 var timeAfterSend = DateTime.Now;
                 printOutput($"Delete send took {timeAfterSend - timeBeforeSend}\n \n ");
                 RemoveObjectDtoResponse response = null;

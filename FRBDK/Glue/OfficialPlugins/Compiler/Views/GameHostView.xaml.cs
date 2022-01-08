@@ -128,7 +128,8 @@ namespace OfficialPlugins.GameHost.Views
 
             do
             {
-                var response = await CommandSender.Send(dto);
+                var sendResponse = await CommandSender.Send(dto);
+                var response = sendResponse.Succeeded ? sendResponse.Data : string.Empty;
 
                 succeeded = !string.IsNullOrWhiteSpace(response);
 
