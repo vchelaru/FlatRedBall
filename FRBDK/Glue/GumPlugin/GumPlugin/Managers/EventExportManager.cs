@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using GlueFormsCore.Managers;
+using GumPlugin.CodeGeneration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -43,6 +44,20 @@ namespace GumPlugin.Managers
         public string ElementType { get; set; }
         public GumEventTypes EventType { get; set; }
         public DateTime TimestampUtc { get; set; }
+
+        public override string ToString()
+        {
+            string toReturn = EventType.ToString();
+
+            if(EventType == GumEventTypes.ElementRenamed || 
+                EventType == GumEventTypes.InstanceRenamed ||
+                EventType == GumEventTypes.StateCategoryRenamed ||
+                EventType == GumEventTypes.StateRenamed )
+            {
+                toReturn += $" {OldName} -> {NewName}";
+            }
+            return toReturn;
+        }
     }
 
     #endregion
@@ -120,17 +135,26 @@ namespace GumPlugin.Managers
                             catch { }// do nothing
                         }
 
-                        foreach (var eventInstance in eventArray)
+                        var eventsToReactTo = eventArray
+                            .Where(eventInstance => eventInstance.TimestampUtc > LastTimeChangesHandledUtc && !string.IsNullOrEmpty(eventInstance.ElementType))
+                            .ToArray();
+
+                        foreach (var eventInstance in eventsToReactTo)
                         {
-                            if(eventInstance.TimestampUtc > LastTimeChangesHandledUtc && !string.IsNullOrEmpty(eventInstance.ElementType))
-                            {
-                                ReactToExportedEvent(eventInstance);
-                            }
-                            // need to do timestamp checks
-                            //ReactToExportedEvent(deserialized);
+                            ReactToExportedEvent(eventInstance);
                         }
 
-                        System.IO.File.WriteAllText(file.FullPath, DateTime.UtcNow.ToString("O"));
+                        try
+                        {
+                            var newTime = DateTime.UtcNow;
+                            System.IO.File.WriteAllText(file.FullPath, newTime.ToString("O"));
+                            LastTimeChangesHandledUtc = newTime;
+                        }
+                        catch(Exception e)
+                        {
+                            // it's okay, I think?
+                            GlueCommands.Self.PrintError($"Could not save Gum last change file {file}:\n{e}");
+                        }
                     }
                 }
 
@@ -193,6 +217,18 @@ namespace GumPlugin.Managers
                                     oldCodeFileName.NoPathNoExtension,
                                     newCodeFileName.NoPathNoExtension,
                                     ref contents);
+
+                                var oldNamespace = GueDerivingClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(false, exportedEvent.OldName);
+                                var newNamespace = GueDerivingClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(false, exportedEvent.NewName);
+
+                                if(oldNamespace != newNamespace)
+                                {
+                                    RefactorManager.Self.RenameNamespaceInCode(
+                                        oldNamespace,
+                                        newNamespace,
+                                        ref contents);
+                                }
+
                                 System.IO.File.WriteAllText(newCodeFileName.FullPath, contents);
 
                                 GlueCommands.Self.ProjectCommands.TryAddCodeFileToProject(newCodeFileName, saveOnAdd:true);
@@ -202,8 +238,8 @@ namespace GumPlugin.Managers
 
                             var prefix = GlueState.Self.ProjectNamespace + ".GumRuntimes.";
 
-                            var oldQualifiedType = prefix + exportedEvent.OldName.Replace('\\', '.') + "Runtime";
-                            var newQualifiedType = prefix + exportedEvent.NewName.Replace('\\', '.') + "Runtime";
+                            var oldQualifiedType = prefix + exportedEvent.OldName.Replace('\\', '.').Replace("/", ".") + "Runtime";
+                            var newQualifiedType = prefix + exportedEvent.NewName.Replace('\\', '.').Replace("/", ".") + "Runtime";
 
                             var elementsToRegen = new HashSet<GlueElement>();
 

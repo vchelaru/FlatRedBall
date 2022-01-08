@@ -185,7 +185,7 @@ namespace GumPlugin.CodeGeneration
             return GetFullRuntimeNamespaceFor(isStandardElement, elementName);
         }
 
-        private string GetFullRuntimeNamespaceFor(bool isStandardElement, string elementName)
+        public string GetFullRuntimeNamespaceFor(bool isStandardElement, string elementName)
         {
             string subNamespace = null;
             if (isStandardElement == false && (elementName.Contains('/')))

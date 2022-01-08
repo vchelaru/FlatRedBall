@@ -12,5 +12,10 @@ namespace GlueFormsCore.Managers
             contents = contents.Replace("partial class " + oldClassName,
                 "partial class " + newClassName);
         }
+
+        public void RenameNamespaceInCode(string oldNamespace, string newNamespace, ref string contents)
+        {
+            contents = contents.Replace($"namespace {oldNamespace}", $"namespace {newNamespace}");
+        }
     }
 }
