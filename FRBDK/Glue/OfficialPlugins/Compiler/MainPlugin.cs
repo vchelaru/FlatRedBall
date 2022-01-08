@@ -54,6 +54,7 @@ namespace OfficialPlugins.Compiler
 
         PluginTab buildTab;
         PluginTab glueViewSettingsTab;
+        GlueViewSettings glueViewSettingsView;
 
         Game1GlueControlGenerator game1GlueControlGenerator;
 
@@ -240,8 +241,8 @@ namespace OfficialPlugins.Compiler
                 IsBorderless = isBorderless
             };
 
-            return await CommandSending.CommandSender
-                .Send(dto);
+            var sendResponse = await CommandSending.CommandSender.Send(dto);
+            return sendResponse.Succeeded ? sendResponse.Data : String.Empty;
         }
 
         #endregion
@@ -257,14 +258,15 @@ namespace OfficialPlugins.Compiler
             {
                 try
                 {
-                    if(CompilerViewModel.IsEditChecked)
+                    if(CompilerViewModel.IsEditChecked && CompilerViewModel.IsRunning)
                     {
                         lastGetCall = DateTime.Now;
 
 
-
-                        var response = await CommandSending.CommandSender
+                        var sendResponse = 
+                            await CommandSending.CommandSender
                             .Send<GetCommandsDtoResponse>(new GetCommandsDto(), isImportant:false);
+                        var response = sendResponse?.Data;
 
 
                         var getTime = DateTime.Now;
@@ -315,8 +317,9 @@ namespace OfficialPlugins.Compiler
         }
         private void HandleGluxUnloaded()
         {
-            CompilerViewModel.CompileContentButtonVisibility = Visibility.Collapsed;
             CompilerViewModel.HasLoadedGlux = false;
+
+            glueViewSettingsTab.Hide();
 
             ToolbarController.Self.HandleGluxUnloaded();
         }
@@ -365,12 +368,10 @@ namespace OfficialPlugins.Compiler
 
         private void HandleGluxLoaded()
         {
-            UpdateCompileContentVisibility();
-
             var model = LoadOrCreateCompilerSettings();
             ignoreViewModelChanges = true;
             GlueViewSettingsViewModel.SetFrom(model);
-            CommandSender.PortNumber = GlueViewSettingsViewModel.PortNumber;
+            glueViewSettingsView.DataUiGrid.Refresh();
 
             CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableGameEmbedAndEdit;
             ignoreViewModelChanges = false;
@@ -392,38 +393,6 @@ namespace OfficialPlugins.Compiler
             }
 
             GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
-        }
-
-        private void UpdateCompileContentVisibility()
-        {
-            bool shouldShowCompileContentButton = false;
-
-            if (GlueState.Self.CurrentMainProject != null)
-            {
-                shouldShowCompileContentButton = GlueState.Self.CurrentMainProject != GlueState.Self.CurrentMainContentProject;
-
-                if (!shouldShowCompileContentButton)
-                {
-                    foreach (var mainSyncedProject in GlueState.Self.SyncedProjects)
-                    {
-                        if (mainSyncedProject != mainSyncedProject.ContentProject)
-                        {
-                            shouldShowCompileContentButton = true;
-                            break;
-                        }
-                    }
-                }
-
-            }
-
-            if (shouldShowCompileContentButton)
-            {
-                CompilerViewModel.CompileContentButtonVisibility = Visibility.Visible;
-            }
-            else
-            {
-                CompilerViewModel.CompileContentButtonVisibility = Visibility.Collapsed;
-            }
         }
 
         private void CreateToolbar()
@@ -464,16 +433,18 @@ namespace OfficialPlugins.Compiler
             VariableSendingManager.Self.ViewModel = CompilerViewModel;
             VariableSendingManager.Self.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
 
+            CommandSender.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
+            CommandSender.CompilerViewModel = CompilerViewModel;
             CommandSender.PrintOutput = MainControl.PrintOutput;
 
             buildTab = base.CreateTab(MainControl, "Build", TabLocation.Bottom);
             buildTab.Show();
 
 
-            var glueViewSettingsView = new Views.GlueViewSettings();
+            glueViewSettingsView = new Views.GlueViewSettings();
             glueViewSettingsView.ViewModel = GlueViewSettingsViewModel;
 
-            glueViewSettingsTab = base.CreateTab(glueViewSettingsView, "GlueView Settings");
+            glueViewSettingsTab = base.CreateTab(glueViewSettingsView, "Editor Settings");
 
             AssignControlEvents();
         }
@@ -492,7 +463,6 @@ namespace OfficialPlugins.Compiler
             {
                 case nameof(ViewModels.GlueViewSettingsViewModel.PortNumber):
                 case nameof(ViewModels.GlueViewSettingsViewModel.EnableGameEmbedAndEdit):
-                    CommandSender.PortNumber = GlueViewSettingsViewModel.PortNumber;
                     CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableGameEmbedAndEdit;
                     await HandlePortOrGenerateCheckedChanged(propertyName);
                     break;
@@ -552,8 +522,8 @@ namespace OfficialPlugins.Compiler
                 case nameof(ViewModels.CompilerViewModel.PlayOrEdit):
 
                     var inEditMode = CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit;
-                    var response = await CommandSending.CommandSender.Send<Dtos.GeneralCommandResponse>(
-                        new Dtos.SetEditMode { IsInEditMode = inEditMode });
+                    var dto = new Dtos.SetEditMode { IsInEditMode = inEditMode };
+                    var response = await CommandSending.CommandSender.Send<Dtos.GeneralCommandResponse>(dto);
 
                     if(response?.Succeeded != true)
                     {
@@ -567,6 +537,13 @@ namespace OfficialPlugins.Compiler
                             message += response.Message;
                         }
                         MainControl.PrintOutput(message);
+                    }
+                    else if(CommandSender.IsConnected == false)
+                    {
+                        if(inEditMode)
+                        {
+                            int m = 3;
+                        }
                     }
                     else if (inEditMode)
                     {
@@ -673,11 +650,6 @@ namespace OfficialPlugins.Compiler
             };
 
 
-            MainControl.BuildContentClicked += delegate
-            {
-                BuildContent(OutputSuccessOrFailure);
-            };
-
             MainControl.RunClicked += async (not, used) =>
             {
                 var succeeded = await GameHostController.Self.Compile();
@@ -721,11 +693,6 @@ namespace OfficialPlugins.Compiler
                 MainControl.PrintOutput($"{DateTime.Now.ToLongTimeString()} Build failed");
 
             }
-        }
-
-        private void BuildContent(Action<bool> afterCompile = null)
-        {
-            compiler.BuildContent(MainControl.PrintOutput, MainControl.PrintOutput, afterCompile, CompilerViewModel.Configuration);
         }
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)

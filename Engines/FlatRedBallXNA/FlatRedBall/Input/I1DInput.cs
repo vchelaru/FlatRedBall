@@ -26,10 +26,12 @@ namespace FlatRedBall.Input
         Func<float> value;
         Func<float> velocity;
 
-        public DelegateBased1DInput(Func<float> value, Func<float> velocity)
+        float Zero() => 0;
+
+        public DelegateBased1DInput(Func<float> value, Func<float> velocity = null)
         {
             this.value = value;
-            this.velocity = velocity;
+            this.velocity = velocity ?? Zero;
         }
 
         public float Value

@@ -186,7 +186,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                 var renameResponseTask = CommandSender.Send<GlueVariableSetDataResponse>(data);
                 renameResponseTask.Wait();
-                var result = renameResponseTask.Result;
+                var result = renameResponseTask.Result?.Data;
 
                 if(result == null || !string.IsNullOrEmpty(result.Exception) || result.WasVariableAssigned == false)
                 {
@@ -316,7 +316,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 foreach(var nos in modifiedObjects)
                 {
                     var nosParent = ObjectFinder.Self.GetElementContaining(nos);
-                    nosParents.Add(nosParent);
+                    if(nosParent != null)
+                    {
+                        nosParents.Add(nosParent);
+                    }
                 }
 
                 foreach(var nosParent in nosParents)

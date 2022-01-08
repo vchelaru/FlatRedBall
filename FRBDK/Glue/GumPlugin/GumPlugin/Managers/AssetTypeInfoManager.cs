@@ -482,6 +482,7 @@ namespace GumPlugin.Managers
             if (element is ComponentSave)
             {
                 newAti.Extension = GumProjectSave.ComponentExtension;
+
                 //newAti.CustomLoadMethod = ComponentAti.CustomLoadMethod + " as " + 
                 //    GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element);
                 newAti.CustomLoadFunc = (innerElement, nos, rfs, contentManagerName) =>
@@ -532,12 +533,10 @@ namespace GumPlugin.Managers
             newAti.FriendlyName = unqualifiedName;
             newAti.ConstructorFunc = GetGumElementConstructorFunct;
 
-
+            newAti.Tag = element;
 
             newAti.FindByNameSyntax = "GetGraphicalUiElementByName(\"OBJECTNAME\") as " +
                 newAti.QualifiedRuntimeTypeName.QualifiedType;
-
-            newAti.ExtraVariablesPattern = "";
 
             // 9/24/2014
             // Jesse was getting

@@ -76,6 +76,11 @@ namespace OfficialPluginsCore.Wizard.Managers
                     gameScreen = response.gameScreen;
                     solidCollisionNos = response.solidCollision;
                     cloudCollisionNos = response.cloudCollisionNos;
+
+                    if(vm.IsAddGumScreenToLayerVisible && vm.AddGameScreenGumToHudLayer)
+                    {
+                        await HandleAddGumScreenToLayer(gameScreen);
+                    }
                 });
             }
 
@@ -191,6 +196,23 @@ namespace OfficialPluginsCore.Wizard.Managers
             // just in case, refresh everything
             GlueCommands.Self.RefreshCommands.RefreshTreeNodes();
 
+        }
+
+        private async Task<NamedObjectSave> HandleAddGumScreenToLayer(ScreenSave gameScreen)
+        {
+            // create an object named GumScreen, add it, and then 
+            var namedObjectSave = new NamedObjectSave();
+            namedObjectSave.InstanceName = "GumScreen";
+            namedObjectSave.SourceType = SourceType.File;
+            namedObjectSave.SourceFile = "gumproject/Screens/GameScreenGum.gusx";
+            namedObjectSave.SourceName = "Entire File (GameScreenGumRuntime)";
+            namedObjectSave.LayerOn = "HudLayer";
+
+            await TaskManager.Self.AddAsync(
+                () => GlueCommands.Self.GluxCommands.AddNamedObjectTo(namedObjectSave, gameScreen),
+                $"Adding {namedObjectSave.InstanceName} to {gameScreen.Name}");
+
+            return namedObjectSave;
         }
 
         private void ImportAdditionalObjects(string namedObjectSavesSerialized)
@@ -349,8 +371,33 @@ namespace OfficialPluginsCore.Wizard.Managers
                     setFromMapObject: vm.AddTiledMap);
             }
 
+            if(vm.AddHudLayer)
+            {
+                await AddHudLayer(gameScreen);
+            }
+
 
             return (gameScreen, solidCollisionNos, cloudCollisionNos);
+        }
+
+        private static async Task<NamedObjectSave> AddHudLayer(ScreenSave gameScreen)
+        {
+            var addObjectViewModel = new AddObjectViewModel();
+            addObjectViewModel.ForcedElementToAddTo = gameScreen;
+            addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+            addObjectViewModel.SourceClassType = "FlatRedBall.Graphics.Layer";
+            addObjectViewModel.ObjectName = "HudLayer";
+
+            NamedObjectSave nos = null;
+
+            var task = TaskManager.Self.AddOrRunIfTasked(() =>
+            {
+                nos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, gameScreen, null);
+            }, "Adding Layer to Screen");
+
+            await TaskManager.Self.WaitForTaskToFinish(task);
+
+            return nos;
         }
 
         private static async Task<EntitySave> HandleAddPlayerEntity(WizardData vm)

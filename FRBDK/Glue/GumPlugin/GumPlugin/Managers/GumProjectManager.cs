@@ -85,8 +85,7 @@ namespace GumPlugin.Managers
                 string gumProjectDirectory = GlueState.Self.ContentDirectory + "GumProject/";
                 EmbeddedResourceManager.Self.SaveEmptyProject(gumProjectDirectory);
 
-                GlueState.Self.CurrentTreeNode = FlatRedBall.Glue.FormHelpers.TreeNodeWrapper.CreateOrNull(
-                    FlatRedBall.Glue.FormHelpers.ElementViewWindow.GlobalContentFileNode);
+                GlueState.Self.CurrentTreeNode = GlueState.Self.Find.GlobalContentTreeNode;
 
                 bool userCancelled = false;
 
@@ -133,7 +132,7 @@ namespace GumPlugin.Managers
                     GlueState.Self.CurrentReferencedFileSave = rfs;
                     ReloadGumProject();
 
-                    AppCommands.Self.UpdateGumToGlueResolution();
+                    GumPluginCommands.Self.UpdateGumToGlueResolution();
 
                 }
             }

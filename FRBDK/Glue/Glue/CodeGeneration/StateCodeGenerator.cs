@@ -869,7 +869,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             if (customVariable != null)
             {
                 referencedElement =
-                    BaseElementTreeNode.GetElementIfCustomVariableIsVariableState(customVariable, element);
+                    CustomVariableCodeGenerator.GetElementIfCustomVariableIsVariableState(customVariable, element);
 
                 isFile = customVariable.GetIsFile();
 

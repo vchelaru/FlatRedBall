@@ -28,7 +28,7 @@ namespace GumPluginCore.Managers
 
                 if (didAdd)
                 {
-                    AppCommands.Self.SaveGumx();
+                    GumPluginCommands.Self.SaveGumxAsync();
                 }
             }, "Adding Gum Forms Behaviors");
         }
@@ -42,10 +42,10 @@ namespace GumPluginCore.Managers
 
             if (!doesProjectAlreadyHaveBehavior)
             {
-                AppCommands.Self.AddBehavior(behaviorSave);
+                GumPluginCommands.Self.AddBehavior(behaviorSave);
             }
             // in case it's changed, or in case the user has somehow corrupted their behavior, force save it
-            AppCommands.Self.SaveBehavior(behaviorSave);
+            GumPluginCommands.Self.SaveBehavior(behaviorSave);
 
             return doesProjectAlreadyHaveBehavior == false;
         }

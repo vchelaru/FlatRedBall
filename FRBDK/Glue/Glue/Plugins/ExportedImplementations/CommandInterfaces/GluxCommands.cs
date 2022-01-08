@@ -29,9 +29,25 @@ using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using GlueFormsCore.ViewModels;
 using GlueFormsCore.Managers;
+//using FlatRedBall.Utilities;
+//using ToolsUtilities;
+using GeneralResponse = ToolsUtilities.GeneralResponse;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
+    #region ObjectsToRemove Class
+    public class ObjectsToRemove
+    {
+        public List<NamedObjectSave> DerivedNamedObjects { get; set; } = new List<NamedObjectSave>();
+        public List<NamedObjectSave> SubObjectsInList { get; set; } = new List<NamedObjectSave>();
+        public List<NamedObjectSave> CollisionRelationships { get; set; } = new List<NamedObjectSave>();
+
+        public List<CustomVariable> CustomVariables { get; set; } = new List<CustomVariable>();
+        public List<EventResponseSave> EventResponses { get; set; } = new List<EventResponseSave>();
+
+    }
+    #endregion
+
     class GluxCommands : IGluxCommands
     {
         #region Fields
@@ -523,7 +539,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     // If a background sync is happening, this can lock the thread, so we want to
                     // make sure this doesn't happen at the same time as a background sync:
-                    TaskManager.Self.AddAsyncTask(() =>
+                    TaskManager.Self.AddParallelTask(() =>
                         {
                             UpdateReactor.UpdateFile(ProjectManager.MakeAbsolute(toReturn.Name));
                         },
@@ -821,14 +837,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     {
                         GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
 
-                        if(GlueState.Self.CurrentElement.ReferencedFiles.Count > 0)
+                        if(GlueState.Self.CurrentElement != null)
                         {
-                            GlueState.Self.CurrentReferencedFileSave = GlueState.Self.CurrentElement.ReferencedFiles.LastOrDefault();
-                        }
-                        else
-                        {
-                            // This should refresh the selection...
-                            GlueState.Self.CurrentElement = GlueState.Self.CurrentElement;
+                            if(GlueState.Self.CurrentElement.ReferencedFiles.Count > 0)
+                            {
+                                GlueState.Self.CurrentReferencedFileSave = GlueState.Self.CurrentElement.ReferencedFiles.LastOrDefault();
+                            }
+                            else
+                            {
+                                // This should refresh the selection...
+                                GlueState.Self.CurrentElement = GlueState.Self.CurrentElement;
+                            }
                         }
                     }
                     if (regenerateCode)
@@ -1084,7 +1103,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 currentList);
         }
 
-        public NamedObjectSave AddNewNamedObjectTo(AddObjectViewModel addObjectViewModel, GlueElement element, NamedObjectSave listToAddTo = null)
+        public NamedObjectSave AddNewNamedObjectTo(AddObjectViewModel addObjectViewModel, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true)
         {
             if (element == null)
             {
@@ -1128,14 +1147,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             newNos.Properties.AddRange(addObjectViewModel.Properties);
 
-            AddNamedObjectTo(newNos, element, listToAddTo);
+            AddNamedObjectTo(newNos, element, listToAddTo, selectNewNos);
 
             GluxCommands.Self.SaveGlux();
 
             return newNos;
         }
 
-        public void AddNamedObjectTo(NamedObjectSave newNos, GlueElement element, NamedObjectSave listToAddTo = null)
+        public void AddNamedObjectTo(NamedObjectSave newNos, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true)
         {
             if(TaskManager.Self.IsInTask() == false)
             {
@@ -1184,7 +1203,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 MainGlueWindow.Self.PropertyGrid.Refresh();
                 PropertyGridHelper.UpdateNamedObjectDisplay();
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
-                GlueState.Self.CurrentNamedObjectSave = newNos;
+
+                if(selectNewNos)
+                {
+                    GlueState.Self.CurrentNamedObjectSave = newNos;
+                }
             });
 
         }
@@ -1233,6 +1256,149 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 "Performing object removal logic");
         }
 
+        public GeneralResponse CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool save = true)
+        {
+            bool succeeded = true;
+
+            //// moving to another element, so let's copy
+            NamedObjectSave clonedNos = nos.Clone();
+
+            UpdateNosAttachmentAfterDragDrop(clonedNos, targetElement);
+
+            //clonedNos.InstanceName = IncrementNumberAtEndOfNewObject(elementMovingInto, clonedNos.InstanceName);
+            FlatRedBall.Utilities.StringFunctions.MakeNameUnique(
+                clonedNos, targetElement.AllNamedObjects);
+
+            var listOfThisType = ObjectFinder.Self.GetDefaultListToContain(clonedNos, targetElement);
+
+            if (listOfThisType != null)
+            {
+                listOfThisType.ContainedObjects.Add(clonedNos);
+            }
+            else
+            {
+                targetElement.NamedObjects.Add(clonedNos);
+            }
+
+            var referenceCheck = ProjectManager.CheckForCircularObjectReferences(targetElement);
+
+            var generalResponse = new GeneralResponse();
+
+            if (referenceCheck == ProjectManager.CheckResult.Failed)
+            {
+                generalResponse.Message = $"Could not copy {nos} because it would result in a circular reference";
+                succeeded = false;
+                // VerifyReferenceGraph (currently) shows a popup so we don't have to here
+                //MessageBox.Show("This movement would result in a circular reference");
+                if (listOfThisType != null)
+                {
+                    listOfThisType.ContainedObjects.Remove(clonedNos);
+                }
+                else
+                {
+                    targetElement.NamedObjects.Remove(clonedNos);
+                }
+            }
+
+            if (succeeded)
+            {
+                // If an object which was on a Layer
+                // is moved into another Element, then
+                // the cloned object probably shouldn't
+                // be on a layer.  Not sure if we want to 
+                // see if there is a Layer with the same-name
+                // but we maybe shouldn't assume that they mean
+                // the same thing.
+                clonedNos.LayerOn = null;
+
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(targetElement);
+
+                GlueCommands.Self.GenerateCodeCommands
+                    .GenerateElementAndReferencedObjectCode(targetElement as GlueElement);
+
+                if(save)
+                {
+                    GlueCommands.Self.GluxCommands.SaveGlux();
+                }
+            }
+
+            generalResponse.Succeeded = succeeded;
+            return generalResponse;
+        }
+
+        private static void UpdateNosAttachmentAfterDragDrop(NamedObjectSave clonedNos, GlueElement elementMovingInto)
+        {
+            if (elementMovingInto is EntitySave)
+            {
+                clonedNos.AttachToCamera = false;
+                clonedNos.AttachToContainer = true;
+            }
+            else if (elementMovingInto is ScreenSave)
+            {
+                clonedNos.AttachToContainer = false;
+            }
+        }
+
+
+        public static ObjectsToRemove GetObjectsToRemoveIfRemoving(NamedObjectSave namedObject, GlueElement owner)
+        {
+            var toReturn = new ObjectsToRemove();
+
+            toReturn.SubObjectsInList.AddRange(namedObject.ContainedObjects);
+
+            // Only check the top level 
+            foreach(var item in owner.NamedObjects)
+            {
+                if(item.IsCollisionRelationship())
+                {
+                    var matches = 
+                        item.Properties.GetValue<string>("FirstCollisionName") == namedObject.FieldName ||
+                        item.Properties.GetValue<string>("SecondCollisionName") == namedObject.FieldName
+                        ;
+
+                    if(matches)
+                    {
+                        toReturn.CollisionRelationships.Add(item);
+                    }
+                }
+            }
+
+            List<IElement> derivedElements = new List<IElement>();
+            derivedElements.AddRange(ObjectFinder.Self.GetAllElementsThatInheritFrom(owner as EntitySave));
+
+            List<NamedObjectSave> derivedNamedObjectsToRemove = new List<NamedObjectSave>();
+
+            foreach (IElement derivedElement in derivedElements)
+            {
+                // At this point, namedObjectToRemove is already removed from the current Element, so this will only
+                // return NamedObjects that exist in the derived.
+                NamedObjectSave derivedNamedObject = derivedElement.GetNamedObjectRecursively(namedObject.InstanceName);
+
+                if (derivedNamedObject != null && derivedNamedObject != namedObject && derivedNamedObject.DefinedByBase)
+                {
+                    toReturn.DerivedNamedObjects.Add(derivedNamedObject);
+                }
+            }
+
+            
+
+            var customVariablesToRemove = owner.CustomVariables
+                .Where(item => item.SourceObject == namedObject.InstanceName)
+                .ToArray();
+
+            toReturn.CustomVariables.AddRange(customVariablesToRemove);
+
+            var eventsToRemove = owner.Events
+                .Where(item => item.SourceObject == namedObject.InstanceName)
+                .ToArray();
+
+            toReturn.EventResponses.AddRange(eventsToRemove);
+
+
+
+            return toReturn;
+        }
+
         private void DoRemovalInternal(NamedObjectSave namedObjectToRemove, bool performSave, bool updateUi, List<string> additionalFilesToRemove, StringBuilder removalInformation, bool wasSelected, int indexInChild, NamedObjectSave containerOfRemoved, GlueElement element)
         {
             if (element != null)
@@ -1244,32 +1410,26 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // We should tolerate:
                 //if (!removedItselfFromList)
                 //{
-                    //throw new ArgumentException($"Tried to remove {namedObjectToRemove} from {element} but it wasn't removed from anything.");
+                //throw new ArgumentException($"Tried to remove {namedObjectToRemove} from {element} but it wasn't removed from anything.");
                 //}
 
+                var objectsToRemove = GetObjectsToRemoveIfRemoving(namedObjectToRemove, element);
+
+
                 #region Remove all CustomVariables that reference the removed NamedObject
-                for (int i = element.CustomVariables.Count - 1; i > -1; i--)
+
+                foreach (var variable in objectsToRemove.CustomVariables)
                 {
-                    CustomVariable variable = element.CustomVariables[i];
-
-                    if (variable.SourceObject == namedObjectToRemove.InstanceName)
-                    {
-                        removalInformation.AppendLine("Removed variable " + variable.ToString());
-
-                        element.CustomVariables.RemoveAt(i);
-                    }
+                    removalInformation.AppendLine("Removed variable " + variable.ToString());
+                    element.CustomVariables.Remove(variable);
                 }
                 #endregion
 
                 // Remove any events that use this
-                for (int i = element.Events.Count - 1; i > -1; i--)
+                foreach (var ers in objectsToRemove.EventResponses)
                 {
-                    EventResponseSave ers = element.Events[i];
-                    if (ers.SourceObject == namedObjectToRemove.InstanceName)
-                    {
-                        removalInformation.AppendLine("Removed event " + ers.ToString());
-                        element.Events.RemoveAt(i);
-                    }
+                    removalInformation.AppendLine("Removed event " + ers.ToString());
+                    element.Events.Remove(ers);
                 }
 
                 if (namedObjectToRemove.IsLayer)
@@ -1287,33 +1447,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 element.RefreshStatesToCustomVariables();
 
-                #region Ask the user what to do with all NamedObjects that are DefinedByBase
-
-                List<IElement> derivedElements = new List<IElement>();
-                if (element is EntitySave)
+                foreach (var derivedNamedObject in objectsToRemove.CollisionRelationships)
                 {
-                    derivedElements.AddRange(ObjectFinder.Self.GetAllEntitiesThatInheritFrom(element as EntitySave));
-                }
-                else
-                {
-                    derivedElements.AddRange(ObjectFinder.Self.GetAllScreensThatInheritFrom(element as ScreenSave));
+                    // Delete it
+                    RemoveNamedObject(derivedNamedObject, performSave, updateUi, additionalFilesToRemove);
                 }
 
-                foreach (IElement derivedElement in derivedElements)
+                foreach (var derivedNamedObject in objectsToRemove.DerivedNamedObjects)
                 {
-                    // At this point, namedObjectToRemove is already removed from the current Element, so this will only
-                    // return NamedObjects that exist in the derived.
-                    NamedObjectSave derivedNamedObject = derivedElement.GetNamedObjectRecursively(namedObjectToRemove.InstanceName);
-
-                    if (derivedNamedObject != null && derivedNamedObject != namedObjectToRemove && derivedNamedObject.DefinedByBase)
-                    {
-                        // Delete it
-                        RemoveNamedObject(derivedNamedObject, performSave, updateUi, additionalFilesToRemove);
-
-                    }
-
+                    // Delete it
+                    RemoveNamedObject(derivedNamedObject, performSave, updateUi, additionalFilesToRemove);
                 }
-                #endregion
 
 
                 if (updateUi)
@@ -1448,7 +1592,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region Custom Variable
 
-        public void RemoveCustomVariable(CustomVariable customVariable, List<string> additionalFilesToRemove)
+        public void RemoveCustomVariable(CustomVariable customVariable, List<string> additionalFilesToRemove = null)
         {
             // additionalFilesToRemove is added to keep this consistent with other remove methods
 
@@ -1471,7 +1615,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
+            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
 
             GlueCommands.Self.DialogCommands.FocusOnTreeView();
 
@@ -1481,6 +1625,46 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
 
             PluginManager.ReactToVariableRemoved(customVariable);
+        }
+
+        #endregion
+
+        #region StateSaveCategory
+
+        public void RemoveStateSaveCategory(StateSaveCategory category)
+        {
+            var owner = ObjectFinder.Self.GetElementContaining(category);
+            GlueState.Self.CurrentElement.StateCategoryList.Remove(category);
+
+            var project = GlueState.Self.CurrentGlueProject;
+
+            var qualifiedCategoryName = owner.Name.Replace("\\", ".") + "." + category.Name;
+
+
+
+            var screenVariables = project.Screens
+                .SelectMany(item => item.CustomVariables)
+                .Where(item => item.Type == qualifiedCategoryName);
+            var entityVariables = project.Entities
+                .SelectMany(item => item.CustomVariables)
+                .Where(item => item.Type == qualifiedCategoryName);
+
+            var combined = screenVariables.Concat(entityVariables).ToArray();
+
+            HashSet<GlueElement> impactedObjects = new HashSet<GlueElement>();
+
+            foreach(var variable in combined)
+            {
+                GlueCommands.Self.PrintOutput($"Removing {variable} because it references the category {category.Name}");
+                GlueCommands.Self.GluxCommands.RemoveCustomVariable(variable);
+            }
+
+            if (owner != null)
+            {
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(owner);
+            }
+
+            GluxCommands.Self.SaveGlux();
         }
 
         #endregion
@@ -1676,9 +1860,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            ElementViewWindow.RemoveEntity(entityToRemove);
-
-            ProjectManager.RemoveCodeFilesForElement(filesThatCouldBeRemoved, entityToRemove);
+            FillWithCodeFilesForElement(filesThatCouldBeRemoved, entityToRemove);
 
             GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
 
@@ -1746,16 +1928,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            TaskManager.Self.OnUiThread(() =>
-            {
-                ElementViewWindow.RemoveScreen(screenToRemove);
-            });
             IElement element = screenToRemove;
 
             PluginManager.ReactToScreenRemoved(screenToRemove, filesThatCouldBeRemoved);
 
 
-            ProjectManager.RemoveCodeFilesForElement(filesThatCouldBeRemoved, element);
+            FillWithCodeFilesForElement(filesThatCouldBeRemoved, element);
 
 
             GlueCommands.Self.ProjectCommands.SaveProjects();
@@ -1784,6 +1962,39 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     GluxCommands.Self.RemoveReferencedFile(rfs, filesThatCouldBeRemoved);
                 }
+            }
+        }
+
+        static void FillWithCodeFilesForElement(List<string> filesThatCouldBeRemoved, IElement element)
+        {
+            string elementName = element.Name;
+
+
+            
+            filesThatCouldBeRemoved.Add(elementName + ".cs");
+
+            
+            filesThatCouldBeRemoved.Add(elementName + ".Generated.cs");
+
+            string eventFile = elementName + ".Event.cs";
+            string absoluteEvent = ProjectManager.MakeAbsolute(eventFile);
+            if (System.IO.File.Exists(absoluteEvent))
+            {
+                filesThatCouldBeRemoved.Add(eventFile);
+            }
+
+            string generatedEventFile = elementName + ".Generated.Event.cs";
+            string absoluteGeneratedEventFile = ProjectManager.MakeAbsolute(generatedEventFile);
+            if (System.IO.File.Exists(absoluteGeneratedEventFile))
+            {
+                filesThatCouldBeRemoved.Add(generatedEventFile);
+            }
+
+            string factoryName = "Factories/" + FileManager.RemovePath(elementName) + "Factory.Generated.cs";
+            string absoluteFactoryNameFile = ProjectManager.MakeAbsolute(factoryName);
+            if (System.IO.File.Exists(absoluteFactoryNameFile))
+            {
+                filesThatCouldBeRemoved.Add(absoluteFactoryNameFile);
             }
         }
 

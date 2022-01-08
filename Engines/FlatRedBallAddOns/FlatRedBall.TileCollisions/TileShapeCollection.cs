@@ -498,6 +498,12 @@ namespace FlatRedBall.TileCollisions
             return GetRectangleAtPosition(x, y);
         }
 
+        /// <summary>
+        /// Returns the AxisAlignedRectangle at the argument worldX and worldY position. If no rectangle is located at this position, null is returned.
+        /// </summary>
+        /// <param name="worldX">The world X coordinate</param>
+        /// <param name="worldY">The world Y coordinate</param>
+        /// <returns>The AxisAlignedRectangle at the location, or null if none is found.</returns>
         public AxisAlignedRectangle GetRectangleAtPosition(float worldX, float worldY)
         {
             float middleOfTileX = MathFunctions.RoundFloat(worldX, GridSize, LeftSeedX + GridSize / 2.0f);
@@ -531,11 +537,11 @@ namespace FlatRedBall.TileCollisions
             float keyValueAfter = keyValue + halfGridSize;
 
             int startInclusive = mShapes.Polygons.GetFirstAfter(keyValueBefore, mSortAxis,
-                0, mShapes.AxisAlignedRectangles.Count);
+                0, mShapes.Polygons.Count);
 
 
             int endExclusive = mShapes.Polygons.GetFirstAfter(keyValueAfter, mSortAxis,
-                0, mShapes.AxisAlignedRectangles.Count);
+                0, mShapes.Polygons.Count);
 
             var left = middleOfTileX - halfGridSize;
             var right = middleOfTileX + halfGridSize;
@@ -979,7 +985,10 @@ namespace FlatRedBall.TileCollisions
                 }
             }
 
-            UpdateLShapedPassNeighbors(positionedObject as AARect, rectangleLeftOf, rectangleUpLeft, rectangleAbove, rectangleUpRight, rectangleRightOf, rectangleDownRight, rectangleBelow, rectangleDownLeft);
+            if (positionedObject is AARect asAaRect)
+            {
+                UpdateLShapedPassNeighbors(asAaRect, rectangleLeftOf, rectangleUpLeft, rectangleAbove, rectangleUpRight, rectangleRightOf, rectangleDownRight, rectangleBelow, rectangleDownLeft);
+            }
 
             if (updateNeighbors)
             {

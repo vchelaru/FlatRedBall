@@ -45,7 +45,8 @@ namespace FlatRedBall.Glue.SaveClasses
             NugetPackageInCsproj = 6,
             SupportsEditMode = 7,
             ScreensHaveActivityEditMode = 8,
-            GlueSavedToJson = 9
+            GlueSavedToJson = 9,
+            IEntityInFrb = 10
         }
 
         #endregion

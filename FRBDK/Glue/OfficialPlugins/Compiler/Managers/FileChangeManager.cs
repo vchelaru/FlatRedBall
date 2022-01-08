@@ -42,17 +42,6 @@ namespace OfficialPlugins.Compiler.Managers
         {
             // If a file changed, always copy it over - why only do so if we're in edit mode?
 
-            bool shouldBuildContent = viewModel.AutoBuildContent &&
-                GlueState.Self.CurrentMainProject != GlueState.Self.CurrentMainContentProject &&
-                GlueState.Self.CurrentMainContentProject.IsFilePartOfProject(fileName);
-
-            if (shouldBuildContent)
-            {
-                control.PrintOutput($"{DateTime.Now.ToLongTimeString()} Building for changed file {fileName}");
-
-                BuildContent(OutputSuccessOrFailure);
-            }
-
             var extension = FileManager.GetExtension(fileName);
             var shouldCopy = copiedExtensions.Contains(extension);
 
@@ -65,11 +54,6 @@ namespace OfficialPlugins.Compiler.Managers
             RefreshManager.Self.HandleFileChanged(fileName);
         }
 
-
-        private void BuildContent(Action<bool> afterCompile = null)
-        {
-            compiler.BuildContent(control.PrintOutput, control.PrintOutput, afterCompile, viewModel.Configuration);
-        }
 
         private void OutputSuccessOrFailure(bool succeeded)
         {

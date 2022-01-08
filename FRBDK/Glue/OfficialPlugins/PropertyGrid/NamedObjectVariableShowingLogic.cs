@@ -20,6 +20,7 @@ using GluePropertyGridClasses.StringConverters;
 using FlatRedBall.Glue.Managers;
 using WpfDataUi.Controls;
 using FlatRedBall.Graphics.Animation;
+using FlatRedBall.Content.Instructions;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -43,7 +44,7 @@ namespace OfficialPlugins.VariableDisplay
                 instance.UpdateCustomProperties();
             }
 
-            CreateCategoriesAndVariables(instance, container, categories, assetTypeInfo);
+            CreateCategoriesAndVariables(instance, container as GlueElement, categories, assetTypeInfo);
 
             if (assetTypeInfo != null)
             {
@@ -91,7 +92,7 @@ namespace OfficialPlugins.VariableDisplay
             }
         }
 
-        private static void CreateCategoriesAndVariables(NamedObjectSave instance, IElement container, 
+        private static void CreateCategoriesAndVariables(NamedObjectSave instance, GlueElement container, 
             List<MemberCategory> categories, AssetTypeInfo ati)
         {
             // May 13, 2017
@@ -190,7 +191,7 @@ namespace OfficialPlugins.VariableDisplay
             }
         }
 
-        private static void AddForTypedMember(NamedObjectSave instance, IElement container, List<MemberCategory> categories,
+        private static void AddForTypedMember(NamedObjectSave instance, GlueElement container, List<MemberCategory> categories,
             AssetTypeInfo ati, TypedMemberBase typedMember, VariableDefinition variableDefinition = null)
         {
             variableDefinition = variableDefinition ?? ati?.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
@@ -451,7 +452,7 @@ namespace OfficialPlugins.VariableDisplay
         }
 
         private static InstanceMember CreateInstanceMember(NamedObjectSave instance, 
-            IElement container, 
+            GlueElement container, 
             // memberName is contained in typedMember, but we want to move away from TypedMemberBase so this extra
             // parameter will help that.
             string memberName,
@@ -566,7 +567,7 @@ namespace OfficialPlugins.VariableDisplay
 
                 instanceMember.IsDefault = instance.GetCustomVariable(memberName) == null;
 
-                AssignCustomGetEvent(instance, memberName, memberType, variableDefinition, instanceMember);
+                AssignCustomGetEvent(instance, container, memberName, memberType, variableDefinition, instanceMember);
 
                 instanceMember.CustomSetEvent += (owner, value) =>
                 {
@@ -672,7 +673,7 @@ namespace OfficialPlugins.VariableDisplay
             return instanceMember;
         }
 
-        private static void AssignCustomGetEvent(NamedObjectSave instance, string memberName, Type memberType, VariableDefinition variableDefinition, DataGridItem instanceMember)
+        private static void AssignCustomGetEvent(NamedObjectSave instance, GlueElement container, string memberName, Type memberType, VariableDefinition variableDefinition, DataGridItem instanceMember)
         {
             instanceMember.CustomGetEvent += (throwaway) =>
             {
@@ -682,14 +683,16 @@ namespace OfficialPlugins.VariableDisplay
                 if (instruction == null)
                 {
                     // Get the value for this variable from the base element. 
-                    var element = ObjectFinder.Self.GetElement(instance);
-                    if(element != null)
+
+                    var getVariableResponse = GetVariableOnInstance(instance, container, memberName);
+
+                    if (getVariableResponse.customVariable != null)
                     {
-                        var variable = element.GetCustomVariableRecursively(memberName);
-                        if(variable != null)
-                        {
-                            return variable.DefaultValue;
-                        }
+                        return getVariableResponse.customVariable.DefaultValue;
+                    }
+                    else if(getVariableResponse.instructionOnState != null)
+                    {
+                        return getVariableResponse.instructionOnState.Value;
                     }
 
                     if (variableDefinition != null)
@@ -757,6 +760,84 @@ namespace OfficialPlugins.VariableDisplay
                     }
                 }
             };
+        }
+
+        private static (CustomVariable customVariable, InstructionSave instructionOnState) GetVariableOnInstance(NamedObjectSave instance, GlueElement container, string memberName)
+        {
+            CustomVariable foundVariable = null;
+            FlatRedBall.Content.Instructions.InstructionSave valueOnState = null;
+
+            var instanceElementType = ObjectFinder.Self.GetElement(instance);
+            if (instanceElementType != null)
+            {
+
+
+                foreach(var instructionOnObject in instance.InstructionSaves)
+                {
+                    var variableOnInstanceName = instructionOnObject.Member;
+                    var variableOnInstanceValue = instructionOnObject.Value;
+
+                    // is it a state?
+                    CustomVariable possibleStateCustomVariable = instanceElementType.GetCustomVariable(variableOnInstanceName);
+
+                    StateSaveCategory matchingStateCategory = null;
+                    if (possibleStateCustomVariable != null)
+                    {
+                        matchingStateCategory = instanceElementType.GetStateCategory(possibleStateCustomVariable.Type);
+                    }
+                    if (matchingStateCategory != null)
+                    {
+                        var matchingState = matchingStateCategory.GetState(variableOnInstanceValue as string);
+                        if (matchingState != null)
+                        {
+                            // does the state set the member?
+                            valueOnState = matchingState.InstructionSaves.Find(item => item.Member == memberName && item.Value != null);
+
+                        }
+                    }
+                    if (valueOnState != null)
+                    {
+                        break;
+                    }
+                }
+
+                if(valueOnState == null)
+                {
+                    // See if this variable is set by any states on the instance first
+                    var variablesOnThisInstance = container.CustomVariables.Where(item => item.SourceObject == instance.InstanceName);
+
+                    foreach(var variableOnInstance in variablesOnThisInstance)
+                    {
+                        var variableOnInstanceName = variableOnInstance.Name;
+                        var variableOnInstanceValue = variableOnInstance.DefaultValue;
+                        // is it a state?
+                        CustomVariable possibleStateCustomVariable = instanceElementType.GetCustomVariable(variableOnInstanceName);
+
+                        var matchingStateCategory = instanceElementType.GetStateCategory(possibleStateCustomVariable.Type);
+                        if(matchingStateCategory != null)
+                        {
+                            var matchingState = matchingStateCategory.GetState(variableOnInstanceValue as string);
+                            if(matchingState != null)
+                            {
+                                // does the state set the member?
+                                valueOnState = matchingState.InstructionSaves.Find(item => item.Member == memberName && item.Value != null);
+
+                            }
+                        }
+                        if(valueOnState != null)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                if(valueOnState == null)
+                {
+                    foundVariable = instanceElementType.GetCustomVariableRecursively(memberName);
+                }
+            }
+
+            return (foundVariable, valueOnState);
         }
 
 

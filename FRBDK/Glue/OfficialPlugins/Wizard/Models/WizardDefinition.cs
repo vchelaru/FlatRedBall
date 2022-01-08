@@ -125,6 +125,7 @@ namespace OfficialPluginsCore.Wizard.Models
                 formsData.AddBoolValue("Add SolidCollision", nameof(ViewModel.AddSolidCollision), nameof(ViewModel.AddGameScreen));
                 formsData.AddBoolValue("Add CloudCollision", nameof(ViewModel.AddCloudCollision), nameof(ViewModel.AddGameScreen));
 
+                formsData.AddBoolValue("Add HUD Layer", nameof(ViewModel.AddHudLayer), nameof(ViewModel.AddGameScreen));
 
 
                 FormsDataList.Add(formsData);
@@ -246,6 +247,8 @@ namespace OfficialPluginsCore.Wizard.Models
 
                 formsData.AddBoolValue("Add Gum", nameof(ViewModel.AddGum));
                 formsData.AddBoolValue("Add FlatRedBall.Forms", nameof(ViewModel.AddFlatRedBallForms));
+                var moveToHudLayer = formsData.AddBoolValue("Move GameScreenGum on GameScreen HudLayer", nameof(ViewModel.AddGameScreenGumToHudLayer), nameof(ViewModel.IsAddGumScreenToLayerVisible));
+                moveToHudLayer.Subtext = "This option requires a GumScreen object to GameScreen. The wizard will add this object if selected.";
 
                 FormsDataList.Add(formsData);
             }

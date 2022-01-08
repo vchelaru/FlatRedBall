@@ -83,7 +83,12 @@ namespace GumPlugin.CodeGeneration
 
                 var rfs = GetGumScreenRfs(element);
                 // also instantiate the Gum object which has a common alias\
-                codeBlock.Line($"{GumScreenObjectNameFor(element)} = {rfs.GetInstanceName()};");
+                var gumScreenName = GumScreenObjectNameFor(element);
+                var shouldGenerateGum = element.AllNamedObjects.Any(item => item.InstanceName == gumScreenName) == false;
+                if(shouldGenerateGum)
+                {
+                    codeBlock.Line($"{gumScreenName} = {rfs.GetInstanceName()};");
+                }
 
             }
 

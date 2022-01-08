@@ -27,6 +27,7 @@ using GlueFormsCore.Controls;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.FormHelpers;
+using GlueFormsCore.ViewModels;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -79,7 +80,7 @@ namespace FlatRedBall.Glue.Plugins
 
         public void Hide()
         {
-            var items = Page.ParentTabControl as ObservableCollection<PluginTabPage>;
+            var items = Page.ParentTabControl;
             items?.Remove(Page);
             Page.ParentTabControl = null;
             AfterHide?.Invoke(this, null);
@@ -91,7 +92,7 @@ namespace FlatRedBall.Glue.Plugins
         {
             if(Page.ParentTabControl == null)
             {
-                var items = PluginBase.GetTabContainerFromLocation(SuggestedLocation);
+                var items = GetTabContainerFromLocation(SuggestedLocation);
                 items.Add(Page);
                 Page.ParentTabControl = items;
                 Page.RefreshRightClickCommands();
@@ -102,7 +103,7 @@ namespace FlatRedBall.Glue.Plugins
         public void Focus()
         {
             GlueCommands.Self.DoOnUiThread(() => Page.Focus());
-            Page.LastTimeClicked = DateTime.Now;
+            Page.RecordLastClick();
         }
 
         public bool CanClose
@@ -113,8 +114,8 @@ namespace FlatRedBall.Glue.Plugins
 
         public void ForceLocation(TabLocation tabLocation)
         {
-            var desiredTabControl = PluginBase.GetTabContainerFromLocation(tabLocation);
-            var parentTabControl = Page.ParentTabControl as ObservableCollection<PluginTabPage>;
+            var desiredTabControl = GetTabContainerFromLocation(tabLocation);
+            var parentTabControl = Page.ParentTabControl;
 
             if(desiredTabControl != parentTabControl)
             {
@@ -128,6 +129,23 @@ namespace FlatRedBall.Glue.Plugins
                 Page.RefreshRightClickCommands();
             }
         }
+
+        static TabContainerViewModel GetTabContainerFromLocation(TabLocation tabLocation)
+        {
+            TabContainerViewModel tabContainer = null;
+
+            switch (tabLocation)
+            {
+                case TabLocation.Top: tabContainer = PluginManager.TabControlViewModel.TopTabItems; break;
+                case TabLocation.Left: tabContainer = PluginManager.TabControlViewModel.LeftTabItems; break;
+                case TabLocation.Center: tabContainer = PluginManager.TabControlViewModel.CenterTabItems; break;
+                case TabLocation.Right: tabContainer = PluginManager.TabControlViewModel.RightTabItems; break;
+                case TabLocation.Bottom: tabContainer = PluginManager.TabControlViewModel.BottomTabItems; break;
+            }
+
+            return tabContainer;
+        }
+
     }
     #endregion
 
@@ -356,6 +374,10 @@ namespace FlatRedBall.Glue.Plugins
         public Action<GlueElement> RefreshTreeNodeFor;
         public Action RefreshGlobalContentTreeNode;
         public Action RefreshDirectoryTreeNodes;
+
+        public Action FocusOnTreeView;
+
+        public Action ReactToCtrlF;
 
         #endregion
 
@@ -593,22 +615,6 @@ namespace FlatRedBall.Glue.Plugins
             host.Child = control;
 
             return CreateTab(host, tabName, tabLocation);
-        }
-
-        public static ObservableCollection<PluginTabPage> GetTabContainerFromLocation(TabLocation tabLocation)
-        {
-            ObservableCollection<PluginTabPage> tabContainer = null;
-
-            switch (tabLocation)
-            {
-                case TabLocation.Top: tabContainer = PluginManager.TabControlViewModel.TopTabItems; break;
-                case TabLocation.Left: tabContainer = PluginManager.TabControlViewModel.LeftTabItems; break;
-                case TabLocation.Center: tabContainer = PluginManager.TabControlViewModel.CenterTabItems; break;
-                case TabLocation.Right: tabContainer = PluginManager.TabControlViewModel.RightTabItems; break;
-                case TabLocation.Bottom: tabContainer = PluginManager.TabControlViewModel.BottomTabItems; break;
-            }
-
-            return tabContainer;
         }
 
         protected PluginTab CreateAndAddTab(System.Windows.Forms.Control control, string tabName, TabLocation tabLocation = TabLocation.Right)

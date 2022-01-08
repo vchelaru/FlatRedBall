@@ -599,7 +599,7 @@ namespace FlatRedBall.Glue.Elements
 
         public List<GlueElement> GetAllElementsThatInheritFrom(string elementName)
         {
-            var element = GetIElement(elementName);
+            var element = GetElement(elementName);
 
             return GetAllElementsThatInheritFrom(element);
         }

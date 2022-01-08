@@ -239,6 +239,12 @@ namespace FlatRedBall.Entities
             return max - min;
         }
 
+        public void ForceToTarget()
+        {
+            var target = GetTarget();
+            ApplyTarget(target, lerpSmooth: false);
+        }
+
         public void ApplyTarget(Vector2 target, bool lerpSmooth = true)
         {
             #region Set this position or velocity depending on whether we lerp position

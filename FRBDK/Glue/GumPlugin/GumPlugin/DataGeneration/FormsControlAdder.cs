@@ -103,11 +103,11 @@ namespace GumPlugin.DataGeneration
                     if(file.Extension == "gucx")
                     {
                         var isComponentAlreadyPartOfProject =
-                            AppCommands.Self.IsComponentFileReferenced(file.FullPath);
+                            GumPluginCommands.Self.IsComponentFileReferenced(file.FullPath);
 
                         if(!isComponentAlreadyPartOfProject && file.Exists())
                         {
-                            AppCommands.Self.AddComponent(file.FullPath);
+                            GumPluginCommands.Self.AddComponent(file.FullPath);
                             wasAnythingAdded = true;
                         }
 
@@ -118,7 +118,7 @@ namespace GumPlugin.DataGeneration
 
                 if(wasAnythingAdded)
                 {
-                    AppCommands.Self.SaveGumx(saveAllElements: false);
+                    GumPluginCommands.Self.SaveGumxAsync(saveAllElements: false);
                 }
             }, "Updating Gum project with Forms Components");
 
@@ -235,7 +235,7 @@ namespace GumPlugin.DataGeneration
                         state.ConvertEnumerationValuesToInts();
                     }
                     // This won't work in Core because it uses enum values
-                    AppCommands.Self.SaveStandardElement(textStandard);
+                    GumPluginCommands.Self.SaveStandardElement(textStandard);
                     foreach (var state in textStandard.AllStates)
                     {
                         state.FixEnumerations();

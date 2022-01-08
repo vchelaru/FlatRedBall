@@ -285,7 +285,6 @@ namespace TileGraphicsPlugin
 
             this.ReactToItemSelectHandler += HandleItemSelect;
             this.ReactToFileChangeHandler += HandleFileChange;
-            this.ReactToTreeViewRightClickHandler += RightClickManager.Self.HandleTreeViewRightClick;
 
             this.FillWithReferencedFiles += FileReferenceManager.Self.HandleGetFilesReferencedBy;
             this.CanFileReferenceContent += HandleCanFileReferenceContent;

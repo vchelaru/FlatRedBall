@@ -89,6 +89,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\CameraControllingEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\IDamageable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\IDamageArea.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\IEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\Vector2ExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\Vector3ExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Feedback\VibrateMotor.cs" />
@@ -232,7 +233,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\FloatRectangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\Frustum.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\ICollidable.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\InputManager.Common.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\IPressableInput.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\I1DInput.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\I2DInput.cs" />

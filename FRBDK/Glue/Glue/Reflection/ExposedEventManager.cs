@@ -12,6 +12,11 @@ namespace FlatRedBall.Glue.Reflection
     public class ExposableEvent : IComparable
     {
         public string Name;
+
+        /// <summary>
+        /// The variable that this event is tied to. For example if a Player has a MaxHealth variable, an event
+        /// can be added to perform custom code whenever the MaxHealth variable is assigned.
+        /// </summary>
         public string Variable;
         public BeforeOrAfter BeforeOrAfter;
 

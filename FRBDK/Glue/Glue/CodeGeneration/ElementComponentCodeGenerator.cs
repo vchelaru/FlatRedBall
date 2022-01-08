@@ -38,6 +38,12 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
 
         }
+
+        #region Initialize
+
+        public string InitializeCategory { get; set; }
+        public string InitializeAfterCategory { get; set; }
+
         public virtual ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
         {
             return codeBlock;
@@ -51,11 +57,24 @@ namespace FlatRedBall.Glue.CodeGeneration
         {
             return codeBlock;
         }
+
+        #endregion
+
+        #region AddToManagers
+
         public virtual ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
         {
             return codeBlock;
 
         }
+
+        public virtual void GenerateAddToManagersBottomUp(ICodeBlock codeBlock, IElement element)
+        {
+
+        }
+
+        #endregion
+
         public virtual ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
         {
             return codeBlock;
@@ -94,10 +113,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         }
 
-        public virtual void GenerateAddToManagersBottomUp(ICodeBlock codeBlock, IElement element)
-        {
-
-        }
+        #region Pause/Unpause
 
         public virtual void GeneratePauseThisScreen(ICodeBlock codeBlock, IElement element)
         {
@@ -108,6 +124,8 @@ namespace FlatRedBall.Glue.CodeGeneration
         {
 
         }
+
+        #endregion
 
         /// <summary>
         /// Adds code to the contents of the entity's UpdateDependencies call. If no code generators

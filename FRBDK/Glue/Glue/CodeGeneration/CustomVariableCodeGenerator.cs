@@ -925,6 +925,44 @@ namespace FlatRedBall.Glue.CodeGeneration
             return customVariableType;
         }
 
+        public static IElement GetElementIfCustomVariableIsVariableState(CustomVariable customVariable, IElement saveObject)
+        {
+
+            if (customVariable.GetIsVariableState() && string.IsNullOrEmpty(customVariable.SourceObject))
+            {
+                return saveObject;
+            }
+            else
+            {
+
+                NamedObjectSave sourceNamedObjectSave = saveObject.GetNamedObjectRecursively(customVariable.SourceObject);
+
+                if (sourceNamedObjectSave != null)
+                {
+                    EntitySave sourceEntitySave = ObjectFinder.Self.GetEntitySave(sourceNamedObjectSave.SourceClassType);
+
+                    if (sourceEntitySave != null &&
+                        ((sourceEntitySave.States.Count != 0 && customVariable.SourceObjectProperty == "CurrentState") ||
+                        sourceEntitySave.StateCategoryList.ContainsCategoryName(customVariable.Type))
+                        )
+                    {
+                        return sourceEntitySave;
+                    }
+                    else if (sourceEntitySave == null)
+                    {
+                        ScreenSave sourceScreenSave = ObjectFinder.Self.GetScreenSave(sourceNamedObjectSave.SourceClassType);
+
+                        if (sourceScreenSave != null && sourceScreenSave.States.Count != 0 && customVariable.SourceObjectProperty == "CurrentState")
+                        {
+                            return sourceScreenSave;
+                        }
+
+                    }
+                }
+                return null;
+            }
+        }
+
         public static ICodeBlock AppendAssignmentForCustomVariableInElement(ICodeBlock codeBlock, CustomVariable customVariable, IElement saveObject)
         {
             bool hasBase = !string.IsNullOrEmpty(((INamedObjectContainer)saveObject).BaseObject);
@@ -962,7 +1000,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 if (variableConsideringDefinedByBase != null)
                 {
 
-                    containerOfState = BaseElementTreeNode.GetElementIfCustomVariableIsVariableState(variableConsideringDefinedByBase, saveObject);
+                    containerOfState = GetElementIfCustomVariableIsVariableState(variableConsideringDefinedByBase, saveObject);
 
                     if (containerOfState == null)
                     {

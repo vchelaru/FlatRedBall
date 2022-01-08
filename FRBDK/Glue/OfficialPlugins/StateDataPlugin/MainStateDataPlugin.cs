@@ -47,9 +47,15 @@ namespace OfficialPlugins.StateDataPlugin
         {
             this.ReactToItemSelectHandler += HandleReactToItemSelect;
             this.ReactToStateRemovedHandler += HandleStateRemoved;
+            this.ReactToUnloadedGlux += HandleGluxUnloaded;
 
             stateErrorReporter = new StateErrorReporter();
             this.AddErrorReporter(stateErrorReporter);
+        }
+
+        private void HandleGluxUnloaded()
+        {
+            HideCategoryUi();
         }
 
         private void HandleStateRemoved(IElement element, string stateName)

@@ -562,6 +562,11 @@ namespace GlueControl.Editing
                         Select(itemOver?.Name, addToExistingSelection: isFirst == false, playBump: true);
                     }
 
+                    // This pushes the selection up for the first item so that Glue can match the selection. Eventually Glue will accept a list for multi-select, but not yet...
+                    if (isFirst)
+                    {
+                        ObjectSelected(itemOver);
+                    }
 
                     isFirst = false;
                 }

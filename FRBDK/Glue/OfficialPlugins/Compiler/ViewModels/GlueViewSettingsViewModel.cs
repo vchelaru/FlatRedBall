@@ -3,6 +3,7 @@ using OfficialPlugins.Compiler.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows;
 
 namespace OfficialPlugins.Compiler.ViewModels
 {
@@ -38,6 +39,8 @@ namespace OfficialPlugins.Compiler.ViewModels
             }
         }
 
+        [DependsOn(nameof(EnableGameEmbedAndEdit))]
+        public Visibility ShowWindowDefenderUi => EnableGameEmbedAndEdit.ToVisibility();
 
         internal void SetFrom(CompilerSettingsModel model)
         {

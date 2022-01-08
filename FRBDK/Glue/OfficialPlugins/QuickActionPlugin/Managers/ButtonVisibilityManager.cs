@@ -177,27 +177,36 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
 
             #region Add Instance of Entity to GameScreen
 
-            mainView.AddInstanceOfEntityButton.Visibility = ToVisibility(
+            var canAddInstanceToGameScreen =
                 glueProject != null &&
                 selectedObject is EntitySave entitySave &&
                 hasGameScreen &&
                 // Individual:
-                gameScreen.AllNamedObjects.Any(item => item.SourceClassType == (selectedObject as EntitySave).Name) == false &&
                 // List:
                 //gameScreen.AllNamedObjects.Any(item => item.IsList && item.SourceClassGenericType == (selectedObject as EntitySave).Name) == false
                 // Update July 25, 2021 - if the user has a list of an entity, they may still want to add instances to that list, espeically with the 
                 // Glue level editor being developed now. So don't exclude this button if a list exists
                 // Update Sept 25, 2021
                 // Don't allow instances of this if there is a SetByDerived instance
-                entitySave.AllNamedObjects.Any(item => item.SetByDerived == true) == false
-                );
+                entitySave.AllNamedObjects.Any(item => item.SetByDerived == true) == false;
+            var selectedEntitySave = selectedObject as EntitySave;
+            var alreadyHasInstance =
+                gameScreen != null && 
+                selectedEntitySave != null && 
+                gameScreen.AllNamedObjects.Any(item => item.SourceClassType == (selectedEntitySave).Name);
+
+
+            mainView.AddInstanceOfEntityButton.Visibility = ToVisibility(canAddInstanceToGameScreen);
 
             if(mainView.AddInstanceOfEntityButton.Visibility == Visibility.Visible)
             {
                 var entity = selectedObject as EntitySave;
                 var entityName = entity.GetStrippedName();
+
+                string anotherOrEmpty = alreadyHasInstance ? "another " : String.Empty;
+
                 mainView.AddInstanceOfEntityButton.Title =
-                    $"Add {entityName} Instance to GameScreen";
+                    $"Add {anotherOrEmpty}{entityName} Instance to GameScreen";
 
                 mainView.AddInstanceOfEntityButton.Details =
                     $"Adds a single instance to the GameScreen. This is usually done if there will only ever be one of these in the game screen at any time.";
@@ -221,7 +230,11 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
 
             #endregion
 
-            foreach(var child in mainView.MainStackPanel.Children)
+            //------------------------------------------------------------//
+
+            #region Update GroupBox Visibility
+
+            foreach (var child in mainView.MainStackPanel.Children)
             {
                 if(child is GroupBox groupBox)
                 {
@@ -230,6 +243,8 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
                     groupBox.Visibility = wrapPanel.Children.Any(item => item.Visibility == Visibility.Visible).ToVisibility();
                 }
             }
+
+            #endregion
         }
     }
 }

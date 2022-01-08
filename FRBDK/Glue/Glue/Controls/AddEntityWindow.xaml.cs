@@ -1,5 +1,7 @@
-﻿using FlatRedBall.Glue.SaveClasses;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Utilities;
+using GlueFormsCore.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +41,8 @@ namespace FlatRedBall.Glue.Controls
             }
         }
 
+        AddEntityViewModel ViewModel => DataContext as AddEntityViewModel;
+
         #endregion
 
         #region Constructor
@@ -72,7 +76,19 @@ namespace FlatRedBall.Glue.Controls
 
         private void OkClickInternal(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = true;
+            HandleOkClicked();
+        }
+
+        private void HandleOkClicked()
+        {
+            if(!string.IsNullOrEmpty(ViewModel.FailureText))
+            {
+                GlueCommands.Self.DialogCommands.ShowMessageBox(ViewModel.FailureText);
+            }
+            else
+            {
+                this.DialogResult = true;
+            }
         }
 
         private void CancelClickInternal(object sender, RoutedEventArgs e)
@@ -84,7 +100,7 @@ namespace FlatRedBall.Glue.Controls
         {
             if(e.Key == Key.Enter)
             {
-                this.DialogResult = true;
+                HandleOkClicked();
             }
             if(e.Key == Key.Escape)
             {

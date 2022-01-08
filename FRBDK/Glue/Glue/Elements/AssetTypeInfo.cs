@@ -13,6 +13,7 @@ using FlatRedBall.Glue.SaveClasses;
 
 using FlatRedBall.Instructions;
 using FlatRedBall.Instructions.Reflection;
+using Newtonsoft.Json;
 
 namespace FlatRedBall.Glue.Elements
 {
@@ -275,6 +276,14 @@ namespace FlatRedBall.Glue.Elements
         /// By default this is false, which means that files added to Glue will be added to the content project.
         /// </summary>
         public bool ExcludeFromContentProject;
+
+        /// <summary>
+        /// Additional data which may be added by a plugin, such as the Gum plugin adding the ElementSave.
+        /// </summary>
+        [XmlIgnore]
+        [JsonIgnore]
+        public object Tag { get; set; }
+
         #endregion
 
         #region Properties

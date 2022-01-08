@@ -11,24 +11,17 @@ namespace FlatRedBall.AI.Pathfinding
     #endregion
     public class Link : IEquatable<Link>
     {
-        #region Fields
-        protected bool mActive; 
+        #region Fields/Properties
 
-        private float mCost;
-
-        private PositionedNode mNodeLinkingTo;
-
-        #endregion
-
-        #region Properties
-
+        /// <summary>
+        /// Whether this link is active. If false, pathfinding will ignore this link.
+        /// </summary>
         public bool Active
         {
-            get { return mActive; }
-            set { mActive = value; }
+            get;
+            set;
         }
 
-        #region XML Docs
         /// <summary>
         /// The cost to travel the link.
         /// </summary>
@@ -37,22 +30,19 @@ namespace FlatRedBall.AI.Pathfinding
         /// be changed to be any value to reflect different terrain, altitude, or other
         /// travelling costs.
         /// </remarks>
-        #endregion
         public float Cost
         {
-            get { return mCost; }
-            set { mCost = value; }
+            get;
+            set;
         }
 
-        #region XML Docs
         /// <summary>
         /// The destination PositionedNode.  The starting PositionedNode is not stored by the Link instance.
         /// </summary>
-        #endregion
         public PositionedNode NodeLinkingTo
         {
-            get { return mNodeLinkingTo; }
-            set { mNodeLinkingTo = value; }
+            get;
+            set;
         }
 
         #endregion
@@ -68,9 +58,9 @@ namespace FlatRedBall.AI.Pathfinding
         #endregion
         public Link(PositionedNode nodeLinkingTo, float cost)
         {
-            mNodeLinkingTo = nodeLinkingTo;
-            mCost = cost;
-            mActive = true; 
+            NodeLinkingTo = nodeLinkingTo;
+            Cost = cost;
+            Active = true; 
         }
 
         public override string ToString()

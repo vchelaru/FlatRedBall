@@ -38,6 +38,10 @@ using WpfTabControl = System.Windows.Controls.TabControl;
 using GlueFormsCore.Controls;
 using System.Runtime.CompilerServices;
 using FlatRedBall.Glue.FormHelpers;
+using GlueFormsCore.FormHelpers;
+using GlueFormsCore.ViewModels;
+using System.Threading.Tasks;
+using FlatRedBall.Glue.Managers;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -70,22 +74,6 @@ namespace FlatRedBall.Glue.Plugins
         #endregion
 
         private static MenuStrip mMenuStrip;
-
-        // not sure who should provide access to these tabs, but
-        // we want to make it easier to get access to them instead
-        // of having to explicitly define plugin types tied to certain
-        // sides:
-        //public static TabControl TopTab { get; private set; }
-        //public static TabControl LeftTab { get; private set; }
-        //public static TabControl BottomTab { get; private set; }
-        //public static TabControl RightTab { get; private set; }
-        //public static TabControl CenterTab { get; private set; }
-
-        //public static WpfTabControl TopTabControl { get; private set; }
-        //public static WpfTabControl BottomTabControl { get; private set; }
-        //public static WpfTabControl LeftTabControl { get; private set; }
-        //public static WpfTabControl RightTabControl { get; private set; }
-        //public static WpfTabControl CenterTabControl { get; private set; }
 
         public static TabControlViewModel TabControlViewModel { get; private set; }
 
@@ -860,35 +848,9 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
-        //internal static void SetTabs(TabControl top, TabControl bottom, TabControl left, TabControl right, TabControl center)
-        //{
-        //    TopTab = top;
-        //    LeftTab = left;
-        //    RightTab = right;
-        //    BottomTab = bottom;
-        //    CenterTab = center;
-
-        //    SetEvent(TopTab);
-        //    SetEvent(LeftTab);
-        //    SetEvent(RightTab);
-        //    SetEvent(BottomTab);
-        //    SetEvent(CenterTab);
-
-        //    void SetEvent(TabControl control)
-        //    {
-        //        control.SelectedIndexChanged += (not, used) =>
-        //        {
-        //            var selectedTab = (control.SelectedTab as PluginTabPage);
-        //            selectedTab?.TabSelected?.Invoke();
-        //        };
-        //    }
-        //}
-
         internal static void SetTabs(TabControlViewModel tabControlViewModel)
         {
             TabControlViewModel = tabControlViewModel;
-
-            // todo - do we need to subscribe to something to raise the tab event?
         }
 
         internal static void SetToolbarTray(ToolbarControl toolbar)
@@ -897,14 +859,13 @@ namespace FlatRedBall.Glue.Plugins
 
         }
 
-        internal static void ReactToTreeViewRightClick(TreeNode rightClickedTreeNode, ContextMenuStrip menuToModify)
+        internal static void ReactToTreeViewRightClick(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> menuToModify)
         {
             SaveRelativeDirectory();
 
             CallMethodOnPlugin(
                 plugin => plugin.ReactToTreeViewRightClickHandler(rightClickedTreeNode, menuToModify),
-                plugin => plugin.ReactToTreeViewRightClickHandler != null,
-                nameof(ReactToStateCreated));
+                plugin => plugin.ReactToTreeViewRightClickHandler != null);
 
             ResumeRelativeDirectory("ReactToTreeViewRightClick");
         }
@@ -1051,12 +1012,11 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToNewScreenCreated(ScreenSave screen)
         {
-            CallMethodOnPlugin((plugin) =>
+            CallMethodOnPlugin(plugin =>
             {
                 plugin.NewScreenCreated(screen);
             },
-            plugin => plugin.NewScreenCreated != null,
-            nameof(ReactToNewScreenCreatedWithUi));
+            plugin => plugin.NewScreenCreated != null);
         }
 
         /// <summary>
@@ -1083,14 +1043,11 @@ namespace FlatRedBall.Glue.Plugins
             nameof(ReactToNewEntityCreatedWithUi));
         }
 
-        internal static void ReactToNewScreenCreatedWithUi(ScreenSave screen, AddScreenWindow addScreenWindow)
+        internal static Task ReactToNewScreenCreatedWithUiAsync(ScreenSave screen, AddScreenWindow addScreenWindow)
         {
-            CallMethodOnPlugin((plugin) =>
-            {
-                plugin.NewScreenCreatedWithUi(screen, addScreenWindow);
-            },
-            plugin => plugin.NewScreenCreatedWithUi != null,
-            nameof(ReactToNewScreenCreatedWithUi));
+            return CallMethodOnPluginAsync(
+                plugin => plugin.NewScreenCreatedWithUi(screen, addScreenWindow),
+                plugin => plugin.NewScreenCreatedWithUi != null);
         }
 
         internal static void ReactToResolutionChanged()
@@ -1207,56 +1164,17 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToItemSelect(ITreeNode selectedTreeNode)
         {
-            //CenterTab.SuspendLayout();
+            TabControlViewModel.IsRecordingSelection = false;
+            // Tabs will be added and removed here, and that can cause the selection to change.
+            // We don't want the selection change to cause the TabControlViewModel to consider these
+            // clicks, so let's tell it to ignore these for now...
 
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToItemSelectHandler != null);
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-                        PluginBase plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToItemSelectHandler(selectedTreeNode);
-                            },container, "Failed in ReactToItemSelect");
-                    }
-                }
-            }
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToItemSelectHandler(selectedTreeNode),
+                plugin => plugin.ReactToItemSelectHandler != null);
 
-            ShowMostRecentTabFor(TabControlViewModel.TopTabItems, 
-                (item) => TabControlViewModel.TopSelectedTab = item);
-
-            ShowMostRecentTabFor(TabControlViewModel.BottomTabItems, 
-                (item) => TabControlViewModel.BottomSelectedTab = item);
-
-            ShowMostRecentTabFor(TabControlViewModel.LeftTabItems,
-                (item) => TabControlViewModel.LeftSelectedTab = item);
-
-            ShowMostRecentTabFor(TabControlViewModel.CenterTabItems,
-                (item) => TabControlViewModel.CenterSelectedTab = item);
-
-            ShowMostRecentTabFor(TabControlViewModel.RightTabItems,
-                (item) => TabControlViewModel.RightSelectedTab = item);
-
-            //CenterTab.ResumeLayout();
-
-        }
-
-        private static void ShowMostRecentTabFor(IEnumerable<PluginTabPage> items, Action<PluginTabPage> action)
-        {
-            if (items.Count() > 1)
-            {
-                var ordered = items.OrderByDescending(item => item.LastTimeClicked).ToList();
-
-                if (ordered[0].LastTimeClicked != ordered[1].LastTimeClicked)
-                {
-                    action(ordered[0]);
-                }
-            }
-
+            TabControlViewModel.UpdateToSelection(selectedTreeNode);
+            TabControlViewModel.IsRecordingSelection = true;
         }
 
         internal static void ReactToPropertyGridRightClick(System.Windows.Forms.PropertyGrid rightClickedPropertyGrid, ContextMenu menuToModify)
@@ -1812,7 +1730,7 @@ namespace FlatRedBall.Glue.Plugins
                     plugins = plugins.Where(item => predicate(item));
                 }
 
-                var pluginArray = plugins.ToArray();
+                PluginBase[] pluginArray = plugins.ToArray();
 
                 foreach (var plugin in pluginArray)
                 {
@@ -1827,6 +1745,39 @@ namespace FlatRedBall.Glue.Plugins
                     }
                 }
             }
+        }
+
+        static Task CallMethodOnPluginAsync(Action<PluginBase> methodToCall, Predicate<PluginBase> predicate, [CallerMemberName] string methodName = null)
+        {
+            var task = TaskManager.Self.AddAsync(() =>
+            {
+                foreach (PluginManager manager in mInstances)
+                {
+                    var plugins = manager.PluginContainers.Keys.Where(plugin => plugin is PluginBase)
+                        .Select(item => item as PluginBase);
+                    if (predicate != null)
+                    {
+                        plugins = plugins.Where(item => predicate(item));
+                    }
+
+                    PluginBase[] pluginArray = plugins.ToArray();
+
+                    foreach (var plugin in pluginArray)
+                    {
+                        PluginContainer container = manager.PluginContainers[plugin];
+
+                        if (container.IsEnabled)
+                        {
+                            PluginCommand(() =>
+                            {
+                                methodToCall(plugin);
+                            }, container, "Failed in " + methodName);
+                        }
+                    }
+                }
+            }, methodName);
+
+            return task;
         }
 
         private static void PluginCommandNotUiThread(Action action, PluginContainer container, string message)
@@ -2049,6 +2000,20 @@ namespace FlatRedBall.Glue.Plugins
             CallMethodOnPlugin(
                 (plugin) => plugin.RefreshDirectoryTreeNodes(),
                 (plugin) => plugin.RefreshDirectoryTreeNodes != null);
+        }
+
+        public static void ReactToFocusOnTreeView()
+        {
+            CallMethodOnPlugin(
+                plugin => plugin.FocusOnTreeView(),
+                plugin => plugin.FocusOnTreeView != null);
+        }
+
+        public static void ReactToCtrlF()
+        {
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToCtrlF(),
+                plugin => plugin.ReactToCtrlF != null);
         }
 
         #endregion
@@ -2304,41 +2269,11 @@ namespace FlatRedBall.Glue.Plugins
         {
             SaveRelativeDirectory();
 
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                var plugins = pluginManager.ImportedPlugins.Where(plugin =>
-                {
-                    return plugin.AddEventsForObject != null &&
-                    pluginManager.mPluginContainers[plugin].IsEnabled;
-                });
+            CallMethodOnPlugin(
+                plugin => plugin.AddEventsForObject(namedObjectSave, listToFill),
+                plugin => plugin.AddEventsForObject != null);
 
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-
-
-                    if (HandleExceptions)
-                    {
-                        try
-                        {
-                            plugin.AddEventsForObject(namedObjectSave, listToFill);
-
-                        }
-                        catch (Exception e)
-                        {
-                            container.Fail(e, "Failed in AddEventsForObject");
-                        }
-                    }
-                    else
-                    {
-                        plugin.AddEventsForObject(namedObjectSave, listToFill);
-                    }
-
-
-                }
-            }
             ResumeRelativeDirectory("AddEventsForObject");
-
         }
 
 
@@ -2346,7 +2281,6 @@ namespace FlatRedBall.Glue.Plugins
 
         static void SaveRelativeDirectory()
         {
-
             mOldRelativeDirectories.Push(FileManager.RelativeDirectory);
         }
 

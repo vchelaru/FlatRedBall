@@ -4,6 +4,7 @@ using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.ViewModels;
+using GlueFormsCore.FormHelpers;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.AddToShapeCollectionPlugin
             this.ReactToTreeViewRightClickHandler += HandleTreeViewRightClick;
         }
 
-        private void HandleTreeViewRightClick(TreeNode rightClickedTreeNode, ContextMenuStrip menuToModify)
+        private void HandleTreeViewRightClick(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> menuToModify)
         {
             if(rightClickedTreeNode.IsNamedObjectNode())
             {
@@ -37,11 +38,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.AddToShapeCollectionPlugin
             }
         }
 
-        private void AddAddShapeTreeNodes(ContextMenuStrip menuToModify)
+        private void AddAddShapeTreeNodes(List<GeneralToolStripMenuItem> menuToModify)
         {
-            menuToModify.Items.Add("Add AxisAlignedRectangle", null, HandleAddAxisAlignedRectangle);
-            menuToModify.Items.Add("Add Circle", null, HandleAddCircle);
-            menuToModify.Items.Add("Add Polygon", null, HandleAddPolygon);
+            menuToModify.Add("Add AxisAlignedRectangle", HandleAddAxisAlignedRectangle);
+            menuToModify.Add("Add Circle", HandleAddCircle);
+            menuToModify.Add("Add Polygon", HandleAddPolygon);
 
         }
 

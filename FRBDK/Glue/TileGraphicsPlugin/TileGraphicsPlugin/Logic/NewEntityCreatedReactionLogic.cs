@@ -46,7 +46,7 @@ namespace TileGraphicsPlugin.Logic
                                 
 
                             var newNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(
-                                addObjectViewModel, screen, listToAddTo:null);
+                                addObjectViewModel, screen, listToAddTo:null, selectNewNos:false);
                             newNos.ExposedInDerived = true;
 
                             Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(nameof(newNos.ExposedInDerived), false,

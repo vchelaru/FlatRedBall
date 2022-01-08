@@ -118,6 +118,18 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public Visibility SearchPlaceholderVisibility =>
             (IsSearchBoxFocused == false && string.IsNullOrWhiteSpace(SearchBoxText)).ToVisibility();
 
+        public bool IsForwardButtonEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsBackButtonEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         #endregion
 
         public MainTreeViewViewModel()

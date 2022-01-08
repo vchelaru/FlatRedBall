@@ -184,34 +184,6 @@ namespace FlatRedBall.Glue.IO
 
                 SetInitWindowText("Cleaning extra Screens and Entities", initializationWindow);
 
-
-                foreach (var screenNode in ElementViewWindow.AllScreens)
-                {
-                    if (screenNode.SaveObject == null)
-                    {
-                        ScreenSave screenSave = new ScreenSave();
-                        screenSave.Name = screenNode.Text;
-
-                        ProjectManager.GlueProjectSave.Screens.Add(screenSave);
-                        screenNode.SaveObject = screenSave;
-                    }
-                }
-
-                foreach (var entityNode in ElementViewWindow.AllEntities)
-                {
-                    if (entityNode.EntitySave == null)
-                    {
-                        EntitySave entitySave = new EntitySave();
-                        entitySave.Name = entityNode.Text;
-                        entitySave.Tags.Add("GLUE");
-                        entitySave.Source = "GLUE";
-
-                        ProjectManager.GlueProjectSave.Entities.Add(entitySave);
-                        entityNode.EntitySave = entitySave;
-                    }
-                }
-
-
                 UnreferencedFilesManager.Self.RefreshUnreferencedFiles(true);
 
                 TaskManager.Self.OnUiThread(() => MainGlueWindow.Self.Text = "FlatRedBall - " + projectFileName);
@@ -465,7 +437,6 @@ namespace FlatRedBall.Glue.IO
 
 
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodes();
-                ElementViewWindow.SortEntities();
 
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("PrepareSyncedProjects");

@@ -16,258 +16,260 @@ namespace FlatRedBall.Glue.Managers
     public interface IFindManager
     {
 
-        TreeNode TreeNodeForDirectoryOrEntityNode(string containingDirection, TreeNode containingNode);
+        //ITreeNode TreeNodeForDirectoryOrEntityNode(string containingDirection, TreeNode containingNode);
 
-        TreeNode TreeNodeByDirectory(string containingDirection, TreeNode containingNode);
+        //ITreeNode TreeNodeByDirectory(string containingDirection, TreeNode containingNode);
 
-        ITreeNode ElementTreeNode(IElement element);
+        //ITreeNode ElementTreeNode(IElement element);
 
-        ITreeNode EntityTreeNode(EntitySave entitySave);
+        //ITreeNode EntityTreeNode(EntitySave entitySave);
 
-        ScreenTreeNode ScreenTreeNode(string screenFileName);
+        //ITreeNode ScreenTreeNode(string screenFileName);
 
-        ScreenTreeNode ScreenTreeNode(ScreenSave screenSave);
+        //ITreeNode ScreenTreeNode(ScreenSave screenSave);
 
-        string GlobalContentFilesPath { get; }
+        //string GlobalContentFilesPath { get; }
 
         ITreeNode NamedObjectTreeNode(NamedObjectSave namedObjectSave);
 
         ITreeNode TreeNodeByTag(object tag);
 
-        string ContentPathFor(IElement element);
+        ITreeNode GlobalContentTreeNode { get;  }
+
+        //string ContentPathFor(IElement element);
 
         bool IfReferencedFileSaveIsReferenced(ReferencedFileSave referencedFileSave);
     }
 
-    public class FindManager : IFindManager
-    {
+    //public class FindManager : IFindManager
+    //{
 
-        public string GlobalContentFilesPath
-        {
-            get
-            {
-                return ProjectManager.ProjectBase.GetAbsoluteContentFolder() + "GlobalContent/";
+    //    public string GlobalContentFilesPath
+    //    {
+    //        get
+    //        {
+    //            return ProjectManager.ProjectBase.GetAbsoluteContentFolder() + "GlobalContent/";
                 
-            }
-        }
+    //        }
+    //    }
 
 
-        public TreeNode TreeNodeForDirectoryOrEntityNode(string containingDirection, TreeNode containingNode)
-        {
-            if (string.IsNullOrEmpty(containingDirection))
-            {
-                return ElementViewWindow.EntitiesTreeNode;
-            }
-            else
-            {
-                return TreeNodeByDirectory(containingDirection, containingNode);
-            }
-        }
+    //    public ITreeNode TreeNodeForDirectoryOrEntityNode(string containingDirection, TreeNode containingNode)
+    //    {
+    //        if (string.IsNullOrEmpty(containingDirection))
+    //        {
+    //            return ElementViewWindow.EntitiesTreeNode;
+    //        }
+    //        else
+    //        {
+    //            return TreeNodeByDirectory(containingDirection, containingNode);
+    //        }
+    //    }
 
-        public TreeNode TreeNodeByDirectory(string containingDirection, TreeNode containingNode)
-        {
-            if (string.IsNullOrEmpty(containingDirection))
-            {
-                return null;
-            }
-            else
-            {
-                int indexOfSlash = containingDirection.IndexOf("/");
+    //    public ITreeNode TreeNodeByDirectory(string containingDirection, TreeNode containingNode)
+    //    {
+    //        if (string.IsNullOrEmpty(containingDirection))
+    //        {
+    //            return null;
+    //        }
+    //        else
+    //        {
+    //            int indexOfSlash = containingDirection.IndexOf("/");
 
-                string rootDirectory = containingDirection;
+    //            string rootDirectory = containingDirection;
 
-                if (indexOfSlash != -1)
-                {
-                    rootDirectory = containingDirection.Substring(0, indexOfSlash);
-                }
+    //            if (indexOfSlash != -1)
+    //            {
+    //                rootDirectory = containingDirection.Substring(0, indexOfSlash);
+    //            }
 
-                for (int i = 0; i < containingNode.Nodes.Count; i++)
-                {
-                    TreeNode subNode = containingNode.Nodes[i];
+    //            for (int i = 0; i < containingNode.Nodes.Count; i++)
+    //            {
+    //                TreeNode subNode = containingNode.Nodes[i];
 
-                    if (subNode.IsDirectoryNode() && subNode.Text.ToLower() == rootDirectory.ToLower())
-                    {
-                        // use the containingDirectory here
-                        if (indexOfSlash == -1 || indexOfSlash == containingDirection.Length - 1)
-                        {
-                            return subNode;
-                        }
-                        else
-                        {
-                            return TreeNodeByDirectory(containingDirection.Substring(indexOfSlash + 1), subNode);
-                        }
-                    }
-                }
+    //                if (subNode.IsDirectoryNode() && subNode.Text.ToLower() == rootDirectory.ToLower())
+    //                {
+    //                    // use the containingDirectory here
+    //                    if (indexOfSlash == -1 || indexOfSlash == containingDirection.Length - 1)
+    //                    {
+    //                        return subNode;
+    //                    }
+    //                    else
+    //                    {
+    //                        return TreeNodeByDirectory(containingDirection.Substring(indexOfSlash + 1), subNode);
+    //                    }
+    //                }
+    //            }
 
-                return null;
-            }
-        }
+    //            return null;
+    //        }
+    //    }
 
-        public ITreeNode ElementTreeNode(IElement element)
-        {
-            if (element is ScreenSave)
-            {
-                return TreeNodeWrapper.CreateOrNull( ScreenTreeNode(element as ScreenSave));
-            }
-            else
-            {
-                return TreeNodeByTag(element);
-            }
-        }
+    //    public ITreeNode ElementTreeNode(IElement element)
+    //    {
+    //        if (element is ScreenSave)
+    //        {
+    //            return TreeNodeWrapper.CreateOrNull( ScreenTreeNode(element as ScreenSave));
+    //        }
+    //        else
+    //        {
+    //            return TreeNodeByTag(element);
+    //        }
+    //    }
 
-        public ITreeNode EntityTreeNode(EntitySave entitySave)
-        {
-            // Vic says: I don't know why I had code duplication here, but let's fix it:
-            //return GetEntityTreeNode(entitySave.Name);
-            // Vic says:  Update on Sept. 13 2010 - Turns out that the GetEntityTreeNode call above uses the name.  But this one
-            // does an actual comparison between the EntitySave referenced by the tree node so it doesn't depend
-            // on the Entity's name.  Very important when doing renaming!
+    //    public ITreeNode EntityTreeNode(EntitySave entitySave)
+    //    {
+    //        // Vic says: I don't know why I had code duplication here, but let's fix it:
+    //        //return GetEntityTreeNode(entitySave.Name);
+    //        // Vic says:  Update on Sept. 13 2010 - Turns out that the GetEntityTreeNode call above uses the name.  But this one
+    //        // does an actual comparison between the EntitySave referenced by the tree node so it doesn't depend
+    //        // on the Entity's name.  Very important when doing renaming!
 
-            string containingDirectory = FileManager.MakeRelative(FileManager.GetDirectory(entitySave.Name));
+    //        string containingDirectory = FileManager.MakeRelative(FileManager.GetDirectory(entitySave.Name));
 
-            TreeNode treeNodeToAddTo = GlueState.Self.Find.TreeNodeForDirectoryOrEntityNode(containingDirectory.Substring("Entities/".Length), ElementViewWindow.EntitiesTreeNode);
-
-
-            for (int i = 0; i < treeNodeToAddTo.Nodes.Count; i++)
-            {
-                if (treeNodeToAddTo.Nodes[i] is EntityTreeNode)
-                {
-                    EntityTreeNode asEntityTreeNode = treeNodeToAddTo.Nodes[i] as EntityTreeNode;
-                    if (asEntityTreeNode.EntitySave == entitySave)
-                    {
-                        return TreeNodeWrapper.CreateOrNull( asEntityTreeNode);
-                    }
-                }
-            }
-
-            return TreeNodeWrapper.CreateOrNull(null);
-        }
-
-        public ScreenTreeNode ScreenTreeNode(string screenFileName)
-        {
+    //        TreeNode treeNodeToAddTo = GlueState.Self.Find.TreeNodeForDirectoryOrEntityNode(containingDirectory.Substring("Entities/".Length), ElementViewWindow.EntitiesTreeNode);
 
 
-            for (int i = 0; i < ElementViewWindow.ScreensTreeNode.Nodes.Count; i++)
-            {
-                if (ElementViewWindow.ScreensTreeNode.Nodes[i].Tag is ScreenSave screenSave)
-                {
-                    if (screenSave.Name == screenFileName)
-                    {
-                        return ElementViewWindow.ScreensTreeNode.Nodes[i] as ScreenTreeNode;
-                    }
-                }
-            }
+    //        for (int i = 0; i < treeNodeToAddTo.Nodes.Count; i++)
+    //        {
+    //            if (treeNodeToAddTo.Nodes[i] is EntityTreeNode)
+    //            {
+    //                EntityTreeNode asEntityTreeNode = treeNodeToAddTo.Nodes[i] as EntityTreeNode;
+    //                if (asEntityTreeNode.EntitySave == entitySave)
+    //                {
+    //                    return TreeNodeWrapper.CreateOrNull( asEntityTreeNode);
+    //                }
+    //            }
+    //        }
 
-            return null;
-        }
+    //        return TreeNodeWrapper.CreateOrNull(null);
+    //    }
 
-        public ScreenTreeNode ScreenTreeNode(ScreenSave screenSave)
-        {
-            for (int i = 0; i < ElementViewWindow.ScreensTreeNode.Nodes.Count; i++)
-            {
-                if (ElementViewWindow.ScreensTreeNode.Nodes[i] is ScreenTreeNode)
-                {
-                    ScreenTreeNode asScreenTreeNode = ElementViewWindow.ScreensTreeNode.Nodes[i] as ScreenTreeNode;
+    //    //public ScreenTreeNode ScreenTreeNode(string screenFileName)
+    //    //{
 
-                    if (asScreenTreeNode.SaveObject == screenSave)
-                    {
-                        return asScreenTreeNode;
-                    }
-                }
-            }
-            return null;
-        }
 
-        public TreeNode GlobalContentFilesTreeNode()
-        {
-            return ElementViewWindow.GlobalContentFileNode;
-        }
+    //    //    for (int i = 0; i < ElementViewWindow.ScreensTreeNode.Nodes.Count; i++)
+    //    //    {
+    //    //        if (ElementViewWindow.ScreensTreeNode.Nodes[i].Tag is ScreenSave screenSave)
+    //    //        {
+    //    //            if (screenSave.Name == screenFileName)
+    //    //            {
+    //    //                return ElementViewWindow.ScreensTreeNode.Nodes[i] as ScreenTreeNode;
+    //    //            }
+    //    //        }
+    //    //    }
 
-        public ITreeNode NamedObjectTreeNode(NamedObjectSave namedObjectSave)
-        {
-            IElement container = namedObjectSave.GetContainer();
+    //    //    return null;
+    //    //}
 
-            if (container is ScreenSave)
-            {
-                var screenTreeNode = GlueState.Self.Find.ScreenTreeNode((ScreenSave)container);
-                return TreeNodeWrapper.CreateOrNull( screenTreeNode.GetTreeNodeFor(namedObjectSave));
-            }
-            else if (container is EntitySave)
-            {
-                var entityTreeNode = GlueState.Self.Find.EntityTreeNode((EntitySave)container);
+    //    //public ScreenTreeNode ScreenTreeNode(ScreenSave screenSave)
+    //    //{
+    //    //    for (int i = 0; i < ElementViewWindow.ScreensTreeNode.Nodes.Count; i++)
+    //    //    {
+    //    //        if (ElementViewWindow.ScreensTreeNode.Nodes[i] is ScreenTreeNode)
+    //    //        {
+    //    //            ScreenTreeNode asScreenTreeNode = ElementViewWindow.ScreensTreeNode.Nodes[i] as ScreenTreeNode;
 
-                return entityTreeNode.FindByTagRecursive(namedObjectSave);
-            }
-            else
-            {
-                return null;
-            }
-        }
+    //    //            if (asScreenTreeNode.SaveObject == screenSave)
+    //    //            {
+    //    //                return asScreenTreeNode;
+    //    //            }
+    //    //        }
+    //    //    }
+    //    //    return null;
+    //    //}
 
-        public TreeNode TreeNodeByTagIn(object tag, TreeNodeCollection treeNodeCollection)
-        {
-            foreach (TreeNode treeNode in treeNodeCollection)
-            {
-                if (treeNode.Tag == tag)
-                {
-                    return treeNode;
-                }
+    //    public ITreeNode GlobalContentFilesTreeNode()
+    //    {
+    //        return ElementViewWindow.GlobalContentFileNode;
+    //    }
 
-                TreeNode foundNode = TreeNodeByTagIn(tag, treeNode.Nodes);
+    //    public ITreeNode NamedObjectTreeNode(NamedObjectSave namedObjectSave)
+    //    {
+    //        IElement container = namedObjectSave.GetContainer();
 
-                if (foundNode != null)
-                {
-                    return foundNode;
-                }
-            }
-            return null;
-        }
+    //        if (container is ScreenSave)
+    //        {
+    //            var screenTreeNode = GlueState.Self.Find.ScreenTreeNode((ScreenSave)container);
+    //            return TreeNodeWrapper.CreateOrNull( screenTreeNode.GetTreeNodeFor(namedObjectSave));
+    //        }
+    //        else if (container is EntitySave)
+    //        {
+    //            var entityTreeNode = GlueState.Self.Find.EntityTreeNode((EntitySave)container);
 
-        //ITreeNode ITreeNode.FindByTagRecursive(object tag)
-        //{
-        //    return this.TreeNodeByTag(tag);
-        //}
+    //            return entityTreeNode.FindByTagRecursive(namedObjectSave);
+    //        }
+    //        else
+    //        {
+    //            return null;
+    //        }
+    //    }
 
-        public ITreeNode TreeNodeByTag(object tag)
-        {
-            var found = TreeNodeByTagIn(tag, ElementViewWindow.ScreensTreeNode.Nodes);
+    //    public ITreeNode TreeNodeByTagIn(object tag, TreeNodeCollection treeNodeCollection)
+    //    {
+    //        foreach (TreeNode treeNode in treeNodeCollection)
+    //        {
+    //            if (treeNode.Tag == tag)
+    //            {
+    //                return treeNode;
+    //            }
 
-            if(found == null)
-            {
-                found = TreeNodeByTagIn(tag, ElementViewWindow.EntitiesTreeNode.Nodes);
-            }
-            if(found == null)
-            {
-                found = TreeNodeByTagIn(tag, ElementViewWindow.GlobalContentFileNode.Nodes);
-            }
-            return TreeNodeWrapper.CreateOrNull( found);
-        }
+    //            TreeNode foundNode = TreeNodeByTagIn(tag, treeNode.Nodes);
 
-        public string ContentPathFor(IElement element)
-        {
-            return ElementCommands.GetFullPathContentDirectory(element, null);
+    //            if (foundNode != null)
+    //            {
+    //                return foundNode;
+    //            }
+    //        }
+    //        return null;
+    //    }
 
-        }
+    //    //ITreeNode ITreeNode.FindByTagRecursive(object tag)
+    //    //{
+    //    //    return this.TreeNodeByTag(tag);
+    //    //}
 
-        public bool IfReferencedFileSaveIsReferenced(ReferencedFileSave referencedFileSave)
-        {
-            IElement container = referencedFileSave.GetContainer();
+    //    public ITreeNode TreeNodeByTag(object tag)
+    //    {
+    //        var found = TreeNodeByTagIn(tag, ElementViewWindow.ScreensTreeNode.Nodes);
 
-            bool isContained = false;
-            if (container != null)
-            {
-                isContained = container.GetAllReferencedFileSavesRecursively().Contains(referencedFileSave);
-            }
-            else
-            {
-                isContained = ProjectManager.GlueProjectSave.GlobalFiles.Contains(referencedFileSave);
+    //        if(found == null)
+    //        {
+    //            found = TreeNodeByTagIn(tag, ElementViewWindow.EntitiesTreeNode.Nodes);
+    //        }
+    //        if(found == null)
+    //        {
+    //            found = TreeNodeByTagIn(tag, ElementViewWindow.GlobalContentFileNode.Nodes);
+    //        }
+    //        return TreeNodeWrapper.CreateOrNull( found);
+    //    }
 
-            }
+    //    public string ContentPathFor(IElement element)
+    //    {
+    //        return ElementCommands.GetFullPathContentDirectory(element, null);
 
-            return isContained;
+    //    }
 
-        }
-    }
+    //    public bool IfReferencedFileSaveIsReferenced(ReferencedFileSave referencedFileSave)
+    //    {
+    //        IElement container = referencedFileSave.GetContainer();
+
+    //        bool isContained = false;
+    //        if (container != null)
+    //        {
+    //            isContained = container.GetAllReferencedFileSavesRecursively().Contains(referencedFileSave);
+    //        }
+    //        else
+    //        {
+    //            isContained = ProjectManager.GlueProjectSave.GlobalFiles.Contains(referencedFileSave);
+
+    //        }
+
+    //        return isContained;
+
+    //    }
+    //}
 
 
 }

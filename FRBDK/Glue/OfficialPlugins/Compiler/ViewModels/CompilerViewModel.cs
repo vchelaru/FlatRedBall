@@ -49,7 +49,11 @@ namespace OfficialPlugins.Compiler.ViewModels
                     // If the game either stops or restarts, no longer paused
                     IsPaused = false;
                     CurrentGameSpeed = "100%";
-                    PlayOrEdit = PlayOrEdit.Play;
+                    if(value)
+                    {
+                        // no need to push this if we stopped the game from running
+                        PlayOrEdit = PlayOrEdit.Play;
+                    }
                 }
             }
         }
@@ -103,6 +107,12 @@ namespace OfficialPlugins.Compiler.ViewModels
                 }
             }
         }
+
+        [DependsOn(nameof(WhileStoppedViewVisibility))]
+        [DependsOn(nameof(IsGenerateGlueControlManagerInGame1Checked))]
+        public Visibility RunInEditModeButtonVisibility =>
+            (WhileStoppedViewVisibility == Visibility.Visible && IsGenerateGlueControlManagerInGame1Checked).ToVisibility();
+
         public bool IsPaused
         {
             get => Get<bool>();
@@ -166,9 +176,9 @@ namespace OfficialPlugins.Compiler.ViewModels
 
         public string Configuration { get; set; }
 
-        public Visibility CompileContentButtonVisibility
+        public bool IsPrintMsBuildCommandChecked
         {
-            get => Get<Visibility>();
+            get => Get<bool>();
             set => Set(value);
         }
 
@@ -285,6 +295,27 @@ namespace OfficialPlugins.Compiler.ViewModels
                     return Brushes.Red;
                 }
             }
+        }
+
+        [DependsOn(nameof(IsRunning))]
+        [DependsOn(nameof(IsGenerateGlueControlManagerInGame1Checked))]
+        public Visibility EditorToGameCheckboxVisibility => (IsRunning && IsGenerateGlueControlManagerInGame1Checked).ToVisibility();
+
+        public bool IsPrintEditorToGameCheckboxChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(EditorToGameCheckboxVisibility))]
+        [DependsOn(nameof(IsPrintEditorToGameCheckboxChecked))]
+        public Visibility CommandParameterCheckboxVisibility =>
+            (EditorToGameCheckboxVisibility == Visibility.Visible && IsPrintEditorToGameCheckboxChecked).ToVisibility();
+
+        public bool IsShowParametersChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
         }
 
         #endregion

@@ -22,7 +22,7 @@ namespace FlatRedBall.Glue.Managers
             {
                 // CTRL+F, control f, search focus, ctrl f, ctrl + f
                 case Keys.Control | Keys.F:
-                    MainExplorerPlugin.Self.SearchTextbox.Focus();
+                    PluginManager.ReactToCtrlF();
                     return true;
                 case Keys.Alt | Keys.Left:
                     TreeNodeStackManager.Self.GoBack();
@@ -72,7 +72,8 @@ namespace FlatRedBall.Glue.Managers
                 case System.Windows.Input.Key.F:
                     if(ctrlDown)
                     {
-                        MainExplorerPlugin.Self.SearchTextbox.Focus();
+                        PluginManager.ReactToCtrlF();
+
                         return true;
                     }
                     break;

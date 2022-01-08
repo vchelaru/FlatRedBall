@@ -18,6 +18,7 @@ using EditorObjects.IoC;
 using System.Windows.Forms;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using GlueFormsCore.FormHelpers;
 
 namespace OfficialPlugins.MonoGameContent
 {
@@ -135,7 +136,7 @@ namespace OfficialPlugins.MonoGameContent
 
         #endregion
 
-        private void HandleTreeViewRightClick(TreeNode rightClickedTreeNode, ContextMenuStrip menuToModify)
+        private void HandleTreeViewRightClick(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> menuToModify)
         {
             if(rightClickedTreeNode.IsReferencedFile())
             {
@@ -143,11 +144,11 @@ namespace OfficialPlugins.MonoGameContent
                 var forcePngsToPipeline = controller.Settings.UseContentPipelineOnAllPngs;
                 if (BuildLogic.IsBuiltByContentPipeline(rfs, forcePngsToPipeline))
                 {
-                    menuToModify.Items.Add("Rebuild Content Pipeline File (xnb)").Click += (not, used) =>
+                    menuToModify.Add("Rebuild Content Pipeline File (xnb)", (not, used) =>
                     {
                         var fullFileName = GlueCommands.Self.GetAbsoluteFileName(rfs);
                         BuildLogic.Self.TryAddXnbReferencesAndBuild(fullFileName, GlueState.CurrentMainProject, false, rebuild:true);
-                    };
+                    });
                 }
 
             }

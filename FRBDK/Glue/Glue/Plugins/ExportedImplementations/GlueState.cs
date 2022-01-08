@@ -15,9 +15,12 @@ using FlatRedBall.Glue.IO;
 using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Navigation;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 {
+    #region GlueStateSnapshot
+
     public class GlueStateSnapshot
     {
         public ITreeNode CurrentTreeNode;
@@ -32,6 +35,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         public EventResponseSave CurrentEventResponseSave;
 
     }
+
+    #endregion
 
     public class GlueState : IGlueState
     {
@@ -50,25 +55,30 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             get => snapshot.CurrentTreeNode;
             set
             {
+                UpdateToSetTreeNode(value, recordState:true);
+            }
+        }
 
+        public void SetCurrentTreeNode(ITreeNode treeNode, bool recordState) =>
+            UpdateToSetTreeNode(treeNode, recordState);
 
-                var isSame = value == snapshot?.CurrentTreeNode;
+        private void UpdateToSetTreeNode(ITreeNode value, bool recordState)
+        {
+            var isSame = value == snapshot?.CurrentTreeNode;
 
-                // Snapshot should come first so everyone can update to the snapshot
-                GlueState.Self.TakeSnapshot(value);
-                if (!ElementViewWindow.SuppressSelectionEvents)
-                {
-                    PluginManager.ReactToItemSelect(value);
-                }
+            // push before taking a snapshot, so that the "old" one is pushed
+            if (!isSame && snapshot?.CurrentTreeNode != null && recordState)
+            {
+                TreeNodeStackManager.Self.Push(snapshot.CurrentTreeNode);
+            }
 
-                if (value is TreeNodeWrapper asWrapper && !isSame)
-                {
-                    //GlueCommands.Self.DoOnUiThread(() => MainExplorerPlugin.Self.ElementTreeView.SelectedNode = value);
-                    GlueCommands.Self.DoOnUiThread(() =>
-                    {
-                        MainExplorerPlugin.Self.ElementTreeView.SelectedNode = asWrapper.TreeNode;
-                    });
-                }
+            // Snapshot should come first so everyone can update to the snapshot
+            GlueState.Self.TakeSnapshot(value);
+
+            // If we don't check for isSame, then selecting the same tree node will result in double-selects in the game.
+            if(!isSame)
+            {
+                PluginManager.ReactToItemSelect(value);
             }
         }
 
@@ -191,7 +201,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         public IFindManager Find
         {
             get;
-            private set;
+            set;
         }
         public States.Clipboard Clipboard
         {
@@ -303,7 +313,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public GlueState()
         {
-            Find = new FindManager();
+            // find will be assigned by plugins
             Clipboard = new States.Clipboard();
 
             System.Windows.Data.BindingOperations.EnableCollectionSynchronization(

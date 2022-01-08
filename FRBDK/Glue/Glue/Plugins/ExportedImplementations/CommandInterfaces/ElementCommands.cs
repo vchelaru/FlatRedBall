@@ -24,6 +24,7 @@ using Microsoft.Xna.Framework;
 using Glue;
 using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.Glue.SaveClasses.Helpers;
+using GlueFormsCore.Managers;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -416,12 +417,16 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void AddCustomVariableToCurrentElement(CustomVariable newVariable, bool save = true)
         {
-            var currentElement = GlueState.Self.CurrentElement;
+            var element = GlueState.Self.CurrentElement;
+            AddCustomVariableToElement(newVariable, element, save);
+        }
 
-            currentElement.CustomVariables.Add(newVariable);
+        public void AddCustomVariableToElement(CustomVariable newVariable, GlueElement element, bool save = true)
+        { 
+            element.CustomVariables.Add(newVariable);
 
             // by default new variables should not be included in states. 
-            foreach(var category in currentElement.StateCategoryList)
+            foreach(var category in element.StateCategoryList)
             {
                 if (!category.ExcludedVariables.Contains(newVariable.Name))
                 { 
@@ -429,7 +434,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            CustomVariableHelper.SetDefaultValueFor(newVariable, currentElement);
+            InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, element);
+
+
+            CustomVariableHelper.SetDefaultValueFor(newVariable, element);
 
             if (GlueState.Self.CurrentElement != null)
             {
@@ -439,14 +447,23 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             MainGlueWindow.Self.PropertyGrid.Refresh();
 
 
-            UpdateInstanceCustomVariables(currentElement);
+            UpdateInstanceCustomVariables(element);
 
             PluginManager.ReactToVariableAdded(newVariable);
 
             // Generate code after PluginMangager.React so that the code can include any changes made by plugins.
-            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
 
-            if(save)
+            if (GlueState.Self.CurrentElement == element)
+            {
+                // Vic asks = why do we call ReactToItemSelect instead of setting the custom variable. Is it to force a refresh?
+                // On because actually people usually don't want to select the variable because it's rare to actually modify the variable
+                // through its properties. Instead, it's more common to select the variables folder and use the variables tab
+                //GlueState.Self.CurrentCustomVariable = newVariable;
+                PluginManager.ReactToItemSelect(GlueState.Self.CurrentTreeNode);
+            }
+
+            if (save)
             {
                 GluxCommands.Self.SaveGlux();
             }

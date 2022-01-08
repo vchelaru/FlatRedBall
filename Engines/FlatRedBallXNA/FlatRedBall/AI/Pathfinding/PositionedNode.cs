@@ -13,12 +13,16 @@ using Microsoft.Xna.Framework;
 
 namespace FlatRedBall.AI.Pathfinding
 {
+    #region Enums
+
     public enum AStarState
     {
         Unused,
         Open,
         Closed
     }
+
+    #endregion
 
     /// <summary>
     /// An object which has position properties 
@@ -155,7 +159,7 @@ namespace FlatRedBall.AI.Pathfinding
         /// </remarks>
         public List<Link> Links
         {
-            get { return mLinks; }
+            get => mLinks;
         }
 
         /// <summary>

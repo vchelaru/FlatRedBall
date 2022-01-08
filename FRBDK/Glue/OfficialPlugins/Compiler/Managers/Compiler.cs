@@ -49,8 +49,8 @@ namespace OfficialPlugins.Compiler
             }
         }
 
-        internal async Task<bool> Compile(Action<string> printOutput, Action<string> printError,  
-            string configuration = "Debug")
+        internal async Task<bool> Compile(Action<string> printOutput, Action<string> printError,
+            string configuration = "Debug", bool printMsBuildCommand = false)
         {
             var shouldCompile = true;
 
@@ -64,57 +64,84 @@ namespace OfficialPlugins.Compiler
             //do we actually want to do this ?
             if(shouldCompile)
             {
-                bool succeeded = true;
-
                 var projectFileName = GlueState.Self.CurrentMainProject.FullFileName;
 
+                var succeeded = false;
+
+                string msBuildPath;
+                string additionalArgumentPrefix = "";
 
                 if (MsBuildLocation != null)
                 {
-                    #region Restore Nuget
-
-                    {
-                        string startOutput = "Nuget Restore started at " + DateTime.Now.ToLongTimeString();
-                        string endOutput = "Nuget Restore succeeded";
-
-                        string outputDirectory = GlueState.Self.CurrentGlueProjectDirectory + "bin/x86/Debug/";
-                        // For info on parameters:
-                        // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
-                        // \m uses multiple cores
-                        string arguments = $"\"{projectFileName}\" -t:restore " +
-                            "/nologo " +
-                            "/verbosity:minimal";
-
-                        succeeded = await StartMsBuildWithParameters(printOutput, printError, succeeded, startOutput, endOutput, arguments);
-                    }
-
-                    #endregion
-
-                    #region Build
-
-                    {
-                        string startOutput = "Build started at " + DateTime.Now.ToLongTimeString();
-                        string endOutput = "Build succeeded";
-
-                        string outputDirectory = GlueState.Self.CurrentGlueProjectDirectory + "bin/x86/Debug/";
-                        // For info on parameters:
-                        // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
-                        // \m uses multiple cores
-                        string arguments = $"\"{projectFileName}\" " +
-                            $"/p:Configuration=\"{configuration}\" " +
-                            $"/p:XNAContentPipelineTargetPlatform=\"Windows\" " +
-                            $"/p:XNAContentPipelineTargetProfile=\"HiDef\" " +
-                            $"/p:OutDir=\"{outputDirectory}\" " +
-                            "/m " +
-                            "/nologo " +
-                            "/verbosity:minimal";
-
-                        succeeded = await StartMsBuildWithParameters(printOutput, printError, succeeded, startOutput, endOutput, arguments);
-                    }
-
-                    #endregion
+                    msBuildPath = MsBuildLocation.FullPath;
                 }
                 else
+                {
+                    // try dotnet msbuild
+                    msBuildPath = "dotnet";
+
+                    additionalArgumentPrefix = "msbuild ";
+                }
+
+                #region Restore Nuget
+
+                {
+                    string startOutput = "Nuget Restore started at " + DateTime.Now.ToLongTimeString();
+                    string endOutput = "Nuget Restore succeeded";
+
+                    string outputDirectory = GlueState.Self.CurrentGlueProjectDirectory + "bin/x86/Debug/";
+                    // For info on parameters:
+                    // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
+                    // \m uses multiple cores
+                    string arguments = 
+                        additionalArgumentPrefix +
+                        $"\"{projectFileName}\" -t:restore " +
+                        "/nologo " +
+                        "/verbosity:minimal";
+
+                    if(printMsBuildCommand)
+                    {
+                        printOutput?.Invoke($"{msBuildPath} {arguments}");
+                    }
+
+                    succeeded = await StartMsBuildWithParameters(printOutput, printError, startOutput, endOutput, arguments, msBuildPath);
+                }
+
+                #endregion
+
+                #region Build
+
+                if(succeeded)
+                {
+                    string startOutput = "Build started at " + DateTime.Now.ToLongTimeString();
+                    string endOutput = "Build succeeded";
+
+                    string outputDirectory = GlueState.Self.CurrentGlueProjectDirectory + "bin/x86/Debug/";
+                    // For info on parameters:
+                    // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
+                    // \m uses multiple cores
+                    string arguments =
+                        additionalArgumentPrefix +
+                        $"\"{projectFileName}\" " +
+                        $"/p:Configuration=\"{configuration}\" " +
+                        $"/p:XNAContentPipelineTargetPlatform=\"Windows\" " +
+                        $"/p:XNAContentPipelineTargetProfile=\"HiDef\" " +
+                        $"/p:OutDir=\"{outputDirectory}\" " +
+                        "/m " +
+                        "/nologo " +
+                        "/verbosity:minimal";
+
+                    if (printMsBuildCommand)
+                    {
+                        printOutput?.Invoke($"{msBuildPath} {arguments}");
+                    }
+
+                    succeeded = await StartMsBuildWithParameters(printOutput, printError, startOutput, endOutput, arguments, msBuildPath);
+                }
+
+                #endregion
+
+                if(!succeeded)
                 {
                     string cantFindMsBuildMessage =
                         $"Could not find msbuild.exe. Looked in the following locations:";
@@ -125,16 +152,15 @@ namespace OfficialPlugins.Compiler
                     }
 
                     printError(cantFindMsBuildMessage);
-                    succeeded = false;
                 }
                 return succeeded;
             }
             return false;
         }
 
-        private async Task<bool> StartMsBuildWithParameters(Action<string> printOutput, Action<string> printError, bool succeeded, string startOutput, string endOutput, string arguments)
+        private async Task<bool> StartMsBuildWithParameters(Action<string> printOutput, Action<string> printError, string startOutput, string endOutput, string arguments, string msbuildLocation)
         {
-            Process process = CreateProcess("\"" + MsBuildLocation.FullPath + "\"", arguments);
+            Process process = CreateProcess("\"" + msbuildLocation + "\"", arguments);
 
             printOutput(startOutput);
             // This is noisy and technical. Reducing output window verbosity
@@ -142,7 +168,7 @@ namespace OfficialPlugins.Compiler
 
             StringBuilder outputStringBuilder = new StringBuilder();
             StringBuilder errorStringBuilder = new StringBuilder();
-            var errorString = await Task.Run(() => RunProcess(outputStringBuilder, errorStringBuilder, MsBuildLocation, process));
+            var errorString = await Task.Run(() => RunProcess(outputStringBuilder, errorStringBuilder, msbuildLocation, process));
 
             if (outputStringBuilder.Length > 0)
             {
@@ -154,13 +180,15 @@ namespace OfficialPlugins.Compiler
                 printError(errorStringBuilder.ToString());
             }
 
+            bool succeeded = false;
+
             if (!string.IsNullOrEmpty(errorString))
             {
                 printError(errorString);
-                succeeded = false;
             }
             else
             {
+                succeeded = true;
                 printOutput($"{endOutput} at {DateTime.Now.ToLongTimeString()}");
             }
 
@@ -190,73 +218,7 @@ namespace OfficialPlugins.Compiler
         //    return whyCantRun;
         //}
 
-        private bool RunMsBuildOnProject(Action<string> printOutput, Action<string> printError, string configuration, string projectFileName)
-        {
-            bool succeeded = true;
-
-            if(MsBuildLocation != null)
-            {
-                string outputDirectory = GlueState.Self.CurrentGlueProjectDirectory + "bin/x86/Debug/";
-
-                // For info on parameters:
-                // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
-                // \m uses multiple cores
-                string arguments = $"\"{projectFileName}\" " +
-                    $"/p:Configuration=\"{configuration}\" " +
-                    $"/p:XNAContentPipelineTargetPlatform=\"Windows\" " +
-                    $"/p:XNAContentPipelineTargetProfile=\"HiDef\" " +
-                    $"/p:OutDir=\"{outputDirectory}\" " +
-                    "/m " +
-                    "/nologo " +
-                    "/verbosity:minimal";
-
-                Process process = CreateProcess("\"" + MsBuildLocation.FullPath + "\"", arguments);
-
-                printOutput("Build started at " + DateTime.Now.ToLongTimeString());
-                // This is noisy and technical. Reducing output window verbosity
-                //printOutput(process.StartInfo.FileName + " " + process.StartInfo.Arguments);
-
-                StringBuilder outputStringBuilder = new StringBuilder();
-                StringBuilder errorStringBuilder = new StringBuilder();
-                var errorString = RunProcess(outputStringBuilder, errorStringBuilder, MsBuildLocation, process);
-
-                if (outputStringBuilder.Length > 0)
-                {
-                    printOutput(outputStringBuilder.ToString());
-                }
-
-                if (errorStringBuilder.Length > 0)
-                {
-                    printError(errorStringBuilder.ToString());
-                }
-
-                if (!string.IsNullOrEmpty(errorString))
-                {
-                    printError(errorString);
-                    succeeded = false;
-                }
-                else
-                {
-                    printOutput($"Build succeeded at {DateTime.Now.ToLongTimeString()}");
-                }
-            }
-            else
-            {
-                string message =
-                    $"Could not find msbuild.exe. Looked in the following locations:";
-
-                foreach (var item in AvailableLocations)
-                {
-                    message += $"\n{item}";
-                }
-
-                printError(message);
-                succeeded = false;
-            }
-            return succeeded;
-        }
-
-        private static string RunProcess(StringBuilder printOutput, StringBuilder printError, FilePath executable, Process process)
+        private static string RunProcess(StringBuilder printOutput, StringBuilder printError, string processPath, Process process)
         {
             string errorString = "";
             process.Start();
@@ -285,7 +247,7 @@ namespace OfficialPlugins.Compiler
             {
                 if (hasUserTerminatedProcess)
                 {
-                    errorString = "The process\n\n" + executable.FullPath + "\n\nhas been terminated";
+                    errorString = "The process\n\n" + processPath + "\n\nhas been terminated";
                 }
                 else
                 {
@@ -321,28 +283,6 @@ namespace OfficialPlugins.Compiler
             return errorString;
         }
 
-        internal void BuildContent(Action<string> printOutput, Action<string> printError, Action<bool> afterBuilt = null, string configuration = "Debug")
-        {
-            TaskManager.Self.AddAsyncTask(() =>
-            {
-                bool succeeded = false;
-
-                if(GlueState.Self.CurrentMainProject == GlueState.Self.CurrentMainProject.ContentProject)
-                {
-                    // eventually use the MG build here...
-                    printOutput("Project does not have a dedicated content project");
-                }
-                else
-                {
-                    var projectFileName = GlueState.Self.CurrentMainProject.ContentProject.FullFileName;
-
-                    succeeded = RunMsBuildOnProject(printOutput, printError, configuration, projectFileName);
-                }
-
-                afterBuilt?.Invoke(succeeded);
-
-            }, "Building Content");
-        }
 
         private static Process CreateProcess(string executable, string arguments)
         {

@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Parsing;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using FlatRedBall.Utilities;
@@ -17,11 +18,11 @@ namespace FlatRedBall.Glue.CodeGeneration
 
 
 
-        public List<string> GetInheritanceList(IElement element, EntitySave entitySave, out EntitySave rootEntitySave)
+        public List<string> GetInheritanceList(EntitySave entitySave, out EntitySave rootEntitySave)
         {
 
-            var inheritsFromEntity = !string.IsNullOrEmpty(element.BaseElement) && 
-                element.BaseElement != "<NONE>" && !element.InheritsFromFrbType();
+            var inheritsFromEntity = !string.IsNullOrEmpty(entitySave.BaseElement) &&
+                entitySave.BaseElement != "<NONE>" && !entitySave.InheritsFromFrbType();
 
             rootEntitySave = null;
 
@@ -62,9 +63,14 @@ namespace FlatRedBall.Glue.CodeGeneration
             inheritanceList.Add("FlatRedBall.Graphics.IDestroyable");
 
 
+            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.IEntityInFrb)
+            {
+                inheritanceList.Add("FlatRedBall.Entities.IEntity");
+            }
+
             foreach (ElementComponentCodeGenerator eccg in CodeWriter.CodeGenerators)
             {
-                eccg.AddInheritedTypesToList(inheritanceList, element);
+                eccg.AddInheritedTypesToList(inheritanceList, entitySave);
             }
 
             StringFunctions.RemoveDuplicates(inheritanceList);

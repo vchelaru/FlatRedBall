@@ -468,61 +468,6 @@ namespace FlatRedBall.Glue
             }
         }
         
-        public static void RemoveCodeFilesForElement(List<string> filesThatCouldBeRemoved, IElement element)
-        {
-            string elementName = element.Name;
-
-
-            GlueCommands.Self.ProjectCommands.RemoveFromProjectsTask(
-                GlueState.Self.CurrentGlueProjectDirectory + elementName + ".cs");
-            filesThatCouldBeRemoved.Add(elementName + ".cs");
-
-            // gotta also remove the generated file
-            GlueCommands.Self.ProjectCommands.RemoveFromProjectsTask(
-                GlueState.Self.CurrentGlueProjectDirectory + elementName + ".Generated.cs");
-            filesThatCouldBeRemoved.Add(elementName + ".Generated.cs");
-
-            string eventFile = elementName + ".Event.cs";
-            string absoluteEvent = MakeAbsolute(eventFile);
-            GlueCommands.Self.ProjectCommands.RemoveFromProjectsTask(absoluteEvent);
-            if (System.IO.File.Exists(absoluteEvent))
-            {
-                filesThatCouldBeRemoved.Add(eventFile);
-            }
-
-            string generatedEventFile = elementName + ".Generated.Event.cs";
-            string absoluteGeneratedEventFile = MakeAbsolute(generatedEventFile);
-            GlueCommands.Self.ProjectCommands.RemoveFromProjectsTask(absoluteGeneratedEventFile);
-            if (System.IO.File.Exists(absoluteGeneratedEventFile))
-            {
-                filesThatCouldBeRemoved.Add(generatedEventFile);
-            }
-
-            string factoryName = "Factories/" + FileManager.RemovePath(elementName) + "Factory.Generated.cs";
-            string absoluteFactoryNameFile = MakeAbsolute(factoryName);
-            GlueCommands.Self.ProjectCommands.RemoveFromProjectsTask(absoluteFactoryNameFile);
-            if (System.IO.File.Exists(absoluteFactoryNameFile))
-            {
-                filesThatCouldBeRemoved.Add(absoluteFactoryNameFile);
-            }
-        }
-
-
-        public static void SortAndUpdateUI(EntitySave entitySave)
-        {
-            mGlueProjectSave.Entities.SortByName();
-
-            ElementViewWindow.UpdateNodeToListIndex(entitySave);
-        }
-
-        public static void SortAndUpdateUI(ScreenSave screenSave)
-        {
-            mGlueProjectSave.Screens.SortByName();
-
-            //ElementViewWindow.UpdateNodeToListIndex(screenSave);
-            ElementViewWindow.ScreensTreeNode.Nodes.SortByTextConsideringDirectories();
-        }
-
         public static CheckResult StatusCheck()
         {
             //if (IdeManager.HasOnlyExpress)
@@ -710,7 +655,7 @@ namespace FlatRedBall.Glue
 
 
 
-        internal static CheckResult VerifyReferenceGraph(IElement element)
+        internal static CheckResult CheckForCircularObjectReferences(IElement element)
         {
 
             if (mGlueProjectSave != null && element != null)
@@ -723,10 +668,6 @@ namespace FlatRedBall.Glue
 
                 if (ReferenceVerificationHelper(element, ref resultString, visitedEntities) == CheckResult.Failed)
                 {
-                    MessageBox.Show("This assignment has created a reference creation cycle of the following path:\n\n" +
-                        resultString +
-                        "\nThe assignment will be undone.");
-
                     return CheckResult.Failed;
                 }
 

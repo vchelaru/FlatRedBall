@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
@@ -24,6 +25,8 @@ namespace OfficialPlugins.TreeViewPlugin
 
         public override Version Version => new Version(1, 0);
 
+        MainTreeViewControl mainView;
+
         MainTreeViewViewModel MainViewModel = new MainTreeViewViewModel();
 
         PluginTab pluginTab;
@@ -37,7 +40,9 @@ namespace OfficialPlugins.TreeViewPlugin
 
         public override void StartUp()
         {
-            var mainView = new MainTreeViewControl();
+            var findManager = new FindManager(MainViewModel);
+            GlueState.Self.Find = findManager;
+            mainView = new MainTreeViewControl();
 
             mainView.DataContext = MainViewModel;
 
@@ -56,7 +61,8 @@ namespace OfficialPlugins.TreeViewPlugin
             RefreshTreeNodeFor += HandleRefreshTreeNodeFor;
             RefreshGlobalContentTreeNode += HandleRefreshGlobalContentTreeNode;
             RefreshDirectoryTreeNodes += HandleRefreshDirectoryTreeNodes;
-
+            FocusOnTreeView += HandleFocusOnTreeView;
+            ReactToCtrlF += HandleCtrlF;
             this.ReactToItemSelectHandler += HandleItemSelected;
         }
 
@@ -86,6 +92,9 @@ namespace OfficialPlugins.TreeViewPlugin
                 SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
 
             }
+
+            MainViewModel.IsForwardButtonEnabled = TreeNodeStackManager.Self.CanGoForward;
+            MainViewModel.IsBackButtonEnabled = TreeNodeStackManager.Self.CanGoBack;
         }
 
         private void HandleRefreshGlobalContentTreeNode()
@@ -108,8 +117,11 @@ namespace OfficialPlugins.TreeViewPlugin
 
         private void HandleRefreshTreeNodeFor(GlueElement element)
         {
+            var oldTag = SelectionLogic.CurrentNode?.Tag;
+            var oldNode = SelectionLogic.CurrentNode;
             var currentNode = SelectionLogic.CurrentNode;
             MainViewModel.RefreshTreeNodeFor(element);
+
             if(currentNode?.Tag != null)
             {
                 // November 20, 2021
@@ -126,17 +138,35 @@ namespace OfficialPlugins.TreeViewPlugin
                 // in the middle of a view model change.
 
                 var wasPushingSelection = SelectionLogic.IsPushingSelectionOutToGlue;
-                SelectionLogic.IsPushingSelectionOutToGlue = false;
+                // If the tag changed, push it back out:
+                SelectionLogic.IsPushingSelectionOutToGlue = oldTag != currentNode?.Tag;
                 SelectionLogic.SelectByTag(currentNode.Tag);
                 SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
 
+                // This can happen if the last item in a category (like a variable) is removed. If so, push
+                // the change out:
+                if (SelectionLogic.CurrentNode == null && GlueState.Self.CurrentTreeNode != null)
+                {
+                    GlueState.Self.CurrentTreeNode = null;
+                }
             }
+            
         }
 
         private void HandleRefreshDirectoryTreeNodes()
         {
             MainViewModel.RefreshDirectoryNodes();
             
+        }
+
+        private void HandleFocusOnTreeView()
+        {
+            this.mainView?.Focus();
+        }
+
+        private void HandleCtrlF()
+        {
+            mainView.FocusSearchBox();
         }
     }
 }

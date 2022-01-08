@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using ToolsUtilities;
 
 namespace OfficialPlugins.Compiler.Managers
 {
@@ -47,8 +48,11 @@ namespace OfficialPlugins.Compiler.Managers
                     var succeeded = await Compile();
                     if(succeeded)
                     {
-                        await runner.Run(preventFocus: false);
-                        compilerViewModel.IsEditChecked = true;
+                        var runResponse = await runner.Run(preventFocus: false);
+                        if(runResponse.Succeeded)
+                        {
+                            compilerViewModel.IsEditChecked = true;
+                        }
                     }
 
                 }, "Starting in edit mode", TaskExecutionPreference.AddOrMoveToEnd);
@@ -57,23 +61,33 @@ namespace OfficialPlugins.Compiler.Managers
             gameHostControl.RestartGameCurrentScreenClicked += async (not, used) =>
             {
                 var wasEditChecked = compilerViewModel.IsEditChecked;
+                // This is the screen that the game is currently on...
                 var screenName = await CommandSending.CommandSender.GetScreenName();
-
+                // ...but we may not want to restart on this screen if it's the edit entity screen:
+                var isEntityViewingScreen = screenName == "GlueControl.Screens.EntityViewingScreen";
+                var screenCommandLineArg = isEntityViewingScreen ? null : screenName;
 
                 compilerViewModel.IsPaused = false;
                 runner.KillGameProcess();
-                var succeeded = await Compile();
-
-                if (succeeded)
+                var compileSucceeded = await Compile();
+                GeneralResponse runResponse = GeneralResponse.UnsuccessfulResponse;
+                if (compileSucceeded)
                 {
-                    if (succeeded)
+                    runResponse = await runner.Run(preventFocus: false, screenCommandLineArg);
+                }
+                if (wasEditChecked && runResponse.Succeeded)
+                {
+                    compilerViewModel.IsEditChecked = true;
+
+                    if(isEntityViewingScreen)
                     {
-                        await runner.Run(preventFocus: false, screenName);
-                        if (wasEditChecked)
-                        {
-                            compilerViewModel.IsEditChecked = true;
-                        }
+                        await RefreshManager.Self.PushGlueSelectionToGame();
                     }
+                }
+
+                if(!runResponse.Succeeded)
+                {
+                    mainControl.PrintOutput(runResponse.Message);
                 }
             };
 
@@ -142,7 +156,8 @@ namespace OfficialPlugins.Compiler.Managers
             var toReturn = await compiler.Compile(
                 mainControl.PrintOutput,
                 mainControl.PrintOutput,
-                compilerViewModel.Configuration);
+                compilerViewModel.Configuration,
+                compilerViewModel.IsPrintMsBuildCommandChecked);
             compilerViewModel.IsCompiling = false;
             return toReturn;
         }

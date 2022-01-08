@@ -1,8 +1,10 @@
 ﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using Gum.DataTypes;
 using Gum.DataTypes.Variables;
+using GumPlugin.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -148,7 +150,7 @@ namespace GumPlugin.CodeGeneration
         internal void HandleGetEventSignatureArgs(FlatRedBall.Glue.SaveClasses.NamedObjectSave namedObject, FlatRedBall.Glue.Events.EventResponseSave eventResponseSave,
             out string type, out string args)
         {
-            bool isGumFile = false;
+            bool isGumObject = false;
             type = null;
             args = null;
 
@@ -159,12 +161,15 @@ namespace GumPlugin.CodeGeneration
                 if(isFromFile && !string.IsNullOrEmpty(namedObject.SourceFile))
                 {
                     extension = FileManager.GetExtension(namedObject.SourceFile);
+                    isGumObject = extension == "gusx" || extension == "gucx";
+                }
+                else if(AssetTypeInfoManager.Self.IsAssetTypeInfoGum(namedObject.GetAssetTypeInfo()))
+                {
+                    isGumObject = true;
                 }
 
-
-                isGumFile = extension == "gusx" || extension == "gucx";
             }
-            if(isGumFile)
+            if(isGumObject)
             {
                 type = "FlatRedBall.Gui.WindowEvent";
                 args = "FlatRedBall.Gui.IWindow window";

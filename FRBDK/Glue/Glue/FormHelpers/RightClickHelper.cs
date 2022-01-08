@@ -40,6 +40,7 @@ using EditorObjects.IoC;
 using FlatRedBall.Glue.SetVariable;
 using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
 using GlueFormsCore.FormHelpers;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.FormHelpers
 {
@@ -281,7 +282,7 @@ namespace FlatRedBall.Glue.FormHelpers
         public bool IsFolderForEntities()
         {
             //TODO:  this fails when deleting a folder inside files.  We gotta fix that.  Try deleting the Palette folders in CreepBase in Baron
-            
+
             var parent = Parent;
 
             if (parent == null)
@@ -348,8 +349,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             else if (((ITreeNode)this).IsGlobalContentContainerNode())
             {
-                var returnValue = GlueState.Self.Find.GlobalContentFilesPath;
-
+                var returnValue = ProjectManager.ProjectBase.GetAbsoluteContentFolder() + "GlobalContent/";
 
                 // But we want to make this relative to the project, so let's do that
                 returnValue = ProjectManager.MakeRelativeContent(returnValue);
@@ -383,7 +383,7 @@ namespace FlatRedBall.Glue.FormHelpers
             }
             else
             {
-                if(Parent == null)
+                if (Parent == null)
                 {
                     string valueToReturn = this.Text + "/";
                     return valueToReturn;
@@ -408,185 +408,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
     #endregion
 
-    #region TreeNodeWrapper class
-    public class TreeNodeWrapper : ITreeNode
-    {
-        TreeNode treeNode;
-
-        public TreeNode TreeNode => treeNode;
-
-        public TreeNodeWrapper(TreeNode treeNode)
-        {
-            this.treeNode = treeNode;
-        }
-
-        public object Tag
-        {
-            get => treeNode?.Tag;
-            set => treeNode.Tag = value;
-        }
-
-        public ITreeNode Parent => TreeNodeWrapper.CreateOrNull(treeNode.Parent);
-
-        public string Text
-        {
-            get => treeNode?.Text;
-            set => treeNode.Text = value;
-        }
-
-        public static ITreeNode CreateOrNull(TreeNode targetNode)
-        {
-            if(targetNode != null)
-            {
-                return new TreeNodeWrapper(targetNode);
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public void Add(ITreeNode child)
-        {
-            if(child is TreeNodeWrapper treeNodeWrapper)
-            {
-                this.treeNode.Nodes.Add(treeNodeWrapper.treeNode);
-            }
-            else
-            {
-                throw new InvalidOperationException();
-            }
-        }
-
-        public ITreeNode FindByName(string name)
-        {
-            TreeNode matchingNode = null;
-            foreach(TreeNode node in treeNode.Nodes)
-            {
-                if(node.Text == name)
-                {
-                    matchingNode = node;
-                    break;
-                }
-            }
-
-            return CreateOrNull(matchingNode);
-        }
-
-        public void Remove(ITreeNode child)
-        {
-            if (child is TreeNodeWrapper treeNodeWrapper)
-            {
-                this.treeNode.Nodes.Remove(treeNodeWrapper.treeNode);
-            }
-            else
-            {
-                throw new InvalidOperationException();
-            }
-        }
-
-        public void RemoveGlobalContentTreeNodesIfDoesntExist(ITreeNode treeNode)
-        {
-            var innerTreeNode = ((TreeNodeWrapper)treeNode).treeNode;
-            if (((ITreeNode)treeNode).IsDirectoryNode())
-            {
-                string directory = treeNode.GetRelativePath();
-
-                directory = ProjectManager.MakeAbsolute(directory, true);
-
-
-                if (!Directory.Exists(directory))
-                {
-                    // The directory isn't here anymore, so kill it!
-                    treeNode.Parent.Remove(treeNode);
-
-                }
-                else
-                {
-                    // The directory is valid, but let's check subdirectories
-                    for (int i = innerTreeNode.Nodes.Count - 1; i > -1; i--)
-                    {
-                        RemoveGlobalContentTreeNodesIfDoesntExist( CreateOrNull( innerTreeNode.Nodes[i]));
-                    }
-                }
-            }
-            else // assume content for now
-            {
-
-                ReferencedFileSave referencedFileSave = treeNode.Tag as ReferencedFileSave;
-
-                if (!ProjectManager.GlueProjectSave.GlobalFiles.Contains(referencedFileSave))
-                {
-                    treeNode.Parent.Remove(treeNode);
-                }
-                else
-                {
-                    // The RFS may be contained, but see if the file names match
-                    string rfsName = FileManager.Standardize(referencedFileSave.Name, null, false).ToLower();
-                    string treeNodeFile = FileManager.Standardize(treeNode.GetRelativePath(), null, false).ToLower();
-
-                    // We first need to make sure that the file is part of GlobalContentFiles.
-                    // If it is, then we may have tree node in the wrong folder, so let's get rid
-                    // of it.  If it doesn't start with globalcontent/ then we shouldn't remove it here.
-                    if (rfsName.StartsWith("globalcontent/") && rfsName != treeNodeFile)
-                    {
-                        treeNode.Parent.Remove(treeNode);
-                    }
-                }
-            }
-        }
-
-        public ITreeNode FindByTagRecursive(object tag)
-        {
-            return TreeNodeWrapper.CreateOrNull( FindByTagRecursiveInner(treeNode, tag));
-            
-        }
-
-        private TreeNode FindByTagRecursiveInner(TreeNode treeNode, object tag)
-        {
-            foreach (TreeNode child in treeNode.Nodes)
-            {
-                if (child.Tag == tag)
-                {
-                    return child;
-                }
-                else
-                {
-                    var inner = FindByTagRecursiveInner(child, tag);
-
-                    if(inner != null)
-                    {
-                        return inner;
-                    }
-                }
-            }
-            return null;
-        }
-
-        public void SortByTextConsideringDirectories()
-        {
-            treeNode.Nodes.SortByTextConsideringDirectories();
-        }
-
-        IEnumerable<ITreeNode> ITreeNode.Children
-        {
-            get
-            {
-                foreach(TreeNode item in treeNode.Nodes)
-                {
-                    yield return CreateOrNull(item);
-                }
-            }
-        }
-
-        public override string ToString()
-        {
-            return $"{Text} {Tag}";
-        }
-    }
-
-    #endregion
-
     public static class RightClickHelper
     {
         #region Fields
@@ -596,7 +417,7 @@ namespace FlatRedBall.Glue.FormHelpers
         static GeneralToolStripMenuItem addFileToolStripMenuItem;
         static GeneralToolStripMenuItem newFileToolStripMenuItem;
         static GeneralToolStripMenuItem existingFileToolStripMenuItem;
-        
+
 
         static GeneralToolStripMenuItem openWithDEFAULTToolStripMenuItem;
 
@@ -629,8 +450,8 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static GeneralToolStripMenuItem mFindAllReferences;
 
-        
-        
+
+
 
         static GeneralToolStripMenuItem mDuplicate;
 
@@ -650,7 +471,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static GeneralToolStripMenuItem mCreateZipPackage;
         static GeneralToolStripMenuItem mExportElement;
-        static GeneralToolStripMenuItem createDerivedScreen;
 
         static GeneralToolStripMenuItem mAddEventMenuItem;
 
@@ -658,28 +478,20 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static GeneralToolStripMenuItem mCopyToBuildFolder;
 
-        
+
 
         static GeneralToolStripMenuItem addLayeritem;
         #endregion
 
-        public static void PopulateRightClickItems(TreeNode targetNode, MenuShowingAction menuShowingAction = MenuShowingAction.RegularRightClick)
-        {
-            menu.Items.Clear();
+        //public static void PopulateRightClickItems(TreeNode targetNode, MenuShowingAction menuShowingAction = MenuShowingAction.RegularRightClick)
+        //{
+        //    menu.Items.Clear();
 
-            var sourceNode = ElementViewWindow.TreeNodeDraggedOff;
+        //    var wrapper = TreeNodeWrapper.CreateOrNull(ElementViewWindow.TreeNodeDraggedOff);
+        //    PopulateRightClickMenuItemsShared(new TreeNodeWrapper(targetNode), menuShowingAction, wrapper);
 
-            TreeNodeWrapper wrapper = null;
-
-            if(sourceNode != null)
-            {
-                wrapper = new TreeNodeWrapper(sourceNode);
-            }
-
-            PopulateRightClickMenuItemsShared(new TreeNodeWrapper(targetNode), menuShowingAction, wrapper);
-            
-            PluginManager.ReactToTreeViewRightClick(targetNode, menu);
-        }
+        //    PluginManager.ReactToTreeViewRightClick(targetNode, menu);
+        //}
 
         static List<GeneralToolStripMenuItem> ListToAddTo = null;
         public static List<GeneralToolStripMenuItem> GetRightClickItems(ITreeNode targetNode, MenuShowingAction menuShowingAction, ITreeNode treeNodeMoving = null)
@@ -690,6 +502,8 @@ namespace FlatRedBall.Glue.FormHelpers
 
             PopulateRightClickMenuItemsShared(targetNode, menuShowingAction, treeNodeMoving);
 
+            PluginManager.ReactToTreeViewRightClick(targetNode, listToFill);
+
             ListToAddTo = null;
 
             return listToFill;
@@ -697,6 +511,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         private static void PopulateRightClickMenuItemsShared(ITreeNode targetNode, MenuShowingAction menuShowingAction, ITreeNode sourceNode)
         {
+
             #region IsScreenNode
 
             if (targetNode.IsScreenNode())
@@ -718,7 +533,10 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     AddEvent("Export Screen", ExportElementClick);
 
-                    AddEvent("Create Derived (Level) Screen", HandleCreateDerivedScreenClicked);
+                    if(targetNode.Tag is ScreenSave screenSave && screenSave.Name == "Screens\\GameScreen")
+                    {
+                        AddEvent("Create Level Screen", (not, used) => GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog());
+                    }
 
                     AddRemoveFromProjectItems();
 
@@ -755,7 +573,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     AddItem(mExportElement);
                     AddItem(mFindAllReferences);
 
-                    EntitySave entitySave = targetNode.Tag as  EntitySave;
+                    EntitySave entitySave = targetNode.Tag as EntitySave;
 
                     if (entitySave.PooledByFactory)
                     {
@@ -897,7 +715,10 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 AddSeparator();
 
-                var currentNamedObject = GlueState.Self.CurrentNamedObjectSave;
+                // In case something has changed which can happen mid wizard
+                //var currentNamedObject = GlueState.Self.CurrentNamedObjectSave;
+                var currentNamedObject = targetNode.Tag as NamedObjectSave;
+                //GlueState.Self.CurrentNamedObjectSave;
 
                 if (currentNamedObject.IsList &&
                     !string.IsNullOrEmpty(currentNamedObject.SourceClassGenericType) &&
@@ -1089,10 +910,9 @@ namespace FlatRedBall.Glue.FormHelpers
             #endregion
         }
 
-        static ContextMenuStrip menu => MainGlueWindow.Self.mElementContextMenu;
         static void Add(string text, Action action, string shortcutDisplay = null)
         {
-            if(ListToAddTo != null)
+            if (ListToAddTo != null)
             {
                 var item = new GeneralToolStripMenuItem
                 {
@@ -1105,17 +925,13 @@ namespace FlatRedBall.Glue.FormHelpers
             }
             else
             {
-                var tsmi = new ToolStripMenuItem(text);
-                tsmi.Click += (not, used) => action();
-                tsmi.ShortcutKeyDisplayString = shortcutDisplay;
-                menu.Items.Add(tsmi);
-
+                throw new NotImplementedException("Need a ListToAddTo assigned");
             }
         }
 
         static void AddEvent(string text, EventHandler eventHandler, string shortcutDisplay = null)
         {
-            if(ListToAddTo != null)
+            if (ListToAddTo != null)
             {
                 var item = new GeneralToolStripMenuItem
                 {
@@ -1127,30 +943,25 @@ namespace FlatRedBall.Glue.FormHelpers
             }
             else
             {
-                var tsmi = new ToolStripMenuItem(text);
-                tsmi.Click += eventHandler;
-                tsmi.ShortcutKeyDisplayString = shortcutDisplay;
-                menu.Items.Add(tsmi);
+                throw new NotImplementedException("Need a ListToAddTo assigned");
             }
         }
 
         static void AddItem(GeneralToolStripMenuItem generalItem)
         {
-            if(ListToAddTo != null)
+            if (ListToAddTo != null)
             {
                 ListToAddTo.Add(generalItem);
             }
             else
             {
-                var tsmi = generalItem.ToTsmi();
-                menu.Items.Add(tsmi);
-
+                throw new NotImplementedException("Need a ListToAddTo assigned");
             }
         }
 
         static void AddSeparator()
         {
-            if(ListToAddTo != null)
+            if (ListToAddTo != null)
             {
                 ListToAddTo.Add(new GeneralToolStripMenuItem
                 {
@@ -1159,19 +970,19 @@ namespace FlatRedBall.Glue.FormHelpers
             }
             else
             {
-                menu.Items.Add("-");
+                throw new NotImplementedException("Need a ListToAddTo assigned");
             }
         }
 
 
         public static ReferencedFileSave AddSingleFile(string fullFileName, ref bool cancelled, IElement elementToAddTo = null)
         {
-            return AddExistingFileManager.Self.AddSingleFile(fullFileName, ref cancelled, elementToAddTo:elementToAddTo);
+            return AddExistingFileManager.Self.AddSingleFile(fullFileName, ref cancelled, elementToAddTo: elementToAddTo);
         }
 
         public static void Initialize()
         {
-            addScreenToolStripMenuItem = new GeneralToolStripMenuItem("Add Screen");           
+            addScreenToolStripMenuItem = new GeneralToolStripMenuItem("Add Screen");
             addScreenToolStripMenuItem.Click += (not, used) => GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog();
 
             setAsStartUpScreenToolStripMenuItem = new GeneralToolStripMenuItem("Set as StartUp Screen");
@@ -1183,8 +994,8 @@ namespace FlatRedBall.Glue.FormHelpers
             addEntityToolStripMenuItem = new GeneralToolStripMenuItem("Add Entity");
             addEntityToolStripMenuItem.Click += (not, used) => GlueCommands.Self.DialogCommands.ShowAddNewEntityDialog();
 
-             
-            
+
+
             addObjectToolStripMenuItem = new GeneralToolStripMenuItem();
             addObjectToolStripMenuItem.Text = "Add Object";
             addObjectToolStripMenuItem.Click += (not, used) => GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog();
@@ -1206,14 +1017,14 @@ namespace FlatRedBall.Glue.FormHelpers
                 GlueCommands.Self.ProjectCommands.SaveProjects();
                 GluxCommands.Self.SaveGlux();
             };
-            
+
 
             openWithDEFAULTToolStripMenuItem = new GeneralToolStripMenuItem();
             openWithDEFAULTToolStripMenuItem.Text = "Open with...";
 
             newFileToolStripMenuItem = new GeneralToolStripMenuItem();
             newFileToolStripMenuItem.Text = "New File";
-            newFileToolStripMenuItem.Click += (not, used) => GlueCommands.Self.DialogCommands.ShowAddNewFileDialog(); 
+            newFileToolStripMenuItem.Click += (not, used) => GlueCommands.Self.DialogCommands.ShowAddNewFileDialog();
 
             addFileToolStripMenuItem = new GeneralToolStripMenuItem();
             addFileToolStripMenuItem.DropDownItems.AddRange(new GeneralToolStripMenuItem[] {
@@ -1224,10 +1035,10 @@ namespace FlatRedBall.Glue.FormHelpers
             // this didn't do anything before I migrated it here. What does it do?
             //addFileToolStripMenuItem.Click += new System.EventHandler(this.addFileToolStripMenuItem_Click);
 
-            
+
             removeFromProjectToolStripMenuItem = new GeneralToolStripMenuItem();
             removeFromProjectToolStripMenuItem.Text = "Remove from project";
-            removeFromProjectToolStripMenuItem.Click += (not, used) => RightClickHelper.RemoveFromProjectToolStripMenuItem(); 
+            removeFromProjectToolStripMenuItem.Click += (not, used) => RightClickHelper.RemoveFromProjectToolStripMenuItem();
 
             mMoveToTop = new GeneralToolStripMenuItem("^^ Move To Top");
             mMoveToTop.ShortcutKeyDisplayString = "Alt+Shift+Up";
@@ -1270,7 +1081,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
                 }
             };
-            
+
 
             mMoveUp = new GeneralToolStripMenuItem("^ Move Up");
             mMoveUp.ShortcutKeyDisplayString = "Alt+Up";
@@ -1296,11 +1107,11 @@ namespace FlatRedBall.Glue.FormHelpers
             mFindAllReferences = new GeneralToolStripMenuItem("Find all references to this");
             mFindAllReferences.Click += new EventHandler(FindAllReferencesClick);
 
-            
 
-            
 
-            
+
+
+
 
             mDuplicate = new GeneralToolStripMenuItem("Duplicate");
             mDuplicate.Click += new EventHandler(DuplicateClick);
@@ -1335,8 +1146,6 @@ namespace FlatRedBall.Glue.FormHelpers
             mExportElement = new GeneralToolStripMenuItem("Export Screen");
             mExportElement.Click += new EventHandler(ExportElementClick);
 
-            createDerivedScreen = new GeneralToolStripMenuItem("Create Derived (Level) Screen");
-            createDerivedScreen.Click += HandleCreateDerivedScreenClicked;
 
             mAddEventMenuItem = new GeneralToolStripMenuItem("Add Event");
             mAddEventMenuItem.Click += new EventHandler(AddEventClicked);
@@ -1347,7 +1156,7 @@ namespace FlatRedBall.Glue.FormHelpers
             mCopyToBuildFolder = new GeneralToolStripMenuItem("Copy to build folder");
             mCopyToBuildFolder.Click += HandleCopyToBuildFolder;
 
-            
+
 
             addLayeritem = new GeneralToolStripMenuItem("Add Layer");
             addLayeritem.Click += HandleAddLayerClick;
@@ -1362,15 +1171,6 @@ namespace FlatRedBall.Glue.FormHelpers
                     currentScreen.Name;
             }
         }
-
-        private static void HandleCreateDerivedScreenClicked(object sender, EventArgs e)
-        {
-            var baseScreen = GlueState.Self.CurrentScreenSave;
-
-            GlueCommands.Self.DialogCommands.ShowCreateDerivedScreenDialog(baseScreen);
-        }
-
-
 
         private static void HandleReGenerateCodeClick(ITreeNode treeNode)
         {
@@ -1395,7 +1195,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
 
             }
-            else if(GlueState.Self.CurrentElement != null)
+            else if (GlueState.Self.CurrentElement != null)
             {
                 // We used to allow regeneration of non-generated files
                 // But people accidentally click this, and it means you have
@@ -1470,7 +1270,7 @@ namespace FlatRedBall.Glue.FormHelpers
         static void OnAddEntityInstanceClick(ITreeNode nodeDroppedOn, ITreeNode nodeMoving)
         {
             DragDropManager.DragDropTreeNode(
-                 nodeDroppedOn, 
+                 nodeDroppedOn,
                  nodeMoving);
 
 
@@ -1481,13 +1281,6 @@ namespace FlatRedBall.Glue.FormHelpers
         static void OnRefreshTreeNodesClick(object sender, EventArgs e)
         {
             GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-        }
-
-        [Obsolete("Use GlueCommands.DialogCommands.ShowAddNewEventDialog")]
-        public static void ShowAddEventWindow(NamedObjectSave objectToTunnelInto)
-        {
-            GlueCommands.Self.DialogCommands.ShowAddNewEventDialog(objectToTunnelInto);
-
         }
 
         static void AddEventClicked(object sender, EventArgs e)
@@ -1507,9 +1300,10 @@ namespace FlatRedBall.Glue.FormHelpers
             IElement currentElement = GlueState.Self.CurrentElement;
 
             string failureMessage;
-            bool isInvalid = DialogCommands.IsVariableInvalid(null, resultName, currentElement, out failureMessage);
+            bool isInvalid = NameVerifier.IsEventNameValid(resultName,
+                currentElement, out failureMessage);
 
-            if(isInvalid)
+            if (isInvalid)
             {
                 MessageBox.Show(failureMessage);
             }
@@ -1555,7 +1349,7 @@ namespace FlatRedBall.Glue.FormHelpers
             // view file order, viewfileorder, view files, viewfiles, viewfilelist, view file list
             ReferencedFileFlatListWindow rfflw = new ReferencedFileFlatListWindow();
             rfflw.Show(MainGlueWindow.Self);
-            if(GlueState.Self.CurrentGlueProject != null)
+            if (GlueState.Self.CurrentGlueProject != null)
             {
                 rfflw.PopulateFrom(ProjectManager.GlueProjectSave.GlobalFiles);
             }
@@ -1629,12 +1423,12 @@ namespace FlatRedBall.Glue.FormHelpers
             ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
 
         }
-        
+
         static void AddStateClick(object sender, EventArgs e)
         {
             // search: addstate, add new state, addnewstate, add state
             TextInputWindow tiw = new TextInputWindow();
-            tiw.Message  = "Enter a name for the new state";
+            tiw.Message = "Enter a name for the new state";
             tiw.Text = "New State";
 
 
@@ -1720,8 +1514,8 @@ namespace FlatRedBall.Glue.FormHelpers
             NamedObjectSave parentNos = element
                 .NamedObjects
                 .FirstOrDefault(item => item.ContainedObjects.Contains(namedObjectToDuplicate));
-            
-            if(parentNos != null)
+
+            if (parentNos != null)
             {
                 bool IsShapeCollection(NamedObjectSave nos)
                 {
@@ -1755,7 +1549,7 @@ namespace FlatRedBall.Glue.FormHelpers
             }
 
 
-            if(newNamedObject.SetByDerived)
+            if (newNamedObject.SetByDerived)
             {
                 GlueFormsCore.SetVariable.NamedObjectSaves.SetByDerivedSetLogic.ReactToChangedSetByDerived(
                     newNamedObject, element);
@@ -1872,11 +1666,11 @@ namespace FlatRedBall.Glue.FormHelpers
         //    }
         //}
 
-        internal static void RemoveFromProjectToolStripMenuItem()
+        internal static async Task RemoveFromProjectToolStripMenuItem()
         {
             bool saveAndRegenerate = true;
 
-            RemoveFromProjectOptionalSaveAndRegenerate(saveAndRegenerate, true, true);
+            await RemoveFromProjectOptionalSaveAndRegenerate(saveAndRegenerate, true, true);
         }
 
         private static void RemoveFromProjectQuick(object sender, EventArgs e)
@@ -1884,7 +1678,7 @@ namespace FlatRedBall.Glue.FormHelpers
             RemoveFromProjectOptionalSaveAndRegenerate(false, true, true);
         }
 
-        private static void RemoveFromProjectOptionalSaveAndRegenerate(bool saveAndRegenerate, bool askAreYouSure, bool askToDelete)
+        private static async Task RemoveFromProjectOptionalSaveAndRegenerate(bool saveAndRegenerate = true, bool askAreYouSure = true, bool askToDeleteFiles = true)
         {
             // delete object, remove object, DeleteObject, RemoveObject, remove from project, 
             // remove from screen, remove from entity, remove file
@@ -1907,272 +1701,256 @@ namespace FlatRedBall.Glue.FormHelpers
             }
             //////////////////////////////END EARLY OUT/////////////////////////////////////
 
-            // Search terms: removefromproject, remove from project, remove file, remove referencedfilesave
-            List<string> filesToRemove = new List<string>();
 
-            if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
+            if (currentObject is NamedObjectSave asNos)
             {
-                #region Find out if the user really wants to remove this - don't ask if askAreYouSure is false
-                DialogResult reallyRemoveResult = DialogResult.Yes;
+                GlueCommands.Self.DialogCommands.AskToRemoveObject(asNos, saveAndRegenerate);
+            }
+            else
+            {
+                // Search terms: removefromproject, remove from project, remove file, remove referencedfilesave
+                List<string> filesToRemove = new List<string>();
 
-                if (askAreYouSure)
+                if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
                 {
-                    string message = "Are you sure you want to remove this:\n\n" + currentObject.ToString();
+                    #region Find out if the user really wants to remove this - don't ask if askAreYouSure is false
+                    DialogResult reallyRemoveResult = DialogResult.Yes;
 
-                    reallyRemoveResult =
-                        MessageBox.Show(message, "Remove?", MessageBoxButtons.YesNo);
-                }
-                #endregion
-
-                if (reallyRemoveResult == DialogResult.Yes)
-                {
-                    GlueElement deletedElement = null;
-                    #region If is NamedObjectSave
-                    // test deep first
-                    if (GlueState.Self.CurrentNamedObjectSave != null)
+                    if (askAreYouSure)
                     {
-                        var nos = GlueState.Self.CurrentNamedObjectSave;
+                        string message = "Are you sure you want to remove this:\n\n" + currentObject.ToString();
 
-                        var canDelete = true;
-
-                        if(nos.DefinedByBase)
-                        {
-                            var definingNos = ObjectFinder.Self.GetRootDefiningObject(nos);
-
-                            if(definingNos?.ExposedInDerived == true)
-                            {
-                                var message = $"The object {nos} cannot be deleted because a base object has it marked as ExposedInDerived";
-
-                                GlueCommands.Self.DialogCommands.ShowMessageBox(message);
-
-                                canDelete = false;
-                            }
-                        }
-
-                        if(canDelete)
-                        {
-                            GlueCommands.Self.GluxCommands
-                                .RemoveNamedObject(nos, true, true, filesToRemove);
-                        }
-                        //ProjectManager.RemoveNamedObject(EditorLogic.CurrentNamedObject);
+                        reallyRemoveResult =
+                            MessageBox.Show(message, "Remove?", MessageBoxButtons.YesNo);
                     }
                     #endregion
 
-                    #region Else if is StateSave
-                    else if (GlueState.Self.CurrentStateSave != null)
+                    if (reallyRemoveResult == DialogResult.Yes)
                     {
-                        var name = GlueState.Self.CurrentStateSave.Name;
+                        GlueElement deletedElement = null;
+                        #region If is NamedObjectSave
+                        // handled above in AskToRemoveObject
+                        #endregion
 
-                        GlueState.Self.CurrentElement.RemoveState(GlueState.Self.CurrentStateSave);
-
-                        AskToRemoveCustomVariablesWithoutState(GlueState.Self.CurrentElement);
-
-                        GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-
-                        PluginManager.ReactToStateRemoved(GlueState.Self.CurrentElement, name);
-
-                        GluxCommands.Self.SaveGlux();
-                    }
-
-                    #endregion
-
-                    #region Else if is StateSaveCategory
-
-                    else if (GlueState.Self.CurrentStateSaveCategory != null)
-                    {
-                        GlueState.Self.CurrentElement.StateCategoryList.Remove(GlueState.Self.CurrentStateSaveCategory);
-
-                        GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-
-                        GluxCommands.Self.SaveGlux();
-                    }
-
-                    #endregion
-
-                    #region Else if is ReferencedFileSave
-
-                    else if (GlueState.Self.CurrentReferencedFileSave != null)
-                    {
-                        // the GluxCommand handles saving and regenerate internally, no need to do it twice
-                        saveAndRegenerate = false;
-                        var toRemove = GlueState.Self.CurrentReferencedFileSave;
-
-                        if(GlueState.Self.Find.IfReferencedFileSaveIsReferenced(toRemove))
+                        #region Else if is StateSave
+                        if (GlueState.Self.CurrentStateSave != null)
                         {
-                            IElement element = GlueState.Self.CurrentElement;
+                            var name = GlueState.Self.CurrentStateSave.Name;
 
-                            // this could happen at the same time as file flushing, which can cause locks.  Therefore we need to add this as a task:
-                            TaskManager.Self.AddOrRunIfTasked(() =>
-                            {
-                                GluxCommands.Self.RemoveReferencedFile(toRemove, filesToRemove, regenerateCode:true);
-                            },
-                            "Remove file " + toRemove.ToString());
+                            GlueState.Self.CurrentElement.RemoveState(GlueState.Self.CurrentStateSave);
 
-                        }
-                            
-                    }
-                    #endregion
+                            AskToRemoveCustomVariablesWithoutState(GlueState.Self.CurrentElement);
 
-                    #region Else if is CustomVariable
+                            GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
 
-                    else if (GlueState.Self.CurrentCustomVariable != null)
-                    {
-                        GlueCommands.Self.GluxCommands.RemoveCustomVariable(
-                            GlueState.Self.CurrentCustomVariable, filesToRemove);
-                        //ProjectManager.RemoveCustomVariable(EditorLogic.CurrentCustomVariable);
-                    }
+                            PluginManager.ReactToStateRemoved(GlueState.Self.CurrentElement, name);
 
-                    #endregion
-
-                    #region Else if is EventSave
-                    else if (GlueState.Self.CurrentEventResponseSave != null)
-                    {
-                        var element = GlueState.Self.CurrentElement;
-                        var eventResponse = GlueState.Self.CurrentEventResponseSave;
-                        GlueState.Self.CurrentElement.Events.Remove(eventResponse);
-                        PluginManager.ReactToEventResponseRemoved(element, eventResponse);
-                        GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-                    }
-                    #endregion
-
-                    #region Else if is ScreenSave
-
-                    // Then test higher if deep didn't get removed
-                    else if (GlueState.Self.CurrentScreenSave != null)
-                    {
-                        var screenToRemove = GlueState.Self.CurrentScreenSave;
-                        RemoveScreen(screenToRemove, filesToRemove);
-                        deletedElement = screenToRemove;
-                    }
-
-                    #endregion
-
-                    #region Else if is EntitySave
-
-                    else if (GlueState.Self.CurrentEntitySave != null)
-                    {
-                        var entityToRemove = GlueState.Self.CurrentEntitySave;
-                        RemoveEntity(GlueState.Self.CurrentEntitySave, filesToRemove);
-                        //ProjectManager.RemoveEntity(EditorLogic.CurrentEntitySave);
-                        deletedElement = entityToRemove;
-
-                    }
-
-                    #endregion
-
-
-                    #region Files were deleted and the user wants to be asked to delete
-
-                    if (filesToRemove.Count != 0 && askToDelete)
-                    {
-
-                        for (int i = 0; i < filesToRemove.Count; i++)
-                        {
-                            if (FileManager.IsRelative(filesToRemove[i]))
-                            {
-                                filesToRemove[i] = ProjectManager.MakeAbsolute(filesToRemove[i]);
-                            }
-                            filesToRemove[i] = filesToRemove[i].Replace("\\", "/");
+                            GluxCommands.Self.SaveGlux();
                         }
 
-                        StringFunctions.RemoveDuplicates(filesToRemove, true);
+                        #endregion
 
-                        var lbw = new ListBoxWindowWpf();
-                            
-                        string messageString = "What would you like to do with the following files:\n";
-                        lbw.Message = messageString;
+                        #region Else if is StateSaveCategory
 
-                        foreach (string s in filesToRemove)
+                        else if (GlueState.Self.CurrentStateSaveCategory != null)
                         {
-                                
-                            lbw.AddItem(s);
-                        }
-                        lbw.ClearButtons();
-                        lbw.AddButton("Nothing - leave them as part of the game project", DialogResult.No);
-                        lbw.AddButton("Remove them from the project but keep the files", DialogResult.OK);
-                        lbw.AddButton("Remove and delete the files", DialogResult.Yes);
-
-                        var dialogShowResult = lbw.ShowDialog();
-                        DialogResult result = (DialogResult)lbw.ClickedOption;
-
-                        if (result == DialogResult.OK || result == DialogResult.Yes)
-                        {
-                            foreach (string file in filesToRemove)
-                            {
-                                FilePath fileName = ProjectManager.MakeAbsolute(file);
-                                // This file may have been removed
-                                // in windows explorer, and now removed
-                                // from Glue.  Check to prevent a crash.
-
-                                GlueCommands.Self.ProjectCommands.RemoveFromProjects(fileName, false);
-                            }
+                            GlueCommands.Self.GluxCommands.RemoveStateSaveCategory(GlueState.Self.CurrentStateSaveCategory);
                         }
 
-                        if (result == DialogResult.Yes)
-                        {
-                            foreach (string file in filesToRemove)
-                            {
-                                string fileName = ProjectManager.MakeAbsolute(file);
-                                // This file may have been removed
-                                // in windows explorer, and now removed
-                                // from Glue.  Check to prevent a crash.
-                                if (File.Exists(fileName))
-                                {
-                                    FileHelper.DeleteFile(fileName);
-                                }
-                            }
-                        }
-                    }
+                        #endregion
 
-                    #endregion
+                        #region Else if is ReferencedFileSave
 
-                    TaskManager.Self.AddOrRunIfTasked(() =>
-                    {
-                        // Nodes aren't directly removed in the code above. Instead, 
-                        // a "refresh nodes" method is called, which may remove unneeded
-                        // nodes, but event raising is suppressed. Therefore, we have to explicitly 
-                        // do it here:
-                        if(deletedElement != null)
-                        {
-                            GlueCommands.Self.RefreshCommands.RefreshTreeNodes();
-                            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(deletedElement);
-
-                        }
-                        else if(glueState.CurrentElement != null)
-                        {
-                            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(glueState.CurrentElement);
-                        }
-                        else
-                        {
-                            GlueCommands.Self.RefreshCommands.RefreshGlobalContent() ;
-                        }
-                    }, "Refreshing tree nodes");
-
-
-                    if (saveAndRegenerate)
-                    {
-                        if (GlueState.Self.CurrentScreenSave != null)
-                        {
-                            var screen = GlueState.Self.CurrentScreenSave;
-                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screen);
-                        }
-                        else if (GlueState.Self.CurrentEntitySave != null)
-                        {
-                            var entity = GlueState.Self.CurrentEntitySave;
-                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
-                        }
                         else if (GlueState.Self.CurrentReferencedFileSave != null)
                         {
-                            GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCodeTask();
+                            // the GluxCommand handles saving and regenerate internally, no need to do it twice
+                            saveAndRegenerate = false;
+                            var toRemove = GlueState.Self.CurrentReferencedFileSave;
 
-                            // Vic asks - do we have to do anything else here?  I don't think so...
+                            if (GlueState.Self.Find.IfReferencedFileSaveIsReferenced(toRemove))
+                            {
+                                IElement element = GlueState.Self.CurrentElement;
+
+                                // this could happen at the same time as file flushing, which can cause locks.  Therefore we need to add this as a task:
+                                TaskManager.Self.AddOrRunIfTasked(() =>
+                                {
+                                    GluxCommands.Self.RemoveReferencedFile(toRemove, filesToRemove, regenerateCode: true);
+                                },
+                                "Remove file " + toRemove.ToString());
+
+                            }
+
+                        }
+                        #endregion
+
+                        #region Else if is CustomVariable
+
+                        else if (GlueState.Self.CurrentCustomVariable != null)
+                        {
+                            GlueCommands.Self.GluxCommands.RemoveCustomVariable(
+                                GlueState.Self.CurrentCustomVariable, filesToRemove);
+                            //ProjectManager.RemoveCustomVariable(EditorLogic.CurrentCustomVariable);
                         }
 
+                        #endregion
 
-                        GluxCommands.Self.ProjectCommands.SaveProjects();
-                        GluxCommands.Self.SaveGlux();
+                        #region Else if is EventSave
+                        else if (GlueState.Self.CurrentEventResponseSave != null)
+                        {
+                            var element = GlueState.Self.CurrentElement;
+                            var eventResponse = GlueState.Self.CurrentEventResponseSave;
+                            GlueState.Self.CurrentElement.Events.Remove(eventResponse);
+                            PluginManager.ReactToEventResponseRemoved(element, eventResponse);
+                            GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
+                        }
+                        #endregion
+
+                        #region Else if is ScreenSave
+
+                        // Then test higher if deep didn't get removed
+                        else if (GlueState.Self.CurrentScreenSave != null)
+                        {
+                            var screenToRemove = GlueState.Self.CurrentScreenSave;
+                            await TaskManager.Self.AddAsync(() =>
+                            {
+                                RemoveScreen(screenToRemove, filesToRemove);
+                                deletedElement = screenToRemove;
+
+                            }, "Removing Screen");
+
+                        }
+
+                        #endregion
+
+                        #region Else if is EntitySave
+
+                        else if (GlueState.Self.CurrentEntitySave != null)
+                        {
+                            var entityToRemove = GlueState.Self.CurrentEntitySave;
+                            await TaskManager.Self.AddAsync(() =>
+                            {
+                                RemoveEntity(GlueState.Self.CurrentEntitySave, filesToRemove);
+                                //ProjectManager.RemoveEntity(EditorLogic.CurrentEntitySave);
+                                deletedElement = entityToRemove;
+                            }, "Removing Entity");
+
+                        }
+
+                        #endregion
+
+
+                        #region Files were deleted and the user wants to be asked to delete
+
+                        if (filesToRemove.Count != 0 && askToDeleteFiles)
+                        {
+
+                            for (int i = 0; i < filesToRemove.Count; i++)
+                            {
+                                if (FileManager.IsRelative(filesToRemove[i]))
+                                {
+                                    filesToRemove[i] = ProjectManager.MakeAbsolute(filesToRemove[i]);
+                                }
+                                filesToRemove[i] = filesToRemove[i].Replace("\\", "/");
+                            }
+
+                            StringFunctions.RemoveDuplicates(filesToRemove, true);
+
+                            var lbw = new ListBoxWindowWpf();
+
+                            string messageString = "What would you like to do with the following files:\n";
+                            lbw.Message = messageString;
+
+                            foreach (string s in filesToRemove)
+                            {
+
+                                lbw.AddItem(s);
+                            }
+                            lbw.ClearButtons();
+                            lbw.AddButton("Nothing - leave them as part of the game project", DialogResult.No);
+                            lbw.AddButton("Remove them from the project but keep the files", DialogResult.OK);
+                            lbw.AddButton("Remove and delete the files", DialogResult.Yes);
+
+                            var dialogShowResult = lbw.ShowDialog();
+
+                            if(lbw.ClickedOption is DialogResult result)
+                            {
+                                if (result == DialogResult.OK || result == DialogResult.Yes)
+                                {
+                                    await TaskManager.Self.AddAsync(() =>
+                                    {
+                                        foreach (var file in filesToRemove)
+                                        {
+                                            FilePath filePath = ProjectManager.MakeAbsolute(file);
+                                            // This file may have been removed
+                                            // in windows explorer, and now removed
+                                            // from Glue.  Check to prevent a crash.
+
+                                            GlueCommands.Self.ProjectCommands.RemoveFromProjects(filePath, false);
+
+                                            if (result == DialogResult.Yes && filePath.Exists())
+                                            {
+                                                FileHelper.DeleteFile(filePath.FullPath);
+                                            }
+                                        }
+                                        GluxCommands.Self.ProjectCommands.SaveProjects();
+
+                                    }, "Removing files");
+                                }
+
+                            }
+                        }
+
+                        #endregion
+
+                        await TaskManager.Self.AddAsync(() =>
+                        {
+                            // Nodes aren't directly removed in the code above. Instead, 
+                            // a "refresh nodes" method is called, which may remove unneeded
+                            // nodes, but event raising is suppressed. Therefore, we have to explicitly 
+                            // do it here:
+                            if (deletedElement != null)
+                            {
+                                GlueCommands.Self.RefreshCommands.RefreshTreeNodes();
+                                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(deletedElement);
+
+                            }
+                            else if (glueState.CurrentElement != null)
+                            {
+                                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(glueState.CurrentElement);
+                            }
+                            else
+                            {
+                                GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
+                            }
+                        }, "Refreshing tree nodes");
+
+
+                        if (saveAndRegenerate)
+                        {
+                            if (GlueState.Self.CurrentScreenSave != null)
+                            {
+                                var screen = GlueState.Self.CurrentScreenSave;
+                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screen);
+                            }
+                            else if (GlueState.Self.CurrentEntitySave != null)
+                            {
+                                var entity = GlueState.Self.CurrentEntitySave;
+                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
+                            }
+                            else if (GlueState.Self.CurrentReferencedFileSave != null)
+                            {
+                                GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCodeTask();
+
+                                // Vic asks - do we have to do anything else here?  I don't think so...
+                            }
+
+
+                            GluxCommands.Self.ProjectCommands.SaveProjects();
+                            GluxCommands.Self.SaveGlux();
+                        }
                     }
                 }
+
             }
         }
 
@@ -2211,10 +1989,10 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 message += "\n\nDo you really want to remove this Entity?";
 
-                result = MessageBox.Show(message, "Are you sure?", MessageBoxButtons.YesNo);
+                GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message,
+                    () => GlueCommands.Self.GluxCommands.RemoveEntity(entityToRemove, filesThatCouldBeRemoved));
             }
-
-            if (result == DialogResult.Yes)
+            else
             {
                 GlueCommands.Self.GluxCommands.RemoveEntity(entityToRemove, filesThatCouldBeRemoved);
             }
@@ -2250,7 +2028,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         private static void AskToRemoveCustomVariablesWithoutState(IElement element)
         {
-            for(int i = 0; i < element.CustomVariables.Count; i++)
+            for (int i = 0; i < element.CustomVariables.Count; i++)
             {
                 CustomVariable variable = element.CustomVariables[i];
 
@@ -2297,7 +2075,7 @@ namespace FlatRedBall.Glue.FormHelpers
         internal static void ViewInExplorerClick(ITreeNode targetNode)
         {
 
-            if(GlueState.Self.CurrentGlueProject == null)
+            if (GlueState.Self.CurrentGlueProject == null)
             {
                 MessageBox.Show("You must first load or create a Glue project");
             }
@@ -2373,7 +2151,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 // added after everything else.
                 locationToShow = "\"" + locationToShow + "\"";
 
-                if(isFile)
+                if (isFile)
                 {
                     Process.Start("explorer.exe", "/select," + locationToShow);
                 }
@@ -2391,17 +2169,17 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 string locationToShow = ProjectManager.MakeAbsolute(targetNode.GetRelativePath(), true);
 
-                if(System.IO.Directory.Exists(locationToShow))
+                if (System.IO.Directory.Exists(locationToShow))
                 {
                     locationToShow = locationToShow.Replace("/", "\\");
                     Process.Start("explorer.exe", "/select," + locationToShow);
                 }
                 else
                 {
-                    if(GlueState.Self.CurrentElement != null)
+                    if (GlueState.Self.CurrentElement != null)
                     {
                         string screenOrEntity = "screen";
-                        if(GlueState.Self.CurrentEntitySave != null)
+                        if (GlueState.Self.CurrentEntitySave != null)
                         {
                             screenOrEntity = "entity";
                         }
@@ -2523,20 +2301,20 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
             }
 
-            if(shouldPerformMove && !Directory.Exists(newDirectoryNameAbsolute))
+            if (shouldPerformMove && !Directory.Exists(newDirectoryNameAbsolute))
             {
                 try
                 {
                     Directory.CreateDirectory(newDirectoryNameAbsolute);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     PluginManager.ReceiveError(ex.ToString());
                     shouldPerformMove = false;
                 }
             }
 
-            if(shouldPerformMove)
+            if (shouldPerformMove)
             {
                 var allContainedEntities = GlueState.Self.CurrentGlueProject.Entities
                     .Where(entity => entity.Name.StartsWith(directoryRenaming)).ToList();
@@ -2545,25 +2323,25 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 bool didAllSucceed = true;
 
-                foreach(var entity in allContainedEntities)
+                foreach (var entity in allContainedEntities)
                 {
                     bool succeeded = GlueCommands.Self.GluxCommands.MoveEntityToDirectory(entity, newDirectoryNameRelative);
 
-                    if(!succeeded)
+                    if (!succeeded)
                     {
                         didAllSucceed = false;
                         break;
                     }
                 }
 
-                if(didAllSucceed)
+                if (didAllSucceed)
                 {
                     treeNode.Text = inputWindow.Result;
 
                     GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
                     GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
-                    
-                    GluxCommands.Self.SaveGlux(); 
+
+                    GluxCommands.Self.SaveGlux();
                     GlueCommands.Self.ProjectCommands.SaveProjects();
 
                 }
@@ -2612,7 +2390,7 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-       
+
         private static void MoveToTopClick(object sender, EventArgs e)
         {
             MoveToTop();
@@ -2673,18 +2451,18 @@ namespace FlatRedBall.Glue.FormHelpers
                 if (listToRemoveFrom != null)
                 {
                     int index = listToRemoveFrom.IndexOf(objectToRemove);
-                
+
                     var oldIndexInListForIndexing = listForIndexing.IndexOf(objectToRemove);
                     var newIndexInListForIndexing = oldIndexInListForIndexing + direction;
 
                     object objectToMoveBeforeOrAfter = objectToRemove;
-                    if(newIndexInListForIndexing >= 0 && newIndexInListForIndexing < listForIndexing.Count)
+                    if (newIndexInListForIndexing >= 0 && newIndexInListForIndexing < listForIndexing.Count)
                     {
                         objectToMoveBeforeOrAfter = listForIndexing[newIndexInListForIndexing];
                     }
 
                     //int newIndex = index + direction;
-                    int newIndex = listToRemoveFrom .IndexOf(objectToMoveBeforeOrAfter);
+                    int newIndex = listToRemoveFrom.IndexOf(objectToMoveBeforeOrAfter);
 
                     if (newIndex >= 0 && newIndex < listToRemoveFrom.Count)
                     {
@@ -2728,7 +2506,7 @@ namespace FlatRedBall.Glue.FormHelpers
             }, "Moving to bottom", TaskExecutionPreference.Asap);
         }
 
-        private static void GetObjectAndListForMoving(out object objectToMove, 
+        private static void GetObjectAndListForMoving(out object objectToMove,
             out IList listToRemoveFrom, out IList listForIndexing)
         {
             objectToMove = null;
@@ -2755,12 +2533,12 @@ namespace FlatRedBall.Glue.FormHelpers
                     listToRemoveFrom = container.ContainedObjects;
                     listForIndexing = listToRemoveFrom;
                 }
-                else if(currentNamedObject.IsLayer)
+                else if (currentNamedObject.IsLayer)
                 {
                     listToRemoveFrom = GlueState.Self.CurrentElement.NamedObjects;
                     listForIndexing = GlueState.Self.CurrentElement.NamedObjects.Where(item => item.IsLayer).ToList();
                 }
-                else if(currentNamedObject.IsCollisionRelationship())
+                else if (currentNamedObject.IsCollisionRelationship())
                 {
                     listToRemoveFrom = GlueState.Self.CurrentElement.NamedObjects;
                     listForIndexing = GlueState.Self.CurrentElement.NamedObjects.Where(item => item.IsCollisionRelationship()).ToList();
@@ -2813,7 +2591,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 //GlueState.Self.CurrentCustomVariable = null;
                 GlueState.Self.CurrentCustomVariable = currentCustomVariable;
             }
-            else if(currentNamedObjectSave != null)
+            else if (currentNamedObjectSave != null)
             {
                 //GlueState.Self.CurrentNamedObjectSave = null;
                 GlueState.Self.CurrentNamedObjectSave = currentNamedObjectSave;
@@ -2824,7 +2602,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static void SetExternallyBuiltFileIfHigherThanCurrent(string directoryOfFile, bool performSave)
         {
-            if(directoryOfFile == null)
+            if (directoryOfFile == null)
             {
                 throw new ArgumentNullException(nameof(directoryOfFile));
             }
@@ -2922,8 +2700,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
             List<ScreenSave> screensToRefresh = new List<ScreenSave>();
 
-            ScreenTreeNode treeNode = null;
-
             if (screenSave != null)
             {
                 bool isAlreadyRequired = screenSave.IsRequiredAtStartup;
@@ -2949,7 +2725,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     screenSave.IsRequiredAtStartup = true;
                 }
 
-                foreach(var screen in screensToRefresh)
+                foreach (var screen in screensToRefresh)
                 {
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screen);
                     GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screen);

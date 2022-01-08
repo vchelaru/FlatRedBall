@@ -21,6 +21,7 @@ namespace FlatRedBall.Glue.Managers
         public void AddExistingFileClick()
         {
             var viewModel = new AddExistingFileViewModel();
+            var element = GlueState.Self.CurrentElement;
             FillWithFiles(viewModel);
 
 
@@ -31,40 +32,38 @@ namespace FlatRedBall.Glue.Managers
 
             if(result == true)
             {
-                var element = GlueState.Self.CurrentElement;
                 string directoryOfTreeNode = GlueState.Self.CurrentTreeNode.GetRelativePath();
                 bool userCancelled = false;
 
                 foreach(var file in viewModel.Files)
                 {
                     // If there is already an RFS for this file, no need to add it again.
-                    ReferencedFileSave existingFile = null;
-                    if(element != null)
+                    TaskManager.Self.AddOrRunIfTasked(() =>
                     {
-                        existingFile = element.GetAllReferencedFileSavesRecursively()
-                            .FirstOrDefault(item =>
-                                GlueCommands.Self.FileCommands.GetFullFileName(item) == file);
-                    }
-                    else
-                    {
-                        // global content?
-                        existingFile = GlueState.Self.CurrentGlueProject.GlobalFiles
-                            .FirstOrDefault(item =>
-                                GlueCommands.Self.FileCommands.GetFullFileName(item) == file);
-                    }
+                        ReferencedFileSave existingFile = null;
+                        if(element != null)
+                        {
+                            existingFile = element.GetAllReferencedFileSavesRecursively()
+                                .FirstOrDefault(item =>
+                                    GlueCommands.Self.FileCommands.GetFullFileName(item) == file);
+                        }
+                        else
+                        {
+                            // global content?
+                            existingFile = GlueState.Self.CurrentGlueProject.GlobalFiles
+                                .FirstOrDefault(item =>
+                                    GlueCommands.Self.FileCommands.GetFullFileName(item) == file);
+                        }
 
-                    if(existingFile == null)
-                    {
-                        TaskManager.Self.Add(() =>
+                        if (existingFile == null)
                         {
                             AddSingleFile(file, ref userCancelled, element, directoryOfTreeNode);
-
-                        }, $"Adding file {file}");
-                    }
-                    else
-                    {
-                        GlueState.Self.CurrentReferencedFileSave = existingFile;
-                    }
+                        }
+                        else
+                        {
+                            GlueCommands.Self.DoOnUiThread(() =>  GlueState.Self.CurrentReferencedFileSave = existingFile);
+                        }
+                    }, $"Adding file {file}");
                 }
             }
         }

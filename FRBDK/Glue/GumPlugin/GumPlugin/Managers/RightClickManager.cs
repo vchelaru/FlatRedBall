@@ -12,13 +12,14 @@ using FlatRedBall.IO;
 using GumPlugin.CodeGeneration;
 using Gum.Managers;
 using FlatRedBall.Glue.ViewModels;
+using GlueFormsCore.FormHelpers;
 
 namespace GumPlugin.Managers
 {
     public class RightClickManager : Singleton<RightClickManager>
     {
         
-        public void HandleTreeViewRightClick(System.Windows.Forms.TreeNode rightClickedTreeNode, System.Windows.Forms.ContextMenuStrip menuToModify)
+        public void HandleTreeViewRightClick(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> menuToModify)
         {
             TryAddAddGumScreenItem(rightClickedTreeNode, menuToModify);
 
@@ -29,7 +30,7 @@ namespace GumPlugin.Managers
             TryAddRegenerateGumElement(rightClickedTreeNode, menuToModify);
         }
 
-        private void TryAddRegenerateGumElement(TreeNode rightClickedTreeNode, ContextMenuStrip menuToModify)
+        private void TryAddRegenerateGumElement(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> menuToModify)
         {
             var file = rightClickedTreeNode.Tag as ReferencedFileSave;
 
@@ -50,19 +51,15 @@ namespace GumPlugin.Managers
 
             if(file != null && shouldShowRegenerateCodeMenu)
             {
-
-                var newMenu = new ToolStripMenuItem("Regenerate Gum Code");
-                menuToModify.Items.Add(newMenu);
-                newMenu.Click += delegate
+                menuToModify.Add("Regenerate Gum Code", (not, used) =>
                 {
                     var fileName = GlueCommands.Self.GetAbsoluteFileName(file);
                     CodeGeneratorManager.Self.GenerateDueToFileChange(fileName);
-
-                };
+                });
             }
         }
 
-        private void TryAddAddNewScreenForCurrentScreen(TreeNode rightClickedTreeNode, ContextMenuStrip menuToModify)
+        private void TryAddAddNewScreenForCurrentScreen(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> menuToModify)
         {
             var shouldContinue = true;
             if (!rightClickedTreeNode.IsScreenNode())
@@ -89,13 +86,13 @@ namespace GumPlugin.Managers
 
             if(shouldContinue)
             {
-                var newMenuItem = new ToolStripMenuItem($"Create New Gum Screen for {FileManager.RemovePath(screen.Name)}");
-                menuToModify.Items.Add(newMenuItem);
-                newMenuItem.Click += (not, used) => AppCommands.Self.AddScreenForGlueScreen(screen);
+                var newMenuItem = new GeneralToolStripMenuItem($"Create New Gum Screen for {FileManager.RemovePath(screen.Name)}");
+                menuToModify.Add(newMenuItem);
+                newMenuItem.Click += (not, used) => GumPluginCommands.Self.AddScreenForGlueScreen(screen);
             }
         }
 
-        private void TryAddAddComponentForCurrentEntity(TreeNode rightClickedTreeNode, ContextMenuStrip menuToModify)
+        private void TryAddAddComponentForCurrentEntity(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> menuToModify)
         {
             var shouldContinue = true;
             if(!rightClickedTreeNode.IsEntityNode())
@@ -124,8 +121,8 @@ namespace GumPlugin.Managers
             if (shouldContinue)
             {
 
-                var newMenuitem = new ToolStripMenuItem($"Add Gum Component to {FileManager.RemovePath(entity.Name)}");
-                menuToModify.Items.Add(newMenuitem);
+                var newMenuitem = new GeneralToolStripMenuItem($"Add Gum Component to {FileManager.RemovePath(entity.Name)}");
+                menuToModify.Add(newMenuitem);
                 newMenuitem.Click += (not, used) =>
                 {
                     var gumComponent = new ComponentSave();
@@ -135,11 +132,11 @@ namespace GumPlugin.Managers
 
                     string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
 
-                    AppCommands.Self.AddComponentToGumProject(gumComponent);
+                    GumPluginCommands.Self.AddComponentToGumProject(gumComponent);
 
-                    AppCommands.Self.SaveGumx(saveAllElements: false);
+                    GumPluginCommands.Self.SaveGumxAsync(saveAllElements: false);
 
-                    AppCommands.Self.SaveComponent(gumComponent);
+                    GumPluginCommands.Self.SaveComponent(gumComponent);
 
 
 
@@ -157,7 +154,7 @@ namespace GumPlugin.Managers
             }
         }
 
-        private bool TryAddAddGumScreenItem(TreeNode rightClickedTreeNode, ContextMenuStrip menuToModify)
+        private bool TryAddAddGumScreenItem(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> menuToModify)
         {
             bool shouldContinue = true;
             if (!rightClickedTreeNode.IsFilesContainerNode() || !rightClickedTreeNode.Parent.IsScreenNode())
@@ -190,13 +187,13 @@ namespace GumPlugin.Managers
 
                     if (gps.ScreenReferences.Count != 0)
                     {
-                        var menuToAddScreensTo = new ToolStripMenuItem("Add Gum Screen");
+                        var menuToAddScreensTo = new GeneralToolStripMenuItem("Add Gum Screen");
 
-                        menuToModify.Items.Add(menuToAddScreensTo);
+                        menuToModify.Add(menuToAddScreensTo);
 
                         foreach (var screen in gps.ScreenReferences)
                         {
-                            var screenMenuItem = new ToolStripMenuItem(screen.Name);
+                            var screenMenuItem = new GeneralToolStripMenuItem(screen.Name);
                             screenMenuItem.Click += HandleScreenToAddClick;
                             menuToAddScreensTo.DropDownItems.Add(screenMenuItem);
                         }

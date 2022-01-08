@@ -56,6 +56,7 @@
     <None Remove="Compiler\Icons\build.png" />
     <None Remove="Compiler\Icons\Edit.png" />
     <None Remove="Compiler\Icons\EditDeselected.png" />
+    <None Remove="Compiler\Icons\FirewallEnablePopup.png" />
     <None Remove="Compiler\Icons\FocusOnSelection.png" />
     <None Remove="Compiler\Icons\HotReload.pdn" />
     <None Remove="Compiler\Icons\HotReload.png" />
@@ -151,6 +152,7 @@
     <EmbeddedResource Include="Compiler\Embedded\Screens\EntityViewingScreen.cs" />
     <Resource Include="Compiler\Icons\Edit.png" />
     <Resource Include="Compiler\Icons\EditDeselected.png" />
+    <Resource Include="Compiler\Icons\FirewallEnablePopup.png" />
     <Resource Include="Compiler\Icons\FocusOnSelection.png" />
     <Resource Include="Compiler\Icons\icon_minus.png" />
     <Resource Include="Compiler\Icons\icon_plus.png" />

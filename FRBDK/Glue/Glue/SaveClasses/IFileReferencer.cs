@@ -32,7 +32,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 name = name.Replace("\\", "/");
                 foreach (ReferencedFileSave rfs in instance.ReferencedFiles)
                 {
-                    if (rfs.Name == name)
+                    if (rfs.Name?.ToLowerInvariant() == name?.ToLowerInvariant())
                     {
                         return rfs;
                     }

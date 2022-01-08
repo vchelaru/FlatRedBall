@@ -81,7 +81,7 @@ namespace GumPlugin.Managers
                 }
                 else if(propertyChanged == nameof(GumViewModel.IsMatchGameResolutionInGumChecked))
                 {
-                    AppCommands.Self.UpdateGumToGlueResolution();
+                    GumPluginCommands.Self.UpdateGumToGlueResolution();
                 }
                 GlueCommands.Self.GluxCommands.SaveGlux();
             }

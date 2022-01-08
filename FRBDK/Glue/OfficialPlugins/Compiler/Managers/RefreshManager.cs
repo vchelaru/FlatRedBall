@@ -360,7 +360,12 @@ namespace OfficialPlugins.Compiler.Managers
                     addObjectDto.ElementNameGame = GetGameTypeFor(containerElement);
                 }
 
-                var addResponseAsString = await CommandSender.Send(addObjectDto);
+                var sendResponse = await CommandSender.Send(addObjectDto);
+                string addResponseAsString = null;
+                if(sendResponse.Succeeded)
+                {
+                    addResponseAsString = sendResponse.Data;
+                }
 
                 AddObjectDtoResponse addResponse = null;
                 if(!string.IsNullOrEmpty(addResponseAsString))
@@ -523,6 +528,9 @@ namespace OfficialPlugins.Compiler.Managers
 
         }
 
+        static bool IsAbstract(IElement element) => element.AllNamedObjects.Any(item => item.SetByDerived);
+
+
         public async Task PushGlueSelectionToGame(string forcedCategoryName = null, string forcedStateName = null, GlueElement forcedElement = null, bool bringIntoFocus = false)
         {
             var element = forcedElement ?? GlueState.Self.CurrentElement;
@@ -538,16 +546,37 @@ namespace OfficialPlugins.Compiler.Managers
             {
                 dto.ScreenSave = element as ScreenSave;
                 dto.EntitySave = element as EntitySave;
-                dto.BringIntoFocus = bringIntoFocus;
-                dto.NamedObject = nos;
-                dto.ElementNameGlue = element.Name;
-                dto.StateName = forcedStateName ??
-                    GlueState.Self.CurrentStateSave?.Name;
 
-                dto.StateCategoryName = forcedCategoryName ??
-                    GlueState.Self.CurrentStateSaveCategory?.Name;
+                bool isAbstract = IsAbstract(element);
 
-                await CommandSender.Send(dto);
+                if (isAbstract)
+                {
+                    var derived = ObjectFinder.Self.GetAllDerivedElementsRecursive(element)
+                        .Where(item => !IsAbstract(item))
+                        .OrderBy(item => item.Name)
+                        .FirstOrDefault();
+
+
+                    dto.BackupElementNameGlue = derived?.Name;
+                }
+
+                var canSend = !isAbstract || !string.IsNullOrEmpty(dto.BackupElementNameGlue);
+
+                    // If its abstract and there's no derived, don't try to select it
+                if(canSend)
+                {
+                    dto.BringIntoFocus = bringIntoFocus;
+                    dto.NamedObject = nos;
+                    dto.ElementNameGlue = element.Name;
+                    dto.StateName = forcedStateName ??
+                        GlueState.Self.CurrentStateSave?.Name;
+
+                    dto.StateCategoryName = forcedCategoryName ??
+                        GlueState.Self.CurrentStateSaveCategory?.Name;
+
+                    await CommandSender.Send(dto);
+
+                }
             }
 
         }
@@ -636,7 +665,8 @@ namespace OfficialPlugins.Compiler.Managers
 
                     };
 
-                    responseAsString = await CommandSender.Send(dto);
+                    var sendResponse = await CommandSender.Send(dto);
+                    responseAsString = sendResponse.Succeeded ? sendResponse.Data : string.Empty;
 
                     if(string.IsNullOrEmpty(responseAsString))
                     {
@@ -685,7 +715,8 @@ namespace OfficialPlugins.Compiler.Managers
                     owner.Name;
                 dto.ObjectName = nos.InstanceName;
                 var timeBeforeSend = DateTime.Now;
-                var responseAsstring = await CommandSender.Send(dto);
+                var sendResponse = await CommandSender.Send(dto);
+                var responseAsstring = sendResponse.Succeeded ? sendResponse.Data : null;
                 var timeAfterSend = DateTime.Now;
                 printOutput($"Delete send took {timeAfterSend - timeBeforeSend}\n \n ");
                 RemoveObjectDtoResponse response = null;
@@ -719,7 +750,7 @@ namespace OfficialPlugins.Compiler.Managers
                 (ViewModel.IsRunning && ViewModel.IsEditChecked)
             );
 
-        public async void StopAndRestartTask(string reason)
+        public async Task StopAndRestartTask(string reason)
         {
             if (CanRestart)
             {
@@ -786,7 +817,9 @@ namespace OfficialPlugins.Compiler.Managers
                 {
                     if(!DoesTaskManagerHaveAnotherRestartTask())
                     {
-                        var response = await runner.Run(preventFocus: true, runArguments: screenToRestartOn);
+                        // If we aren't generating Glue, then the game will not be embedded, so prevent focus
+                        var preventFocus = ViewModel.IsGenerateGlueControlManagerInGame1Checked == false;
+                        var response = await runner.Run(preventFocus, screenToRestartOn);
                         if(response.Succeeded == false)
                         {
                             printError(response.Message);

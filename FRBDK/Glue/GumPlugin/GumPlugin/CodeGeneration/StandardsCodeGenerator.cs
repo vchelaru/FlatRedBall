@@ -48,7 +48,11 @@ namespace GumPlugin.CodeGeneration
                 codeBlock.Line("UpdateLayout();");
             });
 
-
+            mStandardSetterReplacements.Add("Texture", (codeBlock) =>
+            {
+                codeBlock.Line("ContainedSprite.Texture = value;");
+                codeBlock.Line("UpdateLayout();");
+            });
 
             // This says what the property name is and what the contained variable name is.
             // For example:

@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
+using OfficialPlugins.Compiler.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,15 +18,17 @@ namespace OfficialPlugins.Compiler.CommandSending
         #region Fields/Properties
 
         static Stream TcpClientStream;
+        public static bool IsConnected => TcpClientStream != null;
 
         public static Action<string> PrintOutput { get; set; }
         static SemaphoreSlim sendCommandSemaphore = new SemaphoreSlim(1, 1);
 
-        public static int PortNumber { get; set; }
+        public static GlueViewSettingsViewModel GlueViewSettingsViewModel { get; set; }
+        public static CompilerViewModel CompilerViewModel { get; set; }
 
         #endregion
 
-        public static async Task<string> Send(object dto, bool isImportant = true)
+        public static async Task<ToolsUtilities.GeneralResponse<string>> Send(object dto, bool isImportant = true)
         {
             var dtoTypeName = dto.GetType().Name;
 
@@ -34,66 +37,75 @@ namespace OfficialPlugins.Compiler.CommandSending
             return await SendCommand($"{dtoTypeName}:{serialized}", isImportant);
         }
 
-        public static async Task<T> Send<T>(object dto, bool isImportant = true)
+        public static async Task<ToolsUtilities.GeneralResponse<T>> Send<T>(object dto, bool isImportant = true)
         {
-            var responseString = await Send(dto, isImportant);
 
-            try
+            var sendResponse = await Send(dto, isImportant);
+            var responseString = sendResponse.Succeeded ? sendResponse.Data : String.Empty;
+
+            ToolsUtilities.GeneralResponse<T> toReturn = new ToolsUtilities.GeneralResponse<T>();
+
+            if(sendResponse.Succeeded == false)
             {
-                return JsonConvert.DeserializeObject<T>(responseString);
+                toReturn.SetFrom(sendResponse);
             }
-            catch
+            else
             {
-                // no biggie
-                return default(T);
+                try
+                {
+                    var deserialized = JsonConvert.DeserializeObject<T>(responseString);
+                    toReturn.Succeeded = true;
+                    toReturn.Data = deserialized;
+                }
+                catch(Exception e)
+                {
+                    toReturn.Succeeded = false;
+                    toReturn.Message = $"Failed with exception:\n{e}";
+                    toReturn.Data = default(T);
+                }
+
             }
+            return toReturn;
         }
 
-        public static async Task<string> SendCommand(string text, bool isImportant = true)
+        private static async Task<ToolsUtilities.GeneralResponse<string>> SendCommand(string text, bool isImportant = true)
         {
             var shouldPrint = isImportant && text?.StartsWith("SelectObjectDto:") == false;
 
-            var isInSemaphore = sendCommandSemaphore.Wait(0);
-
-            if (!isImportant && !isInSemaphore)
+            if(isImportant && CompilerViewModel.IsPrintEditorToGameCheckboxChecked)
             {
-                return null;
-            }
-            if(!isInSemaphore)
-            {
-                await sendCommandSemaphore.WaitAsync();
-            }
 
-            try
-            {
-                await ConnectIfNecessary(PortNumber, shouldPrint);
-
-                if (TcpClientStream != null)
+                if(CompilerViewModel.IsShowParametersChecked && CompilerViewModel.CommandParameterCheckboxVisibility == System.Windows.Visibility.Visible)
                 {
-                    string stringFromClient = null;
-                    try
-                    {
-                        await WriteMessageToStream(TcpClientStream, text);
-
-                        stringFromClient = await ReadFromClient(TcpClientStream);
-                    }
-                    catch(IOException)
-                    {
-                        // this is expected, happens if the game is closed
-                        TcpClientStream = null;
-                    }
-                    catch(Exception e)
-                    {
-                        if (shouldPrint) PrintOutput($"Exception on get stream/write/read:\n{e}");
-                        // do nothing...
-                        TcpClientStream = null;
-                    }
-                    return stringFromClient;
+                    PrintOutput(text);
+                    PrintOutput("------------------------------------------");
                 }
                 else
                 {
-                    return null;
+                    string prefix = text;
+                    if(text.Contains(":"))
+                    {
+                        var indexOfColon = text.IndexOf(":");
+                        prefix = text.Substring(0, indexOfColon);
+                    }
+                    PrintOutput(prefix);
                 }
+            }
+
+            var isSemaphoreAvailable = sendCommandSemaphore.Wait(0);
+
+            if (!isImportant && !isSemaphoreAvailable)
+            {
+                return ToolsUtilities.GeneralResponse<string>.UnsuccessfulWith("Didn't try because it wasn't important and this was already busy.");
+            }
+            try
+            {
+                if (!isSemaphoreAvailable)
+                {
+                    await sendCommandSemaphore.WaitAsync();
+                }
+
+                return await SendCommandNoSemaphore(text, isImportant, shouldPrint, shouldRetry:true);
             }
             finally
             {
@@ -102,7 +114,56 @@ namespace OfficialPlugins.Compiler.CommandSending
 
         }
 
-        private static async Task ConnectIfNecessary(int port, bool shouldPrintTimeout)
+        private static async Task<ToolsUtilities.GeneralResponse<string>> SendCommandNoSemaphore(string text, bool isImportant, bool shouldPrint, bool shouldRetry )
+        {
+            ToolsUtilities.GeneralResponse<string> toReturn = new ToolsUtilities.GeneralResponse<string>();
+            toReturn.Succeeded = true;
+
+            var connectResponse = await ConnectIfNecessary(GlueViewSettingsViewModel.PortNumber, shouldPrint);
+
+            if (!connectResponse.Succeeded)
+            {
+                toReturn.SetFrom(connectResponse);
+            }
+
+            if (toReturn.Succeeded && TcpClientStream != null)
+            {
+                string stringFromClient = null;
+                try
+                {
+                    await WriteMessageToStream(TcpClientStream, text);
+
+                    stringFromClient = await ReadFromClient(TcpClientStream);
+                    toReturn.Data = stringFromClient;
+                }
+                catch (IOException ioexception)
+                {
+                    // this is expected, happens if the game is closed
+                    TcpClientStream = null;
+                    toReturn.Succeeded = false;
+                    toReturn.Message = $"IOException trying to write to client:\n{ioexception}";
+
+                    if (shouldRetry)
+                    {
+                        // retry, but only once
+                        toReturn = await SendCommandNoSemaphore(text, isImportant, shouldPrint, shouldRetry: false);
+                    }
+                }
+                catch (Exception e)
+                {
+                    var message = $"Exception on get stream/write/read:\n{e}";
+                    if (shouldPrint) PrintOutput(message);
+                    // do nothing...
+                    TcpClientStream = null;
+                    toReturn.Succeeded = false;
+                    toReturn.Message = message;
+                }
+            }
+
+            return toReturn;
+        }
+
+        private static async Task<ToolsUtilities.GeneralResponse> ConnectIfNecessary(int port, bool shouldPrintTimeout)
         {
             if(TcpClientStream == null)
             {
@@ -112,9 +173,11 @@ namespace OfficialPlugins.Compiler.CommandSending
                 // this takes ~2 seconds, according to this:
                 // https://github.com/dotnet/runtime/issues/31085
 
-                const int timeoutDuration = 1000;
-                var timeoutTask = Task.Delay(timeoutDuration);
                 var connectTask = client.ConnectAsync("127.0.0.1", port);
+                // 1000 seemed to timeout - not super frequently but sometimes
+                // Increasing to 2000 
+                const int timeoutDuration = 2000;
+                var timeoutTask = Task.Delay(timeoutDuration);
 
                 var completedTask = await Task.WhenAny(timeoutTask, connectTask);
                 if (completedTask == timeoutTask)
@@ -122,11 +185,28 @@ namespace OfficialPlugins.Compiler.CommandSending
                     if (shouldPrintTimeout) PrintOutput("Timed out waiting for connection");
                     client.Dispose();
                     TcpClientStream = null;
+                    var response = ToolsUtilities.GeneralResponse.UnsuccessfulResponse;
+                    response.Message = "Timed out waiting for connection";
+                    return response;
                 }
                 else
                 {
                     TcpClientStream = client.GetStream();
+
+                    if (TcpClientStream != null)
+                    {
+                        return ToolsUtilities.GeneralResponse.SuccessfulResponse;
+                    }
+                    else
+                    {
+                        return ToolsUtilities.GeneralResponse.UnsuccessfulWith("Tried to connect, did not time out, but still was unable to get a TcpClientStream");
+
+                    }
                 }
+            }
+            else
+            {
+                return ToolsUtilities.GeneralResponse.SuccessfulResponse;
             }
         }
 
@@ -217,7 +297,11 @@ namespace OfficialPlugins.Compiler.CommandSending
 
             try
             {
-                screenName = await CommandSending.CommandSender.SendCommand("GetCurrentScreen");
+                var response = await CommandSending.CommandSender.SendCommand("GetCurrentScreen");
+                if(response.Succeeded)
+                {
+                    screenName = response.Data;
+                }
             }
             catch (SocketException)
             {
@@ -232,7 +316,8 @@ namespace OfficialPlugins.Compiler.CommandSending
 
             try
             {
-                cameraPositionAsString = await CommandSending.CommandSender.Send(new Dtos.GetCameraPosition());
+                var sendResponse = await CommandSending.CommandSender.Send(new Dtos.GetCameraPosition());
+                cameraPositionAsString = sendResponse.Succeeded ? sendResponse.Data : String.Empty;
             }
             catch (SocketException)
             {

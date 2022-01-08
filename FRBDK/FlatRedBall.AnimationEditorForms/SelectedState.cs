@@ -154,23 +154,31 @@ namespace FlatRedBall.AnimationEditorForms
 
         public AnimationFrameSave SelectedFrame
         {
-            get
-            {
-                if (SelectedNode == null)
-                {
-                    return null;
-                }
-                else
-                {
-                    return SelectedNode.Tag as AnimationFrameSave;
-                }
-            }
+            get => SelectedNode?.Tag as AnimationFrameSave;
             set
             {
-                TreeNode treeNode = TreeViewManager.Self.GetTreeNodeFor(value);
+                var treeNode = TreeViewManager.Self.GetTreeNodeFor(value);
 
                 SelectedNode = treeNode;
+            }
+        }
 
+        public List<AnimationFrameSave> SelectedFrames
+        {
+            get
+            {
+                var toReturn = new List<AnimationFrameSave>();
+                var treeNodes = SelectedNodes;
+
+                foreach (var treeNode in treeNodes)
+                {
+                    if (treeNode.Tag is AnimationFrameSave frame)
+                    {
+                        toReturn.Add(frame);
+                    }
+                }
+
+                return toReturn;
             }
         }
 

@@ -68,6 +68,15 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                     allScreenNames, 2);
 
                 window.Result = levelName;
+
+                var allLevelScreens = ObjectFinder.Self.GetAllDerivedElementsRecursive(gameScreen);
+
+                foreach(var existingLevelScreen in allLevelScreens)
+                {
+                    viewModel.AvailableLevels.Add(existingLevelScreen.Name);
+                }
+                viewModel.SelectedCopyEntitiesFromLevel = allLevelScreens.FirstOrDefault()?.Name;
+                viewModel.IsCopyEntitiesFromOtherLevelChecked = allLevelScreens.Count > 0;
             }
             else
             {
@@ -122,7 +131,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                     nos.Properties.SetValue("CollisionTileTypeName", name);
                 }
 
-            }, "Adding collision {}");
+            }, $"Adding collision {name}");
 
             await TaskManager.Self.WaitForTaskToFinish(task);
 
@@ -155,7 +164,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             }
         }
 
-        private async void ApplyViewModelToScreen(ScreenSave newScreen, AddScreenViewModel viewModel)
+        private async void ApplyViewModelToScreen(ScreenSave newScreen, ViewModels.AddScreenViewModel viewModel)
         {
 
             var shouldSave = false;
@@ -190,67 +199,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                     break;
                 case AddScreenType.LevelScreen:
 
-                    if(viewModel.InheritFromGameScreen)
-                    {
-                        var gameScreen = ObjectFinder.Self.GetScreenSaveUnqualified("GameScreen");
-                        if(gameScreen != null)
-                        {
-                            newScreen.BaseScreen = gameScreen.Name;
-                            GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(newScreen);
-                            shouldSave = true;
-
-                        }
-                    }
-
-                    if(viewModel.IsSetAsStartupChecked)
-                    {
-                        GlueCommands.Self.GluxCommands.StartUpScreenName = newScreen.Name;
-                        //GlueCommands.Self.RefreshCommands.RefreshUi()
-                        // meh, eventually we'll fix this:
-                    }
-
-                    switch(viewModel.TmxOptions)
-                    {
-                        case TmxOptions.NewStandardTmx:
-                            ShowUiForNewTmx(newScreen);
-                            break;
-                        case TmxOptions.CopiedTmx:
-                            var originalFile = GlueCommands.Self.GetAbsoluteFilePath(viewModel.SelectedTmxFile);
-
-                            var destinationFolder = GlueCommands.Self.FileCommands.GetContentFolder(newScreen);
-                            var strippedName = newScreen.GetStrippedName() + "Map";
-                            FilePath destinationFile = new FilePath(destinationFolder + strippedName + ".tmx");
-
-                            if(originalFile.Exists())
-                            {
-                                try
-                                {
-                                    GlueCommands.Self.TryMultipleTimes(() =>
-                                    {
-                                        System.IO.Directory.CreateDirectory(destinationFile.GetDirectoryContainingThis().FullPath);
-                                        System.IO.File.Copy(originalFile.FullPath, destinationFile.FullPath);
-                                    });
-                                }
-                                catch(Exception e)
-                                {
-                                    GlueCommands.Self.PrintError($"Error copying TMX:\n{e}");
-                                }
-                            }
-
-                            if(destinationFile.Exists())
-                            {
-                                var newRfs = GlueCommands.Self.GluxCommands.CreateReferencedFileSaveForExistingFile(newScreen, destinationFile);
-
-                                if (newRfs != null)
-                                {
-                                    UpdateMapObjectToNewTmx(newScreen, newRfs);
-                                }
-                            }
-
-
-                            break;
-                            // don't do anything for the other options
-                    }
+                    shouldSave = ApplyLevelScreenViewModelProperties(newScreen, viewModel, shouldSave);
                     break;
             }
 
@@ -260,6 +209,90 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(newScreen);
                 GlueCommands.Self.GluxCommands.SaveGlux();
             }
+        }
+
+        private static bool ApplyLevelScreenViewModelProperties(ScreenSave newScreen, ViewModels.AddScreenViewModel viewModel, bool shouldSave)
+        {
+            if (viewModel.InheritFromGameScreen)
+            {
+                var gameScreen = ObjectFinder.Self.GetScreenSaveUnqualified("GameScreen");
+                if (gameScreen != null)
+                {
+                    newScreen.BaseScreen = gameScreen.Name;
+                    GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(newScreen);
+                    shouldSave = true;
+                }
+
+                if(viewModel.IsCopyEntitiesFromOtherLevelChecked && !string.IsNullOrEmpty(viewModel.SelectedCopyEntitiesFromLevel))
+                {
+                    // copy all entities defined at this screen level (not base) into the new scree
+                    var screen = ObjectFinder.Self.GetScreenSave(viewModel.SelectedCopyEntitiesFromLevel);
+
+                    if(screen != null)
+                    {
+                        var namedObjectsToCopy = screen.AllNamedObjects
+                            .Where(item => item.DefinedByBase == false)
+                            .ToArray();
+
+                        foreach(var original in namedObjectsToCopy)
+                        {
+                            // todo - copy this to the new object
+                            GlueCommands.Self.GluxCommands
+                                .CopyNamedObjectIntoElement(original, newScreen, save: false);
+                        }
+                    }
+                }
+            }
+
+            if (viewModel.IsSetAsStartupChecked)
+            {
+                GlueCommands.Self.GluxCommands.StartUpScreenName = newScreen.Name;
+            }
+
+            switch (viewModel.TmxOptions)
+            {
+                case TmxOptions.NewStandardTmx:
+                    ShowUiForNewTmx(newScreen);
+                    break;
+                case TmxOptions.CopiedTmx:
+                    var originalFile = GlueCommands.Self.GetAbsoluteFilePath(viewModel.SelectedTmxFile);
+
+                    var destinationFolder = GlueCommands.Self.FileCommands.GetContentFolder(newScreen);
+                    var strippedName = newScreen.GetStrippedName() + "Map";
+                    FilePath destinationFile = new FilePath(destinationFolder + strippedName + ".tmx");
+
+                    if (originalFile.Exists())
+                    {
+                        try
+                        {
+                            GlueCommands.Self.TryMultipleTimes(() =>
+                            {
+                                System.IO.Directory.CreateDirectory(destinationFile.GetDirectoryContainingThis().FullPath);
+                                System.IO.File.Copy(originalFile.FullPath, destinationFile.FullPath);
+                            });
+                        }
+                        catch (Exception e)
+                        {
+                            GlueCommands.Self.PrintError($"Error copying TMX:\n{e}");
+                        }
+                    }
+
+                    if (destinationFile.Exists())
+                    {
+                        var newRfs = GlueCommands.Self.GluxCommands.CreateReferencedFileSaveForExistingFile(newScreen, destinationFile);
+
+                        if (newRfs != null)
+                        {
+                            UpdateMapObjectToNewTmx(newScreen, newRfs);
+                        }
+                    }
+
+
+                    break;
+                    // don't do anything for the other options
+            }
+
+            return shouldSave;
         }
 
         public static void AddMapObject(ScreenSave newScreen)

@@ -46,10 +46,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     RefreshTreeNodeFor(screen);
                 }
-                GlueCommands.Self.DoOnUiThread(() =>
 
-                    ElementViewWindow.ScreensTreeNode.Nodes.SortByTextConsideringDirectories()
-                );
 
                 RefreshGlobalContent();
             }
@@ -159,9 +156,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void RefreshDirectoryTreeNodes()
         {
-            // todo - this should move to a different loation
-            ElementViewWindow.AddDirectoryNodes();
-
             PluginManager.RefreshDirectoryTreeNodes();
         }
     }

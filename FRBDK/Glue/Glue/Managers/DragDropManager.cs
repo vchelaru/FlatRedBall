@@ -325,56 +325,18 @@ namespace FlatRedBall.Glue.Managers
 
         private static bool DragDropNosIntoElement(NamedObjectSave movingNos, GlueElement elementMovingInto)
         {
-            bool succeeded = true;
+            var response = GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(movingNos, elementMovingInto,
+                save:false);
 
-            // moving to another element, so let's copy
-            NamedObjectSave clonedNos = movingNos.Clone();
-
-            UpdateNosAttachmentAfterDragDrop(clonedNos, elementMovingInto);
-
-            clonedNos.InstanceName = IncrementNumberAtEndOfNewObject(elementMovingInto, clonedNos.InstanceName);
-
-            var listOfThisType = ObjectFinder.Self.GetDefaultListToContain(clonedNos, elementMovingInto);
-
-            if(listOfThisType != null)
+            if(response.Succeeded)
             {
-                listOfThisType.ContainedObjects.Add(clonedNos);
+                GlueCommands.Self.PrintOutput("Copied\n" + movingNos + "\n\nto\n" + elementMovingInto);
             }
             else
             {
-                elementMovingInto.NamedObjects.Add(clonedNos);
+                GlueCommands.Self.DialogCommands.ShowMessageBox(response.Message);
             }
-
-            var referenceCheck = ProjectManager.VerifyReferenceGraph(elementMovingInto);
-
-            if (referenceCheck == ProjectManager.CheckResult.Failed)
-            {
-                succeeded = false;
-                // VerifyReferenceGraph (currently) shows a popup so we don't have to here
-                //MessageBox.Show("This movement would result in a circular reference");
-
-                elementMovingInto.NamedObjects.Remove(clonedNos);
-            }
-
-            if (succeeded)
-            {
-                // If an object which was on a Layer
-                // is moved into another Element, then
-                // the cloned object probably shouldn't
-                // be on a layer.  Not sure if we want to 
-                // see if there is a Layer with the same-name
-                // but we maybe shouldn't assume that they mean
-                // the same thing.
-                clonedNos.LayerOn = null;
-
-                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementMovingInto);
-
-                GlueCommands.Self.GenerateCodeCommands
-                    .GenerateElementAndReferencedObjectCode(elementMovingInto as GlueElement);
-
-                MessageBox.Show("Copied\n" + movingNos + "\n\nto\n" + clonedNos);
-            }
-            return succeeded;
+            return response.Succeeded;
         }
 
         private static void UpdateNosAttachmentAfterDragDrop(NamedObjectSave clonedNos, IElement elementMovingInto)
@@ -422,9 +384,7 @@ namespace FlatRedBall.Glue.Managers
 
             if (succeeded)
             {
-                // show the add new variable window and select this object
-                RightClickHelper.ShowAddEventWindow(treeNodeMoving.Tag as NamedObjectSave);
-
+                GlueCommands.Self.DialogCommands.ShowAddNewEventDialog(treeNodeMoving.Tag as NamedObjectSave);
             }
 
             return succeeded;
@@ -540,23 +500,52 @@ namespace FlatRedBall.Glue.Managers
             }
             else if (targetNode.IsRootCustomVariablesNode())
             {
-                // let's see if the user is moving a variable from one element to another
-                var sourceElement = nodeMoving.GetContainingElementTreeNode().Tag as GlueElement;
-                var targetElement = targetNode.GetContainingElementTreeNode().Tag as GlueElement;
-
-                if (sourceElement != targetElement)
-                {
-                    // copying a variable from one element to another
-                    // eventually we need to add some error checking here.
-                    CustomVariable newVariable = customVariable.Clone();
-
-                    targetElement.CustomVariables.Add(newVariable);
-
-
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(targetElement);
-                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(targetElement);
-                }
+                MoveVariableOnVariablesRootNode(nodeMoving, targetNode);
             }
+            else if(targetNode.IsStateCategoryNode())
+            {
+                MoveVariableOnStateCategory(nodeMoving.Tag as CustomVariable, targetNode.Tag as StateSaveCategory);
+            }
+        }
+
+        private static void MoveVariableOnVariablesRootNode(ITreeNode nodeMoving, ITreeNode targetNode)
+        {
+            CustomVariable customVariable = nodeMoving.Tag as CustomVariable;
+
+            // let's see if the user is moving a variable from one element to another
+            var sourceElement = nodeMoving.GetContainingElementTreeNode().Tag as GlueElement;
+            var targetElement = targetNode.GetContainingElementTreeNode().Tag as GlueElement;
+
+            if (sourceElement != targetElement)
+            {
+                // copying a variable from one element to another
+                // eventually we need to add some error checking here.
+                CustomVariable newVariable = customVariable.Clone();
+
+                targetElement.CustomVariables.Add(newVariable);
+
+
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(targetElement);
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(targetElement);
+            }
+        }
+
+        private static void MoveVariableOnStateCategory(CustomVariable customVariable, StateSaveCategory stateSaveCategory)
+        {
+            TaskManager.Self.AddOrRunIfTasked(() =>
+            {
+                if (stateSaveCategory.ExcludedVariables.Contains(customVariable.Name))
+                {
+                    stateSaveCategory.ExcludedVariables.Remove(customVariable.Name);
+                }
+                var container = ObjectFinder.Self.GetElementContaining(stateSaveCategory);
+
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container);
+                GlueCommands.Self.GluxCommands.SaveGlux();
+
+                GlueCommands.Self.PrintOutput($"Including variable {customVariable.Name} in category {stateSaveCategory.Name}");
+            }, $"Including variable {customVariable.Name} in category {stateSaveCategory.Name}", TaskExecutionPreference.Asap);
         }
 
 
@@ -615,6 +604,12 @@ namespace FlatRedBall.Glue.Managers
             {
                 // The user drag+dropped a state category into the variables
                 // Let's make sure that it's all in the same Element though:
+                // Update December 30, 2021 - Glue now supports variables which
+                // are a state category which comes from a different entity/screen.
+                // I don't want to uncomment this right now because that may require
+                // some additional testing, but I'm putting this comment here so that
+                // in the future it's clear that this was an old rule which could be removed
+                // with proper testing.
                 if (targetNode.GetContainingElementTreeNode() == nodeMoving.GetContainingElementTreeNode())
                 {
                     StateSaveCategory category = nodeMoving.Tag as StateSaveCategory;
@@ -627,13 +622,8 @@ namespace FlatRedBall.Glue.Managers
 
                     var element = targetNode.GetContainingElementTreeNode().Tag as GlueElement;
 
-                    element.CustomVariables.Add(customVariable);
-
-                    InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, element);
-
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-
-                    GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
+                    GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElement(
+                        customVariable, element);
                 }
             }
         }
@@ -689,89 +679,7 @@ namespace FlatRedBall.Glue.Managers
 
             else if (targetNode.IsNamedObjectNode())
             {
-                // Allow drop only if it's a list or Layer
-                NamedObjectSave targetNamedObjectSave = targetNode.Tag as NamedObjectSave;
-
-                if (!targetNamedObjectSave.IsList && !targetNamedObjectSave.IsLayer)
-                {
-                    MessageBox.Show("The target is not a List or Layer so we can't add an Object to it.", "Target not valid");
-                }
-                if (targetNamedObjectSave.IsLayer)
-                {
-                    var parent = targetNode.Parent;
-
-                    newTreeNode = MoveEntityOn(treeNodeMoving, parent);
-
-                    DragDropManager.Self.MoveNamedObject(newTreeNode, targetNode);
-                }
-                else
-                {
-                    // Make sure that the two types match
-                    string listType = targetNamedObjectSave.SourceClassGenericType;
-
-                    var entity = treeNodeMoving.Tag as EntitySave;
-
-                    bool isOfTypeOrInherits =
-                        listType == entity.Name ||
-                        (treeNodeMoving.Tag as EntitySave).InheritsFrom(listType);
-
-                    if (isOfTypeOrInherits == false)
-                    {
-                        MessageBox.Show("The target list type is of type\n\n" +
-                            listType +
-                            "\n\nBut the Entity is of type\n\n" +
-                            entity.Name +
-                            "\n\nCould not add an instance to the list", "Could not add instance");
-                    }
-                    else
-                    {
-                        var namedObject = new NamedObjectSave();
-
-                        if(GlueState.Self.CurrentGlueProject.FileVersion >= 
-                            (int)GlueProjectSave.GluxVersions.ListsHaveAssociateWithFactoryBool)
-                        {
-                            namedObject.AssociateWithFactory = true;
-                        }
-                        namedObject.InstanceName =
-                            FileManager.RemovePath(entity.Name) + "1";
-
-                        StringFunctions.MakeNameUnique<NamedObjectSave>(
-                            namedObject, targetNamedObjectSave.ContainedObjects);
-
-                        // Not sure if we need to set this or not, but I think 
-                        // any instance added to a list will not be defined by base
-                        namedObject.DefinedByBase = false;
-
-                        // make sure that the target list is the current
-                        GlueState.Self.CurrentNamedObjectSave = targetNamedObjectSave;
-
-                        var currentNosList = GlueState.Self.CurrentNamedObjectSave;
-                        NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToList(namedObject, 
-                            currentNosList);
-
-                        // If the tree node doesn't exist yet, this selection won't work:
-                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(
-                            GlueState.Self.CurrentElement);
-
-                        GlueState.Self.CurrentNamedObjectSave = namedObject;
-
-                        if (namedObject.SourceClassType != entity.Name)
-                        {
-                            namedObject.SourceClassType = entity.Name;
-                            namedObject.UpdateCustomProperties();
-                        }
-
-                        GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-
-                        // run after generated code so plugins like level editor work off latest code
-                        PluginManager.ReactToNewObject(namedObject);
-                        PluginManager.ReactToObjectContainerChanged(namedObject, currentNosList);
-
-                        // Don't save the Glux, the caller of this method will take care of it
-                        // GluxCommands.Self.SaveGlux();
-                    }
-
-                }
+                newTreeNode = MoveEntityOnNamedObject(treeNodeMoving, targetNode);
             }
 
             #endregion
@@ -779,6 +687,96 @@ namespace FlatRedBall.Glue.Managers
             else if (targetNode.IsGlobalContentContainerNode())
             {
                 AskAndAddAllContainedRfsToGlobalContent(treeNodeMoving.Tag as IElement);
+            }
+
+            return newTreeNode;
+        }
+
+        private ITreeNode MoveEntityOnNamedObject(ITreeNode treeNodeMoving, ITreeNode targetNode)
+        {
+            ITreeNode newTreeNode = null;
+            var entity = treeNodeMoving.Tag as EntitySave;
+
+            // Allow drop only if it's a list or Layer
+            NamedObjectSave targetNamedObjectSave = targetNode.Tag as NamedObjectSave;
+
+            if (!targetNamedObjectSave.IsList && !targetNamedObjectSave.IsLayer)
+            {
+                MessageBox.Show("The target is not a List or Layer so we can't add an Object to it.", "Target not valid");
+            }
+            if (targetNamedObjectSave.IsLayer)
+            {
+                var parent = targetNode.Parent;
+
+                newTreeNode = MoveEntityOn(treeNodeMoving, parent);
+
+                DragDropManager.Self.MoveNamedObject(newTreeNode, targetNode);
+            }
+            else
+            {
+                // Make sure that the two types match
+                string listType = targetNamedObjectSave.SourceClassGenericType;
+
+                bool isOfTypeOrInherits =
+                    listType == entity.Name ||
+                    entity.InheritsFrom(listType);
+
+                if (isOfTypeOrInherits == false)
+                {
+                    MessageBox.Show("The target list type is of type\n\n" +
+                        listType +
+                        "\n\nBut the Entity is of type\n\n" +
+                        entity.Name +
+                        "\n\nCould not add an instance to the list", "Could not add instance");
+                }
+                else
+                {
+                    var namedObject = new NamedObjectSave();
+
+                    if (GlueState.Self.CurrentGlueProject.FileVersion >=
+                        (int)GlueProjectSave.GluxVersions.ListsHaveAssociateWithFactoryBool)
+                    {
+                        namedObject.AssociateWithFactory = true;
+                    }
+                    namedObject.InstanceName =
+                        FileManager.RemovePath(entity.Name) + "1";
+
+                    StringFunctions.MakeNameUnique<NamedObjectSave>(
+                        namedObject, targetNamedObjectSave.ContainedObjects);
+
+                    // Not sure if we need to set this or not, but I think 
+                    // any instance added to a list will not be defined by base
+                    namedObject.DefinedByBase = false;
+
+                    // make sure that the target list is the current
+                    GlueState.Self.CurrentNamedObjectSave = targetNamedObjectSave;
+
+                    var currentNosList = GlueState.Self.CurrentNamedObjectSave;
+                    NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToList(namedObject,
+                        currentNosList);
+
+                    // If the tree node doesn't exist yet, this selection won't work:
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(
+                        GlueState.Self.CurrentElement);
+
+                    GlueState.Self.CurrentNamedObjectSave = namedObject;
+
+                    if (namedObject.SourceClassType != entity.Name)
+                    {
+                        namedObject.SourceClassType = entity.Name;
+                        namedObject.UpdateCustomProperties();
+                    }
+
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+
+                    // run after generated code so plugins like level editor work off latest code
+                    PluginManager.ReactToNewObject(namedObject);
+                    PluginManager.ReactToObjectContainerChanged(namedObject, currentNosList);
+
+                    // Don't save the Glux, the caller of this method will take care of it
+                    // GluxCommands.Self.SaveGlux();
+                }
+
             }
 
             return newTreeNode;
@@ -845,9 +843,10 @@ namespace FlatRedBall.Glue.Managers
 
             if(listOfThisType != null)
             {
-                var namedObjectNode = ElementViewWindow.GetTreeNodeFor(listOfThisType);
+
+                var namedObjectNode = GlueState.Self.Find.TreeNodeByTag(listOfThisType);
                 // move it onto this
-                MoveEntityOn(treeNodeMoving, TreeNodeWrapper.CreateOrNull(namedObjectNode));
+                MoveEntityOn(treeNodeMoving, namedObjectNode);
             }
             else
             {

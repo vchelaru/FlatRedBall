@@ -56,7 +56,12 @@ namespace OfficialPlugins.Compiler.Dtos
     class SelectObjectDto : UpdateCurrentElementDto
     {
         public NamedObjectSave NamedObject { get; set; }
+
         public string ElementNameGlue { get; set; }
+
+        // if the user selects an element which is abstract, then we need to fallback
+        public string BackupElementNameGlue { get; set; }
+
         public string StateName { get; set; }
         public string StateCategoryName { get; set; }
         public bool BringIntoFocus { get; set; }

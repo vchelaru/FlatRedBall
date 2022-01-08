@@ -252,10 +252,17 @@ namespace GlueControl
 
         private static void HandleDto(SelectObjectDto selectObjectDto)
         {
+
+            // if it matches, don't fall back to the backup element
             bool matchesCurrentScreen =
                 GetIfMatchesCurrentScreen(selectObjectDto.ElementNameGlue, out System.Type ownerType, out Screen currentScreen);
 
-            var elementNameGlue = selectObjectDto.ElementNameGlue;
+            string elementNameGlue = selectObjectDto.BackupElementNameGlue ?? selectObjectDto.ElementNameGlue;
+            if (matchesCurrentScreen)
+            {
+                elementNameGlue = selectObjectDto.ElementNameGlue;
+            }
+
             string ownerTypeName = GlueToGameElementName(elementNameGlue);
             ownerType = typeof(CommandReceiver).Assembly.GetType(ownerTypeName);
 
@@ -294,12 +301,6 @@ namespace GlueControl
 #if SupportsEditMode
                     ScreenManager.IsNextScreenInEditMode = ScreenManager.IsInEditMode;
 
-                    void BeforeCustomInitializeLogic(Screen newScreen)
-                    {
-                        GlueControlManager.Self.ReRunAllGlueToGameCommands();
-                        ScreenManager.BeforeScreenCustomInitialize -= BeforeCustomInitializeLogic;
-                    }
-
                     void AfterInitializeLogic(Screen screen)
                     {
                         // Select this even if it's null so the EditingManager deselects 
@@ -313,11 +314,8 @@ namespace GlueControl
                         screen.ScreenDestroy += HandleScreenDestroy;
                         CameraLogic.SetCameraForScreen(screen);
 
-                        CameraLogic.UpdateZoomLevelToCamera();
-
                         ScreenManager.ScreenLoaded -= AfterInitializeLogic;
                     }
-                    FlatRedBall.Screens.ScreenManager.BeforeScreenCustomInitialize += BeforeCustomInitializeLogic;
                     ScreenManager.ScreenLoaded += AfterInitializeLogic;
 
                     ScreenManager.CurrentScreen.MoveToScreen(ownerType);
@@ -352,12 +350,6 @@ namespace GlueControl
 #if SupportsEditMode
                         ScreenManager.IsNextScreenInEditMode = ScreenManager.IsInEditMode;
 
-                        void BeforeCustomInitializeLogic(Screen newScreen)
-                        {
-                            GlueControlManager.Self.ReRunAllGlueToGameCommands();
-                            ScreenManager.BeforeScreenCustomInitialize -= BeforeCustomInitializeLogic;
-                        }
-
                         void AfterInitializeLogic(Screen newScreen)
                         {
                             newScreen.ScreenDestroy += HandleScreenDestroy;
@@ -366,7 +358,6 @@ namespace GlueControl
                         }
 
                         FlatRedBall.Screens.ScreenManager.ScreenLoaded += AfterInitializeLogic;
-                        FlatRedBall.Screens.ScreenManager.BeforeScreenCustomInitialize += BeforeCustomInitializeLogic;
 
                         EditorVisuals.DestroyContainedObjects();
 
@@ -382,6 +373,8 @@ namespace GlueControl
                 }
             }
         }
+
+
 
         private static void SelectState(string stateName, string stateCategoryName)
         {
@@ -717,21 +710,6 @@ namespace GlueControl
             // user may go into edit mode after moving through a level and wouldn't want it to restart fully....or would they? What if they
             // want to change the Player start location. Need to think that through...
 
-            // Vic says - We run all Glue commands before running custom initialize. The reason is - custom initialize
-            // may make modifications to objects that are created by glue commands (such as assigning acceleration to objects
-            // in a list), but it is unlikely that scripts will make modifications to objects created in CustomInitialize because
-            // objects created in CustomInitialize cannot be modified by level editor.
-            void BeforeCustomInitializeLogic(Screen newScreen)
-            {
-                // We used to set this immediately whenever the DTO
-                // to switch into edit mode was received. However, this
-                // could result in the current screen running one Activity
-                // call in edit mode before it reloads itself. Therefore, we
-                // want to set the edit mode here:
-                GlueControlManager.Self.ReRunAllGlueToGameCommands();
-                ScreenManager.BeforeScreenCustomInitialize -= BeforeCustomInitializeLogic;
-            }
-
             void AfterInitializeLogic(Screen newScreen)
             {
                 newScreen.ScreenDestroy += HandleScreenDestroy;
@@ -741,10 +719,8 @@ namespace GlueControl
                     CameraLogic.SetCameraForScreen(screen, setZoom: FlatRedBall.Screens.ScreenManager.IsInEditMode);
                 }
 
-                // This sets the zoom leve internally back to the camera
-                CameraLogic.UpdateZoomLevelToCamera();
                 // Even though the camera is reset properly, Gum zoom isn't. Calling this fixes Gum zoom:
-                CameraLogic.UpdateCameraToZoomLevel();
+                CameraLogic.UpdateCameraToZoomLevel(zoomAroundCursorPosition: false, forceTo100: !isInEditMode);
 
                 if (FlatRedBall.Screens.ScreenManager.IsInEditMode)
                 {
@@ -757,7 +733,6 @@ namespace GlueControl
                 EditingManager.Self.RefreshSelectionAfterScreenLoad(playBump);
             }
 
-            FlatRedBall.Screens.ScreenManager.BeforeScreenCustomInitialize += BeforeCustomInitializeLogic;
             FlatRedBall.Screens.ScreenManager.ScreenLoaded += AfterInitializeLogic;
 
             if (shouldRecordCameraPosition)

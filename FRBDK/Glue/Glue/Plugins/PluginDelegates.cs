@@ -10,6 +10,7 @@ using FlatRedBall.Glue.FormHelpers.PropertyGrids;
 using FlatRedBall.Glue.GuiDisplay;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.FormHelpers;
+using GlueFormsCore.FormHelpers;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -43,7 +44,7 @@ namespace FlatRedBall.Glue.Plugins
     public delegate void ReactToStateNameChangeDelegate(IElement element, string oldName, string newName);
     public delegate void ReactToStateRemovedDelegate(IElement element, string stateName);
     public delegate void ReactToItemSelectDelegate(ITreeNode selectedTreeNode);
-    public delegate void ReactToTreeViewRightClickDelegate(TreeNode rightClickedTreeNode, ContextMenuStrip menuToModify);
+    public delegate void ReactToTreeViewRightClickDelegate(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> listToAddTo);
 
     public delegate void AdjustDisplayedScreenDelegate(ScreenSave screenSave, ScreenSavePropertyGridDisplayer displayer);
     public delegate void AdjustDisplayedEntityDelegate(EntitySave entitySave, EntitySavePropertyGridDisplayer displayer);

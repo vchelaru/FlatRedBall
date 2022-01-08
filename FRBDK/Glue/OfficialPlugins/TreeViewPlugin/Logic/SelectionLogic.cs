@@ -75,9 +75,13 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
         {
             IsUpdatingThisSelectionOnGlueEvent = false;
 
+            var didSelectionChange = currentNode?.Tag != nodeViewModel?.Tag;
             currentNode = nodeViewModel;
 
-            if(IsPushingSelectionOutToGlue)
+            if(IsPushingSelectionOutToGlue
+                // The node can change if the user deletes a tree node and then a new one
+                // automatically gets re-selected. In this case, we do still want to push the selection out.
+                || didSelectionChange)
             {
                 var tag = nodeViewModel.Tag;
 
@@ -115,19 +119,6 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
                 }
                 else if(tag == null)
                 {
-                    //var element = ((ITreeNode)nodeViewModel).GetContainingElementTreeNode()?.Tag;
-
-                    //if (element is EntitySave)
-                    //{
-                    //    GlueState.Self.CurrentEntitySave = element as EntitySave;
-
-                    //}
-                    //else if(element is ScreenSave)
-                    //{
-                    //    GlueState.Self.CurrentScreenSave = element as ScreenSave;
-                    //}
-                    // cheating, this will eventually go away:
-                    //ElementViewWindow.SelectByRelativePath((nodeViewModel as ITreeNode).GetRelativePath());
                     GlueState.Self.CurrentTreeNode = nodeViewModel;
                 }
             }
@@ -182,7 +173,17 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             {
                 if (treeNode != null && (treeNode.IsSelected == false || treeNode != currentNode))
                 {
-                    treeNode.IsSelected = true;
+                    
+                        treeNode.IsSelected = true;
+                    //}
+                    //else
+                    //{
+                        // When right-clicking on the Entities folder and adding a new entity, the new entity will (usually)
+                        // create a list in GameScreen. Sometimes this tree node is already selected by default (not sure why), but
+                        // even if it is, it differs from the current node, so since the selection is changing, we need to push that to
+                        // the SelectionLogic:
+                        // Update - actually this didn't matter, the bug was still here even after adding this:
+                        //SelectionLogic.HandleSelected(treeNode);
                     treeNode.ExpandParentsRecursively();
                 }
                 // If we don't do this, sometimes it doesn't scroll into view...

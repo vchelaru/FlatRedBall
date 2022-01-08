@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using GlueFormsCore.FormHelpers;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.RfsSorting
 {
@@ -21,14 +22,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.RfsSorting
 
         }
 
-        void HandleTreeNodeRightClick(TreeNode rightClickedTreeNode, ContextMenuStrip menuToModify)
+        void HandleTreeNodeRightClick(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> menuToModify)
         {
             if (rightClickedTreeNode != null && rightClickedTreeNode.IsFilesContainerNode())
             {
-                menuToModify.Items.Add("Sort files alphabetically", null, SortFilesAlphabetically);
-
-
-
+                menuToModify.Add("Sort files alphabetically", SortFilesAlphabetically);
             }
         }
 

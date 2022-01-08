@@ -660,7 +660,7 @@ namespace FlatRedBall.AnimationEditorForms
         {
             if (SelectedState.Self.SelectedChains.Count > 0)
             {
-                string message = "Delete the following animations?\n\n";
+                string message = "Delete the following animation(s)?\n\n";
 
                 foreach(var chain in SelectedState.Self.SelectedChains)
                 {
@@ -693,14 +693,23 @@ namespace FlatRedBall.AnimationEditorForms
 
         void DeleteAnimationFrameClick(object sender, EventArgs args)
         {
-            if (SelectedState.Self.SelectedFrame != null)
+            if (SelectedState.Self.SelectedFrames.Count > 0)
             {
+                string message = $"Delete the following {SelectedState.Self.SelectedFrames.Count} frame(s)?\n\n";
+                foreach(var frame in SelectedState.Self.SelectedFrames)
+                {
+                    message += $"Frame {frame.TextureName}\n";
+                }
                 DialogResult result = 
-                    MessageBox.Show("Delete Frame?", "Delete?", MessageBoxButtons.YesNo);
+                    MessageBox.Show(message, "Delete?", MessageBoxButtons.YesNo);
 
                 if (result == DialogResult.Yes)
                 {
-                    SelectedState.Self.SelectedChain.Frames.Remove(SelectedState.Self.SelectedFrame);
+                    var framesToDelete = SelectedState.Self.SelectedFrames.ToArray();
+                    foreach(var frame in framesToDelete)
+                    {
+                        SelectedState.Self.SelectedChain.Frames.Remove(frame);
+                    }
 
                     TreeViewManager.Self.RefreshTreeNode(SelectedState.Self.SelectedChain);
 

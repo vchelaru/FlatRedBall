@@ -54,14 +54,6 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             InitializeComponent();
         }
 
-        // This makes the selection not happen on push+move as explained here:
-        // https://stackoverflow.com/questions/2645265/wpf-listbox-click-and-drag-selects-other-items
-        private void MainTreeView_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (e.LeftButton == MouseButtonState.Pressed)
-                (sender as ListBox).ReleaseMouseCapture();
-        }
-
         #region Hotkey
 
         private void MainTreeView_KeyDown(object sender, KeyEventArgs e)
@@ -83,13 +75,26 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             }
         }
 
+        public void FocusSearchBox()
+        {
+            SearchTextBox.Focus();
+        }
+
         #endregion
 
         #region Drag+drop
         Point startPoint;
+        NodeViewModel nodePushed;
         private void MainTreeView_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             startPoint = e.GetPosition(null);
+
+            var objectPushed = e.OriginalSource;
+            nodePushed = (objectPushed as FrameworkElement)?.DataContext as NodeViewModel;
+
+            //MainTreeView.
+            if (e.LeftButton == MouseButtonState.Pressed)
+                (sender as ListBox).ReleaseMouseCapture();
         }
 
         private void MainTreeView_PreviewMouseMove(object sender, MouseEventArgs e)
@@ -156,16 +161,24 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         private void HandleDropTreeNodeOnTreeNode(DragEventArgs e)
         {
-            var objectDragged = e.Data.GetData("NodeViewModel");
-
+            // There's a bug in the tree view when dragging quickly, which can result in the wrong item dropped.
+            // To solve this, we're going to use the NodePushed. For more info on the bug, see this:
+            // https://github.com/vchelaru/FlatRedBall/issues/312
+            //var objectDragged = e.Data.GetData("NodeViewModel");
             var targetNode = (e.OriginalSource as FrameworkElement).DataContext as NodeViewModel;
 
-            if (objectDragged is NodeViewModel treeNodeMoving)
+            if (nodePushed != null && targetNode != null)
             {
-                if (ButtonPressed == LeftOrRight.Left || targetNode == treeNodeMoving)
+                if (nodePushed.IsSelected == false)
+                {
+                    // This addresses a bug in the tree view which can result in "rolling selection" as you grab
+                    // and drag down the tree view quickly. It won't produce a bug anymore (see above) but this is just for visual confirmation.
+                    nodePushed.IsSelected = true;
+                }
+                if (ButtonPressed == LeftOrRight.Left || targetNode == nodePushed)
                 {
                     // do something here...
-                    DragDropManager.DragDropTreeNode(targetNode, treeNodeMoving);
+                    DragDropManager.DragDropTreeNode(targetNode, nodePushed);
                     if (ButtonPressed == LeftOrRight.Right)
                     {
                         RightClickContextMenu.IsOpen = true;// test this
@@ -175,7 +188,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 {
                     SelectionLogic.SelectByTag(targetNode.Tag);
 
-                    var items = RightClickHelper.GetRightClickItems(targetNode, MenuShowingAction.RightButtonDrag, treeNodeMoving);
+                    var items = RightClickHelper.GetRightClickItems(targetNode, MenuShowingAction.RightButtonDrag, nodePushed);
 
 
                     RightClickContextMenu.Items.Clear();
@@ -244,7 +257,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             if (whatWasSelected != null)
             {
                 SelectionLogic.SelectByTag(whatWasSelected);
-                SelectionLogic.CurrentNode.ExpandParentsRecursively();
+                SelectionLogic.CurrentNode?.ExpandParentsRecursively();
             }
         }
 
@@ -259,6 +272,14 @@ namespace OfficialPlugins.TreeViewPlugin.Views
         }
 
         #endregion
+
+        // This makes the selection not happen on push+move as explained here:
+        // https://stackoverflow.com/questions/2645265/wpf-listbox-click-and-drag-selects-other-items
+        private void MainTreeView_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+                (sender as ListBox).ReleaseMouseCapture();
+        }
 
         private void MainTreeView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {

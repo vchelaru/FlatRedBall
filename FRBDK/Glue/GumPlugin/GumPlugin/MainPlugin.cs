@@ -31,6 +31,7 @@ using FlatRedBall.Glue.Controls;
 using GumPluginCore.ViewModels;
 using GumPlugin.DataGeneration;
 using FlatRedBall.Glue.FormHelpers;
+using System.Threading.Tasks;
 
 namespace GumPlugin
 {
@@ -300,7 +301,7 @@ namespace GumPlugin
 
         #endregion
 
-        #region Methods
+        #region Initialize/Assing Events
 
         public override void StartUp()
         {
@@ -357,6 +358,7 @@ namespace GumPlugin
             this.ReactToItemSelectHandler += HandleItemSelected;
 
             this.NewScreenCreated += HandleNewScreen;
+            this.ReactToScreenRemoved += HandleScreenRemoved;
 
             this.GetEventSignatureArgs += HandleGetEventSignatureArgs;
 
@@ -371,11 +373,16 @@ namespace GumPlugin
             this.ResolutionChanged += HandleResolutionChanged;
         }
 
+
+        #endregion
+
+        #region Methods
+
         private void HandleResolutionChanged()
         {
             if(viewModel?.IsMatchGameResolutionInGumChecked == true)
             {
-                AppCommands.Self.UpdateGumToGlueResolution();
+                GumPluginCommands.Self.UpdateGumToGlueResolution();
             }
         }
 
@@ -531,7 +538,28 @@ namespace GumPlugin
 
             if(createGumScreen && AppState.Self.GumProjectSave != null)
             {
-                AppCommands.Self.AddScreenForGlueScreen(newGlueScreen);
+                GumPluginCommands.Self.AddScreenForGlueScreen(newGlueScreen);
+            }
+        }
+
+
+        private void HandleScreenRemoved(FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen, List<string> listToFillWithAdditionalFilesToRemove)
+        {
+            if(AppState.Self.GumProjectSave != null)
+            {
+                var gumScreenName = GumPluginCommands.Self.GetGumScreenNameFor(glueScreen);
+
+                var gumScreen = AppState.Self.GumProjectSave.Screens.FirstOrDefault(item => item.Name == gumScreenName);
+
+                if (gumScreen != null)
+                {
+                    GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
+                        $"Delete the Gum Screen {gumScreen.Name}\nfor {glueScreen}?", 
+                        () => GumPluginCommands.Self.RemoveScreen(gumScreen));
+
+                }
+
+
             }
         }
 
@@ -601,7 +629,14 @@ namespace GumPlugin
                 bool isInGlobalContent = GlueState.Self.CurrentGlueProject.GlobalFiles.Contains(newFile);
                 if (!isInGlobalContent)
                 {
-                    MessageBox.Show("The Gum project file (.gumx) should be added to global content. Not doing so may cause runtime errors.");
+                    MessageBox.Show("The Gum project file (.gumx) can only be added to global content.");
+
+                    var container = FlatRedBall.Glue.Elements.ObjectFinder.Self.GetElementContaining(newFile);
+
+                    if(container != null)
+                    {
+                        container.ReferencedFiles.Remove(newFile);
+                    }
                 }
                 else
                 {
@@ -781,7 +816,7 @@ namespace GumPlugin
             toolbarViewModel.HasGumProject = AppState.Self.GumProjectSave != null;
         }
 
-        private void HandleGluxLoad()
+        private async void HandleGluxLoad()
         {
             var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
 
@@ -793,7 +828,7 @@ namespace GumPlugin
                 var behavior = GetBehavior(gumRfs);
 
                 // todo: Removing a file should cause this to get called, but I don't think Gum lets us subscribe to that yet.
-                TaskManager.Self.Add(() =>
+                await TaskManager.Self.AddAsync(() =>
                 {
                     EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
 
@@ -810,34 +845,38 @@ namespace GumPlugin
 
                 }, "Gum plugin reacting to glux load");
 
-                UpdateGumParentProject();
+                await UpdateGumParentProject();
 
-                AppCommands.Self.UpdateGumToGlueResolution();
+                GumPluginCommands.Self.UpdateGumToGlueResolution();
             }
         }
 
-        private void UpdateGumParentProject()
+        private async Task UpdateGumParentProject()
         {
             var gumProject = AppState.Self.GumProjectSave;
 
             if (gumProject != null)
             {
-                FilePath gumProjectParentRoot = null;
                 var needsToSetRoot = string.IsNullOrWhiteSpace(gumProject.ParentProjectRoot);
+                // Victor Chelaru Jan 8, 2022
+                // This uses the content directory as the root. Should it use the entire game folder? Or just the 
+                // content folder? I'm not sure.
+                var expectedGumProjectParentRoot = new FilePath(GlueState.Self.ContentDirectory).RelativeTo(AppState.Self.GumProjectFolder);
                 if (!needsToSetRoot)
                 {
-                    gumProjectParentRoot = new FilePath(AppState.Self.GlueProjectFolder + gumProject.ParentProjectRoot);
+                    var currentGumProjectParentRoot = 
+                        new FilePath(GlueState.Self.ContentDirectory + gumProject.ParentProjectRoot);
 
-                    if(gumProjectParentRoot != GlueState.Self.CurrentGlueProjectDirectory)
+                    if(currentGumProjectParentRoot != expectedGumProjectParentRoot)
                     {
                         needsToSetRoot = true;
                     }
                 }
                 if(needsToSetRoot)
                 {
-                    gumProject.ParentProjectRoot = new FilePath(GlueState.Self.CurrentGlueProjectDirectory).RelativeTo(AppState.Self.GumProjectFolder);
+                    gumProject.ParentProjectRoot = expectedGumProjectParentRoot;
 
-                    AppCommands.Self.SaveGumx();
+                    await GumPluginCommands.Self.SaveGumxAsync();
                 }
             }
         }

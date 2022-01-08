@@ -50,11 +50,6 @@ namespace OfficialPlugins.Compiler.Views
             StopClicked?.Invoke(this, null);
         }
 
-        private void HandleRestartGameClicked(object sender, RoutedEventArgs e)
-        {
-            RestartGameClicked?.Invoke(this, null);
-        }
-
         private void HandleRestartGameCurrentScreenClicked(object sender, RoutedEventArgs e)
         {
             if(ViewModel.IsGenerateGlueControlManagerInGame1Checked)

@@ -29,7 +29,6 @@ namespace OfficialPlugins.Compiler
         #region Events
 
         public event EventHandler BuildClicked;
-        public event EventHandler BuildContentClicked;
         public event EventHandler RunClicked;
 
 
@@ -49,13 +48,6 @@ namespace OfficialPlugins.Compiler
             TextBox.Document.Blocks.Clear();
             TextBox.Document.Blocks.Add(new Paragraph());
             BuildClicked?.Invoke(this, null);
-        }
-
-        private void HandleBuildContentClick(object sender, EventArgs e)
-        {
-            TextBox.Document.Blocks.Clear();
-            TextBox.Document.Blocks.Add(new Paragraph());
-            BuildContentClicked?.Invoke(this, null);
         }
 
         private void HandleRunClick(object sender, EventArgs e)

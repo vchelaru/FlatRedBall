@@ -14,7 +14,7 @@ namespace Npc.Data
             Add("Android (Phone, Tablet, Fire TV)", "FlatRedBallAndroidTemplate", "FlatRedBallAndroidTemplate.zip", "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallAndroidTemplate.zip", true);
             Add("iOS (iPhone, iPad, iPod Touch)", "FlatRedBalliOSTemplate", "FlatRedBalliOSTemplate.zip", "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBalliOSTemplate.zip" ,true);
             Add("Winows UWP (Windows Desktop, Xbox One, Tablet, Windows Phone)", "FlatRedBallUwpTemplate", "FlatRedBallUwpTemplate.zip", "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallUwpTemplate.zip" ,true);
-            Add("Desktop XNA (Windows, requires XNA install)", "FlatRedBallXna4Template", "FlatRedBallXna4Template.zip" , "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallXna4Template.zip", true);
+            Add("[deprecated, use Desktop GL] Desktop XNA (Windows, requires XNA install)", "FlatRedBallXna4Template", "FlatRedBallXna4Template.zip" , "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallXna4Template.zip", true);
         }
 
         static void Add(string friendlyName, string namespaceName, string zipName, string url, bool supportedInGlue)

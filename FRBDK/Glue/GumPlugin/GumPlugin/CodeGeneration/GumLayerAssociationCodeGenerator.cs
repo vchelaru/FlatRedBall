@@ -68,49 +68,76 @@ namespace GumPlugin.CodeGeneration
         {
             if (ShouldGenerate)
             {
+                string idbName = GetIdbName(element);
 
-                var rfs = GetScreenRfsIn(element);
-                var idbName = rfs?.GetInstanceName();
-                var rfsAssetTpe = rfs?.GetAssetTypeInfo();
-                var isIdb = rfsAssetTpe == AssetTypeInfoManager.Self.ScreenIdbAti;
-                if (string.IsNullOrEmpty(idbName) && element is FlatRedBall.Glue.SaveClasses.ScreenSave)
+                if (idbName != null)
                 {
-                    idbName = "gumIdb";
-                }
-                else if(rfs != null && isIdb == false)
-                {
-                    idbName = "FlatRedBall.Gum.GumIdb.Self";
-                }
-
-                
-                var frbLayerNames = GetUsedFrbLayerNames(element);
-                // Creates Gum layers for every FRB layer, so that objects can be moved between layers at runtime, and so code gen
-                // can use these for objects that are placed on layers in Glue.
-                foreach (var layerPrefix in frbLayerNames)
-                {
-
-                    if(idbName != null)
+                    var frbLayerNames = GetUsedFrbLayerNames(element);
+                    // Creates Gum layers for every FRB layer, so that objects can be moved between layers at runtime, and so code gen
+                    // can use these for objects that are placed on layers in Glue.
+                    foreach (var layerPrefix in frbLayerNames)
                     {
-                        codeBlock.Line(layerPrefix + "Gum = RenderingLibrary.SystemManagers.Default.Renderer.AddLayer();");
-                        codeBlock.Line(layerPrefix + "Gum.Name = \"" + layerPrefix + "Gum\";");
+                        var gumLayerName = layerPrefix + "Gum";
+                        codeBlock.Line($"{gumLayerName} = RenderingLibrary.SystemManagers.Default.Renderer.AddLayer();");
+                        codeBlock.Line($"{gumLayerName}.Name = \"{gumLayerName}\";");
 
                         string frbLayerName = layerPrefix;
 
-                        if(frbLayerName == UnderEverythingLayerPrefix)
+                        if (frbLayerName == UnderEverythingLayerPrefix)
                         {
                             frbLayerName = "global::FlatRedBall.SpriteManager.UnderAllDrawnLayer";
                         }
-                        else if(frbLayerName == AboveEverythingLayerPrefix)
+                        else if (frbLayerName == AboveEverythingLayerPrefix)
                         {
                             frbLayerName = "global::FlatRedBall.SpriteManager.TopLayer";
                         }
 
-                        codeBlock.Line(idbName + ".AddGumLayerToFrbLayer(" + layerPrefix + "Gum, " + frbLayerName + ");");
+                        codeBlock.Line($"{idbName}.AddGumLayerToFrbLayer({gumLayerName}, {frbLayerName});");
                     }
                 }
 
             }
             return base.GenerateAddToManagers(codeBlock, element);
+        }
+
+        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
+        {
+            if (ShouldGenerate)
+            {
+                string idbName = GetIdbName(element);
+
+                if (idbName != null)
+                {
+                    var frbLayerNames = GetUsedFrbLayerNames(element);
+
+                    foreach (var layerPrefix in frbLayerNames)
+                    {
+                        var gumLayerName = layerPrefix + "Gum";
+
+                        codeBlock.Line($"RenderingLibrary.SystemManagers.Default.Renderer.RemoveLayer({gumLayerName});");
+                    }
+                }
+            }
+
+            return codeBlock;
+        }
+
+        private string GetIdbName(IElement element)
+        {
+            var rfs = GetScreenRfsIn(element);
+            var idbName = rfs?.GetInstanceName();
+            var rfsAssetTpe = rfs?.GetAssetTypeInfo();
+            var isIdb = rfsAssetTpe == AssetTypeInfoManager.Self.ScreenIdbAti;
+            if (string.IsNullOrEmpty(idbName) && element is FlatRedBall.Glue.SaveClasses.ScreenSave)
+            {
+                idbName = "gumIdb";
+            }
+            else if (rfs != null && isIdb == false)
+            {
+                idbName = "FlatRedBall.Gum.GumIdb.Self";
+            }
+
+            return idbName;
         }
 
         private ReferencedFileSave GetScreenRfsIn(IElement element)

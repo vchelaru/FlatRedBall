@@ -42,10 +42,19 @@ namespace FlatRedBall.Graphics
 
     public enum SortType
     {
+        /// <summary>
+        /// No sorting will be performed, objects will remain in the the same order that they've been added to their respective list
+        /// </summary>
         None,
+        /// <summary>
+        /// Objects will sort by their Z value
+        /// </summary>
         Z,
         DistanceFromCamera,
         DistanceAlongForwardVector,
+        /// <summary>
+        /// Objects will be sorted based on their Z value first. Objects with identical Z values will sort using their top parent Y values.
+        /// </summary>
         ZSecondaryParentY,
         CustomComparer,
         Texture

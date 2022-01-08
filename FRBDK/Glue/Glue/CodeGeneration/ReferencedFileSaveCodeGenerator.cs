@@ -1477,7 +1477,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     currentBlock.Line(ati.AddToManagersFunc(mSaveObject, null, referencedFile, "layerToAddTo"));
                 }
-                else if (BaseElementTreeNode.IsOnOwnLayer(mSaveObject) && ati.LayeredAddToManagersMethod.Count != 0 && !string.IsNullOrEmpty(ati.LayeredAddToManagersMethod[0]))
+                else if (CodeWriter.IsOnOwnLayer(mSaveObject) && ati.LayeredAddToManagersMethod.Count != 0 && !string.IsNullOrEmpty(ati.LayeredAddToManagersMethod[0]))
                 {
                     string layerAddToManagersMethod = ati.LayeredAddToManagersMethod[0];
                     if (mSaveObject is EntitySave)

@@ -12,7 +12,7 @@ namespace GlueFormsCore.FormHelpers
         public GeneralToolStripMenuItem(string text) { Text = text; }
 
         public string Text { get; internal set; }
-        public EventHandler Click { get; internal set; }
+        public EventHandler Click { get; set; }
         public string ShortcutKeyDisplayString { get; internal set; }
 
         public List<GeneralToolStripMenuItem> DropDownItems { get; private set; } = new List<GeneralToolStripMenuItem>();
@@ -29,6 +29,17 @@ namespace GlueFormsCore.FormHelpers
             }
 
             return tsmi;
+        }
+    }
+
+    public static class GeneralToolStripMenuItemExtensions
+    {
+        public static void Add(this List<GeneralToolStripMenuItem> items, string text, EventHandler click)
+        {
+            var item = new GeneralToolStripMenuItem();
+            item.Text = text;
+            item.Click += click;
+            items.Add(item);
         }
     }
 }

@@ -143,52 +143,34 @@ namespace GlueControl.Editing
             }
         }
 
-        public static void UpdateZoomLevelToCamera()
-        {
-            var windowSizeRelativeToDefault = Camera.Main.DestinationRectangle.Height / (double)CameraSetup.Data.ResolutionHeight;
-            windowSizeRelativeToDefault /= (CameraSetup.Data.Scale / 100.0f);
-            var gameZoomLevel = FlatRedBall.Math.MathFunctions.RoundToInt(100 * Camera.Main.DestinationRectangle.Height / (Camera.Main.OrthogonalHeight * windowSizeRelativeToDefault));
-
-            if (zoomLevels.Contains(gameZoomLevel))
-            {
-                currentZoomLevelIndex = Array.IndexOf(zoomLevels, gameZoomLevel);
-            }
-            else
-            {
-                for (int i = 0; i < zoomLevels.Length; i++)
-                {
-                    if (zoomLevels[i] > gameZoomLevel)
-                    {
-                        currentZoomLevelIndex = i;
-                        break;
-                    }
-                }
-            }
-        }
-
-        public static void UpdateCameraToZoomLevel(bool zoomAroundCursorPosition = true)
+        public static void UpdateCameraToZoomLevel(bool zoomAroundCursorPosition = true, bool forceTo100 = false)
         {
             var cursor = GuiManager.Cursor;
             var worldXBefore = cursor.WorldX;
             var worldYBefore = cursor.WorldY;
 
-            var zoomLevel = zoomLevels[currentZoomLevelIndex];
+            var zoomLevel =
+                forceTo100
+                ? 100 * CameraSetup.Data.Scale / 100.0f
+                : zoomLevels[currentZoomLevelIndex] * CameraSetup.Data.Scale / 100.0f;
+
             Camera.Main.OrthogonalHeight = (CameraSetup.Data.Scale / 100.0f) * CameraSetup.Data.ResolutionHeight / (zoomLevel / 100.0f);
             Camera.Main.FixAspectRatioYConstant();
 
-
             if (global::RenderingLibrary.SystemManagers.Default != null)
             {
-                global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = zoomLevel / 100.0f;
+                var windowSizeRelativeToDefault = Camera.Main.DestinationRectangle.Height / (double)CameraSetup.Data.ResolutionHeight;
+                windowSizeRelativeToDefault /= (CameraSetup.Data.Scale / 100.0f);
+
+                global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = (float)windowSizeRelativeToDefault * zoomLevel / 100.0f;
                 foreach (var layer in global::RenderingLibrary.SystemManagers.Default.Renderer.Layers)
                 {
                     if (layer.LayerCameraSettings != null)
                     {
-                        layer.LayerCameraSettings.Zoom = zoomLevel / 100.0f;
+                        layer.LayerCameraSettings.Zoom = (float)windowSizeRelativeToDefault * zoomLevel / 100.0f;
                     }
                 }
             }
-
 
             if (zoomAroundCursorPosition)
             {

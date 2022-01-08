@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Managers;
+﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
@@ -76,7 +77,18 @@ namespace GumPlugin.Managers
                 // Screens can be casted appropriately:
                 //availableObjects.Add("Entire File (" + element.Name + "Runtime" + ")");
                 // only add this if it's an IDB:
-                var rfsAti = GlueState.Self.CurrentReferencedFileSave?.GetAssetTypeInfo();
+                var rfs = GlueState.Self.CurrentReferencedFileSave;
+                if(GlueState.Self.CurrentNamedObjectSave != null && rfs == null)
+                {
+                    var nos = GlueState.Self.CurrentNamedObjectSave;
+
+                    if(nos.SourceType == SourceType.File)
+                    {
+                        var glueElement = ObjectFinder.Self.GetElementContaining(nos);
+                        rfs = glueElement?.GetReferencedFileSave(nos.SourceFile);
+                    }
+                }
+                var rfsAti = rfs?.GetAssetTypeInfo();
                 if ( rfsAti == AssetTypeInfoManager.Self.ScreenIdbAti)
                 {
                     availableObjects.Add("this (" + 

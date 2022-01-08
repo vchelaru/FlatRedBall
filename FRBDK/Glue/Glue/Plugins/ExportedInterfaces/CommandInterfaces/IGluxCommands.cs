@@ -88,7 +88,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #endregion
 
+        #region CustomClass
+
         ValidationResponse AddNewCustomClass(string className, out CustomClassSave customClassSave);
+
+        #endregion
 
         #region Screens
 
@@ -100,11 +104,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         // SourceType sourceType, string sourceClassType, string sourceFile, string objectName, string sourceNameInFile, string sourceClassGenericType
         NamedObjectSave AddNewNamedObjectToSelectedElement(ViewModels.AddObjectViewModel addObjectViewModel);
-        NamedObjectSave AddNewNamedObjectTo(ViewModels.AddObjectViewModel addObjectViewModel, GlueElement element, NamedObjectSave listToAddTo = null);
+        NamedObjectSave AddNewNamedObjectTo(ViewModels.AddObjectViewModel addObjectViewModel, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true);
 
-        void AddNamedObjectTo(NamedObjectSave newNos, GlueElement element, NamedObjectSave listToAddTo = null);
+        void AddNamedObjectTo(NamedObjectSave newNos, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true);
 
         void SetVariableOn(NamedObjectSave nos, string memberName, object value);
+        ToolsUtilities.GeneralResponse CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool save = true);
 
         void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSave = true, bool updateUi = true,
             List<string> additionalFilesToRemove = null);
@@ -112,7 +117,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #region Custom Variable
 
-        void RemoveCustomVariable(CustomVariable customVariable, List<string> additionalFilesToRemove);
+        void RemoveCustomVariable(CustomVariable customVariable, List<string> additionalFilesToRemove = null);
+
+        #endregion
+
+        #region StateSaveCategory
+
+        void RemoveStateSaveCategory(StateSaveCategory category);
 
         #endregion
 

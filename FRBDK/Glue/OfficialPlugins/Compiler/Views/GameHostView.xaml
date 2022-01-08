@@ -29,7 +29,7 @@
 
             <Button Width="24"
                     HorizontalAlignment="Left" 
-                    Visibility="{Binding WhileStoppedViewVisibility}"
+                    Visibility="{Binding RunInEditModeButtonVisibility}"
                     Click="PlayInEditModeClicked">
                 <Button.ToolTip>
                     <ToolTip>

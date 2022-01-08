@@ -275,7 +275,7 @@ namespace FlatRedBall.Glue.UnreferencedFiles
         {
             IsStillScanning = true;
 
-            TaskManager.Self.AddAsyncTask(() =>
+            TaskManager.Self.AddParallelTask(() =>
            {
                var contentDirectory = GlueState.Self.ContentDirectory;
 

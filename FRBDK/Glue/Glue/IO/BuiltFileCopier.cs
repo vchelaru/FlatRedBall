@@ -11,6 +11,8 @@ using System.Windows.Forms;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins;
+using GlueFormsCore.FormHelpers;
+using FlatRedBall.Glue.FormHelpers;
 
 namespace FlatRedBall.Glue.IO
 {
@@ -52,7 +54,7 @@ namespace FlatRedBall.Glue.IO
             }
         }
 
-        void HandleTreeViewRightClick(TreeNode rightClickedTreeNode, ContextMenuStrip menuToModify)
+        void HandleTreeViewRightClick(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> menuToModify)
         {
             if (rightClickedTreeNode.Tag != null && rightClickedTreeNode.Tag is ReferencedFileSave)
             {
@@ -62,7 +64,7 @@ namespace FlatRedBall.Glue.IO
 
                 if (extension == "wma" || extension == "mp3")
                 {
-                    menuToModify.Items.Add("Copy XNBs for file", null, HandleCopyXnbMenuClick);
+                    menuToModify.Add("Copy XNBs for file", HandleCopyXnbMenuClick);
                 }
 
 

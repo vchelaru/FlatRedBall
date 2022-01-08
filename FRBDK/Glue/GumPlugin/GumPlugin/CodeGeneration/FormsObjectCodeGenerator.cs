@@ -31,7 +31,12 @@ namespace GumPluginCore.CodeGeneration
                     codeBlock.Line($"{formsObjectType} Forms;");
                 }
 
-                codeBlock.Line($"{rfs.RuntimeType} {GumPluginCodeGenerator.GumScreenObjectNameFor(element)};");
+                var gumScreenName = GumPluginCodeGenerator.GumScreenObjectNameFor(element);
+                var shouldGenerateGum = element.AllNamedObjects.Any(item => item.InstanceName == gumScreenName) == false;
+                if(shouldGenerateGum)
+                {
+                    codeBlock.Line($"{rfs.RuntimeType} {gumScreenName};");
+                }
 
             }
 

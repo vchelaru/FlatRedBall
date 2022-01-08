@@ -18,21 +18,22 @@
             <views:WhileStoppedView
                 Visibility="{Binding WhileStoppedViewVisibility}"
                 BuildClicked="HandleCompileClick"
-                BuildContentClicked="HandleBuildContentClick"
                 RunClicked="HandleRunClick"
                 >
             </views:WhileStoppedView>
 
-            
-            <StackPanel Margin="3" Orientation="Horizontal" Visibility="{Binding CompileContentButtonVisibility}">
-                <Button Click="HandleBuildContentClick" Content="Build Content"></Button>
+            <CheckBox HorizontalAlignment="Center" 
+                      HorizontalContentAlignment="Center" 
+                      Visibility="{Binding EditorToGameCheckboxVisibility}"
+                      IsChecked="{Binding IsPrintEditorToGameCheckboxChecked}"
+                      >Show Editor->Game Commands</CheckBox>
 
-                <CheckBox VerticalAlignment="Center" VerticalContentAlignment="Center"
-                          IsChecked="{Binding AutoBuildContent}">
-                    <TextBlock Text="Auto-build on content change"/>
-                </CheckBox>
-            
-            </StackPanel>
+            <CheckBox HorizontalAlignment="Center" 
+                      HorizontalContentAlignment="Center" 
+                      Visibility="{Binding CommandParameterCheckboxVisibility}"
+                      IsChecked="{Binding IsShowParametersChecked}"
+                      >Show Parameters</CheckBox>
+
         </WrapPanel>
 
         <RichTextBox Grid.Row="2" ScrollViewer.VerticalScrollBarVisibility="Auto" 
