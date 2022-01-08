@@ -160,17 +160,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Properties
 
-        public List<PropertySave> Properties
-        {
-            get;
-            set;
-        } = new List<PropertySave>();
-        public bool ShouldSerializeProperties()
-        {
-            return Properties != null && Properties.Count != 0;
-        }
-
-        //[ReadOnlyAttribute(true)]
+        // Have Name be first so it JSON serializes first:
         /// <summary>
         /// The name of the file name, relative to the Content folder.
         /// </summary>
@@ -189,6 +179,17 @@ namespace FlatRedBall.Glue.SaveClasses
 
             }
         }
+
+        public List<PropertySave> Properties
+        {
+            get;
+            set;
+        } = new List<PropertySave>();
+        public bool ShouldSerializeProperties()
+        {
+            return Properties != null && Properties.Count != 0;
+        }
+
 
         [Category("Memory and Performance"), 
         Description("Whether the object created by this file will be a manually-updated object.  For example, Scenes which do not move can be made manually updated to improve runtime performance."),

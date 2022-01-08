@@ -562,7 +562,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     }
                     else
                     {
-                        codeBlock.Line(objectName + " = FlatRedBall.SpriteManager.Camera;");
+                        codeBlock.Line($"{objectName} = FlatRedBall.SpriteManager.Camera;");
 
                     }
                 }
@@ -574,22 +574,30 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     string qualifiedName = GetQualifiedTypeName(namedObject);
 
-                    codeBlock.Line(string.Format("{0} = new {1}();", objectName, qualifiedName));
-
-                    if (namedObject.IsLayer || 
-                        namedObject.SourceType == SourceType.FlatRedBallType)
+                    if(string.IsNullOrEmpty(qualifiedName))
                     {
-                        codeBlock.Line($"{objectName}.Name = \"{namedObject.InstanceName}\";");
+                        codeBlock.Line($"// skipping code generation for {objectName} because it does not have its type assigned.");
+                    }
+                    else
+                    {
+                        codeBlock.Line($"{objectName} = new {qualifiedName}();");
 
-                        if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode)
+                        if (namedObject.IsLayer || 
+                            namedObject.SourceType == SourceType.FlatRedBallType)
                         {
-                            var hasCreationSource = nosAti?.IsPositionedObject == true;
-                            if(hasCreationSource)
+                            codeBlock.Line($"{objectName}.Name = \"{namedObject.InstanceName}\";");
+
+                            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode)
                             {
-                                codeBlock.Line($"{objectName}.CreationSource = \"Glue\";");
+                                var hasCreationSource = nosAti?.IsPositionedObject == true;
+                                if(hasCreationSource)
+                                {
+                                    codeBlock.Line($"{objectName}.CreationSource = \"Glue\";");
+                                }
                             }
                         }
                     }
+
                 }
 
 

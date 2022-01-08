@@ -1124,20 +1124,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             newNos.InstanceName = addObjectViewModel.ObjectName;
             newNos.DefinedByBase = membershipInfo == MembershipInfo.ContainedInBase;
 
-
-            if (addObjectViewModel.SourceClassType != NoType && !string.IsNullOrEmpty(addObjectViewModel.SourceClassType))
+            if(addObjectViewModel.SourceType == SourceType.File)
+            {
+                newNos.SourceType = addObjectViewModel.SourceType;
+                newNos.SourceFile = addObjectViewModel.SelectedItem?.MainText;
+                newNos.SourceName = addObjectViewModel.SourceNameInFile;
+                newNos.UpdateCustomProperties();
+            }
+            else if (addObjectViewModel.SourceClassType != NoType && !string.IsNullOrEmpty(addObjectViewModel.SourceClassType))
             {
                 newNos.SourceType = addObjectViewModel.SourceType;
                 newNos.SourceClassType =
                     addObjectViewModel.SelectedAti?.QualifiedRuntimeTypeName.QualifiedType ??
                     addObjectViewModel.SourceClassType;
-                newNos.SourceFile = addObjectViewModel.SelectedItem?.MainText;
-                newNos.SourceName = addObjectViewModel.SourceNameInFile;
-                newNos.UpdateCustomProperties();
-            }
-            else if (addObjectViewModel.SourceFile != null)
-            {
-                newNos.SourceType = addObjectViewModel.SourceType;
                 newNos.SourceFile = addObjectViewModel.SelectedItem?.MainText;
                 newNos.SourceName = addObjectViewModel.SourceNameInFile;
                 newNos.UpdateCustomProperties();
