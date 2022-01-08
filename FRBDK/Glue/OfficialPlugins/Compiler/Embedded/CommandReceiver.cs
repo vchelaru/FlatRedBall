@@ -314,8 +314,6 @@ namespace GlueControl
                         screen.ScreenDestroy += HandleScreenDestroy;
                         CameraLogic.SetCameraForScreen(screen);
 
-                        CameraLogic.UpdateZoomLevelToCamera();
-
                         ScreenManager.ScreenLoaded -= AfterInitializeLogic;
                     }
                     ScreenManager.ScreenLoaded += AfterInitializeLogic;
@@ -721,8 +719,6 @@ namespace GlueControl
                     CameraLogic.SetCameraForScreen(screen, setZoom: FlatRedBall.Screens.ScreenManager.IsInEditMode);
                 }
 
-                // This sets the zoom leve internally back to the camera
-                CameraLogic.UpdateZoomLevelToCamera();
                 // Even though the camera is reset properly, Gum zoom isn't. Calling this fixes Gum zoom:
                 CameraLogic.UpdateCameraToZoomLevel();
 
