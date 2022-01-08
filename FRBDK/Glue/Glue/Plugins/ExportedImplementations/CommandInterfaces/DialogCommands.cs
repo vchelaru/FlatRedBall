@@ -515,7 +515,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         {
                             var entity = GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(viewModel, directory);
 
-                            await TaskManager.Self.AddOrRunAndWaitToFinish(() =>
+                            await TaskManager.Self.AddAsync(() =>
                                 PluginManager.ReactToNewEntityCreatedWithUi(entity, window),
                                 "Calling plugin ReactToNewEntityCreatedWithUi", doOnUiThread:true);
 

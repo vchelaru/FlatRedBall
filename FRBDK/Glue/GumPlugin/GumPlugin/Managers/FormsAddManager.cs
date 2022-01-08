@@ -28,7 +28,7 @@ namespace GumPluginCore.Managers
 
                 if (didAdd)
                 {
-                    GumPluginCommands.Self.SaveGumx();
+                    GumPluginCommands.Self.SaveGumxAsync();
                 }
             }, "Adding Gum Forms Behaviors");
         }

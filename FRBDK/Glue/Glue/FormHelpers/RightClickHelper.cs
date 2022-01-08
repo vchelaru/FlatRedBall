@@ -1811,7 +1811,7 @@ namespace FlatRedBall.Glue.FormHelpers
                         else if (GlueState.Self.CurrentScreenSave != null)
                         {
                             var screenToRemove = GlueState.Self.CurrentScreenSave;
-                            await TaskManager.Self.AddOrRunAndWaitToFinish(() =>
+                            await TaskManager.Self.AddAsync(() =>
                             {
                                 RemoveScreen(screenToRemove, filesToRemove);
                                 deletedElement = screenToRemove;
@@ -1827,7 +1827,7 @@ namespace FlatRedBall.Glue.FormHelpers
                         else if (GlueState.Self.CurrentEntitySave != null)
                         {
                             var entityToRemove = GlueState.Self.CurrentEntitySave;
-                            await TaskManager.Self.AddOrRunAndWaitToFinish(() =>
+                            await TaskManager.Self.AddAsync(() =>
                             {
                                 RemoveEntity(GlueState.Self.CurrentEntitySave, filesToRemove);
                                 //ProjectManager.RemoveEntity(EditorLogic.CurrentEntitySave);
@@ -1876,7 +1876,7 @@ namespace FlatRedBall.Glue.FormHelpers
                             {
                                 if (result == DialogResult.OK || result == DialogResult.Yes)
                                 {
-                                    await TaskManager.Self.AddOrRunAndWaitToFinish(() =>
+                                    await TaskManager.Self.AddAsync(() =>
                                     {
                                         foreach (var file in filesToRemove)
                                         {
@@ -1902,7 +1902,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                         #endregion
 
-                        await TaskManager.Self.AddOrRunAndWaitToFinish(() =>
+                        await TaskManager.Self.AddAsync(() =>
                         {
                             // Nodes aren't directly removed in the code above. Instead, 
                             // a "refresh nodes" method is called, which may remove unneeded

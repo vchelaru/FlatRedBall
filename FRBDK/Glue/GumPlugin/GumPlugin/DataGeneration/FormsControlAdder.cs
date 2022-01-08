@@ -118,7 +118,7 @@ namespace GumPlugin.DataGeneration
 
                 if(wasAnythingAdded)
                 {
-                    GumPluginCommands.Self.SaveGumx(saveAllElements: false);
+                    GumPluginCommands.Self.SaveGumxAsync(saveAllElements: false);
                 }
             }, "Updating Gum project with Forms Components");
 

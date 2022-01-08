@@ -155,7 +155,7 @@ namespace FlatRedBall.Glue.Managers
         /// <param name="action">The action to perform.</param>
         /// <param name="details">The details of the task, to be displayed in the tasks window.</param>
         [Obsolete]
-        public void AddAsyncTask(Action action, string details)
+        public void AddParallelTask(Action action, string details)
         {
 
             ThreadPool.QueueUserWorkItem(
@@ -221,7 +221,7 @@ namespace FlatRedBall.Glue.Managers
             return glueTask;
         }
 
-        public Task AddOrRunAndWaitToFinish(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
+        public Task AddAsync(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
         {
             var glueTask = AddOrRunIfTasked(action, displayInfo, executionPreference, doOnUiThread);
             return WaitForTaskToFinish(glueTask);

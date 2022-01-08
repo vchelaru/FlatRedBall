@@ -73,7 +73,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
                     if (shouldSave)
                     {
 
-                        TaskManager.Self.AddAsyncTask(() =>
+                        TaskManager.Self.AddParallelTask(() =>
                         {
                             if (currentElement != null)
                             {

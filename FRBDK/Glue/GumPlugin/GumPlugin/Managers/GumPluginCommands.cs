@@ -18,9 +18,9 @@ namespace GumPlugin.Managers
     {
         #region File Commands
 
-        public void SaveGumx(bool saveAllElements = false)
+        public async Task SaveGumxAsync(bool saveAllElements = false)
         {
-            TaskManager.Self.AddOrRunIfTasked(() =>
+            await TaskManager.Self.AddAsync(() =>
             {
                 string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
 
@@ -160,7 +160,7 @@ namespace GumPlugin.Managers
 
                 AddScreenToGumProject(gumScreen);
 
-                SaveGumx(saveAllElements: false);
+                SaveGumxAsync(saveAllElements: false);
 
                 SaveScreen(gumScreen);
 
@@ -178,7 +178,7 @@ namespace GumPlugin.Managers
 
             if(save)
             {
-                SaveGumx();
+                SaveGumxAsync();
             }
 
         }
@@ -253,7 +253,7 @@ namespace GumPlugin.Managers
                         gumProject.DefaultCanvasWidth = displaySettings.ResolutionWidth;
                         gumProject.DefaultCanvasHeight = displaySettings.ResolutionHeight;
 
-                        GumPluginCommands.Self.SaveGumx();
+                        GumPluginCommands.Self.SaveGumxAsync();
                     }
 
                 }

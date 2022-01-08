@@ -134,7 +134,7 @@ namespace GumPlugin.Managers
 
                     GumPluginCommands.Self.AddComponentToGumProject(gumComponent);
 
-                    GumPluginCommands.Self.SaveGumx(saveAllElements: false);
+                    GumPluginCommands.Self.SaveGumxAsync(saveAllElements: false);
 
                     GumPluginCommands.Self.SaveComponent(gumComponent);
 

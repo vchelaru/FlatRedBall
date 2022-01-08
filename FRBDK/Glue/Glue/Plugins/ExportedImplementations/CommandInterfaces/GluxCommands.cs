@@ -539,7 +539,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     // If a background sync is happening, this can lock the thread, so we want to
                     // make sure this doesn't happen at the same time as a background sync:
-                    TaskManager.Self.AddAsyncTask(() =>
+                    TaskManager.Self.AddParallelTask(() =>
                         {
                             UpdateReactor.UpdateFile(ProjectManager.MakeAbsolute(toReturn.Name));
                         },

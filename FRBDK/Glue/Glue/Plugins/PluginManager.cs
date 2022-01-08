@@ -1749,7 +1749,7 @@ namespace FlatRedBall.Glue.Plugins
 
         static Task CallMethodOnPluginAsync(Action<PluginBase> methodToCall, Predicate<PluginBase> predicate, [CallerMemberName] string methodName = null)
         {
-            var task = TaskManager.Self.AddOrRunAndWaitToFinish(() =>
+            var task = TaskManager.Self.AddAsync(() =>
             {
                 foreach (PluginManager manager in mInstances)
                 {

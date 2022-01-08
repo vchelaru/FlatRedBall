@@ -208,7 +208,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             namedObjectSave.SourceName = "Entire File (GameScreenGumRuntime)";
             namedObjectSave.LayerOn = "HudLayer";
 
-            await TaskManager.Self.AddOrRunAndWaitToFinish(
+            await TaskManager.Self.AddAsync(
                 () => GlueCommands.Self.GluxCommands.AddNamedObjectTo(namedObjectSave, gameScreen),
                 $"Adding {namedObjectSave.InstanceName} to {gameScreen.Name}");
 

@@ -31,6 +31,7 @@ using FlatRedBall.Glue.Controls;
 using GumPluginCore.ViewModels;
 using GumPlugin.DataGeneration;
 using FlatRedBall.Glue.FormHelpers;
+using System.Threading.Tasks;
 
 namespace GumPlugin
 {
@@ -815,7 +816,7 @@ namespace GumPlugin
             toolbarViewModel.HasGumProject = AppState.Self.GumProjectSave != null;
         }
 
-        private void HandleGluxLoad()
+        private async void HandleGluxLoad()
         {
             var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
 
@@ -827,7 +828,7 @@ namespace GumPlugin
                 var behavior = GetBehavior(gumRfs);
 
                 // todo: Removing a file should cause this to get called, but I don't think Gum lets us subscribe to that yet.
-                TaskManager.Self.Add(() =>
+                await TaskManager.Self.AddAsync(() =>
                 {
                     EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
 
@@ -844,34 +845,38 @@ namespace GumPlugin
 
                 }, "Gum plugin reacting to glux load");
 
-                UpdateGumParentProject();
+                await UpdateGumParentProject();
 
                 GumPluginCommands.Self.UpdateGumToGlueResolution();
             }
         }
 
-        private void UpdateGumParentProject()
+        private async Task UpdateGumParentProject()
         {
             var gumProject = AppState.Self.GumProjectSave;
 
             if (gumProject != null)
             {
-                FilePath gumProjectParentRoot = null;
                 var needsToSetRoot = string.IsNullOrWhiteSpace(gumProject.ParentProjectRoot);
+                // Victor Chelaru Jan 8, 2022
+                // This uses the content directory as the root. Should it use the entire game folder? Or just the 
+                // content folder? I'm not sure.
+                var expectedGumProjectParentRoot = new FilePath(GlueState.Self.ContentDirectory).RelativeTo(AppState.Self.GumProjectFolder);
                 if (!needsToSetRoot)
                 {
-                    gumProjectParentRoot = new FilePath(AppState.Self.GlueProjectFolder + gumProject.ParentProjectRoot);
+                    var currentGumProjectParentRoot = 
+                        new FilePath(GlueState.Self.ContentDirectory + gumProject.ParentProjectRoot);
 
-                    if(gumProjectParentRoot != GlueState.Self.CurrentGlueProjectDirectory)
+                    if(currentGumProjectParentRoot != expectedGumProjectParentRoot)
                     {
                         needsToSetRoot = true;
                     }
                 }
                 if(needsToSetRoot)
                 {
-                    gumProject.ParentProjectRoot = new FilePath(GlueState.Self.CurrentGlueProjectDirectory).RelativeTo(AppState.Self.GumProjectFolder);
+                    gumProject.ParentProjectRoot = expectedGumProjectParentRoot;
 
-                    GumPluginCommands.Self.SaveGumx();
+                    await GumPluginCommands.Self.SaveGumxAsync();
                 }
             }
         }
