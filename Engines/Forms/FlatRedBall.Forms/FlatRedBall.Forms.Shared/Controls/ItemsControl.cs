@@ -287,7 +287,8 @@ namespace FlatRedBall.Forms.Controls
                 var listBoxItem = ListBoxItemsInternal[i];
                 if (listBoxItem != sender && listBoxItem.IsSelected)
                 {
-                    args.RemovedItems.Add(Items[i]);
+                    var deselectedItem = listBoxItem.BindingContext ?? listBoxItem;
+                    args.RemovedItems.Add(deselectedItem);
                     listBoxItem.IsSelected = false;
                 }
             }
