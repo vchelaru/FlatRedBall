@@ -1151,9 +1151,23 @@ namespace FlatRedBall.Glue.Managers
                     }
                     else
                     {
-                        // Not moving into or out of an element
-                        string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativePath(), true);
-                        MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
+                        var targetElementContentFolder = new FilePath( GlueCommands.Self.FileCommands.GetContentFolder(elementDroppingIn));
+
+                        var fileAbsolutePath = GlueCommands.Self.GetAbsoluteFilePath(referencedFileSave);
+
+                        var isRelativeToElementBeforeMove = targetElementContentFolder.IsRootOf(fileAbsolutePath);
+
+                        if(isRelativeToElementBeforeMove)
+                        {
+                            string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativePath(), true);
+                            MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
+                        }
+                        else
+                        {
+                            GlueCommands.Self.PrintOutput($"Could not move {referencedFileSave} because it is not inside the content folder for {elementDroppingIn}");
+
+                        }
+
                     }
                 }
             }
