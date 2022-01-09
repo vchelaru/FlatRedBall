@@ -18,34 +18,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 {
     public class CustomVariableCodeGenerator : ElementComponentCodeGenerator
     {
-        internal static bool IsTypeFromCsv(CustomVariable customVariable)
-        {
-            if(customVariable != null && customVariable.Type != null &&
-                customVariable.GetIsVariableState() == false &&
-                customVariable.Type.Contains(".") &&
-                customVariable.GetRuntimeType() == null)
-            {
-                var isCsv = true;
-                // If it's from CSV, there will be no asset type info for the CSV:
-                if(customVariable.IsTunneling)
-                {
-                    var containingElement = ObjectFinder.Self.GetElementContaining(customVariable);
-                    var nos = containingElement?.GetNamedObject(customVariable.SourceObject);
 
-                    if(nos != null)
-                    {
-                        if(nos.SourceType != SourceType.Entity)
-                        {
-                            isCsv = false;
-                        }
-                    }                    
-                }
-
-                return isCsv;
-            }
-            return false;
-        }
-
+        #region Write Fields/Properties for CustomVariables
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
             for (int i = 0; i < element.CustomVariables.Count; i++)
@@ -67,6 +41,305 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
             return codeBlock;
         }
+
+        private static ICodeBlock AppendCodeForMember(IElement saveObject, ICodeBlock codeBlock, CustomVariable customVariable,
+            VariableDefinition variableDefinition)
+        {
+            // Regarding customVariable.IsTunneling -
+            // If a variable is tunneling, then we want to generate code for DefinedByBase - this means
+            // the use will be able to override virtual properties and give each class a specific implementation
+            // Regarding customVariable.CreatesEvent - 
+            // If this event creates an event, then we need to create a property for it, even if there is a base property.
+            if (!customVariable.DefinedByBase || customVariable.IsTunneling || customVariable.IsShared || customVariable.CreatesEvent)
+            {
+                #region if Tunneled Variable
+                if (customVariable.IsTunneling && IsSourceObjectEnabled(saveObject, customVariable))
+                {
+                    AppendPropertyForTunneledVariable(saveObject, codeBlock, customVariable, variableDefinition);
+
+                }
+                #endregion
+
+                #region else Exposed/Custom variable
+                else
+                {
+
+                    bool isExposedExistingMember = customVariable.GetIsExposingVariable(saveObject);
+                    // Exposed
+                    // variables
+                    // are variables
+                    // which automatically
+                    // exist as part of the
+                    // Entity.  For example the
+                    // property X is part of the
+                    // PositionedObject.  Exposed
+                    // variables do not need to be
+                    // added as fields - they are already
+                    // part of the class.
+                    // Update March 25, 2012
+                    // But what if the variable
+                    // has an event?  Then it needs
+                    // to have a property that fires
+                    // the event.
+                    // If it's Visible, it's handled by the IVisible generator
+                    if ((!isExposedExistingMember || customVariable.CreatesEvent) && customVariable.Name != "Visible")
+                    {
+                        CreateNewVariableMember(codeBlock, customVariable, isExposedExistingMember, saveObject);
+                    }
+                }
+                #endregion
+
+
+                CreateAccompanyingVelocityVariables(codeBlock, customVariable);
+
+            }
+
+            return codeBlock;
+        }
+
+        private static void CreateNewVariableMember(ICodeBlock codeBlock, CustomVariable customVariable, bool isExposing, IElement element)
+        {
+            string variableAssignment = "";
+
+            if (customVariable.DefaultValue != null)
+            {
+                if (!IsTypeFromCsv(customVariable))
+                {
+                    variableAssignment =
+                        CodeParser.ConvertValueToCodeString(customVariable.DefaultValue);
+
+                    // If this is a file, we don't want to assign it here
+                    if (customVariable.GetIsFile())
+                    {
+                        variableAssignment = null;
+                    }
+
+                    if (customVariable.Type == "Color")
+                    {
+                        variableAssignment = "Color." + variableAssignment.Replace("\"", "");
+
+                    }
+                    else if (customVariable.Type != "string" && variableAssignment == "\"\"")
+                    {
+                        variableAssignment = null;
+                    }
+                    else if(customVariable.GetIsVariableState())
+                    {
+                        if(customVariable.DefaultValue != null)
+                        {
+                            variableAssignment = customVariable.Type + "." + customVariable.DefaultValue;
+                        }
+                        int m = 3;
+                    }
+
+                    if (variableAssignment != null)
+                    {
+                        variableAssignment = " = " + variableAssignment;
+                    }
+                }
+                else if(!string.IsNullOrEmpty(customVariable.DefaultValue as string) && (string)customVariable.DefaultValue != "<NULL>")
+                {
+                    // If the variable IsShared (ie static) then we
+                    // don't want to assign the value because the CSV
+                    // may not yet be loaded.  This may create behavior
+                    // the user doesn't expect, but the alternative is either
+                    // to load the file before the user wants to (which maybe we
+                    // will end up doing) or to get a crash
+                    // Update June 2, 2013
+                    // If the customVariable 
+                    // is not "IsShared" (it's
+                    // not static), we don't want
+                    // to assign the value where we
+                    // create the variable as a field
+                    // because this means the value will
+                    // attempt to assign before LoadStaticContent.
+                    // This can cause a crash, and has in the GlueTestProject.
+                    // Update June 2, 2013
+                    // Used to set it to null
+                    // if it's static, but we should
+                    // allow statics to set their values
+                    // if they come from global content files.
+
+                    
+                    if (
+                        ReferencesCsvFromGlobalContent(customVariable) &&
+                        ShouldAssignToCsv(customVariable, customVariable.DefaultValue as string))
+                    {
+                        variableAssignment = " = " + GetAssignmentToCsvItem(customVariable, element, (string)customVariable.DefaultValue);
+                    }
+                    else
+                    {
+                        variableAssignment = null;
+                    }
+                }
+            }
+
+            string formatString = null;
+
+            bool needsToBeProperty = (customVariable.SetByDerived && !customVariable.IsShared) || customVariable.CreatesProperty || customVariable.CreatesEvent
+                || IsVariableWholeNumberWithVelocity(customVariable);
+
+            if(needsToBeProperty)
+            {
+                var isState = customVariable.GetIsVariableState();
+
+                if(isState)
+                {
+
+                    var elementDefiningCategory = ObjectFinder.Self.GetElementDefiningStateCategory(customVariable.Type);
+                    var isDefinedInDifferentElement = elementDefiningCategory != null && elementDefiningCategory != element && ObjectFinder.Self.GetAllBaseElementsRecursively(element).Contains(elementDefiningCategory) == false;
+                    if (!isDefinedInDifferentElement)
+                    {
+                        needsToBeProperty = false;
+                    }
+                }
+            }
+
+
+            EventCodeGenerator.TryGenerateEventsForVariable(codeBlock, customVariable, element);
+            
+
+            string memberType = GetMemberTypeFor(customVariable, element);
+
+            string scopeValue = customVariable.Scope.ToString().ToLower();
+
+            if(!string.IsNullOrWhiteSpace(customVariable.Summary))
+            {
+                codeBlock.Line("/// <summary>");
+                codeBlock.Line($"/// {customVariable.Summary}");
+                codeBlock.Line("/// </summary>");
+            }
+
+            if (needsToBeProperty)
+            {
+                // If the variable
+                // creates an event
+                // then it needs to have
+                // custom code (it can't be
+                // an automatic property).
+                bool isWholeNumberWithVelocity = IsVariableWholeNumberWithVelocity(customVariable);
+
+                if (customVariable.CreatesEvent || isWholeNumberWithVelocity || customVariable.DefaultValue != null )
+                {
+                    string variableToAssignInProperty = "base." + customVariable.Name;
+                    // create a field for this, unless it's defined by base - then the base creates a field for it
+                    if (!isExposing && !customVariable.DefinedByBase)
+                    {
+                        variableToAssignInProperty = "m" + customVariable.Name;
+
+                        // First we make the field that will get set here:
+                        var line = 
+                            // field is always private:
+                            //scopeValue + " " + 
+                            "private " + 
+                            StringHelper.Modifiers(Static: customVariable.IsShared, Type: memberType, Name: variableToAssignInProperty) + variableAssignment + ";";
+                        codeBlock.Line(line);
+                    }
+
+                    string propertyHeader = null;
+
+                    var scopeString = customVariable.Scope.ToString().ToLower();
+
+                    if (isExposing)
+                    {
+                        propertyHeader = $"{scopeValue} new {memberType} {customVariable.Name}";
+                    }
+                    else if (customVariable.DefinedByBase)
+                    {
+                        propertyHeader = $"{scopeValue} override {memberType} {customVariable.Name}";
+                    }
+                    else if (customVariable.SetByDerived)
+                    {
+                        propertyHeader = $"{scopeValue} virtual {memberType} {customVariable.Name}";
+                    }
+                    else
+                    {
+                        propertyHeader = $"{scopeValue} {memberType} {customVariable.Name}";
+                    }
+
+                    ICodeBlock set = codeBlock.Property(propertyHeader, Static:customVariable.IsShared)
+                        .Set();
+
+                    if (EventCodeGenerator.ShouldGenerateEventsForVariable(customVariable, element))
+                    {
+                        EventCodeGenerator.GenerateEventRaisingCode(set, BeforeOrAfter.Before, customVariable.Name, element);
+                    }
+
+                    set.Line(variableToAssignInProperty + " = value;");
+                    if (IsVariableWholeNumberWithVelocity(customVariable))
+                    {
+                        set.Line(customVariable.Name + "ModifiedByVelocity = value;");
+                    }
+                    if (EventCodeGenerator.ShouldGenerateEventsForVariable(customVariable, element))
+                    {
+                        EventCodeGenerator.GenerateEventRaisingCode(set, BeforeOrAfter.After, customVariable.Name, element);
+                    }
+
+                    ICodeBlock get = set.End().Get();
+
+                    codeBlock = get.Line("return " + variableToAssignInProperty + ";")
+                        .End().End(); // end the getter, end the property
+                }
+                else
+                {
+                    // Static vars can't be virtual
+                    bool isVirtual = !customVariable.IsShared;
+                    codeBlock.AutoProperty(customVariable.Name, customVariable.Scope, Virtual: isVirtual, Static: customVariable.IsShared, Type: memberType);
+                }
+            }
+            else
+            {
+                if (!customVariable.GetIsVariableState())
+                {
+
+                    var line = customVariable.Scope.ToString().ToLower() + " " + StringHelper.Modifiers(Static: customVariable.IsShared, 
+                        Type: memberType, Name: customVariable.Name) + variableAssignment + ";";
+                    codeBlock.Line(line);
+
+
+                }
+                else
+                {
+                    var definingEntityNameFromType = customVariable.GetEntityNameDefiningThisTypeCategory();
+
+                    var isStateDefinedInOtherEntity = !string.IsNullOrEmpty(definingEntityNameFromType) &&
+                        customVariable.GetEntityNameDefiningThisTypeCategory() != element.Name;
+
+                    if(isStateDefinedInOtherEntity)
+                    {
+                        var line = customVariable.Scope.ToString().ToLower() + " " + 
+                            StringHelper.Modifiers(Static: customVariable.IsShared, Type: memberType, Name: customVariable.Name) + ";";
+
+                        codeBlock.Line(line);
+
+                    }
+
+
+                    else if (IsVariableTunnelingToDisabledObject(customVariable, element))
+                    {
+                        // If it's a varaible
+                        // that is exposing a
+                        // state variable for a
+                        // disabled object, we still
+                        // want to generate something:
+                        var line = scopeValue.ToString().ToLower() + " " +
+                            StringHelper.Modifiers(Static: customVariable.IsShared, Type: memberType, Name: customVariable.Name)
+                            + ";";
+
+
+
+                        // No assignment for now.  Do we eventually want this?  The reason
+                        // this even exists is to satisfy a variable that may be needed by other
+                        // code which would point to a disabled object.
+                        //+ variableAssignment 
+                        codeBlock.Line(line);
+                        
+                    }
+                }
+            }
+        }
+
+        #endregion
 
         public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
@@ -158,61 +431,6 @@ namespace FlatRedBall.Glue.CodeGeneration
             
             
 
-
-        private static ICodeBlock AppendCodeForMember(IElement saveObject, ICodeBlock codeBlock, CustomVariable customVariable,
-            VariableDefinition variableDefinition)
-        {
-            // Regarding customVariable.IsTunneling -
-            // If a variable is tunneling, then we want to generate code for DefinedByBase - this means
-            // the use will be able to override virtual properties and give each class a specific implementation
-            // Regarding customVariable.CreatesEvent - 
-            // If this event creates an event, then we need to create a property for it, even if there is a base property.
-            if (!customVariable.DefinedByBase || customVariable.IsTunneling || customVariable.IsShared || customVariable.CreatesEvent)
-            {
-                #region if Tunneled Variable
-                if (customVariable.IsTunneling && IsSourceObjectEnabled(saveObject, customVariable))
-                {
-                    AppendPropertyForTunneledVariable(saveObject, codeBlock, customVariable, variableDefinition);
-
-                }
-                #endregion
-
-                #region else Exposed/Custom variable
-                else
-                {
-
-                    bool isExposedExistingMember = customVariable.GetIsExposingVariable(saveObject);
-                    // Exposed
-                    // variables
-                    // are variables
-                    // which automatically
-                    // exist as part of the
-                    // Entity.  For example the
-                    // property X is part of the
-                    // PositionedObject.  Exposed
-                    // variables do not need to be
-                    // added as fields - they are already
-                    // part of the class.
-                    // Update March 25, 2012
-                    // But what if the variable
-                    // has an event?  Then it needs
-                    // to have a property that fires
-                    // the event.
-                    // If it's Visible, it's handled by the IVisible generator
-                    if ((!isExposedExistingMember || customVariable.CreatesEvent) && customVariable.Name != "Visible")
-                    {
-                        CreateNewVariableMember(codeBlock, customVariable, isExposedExistingMember, saveObject);
-                    }
-                }
-                #endregion
-
-
-                CreateAccompanyingVelocityVariables(codeBlock, customVariable);
-
-            }
-
-            return codeBlock;
-        }
 
         private static void CreateAccompanyingVelocityVariables(ICodeBlock codeBlock, CustomVariable customVariable)
         {
@@ -586,240 +804,6 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             return (referencedNos == null && element is EntitySave) ||
                 (referencedNos?.GetAssetTypeInfo()?.IsPositionedObject == true);
-        }
-
-        private static void CreateNewVariableMember(ICodeBlock codeBlock, CustomVariable customVariable, bool isExposing, IElement element)
-        {
-            string variableAssignment = "";
-
-            if (customVariable.DefaultValue != null)
-            {
-                if (!IsTypeFromCsv(customVariable))
-                {
-                    variableAssignment =
-                        CodeParser.ConvertValueToCodeString(customVariable.DefaultValue);
-
-                    // If this is a file, we don't want to assign it here
-                    if (customVariable.GetIsFile())
-                    {
-                        variableAssignment = null;
-                    }
-
-                    if (customVariable.Type == "Color")
-                    {
-                        variableAssignment = "Color." + variableAssignment.Replace("\"", "");
-
-                    }
-                    else if (customVariable.Type != "string" && variableAssignment == "\"\"")
-                    {
-                        variableAssignment = null;
-                    }
-
-                    if (variableAssignment != null)
-                    {
-                        variableAssignment = " = " + variableAssignment;
-                    }
-                }
-                else if(!string.IsNullOrEmpty(customVariable.DefaultValue as string) && (string)customVariable.DefaultValue != "<NULL>")
-                {
-                    // If the variable IsShared (ie static) then we
-                    // don't want to assign the value because the CSV
-                    // may not yet be loaded.  This may create behavior
-                    // the user doesn't expect, but the alternative is either
-                    // to load the file before the user wants to (which maybe we
-                    // will end up doing) or to get a crash
-                    // Update June 2, 2013
-                    // If the customVariable 
-                    // is not "IsShared" (it's
-                    // not static), we don't want
-                    // to assign the value where we
-                    // create the variable as a field
-                    // because this means the value will
-                    // attempt to assign before LoadStaticContent.
-                    // This can cause a crash, and has in the GlueTestProject.
-                    // Update June 2, 2013
-                    // Used to set it to null
-                    // if it's static, but we should
-                    // allow statics to set their values
-                    // if they come from global content files.
-
-                    
-                    if (
-                        ReferencesCsvFromGlobalContent(customVariable) &&
-                        ShouldAssignToCsv(customVariable, customVariable.DefaultValue as string))
-                    {
-                        variableAssignment = " = " + GetAssignmentToCsvItem(customVariable, element, (string)customVariable.DefaultValue);
-                    }
-                    else
-                    {
-                        variableAssignment = null;
-                    }
-                }
-            }
-
-            string formatString = null;
-
-            bool needsToBeProperty = (customVariable.SetByDerived && !customVariable.IsShared) || customVariable.CreatesProperty || customVariable.CreatesEvent
-                || IsVariableWholeNumberWithVelocity(customVariable);
-
-            if(needsToBeProperty)
-            {
-                var isState = customVariable.GetIsVariableState();
-
-                if(isState)
-                {
-
-                    var elementDefiningCategory = ObjectFinder.Self.GetElementDefiningStateCategory(customVariable.Type);
-                    var isDefinedInDifferentElement = elementDefiningCategory != null && elementDefiningCategory != element && ObjectFinder.Self.GetAllBaseElementsRecursively(element).Contains(elementDefiningCategory) == false;
-                    if (!isDefinedInDifferentElement)
-                    {
-                        needsToBeProperty = false;
-                    }
-                }
-            }
-
-
-            EventCodeGenerator.TryGenerateEventsForVariable(codeBlock, customVariable, element);
-            
-
-            string memberType = GetMemberTypeFor(customVariable, element);
-
-            string scopeValue = customVariable.Scope.ToString().ToLower();
-
-            if(!string.IsNullOrWhiteSpace(customVariable.Summary))
-            {
-                codeBlock.Line("/// <summary>");
-                codeBlock.Line($"/// {customVariable.Summary}");
-                codeBlock.Line("/// </summary>");
-            }
-
-            if (needsToBeProperty)
-            {
-                // If the variable
-                // creates an event
-                // then it needs to have
-                // custom code (it can't be
-                // an automatic property).
-                bool isWholeNumberWithVelocity = IsVariableWholeNumberWithVelocity(customVariable);
-
-                if (customVariable.CreatesEvent || isWholeNumberWithVelocity || customVariable.DefaultValue != null )
-                {
-                    string variableToAssignInProperty = "base." + customVariable.Name;
-                    // create a field for this, unless it's defined by base - then the base creates a field for it
-                    if (!isExposing && !customVariable.DefinedByBase)
-                    {
-                        variableToAssignInProperty = "m" + customVariable.Name;
-
-                        // First we make the field that will get set here:
-                        var line = 
-                            // field is always private:
-                            //scopeValue + " " + 
-                            "private " + 
-                            StringHelper.Modifiers(Static: customVariable.IsShared, Type: memberType, Name: variableToAssignInProperty) + variableAssignment + ";";
-                        codeBlock.Line(line);
-                    }
-
-                    string propertyHeader = null;
-
-                    var scopeString = customVariable.Scope.ToString().ToLower();
-
-                    if (isExposing)
-                    {
-                        propertyHeader = $"{scopeValue} new {memberType} {customVariable.Name}";
-                    }
-                    else if (customVariable.DefinedByBase)
-                    {
-                        propertyHeader = $"{scopeValue} override {memberType} {customVariable.Name}";
-                    }
-                    else if (customVariable.SetByDerived)
-                    {
-                        propertyHeader = $"{scopeValue} virtual {memberType} {customVariable.Name}";
-                    }
-                    else
-                    {
-                        propertyHeader = $"{scopeValue} {memberType} {customVariable.Name}";
-                    }
-
-                    ICodeBlock set = codeBlock.Property(propertyHeader, Static:customVariable.IsShared)
-                        .Set();
-
-                    if (EventCodeGenerator.ShouldGenerateEventsForVariable(customVariable, element))
-                    {
-                        EventCodeGenerator.GenerateEventRaisingCode(set, BeforeOrAfter.Before, customVariable.Name, element);
-                    }
-
-                    set.Line(variableToAssignInProperty + " = value;");
-                    if (IsVariableWholeNumberWithVelocity(customVariable))
-                    {
-                        set.Line(customVariable.Name + "ModifiedByVelocity = value;");
-                    }
-                    if (EventCodeGenerator.ShouldGenerateEventsForVariable(customVariable, element))
-                    {
-                        EventCodeGenerator.GenerateEventRaisingCode(set, BeforeOrAfter.After, customVariable.Name, element);
-                    }
-
-                    ICodeBlock get = set.End().Get();
-
-                    codeBlock = get.Line("return " + variableToAssignInProperty + ";")
-                        .End().End(); // end the getter, end the property
-                }
-                else
-                {
-                    // Static vars can't be virtual
-                    bool isVirtual = !customVariable.IsShared;
-                    codeBlock.AutoProperty(customVariable.Name, customVariable.Scope, Virtual: isVirtual, Static: customVariable.IsShared, Type: memberType);
-                }
-            }
-            else
-            {
-                if (!customVariable.GetIsVariableState())
-                {
-
-                    var line = customVariable.Scope.ToString().ToLower() + " " + StringHelper.Modifiers(Static: customVariable.IsShared, 
-                        Type: memberType, Name: customVariable.Name) + variableAssignment + ";";
-                    codeBlock.Line(line);
-
-
-                }
-                else
-                {
-                    var definingEntityNameFromType = customVariable.GetEntityNameDefiningThisTypeCategory();
-
-                    var isStateDefinedInOtherEntity = !string.IsNullOrEmpty(definingEntityNameFromType) &&
-                        customVariable.GetEntityNameDefiningThisTypeCategory() != element.Name;
-
-                    if(isStateDefinedInOtherEntity)
-                    {
-                        var line = customVariable.Scope.ToString().ToLower() + " " + 
-                            StringHelper.Modifiers(Static: customVariable.IsShared, Type: memberType, Name: customVariable.Name) + ";";
-
-                        codeBlock.Line(line);
-
-                    }
-
-
-                    else if (IsVariableTunnelingToDisabledObject(customVariable, element))
-                    {
-                        // If it's a varaible
-                        // that is exposing a
-                        // state variable for a
-                        // disabled object, we still
-                        // want to generate something:
-                        var line = scopeValue.ToString().ToLower() + " " +
-                            StringHelper.Modifiers(Static: customVariable.IsShared, Type: memberType, Name: customVariable.Name)
-                            + ";";
-
-
-
-                        // No assignment for now.  Do we eventually want this?  The reason
-                        // this even exists is to satisfy a variable that may be needed by other
-                        // code which would point to a disabled object.
-                        //+ variableAssignment 
-                        codeBlock.Line(line);
-                        
-                    }
-                }
-            }
         }
 
         private static bool IsVariableWholeNumberWithVelocity(CustomVariable customVariable)
@@ -1488,6 +1472,34 @@ namespace FlatRedBall.Glue.CodeGeneration
                     
                 }
             }
+        }
+
+        internal static bool IsTypeFromCsv(CustomVariable customVariable)
+        {
+            if(customVariable != null && customVariable.Type != null &&
+                customVariable.GetIsVariableState() == false &&
+                customVariable.Type.Contains(".") &&
+                customVariable.GetRuntimeType() == null)
+            {
+                var isCsv = true;
+                // If it's from CSV, there will be no asset type info for the CSV:
+                if(customVariable.IsTunneling)
+                {
+                    var containingElement = ObjectFinder.Self.GetElementContaining(customVariable);
+                    var nos = containingElement?.GetNamedObject(customVariable.SourceObject);
+
+                    if(nos != null)
+                    {
+                        if(nos.SourceType != SourceType.Entity)
+                        {
+                            isCsv = false;
+                        }
+                    }                    
+                }
+
+                return isCsv;
+            }
+            return false;
         }
     }
 }
