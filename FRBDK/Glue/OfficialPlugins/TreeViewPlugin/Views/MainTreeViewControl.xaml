@@ -95,6 +95,7 @@
                         ChildrenPath="VisibleChildren"
                         KeyDown="MainTreeView_KeyDown"
                         PreviewMouseLeftButtonDown="MainTreeView_PreviewMouseLeftButtonDown"
+                        PreviewMouseLeftButtonUp="MainTreeView_PreviewMouseLeftButtonUp"
                         PreviewMouseMove="MainTreeView_PreviewMouseMove"
                         Drop="MainTreeView_Drop"
                         DragEnter="MainTreeView_DragEnter"
@@ -105,7 +106,7 @@
             </pt:TreeListBox.ContextMenu>
             <pt:TreeListBox.ItemTemplate>
                 <DataTemplate>
-                    <Grid Visibility="{Binding Visibility}">
+                    <Grid x:Name="ItemGrid" Visibility="{Binding Visibility}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>

@@ -72,9 +72,10 @@ namespace FlatRedBall.Glue.Managers
 
                 if (succeeded)
                 {
-                    if (GlueState.Self.CurrentElement != null)
+                    var element = targetNode.GetContainingElementTreeNode()?.Tag as GlueElement;
+                    if (element != null)
                     {
-                        GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                     }
                     else
                     {
@@ -305,11 +306,11 @@ namespace FlatRedBall.Glue.Managers
                     // removing from a list
                     NamedObjectSave container = treeNodeMoving.Parent.Tag as NamedObjectSave;
 
-                    IElement elementToAddTo = movingNos.GetContainer();
+                    var elementToAddTo = movingNos.GetContainer();
                     container.ContainedObjects.Remove(movingNos);
                     AddExistingNamedObjectToElement(
                         GlueState.Self.CurrentElement, movingNos);
-                    GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementToAddTo);
 
                     IElement elementToRegenerate = targetNode.Parent.Tag as IElement;
 
@@ -407,7 +408,8 @@ namespace FlatRedBall.Glue.Managers
                 }
                 else
                 {
-                    GlueState.Self.CurrentElement.NamedObjects.Remove(movingNos);
+                    var elementToRemoveFrom = ObjectFinder.Self.GetElementContaining(movingNos);
+                    elementToRemoveFrom?.NamedObjects.Remove(movingNos);
                 }
                 parentTreeNode.Remove(treeNodeMoving);
                 targetNode.Add(treeNodeMoving);
@@ -441,8 +443,8 @@ namespace FlatRedBall.Glue.Managers
                 }
                 else
                 {
-                    var currentElement = GlueState.Self.CurrentElement;
-                    currentElement.NamedObjects.Remove(movingNos);
+                    var element = ObjectFinder.Self.GetElementContaining(movingNos);
+                    element.NamedObjects.Remove(movingNos);
                 }
                 parentTreeNode.Remove(treeNodeMoving);
                 targetNode.Add(treeNodeMoving);
@@ -494,7 +496,8 @@ namespace FlatRedBall.Glue.Managers
 
                     eventResponseSave.DelegateType = null;
 
-                    RightClickHelper.AddEventToElementAndSave(GlueState.Self.CurrentElement, eventResponseSave);
+                    var element = targetNode.GetContainingElementTreeNode()?.Tag as GlueElement;
+                    RightClickHelper.AddEventToElementAndSave(element, eventResponseSave);
 
                 }
             }
@@ -556,13 +559,19 @@ namespace FlatRedBall.Glue.Managers
         internal void MoveState(ITreeNode nodeMoving, ITreeNode targetNode)
         {
 
-            var currentElement = GlueState.Self.CurrentElement;
-            var currentState = GlueState.Self.CurrentStateSave;
+            var currentElement = targetNode.GetContainingElementTreeNode()?.Tag as GlueElement;
+            var currentState = nodeMoving.Tag as StateSave;
+
+            if(currentElement== null || currentState == null)
+            {
+                return;
+            }
 
             StateSave toAdd = (StateSave)nodeMoving.Tag;
 
             var sourceContainer = nodeMoving.GetContainingElementTreeNode().Tag as GlueElement;
             var targetContainer = targetNode.GetContainingElementTreeNode().Tag as GlueElement;
+
 
             if (targetNode.IsStateCategoryNode() || targetNode.IsRootStateNode())
             {
@@ -697,6 +706,8 @@ namespace FlatRedBall.Glue.Managers
             ITreeNode newTreeNode = null;
             var entity = treeNodeMoving.Tag as EntitySave;
 
+            var targetElement = targetNode.GetContainingElementTreeNode()?.Tag as GlueElement;
+
             // Allow drop only if it's a list or Layer
             NamedObjectSave targetNamedObjectSave = targetNode.Tag as NamedObjectSave;
 
@@ -757,7 +768,7 @@ namespace FlatRedBall.Glue.Managers
 
                     // If the tree node doesn't exist yet, this selection won't work:
                     GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(
-                        GlueState.Self.CurrentElement);
+                        targetElement);
 
                     GlueState.Self.CurrentNamedObjectSave = namedObject;
 
@@ -767,7 +778,7 @@ namespace FlatRedBall.Glue.Managers
                         namedObject.UpdateCustomProperties();
                     }
 
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(targetElement);
 
                     // run after generated code so plugins like level editor work off latest code
                     PluginManager.ReactToNewObject(namedObject);
@@ -1085,7 +1096,7 @@ namespace FlatRedBall.Glue.Managers
                     // See if we're moving the RFS from one Element to another
                     IElement container = ObjectFinder.Self.GetElementContaining(referencedFileSave);
                     var elementTreeNodeDroppingIn = targetNode.GetContainingElementTreeNode();
-                    IElement elementDroppingIn = null;
+                    GlueElement elementDroppingIn = null;
                     if (elementTreeNodeDroppingIn != null)
                     {
                         // User didn't drop on an entity, but instead on a node within the entity.
@@ -1097,7 +1108,7 @@ namespace FlatRedBall.Glue.Managers
                             response.Message = "Shared files cannot be added to subfolders, so it will be added directly to \"Files\"";
                         }
 
-                        elementDroppingIn = elementTreeNodeDroppingIn.Tag as IElement;
+                        elementDroppingIn = elementTreeNodeDroppingIn.Tag as GlueElement;
                     }
 
                     if (container != elementDroppingIn)
@@ -1128,10 +1139,10 @@ namespace FlatRedBall.Glue.Managers
                                                                             out creationReport,
                                                                             out errorMessage);
 
-                            if(GlueState.Self.CurrentElement != null)
+                            if(elementDroppingIn != null)
                             {
-                                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(GlueState.Self.CurrentElement);
-                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(GlueState.Self.CurrentElement);
+                                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementDroppingIn);
+                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(elementDroppingIn);
                             }
                             else
                             {
@@ -1268,7 +1279,7 @@ namespace FlatRedBall.Glue.Managers
 
             string oldFileName = ProjectManager.MakeAbsolute(referencedFileSave.Name, true);
             string targetFile = targetDirectory + FileManager.RemovePath(oldFileName);
-
+            var elementContainingMovedFile = ObjectFinder.Self.GetElementContaining(referencedFileSave);
             bool canMove = true;
 
             // There's so much error checking and validation that we
@@ -1365,9 +1376,9 @@ namespace FlatRedBall.Glue.Managers
 
 
                 // 5 Re-generate the containing Element (Screen or Entity)
-                if (GlueState.Self.CurrentElement != null)
+                if (elementContainingMovedFile != null)
                 {
-                    CodeWriter.GenerateCode(GlueState.Self.CurrentElement);
+                    CodeWriter.GenerateCode(elementContainingMovedFile);
                 }
                 else
                 {
@@ -1376,9 +1387,9 @@ namespace FlatRedBall.Glue.Managers
 
 
                 // The new 1:  Update 
-                if (GlueState.Self.CurrentElement != null)
+                if (elementContainingMovedFile != null)
                 {
-                    GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementContainingMovedFile);
                 }
                 else
                 {
@@ -1442,7 +1453,12 @@ namespace FlatRedBall.Glue.Managers
 
 
                 GlueCommands.Self.GluxCommands.SaveGlux();
-                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+
+                var element = ObjectFinder.Self.GetElementContaining(namedObject);
+                if(element != null)
+                {
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+                }
 
                 return true;
             }
@@ -1456,7 +1472,7 @@ namespace FlatRedBall.Glue.Managers
             // entire file, ask the user if they want to make the object come from the file...
             var namedObjectAti = namedObject.GetAssetTypeInfo();
             AssetTypeInfo rfsAti = referencedFileSave.GetAssetTypeInfo();
-
+            var element = ObjectFinder.Self.GetElementContaining(referencedFileSave);
 
             var doFileAndNamedObjectHaveMatchingTypes =
                 rfsAti == namedObjectAti && rfsAti != null;
@@ -1500,7 +1516,10 @@ namespace FlatRedBall.Glue.Managers
                 }
 
                 GlueCommands.Self.GluxCommands.SaveGlux();
-                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                if(element!= null)
+                {
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+                }
             }
 
             return true;

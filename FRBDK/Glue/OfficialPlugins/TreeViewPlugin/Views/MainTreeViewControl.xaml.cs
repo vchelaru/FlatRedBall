@@ -85,6 +85,8 @@ namespace OfficialPlugins.TreeViewPlugin.Views
         #region Drag+drop
         Point startPoint;
         NodeViewModel nodePushed;
+        NodeViewModel nodeWaitingOnSelection;
+
         private void MainTreeView_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             startPoint = e.GetPosition(null);
@@ -95,6 +97,33 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             //MainTreeView.
             if (e.LeftButton == MouseButtonState.Pressed)
                 (sender as ListBox).ReleaseMouseCapture();
+
+            if(nodePushed != null && ClickedOnGrid(objectPushed as FrameworkElement))
+            {
+                nodeWaitingOnSelection = nodePushed;
+                // don't select anything (yet)
+                e.Handled = true;
+            }
+        }
+
+        private bool ClickedOnGrid(FrameworkElement frameworkElement)
+        {
+            if(frameworkElement.Name == "ItemGrid")
+            {
+                return true;
+            }
+            else
+            {
+                var parent = frameworkElement.Parent as FrameworkElement;
+                if(parent == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return ClickedOnGrid(parent);
+                }
+            }
         }
 
         private void MainTreeView_PreviewMouseMove(object sender, MouseEventArgs e)
@@ -169,12 +198,13 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
             if (nodePushed != null && targetNode != null)
             {
-                if (nodePushed.IsSelected == false)
-                {
+                //if (nodePushed.IsSelected == false)
+                //{
                     // This addresses a bug in the tree view which can result in "rolling selection" as you grab
                     // and drag down the tree view quickly. It won't produce a bug anymore (see above) but this is just for visual confirmation.
-                    nodePushed.IsSelected = true;
-                }
+                    // Update, we no longer select on a push anyway
+                    //nodePushed.IsSelected = true;
+                //}
                 if (ButtonPressed == LeftOrRight.Left || targetNode == nodePushed)
                 {
                     // do something here...
@@ -235,6 +265,15 @@ namespace OfficialPlugins.TreeViewPlugin.Views
         }
 
         #endregion
+
+        private void MainTreeView_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if(nodeWaitingOnSelection != null)
+            {
+                nodeWaitingOnSelection.IsSelected = true;
+                nodeWaitingOnSelection = null;
+            }
+        }
 
         #region Searching
 
@@ -302,5 +341,6 @@ namespace OfficialPlugins.TreeViewPlugin.Views
         {
             ViewModel.CollapseAll();
         }
+
     }
 }

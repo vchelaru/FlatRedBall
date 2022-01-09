@@ -139,7 +139,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 if (Set(value) && value)
                 {
-
                     SelectionLogic.HandleSelected(this);
                 }
             }
