@@ -76,7 +76,6 @@ namespace FlatRedBall.Forms.MVVM
 
             void CollectionChangedInternal(object sender, NotifyCollectionChangedEventArgs e)
             {
-                // vic asks - is this okay?
                 NotifyPropertyChanged(propertyName);
             }
         }

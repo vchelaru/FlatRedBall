@@ -536,16 +536,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             //if (System.IO.Directory.Exists(destinationFolder))
             System.IO.Directory.CreateDirectory(destinationFolder);
 
-            try
+            if(absoluteSource.Exists())
             {
-                System.IO.File.Copy(absoluteSource.FullPath, destination, true);
+                try
+                {
+                    System.IO.File.Copy(absoluteSource.FullPath, destination, true);
 
-                PluginManager.ReceiveOutput("Copied " + absoluteSource + " ==> " + destination);
-            }
-            catch (Exception e)
-            {
-                // this could really overwhelm the user with popups, so let's just show output:
-                PluginManager.ReceiveOutput("Error copying file:\n\n" + e.ToString());
+                    PluginManager.ReceiveOutput("Copied " + absoluteSource + " ==> " + destination);
+                }
+                catch (Exception e)
+                {
+                    // this could really overwhelm the user with popups, so let's just show output:
+                    PluginManager.ReceiveOutput("Error copying file:\n\n" + e.ToString());
+                }
             }
         }
 

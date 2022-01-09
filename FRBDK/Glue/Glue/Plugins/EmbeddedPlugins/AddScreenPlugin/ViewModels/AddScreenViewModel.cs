@@ -87,7 +87,8 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
         #region Entities
 
         [DependsOn(nameof(InheritFromGameScreen))]
-        public Visibility LevelScreenEntitiesGroupVisibility => InheritFromGameScreen.ToVisibility();
+        [DependsOn(nameof(AvailableLevels))]
+        public Visibility LevelScreenEntitiesGroupVisibility => (InheritFromGameScreen && AvailableLevels.Count > 0).ToVisibility();
 
         public bool IsCopyEntitiesFromOtherLevelChecked
         {
@@ -100,8 +101,9 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
 
         public ObservableCollection<string> AvailableLevels
         {
-            get; private set;
-        } = new ObservableCollection<string>();
+            get => Get< ObservableCollection<string>>();
+            private set => Set(value);
+        } 
 
         public string SelectedCopyEntitiesFromLevel
         {
@@ -241,7 +243,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
             IsAddMapLayeredTileMapChecked = true;
             IsAddListsForEntitiesChecked = true;
             AvailableTmxFiles = new ObservableCollection<string>();
-            AvailableTmxFiles.CollectionChanged += (_,__) => NotifyPropertyChanged(nameof(AvailableTmxFiles));
+            AvailableLevels = new ObservableCollection<string>();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
@@ -47,6 +48,17 @@ namespace FlatRedBall.Glue.MVVM
 
         protected bool Set<T>(T propertyValue, [CallerMemberName]string propertyName = null)
         {
+            if (propertyValue is INotifyCollectionChanged collection)
+            {
+                var oldValue = Get<T>(propertyName);
+
+                if (oldValue is INotifyCollectionChanged oldCollection)
+                {
+                    oldCollection.CollectionChanged -= CollectionChangedInternal;
+                }
+                collection.CollectionChanged += CollectionChangedInternal;
+            }
+
             bool didSet = SetWithoutNotifying(propertyValue, propertyName);
 
             if (didSet)
@@ -55,6 +67,11 @@ namespace FlatRedBall.Glue.MVVM
             }
 
             return didSet;
+
+            void CollectionChangedInternal(object sender, NotifyCollectionChangedEventArgs e)
+            {
+                NotifyPropertyChanged(propertyName);
+            }
         }
 
         protected bool SetWithoutNotifying<T>(T propertyValue, [CallerMemberName]string propertyName = null)
