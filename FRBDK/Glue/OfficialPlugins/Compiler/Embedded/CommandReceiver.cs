@@ -641,8 +641,8 @@ namespace GlueControl
                     Polygon.TolerateEmptyPolygons = true;
                 }
 
-                FlatRedBall.TileEntities.TileEntityInstantiator.CreationFunction =
-                    InstanceLogic.Self.CreateEntity;
+                FlatRedBall.TileEntities.TileEntityInstantiator.CreationFunction = (entityNameGameType) => InstanceLogic.Self.CreateEntity(entityNameGameType);
+
 
                 RestartScreenRerunCommands(applyRestartVariables: true, isInEditMode: value, shouldRecordCameraPosition: false, forceCameraToPreviousState: true);
             }

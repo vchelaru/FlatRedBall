@@ -440,7 +440,21 @@ namespace FlatRedBall.Glue.Parsing
 
             codeBlock.Line(string.Format("static PoolList<{0}> mPool = new PoolList<{0}>();", entityClassName));
 
-            codeBlock.Line(string.Format("public static Action<{0}> EntitySpawned;", entityClassName));
+            // January 9, 2022
+            // Vic asks - why is
+            // this a non-event delegate?
+            // This allows the caller to null
+            // it out which could break the level
+            // editor. I am going to switch it to an
+            // event to see if this works okay...
+            // Update - I think it's not an event to prevent
+            // common memory leaks from events, but...it should
+            // mainly be used by gencode so I'm switching to an event.
+            //codeBlock.Line(string.Format("public static Action<{0}> EntitySpawned;", entityClassName));
+            codeBlock.Line($"/// <summary> Event raised whenever an instance is created through this factory.");
+            codeBlock.Line($"/// These events are cleared out whenever a Screen is destroyed, so there is ");
+            codeBlock.Line($"/// no reason to explicitly remove added events. </summary>");
+            codeBlock.Line($"public static event Action<{entityClassName}> EntitySpawned;");
 
             ImplementIEntityFactory(factoryClassName, codeBlock);
 

@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.CodeGeneration.Game1;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,11 +29,30 @@ namespace OfficialPlugins.Compiler.CodeGeneration
                 codeBlock.Line("glueControlManager.Start();");
                 codeBlock.Line("this.Exiting += (not, used) => glueControlManager.Kill();");
 
+
                 // Vic says - We run all Glue commands before running custom initialize. The reason is - custom initialize
                 // may make modifications to objects that are created by glue commands (such as assigning acceleration to objects
                 // in a list), but it is unlikely that scripts will make modifications to objects created in CustomInitialize because
                 // objects created in CustomInitialize cannot be modified by level editor.
-                codeBlock.Line("FlatRedBall.Screens.ScreenManager.BeforeScreenCustomInitialize += (newScreen) => glueControlManager.ReRunAllGlueToGameCommands();");
+                codeBlock.Line("FlatRedBall.Screens.ScreenManager.BeforeScreenCustomInitialize += (newScreen) => ");
+                var innerBlock = codeBlock.Block();
+                innerBlock.Line("glueControlManager.ReRunAllGlueToGameCommands();");
+                var isFirst = true;
+                foreach(var entity in GlueState.Self.CurrentGlueProject.Entities)
+                {
+                    if(entity.CreatedByOtherEntities)
+                    {
+                        if(isFirst)
+                        {
+                            innerBlock.Line("// These get nulled out when screens are destroyed so we have to re-assign them");
+                        }
+                        // this has a factory, so we should += the 
+                        var nameWithoutEntities = entity.Name.Substring("Entities.".Length);
+                        innerBlock.Line($"Factories.{nameWithoutEntities.Replace("\\", ".").Replace("/", ".")}Factory.EntitySpawned += (newEntity) =>  GlueControl.InstanceLogic.Self.ApplyEditorCommandsToNewEntity(newEntity);");
+                        isFirst = false;
+                    }
+                }
+                codeBlock.Line(";");
             }
         }
     }

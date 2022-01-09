@@ -146,26 +146,7 @@ namespace GlueControl
 
             if (deserialized.SourceType == GlueControl.Models.SourceType.Entity)
             {
-                newPositionedObject = CreateEntity(deserialized);
-
-                var sourceClassTypeGame = CommandReceiver.GlueToGameElementName(deserialized.SourceClassType);
-
-                for (int i = 0; i < currentAddObjectIndex; i++)
-                {
-                    var dto = CommandReceiver.GlobalGlueToGameCommands[i];
-                    if (dto is Dtos.AddObjectDto addObjectDtoRerun)
-                    {
-                        HandleCreateInstanceCommandFromGlue(addObjectDtoRerun, currentAddObjectIndex, newPositionedObject);
-                    }
-                    else if (dto is Dtos.GlueVariableSetData glueVariableSetDataRerun)
-                    {
-                        GlueControl.Editing.VariableAssignmentLogic.SetVariable(glueVariableSetDataRerun, newPositionedObject);
-                    }
-                    else if (dto is RemoveObjectDto removeObjectDtoRerun)
-                    {
-                        HandleDeleteInstanceCommandFromGlue(removeObjectDtoRerun, newPositionedObject);
-                    }
-                }
+                newPositionedObject = CreateEntity(deserialized, currentAddObjectIndex);
             }
             else if (deserialized.SourceType == GlueControl.Models.SourceType.FlatRedBallType &&
                 deserialized.IsCollisionRelationship())
@@ -390,13 +371,38 @@ namespace GlueControl
         }
 
 
-        public PositionedObject CreateEntity(Models.NamedObjectSave deserialized)
+        public PositionedObject CreateEntity(Models.NamedObjectSave deserialized, int currentAddObjectIndex)
         {
             var entityNameGlue = deserialized.SourceClassType;
-            return CreateEntity(CommandReceiver.GlueToGameElementName(entityNameGlue));
+            var newEntity = CreateEntity(CommandReceiver.GlueToGameElementName(entityNameGlue), currentAddObjectIndex);
+
+            return newEntity;
         }
 
-        public PositionedObject CreateEntity(string entityNameGameType)
+        public void ApplyEditorCommandsToNewEntity(PositionedObject newEntity, int currentAddObjectIndex = -1)
+        {
+            currentAddObjectIndex = currentAddObjectIndex > 0
+                ? currentAddObjectIndex
+                : CommandReceiver.GlobalGlueToGameCommands.Count;
+            for (int i = 0; i < currentAddObjectIndex; i++)
+            {
+                var dto = CommandReceiver.GlobalGlueToGameCommands[i];
+                if (dto is Dtos.AddObjectDto addObjectDtoRerun)
+                {
+                    HandleCreateInstanceCommandFromGlue(addObjectDtoRerun, currentAddObjectIndex, newEntity);
+                }
+                else if (dto is Dtos.GlueVariableSetData glueVariableSetDataRerun)
+                {
+                    GlueControl.Editing.VariableAssignmentLogic.SetVariable(glueVariableSetDataRerun, newEntity);
+                }
+                else if (dto is RemoveObjectDto removeObjectDtoRerun)
+                {
+                    HandleDeleteInstanceCommandFromGlue(removeObjectDtoRerun, newEntity);
+                }
+            }
+        }
+
+        public PositionedObject CreateEntity(string entityNameGameType, int currentAddObjectIndex = -1)
         {
             var containsKey =
                 CustomGlueElements.ContainsKey(entityNameGameType);
@@ -412,13 +418,15 @@ namespace GlueControl
                 }
             }
 
+            PositionedObject newEntity = null;
+
             // This function may be given a qualified name like MyGame.Entities.MyEntity (if from Glue) 
             // or an unqualified name like MyEntity (if from Tiled). If from Tiled, then this code attempts
             // to fully qualify the entity name. This attempt to qualify may make the name null, so we need to
             // check and tolerate null.
             if (string.IsNullOrWhiteSpace(entityNameGameType))
             {
-                return null;
+                newEntity = null;
             }
             else if (containsKey)
             {
@@ -428,7 +436,9 @@ namespace GlueControl
 
                 DestroyablesAddedAtRuntime.Add(dynamicEntityInstance);
 
-                return dynamicEntityInstance;
+                newEntity = dynamicEntityInstance;
+
+                ApplyEditorCommandsToNewEntity(newEntity, currentAddObjectIndex);
             }
             else
             {
@@ -449,8 +459,16 @@ namespace GlueControl
                 {
                     DestroyablesAddedAtRuntime.Add(asDestroyable);
                 }
-                return newPositionedObject;
+                newEntity = newPositionedObject;
+
+                if(factory == null)
+                {
+                    ApplyEditorCommandsToNewEntity(newEntity, currentAddObjectIndex);
+                }
             }
+
+
+            return newEntity;
         }
 
         private void AssignVariablesOnNewlyCreatedObject(Models.NamedObjectSave deserialized, object newObject)
@@ -471,7 +489,7 @@ namespace GlueControl
 
             foreach (var instruction in deserialized.InstructionSaves)
             {
-                AssignVariable(newObject, instruction, convertFileNamesToObjects:true);
+                AssignVariable(newObject, instruction, convertFileNamesToObjects: true);
             }
         }
 

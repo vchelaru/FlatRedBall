@@ -466,15 +466,12 @@ namespace OfficialPlugins.Compiler.Managers
                 }
 
                 var isState = variable.GetIsVariableState(variableElement);
-                if (isState)
-                {
-                    throw new NotImplementedException("Need to convert the type from System.Object to the state");
-                }
+                
                 await TryPushVariable(null, name, type, value, GlueState.Self.CurrentElement, AssignOrRecordOnly.Assign, isState);
             }
             else
             {
-                RefreshManager.Self.StopAndRestartTask($"Object variable {variable.Name} changed");
+                await RefreshManager.Self.StopAndRestartTask($"Object variable {variable.Name} changed");
             }
         }
     }
