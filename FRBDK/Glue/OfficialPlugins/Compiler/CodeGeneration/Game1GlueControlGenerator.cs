@@ -47,8 +47,10 @@ namespace OfficialPlugins.Compiler.CodeGeneration
                             innerBlock.Line("// These get nulled out when screens are destroyed so we have to re-assign them");
                         }
                         // this has a factory, so we should += the 
-                        var nameWithoutEntities = entity.Name.Substring("Entities.".Length);
-                        innerBlock.Line($"Factories.{nameWithoutEntities.Replace("\\", ".").Replace("/", ".")}Factory.EntitySpawned += (newEntity) =>  GlueControl.InstanceLogic.Self.ApplyEditorCommandsToNewEntity(newEntity);");
+                        // turns out we don't qualify factories in namespaces.....well maybe we should but not going to bother with that now.
+                        // If this ever changes, we'll have to tie it to a new gluj version.
+                        var entityClassName = entity.ClassName;
+                        innerBlock.Line($"Factories.{entityClassName.Replace("\\", ".").Replace("/", ".")}Factory.EntitySpawned += (newEntity) =>  GlueControl.InstanceLogic.Self.ApplyEditorCommandsToNewEntity(newEntity);");
                         isFirst = false;
                     }
                 }
