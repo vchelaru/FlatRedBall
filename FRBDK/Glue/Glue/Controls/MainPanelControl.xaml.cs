@@ -62,8 +62,43 @@ namespace GlueFormsCore.Controls
             PluginManager.SetToolbarTray(ToolbarControl);
 
             CreateFileWatchTimer();
+
+            CreateWindowTimer();
+
+            this.PreviewMouseLeftButtonUp += MainPanelControl_PreviewMouseLeftButtonUp;
+            this.PreviewMouseMove += MainPanelControl_PreviewMouseMove;
             //TopTabControl
 
+        }
+
+
+        System.Timers.Timer timer;
+        private void CreateWindowTimer()
+        {
+            timer = new System.Timers.Timer();
+            timer.Elapsed += (not, used) =>
+            {
+                PluginManager.ReactToGlobalTimer();
+            };
+            timer.Interval = 250;
+            timer.Start();
+        }
+
+        private void MainPanelControl_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if(e.LeftButton == MouseButtonState.Released && GlueState.Self.DraggedTreeNode != null)
+            {
+                GlueState.Self.DraggedTreeNode = null;
+
+            }
+        }
+
+        private void MainPanelControl_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if(GlueState.Self.DraggedTreeNode != null)
+            {
+                GlueState.Self.DraggedTreeNode = null;
+            }
         }
 
         public void ReactToCloseProject(bool shouldSave, bool isExiting, InitializationWindowWpf initWindow = null)

@@ -154,7 +154,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             TaskItemViewModel currentTask = null;
             double maxTaskCount = 0;
-            void UpdateCurrentTask(TaskEvent taskEvent, FlatRedBall.Glue.Tasks.GlueTask task)
+            void UpdateCurrentTask(TaskEvent taskEvent, FlatRedBall.Glue.Tasks.GlueTaskBase task)
             {
                 var currentTaskCount = TaskManager.Self.TaskCount;
                 maxTaskCount = Math.Max(maxTaskCount, currentTaskCount);

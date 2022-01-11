@@ -106,6 +106,7 @@ namespace Glue
             // so docking works
             //this.Controls.SetChildIndex(this.MainPanelSplitContainer, 0);
             this.Controls.Add(this.mMenu);
+
         }
 
         private void HandleResizeEnd(object sender, EventArgs e)
@@ -200,8 +201,6 @@ namespace Glue
 
             return toReturn;
         }
-
-
 
         private void Form1_Load(object sender, EventArgs e)
         {

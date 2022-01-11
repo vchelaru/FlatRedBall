@@ -32,6 +32,7 @@ using OfficialPlugins.Compiler.CommandSending;
 using System.Runtime.InteropServices;
 using OfficialPlugins.GameHost.Views;
 using OfficialPlugins.Compiler.Views;
+using FlatRedBall.Glue.FormHelpers;
 
 namespace OfficialPlugins.Compiler
 {
@@ -121,15 +122,6 @@ namespace OfficialPlugins.Compiler
             this.RegisterCodeGenerator(new CompilerPluginElementCodeGenerator());
 
 
-            #region Start the timer
-
-            var timerFrequency = 250; // ms
-            timer = new Timer(timerFrequency);
-            timer.Elapsed += HandleTimerElapsed;
-            timer.SynchronizingObject = MainGlueWindow.Self;
-            timer.Start();
-
-            #endregion
 
 
             // winforms stuff is here:
@@ -154,6 +146,15 @@ namespace OfficialPlugins.Compiler
                 glueViewSettingsTab);
 
             //this.CreateAndAddTab(new TestControl(), "Test for Smitty");
+            #region Start the timer, do it after the gameHostView is created
+
+            var timerFrequency = 250; // ms
+            timer = new Timer(timerFrequency);
+            timer.Elapsed += HandleTimerElapsed;
+            timer.SynchronizingObject = MainGlueWindow.Self;
+            timer.Start();
+
+            #endregion
         }
 
         private void AssignEvents()
@@ -193,7 +194,9 @@ namespace OfficialPlugins.Compiler
             //this.ReactToMainWindowMoved += gameHostView.ReactToMainWindowMoved;
             this.ReactToMainWindowResizeEnd += gameHostView.ReactToMainWindowResizeEnd;
             this.TryHandleTreeNodeDoubleClicked += RefreshManager.Self.HandleTreeNodeDoubleClicked;
+            this.GrabbedTreeNodeChanged += HandleGrabbedTreeNodeChanged;
         }
+
 
         #endregion
 
@@ -249,7 +252,36 @@ namespace OfficialPlugins.Compiler
 
         System.Threading.SemaphoreSlim getCommandsSemaphore = new System.Threading.SemaphoreSlim(1, 1);
         DateTime lastGetCall;
+        bool IsCursorOverTab;
         private async void HandleTimerElapsed(object sender, ElapsedEventArgs e)
+        {
+            await UpdateIsBusyStatus();
+            try
+            {
+                // These suck - they dont' return anything if the user is over only teh wpf item:
+                //var point = System.Windows.Input.Mouse.GetPosition(gameHostView);
+                //var position = gameHostView.PointToScreen(point);
+                var winformsPoint = System.Windows.Forms.Control.MousePosition;
+
+                Point locationFromScreen = this.gameHostView.PointToScreen(new Point(0, 0));
+                // Transform screen point to WPF device independent point
+                PresentationSource source = PresentationSource.FromVisual(gameHostView);
+                System.Windows.Point targetPoints = source.CompositionTarget.TransformFromDevice.Transform(locationFromScreen);
+
+                IsCursorOverTab = winformsPoint.X >= targetPoints.X && 
+                    winformsPoint.Y >= targetPoints.Y &&
+                    winformsPoint.X <= (targetPoints.X + gameHostView.ActualWidth) &&
+                    winformsPoint.Y <= (targetPoints.Y + gameHostView.ActualHeight);
+
+
+                CompilerViewModel.HasDraggedTreeNodeOverView = GlueState.Self.DraggedTreeNode != null && IsCursorOverTab;
+    //&& gameHostView.IsMouseOver
+    ;
+            }
+            catch { }
+        }
+
+        private async Task UpdateIsBusyStatus()
         {
             this.CompilerViewModel.LastWaitTimeInSeconds = (DateTime.Now - lastGetCall).TotalSeconds;
             var isBusy = (await getCommandsSemaphore.WaitAsync(0)) == false;
@@ -258,14 +290,14 @@ namespace OfficialPlugins.Compiler
             {
                 try
                 {
-                    if(CompilerViewModel.IsEditChecked && CompilerViewModel.IsRunning)
+                    if (CompilerViewModel.IsEditChecked && CompilerViewModel.IsRunning)
                     {
                         lastGetCall = DateTime.Now;
 
 
-                        var sendResponse = 
+                        var sendResponse =
                             await CommandSending.CommandSender
-                            .Send<GetCommandsDtoResponse>(new GetCommandsDto(), isImportant:false);
+                            .Send<GetCommandsDtoResponse>(new GetCommandsDto(), isImportant: false);
                         var response = sendResponse?.Data;
 
 
@@ -287,7 +319,7 @@ namespace OfficialPlugins.Compiler
 
                         this.CompilerViewModel.LastWaitTimeInSeconds = (DateTime.Now - lastGetCall).TotalSeconds;
 
-                        if(this.CompilerViewModel.LastWaitTimeInSeconds > 1)
+                        if (this.CompilerViewModel.LastWaitTimeInSeconds > 1)
                         {
 
                             MainControl.PrintOutput(
@@ -313,8 +345,8 @@ namespace OfficialPlugins.Compiler
                 System.Diagnostics.Debug.WriteLine("   isBusy = true");
 
             }
-
         }
+
         private void HandleGluxUnloaded()
         {
             CompilerViewModel.HasLoadedGlux = false;
@@ -428,6 +460,7 @@ namespace OfficialPlugins.Compiler
 
             Runner.Self.ViewModel = CompilerViewModel;
             RefreshManager.Self.ViewModel = CompilerViewModel;
+            DragDropManagerGameWindow.CompilerViewModel = CompilerViewModel;
             RefreshManager.Self.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
 
             VariableSendingManager.Self.ViewModel = CompilerViewModel;
@@ -709,6 +742,12 @@ namespace OfficialPlugins.Compiler
 
 
 
+
+        private void HandleGrabbedTreeNodeChanged(ITreeNode treeNode, TreeNodeAction action)
+        {
+
+
+        }
 
 
         #region DLLImports

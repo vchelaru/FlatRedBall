@@ -32,6 +32,7 @@ using GlueFormsCore.Managers;
 //using FlatRedBall.Utilities;
 //using ToolsUtilities;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -831,7 +832,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     nos.ResetVariablesReferencing(referencedFileToRemove);
                 }
 
-                MainGlueWindow.Self.Invoke(() =>
+                GlueCommands.Self.DoOnUiThread(() =>
                 {
                     if (GlueState.Self.CurrentElement != null)
                     {
@@ -1101,6 +1102,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return AddNewNamedObjectTo(addObjectViewModel,
                 elementToAddTo, 
                 currentList);
+        }
+
+        public async Task<NamedObjectSave> AddNewNamedObjectToAsync(AddObjectViewModel addObjectViewModel, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true)
+        {
+            var result = await TaskManager.Self.AddAsync(() =>
+                AddNewNamedObjectTo(addObjectViewModel, element, listToAddTo, selectNewNos), $"Adding new named object {addObjectViewModel?.ObjectName}");
+
+            return result;
         }
 
         public NamedObjectSave AddNewNamedObjectTo(AddObjectViewModel addObjectViewModel, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true)

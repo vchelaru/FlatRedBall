@@ -1,9 +1,11 @@
 ﻿using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
 using Glue;
 using GlueFormsCore.Controls;
 using OfficialPlugins.Compiler;
 using OfficialPlugins.Compiler.CommandSending;
+using OfficialPlugins.Compiler.Managers;
 using OfficialPlugins.Compiler.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -56,6 +58,7 @@ namespace OfficialPlugins.GameHost.Views
         // simple enough to hold on to it
         IntPtr gameHandle;
 
+
         #endregion
 
         #region Events
@@ -88,6 +91,39 @@ namespace OfficialPlugins.GameHost.Views
 
             this.WinformsHost.Child = winformsPanel;
 
+            DataContextChanged += GameHostView_DataContextChanged;
+        }
+
+        private void GameHostView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (ViewModel != null)
+            {
+                ViewModel.PropertyChanged += async (sender, args) =>
+                {
+                    switch (args.PropertyName)
+                    {
+                        case nameof(ViewModel.GameWindowHeight):
+                            await RefreshLeftPanelSize();
+                            break;
+                    }
+                };
+            }
+        }
+
+        private void WinformsHost_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effects = DragDropEffects.Move;
+        }
+
+        private async void WinformsHost_Drop(object sender, DragEventArgs e)
+        {
+            //https://stackoverflow.com/questions/5978917/render-wpf-control-on-top-of-windowsformshost/5979041#5979041
+            var vm = GlueState.Self.DraggedTreeNode;
+
+            if (vm != null && ViewModel.IsRunning)
+            {
+                await DragDropManagerGameWindow.HandleDragDropOnGameWindow(vm);
+            }
         }
 
         public async Task EmbedHwnd(IntPtr handle)
@@ -163,6 +199,7 @@ namespace OfficialPlugins.GameHost.Views
             RestartGameClicked?.Invoke(this, null);
         }
 
+
         private void WinformsHost_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (ViewModel.IsRunning && ViewModel.IsGenerateGlueControlManagerInGame1Checked && gameHandle != IntPtr.Zero)
@@ -172,6 +209,7 @@ namespace OfficialPlugins.GameHost.Views
 
                 WindowMover.MoveWindow(gameHandle, 0, 0, newWidth, newHeight, true);
             }
+
         }
 
         private void WhileRunningView_RestartGameCurrentScreenClicked(object sender, EventArgs e)
@@ -214,6 +252,8 @@ namespace OfficialPlugins.GameHost.Views
             UnpauseClicked?.Invoke(this, null);
         }
 
+
+
         private void GlueViewSettingsButtonClicked(object sender, RoutedEventArgs e)
         {
             SettingsClicked?.Invoke(this, null);
@@ -244,10 +284,16 @@ namespace OfficialPlugins.GameHost.Views
         // way to do it.
         // I initially started with a delay of 1000 ms, and got it much lower. Too low and the problem doesn't
         // get solved, too high and the user sees long delays between the flickers.
+        const int msDelayBetweenResizes = 5;
 
         int lastWidth;
         int lastHeight;
         public async void ReactToMainWindowResizeEnd()
+        {
+            await RefreshLeftPanelSize();
+        }
+
+        private async Task RefreshLeftPanelSize()
         {
             var window = MainGlueWindow.Self;
             var areSame = window.Width == lastWidth && window.Height == lastHeight;
@@ -260,7 +306,7 @@ namespace OfficialPlugins.GameHost.Views
                 var leftPixel = MainPanelControl.ViewModel.LeftPanelWidth.Value;
                 // need to get the VM for the splitter and adjust it:
                 MainPanelControl.ViewModel.LeftPanelWidth = new GridLength(leftPixel + 1);
-                await Task.Delay(5);
+                await Task.Delay(msDelayBetweenResizes);
                 MainPanelControl.ViewModel.LeftPanelWidth = new GridLength(leftPixel);
             }
         }

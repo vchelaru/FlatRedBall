@@ -641,7 +641,7 @@ namespace FlatRedBall.Glue.Managers
 
         #region Entity
 
-        public ITreeNode MoveEntityOn(ITreeNode treeNodeMoving, ITreeNode targetNode)
+        public async Task<ITreeNode> MoveEntityOn(ITreeNode treeNodeMoving, ITreeNode targetNode)
         {
             ITreeNode newTreeNode = null;
 
@@ -678,7 +678,7 @@ namespace FlatRedBall.Glue.Managers
                 
                 if (isValidDrop)
                 {
-                    newTreeNode = MoveEntityOntoElement(treeNodeMoving, targetNode);
+                    newTreeNode = await DropEntityOntoElement(treeNodeMoving.Tag as EntitySave, targetNode.GetContainingElementTreeNode().Tag as GlueElement);
                 }
             }
 
@@ -688,7 +688,7 @@ namespace FlatRedBall.Glue.Managers
 
             else if (targetNode.IsNamedObjectNode())
             {
-                newTreeNode = MoveEntityOnNamedObject(treeNodeMoving, targetNode);
+                newTreeNode = await MoveEntityOnNamedObject (treeNodeMoving, targetNode);
             }
 
             #endregion
@@ -701,7 +701,7 @@ namespace FlatRedBall.Glue.Managers
             return newTreeNode;
         }
 
-        private ITreeNode MoveEntityOnNamedObject(ITreeNode treeNodeMoving, ITreeNode targetNode)
+        private async Task<ITreeNode> MoveEntityOnNamedObject(ITreeNode treeNodeMoving, ITreeNode targetNode)
         {
             ITreeNode newTreeNode = null;
             var entity = treeNodeMoving.Tag as EntitySave;
@@ -719,7 +719,7 @@ namespace FlatRedBall.Glue.Managers
             {
                 var parent = targetNode.Parent;
 
-                newTreeNode = MoveEntityOn(treeNodeMoving, parent);
+                newTreeNode = await MoveEntityOn(treeNodeMoving, parent);
 
                 DragDropManager.Self.MoveNamedObject(newTreeNode, targetNode);
             }
@@ -829,26 +829,9 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        private ITreeNode MoveEntityOntoElement(ITreeNode treeNodeMoving, ITreeNode targetNode)
+        public async Task<ITreeNode> DropEntityOntoElement(EntitySave entitySaveMoved, GlueElement elementToCreateIn)
         {
             ITreeNode newTreeNode = null;
-            EntitySave entitySaveMoved = treeNodeMoving.Tag as EntitySave;
-
-            #region Get the IElement elementToCreateIn
-
-            GlueElement elementToCreateIn = null;
-
-            if (targetNode.IsRootNamedObjectNode())
-            {
-                var parent = targetNode.Parent;
-                elementToCreateIn = parent.Tag as GlueElement;
-            }
-            else
-            {
-                elementToCreateIn = targetNode.Tag as GlueElement;
-            }
-
-            #endregion
 
             var listOfThisType = ObjectFinder.Self.GetDefaultListToContain(entitySaveMoved, elementToCreateIn);
 
@@ -856,8 +839,9 @@ namespace FlatRedBall.Glue.Managers
             {
 
                 var namedObjectNode = GlueState.Self.Find.TreeNodeByTag(listOfThisType);
+                var entityTreeNode = GlueState.Self.Find.TreeNodeByTag(entitySaveMoved);
                 // move it onto this
-                MoveEntityOn(treeNodeMoving, namedObjectNode);
+                await MoveEntityOn(entityTreeNode, namedObjectNode);
             }
             else
             {
@@ -866,14 +850,14 @@ namespace FlatRedBall.Glue.Managers
                 //DialogResult result =
                 //    MessageBox.Show("Create a new Object in\n\n" + elementToCreateIn.Name + "\n\nusing\n\n\t" + entitySaveMoved.Name + "?", "Create new Object?", MessageBoxButtons.YesNo);
 
-                NamedObjectSave newNamedObject = CreateNewNamedObjectInElement(elementToCreateIn, entitySaveMoved);
+                var newNamedObject = await CreateNewNamedObjectInElement(elementToCreateIn, entitySaveMoved);
                 newTreeNode = GlueState.Self.Find.NamedObjectTreeNode(newNamedObject);
                 GlueState.Self.CurrentNamedObjectSave = newNamedObject;
             }
             return newTreeNode;
         }
 
-        public NamedObjectSave CreateNewNamedObjectInElement(IElement elementToCreateIn, 
+        public async Task<NamedObjectSave> CreateNewNamedObjectInElement(IElement elementToCreateIn, 
             EntitySave blueprintEntity, bool createList = false)
         {
             if (blueprintEntity == null)
@@ -942,7 +926,7 @@ namespace FlatRedBall.Glue.Managers
 
             #endregion
 
-            return GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel,
+            return await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addObjectViewModel,
                 elementToCreateIn as GlueElement, null);
         }
 
@@ -1603,7 +1587,7 @@ namespace FlatRedBall.Glue.Managers
 
         #region General Calls
 
-        public static void DragDropTreeNode(ITreeNode targetNode, ITreeNode nodeMoving)
+        public static async Task DragDropTreeNode(ITreeNode targetNode, ITreeNode nodeMoving)
         {
 #if !DEBUG
             try
@@ -1617,7 +1601,7 @@ namespace FlatRedBall.Glue.Managers
                 }
                 else if (nodeMoving.IsEntityNode())
                 {
-                    DragDropManager.Self.MoveEntityOn(nodeMoving, targetNode);
+                    await DragDropManager.Self.MoveEntityOn(nodeMoving, targetNode);
                     shouldSaveGlux = true;
 
                 }

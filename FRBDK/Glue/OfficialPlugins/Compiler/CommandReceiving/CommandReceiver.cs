@@ -80,24 +80,6 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             }
         }
 
-        private static async Task<ScreenSave> GetCurrentInGameScreen()
-        {
-            var screenName = await CommandSender.GetScreenName();
-
-            if(!string.IsNullOrEmpty(screenName) && screenName.Contains(".Screens."))
-            {
-                // remove prefix:
-                var screensDotStart = screenName.IndexOf("Screens.");
-                screenName = screenName.Substring(screensDotStart).Replace(".", "\\");
-                var screen = ObjectFinder.Self.GetScreenSave(screenName);
-                return screen;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
 
         #endregion
 
@@ -105,7 +87,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         private static async void HandleRemoveObject(RemoveObjectDto removeObjectDto)
         {
-            ScreenSave screen = await GetCurrentInGameScreen();
+            ScreenSave screen = await CommandSender.GetCurrentInGameScreen();
             if(screen != null)
             {
                 TaskManager.Self.Add(() =>
@@ -127,7 +109,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         private static async void HandleAddObject(string dataAsString)
         {
-            ScreenSave screen = await GetCurrentInGameScreen();
+            ScreenSave screen = await CommandSender.GetCurrentInGameScreen();
             TaskManager.Self.Add(() =>
             {
                 GlueElement element = screen;
@@ -436,7 +418,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         private static async void HandleSelectObject(SelectObjectDto selectObjectDto)
         {
 
-            var screen = await GetCurrentInGameScreen();
+            var screen = await CommandSender.GetCurrentInGameScreen();
             TaskManager.Self.Add(() =>
             {
                 NamedObjectSave nos = null;

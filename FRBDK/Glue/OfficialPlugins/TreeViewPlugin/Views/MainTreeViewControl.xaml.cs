@@ -89,6 +89,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         private void MainTreeView_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+
             startPoint = e.GetPosition(null);
 
             var objectPushed = e.OriginalSource;
@@ -144,6 +145,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 ButtonPressed = e.LeftButton == MouseButtonState.Pressed ?
                     LeftOrRight.Left : LeftOrRight.Right;
 
+                GlueState.Self.DraggedTreeNode = nodePushed;
                 // Get the dragged ListViewItem
                 var vm = (e.OriginalSource as FrameworkElement).DataContext as NodeViewModel;
 

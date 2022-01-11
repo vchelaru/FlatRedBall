@@ -2016,6 +2016,19 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToCtrlF != null);
         }
 
+        public static void ReactToGrabbedTreeNodeChanged(ITreeNode treeNode, TreeNodeAction treeNodeAction)
+        {
+            CallMethodOnPlugin(
+                plugin => plugin.GrabbedTreeNodeChanged(treeNode, treeNodeAction),
+                plugin => plugin.GrabbedTreeNodeChanged != null);
+        }
+
+        public static void ReactToGlobalTimer()
+        {
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToGlobalTimer(),
+                plugin => plugin.ReactToGlobalTimer != null);
+        }
         #endregion
 
         internal static bool TryHandleException(Exception exception)

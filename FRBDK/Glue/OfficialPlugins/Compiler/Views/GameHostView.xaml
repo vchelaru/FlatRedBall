@@ -5,13 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPlugins.GameHost.Views"
              xmlns:views="clr-namespace:OfficialPlugins.Compiler.Views"
-             
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="28"></RowDefinition>
-            <RowDefinition></RowDefinition>
+            <RowDefinition Height="{Binding DragDropHeight}"></RowDefinition>
+            <RowDefinition Height="{Binding GameWindowHeight}"></RowDefinition>
         </Grid.RowDefinitions>
 
         <!--put this before the while running view so it doesn't block the view on narrow screens-->
@@ -77,10 +77,34 @@
             </Grid>
 
         </StackPanel>
-        <Grid x:Name="MainGrid" Grid.Row="1">
-            <WindowsFormsHost x:Name="WinformsHost" SizeChanged="WinformsHost_SizeChanged">
+
+        <Grid Grid.Row="1"
+                AllowDrop="True"
+                DragEnter="WinformsHost_DragEnter"
+                Drop="WinformsHost_Drop"
+              Background="#1E1E1E">
+            <Grid>
+                <TextBlock TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                </TextBlock>
+
+
+                <TextBlock TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Foreground="White">
+                    Drag + drop here to add a new object
+                </TextBlock>
+
+            </Grid>
+        </Grid>
+
+
+        <Grid x:Name="MainGrid" Grid.Row="2">
+            <WindowsFormsHost x:Name="WinformsHost" 
+                              
+                              SizeChanged="WinformsHost_SizeChanged"
+                              IsHitTestVisible="False"
+                              >
                 
             </WindowsFormsHost>
+
         </Grid>
         
     </Grid>

@@ -310,6 +310,24 @@ namespace OfficialPlugins.Compiler.CommandSending
             return screenName;
         }
 
+        public static async Task<FlatRedBall.Glue.SaveClasses.ScreenSave> GetCurrentInGameScreen()
+        {
+            var screenName = await CommandSender.GetScreenName();
+
+            if (!string.IsNullOrEmpty(screenName) && screenName.Contains(".Screens."))
+            {
+                // remove prefix:
+                var screensDotStart = screenName.IndexOf("Screens.");
+                screenName = screenName.Substring(screensDotStart).Replace(".", "\\");
+                var screen = FlatRedBall.Glue.Elements.ObjectFinder.Self.GetScreenSave(screenName);
+                return screen;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         internal static async Task<Vector3> GetCameraPosition(int portNumber)
         {
             string cameraPositionAsString = null;

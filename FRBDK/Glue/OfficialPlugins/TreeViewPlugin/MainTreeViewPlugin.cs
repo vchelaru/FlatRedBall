@@ -63,8 +63,9 @@ namespace OfficialPlugins.TreeViewPlugin
             RefreshDirectoryTreeNodes += HandleRefreshDirectoryTreeNodes;
             FocusOnTreeView += HandleFocusOnTreeView;
             ReactToCtrlF += HandleCtrlF;
-            this.ReactToItemSelectHandler += HandleItemSelected;
+            ReactToItemSelectHandler += HandleItemSelected;
         }
+
 
         private async void HandleItemSelected(ITreeNode selectedTreeNode)
         {

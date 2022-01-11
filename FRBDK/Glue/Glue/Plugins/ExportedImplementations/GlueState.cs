@@ -181,7 +181,35 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
+        ITreeNode draggedTreeNode;
+        public ITreeNode DraggedTreeNode 
+        {
+            get => draggedTreeNode;
+            set
+            {
+                if(value != draggedTreeNode)
+                {
+                    if(draggedTreeNode != null)
+                    {
+                        PluginManager.ReactToGrabbedTreeNodeChanged(draggedTreeNode, TreeNodeAction.Released);
+                    }
+                    draggedTreeNode = value;
+                    if(draggedTreeNode == null)
+                    {
+                        GlueCommands.Self.PrintOutput("Released node");
+                    }
+                    else
+                    {
+                        if (value != null)
+                        {
+                            PluginManager.ReactToGrabbedTreeNodeChanged(draggedTreeNode, TreeNodeAction.Grabbed);
+                        }
+                        GlueCommands.Self.PrintOutput("Dragged Node " + draggedTreeNode?.Text ?? "<none>");
 
+                    }
+                }
+            }
+        }
         #endregion
 
         #region Properties

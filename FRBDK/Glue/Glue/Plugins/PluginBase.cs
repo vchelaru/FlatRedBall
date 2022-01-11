@@ -44,6 +44,12 @@ namespace FlatRedBall.Glue.Plugins
 
     #endregion
 
+    public enum TreeNodeAction
+    {
+        Grabbed,
+        Released
+    }
+
     #region PluginTab
     public class PluginTab
     {
@@ -374,10 +380,13 @@ namespace FlatRedBall.Glue.Plugins
         public Action<GlueElement> RefreshTreeNodeFor;
         public Action RefreshGlobalContentTreeNode;
         public Action RefreshDirectoryTreeNodes;
+        public Action<ITreeNode, TreeNodeAction> GrabbedTreeNodeChanged;
 
         public Action FocusOnTreeView;
 
         public Action ReactToCtrlF;
+
+        public Action ReactToGlobalTimer;
 
         #endregion
 

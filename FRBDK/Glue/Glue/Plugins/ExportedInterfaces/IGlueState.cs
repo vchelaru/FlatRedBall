@@ -82,7 +82,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
 
         string ProjectSpecificSettingsFolder { get; }
 
-
+        ITreeNode DraggedTreeNode { get; set; }
 
         #endregion
 
@@ -112,7 +112,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
         }
         public Managers.IFindManager Find { get; }
 
-
+        public ITreeNode DraggedTreeNode { get; set; }
         public EntitySave CurrentEntitySave
         {
             get;
