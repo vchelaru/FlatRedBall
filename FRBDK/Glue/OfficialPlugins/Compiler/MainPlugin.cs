@@ -83,7 +83,8 @@ namespace OfficialPlugins.Compiler
 
         bool ignoreViewModelChanges = false;
 
-        Timer timer;
+        Timer busyUpdateTimer;
+        Timer dragDropTimer;
 
 
         #endregion
@@ -145,14 +146,20 @@ namespace OfficialPlugins.Compiler
                 GlueViewSettingsViewModel,
                 glueViewSettingsTab);
 
-            //this.CreateAndAddTab(new TestControl(), "Test for Smitty");
             #region Start the timer, do it after the gameHostView is created
 
-            var timerFrequency = 250; // ms
-            timer = new Timer(timerFrequency);
-            timer.Elapsed += HandleTimerElapsed;
-            timer.SynchronizingObject = MainGlueWindow.Self;
-            timer.Start();
+            var busyTimerFrequency = 250; // ms
+            busyUpdateTimer = new Timer(busyTimerFrequency);
+            busyUpdateTimer.Elapsed += HandleTimerElapsed;
+            busyUpdateTimer.SynchronizingObject = MainGlueWindow.Self;
+            busyUpdateTimer.Start();
+
+            // This was 250 but it wasn't fast enough to feel responsive
+            var dragDropTimerFrequency = 100; // ms
+            dragDropTimer = new Timer(dragDropTimerFrequency);
+            dragDropTimer.Elapsed += HandleDragDropTimerElapsed;
+            dragDropTimer.SynchronizingObject = MainGlueWindow.Self;
+            dragDropTimer.Start();
 
             #endregion
         }
@@ -253,9 +260,8 @@ namespace OfficialPlugins.Compiler
         System.Threading.SemaphoreSlim getCommandsSemaphore = new System.Threading.SemaphoreSlim(1, 1);
         DateTime lastGetCall;
         bool IsCursorOverTab;
-        private async void HandleTimerElapsed(object sender, ElapsedEventArgs e)
+        private async void HandleDragDropTimerElapsed(object sender, ElapsedEventArgs e)
         {
-            await UpdateIsBusyStatus();
             try
             {
                 // These suck - they dont' return anything if the user is over only teh wpf item:
@@ -294,7 +300,15 @@ namespace OfficialPlugins.Compiler
                 }
     
             }
+            // This can get called before the control is created, so tolerate exceptions
             catch { }
+        }
+
+
+        private async void HandleTimerElapsed(object sender, ElapsedEventArgs e)
+        {
+            await UpdateIsBusyStatus();
+
         }
 
         private async Task UpdateIsBusyStatus()
