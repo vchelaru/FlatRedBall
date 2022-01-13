@@ -79,6 +79,10 @@ namespace GumPlugin.DataGeneration
 
             ColoredFrame = new FormsControlInfo
             {
+                // Vic asks - why is this a null behavior? 
+                // Oh, maybe because FormsControlInfo defines
+                // all types of controls, and this one doesn't
+                // have a dedicated behavior type.
                 BehaviorName = null,
                 ComponentFile = "ColoredFrame",
                 ControlName = null,
