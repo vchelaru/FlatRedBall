@@ -21,12 +21,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
             this.GetTypeConverter += HandleGetTypeConverter;
         }
 
-        private TypeConverter HandleGetTypeConverter(IElement container, NamedObjectSave instance, TypedMemberBase typedMember)
+        private TypeConverter HandleGetTypeConverter(IElement container, NamedObjectSave instance, Type memberType, string memberName, string customType)
         {
-            Type memberType = typedMember.MemberType;
-            string memberName = typedMember.MemberName;
-            string customType = typedMember.CustomTypeName;
-
             TypeConverter typeConverter = null;
 
             // If the NOS references a FRB type, we need to adjust the type appropriately
@@ -52,7 +48,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
 
                     handled = true;
                 }
-                else if(memberType?.Name == "Sprite")
+                else if (memberType?.Name == "Sprite")
                 {
                     var nosTypeConverter = new AvailableNamedObjectsAndFiles(container);
                     nosTypeConverter.NamedObjectTypeRestriction = "FlatRedBall.Sprite";
@@ -94,7 +90,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
                 {
                     AvailableFileStringConverter availableFileStringConverter = new AvailableFileStringConverter(container);
                     availableFileStringConverter.QualifiedRuntimeTypeName = memberType.FullName;
-                    if(!string.IsNullOrEmpty(customType))
+                    if (!string.IsNullOrEmpty(customType))
                     {
                         availableFileStringConverter.QualifiedRuntimeTypeName = customType;
                     }
@@ -133,9 +129,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
             }
 
             return typeConverter;
-
         }
-
 
         private static bool IsTypeFile(Type memberType, string customTypeName)
         {

@@ -335,7 +335,11 @@ namespace FlatRedBall.Glue.Plugins
 
         public GetEventTypeAndSignature GetEventSignatureArgs { get; protected set; }
 
-        public Func<IElement, NamedObjectSave, TypedMemberBase, TypeConverter> GetTypeConverter { get; protected set; }
+        /// <summary>
+        /// Function to return a type converter given a member as defined by the parameters:
+        /// IElement container, NamedObjectSave instance, Type memberType, string memberName, string customType, TypeConverter ReturnValue
+        /// </summary>
+        public Func<IElement, NamedObjectSave, Type, string, string, TypeConverter> GetTypeConverter { get; protected set; }
         public Action<NamedObjectSave, ICodeBlock, InstructionSave> WriteInstanceVariableAssignment { get; protected set; }
 
         /// <summary>

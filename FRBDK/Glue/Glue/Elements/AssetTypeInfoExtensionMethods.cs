@@ -10,23 +10,6 @@ namespace FlatRedBall.Glue.Elements
 {
     public static class AssetTypeInfoExtensionMethods
     {       
-
-        public static List<TypedMemberBase> GetTypedMembers(this AssetTypeInfo thisAti)
-        {
-            List<TypedMemberBase> typedMembers = new List<TypedMemberBase>();
-
-            foreach (var item in thisAti.CachedExtraVariables)
-            {
-                TypedMemberBase typedMemberBase = GetTypedMemberBase(item.Type, item.Member);
-
-                typedMembers.Add(typedMemberBase);
-                        
-            }
-
-            return typedMembers;
-        }
-
-
         public static TypedMemberBase GetTypedMemberBase(string typeString, string memberName)
 		{
 			// make the typeString proper

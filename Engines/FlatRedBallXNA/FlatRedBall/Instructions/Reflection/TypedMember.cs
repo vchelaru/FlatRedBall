@@ -30,7 +30,7 @@ namespace FlatRedBall.Instructions.Reflection
 
         /// <summary>
         /// This exists so we can create typed members for types that may not be available in the current assembly.
-        /// It enables Glue to generate code for types it doesn't understnad.
+        /// It enables Glue to generate code for types it doesn't understand.
         /// </summary>
         public string CustomTypeName
         {

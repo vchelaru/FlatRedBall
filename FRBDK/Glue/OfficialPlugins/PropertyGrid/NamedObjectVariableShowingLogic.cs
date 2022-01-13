@@ -118,10 +118,7 @@ namespace OfficialPlugins.VariableDisplay
                         else
                         {
                             typedMember = TypedMemberBase.GetTypedMember(variableDefinition.Name, type);
-
-                            InstanceMember instanceMember = CreateInstanceMember(instance, container, variableDefinition.Name, type, typedMember, ati, variableDefinition);
-
-
+                            InstanceMember instanceMember = CreateInstanceMember(instance, container, variableDefinition.Name, type, typedMember.CustomTypeName, ati, variableDefinition);
                             if (instanceMember != null)
                             {
                                 var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember);
@@ -195,7 +192,7 @@ namespace OfficialPlugins.VariableDisplay
             AssetTypeInfo ati, TypedMemberBase typedMember, VariableDefinition variableDefinition = null)
         {
             variableDefinition = variableDefinition ?? ati?.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
-            InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember.MemberName, typedMember.MemberType, typedMember, ati, variableDefinition);
+            InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember.MemberName, typedMember.MemberType, typedMember.CustomTypeName, ati, variableDefinition);
 
             var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember, variableDefinition);
 
@@ -453,12 +450,11 @@ namespace OfficialPlugins.VariableDisplay
 
         private static InstanceMember CreateInstanceMember(NamedObjectSave instance, 
             GlueElement container, 
-            // memberName is contained in typedMember, but we want to move away from TypedMemberBase so this extra
-            // parameter will help that.
             string memberName,
-            // Same here
             Type memberType,
-            TypedMemberBase typedMember, AssetTypeInfo ati, VariableDefinition variableDefinition)
+            string customTypeName, 
+            AssetTypeInfo ati, 
+            VariableDefinition variableDefinition)
         {
             bool shouldBeSkipped = GetIfShouldBeSkipped(memberName, instance, ati);
 
@@ -467,7 +463,7 @@ namespace OfficialPlugins.VariableDisplay
             if (!shouldBeSkipped)
             {
                 var typeConverter = PluginManager.GetTypeConverter(
-                     container, instance, typedMember);
+                     container, instance, memberType, memberName, customTypeName);
 
                 bool isObjectInFile = typeConverter is IObjectsInFileConverter;
 
@@ -677,89 +673,93 @@ namespace OfficialPlugins.VariableDisplay
         {
             instanceMember.CustomGetEvent += (throwaway) =>
             {
+                return GetValueRecursively(instance, container, memberName, memberType, variableDefinition);
+            };
+        }
 
-                var instruction = instance.GetCustomVariable(memberName);
+        private static object GetValueRecursively(NamedObjectSave instance, GlueElement container, string memberName, Type memberType, VariableDefinition variableDefinition)
+        {
+            var instruction = instance.GetCustomVariable(memberName);
 
-                if (instruction == null)
+            if (instruction == null)
+            {
+                // Get the value for this variable from the base element. 
+
+                var getVariableResponse = GetVariableOnInstance(instance, container, memberName);
+
+                if (getVariableResponse.customVariable != null)
                 {
-                    // Get the value for this variable from the base element. 
+                    return getVariableResponse.customVariable.DefaultValue;
+                }
+                else if (getVariableResponse.instructionOnState != null)
+                {
+                    return getVariableResponse.instructionOnState.Value;
+                }
 
-                    var getVariableResponse = GetVariableOnInstance(instance, container, memberName);
-
-                    if (getVariableResponse.customVariable != null)
+                if (variableDefinition != null)
+                {
+                    var toReturn = variableDefinition.DefaultValue;
+                    if (memberType == typeof(bool))
                     {
-                        return getVariableResponse.customVariable.DefaultValue;
+                        bool boolToReturn = false;
+
+                        bool.TryParse(variableDefinition.DefaultValue, out boolToReturn);
+
+                        return boolToReturn;
                     }
-                    else if(getVariableResponse.instructionOnState != null)
+                    else if (memberType == typeof(float))
                     {
-                        return getVariableResponse.instructionOnState.Value;
+                        float floatToReturn = 0.0f;
+
+                        float.TryParse(variableDefinition.DefaultValue, out floatToReturn);
+
+                        return floatToReturn;
                     }
-
-                    if (variableDefinition != null)
+                    else if (memberType == typeof(int))
                     {
-                        var toReturn = variableDefinition.DefaultValue;
-                        if (memberType == typeof(bool))
-                        {
-                            bool boolToReturn = false;
+                        int intToReturn = 0;
 
-                            bool.TryParse(variableDefinition.DefaultValue, out boolToReturn);
+                        int.TryParse(variableDefinition.DefaultValue, out intToReturn);
 
-                            return boolToReturn;
-                        }
-                        else if (memberType == typeof(float))
-                        {
-                            float floatToReturn = 0.0f;
+                        return intToReturn;
+                    }
+                    else if (memberType == typeof(long))
+                    {
+                        long longToReturn = 0;
 
-                            float.TryParse(variableDefinition.DefaultValue, out floatToReturn);
+                        long.TryParse(variableDefinition.DefaultValue, out longToReturn);
 
-                            return floatToReturn;
-                        }
-                        else if (memberType == typeof(int))
-                        {
-                            int intToReturn = 0;
+                        return longToReturn;
+                    }
+                    else if (memberType == typeof(double))
+                    {
+                        double doubleToReturn = 0.0;
 
-                            int.TryParse(variableDefinition.DefaultValue, out intToReturn);
+                        double.TryParse(variableDefinition.DefaultValue, out doubleToReturn);
 
-                            return intToReturn;
-                        }
-                        else if (memberType == typeof(long))
-                        {
-                            long longToReturn = 0;
-
-                            long.TryParse(variableDefinition.DefaultValue, out longToReturn);
-
-                            return longToReturn;
-                        }
-                        else if (memberType == typeof(double))
-                        {
-                            double doubleToReturn = 0.0;
-
-                            double.TryParse(variableDefinition.DefaultValue, out doubleToReturn);
-
-                            return doubleToReturn;
-                        }
-                        else
-                        {
-                            return toReturn;
-                        }
+                        return doubleToReturn;
                     }
                     else
                     {
-                        return null;
+                        return toReturn;
                     }
                 }
                 else
                 {
-                    if (memberType.IsEnum && instruction.Value is int)
-                    {
-                        return Enum.ToObject(memberType, instruction.Value);
-                    }
-                    else
-                    {
-                        return instruction.Value;
-                    }
+                    return null;
                 }
-            };
+            }
+            else
+            {
+                if (memberType.IsEnum && instruction.Value is int)
+                {
+                    return Enum.ToObject(memberType, instruction.Value);
+                }
+                else
+                {
+                    return instruction.Value;
+                }
+            }
         }
 
         private static (CustomVariable customVariable, InstructionSave instructionOnState) GetVariableOnInstance(NamedObjectSave instance, GlueElement container, string memberName)

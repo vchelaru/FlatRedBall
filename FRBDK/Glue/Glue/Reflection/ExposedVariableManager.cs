@@ -469,11 +469,7 @@ namespace FlatRedBall.Glue.Reflection
                     break;
                 case SourceType.File:
                     {
-                        if (ati != null && ati.CachedExtraVariables.Any(item => item.Member == variableName))
-                        {
-                            foundType = ati.CachedExtraVariables.First(item => item.Member == variableName).Type;
-                        }
-                        else if(ati != null && ati.VariableDefinitions.Any(item => item.Name == variableName))
+                        if(ati != null && ati.VariableDefinitions.Any(item => item.Name == variableName))
                         {
                             foundType = ati.VariableDefinitions.First(item => item.Name == variableName).Type;
                         }
@@ -503,10 +499,6 @@ namespace FlatRedBall.Glue.Reflection
                     else if(ati != null && ati.VariableDefinitions.Any(item =>item.Name == variableName))
                     {
                         foundType = ati.VariableDefinitions.First(item => item.Name == variableName).Type;
-                    }
-                    else if (ati != null && ati.CachedExtraVariables.Any(item => item.Member == variableName))
-                    {
-                        foundType = ati.CachedExtraVariables.First(item => item.Member == variableName).Type;
                     }
                     else if (ati != null &&
                         !string.IsNullOrEmpty(ati.QualifiedRuntimeTypeName.QualifiedType))
@@ -755,27 +747,6 @@ namespace FlatRedBall.Glue.Reflection
                         break;
                 }
             }
-
-            AssetTypeInfo ati = namedObjectSave.GetAssetTypeInfo();
-            if (ati != null)
-            {
-
-                // we convert from a string member to a typed member, only to go back to a string member.
-                // That means we lose type info on any member that is of type not understood by Glue.
-                // Not sure why the code does this, but we could just directly add the member from CachedExtraVariables
-                //List<TypedMemberBase> typedMembers = null;
-                //typedMembers = ati.GetTypedMembers();
-                
-                foreach (var member in ati.CachedExtraVariables)
-                {
-                    if (!returnValue.Any(item=>item.Member == member.Member))
-                    {
-                        returnValue.Add(member);
-                    }
-                }
-
-            }
-
 
             return returnValue;
         }

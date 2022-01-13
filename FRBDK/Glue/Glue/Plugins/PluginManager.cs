@@ -2214,7 +2214,7 @@ namespace FlatRedBall.Glue.Plugins
             ResumeRelativeDirectory(nameof(ReactToSyncedProjectLoad));
         }
 
-        public static TypeConverter GetTypeConverter(IElement container, NamedObjectSave instance, TypedMemberBase typedMember)
+        public static TypeConverter GetTypeConverter(IElement container, NamedObjectSave instance, Type memberType, string memberName, string customTypeName)
         {
             TypeConverter toReturn = null;
 
@@ -2223,7 +2223,7 @@ namespace FlatRedBall.Glue.Plugins
             CallMethodOnPlugin(
                 (plugin) =>
                 {
-                    var foundValue = plugin.GetTypeConverter(container, instance, typedMember);
+                    var foundValue = plugin.GetTypeConverter(container, instance, memberType, memberName, customTypeName);
                     if (foundValue != null)
                     {
                         toReturn = foundValue;

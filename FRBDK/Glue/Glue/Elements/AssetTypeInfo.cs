@@ -191,20 +191,6 @@ namespace FlatRedBall.Glue.Elements
         public string RecycledDestroyMethod;
         public string SetFromOtherCode;
 
-        string mExtraVariablesPattern;
-        [Obsolete("Use VariableDefinitions instead, as they provide more control and a cleaner syntax")]
-        public string ExtraVariablesPattern
-        {
-            get
-            {
-                return mExtraVariablesPattern;
-            }
-            set
-            {
-                mExtraVariablesPattern = value;
-                UpdateExtraVariableCache();
-            }
-        }
         /// <summary>
         /// The list of variables available on this type. This should replace ExtraVariablesPattern and 
         /// and Type-based (reflection) variable lists.
@@ -339,38 +325,6 @@ namespace FlatRedBall.Glue.Elements
 			DestroyMethod = destroyMethod;
 
 		}
-
-
-        private void UpdateExtraVariableCache()
-        {
-            CachedExtraVariables.Clear();
-
-            if (!string.IsNullOrEmpty(ExtraVariablesPattern))
-            {
-                string[] values = ExtraVariablesPattern.Split(';');
-
-                for (int i = 0; i < values.Length; i++)
-                {
-                    string value = values[i].Trim();
-                    if (!string.IsNullOrEmpty(value))
-                    {
-                        int spaceIndex = value.IndexOf(' ');
-
-                        
-
-                        string typeString = value.Substring(0, spaceIndex);
-                        string memberName = value.Substring(spaceIndex + 1, value.Length - (spaceIndex + 1));
-
-                        var toAdd = new MemberWithType();
-                        toAdd.Member = memberName;
-                        toAdd.Type = typeString;
-
-                        CachedExtraVariables.Add(toAdd);
-                    }
-                }
-            }
-
-        }
 
 		public override string ToString()
 		{

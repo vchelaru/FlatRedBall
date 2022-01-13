@@ -93,7 +93,7 @@ namespace GumPlugin.CodeGeneration
                             // Here we try to get the "most fulfilled" version of an object to set it as the default.
                             // For example, Button text is optional, and two Gum objects may have the Button behavior.
                             // If one of them has text properties then we should favor that over the one that doens't.
-                            // Of coruse, the user can still change the defaults at runtime or manually create the visual
+                            // Of course, the user can still change the defaults at runtime or manually create the visual
                             // for a form if they don't want the default, but this will hopefully give the "best fit"
                             // default.
                             if(matchingFulfillment == null || matchingFulfillment.IsCompletelyFulfilled == false)

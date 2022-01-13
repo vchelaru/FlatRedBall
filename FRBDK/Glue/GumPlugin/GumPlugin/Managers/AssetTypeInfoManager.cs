@@ -309,7 +309,38 @@ namespace GumPlugin.Managers
                     mGraphicalUiElementAti.HasCursorIsOn = false;
                     mGraphicalUiElementAti.HasVisibleProperty = false;
                     mGraphicalUiElementAti.FindByNameSyntax = "GetGraphicalUiElementByName(\"OBJECTNAME\")";
-                    mGraphicalUiElementAti.ExtraVariablesPattern = "float X; float Y; float Width; float Height; bool Visible";
+
+                    //mGraphicalUiElementAti.ExtraVariablesPattern = "float X; float Y; float Width; float Height; bool Visible";
+                    mGraphicalUiElementAti.VariableDefinitions.Add(new VariableDefinition
+                    {
+                        Name = "X",
+                        Type = "float"
+                    });
+
+                    mGraphicalUiElementAti.VariableDefinitions.Add(new VariableDefinition
+                    {
+                        Name = "Y",
+                        Type = "float"
+                    });
+
+                    mGraphicalUiElementAti.VariableDefinitions.Add(new VariableDefinition
+                    {
+                        Name = "Width",
+                        Type = "float"
+                    });
+
+                    mGraphicalUiElementAti.VariableDefinitions.Add(new VariableDefinition
+                    {
+                        Name = "Height",
+                        Type = "float"
+                    });
+
+                    mGraphicalUiElementAti.VariableDefinitions.Add(new VariableDefinition
+                    {
+                        Name = "bool",
+                        Type = "Visible"
+                    });
+
                     mGraphicalUiElementAti.HideFromNewFileWindow = true;
                 }
 
