@@ -355,6 +355,11 @@ namespace GlueControl
                             newScreen.ScreenDestroy += HandleScreenDestroy;
 
                             FlatRedBall.Screens.ScreenManager.ScreenLoaded -= AfterInitializeLogic;
+
+                            if (!string.IsNullOrEmpty(selectObjectDto.StateName))
+                            {
+                                SelectState(selectObjectDto.StateName, selectObjectDto.StateCategoryName);
+                            }
                         }
 
                         FlatRedBall.Screens.ScreenManager.ScreenLoaded += AfterInitializeLogic;

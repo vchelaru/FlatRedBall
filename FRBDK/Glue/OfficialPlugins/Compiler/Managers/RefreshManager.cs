@@ -551,7 +551,16 @@ namespace OfficialPlugins.Compiler.Managers
 
         static bool IsAbstract(IElement element) => element.AllNamedObjects.Any(item => item.SetByDerived);
 
-
+        // When the user selects a state, then
+        // selects an object with in the same entity
+        // as that state, we want to "undo" the state
+        // so that any edits they make to the object doesn't
+        // pull in state values. The easiest way to do this is
+        // to force a reload of the screen. To do this, we need
+        // to know if the user was viewing a state before, and is 
+        // no longer viewing a state now. The LastDtoPushedToGame is
+        // needed to determine this.
+        SelectObjectDto LastDtoPushedToGame;
         public async Task PushGlueSelectionToGame(string forcedCategoryName = null, string forcedStateName = null, GlueElement forcedElement = null, bool bringIntoFocus = false)
         {
             var element = forcedElement ?? GlueState.Self.CurrentElement;
@@ -563,7 +572,20 @@ namespace OfficialPlugins.Compiler.Managers
             {
                 nos = GlueState.Self.CurrentNamedObjectSave;
             }
-            if(element != null)
+
+            // Determine these values before resetting the LastDtoPushedToGame...
+            var needsScreenReload = LastDtoPushedToGame?.GlueElement == element &&
+                !string.IsNullOrEmpty(LastDtoPushedToGame.StateName) &&
+                string.IsNullOrEmpty(forcedStateName ?? GlueState.Self.CurrentStateSave?.Name);
+
+            // ... now reset it
+            LastDtoPushedToGame = null;
+
+            if(needsScreenReload)
+            {
+                await CommandSender.Send(new Dtos.RestartScreenDto());
+            }
+            else if (element != null)
             {
                 dto.ScreenSave = element as ScreenSave;
                 dto.EntitySave = element as EntitySave;
@@ -577,13 +599,12 @@ namespace OfficialPlugins.Compiler.Managers
                         .OrderBy(item => item.Name)
                         .FirstOrDefault();
 
-
                     dto.BackupElementNameGlue = derived?.Name;
                 }
 
                 var canSend = !isAbstract || !string.IsNullOrEmpty(dto.BackupElementNameGlue);
 
-                    // If its abstract and there's no derived, don't try to select it
+                // If its abstract and there's no derived, don't try to select it
                 if(canSend)
                 {
                     dto.BringIntoFocus = bringIntoFocus;
@@ -595,11 +616,12 @@ namespace OfficialPlugins.Compiler.Managers
                     dto.StateCategoryName = forcedCategoryName ??
                         GlueState.Self.CurrentStateSaveCategory?.Name;
 
+                    LastDtoPushedToGame = dto;
+
                     await CommandSender.Send(dto);
 
                 }
             }
-
         }
 
         #endregion
