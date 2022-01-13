@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+﻿using FlatRedBall.Content.Scene;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using OfficialPlugins.Compiler.ViewModels;
@@ -28,6 +29,7 @@ namespace OfficialPlugins.Compiler.CommandSending
 
         #endregion
 
+        #region General Send
         public static async Task<ToolsUtilities.GeneralResponse<string>> Send(object dto, bool isImportant = true)
         {
             var dtoTypeName = dto.GetType().Name;
@@ -224,7 +226,6 @@ namespace OfficialPlugins.Compiler.CommandSending
             }
         }
 
-
         private static async Task<string> ReadFromClient(Stream stm)
         {
             //// Read response from server.
@@ -286,6 +287,8 @@ namespace OfficialPlugins.Compiler.CommandSending
             //return buffer;
         }
 
+        #endregion
+
         /// <summary>
         /// Returns the qualified class name like "GameNamespace.Screens.MyScreen"
         /// </summary>
@@ -328,20 +331,10 @@ namespace OfficialPlugins.Compiler.CommandSending
             }
         }
 
-        internal static async Task<Vector3> GetCameraPosition(int portNumber)
+        internal static async Task<Vector3> GetCameraPosition()
         {
-            string cameraPositionAsString = null;
-
-            try
-            {
-                var sendResponse = await CommandSending.CommandSender.Send(new Dtos.GetCameraPosition());
-                cameraPositionAsString = sendResponse.Succeeded ? sendResponse.Data : String.Empty;
-            }
-            catch (SocketException)
-            {
-                // do nothing, may not have been able to communicate, just output
-                //control.PrintOutput("Could not get the game's screen, restarting game from startup screen");
-            }
+            var sendResponse = await CommandSending.CommandSender.Send(new Dtos.GetCameraPosition());
+            var cameraPositionAsString = sendResponse.Succeeded ? sendResponse.Data : String.Empty;
 
             if(string.IsNullOrEmpty(cameraPositionAsString))
             {
@@ -351,7 +344,22 @@ namespace OfficialPlugins.Compiler.CommandSending
             {
                 var response = JsonConvert.DeserializeObject<Dtos.GetCameraPositionResponse>(cameraPositionAsString);
                 return new Vector3(response.X, response.Y, response.Z);
+            }
+        }
 
+        internal static async Task<CameraSave> GetCameraSave()
+        {
+            var sendResponse = await CommandSending.CommandSender.Send(new Dtos.GetCameraSave());
+            var cameraSaveAsString = sendResponse.Succeeded ? sendResponse.Data : String.Empty;
+
+            if (string.IsNullOrEmpty(cameraSaveAsString))
+            {
+                return null;
+            }
+            else
+            {
+                var cameraSave = JsonConvert.DeserializeObject<CameraSave>(cameraSaveAsString);
+                return cameraSave;
             }
         }
     }

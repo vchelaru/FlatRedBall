@@ -10,8 +10,10 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="28"></RowDefinition>
-            <RowDefinition Height="{Binding DragDropHeight}"></RowDefinition>
-            <RowDefinition Height="{Binding GameWindowHeight}"></RowDefinition>
+            <!--<RowDefinition Height="{Binding DragDropHeight}"></RowDefinition>-->
+            <!--<RowDefinition Height="{Binding GameWindowHeight}"></RowDefinition>-->
+            <!--<RowDefinition Height="{Binding DragDropHeight}"></RowDefinition>-->
+            <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
 
         <!--put this before the while running view so it doesn't block the view on narrow screens-->
@@ -78,7 +80,7 @@
 
         </StackPanel>
 
-        <Grid Grid.Row="1"
+        <!--<Grid Grid.Row="1"
                 AllowDrop="True"
                 DragEnter="WinformsHost_DragEnter"
                 Drop="WinformsHost_Drop"
@@ -93,10 +95,10 @@
                 </TextBlock>
 
             </Grid>
-        </Grid>
+        </Grid>-->
 
 
-        <Grid x:Name="MainGrid" Grid.Row="2">
+        <Grid x:Name="MainGrid" Grid.Row="1">
             <WindowsFormsHost x:Name="WinformsHost" 
                               
                               SizeChanged="WinformsHost_SizeChanged"

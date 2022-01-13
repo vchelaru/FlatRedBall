@@ -275,8 +275,24 @@ namespace OfficialPlugins.Compiler
 
 
                 CompilerViewModel.HasDraggedTreeNodeOverView = GlueState.Self.DraggedTreeNode != null && IsCursorOverTab;
-    //&& gameHostView.IsMouseOver
-    ;
+
+                if(CompilerViewModel.HasDraggedTreeNodeOverView && 
+                    (System.Windows.Forms.Control.MouseButtons & System.Windows.Forms.MouseButtons.Left) == 0)
+                {
+                    // user is not holding the mouse button down
+                    float screenX = (float)( winformsPoint.X - targetPoints.X);
+                    float screenY = (float) (winformsPoint.Y - targetPoints.Y);
+
+                    var draggedNode = GlueState.Self.DraggedTreeNode;
+                    // set this before calling HandleDragDropOnGameWindow to prevent a double-drop because the node is not null
+                    GlueState.Self.DraggedTreeNode = null;
+
+                    int gameHostWidth = (int)gameHostView.WinformsHost.ActualWidth;
+                    int gameHostHeight = (int)gameHostView.WinformsHost.ActualHeight;
+
+                    await DragDropManagerGameWindow.HandleDragDropOnGameWindow(draggedNode, gameHostWidth, gameHostHeight, screenX, screenY);
+                }
+    
             }
             catch { }
         }

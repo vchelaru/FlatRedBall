@@ -396,81 +396,102 @@ namespace OfficialPlugins.Compiler.Managers
             }
         }
 
+        public Vector2? ForcedNextObjectPosition { get; set; }
         private async Task AdjustNewObjectToCameraPosition(NamedObjectSave newNamedObject)
         {
-            if (GlueState.Self.CurrentScreenSave != null)
+            Vector2 newPosition = Vector2.Zero;
+
+            if(ForcedNextObjectPosition != null)
             {
-                // If it's in a screen, then we position the object on the camera:
-
-                var cameraPosition = Microsoft.Xna.Framework.Vector3.Zero;
-
-                cameraPosition = await CommandSender.GetCameraPosition(PortNumber);
-
-                var gluxCommands = GlueCommands.Self.GluxCommands;
-
-                bool didSetValue = false;
-
-                Vector2 newPosition = new Vector2(cameraPosition.X, cameraPosition.Y);
-
-                var list = GlueState.Self.CurrentElement.NamedObjects.FirstOrDefault(item =>
-                    item.ContainedObjects.Contains(newNamedObject));
-
-                var shouldIncreasePosition = false;
-                do
+                newPosition = ForcedNextObjectPosition.Value;
+                ForcedNextObjectPosition = null;
+            }
+            else
+            {
+                if (GlueState.Self.CurrentScreenSave != null)
                 {
-                    shouldIncreasePosition = false;
-
-                    var listToLoopThrough = list?.ContainedObjects ?? GlueState.Self.CurrentElement.NamedObjects;
-
-                    const int incrementForNewObject = 16;
-                    const int minimumDistanceForObjects = 3;
-                    foreach (var item in listToLoopThrough)
-                    {
-                        if (item != newNamedObject)
-                        {
-                            Vector2 itemPosition = new Vector2(
-                                (item.GetCustomVariable("X")?.Value as float?) ?? 0,
-                                (item.GetCustomVariable("Y")?.Value as float?) ?? 0);
-
-                            var distance = (itemPosition - newPosition).Length();
-
-
-                            if (distance < minimumDistanceForObjects)
-                            {
-                                shouldIncreasePosition = true;
-                                break;
-                            }
-
-                        }
-                    }
-                    if (shouldIncreasePosition)
-                    {
-                        newPosition.X += incrementForNewObject;
-                    }
-
-                } while (shouldIncreasePosition);
-
-                if (newPosition.X != 0)
-                {
-                    gluxCommands.SetVariableOn(newNamedObject, "X", newPosition.X);
-                    didSetValue = true;
-                }
-                if (newPosition.Y != 0)
-                {
-                    gluxCommands.SetVariableOn(newNamedObject, "Y", newPosition.Y);
-
-                    didSetValue = true;
-                }
-
-
-
-                if (didSetValue)
-                {
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-                    GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    newPosition = await GetNewNosPositionFromCamera(newNamedObject);
                 }
             }
+
+
+            bool didSetValue = false;
+            var gluxCommands = GlueCommands.Self.GluxCommands;
+
+            if (newPosition.X != 0)
+            {
+                gluxCommands.SetVariableOn(newNamedObject, "X", newPosition.X);
+                didSetValue = true;
+            }
+            if (newPosition.Y != 0)
+            {
+                gluxCommands.SetVariableOn(newNamedObject, "Y", newPosition.Y);
+
+                didSetValue = true;
+            }
+
+
+
+            if (didSetValue)
+            {
+                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
+                GlueCommands.Self.GluxCommands.SaveGlux();
+            }
+        }
+
+        private async Task<Vector2> GetNewNosPositionFromCamera(NamedObjectSave newNamedObject)
+        {
+            // If it's in a screen, then we position the object on the camera:
+
+            var cameraPosition = Microsoft.Xna.Framework.Vector3.Zero;
+
+            cameraPosition = await CommandSender.GetCameraPosition();
+
+            var gluxCommands = GlueCommands.Self.GluxCommands;
+
+
+            Vector2 newPosition = new Vector2(cameraPosition.X, cameraPosition.Y);
+
+            var list = GlueState.Self.CurrentElement.NamedObjects.FirstOrDefault(item =>
+                item.ContainedObjects.Contains(newNamedObject));
+
+            var shouldIncreasePosition = false;
+            do
+            {
+                shouldIncreasePosition = false;
+
+                var listToLoopThrough = list?.ContainedObjects ?? GlueState.Self.CurrentElement.NamedObjects;
+
+                const int incrementForNewObject = 16;
+                const int minimumDistanceForObjects = 3;
+                foreach (var item in listToLoopThrough)
+                {
+                    if (item != newNamedObject)
+                    {
+                        Vector2 itemPosition = new Vector2(
+                            (item.GetCustomVariable("X")?.Value as float?) ?? 0,
+                            (item.GetCustomVariable("Y")?.Value as float?) ?? 0);
+
+                        var distance = (itemPosition - newPosition).Length();
+
+
+                        if (distance < minimumDistanceForObjects)
+                        {
+                            shouldIncreasePosition = true;
+                            break;
+                        }
+
+                    }
+                }
+                if (shouldIncreasePosition)
+                {
+                    newPosition.X += incrementForNewObject;
+                }
+
+            } while (shouldIncreasePosition);
+
+            return newPosition;
         }
 
         #endregion

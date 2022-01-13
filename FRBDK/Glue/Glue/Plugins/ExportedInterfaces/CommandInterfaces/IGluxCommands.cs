@@ -110,6 +110,21 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         void AddNamedObjectTo(NamedObjectSave newNos, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true);
 
+        /// <summary>
+        /// Assigns a variable on the argument NamedObject.
+        /// </summary>
+        /// <remarks>
+        /// This also performs value conversion, updates the object according to its variablea ssignment, refreshes errors, and notifies plugins.
+        /// </remarks>
+        /// <example>
+        /// To assign a value like X, the following code would be used:
+        /// GlueCommands.Self.GluxCommands.SetVariableOn(namedObjectSave, "X", 100.0f);
+        /// To assign a state value where the category is named CategoryName, the following code would be used:
+        /// GlueCommands.Self.GluxCommands.SetVariableOn(namedObjectSave, "CurrentCategoryNameState", "NameOfStateAsString");
+        /// </example>
+        /// <param name="nos">The NamedObjectSave which will have its variable assigned.</param>
+        /// <param name="memberName">The name of the variable to assign.</param>
+        /// <param name="value">The value of the variable.</param>
         void SetVariableOn(NamedObjectSave nos, string memberName, object value);
         ToolsUtilities.GeneralResponse CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool save = true);
 

@@ -60,22 +60,18 @@ namespace FlatRedBall.Content.Scene
 
         #region Methods
 
-        #region XML Docs
         /// <summary>
         /// Creates a new CameraSave.  This is used by the XmlSerializer when deserializing an XML.
         /// Usually CameraSaves are created using the FromCamera static method.
         /// </summary>
-        #endregion
         public CameraSave()
         { 
         }
 
-        #region XML Docs
         /// <summary>
         /// Creates a new CameraSave instance using members from the passed Camera argument.
         /// </summary>
         /// <param name="camera">The Camera to copy properties from.</param>
-        #endregion
         public static CameraSave FromCamera(Camera camera)
         {
 			return FromCamera(camera, false);
@@ -101,8 +97,6 @@ namespace FlatRedBall.Content.Scene
             return cameraSave;
         }
 
-        #region XML Docs
-        /// <summary>
         /// Sets the argument Camera's properties to the properties stored in this CameraSave.
         /// </summary>
         /// <remarks>
@@ -113,7 +107,6 @@ namespace FlatRedBall.Content.Scene
         /// on an existing Camera
         /// </remarks>
         /// <param name="camera">The Camera to set the properties on.</param>
-        #endregion
         public void SetCamera(Camera camera)
         {
             camera.Position.X = X;
@@ -149,7 +142,7 @@ namespace FlatRedBall.Content.Scene
 
 
         }
-        
+
         #endregion
     }
 }

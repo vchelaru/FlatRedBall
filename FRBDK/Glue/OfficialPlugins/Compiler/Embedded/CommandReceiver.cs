@@ -602,6 +602,15 @@ namespace GlueControl
 
         #endregion
 
+        #region GetCameraSave
+
+        private static object HandleDto(GetCameraSave dto)
+        {
+            return FlatRedBall.Content.Scene.CameraSave.FromCamera(Camera.Main);
+        }
+
+        #endregion
+
         #region EditMode vs Play
 
         private static object HandleDto(SetEditMode setEditMode)

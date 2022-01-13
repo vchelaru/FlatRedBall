@@ -703,6 +703,8 @@ namespace FlatRedBall.Glue.Managers
 
         private async Task<ITreeNode> MoveEntityOnNamedObject(ITreeNode treeNodeMoving, ITreeNode targetNode)
         {
+            // todo - this should be in a task
+
             ITreeNode newTreeNode = null;
             var entity = treeNodeMoving.Tag as EntitySave;
 
@@ -763,6 +765,7 @@ namespace FlatRedBall.Glue.Managers
                     GlueState.Self.CurrentNamedObjectSave = targetNamedObjectSave;
 
                     var currentNosList = GlueState.Self.CurrentNamedObjectSave;
+
                     NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToList(namedObject,
                         currentNosList);
 
@@ -786,6 +789,7 @@ namespace FlatRedBall.Glue.Managers
 
                     // Don't save the Glux, the caller of this method will take care of it
                     // GluxCommands.Self.SaveGlux();
+                    newTreeNode = GlueState.Self.Find.TreeNodeByTag(namedObject);
                 }
 
             }
@@ -841,7 +845,7 @@ namespace FlatRedBall.Glue.Managers
                 var namedObjectNode = GlueState.Self.Find.TreeNodeByTag(listOfThisType);
                 var entityTreeNode = GlueState.Self.Find.TreeNodeByTag(entitySaveMoved);
                 // move it onto this
-                await MoveEntityOn(entityTreeNode, namedObjectNode);
+                newTreeNode = await MoveEntityOn(entityTreeNode, namedObjectNode);
             }
             else
             {

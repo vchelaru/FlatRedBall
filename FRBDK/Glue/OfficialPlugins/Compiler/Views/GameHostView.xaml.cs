@@ -98,15 +98,15 @@ namespace OfficialPlugins.GameHost.Views
         {
             if (ViewModel != null)
             {
-                ViewModel.PropertyChanged += async (sender, args) =>
-                {
-                    switch (args.PropertyName)
-                    {
-                        case nameof(ViewModel.GameWindowHeight):
-                            await RefreshLeftPanelSize();
-                            break;
-                    }
-                };
+                //ViewModel.PropertyChanged += async (sender, args) =>
+                //{
+                //    //switch (args.PropertyName)
+                //    //{
+                //    //    //case nameof(ViewModel.GameWindowHeight):
+                //    //    //    await RefreshLeftPanelSize();
+                //    //    //    break;
+                //    //}
+                //};
             }
         }
 
@@ -117,13 +117,14 @@ namespace OfficialPlugins.GameHost.Views
 
         private async void WinformsHost_Drop(object sender, DragEventArgs e)
         {
-            //https://stackoverflow.com/questions/5978917/render-wpf-control-on-top-of-windowsformshost/5979041#5979041
-            var vm = GlueState.Self.DraggedTreeNode;
+            // this doesn't work due to the airspace problem in wpf
+            ////https://stackoverflow.com/questions/5978917/render-wpf-control-on-top-of-windowsformshost/5979041#5979041
+            //var vm = GlueState.Self.DraggedTreeNode;
 
-            if (vm != null && ViewModel.IsRunning)
-            {
-                await DragDropManagerGameWindow.HandleDragDropOnGameWindow(vm);
-            }
+            //if (vm != null && ViewModel.IsRunning)
+            //{
+            //    await DragDropManagerGameWindow.HandleDragDropOnGameWindow(vm);
+            //}
         }
 
         public async Task EmbedHwnd(IntPtr handle)

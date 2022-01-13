@@ -118,6 +118,13 @@ namespace GlueControl.Dtos
     }
     #endregion
 
+    #region GetCameraSave
+    public class GetCameraSave
+    {
+        // no members
+    }
+    #endregion
+
     #region AddObjectDto
     public class AddObjectDto : NamedObjectSave
     {

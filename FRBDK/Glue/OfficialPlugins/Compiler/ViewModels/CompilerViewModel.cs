@@ -308,15 +308,15 @@ namespace OfficialPlugins.Compiler.ViewModels
         [DependsOn(nameof(IsRunning))]
         public bool ShowDragDrop => IsRunning && HasDraggedTreeNodeOverView;
 
-        [DependsOn(nameof(ShowDragDrop))]
-        public GridLength DragDropHeight => ShowDragDrop
-            ? new GridLength(1, GridUnitType.Star)
-            : new GridLength(0);
+        //[DependsOn(nameof(ShowDragDrop))]
+        //public GridLength DragDropHeight => ShowDragDrop
+        //    ? new GridLength(1, GridUnitType.Star)
+        //    : new GridLength(0);
 
-        [DependsOn(nameof(ShowDragDrop))]
-        public GridLength GameWindowHeight => ShowDragDrop
-            ? new GridLength(0)
-            : new GridLength(1, GridUnitType.Star);
+        //[DependsOn(nameof(ShowDragDrop))]
+        //public GridLength GameWindowHeight => ShowDragDrop
+        //    ? new GridLength(0)
+        //    : new GridLength(1, GridUnitType.Star);
 
         [DependsOn(nameof(IsRunning))]
         [DependsOn(nameof(IsGenerateGlueControlManagerInGame1Checked))]

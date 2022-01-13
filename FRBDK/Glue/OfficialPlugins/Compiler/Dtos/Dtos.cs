@@ -106,12 +106,20 @@ namespace OfficialPlugins.Compiler.Dtos
     }
     #endregion
 
+
     #region GetCameraPositionResponse
     public class GetCameraPositionResponse
     {
         public float X { get; set; }
         public float Y { get; set; }
         public float Z { get; set; }
+    }
+    #endregion
+
+    #region GetCameraSave
+    public class GetCameraSave
+    {
+        // no members
     }
     #endregion
 

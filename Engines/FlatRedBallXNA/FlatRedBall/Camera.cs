@@ -374,6 +374,10 @@ namespace FlatRedBall
 
         #region Constructor
 
+        /// <summary>
+        /// Creates a new camera instance. This camera will not be drawn by the engine until it is added
+        /// through the SpriteManager.
+        /// </summary>
         public Camera () : this(null)
         {
 
