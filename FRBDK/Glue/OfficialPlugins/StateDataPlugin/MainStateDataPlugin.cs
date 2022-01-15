@@ -48,6 +48,7 @@ namespace OfficialPlugins.StateDataPlugin
             this.ReactToItemSelectHandler += HandleReactToItemSelect;
             this.ReactToStateRemovedHandler += HandleStateRemoved;
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
+            this.ReactToStateCategoryExcludedVariablesChanged += HandleStateCategoryVariableChange;
 
             stateErrorReporter = new StateErrorReporter();
             this.AddErrorReporter(stateErrorReporter);
@@ -78,6 +79,14 @@ namespace OfficialPlugins.StateDataPlugin
         private void HideCategoryUi()
         {
             tab?.Hide();
+        }
+
+        private void HandleStateCategoryVariableChange(StateSaveCategory stateSaveCategory, string arg2, StateCategoryVariableAction arg3)
+        {
+            if(stateSaveCategory == GlueState.Self.CurrentStateSaveCategory && tab.IsShown)
+            {
+                ShowCategory(stateSaveCategory);
+            }
         }
 
         private void ShowCategory(StateSaveCategory currentStateSaveCategory)

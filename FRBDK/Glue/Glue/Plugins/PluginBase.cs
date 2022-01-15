@@ -50,6 +50,11 @@ namespace FlatRedBall.Glue.Plugins
         Released
     }
 
+    public enum StateCategoryVariableAction
+    {
+        Included,
+        Excluded
+    }
     #region PluginTab
     public class PluginTab
     {
@@ -391,6 +396,8 @@ namespace FlatRedBall.Glue.Plugins
         public Action ReactToCtrlF;
 
         public Action ReactToGlobalTimer;
+
+        public Action<StateSaveCategory, string, StateCategoryVariableAction> ReactToStateCategoryExcludedVariablesChanged;
 
         #endregion
 

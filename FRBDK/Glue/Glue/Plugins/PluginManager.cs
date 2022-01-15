@@ -2029,6 +2029,12 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToGlobalTimer(),
                 plugin => plugin.ReactToGlobalTimer != null);
         }
+
+        public static Task ReactToStateCategoryExcludedVariablesChangedAsync(StateSaveCategory category, string variableName, StateCategoryVariableAction action) => 
+            CallMethodOnPluginAsync(
+                plugin => plugin.ReactToStateCategoryExcludedVariablesChanged(category, variableName, action),
+                plugin => plugin.ReactToStateCategoryExcludedVariablesChanged != null);
+
         #endregion
 
         internal static bool TryHandleException(Exception exception)

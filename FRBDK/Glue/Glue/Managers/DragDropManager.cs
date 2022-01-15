@@ -543,6 +543,8 @@ namespace FlatRedBall.Glue.Managers
                 }
                 var container = ObjectFinder.Self.GetElementContaining(stateSaveCategory);
 
+                PluginManager.ReactToStateCategoryExcludedVariablesChangedAsync(stateSaveCategory, customVariable.Name, StateCategoryVariableAction.Included);
+
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container);
                 GlueCommands.Self.GluxCommands.SaveGlux();
