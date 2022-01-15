@@ -87,10 +87,31 @@ namespace OfficialPlugins.TreeViewPlugin.Views
         NodeViewModel nodePushed;
         NodeViewModel nodeWaitingOnSelection;
 
+        DateTime lastClick;
         private void MainTreeView_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-
-            startPoint = e.GetPosition(null);
+            // Normally tree nodes are selected
+            // on a push, not click. However, this
+            // default behavior would unload the current
+            // editor level and show the new selection. This
+            // is distracting, and we want to allow the user to
+            // drag+drop entities into screens to create new instances
+            // without having to deselect the room. To do this, we suppress
+            // the default selected behavior by setting e.Handled=true down below.
+            // Update - by suppressing the click, we also suppress the double-click.
+            // to solve this, we keep track of how often a click happens and if it's faster
+            // than .25 seconds, we manually call the DoubleClick event.
+            if(e.ChangedButton == MouseButton.Left && e.LeftButton == MouseButtonState.Pressed)
+            {
+                var timeSinceLastClick = DateTime.Now - lastClick;
+                if(timeSinceLastClick.TotalSeconds < .25)
+                {
+                    MainTreeView_MouseDoubleClick(this, null);
+                }
+                lastClick = DateTime.Now;
+                GlueCommands.Self.PrintOutput("Click at " + lastClick);
+                startPoint = e.GetPosition(null);
+            }
 
             var objectPushed = e.OriginalSource;
             nodePushed = (objectPushed as FrameworkElement)?.DataContext as NodeViewModel;
@@ -324,7 +345,6 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         private void MainTreeView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            // todo - look at ElementViewWindow.cs ElementDoubleClick, extract that into common code
             var selectedNode = SelectionLogic.CurrentNode;
             GlueCommands.Self.TreeNodeCommands.HandleTreeNodeDoubleClicked(selectedNode);
         }
