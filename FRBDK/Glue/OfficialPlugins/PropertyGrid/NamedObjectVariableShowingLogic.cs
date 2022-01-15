@@ -21,6 +21,7 @@ using FlatRedBall.Glue.Managers;
 using WpfDataUi.Controls;
 using FlatRedBall.Graphics.Animation;
 using FlatRedBall.Content.Instructions;
+using FlatRedBall.Glue.Parsing;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -677,6 +678,22 @@ namespace OfficialPlugins.VariableDisplay
             };
         }
 
+        // Vic says - I suppose this could go to ObjectFinder, but that would require a bit of work. For now, making it static, and if this is
+        // needed in more places, we could migrate:
+        public static object GetValueRecursively(NamedObjectSave instance, GlueElement container, string memberName)
+        {
+            var variableDefinition = instance?.GetAssetTypeInfo()?.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);
+
+            var typeName = variableDefinition?.Type;
+            Type type = null;
+            if(!string.IsNullOrEmpty(typeName))
+            {
+                type = TypeManager.GetTypeFromString(typeName);
+            }
+
+            return GetValueRecursively(instance, container, memberName, type, variableDefinition);
+        }
+
         private static object GetValueRecursively(NamedObjectSave instance, GlueElement container, string memberName, Type memberType, VariableDefinition variableDefinition)
         {
             var instruction = instance.GetCustomVariable(memberName);
@@ -751,7 +768,7 @@ namespace OfficialPlugins.VariableDisplay
             }
             else
             {
-                if (memberType.IsEnum && instruction.Value is int)
+                if (instruction.Value is int && memberType.IsEnum)
                 {
                     return Enum.ToObject(memberType, instruction.Value);
                 }

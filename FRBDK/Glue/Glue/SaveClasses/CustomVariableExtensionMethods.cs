@@ -60,91 +60,11 @@ namespace FlatRedBall.Glue.SaveClasses
             return false;
         }
 
-        public static bool GetIsVariableState(this CustomVariable customVariable, IElement containingElement = null)
+        public static bool GetIsVariableState(this CustomVariable customVariable, GlueElement containingElement = null)
         {
+            var result = ObjectFinder.Self.GetStateSaveCategory(customVariable, containingElement);
 
-            if(customVariable.Type == null)
-            {
-                throw new NullReferenceException(
-                    $"The custom variable with name {customVariable.Name} has a Type that is null. This is not allowed");
-            }
-            bool returnValue = false;
-
-            if (customVariable.DefinedByBase)
-            {
-                // If this is DefinedByBase, it may represent a variable that is tunneling, but it
-                // doesn't know it - we have to get the variable from the base to know for sure.
-                if (containingElement == null)
-                {
-                    containingElement = ObjectFinder.Self.GetElementContaining(customVariable);
-                }
-                if (containingElement != null && !string.IsNullOrEmpty(containingElement.BaseElement))
-                {
-                    IElement baseElement = GlueState.CurrentGlueProject.GetElement( containingElement.BaseElement);
-                    if (baseElement != null)
-                    {
-                        CustomVariable customVariableInBase = baseElement.GetCustomVariableRecursively(customVariable.Name);
-                        if (customVariableInBase != null)
-                        {
-                            returnValue = customVariableInBase.GetIsVariableState();
-                        }
-                    }
-                }
-            }
-            else
-            {
-
-                bool isTunneled = !string.IsNullOrEmpty(customVariable.SourceObject) &&
-                    !string.IsNullOrEmpty(customVariable.SourceObjectProperty);
-
-                bool isOnThis = string.IsNullOrEmpty(customVariable.SourceObject) &&
-                        string.IsNullOrEmpty(customVariable.SourceObjectProperty);
-
-
-                if (isTunneled)
-                {
-                    string property = customVariable.SourceObjectProperty;
-                    return !string.IsNullOrEmpty(property) && property.StartsWith("Current") &&
-                        property.EndsWith("State");
-                }
-                else
-                {
-                    if (containingElement == null)
-                    {
-                        containingElement = ObjectFinder.Self.GetElementContaining(customVariable);
-                    }
-
-                    if (containingElement != null)
-                    {
-                        returnValue = customVariable.Type == "VariableState" ||
-                            containingElement.GetStateCategory(customVariable.Type) != null;
-                    }
-                }
-            }
-
-            if(!returnValue && customVariable.Type.StartsWith("Entities."))
-            {
-                // It may still be a state, so let's see the entity:
-                var entityName = customVariable.GetEntityNameDefiningThisTypeCategory();
-
-                var entity = ObjectFinder.Self.GetEntitySave(entityName);
-
-                if(entity != null)
-                {
-                    var lastPeriod = customVariable.Type.LastIndexOf('.');
-                    var startIndex = lastPeriod + 1;
-                    var stateCategory = customVariable.Type.Substring(startIndex);
-                    var category = entity.GetStateCategory(stateCategory);
-
-                    if(category != null)
-                    {
-                        returnValue = true;
-                    }
-                }
-            }
-
-            return returnValue;
-
+            return result.IsState;
         }
 
         public static string GetEntityNameDefiningThisTypeCategory(this CustomVariable customVariable)

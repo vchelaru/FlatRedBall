@@ -258,7 +258,7 @@ namespace FlatRedBall.Glue.SaveClasses.Helpers
             return null;
         }
 
-        public static InterpolationCharacteristic GetInterpolationCharacteristic(CustomVariable customVariable, IElement container)
+        public static InterpolationCharacteristic GetInterpolationCharacteristic(CustomVariable customVariable, GlueElement container)
         {
             string variableType = null;
             if (customVariable != null)

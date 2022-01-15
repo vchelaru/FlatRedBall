@@ -36,7 +36,7 @@ namespace OfficialPlugins.Compiler.Managers
             return changedMember == nameof(NamedObjectSave.ExposedInDerived);
         }
 
-        public async void HandleNamedObjectValueChanged(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly)
+        public async Task HandleNamedObjectValueChanged(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly, object forcedCurrentValue = null)
         {
             //////////////////Early Out//////////////////////////////
             var isIgnored = GetIfChangedMemberIsIgnored(changedMember);
@@ -48,7 +48,8 @@ namespace OfficialPlugins.Compiler.Managers
 
             string typeName = null;
             object currentValue = null;
-            var isState = false;
+            bool isState = false;
+            StateSaveCategory category = null;
 
             var nosAti = nos.GetAssetTypeInfo();
             var variableDefinition = nosAti?.VariableDefinitions.FirstOrDefault(item => item.Name == changedMember);
@@ -68,7 +69,14 @@ namespace OfficialPlugins.Compiler.Managers
                 if( nosElement != null)
                 {
                     var variable = nosElement.GetCustomVariableRecursively(changedMember);
-                    if (variable != null && variable.GetIsVariableState(nosElement))
+                    if(variable != null)
+                    {
+                        var isStateResult = ObjectFinder.Self.GetStateSaveCategory(variable, nosElement);
+                        category = isStateResult.Category;
+                        isState = isStateResult.IsState;
+                    }
+
+                    if (isState)
                     {
                         if(changedMember == "VariableState")
                         {
@@ -107,8 +115,30 @@ namespace OfficialPlugins.Compiler.Managers
                 // try to get it from a PositionedObject
                 typeName = typeof(FlatRedBall.PositionedObject).GetProperty(changedMember)?.PropertyType.ToString();
             }
+            if (typeName == null && nos.SourceType == SourceType.Entity)
+            {
+                var nosEntity = ObjectFinder.Self.GetElement(nos);
+                var variableInEntity = nosEntity.GetCustomVariable(changedMember);
+                typeName = variableInEntity?.Type;
 
-            if (instruction != null)
+                if(variableInEntity != null)
+                {
+                    var getStateResult = ObjectFinder.Self.GetStateSaveCategory(variableInEntity, nosEntity);
+                    isState = getStateResult.IsState;
+                    category = getStateResult.Category;
+                    if(isState && category != null)
+                    {
+                        typeName = nosEntity.Name.Replace("/", ".").Replace("\\", ".") + "." + category.Name;
+                    }
+                }
+            }
+
+
+            if (forcedCurrentValue != null)
+            {
+                currentValue = forcedCurrentValue;
+            }
+            else if (instruction != null)
             {
                 currentValue = instruction.Value;
             }
@@ -138,7 +168,7 @@ namespace OfficialPlugins.Compiler.Managers
 
             ConvertValue(ref changedMember, oldValue, currentValue, nos, currentElement, glueScreenName, ref nosName, ati, ref typeName, out value);
 
-            TaskManager.Self.Add(() =>
+            await TaskManager.Self.AddAsync(() =>
             {
                 try
                 {
@@ -156,7 +186,7 @@ namespace OfficialPlugins.Compiler.Managers
                     if(response?.WasVariableAssigned != true)
                     {
                         // wasn't assigned, the game didn't know what to do, so restart
-                        RefreshManager.Self.StopAndRestartTask($"Unhandled variable {changedMember} changed");
+                        RefreshManager.Self.StopAndRestartTask($"Unhandled variable {changedMember} changed").Wait();
                     }
                 }
                 catch
@@ -164,6 +194,24 @@ namespace OfficialPlugins.Compiler.Managers
                     // no biggie...
                 }
             }, "Pushing variable to game", TaskExecutionPreference.Asap);
+
+            if(category != null && value == null)
+            {
+                // we need to un-assign the state. We can do this by looping through all variables controlled by the
+                // category and setting them to null values:
+                var ownerOfCategory = ObjectFinder.Self.GetElementContaining(category);
+
+                var variablesToAssign = ownerOfCategory?.CustomVariables
+                    .Where(item => !category.ExcludedVariables.Contains(item.Name)).ToArray();
+                if(variablesToAssign != null)
+                {
+                    foreach(var variableToAssign in variablesToAssign)
+                    {
+                        var defaultValue = VariableDisplay.NamedObjectVariableShowingLogic.GetValueRecursively(nos, ownerOfCategory, variableToAssign.Name);
+                        await HandleNamedObjectValueChanged(variableToAssign.Name, null, nos, assignOrRecordOnly, forcedCurrentValue:defaultValue);
+                    }
+                }
+            }
         }
 
         private void ConvertValue(ref string changedMember, object oldValue, 
@@ -442,13 +490,13 @@ namespace OfficialPlugins.Compiler.Managers
         }
 
 
-        internal void HandleNamedObjectValueChanged(string changedMember, object oldValue)
+        internal async Task HandleNamedObjectValueChanged(string changedMember, object oldValue)
         {
             var nos = GlueState.Self.CurrentNamedObjectSave;
-            HandleNamedObjectValueChanged(changedMember, oldValue, nos, AssignOrRecordOnly.Assign);
+            await HandleNamedObjectValueChanged(changedMember, oldValue, nos, AssignOrRecordOnly.Assign);
         }
 
-        internal async void HandleVariableChanged(IElement variableElement, CustomVariable variable)
+        internal async void HandleVariableChanged(GlueElement variableElement, CustomVariable variable)
         {
             if (RefreshManager.Self.ShouldRestartOnChange)
             {

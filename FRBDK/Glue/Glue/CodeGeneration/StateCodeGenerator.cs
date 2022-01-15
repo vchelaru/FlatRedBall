@@ -21,7 +21,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #region Create Inner Class
 
-        private static ICodeBlock CreateClassForStateCategory(ICodeBlock currentBlock, List<StateSave> statesForThisCategory, StateSaveCategory category, IElement element)
+        private static ICodeBlock CreateClassForStateCategory(ICodeBlock currentBlock, List<StateSave> statesForThisCategory, StateSaveCategory category, GlueElement element)
         {
             string categoryClassName = category?.Name ?? "VariableState";
 
@@ -86,7 +86,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return currentBlock;
         }
 
-        private static bool ShouldIncludeVariable(StateSaveCategory category, IElement element, CustomVariable item)
+        private static bool ShouldIncludeVariable(StateSaveCategory category, GlueElement element, CustomVariable item)
         {
             if (category == null)
             {
@@ -170,8 +170,8 @@ namespace FlatRedBall.Glue.CodeGeneration
                 List<StateSave> statesForThisCategory = GetSharedVariableStates(element);
 
 
-                currentBlock = CreateClassForStateCategory(currentBlock, statesForThisCategory, null, element);
-                GenerateCurrentStateProperty(element, codeBlock, null, statesForThisCategory);
+                currentBlock = CreateClassForStateCategory(currentBlock, statesForThisCategory, null, element as GlueElement);
+                GenerateCurrentStateProperty(element as GlueElement, codeBlock, null, statesForThisCategory);
 
                 //Build State Categories
                 var stateCategories = GetAllStateCategoryNames(element, false);
@@ -181,15 +181,15 @@ namespace FlatRedBall.Glue.CodeGeneration
                     var states = GetAllStatesForCategory(element, kvp.Key);
 
                     var category = kvp.Value;
-                    CreateClassForStateCategory(currentBlock, states, category, element);
-                    GenerateCurrentStateProperty(element, codeBlock, category, states);
+                    CreateClassForStateCategory(currentBlock, states, category, element as GlueElement);
+                    GenerateCurrentStateProperty(element as GlueElement, codeBlock, category, states);
                 }
             }
 
             return codeBlock;
         }
 
-        private static ICodeBlock GenerateCurrentStateProperty(IElement element, ICodeBlock codeBlock, StateSaveCategory category, List<StateSave> states)
+        private static ICodeBlock GenerateCurrentStateProperty(GlueElement element, ICodeBlock codeBlock, StateSaveCategory category, List<StateSave> states)
         {
             string enumType = category?.Name ?? "VariableState";
             // early out
@@ -308,7 +308,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        private static void GenerateVariableAssignmentForDynamicState(IElement element, ICodeBlock setBlock, StateSaveCategory category)
+        private static void GenerateVariableAssignmentForDynamicState(GlueElement element, ICodeBlock setBlock, StateSaveCategory category)
         {
             setBlock = setBlock.If("value != null");
             foreach (var variable in element.CustomVariables)
@@ -684,7 +684,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
 
 
-                GenerateInterpolationAdditionalMethods(codeBlock, element, sharedVariableStates);
+                GenerateInterpolationAdditionalMethods(codeBlock, element as GlueElement, sharedVariableStates);
 
                 GeneratePreloadStateContent(codeBlock, element, sharedVariableStates);
             }

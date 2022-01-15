@@ -629,12 +629,12 @@ namespace OfficialPlugins.Compiler.Managers
         #region Variable Changed
 
 
-        internal void HandleNamedObjectValueChanged(string variableName, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly)
+        internal async void HandleNamedObjectValueChanged(string variableName, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly)
         {
             var foundVariable = nos.GetCustomVariable(variableName);
             if(ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
-                VariableSendingManager.Self.HandleNamedObjectValueChanged(variableName, oldValue, nos, assignOrRecordOnly);
+                await VariableSendingManager.Self.HandleNamedObjectValueChanged(variableName, oldValue, nos, assignOrRecordOnly);
             }
         }
 
@@ -642,7 +642,7 @@ namespace OfficialPlugins.Compiler.Managers
         {
             if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
-                VariableSendingManager.Self.HandleVariableChanged(variableElement, variable);
+                VariableSendingManager.Self.HandleVariableChanged(variableElement as GlueElement, variable);
             }
         }
 

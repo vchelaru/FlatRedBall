@@ -20,7 +20,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         const string FirstValue = "FirstValue";
         const string SecondValue = "SecondValue";
 
-        private static void GenerateInterpolationAdditionalMethods(ICodeBlock codeBlock, SaveClasses.IElement element, List<StateSave> sharedVariableStates)
+        private static void GenerateInterpolationAdditionalMethods(ICodeBlock codeBlock, GlueElement element, List<StateSave> sharedVariableStates)
         {
             StateCodeGenerator.GenerateInterpolateToStateMethod(element, codeBlock, "VariableState", sharedVariableStates);
             StateCodeGenerator.GenerateInterpolateBetweenMethod(element, codeBlock, "VariableState", sharedVariableStates);
@@ -308,7 +308,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
 
-        private static ICodeBlock GenerateInterpolateBetweenMethod(IElement element, ICodeBlock codeBlock, string enumType, List<StateSave> states)
+        private static ICodeBlock GenerateInterpolateBetweenMethod(GlueElement element, ICodeBlock codeBlock, string enumType, List<StateSave> states)
         {
             var curBlock = codeBlock;
 
@@ -441,7 +441,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return curBlock;
         }
 
-        private static void CreateStartingValueVariables(IElement element, List<StateSave> states, ICodeBlock curBlock, Dictionary<InstructionSave, InterpolationCharacteristic> interpolationCharacteristics)
+        private static void CreateStartingValueVariables(GlueElement element, List<StateSave> states, ICodeBlock curBlock, Dictionary<InstructionSave, InterpolationCharacteristic> interpolationCharacteristics)
         {
             foreach (StateSave state in states)
             {

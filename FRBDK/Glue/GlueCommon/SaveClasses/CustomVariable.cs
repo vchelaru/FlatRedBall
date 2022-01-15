@@ -30,6 +30,9 @@ namespace FlatRedBall.Glue.SaveClasses
 
     #endregion
 
+    /// <summary>
+    /// Variable which is stored directly in a GlueElement. These are not directly stored in NamedObjectSaves.
+    /// </summary>
     public class CustomVariable 
     {
         #region Fields

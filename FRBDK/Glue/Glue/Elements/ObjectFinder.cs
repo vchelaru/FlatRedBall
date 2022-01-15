@@ -10,6 +10,7 @@ using EditorObjects.Parsing;
 using FlatRedBall.Glue.Events;
 
 using FlatRedBall.Glue.GuiDisplay.Facades;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.Elements
 {
@@ -118,6 +119,34 @@ namespace FlatRedBall.Glue.Elements
             {
                 return new List<ReferencedFileSave>();
             }
+        }
+
+        public List<ReferencedFileSave> GetMatchingReferencedFiles(ReferencedFileSave rfs)
+        {
+            // The same file 
+            // can be referenced 
+            // in multiple parts in 
+            // a Glue project.  For example,
+            // one .scnx file may be used in two
+            // unrelated Entities.  Or a RFS may be
+            // both in GlobalContent as well as in an
+            // Entity.  In this case, the two RFS's should
+            // be linked.  Changing a property on one (like
+            // whether to use the content pipeline) should be
+            // also changed on the other.
+            List<ReferencedFileSave> toReturn = new List<ReferencedFileSave>();
+
+            List<ReferencedFileSave> allRfses = GetAllReferencedFiles();
+
+            foreach (ReferencedFileSave possibleRfs in allRfses)
+            {
+                if (possibleRfs != rfs && possibleRfs.Name == rfs.Name)
+                {
+                    toReturn.Add(possibleRfs);
+                }
+            }
+
+            return toReturn;
         }
 
         #endregion
@@ -954,36 +983,98 @@ namespace FlatRedBall.Glue.Elements
             return GlueProject.GetElementContaining(customVariable);
         }
 
-        #endregion
-
-
-        public List<ReferencedFileSave> GetMatchingReferencedFiles(ReferencedFileSave rfs)
+        public (bool IsState, StateSaveCategory Category) GetStateSaveCategory(CustomVariable customVariable, GlueElement containingElement)
         {
-            // The same file 
-            // can be referenced 
-            // in multiple parts in 
-            // a Glue project.  For example,
-            // one .scnx file may be used in two
-            // unrelated Entities.  Or a RFS may be
-            // both in GlobalContent as well as in an
-            // Entity.  In this case, the two RFS's should
-            // be linked.  Changing a property on one (like
-            // whether to use the content pipeline) should be
-            // also changed on the other.
-            List<ReferencedFileSave> toReturn = new List<ReferencedFileSave>();
-
-            List<ReferencedFileSave> allRfses = GetAllReferencedFiles();
-
-            foreach (ReferencedFileSave possibleRfs in allRfses)
+            if (customVariable.Type == null)
             {
-                if (possibleRfs != rfs && possibleRfs.Name == rfs.Name)
+                throw new NullReferenceException(
+                    $"The custom variable with name {customVariable.Name} has a Type that is null. This is not allowed");
+            }
+            bool isState = false;
+            StateSaveCategory category = null;
+
+            if (containingElement == null)
+            {
+                containingElement = ObjectFinder.Self.GetElementContaining(customVariable);
+            }
+            if (customVariable.DefinedByBase)
+            {
+                // If this is DefinedByBase, it may represent a variable that is tunneling, but it
+                // doesn't know it - we have to get the variable from the base to know for sure.
+                if (containingElement != null && !string.IsNullOrEmpty(containingElement.BaseElement))
                 {
-                    toReturn.Add(possibleRfs);
+                    var baseElement = GlueState.Self.CurrentGlueProject.GetElement(containingElement.BaseElement);
+                    if (baseElement != null)
+                    {
+                        CustomVariable customVariableInBase = baseElement.GetCustomVariableRecursively(customVariable.Name);
+                        if (customVariableInBase != null)
+                        {
+                            (isState, category) = GetStateSaveCategory(customVariableInBase, baseElement);
+                        }
+                    }
+                }
+            }
+            else
+            {
+
+                bool isTunneled = !string.IsNullOrEmpty(customVariable.SourceObject) &&
+                    !string.IsNullOrEmpty(customVariable.SourceObjectProperty);
+
+
+
+                if (isTunneled)
+                {
+                    string property = customVariable.SourceObjectProperty;
+
+                    var nos = containingElement.GetNamedObjectRecursively(customVariable.SourceObject);
+                    var nosElement = GetElement(nos);
+                    var variableInNosElement = nosElement?.GetCustomVariableRecursively(customVariable.SourceObjectProperty);
+
+                    if(nosElement != null && variableInNosElement != null)
+                    {
+                        (isState, category) = GetStateSaveCategory(variableInNosElement, nosElement);
+                    }
+                }
+                else
+                {
+                    if (containingElement != null)
+                    {
+                        if(customVariable.Type == "VariableState")
+                        {
+                            isState = true;
+                            category = null;
+                        }
+                        else
+                        {
+                            category = containingElement.GetStateCategory(customVariable.Type);
+                            isState = category != null;
+                        }
+                    }
                 }
             }
 
-            return toReturn;
+            if (!isState && customVariable.Type.StartsWith("Entities."))
+            {
+                // It may still be a state, so let's see the entity:
+                var entityName = customVariable.GetEntityNameDefiningThisTypeCategory();
+
+                var entity = ObjectFinder.Self.GetEntitySave(entityName);
+
+                if (entity != null)
+                {
+                    var lastPeriod = customVariable.Type.LastIndexOf('.');
+                    var startIndex = lastPeriod + 1;
+                    var stateCategory = customVariable.Type.Substring(startIndex);
+                    category = entity.GetStateCategory(stateCategory);
+                    isState = category != null;
+                }
+            }
+
+            return (isState, category);
         }
+
+        #endregion
+
 
         public int GetHierarchyDepth(GlueElement element)
         {

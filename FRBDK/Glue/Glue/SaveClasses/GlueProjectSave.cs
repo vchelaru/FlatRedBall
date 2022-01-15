@@ -188,9 +188,9 @@ namespace FlatRedBall.Glue.SaveClasses
 
         }
 
-        public IElement GetElement(string elementName)
+        public GlueElement GetElement(string elementName)
         {
-            IElement retval;
+            GlueElement retval;
 
             retval = GetScreenSave(elementName);
 

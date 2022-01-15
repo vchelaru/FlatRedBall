@@ -1127,9 +1127,9 @@ namespace GlueControl.Editing
         {
             Type stateType = TryGetStateType(type);
 
-            var dictionary = stateType.GetField("AllStates").GetValue(null) as IDictionary;
+            var dictionary = stateType?.GetField("AllStates").GetValue(null) as IDictionary;
 
-            if (dictionary != null && dictionary.Contains(variableValue))
+            if (dictionary != null && variableValue != null && dictionary.Contains(variableValue))
             {
                 return dictionary[variableValue];
             }
