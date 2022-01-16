@@ -90,15 +90,15 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             ScreenSave screen = await CommandSender.GetCurrentInGameScreen();
             if(screen != null)
             {
-                TaskManager.Self.Add(() =>
+                await TaskManager.Self.AddAsync(() =>
                 {
+                    var objectsToRemove = removeObjectDto.ObjectNames
+                        .Select(objectName => screen.GetNamedObjectRecursively(objectName))
+                        .Where(item => item != null)
+                        .ToList();
 
-                    var nos = screen.GetNamedObjectRecursively(removeObjectDto.ObjectName);
+                    GlueCommands.Self.GluxCommands.RemoveNamedObjectListAsync(objectsToRemove);
 
-                    if (nos != null)
-                    {
-                        GlueCommands.Self.GluxCommands.RemoveNamedObject(nos);
-                    }
                 }, "Handling removing object from screen");
             }
         }

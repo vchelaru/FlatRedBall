@@ -461,7 +461,7 @@ namespace GlueControl
                 }
                 newEntity = newPositionedObject;
 
-                if(factory == null)
+                if (factory == null)
                 {
                     ApplyEditorCommandsToNewEntity(newEntity, currentAddObjectIndex);
                 }
@@ -499,11 +499,25 @@ namespace GlueControl
 
         public RemoveObjectDtoResponse HandleDeleteInstanceCommandFromGlue(RemoveObjectDto removeObjectDto, PositionedObject forcedItem = null)
         {
+            var elementNameGlue = removeObjectDto.ElementNameGlue;
+
             RemoveObjectDtoResponse response = new RemoveObjectDtoResponse();
             response.DidScreenMatch = false;
             response.WasObjectRemoved = false;
 
-            var elementGameType = CommandReceiver.GlueToGameElementName(removeObjectDto.ElementNameGlue);
+            foreach (var objectName in removeObjectDto.ObjectNames)
+            {
+                HandleDeleteObject(forcedItem, elementNameGlue, objectName, response);
+            }
+
+
+            return response;
+        }
+
+        private void HandleDeleteObject(PositionedObject forcedItem, string elementNameGlue, string objectName, RemoveObjectDtoResponse response)
+        {
+            var elementGameType = CommandReceiver.GlueToGameElementName(elementNameGlue);
+
             var ownerType = this.GetType().Assembly.GetType(elementGameType);
             GlueElement ownerElement = null;
             if (CustomGlueElements.ContainsKey(elementGameType))
@@ -511,10 +525,12 @@ namespace GlueControl
                 ownerElement = CustomGlueElements[elementGameType];
             }
 
+
             var removedFromEntity =
                 (ownerType != null && typeof(PositionedObject).IsAssignableFrom(ownerType))
                 ||
                 ownerElement != null && ownerElement is EntitySave;
+
 
             if (removedFromEntity)
             {
@@ -522,7 +538,7 @@ namespace GlueControl
                 {
                     if (CommandReceiver.DoTypesMatch(forcedItem, elementGameType))
                     {
-                        var objectToDelete = forcedItem.Children.FindByName(removeObjectDto.ObjectName);
+                        var objectToDelete = forcedItem.Children.FindByName(objectName);
                         if (objectToDelete != null)
                         {
                             TryDeleteObject(response, objectToDelete);
@@ -535,7 +551,7 @@ namespace GlueControl
                     {
                         // try to remove this object from here...
                         //screen.ApplyVariable(variableNameOnObjectInInstance, variableValue, item);
-                        var objectToDelete = item.Children.FindByName(removeObjectDto.ObjectName);
+                        var objectToDelete = item.Children.FindByName(objectName);
 
                         if (objectToDelete != null)
                         {
@@ -560,14 +576,14 @@ namespace GlueControl
                         : GlueControl.Editing.ElementEditingMode.EditingScreen;
 
                     var foundObject = GlueControl.Editing.SelectionLogic.GetAvailableObjects(editingMode)
-                            .FirstOrDefault(item => item.Name == removeObjectDto.ObjectName);
+                            .FirstOrDefault(item => item.Name == objectName);
                     TryDeleteObject(response, foundObject);
 
                     if (!response.WasObjectRemoved)
                     {
                         // see if there is a collision relationship with this name
                         var matchingCollisionRelationship = FlatRedBall.Math.Collision.CollisionManager.Self.Relationships.FirstOrDefault(
-                            item => item.Name == removeObjectDto.ObjectName);
+                            item => item.Name == objectName);
 
                         if (matchingCollisionRelationship != null)
                         {
@@ -577,10 +593,6 @@ namespace GlueControl
                     }
                 }
             }
-
-
-
-            return response;
         }
 
         private static void TryDeleteObject(RemoveObjectDtoResponse removeResponse, PositionedObject objectToDelete)
@@ -1190,17 +1202,18 @@ namespace GlueControl
 
         #region Delete Instance from Game
 
-        public void DeleteInstanceByGame(INameable instance)
+        public void DeleteInstancesByGame(List<INameable> instances)
         {
             // Vic June 27, 2021
             // this sends a command to Glue to delete the object, but doesn't
             // actually delete it in game until Glue tells the game to get rid
             // of it. Is that okay? it's a little slower, but it works. Maybe at
             // some point in the future I'll find a reason why it needs to be immediate.
-            var name = instance.Name;
-
+            // Update - January 16, 2022
+            // This does take a little bit of time, and we can make the game way more responsive
+            // by batching.
             var dto = new Dtos.RemoveObjectDto();
-            dto.ObjectName = instance.Name;
+            dto.ObjectNames = instances.Select(item => item.Name).ToList();
 
             GlueControlManager.Self.SendToGlue(dto);
         }

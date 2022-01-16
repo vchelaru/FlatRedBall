@@ -23,7 +23,7 @@ namespace OfficialPlugins.Compiler.Dtos
     public class RemoveObjectDto : UpdateCurrentElementDto
     {
         public string ElementNameGlue { get; set; }
-        public string ObjectName { get; set; }
+        public List<string> ObjectNames { get; set; } = new List<string>();
     }
     #endregion
 

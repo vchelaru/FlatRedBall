@@ -1001,13 +1001,32 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToObjectRemoved(IElement element, NamedObjectSave removedObject)
         {
-            CallMethodOnPlugin((plugin) =>
-            {
-                plugin.ReactToObjectRemoved(element, removedObject);
-            },
-            plugin => plugin.ReactToObjectRemoved != null,
-            nameof(ReactToNewObject));
+            CallMethodOnPlugin(plugin => plugin.ReactToObjectRemoved(element, removedObject),
+            plugin => plugin.ReactToObjectRemoved != null);
             
+        }
+
+        internal static Task ReactToObjectListRemovedAsync(List<GlueElement> ownerList, List<NamedObjectSave> removedObjects)
+        {
+            return CallMethodOnPluginAsync(plugin =>
+            {
+                if(plugin.ReactToObjectListRemoved != null)
+                {
+                    plugin.ReactToObjectListRemoved(ownerList, removedObjects);
+                }
+                else
+                {
+                    
+                    // fall back to the single item removed if the entire list can't be handled at once
+                    for(int i = 0; i < removedObjects.Count; i++)
+                    {
+                        var removedObject = removedObjects[i];
+                        var owner = ownerList[i];
+                        plugin.ReactToObjectRemoved(owner, removedObject);
+                    }
+                }
+            },
+            plugin => plugin.ReactToObjectRemoved != null || plugin.ReactToObjectListRemoved != null);
         }
 
         internal static void ReactToNewScreenCreated(ScreenSave screen)

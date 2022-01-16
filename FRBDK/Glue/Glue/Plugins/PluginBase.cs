@@ -231,6 +231,8 @@ namespace FlatRedBall.Glue.Plugins
         /// </summary>
         public ReactToNewObjectDelegate ReactToNewObjectHandler { get; protected set; }
         public Action<IElement, NamedObjectSave> ReactToObjectRemoved { get; protected set; }
+        public Action<List<GlueElement>, List<NamedObjectSave>> ReactToObjectListRemoved { get; protected set; }
+        
 
         /// <summary>
         /// Delegate raised when right-clicking on the property grid.

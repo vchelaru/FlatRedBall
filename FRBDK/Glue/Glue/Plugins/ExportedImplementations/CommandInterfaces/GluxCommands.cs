@@ -1220,12 +1220,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         }
 
-        public void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSave = true, 
+        public void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSaveAndGenerateCode = true, 
             bool updateUi = true, List<string> additionalFilesToRemove = null)
         {
-            // caller doesn't care, so we're going to new it here and just fill it, but throw it away
-            additionalFilesToRemove = additionalFilesToRemove ?? new List<string>();
-
             StringBuilder removalInformation = new StringBuilder();
 
             var wasSelected = GlueState.Self.CurrentNamedObjectSave == namedObjectToRemove;
@@ -1260,8 +1257,128 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // 5.  Find any Elements that contain NamedObjects that are DefinedByBase - if so, see if we should remove those or make them not DefinedByBase
             // 6.  Remove any events that tunnel into this.
             TaskManager.Self.AddOrRunIfTasked(() =>
-                DoRemovalInternal(namedObjectToRemove, performSave, updateUi, additionalFilesToRemove, removalInformation, wasSelected, indexInChild, containerOfRemoved, element),
-                "Performing object removal logic");
+            {
+                // caller doesn't care, so we're going to new it here and just fill it, but throw it away
+                additionalFilesToRemove = additionalFilesToRemove ?? new List<string>();
+
+                DoRemovalInternal(namedObjectToRemove, performSaveAndGenerateCode, updateUi, additionalFilesToRemove, removalInformation, wasSelected, indexInChild, containerOfRemoved, element);
+            },
+            "Performing object removal logic");
+        }
+
+        public async Task RemoveNamedObjectAsync(NamedObjectSave namedObjectToRemove, bool performSaveAndGenerateCode = true,
+            bool updateUi = true, List<string> additionalFilesToRemove = null, bool notifyPluginsOfRemoval = true)
+        {
+            StringBuilder removalInformation = new StringBuilder();
+
+            bool wasSelected;
+            int indexInChild;
+            NamedObjectSave containerOfRemoved;
+            GlueElement element;
+            GetSelectionInfo(namedObjectToRemove, out wasSelected, out indexInChild, out containerOfRemoved, out element);
+
+            // The additionalFilesToRemove is included for consistency with other methods.  It may be used later
+
+            // There are the following things that need to happen:
+            // 1.  Remove the NamedObject from the Glue project (GLUX)
+            // 2.  Remove any variables that use this NamedObject as their source
+            // 3.  Remove the named object from the GUI
+            // 4.  Update the variables for any NamedObjects that use this element containing this NamedObject
+            // 5.  Find any Elements that contain NamedObjects that are DefinedByBase - if so, see if we should remove those or make them not DefinedByBase
+            // 6.  Remove any events that tunnel into this.
+            await TaskManager.Self.AddAsync(() =>
+            {
+                // caller doesn't care, so we're going to new it here and just fill it, but throw it away
+                additionalFilesToRemove = additionalFilesToRemove ?? new List<string>();
+
+                DoRemovalInternal(namedObjectToRemove, performSaveAndGenerateCode, updateUi, additionalFilesToRemove, removalInformation, wasSelected, indexInChild, containerOfRemoved, element, notifyPluginsOfRemoval);
+            },
+            "Performing object removal logic");
+        }
+
+        private static void GetSelectionInfo(NamedObjectSave namedObjectToRemove, out bool wasSelected, out int indexInChild, out NamedObjectSave containerOfRemoved, out GlueElement element)
+        {
+            wasSelected = GlueState.Self.CurrentNamedObjectSave == namedObjectToRemove;
+            indexInChild = -1;
+            containerOfRemoved = null;
+            element = namedObjectToRemove.GetContainer();
+            if (wasSelected)
+            {
+                if (element.NamedObjects.Contains(namedObjectToRemove))
+                {
+                    indexInChild = element.NamedObjects.IndexOf(namedObjectToRemove);
+                }
+                else
+                {
+                    containerOfRemoved = element.NamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(namedObjectToRemove));
+
+                    if (containerOfRemoved != null)
+                    {
+                        indexInChild = containerOfRemoved.ContainedObjects.IndexOf(namedObjectToRemove);
+                    }
+                }
+            }
+        }
+
+        public async Task RemoveNamedObjectListAsync(List<NamedObjectSave> namedObjectListToRemove, bool performSaveAndGenerateCode = true,
+            bool updateUi = true, List<string> additionalFilesToRemove = null)
+        {
+            bool wasSelected =
+                namedObjectListToRemove.Contains(GlueState.Self.CurrentNamedObjectSave);
+
+            List<GlueElement> ownerList = null;
+
+            await TaskManager.Self.AddAsync(() =>
+                ownerList = namedObjectListToRemove.Select(item => ObjectFinder.Self.GetElementContaining(item)).ToList(),
+                "Getting list of owners");
+
+            foreach (var item in namedObjectListToRemove)
+            {
+                await RemoveNamedObjectAsync(item, performSaveAndGenerateCode: false, updateUi: false, additionalFilesToRemove: null, notifyPluginsOfRemoval:false);
+            }
+
+            var ownerHashSet = ownerList.ToHashSet();
+
+            if(updateUi)
+            {
+                foreach(var owner in ownerHashSet)
+                {
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(owner);
+                }
+            }
+
+
+
+            // If we aren't going to save the project, we probably don't
+            // care about generating code either. I don't know if we ever
+            // want to separate these variables, but we'll link them for now.
+            if (performSaveAndGenerateCode)
+            {
+                foreach (var owner in ownerHashSet)
+                {
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(owner);
+                }
+            }
+
+
+            if(wasSelected)
+            {
+                var owner = ownerHashSet.FirstOrDefault();
+                if(owner != null)
+                {
+                    var nos = owner.NamedObjects.FirstOrDefault();
+                    if(nos != null)
+                    {
+                        GlueState.Self.CurrentNamedObjectSave = nos;
+                    }
+                    else
+                    {
+                        GlueState.Self.CurrentElement = owner;
+                    }
+                }
+            }
+
+            await PluginManager.ReactToObjectListRemovedAsync(ownerList, namedObjectListToRemove);
         }
 
         public GeneralResponse CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool save = true)
@@ -1407,7 +1524,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return toReturn;
         }
 
-        private void DoRemovalInternal(NamedObjectSave namedObjectToRemove, bool performSave, bool updateUi, List<string> additionalFilesToRemove, StringBuilder removalInformation, bool wasSelected, int indexInChild, NamedObjectSave containerOfRemoved, GlueElement element)
+        private void DoRemovalInternal(NamedObjectSave namedObjectToRemove, bool performSaveAndGenerateCode, bool updateUi, 
+            List<string> additionalFilesToRemove, 
+            StringBuilder removalInformation, bool wasSelected, 
+            int indexInChild, NamedObjectSave containerOfRemoved, 
+            GlueElement element,
+            bool notifyPlugins = true)
         {
             if (element != null)
             {
@@ -1458,13 +1580,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 foreach (var derivedNamedObject in objectsToRemove.CollisionRelationships)
                 {
                     // Delete it
-                    RemoveNamedObject(derivedNamedObject, performSave, updateUi, additionalFilesToRemove);
+                    RemoveNamedObject(derivedNamedObject, performSaveAndGenerateCode, updateUi, additionalFilesToRemove);
                 }
 
                 foreach (var derivedNamedObject in objectsToRemove.DerivedNamedObjects)
                 {
                     // Delete it
-                    RemoveNamedObject(derivedNamedObject, performSave, updateUi, additionalFilesToRemove);
+                    RemoveNamedObject(derivedNamedObject, performSaveAndGenerateCode, updateUi, additionalFilesToRemove);
                 }
 
 
@@ -1508,7 +1630,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     });
                 }
-                CodeWriter.GenerateCode(element);
+
+                // If we aren't going to save the project, we probably don't
+                // care about generating code either. I don't know if we ever
+                // want to separate these variables, but we'll link them for now.
+                if(performSaveAndGenerateCode)
+                {
+                    CodeWriter.GenerateCode(element);
+                }
+
                 if (element is EntitySave)
                 {
                     List<NamedObjectSave> entityNamedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(element.Name);
@@ -1521,17 +1651,20 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
 
-                PluginManager.ReactToObjectRemoved(element, namedObjectToRemove);
+                if(notifyPlugins)
+                {
+                    PluginManager.ReactToObjectRemoved(element, namedObjectToRemove);
+                }
             }
 
-            if (element == null && GlueState.Self.CurrentElement != null)
+            if (element == null && GlueState.Self.CurrentElement != null && updateUi)
             {
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(GlueState.Self.CurrentElement);
             }
 
 
 
-            if (performSave)
+            if (performSaveAndGenerateCode)
             {
                 GluxCommands.Self.SaveGlux();
             }

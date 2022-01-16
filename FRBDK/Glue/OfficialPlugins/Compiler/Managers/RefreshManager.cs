@@ -745,18 +745,25 @@ namespace OfficialPlugins.Compiler.Managers
         #endregion
 
         #region Object Removed
-        internal async Task HandleObjectRemoved(IElement owner, NamedObjectSave nos)
+
+        internal async Task HandleObjectListRemoved(List<GlueElement> owners, List<NamedObjectSave> namedObjects)
         {
-            if (ViewModel.IsRunning && ViewModel.IsEditChecked)
+            var owner = owners.FirstOrDefault();
+            // Assume all owners are the same, so just use the first. If we ever allow selection of multiple objects
+            // in different screens, then we would want to include the lists.
+            if (ViewModel.IsRunning && ViewModel.IsEditChecked && owner != null)
             {
                 var dto = new Dtos.RemoveObjectDto();
 
-                dto.ScreenSave = GlueState.Self.CurrentElement as ScreenSave;
-                dto.EntitySave = GlueState.Self.CurrentElement as EntitySave;
+                dto.ScreenSave = owner as ScreenSave;
+                dto.EntitySave = owner as EntitySave;
 
                 dto.ElementNameGlue = //ToGameType((GlueElement)owner);
                     owner.Name;
-                dto.ObjectName = nos.InstanceName;
+
+                var namedObjectNames = namedObjects.Select(item => item.InstanceName).ToList();
+
+                dto.ObjectNames.AddRange(namedObjectNames);
                 var timeBeforeSend = DateTime.Now;
                 var sendResponse = await CommandSender.Send(dto);
                 var responseAsstring = sendResponse.Succeeded ? sendResponse.Data : null;
@@ -771,13 +778,18 @@ namespace OfficialPlugins.Compiler.Managers
                 {
                     printOutput($"Error parsing response from game:\n\n{responseAsstring}");
                 }
-                if(response == null || (response.DidScreenMatch && response.WasObjectRemoved == false))
+                if (response == null || (response.DidScreenMatch && response.WasObjectRemoved == false))
                 {
-                    StopAndRestartTask(
-                        $"Restarting because {nos} was deleted from Glue but not from game");
+                    await StopAndRestartTask(
+                        $"Restarting because {namedObjects.Count} items were deleted from Glue but not from game");
                 }
-
             }
+        }
+
+        internal Task HandleObjectRemoved(IElement owner, NamedObjectSave nos)
+        {
+            return HandleObjectListRemoved(
+                new List<GlueElement> { owner as GlueElement }, new List<NamedObjectSave> { nos });
         }
         #endregion
 

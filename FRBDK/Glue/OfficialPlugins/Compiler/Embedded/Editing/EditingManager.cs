@@ -405,10 +405,7 @@ namespace GlueControl.Editing
 
             if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.Delete))
             {
-                for (int i = itemsSelected.Count - 1; i > -1; i--)
-                {
-                    InstanceLogic.Self.DeleteInstanceByGame(itemsSelected[i]);
-                }
+                InstanceLogic.Self.DeleteInstancesByGame(itemsSelected);
                 itemsSelected.Clear();
                 AddAndDestroyMarkersAccordingToItemsSelected();
             }

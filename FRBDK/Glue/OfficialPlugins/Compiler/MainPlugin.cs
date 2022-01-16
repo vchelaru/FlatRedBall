@@ -186,6 +186,9 @@ namespace OfficialPlugins.Compiler
             this.ReactToNewObjectHandler += RefreshManager.Self.HandleNewObjectCreated;
             this.ReactToObjectRemoved += async (owner, nos) =>
                 await RefreshManager.Self.HandleObjectRemoved(owner, nos);
+            this.ReactToObjectListRemoved += async (ownerList, list) =>
+                await RefreshManager.Self.HandleObjectListRemoved(ownerList, list);
+
             this.ReactToElementVariableChange += RefreshManager.Self.HandleVariableChanged;
             this.ReactToNamedObjectChangedValue += (string changedMember, object oldValue, NamedObjectSave namedObject) => 
                 RefreshManager.Self.HandleNamedObjectValueChanged(changedMember, oldValue, namedObject, Dtos.AssignOrRecordOnly.Assign);
