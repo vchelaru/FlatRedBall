@@ -114,7 +114,9 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             }
 
             var objectPushed = e.OriginalSource;
-            nodePushed = (objectPushed as FrameworkElement)?.DataContext as NodeViewModel;
+            var frameworkElementPushed = (objectPushed as FrameworkElement);
+
+            nodePushed = frameworkElementPushed?.DataContext as NodeViewModel;
 
             //MainTreeView.
             if (e.LeftButton == MouseButtonState.Pressed)

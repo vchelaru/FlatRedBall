@@ -78,7 +78,18 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             var didSelectionChange = currentNode?.Tag != nodeViewModel?.Tag;
             currentNode = nodeViewModel;
 
-            if(IsPushingSelectionOutToGlue
+            if(nodeViewModel != null && nodeViewModel.IsSelected)
+            {
+                var container = mainView.MainTreeView.ItemContainerGenerator.ContainerFromItem(nodeViewModel) as ListBoxItem;
+                // This is needed to handle focusing because otherwise clicks on teh treeview don't focus.
+                if(container != null)
+                {
+                    container.Focus();
+                    System.Windows.Input.Keyboard.Focus(container);
+                }
+            }
+
+            if (IsPushingSelectionOutToGlue
                 // The node can change if the user deletes a tree node and then a new one
                 // automatically gets re-selected. In this case, we do still want to push the selection out.
                 || didSelectionChange)
