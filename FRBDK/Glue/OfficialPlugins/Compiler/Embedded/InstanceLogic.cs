@@ -544,7 +544,8 @@ namespace GlueControl
                     }
                 }
             }
-            else
+            // see VariableAssignmentLogic.SetVariable by `var setOnEntity =` code for info on why we do this check
+            else if (forcedItem == null)
             {
                 bool matchesCurrentScreen =
                     (ScreenManager.CurrentScreen.GetType().FullName == elementGameType || ownerType?.IsAssignableFrom(ScreenManager.CurrentScreen.GetType()) == true);

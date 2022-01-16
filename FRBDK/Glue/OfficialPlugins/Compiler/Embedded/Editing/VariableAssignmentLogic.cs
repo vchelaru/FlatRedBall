@@ -42,7 +42,11 @@ namespace GlueControl.Editing
                     ownerElement = InstanceLogic.Self.CustomGlueElements[elementGameType];
                 }
 
-
+                // The variable could be
+                // * Set on an entity, such as changing the Radius on a collision circle.
+                // * Set on an instance, such as setting the X position of an enemy in a Screen.
+                // If forcedItem is null, that means that we are re-running all variable assignments,
+                // which happens whenever a screen is restarted. 
                 var setOnEntity =
                     (ownerGameType != null && typeof(PositionedObject).IsAssignableFrom(ownerGameType))
                     ||
@@ -90,7 +94,8 @@ namespace GlueControl.Editing
                         response.WasVariableAssigned = true;
                     }
                 }
-                else
+                // See comment by setOnEntity about why we check for forcedItem.
+                else if (forcedItem == null)
                 {
                     var elementNameGlue = string.Join("\\", data.InstanceOwnerGameType.Split('.').Skip(1).ToArray());
                     if (CommandReceiver.GetIfMatchesCurrentScreen(elementNameGlue))
