@@ -1512,9 +1512,28 @@ namespace FlatRedBall.Glue.Plugins
         public static void ReactToNamedObjectChangedValue(string changedMember, object oldValue, NamedObjectSave namedObject)
         {
             CallMethodOnPlugin(
-                (plugin) => plugin.ReactToNamedObjectChangedValue(changedMember, oldValue, namedObject),
-                (plugin) => plugin.ReactToNamedObjectChangedValue != null,
-                nameof(ReactToNamedObjectChangedValue));
+                plugin => plugin.ReactToNamedObjectChangedValue(changedMember, oldValue, namedObject),
+                plugin => plugin.ReactToNamedObjectChangedValue != null);
+        }
+
+        public static void ReactToNamedObjectChangedValueList(List<VariableChangeArguments> changes)
+        {
+            CallMethodOnPlugin(
+                plugin =>
+                {
+                    if(plugin.ReactToNamedObjectChangedValueList != null)
+                    {
+                        plugin.ReactToNamedObjectChangedValueList(changes);
+                    }
+                    else
+                    {
+                        foreach(var change in changes)
+                        {
+                            plugin.ReactToNamedObjectChangedValue(change.ChangedMember, change.OldValue, change.NamedObject);
+                        }
+                    }
+                },
+                plugin => plugin.ReactToNamedObjectChangedValueList != null || plugin.ReactToNamedObjectChangedValue != null);
         }
 
         internal static void ReactToReferencedFileChangedValue(string changedMember, object oldValue)

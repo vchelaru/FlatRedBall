@@ -55,6 +55,7 @@ namespace FlatRedBall.Glue.Plugins
         Included,
         Excluded
     }
+
     #region PluginTab
     public class PluginTab
     {
@@ -160,6 +161,17 @@ namespace FlatRedBall.Glue.Plugins
     }
     #endregion
 
+    #region VariableChangeArguments
+
+    public class VariableChangeArguments
+    {
+        public string ChangedMember { get; set; }
+        public object OldValue { get; set; }
+        public NamedObjectSave NamedObject { get; set; }
+    }
+
+    #endregion
+
     public abstract class PluginBase : IPlugin
     {
         Dictionary<ToolStripMenuItem, ToolStripMenuItem> toolStripItemsAndParents = new Dictionary<ToolStripMenuItem, ToolStripMenuItem>();
@@ -220,6 +232,7 @@ namespace FlatRedBall.Glue.Plugins
         public Action<FilePath> ReactToCodeFileChange { get; protected set; }
         public ReactToItemSelectDelegate ReactToItemSelectHandler { get; protected set; }
         public ReactToNamedObjectChangedValueDelegate ReactToNamedObjectChangedValue { get; protected set; }
+        public Action<List<VariableChangeArguments>> ReactToNamedObjectChangedValueList { get; protected set; }
 
         /// <summary>
         /// Delegate called when the user creates a new ReferencedFileSave (adds a new file to the Glue project)

@@ -231,6 +231,16 @@ namespace FlatRedBall.Glue.Managers
             return glueTask;
         }
 
+        /// <summary>
+        /// Adds an action to the TaskManager to be executed according to the argument TaskExecutionPreference. If the 
+        /// callstack is already part of a task, then the action is executed immediately. The returned task will complete
+        /// when the argument Action has completed.
+        /// </summary>
+        /// <param name="action">The action to execute.</param>
+        /// <param name="displayInfo">The display info to show in the task manager tab</param>
+        /// <param name="executionPreference">When to execute the action.</param>
+        /// <param name="doOnUiThread">Whether the action must be performed on the UI thread.</param>
+        /// <returns>A task which will complete once the action has finished executing.</returns>
         public Task AddAsync(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
         {
             var glueTask = AddOrRunIfTasked(action, displayInfo, executionPreference, doOnUiThread);
@@ -267,7 +277,8 @@ namespace FlatRedBall.Glue.Managers
 
                 while(!IsTaskDone())
                 {
-                    await Task.Delay(150);
+                    const int waitDelay = 30;
+                    await Task.Delay(waitDelay);
                 }
             }
         }

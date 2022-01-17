@@ -38,11 +38,49 @@ namespace OfficialPlugins.Compiler.Managers
 
         public async Task HandleNamedObjectValueChanged(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly, object forcedCurrentValue = null)
         {
+            var gameScreenName = await CommandSender.GetScreenName();
+            var listOfVariables = GetNamedObjectValueChangedDtos(changedMember, oldValue, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue);
+
+            await TaskManager.Self.AddAsync(() =>
+            {
+                try
+                {
+                    foreach(var dto in listOfVariables)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"In task {dto.VariableName} to {dto.VariableValue}");
+
+                        var task = TryPushVariable(dto);
+                        task.Wait();
+                        var response = task.Result;
+                        if (!string.IsNullOrWhiteSpace(response?.Exception))
+                        {
+                            GlueCommands.Self.PrintError(response.Exception);
+                            Output.Print(response.Exception);
+                        }
+
+                        if (response?.WasVariableAssigned != true)
+                        {
+                            // wasn't assigned, the game didn't know what to do, so restart
+                            RefreshManager.Self.StopAndRestartTask($"Unhandled variable {changedMember} changed").Wait();
+                            break;
+                        }
+                    }
+                }
+                catch
+                {
+                    // no biggie...
+                }
+            }, $"Pushing {listOfVariables.Count} variables to game", TaskExecutionPreference.Asap);
+        }
+
+        public List<GlueVariableSetData> GetNamedObjectValueChangedDtos(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly, string gameScreenName, object forcedCurrentValue = null)
+        {
+            List<GlueVariableSetData> toReturn = new List<GlueVariableSetData>();
             //////////////////Early Out//////////////////////////////
             var isIgnored = GetIfChangedMemberIsIgnored(changedMember);
             if(isIgnored)
             {
-                return;
+                return toReturn;
             }
             ////////////////End Early Out////////////////////////////
 
@@ -158,7 +196,6 @@ namespace OfficialPlugins.Compiler.Managers
             var ati = nos.GetAssetTypeInfo();
             string value;
 
-            var gameScreenName = await CommandSender.GetScreenName();
             string glueScreenName = null;
             if(!string.IsNullOrEmpty(gameScreenName))
             {
@@ -168,32 +205,9 @@ namespace OfficialPlugins.Compiler.Managers
 
             ConvertValue(ref changedMember, oldValue, currentValue, nos, currentElement, glueScreenName, ref nosName, ati, ref typeName, out value);
 
-            await TaskManager.Self.AddAsync(() =>
-            {
-                try
-                {
-                    System.Diagnostics.Debug.WriteLine($"In task {changedMember} to {value}");
+            GlueVariableSetData data = GetGlueVariableSetDataDto(nosName, changedMember, typeName, value, currentElement, assignOrRecordOnly, isState);
 
-                    var task = TryPushVariable(nosName, changedMember, typeName, value, currentElement, assignOrRecordOnly, isState);
-                    task.Wait();
-                    var response = task.Result;
-                    if (!string.IsNullOrWhiteSpace(response?.Exception))
-                    {
-                        GlueCommands.Self.PrintError(response.Exception);
-                        Output.Print(response.Exception);
-
-                    }
-                    if(response?.WasVariableAssigned != true)
-                    {
-                        // wasn't assigned, the game didn't know what to do, so restart
-                        RefreshManager.Self.StopAndRestartTask($"Unhandled variable {changedMember} changed").Wait();
-                    }
-                }
-                catch
-                {
-                    // no biggie...
-                }
-            }, "Pushing variable to game", TaskExecutionPreference.Asap);
+            toReturn.Add(data);
 
             if(category != null && value == null)
             {
@@ -208,10 +222,12 @@ namespace OfficialPlugins.Compiler.Managers
                     foreach(var variableToAssign in variablesToAssign)
                     {
                         var defaultValue = VariableDisplay.NamedObjectVariableShowingLogic.GetValueRecursively(nos, ownerOfCategory, variableToAssign.Name);
-                        await HandleNamedObjectValueChanged(variableToAssign.Name, null, nos, assignOrRecordOnly, forcedCurrentValue:defaultValue);
+                        toReturn.AddRange(GetNamedObjectValueChangedDtos(variableToAssign.Name, null, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue:defaultValue));
                     }
                 }
             }
+
+            return toReturn;
         }
 
         private void ConvertValue(ref string changedMember, object oldValue, 
@@ -447,35 +463,14 @@ namespace OfficialPlugins.Compiler.Managers
         private string ToGameType(GlueElement element) =>
             GlueState.Self.ProjectNamespace + "." + element.Name.Replace("\\", ".");
 
-        private async Task<GlueVariableSetDataResponse> TryPushVariable(string variableOwningNosName, 
-            string rawMemberName, string type, string value, GlueElement currentElement,
-            AssignOrRecordOnly assignOrRecordOnly, bool isState)
+        private async Task<GlueVariableSetDataResponse> TryPushVariable(GlueVariableSetData data)
         {
+
             GlueVariableSetDataResponse response = null;
             if (ViewModel.IsRunning)
             {
-                if (currentElement != null)
+                if (data.GlueElement != null)
                 {
-                    var data = new GlueVariableSetData();
-                    data.InstanceOwnerGameType = ToGameType(currentElement);
-                    data.Type = type;
-                    data.VariableValue = value;
-                    data.VariableName = rawMemberName;
-                    data.AssignOrRecordOnly = assignOrRecordOnly;
-                    data.IsState = isState;
-
-
-                    data.ScreenSave = currentElement as ScreenSave;
-                    data.EntitySave = currentElement as EntitySave;
-
-                    if (!string.IsNullOrEmpty(variableOwningNosName))
-                    {
-                        data.VariableName = "this." + variableOwningNosName + "." + data.VariableName;
-                    }
-                    else
-                    {
-                        data.VariableName = "this." + data.VariableName;
-                    }
 
                     var sendGeneralResponse = await CommandSender.Send(data);
                     var responseAsString = sendGeneralResponse.Succeeded ? sendGeneralResponse.Data : string.Empty;
@@ -489,6 +484,31 @@ namespace OfficialPlugins.Compiler.Managers
             return response;
         }
 
+        private GlueVariableSetData GetGlueVariableSetDataDto(string variableOwningNosName, string rawMemberName, string type, string value, GlueElement currentElement, AssignOrRecordOnly assignOrRecordOnly, bool isState)
+        {
+            var data = new GlueVariableSetData();
+            data.InstanceOwnerGameType = ToGameType(currentElement);
+            data.Type = type;
+            data.VariableValue = value;
+            data.VariableName = rawMemberName;
+            data.AssignOrRecordOnly = assignOrRecordOnly;
+            data.IsState = isState;
+
+
+            data.ScreenSave = currentElement as ScreenSave;
+            data.EntitySave = currentElement as EntitySave;
+
+            if (!string.IsNullOrEmpty(variableOwningNosName))
+            {
+                data.VariableName = "this." + variableOwningNosName + "." + data.VariableName;
+            }
+            else
+            {
+                data.VariableName = "this." + data.VariableName;
+            }
+
+            return data;
+        }
 
         internal async Task HandleNamedObjectValueChanged(string changedMember, object oldValue)
         {
@@ -514,8 +534,10 @@ namespace OfficialPlugins.Compiler.Managers
                 }
 
                 var isState = variable.GetIsVariableState(variableElement);
-                
-                await TryPushVariable(null, name, type, value, GlueState.Self.CurrentElement, AssignOrRecordOnly.Assign, isState);
+
+                GlueVariableSetData data = GetGlueVariableSetDataDto(null, name, type, value, GlueState.Self.CurrentElement, AssignOrRecordOnly.Assign, isState);
+
+                await TryPushVariable(data);
             }
             else
             {

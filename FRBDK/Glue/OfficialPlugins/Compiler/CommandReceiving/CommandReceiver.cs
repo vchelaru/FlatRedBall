@@ -224,10 +224,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region Set Variable
 
-        private static void HandleSetVariable(SetVariableDto setVariableDto, bool regenerateAndSave = true)
+        private static async Task HandleSetVariable(SetVariableDto setVariableDto, bool regenerateAndSave = true, bool sendBackToGame = true)
         {
 
-            TaskManager.Self.Add(() =>
+            await TaskManager.Self.AddAsync(() =>
             {
                 var type = string.Join('\\', setVariableDto.InstanceOwner.Split('.').Skip(1));
 
@@ -247,14 +247,20 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                     value = ConvertVariable(value, ref typeName, setVariableDto.VariableName, nos, element);
 
-                    // Setting the nos pushes back to the game so the game can re-assign this variable whenever the screen changes.
+                    // Calling nos.SetVariable rather than going through the GlueCommands prevents the PluginManager from being notified of the change.
+                    // We want to manually push the change back using a batch command since it will be much faster when receiving a SetVariableDtoList
                     nos.SetVariable(setVariableDto.VariableName, value);
 
-                    GlueCommands.Self.DoOnUiThread(() =>
-                        RefreshManager.Self.HandleNamedObjectValueChanged(setVariableDto.VariableName, null, nos, 
-                        // record only - this variable change came from the game, we don't want to re-assign it and wipe other active edits
-                        AssignOrRecordOnly.RecordOnly)
-                    );
+                    if(sendBackToGame)
+                    {
+                        // Send this back to the game so the game. When the game receives this, it will store it in
+                        // a list and will re-run the commands as necessary (such as whenever a screen is reloaded).
+                        GlueCommands.Self.DoOnUiThread(() =>
+                            RefreshManager.Self.HandleNamedObjectValueChanged(setVariableDto.VariableName, null, nos, 
+                            // record only - this variable change came from the game, we don't want to re-assign it and wipe other active edits
+                            AssignOrRecordOnly.RecordOnly)
+                        );
+                    }
 
                     if(regenerateAndSave)
                     {
@@ -270,17 +276,17 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 }
             }, "Handling set variable from game", 
             // This is going to push the change back to the game, and we don't want to sit and wait for codegen to finish, etc. Do it immediately!
-            // Update - if it's asap, then later commands can execute before earlier ones, so we need to still respect fifo. It will add delay but removes
+            // Update - if it's asap, then later commands can execute before earlier ones, so we need to still respect fifo. Fifo adds delays but avoids
             // the confusion.
             TaskExecutionPreference.Fifo);
         }
 
-        private static void HandleSetVariableDtoList(SetVariableDtoList setVariableDtoList)
+        private static async Task HandleSetVariableDtoList(SetVariableDtoList setVariableDtoList)
         {
             HashSet<NamedObjectSave> modifiedObjects = new HashSet<NamedObjectSave>();
             foreach(var setVariableDto in setVariableDtoList.SetVariableList)
             {
-                HandleSetVariable(setVariableDto, regenerateAndSave: false);
+                await HandleSetVariable(setVariableDto, regenerateAndSave: false);
                 var type = string.Join('\\', setVariableDto.InstanceOwner.Split('.').Skip(1));
 
                 var element = ObjectFinder.Self.GetElement(type);
@@ -289,7 +295,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 modifiedObjects.Add(nos);
             }
 
-            TaskManager.Self.Add(() =>
+            await TaskManager.Self.AddAsync(() =>
             {
                 GlueCommands.Self.GluxCommands.SaveGlux();
                 GlueCommands.Self.DoOnUiThread(GlueCommands.Self.RefreshCommands.RefreshVariables);
