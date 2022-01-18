@@ -108,7 +108,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         NamedObjectSave AddNewNamedObjectTo(ViewModels.AddObjectViewModel addObjectViewModel, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true);
         Task<NamedObjectSave> AddNewNamedObjectToAsync(ViewModels.AddObjectViewModel addObjectViewModel, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true);
 
-        void AddNamedObjectTo(NamedObjectSave newNos, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true);
+        void AddNamedObjectTo(NamedObjectSave newNos, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true,
+            bool performSaveAndGenerateCode = true, bool updateUi = true);
 
         /// <summary>
         /// Assigns a variable on the argument NamedObject.

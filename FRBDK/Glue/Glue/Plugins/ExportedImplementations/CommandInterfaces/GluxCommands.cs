@@ -1162,7 +1162,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return newNos;
         }
 
-        public void AddNamedObjectTo(NamedObjectSave newNos, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true)
+        public void AddNamedObjectTo(NamedObjectSave newNos, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true,
+             bool performSaveAndGenerateCode = true, bool updateUi = true)
         {
             if(TaskManager.Self.IsInTask() == false)
             {
@@ -1197,7 +1198,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+            if(performSaveAndGenerateCode)
+            {
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+            }
 
             // run after generated code so plugins like level editor work off latest code
             PluginManager.ReactToNewObject(newNos);
@@ -1206,18 +1210,25 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 PluginManager.ReactToObjectContainerChanged(newNos, listToAddTo);
             }
 
-            GlueCommands.Self.DoOnUiThread(() =>
+            if(updateUi)
             {
-                MainGlueWindow.Self.PropertyGrid.Refresh();
-                PropertyGridHelper.UpdateNamedObjectDisplay();
-                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
-
-                if(selectNewNos)
+                GlueCommands.Self.DoOnUiThread(() =>
                 {
-                    GlueState.Self.CurrentNamedObjectSave = newNos;
-                }
-            });
+                    MainGlueWindow.Self.PropertyGrid.Refresh();
+                    PropertyGridHelper.UpdateNamedObjectDisplay();
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
 
+                    if(selectNewNos)
+                    {
+                        GlueState.Self.CurrentNamedObjectSave = newNos;
+                    }
+                });
+            }
+
+            if(performSaveAndGenerateCode)
+            {
+                GlueCommands.Self.GluxCommands.SaveGlux();
+            }
         }
 
         public void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSaveAndGenerateCode = true, 
