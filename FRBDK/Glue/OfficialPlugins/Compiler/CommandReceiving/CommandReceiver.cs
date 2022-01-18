@@ -1,9 +1,11 @@
 ﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Graphics.Animation;
 using FlatRedBall.Math;
+using Glue;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
@@ -59,7 +61,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                                 var addObjectDto = JsonConvert.DeserializeObject<AddObjectDto>(data);
                                 var nos = JsonConvert.DeserializeObject<NamedObjectSave>(data);
 
-                                HandleAddObject(addObjectDto, nos);
+                                ScreenSave screen = CommandSender.GetCurrentInGameScreen().Result;
+                                screen = screen ?? GlueState.Self.CurrentScreenSave;
+
+                                HandleAddObject(addObjectDto, nos, saveRegenAndUpdateUi:true, screen:screen);
                             }
 
                             break;
@@ -80,12 +85,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                             break;
                         case nameof(AddObjectDtoList):
                             var deserializedList = JsonConvert.DeserializeObject<AddObjectDtoList>(data);
-                            foreach(var item in deserializedList.Data)
-                            {
-                                var cloneString = JsonConvert.SerializeObject(item);
-                                var nos =  JsonConvert.DeserializeObject<NamedObjectSave>(cloneString);
-                                HandleAddObject(item, nos);
-                            }
+                            HandleAddObjectDtoList(deserializedList);
                             break;
                         default:
                             int m = 3;
@@ -95,6 +95,38 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 $"Processing command of type {action}");
 
             }
+        }
+
+        private static async void HandleAddObjectDtoList(AddObjectDtoList deserializedList)
+        {
+            ScreenSave screen = await CommandSender.GetCurrentInGameScreen();
+            screen = screen ?? GlueState.Self.CurrentScreenSave;
+
+            List<NamedObjectSave> newNamedObjects = new List<NamedObjectSave>();
+
+            foreach (var item in deserializedList.Data)
+            {
+                var cloneString = JsonConvert.SerializeObject(item);
+                var nos = JsonConvert.DeserializeObject<NamedObjectSave>(cloneString);
+                newNamedObjects.Add(nos);
+                await HandleAddObject(item, nos, saveRegenAndUpdateUi:false, screen:screen);
+            }
+
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screen);
+
+            GlueCommands.Self.DoOnUiThread(() =>
+            {
+                MainGlueWindow.Self.PropertyGrid.Refresh();
+                PropertyGridHelper.UpdateNamedObjectDisplay();
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screen);
+
+                if(newNamedObjects.Count > 0)
+                {
+                    GlueState.Self.CurrentNamedObjectSave = newNamedObjects.LastOrDefault();
+                }
+            });
+
+            GlueCommands.Self.GluxCommands.SaveGlux();
         }
 
 
@@ -124,17 +156,13 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region Add Object (including copy/paste
 
-        private static async void HandleAddObject(AddObjectDto addObjectDto, NamedObjectSave nos)
+        private static Task HandleAddObject(AddObjectDto addObjectDto, NamedObjectSave nos, bool saveRegenAndUpdateUi, ScreenSave screen)
         {
-            ScreenSave screen = await CommandSender.GetCurrentInGameScreen();
-            TaskManager.Self.Add(() =>
+            return TaskManager.Self.AddAsync(() =>
             {
+                screen = screen ?? GlueState.Self.CurrentScreenSave;
                 GlueElement element = screen;
-                if (element == null)
-                {
-                    element = GlueState.Self.CurrentElement;
-                    screen = GlueState.Self.CurrentScreenSave;
-                }
+                
 
                 var listToAddTo = ObjectFinder.Self.GetDefaultListToContain(addObjectDto, screen);
 
@@ -201,7 +229,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     // old object selected. Glue shouldn't assume this is the case, because in the future new instances
                     // may be added without copy/paste, and those would be selected. Therefore, we'll rely on the game to 
                     // tell us to select something different...
-                    GlueCommands.Self.GluxCommands.AddNamedObjectTo(nos, element, listToAddTo);
+                    GlueCommands.Self.GluxCommands.AddNamedObjectTo(nos, element, listToAddTo, performSaveAndGenerateCode:saveRegenAndUpdateUi, updateUi: saveRegenAndUpdateUi);
                 });
 
                 //RefreshManager.Self.HandleNamedObjectValueChanged(nameof(deserializedNos.InstanceName), oldName, deserializedNos);

@@ -125,7 +125,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
 
 
-        internal static void UpdateNamedObjectDisplay()
+        public static void UpdateNamedObjectDisplay()
         {
             bool didInstanceChange = mNosDisplayer.UpdateToState(GlueState.Self);
             
