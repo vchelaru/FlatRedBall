@@ -139,6 +139,12 @@ namespace GlueControl.Dtos
     #endregion
 
     #region AddObjectDto
+
+    public class AddObjectDtoList
+    {
+        public List<AddObjectDto> Data { get; set; } = new List<AddObjectDto>();
+    }
+
     public class AddObjectDto : NamedObjectSave
     {
         public string CopyOriginalName { get; set; }

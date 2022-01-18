@@ -435,6 +435,34 @@ namespace GlueControl
             SendToGlue(dto);
         }
 
+        public void SendToGlue(List<Dtos.AddObjectDto> dtos)
+        {
+            foreach (var item in dtos)
+            {
+                var currentScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen;
+                if (currentScreen is Screens.EntityViewingScreen entityViewingScreen)
+                {
+                    item.ElementNameGame = entityViewingScreen.CurrentEntity.GetType().FullName;
+                }
+                else
+                {
+                    item.ElementNameGame = currentScreen.GetType().FullName;
+                }
+
+            }
+
+            Dtos.AddObjectDtoList dtoList = new AddObjectDtoList();
+            dtoList.Data.AddRange(dtos);
+
+            GlueControlManager.Self.SendToGlue((object)dtoList);
+
+            foreach (var item in dtos)
+            {
+                // We don't (yet) handle batch here, so just add the individuals
+                CommandReceiver.GlobalGlueToGameCommands.Add(item);
+            }
+        }
+
         public void SendToGlue(object dto)
         {
             var type = dto.GetType().Name;

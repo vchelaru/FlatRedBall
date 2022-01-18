@@ -102,8 +102,12 @@ namespace GlueControl.Forms
                 var factoryName = factory.GetType().Name;
                 var name = factoryName.Substring(0, factoryName.Length - "Factory".Length);
                 var button = AddButton();
-                button.Click += (not, used) => InstanceLogic.Self.CreateInstanceByGame(
-                    name, Camera.Main.X, Camera.Main.Y);
+                button.Click += (not, used) =>
+                {
+                    List<Dtos.AddObjectDto> addedItems = new List<Dtos.AddObjectDto>();
+                    InstanceLogic.Self.CreateInstanceByGame(name, Camera.Main.X, Camera.Main.Y, addedItems);
+                    GlueControlManager.Self.SendToGlue(addedItems);
+                };
                 button.Text = name;
             }
         }

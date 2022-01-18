@@ -50,6 +50,8 @@ namespace GlueControl.Editing
         private void HandlePaste(PositionedObject itemGrabbed)
         {
             List<PositionedObject> newObjects = new List<PositionedObject>();
+            List<Dtos.AddObjectDto> addedItems = new List<Dtos.AddObjectDto>();
+
             foreach (var copiedObject in CopiedObjects)
             {
                 PositionedObject instance = null;
@@ -58,23 +60,23 @@ namespace GlueControl.Editing
 
                 if (copiedObject is Circle originalCircle)
                 {
-                    instance = InstanceLogic.Self.HandleCreateCircleByGame(originalCircle, copiedObjectName);
+                    instance = InstanceLogic.Self.HandleCreateCircleByGame(originalCircle, copiedObjectName, addedItems);
                 }
                 else if (copiedObject is AxisAlignedRectangle originalRectangle)
                 {
-                    instance = InstanceLogic.Self.HandleCreateAxisAlignedRectangleByGame(originalRectangle, copiedObjectName);
+                    instance = InstanceLogic.Self.HandleCreateAxisAlignedRectangleByGame(originalRectangle, copiedObjectName, addedItems);
                 }
                 else if (copiedObject is Polygon originalPolygon)
                 {
-                    instance = InstanceLogic.Self.HandleCreatePolygonByGame(originalPolygon, copiedObjectName);
+                    instance = InstanceLogic.Self.HandleCreatePolygonByGame(originalPolygon, copiedObjectName, addedItems);
                 }
                 else if (copiedObject is Sprite originalSprite)
                 {
-                    instance = InstanceLogic.Self.HandleCreateSpriteByName(originalSprite, copiedObjectName);
+                    instance = InstanceLogic.Self.HandleCreateSpriteByName(originalSprite, copiedObjectName, addedItems);
                 }
                 else if (copiedObject is Text originalText)
                 {
-                    instance = InstanceLogic.Self.HandleCreateTextByName(originalText, copiedObjectName);
+                    instance = InstanceLogic.Self.HandleCreateTextByName(originalText, copiedObjectName, addedItems);
                 }
                 else if (copiedObject is PositionedObject asPositionedObject) // positioned object, so entity?
                 {
@@ -86,7 +88,7 @@ namespace GlueControl.Editing
                     // for now assume names are unique, not qualified
                     instance = InstanceLogic.Self.CreateInstanceByGame(
                         type,
-                        asPositionedObject);
+                        asPositionedObject, addedItems);
                     instance.CreationSource = "Glue";
                     instance.Velocity = Vector3.Zero;
                     instance.Acceleration = Vector3.Zero;
@@ -113,6 +115,7 @@ namespace GlueControl.Editing
                     newObjects.Add(instance);
                 }
             }
+            GlueControlManager.Self.SendToGlue(addedItems);
 
             // If the user is dragging objects around and pasting them, then we won't select
             // pasted objects. If the user does a simple copy/paste without dragging, then select

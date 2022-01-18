@@ -50,12 +50,17 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 var action = command.Substring(0, firstColon);
                 var data = command.Substring(firstColon + 1);
 
-                TaskManager.Self.Add(() =>
+                TaskManager.Self.AddAsync(() =>
                 {
                     switch(action)
                     {
                         case nameof(AddObjectDto):
-                            HandleAddObject(data);
+                            {
+                                var addObjectDto = JsonConvert.DeserializeObject<AddObjectDto>(data);
+                                var nos = JsonConvert.DeserializeObject<NamedObjectSave>(data);
+
+                                HandleAddObject(addObjectDto, nos);
+                            }
 
                             break;
                         case nameof(SetVariableDto):
@@ -72,6 +77,18 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                             break;
                         case nameof(ModifyCollisionDto):
                             HandleDto(JsonConvert.DeserializeObject<ModifyCollisionDto>(data));
+                            break;
+                        case nameof(AddObjectDtoList):
+                            var deserializedList = JsonConvert.DeserializeObject<AddObjectDtoList>(data);
+                            foreach(var item in deserializedList.Data)
+                            {
+                                var cloneString = JsonConvert.SerializeObject(item);
+                                var nos =  JsonConvert.DeserializeObject<NamedObjectSave>(cloneString);
+                                HandleAddObject(item, nos);
+                            }
+                            break;
+                        default:
+                            int m = 3;
                             break;
                     }
                 },
@@ -107,7 +124,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region Add Object (including copy/paste
 
-        private static async void HandleAddObject(string dataAsString)
+        private static async void HandleAddObject(AddObjectDto addObjectDto, NamedObjectSave nos)
         {
             ScreenSave screen = await CommandSender.GetCurrentInGameScreen();
             TaskManager.Self.Add(() =>
@@ -119,15 +136,12 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     screen = GlueState.Self.CurrentScreenSave;
                 }
 
-                var addObjectDto = JsonConvert.DeserializeObject<AddObjectDto>(dataAsString);
-
                 var listToAddTo = ObjectFinder.Self.GetDefaultListToContain(addObjectDto, screen);
 
                 string newName = GetNewName(element, addObjectDto);
                 var oldName = addObjectDto.InstanceName;
 
 
-                var nos = JsonConvert.DeserializeObject<NamedObjectSave>(dataAsString);
                 nos.InstanceName = newName;
 
                 foreach (var variable in nos.InstructionSaves)

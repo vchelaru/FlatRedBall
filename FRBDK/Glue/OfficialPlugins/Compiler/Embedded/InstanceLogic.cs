@@ -639,22 +639,22 @@ namespace GlueControl
 
         #endregion
 
-        private static void SendAndEnqueue(Dtos.AddObjectDto addObjectDto)
-        {
-            var currentScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen;
-            if (currentScreen is Screens.EntityViewingScreen entityViewingScreen)
-            {
-                addObjectDto.ElementNameGame = entityViewingScreen.CurrentEntity.GetType().FullName;
-            }
-            else
-            {
-                addObjectDto.ElementNameGame = currentScreen.GetType().FullName;
-            }
+        //private static void SendAndEnqueue(Dtos.AddObjectDto addObjectDto)
+        //{
+        //    var currentScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen;
+        //    if (currentScreen is Screens.EntityViewingScreen entityViewingScreen)
+        //    {
+        //        addObjectDto.ElementNameGame = entityViewingScreen.CurrentEntity.GetType().FullName;
+        //    }
+        //    else
+        //    {
+        //        addObjectDto.ElementNameGame = currentScreen.GetType().FullName;
+        //    }
 
-            GlueControlManager.Self.SendToGlue(addObjectDto);
+        //    GlueControlManager.Self.SendToGlue(addObjectDto);
 
-            CommandReceiver.GlobalGlueToGameCommands.Add(addObjectDto);
-        }
+        //    CommandReceiver.GlobalGlueToGameCommands.Add(addObjectDto);
+        //}
 
         #region Create Instance from Game
 
@@ -691,7 +691,7 @@ namespace GlueControl
             });
         }
 
-        public FlatRedBall.PositionedObject CreateInstanceByGame(string entityGameType, PositionedObject original)
+        public FlatRedBall.PositionedObject CreateInstanceByGame(string entityGameType, PositionedObject original, List<Dtos.AddObjectDto> addDtoList)
         {
             var newName = GetNameFor(entityGameType);
 
@@ -873,12 +873,12 @@ namespace GlueControl
                 }
             }
 
-            SendAndEnqueue(addObjectDto);
+            addDtoList.Add(addObjectDto);
 
             return newInstance;
         }
 
-        public FlatRedBall.PositionedObject CreateInstanceByGame(string entityGameType, float x, float y)
+        public FlatRedBall.PositionedObject CreateInstanceByGame(string entityGameType, float x, float y, List<Dtos.AddObjectDto> addDtoList)
         {
             var newName = GetNameFor(entityGameType);
 
@@ -905,12 +905,12 @@ namespace GlueControl
 
             #endregion
 
-            SendAndEnqueue(addObjectDto);
+            addDtoList.Add(addObjectDto);
 
             return toReturn;
         }
 
-        public Circle HandleCreateCircleByGame(Circle originalCircle, string copiedObjectName)
+        public Circle HandleCreateCircleByGame(Circle originalCircle, string copiedObjectName, List<Dtos.AddObjectDto> addDtoList)
         {
             var newCircle = originalCircle.Clone();
             var newName = GetNameFor("Circle");
@@ -939,12 +939,12 @@ namespace GlueControl
 
             #endregion
 
-            SendAndEnqueue(addObjectDto);
+            addDtoList.Add(addObjectDto);
 
             return newCircle;
         }
 
-        public AxisAlignedRectangle HandleCreateAxisAlignedRectangleByGame(AxisAlignedRectangle originalRectangle, string copiedObjectName)
+        public AxisAlignedRectangle HandleCreateAxisAlignedRectangleByGame(AxisAlignedRectangle originalRectangle, string copiedObjectName, List<Dtos.AddObjectDto> addDtoList)
         {
             var newRectangle = originalRectangle.Clone();
             var newName = GetNameFor("Rectangle");
@@ -975,12 +975,12 @@ namespace GlueControl
 
             #endregion
 
-            SendAndEnqueue(addObjectDto);
+            addDtoList.Add(addObjectDto);
 
             return newRectangle;
         }
 
-        public Polygon HandleCreatePolygonByGame(Polygon originalPolygon, string copiedObjectName)
+        public Polygon HandleCreatePolygonByGame(Polygon originalPolygon, string copiedObjectName, List<Dtos.AddObjectDto> addDtoList)
         {
             var newPolygon = originalPolygon.Clone();
             var newName = GetNameFor("Polygon");
@@ -1011,12 +1011,12 @@ namespace GlueControl
 
             #endregion
 
-            SendAndEnqueue(addObjectDto);
+            addDtoList.Add(addObjectDto);
 
             return newPolygon;
         }
 
-        public Sprite HandleCreateSpriteByName(Sprite originalSprite, string copiedObjectName)
+        public Sprite HandleCreateSpriteByName(Sprite originalSprite, string copiedObjectName, List<Dtos.AddObjectDto> addDtoList)
         {
             var newSprite = originalSprite.Clone();
             var newName = GetNameFor("Sprite");
@@ -1131,12 +1131,12 @@ namespace GlueControl
 
             #endregion
 
-            SendAndEnqueue(addObjectDto);
+            addDtoList.Add(addObjectDto);
 
             return newSprite;
         }
 
-        public Text HandleCreateTextByName(Text originalText, string copiedObjectName)
+        public Text HandleCreateTextByName(Text originalText, string copiedObjectName, List<Dtos.AddObjectDto> addDtoList)
         {
             var newText = originalText.Clone();
             var newName = GetNameFor("Text");
@@ -1193,7 +1193,7 @@ namespace GlueControl
 
             #endregion
 
-            SendAndEnqueue(addObjectDto);
+            addDtoList.Add(addObjectDto);
 
             return newText;
         }
