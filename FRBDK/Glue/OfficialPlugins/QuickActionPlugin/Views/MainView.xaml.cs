@@ -194,7 +194,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             }
 
             GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-
+            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(GlueState.Self.CurrentElement);
             PluginManager.ReactToNewObject(namedObject);
             if(targetList != null)
             {
