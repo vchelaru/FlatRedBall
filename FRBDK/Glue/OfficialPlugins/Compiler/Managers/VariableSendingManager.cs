@@ -41,29 +41,38 @@ namespace OfficialPlugins.Compiler.Managers
             var gameScreenName = await CommandSender.GetScreenName();
             var listOfVariables = GetNamedObjectValueChangedDtos(changedMember, oldValue, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue);
 
+            await PushVariableChangesToGame(listOfVariables);
+        }
+
+        public async Task PushVariableChangesToGame(List<GlueVariableSetData> listOfVariables)
+        {
             await TaskManager.Self.AddAsync(() =>
             {
                 try
                 {
-                    foreach(var dto in listOfVariables)
+                    var dto = new GlueVariableSetDataList();
+                    dto.Data.AddRange(listOfVariables);
+
+                    var sendGeneralResponse = CommandSender.Send(dto).Result;
+
+                    GlueVariableSetDataResponseList response = null;
+                    if (sendGeneralResponse.Succeeded)
                     {
-                        System.Diagnostics.Debug.WriteLine($"In task {dto.VariableName} to {dto.VariableValue}");
+                        response =
+                            JsonConvert.DeserializeObject<GlueVariableSetDataResponseList>(sendGeneralResponse.Data);
+                    }
 
-                        var task = TryPushVariable(dto);
-                        task.Wait();
-                        var response = task.Result;
-                        if (!string.IsNullOrWhiteSpace(response?.Exception))
-                        {
-                            GlueCommands.Self.PrintError(response.Exception);
-                            Output.Print(response.Exception);
-                        }
+                    var failed = response == null || response.Data.Any(item => !string.IsNullOrEmpty(item?.Exception));
 
-                        if (response?.WasVariableAssigned != true)
+                    if(failed)
+                    {
+                        var exception = response?.Data.FirstOrDefault(item => !string.IsNullOrEmpty(item.Exception)).Exception;
+                        if(exception != null)
                         {
-                            // wasn't assigned, the game didn't know what to do, so restart
-                            RefreshManager.Self.StopAndRestartTask($"Unhandled variable {changedMember} changed").Wait();
-                            break;
+                            GlueCommands.Self.PrintError(exception);
+                            Output.Print(exception);
                         }
+                        RefreshManager.Self.StopAndRestartTask($"Unhandled variable changed").Wait();
                     }
                 }
                 catch
@@ -465,20 +474,15 @@ namespace OfficialPlugins.Compiler.Managers
 
         private async Task<GlueVariableSetDataResponse> TryPushVariable(GlueVariableSetData data)
         {
-
             GlueVariableSetDataResponse response = null;
-            if (ViewModel.IsRunning)
+            if (ViewModel.IsRunning && data.GlueElement != null)
             {
-                if (data.GlueElement != null)
+                var sendGeneralResponse = await CommandSender.Send(data);
+                var responseAsString = sendGeneralResponse.Succeeded ? sendGeneralResponse.Data : string.Empty;
+
+                if (!string.IsNullOrEmpty(responseAsString))
                 {
-
-                    var sendGeneralResponse = await CommandSender.Send(data);
-                    var responseAsString = sendGeneralResponse.Succeeded ? sendGeneralResponse.Data : string.Empty;
-
-                    if (!string.IsNullOrEmpty(responseAsString))
-                    {
-                        response = JsonConvert.DeserializeObject<GlueVariableSetDataResponse>(responseAsString);
-                    }
+                    response = JsonConvert.DeserializeObject<GlueVariableSetDataResponse>(responseAsString);
                 }
             }
             return response;

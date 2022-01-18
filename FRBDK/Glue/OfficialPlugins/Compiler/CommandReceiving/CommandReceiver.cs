@@ -284,16 +284,34 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         private static async Task HandleSetVariableDtoList(SetVariableDtoList setVariableDtoList)
         {
             HashSet<NamedObjectSave> modifiedObjects = new HashSet<NamedObjectSave>();
-            foreach(var setVariableDto in setVariableDtoList.SetVariableList)
-            {
-                await HandleSetVariable(setVariableDto, regenerateAndSave: false);
-                var type = string.Join('\\', setVariableDto.InstanceOwner.Split('.').Skip(1));
 
+            var gameScreenName = await CommandSender.GetScreenName();
+
+            List<GlueVariableSetData> listOfVariables = new List<GlueVariableSetData>();
+            foreach (var setVariableDto in setVariableDtoList.SetVariableList)
+            {
+                await HandleSetVariable(setVariableDto, sendBackToGame:false, regenerateAndSave: false);
+
+                var type = string.Join('\\', setVariableDto.InstanceOwner.Split('.').Skip(1));
                 var element = ObjectFinder.Self.GetElement(type);
                 var nos = element.GetNamedObjectRecursively(setVariableDto.ObjectName);
 
+                //GlueCommands.Self.DoOnUiThread(() =>
+                //    RefreshManager.Self.HandleNamedObjectValueChanged(setVariableDto.VariableName, null, nos,
+                //    // record only - this variable change came from the game, we don't want to re-assign it and wipe other active edits
+                //    AssignOrRecordOnly.RecordOnly)
+                //);
+                var foundVariable = nos.GetCustomVariable(setVariableDto.VariableName);
+                //await VariableSendingManager.Self.HandleNamedObjectValueChanged(setVariableDto.VariableName, null, nos, AssignOrRecordOnly.RecordOnly);
+                List<GlueVariableSetData> listOfInner = VariableSendingManager.Self.GetNamedObjectValueChangedDtos(
+                    setVariableDto.VariableName, null, nos, AssignOrRecordOnly.RecordOnly, gameScreenName);
+
+                listOfVariables.AddRange(listOfInner);
+
                 modifiedObjects.Add(nos);
             }
+
+            await VariableSendingManager.Self.PushVariableChangesToGame(listOfVariables);
 
             await TaskManager.Self.AddAsync(() =>
             {

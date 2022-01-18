@@ -76,6 +76,11 @@ namespace OfficialPlugins.Compiler.Dtos
         RecordOnly
     }
 
+    public class GlueVariableSetDataList
+    {
+        public List<GlueVariableSetData> Data { get; set; } = new List<GlueVariableSetData>();
+    }
+
     public class GlueVariableSetData : UpdateCurrentElementDto
     {
         public AssignOrRecordOnly AssignOrRecordOnly { get; set; }
@@ -87,10 +92,18 @@ namespace OfficialPlugins.Compiler.Dtos
         public string VariableValue { get; set; }
         public string Type { get; set; }
         public bool IsState { get; set; }
+
+        public override string ToString() => $"{VariableName}={VariableValue}";
     }
     #endregion
 
     #region GlueVariableSetDataResponse
+
+    public class GlueVariableSetDataResponseList
+    {
+        public List<GlueVariableSetDataResponse> Data { get; set; } = new List<GlueVariableSetDataResponse>();
+    }
+
     public class GlueVariableSetDataResponse
     {
         public string Exception { get; set; }

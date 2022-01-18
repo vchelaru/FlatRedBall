@@ -155,6 +155,19 @@ namespace GlueControl
 
         #region Set Variable
 
+        private static GlueVariableSetDataResponseList HandleDto(GlueVariableSetDataList dto)
+        {
+            GlueVariableSetDataResponseList toReturn = new GlueVariableSetDataResponseList();
+
+            foreach (var setVariableDto in dto.Data)
+            {
+                var setResponse = HandleDto(setVariableDto);
+                toReturn.Data.Add(setResponse);
+            }
+
+            return toReturn;
+        }
+
         private static GlueVariableSetDataResponse HandleDto(GlueVariableSetData dto)
         {
             GlueVariableSetDataResponse response = null;
