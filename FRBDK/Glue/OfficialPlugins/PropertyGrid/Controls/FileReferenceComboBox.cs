@@ -24,6 +24,13 @@ namespace OfficialPlugins.VariableDisplay.Controls
             var columnDefinition = new ColumnDefinition();
             columnDefinition.Width = new System.Windows.GridLength(36);
 
+            // January 18, 2022
+            // We allow this to be
+            // editable so references
+            // to unavailable files still 
+            // show up
+            IsEditable = true;
+
             grid.ColumnDefinitions.Add(columnDefinition);
 
             var button = new Button();

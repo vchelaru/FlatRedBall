@@ -30,6 +30,8 @@ namespace OfficialPlugins.VariableDisplay
         public static void UpdateShownVariables(DataUiGrid grid, NamedObjectSave instance, IElement container,
             AssetTypeInfo assetTypeInfo = null)
         {
+            #region Initial logic
+
             grid.Categories.Clear();
 
             List<MemberCategory> categories = new List<MemberCategory>();
@@ -44,6 +46,8 @@ namespace OfficialPlugins.VariableDisplay
             {
                 instance.UpdateCustomProperties();
             }
+
+            #endregion
 
             CreateCategoriesAndVariables(instance, container as GlueElement, categories, assetTypeInfo);
 
