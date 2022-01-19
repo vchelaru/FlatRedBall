@@ -343,14 +343,17 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 //    // record only - this variable change came from the game, we don't want to re-assign it and wipe other active edits
                 //    AssignOrRecordOnly.RecordOnly)
                 //);
-                var foundVariable = nos.GetCustomVariable(setVariableDto.VariableName);
-                //await VariableSendingManager.Self.HandleNamedObjectValueChanged(setVariableDto.VariableName, null, nos, AssignOrRecordOnly.RecordOnly);
-                List<GlueVariableSetData> listOfInner = VariableSendingManager.Self.GetNamedObjectValueChangedDtos(
-                    setVariableDto.VariableName, null, nos, AssignOrRecordOnly.RecordOnly, gameScreenName);
+                if(nos != null)
+                {
+                    var foundVariable = nos.GetCustomVariable(setVariableDto.VariableName);
+                    //await VariableSendingManager.Self.HandleNamedObjectValueChanged(setVariableDto.VariableName, null, nos, AssignOrRecordOnly.RecordOnly);
+                    List<GlueVariableSetData> listOfInner = VariableSendingManager.Self.GetNamedObjectValueChangedDtos(
+                        setVariableDto.VariableName, null, nos, AssignOrRecordOnly.RecordOnly, gameScreenName);
 
-                listOfVariables.AddRange(listOfInner);
+                    listOfVariables.AddRange(listOfInner);
 
-                modifiedObjects.Add(nos);
+                    modifiedObjects.Add(nos);
+                }
             }
 
             await VariableSendingManager.Self.PushVariableChangesToGame(listOfVariables);
