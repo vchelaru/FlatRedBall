@@ -329,6 +329,8 @@ namespace GumPlugin
 
             AddErrorReporter(error);
 
+            viewModel = new GumViewModel();
+            viewModel.PropertyChanged += HandleViewModelPropertyChanged;
         }
 
         private void AssignEvents()
@@ -572,8 +574,6 @@ namespace GumPlugin
                 if (control == null)
                 {
                     control = new GumControl();
-                    viewModel = new GumViewModel();
-                    viewModel.PropertyChanged += HandleViewModelPropertyChanged;
                     control.DataContext = viewModel;
 
                     tab = this.CreateTab(control, "Gum Properties");
@@ -748,8 +748,6 @@ namespace GumPlugin
                     if (control == null)
                     {
                         control = new GumControl();
-                        viewModel = new GumViewModel();
-                        viewModel.PropertyChanged += HandleViewModelPropertyChanged;
                         control.DataContext = viewModel;
 
                         tab = this.CreateTab(control, "Gum Properties");
@@ -814,6 +812,12 @@ namespace GumPlugin
             EventsManager.Self.RefreshEvents();
 
             toolbarViewModel.HasGumProject = AppState.Self.GumProjectSave != null;
+
+            if(AppState.Self.GumProjectSave != null)
+            {
+                var rfs = GumProjectManager.Self.GetRfsForGumProject();
+                viewModel.SetFrom(AppState.Self.GumProjectSave, rfs);
+            }
         }
 
         private async void HandleGluxLoad()
