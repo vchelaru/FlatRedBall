@@ -218,7 +218,7 @@ namespace OfficialPlugins.Compiler.Managers
 
             toReturn.Add(data);
 
-            if(category != null && value == null)
+            if(category != null && ( value == null || value == "<NONE>"))
             {
                 // we need to un-assign the state. We can do this by looping through all variables controlled by the
                 // category and setting them to null values:
