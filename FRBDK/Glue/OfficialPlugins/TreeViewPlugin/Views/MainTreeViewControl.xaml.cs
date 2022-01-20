@@ -109,7 +109,6 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                     MainTreeView_MouseDoubleClick(this, null);
                 }
                 lastClick = DateTime.Now;
-                GlueCommands.Self.PrintOutput("Click at " + lastClick);
                 startPoint = e.GetPosition(null);
             }
 

@@ -147,6 +147,7 @@ namespace OfficialPlugins.Compiler.Dtos
     {
         public string CopyOriginalName { get; set; }
         public string ElementNameGame { get; set; }
+        public bool SelectNewObject { get; set; }
     }
     #endregion
 

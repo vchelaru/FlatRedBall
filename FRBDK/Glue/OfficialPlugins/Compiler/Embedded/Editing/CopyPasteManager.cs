@@ -115,6 +115,13 @@ namespace GlueControl.Editing
                     newObjects.Add(instance);
                 }
             }
+
+            // If we have something grabbed, then don't select the new items in Glue
+            foreach (var item in addedItems)
+            {
+                item.SelectNewObject = itemGrabbed == null;
+            }
+
             GlueControlManager.Self.SendToGlue(addedItems);
 
             // If the user is dragging objects around and pasting them, then we won't select

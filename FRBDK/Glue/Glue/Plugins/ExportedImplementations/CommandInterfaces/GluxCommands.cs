@@ -1390,6 +1390,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
 
             await PluginManager.ReactToObjectListRemovedAsync(ownerList, namedObjectListToRemove);
+
+            GlueCommands.Self.GluxCommands.SaveGlux();
         }
 
         public GeneralResponse CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool save = true)

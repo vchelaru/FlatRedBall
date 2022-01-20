@@ -122,7 +122,18 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                 if(newNamedObjects.Count > 0)
                 {
-                    GlueState.Self.CurrentNamedObjectSave = newNamedObjects.LastOrDefault();
+                    foreach(var item in deserializedList.Data)
+                    {
+                        if(item.SelectNewObject)
+                        {
+                            var objectToSelect = newNamedObjects.FirstOrDefault(item => item.InstanceName == item.InstanceName);
+                            if(objectToSelect != null)
+                            {
+                                GlueState.Self.CurrentNamedObjectSave = objectToSelect;
+                                break;
+                            }
+                        }
+                    }
                 }
             });
 
@@ -229,7 +240,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     // old object selected. Glue shouldn't assume this is the case, because in the future new instances
                     // may be added without copy/paste, and those would be selected. Therefore, we'll rely on the game to 
                     // tell us to select something different...
-                    GlueCommands.Self.GluxCommands.AddNamedObjectTo(nos, element, listToAddTo, performSaveAndGenerateCode:saveRegenAndUpdateUi, updateUi: saveRegenAndUpdateUi);
+                    GlueCommands.Self.GluxCommands.AddNamedObjectTo(nos, element, listToAddTo, 
+                        selectNewNos: false, // The caller of this is responsible for selection, so that selection goes faster
+                        performSaveAndGenerateCode:saveRegenAndUpdateUi, 
+                        updateUi: saveRegenAndUpdateUi);
                 });
 
                 //RefreshManager.Self.HandleNamedObjectValueChanged(nameof(deserializedNos.InstanceName), oldName, deserializedNos);
@@ -527,6 +541,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #endregion
 
+        #region Modify Collision
+
         private static void HandleDto(ModifyCollisionDto dto)
         {
             string collisionTileTypeName;
@@ -683,5 +699,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 mapLayer = tiledMapSave.Layers.Find(item => item.Name == "GameplayLayer");
             }
         }
+
+        #endregion
     }
 }
