@@ -828,8 +828,16 @@ namespace GlueControl.Editing
                 }
                 else if (isSecondTileShapeCollection)
                 {
-                    return typeof(CollidableVsTileShapeCollectionRelationship<>)
-                        .MakeGenericType(firstType.GenericTypeArguments[0]);
+                    if (isFirstList)
+                    {
+                        return typeof(CollidableVsTileShapeCollectionRelationship<>)
+                            .MakeGenericType(firstType.GenericTypeArguments[0]);
+                    }
+                    else
+                    {
+                        return typeof(CollidableVsTileShapeCollectionRelationship<>)
+                            .MakeGenericType(firstType);
+                    }
                 }
                 else
                 {
