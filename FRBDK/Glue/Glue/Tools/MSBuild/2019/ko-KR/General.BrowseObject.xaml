@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ConfigurationGeneralBrowseObject" DisplayName="일반" PageTemplate="generic" Description="일반" xmlns="http://schemas.microsoft.com/build/2009/properties">
+
+  <Rule.Categories>
+    <Category Name="General" DisplayName="일반" Description="일반"/>
+  </Rule.Categories>
+
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" Label="Configuration" HasConfigurationCondition="False"/>
+  </Rule.DataSource>
+
+  <StringProperty Name="ApplicationIcon" DisplayName="애플리케이션 아이콘"/>
+  <DynamicEnumProperty Name="TargetFrameworkMoniker" DisplayName="대상 프레임워크 모니커" EnumProvider="TargetFrameworkMoniker"/>
+  <StringProperty Name="AssemblyName" DisplayName="어셈블리 이름"/>
+  <StringProperty Name="Name" Visible="False"/>
+  <StringProperty Name="RootNamespace" DisplayName="루트 네임스페이스"/>
+  <StringProperty Name="DefaultNamespace" DisplayName="기본 네임스페이스" Visible="False">
+    <StringProperty.DataSource>
+      <DataSource PersistedName="RootNamespace" Persistence="ProjectFile" Label="Configuration" HasConfigurationCondition="false"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="TargetFramework" Visible="False">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" PersistedName="TargetFrameworkMoniker"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="OutputName" Visible="False"/>
+  <EnumProperty Name="OutputType" DisplayName="출력 형식">
+    <EnumValue Name="dll" DisplayName="클래스 라이브러리"/>
+    <EnumValue Name="exe" DisplayName="콘솔 애플리케이션"/>
+    <EnumValue Name="winexe" DisplayName="Windows 애플리케이션"/>
+  </EnumProperty>
+  <StringListProperty Name="AvailablePlatforms" Separator="," Visible="False"/>
+  <StringProperty Name="FileName" DisplayName="프로젝트 파일" ReadOnly="True">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" PersistedName="MSBuildProjectFile"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="FullPath" DisplayName="프로젝트 폴더" ReadOnly="True">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" PersistedName="MSBuildProjectDirectory"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="LocalPath" ReadOnly="True" Visible="False">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" PersistedName="MSBuildProjectDirectory"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+</Rule>

@@ -17,7 +17,66 @@ namespace OfficialPlugins.Compiler
     {
         List<FilePath> AvailableLocations = new List<FilePath>
         {
-            $@"{FileManager.GetDirectory(Assembly.GetEntryAssembly().Location)}Tools\MSBuild\15.0\MSBuild.exe",
+            // Update - MSBuild for version 15.0 is not supported anymore because we need to do nuget restore.
+            // Going to include MSBuild from VS 2019
+            //$@"{FileManager.GetDirectory(Assembly.GetEntryAssembly().Location)}Tools\MSBuild\15.0\MSBuild.exe",
+            // Update January 21 2022
+            // Using this version of MSBuild is an attempt to get around needing Visual Studio (again)
+            // but it won't work because of nuget restore:
+            // error MSB4036: The "GetReferenceNearestTargetFrameworkTask" task was not found. 
+            // Not sure what to add here, as the answers on stackoverflow suggest running the VS installer
+            // So....we'll comment this out for now:
+            // https://stackoverflow.com/questions/47797510/the-getreferencenearesttargetframeworktask-task-was-not-found
+            //$@"{FileManager.GetDirectory(Assembly.GetEntryAssembly().Location)}Tools\MSBuild\2019\MSBuild.exe",
+            // I've excluded the MSBuild 2019 folder to make Glue smaller, but to bring it back in, the following should be added to the csproj:
+            /*
+    <ItemGroup>
+		<Page Remove="Tools\MSBuild\2019\de-DE\*.xaml" />
+		<Page Remove="Tools\MSBuild\2019\en-US\*.xaml" />
+		<Page Remove="Tools\MSBuild\2019\es-ES\*.xaml" />
+		<Page Remove="Tools\MSBuild\2019\fr-FR\*.xaml" />
+		<Page Remove="Tools\MSBuild\2019\it-IT\*.xaml" />
+		<Page Remove="Tools\MSBuild\2019\ja-JP\*.xaml" />
+		<Page Remove="Tools\MSBuild\2019\ko-KR\*.xaml" />
+		<Page Remove="Tools\MSBuild\2019\ru-RU\*.xaml" />
+		<Page Remove="Tools\MSBuild\2019\zh-CN\*.xaml" />
+		<Page Remove="Tools\MSBuild\2019\zh-TW\*.xaml" />
+      <None Update="Tools\MSBuild**">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Tools\MSBuild\2019\**">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Tools\MSBuild\2019\de-DE\**">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
+
+
+            // This compiler list is a priority-ordered list of locations to check for MSBuild.
+            // The items at the top are the highest priority, while further down are lower priority.
+            // Vic has attempted to run Glue from VS 2022 and use the 2022 MSBuild versions, but for some
+            // reason this causes weirdness in the built game. He believes there may be multiple issues happening:
+            // 1. MSBuild using 2022 will fail if run from Glue built using VS 2019
+            // 2. Games built with MSBuild 2022 behave slightly differently than games built with 2019. If using Glue 
+            //    built in 2022 and MSBuild 2022, the game will not sit inside the winforms project after clicks. Not sure
+            //    why but the game window behaves differently.
+            // These may be 2 separate issues, not sure, but Vic is tackling each one at a time. The first issue is documented
+            // here:
+            // https://stackoverflow.com/questions/70795993/why-does-msbuild-fail-when-run-from-app-built-in-visual-studio-2019?noredirect=1#comment125157308_70795993
+            // As of January 21 it has not received any useful answers. Vic is hoping that Matt in FRB can help, or that he can put
+            // a large bounty on the question to get attention.
+            // In the meantime, the solution is - use Visual Studio 2019, and put 2022 MSBuild.exe at low priority (low on the list)
+             * 
+             */
+            // Update January 2022
+            // It turns out that any MSBuild will work fine (at least based on initial tests) so long as the
+            // application is run from .exe. Therefore, users will not encounter any problems. However, when debugging,
+            // the version of MSBuild being called must match the version of Visual Studio which launched Glue. The setup
+            // of preferring MSBuild 2022 should solve most problems. If a user doesn't have 2022 installed, then they will
+            // probably be using VS 2019, and that will use 2019 msbuild. If a user does have 2022 installed, they will probably
+            // be opening Glue with that.
             @"C:\Program Files\Microsoft Visual Studio\2022\Community\Msbuild\Current\Bin\MSBuild.exe",
             @"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Msbuild\Current\Bin\MSBuild.exe",
             @"C:\Program Files\Microsoft Visual Studio\2022\Professional\Msbuild\Current\Bin\MSBuild.exe",
@@ -27,6 +86,7 @@ namespace OfficialPlugins.Compiler
             @"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\amd64\MSBuild.exe",
             @"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\MSBuild.exe",
             @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe",
+            // See above on why this is low on the list
             @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe",
 
         };
@@ -55,6 +115,15 @@ namespace OfficialPlugins.Compiler
         internal async Task<bool> Compile(Action<string> printOutput, Action<string> printError,
             string configuration = "Debug", bool printMsBuildCommand = false)
         {
+
+            // At one point I was trying to resolve the VS 22 vs 19 issue and I ran MSBuild through a batch
+            // file. It didn't matter, still broken :(
+            //var batFile = @"C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\BuildMyGame.bat";
+            //var exists = System.IO.File.Exists(batFile);
+            //var process = System.Diagnostics.Process.Start(batFile);
+
+            //return true;
+
             var shouldCompile = true;
 
             //var message = GetMissingFrameworkMessage();
@@ -92,7 +161,6 @@ namespace OfficialPlugins.Compiler
                     string startOutput = "Nuget Restore started at " + DateTime.Now.ToLongTimeString();
                     string endOutput = "Nuget Restore succeeded";
 
-                    string outputDirectory = GlueState.Self.CurrentGlueProjectDirectory + "bin/x86/Debug/";
                     // For info on parameters:
                     // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
                     // \m uses multiple cores
@@ -104,7 +172,7 @@ namespace OfficialPlugins.Compiler
 
                     if(printMsBuildCommand)
                     {
-                        printOutput?.Invoke($"{msBuildPath} {arguments}");
+                        printOutput?.Invoke($"\"{msBuildPath}\" {arguments}");
                     }
 
                     succeeded = await StartMsBuildWithParameters(printOutput, printError, startOutput, endOutput, arguments, msBuildPath);
@@ -127,6 +195,7 @@ namespace OfficialPlugins.Compiler
                         additionalArgumentPrefix +
                         $"\"{projectFileName}\" " +
                         $"/p:Configuration=\"{configuration}\" " +
+                        
                         $"/p:XNAContentPipelineTargetPlatform=\"Windows\" " +
                         $"/p:XNAContentPipelineTargetProfile=\"HiDef\" " +
                         $"/p:OutDir=\"{outputDirectory}\" " +
@@ -136,7 +205,7 @@ namespace OfficialPlugins.Compiler
 
                     if (printMsBuildCommand)
                     {
-                        printOutput?.Invoke($"{msBuildPath} {arguments}");
+                        printOutput?.Invoke($"\"{msBuildPath}\" {arguments}");
                     }
 
                     succeeded = await StartMsBuildWithParameters(printOutput, printError, startOutput, endOutput, arguments, msBuildPath);
