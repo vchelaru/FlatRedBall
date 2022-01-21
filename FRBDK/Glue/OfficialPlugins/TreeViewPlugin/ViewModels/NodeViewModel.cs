@@ -6,6 +6,7 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using OfficialPlugins.TreeViewPlugin.Logic;
 using OfficialPlugins.TreeViewPlugin.Models;
+using OfficialPlugins.TreeViewPlugin.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,6 +15,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -213,6 +215,17 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             foreach(var child in this.Children)
             {
                 child.CollapseRecursively();
+            }
+        }
+
+        public void Focus(MainTreeViewControl mainView)
+        {
+            var container = mainView.MainTreeView.ItemContainerGenerator.ContainerFromItem(this) as ListBoxItem;
+            // This is needed to handle focusing because otherwise clicks on teh treeview don't focus.
+            if (container != null)
+            {
+                container.Focus();
+                System.Windows.Input.Keyboard.Focus(container);
             }
         }
 

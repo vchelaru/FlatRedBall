@@ -80,13 +80,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
 
             if(nodeViewModel != null && nodeViewModel.IsSelected)
             {
-                var container = mainView.MainTreeView.ItemContainerGenerator.ContainerFromItem(nodeViewModel) as ListBoxItem;
-                // This is needed to handle focusing because otherwise clicks on teh treeview don't focus.
-                if(container != null)
-                {
-                    container.Focus();
-                    System.Windows.Input.Keyboard.Focus(container);
-                }
+                nodeViewModel.Focus(mainView);
             }
 
             if (IsPushingSelectionOutToGlue
@@ -204,6 +198,11 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
 
                 mainView.MainTreeView.ScrollIntoView(treeNode);
 
+                // Do this after the delay
+                if(treeNode?.IsSelected == true)
+                {
+                    treeNode.Focus(mainView);
+                }
             }
         }
 
