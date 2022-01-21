@@ -59,9 +59,10 @@ namespace OfficialPlugins.StateDataPlugin.StateError
 
                             if(category != null)
                             {
-                                var hasState = category.GetState(variable.Value as string) != null;
+                                var valueAsString = variable.Value as string;
+                                var hasValidState = valueAsString == "<NONE>" || category.GetState(valueAsString) != null ;
 
-                                if(!hasState)
+                                if(!hasValidState)
                                 {
                                     var error = new MissingStateViewModel();
                                     error.GlueElement = element;
