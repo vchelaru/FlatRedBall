@@ -18,6 +18,9 @@ namespace OfficialPlugins.Compiler
         List<FilePath> AvailableLocations = new List<FilePath>
         {
             $@"{FileManager.GetDirectory(Assembly.GetEntryAssembly().Location)}Tools\MSBuild\15.0\MSBuild.exe",
+            @"C:\Program Files\Microsoft Visual Studio\2022\Community\Msbuild\Current\Bin\MSBuild.exe",
+            @"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Msbuild\Current\Bin\MSBuild.exe",
+            @"C:\Program Files\Microsoft Visual Studio\2022\Professional\Msbuild\Current\Bin\MSBuild.exe",
             @"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe",
             @"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe",
             @"C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Current\Bin\MSBuild.exe",
@@ -143,15 +146,19 @@ namespace OfficialPlugins.Compiler
 
                 if(!succeeded)
                 {
-                    string cantFindMsBuildMessage =
-                        $"Could not find msbuild.exe. Looked in the following locations:";
-
-                    foreach (var item in AvailableLocations)
+                    var fileExists = System.IO.File.Exists(msBuildPath);
+                    if(!fileExists)
                     {
-                        cantFindMsBuildMessage += $"\n{item}";
-                    }
+                        string cantFindMsBuildMessage =
+                            $"Could not find msbuild.exe. Looked in the following locations:";
 
-                    printError(cantFindMsBuildMessage);
+                        foreach (var item in AvailableLocations)
+                        {
+                            cantFindMsBuildMessage += $"\n{item}";
+                        }
+
+                        printError(cantFindMsBuildMessage);
+                    }
                 }
                 return succeeded;
             }
