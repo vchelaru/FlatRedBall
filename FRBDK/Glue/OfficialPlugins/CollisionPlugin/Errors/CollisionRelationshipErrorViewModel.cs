@@ -14,6 +14,8 @@ namespace OfficialPluginsCore.CollisionPlugin.Errors
         NamedObjectSave CollisionRelationship;
         IElement Container;
 
+        public override string UniqueId => Details;
+
         public CollisionRelationshipErrorViewModel(NamedObjectSave collisionRelationship,
             IElement container)
         {

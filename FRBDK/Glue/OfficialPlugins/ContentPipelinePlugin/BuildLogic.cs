@@ -324,7 +324,7 @@ namespace OfficialPlugins.MonoGameContent
                 GlueCommands.PrintError(error);
 
                 var viewModel = new DelegateBasedErrorViewModel();
-                viewModel.UniqueId = "Missing Monogame Builder for " + rfsFilePath.Standardized;
+                
                 viewModel.Details = 
                     $"Could not build {rfsFilePath.FullPath} because the Monogame Builder Tool could not be found at {commandLineBuildExe.FullPath} " +
                     $"You can probably solve this by installing MonoGame for Visual Studio.";
@@ -333,7 +333,7 @@ namespace OfficialPlugins.MonoGameContent
                 {
                     return rfsFilePath.Exists() == false ||
                         commandLineBuildExe.Exists() == true ||
-                        GlueCommands.GluxCommands.GetReferencedFileSaveFromFile(rfsFilePath.FullPath) == null;
+                        GlueCommands.GluxCommands.GetReferencedFileSaveFromFile(rfsFilePath) == null;
                 };
 
                 EditorObjects.IoC.Container.Get<GlueErrorManager>().Add(viewModel);

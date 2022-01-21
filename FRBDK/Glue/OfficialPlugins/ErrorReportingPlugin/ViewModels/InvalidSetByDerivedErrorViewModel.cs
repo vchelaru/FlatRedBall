@@ -12,7 +12,8 @@ namespace OfficialPlugins.ErrorReportingPlugin.ViewModels
     {
         NamedObjectSave baseNos;
         NamedObjectSave derivedNos;
-        
+
+        public override string UniqueId => Details;
         public InvalidSetByDerivedErrorViewModel(NamedObjectSave baseNos, NamedObjectSave derivedNos)
         {
             this.baseNos = baseNos;

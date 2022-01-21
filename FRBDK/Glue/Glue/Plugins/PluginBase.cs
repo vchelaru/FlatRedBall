@@ -563,10 +563,25 @@ namespace FlatRedBall.Glue.Plugins
 
         #endregion
 
+        #region Errors
+
+        List<IErrorReporter> ErrorReporters = new List<IErrorReporter>();
+
         protected void AddErrorReporter(IErrorReporter errorReporter)
         {
+            ErrorReporters.Add(errorReporter);
             EditorObjects.IoC.Container.Get<GlueErrorManager>().Add(errorReporter);
         }
+
+        protected void RefreshErrors()
+        {
+            foreach(var reporter in ErrorReporters)
+            {
+                GlueCommands.Self.RefreshCommands.RefreshErrorsFor(reporter);
+            }
+        }
+
+        #endregion
 
         protected void AddAssetTypeInfo(AssetTypeInfo ati)
         {

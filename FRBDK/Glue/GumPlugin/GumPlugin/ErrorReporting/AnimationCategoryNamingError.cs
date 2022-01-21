@@ -17,6 +17,9 @@ namespace GumPluginCore.ErrorReporting
         string elementName;
         string categoryName;
         string animationName;
+
+        public override string UniqueId => Details;
+
         public AnimationCategoryNamingError(string elementName, string categoryName, string animationName)
         {
             this.elementName = elementName;

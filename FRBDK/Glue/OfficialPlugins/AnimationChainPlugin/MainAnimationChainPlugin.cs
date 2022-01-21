@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
+using OfficialPlugins.AnimationChainPlugin.Errors;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -16,9 +17,15 @@ namespace OfficialPluginsCore.AnimationChainPlugin
     [Export(typeof(PluginBase))]
     public class MainAnimationChainPlugin : PluginBase
     {
+        #region Fields/Properties
+
         public override string FriendlyName => "Animation Chain Plugin";
 
         public override Version Version => new Version(1, 0);
+
+        
+
+        #endregion
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
@@ -28,11 +35,31 @@ namespace OfficialPluginsCore.AnimationChainPlugin
         public override void StartUp()
         {
             AssignEvents();
+            this.AddErrorReporter(new AnimationChainErrorReporter());
         }
 
         private void AssignEvents()
         {
             this.ReactToNewFileHandler += HandleNewFile;
+            this.ReactToFileChangeHandler += HandleFileChanged;
+            this.ReactToNamedObjectChangedValue += HandleNamedObjectChangedValue;
+        }
+
+        private void HandleNamedObjectChangedValue(string changedMember, object oldValue, NamedObjectSave namedObject)
+        {
+            if (changedMember == "CurrentChainName" || changedMember == "AnimationChains")
+            {
+                this.RefreshErrors();
+            }
+        }
+
+        private void HandleFileChanged(string fileName)
+        {
+            var filePath = new FilePath(fileName);
+            if (filePath.Extension == "achx")
+            {
+                this.RefreshErrors();
+            }
         }
 
         private void HandleNewFile(ReferencedFileSave newFile)

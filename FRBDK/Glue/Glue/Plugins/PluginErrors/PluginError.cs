@@ -12,6 +12,9 @@ namespace FlatRedBall.Glue.Plugins
     public class PluginError : ErrorViewModel
     {
         PluginContainer pluginContainer;
+
+        public override string UniqueId => Details;
+
         public PluginContainer PluginContainer
         {
             get

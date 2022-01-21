@@ -30,7 +30,7 @@ namespace TiledPluginCore.Errors
             set
             {
                 filePath = value;
-                UpdateUniqueId();
+                UpdateDetails();
             }
         }
 
@@ -41,18 +41,21 @@ namespace TiledPluginCore.Errors
             set
             {
                 layerName = value;
-                UpdateUniqueId();
+                UpdateDetails();
             }
         }
 
-        private void UpdateUniqueId()
+        private void UpdateDetails()
         {
-            UniqueId = $"{nameof(MultipleTilesetPerLayerErrorViewModel)} {filePath.FullPath} {layerName}";
+            Details = $"Layer {layerName} in {FilePath} references multiple tilesets which is not allowed";
         }
+
+        public override string UniqueId => Details;
+
 
         public override void HandleDoubleClick()
         {
-            var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(filePath.FullPath);
+            var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(filePath);
             GlueState.Self.CurrentReferencedFileSave = rfs;
         }
 
@@ -100,7 +103,7 @@ namespace TiledPluginCore.Errors
         {
             // fixed if:
             // 1. File has been removed from the Glue project
-            var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(FilePath.FullPath);
+            var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(FilePath);
             if(rfs == null)
             {
                 return true;

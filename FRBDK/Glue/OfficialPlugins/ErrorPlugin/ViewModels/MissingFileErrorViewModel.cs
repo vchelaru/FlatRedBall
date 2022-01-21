@@ -15,7 +15,9 @@ namespace OfficialPlugins.ErrorPlugin.ViewModels
     {
         public ReferencedFileSave ReferencedFileSave { get; private set; }
         public FilePath AbsoluteMissingFile { get; private set; }
-        
+
+        public override string UniqueId => Details;
+
         public MissingFileErrorViewModel(ReferencedFileSave referencedFileSave)
         {
             ReferencedFileSave = referencedFileSave;

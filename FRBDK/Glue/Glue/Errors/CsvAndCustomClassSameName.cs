@@ -15,6 +15,8 @@ namespace FlatRedBall.Glue.Errors
         ReferencedFileSave File { get; set; }
         CustomClassSave CustomClass { get; set; }
 
+        public override string UniqueId => $"{File.Name} {CustomClass?.Name}";
+
         public CsvAndCustomClassSameName(ReferencedFileSave rfs, 
             CustomClassSave customClass)
         {

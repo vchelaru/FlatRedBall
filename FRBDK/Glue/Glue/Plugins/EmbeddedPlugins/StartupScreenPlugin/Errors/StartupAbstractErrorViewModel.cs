@@ -12,6 +12,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.StartupScreenPlugin.Errors
     {
         public ScreenSave Screen { get; private set; }
 
+        public override string UniqueId => $"{Screen?.Name}";
         public StartupAbstractErrorViewModel(ScreenSave screen)
         {
             Screen = screen;

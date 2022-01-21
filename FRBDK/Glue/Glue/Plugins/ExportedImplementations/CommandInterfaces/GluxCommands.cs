@@ -1736,7 +1736,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
                 memberName, oldValue, namedObjectSave:nos);
 
-            EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
+            TaskManager.Self.Add(() => EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors(), "Clear fixed errors");
 
             PluginManager.ReactToChangedProperty(memberName, oldValue);
         }

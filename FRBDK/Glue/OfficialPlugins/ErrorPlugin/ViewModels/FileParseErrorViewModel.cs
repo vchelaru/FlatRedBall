@@ -17,6 +17,8 @@ namespace OfficialPlugins.ErrorPlugin.ViewModels
         public FilePath FilePath { get; private set; }
         public GeneralResponse GeneralResponse { get; private set; }
 
+        public override string UniqueId => Details;
+
         public FileParseErrorViewModel(FilePath filePath, GeneralResponse generalResponse)
         {
             FilePath = filePath;

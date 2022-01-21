@@ -70,12 +70,14 @@ namespace OfficialPlugins.StateDataPlugin.StateError
             return false;
         }
 
+        public override string UniqueId => Details;
+
+
         public void RefreshDetail()
         {
             Details = $"{NamedObjectSave?.InstanceName}.{NamedObjectVariableClone?.Member} in {GlueElement} " +
                 $"references invalid state {NamedObjectVariableClone.Value}";
 
-            UniqueId = Details;
         }
 
     }

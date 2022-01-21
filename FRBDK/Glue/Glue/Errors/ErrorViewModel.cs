@@ -14,11 +14,11 @@ namespace FlatRedBall.Glue.Errors
     /// Base class for reporting an error in Glue. For implementation examples, see the 
     /// IErrorReporter interface.
     /// </summary>
-    public class ErrorViewModel : ViewModel
+    public abstract class ErrorViewModel : ViewModel
     {
-        public string UniqueId
+        public abstract string UniqueId
         {
-            get; set;
+            get;
         }
 
 
@@ -27,6 +27,8 @@ namespace FlatRedBall.Glue.Errors
             get => Get<string>(); 
             set => Set(value); 
         }
+
+        public string DetailsDisplay => Details ?? this.GetType().Name;
 
         public ErrorViewModel()
         {

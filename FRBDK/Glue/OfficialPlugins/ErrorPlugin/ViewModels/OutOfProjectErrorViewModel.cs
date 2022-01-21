@@ -15,6 +15,7 @@ namespace OfficialPluginsCore.ErrorPlugin.ViewModels
         public FilePath AbsoluteOutOfProjectFile { get; private set; }
         public List<FilePath> ReferenceStack { get; private set; }
 
+        public override string UniqueId => Details;
         public OutOfProjectErrorViewModel(ReferencedFileSave referencedFileSave, List<FilePath> referenceStack, FilePath absoluteOutOfProjectFile)
         {
             ReferencedFileSave = referencedFileSave;
