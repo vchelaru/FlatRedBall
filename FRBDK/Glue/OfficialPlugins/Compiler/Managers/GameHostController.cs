@@ -41,22 +41,7 @@ namespace OfficialPlugins.Compiler.Managers
                 }
             };
 
-            gameHostControl.StartInEditModeClicked += async (not, used) =>
-            {
-                TaskManager.Self.Add(async () =>
-                {
-                    var succeeded = await Compile();
-                    if(succeeded)
-                    {
-                        var runResponse = await runner.Run(preventFocus: false);
-                        if(runResponse.Succeeded)
-                        {
-                            compilerViewModel.IsEditChecked = true;
-                        }
-                    }
-
-                }, "Starting in edit mode", TaskExecutionPreference.AddOrMoveToEnd);
-            };
+            gameHostControl.StartInEditModeClicked += StarRunInEditMode;
 
             gameHostControl.RestartGameCurrentScreenClicked += async (not, used) =>
             {
@@ -140,6 +125,40 @@ namespace OfficialPlugins.Compiler.Managers
 
 
         }
+
+        private void StarRunInEditMode(object sender, EventArgs e)
+        {
+            TaskManager.Self.Add(async () =>
+            {
+                var runner = Runner.Self;
+
+                var succeeded = await Compile();
+                if (succeeded)
+                {
+                    string commandLineArgs = null;
+                    var currentScreen = GlueState.Self.CurrentScreenSave;
+                    var currentEntity = GlueState.Self.CurrentEntitySave;
+
+                    if(currentScreen != null && !currentScreen.IsAbstract)
+                    {
+                        commandLineArgs = 
+                           GlueState.Self.ProjectNamespace + "." + currentScreen.Name.Replace("\\", ".").Replace("/", ".");
+                    }
+                    if(currentEntity != null)
+                    {
+                        commandLineArgs = "GlueControl.Screens.EntityViewingScreen";
+                    }
+
+                    var runResponse = await runner.Run(preventFocus: false, runArguments:commandLineArgs);
+                    if (runResponse.Succeeded)
+                    {
+                        compilerViewModel.IsEditChecked = true;
+                    }
+                }
+
+            }, "Starting in edit mode", TaskExecutionPreference.AddOrMoveToEnd);
+        }
+
         public async Task<bool> Compile()
         {
             var compiler = Compiler.Self;

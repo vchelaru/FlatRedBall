@@ -273,5 +273,8 @@ namespace FlatRedBall.Glue.SaveClasses
             }
             return null;
         }
+
+
+        public bool IsAbstract => this.AllNamedObjects.Any(item => item.SetByDerived);
     }
 }
