@@ -43,7 +43,14 @@ namespace FlatRedBall.Glue.SaveClasses
 
             bool wasFound = false;
 
-            // See if there is an instructionD
+            var container = ObjectFinder.Self.GetElementContaining(stateSave);
+            CustomVariable variable = container.CustomVariables.FirstOrDefault(item => item.Name == variableName);
+            var variableType = variable?.Type ?? valueToSet?.GetType().Name;
+
+            //if(variableType != "string" && valueToSet is string valueAsString)
+            //{
+            //    valueToSet = Instructions.Reflection.PropertyValuePair.ConvertStringToType(valueAsString, variableType);
+            //}
 
             #region Set the existing instruction's value if there is one already
 
@@ -58,14 +65,12 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if (!wasFound)
             {
-                IElement container = ObjectFinder.Self.GetElementContaining(stateSave);
 
-                CustomVariable variable = container.CustomVariables.FirstOrDefault(item => item.Name == variableName);
 
                 InstructionSave instructionSave = new InstructionSave();
                 instructionSave.Value = valueToSet; // make it the default
 
-                instructionSave.Type = variable?.Type ?? valueToSet.GetType().Name;
+                instructionSave.Type = variableType;
                 instructionSave.Member = variableName;
 			    // Create a new instruction
 

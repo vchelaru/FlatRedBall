@@ -313,20 +313,27 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
 
             try
             {
+                var valueAsString = whatToConvert?.ToString();
                 switch(variable.Type)
                 {
                     case "float":
-                        return System.Convert.ToSingle(whatToConvert.ToString(), CultureInfo.InvariantCulture);
+                    case "float?":
+                        return System.Convert.ToSingle(valueAsString, CultureInfo.InvariantCulture);
                     case "int":
-                        return System.Convert.ToInt32(whatToConvert.ToString());
+                    case "int?":
+                        return System.Convert.ToInt32(valueAsString);
                     case "bool":
-                        return System.Convert.ToBoolean(whatToConvert.ToString());
+                    case "bool?":
+                        return System.Convert.ToBoolean(valueAsString);
                     case "long":
-                        return System.Convert.ToInt64(whatToConvert.ToString());
+                    case "long?":
+                        return System.Convert.ToInt64(valueAsString);
                     case "double":
-                        return System.Convert.ToDouble(whatToConvert.ToString(), CultureInfo.InvariantCulture);
+                    case "double?":
+                        return System.Convert.ToDouble(valueAsString, CultureInfo.InvariantCulture);
                     case "byte":
-                        return System.Convert.ToByte(whatToConvert.ToString());
+                    case "byte?":
+                        return System.Convert.ToByte(valueAsString);
                     default:
                         return whatToConvert;
                 }

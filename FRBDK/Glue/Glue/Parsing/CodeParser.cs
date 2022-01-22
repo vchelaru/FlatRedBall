@@ -140,7 +140,7 @@ namespace FlatRedBall.Glue.Parsing
                 {
                     value = value.ToLower();
                 }
-                else if (objectToParse is float)
+                else if (objectToParse is float || objectToParse is float?)
                 {
                     if (float.IsPositiveInfinity((float)objectToParse))
                     {
