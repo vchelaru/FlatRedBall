@@ -753,6 +753,12 @@ namespace FlatRedBall.Glue.Parsing
                 case "byte":
                 case "Byte":
                     return "0";
+                case "float?":
+                case "int?":
+                case "long?":
+                case "byte?":
+                case "double?":
+                    return "null";
                 default:
                     throw new ArgumentException("Could not find the value for type " + type);
             }
