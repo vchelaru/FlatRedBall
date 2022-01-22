@@ -467,7 +467,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 containerName = " in " + container.ToString();
             }
 
-            return nos.ClassType + " " + nos.FieldName + containerName;
+            return nos.ClassType + " " + nos.InstanceName + containerName;
 
         }
 

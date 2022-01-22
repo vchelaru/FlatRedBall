@@ -36,7 +36,8 @@ namespace OfficialPlugins.AnimationChainPlugin.Errors
                             if(animationVariable != null)
                             {
                                 var animationFileName = animationVariable.Value as string;
-                                var rfs = glueElement.ReferencedFiles.FirstOrDefault(item => item.GetInstanceName() == animationFileName);
+                                var rfs = glueElement.GetAllReferencedFileSavesRecursively()
+                                    .FirstOrDefault(item => item.GetInstanceName() == animationFileName);
 
                                 if(rfs != null)
                                 {

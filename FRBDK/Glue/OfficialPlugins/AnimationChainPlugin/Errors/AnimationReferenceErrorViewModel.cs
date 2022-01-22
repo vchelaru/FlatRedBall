@@ -29,7 +29,9 @@ namespace OfficialPlugins.AnimationChainPlugin.Errors
             ObjectName = namedObject.InstanceName; 
             AnimationName = animation;
 
-            Details = $"{ObjectName} references animation {AnimationName} which is missing from {AchxFilePath}";
+            // Use namedObject rather than ObjectName so the container is listed in case the user doesn't know to
+            // double-click the view model
+            Details = $"{namedObject} references animation {AnimationName} which is missing from {AchxFilePath}";
         }
 
         public override bool GetIfIsFixed()
