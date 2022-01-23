@@ -230,6 +230,8 @@ namespace FlatRedBall.Screens
                 // silent accumulation. Do we warn or just destroy?
                 Instructions.InstructionManager.Instructions.Clear();
 
+                FlatRedBallServices.singleThreadSynchronizationContext.Clear();
+
                 //mCurrentScreen.Destroy();
 
                 // check to see if there is any leftover data

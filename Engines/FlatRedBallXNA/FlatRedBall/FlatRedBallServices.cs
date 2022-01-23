@@ -114,7 +114,7 @@ namespace FlatRedBall
 
     public static partial class FlatRedBallServices
     {
-        static SingleThreadSynchronizationContext singleThreadSynchronizationContext;
+        internal static SingleThreadSynchronizationContext singleThreadSynchronizationContext;
         #region Fields
 
         static List<IManager> mManagers = new List<IManager>();

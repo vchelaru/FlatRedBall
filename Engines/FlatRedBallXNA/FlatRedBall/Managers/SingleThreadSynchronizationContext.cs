@@ -72,5 +72,14 @@ namespace FlatRedBall.Managers
         {
 
         }
+
+        public void Clear()
+        {
+            lock (_syncHandle)
+            {
+                _messagesToProcess.Clear();
+            }
+
+        }
     }
 }
