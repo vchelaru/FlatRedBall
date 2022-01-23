@@ -123,6 +123,14 @@ namespace OfficialPlugins.TreeViewPlugin
             var currentNode = SelectionLogic.CurrentNode;
             MainViewModel.RefreshTreeNodeFor(element);
 
+            if(element is ScreenSave)
+            {
+                MainViewModel.ScreenRootNode.SortByTextConsideringDirectories();
+            }
+            else // entity save
+            {
+                MainViewModel.EntityRootNode.SortByTextConsideringDirectories();
+            }
             if(currentNode?.Tag != null)
             {
                 // November 20, 2021
