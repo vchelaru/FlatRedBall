@@ -15,6 +15,12 @@ namespace GlueFormsCore.ViewModels
             set => Set(value);
         }
 
+        public bool HasChangedScreenTextBox
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         [DependsOn(nameof(ScreenName))]
         public string NameValidationMessage
         {

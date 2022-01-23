@@ -1,9 +1,13 @@
 ﻿using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using System.Windows;
+using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Utilities;
 
 namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
 {
@@ -28,13 +32,44 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
     {
         #region General Values
 
+
+        GlueFormsCore.ViewModels.AddScreenViewModel topLevelViewModel;
+        public GlueFormsCore.ViewModels.AddScreenViewModel TopLevelViewModel
+        {
+            get => topLevelViewModel;
+            set
+            {
+                topLevelViewModel = value;
+
+                topLevelViewModel.PropertyChanged += (sender, args) =>
+                {
+                    if (args.PropertyName == nameof(GlueFormsCore.ViewModels.AddScreenViewModel.HasChangedScreenTextBox))
+                    {
+                        HasChangedScreenTextBox = topLevelViewModel.HasChangedScreenTextBox;
+                    }
+                };
+            }
+        }
+
         public AddScreenType AddScreenType
         {
             get => Get<AddScreenType>();
-            set => Set(value);
+            set
+            {
+                if (Set(value))
+                {
+                    TryUpdateScreenName();
+                }
+            }
         }
 
         public bool HasGameScreen
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool HasChangedScreenTextBox
         {
             get => Get<bool>();
             set => Set(value);
@@ -244,6 +279,36 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels
             IsAddListsForEntitiesChecked = true;
             AvailableTmxFiles = new ObservableCollection<string>();
             AvailableLevels = new ObservableCollection<string>();
+        }
+
+        public void TryUpdateScreenName()
+        {
+            if(!HasChangedScreenTextBox)
+            {
+                string newName = null;
+                switch(AddScreenType)
+                {
+                    case AddScreenType.BaseLevelScreen:
+                        newName = "GameScreen";
+                        break;
+                    case AddScreenType.LevelScreen:
+                        newName = "Level1";
+                        break;
+
+                    case AddScreenType.EmptyScreen:
+                        newName = "NewScreen";
+                        // do we even do anything?
+                        break;
+                }
+
+                var screens = GlueState.Self.CurrentGlueProject.Screens;
+
+                while(screens.Any(item => item.GetStrippedName() == newName))
+                {
+                    newName = StringFunctions.IncrementNumberAtEnd(newName);
+                }
+                topLevelViewModel.ScreenName = newName;
+            }
         }
     }
 }

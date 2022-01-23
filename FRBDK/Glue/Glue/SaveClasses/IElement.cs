@@ -58,11 +58,6 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             get;
         }
-
-        IEnumerable<NamedObjectSave> AllNamedObjects
-        {
-            get;
-        }
         
         List<StateSave> States
         {

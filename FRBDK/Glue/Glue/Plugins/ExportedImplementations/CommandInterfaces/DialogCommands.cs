@@ -713,7 +713,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         #endregion
 
         #region Screen
-
         public async void ShowAddNewScreenDialog()
         {
             //////////////Early Out////////////
@@ -730,6 +729,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             // AddScreen, add screen, addnewscreen, add new screen
             var addScreenWindow = new AddScreenWindow();
+
 
             addScreenWindow.Message = "Enter a name for the new Screen";
 
@@ -752,6 +752,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             var viewModel = new AddScreenViewModel();
             viewModel.ScreenName = name;
             addScreenWindow.DataContext = viewModel;
+            addScreenWindow.TextEntered += (not, used) => viewModel.HasChangedScreenTextBox = true;
 
             PluginManager.ModifyAddScreenWindow(addScreenWindow);
 
@@ -922,25 +923,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #endregion
 
-        public void SetFormOwner(Form form)
-        {
-            if (MainGlueWindow.Self != null)
-                form.Owner = MainGlueWindow.Self;
-        }
-
-        public List<T> ToList<T>(System.Collections.IList list)
-        {
-            List<T> toReturn = new List<T>();
-
-
-            foreach (T item in list)
-            {
-                toReturn.Add(item);
-            }
-
-            return toReturn;
-        }
-
+        #region Go to definition
         public void GoToDefinitionOfSelection()
         {
             var selectedNode = GlueState.Self.CurrentTreeNode;
@@ -1032,6 +1015,27 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
 
             #endregion
+        }
+
+        #endregion
+
+        public void SetFormOwner(Form form)
+        {
+            if (MainGlueWindow.Self != null)
+                form.Owner = MainGlueWindow.Self;
+        }
+
+        public List<T> ToList<T>(System.Collections.IList list)
+        {
+            List<T> toReturn = new List<T>();
+
+
+            foreach (T item in list)
+            {
+                toReturn.Add(item);
+            }
+
+            return toReturn;
         }
 
     }

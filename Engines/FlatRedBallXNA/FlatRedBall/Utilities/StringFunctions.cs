@@ -596,7 +596,6 @@ namespace FlatRedBall.Utilities
             return true;
         }
 
-        #region XML Docs
         /// <summary>
         /// Increments the number at the end of a string or adds a number if none exists.
         /// </summary>
@@ -607,7 +606,6 @@ namespace FlatRedBall.Utilities
         /// </remarks>
         /// <param name="originalString">The string to "increment".</param>
         /// <returns>Returns a string with the number at the end incremented, or with a number added on the end if none existed before.</returns>
-        #endregion
         public static string IncrementNumberAtEnd(string originalString)
         {
             if(string.IsNullOrEmpty(originalString))

@@ -16,7 +16,7 @@
         <StackPanel x:Name="AboveTextBoxStackPanel"></StackPanel>
         <StackPanel Grid.Row="1" x:Name="TextBoxStackPanel">
             <Label x:Name="Label">Label1</Label>
-            <TextBox x:Name="TextBox" KeyDown="TextBox_KeyDown" ></TextBox>
+            <TextBox x:Name="TextBox" KeyDown="TextBox_KeyDown" TextChanged="TextBox_TextChanged" ></TextBox>
             <TextBlock x:Name="ValidationLabel" Foreground="DarkRed" FontSize="10" Margin="3,0,0,0">This is validation text</TextBlock>
         </StackPanel>
         <StackPanel x:Name="BelowTextBoxStackPanel"

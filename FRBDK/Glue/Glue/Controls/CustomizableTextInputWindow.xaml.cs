@@ -37,6 +37,8 @@ namespace FlatRedBall.Glue.Controls
 
         public event EventHandler CustomOkClicked;
 
+        public event EventHandler TextEntered;
+
         #endregion
 
         public CustomizableTextInputWindow()
@@ -110,7 +112,14 @@ namespace FlatRedBall.Glue.Controls
                     HandleOk();
                     e.Handled = true;
                     break;
+                default:
+                    TextEntered?.Invoke(this, null);
+                    break;
             }
+        }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
         }
     }
 }

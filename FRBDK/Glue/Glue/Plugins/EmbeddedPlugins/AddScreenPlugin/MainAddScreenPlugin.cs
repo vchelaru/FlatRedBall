@@ -41,6 +41,10 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
 
             var viewModel = new ViewModels.AddScreenViewModel();
 
+            var topLevelViewModel = window.DataContext as GlueFormsCore.ViewModels.AddScreenViewModel;
+            viewModel.TopLevelViewModel = topLevelViewModel;
+
+
             var gameScreen =
                 ObjectFinder.Self.GetScreenSaveUnqualified("GameScreen");
             var hasGameScreen = gameScreen != null;
@@ -93,6 +97,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
 
             optionsView.DataContext = viewModel;
             window.AddControl(optionsView);
+            viewModel.TryUpdateScreenName();
         }
 
         private void HandleNewScreenCreatedWithUi(ScreenSave newScreen, AddScreenWindow window)
