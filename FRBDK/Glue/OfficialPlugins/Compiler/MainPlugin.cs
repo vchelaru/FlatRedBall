@@ -108,7 +108,7 @@ namespace OfficialPlugins.Compiler
             runner.AfterSuccessfulRun += async () =>
             {
                 // If we aren't generating the code, we shouldn't try to move the game to Glue since the borders can't be adjusted
-                if(CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked)
+                if(CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked && GlueViewSettingsViewModel.EmbedGameInGameTab)
                 {
                     MoveGameToHost();
                 }
@@ -438,7 +438,7 @@ namespace OfficialPlugins.Compiler
             GlueViewSettingsViewModel.SetFrom(model);
             glueViewSettingsView.DataUiGrid.Refresh();
 
-            CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableGameEmbedAndEdit;
+            CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableGameEditMode;
             ignoreViewModelChanges = false;
 
             CompilerViewModel.IsGluxVersionNewEnoughForGlueControlGeneration =
@@ -528,8 +528,8 @@ namespace OfficialPlugins.Compiler
             switch(propertyName)
             {
                 case nameof(ViewModels.GlueViewSettingsViewModel.PortNumber):
-                case nameof(ViewModels.GlueViewSettingsViewModel.EnableGameEmbedAndEdit):
-                    CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableGameEmbedAndEdit;
+                case nameof(ViewModels.GlueViewSettingsViewModel.EnableGameEditMode):
+                    CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableGameEditMode;
                     await HandlePortOrGenerateCheckedChanged(propertyName);
                     break;
                 case nameof(ViewModels.GlueViewSettingsViewModel.GridSize):
@@ -668,13 +668,13 @@ namespace OfficialPlugins.Compiler
         private async Task HandlePortOrGenerateCheckedChanged(string propertyName)
         {
             MainControl.PrintOutput("Applying changes");
-            game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = GlueViewSettingsViewModel.EnableGameEmbedAndEdit && IsFrbNewEnough();
+            game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = GlueViewSettingsViewModel.EnableGameEditMode && IsFrbNewEnough();
             game1GlueControlGenerator.PortNumber = GlueViewSettingsViewModel.PortNumber;
             RefreshManager.Self.PortNumber = GlueViewSettingsViewModel.PortNumber;
             GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
             if (IsFrbNewEnough())
             {
-                TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(GlueViewSettingsViewModel.EnableGameEmbedAndEdit), "Generate Glue Control Code");
+                TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(GlueViewSettingsViewModel.EnableGameEditMode), "Generate Glue Control Code");
             }
 
             if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.NugetPackageInCsproj)

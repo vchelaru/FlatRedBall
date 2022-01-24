@@ -9,7 +9,13 @@ namespace OfficialPlugins.Compiler.ViewModels
 {
     public class GlueViewSettingsViewModel : ViewModel
     {
-        public bool EnableGameEmbedAndEdit
+        public bool EnableGameEditMode
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool EmbedGameInGameTab
         {
             get => Get<bool>();
             set => Set(value);
@@ -39,24 +45,26 @@ namespace OfficialPlugins.Compiler.ViewModels
             }
         }
 
-        [DependsOn(nameof(EnableGameEmbedAndEdit))]
-        public Visibility ShowWindowDefenderUi => EnableGameEmbedAndEdit.ToVisibility();
+        [DependsOn(nameof(EnableGameEditMode))]
+        public Visibility ShowWindowDefenderUi => EnableGameEditMode.ToVisibility();
 
         internal void SetFrom(CompilerSettingsModel model)
         {
             this.PortNumber = model.PortNumber;
             this.ShowScreenBoundsWhenViewingEntities = model.ShowScreenBoundsWhenViewingEntities;
             this.GridSize = model.GridSize;
-            this.EnableGameEmbedAndEdit = model.GenerateGlueControlManagerCode;
+            this.EnableGameEditMode = model.GenerateGlueControlManagerCode;
+            this.EmbedGameInGameTab = model.EmbedGameInGameTab;
 
-        }
+            }
 
         internal void SetModel(CompilerSettingsModel compilerSettings)
         {
             compilerSettings.PortNumber = this.PortNumber;
             compilerSettings.ShowScreenBoundsWhenViewingEntities = this.ShowScreenBoundsWhenViewingEntities;
             compilerSettings.GridSize = this.GridSize;
-            compilerSettings.GenerateGlueControlManagerCode = this.EnableGameEmbedAndEdit;
+            compilerSettings.GenerateGlueControlManagerCode = this.EnableGameEditMode;
+            compilerSettings.EmbedGameInGameTab = this.EmbedGameInGameTab;
 
         }
     }
