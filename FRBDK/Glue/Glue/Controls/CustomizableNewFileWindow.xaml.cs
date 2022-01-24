@@ -67,8 +67,29 @@ namespace FlatRedBall.Glue.Controls
         {
             InitializeComponent();
             GlueCommands.Self.DialogCommands.MoveToCursor(this);
-            SearchTermTextBox.Focus();
+            this.Loaded += HandleLoaded;
         }
+
+
+        private void HandleLoaded(object sender, RoutedEventArgs e)
+        {
+            if(SearchTermTextBox.IsVisible)
+            {
+
+                SearchTermTextBox.Focus();
+                Keyboard.Focus(SearchTermTextBox);
+
+                SearchTermTextBox.SelectAll();
+            }
+            else
+            {
+                this.TextBox.Focus();
+                this.TextBox.SelectAll();
+            }
+
+        }
+
+
 
         public void AddCustomUi(System.Windows.Controls.Control controlToAdd)
         {
