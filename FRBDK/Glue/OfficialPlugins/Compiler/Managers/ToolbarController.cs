@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace OfficialPluginsCore.Compiler.Managers
@@ -76,7 +77,14 @@ namespace OfficialPluginsCore.Compiler.Managers
             RefreshToolbarScreens();
             toolbarViewModel.StartupScreenName = null;
         }
-        
+
+
+        #region External DllImport
+        [DllImport("Shlwapi.dll", CharSet = CharSet.Unicode)]
+        private static extern int StrCmpLogicalW(string x, string y);
+
+        #endregion
+
         void RefreshToolbarScreens()
         {
             toolbarViewModel.AvailableScreens.Clear();
@@ -85,8 +93,9 @@ namespace OfficialPluginsCore.Compiler.Managers
             {
                 var sortedScreens = GlueState.Self.CurrentGlueProject.Screens
                     .Select(item => ScreenName(item))
-                    .OrderBy(item => item)
-                    .ToArray();
+                    .ToList();
+
+                sortedScreens.Sort(StrCmpLogicalW);
 
                 foreach(var item in sortedScreens)
                 {
