@@ -16,14 +16,14 @@
                         x:Name="AddObjectToScreenButton"
                         Title="Add Object"
                         Details="Set the AddObject details here, depending on if it's a Screen or entity."
-                        Clicked="AddObjectButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Views/Add Object v4.png">
+                        Clicked="AddObjectButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Object.png">
                     </local:TitleImageButton>
 
                     <local:TitleImageButton
                         x:Name="AddObjectToListButton"
                         Title="Add XXXX to XXXXList"
                         Details="Adds a new instance to the selected list."
-                        Clicked="AddObjectToListButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Views/Add Object v4.png">
+                        Clicked="AddObjectToListButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Object.png">
                     </local:TitleImageButton>
 
                     
@@ -36,14 +36,14 @@
                         x:Name="AddObjectToEntityButton"
                         Title="Add Object"
                         Details="Set the AddObject details here, depending on if it's a Screen or entity."
-                        Clicked="AddObjectButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Views/Add Object v4.png">
+                        Clicked="AddObjectButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Object.png">
                     </local:TitleImageButton>
 
                     <local:TitleImageButton
                         x:Name="AddListOfEntityButton"
                         Title="Add XXXX List to GameScreen"
                         Details="Add a XXXX list to the GameScreen"
-                        Clicked="AddListOfEntityButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Views/Add Entity List to GameScreen.png">
+                        Clicked="AddListOfEntityButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Entity List to GameScreen.png">
 
                     </local:TitleImageButton>
 
@@ -52,7 +52,7 @@
                         x:Name="AddInstanceOfEntityButton"
                         Title="Add XXXX Instance to GameScreen"
                         Details="Adds a single XXXX instance to the GameScreen"
-                        Clicked="AddInstanceOfEntityButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Views/Add Entity instance to GameScreen.png">
+                        Clicked="AddInstanceOfEntityButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Entity instance to GameScreen.png">
                     </local:TitleImageButton>
 
                     <local:TitleImageButton
@@ -60,7 +60,7 @@
                         Title="Add XXXX Factory"
                         Details="Factories simplify the creation and addition of entities to screen lists. 
                         Factories are required to create entities through TMX files."
-                        Clicked="AddEntityFactory_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Views/Create Factory for Entity v2.png">
+                        Clicked="AddEntityFactory_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Create Factory for Entity.png">
                     </local:TitleImageButton>
                 </WrapPanel>
                 
@@ -74,7 +74,7 @@
                         x:Name="RunWizardButton"
                         Title="Run Glue Wizard"
                         Details="The Glue Wizard can help you get a fully functional game set up in seconds."
-                        Clicked="RunWizard_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Views/StartWizard.png"
+                        Clicked="RunWizard_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/StartWizard.png"
                         >
 
                     </local:TitleImageButton>
@@ -84,7 +84,7 @@
                         Title="Create New Project"
                         Details="Usually new projects target Desktop GL."
                         Clicked="CreateNewProjectButton_Clicked" 
-                        Image="/OfficialPluginsCore;component/QuickActionPlugin/Views/Create Project v2.png"
+                        Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Create Project.png"
                         >
 
                     </local:TitleImageButton>
@@ -94,7 +94,7 @@
                         Title="Open Project"
                         Details="Load an existing project from disk."
                         Clicked="OpenProjectButton_Clicked" 
-                        Image="/OfficialPluginsCore;component/QuickActionPlugin/Views/Open Project.png"
+                        Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Open Project.png"
                         >
 
                     </local:TitleImageButton>
@@ -103,8 +103,8 @@
                     <local:TitleImageButton 
                         x:Name="AddGumProject"
                         Title="Add Gum Project" 
-                        Details="Gum provides a flexible and powerful UI and HUD layout tool."
-                        Clicked="AddGumButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Views/Add Gum Project.png">
+                        Details="Gum is used to create UI and HUD."
+                        Clicked="AddGumButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Gum Project.png">
 
                     </local:TitleImageButton>
 
@@ -114,7 +114,7 @@
                         Details="Every game needs at least one screen.
                         Usually the game logic is in a screen called GameScreen.
                         Typically each level requires a new screen."
-                        Clicked="AddScreenButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Views/Create Screen.png">
+                        Clicked="AddScreenButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Level Screen.png">
 
                     </local:TitleImageButton>
 
@@ -122,7 +122,7 @@
                         x:Name="AddEntityButton"
                         Title="Add Entity"
                         Details="Entities represent game objects like the player, enemies, bullets, and pick-ups."
-                        Clicked="AddEntityButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Views/Create Entity.png">
+                        Clicked="AddEntityButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Create Entity.png">
                     </local:TitleImageButton>
                 </WrapPanel>
             </glue:StyledGroupBox>
