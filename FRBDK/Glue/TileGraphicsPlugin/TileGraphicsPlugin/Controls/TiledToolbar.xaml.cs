@@ -52,14 +52,22 @@ namespace TiledPluginCore.Controls
             Opened?.Invoke(this, null);
         }
 
+        [DllImport("Shlwapi.dll", CharSet = CharSet.Unicode)]
+        private static extern int StrCmpLogicalW(string x, string y);
+
+
         // Vic asks - why use a list of MenuItems rather than a ListBox...because we didn't want
         // the list box to keep its selection??
         internal void FillDropdown(List<ReferencedFileSave> availableTmxFiles)
         {
             TiledDropdown.Children.Clear();
 
-            var sorted = availableTmxFiles
-                .OrderBy(item => new FilePath(item.Name).NoPath.ToLowerInvariant());
+            var sorted = availableTmxFiles;
+            //.OrderBy(item => new FilePath(item.Name).NoPath.ToLowerInvariant());
+            sorted.Sort((a,b) => 
+                StrCmpLogicalW(new FilePath(a.Name).NoPath,
+                               new FilePath(b.Name).NoPath));
+
 
             foreach (var rfs in sorted)
             {
