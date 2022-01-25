@@ -39,17 +39,10 @@ namespace FlatRedBall.Glue.IO
                 if(ProjectManager.ProjectBase != null)
                 {
                     handled = TryHandleProjectFileChanges(changedFile);
-
-                    var standardizedGlux = FileManager.RemoveExtension(FileManager.Standardize(projectFileName).ToLower()) + ".glux";
-                    var standardizedGluj = FileManager.RemoveExtension(FileManager.Standardize(projectFileName).ToLower()) + ".gluj";
-                    var partialGlux = FileManager.RemoveExtension(FileManager.Standardize(projectFileName).ToLower()) + @"\..*\.generated\.glux";
-                    var partialGluxRegex = new Regex(partialGlux);
-                    if(!handled && (
-                        changedFile.ToLower() == standardizedGlux || partialGluxRegex.IsMatch(changedFile.ToLower()) || changedFile.ToLower() == standardizedGluj
-                        )
-                    )
+                    bool isGlueProjectOrElementFile = GetIfIsGlueProjectOrElementFile(changedFile, projectFileName);
+                    if (!handled && isGlueProjectOrElementFile)
                     {
-                        if(!ProjectManager.WantsToClose)
+                        if (!ProjectManager.WantsToClose)
                         {
                             ReloadGlux();
                         }
@@ -157,7 +150,7 @@ namespace FlatRedBall.Glue.IO
                                 handled |= shouldSave;
 
                             }
-                            
+
                         }
                     }
 
@@ -166,7 +159,7 @@ namespace FlatRedBall.Glue.IO
                     #region If it's a .cs file, we should see if we've added a new .cs file, and if so refresh the Element for it
                     if (extension == "cs")
                     {
-                        TaskManager.Self.OnUiThread(()=>ReactToChangedCodeFile(changedFile));
+                        TaskManager.Self.OnUiThread(() => ReactToChangedCodeFile(changedFile));
 
                     }
 
@@ -184,7 +177,7 @@ namespace FlatRedBall.Glue.IO
                                 // It's a directory, so let's just rebuild our directory TreeNodes
                                 GlueCommands.Self.RefreshCommands.RefreshDirectoryTreeNodes();
                             }
-                            catch(System.IO.IOException)
+                            catch (System.IO.IOException)
                             {
                                 // this could be because something else is accessing the directory, so sleep, try again
                                 System.Threading.Thread.Sleep(100);
@@ -225,6 +218,32 @@ namespace FlatRedBall.Glue.IO
             }
 
             return handled;
+        }
+
+        private static bool GetIfIsGlueProjectOrElementFile(string changedFile, string projectFileName)
+        {
+            var standardizedGlux = FileManager.RemoveExtension(FileManager.Standardize(projectFileName).ToLower()) + ".glux";
+            var standardizedGluj = FileManager.RemoveExtension(FileManager.Standardize(projectFileName).ToLower()) + ".gluj";
+            var partialGlux = FileManager.RemoveExtension(FileManager.Standardize(projectFileName).ToLower()) + @"\..*\.generated\.glux";
+            var partialGluxRegex = new Regex(partialGlux);
+            var isGlueProjectFile = changedFile.ToLower() == standardizedGlux || partialGluxRegex.IsMatch(changedFile.ToLower()) || changedFile.ToLower() == standardizedGluj;
+            var isElementFile = false;
+            if(!isGlueProjectFile)
+            {
+                var extension = FileManager.GetExtension(changedFile);
+
+                if(extension == GlueProjectSave.ScreenExtension || extension == GlueProjectSave.EntityExtension)
+                {
+                    var projectDirectory = FileManager.GetDirectory(projectFileName);
+
+                    var isRelativeToProject = FileManager.IsRelativeTo(changedFile, projectDirectory);
+
+                    isElementFile = isRelativeToProject;
+                    // is it relative to the project?
+                }
+            }
+
+            return isGlueProjectFile || isElementFile;
         }
 
         private static bool TryHandleProjectFileChanges(string changedFile)

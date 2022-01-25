@@ -80,7 +80,9 @@ namespace FlatRedBall.Glue.IO
 
             FileWatchManager.PerformFlushing = false;
 
-            bool closeInitWindow = PrepareInitializationWindow(ref initializationWindow);
+            bool closeInitWindow = false;
+            
+            GlueCommands.Self.DoOnUiThread(() => closeInitWindow = PrepareInitializationWindow(ref initializationWindow));
 
             // close the project before turning off task processing...
             if (ProjectManager.ProjectBase != null)
@@ -558,13 +560,13 @@ namespace FlatRedBall.Glue.IO
             {
                 closeInitWindow = true;
 
-                initializationWindow = new InitializationWindowWpf();
+                    initializationWindow = new InitializationWindowWpf();
 
-                if (GlueGui.ShowGui)
-                {
-                    initializationWindow.Show();
+                    if (GlueGui.ShowGui)
+                    {
+                        initializationWindow.Show();
                     
-                }
+                    }
             }
             return closeInitWindow;
         }

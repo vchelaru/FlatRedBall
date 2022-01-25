@@ -196,7 +196,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     // file to disk.
                     try
                     {
-
                         ProjectManager.GlueProjectSave.TestSave("GLUE");
                     }
                     catch (Exception e)
@@ -269,7 +268,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     if (!MainGlueWindow.Self.HasErrorOccurred)
                     {
-                        FileWatchManager.IgnoreNextChangeOnFile(GlueState.Self.GlueProjectFileName);
+                        List<FilePath> fileChangesToIgnore = GlueState.Self.CurrentGlueProject.GetAllSerializedFiles(GlueState.Self.GlueProjectFileName);
+                        foreach(var fileToIgnore in fileChangesToIgnore)
+                        {
+                            FileWatchManager.IgnoreNextChangeOnFile(fileToIgnore);
+                        }
                         
                         Exception lastException;
                         var succeeded = ProjectManager.GlueProjectSave.Save("GLUE", GlueState.Self.GlueProjectFileName, out lastException);
@@ -1157,8 +1160,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             newNos.Properties.AddRange(addObjectViewModel.Properties);
 
             AddNamedObjectTo(newNos, element, listToAddTo, selectNewNos);
-
-            GluxCommands.Self.SaveGlux();
 
             return newNos;
         }

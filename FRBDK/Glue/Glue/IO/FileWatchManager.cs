@@ -234,6 +234,8 @@ namespace FlatRedBall.Glue.IO
             //mExternallyBuiltFileWatcher.Changed += new FileSystemEventHandler(ExternallyBuiltFileChangedEventRaised);
         }
 
+
+        public static void IgnoreNextChangeOnFile(FilePath filePath) => IgnoreNextChangeOnFile(filePath.FullPath);
         public static void IgnoreNextChangeOnFile(string file)
         {
             // all changed file groups share the same instance, so we only

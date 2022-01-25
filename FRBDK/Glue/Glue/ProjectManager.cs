@@ -372,7 +372,7 @@ namespace FlatRedBall.Glue
         {
             if (FileManager.IsRelative(relativePath))
             {
-                if (forceAsContent || GlueCommands.Self.FileCommands.IsContent(relativePath))
+                if ((forceAsContent || GlueCommands.Self.FileCommands.IsContent(relativePath)) && ContentProject != null)
                 {
                     return !relativePath.StartsWith(ContentDirectoryRelative)
                                ? ContentProject.MakeAbsolute(ContentDirectoryRelative + relativePath)

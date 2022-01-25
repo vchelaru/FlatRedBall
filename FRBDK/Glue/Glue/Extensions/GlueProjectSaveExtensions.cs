@@ -33,6 +33,28 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
+        public static List<FilePath> GetAllSerializedFiles(this GlueProjectSave glueProjectSave, FilePath target)
+        {
+            var files = new List<FilePath>();
+            files.Add(target);
+
+            if(glueProjectSave.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
+            {
+                var directory = target.GetDirectoryContainingThis();
+
+                foreach(var screen in glueProjectSave.Screens)
+                {
+                    files.Add(directory + screen.Name + "." + GlueProjectSave.ScreenExtension);
+                }
+                foreach(var entity in glueProjectSave.Entities)
+                {
+                    files.Add(directory + entity.Name + "." + GlueProjectSave.EntityExtension);
+                }
+            }
+
+            return files;
+        }
+
         public static bool Save(this GlueProjectSave glueProjectSave, string tag, string fileName, out Exception lastException)
         {
             int failures = 0;
