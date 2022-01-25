@@ -11,14 +11,13 @@ namespace FlatRedBall.Glue.SaveClasses
     /// </summary>
     public class CustomClassSave
     {
-        public List<string> CsvFilesUsingThis = new List<string>();
-
-        public List<InstructionSave> RequiredProperties = new List<InstructionSave>();
-
-
         public string Name;
         public bool GenerateCode { get; set; }
         public string CustomNamespace { get; set; }
+
+        public List<string> CsvFilesUsingThis = new List<string>();
+
+        public List<InstructionSave> RequiredProperties = new List<InstructionSave>();
 
         public CustomClassSave()
         {

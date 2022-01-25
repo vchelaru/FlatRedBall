@@ -24,10 +24,12 @@ namespace FlatRedBall.Glue.SaveClasses
 
     public class GlueProjectSave
     {
+        #region Constants
+
         public const string ScreenExtension = "glsj";
         public const string EntityExtension = "glej";
 
-
+        #endregion
 
         #region Glux Version
 
@@ -46,7 +48,8 @@ namespace FlatRedBall.Glue.SaveClasses
             SupportsEditMode = 7,
             ScreensHaveActivityEditMode = 8,
             GlueSavedToJson = 9,
-            IEntityInFrb = 10
+            IEntityInFrb = 10,
+            SeparateJsonFilesForElements = 11,
         }
 
         #endregion
@@ -55,7 +58,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.GlueSavedToJson;
+        public const int LatestVersion = (int)GluxVersions.SeparateJsonFilesForElements;
 
         public int FileVersion { get; set; }
 
@@ -82,6 +85,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public List<EntitySave> Entities = new List<EntitySave>();
 
+        public List<GlueElementFileReference> ScreenReferences { get; set; } = new List<GlueElementFileReference>();
+        public List<GlueElementFileReference> EntityReferences { get; set; } = new List<GlueElementFileReference>();
 
 
         public List<ReferencedFileSave> GlobalFiles = new List<ReferencedFileSave>();

@@ -151,7 +151,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
 
         /// <summary>
-        /// Saves the current project immediately - this should not be called except in very rare circumstances as it will run right away and may result
+        /// Saves the current project immediately - this should not 
+        /// be called except in very rare circumstances as it will run right away and may result
         /// in multiple threads accessing the glux at the same time.
         /// </summary>
         public void SaveGlueProjectImmediately()
@@ -174,7 +175,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
                 else
                 {
-                    ProjectSyncer.SyncGlux();
+                    ProjectSyncer.UpdateSyncedProjectsInGlux();
 
                     // Jan 20, 2020
                     // .NET Core XmlSerialization

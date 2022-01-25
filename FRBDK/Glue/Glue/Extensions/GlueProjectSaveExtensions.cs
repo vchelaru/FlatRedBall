@@ -69,22 +69,54 @@ namespace FlatRedBall.Glue.SaveClasses
             return succeeded;
         }
 
-        private static void SaveToFile(this GlueProjectSave glueProjectSave, string fileName, string tag)
+        private static void SaveToFile(this GlueProjectSave glueProjectSave, FilePath filePath, string tag)
         {
-            var toSave = glueProjectSave.ConvertToPartial(tag);
+            var clone = glueProjectSave.ConvertToPartial(tag);
+
+            if(clone.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
+            {
+                clone.EntityReferences = clone.Entities.Select(item => new GlueElementFileReference { Name = item.Name }).ToList();
+                clone.ScreenReferences = clone.Screens.Select(item => new GlueElementFileReference { Name = item.Name }).ToList();
+
+                var glueDirectory = filePath.GetDirectoryContainingThis();
+
+                foreach(var entity in clone.Entities)
+                {
+                    var serialized = JsonConvert.SerializeObject(entity, Formatting.Indented);
+
+                    var locationToSave = glueDirectory + entity.Name + "." + GlueProjectSave.EntityExtension;
+
+                    FileManager.SaveText(serialized, locationToSave);
+                }
+
+                foreach(var screen in clone.Screens)
+                {
+                    var serialized = JsonConvert.SerializeObject(screen, Formatting.Indented);
+
+                    var locationToSave = glueDirectory + screen.Name + "." + GlueProjectSave.ScreenExtension;
+
+                    FileManager.SaveText(serialized, locationToSave);
+                }
+
+                clone.Entities.Clear();
+                clone.Screens.Clear();
+            }
+
+            var fileName = filePath.FullPath;
+
             string convertedFileName = fileName.ConvertToPartialName(tag);
             if(glueProjectSave.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
             {
                 JsonSerializerSettings settings = new JsonSerializerSettings();
                 settings.NullValueHandling = NullValueHandling.Ignore;
                 settings.DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate;
-                var serialized = JsonConvert.SerializeObject(glueProjectSave, Formatting.Indented, settings);
+                var serialized = JsonConvert.SerializeObject(clone, Formatting.Indented, settings);
                 FileManager.SaveText(serialized, fileName);
 
             }
             else
             {
-                FileManager.XmlSerialize(toSave, convertedFileName);
+                FileManager.XmlSerialize(clone, convertedFileName);
             }
         }
 
@@ -114,11 +146,14 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 returnValue = new GlueProjectSave();
 
-                //Entities
-                returnValue.Entities.RemoveAll(t => !t.Tags.Contains(tag));
 
-                //Screens
-                returnValue.Screens.RemoveAll(t => !t.Tags.Contains(tag));
+                throw new NotImplementedException("Need to add, not remove. I believe the following code is wrong:");
+
+                ////Entities
+                //returnValue.Entities.RemoveAll(t => !t.Tags.Contains(tag));
+
+                ////Screens
+                //returnValue.Screens.RemoveAll(t => !t.Tags.Contains(tag));
             }
 
             return returnValue;
@@ -174,6 +209,40 @@ namespace FlatRedBall.Glue.SaveClasses
 
                 main.Merge(FileManager.XmlDeserialize<GlueProjectSave>(file).MarkTags(tag));
             }
+
+            if(main.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
+            {
+                var glueDirectory = fileName.GetDirectoryContainingThis();
+                foreach (var screenReference in main.ScreenReferences)
+                {
+                    var path = new FilePath(glueDirectory + screenReference.Name + "." + GlueProjectSave.ScreenExtension);
+
+                    if(path.Exists())
+                    {
+                        var fileContents = System.IO.File.ReadAllText(path.FullPath);
+                        var deserialized = JsonConvert.DeserializeObject<ScreenSave>(fileContents);
+
+                        main.Screens.Add(deserialized);
+                    }
+                }
+
+                foreach(var entityReference in main.EntityReferences)
+                {
+                    var path = new FilePath(glueDirectory + entityReference.Name + "." + GlueProjectSave.EntityExtension);
+
+                    if(path.Exists())
+                    {
+                        var fileContents = System.IO.File.ReadAllText(path.FullPath);
+                        var deserialized = JsonConvert.DeserializeObject<EntitySave>(fileContents);
+
+                        main.Entities.Add(deserialized);
+                    }
+                }
+
+                main.ScreenReferences.Clear();
+                main.EntityReferences.Clear();
+            }
+
             return main;
         }
 
@@ -206,6 +275,15 @@ namespace FlatRedBall.Glue.SaveClasses
                 }
             }
 
+            foreach(var entityReference in newSave.EntityReferences)
+            {
+                var contains = origSave.EntityReferences.Any(item => item.Name == entityReference.Name);
+                if(!contains)
+                {
+                    origSave.EntityReferences.Add(entityReference);
+                }
+            }
+
             //Screens
             foreach (var screenSave in newSave.Screens)
             {
@@ -217,6 +295,15 @@ namespace FlatRedBall.Glue.SaveClasses
                 else
                 {
                     //Do stuff for when it already exists
+                }
+            }
+
+            foreach(var screenReference in newSave.ScreenReferences)
+            {
+                var contains = origSave.ScreenReferences.Any(item => item.Name == screenReference.Name);
+                if(!contains)
+                {
+                    origSave.ScreenReferences.Add(screenReference);
                 }
             }
         }

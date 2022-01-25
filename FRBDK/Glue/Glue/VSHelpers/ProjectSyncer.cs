@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.ComponentModel.Composition;
 using System.IO;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.VSHelpers
 {
@@ -30,11 +31,13 @@ namespace FlatRedBall.Glue.VSHelpers
             }
         }
 
-        public static void SyncGlux()
+        public static void UpdateSyncedProjectsInGlux()
         {
             // See if there are any new projects
 
-            if (ProjectManager.GlueProjectSave != null)
+            var glueProject = GlueState.Self.CurrentGlueProject;
+
+            if (glueProject != null)
             {
                 foreach (ProjectBase vsp in ProjectManager.SyncedProjects)
                 {
@@ -49,16 +52,16 @@ namespace FlatRedBall.Glue.VSHelpers
                         fileNameToUse = vsp.FullFileName;
                     }
 
-                    if (!ProjectManager.GlueProjectSave.SyncedProjects.Contains(fileNameToUse))
+                    if (!glueProject.SyncedProjects.Contains(fileNameToUse))
                     {
-                        ProjectManager.GlueProjectSave.SyncedProjects.Add(fileNameToUse);
+                        glueProject.SyncedProjects.Add(fileNameToUse);
                     }
                 }
 
 
-                for (int i = ProjectManager.GlueProjectSave.SyncedProjects.Count - 1; i > -1; i--)
+                for (int i = glueProject.SyncedProjects.Count - 1; i > -1; i--)
                 {
-                    string projectName = ProjectManager.GlueProjectSave.SyncedProjects[i];
+                    string projectName = glueProject.SyncedProjects[i];
 
                     // is the project part of what's in the ProjectManager?
 
@@ -80,7 +83,7 @@ namespace FlatRedBall.Glue.VSHelpers
 
                     if (!isPartOfProject)
                     {
-                        ProjectManager.GlueProjectSave.SyncedProjects.RemoveAt(i);
+                        glueProject.SyncedProjects.RemoveAt(i);
                     }
 
                 }

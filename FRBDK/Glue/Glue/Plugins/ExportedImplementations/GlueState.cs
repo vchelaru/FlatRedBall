@@ -196,7 +196,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                     draggedTreeNode = value;
                     if(draggedTreeNode == null)
                     {
-                        GlueCommands.Self.PrintOutput("Released node");
+                        //GlueCommands.Self.PrintOutput("Released node");
                     }
                     else
                     {
@@ -204,7 +204,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                         {
                             PluginManager.ReactToGrabbedTreeNodeChanged(draggedTreeNode, TreeNodeAction.Grabbed);
                         }
-                        GlueCommands.Self.PrintOutput("Dragged Node " + draggedTreeNode?.Text ?? "<none>");
 
                     }
                 }
