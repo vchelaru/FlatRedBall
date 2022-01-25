@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPlugins.GameHost.Views"
-             xmlns:views="clr-namespace:OfficialPlugins.Compiler.Views"
+             xmlns:views="clr-namespace:OfficialPlugins.Compiler.Views" xmlns:controls="clr-namespace:FlatRedBall.Glue.Controls;assembly=GlueFormsCore"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -97,8 +97,9 @@
             </Grid>
         </Grid>-->
 
+        <Grid x:Name="BackgroundGrid" Background="#1E1E1D" Grid.Row="1"></Grid>
 
-        <Grid x:Name="MainGrid" Grid.Row="1">
+        <Grid x:Name="MainGrid" Grid.Row="1" Visibility="{Binding WhileRunningViewVisibility}">
             <WindowsFormsHost x:Name="WinformsHost" 
                               
                               SizeChanged="WinformsHost_SizeChanged"
@@ -107,7 +108,11 @@
                 
             </WindowsFormsHost>
 
+
+
         </Grid>
+        <controls:ActivitySpinner Visibility="{Binding BuildingActivitySpinnerVisibility}" 
+                                  Grid.Row="1"></controls:ActivitySpinner>
         
     </Grid>
 </UserControl>

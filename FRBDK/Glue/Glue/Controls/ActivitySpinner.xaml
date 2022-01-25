@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="OfficialPluginsCore.Wizard.Views.ActivitySpinner"
+﻿<UserControl x:Class="FlatRedBall.Glue.Controls.ActivitySpinner"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OfficialPluginsCore.Wizard.Views"
+             xmlns:local="clr-namespace:FlatRedBall.Glue.Controls"
              mc:Ignorable="d" 
              Width="Auto" Height="Auto">
     <UserControl.Resources>

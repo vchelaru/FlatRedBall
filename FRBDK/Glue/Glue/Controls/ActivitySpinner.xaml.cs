@@ -11,7 +11,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace OfficialPluginsCore.Wizard.Views
+namespace FlatRedBall.Glue.Controls
 {
     /// <summary>
     /// Interaction logic for ActivitySpinner.xaml

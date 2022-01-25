@@ -64,6 +64,8 @@ namespace OfficialPlugins.Compiler.ViewModels
             set => Set(value);
         }
 
+        [DependsOn(nameof(IsCompiling))]
+        public Visibility BuildingActivitySpinnerVisibility => IsCompiling.ToVisibility();
         public bool IsHotReloadAvailable
         {
             get => Get<bool>();

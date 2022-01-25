@@ -576,6 +576,12 @@
 
 
   </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Controls\ActivitySpinner.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+  </ItemGroup>
     
 
 
