@@ -58,7 +58,9 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.SeparateJsonFilesForElements;
+        // Don't make 11 the default yet.
+        public const int LatestVersion = (int)GluxVersions.IEntityInFrb;
+        //public const int LatestVersion = (int)GluxVersions.SeparateJsonFilesForElements;
 
         public int FileVersion { get; set; }
 
