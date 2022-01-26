@@ -714,7 +714,9 @@ namespace FlatRedBall.Glue.IO
 
         private void BuildAllOutOfDateFiles()
         {
-            TaskManager.Self.Add(() =>
+            TaskManager.Self.AddOrRunIfTasked(() =>
+            {
+                if(ProjectManager.GlueProjectSave != null)
                 {
                     Parallel.ForEach(ProjectManager.GlueProjectSave.Screens, (screenSave) =>
                     //foreach (ScreenSave screenSave in ProjectManager.GlueProjectSave.Screens)
@@ -732,9 +734,9 @@ namespace FlatRedBall.Glue.IO
                     );
 
                     BuildIfOutOfDate(ProjectManager.GlueProjectSave.GlobalFiles, runBuildsAsync: false, runInParallel: true);
-                },
-                "Build all out of date files"
-                );
+                }
+            },
+            "Build all out of date files");
         }
 
         private void BuildIfOutOfDate(List<ReferencedFileSave> rfsList, bool runBuildsAsync, bool runInParallel)

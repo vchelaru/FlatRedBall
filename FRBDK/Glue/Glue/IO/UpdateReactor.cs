@@ -21,6 +21,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.Parsing;
 using System.Security.Cryptography.Pkcs;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.IO
 {
@@ -28,7 +29,7 @@ namespace FlatRedBall.Glue.IO
     {
         public const string ReloadingProjectDescription = "Reloading Project";
         //static object mUpdateFileLock = new object();
-        public static bool UpdateFile(string changedFile)
+        public static async Task<bool> UpdateFile(string changedFile)
         {
             bool shouldSave = false;
             bool handled = false;
@@ -44,7 +45,7 @@ namespace FlatRedBall.Glue.IO
                     {
                         if (!ProjectManager.WantsToClose)
                         {
-                            ReloadGlux();
+                            await ReloadGlux();
                         }
                         handled = true;
                     }
@@ -337,7 +338,7 @@ namespace FlatRedBall.Glue.IO
             return handled;
         }
 
-        private static async void ReloadGlux()
+        private static async Task ReloadGlux()
         {
             object selectedObject = null;
             PluginManager.ReceiveOutput("Reloading Glue Project");

@@ -158,9 +158,10 @@ namespace FlatRedBall.Glue.IO
 
                     if(!skip)
                     {
-                        TaskManager.Self.Add(() =>
+                        TaskManager.Self.Add(async () =>
                             {
-                                if(ReactToChangedFile(file))
+                                var didReact = await ReactToChangedFile(file);
+                                if (didReact)
                                 {
                                     UnreferencedFilesManager.Self.IsRefreshRequested = true;
                                 }
@@ -178,7 +179,7 @@ namespace FlatRedBall.Glue.IO
             semaphoreSlim.Release();
         }
 
-        private static bool ReactToChangedFile(string file)
+        private static async Task<bool> ReactToChangedFile(string file)
         {
             bool wasAnythingChanged = false;
 
@@ -187,7 +188,7 @@ namespace FlatRedBall.Glue.IO
 
             if (!isIgnored)
             {
-                bool handled = UpdateReactor.UpdateFile(file);
+                bool handled = await UpdateReactor.UpdateFile(file);
                 wasAnythingChanged |= handled;
             }
             else if (reason == IgnoreReason.BuiltFile)

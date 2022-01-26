@@ -2630,7 +2630,7 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-        private static void RebuildFileClick(object sender, EventArgs e)
+        private static async void RebuildFileClick(object sender, EventArgs e)
         {
             // search terms: rebuild file
             ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
@@ -2662,7 +2662,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     var absoluteFileName =
                         ProjectManager.MakeAbsolute(rfs.Name);
 
-                    UpdateReactor.UpdateFile(absoluteFileName);
+                    await UpdateReactor.UpdateFile(absoluteFileName);
 
                     PluginManager.ReactToChangedBuiltFile(absoluteFileName);
 
