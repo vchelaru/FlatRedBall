@@ -1485,9 +1485,9 @@ namespace FlatRedBall.IO
             }
 
             // Note: On Windows, WrietAllText causes 
-            // 2 file changes to be raised on windows.
+            // 2 file changes to be raised if the file already exists.
             // This makes Glue always reload the .glux
-            // on any file change which is slow, inconvenient,
+            // on any file change. This is slow, inconvenient,
             // and can introduce bugs.
             // Therefore, we have to delete the file first to prevent
             // twi file changes:
