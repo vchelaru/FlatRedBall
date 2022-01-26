@@ -544,6 +544,8 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     AddEvent("Find all references to this", FindAllReferencesClick);
                     AddItem(mRefreshTreeNodesMenuItem);
+
+                    //Add("Force Save Screen JSON", () => ForceSaveElementJson(targetNode.Tag as GlueElement));
                 }
             }
 
@@ -909,6 +911,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #endregion
         }
+
 
         static void Add(string text, Action action, string shortcutDisplay = null)
         {
