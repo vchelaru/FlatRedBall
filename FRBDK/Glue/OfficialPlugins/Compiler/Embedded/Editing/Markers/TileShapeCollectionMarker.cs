@@ -148,7 +148,7 @@ namespace GlueControl.Editing
                 return;
             }
             //////////////end early out////////////////////////////
-            
+
             #region Initial Variable Assignment
 
             var cursor = GuiManager.Cursor;
@@ -157,9 +157,24 @@ namespace GlueControl.Editing
 
             float tileDimensionHalf = tileDimensions / 2.0f;
 
+            #endregion
+
+            #region Update Highlight and X
             currentTileHighlight.X = MathFunctions.RoundFloat(cursor.WorldX - tileDimensionHalf, tileDimensions) + tileDimensionHalf;
             currentTileHighlight.Y = MathFunctions.RoundFloat(cursor.WorldY - tileDimensionHalf, tileDimensions) + tileDimensionHalf;
 
+            if (EditingMode == EditingMode.Adding)
+            {
+                if (!boundsRectangle.IsPointInside(currentTileHighlight.X, currentTileHighlight.Y))
+                {
+                    var top = currentTileHighlight.Y + tileDimensionHalf;
+                    var bottom = currentTileHighlight.Y - tileDimensionHalf;
+                    var left = currentTileHighlight.X - tileDimensionHalf;
+                    var right = currentTileHighlight.X + tileDimensionHalf;
+                    EditorVisuals.Line(new Vector3(left, top, 0), new Vector3(right, bottom, 0)).Color = Color.Red;
+                    EditorVisuals.Line(new Vector3(right, top, 0), new Vector3(left, bottom, 0)).Color = Color.Red;
+                }
+            }
             #endregion
 
             #region Primary Push
@@ -173,17 +188,14 @@ namespace GlueControl.Editing
 
             #region Primary Down
 
-            if (cursor.PrimaryDown)
+            if (EditingMode == EditingMode.Adding)
             {
-                if (EditingMode == EditingMode.Adding)
-                {
-                    // try to paint
-                    var existingRectangle = owner.GetRectangleAtPosition(currentTileHighlight.X, currentTileHighlight.Y);
+                // try to paint
+                var existingRectangle = owner.GetRectangleAtPosition(currentTileHighlight.X, currentTileHighlight.Y);
 
-                    if (existingRectangle == null && boundsRectangle.IsPointInside(currentTileHighlight.X, currentTileHighlight.Y))
-                    {
-                        PaintTileAtHighlight();
-                    }
+                if (existingRectangle == null && boundsRectangle.IsPointInside(currentTileHighlight.X, currentTileHighlight.Y))
+                {
+                    PaintTileAtHighlight();
                 }
             }
 
@@ -249,6 +261,7 @@ namespace GlueControl.Editing
 
             #endregion
         }
+
 
         private void CommitRemovedTiles()
         {
