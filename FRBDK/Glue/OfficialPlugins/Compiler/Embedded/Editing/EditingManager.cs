@@ -601,12 +601,28 @@ namespace GlueControl.Editing
             {
                 CurrentNamedObjects.Clear();
             }
-            if (namedObject != null && !CurrentNamedObjects.Contains(namedObject))
+
+            bool isSelectable = true;
+            if (namedObject != null)
             {
-                CurrentNamedObjects.Add(namedObject);
+                INameable foundObject = GetObjectByName(namedObject?.InstanceName);
+                isSelectable = foundObject != null &&
+                    SelectionLogic.IsSelectable(foundObject);
             }
 
-            Select(namedObject?.InstanceName, addToExistingSelection, playBump, focusCameraOnObject);
+            if (isSelectable)
+            {
+                if (namedObject != null && !CurrentNamedObjects.Contains(namedObject))
+                {
+                    CurrentNamedObjects.Add(namedObject);
+                }
+
+                Select(namedObject?.InstanceName, addToExistingSelection, playBump, focusCameraOnObject);
+            }
+            else
+            {
+                Select((string)null, addToExistingSelection, playBump, focusCameraOnObject);
+            }
         }
 
         internal void Select(string objectName, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false)
@@ -660,6 +676,29 @@ namespace GlueControl.Editing
             }
         }
 
+
+        private INameable GetObjectByName(string objectName)
+        {
+            INameable foundObject = null;
+
+            if (!string.IsNullOrEmpty(objectName))
+            {
+                foundObject = SelectionLogic.GetAvailableObjects(ElementEditingMode)
+                    ?.FirstOrDefault(item => item.Name == objectName);
+
+
+                if (foundObject == null)
+                {
+                    var screen = ScreenManager.CurrentScreen;
+                    var instance = screen.GetInstance($"{objectName}", screen);
+
+                    foundObject = instance as INameable;
+                }
+            }
+
+            return foundObject;
+
+        }
         void RemoveFromSelection(NamedObjectSave namedObject)
         {
             CurrentNamedObjects.Remove(namedObject);

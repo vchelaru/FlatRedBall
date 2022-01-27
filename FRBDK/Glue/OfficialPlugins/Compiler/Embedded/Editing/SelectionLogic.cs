@@ -216,11 +216,18 @@ namespace GlueControl.Editing
             return availableItems;
         }
 
-        private static bool IsSelectable(PositionedObject objectAtI)
+        public static bool IsSelectable(INameable nameable)
         {
 #if SupportsEditMode
-
-            return objectAtI.CreationSource == "Glue";
+            if(nameable is PositionedObject positionedObject)
+            {
+                return positionedObject.CreationSource == "Glue" && 
+                    (positionedObject is FlatRedBall.TileGraphics.LayeredTileMap) == false ;
+            }
+            else
+            {
+                return nameable is FlatRedBall.TileCollisions.TileShapeCollection;
+            }
 #else
             return false;
 #endif
