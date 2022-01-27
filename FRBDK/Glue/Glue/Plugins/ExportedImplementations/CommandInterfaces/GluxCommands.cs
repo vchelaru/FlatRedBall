@@ -1020,7 +1020,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             var project = ObjectFinder.Self.GlueProject;
             if (project != null)
             {
-                foreach (ScreenSave screenSave in project.Screens)
+                // dont' foreach here. Technically this should be called on tasks, but if it's not, let's make this safe:
+
+                foreach (ScreenSave screenSave in project.Screens.ToArray())
                 {
                     foreach (ReferencedFileSave rfs in screenSave.ReferencedFiles)
                     {
@@ -1034,7 +1036,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 lock (project.Entities)
                 {
-                    foreach (EntitySave entitySave in project.Entities)
+                    foreach (EntitySave entitySave in project.Entities.ToArray())
                     {
                         foreach (ReferencedFileSave rfs in entitySave.ReferencedFiles)
                         {
@@ -1047,7 +1049,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                 }
 
-                foreach (ReferencedFileSave rfs in project.GlobalFiles)
+                foreach (ReferencedFileSave rfs in project.GlobalFiles.ToArray())
                 {
                     var absoluteRfs = GlueCommands.Self.GetAbsoluteFilePath(rfs);
                     if (absoluteRfs == filePath)

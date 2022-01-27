@@ -102,9 +102,15 @@ namespace FlatRedBall.Glue.SaveClasses
 
                 var glueDirectory = filePath.GetDirectoryContainingThis();
 
+                JsonSerializerSettings settings = new JsonSerializerSettings();
+                settings.Formatting = Formatting.Indented;
+                settings.DefaultValueHandling = DefaultValueHandling.Ignore;
+
+                // Ignoring defaults will make the json much smaller, but is it okay?
+
                 foreach(var entity in clone.Entities)
                 {
-                    var serialized = JsonConvert.SerializeObject(entity, Formatting.Indented);
+                    var serialized = JsonConvert.SerializeObject(entity, settings);
 
                     var locationToSave = glueDirectory + entity.Name + "." + GlueProjectSave.EntityExtension;
 
@@ -113,7 +119,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
                 foreach(var screen in clone.Screens)
                 {
-                    var serialized = JsonConvert.SerializeObject(screen, Formatting.Indented);
+                    var serialized = JsonConvert.SerializeObject(screen, settings);
 
                     var locationToSave = glueDirectory + screen.Name + "." + GlueProjectSave.ScreenExtension;
 

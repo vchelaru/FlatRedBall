@@ -41,6 +41,7 @@ using FlatRedBall.Glue.SetVariable;
 using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
 using GlueFormsCore.FormHelpers;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace FlatRedBall.Glue.FormHelpers
 {
@@ -545,7 +546,10 @@ namespace FlatRedBall.Glue.FormHelpers
                     AddEvent("Find all references to this", FindAllReferencesClick);
                     AddItem(mRefreshTreeNodesMenuItem);
 
-                    //Add("Force Save Screen JSON", () => ForceSaveElementJson(targetNode.Tag as GlueElement));
+                    if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
+                    {
+                        Add("Force Save Screen JSON", () => ForceSaveElementJson(targetNode.Tag as GlueElement));
+                    }
                 }
             }
 
@@ -2809,5 +2813,26 @@ namespace FlatRedBall.Glue.FormHelpers
         }
 
 
+        private static void ForceSaveElementJson(GlueElement glueElement)
+        {
+            var glueDirectory = GlueState.Self.CurrentGlueProjectDirectory;
+            var fileName = glueElement.Name + ".";
+            if(glueElement is ScreenSave)
+            {
+                fileName += GlueProjectSave.ScreenExtension;
+            }
+            else
+            {
+                fileName += GlueProjectSave.EntityExtension;
+            }
+
+            var destination = glueDirectory + fileName;
+
+            var serialized = JsonConvert.SerializeObject(glueElement, Formatting.Indented);
+
+            FileWatchManager.IgnoreNextChangeOnFile(destination);
+
+            FileManager.SaveText(serialized, destination);
+        }
     }
 }

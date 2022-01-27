@@ -310,7 +310,6 @@ namespace FlatRedBall.Glue.GuiDisplay
 
             ExcludeMember(nameof(NamedObjectSave.InstructionSaves));
             ExcludeMember(nameof(NamedObjectSave.Properties));
-            ExcludeMember(nameof(NamedObjectSave.FileCreatedBy));
             ExcludeMember(nameof(NamedObjectSave.FulfillsRequirement));
             ExcludeMember(nameof(NamedObjectSave.IsNodeHidden));
 

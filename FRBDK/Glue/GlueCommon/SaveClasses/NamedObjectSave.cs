@@ -71,17 +71,12 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
 
-        string mSourceClassType;
-
         [CategoryAttribute("Source")]
+        [JsonIgnore]
         public string SourceClassType
         {
-            get { return mSourceClassType; }
-            set
-            {
-                mSourceClassType = value;
-
-            }
+            get => Properties.GetValue<string>(nameof(SourceClassType));
+            set => Properties.SetValue(nameof(SourceClassType), value);
         }
 
         #region Fields
@@ -96,7 +91,7 @@ namespace FlatRedBall.Glue.SaveClasses
         } = new List<PropertySave>();
         public bool ShouldSerializeProperties()
         {
-            return Properties != null && Properties.Count != 0;
+            return Properties?.Count > 0;
         }
 
         private List<TypedMemberBase> mTypedMembers = new List<TypedMemberBase>();
@@ -108,11 +103,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         private List<String> mVariablesToRest = new List<String>();
 
-        private string mSourceFile;
-        private bool mSetByDerived;
-        private bool mExposedInDerived;
-        private bool mSetByContainer;
-        public string FileCreatedBy;
+        
         private string mLayerOn;
 
         string mClickEvent;
@@ -159,32 +150,30 @@ namespace FlatRedBall.Glue.SaveClasses
         /// </remarks>
         #endregion
             // made to use properties on June 23, 2019. Ever want to XML ignore this?
+            // January 26, 2022 - let's make it json ignored
         [CategoryAttribute("Source")]
+        [JsonIgnore]
         public SourceType SourceType
         {
-            get
-            {
-                return Properties.GetValue<SourceType>(nameof(SourceType));
-            }
-            set
-            {
-                Properties.SetValue(nameof(SourceType), value);
-            }
+            get => Properties.GetValue<SourceType>(nameof(SourceType));
+            set => Properties.SetValue(nameof(SourceType), value);
         }
 
         [CategoryAttribute("Source")]
+        [JsonIgnore]
         public string SourceFile
         {
             get
             {
-                return mSourceFile;
+                return Properties.GetValue<string>(nameof(SourceFile));
+
             }
             set
             {
                 if (!String.IsNullOrEmpty(value) && value.ToLower().Replace("\\", "/").StartsWith("content/"))
                     value = value.Substring(8);
 
-                mSourceFile = value;
+                Properties.SetValue(nameof(SourceFile), value);
             }
         }
 
@@ -229,20 +218,20 @@ namespace FlatRedBall.Glue.SaveClasses
 
 
 
-        string mSourceClassGenericType;
 
         [CategoryAttribute("Source")]
+        [JsonIgnore]
         public string SourceClassGenericType
         {
-            get { return mSourceClassGenericType; }
+            get => Properties.GetValue<string>(nameof(SourceClassGenericType));
             set
             {
-                mSourceClassGenericType = value;
-
-                if (mSourceClassGenericType == "<NONE>")
+                if (value == "<NONE>")
                 {
-                    mSourceClassGenericType = null;
+                    value = null;
                 }
+
+                Properties.SetValue(nameof(SourceClassGenericType), value);
             }
         }
 
@@ -301,48 +290,43 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [CategoryAttribute("Access"), DefaultValue(false)]
+        [JsonIgnore]
         public bool HasPublicProperty
         {
-            get;
-            set;
+            get => Properties.GetValue<bool>(nameof(HasPublicProperty));
+            set => Properties.SetValue(nameof(HasPublicProperty), value);
         }
 
         [CategoryAttribute("Access"), DefaultValue(false)]
+        [JsonIgnore]
         public bool SetByDerived
         {
-            get { return mSetByDerived; }
-            set
-            {
-                mSetByDerived = value;
-            }
+            get => Properties.GetValue<bool>(nameof(SetByDerived));
+            set => Properties.SetValue(nameof(SetByDerived), value);
         }
 
         [CategoryAttribute("Access"), DefaultValue(false)]
+        [JsonIgnore]
         public bool ExposedInDerived
         {
-            get { return mExposedInDerived; }
-            set
-            {
-                mExposedInDerived = value;
-            }
+            get => Properties.GetValue<bool>(nameof(ExposedInDerived));
+            set => Properties.SetValue(nameof(ExposedInDerived), value);
         }
 
         [CategoryAttribute("Access"), DefaultValue(false)]
+        [JsonIgnore]
         public bool SetByContainer
         {
-            get { return mSetByContainer; }
-            set
-            {
-                mSetByContainer = value;
-
-            }
+            get => Properties.GetValue<bool>(nameof(SetByContainer));
+            set => Properties.SetValue(nameof(SetByContainer), value);
         }
         
         [CategoryAttribute("Creation")]
+        [JsonIgnore]
         public bool AttachToContainer
         {
-            get;
-            set;
+            get => Properties.GetValue<bool>(nameof(AttachToContainer));
+            set => Properties.SetValue(nameof(AttachToContainer), value);
         }
 
         [CategoryAttribute("Creation"), DefaultValue(false)]
@@ -380,16 +364,11 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [CategoryAttribute("Creation")]
+        [JsonIgnore]
         public string ConditionalCompilationSymbols
         {
-            get
-            {
-                return Properties.GetValue<string>(nameof(ConditionalCompilationSymbols));
-            }
-            set
-            {
-                Properties.SetValue(nameof(ConditionalCompilationSymbols), value);
-            }
+            get => Properties.GetValue<string>(nameof(ConditionalCompilationSymbols));
+            set => Properties.SetValue(nameof(ConditionalCompilationSymbols), value);
         }
 
         // This used to use the Properties list to store its value, but it caused a bug.
@@ -401,8 +380,8 @@ namespace FlatRedBall.Glue.SaveClasses
         // then the property should use get;set; instead of the properties.
         public bool GenerateTimedEmit
         {
-            get;
-            set;
+            get => Properties.GetValue<bool>(nameof(GenerateTimedEmit));
+            set => Properties.SetValue(nameof(GenerateTimedEmit), value);
         }
 
 

@@ -185,10 +185,20 @@ namespace FlatRedBall.Glue.IO
             mFileSystemWatcher.Renamed += HandleRename;
         }
 
+        string[] extensionsToIgnoreRenamesAndDeletes = new string[]
+        {
+            "glux",
+            "gluj",
+            SaveClasses.GlueProjectSave.ScreenExtension,
+            SaveClasses.GlueProjectSave.EntityExtension
+        };
+
         private void HandleRename(object sender, RenamedEventArgs e)
         {
+            var extension = FileManager.GetExtension(e.Name);
 
-            var shouldProcess = FileManager.GetExtension(e.Name) != "glux" && FileManager.GetExtension(e.Name) != "gluj";
+
+            var shouldProcess = extensionsToIgnoreRenamesAndDeletes.Contains(extension) == false;
 
             if(shouldProcess)
             {
@@ -244,8 +254,7 @@ namespace FlatRedBall.Glue.IO
         private bool GetIfShouldIgnoreDelete(string fileName)
         {
             var extension = FileManager.GetExtension(fileName);
-            return extension == "glux" ||
-                extension == "gluj";
+            return extensionsToIgnoreRenamesAndDeletes.Contains(extension);
         }
 
         void HandleFileSystemChange(object sender, FileSystemEventArgs e)
@@ -256,9 +265,8 @@ namespace FlatRedBall.Glue.IO
 
             if(e.ChangeType == WatcherChangeTypes.Renamed)
             {
-                // don't process the .glux file, that gets renamed all the time
-                shouldProcess = FileManager.GetExtension(fileName) != "glux" &&
-                    FileManager.GetExtension(fileName) != "gluj";
+                var extension = FileManager.GetExtension(fileName);
+                shouldProcess = !extensionsToIgnoreRenamesAndDeletes.Contains(extension);
             }
             
             if(shouldProcess)

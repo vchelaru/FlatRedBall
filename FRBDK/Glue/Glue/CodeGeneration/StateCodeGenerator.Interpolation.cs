@@ -474,17 +474,16 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                                 string defaultStartingValue = "";
 
-
                                 try
                                 {
-                                    if (customVariable.GetIsVariableState())
+                                    if (customVariable.GetIsVariableState(element))
                                     {
 
                                         IElement stateContainingEntity = null;
 
                                         if (nos != null)
                                         {
-                                            stateContainingEntity = ObjectFinder.Self.GetIElement(nos.SourceClassType);
+                                            stateContainingEntity = ObjectFinder.Self.GetElement(nos.SourceClassType);
                                         }
                                         else if(customVariable.Type?.StartsWith("Entities.") == true)
                                         {

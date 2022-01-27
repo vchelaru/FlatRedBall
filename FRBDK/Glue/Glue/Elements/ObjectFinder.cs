@@ -997,6 +997,15 @@ namespace FlatRedBall.Glue.Elements
             {
                 containingElement = ObjectFinder.Self.GetElementContaining(customVariable);
             }
+
+            //////////////////////Early Out/////////////////////////
+            if(containingElement == null)
+            {
+                return (isState, category);
+            }
+            ///////////////////End Early Out////////////////////////
+
+
             if (customVariable.DefinedByBase)
             {
                 // If this is DefinedByBase, it may represent a variable that is tunneling, but it

@@ -93,6 +93,10 @@ namespace FlatRedBall.Glue.SaveClasses
                     {
                         return (T)((object)(int)asLong2);
                     }
+                    else if (typeof(T).IsEnum && uncastedValue is int asInt)
+                    {
+                        return (T)((object)asInt);
+                    }
                     else
                     {
                         return (T)propertySave.Value;
