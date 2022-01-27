@@ -642,7 +642,7 @@ namespace FlatRedBallAddOns.Entities
             {
                 NamedObjectSave nos = element.NamedObjects[i];
 
-                if (nos.IsEntireFile && ReusableEntireFileRfses.ContainsKey(nos.SourceFile) == false)
+                if (nos.IsEntireFile && nos.SourceFile != null && ReusableEntireFileRfses.ContainsKey(nos.SourceFile) == false)
                 {
                     ReusableEntireFileRfses.Add(nos.SourceFile, nos.FieldName);
                 }

@@ -182,57 +182,45 @@ namespace GlueControl.Models
 
     public class NamedObjectSave
     {
-        public string InstanceName
-        {
-            get;
-            set;
-        }
-
-        [JsonIgnore]
-        public string SourceClassType
-        {
-            get => Properties.GetValue<string>(nameof(SourceClassType));
-            set => Properties.SetValue(nameof(SourceClassType), value);
-        }
-
-        //[XmlIgnore]
-        //[JsonIgnore]
-        //public static NamedObjectToString ToStringDelegate;
-
         public List<PropertySave> Properties
         {
             get;
             set;
         } = new List<PropertySave>();
-        public bool ShouldSerializeProperties()
-        {
-            return Properties?.Count > 0;
-        }
 
-        [JsonIgnore]
         public SourceType SourceType
         {
-            get => Properties.GetValue<SourceType>(nameof(SourceType));
-            set => Properties.SetValue(nameof(SourceType), value);
+            get;
+            set;
         }
 
+        public string SourceClassType
+        {
+            get;
+            set;
+        }
 
+        string mSourceClassGenericType;
 
-        [JsonIgnore]
         public string SourceClassGenericType
         {
-            get => Properties.GetValue<string>(nameof(SourceClassGenericType));
+            get { return mSourceClassGenericType; }
             set
             {
-                if (value == "<NONE>")
-                {
-                    value = null;
-                }
+                mSourceClassGenericType = value;
 
-                Properties.SetValue(nameof(SourceClassGenericType), value);
+                if (mSourceClassGenericType == "<NONE>")
+                {
+                    mSourceClassGenericType = null;
+                }
             }
         }
 
+        public string InstanceName
+        {
+            get;
+            set;
+        }
 
         public List<InstructionSave> InstructionSaves = new List<InstructionSave>();
 
