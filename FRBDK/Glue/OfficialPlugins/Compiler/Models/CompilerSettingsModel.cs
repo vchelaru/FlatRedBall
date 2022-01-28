@@ -10,9 +10,18 @@ namespace OfficialPlugins.Compiler.Models
     {
         public bool GenerateGlueControlManagerCode { get; set; }
 
-        public bool EmbedGameInGameTab { get; set; } = true;
+        public bool EmbedGameInGameTab { get; set; }
+
+        public bool RestartScreenOnLevelContentChange { get; set; }
         public int PortNumber { get; set; } = 8021;
-        public bool ShowScreenBoundsWhenViewingEntities { get; set; } = true;
+        public bool ShowScreenBoundsWhenViewingEntities { get; set; } 
         public decimal GridSize { get; set; } = 32;
+
+        public void SetDefaults()
+        {
+            EmbedGameInGameTab = true;
+            ShowScreenBoundsWhenViewingEntities = true;
+            RestartScreenOnLevelContentChange = true;
+        }
     }
 }

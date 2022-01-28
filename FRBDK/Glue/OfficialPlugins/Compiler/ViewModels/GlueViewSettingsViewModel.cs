@@ -45,6 +45,12 @@ namespace OfficialPlugins.Compiler.ViewModels
             }
         }
 
+        public bool RestartScreenOnLevelContentChange
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         [DependsOn(nameof(EnableGameEditMode))]
         public Visibility ShowWindowDefenderUi => EnableGameEditMode.ToVisibility();
 
@@ -55,8 +61,8 @@ namespace OfficialPlugins.Compiler.ViewModels
             this.GridSize = model.GridSize;
             this.EnableGameEditMode = model.GenerateGlueControlManagerCode;
             this.EmbedGameInGameTab = model.EmbedGameInGameTab;
-
-            }
+            this.RestartScreenOnLevelContentChange = model.RestartScreenOnLevelContentChange;
+        }
 
         internal void SetModel(CompilerSettingsModel compilerSettings)
         {
@@ -65,6 +71,7 @@ namespace OfficialPlugins.Compiler.ViewModels
             compilerSettings.GridSize = this.GridSize;
             compilerSettings.GenerateGlueControlManagerCode = this.EnableGameEditMode;
             compilerSettings.EmbedGameInGameTab = this.EmbedGameInGameTab;
+            compilerSettings.RestartScreenOnLevelContentChange = this.RestartScreenOnLevelContentChange;
 
         }
     }

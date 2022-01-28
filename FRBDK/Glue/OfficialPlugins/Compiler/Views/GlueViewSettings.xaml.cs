@@ -37,7 +37,6 @@ namespace OfficialPlugins.Compiler.Views
         public GlueViewSettings()
         {
             InitializeComponent();
-
         }
 
         private void CustomizeDisplay()
@@ -58,8 +57,20 @@ namespace OfficialPlugins.Compiler.Views
                     category.Members.Remove(whatToRemove);
                 }
             }
-        }
 
+
+
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.RestartScreenOnLevelContentChange), "Content");
+
+
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.GridSize), "Grid and Markings");
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.ShowScreenBoundsWhenViewingEntities), "Grid and Markings");
+
+            var contentCategory = DataUiGrid.Categories.First(item => item.Name == "Content");
+            var restartScreenOnContentChangeMember = contentCategory.Members.FirstOrDefault(item => item.Name == nameof(ViewModel.RestartScreenOnLevelContentChange));
+            restartScreenOnContentChangeMember.DetailText = "If unchecked, the game will only respond to file changes (like TMX) in edit mode";
+            //this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.Show), "Grid and Markings");
+        }
 
     }
 }

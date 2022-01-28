@@ -410,6 +410,7 @@ namespace OfficialPlugins.Compiler
             {
                 var random = new Random();
                 compilerSettings = new CompilerSettingsModel();
+                compilerSettings.SetDefaults();
                 // randomize it a little to reduce the likelihood of it being the same as a different game.
                 // Before, it was always 8021
                 compilerSettings.PortNumber = 8000 + random.Next(1000);
@@ -682,7 +683,7 @@ namespace OfficialPlugins.Compiler
                 GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
             }
 
-            RefreshManager.Self.StopAndRestartTask($"{propertyName} changed");
+            await RefreshManager.Self.StopAndRestartTask($"{propertyName} changed");
 
             MainControl.PrintOutput("Waiting for tasks to finish...");
             await TaskManager.Self.WaitForAllTasksFinished();

@@ -57,10 +57,23 @@ namespace OfficialPlugins.Compiler.Managers
         }
         bool failedToRebuildAndRestart { get; set; }
 
-        public bool ShouldRestartOnChange => 
-            (failedToRebuildAndRestart || IsExplicitlySetRebuildAndRestartEnabled || 
-                (ViewModel.IsRunning && ViewModel.IsEditChecked)) &&
-            GlueState.Self.CurrentGlueProject != null;
+        public bool ShouldRestartOnChange
+        {
+            get
+            {
+                if(GlueState.Self.CurrentGlueProject != null)
+                {
+                    return
+                        failedToRebuildAndRestart ||
+                        IsExplicitlySetRebuildAndRestartEnabled ||
+                        (ViewModel.IsRunning && ViewModel.IsEditChecked) ||
+                        GlueViewSettingsViewModel.RestartScreenOnLevelContentChange;
+                }
+                return false;
+            }
+        }
+            
+            
 
         public int PortNumber { get; set; }
 
@@ -126,13 +139,13 @@ namespace OfficialPlugins.Compiler.Managers
         {
             // always do this:
             RemoveExpiredPaths();
-            var found =
+            var foundTempIgnoredFilePath =
                 FilePathsToIgnore.FirstOrDefault(item => item.FilePath == fileName);
-            if (found != null)
+            if (foundTempIgnoredFilePath != null)
             {
-                if(DateTime.Now > found.Expiration)
+                if(DateTime.Now > foundTempIgnoredFilePath.Expiration)
                 {
-                    FilePathsToIgnore.Remove(found);
+                    FilePathsToIgnore.Remove(foundTempIgnoredFilePath);
                 }
                 else
                 {
@@ -141,7 +154,7 @@ namespace OfficialPlugins.Compiler.Managers
             }
 
             var shouldReactToFileChange =
-                found == null &&
+                foundTempIgnoredFilePath == null &&
                 ShouldRestartOnChange &&
                 GetIfShouldReactToFileChange(fileName);
 
