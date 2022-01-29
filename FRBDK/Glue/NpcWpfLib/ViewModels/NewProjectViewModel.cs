@@ -164,17 +164,28 @@ namespace Npc.ViewModels
             set => Set(value);
         }
 
+
+
         public bool IsOpenNewProjectWizardChecked
         {
             get => Get<bool>();
             set => Set(value);
         }
+        public bool IsAddGitIgnoreChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        #region Methods
+
 
         public NewProjectViewModel()
         {
             ProjectName = "MyProject";
             UseLocalCopy = false;
             IsOpenNewProjectWizardChecked = true;
+            IsAddGitIgnoreChecked = true;
         }
 
         private string GetWhyIsntValid()
@@ -227,5 +238,7 @@ namespace Npc.ViewModels
 
             return whyIsntValid;
         }
+
+        #endregion
     }
 }

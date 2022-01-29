@@ -92,11 +92,16 @@ namespace FlatRedBall.Glue.Projects
             {
                 await GlueCommands.Self.LoadProjectAsync(createdProject);
 
-                // open the project
-                if(viewModel.IsOpenNewProjectWizardChecked)
-                {
-                    await TaskManager.Self.WaitForAllTasksFinished();
+                await TaskManager.Self.WaitForAllTasksFinished();
 
+                if(viewModel.IsAddGitIgnoreChecked)
+                {
+                    PluginManager.CallPluginMethod("Git Plugin", "AddGitIgnore");
+                }
+
+                // open the project
+                if (viewModel.IsOpenNewProjectWizardChecked)
+                {
                     PluginManager.CallPluginMethod("New Project Wizard", "RunWizard");
                 }
             }

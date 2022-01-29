@@ -12,7 +12,7 @@ using FlatRedBall.IO;
 namespace OfficialPlugins.Git
 {
     [Export(typeof(PluginBase))]
-    public class MainPlugin : PluginBase
+    public class MainGitPlugin : PluginBase
     {
         public override string FriendlyName
         {
@@ -32,10 +32,10 @@ namespace OfficialPlugins.Git
 
         public override void StartUp()
         {
-            this.AddMenuItemTo("Add/Update .gitignore", HandleAddGitIgnore, "Update");
+            this.AddMenuItemTo("Add/Update .gitignore", (not, used) => AddGitIgnore(), "Update");
         }
 
-        private void HandleAddGitIgnore(object sender, EventArgs e)
+        public void AddGitIgnore()
         {
             // Vic asks - does gitignore sit in the root? I think so...
             var gitIgnoreFolder = GlueState.Self.CurrentSlnFileName.GetDirectoryContainingThis();
@@ -46,15 +46,21 @@ namespace OfficialPlugins.Git
 
             if(System.IO.File.Exists(gitIgnoreFile))
             {
-                contents = System.IO.File.ReadAllLines(gitIgnoreFile).ToList();
+                contents = System.IO.File.ReadAllLines(gitIgnoreFile)
+                    .ToList()
+                    ;
             }
 
             var necessaryLines = GetNecessaryLines();
 
             bool didAnythingChange = false;
+
             foreach(var necessaryLine in necessaryLines)
             {
-                if(contents.Contains(necessaryLine) == false)
+                var alreadyContainsLine = contents
+                    .Any(item => item?.ToLowerInvariant() == necessaryLine?.ToLowerInvariant());
+
+                if (!alreadyContainsLine)
                 {
                     contents.Add(necessaryLine);
                     didAnythingChange = true;
@@ -69,7 +75,10 @@ namespace OfficialPlugins.Git
 
         private IEnumerable<string> GetNecessaryLines()
         {
-            
+            // accoding to this:
+            // https://stackoverflow.com/questions/8783093/gitignore-syntax-bin-vs-bin-vs-bin-vs-bin#:~:text=Since%20the%20earlier%20ignores%20the%20directory%20as%20a,%28ahem%29%20ignoresit%20if%20you%20ignored%20the%20parent%20directory%21
+            // we will not append * at the end of ignores like "bin/"
+
             string gameName = 
                 FileManager.RemovePath(FileManager.RemoveExtension(GlueState.Self.CurrentCodeProjectFileName));
 
