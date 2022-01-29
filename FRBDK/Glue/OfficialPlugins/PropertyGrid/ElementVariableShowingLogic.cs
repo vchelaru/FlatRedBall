@@ -26,7 +26,7 @@ namespace OfficialPlugins.VariableDisplay
             List<MemberCategory> categories = new List<MemberCategory>();
 
             CreateAndAddCategory(categories, "Variables");
-            CreateInstanceMembersForVariables(element, categories);
+            CreateInstanceMembersForVariables(element as GlueElement, categories);
 
             AddAlternatingColors(grid, categories);
 
@@ -62,7 +62,7 @@ namespace OfficialPlugins.VariableDisplay
             return defaultCategory;
         }
 
-        private static void CreateInstanceMembersForVariables(IElement element, List<MemberCategory> categories)
+        private static void CreateInstanceMembersForVariables(GlueElement element, List<MemberCategory> categories)
         {
             var variableDefinitions = PluginManager.GetVariableDefinitionsFor(element);
             foreach (var variableDefinition in variableDefinitions)
@@ -132,7 +132,7 @@ namespace OfficialPlugins.VariableDisplay
 
                 instanceMember.CustomGetEvent += (instance) =>
                 {
-                    return GetValueRecursively(element, name);
+                    return element.GetVariableValueRecursively(name);
 
                 };
 
@@ -273,33 +273,6 @@ namespace OfficialPlugins.VariableDisplay
                 //instanceMember.ContextMenuEvents.Add("Variable Properties", (sender, args) => GlueState.Self.CurrentCustomVariable = variable);
 
                 //category.Members.Add(instanceMember);
-            }
-        }
-
-        private static object GetValueRecursively(IElement element, string name)
-        {
-            var variable = element.GetCustomVariable(name);
-
-            if(variable?.DefaultValue != null)
-            {
-                return variable.DefaultValue;
-            }
-            else if(!string.IsNullOrEmpty( element.BaseElement ))
-            {
-                var baseElement = ObjectFinder.Self.GetBaseElement(element);
-
-                if(baseElement == null)
-                {
-                    return null;
-                }
-                else
-                {
-                    return GetValueRecursively(baseElement, name);
-                }
-            }
-            else
-            {
-                return null;
             }
         }
     }

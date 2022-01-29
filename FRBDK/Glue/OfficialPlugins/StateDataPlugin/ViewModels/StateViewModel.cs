@@ -17,14 +17,14 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
     {
         public object Value
         {
-            get { return Get<object>(); }
-            set { Set(value); }
+            get => Get<object>(); 
+            set => Set(value); 
         }
 
         public object DefaultValue
         {
-            get { return Get<object>(); }
-            set { Set(value); }
+            get => Get<object>(); 
+            set => Set(value); 
         }
 
         public bool HasState
@@ -158,8 +158,8 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
 
         public StateSave BackingData
         {
-            get { return Get<StateSave>(); }
-            set { Set(value); }
+            get => Get<StateSave>(); 
+            set => Set(value); 
         }
 
         public event Action<StateViewModel, StateVariableViewModel> ValueChanged;
@@ -190,7 +190,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                     var viewModel = new StateVariableViewModel();
                     viewModel.VariableName = variable.Name;
                     viewModel.Value = instruction?.Value;
-                    viewModel.DefaultValue = element.GetCustomVariable(variable.Name)?.DefaultValue;
+                    viewModel.DefaultValue = element.GetVariableValueRecursively(variable.Name);
                     viewModel.PropertyChanged += HandleStateVariablePropertyChanged;
                     viewModel.HasState = state != null;
                     this.Variables.Add(viewModel);

@@ -298,6 +298,10 @@ namespace OfficialPlugins.StateDataPlugin.Controls
                 {
                     UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
                 };
+
+                // TextBox uses a cell template so it can adjust the brush
+                // The combo box doesn't so we'll have to deal with it....
+
                 column = comboBoxColumn;
             }
             else

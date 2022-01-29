@@ -717,58 +717,7 @@ namespace OfficialPlugins.VariableDisplay
                     return getVariableResponse.instructionOnState.Value;
                 }
 
-                if (variableDefinition != null)
-                {
-                    var toReturn = variableDefinition.DefaultValue;
-                    if (memberType == typeof(bool))
-                    {
-                        bool boolToReturn = false;
-
-                        bool.TryParse(variableDefinition.DefaultValue, out boolToReturn);
-
-                        return boolToReturn;
-                    }
-                    else if (memberType == typeof(float))
-                    {
-                        float floatToReturn = 0.0f;
-
-                        float.TryParse(variableDefinition.DefaultValue, out floatToReturn);
-
-                        return floatToReturn;
-                    }
-                    else if (memberType == typeof(int))
-                    {
-                        int intToReturn = 0;
-
-                        int.TryParse(variableDefinition.DefaultValue, out intToReturn);
-
-                        return intToReturn;
-                    }
-                    else if (memberType == typeof(long))
-                    {
-                        long longToReturn = 0;
-
-                        long.TryParse(variableDefinition.DefaultValue, out longToReturn);
-
-                        return longToReturn;
-                    }
-                    else if (memberType == typeof(double))
-                    {
-                        double doubleToReturn = 0.0;
-
-                        double.TryParse(variableDefinition.DefaultValue, out doubleToReturn);
-
-                        return doubleToReturn;
-                    }
-                    else
-                    {
-                        return toReturn;
-                    }
-                }
-                else
-                {
-                    return null;
-                }
+                return variableDefinition?.GetCastedDefaultValue();
             }
             else
             {

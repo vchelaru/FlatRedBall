@@ -76,7 +76,7 @@ namespace EntityPerformancePlugin.CodeGenerators
         {
             var name = "this";
 
-            var assetTypeInfo = GetAssetTypeInfoFor(element);
+            var assetTypeInfo = element.GetAssetTypeInfo();
 
             GenerateActivityFor(codeBlock, selectedProperties, name, assetTypeInfo);
 
@@ -86,7 +86,7 @@ namespace EntityPerformancePlugin.CodeGenerators
 
             if(needsVisualUpdateCallsInActivity)
             {
-                var ati = GetAssetTypeInfoFor(element);
+                var ati = element.GetAssetTypeInfo();
 
                 if (ati == AvailableAssetTypes.CommonAtis.Text)
                 {
@@ -96,33 +96,6 @@ namespace EntityPerformancePlugin.CodeGenerators
                 {
                     GenerateSpriteVariableUpdateDependenciesFor(codeBlock, name, selectedProperties);
                 }
-            }
-        }
-
-        private AssetTypeInfo GetAssetTypeInfoFor(IElement element)
-        {
-            if(element is ScreenSave)
-            {
-                return null;
-            }
-            else if(! string.IsNullOrEmpty( element.BaseElement))
-            {
-                var entitySave = element as EntitySave;
-                var baseEntity = ObjectFinder.Self.GetEntitySave(element.BaseElement);
-
-                if(baseEntity != null)
-                {
-                    return GetAssetTypeInfoFor(baseEntity);
-                }
-                else
-                {
-                    return AvailableAssetTypes.Self.AllAssetTypes.FirstOrDefault(item => item.RuntimeTypeName == element.BaseElement ||
-                        item.QualifiedRuntimeTypeName.QualifiedType == element.BaseElement);
-                }
-            }
-            else
-            {
-                return AvailableAssetTypes.Self.AllAssetTypes.FirstOrDefault(item => item.RuntimeTypeName == nameof(PositionedObject));
             }
         }
 
@@ -445,7 +418,7 @@ namespace EntityPerformancePlugin.CodeGenerators
 
         private void GenerateEntityUpdateDependencies(CodeBlockBase codeBlock, IElement element, EntityManagementValues managementValues)
         {
-            var ati = GetAssetTypeInfoFor(element);
+            var ati = element.GetAssetTypeInfo();
 
             string name = "this";
 

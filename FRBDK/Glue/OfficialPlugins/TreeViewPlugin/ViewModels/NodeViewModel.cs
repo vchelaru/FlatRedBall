@@ -224,8 +224,17 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             // This is needed to handle focusing because otherwise clicks on teh treeview don't focus.
             if (container != null)
             {
-                container.Focus();
-                System.Windows.Input.Keyboard.Focus(container);
+                try
+                {
+                    container.Focus();
+                    System.Windows.Input.Keyboard.Focus(container);
+                }
+                catch (Exception ex)
+                {
+                    // not sure why but it can crash. Added breakpoint here to see if I can catch what's up. If it does fail for
+                    // other users we prob don't want to do anything, just fail silently.
+                    int m = 3;
+                }
             }
         }
 

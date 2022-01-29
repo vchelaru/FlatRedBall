@@ -92,7 +92,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
 
-        public static CustomVariable GetCustomVariableRecursively(this IElement container, string variableName)
+        public static CustomVariable GetCustomVariableRecursively(this IElement element, string variableName)
         {
             //////////////////////Early Out///////////////////////////////////
             if (string.IsNullOrEmpty(variableName))
@@ -105,7 +105,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 variableName = variableName.Substring("this.".Length);
             }
-            CustomVariable foundVariable = container.GetCustomVariable(variableName);
+            CustomVariable foundVariable = element.GetCustomVariable(variableName);
 
             if (foundVariable != null)
             {
@@ -113,18 +113,79 @@ namespace FlatRedBall.Glue.SaveClasses
             }
             else
             {
-                if (!string.IsNullOrEmpty(container.BaseObject))
+                if (!string.IsNullOrEmpty(element.BaseObject))
                 {
-                    IElement element = GlueState.CurrentGlueProject.GetElement(container.BaseObject);
+                    IElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseObject);
 
-                    if (element != null)
+                    if (baseElement != null)
                     {
-                        foundVariable = GetCustomVariableRecursively(element, variableName);
+                        foundVariable = GetCustomVariableRecursively(baseElement, variableName);
                     }
                 }
 
                 return foundVariable;
             }
+        }
+
+        public static object GetVariableValueRecursively(this IElement element, string variableName)
+        {
+            //////////////////////Early Out///////////////////////////////////
+            if (string.IsNullOrEmpty(variableName))
+            {
+                return null;
+            }
+
+            ////////////////////End Early Out//////////////////////////
+            ///
+            if (variableName.StartsWith("this."))
+            {
+                variableName = variableName.Substring("this.".Length);
+
+            }
+            var variable = element.GetCustomVariable(variableName);
+
+            object toReturn = null;
+            bool foundValue = false;
+
+            if (!foundValue && variable?.DefaultValue != null)
+            {
+                toReturn = variable.DefaultValue;
+                foundValue = true;
+            }
+
+            if (!foundValue)
+            {
+                if (!string.IsNullOrEmpty(element.BaseElement))
+                {
+                    var baseElement = ObjectFinder.Self.GetBaseElement(element);
+
+                    if (baseElement != null)
+                    {
+                        toReturn = GetVariableValueRecursively(baseElement, variableName);
+                        foundValue = toReturn != null;
+                    }
+                }
+            }
+
+            if (!foundValue)
+            {
+                var ati = element.GetAssetTypeInfo();
+                if (ati != null)
+                {
+                    var variableDefinition = ati.VariableDefinitions.FirstOrDefault(x => x.Name == variableName);
+                    toReturn = variableDefinition?.GetCastedDefaultValue();
+                    foundValue = toReturn != null;
+                }
+            }
+            if (!foundValue && variable != null)
+            {
+                // get the default value for the type:
+                // Could use the TypeManager and get full coverage but that is HEAVY and requires some (potentially) expensive conversions.
+                // Therefore, just use the quick-n-dirty VariableDefinition
+                toReturn = VariableDefinition.GetCastedValueForType(variable.Type, null);
+
+            }
+            return toReturn;
         }
 
 
@@ -507,6 +568,33 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 return !string.IsNullOrEmpty(element.BaseElement) &&
                     element.BaseElement.ToLower().Replace('\\', '/').StartsWith("entities/") == false;
+            }
+        }
+
+        public static AssetTypeInfo GetAssetTypeInfo(this IElement element)
+        {
+            if (element is ScreenSave)
+            {
+                return null;
+            }
+            else if (!string.IsNullOrEmpty(element.BaseElement))
+            {
+                var entitySave = element as EntitySave;
+                var baseEntity = ObjectFinder.Self.GetEntitySave(element.BaseElement);
+
+                if (baseEntity != null)
+                {
+                    return baseEntity.GetAssetTypeInfo();
+                }
+                else
+                {
+                    return AvailableAssetTypes.Self.AllAssetTypes.FirstOrDefault(item => item.RuntimeTypeName == element.BaseElement ||
+                        item.QualifiedRuntimeTypeName.QualifiedType == element.BaseElement);
+                }
+            }
+            else
+            {
+                return AvailableAssetTypes.Self.AllAssetTypes.FirstOrDefault(item => item.RuntimeTypeName == nameof(PositionedObject));
             }
         }
     }
