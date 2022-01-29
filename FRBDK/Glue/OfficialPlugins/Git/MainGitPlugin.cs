@@ -101,6 +101,8 @@ namespace OfficialPlugins.Git
 
             yield return "*.sln.metaproj";
 
+            yield return "packages/";
+
             yield return $"{gameName}/{gameName}/bin/";
             yield return $"{gameName}/bin/";
 
