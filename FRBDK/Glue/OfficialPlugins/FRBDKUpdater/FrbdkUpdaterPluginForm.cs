@@ -5,6 +5,7 @@ using System.Net;
 using System.Windows.Forms;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace OfficialPlugins.FrbdkUpdater
 {
@@ -88,7 +89,7 @@ namespace OfficialPlugins.FrbdkUpdater
 
                 process.Start();
 
-                _plugin.GlueCommands.CloseGlue();
+                GlueCommands.Self.CloseGlue();
             }
 
             else

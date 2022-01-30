@@ -1,49 +1,80 @@
 ﻿using System;
 using System.ComponentModel.Composition;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
+using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
+using FlatRedBall.IO;
 
 namespace OfficialPlugins.FrbdkUpdater
 {
 
-    [Export(typeof(IMenuStripPlugin))]
-    public partial class FrbdkUpdaterPlugin : IMenuStripPlugin
+    [Export(typeof(PluginBase))]
+    public class FrbdkUpdaterPlugin : PluginBase
     {
-        ToolStripMenuItem _menuItem;
-        MenuStrip _menuStrip;
-        private const string FrbdkSyncMenuItem = "Update FRBDK";
+        public override string FriendlyName => "Updater Plugin";
+        public override Version Version => new System.Version(2,0);
+
+
+        private const string FrbdkSyncMenuItem = "Update FRB editor binaries";
+        private const string FrbFromCode = "Update FRB and game code in Git, build and relaunch FRB";
+
         public const string PluginsMenuItem = "Update";
-        FrbdkUpdaterPluginForm _form;
 
-        public FrbdkUpdaterPlugin()
+        public override void StartUp()
         {
-            _form = new FrbdkUpdaterPluginForm(this);
+            this.AddMenuItemTo(FrbdkSyncMenuItem, () => MenuItemClick(), "Update");
+
+            this.AddMenuItemTo(FrbFromCode, () => UpdateFrbFromCode(), "Update");
         }
 
-        public void InitializeMenu(MenuStrip menuStrip)
+        public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
-            _menuStrip = menuStrip;
-
-            _menuItem = new ToolStripMenuItem(FrbdkSyncMenuItem);
-            var itemToAddTo = GetItem(PluginsMenuItem);
-
-            itemToAddTo.DropDownItems.Add(_menuItem);
-            _menuItem.Click += MenuItemClick;
+            return true;
         }
 
-        void MenuItemClick(object sender, EventArgs e)
+        private async void UpdateFrbFromCode()
         {
-            if(_form.Disposing || _form.IsDisposed)
-                _form = new FrbdkUpdaterPluginForm(this);
+            await TaskManager.Self.WaitForAllTasksFinished();
 
-            GlueCommands.DialogCommands.SetFormOwner(_form);
+            var command =
+@"timeout /T 4 /NOBREAK & " + 
+@"git fetch & " + 
+@"git pull & " + 
+@"cd.. & " + 
+@"cd Gum & " + 
+@"git fetch & " + 
+@"git pull & " + 
+@"cd.. & " + 
+@"cd FlatRedBall & " + 
+@"git fetch & " + 
+@"git pull & " + 
+@"cd FRBDK\Glue & " + 
+@"dotnet build ""Glue with All.sln"" & " + 
+@"cd Glue\bin\x86\Debug\netcoreapp3.0\ & " +
+@"GlueFormsCore.exe";
+
+            var processStartInfo = new ProcessStartInfo("cmd.exe");
+            processStartInfo.WorkingDirectory = new FilePath(GlueState.Self.CurrentGlueProjectDirectory).GetDirectoryContainingThis().FullPath;
+            processStartInfo.Arguments = "/K " + command;
+
+            Process.Start(processStartInfo);
+
+            GlueCommands.Self.CloseGlue();
+        }
+
+        void MenuItemClick()
+        {
+            var _form = new FrbdkUpdaterPluginForm(this);
+
+            GlueCommands.Self.DialogCommands.SetFormOwner(_form);
+
             _form.Show();
         }
 
-        ToolStripMenuItem GetItem(string name)
-        {
-            return _menuStrip.Items.Cast<ToolStripMenuItem>().FirstOrDefault(item => item.Text == name);
-        }
+
     }
 }

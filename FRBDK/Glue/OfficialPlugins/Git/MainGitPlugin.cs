@@ -14,25 +14,14 @@ namespace OfficialPlugins.Git
     [Export(typeof(PluginBase))]
     public class MainGitPlugin : PluginBase
     {
-        public override string FriendlyName
-        {
-            get
-            {
-                return "Git Plugin";
-            }
-        }
+        public override string FriendlyName => "Git Plugin";
 
-        public override Version Version
-        {
-            get
-            {
-                return new Version(1, 0);
-            }
-        }
+        public override Version Version => new Version(1, 0);
 
         public override void StartUp()
         {
             this.AddMenuItemTo("Add/Update .gitignore", (not, used) => AddGitIgnore(), "Update");
+            this.AddMenuItemTo("Add UpdateAllAndRun.bat", (not, used) => AddUpdateAllAndRun(), "Update");
         }
 
         public void AddGitIgnore()
@@ -70,6 +59,40 @@ namespace OfficialPlugins.Git
             {
                 System.IO.File.WriteAllLines(gitIgnoreFile, contents.ToArray());
                 PluginManager.ReceiveOutput($"Updated {gitIgnoreFile}");
+            }
+        }
+
+        public void AddUpdateAllAndRun()
+        {
+            if(GlueState.Self.CurrentGlueProject != null)
+            {
+                var contents =
+@"git fetch
+git pull
+cd..
+cd Gum
+git fetch
+git pull
+cd..
+cd FlatRedBall
+git fetch
+git pull
+cd FRBDK\Glue
+dotnet build ""Glue with All.sln""
+cd Glue\bin\x86\Debug\netcoreapp3.0\
+GlueFormsCore.exe";
+                var locationToSave = new FilePath(GlueState.Self.CurrentGlueProjectDirectory).GetDirectoryContainingThis();
+
+                var destinationFileName = locationToSave.FullPath + "UpdateAllAndRunFrb.bat";
+
+                try
+                {
+                    System.IO.File.WriteAllText(destinationFileName, contents);
+                }
+                catch (Exception ex)
+                {
+                    GlueCommands.Self.PrintOutput(ex.ToString());
+                }
             }
         }
 
