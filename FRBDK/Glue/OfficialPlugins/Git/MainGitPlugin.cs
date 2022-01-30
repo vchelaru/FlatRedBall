@@ -80,7 +80,7 @@ git pull
 cd FRBDK\Glue
 dotnet build ""Glue with All.sln""
 cd Glue\bin\x86\Debug\netcoreapp3.0\
-GlueFormsCore.exe";
+start GlueFormsCore.exe";
                 var locationToSave = new FilePath(GlueState.Self.CurrentGlueProjectDirectory).GetDirectoryContainingThis();
 
                 var destinationFileName = locationToSave.FullPath + "UpdateAllAndRunFrb.bat";
