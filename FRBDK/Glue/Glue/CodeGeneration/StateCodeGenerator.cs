@@ -102,7 +102,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static void CreatePredefinedStateInstances(ICodeBlock currentBlock, List<StateSave> statesForThisCategory, IElement element, string categoryClassName, CustomVariable[] includedVariables)
+        private static void CreatePredefinedStateInstances(ICodeBlock currentBlock, List<StateSave> statesForThisCategory, GlueElement element, string categoryClassName, CustomVariable[] includedVariables)
         {
             for (int i = 0; i < statesForThisCategory.Count; i++)
             {
@@ -117,8 +117,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     var instruction = state.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name);
 
-                    var valueToSet = state.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name)?.Value
-                        ?? variable.DefaultValue;
+                    var instructionValue = instruction?.Value;
+
+                    var valueToSet = instructionValue ?? variable.DefaultValue;
 
                     var shouldAssign = valueToSet != null;
 
@@ -135,6 +136,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                         {
                             shouldAssign = false;
                         }
+                    }
+
+                    if(shouldAssign && instructionValue is string asString && variable.GetIsVariableState(element) == true && string.IsNullOrEmpty(asString))
+                    {
+                        shouldAssign = false;
                     }
 
                     if (shouldAssign)

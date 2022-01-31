@@ -33,6 +33,8 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             set { Set(value); }
         }
 
+        public GlueElement Element { get; set; }
+
         [DependsOn(nameof(Value))]
         [DependsOn(nameof(DefaultValue))]
         [DependsOn(nameof(HasState))]
@@ -60,12 +62,26 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                 {
                     Value = null;
                 }
+                else if(value is string asString && asString == "<NONE>" && VariableName.StartsWith("Current") && VariableName.EndsWith("State"))
+                {
+                    var variable = Element.GetCustomVariableRecursively(VariableName);
+                    if(variable.GetIsVariableState(Element))
+                    {
+                        Value = null;
+                    }
+                    else
+                    {
+                        // This may never happen except in really weird situations... but we're going to code it properly by using GetIsVariableState
+                        Value = value;
+                    }
+                }
                 else
                 {
                     Value = value;
                 }
             }
         }
+
 
         [DependsOn(nameof(Value))]
         [DependsOn(nameof(DefaultValue))]
@@ -164,7 +180,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
 
         public event Action<StateViewModel, StateVariableViewModel> ValueChanged;
 
-        public StateViewModel(StateSave state, StateSaveCategory category, IElement element)
+        public StateViewModel(StateSave state, StateSaveCategory category, GlueElement element)
         {
             this.category = category;
             this.element = element;
@@ -188,6 +204,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                         state?.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name);
 
                     var viewModel = new StateVariableViewModel();
+                    viewModel.Element = element;
                     viewModel.VariableName = variable.Name;
                     viewModel.Value = instruction?.Value;
                     viewModel.DefaultValue = element.GetVariableValueRecursively(variable.Name);

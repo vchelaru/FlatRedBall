@@ -117,7 +117,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
 
         #region Initialize
 
-        public StateCategoryViewModel(StateSaveCategory category, IElement element)
+        public StateCategoryViewModel(StateSaveCategory category, GlueElement element)
         {
             this.VariableManagementVisibility = Visibility.Collapsed;
             this.Element = element;
@@ -196,7 +196,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             stateViewModel.Variables.CollectionChanged += HandleVariableCollectionOnStateChanged;
         }
 
-        private void CreateBlankViewModelAtEnd(IElement element)
+        private void CreateBlankViewModelAtEnd(GlueElement element)
         {
             // add the blank one:
             var blankRowViewModel = new StateViewModel(null, category, element);

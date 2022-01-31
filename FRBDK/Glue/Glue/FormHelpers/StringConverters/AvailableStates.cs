@@ -5,10 +5,11 @@ using System.Text;
 using System.ComponentModel;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.FormHelpers.StringConverters;
 
 namespace FlatRedBall.Glue.GuiDisplay
 {
-    public class AvailableStates : TypeConverter
+    public class AvailableStates : TypeConverterWithNone
     {
         public NamedObjectSave CurrentNamedObject
         {
@@ -48,6 +49,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
         public AvailableStates(NamedObjectSave currentNamedObject, IElement currentElement, CustomVariable currentCustomVariable, StateSave currentStateSave) : base()
         {
+            IncludeNoneOption = true;
             CurrentNamedObject = currentNamedObject;
             CurrentElement = currentElement;
             CurrentCustomVariable = currentCustomVariable;
@@ -81,7 +83,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
             if (currentNamedObject != null)
             {
-                FillPossibleStatesFor(listToFill, selectedItemName, currentNamedObject);
+                FillPossibleStatesFor(listToFill, selectedItemName, currentNamedObject, base.IncludeNoneOption);
             }
             else
             {
@@ -111,12 +113,12 @@ namespace FlatRedBall.Glue.GuiDisplay
                 {
                     int m = 3;
                 }
-                FillPossibleStatesFor(listToFill, currentElement, customVariable);
+                FillPossibleStatesFor(listToFill, currentElement, customVariable, base.IncludeNoneOption);
 
             }
         }
 
-        private static CustomVariable FillPossibleStatesFor(List<string> listToFill, IElement currentElement, CustomVariable customVariable)
+        private static CustomVariable FillPossibleStatesFor(List<string> listToFill, IElement currentElement, CustomVariable customVariable, bool includeNone)
         {
 
             IElement sourceElement = null;
@@ -174,7 +176,10 @@ namespace FlatRedBall.Glue.GuiDisplay
                 }
             }
 
-            listToFill.Add("<NONE>");
+            if(includeNone)
+            {
+                listToFill.Add("<NONE>");
+            }
 
             if (whatToLoopThrough == null)
             {
@@ -200,7 +205,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             return customVariable;
         }
 
-        public static void FillPossibleStatesFor(List<string> listToFill, string selectedItemName, NamedObjectSave currentNamedObject)
+        public static void FillPossibleStatesFor(List<string> listToFill, string selectedItemName, NamedObjectSave currentNamedObject, bool includeNone = true)
         {
 
 
@@ -215,7 +220,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
                 if (foundVariable != null)
                 {
-                    FillPossibleStatesFor(listToFill, element, foundVariable);
+                    FillPossibleStatesFor(listToFill, element, foundVariable, includeNone);
                     break;
                 }
                 else

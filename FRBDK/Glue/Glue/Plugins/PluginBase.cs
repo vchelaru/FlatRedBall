@@ -619,6 +619,7 @@ namespace FlatRedBall.Glue.Plugins
             page.MoveToTabSelected += (newLocation) =>
             {
                 pluginTab.ForceLocation(newLocation);
+                pluginTab.SuggestedLocation = newLocation;
                 pluginTab.Focus();
             };
 
