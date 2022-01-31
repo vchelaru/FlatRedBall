@@ -337,8 +337,8 @@ namespace GumPlugin.Managers
 
                     mGraphicalUiElementAti.VariableDefinitions.Add(new VariableDefinition
                     {
-                        Name = "bool",
-                        Type = "Visible"
+                        Name = "Visible",
+                        Type = "bool"
                     });
 
                     mGraphicalUiElementAti.HideFromNewFileWindow = true;
