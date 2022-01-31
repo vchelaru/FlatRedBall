@@ -609,7 +609,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
 
                 // See if there is already a variable in the base with this name
-                CustomVariable existingVariableInBase = GlueState.Self.CurrentElement.GetCustomVariableRecursively(resultName);
+                CustomVariable existingVariableInBase = currentElement.GetCustomVariableRecursively(resultName);
 
                 bool canCreate = true;
                 bool isDefinedByBase = false;
@@ -658,7 +658,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         newVariable.TypeConverter = typeConverter;
                     }
 
-                    GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToCurrentElement(newVariable);
+                    GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElement(newVariable, currentElement);
                 }
             }
         }

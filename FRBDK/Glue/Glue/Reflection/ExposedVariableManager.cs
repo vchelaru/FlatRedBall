@@ -483,6 +483,7 @@ namespace FlatRedBall.Glue.Reflection
                     }
                     break;
                 case SourceType.FlatRedBallType:
+                case SourceType.Gum:
 
                     if (variableName == "SourceFile")
                     {

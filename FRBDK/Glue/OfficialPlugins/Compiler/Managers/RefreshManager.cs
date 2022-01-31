@@ -534,7 +534,10 @@ namespace OfficialPlugins.Compiler.Managers
                 // send this down to the game
                 var dto = new AddVariableDto();
                 dto.CustomVariable = newVariable;
-                dto.ElementGameType = GetGameTypeFor(GlueState.Self.CurrentElement);
+
+                var variableOwner = ObjectFinder.Self.GetElementContaining(newVariable);
+
+                dto.ElementGameType = GetGameTypeFor(variableOwner ?? GlueState.Self.CurrentElement);
 
                 await CommandSender.Send(dto);
             }
