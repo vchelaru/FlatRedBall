@@ -28,6 +28,15 @@ namespace FlatRedBall.Glue.Errors
             set => Set(value);
         }
 
+        //public bool IsAutoamticErrorCheckingEnabled
+        //{
+        //    get => Get<bool>();
+        //    set => Set(value);
+        //}
+
+
+        
+
         #endregion
 
         public ICommand CopySingleCommand
