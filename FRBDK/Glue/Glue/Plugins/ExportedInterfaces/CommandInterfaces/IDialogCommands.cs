@@ -40,7 +40,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         void ShowAddNewVariableDialog(Controls.CustomVariableType variableType = Controls.CustomVariableType.Exposed, 
             string tunnelingObject = "",
-            string tunneledVariableName = "");
+            string tunneledVariableName = "", GlueElement container = null);
 
 
         void SetFormOwner(System.Windows.Forms.Form form);

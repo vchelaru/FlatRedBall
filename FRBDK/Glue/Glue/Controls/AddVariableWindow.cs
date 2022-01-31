@@ -90,23 +90,23 @@ namespace FlatRedBall.Glue.Controls
             {
                 if (radExistingVariable.Checked)
                 {
-                    if (GlueState.Self.CurrentEntitySave != null)
+                    if (element is EntitySave asEntitySave)
                     {
-                        string type = ExposedVariableManager.GetMemberTypeForEntity(ResultName, GlueState.Self.CurrentEntitySave);
+                        string type = ExposedVariableManager.GetMemberTypeForEntity(ResultName, asEntitySave);
 
                         return TypeManager.ConvertToCommonType(type);
 
                     }
                     else
                     {
-                        string type = ExposedVariableManager.GetMemberTypeForScreen(ResultName, GlueState.Self.CurrentScreenSave);
+                        string type = ExposedVariableManager.GetMemberTypeForScreen(ResultName, element as ScreenSave);
 
                         return TypeManager.ConvertToCommonType(type);
                     }
                 }
                 else if (radTunnelVariable.Checked)
                 {
-                    NamedObjectSave nos = GlueState.Self.CurrentElement.GetNamedObjectRecursively(TunnelingObjectComboBox.Text);
+                    NamedObjectSave nos = element.GetNamedObjectRecursively(TunnelingObjectComboBox.Text);
                     string type = ExposedVariableManager.GetMemberTypeForNamedObject(nos, this.TunnelingVariableComboBox.Text);
 
                     return TypeManager.ConvertToCommonType(type);
@@ -267,14 +267,12 @@ namespace FlatRedBall.Glue.Controls
         {
             List<string> availableVariables = null;
 
-            if (GlueState.Self.CurrentEntitySave != null)
-            {
-                availableVariables = ExposedVariableManager.GetExposableMembersFor(GlueState.Self.CurrentEntitySave, true).Select(item=>item.Member).ToList();
+            var elementToUse = element ?? GlueState.Self.CurrentElement;
 
-            }
-            else if (GlueState.Self.CurrentScreenSave != null)
+            if (elementToUse != null)
             {
-                availableVariables = ExposedVariableManager.GetExposableMembersFor(GlueState.Self.CurrentScreenSave, true).Select(item => item.Member).ToList();
+                availableVariables = ExposedVariableManager.GetExposableMembersFor(elementToUse, true).Select(item=>item.Member).ToList();
+
             }
 
             if (availableVariables != null)
@@ -321,10 +319,11 @@ namespace FlatRedBall.Glue.Controls
 
         private void AddVariableWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
+            var elementToUse = element ?? GlueState.Self.CurrentEntitySave;
             // See if if the user is trying to create a reserved variable
             if (this.DialogResult == System.Windows.Forms.DialogResult.OK &&
                 this.radCreateNewVariable.Checked &&
-                GlueState.Self.CurrentEntitySave != null &&
+                elementToUse != null &&
                 ExposedVariableManager.IsMemberDefinedByPositionedObject(this.createNewVariableControl1.VariableName)
                 )
             {
@@ -336,7 +335,8 @@ namespace FlatRedBall.Glue.Controls
 
         private void FillTunnelingObjects()
         {
-            List<string> availableObjects = AvailableNamedObjectsAndFiles.GetAvailableObjects(false, true, GlueState.Self.CurrentElement, null);
+            var elementTouse = element ?? GlueState.Self.CurrentElement;
+            List<string> availableObjects = AvailableNamedObjectsAndFiles.GetAvailableObjects(false, true, elementTouse, null);
             foreach (string availableObject in availableObjects)
             {
                 this.TunnelingObjectComboBox.Items.Add(availableObject);
@@ -370,7 +370,8 @@ namespace FlatRedBall.Glue.Controls
         {
             string nameOfNamedObject = TunnelingObjectComboBox.Text;
 
-            NamedObjectSave nos = GlueState.Self.CurrentElement.GetNamedObjectRecursively(nameOfNamedObject);
+            var elementToUse = element ?? GlueState.Self.CurrentElement;
+            NamedObjectSave nos = elementToUse.GetNamedObjectRecursively(nameOfNamedObject);
 
             PopulateTunnelingVariables(nameOfNamedObject, nos);
         }
@@ -384,7 +385,8 @@ namespace FlatRedBall.Glue.Controls
 
 
                 // We should remove any variables that are already tunneled into
-                foreach (CustomVariable customVariable in GlueState.Self.CurrentElement.CustomVariables)
+                var elementToUse = element ?? GlueState.Self.CurrentElement;
+                foreach (CustomVariable customVariable in elementToUse.CustomVariables)
                 {
                     if (customVariable.SourceObject == nameOfNamedObject)
                     {

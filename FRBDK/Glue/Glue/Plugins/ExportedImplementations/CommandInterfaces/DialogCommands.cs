@@ -567,11 +567,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void ShowAddNewVariableDialog(CustomVariableType variableType = CustomVariableType.Exposed,
             string tunnelingObject = "",
-            string tunneledVariableName = "")
+            string tunneledVariableName = "",
+            GlueElement container = null)
         {
+            container = container ?? GlueState.Self.CurrentElement;
             // Search terms:  add new variable, addnewvariable, add variable
-
-            AddVariableWindow addVariableWindow = new AddVariableWindow(GlueState.Self.CurrentElement);
+            AddVariableWindow addVariableWindow = new AddVariableWindow(container);
             addVariableWindow.DesiredVariableType = variableType;
 
             addVariableWindow.TunnelingObject = tunnelingObject;
@@ -579,8 +580,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (addVariableWindow.ShowDialog(MainGlueWindow.Self) == DialogResult.OK)
             {
-                GlueElement currentElement = GlueState.Self.CurrentElement;
-                HandleAddVariableOk(addVariableWindow.GetViewModel(), currentElement);
+                HandleAddVariableOk(addVariableWindow.GetViewModel(), container);
             }
         }
 

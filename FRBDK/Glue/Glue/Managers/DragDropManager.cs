@@ -31,6 +31,8 @@ namespace FlatRedBall.Glue.Managers
     {
         #region Named Object
 
+        #region ... general methods
+
         private void MoveNamedObject(ITreeNode treeNodeMoving, ITreeNode targetNode)
         {
             if (targetNode != null)
@@ -248,6 +250,10 @@ namespace FlatRedBall.Glue.Managers
             return succeeded;
         }
 
+        #endregion
+
+        #region ... create CollisionRelationship
+
         private GeneralResponse HandleCreateCollisionRelationship(NamedObjectSave movingNos, NamedObjectSave targetNos)
         {
             PluginManager.ReactToCreateCollisionRelationshipsBetween(movingNos, targetNos);
@@ -287,6 +293,10 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
+        #endregion
+
+        #region ... into/out of lists
+
         private static bool MoveObjectOnObjectsRoot(ITreeNode treeNodeMoving, ITreeNode targetNode, NamedObjectSave movingNos, bool succeeded)
         {
             // Dropped it on the "Objects" tree node
@@ -323,74 +333,6 @@ namespace FlatRedBall.Glue.Managers
             }
             return succeeded;
         }
-
-        private static bool DragDropNosIntoElement(NamedObjectSave movingNos, GlueElement elementMovingInto)
-        {
-            var response = GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(movingNos, elementMovingInto,
-                save:false);
-
-            if(response.Succeeded)
-            {
-                GlueCommands.Self.PrintOutput("Copied\n" + movingNos + "\n\nto\n" + elementMovingInto);
-            }
-            else
-            {
-                GlueCommands.Self.DialogCommands.ShowMessageBox(response.Message);
-            }
-            return response.Succeeded;
-        }
-
-        private static void UpdateNosAttachmentAfterDragDrop(NamedObjectSave clonedNos, IElement elementMovingInto)
-        {
-            if (elementMovingInto is EntitySave)
-            {
-                clonedNos.AttachToCamera = false;
-                clonedNos.AttachToContainer = true;
-            }
-            else if (elementMovingInto is ScreenSave)
-            {
-                clonedNos.AttachToContainer = false;
-            }
-        }
-
-        private static bool MoveObjectOnRootCustomVariablesNode(ITreeNode treeNodeMoving, ITreeNode targetNode)
-        {
-            bool succeeded = true;
-
-            if (treeNodeMoving.GetContainingElementTreeNode() != targetNode.GetContainingElementTreeNode())
-            {
-                succeeded = false;
-            }
-
-            if (succeeded)
-            {
-                // show the add new variable window and select this object
-                GlueCommands.Self.DialogCommands.ShowAddNewVariableDialog(
-                    CustomVariableType.Tunneled, 
-                    ((NamedObjectSave)treeNodeMoving.Tag).InstanceName);
-            }
-
-            return succeeded;
-        }
-
-        private static bool DragDropNosOnRootEventsNode(ITreeNode treeNodeMoving, ITreeNode targetNode)
-        {
-            bool succeeded = true;
-
-
-            if (treeNodeMoving.GetContainingElementTreeNode() != targetNode.GetContainingElementTreeNode())
-            {
-                succeeded = false;
-            }
-
-            if (succeeded)
-            {
-                GlueCommands.Self.DialogCommands.ShowAddNewEventDialog(treeNodeMoving.Tag as NamedObjectSave);
-            }
-
-            return succeeded;
-        }
-
         private static GeneralResponse HandleDropOnList(ITreeNode treeNodeMoving, ITreeNode targetNode, NamedObjectSave targetNos, NamedObjectSave movingNos)
         {
             var toReturn = GeneralResponse.SuccessfulResponse;
@@ -421,7 +363,6 @@ namespace FlatRedBall.Glue.Managers
 
             return toReturn;
         }
-
         private GeneralResponse HandleDropOnShapeCollection(ITreeNode treeNodeMoving, ITreeNode targetNode, NamedObjectSave targetNos, NamedObjectSave movingNos)
         {
             var toReturn = GeneralResponse.SuccessfulResponse;
@@ -453,6 +394,73 @@ namespace FlatRedBall.Glue.Managers
                 PluginManager.ReactToObjectContainerChanged(movingNos, targetNos);
             }
             return toReturn;
+        }
+
+
+
+        #endregion
+
+        #region ... copy to other GlueElement
+        private static bool DragDropNosIntoElement(NamedObjectSave movingNos, GlueElement elementMovingInto)
+        {
+            var response = GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(movingNos, elementMovingInto,
+                save:false);
+
+            if(response.Succeeded)
+            {
+                GlueCommands.Self.PrintOutput("Copied\n" + movingNos + "\n\nto\n" + elementMovingInto);
+            }
+            else
+            {
+                GlueCommands.Self.DialogCommands.ShowMessageBox(response.Message);
+            }
+            return response.Succeeded;
+        }
+
+        #endregion
+
+        #region ... on Variables
+
+        private static bool MoveObjectOnRootCustomVariablesNode(ITreeNode treeNodeMoving, ITreeNode targetNode)
+        {
+            bool succeeded = true;
+
+            if (treeNodeMoving.GetContainingElementTreeNode() != targetNode.GetContainingElementTreeNode())
+            {
+                succeeded = false;
+            }
+
+            if (succeeded)
+            {
+                var nosMoving = (NamedObjectSave)treeNodeMoving.Tag;
+                var container = ObjectFinder.Self.GetElementContaining(nosMoving);
+                // show the add new variable window and select this object
+                GlueCommands.Self.DialogCommands.ShowAddNewVariableDialog(
+                    CustomVariableType.Tunneled,
+                    nosMoving.InstanceName, container:container);
+            }
+
+            return succeeded;
+        }
+
+        #endregion
+
+        private static bool DragDropNosOnRootEventsNode(ITreeNode treeNodeMoving, ITreeNode targetNode)
+        {
+            bool succeeded = true;
+
+
+            if (treeNodeMoving.GetContainingElementTreeNode() != targetNode.GetContainingElementTreeNode())
+            {
+                succeeded = false;
+            }
+
+            if (succeeded)
+            {
+                GlueCommands.Self.DialogCommands.ShowAddNewEventDialog(treeNodeMoving.Tag as NamedObjectSave);
+            }
+
+            return succeeded;
         }
 
         private static void AddExistingNamedObjectToElement(GlueElement element, NamedObjectSave newNamedObject)

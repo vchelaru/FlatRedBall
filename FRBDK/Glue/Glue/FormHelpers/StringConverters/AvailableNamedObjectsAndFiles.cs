@@ -73,6 +73,10 @@ namespace FlatRedBall.Glue.GuiDisplay
 
         public static List<string> GetAvailableObjects(bool addNone, bool includeReferencedfiles, IElement currentElement, string namedObjectTypeRestriction)
         {
+            if(currentElement == null)
+            {
+                throw new ArgumentNullException(nameof(currentElement));
+            }
             stringListToReturn.Clear();
 
             if (addNone)
