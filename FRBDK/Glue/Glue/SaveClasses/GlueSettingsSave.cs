@@ -23,11 +23,14 @@ namespace FlatRedBall.Glue.SaveClasses
 
     #endregion
 
+    #region ProjectFileGlueFilePair Class
     public class ProjectFileGlueFilePair
     {
         public string GlueFileName { get; set; }
         public string GameProjectFileName { get; set; }
     }
+
+    #endregion
 
     public class GlueSettingsSave
     {

@@ -12,14 +12,23 @@ namespace FlatRedBall.Glue.Errors
 {
     public class ErrorListViewModel : ViewModel
     {
-        public event EventHandler RefreshClicked;
+        #region Fields/Properties
+
         public ErrorViewModel SelectedError
         {
-            get { return Get<ErrorViewModel>(); }
-            set { Set(value); }
+            get => Get<ErrorViewModel>(); 
+            set => Set(value); 
         }
 
         public ObservableCollection<ErrorViewModel> Errors { get; private set; }
+
+        public bool IsOutputErrorCheckingDetailsChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        #endregion
 
         public ICommand CopySingleCommand
         {
@@ -38,6 +47,8 @@ namespace FlatRedBall.Glue.Errors
             get; internal set;
         }
 
+
+        public event EventHandler RefreshClicked;
         public ErrorListViewModel()
         {
             Errors = new ObservableCollection<ErrorViewModel>();

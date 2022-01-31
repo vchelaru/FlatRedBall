@@ -40,15 +40,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
     public class GlueState : IGlueState
     {
-        #region Fields
-
-        static GlueState mSelf;
-
-        #endregion
-
         #region Current Selection Properties
 
-        GlueStateSnapshot snapshot = new GlueStateSnapshot();
 
         public ITreeNode CurrentTreeNode
         {
@@ -56,29 +49,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             set
             {
                 UpdateToSetTreeNode(value, recordState:true);
-            }
-        }
-
-        public void SetCurrentTreeNode(ITreeNode treeNode, bool recordState) =>
-            UpdateToSetTreeNode(treeNode, recordState);
-
-        private void UpdateToSetTreeNode(ITreeNode value, bool recordState)
-        {
-            var isSame = value == snapshot?.CurrentTreeNode;
-
-            // push before taking a snapshot, so that the "old" one is pushed
-            if (!isSame && snapshot?.CurrentTreeNode != null && recordState)
-            {
-                TreeNodeStackManager.Self.Push(snapshot.CurrentTreeNode);
-            }
-
-            // Snapshot should come first so everyone can update to the snapshot
-            GlueState.Self.TakeSnapshot(value);
-
-            // If we don't check for isSame, then selecting the same tree node will result in double-selects in the game.
-            if(!isSame)
-            {
-                PluginManager.ReactToItemSelect(value);
             }
         }
 
@@ -181,61 +151,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
-        ITreeNode draggedTreeNode;
-        public ITreeNode DraggedTreeNode 
-        {
-            get => draggedTreeNode;
-            set
-            {
-                if(value != draggedTreeNode)
-                {
-                    if(draggedTreeNode != null)
-                    {
-                        PluginManager.ReactToGrabbedTreeNodeChanged(draggedTreeNode, TreeNodeAction.Released);
-                    }
-                    draggedTreeNode = value;
-                    if(draggedTreeNode == null)
-                    {
-                        //GlueCommands.Self.PrintOutput("Released node");
-                    }
-                    else
-                    {
-                        if (value != null)
-                        {
-                            PluginManager.ReactToGrabbedTreeNodeChanged(draggedTreeNode, TreeNodeAction.Grabbed);
-                        }
-
-                    }
-                }
-            }
-        }
         #endregion
 
-        #region Properties
-
-        public static GlueState Self
-        {
-            get
-            {
-                if (mSelf == null)
-                {
-                    mSelf = new GlueState();
-                }
-                return mSelf;
-            }
-        }
-
-        public IFindManager Find
-        {
-            get;
-            set;
-        }
-        public States.Clipboard Clipboard
-        {
-            get;
-            private set;
-        }
-
+        #region Project Properties
 
         public string ContentDirectory
         {
@@ -331,6 +249,81 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
+        public IEnumerable<ProjectBase> SyncedProjects => ProjectManager.SyncedProjects;
+
+        public GlueProjectSave CurrentGlueProject => ObjectFinder.Self.GlueProject; 
+
+        public PluginSettings CurrentPluginSettings
+        {
+            get
+            {
+                return ProjectManager.PluginSettings;
+            }
+        }
+
+        public GlueSettingsSave GlueSettingsSave
+        {
+            get { return ProjectManager.GlueSettingsSave; }
+        }
+
+        #endregion
+
+        #region Properties
+
+        ITreeNode draggedTreeNode;
+        public ITreeNode DraggedTreeNode 
+        {
+            get => draggedTreeNode;
+            set
+            {
+                if(value != draggedTreeNode)
+                {
+                    if(draggedTreeNode != null)
+                    {
+                        PluginManager.ReactToGrabbedTreeNodeChanged(draggedTreeNode, TreeNodeAction.Released);
+                    }
+                    draggedTreeNode = value;
+                    if(draggedTreeNode == null)
+                    {
+                        //GlueCommands.Self.PrintOutput("Released node");
+                    }
+                    else
+                    {
+                        if (value != null)
+                        {
+                            PluginManager.ReactToGrabbedTreeNodeChanged(draggedTreeNode, TreeNodeAction.Grabbed);
+                        }
+
+                    }
+                }
+            }
+        }
+
+        GlueStateSnapshot snapshot = new GlueStateSnapshot();
+
+        static GlueState mSelf;
+        public static GlueState Self
+        {
+            get
+            {
+                if (mSelf == null)
+                {
+                    mSelf = new GlueState();
+                }
+                return mSelf;
+            }
+        }
+
+        public IFindManager Find
+        {
+            get;
+            set;
+        }
+        public States.Clipboard Clipboard
+        {
+            get;
+            private set;
+        }
 
 
         public ErrorListViewModel ErrorList { get; private set; } = new ErrorListViewModel();
@@ -380,14 +373,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             return container == null ? null : container.GetStateCategory(name);
         }
 
-        public IEnumerable<ProjectBase> SyncedProjects
-        {
-            get
-            {
-                return ProjectManager.SyncedProjects;
-            }
-        }
-
         /// <summary>
         /// Returns all loaded IDE projects, including the main project and all synced projects.
         /// </summary>
@@ -403,23 +388,29 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             return list;
         }
 
-        public PluginSettings CurrentPluginSettings
+        public void SetCurrentTreeNode(ITreeNode treeNode, bool recordState) =>
+            UpdateToSetTreeNode(treeNode, recordState);
+
+        private void UpdateToSetTreeNode(ITreeNode value, bool recordState)
         {
-            get
+            var isSame = value == snapshot?.CurrentTreeNode;
+
+            // push before taking a snapshot, so that the "old" one is pushed
+            if (!isSame && snapshot?.CurrentTreeNode != null && recordState)
             {
-                return ProjectManager.PluginSettings;
+                TreeNodeStackManager.Self.Push(snapshot.CurrentTreeNode);
+            }
+
+            // Snapshot should come first so everyone can update to the snapshot
+            GlueState.Self.TakeSnapshot(value);
+
+            // If we don't check for isSame, then selecting the same tree node will result in double-selects in the game.
+            if(!isSame)
+            {
+                PluginManager.ReactToItemSelect(value);
             }
         }
 
-        public GlueSettingsSave GlueSettingsSave
-        {
-            get { return ProjectManager.GlueSettingsSave; }
-        }
-
-        public GlueProjectSave CurrentGlueProject
-        {
-            get { return ObjectFinder.Self.GlueProject; }
-        }
 
         public IEnumerable<ReferencedFileSave> GetAllReferencedFiles()
         {

@@ -30,6 +30,7 @@
                 </Button.ToolTip>
                 <Image Source="/OfficialPluginsCore;component/ErrorPlugin/Icons/Refresh.png"></Image>
             </Button>
+            <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsOutputErrorCheckingDetailsChecked}">Output Error Checking Details</CheckBox>
         </StackPanel>
         <ListBox Grid.Row="1" x:Name="ListBox" ItemsSource="{Binding Errors}" 
                  SelectedItem="{Binding SelectedError}" 

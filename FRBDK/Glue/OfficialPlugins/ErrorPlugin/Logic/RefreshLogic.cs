@@ -19,7 +19,7 @@ namespace OfficialPlugins.ErrorPlugin.Logic
 
 
 
-        public static void RefreshAllErrors(ErrorListViewModel errorListViewModel)
+        public static void RefreshAllErrors(ErrorListViewModel errorListViewModel, bool printOutput)
         {
             TaskManager.Self.Add(() =>
             {
@@ -33,7 +33,28 @@ namespace OfficialPlugins.ErrorPlugin.Logic
                 var reporters = errorManager.ErrorReporters;
                 foreach (var reporter in reporters)
                 {
+                    DateTime startTime = DateTime.Now;
+                    if(printOutput)
+                    {
+                        GlueCommands.Self.PrintOutput($"Refreshing errors for reporter {reporter.GetType()}");
+                    }
                     var errors = reporter.GetAllErrors();
+
+                    var endTime = DateTime.Now;
+
+                    if (printOutput)
+                    {
+                        var duration = endTime - startTime;
+
+                        var durationDisplay = $"{duration.Seconds}.{duration.Milliseconds.ToString("000")}";
+
+                        if (duration.Minutes > 0)
+                        {
+                            durationDisplay = $"{duration.Minutes}:{durationDisplay}";
+                        }
+                            
+                        GlueCommands.Self.PrintOutput($"{reporter.GetType()} {durationDisplay}");
+                    }
 
                     if(errors != null)
                     {

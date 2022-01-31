@@ -43,7 +43,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
                 {
                     var time = glueTask.TimeEnded - glueTask.TimeStarted;
 
-                    text += $" {time.Seconds}.{time.Milliseconds.ToString("000")}";
+                    if(time.Minutes > 0)
+                    {
+                        text += $" {time.Minutes}:{time.Seconds}.{time.Milliseconds.ToString("000")}";
+                    }
+                    else
+                    {
+                        text += $" {time.Seconds}.{time.Milliseconds.ToString("000")}";
+                    }
                 }
                 PluginManager.ReceiveOutput(text);
             }

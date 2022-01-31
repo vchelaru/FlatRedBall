@@ -7,6 +7,11 @@ using System;
 using FlatRedBall.Glue.Errors;
 using System.Threading.Tasks;
 using FlatRedBall.IO;
+using FlatRedBall.Glue.IO;
+using System.Linq;
+using FlatRedBall.Glue.SaveClasses;
+using System.Collections.Generic;
+using GlueFormsCore.ViewModels;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 {
@@ -148,6 +153,58 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         public string GetAbsoluteFileName(string relativeFileName, bool isContent)
         {
             return ProjectManager.MakeAbsolute(relativeFileName, isContent);
+        }
+
+        public void UpdateGlueSettingsFromCurrentGlueState(bool saveToDisk = true)
+        {
+            var save = ProjectManager.GlueSettingsSave;
+
+            string lastFileName = null;
+
+            if (ProjectManager.ProjectBase != null)
+            {
+                lastFileName = ProjectManager.ProjectBase.FullFileName;
+            }
+
+            save.LastProjectFile = lastFileName;
+
+            var glueExeFileName = ProjectLoader.GetGlueExeLocation();
+            var foundItem = save.GlueLocationSpecificLastProjectFiles
+                .FirstOrDefault(item => item.GlueFileName == glueExeFileName);
+
+            var alreadyIsListed = foundItem != null;
+
+            if (!alreadyIsListed)
+            {
+                foundItem = new ProjectFileGlueFilePair();
+                save.GlueLocationSpecificLastProjectFiles.Add(foundItem);
+            }
+            foundItem.GlueFileName = glueExeFileName;
+            foundItem.GameProjectFileName = lastFileName;
+
+            // set up the positions of the window
+            //save.WindowLeft = this.Left;
+            //save.WindowTop = this.Top;
+            //save.WindowHeight = this.Height;
+            //save.WindowWidth = this.Width;
+            save.StoredRecentFiles = MainGlueWindow.Self.NumberOfStoredRecentFiles;
+
+            void SetTabs(List<string> tabNames, TabContainerViewModel tabs)
+            {
+                tabNames.Clear();
+                tabNames.AddRange(tabs.Tabs.Select(item => item.Title));
+            }
+
+            SetTabs(save.TopTabs, PluginManager.TabControlViewModel.TopTabItems);
+            SetTabs(save.LeftTabs, PluginManager.TabControlViewModel.LeftTabItems);
+            SetTabs(save.CenterTabs, PluginManager.TabControlViewModel.CenterTabItems);
+            SetTabs(save.RightTabs, PluginManager.TabControlViewModel.RightTabItems);
+            SetTabs(save.BottomTabs, PluginManager.TabControlViewModel.BottomTabItems);
+
+            if (saveToDisk)
+            {
+                GlueCommands.Self.GluxCommands.SaveSettings();
+            }
         }
     }
 }

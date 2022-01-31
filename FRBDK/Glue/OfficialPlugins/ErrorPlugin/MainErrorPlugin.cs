@@ -63,14 +63,14 @@ namespace OfficialPlugins.ErrorPlugin
             this.ReactToUnloadedGlux += HandleUnloadedGlux;
             this.ReactToFileReadError += HandleFileReadError ;
 
-            RefreshCommands.RefreshErrorsAction = () => RefreshLogic.RefreshAllErrors(errorListViewModel);
+            RefreshCommands.RefreshErrorsAction = () => RefreshLogic.RefreshAllErrors(errorListViewModel, errorListViewModel.IsOutputErrorCheckingDetailsChecked);
         }
 
-        public void RefreshErrors() => RefreshLogic.RefreshAllErrors(errorListViewModel);
+        public void RefreshErrors() => RefreshLogic.RefreshAllErrors(errorListViewModel, errorListViewModel.IsOutputErrorCheckingDetailsChecked);
 
         private void HandleRefreshClicked(object sender, EventArgs e)
         {
-            RefreshLogic.RefreshAllErrors(errorListViewModel);
+            RefreshLogic.RefreshAllErrors(errorListViewModel, errorListViewModel.IsOutputErrorCheckingDetailsChecked);
         }
 
         private void HandleErrorsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -120,7 +120,7 @@ namespace OfficialPlugins.ErrorPlugin
 
         private void HandleLoadedGlux()
         {
-            RefreshLogic.RefreshAllErrors(errorListViewModel);
+            RefreshLogic.RefreshAllErrors(errorListViewModel, errorListViewModel.IsOutputErrorCheckingDetailsChecked);
         }
 
         private void HandleUnloadedGlux()
