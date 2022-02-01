@@ -28,7 +28,11 @@ namespace OfficialPlugins.Compiler.CodeGeneration
                 codeBlock.Line($"glueControlManager = new GlueControl.GlueControlManager({PortNumber});");
                 codeBlock.Line("glueControlManager.Start();");
                 codeBlock.Line("this.Exiting += (not, used) => glueControlManager.Kill();");
-
+                codeBlock.Line("FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += (not, used) =>");
+                var sizeChangedInnerBlock = codeBlock.Block();
+                sizeChangedInnerBlock = sizeChangedInnerBlock.If("FlatRedBall.Screens.ScreenManager.IsInEditMode");
+                sizeChangedInnerBlock.Line("GlueControl.Editing.CameraLogic.UpdateCameraToZoomLevel(zoomAroundCursorPosition: false);");
+                codeBlock.Line(";");
 
                 // Vic says - We run all Glue commands before running custom initialize. The reason is - custom initialize
                 // may make modifications to objects that are created by glue commands (such as assigning acceleration to objects
