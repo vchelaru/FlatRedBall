@@ -400,6 +400,7 @@ namespace FlatRedBall.Glue.Plugins
         public Action ReactToMainWindowResizeEnd { get; protected set; }
 
 
+
         // TreeNode Methods
         public Action<GlueElement> RefreshTreeNodeFor;
         public Action RefreshGlobalContentTreeNode;

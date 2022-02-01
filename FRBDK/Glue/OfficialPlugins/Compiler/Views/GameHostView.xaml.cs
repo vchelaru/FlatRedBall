@@ -254,6 +254,13 @@ namespace OfficialPlugins.GameHost.Views
         }
 
 
+        private void BackgroundGrid_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if(e.HeightChanged)
+            {
+                RefreshLeftPanelSize();
+            }
+        }
 
         private void GlueViewSettingsButtonClicked(object sender, RoutedEventArgs e)
         {
