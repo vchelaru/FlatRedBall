@@ -180,8 +180,20 @@ namespace OfficialPlugins.StateDataPlugin.Controls
 
         private bool FocusTextBoxAt(int? currentColumnIndex, int? currentRowIndex)
         {
-            var currentRow = DataGridInstance.Descendants<DataGridRow>()
-                                    .OfType<DataGridRow>().ToList()[currentRowIndex.Value];
+            var rows = DataGridInstance.Descendants<DataGridRow>()
+                                    .OfType<DataGridRow>().ToList();
+
+            // It's possible that the rows may not all exist due to virtualization, so we have to find the row with the matching data context
+            var dataToMatch = ViewModel.States[currentRowIndex.Value];
+
+            var currentRow = rows.FirstOrDefault(item => item.DataContext == dataToMatch);
+
+            /////////////Early Out///////////////////
+            if(currentRow == null)
+            {
+                return false;
+            }
+            ///////////End Early Out/////////////////
 
 
             var childrenOfChildren = currentRow.Descendants<DataGridCell>()
