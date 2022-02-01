@@ -97,8 +97,12 @@ namespace FlatRedBall
                     throw new InvalidOperationException("AnimationChains cannot be set to null. To clear the animations, assign the value to a new AnimationChainList.");
                 }
 #endif
-
                 mAnimationChains = value;
+                // If the user sets a new set of chains, then the CurrentChain may not have enough frames, so reset it
+                if(mCurrentFrameIndex >= CurrentChain?.Count)
+                {
+                    mCurrentFrameIndex = 0;
+                }
                 UpdateTimeBasedOffOfAnimationFrame();
                 UpdateToCurrentAnimationFrame();
             }

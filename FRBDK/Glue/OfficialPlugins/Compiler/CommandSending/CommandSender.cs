@@ -193,7 +193,16 @@ namespace OfficialPlugins.Compiler.CommandSending
                 }
                 else
                 {
-                    TcpClientStream = client.GetStream();
+                    Exception exception = null;
+                    try
+                    {
+                        TcpClientStream = client.GetStream();
+                    }
+                    catch(Exception e)
+                    {
+                        exception = e;
+                        TcpClientStream = null;
+                    }
 
                     if (TcpClientStream != null)
                     {
@@ -201,8 +210,12 @@ namespace OfficialPlugins.Compiler.CommandSending
                     }
                     else
                     {
-                        return ToolsUtilities.GeneralResponse.UnsuccessfulWith("Tried to connect, did not time out, but still was unable to get a TcpClientStream");
-
+                        var response = ToolsUtilities.GeneralResponse.UnsuccessfulWith("Tried to connect, did not time out, but still was unable to get a TcpClientStream");
+                        if(exception != null)
+                        {
+                            response.Message += $"\n{exception}";
+                        }
+                        return response;
                     }
                 }
             }
