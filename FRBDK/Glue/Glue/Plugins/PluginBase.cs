@@ -616,11 +616,13 @@ namespace FlatRedBall.Glue.Plugins
 
             PluginTab pluginTab = new PluginTab();
             pluginTab.Page = page;
-            page.MoveToTabSelected += (newLocation) =>
+            page.MoveToTabSelected += async (newLocation) =>
             {
                 pluginTab.ForceLocation(newLocation);
                 pluginTab.SuggestedLocation = newLocation;
                 pluginTab.Focus();
+
+                await GlueCommands.Self.UpdateGlueSettingsFromCurrentGlueStateAsync();
             };
 
             var settings = GlueState.Self.GlueSettingsSave;

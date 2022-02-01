@@ -101,7 +101,7 @@ namespace GlueFormsCore.Controls
             }
         }
 
-        public void ReactToCloseProject(bool shouldSave, bool isExiting, InitializationWindowWpf initWindow = null)
+        public async void ReactToCloseProject(bool shouldSave, bool isExiting, InitializationWindowWpf initWindow = null)
         {
             var didCreateOwnInitWindow = false;
             if(initWindow == null)
@@ -175,7 +175,7 @@ namespace GlueFormsCore.Controls
                 if (ProjectManager.ProjectBase != null && !string.IsNullOrEmpty(ProjectManager.ProjectBase.FullFileName))
                 {
                     GlueCommands.Self.ProjectCommands.SaveProjectsImmediately();
-                    GlueCommands.Self.UpdateGlueSettingsFromCurrentGlueState();
+                    await GlueCommands.Self.UpdateGlueSettingsFromCurrentGlueStateAsync();
                 }
             }
 
