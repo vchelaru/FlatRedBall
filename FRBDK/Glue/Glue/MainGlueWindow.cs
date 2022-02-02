@@ -163,24 +163,21 @@ namespace Glue
 
         public void Invoke(Action action)
         {
-            if(!ProjectManager.WantsToClose)
+            this.Invoke((MethodInvoker)delegate
             {
-                this.Invoke((MethodInvoker)delegate
+                try
                 {
-                    try
+                    action();
+                }
+                catch(Exception e)
+                {
+                    if(!IsDisposed && !ProjectManager.WantsToClose)
                     {
-                        action();
+                        throw e;
                     }
-                    catch(Exception e)
-                    {
-                        if(!IsDisposed && !ProjectManager.WantsToClose)
-                        {
-                            throw e;
-                        }
-                        // otherwise, we don't care, they're exiting
-                    }
-                });
-            }
+                    // otherwise, we don't care, they're exiting
+                }
+            });
         }
 
         public T Invoke<T>(Func<T> func)
