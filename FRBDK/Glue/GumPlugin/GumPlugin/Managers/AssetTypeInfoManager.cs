@@ -443,13 +443,16 @@ namespace GumPlugin.Managers
             AddIfNotPresent(GraphicalUiElementAti);
         }
 
+        AssetTypeInfo FindMatchingAtiInGlueList(AssetTypeInfo ati) =>
+            AvailableAssetTypes.Self.AllAssetTypes
+                .FirstOrDefault(item =>
+                    item.FriendlyName == ati.FriendlyName &&
+                    item.QualifiedRuntimeTypeName.QualifiedType == ati.QualifiedRuntimeTypeName.QualifiedType);
         public void AddIfNotPresent(AssetTypeInfo ati)
         {
-            var alreadyAdded = AvailableAssetTypes.Self.AllAssetTypes
-                .Any(item => 
-                    item.FriendlyName == ati.FriendlyName && 
-                    item.QualifiedRuntimeTypeName.QualifiedType == ati.QualifiedRuntimeTypeName.QualifiedType);
-            if (alreadyAdded == false)
+            var existing = FindMatchingAtiInGlueList(ati);
+
+            if (existing == null)
             {
                 AvailableAssetTypes.Self.AddAssetType(ati);
             }
@@ -458,6 +461,15 @@ namespace GumPlugin.Managers
         public void RefreshProjectSpecificAtis()
         {
             var list = GetAtisForDerivedGues();
+
+            foreach(var ati in list)
+            {
+                var matching = FindMatchingAtiInGlueList(ati);
+                if(matching != null)
+                {
+                    AvailableAssetTypes.Self.RemoveAssetType(matching);
+                }
+            }
 
             AssetTypesForThisProject.Clear();
             AssetTypesForThisProject.AddRange(list);
@@ -500,8 +512,15 @@ namespace GumPlugin.Managers
                 throw new ArgumentNullException(nameof(element));
             }
 
+            var newAti = FlatRedBall.IO.FileManager.CloneObject<AssetTypeInfo>(GraphicalUiElementAti);
 
-            AssetTypeInfo newAti = FlatRedBall.IO.FileManager.CloneObject<AssetTypeInfo>(GraphicalUiElementAti);
+            UpdateAtiForElement(newAti, element);
+
+            return newAti;
+        }
+
+        public void UpdateAtiForElement(AssetTypeInfo newAti, ElementSave element)
+        {
             newAti.AddToManagersFunc = GraphicalUiElementAti.AddToManagersFunc;
 
             newAti.QualifiedRuntimeTypeName = new PlatformSpecificType()
@@ -530,7 +549,7 @@ namespace GumPlugin.Managers
                 newAti.LayeredAddToManagersMethod.Add(
                     "this.MoveToFrbLayer(mLayer, FlatRedBall.Gum.GumIdb.Self);");
             }
-            if(element is Gum.DataTypes.ScreenSave)
+            if (element is Gum.DataTypes.ScreenSave)
             {
                 var qualifiedName = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element);
 
@@ -579,7 +598,7 @@ namespace GumPlugin.Managers
             // Turns out this can crash if the lement's DefaultState is null
             // This happens if the backing file (like gutx) is not on disk. 
             // Let's put a warning
-            if(element != null && element.DefaultState == null)
+            if (element != null && element.DefaultState == null)
             {
                 GlueCommands.Self.PrintError("Could not find default state for Gum element " + element.Name + ". This can happen if the file is missing on disk");
             }
@@ -587,11 +606,11 @@ namespace GumPlugin.Managers
             if (element != null & element.DefaultState != null)
             {
                 var states = new List<Gum.DataTypes.Variables.StateSave>();
-                
+
                 states.Add(element.DefaultState);
 
                 var parentElement = Gum.Managers.ObjectFinder.Self.GetElementSave(element.BaseType);
-                while(parentElement != null)
+                while (parentElement != null)
                 {
                     states.Add(parentElement.DefaultState);
                     parentElement = Gum.Managers.ObjectFinder.Self.GetElementSave(parentElement.BaseType);
@@ -607,7 +626,7 @@ namespace GumPlugin.Managers
 
                         var hasAlreadyBeenAdded = newAti.VariableDefinitions.Any(item => item.Name == variableName);
 
-                        if(!hasAlreadyBeenAdded)
+                        if (!hasAlreadyBeenAdded)
                         {
 
                             var variableDefinition = new VariableDefinition();
@@ -625,8 +644,6 @@ namespace GumPlugin.Managers
                     }
                 }
             }
-
-            return newAti;
         }
 
         private void ChangePositionUnitTypes(VariableDefinition variableDefinition)
