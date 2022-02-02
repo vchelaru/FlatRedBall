@@ -31,15 +31,18 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
 
         private void HandlePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            TaskManager.Self.OnUiThread(() =>
-                {
-                    string desiredText = " " + vm.StatusText;
-                    if (tab.Title != desiredText)
+            if(!ProjectManager.WantsToClose)
+            {
+                TaskManager.Self.OnUiThread(() =>
                     {
-                        tab.Title = desiredText;
+                        string desiredText = " " + vm.StatusText;
+                        if (tab.Title != desiredText)
+                        {
+                            tab.Title = desiredText;
+                        }
                     }
-                }
-            );
+                );
+            }
         }
     }
 }

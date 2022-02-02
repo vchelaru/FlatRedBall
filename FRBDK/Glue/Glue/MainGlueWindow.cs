@@ -163,21 +163,24 @@ namespace Glue
 
         public void Invoke(Action action)
         {
-            this.Invoke((MethodInvoker)delegate
+            if(!ProjectManager.WantsToClose)
             {
-                try
+                this.Invoke((MethodInvoker)delegate
                 {
-                    action();
-                }
-                catch(Exception e)
-                {
-                    if(!IsDisposed)
+                    try
                     {
-                        throw e;
+                        action();
                     }
-                    // otherwise, we don't care, they're exiting
-                }
-            });
+                    catch(Exception e)
+                    {
+                        if(!IsDisposed && !ProjectManager.WantsToClose)
+                        {
+                            throw e;
+                        }
+                        // otherwise, we don't care, they're exiting
+                    }
+                });
+            }
         }
 
         public T Invoke<T>(Func<T> func)
@@ -509,7 +512,21 @@ namespace Glue
 
         }
 
-        private async void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // If this function is async, all the awaited calls in here may get called after the window
+            // is closed, and that's bad. But we can't Wait the task to finish as that would freeze the UI.
+            // Therefore to fix this, we'll tell Glue to not shut down if this is the first time the user wanted
+            // to shut it. Then we'll wait for all tasks to finish and then try again to close it.
+            if(!ProjectManager.WantsToClose)
+            {
+                CloseAfterTasks();
+                e.Cancel = true;
+            }
+
+        }
+
+        private async void CloseAfterTasks()
         {
             ProjectManager.WantsToClose = true;
             //MainPanelSplitContainer.ReactToFormClosing();
@@ -522,6 +539,8 @@ namespace Glue
 
             PluginManager.ReactToGlueClose();
             MainWpfControl.ReactToCloseProject(true, true);
+
+            GlueCommands.Self.CloseGlue();            
         }
     }
 }
