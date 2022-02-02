@@ -175,7 +175,7 @@ namespace GlueFormsCore.Controls
                 if (ProjectManager.ProjectBase != null && !string.IsNullOrEmpty(ProjectManager.ProjectBase.FullFileName))
                 {
                     GlueCommands.Self.ProjectCommands.SaveProjectsImmediately();
-                    await GlueCommands.Self.UpdateGlueSettingsFromCurrentGlueStateAsync();
+                    GlueCommands.Self.UpdateGlueSettingsFromCurrentGlueStateImmediately();
                 }
             }
 

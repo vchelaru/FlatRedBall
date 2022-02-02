@@ -509,13 +509,14 @@ namespace Glue
 
         }
 
+        static bool WantsToExit = false;
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             // If this function is async, all the awaited calls in here may get called after the window
             // is closed, and that's bad. But we can't Wait the task to finish as that would freeze the UI.
             // Therefore to fix this, we'll tell Glue to not shut down if this is the first time the user wanted
             // to shut it. Then we'll wait for all tasks to finish and then try again to close it.
-            if(!ProjectManager.WantsToClose)
+            if(!WantsToExit)
             {
                 CloseAfterTasks();
                 e.Cancel = true;
@@ -526,6 +527,7 @@ namespace Glue
         private async void CloseAfterTasks()
         {
             ProjectManager.WantsToClose = true;
+            WantsToExit = true;
             //MainPanelSplitContainer.ReactToFormClosing();
             
             //EditorData.GlueLayoutSettings.BottomPanelSplitterPosition = MainPanelSplitContainer.SplitterDistance;
