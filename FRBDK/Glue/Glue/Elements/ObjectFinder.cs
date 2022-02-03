@@ -933,6 +933,17 @@ namespace FlatRedBall.Glue.Elements
             }
         }
 
+        public NamedObjectSave GetNamedObjectFor(CustomVariable customVariable)
+        {
+            if(!string.IsNullOrEmpty(customVariable.SourceObject))
+            {
+                var container = GetElementContaining(customVariable);
+                return container?.GetAllNamedObjectsRecurisvely()
+                    .FirstOrDefault(item => item.InstanceName == customVariable.SourceObject);
+            }
+            return null;
+        }
+
         #endregion
 
         #region NamedObjectSave properties

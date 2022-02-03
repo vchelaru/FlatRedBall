@@ -944,6 +944,12 @@ namespace FlatRedBall.Glue.CodeGeneration
                         valueAsString,
                         customVariable);
 
+                    if(namedObject.SourceType == SourceType.Gum && customVariable.Type?.Contains(".") == true && customVariable.Type.EndsWith("?"))
+                    {
+                        // this is a state type, so remove the "?" and prefix it:
+                        valueAsString = customVariable.Type.Substring(0, customVariable.Type.Length - 1) + "." + value;
+                    }
+
                     // Conversion happens in the variable assignment on the instance, not in the state
                     //if(!string.IsNullOrEmpty(customVariable.OverridingPropertyType))
                     //{

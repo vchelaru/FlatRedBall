@@ -77,11 +77,15 @@ namespace GlueFormsCore.Controls
                 var selectedItem = ViewModel.SelectedItem;
                 var oldName = ViewModel.ObjectName;
                 // force it here because this type is used in the rest of Glue (for now)
-                ViewModel.SourceType = FlatRedBall.Glue.SaveClasses.SourceType.FlatRedBallType;
+                // Update February 2, 2022
+                // We've actually started to support Gum types instead of just FRB types and
+                // there is now code that depends on the differentiation so let's keep it as it
+                // ViewModel.SourceType = FlatRedBall.Glue.SaveClasses.SourceType.FlatRedBallType;
+
                 // this changes the name...
-                ViewModel.SelectedItem = selectedItem;
+                //ViewModel.SelectedItem = selectedItem;
                 // ... so change it back
-                ViewModel.ObjectName = oldName;
+                //ViewModel.ObjectName = oldName;
             }
             this.DialogResult = true;
         }

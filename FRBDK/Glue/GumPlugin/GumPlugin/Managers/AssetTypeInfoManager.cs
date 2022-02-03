@@ -623,6 +623,10 @@ namespace GumPlugin.Managers
                     foreach (var variable in variablesForState)
                     {
                         string variableName = (variable.ExposedAsName ?? variable.Name).Replace(" ", "");
+                        if(variable.IsState(element))
+                        {
+                            variableName = "Current" + variableName;
+                        }
 
                         var hasAlreadyBeenAdded = newAti.VariableDefinitions.Any(item => item.Name == variableName);
 
@@ -665,7 +669,7 @@ namespace GumPlugin.Managers
             // todo: for now we'll return the unqualified name for the state, but eventually we may want to qualify it:
             if(isState)
             {
-                return variable.Type;
+                return GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(container) + "." + variable.Type + "?";
             }
             else
             {

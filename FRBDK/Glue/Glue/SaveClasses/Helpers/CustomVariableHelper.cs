@@ -260,6 +260,23 @@ namespace FlatRedBall.Glue.SaveClasses.Helpers
 
         public static InterpolationCharacteristic GetInterpolationCharacteristic(CustomVariable customVariable, GlueElement container)
         {
+            var nosReferencing = ObjectFinder.Self.GetNamedObjectFor(customVariable);
+
+            if(nosReferencing?.SourceType == SourceType.Gum)
+            {
+                var ati = nosReferencing.GetAssetTypeInfo();
+
+                var variable = ati.VariableDefinitions.FirstOrDefault(item => item.Name == customVariable.SourceObjectProperty);
+
+                // This is a quick test to see if it's a state. States generate nullable types (as of Feb 2, 2022)
+                if(variable?.Type.EndsWith("?") == true)
+                {
+                    // this is a state so don't let interpolation happen. Technically we could, but this would require a lot of plugin work, so let's just mark it
+                    // as CantInterpolate to prevent errors
+                    return InterpolationCharacteristic.CantInterpolate;
+                }
+            }
+
             string variableType = null;
             if (customVariable != null)
             {

@@ -518,19 +518,24 @@ namespace FlatRedBall.Glue.CodeGeneration
                                     }
                                     else
                                     {
+
                                         defaultStartingValue = TypeManager.GetDefaultForType(instructionSave.Type);
                                     }
                                 }
                                 catch
                                 {
-                                    throw new Exception("Could not get a default value for " + instructionSave.Member + " of type " + instructionSave.Type);
+                                    // why barf here? We could just mark it as not allowing interpolation
+                                    interpolationCharacteristic = InterpolationCharacteristic.CanInterpolate;
+                                    //throw new Exception("Could not get a default value for " + instructionSave.Member + " of type " + instructionSave.Type);
                                 }
 
+                                if(interpolationCharacteristic != InterpolationCharacteristic.CanInterpolate)
+                                {
+                                    string type = CustomVariableCodeGenerator.GetMemberTypeFor(customVariable, element);
 
-                                string type = CustomVariableCodeGenerator.GetMemberTypeFor(customVariable, element);
-
-                                curBlock.Line(type + " " + member + FirstValue + "= " + defaultStartingValue + ";");
-                                curBlock.Line(type + " " + member + SecondValue + "= " + defaultStartingValue + ";");
+                                    curBlock.Line(type + " " + member + FirstValue + "= " + defaultStartingValue + ";");
+                                    curBlock.Line(type + " " + member + SecondValue + "= " + defaultStartingValue + ";");
+                                }
                             }
                         }
                     }
