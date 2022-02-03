@@ -1708,6 +1708,7 @@ namespace FlatRedBall.Glue.FormHelpers
             }
             //////////////////////////////END EARLY OUT/////////////////////////////////////
 
+            var currentElementBeforeRemoval = GlueState.Self.CurrentElement;
 
             if (currentObject is NamedObjectSave asNos)
             {
@@ -1909,6 +1910,11 @@ namespace FlatRedBall.Glue.FormHelpers
 
                         #endregion
 
+                        if(deletedElement == null && GlueState.Self.CurrentElement == null)
+                        {
+                            GlueState.Self.CurrentElement = currentElementBeforeRemoval;
+                        }
+
                         await TaskManager.Self.AddAsync(() =>
                         {
                             // Nodes aren't directly removed in the code above. Instead, 
@@ -1934,15 +1940,9 @@ namespace FlatRedBall.Glue.FormHelpers
 
                         if (saveAndRegenerate)
                         {
-                            if (GlueState.Self.CurrentScreenSave != null)
+                            if (GlueState.Self.CurrentElement != null)
                             {
-                                var screen = GlueState.Self.CurrentScreenSave;
-                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screen);
-                            }
-                            else if (GlueState.Self.CurrentEntitySave != null)
-                            {
-                                var entity = GlueState.Self.CurrentEntitySave;
-                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
+                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(GlueState.Self.CurrentElement);
                             }
                             else if (GlueState.Self.CurrentReferencedFileSave != null)
                             {
