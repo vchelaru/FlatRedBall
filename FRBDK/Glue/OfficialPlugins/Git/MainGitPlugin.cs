@@ -133,6 +133,11 @@ start GlueFormsCore.exe";
             yield return $"{gameName}/obj/";
 
             yield return $"{gameName}/{gameName}Content/obj/";
+
+            yield return $"!{gameName}/x64";
+            yield return $"!{gameName}/x86";
+            yield return $"!{gameName}/Libraries";
+
         }
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
