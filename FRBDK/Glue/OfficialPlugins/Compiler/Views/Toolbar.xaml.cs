@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OfficialPluginsCore.Compiler.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,8 @@ namespace OfficialPlugins.Compiler
     {
         public event EventHandler RunClicked;
 
+        RunnerToolbarViewModel ViewModel => DataContext as RunnerToolbarViewModel;
+
         public bool IsOpen
         {
             get => SplitButton.IsOpen;
@@ -31,11 +34,26 @@ namespace OfficialPlugins.Compiler
         public RunnerToolbar()
         {
             InitializeComponent();
+
+            InitializeItemsControlTemplate();
+        }
+
+        private void InitializeItemsControlTemplate()
+        {
         }
 
         private void HandleButtonClick(object sender, RoutedEventArgs args)
         {
             RunClicked?.Invoke(this, null);
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var screenName = (sender as MenuItem).Header as string;
+
+            ViewModel.StartupScreenName = screenName;
+
+            IsOpen = false;
         }
     }
 }

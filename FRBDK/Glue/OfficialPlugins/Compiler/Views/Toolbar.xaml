@@ -19,9 +19,13 @@
                 <TextBlock Margin="5,0,0,0" Text="{Binding StartupScreenName}"></TextBlock>
             </StackPanel>
             <xctk:SplitButton.DropDownContent>
-                <ListBox ItemsSource="{Binding AvailableScreens}" SelectedItem="{Binding StartupScreenName}">
-                    
-                </ListBox>
+                <ItemsControl x:Name="ItemsControl" ItemsSource="{Binding AvailableScreens}" >
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <MenuItem Header="{Binding}" Click="MenuItem_Click"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </xctk:SplitButton.DropDownContent>
         </xctk:SplitButton>
     </Grid>
