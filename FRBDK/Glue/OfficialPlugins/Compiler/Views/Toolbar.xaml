@@ -19,13 +19,16 @@
                 <TextBlock Margin="5,0,0,0" Text="{Binding StartupScreenName}"></TextBlock>
             </StackPanel>
             <xctk:SplitButton.DropDownContent>
-                <ItemsControl x:Name="ItemsControl" ItemsSource="{Binding AvailableScreens}" >
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <MenuItem Header="{Binding}" Click="MenuItem_Click"/>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                <StackPanel>
+                    
+                    <ItemsControl x:Name="ItemsControl" ItemsSource="{Binding AvailableScreens}" >
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <MenuItem Header="{Binding}" Click="MenuItem_Click"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
             </xctk:SplitButton.DropDownContent>
         </xctk:SplitButton>
     </Grid>
