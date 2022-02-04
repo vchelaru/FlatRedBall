@@ -529,7 +529,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                                     //throw new Exception("Could not get a default value for " + instructionSave.Member + " of type " + instructionSave.Type);
                                 }
 
-                                if(interpolationCharacteristic != InterpolationCharacteristic.CanInterpolate)
+                                if(interpolationCharacteristic != InterpolationCharacteristic.CantInterpolate)
                                 {
                                     string type = CustomVariableCodeGenerator.GetMemberTypeFor(customVariable, element);
 
