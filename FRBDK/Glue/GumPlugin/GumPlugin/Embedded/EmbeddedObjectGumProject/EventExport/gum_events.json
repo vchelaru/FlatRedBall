@@ -98,6 +98,48 @@
         "ElementType": "Components",
         "EventType": 3,
         "TimestampUtc": "2022-02-05T19:43:19.2407358Z"
+      },
+      {
+        "NewName": "DefaultForms/RadioButton.HighlightRectangle",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-05T20:37:11.1331583Z"
+      },
+      {
+        "NewName": "FocusedOn",
+        "OldName": "EnabledOn1",
+        "ElementType": "Components",
+        "EventType": 3,
+        "TimestampUtc": "2022-02-05T20:41:51.1790206Z"
+      },
+      {
+        "NewName": "FocusedOff",
+        "OldName": "EnabledOff1",
+        "ElementType": "Components",
+        "EventType": 3,
+        "TimestampUtc": "2022-02-05T20:42:14.0577397Z"
+      },
+      {
+        "NewName": "HighlightedFocusedOn",
+        "OldName": "HighlightedOn1",
+        "ElementType": "Components",
+        "EventType": 3,
+        "TimestampUtc": "2022-02-05T20:43:32.2409756Z"
+      },
+      {
+        "NewName": "HighlightedFocusedOff",
+        "OldName": "HighlightedOff1",
+        "ElementType": "Components",
+        "EventType": 3,
+        "TimestampUtc": "2022-02-05T20:43:51.8776792Z"
+      },
+      {
+        "NewName": "DefaultForms/Slider.HighlightRectangle",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-05T20:53:41.3560906Z"
       }
     ],
     "Owner": []

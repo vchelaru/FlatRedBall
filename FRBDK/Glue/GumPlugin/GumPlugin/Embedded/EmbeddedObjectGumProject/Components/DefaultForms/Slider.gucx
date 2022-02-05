@@ -212,6 +212,72 @@
       <Value xsi:type="xsd:float">484</Value>
       <SetsValue>true</SetsValue>
     </Variable>
+    <Variable>
+      <Type>PositionUnitType</Type>
+      <Name>HighlightRectangle.Y Units</Name>
+      <Value xsi:type="xsd:int">7</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>VerticalAlignment</Type>
+      <Name>HighlightRectangle.Y Origin</Name>
+      <Value xsi:type="xsd:int">1</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>HighlightRectangle.Y</Name>
+      <Value xsi:type="xsd:float">-1</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>PositionUnitType</Type>
+      <Name>HighlightRectangle.X Units</Name>
+      <Value xsi:type="xsd:int">6</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>HorizontalAlignment</Type>
+      <Name>HighlightRectangle.X Origin</Name>
+      <Value xsi:type="xsd:int">1</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>HighlightRectangle.X</Name>
+      <Value xsi:type="xsd:float">0</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>DimensionUnitType</Type>
+      <Name>HighlightRectangle.Width Units</Name>
+      <Value xsi:type="xsd:int">2</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>HighlightRectangle.Width</Name>
+      <Value xsi:type="xsd:float">-6</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>bool</Type>
+      <Name>HighlightRectangle.Visible</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>DimensionUnitType</Type>
+      <Name>HighlightRectangle.Height Units</Name>
+      <Value xsi:type="xsd:int">2</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>HighlightRectangle.Height</Name>
+      <Value xsi:type="xsd:float">-6</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
     <VariableList xsi:type="VariableListSaveOfString">
       <Type>string</Type>
       <Name>AnimationFrames</Name>
@@ -222,6 +288,24 @@
   </State>
   <Category>
     <Name>SliderCategory</Name>
+    <State>
+      <Name>Enabled</Name>
+      <Variable>
+        <Type>bool</Type>
+        <Name>HighlightRectangle.Visible</Name>
+        <Value xsi:type="xsd:boolean">false</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+    </State>
+    <State>
+      <Name>Focused</Name>
+      <Variable>
+        <Type>bool</Type>
+        <Name>HighlightRectangle.Visible</Name>
+        <Value xsi:type="xsd:boolean">true</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+    </State>
   </Category>
   <Instance>
     <Name>LineInstance</Name>
@@ -236,6 +320,11 @@
   <Instance>
     <Name>TrackInstance</Name>
     <BaseType>Container</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>HighlightRectangle</Name>
+    <BaseType>Rectangle</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
   <Behaviors>

@@ -202,20 +202,14 @@ namespace FlatRedBall.Forms.Controls
 
         protected override void UpdateState()
         {
-            string category = "SliderCategoryState";
-            if(IsEnabled == false)
-            {
-                Visual.SetProperty(category, "Disabled");
-            }
-            else if(IsFocused)
-            {
-                Visual.SetProperty(category, "Focused");
+            if (Visual == null) //don't try to update the UI when the UI is not set yet, mmmmkay?
+                return;
 
-            }
-            else
-            {
-                Visual.SetProperty(category, "Enabled");
-            }
+            string category = "SliderCategoryState";
+
+            var state = GetDesiredState();
+
+            Visual.SetProperty(category, state);
         }
 
         private void UpdateThumbPositionAccordingToValue()
