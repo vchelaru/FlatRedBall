@@ -127,7 +127,8 @@ namespace FlatRedBall.Forms.Controls.Primitives
                 }
                 
                 if(gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.A) && 
-                    // A button may be focused, then through the action of clicking the button (like buying items) it may lose its enabled state,but
+                    // A button may be focused, then through the action of clicking the button
+                    // (like buying items) it may lose its enabled state,but
                     // remain focused as to not focus a new item.
                     IsEnabled)
                 {

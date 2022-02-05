@@ -844,6 +844,8 @@ namespace FlatRedBall.Forms.Controls
         protected string GetDesiredState()
         {
             var cursor = GuiManager.Cursor;
+            var primaryDown = cursor.PrimaryDown;
+
 
             if (IsEnabled == false)
             {
@@ -858,7 +860,7 @@ namespace FlatRedBall.Forms.Controls
             }
             else if (IsFocused)
             {
-                if (cursor.WindowPushed == visual && cursor.PrimaryDown)
+                if (cursor.WindowPushed == visual && primaryDown)
                 {
                     return "Pushed";
                 }
@@ -878,7 +880,7 @@ namespace FlatRedBall.Forms.Controls
             }
             else if (GetIfIsOnThisOrChildVisual(cursor))
             {
-                if (cursor.WindowPushed == visual && cursor.PrimaryDown)
+                if (cursor.WindowPushed == visual && primaryDown)
                 {
                     return "Pushed";
                 }

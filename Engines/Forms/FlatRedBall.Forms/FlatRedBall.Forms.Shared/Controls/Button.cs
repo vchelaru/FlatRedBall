@@ -81,9 +81,6 @@ namespace FlatRedBall.Forms.Controls
             Visual.SetProperty(category, state);
         }
 
-
-
-
         #endregion
 
         #region Utilities
