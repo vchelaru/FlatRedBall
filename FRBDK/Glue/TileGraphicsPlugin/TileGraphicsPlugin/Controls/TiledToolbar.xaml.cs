@@ -1,9 +1,12 @@
 ﻿using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.ViewModels;
 using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -21,6 +24,82 @@ using System.Windows.Shapes;
 
 namespace TiledPluginCore.Controls
 {
+
+    public class TmxReferenceViewModel : ViewModel
+    {
+        public FilePath FilePath
+        {
+            get => Get<FilePath>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(FilePath))]
+        public string Display => FilePath.NoPath;
+
+        public override string ToString() => Display;
+
+        public TmxReferenceViewModel(FilePath filePath) => FilePath = filePath;
+    }
+
+    public class TiledToolbarViewModel : ViewModel, ISearchBarViewModel
+    {
+        public List<TmxReferenceViewModel> AllTmxFiles { get; set; } = new List<TmxReferenceViewModel>();
+
+        public ObservableCollection<TmxReferenceViewModel> AvailableTmxFiles
+        {
+            get; set;
+        } = new ObservableCollection<TmxReferenceViewModel>();
+
+        public string SearchBoxText
+        {
+            get => Get<string>();
+            set
+            {
+                if (Set(value))
+                {
+                    RefreshAvailableTmxFiles();
+                }
+            }
+        }
+
+        public bool IsSearchBoxFocused
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+
+        [DependsOn(nameof(SearchBoxText))]
+        public Visibility SearchButtonVisibility => (!string.IsNullOrEmpty(SearchBoxText)).ToVisibility();
+
+        public Visibility TipsVisibility => Visibility.Collapsed;
+
+        [DependsOn(nameof(IsSearchBoxFocused))]
+        [DependsOn(nameof(SearchBoxText))]
+        public Visibility SearchPlaceholderVisibility =>
+            (IsSearchBoxFocused == false && string.IsNullOrWhiteSpace(SearchBoxText)).ToVisibility();
+
+        public string FilterResultsInfo => null;
+
+
+        public void RefreshAvailableTmxFiles()
+        {
+            var searchTextToLowerInvariant = SearchBoxText?.ToLowerInvariant();
+            AvailableTmxFiles.Clear();
+
+            foreach (var item in AllTmxFiles)
+            {
+                var shouldInclude =
+                    string.IsNullOrWhiteSpace(searchTextToLowerInvariant) ||
+                    item.Display.ToLowerInvariant().Contains(searchTextToLowerInvariant);
+                if (shouldInclude)
+                {
+                    AvailableTmxFiles.Add(item);
+                }
+            }
+        }
+    }
+
     /// <summary>
     /// Interaction logic for TiledToolbar.xaml
     /// </summary>
@@ -28,9 +107,12 @@ namespace TiledPluginCore.Controls
     {
         public event EventHandler Opened;
 
+        TiledToolbarViewModel ViewModel => DataContext as TiledToolbarViewModel;
+
         public TiledToolbar()
         {
             InitializeComponent();
+            DataContext = new TiledToolbarViewModel();
         }
 
         private void HandleButtonClick(object sender, RoutedEventArgs e)
@@ -58,9 +140,10 @@ namespace TiledPluginCore.Controls
 
         // Vic asks - why use a list of MenuItems rather than a ListBox...because we didn't want
         // the list box to keep its selection??
+        // Update - a ListBox does not scroll with the mousewheel whereas an ItemCollectionView does
         internal void FillDropdown(List<ReferencedFileSave> availableTmxFiles)
         {
-            TiledDropdown.Children.Clear();
+            ViewModel.AllTmxFiles.Clear();
 
             var sorted = availableTmxFiles;
             //.OrderBy(item => new FilePath(item.Name).NoPath.ToLowerInvariant());
@@ -71,25 +154,34 @@ namespace TiledPluginCore.Controls
 
             foreach (var rfs in sorted)
             {
-                var menuItem = new MenuItem();
-
                 var fullFilePath = new FilePath(GlueCommands.Self.GetAbsoluteFileName(rfs));
 
-                var container = rfs.GetContainer();
-                string containerName = container?.ToString() ?? "Global Content";
+                ViewModel.AllTmxFiles.Add(new TmxReferenceViewModel(fullFilePath));
 
-                menuItem.Header = $"{fullFilePath.NoPath} in {containerName}";
-                menuItem.Click += (not, used) =>
-                {
-                    var startInfo = new ProcessStartInfo();
-                    startInfo.FileName = fullFilePath.FullPath;
-                    startInfo.UseShellExecute = true;
-
-                    System.Diagnostics.Process.Start(startInfo);
-                };
-
-                TiledDropdown.Children.Add(menuItem);
             }
+
+            ViewModel.RefreshAvailableTmxFiles();
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var vm = (sender as MenuItem).DataContext as TmxReferenceViewModel;
+            var startInfo = new ProcessStartInfo();
+            startInfo.FileName = vm.FilePath.FullPath;
+            startInfo.UseShellExecute = true;
+
+            System.Diagnostics.Process.Start(startInfo);
+        }
+
+        private void SearchBar_ClearSearchButtonClicked()
+        {
+            ViewModel.SearchBoxText = null;
+            DropDownButton.IsOpen = true;
+        }
+
+        private void DropDownButton_Closed(object sender, RoutedEventArgs e)
+        {
+            ViewModel.SearchBoxText = null;
         }
     }
 

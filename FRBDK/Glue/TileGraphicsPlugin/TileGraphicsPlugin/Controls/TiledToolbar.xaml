@@ -5,17 +5,26 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TiledPluginCore.Controls"
              mc:Ignorable="d" 
-             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:controls="clr-namespace:GlueFormsCore.Controls;assembly=GlueFormsCore"
              d:DesignHeight="50" d:DesignWidth="200">
     <Grid>
         <xctk:SplitButton
             ToolTip="Open Tiled"
             Opened="HandleOpened"
+            Closed="DropDownButton_Closed"
             Width="40" Height="22" Click="HandleButtonClick"
-            x:Name="AddControlButtonInstance">
+            x:Name="DropDownButton">
             <xctk:SplitButton.DropDownContent>
-                <StackPanel x:Name="TiledDropdown">
+                <StackPanel x:Name="TiledDropdown" MinWidth="100">
+                    <controls:SearchBar ClearSearchButtonClicked="SearchBar_ClearSearchButtonClicked"></controls:SearchBar>
+
+                    <ItemsControl x:Name="ItemsControl" ItemsSource="{Binding AvailableTmxFiles}" >
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <MenuItem Header="{Binding}" Click="MenuItem_Click"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </StackPanel>
             </xctk:SplitButton.DropDownContent>
             <Image Source="/TiledPluginCore;component/Icons/TiledIcon.png"></Image>
