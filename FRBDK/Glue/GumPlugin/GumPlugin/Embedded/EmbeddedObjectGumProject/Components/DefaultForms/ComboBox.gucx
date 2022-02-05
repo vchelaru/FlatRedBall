@@ -279,6 +279,72 @@
       <Value xsi:type="xsd:float">250</Value>
       <SetsValue>true</SetsValue>
     </Variable>
+    <Variable>
+      <Type>PositionUnitType</Type>
+      <Name>HighlightRectangle.Y Units</Name>
+      <Value xsi:type="xsd:int">7</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>VerticalAlignment</Type>
+      <Name>HighlightRectangle.Y Origin</Name>
+      <Value xsi:type="xsd:int">1</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>HighlightRectangle.Y</Name>
+      <Value xsi:type="xsd:float">-1</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>PositionUnitType</Type>
+      <Name>HighlightRectangle.X Units</Name>
+      <Value xsi:type="xsd:int">6</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>HorizontalAlignment</Type>
+      <Name>HighlightRectangle.X Origin</Name>
+      <Value xsi:type="xsd:int">1</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>HighlightRectangle.X</Name>
+      <Value xsi:type="xsd:float">0</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>DimensionUnitType</Type>
+      <Name>HighlightRectangle.Width Units</Name>
+      <Value xsi:type="xsd:int">2</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>HighlightRectangle.Width</Name>
+      <Value xsi:type="xsd:float">-6</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>bool</Type>
+      <Name>HighlightRectangle.Visible</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>DimensionUnitType</Type>
+      <Name>HighlightRectangle.Height Units</Name>
+      <Value xsi:type="xsd:int">2</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>HighlightRectangle.Height</Name>
+      <Value xsi:type="xsd:float">-6</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
     <VariableList xsi:type="VariableListSaveOfString">
       <Type>string</Type>
       <Name>AnimationFrames</Name>
@@ -324,6 +390,12 @@
         <Value xsi:type="xsd:string">Gray</Value>
         <SetsValue>true</SetsValue>
       </Variable>
+      <Variable>
+        <Type>bool</Type>
+        <Name>HighlightRectangle.Visible</Name>
+        <Value xsi:type="xsd:boolean">false</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
     </State>
     <State>
       <Name>Disabled</Name>
@@ -358,6 +430,12 @@
         <Type>ColorCategoryState</Type>
         <Name>TextInstance.ColorCategoryState</Name>
         <Value xsi:type="xsd:string">Gray</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>bool</Type>
+        <Name>HighlightRectangle.Visible</Name>
+        <Value xsi:type="xsd:boolean">false</Value>
         <SetsValue>true</SetsValue>
       </Variable>
     </State>
@@ -396,6 +474,12 @@
         <Value xsi:type="xsd:string">Black</Value>
         <SetsValue>true</SetsValue>
       </Variable>
+      <Variable>
+        <Type>bool</Type>
+        <Name>HighlightRectangle.Visible</Name>
+        <Value xsi:type="xsd:boolean">false</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
     </State>
     <State>
       <Name>Pushed</Name>
@@ -429,6 +513,12 @@
         <Value xsi:type="xsd:string">Black</Value>
         <SetsValue>true</SetsValue>
       </Variable>
+      <Variable>
+        <Type>bool</Type>
+        <Name>HighlightRectangle.Visible</Name>
+        <Value xsi:type="xsd:boolean">false</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <VariableList xsi:type="VariableListSaveOfString">
         <Type>string</Type>
         <Name>AnimationFrames</Name>
@@ -436,6 +526,132 @@
         <IsHiddenInPropertyGrid>false</IsHiddenInPropertyGrid>
         <Value />
       </VariableList>
+    </State>
+    <State>
+      <Name>HighlightedFocused</Name>
+      <Variable>
+        <Type>bool</Type>
+        <Name>HighlightRectangle.Visible</Name>
+        <Value xsi:type="xsd:boolean">true</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>int</Type>
+        <Name>NineSliceInstance.Blue</Name>
+        <Value xsi:type="xsd:int">255</Value>
+        <Category>Rendering</Category>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>ColorCategoryState</Type>
+        <Name>NineSliceInstance.ColorCategoryState</Name>
+        <Value xsi:type="xsd:string">Yellow</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>int</Type>
+        <Name>NineSliceInstance.Green</Name>
+        <Value xsi:type="xsd:int">255</Value>
+        <Category>Rendering</Category>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>int</Type>
+        <Name>NineSliceInstance.Red</Name>
+        <Value xsi:type="xsd:int">255</Value>
+        <Category>Rendering</Category>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>ColorCategoryState</Type>
+        <Name>TextInstance.ColorCategoryState</Name>
+        <Value xsi:type="xsd:string">Black</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+    </State>
+    <State>
+      <Name>Focused</Name>
+      <Variable>
+        <Type>bool</Type>
+        <Name>HighlightRectangle.Visible</Name>
+        <Value xsi:type="xsd:boolean">true</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>int</Type>
+        <Name>NineSliceInstance.Blue</Name>
+        <Value xsi:type="xsd:int">255</Value>
+        <Category>Rendering</Category>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>ColorCategoryState</Type>
+        <Name>NineSliceInstance.ColorCategoryState</Name>
+        <Value xsi:type="xsd:string">Blue</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>int</Type>
+        <Name>NineSliceInstance.Green</Name>
+        <Value xsi:type="xsd:int">255</Value>
+        <Category>Rendering</Category>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>int</Type>
+        <Name>NineSliceInstance.Red</Name>
+        <Value xsi:type="xsd:int">255</Value>
+        <Category>Rendering</Category>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>ColorCategoryState</Type>
+        <Name>TextInstance.ColorCategoryState</Name>
+        <Value xsi:type="xsd:string">Gray</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+    </State>
+    <State>
+      <Name>DisabledFocused</Name>
+      <Variable>
+        <Type>bool</Type>
+        <Name>HighlightRectangle.Visible</Name>
+        <Value xsi:type="xsd:boolean">true</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>int</Type>
+        <Name>NineSliceInstance.Blue</Name>
+        <Value xsi:type="xsd:int">255</Value>
+        <Category>Rendering</Category>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>ColorCategoryState</Type>
+        <Name>NineSliceInstance.ColorCategoryState</Name>
+        <Value xsi:type="xsd:string">Black</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>int</Type>
+        <Name>NineSliceInstance.Green</Name>
+        <Value xsi:type="xsd:int">255</Value>
+        <Category>Rendering</Category>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>int</Type>
+        <Name>NineSliceInstance.Red</Name>
+        <Value xsi:type="xsd:int">255</Value>
+        <Category>Rendering</Category>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>ColorCategoryState</Type>
+        <Name>TextInstance.ColorCategoryState</Name>
+        <Value xsi:type="xsd:string">Gray</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
     </State>
   </Category>
   <Instance>
@@ -456,6 +672,11 @@
   <Instance>
     <Name>SpriteInstance</Name>
     <BaseType>Sprite</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>HighlightRectangle</Name>
+    <BaseType>Rectangle</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
   <Behaviors>

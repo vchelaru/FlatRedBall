@@ -76,61 +76,12 @@ namespace FlatRedBall.Forms.Controls
 
             const string category = "ButtonCategoryState";
 
-            if (IsEnabled == false)
-            {
-                if (IsFocused)
-                {
-                    Visual.SetProperty(category, "DisabledFocused");
-                }
-                else
-                {
-                    Visual.SetProperty(category, "Disabled");
-                }
-            }
-            else if (IsFocused)
-            {
-                if (cursor.WindowPushed == Visual && cursor.PrimaryDown)
-                {
-                    Visual.SetProperty(category, "Pushed");
-                }
-                // Even if the cursor is reported as being over the button, if the
-                // cursor got its input from a touch screen then the cursor really isn't
-                // over anything. Therefore, we only show the highlighted state if the cursor
-                // is a physical on-screen cursor
-                else if (GetIfIsOnThisOrChildVisual(cursor) && 
-                    cursor.LastInputDevice != InputDevice.TouchScreen)
-                {
-                    Visual.SetProperty(category, "HighlightedFocused");
-                }
-                else
-                {
-                    Visual.SetProperty(category, "Focused");
-                }
-            }
-            else if (GetIfIsOnThisOrChildVisual(cursor))
-            {
-                if (cursor.WindowPushed == Visual && cursor.PrimaryDown)
-                {
-                    Visual.SetProperty(category, "Pushed");
-                }
-                // Even if the cursor is reported as being over the button, if the
-                // cursor got its input from a touch screen then the cursor really isn't
-                // over anything. Therefore, we only show the highlighted state if the cursor
-                // is a physical on-screen cursor
-                else if(cursor.LastInputDevice != InputDevice.TouchScreen)
-                {
-                    Visual.SetProperty(category, "Highlighted");
-                }
-                else
-                {
-                    Visual.SetProperty(category, "Enabled");
-                }
-            }
-            else
-            {
-                Visual.SetProperty(category, "Enabled");
-            }
+            var state = base.GetDesiredSate();
+
+            Visual.SetProperty(category, state);
         }
+
+
 
 
         #endregion

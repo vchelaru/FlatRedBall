@@ -431,33 +431,9 @@ namespace FlatRedBall.Forms.Controls
 
             const string category = "ComboBoxCategoryState";
 
-            if (IsEnabled == false)
-            {
-                Visual.SetProperty(category, "Disabled");
-            }
-            else if (IsFocused)
-            {
-                Visual.SetProperty(category, "Focused");
-            }
-            else if (cursor.WindowOver == Visual)
-            {
-                if (cursor.WindowPushed == Visual && cursor.PrimaryDown)
-                {
-                    Visual.SetProperty(category, "Pushed");
-                }
-                else if (cursor.LastInputDevice != InputDevice.TouchScreen)
-                {
-                    Visual.SetProperty(category, "Highlighted");
-                }
-                else
-                {
-                    Visual.SetProperty(category, "Enabled");
-                }
-            }
-            else
-            {
-                Visual.SetProperty(category, "Enabled");
-            }
+            var state = base.GetDesiredSate();
+
+            Visual.SetProperty(category, state);
         }
 
         #endregion
