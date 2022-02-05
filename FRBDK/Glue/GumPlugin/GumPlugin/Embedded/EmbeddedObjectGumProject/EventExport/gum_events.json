@@ -147,6 +147,13 @@
         "ElementType": "Components",
         "EventType": 3,
         "TimestampUtc": "2022-02-05T16:22:26.2969851Z"
+      },
+      {
+        "NewName": "DefaultForms/CheckBox.HighlightRectangle",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-05T16:30:12.2225626Z"
       }
     ]
   }
