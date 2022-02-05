@@ -291,7 +291,7 @@
       <SetsValue>false</SetsValue>
     </Variable>
     <Variable>
-      <Type>ScrollBarVisibilityState</Type>
+      <Type>ScrollBarVisibility</Type>
       <Name>ScrollBarVisibilityState</Name>
       <SetsValue>false</SetsValue>
     </Variable>

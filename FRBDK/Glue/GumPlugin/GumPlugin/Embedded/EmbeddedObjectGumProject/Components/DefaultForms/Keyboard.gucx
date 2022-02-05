@@ -5,7 +5,7 @@
   <State>
     <Name>Default</Name>
     <Variable>
-      <Type>CursorMoveCategoryState</Type>
+      <Type>CursorMoveCategory</Type>
       <Name>CursorMoveCategoryState</Name>
       <SetsValue>false</SetsValue>
     </Variable>

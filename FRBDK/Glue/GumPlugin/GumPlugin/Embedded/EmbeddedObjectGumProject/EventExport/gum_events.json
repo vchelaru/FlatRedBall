@@ -1,3 +1,153 @@
 {
-  "UserEvents": {}
+  "UserEvents": {
+    "vchel": [
+      {
+        "NewName": "GumComponentWithStates",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 0,
+        "TimestampUtc": "2022-02-03T03:39:35.3132666Z"
+      },
+      {
+        "NewName": "GumComponentWithStates.ColoredRectangleInstance",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-03T05:07:11.1068635Z"
+      },
+      {
+        "NewName": "GumComponentWithStates.ColoredRectangleInstance1",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-03T05:07:17.8210316Z"
+      },
+      {
+        "NewName": "GumComponentWithStates.ColoredRectangleInstance2",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-03T05:07:23.0028807Z"
+      },
+      {
+        "NewName": "GumComponentWithStates.ColoredRectangleInstance3",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-03T05:07:28.5784289Z"
+      },
+      {
+        "NewName": "GumComponentWithStates.ColoredRectangleInstance4",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-03T05:07:34.3796099Z"
+      },
+      {
+        "NewName": "GumComponentWithStates.ColoredRectangleInstance5",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-03T05:07:40.5706016Z"
+      },
+      {
+        "NewName": "AfterRename",
+        "OldName": "RenameState",
+        "ElementType": "Components",
+        "EventType": 3,
+        "TimestampUtc": "2022-02-03T15:30:11.4593884Z"
+      },
+      {
+        "NewName": " GameScreenGum.ContainerInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-03T19:02:17.5102186Z"
+      },
+      {
+        "NewName": " GameScreenGum.CircleInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-03T19:02:27.2232282Z"
+      },
+      {
+        "NewName": " FormsScreenGum.ButtonInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-05T01:07:17.4308895Z"
+      },
+      {
+        "NewName": " FormsScreenGum.ButtonInstance1",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-05T01:07:19.2025483Z"
+      },
+      {
+        "NewName": " FormsScreenGum.CheckBoxInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-05T01:07:33.2730837Z"
+      },
+      {
+        "NewName": " FormsScreenGum.ComboBoxInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-05T01:07:50.8495002Z"
+      },
+      {
+        "NewName": " FormsScreenGum.ListBoxInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-05T01:08:30.0909186Z"
+      },
+      {
+        "NewName": " FormsScreenGum.RadioButtonInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-05T01:08:39.1697992Z"
+      },
+      {
+        "NewName": " FormsScreenGum.RadioButtonInstance1",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-05T01:08:52.5530532Z"
+      },
+      {
+        "NewName": " FormsScreenGum.SliderInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-05T01:09:06.0208091Z"
+      },
+      {
+        "NewName": " FormsScreenGum.TextBoxInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-05T01:09:20.5330714Z"
+      },
+      {
+        "NewName": "HighlightedFocusedOn",
+        "OldName": "FocusedHighlightedOn",
+        "ElementType": "Components",
+        "EventType": 3,
+        "TimestampUtc": "2022-02-05T16:22:09.9722883Z"
+      },
+      {
+        "NewName": "HighlightedFocusedOff",
+        "OldName": "FocusedHighlightedOff",
+        "ElementType": "Components",
+        "EventType": 3,
+        "TimestampUtc": "2022-02-05T16:22:26.2969851Z"
+      }
+    ]
+  }
 }
