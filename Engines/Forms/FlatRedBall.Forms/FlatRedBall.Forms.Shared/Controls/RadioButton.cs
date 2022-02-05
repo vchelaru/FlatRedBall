@@ -208,73 +208,11 @@ namespace FlatRedBall.Forms.Controls
             if (Visual == null) //don't try to update the UI when the UI is not set yet, mmmmkay?
                 return;
 
-            var cursor = GuiManager.Cursor;
+            const string category = "RadioButtonCategoryState";
 
-            if (IsChecked  == true)
-            {
-                if (IsEnabled == false)
-                {
-                    Visual.SetProperty("RadioButtonCategoryState", "DisabledOn");
-                }
-                //else if (HasFocus)
-                //{
-                //    Visual.SetProperty("TextBoxCategoryState", "Selected");
-                //}
-                else if (Visual.HasCursorOver(cursor))
-                {
-                    if (cursor.WindowPushed == Visual && cursor.PrimaryDown)
-                    {
-                        Visual.SetProperty("RadioButtonCategoryState", "PushedOn");
-                    }
-                    else if (cursor.LastInputDevice != InputDevice.TouchScreen)
-                    {
-                        Visual.SetProperty("RadioButtonCategoryState", "HighlightedOn");
-                    }
-                    else
-                    {
-                        Visual.SetProperty("RadioButtonCategoryState", "EnabledOn");
-                    }
-                }
-                else
-                {
-                    Visual.SetProperty("RadioButtonCategoryState", "EnabledOn");
-                }
-            }
-            else if(IsChecked == false)
-            {
-                if (IsEnabled == false)
-                {
-                    Visual.SetProperty("RadioButtonCategoryState", "DisabledOff");
-                }
-                //else if (HasFocus)
-                //{
-                //    Visual.SetProperty("TextBoxCategoryState", "Selected");
-                //}
-                else if (Visual.HasCursorOver(cursor))
-                {
-                    if (cursor.WindowPushed == Visual && cursor.PrimaryDown)
-                    {
-                        Visual.SetProperty("RadioButtonCategoryState", "PushedOff");
-                    }
-                    else if (cursor.LastInputDevice != InputDevice.TouchScreen)
-                    {
-                        Visual.SetProperty("RadioButtonCategoryState", "HighlightedOff");
-                    }
-                    else
-                    {
-                        Visual.SetProperty("RadioButtonCategoryState", "EnabledOff");
-                    }
-                }
-                else
-                {
-                    Visual.SetProperty("RadioButtonCategoryState", "EnabledOff");
-                }
-            }
-            else
-            {
-                // todo - handle the indeterminate state here
-            }
-            
+            var state = GetDesiredStateWithChecked(IsChecked);
+
+            Visual.SetProperty(category, state);
         }
 
 

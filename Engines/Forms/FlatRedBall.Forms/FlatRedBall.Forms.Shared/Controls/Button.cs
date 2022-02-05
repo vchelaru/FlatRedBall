@@ -76,7 +76,7 @@ namespace FlatRedBall.Forms.Controls
 
             const string category = "ButtonCategoryState";
 
-            var state = base.GetDesiredSate();
+            var state = base.GetDesiredState();
 
             Visual.SetProperty(category, state);
         }

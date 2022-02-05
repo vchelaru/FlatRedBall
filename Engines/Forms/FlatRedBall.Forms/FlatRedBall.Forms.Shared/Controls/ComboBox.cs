@@ -431,7 +431,7 @@ namespace FlatRedBall.Forms.Controls
 
             const string category = "ComboBoxCategoryState";
 
-            var state = base.GetDesiredSate();
+            var state = base.GetDesiredState();
 
             Visual.SetProperty(category, state);
         }

@@ -841,7 +841,7 @@ namespace FlatRedBall.Forms.Controls
             KeyDown?.Invoke(this, e);
         }
 
-        protected string GetDesiredSate()
+        protected string GetDesiredState()
         {
             var cursor = GuiManager.Cursor;
 
@@ -900,5 +900,26 @@ namespace FlatRedBall.Forms.Controls
                 return "Enabled";
             }
         }
+
+        protected string GetDesiredStateWithChecked(bool? isChecked)
+        {
+            var cursor = GuiManager.Cursor;
+
+            var baseState = GetDesiredState();
+
+            if(isChecked == true)
+            {
+                return baseState + "On";
+            }
+            else if(isChecked == false)
+            {
+                return baseState + "Off";
+            }
+            else
+            {
+                return baseState + "Indeterminate";
+            }
+        }
+
     }
 }
