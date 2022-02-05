@@ -87,7 +87,7 @@ namespace OfficialPluginsCore.Compiler.Managers
 
         void RefreshToolbarScreens()
         {
-            toolbarViewModel.AvailableScreens.Clear();
+            toolbarViewModel.AllScreens.Clear();
 
             if(GlueState.Self.CurrentGlueProject != null)
             {
@@ -109,6 +109,10 @@ namespace OfficialPluginsCore.Compiler.Managers
                     toolbarViewModel.StartupScreenName = 
                         startupScreen.Substring("Screens\\".Length);
                 }
+            }
+            else
+            {
+                toolbarViewModel.RefreshAvailableScreens();
             }
         }
 
