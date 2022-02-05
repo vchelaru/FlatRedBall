@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace FlatRedBall.Glue.ViewModels
 {
-    internal interface ISearchBarViewModel
+    public interface ISearchBarViewModel
     {
         string SearchBoxText { get; set; }
 

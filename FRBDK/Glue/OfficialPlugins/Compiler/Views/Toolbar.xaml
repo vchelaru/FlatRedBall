@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OfficialPlugins.Compiler" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:local="clr-namespace:OfficialPlugins.Compiler" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:controls="clr-namespace:GlueFormsCore.Controls;assembly=GlueFormsCore"
              mc:Ignorable="d" >
     <Grid>
         <!--<Button Width="22" Height="22" Click="HandleButtonClick" IsEnabled="{Binding IsToolbarPlayButtonEnabled}">
@@ -13,14 +13,14 @@
         <xctk:SplitButton x:Name="SplitButton" Width="148" Height="22" 
                           HorizontalContentAlignment="Left"
                           Visibility="{Binding PlayVisibility}"
-                          Click="HandleButtonClick">
+                          Click="HandleButtonClick" Closed="SplitButton_Closed">
             <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                 <Image ToolTip="Run Game" Source="/OfficialPluginsCore;component/Compiler/Icons/play.png"></Image>
                 <TextBlock Margin="5,0,0,0" Text="{Binding StartupScreenName}"></TextBlock>
             </StackPanel>
             <xctk:SplitButton.DropDownContent>
-                <StackPanel>
-                    
+                <StackPanel MinWidth="50">
+                    <controls:SearchBar ClearSearchButtonClicked="SearchBar_ClearSearchButtonClicked"></controls:SearchBar>
                     <ItemsControl x:Name="ItemsControl" ItemsSource="{Binding AvailableScreens}" >
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>

@@ -55,5 +55,16 @@ namespace OfficialPlugins.Compiler
 
             IsOpen = false;
         }
+
+        private void SearchBar_ClearSearchButtonClicked()
+        {
+            ViewModel.SearchBoxText = null;
+            IsOpen = true;
+        }
+
+        private void SplitButton_Closed(object sender, RoutedEventArgs e)
+        {
+            ViewModel.SearchBoxText = null;
+        }
     }
 }

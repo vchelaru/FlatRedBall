@@ -97,10 +97,8 @@ namespace OfficialPluginsCore.Compiler.Managers
 
                 sortedScreens.Sort(StrCmpLogicalW);
 
-                foreach(var item in sortedScreens)
-                {
-                    toolbarViewModel.AvailableScreens.Add(item);
-                }
+                toolbarViewModel.AllScreens.AddRange(sortedScreens);
+                toolbarViewModel.RefreshAvailableScreens();
 
                 var startupScreen =
                     GlueState.Self.CurrentGlueProject.StartUpScreen;

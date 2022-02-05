@@ -3,6 +3,7 @@ using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.ViewModels;
 using FlatRedBall.IO;
 using OfficialPlugins.TreeViewPlugin.Models;
 using System;
@@ -16,7 +17,7 @@ using System.Windows;
 
 namespace OfficialPlugins.TreeViewPlugin.ViewModels
 {
-    class MainTreeViewViewModel : ViewModel
+    class MainTreeViewViewModel : ViewModel, ISearchBarViewModel
     {
         #region Fields/Properties
 

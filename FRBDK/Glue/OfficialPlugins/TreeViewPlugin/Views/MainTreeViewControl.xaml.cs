@@ -77,7 +77,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         public void FocusSearchBox()
         {
-            SearchTextBox.Focus();
+            SearchBar.FocusTextBox();
         }
 
         #endregion

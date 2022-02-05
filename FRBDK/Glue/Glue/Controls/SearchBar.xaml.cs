@@ -51,6 +51,6 @@ namespace GlueFormsCore.Controls
             ViewModel.IsSearchBoxFocused = false;
         }
 
-
+        public void FocusTextBox() => SearchTextBox.Focus();
     }
 }
