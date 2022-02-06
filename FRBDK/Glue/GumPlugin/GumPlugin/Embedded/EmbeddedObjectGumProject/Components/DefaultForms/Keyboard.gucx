@@ -2818,67 +2818,67 @@
     </Variable>
     <Variable>
       <Type>ChildrenLayout</Type>
-      <Name>KeyRows.Children Layout</Name>
+      <Name>AllRows.Children Layout</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>float</Type>
-      <Name>KeyRows.Height</Name>
+      <Name>AllRows.Height</Name>
       <Value xsi:type="xsd:float">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>KeyRows.Height Units</Name>
+      <Name>AllRows.Height Units</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>float</Type>
-      <Name>KeyRows.Width</Name>
+      <Name>AllRows.Width</Name>
       <Value xsi:type="xsd:float">90</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>KeyRows.Width Units</Name>
+      <Name>AllRows.Width Units</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>float</Type>
-      <Name>KeyRows.X</Name>
+      <Name>AllRows.X</Name>
       <Value xsi:type="xsd:float">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>HorizontalAlignment</Type>
-      <Name>KeyRows.X Origin</Name>
+      <Name>AllRows.X Origin</Name>
       <Value xsi:type="xsd:int">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>KeyRows.X Units</Name>
+      <Name>AllRows.X Units</Name>
       <Value xsi:type="xsd:int">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>float</Type>
-      <Name>KeyRows.Y</Name>
+      <Name>AllRows.Y</Name>
       <Value xsi:type="xsd:float">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>VerticalAlignment</Type>
-      <Name>KeyRows.Y Origin</Name>
+      <Name>AllRows.Y Origin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>KeyRows.Y Units</Name>
+      <Name>AllRows.Y Units</Name>
       <Value xsi:type="xsd:int">7</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -3623,7 +3623,7 @@
     <Variable>
       <Type>string</Type>
       <Name>Row1Keys.Parent</Name>
-      <Value xsi:type="xsd:string">KeyRows</Value>
+      <Value xsi:type="xsd:string">AllRows</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -3683,7 +3683,7 @@
     <Variable>
       <Type>string</Type>
       <Name>Row2Keys.Parent</Name>
-      <Value xsi:type="xsd:string">KeyRows</Value>
+      <Value xsi:type="xsd:string">AllRows</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -3719,7 +3719,7 @@
     <Variable>
       <Type>string</Type>
       <Name>Row3Keys.Parent</Name>
-      <Value xsi:type="xsd:string">KeyRows</Value>
+      <Value xsi:type="xsd:string">AllRows</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -3755,7 +3755,7 @@
     <Variable>
       <Type>string</Type>
       <Name>Row4Keys.Parent</Name>
-      <Value xsi:type="xsd:string">KeyRows</Value>
+      <Value xsi:type="xsd:string">AllRows</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -3791,7 +3791,7 @@
     <Variable>
       <Type>string</Type>
       <Name>Row5Keys.Parent</Name>
-      <Value xsi:type="xsd:string">KeyRows</Value>
+      <Value xsi:type="xsd:string">AllRows</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -3827,6 +3827,72 @@
       <Type>HorizontalAlignment</Type>
       <Name>X Origin</Name>
       <Value xsi:type="xsd:int">0</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>PositionUnitType</Type>
+      <Name>HighlightRectangle.Y Units</Name>
+      <Value xsi:type="xsd:int">7</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>VerticalAlignment</Type>
+      <Name>HighlightRectangle.Y Origin</Name>
+      <Value xsi:type="xsd:int">1</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>HighlightRectangle.Y</Name>
+      <Value xsi:type="xsd:float">-1</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>PositionUnitType</Type>
+      <Name>HighlightRectangle.X Units</Name>
+      <Value xsi:type="xsd:int">6</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>HorizontalAlignment</Type>
+      <Name>HighlightRectangle.X Origin</Name>
+      <Value xsi:type="xsd:int">1</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>HighlightRectangle.X</Name>
+      <Value xsi:type="xsd:float">0</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>DimensionUnitType</Type>
+      <Name>HighlightRectangle.Width Units</Name>
+      <Value xsi:type="xsd:int">2</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>HighlightRectangle.Width</Name>
+      <Value xsi:type="xsd:float">-6</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>bool</Type>
+      <Name>HighlightRectangle.Visible</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>DimensionUnitType</Type>
+      <Name>HighlightRectangle.Height Units</Name>
+      <Value xsi:type="xsd:int">2</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>HighlightRectangle.Height</Name>
+      <Value xsi:type="xsd:float">-6</Value>
       <SetsValue>true</SetsValue>
     </Variable>
   </State>
@@ -3869,7 +3935,7 @@
     <DefinedByBase>false</DefinedByBase>
   </Instance>
   <Instance>
-    <Name>KeyRows</Name>
+    <Name>AllRows</Name>
     <BaseType>Container</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
@@ -4141,6 +4207,11 @@
   <Instance>
     <Name>KeyRight</Name>
     <BaseType>DefaultForms/KeyboardKey</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>HighlightRectangle</Name>
+    <BaseType>Rectangle</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
   <Behaviors>
