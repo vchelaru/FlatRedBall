@@ -47,7 +47,7 @@ namespace FlatRedBall.Forms.Controls.Games
         {
         }
 
-
+        public event Action ConfirmSelected;
 
 
 
@@ -180,6 +180,10 @@ namespace FlatRedBall.Forms.Controls.Games
                 {
                     HandleLetterSelect();
                 }
+                if(gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.Back) || gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.Start))
+                {
+                    ConfirmSelected?.Invoke();
+                }
             }
         }
 
@@ -200,6 +204,7 @@ namespace FlatRedBall.Forms.Controls.Games
             else if (wordAfterKey == "Return")
             {
                 // do something?
+                ConfirmSelected?.Invoke();
 
             }
             else if (wordAfterKey == "Left")

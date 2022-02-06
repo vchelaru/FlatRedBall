@@ -156,32 +156,25 @@
         "TimestampUtc": "2022-02-06T03:20:50.6902053Z"
       },
       {
-        "NewName": "DefaultForms/Keyboard.HighlightRectangle",
+        "NewName": " MainMenuGum.ButtonInstance",
         "OldName": null,
-        "ElementType": "Components",
+        "ElementType": "Screens",
         "EventType": 5,
-        "TimestampUtc": "2022-02-06T20:19:59.4946592Z"
+        "TimestampUtc": "2022-02-06T21:59:48.2495636Z"
       },
       {
-        "NewName": "DefaultForms/Keyboard.AllRows",
-        "OldName": "DefaultForms/Keyboard.KeyRows",
-        "ElementType": "Components",
-        "EventType": 7,
-        "TimestampUtc": "2022-02-06T21:01:10.2319262Z"
+        "NewName": " MainMenuGum.ButtonInstance1",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-06T22:00:11.5281484Z"
       },
       {
-        "NewName": "DefaultForms/Keyboard.AllRows",
-        "OldName": "DefaultForms/Keyboard.KeyRows",
-        "ElementType": "Components",
+        "NewName": " MainMenuGum.ButtonInstance2",
+        "OldName": " MainMenuGum.ButtonInstance1",
+        "ElementType": "Screens",
         "EventType": 7,
-        "TimestampUtc": "2022-02-06T21:01:10.2349278Z"
-      },
-      {
-        "NewName": "DefaultForms/Keyboard.AllRows",
-        "OldName": "DefaultForms/Keyboard.KeyRows",
-        "ElementType": "Components",
-        "EventType": 7,
-        "TimestampUtc": "2022-02-06T21:01:10.2389299Z"
+        "TimestampUtc": "2022-02-06T22:00:21.3551018Z"
       }
     ],
     "Owner": []

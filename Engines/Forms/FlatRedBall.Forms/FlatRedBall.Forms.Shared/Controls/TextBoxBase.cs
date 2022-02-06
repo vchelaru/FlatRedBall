@@ -134,6 +134,23 @@ namespace FlatRedBall.Forms.Controls
         // todo - this could move to the base class, if the base objects became input receivers
         public event Action<object, KeyEventArgs> KeyDown;
 
+        bool isCaretVisibleWhenNotFocused;
+        /// <summary>
+        /// Whether the caret is visible when not focused. If true, the caret will always stay visible even if the TextBox has lost focus.
+        /// </summary>
+        public bool IsCaretVisibleWhenNotFocused
+        {
+            get => isCaretVisibleWhenNotFocused;
+            set
+            {
+                if(value != isCaretVisibleWhenNotFocused)
+                {
+                    isCaretVisibleWhenNotFocused = value;
+                    UpdateCaretVisibility();
+                }
+            }
+        } 
+
         #endregion
 
         #region Events
@@ -684,7 +701,7 @@ namespace FlatRedBall.Forms.Controls
 
         private void UpdateCaretVisibility()
         {
-            caretComponent.Visible = isFocused && selectionLength == 0;
+            caretComponent.Visible = (isFocused || IsCaretVisibleWhenNotFocused) && selectionLength == 0;
         }
 
         private void UpdateToTextWrappingChanged()
