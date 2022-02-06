@@ -1,4 +1,6 @@
-﻿using Gum.Wireframe;
+﻿using FlatRedBall.Gui;
+using Gum.Wireframe;
+using Microsoft.Xna.Framework.Input;
 using RenderingLibrary.Graphics;
 using System;
 using System.Collections.Generic;
@@ -7,17 +9,53 @@ using System.Text;
 
 namespace FlatRedBall.Forms.Controls.Games
 {
-    public class OnScreenKeyboard : Controls.FrameworkElement
+    public class OnScreenKeyboard : Controls.FrameworkElement, IInputReceiver
     {
+        #region Fields/Properties
 
         public TextBox AssociatedTextBox { get; set; }
 
-        public OnScreenKeyboard() : base() { }
+        public List<Keys> IgnoredKeys => throw new NotImplementedException();
+
+        public bool TakingInput => true;
+
+        public IInputReceiver NextInTabSequence
+        { get; set; }
+
+        #endregion
+
+        public OnScreenKeyboard() : base() 
+        {
+            Initialize();
+        }
 
         public OnScreenKeyboard(GraphicalUiElement visual) : base(visual)
         {
-
+            Initialize();
         }
+
+        public event FocusUpdateDelegate FocusUpdate;
+
+        private void Initialize()
+        {
+            //this.GotFocus += HandleGotFocus;
+        }
+
+        //private void HandleGotFocus(object sender, EventArgs args)
+        //{
+        //    //// This can't have focus, so pass it along to the 1 key
+        //    //var child = this.Visual.GetChildByNameRecursively("Key1");
+        //    //if (child is GraphicalUiElement gue)
+        //    //{
+        //    //    var key = gue.FormsControlAsObject;
+        //    //    if (key is FrameworkElement keyFrameworkElement)
+        //    //    {
+        //    //        keyFrameworkElement.IsFocused = true;
+        //    //    }
+        //    //}
+        //}
+
+
 
         protected override void ReactToVisualChanged()
         {
@@ -96,6 +134,35 @@ namespace FlatRedBall.Forms.Controls.Games
             }
 
             // check for special names here to perform custom activities
+        }
+
+        public void OnFocusUpdate()
+        {
+        }
+
+        public void OnGainFocus()
+        {
+
+        }
+
+        public void LoseFocus()
+        {
+
+        }
+
+        public void ReceiveInput()
+        {
+
+        }
+
+        public void HandleKeyDown(Keys key, bool isShiftDown, bool isAltDown, bool isCtrlDown)
+        {
+
+        }
+
+        public void HandleCharEntered(char character)
+        {
+
         }
     }
 }
