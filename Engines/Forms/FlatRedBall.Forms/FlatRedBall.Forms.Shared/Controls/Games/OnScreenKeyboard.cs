@@ -53,7 +53,7 @@ namespace FlatRedBall.Forms.Controls.Games
 
         protected override void ReactToVisualChanged()
         {
-            FocusIndicator = this.Visual.GetChildByNameRecursively("HighlightRectangle") as GraphicalUiElement;
+            FocusIndicator = this.Visual.GetChildByName("HighlightRectangle") as GraphicalUiElement;
 
             Key1 = this.Visual.GetChildByNameRecursively("Key1") as GraphicalUiElement;
 
@@ -68,11 +68,10 @@ namespace FlatRedBall.Forms.Controls.Games
         {
             foreach (var child in parent.Children)
             {
-                // We don't know any type info here, so the only way to know if it's selectable
-                // is to look at the name
-                if(child.Name?.StartsWith("Key") == true)
+                var childGue = child as GraphicalUiElement;
+                if(childGue.FormsControlAsObject is Button)
                 {
-                    selectableItems.Add(child as GraphicalUiElement);
+                    selectableItems.Add(childGue);
                 }
                 else
                 {
@@ -221,56 +220,19 @@ namespace FlatRedBall.Forms.Controls.Games
                     AssociatedTextBox.CaretIndex++;
                 }
             }
+            else if (wordAfterKey == "Space")
+            {
+                AssociatedTextBox?.HandleCharEntered(' ');
+            }
             else
             {
-                char selectedLetter = wordAfterKey[0];
-                if(wordAfterKey == "Underscore")
+                var formsObject = (selected as GraphicalUiElement).FormsControlAsObject as Button;
+                char selectedLetter;
+                if(formsObject?.Text.Length > 0)
                 {
-                    selectedLetter = '_';
+                    selectedLetter = formsObject.Text[0];
+                    AssociatedTextBox?.HandleCharEntered(selectedLetter);
                 }
-                else if(wordAfterKey == "Comma")
-                {
-                    selectedLetter = ',';
-                }
-                else if(wordAfterKey == "Period")
-                {
-                    selectedLetter = '.';
-                }
-                else if(wordAfterKey == "Hyphen")
-                {
-                    selectedLetter = '-';
-                }
-                else if (wordAfterKey == "ParenLeft")
-                {
-                    selectedLetter = '(';
-                }
-                else if (wordAfterKey == "ParenRight")
-                {
-                    selectedLetter = '(';
-                }
-                else if (wordAfterKey == "ParenRight")
-                {
-                    selectedLetter = '(';
-                }
-                else if (wordAfterKey == "Space")
-                {
-                    selectedLetter = ' ';
-                }
-                else if(wordAfterKey == "Question")
-                {
-                    selectedLetter = '?';
-                }
-                else if (wordAfterKey == "Bang")
-                {
-                    selectedLetter = '!';
-                }
-                else if (wordAfterKey == "Ampersand")
-                {
-                    selectedLetter = '&';
-                }
-
-                AssociatedTextBox?.HandleCharEntered(selectedLetter);
-
             }
         }
 
@@ -279,6 +241,9 @@ namespace FlatRedBall.Forms.Controls.Games
             if (FocusIndicator != null)
             {
                 FocusIndicator.Visible = true;
+
+                FocusIndicator.Parent = Key1;
+
             }
         }
 

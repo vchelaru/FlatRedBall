@@ -4,6 +4,7 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,7 +27,18 @@ namespace TileGraphicsPlugin.Managers
 
             string fileContents;
 
+
+            // fix for https://github.com/vchelaru/FlatRedBall/issues/396
+            // Fix from : https://stackoverflow.com/questions/21140292/how-to-define-the-culture-that-the-xmlserializer-uses
+            var oldCulture = CultureInfo.CurrentCulture;
+            var newCulture = (CultureInfo)oldCulture.Clone();
+            newCulture.NumberFormat.NumberDecimalSeparator = "."; //Force use . insted of ,
+            System.Threading.Thread.CurrentThread.CurrentCulture = newCulture;
+
             FlatRedBall.IO.FileManager.XmlSerialize(whatToSave, out fileContents);
+
+            System.Threading.Thread.CurrentThread.CurrentCulture = oldCulture;
+
 
             // Not sure how to fix this other than this hacky solution:
             fileContents = fileContents.Replace("<TiledObjectTypeSave ", "<objecttype ");
