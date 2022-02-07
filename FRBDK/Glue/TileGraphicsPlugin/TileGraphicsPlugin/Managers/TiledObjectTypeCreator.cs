@@ -127,7 +127,18 @@ namespace TileGraphicsPlugin.Managers
 
             toReturn.name = variable.Name;
             toReturn.Type = GetTmxFriendlyType( variable.Type);
-            toReturn.DefaultAsString = GetTmxFriendlyValue(variable.DefaultValue?.ToString(), variable.Type) ;
+            if(variable.DefaultValue is float asFloat)
+            {
+                toReturn.DefaultAsString = GetTmxFriendlyValue(asFloat.ToString(CultureInfo.InvariantCulture), variable.Type);
+            }
+            if (variable.DefaultValue is double asDouble)
+            {
+                toReturn.DefaultAsString = GetTmxFriendlyValue(asDouble.ToString(CultureInfo.InvariantCulture), variable.Type);
+            }
+            else
+            {
+                toReturn.DefaultAsString = GetTmxFriendlyValue(variable.DefaultValue?.ToString(), variable.Type) ;
+            }
 
             return toReturn;
         }
