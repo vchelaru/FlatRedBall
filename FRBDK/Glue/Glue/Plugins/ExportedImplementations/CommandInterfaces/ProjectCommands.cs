@@ -35,7 +35,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         
         public void SaveProjectsImmediately()
         {
-            lock (ProjectManager.ProjectBase)
+            var toLock = ProjectManager.ProjectBase;
+            lock (toLock)
             {
                 bool shouldSync = false;
                 // IsDirty means that the project has items that haven't
