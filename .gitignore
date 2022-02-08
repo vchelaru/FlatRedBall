@@ -54,3 +54,5 @@ FRBDK/AnimationEditor/packages/*
 Tests/GlueTestProject/packages/*
 Tests/GlueTestProjectDesktopGl/packages/*
 FRBDK/SplineEditor/packages/*
+Tests/GlueTestProjectDesktopGl/.vs/GlueTestProjectDesktopGl/project-colors.json
+Tests/GlueTestProjectDesktopGl/.vs/GlueTestProjectDesktopGl/v17/fileList.bin

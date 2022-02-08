@@ -1093,6 +1093,29 @@ namespace FlatRedBall.Glue.Elements
             return (isState, category);
         }
 
+        public CustomVariable GetBaseCustomVariable(CustomVariable customVariable, GlueElement owner = null)
+        {
+            if(customVariable?.DefinedByBase == true)
+            {
+                owner = owner ?? GetElementContaining(customVariable);
+
+                if(owner != null)
+                {
+                    var baseOfOwner = GetBaseElement(owner);
+
+                    if(baseOfOwner != null)
+                    {
+                        var variableInBase = baseOfOwner.GetCustomVariable(customVariable.Name);
+
+                        return GetBaseCustomVariable(variableInBase, baseOfOwner);
+
+                    }
+                }
+            }
+
+            return customVariable;
+        }
+
         #endregion
 
 

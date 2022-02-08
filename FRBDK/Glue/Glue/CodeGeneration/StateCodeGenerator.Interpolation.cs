@@ -451,8 +451,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     if (!ContainsKey(interpolationCharacteristics, member))
                     {
-
                         CustomVariable customVariable = element.GetCustomVariable(member);
+                        customVariable = ObjectFinder.Self.GetBaseCustomVariable(customVariable);
 
                         NamedObjectSave nos = null;
 
@@ -623,7 +623,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     
                     var customVariable = element.GetCustomVariable(instructionSave.Member);
-
+                    customVariable = ObjectFinder.Self.GetBaseCustomVariable(customVariable);
                     NamedObjectSave sourceNamedObjectSave = null;
                     if (customVariable != null)
                     {

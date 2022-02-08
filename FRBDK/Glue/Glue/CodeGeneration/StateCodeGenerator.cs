@@ -865,6 +865,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         private static string GetRightSideAssignmentValueAsString(IElement element, string memberName, object value)
         {
             CustomVariable customVariable = element.GetCustomVariableRecursively(memberName);
+            customVariable = ObjectFinder.Self.GetBaseCustomVariable(customVariable);
 
             IElement referencedElement = null;
 

@@ -918,7 +918,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
             else
             {
-
+                customVariable = ObjectFinder.Self.GetBaseCustomVariable(customVariable);
                 NamedObjectSave sourceNamedObjectSave = saveObject.GetNamedObjectRecursively(customVariable.SourceObject);
 
                 if (sourceNamedObjectSave != null)
