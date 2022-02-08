@@ -40,9 +40,6 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
         {
             var currentFile = GlueState.Self.CurrentCodeProjectFileName;
 
-            var standardized = FileManager.Standardize(currentFile).ToLowerInvariant();
-
-
             if(ProjectManager.GlueSettingsSave == null)
             {
                 ProjectManager.GlueSettingsSave = new SaveClasses.GlueSettingsSave();
@@ -55,9 +52,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
 
             ProjectManager.GlueSettingsSave.RecentFiles.RemoveAll(item =>
                 string.IsNullOrEmpty(item) ||
-                FileManager.Standardize(item).ToLowerInvariant() == standardized);
+                item == currentFile);
             // newest first
-            ProjectManager.GlueSettingsSave.RecentFiles.Insert(0, standardized);
+            ProjectManager.GlueSettingsSave.RecentFiles.Insert(0, currentFile.FullPath);
 
             const int maxItemCount = 20;
 

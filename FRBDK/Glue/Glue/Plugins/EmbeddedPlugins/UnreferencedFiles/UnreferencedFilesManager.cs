@@ -211,7 +211,7 @@ namespace FlatRedBall.Glue.Managers
                 item.ItemType != "Reference")
             {
                 FilePath filePath =
-                    FileManager.RemoveDotDotSlash(FileManager.GetDirectory(project.ContentProject.FullFileName) + nameToInclude);
+                    FileManager.RemoveDotDotSlash(FileManager.GetDirectory(project.ContentProject.FullFileName.FullPath) + nameToInclude);
 
                 isUnreferenced = 
                     !referencedFiles.Contains(itemName);

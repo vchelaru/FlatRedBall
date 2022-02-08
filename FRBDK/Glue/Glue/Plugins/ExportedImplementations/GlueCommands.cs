@@ -173,7 +173,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
             if (ProjectManager.ProjectBase != null)
             {
-                lastFileName = ProjectManager.ProjectBase.FullFileName;
+                lastFileName = ProjectManager.ProjectBase.FullFileName.FullPath;
             }
 
             save.LastProjectFile = lastFileName;

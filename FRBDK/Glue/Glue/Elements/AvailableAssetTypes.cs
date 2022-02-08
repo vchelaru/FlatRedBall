@@ -73,7 +73,7 @@ namespace FlatRedBall.Glue.Elements
         {
             get
             {
-                string projectFileName = GlueState.Self.GlueProjectFileName;
+                string projectFileName = GlueState.Self.GlueProjectFileName.FullPath;
                 string directory = FileManager.GetDirectory(projectFileName);
 
                 return directory + @"GlueSettings\";

@@ -251,7 +251,7 @@ namespace OfficialPlugins.Compiler
 
         private static string GetGameExeLocation()
         {
-            var projectFileName = GlueState.Self.CurrentMainProject?.FullFileName;
+            var projectFileName = GlueState.Self.CurrentMainProject?.FullFileName.FullPath;
             if(string.IsNullOrEmpty(projectFileName))
             {
                 return null;

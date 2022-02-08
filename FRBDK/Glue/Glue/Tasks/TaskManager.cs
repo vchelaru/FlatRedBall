@@ -496,14 +496,7 @@ namespace FlatRedBall.Glue.Managers
         public void RecordTaskHistory(string taskDisplayInfo)
         {
             var projectName = GlueState.Self.CurrentMainProject?.FullFileName;
-            if (string.IsNullOrEmpty(projectName))
-            {
-                projectName = "<NO PROJECT>";
-            }
-            else
-            {
-                projectName = FileManager.RemovePath(FileManager.RemoveExtension(projectName));
-            }
+            
             var taskDetail = $"{DateTime.Now.ToString("hh:mm:ss tt")} {projectName} {taskDisplayInfo}";
             taskHistory.Add(taskDetail);
 

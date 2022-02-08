@@ -29,8 +29,8 @@ namespace TileGraphicsPlugin.Managers
             string[] allNames = assembly.GetManifestResourceNames();
 
 
-            string projectFolder = FileManager.GetDirectory(GlueState.Self.GlueProjectFileName);
-            string destinationFolder = projectFolder + "Libraries/Tmx/";
+            var projectFolder = GlueState.Self.GlueProjectFileName.GetDirectoryContainingThis();
+            string destinationFolder = projectFolder.FullPath + "Libraries/Tmx/";
 
             System.IO.Directory.CreateDirectory(destinationFolder);
             const string prefix = "TileGraphicsPlugin.ToolsAndLibrariesToCopyToProject.";

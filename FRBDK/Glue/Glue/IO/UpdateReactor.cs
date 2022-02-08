@@ -36,7 +36,7 @@ namespace FlatRedBall.Glue.IO
                 
             //lock (mUpdateFileLock)
             {
-                string projectFileName = ProjectManager.ProjectBase?.FullFileName;
+                var projectFileName = ProjectManager.ProjectBase?.FullFileName.FullPath;
                 if(ProjectManager.ProjectBase != null)
                 {
                     handled = TryHandleProjectFileChanges(changedFile);
@@ -276,18 +276,11 @@ namespace FlatRedBall.Glue.IO
 
         private static bool TryHandleSpecificProjectFileChange(string changedFile, ProjectBase project)
         {
-            string standardizedProject = FileManager.Standardize(project.FullFileName).ToLower();
-            string standardizedContentProject = null;
+            var standardizedProject = project.FullFileName;
+            var standardizedContentProject = project.ContentProject?.FullFileName;
             bool handled = false;
 
-            if (project.ContentProject != null)
-            {
-                standardizedContentProject = FileManager.Standardize(project.ContentProject.FullFileName).ToLower();
-            }
-
-
-
-            if (standardizedProject == changedFile.ToLower())
+            if (standardizedProject == changedFile)
             {
                 if (project == ProjectManager.ProjectBase)
                 {
@@ -304,17 +297,16 @@ namespace FlatRedBall.Glue.IO
                         ProjectManager.RemoveSyncedProject(project);
                     }
 
-                    ProjectLoader.AddSyncedProjectToProjectManager(project.FullFileName);
+                    ProjectLoader.AddSyncedProjectToProjectManager(project.FullFileName.FullPath);
                 }
                 handled = true;
             }
-            else if (!string.IsNullOrEmpty(standardizedContentProject) &&
-                standardizedContentProject == changedFile.ToLower())
+            else if (standardizedContentProject != null && standardizedContentProject == changedFile)
             {
 
                 if (project == ProjectManager.ContentProject)
                 {
-                    TaskManager.Self.OnUiThread(()=>ProjectLoader.Self.LoadProject(ProjectManager.ProjectBase.FullFileName));
+                    TaskManager.Self.OnUiThread(()=>ProjectLoader.Self.LoadProject(ProjectManager.ProjectBase.FullFileName.FullPath));
                 }
                 else
                 {
@@ -356,7 +348,7 @@ namespace FlatRedBall.Glue.IO
                 // March 1, 2020 - this can fail on int comparison so...we'll just tolerate it and do a full reload:
                 try
                 {
-                    compareResult = ProjectManager.GlueProjectSave.ReloadUsingComparison(GlueState.Self.GlueProjectFileName, out newGlueProjectSave);
+                    compareResult = ProjectManager.GlueProjectSave.ReloadUsingComparison(GlueState.Self.GlueProjectFileName.FullPath, out newGlueProjectSave);
                 }
                 catch
                 {
@@ -413,12 +405,12 @@ namespace FlatRedBall.Glue.IO
                 }
                 if (!wasHandled)
                 {
-                    await ProjectLoader.Self.LoadProject(ProjectManager.ProjectBase.FullFileName);
+                    await ProjectLoader.Self.LoadProject(ProjectManager.ProjectBase.FullFileName.FullPath);
                 }
             }
             else
             {
-                await ProjectLoader.Self.LoadProject(ProjectManager.ProjectBase.FullFileName);
+                await ProjectLoader.Self.LoadProject(ProjectManager.ProjectBase.FullFileName.FullPath);
             }
             
 

@@ -239,7 +239,7 @@ namespace FlatRedBallAddOns.Entities
             if (element.Events.Count != 0)
             {
                 var sharedCodeFullFileName =
-                    EventResponseSave.GetSharedCodeFullFileName(element, FileManager.GetDirectory(GlueState.Self.GlueProjectFileName));
+                    EventResponseSave.GetSharedCodeFullFileName(element, FileManager.GetDirectory(GlueState.Self.GlueProjectFileName.FullPath));
 
                 EventCodeGenerator.CreateEmptyCodeIfNecessary(element,
                     sharedCodeFullFileName, false);

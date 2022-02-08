@@ -45,11 +45,11 @@ namespace FlatRedBall.Glue.VSHelpers
 
                     if (!vsp.SaveAsAbsoluteSyncedProject)
                     {
-                        fileNameToUse = FileManager.MakeRelative(vsp.FullFileName);
+                        fileNameToUse = FileManager.MakeRelative(vsp.FullFileName.FullPath);
                     }
                     else
                     {
-                        fileNameToUse = vsp.FullFileName;
+                        fileNameToUse = vsp.FullFileName.FullPath;
                     }
 
                     if (!glueProject.SyncedProjects.Contains(fileNameToUse))
@@ -69,12 +69,12 @@ namespace FlatRedBall.Glue.VSHelpers
 
                     foreach (ProjectBase vsp in ProjectManager.SyncedProjects)
                     {
-                        if (!vsp.SaveAsAbsoluteSyncedProject && FileManager.MakeRelative(vsp.FullFileName) == projectName)
+                        if (!vsp.SaveAsAbsoluteSyncedProject && FileManager.MakeRelative(vsp.FullFileName.FullPath) == projectName)
                         {
                             isPartOfProject = true;
                             break;
                         }
-                        else if (vsp.SaveAsAbsoluteSyncedProject && vsp.FullFileName.Equals(projectName))
+                        else if (vsp.SaveAsAbsoluteSyncedProject && vsp.FullFileName == projectName)
                         {
                             isPartOfProject = true;
                             break;
@@ -204,7 +204,7 @@ namespace FlatRedBall.Glue.VSHelpers
         {
             ProjectBase projectBase = (ProjectBase)((ToolStripItem)sender).Tag;
 
-            string solutionName = LocateSolution(projectBase.FullFileName);
+            string solutionName = LocateSolution(projectBase.FullFileName.FullPath);
 
             if (!string.IsNullOrEmpty(solutionName))
             {
@@ -215,9 +215,9 @@ namespace FlatRedBall.Glue.VSHelpers
             }
             else
             {
-                if (!PluginManager.OpenProject(projectBase.FullFileName))
+                if (!PluginManager.OpenProject(projectBase.FullFileName.FullPath))
                 {
-                    Process.Start(projectBase.FullFileName);
+                    Process.Start(projectBase.FullFileName.FullPath);
                 }
             }
         }

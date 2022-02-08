@@ -71,7 +71,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             set;
         }
 
-        public abstract string FullFileName
+        public abstract FilePath FullFileName
         {
             get;
         }
@@ -80,7 +80,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         {
             get
             {
-                return FileManager.GetDirectory(FullFileName);
+                return FullFileName.GetDirectoryContainingThis().FullPath;
             }
         }
 
@@ -151,7 +151,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             return new List<string>();
         }
 
-        public void Save() { Save(FullFileName); }
+        public void Save() { Save(FullFileName.FullPath); }
         public abstract void Save(string fileName);
 
         public abstract void Load(string fileName);
@@ -239,7 +239,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         protected void CopyFileToProjectRelativeLocation(string sourceFileName, string relativeFileName)
         {
 
-            string fullName = FileManager.GetDirectory(FullFileName) + relativeFileName;
+            string fullName = FullFileName.GetDirectoryContainingThis().FullPath + relativeFileName;
 
             if (FileManager.Standardize(fullName).ToLower() != FileManager.Standardize(sourceFileName).ToLower())
             {

@@ -47,7 +47,7 @@ namespace FlatRedBall.Glue.Controls
 
             if (GlueState.Self.GlueProjectFileName != null)
             {
-                var projectPath = FileManager.GetDirectory(GlueState.Self.GlueProjectFileName) + "Plugins";
+                var projectPath = FileManager.GetDirectory(GlueState.Self.GlueProjectFileName.FullPath) + "Plugins";
 
                 if (Directory.Exists(projectPath) && Directory.GetDirectories(projectPath).Count() > 0)
                 {

@@ -253,7 +253,7 @@ namespace FlatRedBall.Glue
                 {
                     // if we got here then there is no .sln (the user may have deleted it). In that case we'll
                     // just use the parent directory of the glue project file name
-                    return FileManager.GetDirectory(FileManager.GetDirectory(GlueState.Self.GlueProjectFileName));
+                    return FileManager.GetDirectory(FileManager.GetDirectory(GlueState.Self.GlueProjectFileName.FullPath));
                 }
             }
         }
@@ -294,14 +294,13 @@ namespace FlatRedBall.Glue
 
         }
 
-        public static ProjectBase AddSyncedProject(string fileName)
+        public static ProjectBase AddSyncedProject(FilePath fileName)
         {
             bool doesProjectAlreadyExist = false;
 
             ProjectBase syncedProject = null;
-            string standardizedFileName = FileManager.Standardize(fileName.ToLowerInvariant());
 
-            if (FileManager.Standardize(ProjectManager.ProjectBase.FullFileName.ToLowerInvariant(), null, false) == standardizedFileName)
+            if (ProjectManager.ProjectBase.FullFileName == fileName)
             {
                 doesProjectAlreadyExist = true;
             }
@@ -310,8 +309,8 @@ namespace FlatRedBall.Glue
             {
                 foreach (var project in mSyncedProjects)
                 {
-                    string existingFileName = FileManager.Standardize(project.FullFileName.ToLowerInvariant(), null, false);
-                    if (existingFileName == standardizedFileName)
+                    var existingFileName = project.FullFileName;
+                    if (existingFileName == fileName)
                     {
                         doesProjectAlreadyExist = true;
                         break;
@@ -321,11 +320,11 @@ namespace FlatRedBall.Glue
 
             if (!doesProjectAlreadyExist)
             {
-                syncedProject = ProjectCreator.CreateProject(fileName).Project;
+                syncedProject = ProjectCreator.CreateProject(fileName.FullPath).Project;
 
                 syncedProject.OriginalProjectBaseIfSynced = ProjectManager.ProjectBase;
 
-                syncedProject.Load(fileName);
+                syncedProject.Load(fileName.FullPath);
 
                 lock (ProjectManager.SyncedProjects)
                 {

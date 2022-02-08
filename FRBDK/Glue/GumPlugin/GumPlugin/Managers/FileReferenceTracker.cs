@@ -892,7 +892,7 @@ namespace GumPlugin.Managers
             if(!hadMissingFile)
             {
                 var gumProjectFolder = FileManager.GetDirectory(gumProject.FullFileName);
-                var glueContentFolder = FileManager.GetDirectory(contentProject.FullFileName);
+                var glueContentFolder = FileManager.GetDirectory(contentProject.FullFileName.FullPath);
                 var gumFolderRelative = FileManager.MakeRelative(gumProjectFolder, glueContentFolder);
 
                 bool isGumProjectInOwnFolder = glueContentFolder != gumProjectFolder && FileManager.MakeRelative(gumProjectFolder, glueContentFolder).Contains("..") == false;
@@ -952,7 +952,7 @@ namespace GumPlugin.Managers
 
         private static bool GetIfShouldRemoveFontFile(List<ProjectItem> toRemove, ProjectItem buildItem, string fontCacheFolder, ProjectBase contentProject, string[] fileReferencedByGumx)
         {
-            string contentFullFileName = FileManager.GetDirectory(contentProject.FullFileName) + buildItem.UnevaluatedInclude;
+            string contentFullFileName = FileManager.GetDirectory(contentProject.FullFileName.FullPath) + buildItem.UnevaluatedInclude;
 
             contentFullFileName = FileManager.RemoveDotDotSlash(contentFullFileName);
 

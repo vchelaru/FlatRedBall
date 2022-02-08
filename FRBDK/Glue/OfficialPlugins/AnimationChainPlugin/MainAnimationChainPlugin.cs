@@ -74,7 +74,7 @@ namespace OfficialPluginsCore.AnimationChainPlugin
                     // load it and set the project file
                     var achx = AnimationChainListSave.FromFile(file.FullPath);
 
-                    var projectFile = FileManager.MakeRelative(GlueState.Self.GlueProjectFileName, file.GetDirectoryContainingThis().FullPath);
+                    var projectFile = FileManager.MakeRelative(GlueState.Self.GlueProjectFileName.FullPath, file.GetDirectoryContainingThis().FullPath);
 
                     if(projectFile != achx.ProjectFile)
                     {

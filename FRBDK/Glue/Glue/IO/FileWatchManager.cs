@@ -254,9 +254,9 @@ namespace FlatRedBall.Glue.IO
 
         public static void UpdateToProjectDirectory()
         {
-            if (ProjectManager.ProjectBase != null && !string.IsNullOrEmpty(ProjectManager.ProjectBase.FullFileName))
+            if (ProjectManager.ProjectBase?.FullFileName != null)
             {
-                string directory = FileManager.GetDirectory(ProjectManager.ProjectBase.FullFileName);
+                string directory = ProjectManager.ProjectBase.FullFileName.GetDirectoryContainingThis().FullPath;
 
                 // XNA 4 has the content project level with the code project.  That means we should be watching
                 // one directory above where the .csproj file is so that we're capturing all changes including ones

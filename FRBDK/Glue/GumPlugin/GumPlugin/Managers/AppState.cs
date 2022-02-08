@@ -43,14 +43,14 @@ namespace GumPlugin.Managers
             get
             {
                 var currentGlueProjectFileName = FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self.CurrentCodeProjectFileName;
-                if(string.IsNullOrEmpty(currentGlueProjectFileName))
+                if(string.IsNullOrEmpty(currentGlueProjectFileName.FullPath))
                 {
                     return null;
                 }
                 else
                 {
                     return FileManager.GetDirectory(
-                        FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self.CurrentCodeProjectFileName);
+                        FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self.CurrentCodeProjectFileName.FullPath);
                 }
             }
         }

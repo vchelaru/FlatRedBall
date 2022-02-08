@@ -103,7 +103,7 @@ start GlueFormsCore.exe";
             // we will not append * at the end of ignores like "bin/"
 
             string gameName = 
-                FileManager.RemovePath(FileManager.RemoveExtension(GlueState.Self.CurrentCodeProjectFileName));
+                FileManager.RemovePath(FileManager.RemoveExtension(GlueState.Self.CurrentCodeProjectFileName.FullPath));
 
             yield return "*.user";
 

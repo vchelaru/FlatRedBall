@@ -54,7 +54,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
             try
             {
-                solutionName = ProjectSyncer.LocateSolution(project.FullFileName);
+                solutionName = ProjectSyncer.LocateSolution(project.FullFileName.FullPath);
             }
             catch(FileNotFoundException fnfe)
             {
@@ -127,17 +127,17 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
         public static void OpenInExplorer(ProjectBase project)
         {
-            Process.Start("explorer.exe", "/select," + project.FullFileName);
+            Process.Start("explorer.exe", "/select," + project.FullFileName.Standardized.Replace("/", "\\"));
         }
 
         private void OpenInExplorer(object sender, RoutedEventArgs e)
         {
-            Process.Start("explorer.exe", "/select," + Project.FullFileName);
+            OpenInExplorer(Project);
         }
 
         private void OpenInXamarinStudio(object sender, RoutedEventArgs e)
         {
-            string solutionName = ProjectSyncer.LocateSolution(Project.FullFileName);
+            string solutionName = ProjectSyncer.LocateSolution(Project.FullFileName.FullPath);
 
             HandleOpenInXamarinStudioClick(solutionName);
         }
@@ -149,7 +149,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
             ProjectBase project = null;
 
-            string mainSolution = ProjectSyncer.LocateSolution(GlueState.Self.CurrentMainContentProject.FullFileName);
+            string mainSolution = ProjectSyncer.LocateSolution(GlueState.Self.CurrentMainContentProject.FullFileName.FullPath);
 
             if (standardizedSolution == FileManager.Standardize(mainSolution).ToLowerInvariant())
             {
@@ -161,7 +161,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                 // Maybe this is a synced project?
                 foreach (var potentialProject in GlueState.Self.SyncedProjects)
                 {
-                    string potentialSolutionName = FileManager.Standardize(ProjectSyncer.LocateSolution(potentialProject.FullFileName)).ToLowerInvariant();
+                    string potentialSolutionName = FileManager.Standardize(ProjectSyncer.LocateSolution(potentialProject.FullFileName.FullPath)).ToLowerInvariant();
 
                     if (potentialSolutionName == standardizedSolution)
                     {

@@ -105,7 +105,7 @@ namespace FlatRedBall.Glue.Projects
 
             string relativeFileName = FileManager.MakeRelative(
                 fileToAddAbsolute,
-                FileManager.GetDirectory(project.FullFileName));
+                FileManager.GetDirectory(project.FullFileName.FullPath));
             relativeFileName = relativeFileName.Replace("/", "\\");
 
             if (fileToAddAbsolute.EndsWith(".cs"))

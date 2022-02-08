@@ -60,8 +60,8 @@ namespace TileGraphicsPlugin
 
         public void UpdateAtiCsvPresence()
         {
-            string projectFolder = FileManager.GetDirectory(GlueState.Self.GlueProjectFileName);
-            string settingsFolder = projectFolder + "GlueSettings/";
+            var projectFolder = GlueState.Self.GlueProjectFileName.GetDirectoryContainingThis();
+            string settingsFolder = projectFolder.FullPath + "GlueSettings/";
             if (!Directory.Exists(settingsFolder))
             {
                 Directory.CreateDirectory(settingsFolder);

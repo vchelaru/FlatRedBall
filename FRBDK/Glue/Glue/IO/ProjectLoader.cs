@@ -938,7 +938,7 @@ namespace FlatRedBall.Glue.IO
             {
                 MessageBox.Show("Could not find the project" + absoluteFileName + ", removing project from synched project list.");
             }
-            else if (FileManager.Standardize(absoluteFileName).ToLower() == FileManager.Standardize(ProjectManager.ProjectBase.FullFileName).ToLower())
+            else if (absoluteFileName == ProjectManager.ProjectBase.FullFileName)
             {
                 // Victor Chelaru
                 // January 1, 2013
@@ -965,7 +965,7 @@ namespace FlatRedBall.Glue.IO
                         vsp.SaveAsAbsoluteSyncedProject = false;
                     }
 
-                    if (FileManager.GetDirectory(absoluteFileName).ToLower() == FileManager.GetDirectory(ProjectManager.ProjectBase.FullFileName).ToLower())
+                    if (FileManager.GetDirectory(absoluteFileName).ToLower() == FileManager.GetDirectory(ProjectManager.ProjectBase.FullFileName.FullPath).ToLower())
                     {
                         vsp.SaveAsRelativeSyncedProject = false;
                         vsp.SaveAsAbsoluteSyncedProject = false;

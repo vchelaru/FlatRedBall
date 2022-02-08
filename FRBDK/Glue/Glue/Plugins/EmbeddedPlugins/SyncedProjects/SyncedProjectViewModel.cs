@@ -155,11 +155,11 @@ namespace FlatRedBall.Glue.Controls.ProjectSync
             {
                 if(projectBase.SaveAsRelativeSyncedProject)
                 {
-                    return FileManager.MakeRelative(projectBase.FullFileName);
+                    return FileManager.MakeRelative(projectBase.FullFileName.FullPath);
                 }
                 else
                 {
-                    return projectBase.FullFileName;
+                    return projectBase.FullFileName.FullPath;
                 }
             }
         }

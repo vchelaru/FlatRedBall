@@ -172,7 +172,7 @@ namespace GlueFormsCore.Controls
 
             if (shouldSave)
             {
-                if (ProjectManager.ProjectBase != null && !string.IsNullOrEmpty(ProjectManager.ProjectBase.FullFileName))
+                if (ProjectManager.ProjectBase != null && !string.IsNullOrEmpty(ProjectManager.ProjectBase.FullFileName?.FullPath))
                 {
                     GlueCommands.Self.ProjectCommands.SaveProjectsImmediately();
                     GlueCommands.Self.UpdateGlueSettingsFromCurrentGlueStateImmediately();
@@ -265,7 +265,7 @@ namespace GlueFormsCore.Controls
 
         private void FileWatchTimer_Tick(object sender, EventArgs e)
         {
-            if (ProjectManager.ProjectBase != null && !string.IsNullOrEmpty(ProjectManager.ProjectBase.FullFileName))
+            if (ProjectManager.ProjectBase != null && GlueState.Self.CurrentGlueProject != null)
                 FileWatchManager.Flush();
         }
 

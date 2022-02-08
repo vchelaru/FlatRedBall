@@ -89,7 +89,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
             {
                 // We don't need to save the ContentProject
                 // because there isn't one for W8
-                project.Save(project.FullFileName);
+                project.Save(project.FullFileName.FullPath);
             }
         }
 

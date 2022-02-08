@@ -92,7 +92,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
 
             foreach (var project in GlueState.Self.SyncedProjects)
             {
-                var syncedSolutionFileName = ProjectSyncer.LocateSolution(project.FullFileName);
+                var syncedSolutionFileName = ProjectSyncer.LocateSolution(project.FullFileName.FullPath);
 
                 var syncedSolution = VSSolution.FromFile(syncedSolutionFileName);
 

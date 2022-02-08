@@ -47,7 +47,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     bool succeeded = true;
                     try
                     {
-                        ProjectManager.ProjectBase.Save(ProjectManager.ProjectBase.FullFileName);
+                        ProjectManager.ProjectBase.Save(ProjectManager.ProjectBase.FullFileName.FullPath);
                     }
                     catch (UnauthorizedAccessException)
                     {
@@ -62,7 +62,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
                 if (ProjectManager.ContentProject != null && ProjectManager.ContentProject != ProjectManager.ProjectBase)
                 {
-                    ProjectManager.ContentProject.Save(ProjectManager.ContentProject.FullFileName);
+                    ProjectManager.ContentProject.Save(ProjectManager.ContentProject.FullFileName.FullPath);
                     shouldSync = true;
                 }
 
@@ -71,7 +71,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     try
                     {
-                        syncedProject.Save(syncedProject.FullFileName);
+                        syncedProject.Save(syncedProject.FullFileName.FullPath);
                     }
                     catch (Exception e)
                     {
@@ -80,7 +80,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                     if (syncedProject.ContentProject != syncedProject)
                     {
-                        syncedProject.ContentProject.Save(syncedProject.ContentProject.FullFileName);
+                        syncedProject.ContentProject.Save(syncedProject.ContentProject.FullFileName.FullPath);
                     }
                 }
 
@@ -97,10 +97,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // It may be that only the synced projects have changed, so we have to save those:
                 foreach (var syncedProject in ProjectManager.SyncedProjects)
                 {
-                    syncedProject.Save(syncedProject.FullFileName);
+                    syncedProject.Save(syncedProject.FullFileName.FullPath);
                     if (syncedProject != syncedProject.ContentProject)
                     {
-                        syncedProject.ContentProject.Save(syncedProject.ContentProject.FullFileName);
+                        syncedProject.ContentProject.Save(syncedProject.ContentProject.FullFileName.FullPath);
                     }
                 }
 
@@ -216,7 +216,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             string fileRelativeToContent = FileManager.MakeRelative(
                 fileToAddAbsolute,
-                FileManager.GetDirectory(project.ContentProject.FullFileName));
+                project.ContentProject.FullFileName.GetDirectoryContainingThis().FullPath);
             fileRelativeToContent = fileRelativeToContent.Replace("/", "\\");
 
             if (!isFileAlreadyPartOfProject && needsToBeInContentProject)
@@ -378,7 +378,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             string relativeFileName = FileManager.MakeRelative(
                 fileToAddAbsolute,
-                FileManager.GetDirectory(project.ContentProject.FullFileName) + project.ContentProject.ContentDirectory);
+                project.ContentProject.FullFileName.GetDirectoryContainingThis().FullPath + project.ContentProject.ContentDirectory);
 
             if (relativeFileName.StartsWith(ProjectManager.ContentDirectoryRelative))
             {
@@ -523,7 +523,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         private static void CopyToBuildFolder(FilePath absoluteSource, string debugPath)
         {
-            string buildFolder = FileManager.GetDirectory(GlueState.Self.CurrentCodeProjectFileName) + debugPath + "Content/";
+            string buildFolder = FileManager.GetDirectory(GlueState.Self.CurrentCodeProjectFileName.FullPath) + debugPath + "Content/";
             string destination = buildFolder + FileManager.MakeRelative(absoluteSource.FullPath, GlueState.Self.ContentDirectory);
 
             string destinationFolder = FileManager.GetDirectory(destination);

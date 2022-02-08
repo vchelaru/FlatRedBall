@@ -48,7 +48,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
         }
 
-        public override string FullFileName
+        public override FilePath FullFileName
         {
             get
             {
@@ -746,11 +746,13 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                 if (SaveAsAbsoluteSyncedProject)
                 {
-                    fileName = FileManager.GetDirectory(sourceProjectBase.FullFileName) + bi.UnevaluatedInclude;
+                    fileName = sourceProjectBase.FullFileName.GetDirectoryContainingThis().FullPath + bi.UnevaluatedInclude;
                 }
                 else if (SaveAsRelativeSyncedProject)
                 {
-                    fileName = FileManager.MakeRelative(FileManager.GetDirectory(sourceProjectBase.FullFileName), FileManager.GetDirectory(FullFileName)) + bi.UnevaluatedInclude;
+                    fileName = FileManager.MakeRelative(
+                        sourceProjectBase.FullFileName.GetDirectoryContainingThis().FullPath, 
+                        FullFileName.GetDirectoryContainingThis().FullPath) + bi.UnevaluatedInclude;
                 }
                 else
                 {
@@ -819,9 +821,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                 if (oldText != newText)
                 {
-                    RaiseSaving(FullFileName);
+                    RaiseSaving(FullFileName.FullPath);
 
-                    System.IO.File.WriteAllText(FullFileName, newText, stringWriter.Encoding);
+                    System.IO.File.WriteAllText(FullFileName.FullPath, newText, stringWriter.Encoding);
                 }
             }
         }
@@ -836,7 +838,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public override void SyncTo(ProjectBase projectBase, bool performTranslation)
         {
-            Load(FullFileName);
+            Load(FullFileName.FullPath);
 
             AddCodeBuildItems(projectBase);
 
@@ -845,10 +847,10 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             if (NeedToSaveContentProject)
             {
-                ContentProject.Save(ContentProject.FullFileName);
+                ContentProject.Save(ContentProject.FullFileName.FullPath);
             }
 
-            Save(FullFileName);
+            Save(FullFileName.FullPath);
         }
 
         protected ProjectItem AddCodeBuildItem(string fileName, bool isSyncedProject, string nameRelativeToThisProject)
@@ -873,7 +875,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 if (!FileManager.IsRelative(fileName) && !isSyncedProject)
                 {
                     fileName = FileManager.MakeRelative(fileName,
-                                                        FileManager.GetDirectory(this.FullFileName));
+                                                        FileManager.GetDirectory(this.FullFileName.FullPath));
                 }
 
                 fileName = fileName.Replace('/', '\\');
