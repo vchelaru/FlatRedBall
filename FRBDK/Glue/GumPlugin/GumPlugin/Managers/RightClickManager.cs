@@ -206,9 +206,12 @@ namespace GumPlugin.Managers
 
         private void HandleScreenToAddClick(object sender, EventArgs e)
         {
-            string screenName = ((ToolStripMenuItem)sender).Text;
+            string screenName = ((System.Windows.Controls.MenuItem)sender).Header as string;
 
-            AddScreenByName(screenName, GlueState.Self.CurrentScreenSave);
+            if(!string.IsNullOrEmpty(screenName))
+            {
+                AddScreenByName(screenName, GlueState.Self.CurrentScreenSave);
+            }
 
         }
 

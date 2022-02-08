@@ -397,6 +397,8 @@ namespace FlatRedBall.Glue.CodeGeneration
         {
             var classBlock = namespaceContents.Class("public", "CameraSetupData");
 
+            classBlock.AutoProperty("public bool", "IsGenerateCameraDisplayCodeEnabled");
+
             classBlock.AutoProperty("public float", "Scale");
             classBlock.AutoProperty("public float", "ScaleGum");
             classBlock.AutoProperty("public bool", "Is2D");

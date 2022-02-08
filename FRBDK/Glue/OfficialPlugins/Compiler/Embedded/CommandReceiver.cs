@@ -746,8 +746,12 @@ namespace GlueControl
                     CameraLogic.SetCameraForScreen(screen, setZoom: FlatRedBall.Screens.ScreenManager.IsInEditMode);
                 }
 
+
                 // Even though the camera is reset properly, Gum zoom isn't. Calling this fixes Gum zoom:
-                CameraLogic.UpdateCameraToZoomLevel(zoomAroundCursorPosition: false, forceTo100: !isInEditMode);
+                if (CameraSetup.Data.IsGenerateCameraDisplayCodeEnabled)
+                {
+                    CameraLogic.UpdateCameraToZoomLevel(zoomAroundCursorPosition: false, forceTo100: !isInEditMode);
+                }
 
                 if (FlatRedBall.Screens.ScreenManager.IsInEditMode)
                 {
