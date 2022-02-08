@@ -815,6 +815,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         
         public static string GetMemberTypeFor(CustomVariable customVariable, IElement element)
         {
+            customVariable = ObjectFinder.Self.GetBaseCustomVariable(customVariable);
             NamedObjectSave referencedNos = element.GetNamedObjectRecursively(customVariable.SourceObject);
 
             string customVariableType;
