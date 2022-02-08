@@ -70,18 +70,19 @@
       <UseGlobalContent>false</UseGlobalContent>
       <ReferencedFiles>
         <ReferencedFileSave>
+          <Name>Screens/AudioScreen/boom.wav</Name>
           <Properties>
             <PropertySave>
               <Name>UseContentPipeline</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Screens/AudioScreen/boom.wav</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffect</RuntimeType>
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Name>Screens/GlobalContentScreen/MenuSong.mp3</Name>
           <Properties>
             <PropertySave>
               <Name>UseContentPipeline</Name>
@@ -92,7 +93,6 @@
               <ValueAsInt>100</ValueAsInt>
             </PropertySave>
           </Properties>
-          <Name>Screens/GlobalContentScreen/MenuSong.mp3</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Media.Song</RuntimeType>
           <ProjectsToExcludeFrom />
@@ -975,13 +975,13 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Name>Screens/CsvScreen/CustomCsvClassLoadedOnlyWhenReferenced.csv</Name>
           <Properties>
             <PropertySave>
               <Name>LoadedOnlyWhenReferenced</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Screens/CsvScreen/CustomCsvClassLoadedOnlyWhenReferenced.csv</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <CreatesDictionary>true</CreatesDictionary>
@@ -1696,13 +1696,13 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Name>Screens/FileScreen/EmitterFileLoadedOnlyWhenReferenced.emix</Name>
           <Properties>
             <PropertySave>
               <Name>LoadedOnlyWhenReferenced</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Screens/FileScreen/EmitterFileLoadedOnlyWhenReferenced.emix</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <RuntimeType>FlatRedBall.Graphics.Particle.EmitterList</RuntimeType>
@@ -1715,26 +1715,26 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Name>Screens/FileScreen/SceneFile1.scnx</Name>
           <Properties>
             <PropertySave>
               <Name>LoadedOnlyWhenReferenced</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Screens/FileScreen/SceneFile1.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Name>Screens/FileScreen/SceneFile2.scnx</Name>
           <Properties>
             <PropertySave>
               <Name>LoadedOnlyWhenReferenced</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Screens/FileScreen/SceneFile2.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
@@ -1877,26 +1877,26 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Name>Screens/FlatRedBallTypeScreen/SceneOption1.scnx</Name>
           <Properties>
             <PropertySave>
               <Name>LoadedOnlyWhenReferenced</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Screens/FlatRedBallTypeScreen/SceneOption1.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Name>Screens/FlatRedBallTypeScreen/SceneOption2.scnx</Name>
           <Properties>
             <PropertySave>
               <Name>LoadedOnlyWhenReferenced</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Screens/FlatRedBallTypeScreen/SceneOption2.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
@@ -2842,18 +2842,19 @@
       <UseGlobalContent>true</UseGlobalContent>
       <ReferencedFiles>
         <ReferencedFileSave>
+          <Name>Entities/GlobalContentEntity/burnOrb.wav</Name>
           <Properties>
             <PropertySave>
               <Name>UseContentPipeline</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Entities/GlobalContentEntity/burnOrb.wav</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffect</RuntimeType>
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Name>Screens/GlobalContentScreen/MenuSong.mp3</Name>
           <Properties>
             <PropertySave>
               <Name>UseContentPipeline</Name>
@@ -2864,7 +2865,6 @@
               <ValueAsInt>100</ValueAsInt>
             </PropertySave>
           </Properties>
-          <Name>Screens/GlobalContentScreen/MenuSong.mp3</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Media.Song</RuntimeType>
           <ProjectsToExcludeFrom />
@@ -4417,13 +4417,13 @@
       <UseGlobalContent>false</UseGlobalContent>
       <ReferencedFiles>
         <ReferencedFileSave>
+          <Name>Screens/PauseScreen/SoundEffectInstanceFile.wav</Name>
           <Properties>
             <PropertySave>
               <Name>UseContentPipeline</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Screens/PauseScreen/SoundEffectInstanceFile.wav</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffectInstance</RuntimeType>
           <ProjectsToExcludeFrom />
@@ -5468,13 +5468,13 @@
       <UseGlobalContent>false</UseGlobalContent>
       <ReferencedFiles>
         <ReferencedFileSave>
+          <Name>Screens/TiledLevelScreen/Levels/Level1.tmx</Name>
           <Properties>
             <PropertySave>
               <Name>LoadedOnlyWhenReferenced</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Screens/TiledLevelScreen/Levels/Level1.tmx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <BuildTool>&lt;None&gt;</BuildTool>
@@ -5482,13 +5482,13 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Name>Screens/TiledLevelScreen/Tilesets/Level1Info.csv</Name>
           <Properties>
             <PropertySave>
               <Name>LoadedOnlyWhenReferenced</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Screens/TiledLevelScreen/Tilesets/Level1Info.csv</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <SourceFile>Screens/TiledLevelScreen/Levels/Level1.tmx</SourceFile>
@@ -9499,13 +9499,13 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Name>Entities/CustomContentTypeEntity/LoadedOnlyWhenReferencedFile.xml</Name>
           <Properties>
             <PropertySave>
               <Name>LoadedOnlyWhenReferenced</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Entities/CustomContentTypeEntity/LoadedOnlyWhenReferencedFile.xml</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <RuntimeType>GlueTestProject.RuntimeTypes.TestRuntimeClass</RuntimeType>
@@ -10968,13 +10968,13 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Name>Entities/EmitterEntity/EmitterLoadedOnlyWhenReferenced.emix</Name>
           <Properties>
             <PropertySave>
               <Name>LoadedOnlyWhenReferenced</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Entities/EmitterEntity/EmitterLoadedOnlyWhenReferenced.emix</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <RuntimeType>FlatRedBall.Graphics.Particle.EmitterList</RuntimeType>
@@ -11979,13 +11979,13 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Name>Entities/FileReferencingEntity/SceneLoadedOnlyWhenReferenced.scnx</Name>
           <Properties>
             <PropertySave>
               <Name>LoadedOnlyWhenReferenced</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Entities/FileReferencingEntity/SceneLoadedOnlyWhenReferenced.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <HasPublicProperty>true</HasPublicProperty>
@@ -12579,13 +12579,13 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Name>Entities/GlobalContentEntity/burnOrb.wav</Name>
           <Properties>
             <PropertySave>
               <Name>UseContentPipeline</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Entities/GlobalContentEntity/burnOrb.wav</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <HasPublicProperty>true</HasPublicProperty>
           <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffect</RuntimeType>
@@ -14622,13 +14622,13 @@
       <UseGlobalContent>false</UseGlobalContent>
       <ReferencedFiles>
         <ReferencedFileSave>
+          <Name>Entities/LoadedOnlyWhenReferenced/SceneFile.scnx</Name>
           <Properties>
             <PropertySave>
               <Name>LoadedOnlyWhenReferenced</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Entities/LoadedOnlyWhenReferenced/SceneFile.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
@@ -15735,25 +15735,25 @@
       <UseGlobalContent>false</UseGlobalContent>
       <ReferencedFiles>
         <ReferencedFileSave>
+          <Name>Entities/PausingEntity/SoundEffectFile.wav</Name>
           <Properties>
             <PropertySave>
               <Name>UseContentPipeline</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Entities/PausingEntity/SoundEffectFile.wav</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffect</RuntimeType>
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Name>Entities/PausingEntity/superHit.wav</Name>
           <Properties>
             <PropertySave>
               <Name>UseContentPipeline</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Entities/PausingEntity/superHit.wav</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffect</RuntimeType>
           <ProjectsToExcludeFrom />
@@ -18703,37 +18703,37 @@
       <UseGlobalContent>false</UseGlobalContent>
       <ReferencedFiles>
         <ReferencedFileSave>
+          <Name>Entities/SoundEffectEntity/DogBarkSoundEffect.wav</Name>
           <Properties>
             <PropertySave>
               <Name>UseContentPipeline</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Entities/SoundEffectEntity/DogBarkSoundEffect.wav</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffect</RuntimeType>
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Name>Entities/SoundEffectEntity/DogBarkSoundEffect2.wav</Name>
           <Properties>
             <PropertySave>
               <Name>UseContentPipeline</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Entities/SoundEffectEntity/DogBarkSoundEffect2.wav</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffectInstance</RuntimeType>
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Name>Entities/SoundEffectEntity/SoundEffectInstanceFile.wav</Name>
           <Properties>
             <PropertySave>
               <Name>UseContentPipeline</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Entities/SoundEffectEntity/SoundEffectInstanceFile.wav</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffectInstance</RuntimeType>
           <ProjectsToExcludeFrom />
@@ -20470,13 +20470,13 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Name>Entities/TextureContainer/pipeJuiceBlue.png</Name>
           <Properties>
             <PropertySave>
               <Name>LoadedOnlyWhenReferenced</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Entities/TextureContainer/pipeJuiceBlue.png</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
@@ -21170,13 +21170,13 @@
       <UseGlobalContent>false</UseGlobalContent>
       <ReferencedFiles>
         <ReferencedFileSave>
+          <Name>Entities/VariableEntity/SceneFileForSourceFileSet.scnx</Name>
           <Properties>
             <PropertySave>
               <Name>LoadedOnlyWhenReferenced</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>Entities/VariableEntity/SceneFileForSourceFileSet.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
@@ -21553,13 +21553,13 @@
   </Entities>
   <GlobalFiles>
     <ReferencedFileSave>
+      <Name>GlobalContent/LocalizationDatabase.csv</Name>
       <Properties>
         <PropertySave>
           <Name>IsDatabaseForLocalizing</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Name>GlobalContent/LocalizationDatabase.csv</Name>
       <IsSharedStatic>true</IsSharedStatic>
       <HasPublicProperty>true</HasPublicProperty>
       <ProjectsToExcludeFrom />
@@ -21644,26 +21644,26 @@
       <ProjectsToExcludeFrom />
     </ReferencedFileSave>
     <ReferencedFileSave>
+      <Name>GlobalContent/DogBarkSoundEffect.wav</Name>
       <Properties>
         <PropertySave>
           <Name>UseContentPipeline</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Name>GlobalContent/DogBarkSoundEffect.wav</Name>
       <IsSharedStatic>true</IsSharedStatic>
       <HasPublicProperty>true</HasPublicProperty>
       <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffect</RuntimeType>
       <ProjectsToExcludeFrom />
     </ReferencedFileSave>
     <ReferencedFileSave>
+      <Name>GlobalContent/DogBarkSoundEffect2.wav</Name>
       <Properties>
         <PropertySave>
           <Name>UseContentPipeline</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Name>GlobalContent/DogBarkSoundEffect2.wav</Name>
       <IsSharedStatic>true</IsSharedStatic>
       <HasPublicProperty>true</HasPublicProperty>
       <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffectInstance</RuntimeType>
@@ -21691,6 +21691,7 @@
       <ProjectsToExcludeFrom />
     </ReferencedFileSave>
     <ReferencedFileSave>
+      <Name>GumProject/GumProject.gumx</Name>
       <Properties>
         <PropertySave>
           <Name>FileAdditionBehavior</Name>
@@ -21708,20 +21709,23 @@
           <Name>AutoCreateGumScreens</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
+        <PropertySave>
+          <Name>ShowMouse</Name>
+          <ValueAsBool>false</ValueAsBool>
+        </PropertySave>
       </Properties>
-      <Name>GumProject/GumProject.gumx</Name>
       <IsSharedStatic>true</IsSharedStatic>
       <HasPublicProperty>true</HasPublicProperty>
       <ProjectsToExcludeFrom />
     </ReferencedFileSave>
     <ReferencedFileSave>
+      <Name>GlobalContent/BearContentPipeline.png</Name>
       <Properties>
         <PropertySave>
           <Name>UseContentPipeline</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Name>GlobalContent/BearContentPipeline.png</Name>
       <IsSharedStatic>true</IsSharedStatic>
       <HasPublicProperty>true</HasPublicProperty>
       <ProjectsToExcludeFrom />
@@ -21749,6 +21753,7 @@
       <ProjectsToExcludeFrom />
     </ReferencedFileSave>
     <ReferencedFileSave>
+      <Name>GlobalContent/LoadedOnlyWhenReferencedGlobal.mp3</Name>
       <Properties>
         <PropertySave>
           <Name>UseContentPipeline</Name>
@@ -21759,7 +21764,6 @@
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Name>GlobalContent/LoadedOnlyWhenReferencedGlobal.mp3</Name>
       <IsSharedStatic>true</IsSharedStatic>
       <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
       <DestroyOnUnload>false</DestroyOnUnload>
@@ -21787,32 +21791,33 @@
   <IgnoredDirectories />
   <CustomClasses>
     <CustomClassSave>
+      <Name>SpreadsheetClass</Name>
       <CsvFilesUsingThis>
         <string>GlobalContent/CsvFolder/SpreadsheetFile1.csv</string>
         <string>GlobalContent/CsvFolder/SpreadsheetFile2.csv</string>
       </CsvFilesUsingThis>
       <RequiredProperties />
-      <Name>SpreadsheetClass</Name>
       <GenerateCode>true</GenerateCode>
       <CustomNamespace />
     </CustomClassSave>
     <CustomClassSave>
+      <Name>SharedClass1</Name>
       <CsvFilesUsingThis>
         <string>GlobalContent/SharedClassGlobalCsv.csv</string>
         <string>Screens/CsvScreen/SharedClassScreenCsv.csv</string>
         <string>Entities/CsvEntity/SharedClassEntityCsv.csv</string>
       </CsvFilesUsingThis>
       <RequiredProperties />
-      <Name>SharedClass1</Name>
       <GenerateCode>true</GenerateCode>
     </CustomClassSave>
     <CustomClassSave>
+      <Name>ClassWithNoAssociatedCsvs</Name>
       <CsvFilesUsingThis />
       <RequiredProperties />
-      <Name>ClassWithNoAssociatedCsvs</Name>
       <GenerateCode>true</GenerateCode>
     </CustomClassSave>
     <CustomClassSave>
+      <Name>TileMapInfo</Name>
       <CsvFilesUsingThis>
         <string>Screens/CsvScreen/CustomCsvClassLoadedOnlyWhenReferenced.csv</string>
         <string>Screens/TiledLevelScreen/Tilesets/Level1Info.csv</string>
@@ -21836,44 +21841,43 @@
           <Member>EmbeddedAnimation</Member>
         </InstructionSave>
       </RequiredProperties>
-      <Name>TileMapInfo</Name>
       <GenerateCode>true</GenerateCode>
       <CustomNamespace />
     </CustomClassSave>
     <CustomClassSave>
+      <Name>CustomDataType</Name>
       <CsvFilesUsingThis>
         <string>Screens/CsvScreen/CsvUsingCustomDataFile.csv</string>
       </CsvFilesUsingThis>
       <RequiredProperties />
-      <Name>CustomDataType</Name>
       <GenerateCode>false</GenerateCode>
       <CustomNamespace>GlueTestProject.CustomDataTypes</CustomNamespace>
     </CustomClassSave>
     <CustomClassSave>
+      <Name>CustomClassForDupeTest</Name>
       <CsvFilesUsingThis>
         <string>Screens/CsvScreen/CsvCustomClass1.csv</string>
         <string>Screens/CsvScreen/CsvCustomClass2.csv</string>
       </CsvFilesUsingThis>
       <RequiredProperties />
-      <Name>CustomClassForDupeTest</Name>
       <GenerateCode>true</GenerateCode>
       <CustomNamespace />
     </CustomClassSave>
     <CustomClassSave>
+      <Name>PlatformerValues</Name>
       <CsvFilesUsingThis>
         <string>Entities/PlatformerPluginEntity/PlatformerValues.csv</string>
         <string>Entities/PlatformerPluginEntity2/PlatformerValues.csv</string>
       </CsvFilesUsingThis>
       <RequiredProperties />
-      <Name>PlatformerValues</Name>
       <GenerateCode>true</GenerateCode>
     </CustomClassSave>
     <CustomClassSave>
+      <Name>TopDownValues</Name>
       <CsvFilesUsingThis>
         <string>Entities/TopDownPluginEntity/TopDownValues.csv</string>
       </CsvFilesUsingThis>
       <RequiredProperties />
-      <Name>TopDownValues</Name>
       <GenerateCode>true</GenerateCode>
       <CustomNamespace />
     </CustomClassSave>
@@ -21881,6 +21885,8 @@
   <ApplyToFixedResolutionPlatforms>false</ApplyToFixedResolutionPlatforms>
   <ExternallyBuiltFileDirectory>../../</ExternallyBuiltFileDirectory>
   <FileVersion>2</FileVersion>
+  <ScreenReferences />
+  <EntityReferences />
   <PluginData>
     <RequiredPlugins>
       <PluginRequirement>
@@ -21892,8 +21898,8 @@
   </PluginData>
   <DisplaySettings>
     <Name>Custom</Name>
-    <Is2D>true</Is2D>
     <GenerateDisplayCode>true</GenerateDisplayCode>
+    <Is2D>true</Is2D>
     <ResolutionWidth>1000</ResolutionWidth>
     <ResolutionHeight>600</ResolutionHeight>
     <FixedAspectRatio>false</FixedAspectRatio>

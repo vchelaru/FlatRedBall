@@ -18,8 +18,6 @@ namespace FlatRedBall.AI.Pathfinding
 
             FillFromPredicate(nodeNetwork, layeredTileMap, predicate);
 
-            nodeNetwork.Visible = true;
-
             return nodeNetwork;
         }
 

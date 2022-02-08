@@ -309,7 +309,7 @@ namespace FlatRedBall.Glue.Elements
 
         public GlueElement GetElement(NamedObjectSave nos)
         {
-            if(nos.SourceType == SourceType.Entity)
+            if(nos?.SourceType == SourceType.Entity)
             {
                 return GetEntitySave(nos.SourceClassType);
             }
@@ -935,7 +935,7 @@ namespace FlatRedBall.Glue.Elements
 
         public NamedObjectSave GetNamedObjectFor(CustomVariable customVariable)
         {
-            if(!string.IsNullOrEmpty(customVariable.SourceObject))
+            if(!string.IsNullOrEmpty(customVariable?.SourceObject))
             {
                 var container = GetElementContaining(customVariable);
                 return container?.GetAllNamedObjectsRecurisvely()
