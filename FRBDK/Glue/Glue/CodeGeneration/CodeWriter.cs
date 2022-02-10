@@ -205,6 +205,7 @@ namespace FlatRedBallAddOns.Entities
 
         public static void GenerateCode(GlueElement element)
         {
+
             #region Prepare for generation
 
             if (element == null)

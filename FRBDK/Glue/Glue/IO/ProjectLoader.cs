@@ -399,9 +399,17 @@ namespace FlatRedBall.Glue.IO
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("RefreshGlobalContentDirectory");
 
-                SetInitWindowText("Refreshing global content dictionary...", initializationWindow);
-                ReferencedFileSaveCodeGenerator.RefreshGlobalContentDictionary();
-                GlobalContentCodeGenerator.SuppressGlobalContentDictionaryRefresh = true;
+
+                // February 8, 2022
+                // Why do we have this
+                // code here? It's already
+                // in the CodeWriter.GenerateCode
+                // Answer: Because we want to refresh
+                // it only once and then re-use that dictionary
+                // for the entire codegeneration for the sake of
+                // speed.
+
+
 
                 Section.EndContextAndTime();
 
@@ -495,10 +503,10 @@ namespace FlatRedBall.Glue.IO
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("GenerateAllCode");
                 SetInitWindowText("Generating all code", initializationWindow);
+                
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
                 Section.EndContextAndTime();
 
-                GlobalContentCodeGenerator.SuppressGlobalContentDictionaryRefresh = false;
             }
         }
 

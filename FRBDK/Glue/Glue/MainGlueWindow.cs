@@ -202,6 +202,29 @@ namespace Glue
             return toReturn;
         }
 
+        public async Task<T> Invoke<T>(Func<Task<T>> func)
+        {
+            T toReturn = default(T);
+
+            await this.Invoke(async () =>
+            {
+                try
+                {
+                    toReturn = await func();
+                }
+                catch (Exception e)
+                {
+                    if (!IsDisposed)
+                    {
+                        throw e;
+                    }
+                    // otherwise, we don't care, they're exiting
+                }
+            });
+
+            return toReturn;
+        }
+
         private void Form1_Load(object sender, EventArgs e)
         {
             try

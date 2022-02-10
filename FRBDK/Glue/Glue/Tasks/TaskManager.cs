@@ -149,6 +149,7 @@ namespace FlatRedBall.Glue.Managers
 
         #region Methods
 
+
         /// <summary>
         /// Adds a task which can execute simultaneously with other tasks
         /// </summary>
@@ -231,6 +232,16 @@ namespace FlatRedBall.Glue.Managers
             return glueTask;
         }
 
+        public GlueAsyncTask Add(Func<Task> func, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
+        {
+            var glueTask = new GlueAsyncTask();
+            glueTask.Func = func;
+            glueTask.DoOnUiThread = doOnUiThread;
+            glueTask.TaskExecutionPreference = executionPreference;
+            AddInternal(displayInfo, glueTask);
+            return glueTask;
+        }
+
         /// <summary>
         /// Adds an action to the TaskManager to be executed according to the argument TaskExecutionPreference. If the 
         /// callstack is already part of a task, then the action is executed immediately. The returned task will complete
@@ -253,8 +264,14 @@ namespace FlatRedBall.Glue.Managers
             return await WaitForTaskToFinish(glueTask);
         }
 
+        public async Task AddAsync(Func<Task> func, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
+        {
+            var glueTask = AddOrRunIfTasked(func, displayInfo, executionPreference, doOnUiThread);
+            await WaitForTaskToFinish(glueTask);
+        }
 
-        public async Task WaitForTaskToFinish(GlueTask glueTask)
+
+        public async Task WaitForTaskToFinish(GlueTaskBase glueTask)
         {
             if(glueTask == null)
             {
@@ -454,15 +471,19 @@ namespace FlatRedBall.Glue.Managers
             {
                 string taskDisplayInfo = glueTask.DisplayInfo;
                 RecordTaskHistory(taskDisplayInfo);
-                ThreadPool.QueueUserWorkItem(delegate
+                ThreadPool.QueueUserWorkItem(async (state) =>
                 {
+                    if(SyncTaskThreadId != null)
+                    {
+                        int m = 3;
+                    }
                     SyncTaskThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
                     // This can be uncommented to get information about the task history
                     // to try to improve performance
                     //this.taskHistory.Add(glueTask?.DisplayInfo);
                     glueTask.TimeStarted = DateTime.Now;
                     TaskAddedOrRemoved?.Invoke(TaskEvent.Started, glueTask);
-                    glueTask.DoAction();
+                    await glueTask.DoAction();
 
                     SyncTaskThreadId = null;
 
@@ -539,6 +560,27 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
+        public GlueAsyncTask AddOrRunIfTasked(Func<Task> func, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
+        {
+            if (IsInTask())
+            {
+                // we're in a task:
+                var result = func();
+                return new GlueAsyncTask()
+                {
+                    DisplayInfo = displayInfo,
+                    Func = func,
+                    TaskExecutionPreference = executionPreference,
+                    DoOnUiThread = doOnUiThread,
+                    Result = result
+                };
+            }
+            else
+            {
+                return TaskManager.Self.Add(func, displayInfo, executionPreference, doOnUiThread);
+            }
+        }
+
         public GlueTask<T> AddOrRunIfTasked<T>(Func<T> func, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
         {
             if (IsInTask())
@@ -557,6 +599,16 @@ namespace FlatRedBall.Glue.Managers
             else
             {
                 return TaskManager.Self.Add(func, displayInfo, executionPreference, doOnUiThread);
+            }
+        }
+
+        public void WarnIfNotInTask()
+        {
+            if(!IsInTask())
+            {
+                var stackTrace = Environment.StackTrace;
+
+                GlueCommands.Self.DoOnUiThread(() => GlueCommands.Self.PrintOutput("Code not in task:\n" + stackTrace));
             }
         }
 

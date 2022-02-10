@@ -176,6 +176,8 @@ namespace FlatRedBall.Glue.Parsing
 
         private static ICodeBlock GetGlobalContentFilesMethods()
         {
+            TaskManager.Self.WarnIfNotInTask();
+
             ICodeBlock codeBlock = new CodeDocument();
             var currentBlock = codeBlock;
             var classLevelBlock = currentBlock;

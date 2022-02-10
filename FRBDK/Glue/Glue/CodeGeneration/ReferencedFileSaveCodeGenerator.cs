@@ -38,6 +38,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public static void RefreshGlobalContentDictionary()
         {
+            Managers.TaskManager.Self.WarnIfNotInTask();
+
             // may be null depending on the thread
             if (GlobalContentFilesDictionary == null)
             {

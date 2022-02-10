@@ -108,6 +108,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         /// </summary>
         static void GenerateAllCodeSync  ()
         {
+            ReferencedFileSaveCodeGenerator.RefreshGlobalContentDictionary();
+            GlobalContentCodeGenerator.SuppressGlobalContentDictionaryRefresh = true;
             var glueProject = GlueState.CurrentGlueProject;
 
             CameraSetupCodeGenerator.UpdateOrAddCameraSetup();
@@ -192,6 +194,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 GlueCommands.GenerateCodeCommands.GenerateGame1();
             }
 
+            GlobalContentCodeGenerator.SuppressGlobalContentDictionaryRefresh = false;
 
         }
 
