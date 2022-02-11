@@ -286,10 +286,16 @@ namespace FlatRedBall.Glue.IO
                 {
                     if(!ProjectManager.WantsToCloseProject)
                     {
-                        TaskManager.Self.OnUiThread(async ()=>
-                        {
-                            await GlueCommands.Self.LoadProjectAsync(changedFile);
-                        });
+                        //TaskManager.Self.OnUiThread(()=>
+                        //{
+                        //    return GlueCommands.Self.LoadProjectAsync(changedFile);
+                        //});
+                        // Whenever files flush, there are times when there are multiple files. We want to add or move to end so the other files have a chance to load:
+                        TaskManager.Self.Add(
+                            () => GlueCommands.Self.LoadProjectAsync(changedFile),
+                            "Reloading Project due to changed file", 
+                            TaskExecutionPreference.AddOrMoveToEnd, 
+                            doOnUiThread: false);
                     }
                 }
                 else
