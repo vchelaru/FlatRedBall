@@ -41,7 +41,7 @@ namespace FlatRedBall.Glue.Tasks
 
         public override Task DoAction()
         {
-            if (DoOnUiThread)
+            if (DoOnUiThread && !TaskManager.Self.IsOnUiThread)
             {
                 global::Glue.MainGlueWindow.Self.Invoke(Action);
             }
@@ -60,9 +60,9 @@ namespace FlatRedBall.Glue.Tasks
 
         public override Task DoAction()
         {
-            if (DoOnUiThread)
+            if (DoOnUiThread && !TaskManager.Self.IsOnUiThread)
             {
-                Result = global::Glue.MainGlueWindow.Self.Invoke(() => Result = Func());
+                Result =  global::Glue.MainGlueWindow.Self.Invoke(() => Result = Func());
             }
             else
             {
@@ -80,7 +80,7 @@ namespace FlatRedBall.Glue.Tasks
 
         public override async Task DoAction()
         {
-            if (DoOnUiThread)
+            if (DoOnUiThread && !TaskManager.Self.IsOnUiThread)
             {
                 await global::Glue.MainGlueWindow.Self.Invoke(() => Func());
             }
@@ -98,7 +98,7 @@ namespace FlatRedBall.Glue.Tasks
 
         public override async Task DoAction()
         {
-            if (DoOnUiThread)
+            if (DoOnUiThread && !TaskManager.Self.IsOnUiThread)
             {
                 Result = await global::Glue.MainGlueWindow.Self.Invoke(() => Func());
             }

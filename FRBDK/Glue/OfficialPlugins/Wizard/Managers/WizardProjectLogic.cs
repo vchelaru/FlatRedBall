@@ -150,6 +150,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                 } while (didWait);
             });
 
+
             vm.Tasks = tasks;
 
             TaskItemViewModel currentTask = null;

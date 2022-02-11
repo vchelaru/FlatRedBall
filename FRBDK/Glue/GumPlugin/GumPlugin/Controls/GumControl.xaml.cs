@@ -198,5 +198,73 @@ namespace GumPlugin.Controls
             }
 
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            for(int i = 0; i < 5; i++)
+            {
+                TaskManager.Self.Add(() =>
+                {
+                    TaskManager.Self.WarnIfNotInTask();
+                    System.Threading.Thread.Sleep(1000);
+
+                    TaskManager.Self.AddOrRunIfTasked(() =>
+                    {
+                        System.Threading.Thread.Sleep(1000);
+
+                    }, "Inner");
+
+
+                }, "Doing stuff " + i + DateTime.Now, doOnUiThread: true);
+            }
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                TaskManager.Self.Add(async () =>
+                {
+                    TaskManager.Self.WarnIfNotInTask();
+                    await Task.Delay(1000);
+
+                    TaskManager.Self.AddOrRunIfTasked(() =>
+                    {
+                        System.Threading.Thread.Sleep(1000);
+
+                    }, "Inner");
+                }, "Doing async stuff " + i + DateTime.Now, doOnUiThread: true);
+            }
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+                TaskManager.Self.Add(() =>
+                {
+                    TaskManager.Self.WarnIfNotInTask();
+                    System.Threading.Thread.Sleep(1000);
+
+                    TaskManager.Self.AddOrRunIfTasked(() =>
+                    {
+                        System.Threading.Thread.Sleep(1000);
+
+                    }, "Inner");
+                }, "Single task at " + DateTime.Now, doOnUiThread: true);
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            TaskManager.Self.Add(async () =>
+            {
+                TaskManager.Self.WarnIfNotInTask();
+                await Task.Delay(1000);
+
+                TaskManager.Self.AddOrRunIfTasked(() =>
+                {
+                    System.Threading.Thread.Sleep(1000);
+
+                }, "Inner");
+            }, "Single async task " + DateTime.Now, doOnUiThread:true);
+        }
     }
 }

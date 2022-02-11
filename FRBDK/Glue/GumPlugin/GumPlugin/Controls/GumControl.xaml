@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GumPlugin.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="400" d:DesignWidth="310">
+             d:DesignHeight="500" d:DesignWidth="310">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel>
             <TextBlock HorizontalAlignment="Center" FontSize="16" Text="Gum Project Properties"></TextBlock>
@@ -73,6 +73,11 @@
                     </StackPanel>
                 </StackPanel>
             </GroupBox>
+
+            <Button Click="Button_Click_2">Normal Task</Button>
+            <Button Click="Button_Click">Normal Task (5)</Button>
+            <Button Click="Button_Click_3">Async Task</Button>
+            <Button Click="Button_Click_1">Async Task (5)</Button>
 
         </StackPanel>
     </ScrollViewer>

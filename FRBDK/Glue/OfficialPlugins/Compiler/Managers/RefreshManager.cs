@@ -811,8 +811,6 @@ namespace OfficialPlugins.Compiler.Managers
 
         #region Stop/Restart
 
-        const string stopRestartDetails =
-                   "Restarting due to Glue or file change";
 
         bool CanRestart => ViewModel.IsGenerateGlueControlManagerInGame1Checked &&
             (
@@ -844,12 +842,7 @@ namespace OfficialPlugins.Compiler.Managers
         {
             bool DoesTaskManagerHaveAnotherRestartTask()
             {
-                var actions = TaskManager.Self.SyncedActions;
-
-                var restartTask = actions.FirstOrDefault(item => item != actions[0] &&
-                    item.DisplayInfo == stopRestartDetails);
-
-                return restartTask != null;
+                return TaskManager.Self.HasRestartTask;
             }
 
             var runner = Runner.Self;

@@ -65,10 +65,10 @@ namespace Glue
 
         public static MainPanelControl MainWpfControl { get; private set; }
 
-        public static MainGlueWindow Self
-        {
-            get { return mSelf; }
-        }
+        public static MainGlueWindow Self => mSelf;
+        
+
+        public static int UiThreadId { get; private set; }
 
         //internal MainExplorerPlugin mainExplorerPlugin;
 
@@ -90,7 +90,7 @@ namespace Glue
         public MainGlueWindow()
         {
             mSelf = this;
-
+            UiThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
             InitializeComponent();
 
             CreateMenuStrip();
@@ -163,11 +163,20 @@ namespace Glue
 
         public void Invoke(Action action)
         {
+            var wasInTask = TaskManager.Self.IsInTask();
+
             this.Invoke((MethodInvoker)delegate
             {
                 try
                 {
-                    action();
+                    if(wasInTask)
+                    {
+                        RunOnUiThreadTasked(action);
+                    }
+                    else
+                    {
+                        action();
+                    }
                 }
                 catch(Exception e)
                 {
@@ -182,12 +191,21 @@ namespace Glue
 
         public T Invoke<T>(Func<T> func)
         {
+            var wasInTask = TaskManager.Self.IsInTask();
+
             T toReturn = default(T);
-            this.Invoke((MethodInvoker)delegate
+            base.Invoke((MethodInvoker)delegate
             {
                 try
                 {
-                    toReturn = func();
+                    if (wasInTask)
+                    {
+                        RunOnUiThreadTasked(func);
+                    }
+                    else
+                    {
+                        func();
+                    }
                 }
                 catch (Exception e)
                 {
@@ -202,15 +220,23 @@ namespace Glue
             return toReturn;
         }
 
-        public async Task<T> Invoke<T>(Func<Task<T>> func)
+        public Task Invoke<T>(Func<Task> func)
         {
-            T toReturn = default(T);
+            var wasInTask = TaskManager.Self.IsInTask();
+            Task toReturn = Task.CompletedTask;
 
-            await this.Invoke(async () =>
+            base.Invoke((MethodInvoker)delegate
             {
                 try
                 {
-                    toReturn = await func();
+                    if (wasInTask)
+                    {
+                        toReturn = RunOnUiThreadTasked(func);
+                    }
+                    else
+                    {
+                        toReturn = func();
+                    }
                 }
                 catch (Exception e)
                 {
@@ -224,6 +250,41 @@ namespace Glue
 
             return toReturn;
         }
+
+        public Task<T> Invoke<T>(Func<Task<T>> func)
+        {
+            var wasInTask = TaskManager.Self.IsInTask();
+            Task<T> toReturn = Task.FromResult(default(T));
+
+            base.Invoke((MethodInvoker)delegate
+            {
+                try
+                {
+                    if (wasInTask)
+                    {
+                        toReturn = RunOnUiThreadTasked(func);
+                    }
+                    else
+                    {
+                        toReturn = func();
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (!IsDisposed)
+                    {
+                        throw e;
+                    }
+                    // otherwise, we don't care, they're exiting
+                }
+            });
+
+            return toReturn;
+        }
+
+        private void RunOnUiThreadTasked(Action action) => action();
+        private T RunOnUiThreadTasked<T>(Func<T> action) => action();
+        private Task<T> RunOnUiThreadTasked<T>(Func<Task<T>> action) => action();
 
         private void Form1_Load(object sender, EventArgs e)
         {

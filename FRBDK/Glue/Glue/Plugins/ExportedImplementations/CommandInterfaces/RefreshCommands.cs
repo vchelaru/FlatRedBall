@@ -27,7 +27,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void RefreshTreeNodes()
         {
-            if(TaskManager.Self.IsInTask())
+            if(!TaskManager.Self.IsOnUiThread)
             {
                 TaskManager.Self.OnUiThread(RefreshTreeNodes);
             }

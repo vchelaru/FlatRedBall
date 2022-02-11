@@ -1169,10 +1169,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public void AddNamedObjectTo(NamedObjectSave newNos, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true,
              bool performSaveAndGenerateCode = true, bool updateUi = true)
         {
-            if(TaskManager.Self.IsInTask() == false)
-            {
-                int m = 3;
-            }
             var ati = newNos.GetAssetTypeInfo();
 
             if (listToAddTo != null)
