@@ -44,6 +44,7 @@ namespace FlatRedBall.Glue.Managers
             get => mSyncedActions.ToArray();
         }
         static object mSyncLockObject = new object();
+        static object mSyncLockObjectExecute = new object();
 
 
         List<GlueTaskBase> mActiveAsyncTasks = new List<GlueTaskBase>();
@@ -86,7 +87,7 @@ namespace FlatRedBall.Glue.Managers
             {
                 string toReturn = "";
 
-                if(IsTaskProcessingEnabled == false)
+                if (IsTaskProcessingEnabled == false)
                 {
                     toReturn += "Task processing disabled, next task when re-enabled:\n";
                 }
@@ -97,7 +98,7 @@ namespace FlatRedBall.Glue.Managers
                     // so just handle it with a try catch:
                     try
                     {
-                        foreach(var item in mActiveAsyncTasks)
+                        foreach (var item in mActiveAsyncTasks)
                         {
                             toReturn += item.DisplayInfo + "\n";
                         }
@@ -137,7 +138,7 @@ namespace FlatRedBall.Glue.Managers
             {
                 bool turnedOn = value == true && isTaskProcessingEnabled == false;
                 isTaskProcessingEnabled = value;
-                if(turnedOn)
+                if (turnedOn)
                 {
                     ProcessNextSync();
 
@@ -160,7 +161,7 @@ namespace FlatRedBall.Glue.Managers
         {
 
             ThreadPool.QueueUserWorkItem(
-                (arg)=>ExecuteActionSync(action, details));
+                (arg) => ExecuteActionSync(action, details));
         }
 
         void ExecuteActionSync(Action action, string details)
@@ -273,7 +274,7 @@ namespace FlatRedBall.Glue.Managers
 
         public async Task WaitForTaskToFinish(GlueTaskBase glueTask)
         {
-            if(glueTask == null)
+            if (glueTask == null)
             {
                 return;
             }
@@ -281,9 +282,9 @@ namespace FlatRedBall.Glue.Managers
             {
                 bool IsTaskDone()
                 {
-                    lock(mActiveAsyncTasks)
+                    lock (mActiveAsyncTasks)
                     {
-                        if(mSyncedActions.Contains(glueTask) || mActiveAsyncTasks.Contains(glueTask))
+                        if (mSyncedActions.Contains(glueTask) || mActiveAsyncTasks.Contains(glueTask))
                         {
                             return false;
                         }
@@ -292,7 +293,7 @@ namespace FlatRedBall.Glue.Managers
                     }
                 }
 
-                while(!IsTaskDone())
+                while (!IsTaskDone())
                 {
                     const int waitDelay = 30;
                     await Task.Delay(waitDelay);
@@ -345,9 +346,9 @@ namespace FlatRedBall.Glue.Managers
                     {
                         // don't insert at 0, finish the current task, but insert at 1:
                         var wasAdded = false;
-                        for(int i = 1; i < mSyncedActions.Count; i++)
+                        for (int i = 1; i < mSyncedActions.Count; i++)
                         {
-                            if(mSyncedActions[i].TaskExecutionPreference != TaskExecutionPreference.Asap)
+                            if (mSyncedActions[i].TaskExecutionPreference != TaskExecutionPreference.Asap)
                             {
                                 mSyncedActions.Insert(i, glueTask);
                                 wasAdded = true;
@@ -355,7 +356,7 @@ namespace FlatRedBall.Glue.Managers
                             }
                         }
 
-                        if(!wasAdded)
+                        if (!wasAdded)
                         {
                             mSyncedActions.Add(glueTask);
                         }
@@ -471,43 +472,44 @@ namespace FlatRedBall.Glue.Managers
             {
                 string taskDisplayInfo = glueTask.DisplayInfo;
                 RecordTaskHistory(taskDisplayInfo);
-                ThreadPool.QueueUserWorkItem(async (state) =>
+                ThreadPool.QueueUserWorkItem((state) =>
                 {
-                    if(SyncTaskThreadId != null)
-                    {
-                        int m = 3;
-                    }
-                    SyncTaskThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
-                    // This can be uncommented to get information about the task history
-                    // to try to improve performance
-                    //this.taskHistory.Add(glueTask?.DisplayInfo);
-                    glueTask.TimeStarted = DateTime.Now;
-                    TaskAddedOrRemoved?.Invoke(TaskEvent.Started, glueTask);
-                    await glueTask.DoAction();
-
-                    SyncTaskThreadId = null;
-
-                    glueTask.TimeEnded = DateTime.Now;
                     bool shouldProcess = false;
-
-                    lock (mSyncLockObject)
+                    lock (mSyncLockObjectExecute)
                     {
-                        // The task may have already been removed
-                        if (mSyncedActions.Contains(glueTask))
+                        if (SyncTaskThreadId != null)
                         {
-                            mSyncedActions.Remove(glueTask);
+                            int m = 3;
                         }
+                        SyncTaskThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+                        // This can be uncommented to get information about the task history
+                        // to try to improve performance
+                        //this.taskHistory.Add(glueTask?.DisplayInfo);
+                        glueTask.TimeStarted = DateTime.Now;
+                        TaskAddedOrRemoved?.Invoke(TaskEvent.Started, glueTask);
+                        glueTask.DoAction();
 
-                        shouldProcess = mSyncedActions.Count > 0 && IsTaskProcessingEnabled;
+                        SyncTaskThreadId = null;
+
+                        glueTask.TimeEnded = DateTime.Now;
+
+                        lock (mSyncLockObject)
+                        {
+                            // The task may have already been removed
+                            if (mSyncedActions.Contains(glueTask))
+                            {
+                                mSyncedActions.Remove(glueTask);
+                            }
+
+                            shouldProcess = mSyncedActions.Count > 0 && IsTaskProcessingEnabled;
+                        }
+                        TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, glueTask);
                     }
-                    TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, glueTask);
-
 
                     if (shouldProcess)
                     {
                         ProcessNextSync();
                     }
-
                 });
                 TaskAddedOrRemoved?.Invoke(TaskEvent.Queued, glueTask);
 
@@ -517,7 +519,7 @@ namespace FlatRedBall.Glue.Managers
         public void RecordTaskHistory(string taskDisplayInfo)
         {
             var projectName = GlueState.Self.CurrentMainProject?.FullFileName;
-            
+
             var taskDetail = $"{DateTime.Now.ToString("hh:mm:ss tt")} {projectName} {taskDisplayInfo}";
             taskHistory.Add(taskDetail);
 
@@ -604,7 +606,7 @@ namespace FlatRedBall.Glue.Managers
 
         public void WarnIfNotInTask()
         {
-            if(!IsInTask())
+            if (!IsInTask())
             {
                 var stackTrace = Environment.StackTrace;
 
