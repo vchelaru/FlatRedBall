@@ -178,6 +178,10 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                     DragDrop.DoDragDrop(e.OriginalSource as DependencyObject, dragData, DragDropEffects.Move);
                 }
             }
+            if(!isMouseButtonPressed)
+            {
+                nodePushed = null;
+            }
         }
 
         private void MainTreeView_DragEnter(object sender, DragEventArgs e)
