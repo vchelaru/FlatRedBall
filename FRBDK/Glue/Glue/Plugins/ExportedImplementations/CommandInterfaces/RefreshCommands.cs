@@ -99,7 +99,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void RefreshSelection()
         {
-            if (!ProjectManager.WantsToClose)
+            if (!ProjectManager.WantsToCloseProject)
             {
                 MainGlueWindow.Self.BeginInvoke(new EventHandler(RefreshSelectionInternal));
             }

@@ -137,7 +137,7 @@ namespace FlatRedBall.Glue
             get { return mGameClass; }
         }
 
-        public static bool WantsToClose { get; set; }
+        public static bool WantsToCloseProject { get; set; }
 
 
 

@@ -118,7 +118,7 @@ namespace GlueFormsCore.Controls
             TaskManager.Self.RecordTaskHistory($"--Received Close Project Command --");
 
             // Let's set this to true so all tasks can end
-            ProjectManager.WantsToClose = true;
+            ProjectManager.WantsToCloseProject = true;
 
             long msWaited = 0;
             // But give them a chance to end...
@@ -185,7 +185,7 @@ namespace GlueFormsCore.Controls
             MainGlueWindow.Self.PropertyGrid.SelectedObject = null;
 
             GlueCommands.Self.DoOnUiThread(() => MainGlueWindow.Self.Text = "FlatRedBall");
-            ProjectManager.WantsToClose = false;
+            ProjectManager.WantsToCloseProject = false;
             TaskManager.Self.RecordTaskHistory($"--Ending Close Project Command --");
 
             if(didCreateOwnInitWindow)

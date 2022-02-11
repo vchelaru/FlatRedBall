@@ -1301,7 +1301,7 @@ namespace FlatRedBall.Glue.Plugins
         #endregion
         public static void ReceiveOutput(string output)
         {
-            if (ProjectManager.WantsToClose == false)
+            if (ProjectManager.WantsToCloseProject == false)
             {
                 var time = System.DateTime.Now;
                 var msDigit = (time.Millisecond / 100).ToString();

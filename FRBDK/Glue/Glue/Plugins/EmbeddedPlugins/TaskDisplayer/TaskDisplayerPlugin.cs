@@ -31,7 +31,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
 
         private void HandlePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if(!ProjectManager.WantsToClose)
+            if(!ProjectManager.WantsToCloseProject)
             {
                 TaskManager.Self.OnUiThread(() =>
                     {

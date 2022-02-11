@@ -43,7 +43,7 @@ namespace FlatRedBall.Glue.IO
                     bool isGlueProjectOrElementFile = GetIfIsGlueProjectOrElementFile(changedFile, projectFileName);
                     if (!handled && isGlueProjectOrElementFile)
                     {
-                        if (!ProjectManager.WantsToClose)
+                        if (!ProjectManager.WantsToCloseProject)
                         {
                             await ReloadGlux();
                         }
@@ -284,10 +284,13 @@ namespace FlatRedBall.Glue.IO
             {
                 if (project == ProjectManager.ProjectBase)
                 {
-                    TaskManager.Self.OnUiThread(async ()=>
+                    if(!ProjectManager.WantsToCloseProject)
                     {
-                        await GlueCommands.Self.LoadProjectAsync(changedFile);
-                    });
+                        TaskManager.Self.OnUiThread(async ()=>
+                        {
+                            await GlueCommands.Self.LoadProjectAsync(changedFile);
+                        });
+                    }
                 }
                 else
                 {

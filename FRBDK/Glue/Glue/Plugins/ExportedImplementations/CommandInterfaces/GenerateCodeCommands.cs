@@ -120,7 +120,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 #region Check for exiting the function becuase Glue is closing
 
-                if (ProjectManager.WantsToClose)
+                if (ProjectManager.WantsToCloseProject)
                 {
                     PluginManager.ReceiveOutput("Stopping generation because the project is closing");
                     return;
@@ -150,7 +150,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 #region Check for exiting the function becuase Glue is closing
 
-                if (ProjectManager.WantsToClose)
+                if (ProjectManager.WantsToCloseProject)
                 {
                     PluginManager.ReceiveOutput("Stopping generation because the project is closing");
                     return;
@@ -163,7 +163,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             #region Check for exiting the function becuase Glue is closing
 
-            if (ProjectManager.WantsToClose)
+            if (ProjectManager.WantsToCloseProject)
             {
                 PluginManager.ReceiveOutput("Stopping generation because the project is closing");
                 return;
@@ -175,7 +175,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             #region Check for exiting the function becuase Glue is closing
 
-            if (ProjectManager.WantsToClose)
+            if (ProjectManager.WantsToCloseProject)
             {
                 PluginManager.ReceiveOutput("Stopping generation because the project is closing");
                 return;

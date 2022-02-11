@@ -180,7 +180,7 @@ namespace Glue
                 }
                 catch(Exception e)
                 {
-                    if(!IsDisposed && !ProjectManager.WantsToClose)
+                    if(!IsDisposed && !ProjectManager.WantsToCloseProject)
                     {
                         throw e;
                     }
@@ -610,7 +610,7 @@ namespace Glue
 
         private async void CloseAfterTasks()
         {
-            ProjectManager.WantsToClose = true;
+            ProjectManager.WantsToCloseProject = true;
             WantsToExit = true;
             //MainPanelSplitContainer.ReactToFormClosing();
             
