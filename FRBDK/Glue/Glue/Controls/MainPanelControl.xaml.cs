@@ -135,7 +135,9 @@ namespace GlueFormsCore.Controls
                     (TaskManager.Self.CurrentTaskDescription.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTaskDescription.EndsWith(".csproj")) ||
                     (TaskManager.Self.CurrentTaskDescription.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTaskDescription.EndsWith("." + GlueProjectSave.ScreenExtension)) ||
                     (TaskManager.Self.CurrentTaskDescription.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTaskDescription.EndsWith("." + GlueProjectSave.EntityExtension)) ||
-                    TaskManager.Self.CurrentTaskDescription.StartsWith("Reloading glux due to file change on disk");
+                    TaskManager.Self.CurrentTaskDescription.StartsWith("Reloading glux due to file change on disk") ||
+                    TaskManager.Self.CurrentTaskDescription.StartsWith("Reloading Project due to changed file") ||
+                    (TaskManager.Self.IsInTask() && TaskManager.Self.TaskCount == 1);
 
                 if (canContinue)
                 {
