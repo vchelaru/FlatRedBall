@@ -20,18 +20,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
     {
         #region Fields
 
-        static GlueCommands mSelf;
-        public static GlueCommands Self
-        {
-            get
-            {
-                if (mSelf == null)
-                {
-                    mSelf = new GlueCommands();
-                }
-                return mSelf;
-            }
-        }
+        public static GlueCommands Self { get; private set; } = new GlueCommands();
 
         #endregion
 
@@ -118,7 +107,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public GlueCommands()
         {
-            mSelf = this;
             GenerateCodeCommands = new GenerateCodeCommands();
             GluxCommands = new GluxCommands();
             ProjectCommands = new ProjectCommands();

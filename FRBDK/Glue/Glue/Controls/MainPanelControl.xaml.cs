@@ -121,19 +121,21 @@ namespace GlueFormsCore.Controls
             ProjectManager.WantsToCloseProject = true;
 
             long msWaited = 0;
+            const int maxMsToWait = 60 * 1000;
+
             // But give them a chance to end...
             while (TaskManager.Self.AreAllAsyncTasksDone == false)
             {
                 // We want to wait until all tasks are done, but
                 // if the task is to reload, we can continue or else
                 // we'll have a deadlock
-                var canContinue = TaskManager.Self.CurrentTask == UpdateReactor.ReloadingProjectDescription ||
-                    (TaskManager.Self.CurrentTask.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTask.EndsWith(".glux")) ||
-                    (TaskManager.Self.CurrentTask.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTask.EndsWith(".gluj")) ||
-                    (TaskManager.Self.CurrentTask.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTask.EndsWith(".csproj")) ||
-                    (TaskManager.Self.CurrentTask.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTask.EndsWith("." + GlueProjectSave.ScreenExtension)) ||
-                    (TaskManager.Self.CurrentTask.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTask.EndsWith("." + GlueProjectSave.EntityExtension)) ||
-                    TaskManager.Self.CurrentTask.StartsWith("Reloading glux due to file change on disk");
+                var canContinue = TaskManager.Self.CurrentTaskDescription == UpdateReactor.ReloadingProjectDescription ||
+                    (TaskManager.Self.CurrentTaskDescription.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTaskDescription.EndsWith(".glux")) ||
+                    (TaskManager.Self.CurrentTaskDescription.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTaskDescription.EndsWith(".gluj")) ||
+                    (TaskManager.Self.CurrentTaskDescription.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTaskDescription.EndsWith(".csproj")) ||
+                    (TaskManager.Self.CurrentTaskDescription.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTaskDescription.EndsWith("." + GlueProjectSave.ScreenExtension)) ||
+                    (TaskManager.Self.CurrentTaskDescription.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTaskDescription.EndsWith("." + GlueProjectSave.EntityExtension)) ||
+                    TaskManager.Self.CurrentTaskDescription.StartsWith("Reloading glux due to file change on disk");
 
                 if (canContinue)
                 {
@@ -151,11 +153,10 @@ namespace GlueFormsCore.Controls
                     if (initWindow != null)
                     {
                         initWindow.Message = "Closing Project";
-                        initWindow.SubMessage = $"Waiting for {TaskManager.Self.TaskCount} tasks to finish...\nCurrent Task: {TaskManager.Self.CurrentTask}";
+                        initWindow.SubMessage = $"Waiting for {TaskManager.Self.TaskCount} tasks to finish...\nCurrent Task: {TaskManager.Self.CurrentTaskDescription}";
 
                     }
 
-                    const int maxMsToWait = 50 * 1000;
 
                     // don't wait forever. This is mainly so we wait for any simultaneous tasks.
                     // There shouldn't be any but just in case Vic messed up the code...

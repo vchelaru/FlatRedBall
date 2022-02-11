@@ -18,7 +18,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
             }
         }
 
-        public string CurrentTaskText => TaskManager.Self.CurrentTask;
+        public string CurrentTaskText => TaskManager.Self.CurrentTaskDescription;
 
         public bool LogTaskDetailsToOutput
         {

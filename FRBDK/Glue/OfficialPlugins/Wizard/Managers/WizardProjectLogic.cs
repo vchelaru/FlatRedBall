@@ -90,6 +90,8 @@ namespace OfficialPluginsCore.Wizard.Managers
                 {
                     var playerEntity = await HandleAddPlayerEntity(vm);
 
+
+
                     TaskManager.Self.AddOrRunIfTasked(() => HandleAddPlayerInstance(vm, gameScreen, solidCollisionNos, cloudCollisionNos, playerEntity), "Adding player instance");
                 });
             }
@@ -416,6 +418,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                 playerEntity = await CreatePlayerEntityFromOptions(vm);
             }
 
+
             if(playerEntity != null)
             {
                 // If this is null, the download failed.
@@ -496,11 +499,18 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             addEntityVm.IsSpriteChecked = vm.AddPlayerSprite;
 
-            var task = TaskManager.Self.AddOrRunIfTasked(() => 
-                playerEntity = GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(addEntityVm),
+            await TaskManager.Self.AddAsync(() =>
+            {
+                playerEntity = GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(addEntityVm);
+            },
                 "Adding Player Entity");
 
-            await TaskManager.Self.WaitForTaskToFinish(task);
+
+
+            if (playerEntity == null)
+            {
+                int m = 3;
+            }
 
             return playerEntity;
         }

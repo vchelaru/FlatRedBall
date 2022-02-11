@@ -44,57 +44,11 @@ namespace FlatRedBall.Glue.Managers
 
 
         readonly BlockingCollection<KeyValuePair<int, GlueTaskBase>> taskQueue = new BlockingCollection<KeyValuePair<int, GlueTaskBase>>(new ConcurrentPriorityQueue<int, GlueTaskBase>());
-        public TaskManager()
-        {
-            new Thread(Loop)
-            {
-                IsBackground = true
-            }.Start();
-        }
 
         const string RestartTaskDisplay = "Restarting due to Glue or file change";
         public bool HasRestartTask => taskQueue.Any(item => item.Value.DisplayInfo == RestartTaskDisplay);
 
 
-        async void Loop()
-        {
-            SyncTaskThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
-
-            foreach (var item in taskQueue.GetConsumingEnumerable())
-            {
-                try
-                {
-                    if(isTaskProcessingEnabled)
-                    {
-                        TaskAddedOrRemoved?.Invoke(TaskEvent.Started, item.Value);
-                        await item.Value.DoAction();
-                        TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, item.Value);
-
-                    }
-                    else
-                    {
-                        AddInternal(item.Value.DisplayInfo, item.Value);
-                        System.Threading.Thread.Sleep(50);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    GlueCommands.Self.PrintError(ex.ToString());
-                }
-            }
-        }
-
-        int Load(string filename, int priority)
-        {
-            Thread.Sleep(1000);
-            return priority;
-        }
-
-        public void Dispose()
-        {
-            taskQueue.CompleteAdding();
-            taskQueue.Dispose();
-        }
 
 
 
@@ -102,17 +56,9 @@ namespace FlatRedBall.Glue.Managers
 
         #endregion
 
-        public event Action<TaskEvent, GlueTaskBase> TaskAddedOrRemoved;
-
         #region Properties
 
-        public int SyncTaskTasks
-        {
-            get
-            {
-                return taskQueue.Count;
-            }
-        }
+        GlueTaskBase CurrentlyRunningTask;
 
         public bool AreAllAsyncTasksDone => TaskCount == 0;
 
@@ -122,12 +68,17 @@ namespace FlatRedBall.Glue.Managers
             {
                 lock (mActiveAsyncTasks)
                 {
-                    return mActiveAsyncTasks.Count + asyncTasks + taskQueue.Count;
+                    var toReturn = mActiveAsyncTasks.Count + asyncTasks + taskQueue.Count;
+                    if(CurrentlyRunningTask != null)
+                    {
+                        toReturn++;
+                    }
+                    return toReturn;
                 }
             }
         }
 
-        public string CurrentTask
+        public string CurrentTaskDescription
         {
             get
             {
@@ -168,6 +119,11 @@ namespace FlatRedBall.Glue.Managers
                     }
                 }
 
+                var currentlyRunning = CurrentlyRunningTask;
+                if(currentlyRunning != null)
+                {
+                    return currentlyRunning.DisplayInfo;
+                }
 
                 return toReturn;
             }
@@ -194,9 +150,64 @@ namespace FlatRedBall.Glue.Managers
 
         #endregion
 
-        #region Methods
+        #region Events
 
+        public event Action<TaskEvent, GlueTaskBase> TaskAddedOrRemoved;
 
+        #endregion
+
+        public TaskManager()
+        {
+            new Thread(Loop)
+            {
+                IsBackground = true
+            }.Start();
+        }
+
+        async void Loop()
+        {
+            SyncTaskThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+
+            foreach (var item in taskQueue.GetConsumingEnumerable())
+            {
+                try
+                {
+                    if(isTaskProcessingEnabled)
+                    {
+                        await RunTask(item.Value, markAsCurrent:true);
+
+                    }
+                    else
+                    {
+                        AddInternal(item.Value.DisplayInfo, item.Value);
+                        System.Threading.Thread.Sleep(50);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    GlueCommands.Self.PrintError(ex.ToString());
+                }
+            }
+        }
+
+        private async Task RunTask(GlueTaskBase task, bool markAsCurrent)
+        {
+            if(markAsCurrent) CurrentlyRunningTask = task;
+            TaskAddedOrRemoved?.Invoke(TaskEvent.Started, task);
+            await task.DoAction();
+            // Set it to null before raising the event so that the TaskCount uses a null object.
+            if (markAsCurrent) CurrentlyRunningTask = null;
+            TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, task);
+
+        }
+
+        public void Dispose()
+        {
+            taskQueue.CompleteAdding();
+            taskQueue.Dispose();
+        }
+
+        #region Add Tasks
         /// <summary>
         /// Adds a task which can execute simultaneously with other tasks
         /// </summary>
@@ -209,48 +220,6 @@ namespace FlatRedBall.Glue.Managers
             ThreadPool.QueueUserWorkItem(
                 (arg)=>ExecuteActionSync(action, details));
         }
-
-        void ExecuteActionSync(Action action, string details)
-        {
-            var glueTask = new GlueTask
-            {
-                Action = action,
-                DisplayInfo = details
-            };
-
-            lock (mActiveAsyncTasks)
-            {
-                mActiveAsyncTasks.Add(glueTask);
-            }
-
-            TaskAddedOrRemoved?.Invoke(TaskEvent.Queued, glueTask);
-
-            ((Action)action)();
-
-            lock (mActiveAsyncTasks)
-            {
-                mActiveAsyncTasks.Remove(glueTask);
-            }
-            asyncTasks--;
-
-            // not sure why but this can go into the negative...
-            asyncTasks = System.Math.Max(asyncTasks, 0);
-
-            TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, glueTask);
-        }
-
-
-        public async Task<bool> WaitForAllTasksFinished()
-        {
-            var didWait = false;
-            while (!AreAllAsyncTasksDone)
-            {
-                didWait = true;
-                await Task.Delay(200);
-            }
-            return didWait;
-        }
-
 
         [Obsolete("Use Add, which allows specifying the priority")]
         /// <summary>
@@ -318,6 +287,110 @@ namespace FlatRedBall.Glue.Managers
         }
 
 
+        public GlueTask AddOrRunIfTasked(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
+        {
+            if (IsInTask())
+            {
+                // we're in a task:
+                var task = new GlueTask()
+                {
+                    DisplayInfo = displayInfo,
+                    Action = action,
+                    TaskExecutionPreference = executionPreference,
+                    DoOnUiThread = doOnUiThread
+                };
+
+                RunTask(task, markAsCurrent:false).Wait();
+
+                return task;
+            }
+            else
+            {
+                return TaskManager.Self.Add(action, displayInfo, executionPreference, doOnUiThread);
+            }
+        }
+
+        public async Task<GlueAsyncTask> AddOrRunIfTasked(Func<Task> func, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
+        {
+            if (IsInTask())
+            {
+                // we're in a task:
+                var task = new GlueAsyncTask()
+                {
+                    DisplayInfo = displayInfo,
+                    Func = func,
+                    TaskExecutionPreference = executionPreference,
+                    DoOnUiThread = doOnUiThread
+                };
+
+                await RunTask(task, markAsCurrent: false);
+
+                return task;
+            }
+            else
+            {
+                return TaskManager.Self.Add(func, displayInfo, executionPreference, doOnUiThread);
+            }
+        }
+
+        public GlueTask<T> AddOrRunIfTasked<T>(Func<T> func, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
+        {
+            if (IsInTask())
+            {
+                // we're in a task:
+                var task = new GlueTask<T>()
+                {
+                    DisplayInfo = displayInfo,
+                    Func = func,
+                    TaskExecutionPreference = executionPreference,
+                    DoOnUiThread = doOnUiThread,
+                };
+
+                RunTask(task, markAsCurrent: false).Wait();
+
+                return task;
+            }
+            else
+            {
+                return TaskManager.Self.Add(func, displayInfo, executionPreference, doOnUiThread);
+            }
+        }
+
+        private void AddInternal(string displayInfo, GlueTaskBase glueTask)
+        {
+            glueTask.DisplayInfo = displayInfo;
+
+            TaskAddedOrRemoved?.Invoke(TaskEvent.Queued, glueTask);
+
+            taskQueue.Add(new KeyValuePair<int, GlueTaskBase>((int)glueTask.TaskExecutionPreference, glueTask));
+        }
+
+
+        #endregion
+
+        #region Wait Tasks
+
+        public async Task<bool> WaitForAllTasksFinished()
+        {
+            var didWait = false;
+            while (!AreAllAsyncTasksDone)
+            {
+                didWait = true;
+                await Task.Delay(200);
+            }
+            return didWait;
+        }
+
+
+        bool DoesTaskNeedToFinish(GlueTaskBase glueTask)
+        {
+            return
+                taskQueue.Any(item => item.Value == glueTask) ||
+                mActiveAsyncTasks.Contains(glueTask) ||
+                CurrentlyRunningTask == glueTask;
+
+        }
+
         public async Task WaitForTaskToFinish(GlueTaskBase glueTask)
         {
             if(glueTask == null)
@@ -330,7 +403,7 @@ namespace FlatRedBall.Glue.Managers
                 {
                     lock(mActiveAsyncTasks)
                     {
-                        if(taskQueue.Any(item => item.Value == glueTask) || mActiveAsyncTasks.Contains(glueTask))
+                        if(DoesTaskNeedToFinish(glueTask))
                         {
                             return false;
                         }
@@ -347,6 +420,7 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
+
         public async Task<T> WaitForTaskToFinish<T>(GlueTask<T> glueTask)
         {
             if (glueTask == null)
@@ -359,7 +433,7 @@ namespace FlatRedBall.Glue.Managers
                 {
                     lock (mActiveAsyncTasks)
                     {
-                        if (taskQueue.Any(item => item.Value == glueTask) || mActiveAsyncTasks.Contains(glueTask))
+                        if (DoesTaskNeedToFinish(glueTask))
                         {
                             return false;
                         }
@@ -376,14 +450,40 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        private void AddInternal(string displayInfo, GlueTaskBase glueTask)
+        #endregion
+
+        #region Etc Methods
+
+
+        void ExecuteActionSync(Action action, string details)
         {
-            glueTask.DisplayInfo = displayInfo;
+            var glueTask = new GlueTask
+            {
+                Action = action,
+                DisplayInfo = details
+            };
+
+            lock (mActiveAsyncTasks)
+            {
+                mActiveAsyncTasks.Add(glueTask);
+            }
 
             TaskAddedOrRemoved?.Invoke(TaskEvent.Queued, glueTask);
 
-            taskQueue.Add(new KeyValuePair<int, GlueTaskBase>((int)glueTask.TaskExecutionPreference, glueTask));
+            ((Action)action)();
+
+            lock (mActiveAsyncTasks)
+            {
+                mActiveAsyncTasks.Remove(glueTask);
+            }
+            asyncTasks--;
+
+            // not sure why but this can go into the negative...
+            asyncTasks = System.Math.Max(asyncTasks, 0);
+
+            TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, glueTask);
         }
+
 
         public void RecordTaskHistory(string taskDisplayInfo)
         {
@@ -443,81 +543,6 @@ namespace FlatRedBall.Glue.Managers
                 }
             }
             return false;
-        }
-
-        public GlueTask AddOrRunIfTasked(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
-        {
-            if (IsInTask())
-            {
-                // we're in a task:
-                var task =  new GlueTask()
-                {
-                    DisplayInfo = displayInfo,
-                    Action = action,
-                    TaskExecutionPreference = executionPreference,
-                    DoOnUiThread = doOnUiThread
-                };
-                TaskAddedOrRemoved?.Invoke(TaskEvent.Started, task);
-
-                task.DoAction();
-                TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, task);
-
-                return task;
-            }
-            else
-            {
-                return TaskManager.Self.Add(action, displayInfo, executionPreference, doOnUiThread);
-            }
-        }
-
-        public async Task<GlueAsyncTask> AddOrRunIfTasked(Func<Task> func, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
-        {
-            if (IsInTask())
-            {
-                // we're in a task:
-                var task = new GlueAsyncTask()
-                {
-                    DisplayInfo = displayInfo,
-                    Func = func,
-                    TaskExecutionPreference = executionPreference,
-                    DoOnUiThread = doOnUiThread
-                };
-                TaskAddedOrRemoved?.Invoke(TaskEvent.Started, task);
-
-                await task.DoAction();
-                TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, task);
-
-                return task;
-            }
-            else
-            {
-                return TaskManager.Self.Add(func, displayInfo, executionPreference, doOnUiThread);
-            }
-        }
-
-        public GlueTask<T> AddOrRunIfTasked<T>(Func<T> func, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
-        {
-            if (IsInTask())
-            {
-                // we're in a task:
-                var task = new GlueTask<T>()
-                {
-                    DisplayInfo = displayInfo,
-                    Func = func,
-                    TaskExecutionPreference = executionPreference,
-                    DoOnUiThread = doOnUiThread,
-                };
-                TaskAddedOrRemoved?.Invoke(TaskEvent.Started, task);
-
-                task.DoAction();
-                TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, task);
-
-                return task;
-            }
-            else
-            {
-                return TaskManager.Self.Add(func, displayInfo, executionPreference, doOnUiThread);
-            }
         }
 
         public void WarnIfNotInTask()
