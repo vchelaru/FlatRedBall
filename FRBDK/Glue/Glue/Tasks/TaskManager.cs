@@ -62,14 +62,24 @@ namespace FlatRedBall.Glue.Managers
 
             foreach (var item in taskQueue.GetConsumingEnumerable())
             {
-                if(isTaskProcessingEnabled)
+                try
                 {
-                    await item.Value.DoAction();
+                    if(isTaskProcessingEnabled)
+                    {
+                        TaskAddedOrRemoved?.Invoke(TaskEvent.Started, item.Value);
+                        await item.Value.DoAction();
+                        TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, item.Value);
+
+                    }
+                    else
+                    {
+                        AddInternal(item.Value.DisplayInfo, item.Value);
+                        System.Threading.Thread.Sleep(50);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    AddInternal(item.Value.DisplayInfo, item.Value);
-                    System.Threading.Thread.Sleep(50);
+                    GlueCommands.Self.PrintError(ex.ToString());
                 }
             }
         }
@@ -370,125 +380,9 @@ namespace FlatRedBall.Glue.Managers
         {
             glueTask.DisplayInfo = displayInfo;
 
+            TaskAddedOrRemoved?.Invoke(TaskEvent.Queued, glueTask);
+
             taskQueue.Add(new KeyValuePair<int, GlueTaskBase>((int)glueTask.TaskExecutionPreference, glueTask));
-
-
-            //lock (mSyncLockObject)
-            //{
-            //    if (glueTask.TaskExecutionPreference == TaskExecutionPreference.Asap)
-            //    {
-            //        if (mSyncedActions.Count > 0)
-            //        {
-            //            // don't insert at 0, finish the current task, but insert at 1:
-            //            var wasAdded = false;
-            //            for(int i = 1; i < mSyncedActions.Count; i++)
-            //            {
-            //                if(mSyncedActions[i].TaskExecutionPreference != TaskExecutionPreference.Asap)
-            //                {
-            //                    mSyncedActions.Insert(i, glueTask);
-            //                    wasAdded = true;
-            //                    break;
-            //                }
-            //            }
-
-            //            if(!wasAdded)
-            //            {
-            //                mSyncedActions.Add(glueTask);
-            //            }
-            //        }
-            //        else
-            //        {
-            //            mSyncedActions.Add(glueTask);
-            //        }
-            //    }
-            //    else if (glueTask.TaskExecutionPreference == TaskExecutionPreference.AddOrMoveToEnd)
-            //    {
-            //        // There's a few possible situations:
-            //        // 1. This task is not present in the list at all. 
-            //        //    - In this case, add it at the end
-            //        // 2. This task is present in the list and is not currently executing.
-            //        //    - In this case, remove the item from the list, and re-add it at the end
-            //        // 3. This task is present in the list, but it is the first entry, which means it's probably currently running
-            //        //    a. If this is the only item in the list, then do nothing since it's already executing
-            //        //    b. If it's the first item in the list, but there are other actions that will execute...
-            //        //       i. If there are no other entries in the list that match this, add this at the end
-            //        //       ii. If there are other entries in the list (besides the first) remove those, add at the end
-            //        var existingAction = mSyncedActions.FirstOrDefault(item =>
-            //            item.DisplayInfo == displayInfo);
-
-            //        GlueTaskBase actionToRemove = null;
-
-            //        var shouldAddAtEnd = false;
-            //        if (existingAction == null)
-            //        {
-            //            // This is #1 from above
-            //            actionToRemove = null;
-            //            shouldAddAtEnd = true;
-            //        }
-            //        else
-            //        {
-            //            if (existingAction != mSyncedActions[0])
-            //            {
-            //                // This is #2
-            //                actionToRemove = existingAction;
-            //                shouldAddAtEnd = true;
-            //            }
-            //            else if (mSyncedActions.Count == 1)
-            //            {
-            //                // this is #3a
-            //                actionToRemove = null;
-            //                shouldAddAtEnd = false;
-            //            }
-            //            else
-            //            {
-            //                // this is #3b
-
-            //                // see if it's (a) or (b) from above
-            //                var existingActionLaterInList = mSyncedActions.Skip(1).FirstOrDefault(item =>
-            //                    item.DisplayInfo == displayInfo);
-            //                if (existingActionLaterInList == null)
-            //                {
-            //                    // #3b i
-            //                    shouldAddAtEnd = true;
-            //                    actionToRemove = null;
-            //                }
-            //                else
-            //                {
-            //                    // #3b ii
-            //                    shouldAddAtEnd = true;
-            //                    actionToRemove = existingActionLaterInList;
-            //                }
-            //            }
-            //        }
-
-            //        if (actionToRemove != null)
-            //        {
-            //            mSyncedActions.Remove(actionToRemove);
-            //        }
-            //        if (shouldAddAtEnd)
-            //        {
-            //            mSyncedActions.Add(glueTask);
-            //        }
-
-            //        createdNew = (shouldAddAtEnd && actionToRemove == null);
-
-            //    }
-            //    else
-            //    {
-            //        mSyncedActions.Add(glueTask);
-            //    }
-            //    shouldProcess = createdNew && mSyncedActions.Count == 1 && IsTaskProcessingEnabled;
-            //}
-            //// process will take care of reporting it
-            //if (createdNew)
-            //{
-            //    TaskAddedOrRemoved?.Invoke(TaskEvent.Created, glueTask);
-            //}
-
-            //if (shouldProcess)
-            //{
-            //    ProcessNextSync();
-            //}
         }
 
         public void RecordTaskHistory(string taskDisplayInfo)
@@ -563,7 +457,10 @@ namespace FlatRedBall.Glue.Managers
                     TaskExecutionPreference = executionPreference,
                     DoOnUiThread = doOnUiThread
                 };
+                TaskAddedOrRemoved?.Invoke(TaskEvent.Started, task);
+
                 task.DoAction();
+                TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, task);
 
                 return task;
             }
@@ -585,7 +482,10 @@ namespace FlatRedBall.Glue.Managers
                     TaskExecutionPreference = executionPreference,
                     DoOnUiThread = doOnUiThread
                 };
+                TaskAddedOrRemoved?.Invoke(TaskEvent.Started, task);
+
                 await task.DoAction();
+                TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, task);
 
                 return task;
             }
@@ -607,8 +507,10 @@ namespace FlatRedBall.Glue.Managers
                     TaskExecutionPreference = executionPreference,
                     DoOnUiThread = doOnUiThread,
                 };
+                TaskAddedOrRemoved?.Invoke(TaskEvent.Started, task);
 
                 task.DoAction();
+                TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, task);
 
                 return task;
             }
