@@ -470,13 +470,23 @@ namespace FlatRedBall.Glue.Managers
 
             if (glueTask != null)
             {
-                string taskDisplayInfo = glueTask.DisplayInfo;
-                RecordTaskHistory(taskDisplayInfo);
                 ThreadPool.QueueUserWorkItem((state) =>
                 {
                     bool shouldProcess = false;
                     lock (mSyncLockObjectExecute)
                     {
+                        lock (mSyncLockObject)
+                        {
+                            if (mSyncedActions.Count > 0)
+                            {
+                                glueTask = mSyncedActions[0];
+                                mSyncedActions.Remove(glueTask);
+                            }
+                        }
+
+                        string taskDisplayInfo = glueTask.DisplayInfo;
+                        RecordTaskHistory(taskDisplayInfo);
+
                         if (SyncTaskThreadId != null)
                         {
                             int m = 3;
@@ -495,12 +505,6 @@ namespace FlatRedBall.Glue.Managers
 
                         lock (mSyncLockObject)
                         {
-                            // The task may have already been removed
-                            if (mSyncedActions.Contains(glueTask))
-                            {
-                                mSyncedActions.Remove(glueTask);
-                            }
-
                             shouldProcess = mSyncedActions.Count > 0 && IsTaskProcessingEnabled;
                         }
                         TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, glueTask);
