@@ -21535,6 +21535,17 @@
           <SourceObject>TextInheritingEntityInstance</SourceObject>
           <SourceObjectProperty>CircleRadius</SourceObjectProperty>
         </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+          </Properties>
+          <Name>FloatWithLotsOfDecimals</Name>
+          <DefaultValue xsi:type="xsd:float">1.2345679</DefaultValue>
+        </CustomVariable>
       </CustomVariables>
       <States>
         <StateSave>
