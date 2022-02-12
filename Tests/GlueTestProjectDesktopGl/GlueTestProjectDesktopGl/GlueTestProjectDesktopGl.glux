@@ -13072,6 +13072,7 @@
             </PropertySave>
           </Properties>
           <Name>StateComponentRuntimeInstanceCurrentCategory1State</Name>
+          <DefaultValue xsi:type="xsd:string">Categorized1</DefaultValue>
           <SetByDerived>true</SetByDerived>
           <SourceObject>StateComponentRuntimeInstance</SourceObject>
           <SourceObjectProperty>CurrentCategory1State</SourceObjectProperty>
@@ -13174,6 +13175,7 @@
             </PropertySave>
           </Properties>
           <Name>StateComponentRuntimeInstanceCurrentCategory1State</Name>
+          <DefaultValue xsi:type="xsd:string">Categorized2</DefaultValue>
           <DefinedByBase>true</DefinedByBase>
         </CustomVariable>
       </CustomVariables>
