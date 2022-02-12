@@ -993,7 +993,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     {
                         variableToAssign =
                             CodeParser.ConvertValueToCodeString(customVariable.DefaultValue);
-                        NamedObjectSave namedObject = saveObject.GetNamedObject(variableConsideringDefinedByBase.SourceObject);
+                        NamedObjectSave namedObject = saveObject.GetNamedObjectRecursively(variableConsideringDefinedByBase.SourceObject);
 
 
                         if (variableConsideringDefinedByBase.GetIsFile())
