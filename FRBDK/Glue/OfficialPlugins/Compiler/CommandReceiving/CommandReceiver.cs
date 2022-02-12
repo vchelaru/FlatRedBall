@@ -584,7 +584,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     {
                         int absoluteIndex = GetTileIndexFromWorldPosition(newTile, mapLayer);
 
-                        if (absoluteIndex >= 0 && absoluteIndex < ids.Count && ids[absoluteIndex] != tileTypeGid)
+                        if (absoluteIndex >= 0 && absoluteIndex < ids.Length && ids[absoluteIndex] != tileTypeGid)
                         {
                             ids[absoluteIndex] = tileTypeGid;
                             didChange = true;

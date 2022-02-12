@@ -73,7 +73,7 @@ namespace TiledPluginCore.Errors
                 try
                 {
                     var tiles = data.tiles;
-                    for (int i = 0; i < tiles.Count; i++)
+                    for (int i = 0; i < tiles.Length; i++)
                     {
                         var tileset = tms.GetTilesetForGid(tiles[i]);
                         if (tileset != null)
