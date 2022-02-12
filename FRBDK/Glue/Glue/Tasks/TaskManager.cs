@@ -194,7 +194,9 @@ namespace FlatRedBall.Glue.Managers
         {
             if(markAsCurrent) CurrentlyRunningTask = task;
             TaskAddedOrRemoved?.Invoke(TaskEvent.Started, task);
+            task.TimeStarted = DateTime.Now;
             await task.DoAction();
+            task.TimeEnded = DateTime.Now;
             // Set it to null before raising the event so that the TaskCount uses a null object.
             if (markAsCurrent) CurrentlyRunningTask = null;
             TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, task);
