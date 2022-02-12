@@ -4,8 +4,10 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using TiledPluginCore.Errors;
 using TileGraphicsPlugin;
 using TMXGlueLib;
@@ -27,68 +29,110 @@ namespace TiledPluginCore.Managers
         {
             List<ErrorViewModel> errors = new List<ErrorViewModel>();
 
-            FillWithTmxFilesWithMultipleTilesetsPerLayer(errors);
+            List<FilePath> tmxFiles = new List<FilePath>();
+            foreach (var rfs in ObjectFinder.Self.GetAllReferencedFiles())
+            {
+                if (rfs.GetAssetTypeInfo() == AssetTypeInfoAdder.Self.TmxAssetTypeInfo)
+                {
+                    var fileName = GlueCommands.Self.GetAbsoluteFilePath(rfs);
+                    tmxFiles.Add(fileName);
+                }
+            }
+
+
+            RefreshCache(tmxFiles);
+
+            FillWithTmxFilesWithMultipleTilesetsPerLayer(tmxFiles, errors);
 
             return errors.ToArray();
         }
 
-        private void FillWithTmxFilesWithMultipleTilesetsPerLayer(List<ErrorViewModel> errors)
+        private void RefreshCache(List<FilePath> tmxFiles)
+        {
+            ConcurrentDictionary<FilePath, CachedTiledMapSave> dictionary = new System.Collections.Concurrent.ConcurrentDictionary<FilePath, CachedTiledMapSave>();
+
+            foreach(var item in CachedTiledMapSaves)
+            {
+                dictionary[item.Key] = item.Value;
+            }
+            Parallel.ForEach(tmxFiles, fileName =>
+            {
+                if (!CachedTiledMapSaves.ContainsKey(fileName) && fileName.Exists())
+                {
+                    var tms = TiledMapSave.FromFile(fileName.FullPath);
+
+                    var cachedTiledMapSave = new CachedTiledMapSave
+                    {
+                        LastTimeChanged = DateTime.Now,
+                        FilePath = fileName,
+                        TiledMapSave = tms
+                    };
+
+                    dictionary[fileName] = cachedTiledMapSave;
+
+                }
+            });
+
+            CachedTiledMapSaves.Clear();
+            foreach (var kvp in dictionary)
+            {
+                CachedTiledMapSaves[kvp.Key] = kvp.Value;
+            }
+        }
+
+        private void FillWithTmxFilesWithMultipleTilesetsPerLayer(List<FilePath> tmxFiles, List<ErrorViewModel> errors)
         {
 
-            foreach(var rfs in ObjectFinder.Self.GetAllReferencedFiles())
+            foreach(var fileName in tmxFiles)
             {
-                if(rfs.GetAssetTypeInfo() == AssetTypeInfoAdder.Self.TmxAssetTypeInfo)
+                TiledMapSave tms = null;
+                if(CachedTiledMapSaves.ContainsKey(fileName))
                 {
-                    var fileName = GlueCommands.Self.GetAbsoluteFilePath(rfs);
+                    var cached = CachedTiledMapSaves[fileName];
 
-                    TiledMapSave tms = null;
-                    if(CachedTiledMapSaves.ContainsKey(fileName))
+                    var date = cached.LastTimeChanged;
+
+                    if(fileName.Exists() && System.IO.File.GetLastWriteTime(fileName.FullPath) <= cached.LastTimeChanged)
                     {
-                        var cached = CachedTiledMapSaves[fileName];
-
-                        var date = cached.LastTimeChanged;
-
-                        if(fileName.Exists() && System.IO.File.GetLastWriteTime(fileName.FullPath) <= cached.LastTimeChanged)
-                        {
-                            tms = cached.TiledMapSave;
-                        }
+                        tms = cached.TiledMapSave;
                     }
+                }
 
-                    if(tms == null)
+                // unlikely, but possible that the file changed since it was cached so we re-check here.
+                if(tms == null)
+                {
+                    if (fileName.Exists())
                     {
-                        if (fileName.Exists())
+                        tms = TiledMapSave.FromFile(fileName.FullPath);
+
+                        CachedTiledMapSaves[fileName] = new CachedTiledMapSave
                         {
-                            tms = TiledMapSave.FromFile(fileName.FullPath);
-
-                            CachedTiledMapSaves[fileName] = new CachedTiledMapSave
-                            {
-                                LastTimeChanged = DateTime.Now,
-                                FilePath = fileName,
-                                TiledMapSave = tms
-                            };
-                        }
-
-                    }
-
-                    if(tms != null)
-                    {
-                        foreach(var layer in tms.Layers)
-                        {
-                            if(MultipleTilesetPerLayerErrorViewModel.HasMultipleTilesets(tms, layer))
-                            {
-                                errors.Add(new MultipleTilesetPerLayerErrorViewModel()
-                                {
-                                    Details = $"The layer {layer.Name} in {rfs.Name} references multiple tilesets. This can cause rendering errors",
-                                    FilePath = GlueCommands.Self.GetAbsoluteFileName(rfs),
-                                    LayerName = layer.Name
-
-                                });
-
-                            }
-                        }
+                            LastTimeChanged = DateTime.Now,
+                            FilePath = fileName,
+                            TiledMapSave = tms
+                        };
                     }
 
                 }
+
+                if(tms != null)
+                {
+                    foreach(var layer in tms.Layers)
+                    {
+                        if(MultipleTilesetPerLayerErrorViewModel.HasMultipleTilesets(tms, layer))
+                        {
+                            errors.Add(new MultipleTilesetPerLayerErrorViewModel()
+                            {
+                                Details = $"The layer {layer.Name} in {fileName.FullPath} references multiple tilesets. This can cause rendering errors",
+                                FilePath = fileName,
+                                LayerName = layer.Name
+
+                            });
+
+                        }
+                    }
+                }
+
             }
         }
     }
