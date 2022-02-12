@@ -862,6 +862,8 @@ namespace FlatRedBall.Glue.CodeGeneration
             return GetRightSideAssignmentValueAsString(element, memberName, value);
         }
 
+        // Note - this code is very similar to CustomVariableCodeGenerator's AppendAssignmentForCustomVariableInElement
+        // Unify?
         private static string GetRightSideAssignmentValueAsString(IElement element, string memberName, object value)
         {
             CustomVariable customVariable = element.GetCustomVariableRecursively(memberName);
@@ -945,7 +947,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                         valueAsString,
                         customVariable);
 
-                    if(namedObject.SourceType == SourceType.Gum && customVariable.Type?.Contains(".") == true && customVariable.Type.EndsWith("?"))
+                    if(namedObject?.SourceType == SourceType.Gum && customVariable.Type?.Contains(".") == true && customVariable.Type.EndsWith("?"))
                     {
                         // this is a state type, so remove the "?" and prefix it:
                         valueAsString = customVariable.Type.Substring(0, customVariable.Type.Length - 1) + "." + value;

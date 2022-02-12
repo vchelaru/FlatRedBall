@@ -948,6 +948,8 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
+        // Note - this code is very similar to StateCodeGenerator.cs's GetRightSideAssignmentValueAsString
+        // Unify?
         public static ICodeBlock AppendAssignmentForCustomVariableInElement(ICodeBlock codeBlock, CustomVariable customVariable, IElement saveObject)
         {
             bool hasBase = !string.IsNullOrEmpty(((INamedObjectContainer)saveObject).BaseObject);
@@ -991,10 +993,10 @@ namespace FlatRedBall.Glue.CodeGeneration
                     {
                         variableToAssign =
                             CodeParser.ConvertValueToCodeString(customVariable.DefaultValue);
-                        NamedObjectSave namedObject = saveObject.GetNamedObject(customVariable.SourceObject);
+                        NamedObjectSave namedObject = saveObject.GetNamedObject(variableConsideringDefinedByBase.SourceObject);
 
 
-                        if (customVariable.GetIsFile())
+                        if (variableConsideringDefinedByBase.GetIsFile())
                         {
                             variableToAssign = variableToAssign.Replace("\"", "").Replace("-", "_");
 
@@ -1003,9 +1005,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                                 variableToAssign = "null";
                             }
                         }
-                        else if (customVariable != null && customVariable.GetIsCsv())
+                        else if (variableConsideringDefinedByBase != null && variableConsideringDefinedByBase.GetIsCsv())
                         {
-                            if (ShouldAssignToCsv(customVariable, variableToAssign))
+                            if (ShouldAssignToCsv(variableConsideringDefinedByBase, variableToAssign))
                             {
                                 variableToAssign = GetAssignmentToCsvItem(customVariable, saveObject, variableToAssign);
                             }
@@ -1014,12 +1016,12 @@ namespace FlatRedBall.Glue.CodeGeneration
                                 variableToAssign = null;
                             }
                         }
-                        else if (customVariable.Type == "Color")
+                        else if (variableConsideringDefinedByBase.Type == "Color")
                         {
                             variableToAssign = "Color." + variableToAssign.Replace("\"", "");
 
                         }
-                        else if (customVariable.Type != "string" && variableToAssign == "\"\"")
+                        else if (variableConsideringDefinedByBase.Type != "string" && variableToAssign == "\"\"")
                         {
                             variableToAssign = null;
                         }
@@ -1042,7 +1044,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                             // Therefore, we're going to set it on the underlying
                             // object 
                             bool shouldSetUnderlyingValue = namedObject != null && namedObject.RemoveFromManagersWhenInvisible &&
-                                customVariable.SourceObjectProperty == "Visible";
+                                variableConsideringDefinedByBase.SourceObjectProperty == "Visible";
 
                             if (shouldSetUnderlyingValue)
                             {
@@ -1052,6 +1054,13 @@ namespace FlatRedBall.Glue.CodeGeneration
                             {
                                 variableToAssign = CodeWriter.MakeLocalizedIfNecessary(namedObject, customVariable.SourceObjectProperty,
                                     customVariable.DefaultValue, variableToAssign, null);
+
+                                if (namedObject?.SourceType == SourceType.Gum && variableConsideringDefinedByBase.Type?.Contains(".") == true && variableConsideringDefinedByBase.Type.EndsWith("?"))
+                                {
+                                    // this is a state type, so remove the "?" and prefix it:
+                                    variableToAssign = variableConsideringDefinedByBase.Type.Substring(0, variableConsideringDefinedByBase.Type.Length - 1) + "." + customVariable.DefaultValue;
+                                }
+
                                 variableToAssign = variableToAssign.Replace("+", ".");
                             }
                         }
