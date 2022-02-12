@@ -2063,9 +2063,18 @@ namespace FlatRedBall.Glue.Plugins
 
         public static void ReactToGlobalTimer()
         {
-            CallMethodOnPlugin(
-                plugin => plugin.ReactToGlobalTimer(),
-                plugin => plugin.ReactToGlobalTimer != null);
+            try
+            {
+                CallMethodOnPlugin(
+                    plugin => plugin.ReactToGlobalTimer(),
+                    plugin => plugin.ReactToGlobalTimer != null);
+
+            }
+            catch(InvalidOperationException)
+            {
+                // no biggie, this means the plugins changed when this was called. it is called so frequently,
+                // so we don't want to make a copy of the list.
+            }
         }
 
         public static Task ReactToStateCategoryExcludedVariablesChangedAsync(StateSaveCategory category, string variableName, StateCategoryVariableAction action) => 

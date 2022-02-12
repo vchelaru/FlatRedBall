@@ -662,17 +662,18 @@ namespace TMXGlueLib
                             using (BinaryReader reader = new BinaryReader(data))
                             {
                                 var byteArray = reader.ReadBytes(4 * length);
-                                Buffer.BlockCopy(_ids, 0, byteArray, 0, length);
+                                Buffer.BlockCopy(byteArray, 0, _ids, 0, length * 4);
                             }
 
 
                             //using (BinaryReader reader = new BinaryReader(data))
                             //{
-                            //    _ids = new List<uint>();
+                            //    var list = new List<uint>();
                             //    for (int i = 0; i < length; i++)
                             //    {
-                            //        _ids.Add(reader.ReadUInt32());
+                            //        list.Add(reader.ReadUInt32());
                             //    }
+                            //    _ids = list.ToArray();
                             //}
 
 
