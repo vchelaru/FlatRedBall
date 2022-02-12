@@ -503,7 +503,9 @@ namespace FlatRedBall.Glue.IO
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("GenerateAllCode");
                 SetInitWindowText("Generating all code", initializationWindow);
-                
+
+                // Fix before doing any generation
+                GlueState.Self.CurrentGlueProject.FixAllTypes();
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
                 Section.EndContextAndTime();
 
