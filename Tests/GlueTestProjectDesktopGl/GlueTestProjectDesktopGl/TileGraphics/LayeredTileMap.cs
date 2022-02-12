@@ -854,7 +854,7 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
-        private static Polygon AddPolygonCloneAtXY(MapLayer layer, float tileDimension, Polygon polygon, List<uint> tiles, long tilesetTileGid, int index,
+        private static Polygon AddPolygonCloneAtXY(MapLayer layer, float tileDimension, Polygon polygon, uint[] tiles, long tilesetTileGid, int index,
             TileCollisions.TileShapeCollection collectionForThisName)
         {
             int xIndex = index % layer.width;
@@ -870,7 +870,7 @@ namespace FlatRedBall.TileGraphics
             return cloned;
         }
 
-        private static void AddRectangleCloneAtXY(MapLayer layer, float tileDimension, AxisAlignedRectangle rectangle, List<uint> tiles, long tilesetTileGid, int x, int y,
+        private static void AddRectangleCloneAtXY(MapLayer layer, float tileDimension, AxisAlignedRectangle rectangle, uint[] tiles, long tilesetTileGid, int x, int y,
             TileCollisions.TileShapeCollection collectionForThisName)
         {
 

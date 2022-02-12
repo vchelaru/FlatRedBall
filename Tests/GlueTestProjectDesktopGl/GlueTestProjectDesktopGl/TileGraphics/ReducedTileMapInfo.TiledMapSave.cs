@@ -224,7 +224,7 @@ namespace TMXGlueLib.DataTypes
         private static void AddTileLayerTiles(TiledMapSave tiledMapSave, ReducedLayerInfo reducedLayerInfo, int i, AbstractMapLayer tiledLayer, Tileset tileSet, int tileWidth, int tileHeight)
         {
             var asMapLayer = tiledLayer as MapLayer;
-            var count = asMapLayer.data[0].tiles.Count;
+            var count = asMapLayer.data[0].tiles.Length;
             for (int dataId = 0; dataId < count; dataId++)
             {
                 var dataAtIndex = asMapLayer.data[0].tiles[dataId];

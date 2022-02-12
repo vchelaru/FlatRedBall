@@ -608,7 +608,7 @@ namespace TMXGlueLib
         /// Represents the index that this tile is displaying from the source tile map.  This is 1-based.  0 means no tile.  
         /// This can span multiple tilesets.
         /// </summary>
-        private List<uint> _ids = null;
+        private uint[] _ids = null;
 
 
         /// <summary>
@@ -618,7 +618,7 @@ namespace TMXGlueLib
         /// next row.
         /// </summary>
         [XmlIgnore]
-        public List<uint> tiles
+        public uint[] tiles
         {
             get
             {
@@ -631,7 +631,7 @@ namespace TMXGlueLib
                 {
                     if (encodingField != null && encodingField != "csv")
                     {
-                        _ids = new List<uint>(length);
+                        _ids = new uint[length];
                         // get a stream to the decoded Base64 text
 
                         var trimmedValue = Value.Trim();
@@ -661,12 +661,22 @@ namespace TMXGlueLib
                         {
                             using (BinaryReader reader = new BinaryReader(data))
                             {
-                                _ids = new List<uint>();
-                                for (int i = 0; i < length; i++)
-                                {
-                                    _ids.Add(reader.ReadUInt32());
-                                }
+                                var byteArray = reader.ReadBytes(4 * length);
+                                Buffer.BlockCopy(_ids, 0, byteArray, 0, length);
                             }
+
+
+                            //using (BinaryReader reader = new BinaryReader(data))
+                            //{
+                            //    _ids = new List<uint>();
+                            //    for (int i = 0; i < length; i++)
+                            //    {
+                            //        _ids.Add(reader.ReadUInt32());
+                            //    }
+                            //}
+
+
+
                         }
                     }
                     else if (encodingField == "csv")
@@ -680,7 +690,7 @@ namespace TMXGlueLib
                                 gid = 0;
                             }
                             return gid;
-                        }).ToList();
+                        }).ToArray();
                     }
                     else if (encodingField == null)
                     {
@@ -692,7 +702,7 @@ namespace TMXGlueLib
                                 gid = 0;
                             }
                             return gid;
-                        }).ToList();
+                        }).ToArray();
                     }
                 }
 
@@ -703,7 +713,7 @@ namespace TMXGlueLib
 
         public int length { get; set; }
 
-        public void SetTileData(List<uint> newData, string encoding, string compression)
+        public void SetTileData(uint[] newData, string encoding, string compression)
         {
             this.encoding = encoding;
             this.compression = compression;
@@ -752,12 +762,12 @@ namespace TMXGlueLib
             }
         }
 
-        private static string CompressGzip(List<uint> newData)
+        private static string CompressGzip(uint[] newData)
         {
             var memoryStream = new MemoryStream();
             var gzipStream = new GZipStream(memoryStream, CompressionLevel.Optimal);
             var writer = new BinaryWriter(gzipStream);
-            for (int i = 0; i < newData.Count; i++)
+            for (int i = 0; i < newData.Length; i++)
             {
                 writer.Write(newData[i]);
             }

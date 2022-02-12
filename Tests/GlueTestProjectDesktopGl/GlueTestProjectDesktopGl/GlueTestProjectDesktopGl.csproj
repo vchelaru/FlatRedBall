@@ -22,7 +22,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\$(MonoGamePlatform)\$(Platform)\$(Configuration)\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA;</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA; WINDOWS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -2412,6 +2412,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>FinalFantasyScene</Name>
     </None>
+    <None Include="content\screens\tmxscreen\mapwithdefaulttileset.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>MapWithDefaultTileset</Name>
+    </None>
     <None Include="content\screens\tmxscreen\rotatedtiletmx.tmx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>RotatedTileTmx</Name>
@@ -2467,6 +2471,14 @@
     <None Include="content\simpleshapecollection.shcx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>SimpleShapeCollection</Name>
+    </None>
+    <None Include="content\standardtileset.tsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>standardtileset</Name>
+    </None>
+    <None Include="content\standardtileseticons.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>standardtileseticons</Name>
     </None>
     <None Include="Libraries\DesktopGl\Debug\FlatRedBall.Forms.dll" />
     <None Include="Libraries\DesktopGl\Debug\GumCoreXnaPc.dll" />

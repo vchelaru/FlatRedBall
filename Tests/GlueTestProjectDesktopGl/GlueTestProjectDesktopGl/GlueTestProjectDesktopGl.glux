@@ -5907,6 +5907,18 @@
           <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
+        <ReferencedFileSave>
+          <Name>Screens/TmxScreen/MapWithDefaultTileset.tmx</Name>
+          <Properties>
+            <PropertySave>
+              <Name>CreationOptions</Name>
+              <ValueAsString>{"IncludeDefaultTileset":true,"IncludeGameplayLayer":true,"SolidCollisionCheckBoxVisibility":0,"IsSolidCollisionBorderChecked":true,"ShouldAddCollisionBorder":true}</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <IsSharedStatic>true</IsSharedStatic>
+          <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
+          <ProjectsToExcludeFrom />
+        </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
       <NamedObjects>
@@ -6073,6 +6085,62 @@
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+        <NamedObjectSave>
+          <InstanceName>MapWithDefaultTilesetObject</InstanceName>
+          <Properties>
+            <PropertySave>
+              <Name>SourceType</Name>
+              <ValueAsObject xsi:type="SourceType">File</ValueAsObject>
+              <Type>SourceType</Type>
+            </PropertySave>
+          </Properties>
+          <SourceType>File</SourceType>
+          <SourceFile>Screens/TmxScreen/MapWithDefaultTileset.tmx</SourceFile>
+          <SourceName>Entire File (LayeredTileMap)</SourceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>false</IndependentOfCamera>
+        </NamedObjectSave>
+        <NamedObjectSave>
+          <InstanceName>TileNodeNetworkInstance</InstanceName>
+          <SourceClassType>FlatRedBall.AI.Pathfinding.TileNodeNetwork</SourceClassType>
+          <Properties>
+            <PropertySave>
+              <Name>SourceType</Name>
+              <ValueAsObject xsi:type="SourceType">FlatRedBallType</ValueAsObject>
+              <Type>SourceType</Type>
+            </PropertySave>
+            <PropertySave>
+              <Name>NetworkCreationOptions</Name>
+              <ValueAsInt>3</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>NodeNetworkTileSize</Name>
+              <ValueAsFloat>16</ValueAsFloat>
+            </PropertySave>
+            <PropertySave>
+              <Name>NodeNetworkFillWidth</Name>
+              <ValueAsInt>32</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>NodeNetworkFillHeight</Name>
+              <ValueAsInt>32</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>SourceTmxName</Name>
+              <ValueAsString>MapWithDefaultTilesetObject</ValueAsString>
+            </PropertySave>
+            <PropertySave>
+              <Name>NodeNetworkTileTypeName</Name>
+              <ValueAsString>WalkableTiles</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile>TileNodeNetwork</SourceFile>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>false</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
       <Name>Screens\TmxScreen</Name>

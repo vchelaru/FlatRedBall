@@ -682,7 +682,7 @@ namespace TMXGlueLib
 
                 MapLayer mLayer = mapLayer;
                 int mLayerCount = layercount;
-                Parallel.For(0, mapLayer.data[0].tiles.Count, count =>
+                Parallel.For(0, mapLayer.data[0].tiles.Length, count =>
                 {
                     uint gid = mLayer.data[0].tiles[count];
 
@@ -693,14 +693,14 @@ namespace TMXGlueLib
 
                         //int tileWidth = requireTile ? tileSet.tilewidth : tilewidth;
                         //int tileHeight = requireTile ? tileSet.tileheight : tileheight;
-                        int x = count % this.Width;
-                        int y = count / this.Width;
+                        int x = (int)count % this.Width;
+                        int y = (int)count / this.Width;
 
                         float nodex;
                         float nodey;
                         float nodez;
 
-                        CalculateWorldCoordinates(mLayerCount, count, tilewidth, tileheight, mLayer.width, out nodex, out nodey, out nodez);
+                        CalculateWorldCoordinates(mLayerCount, (int)count, tilewidth, tileheight, mLayer.width, out nodex, out nodey, out nodez);
 
                         node.X = nodex;
                         node.Y = nodey;
@@ -855,7 +855,7 @@ namespace TMXGlueLib
                     MapLayer mLayer = mapLayer;
                     int mLayerCount = layercount;
 
-                    for (int i = 0; i < mapLayer.data[0].tiles.Count; i++)
+                    for (int i = 0; i < mapLayer.data[0].tiles.Length; i++)
                     {
                         uint gid = mLayer.data[0].tiles[i];
                         if (gid > 0)
