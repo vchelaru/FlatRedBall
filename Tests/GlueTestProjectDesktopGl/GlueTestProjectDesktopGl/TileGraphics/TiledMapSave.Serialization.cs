@@ -659,21 +659,30 @@ namespace TMXGlueLib
                         // simply read in all the integers
                         using (data)
                         {
-                            using (BinaryReader reader = new BinaryReader(data))
+                            //var useNew = true;
+                            //if(useNew)
                             {
-                                var byteArray = reader.ReadBytes(4 * length);
-                                Buffer.BlockCopy(_ids, 0, byteArray, 0, length);
+                                using (BinaryReader reader = new BinaryReader(data))
+                                {
+                                    var byteArray = reader.ReadBytes(4 * length);
+                                    Buffer.BlockCopy(byteArray, 0, _ids, 0, length);
+                                }
                             }
-
-
-                            //using (BinaryReader reader = new BinaryReader(data))
+                            //else
                             //{
-                            //    _ids = new List<uint>();
-                            //    for (int i = 0; i < length; i++)
+                            //    using (BinaryReader reader = new BinaryReader(data))
                             //    {
-                            //        _ids.Add(reader.ReadUInt32());
+                            //        var innerList = new List<uint>();
+                            //        for (int i = 0; i < length; i++)
+                            //        {
+                            //            innerList.Add(reader.ReadUInt32());
+                            //        }
+
+                            //        _ids = innerList.ToArray();
                             //    }
+
                             //}
+
 
 
 
