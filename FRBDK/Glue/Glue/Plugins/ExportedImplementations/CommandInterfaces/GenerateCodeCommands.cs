@@ -12,6 +12,7 @@ using EditorObjects.IoC;
 using FlatRedBall.Glue.CodeGeneration.Game1;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Elements;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -48,6 +49,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             string taskName = nameof(GenerateElementCode) + " " + element.ToString();
 
             TaskManager.Self.AddOrRunIfTasked(() => CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
+                taskName,
+                TaskExecutionPreference.AddOrMoveToEnd);
+        }
+
+        public Task GenerateElementCodeAsync(GlueElement element)
+        {
+            string taskName = nameof(GenerateElementCode) + " " + element.ToString();
+
+            return TaskManager.Self.AddAsync(() => CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
                 taskName,
                 TaskExecutionPreference.AddOrMoveToEnd);
         }
@@ -231,5 +241,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             },
             5);
         }
+
     }
 }

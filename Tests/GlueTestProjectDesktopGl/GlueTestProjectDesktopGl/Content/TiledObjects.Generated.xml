@@ -24,6 +24,9 @@
   <objecttype name="FactoryEntityDerived" />
   <objecttype name="FactoryEntityWithNoList" />
   <objecttype name="GrandchildFactoryEntity" />
+  <objecttype name="GumStateComponentContainer">
+    <property name="StateComponentRuntimeInstanceCurrentCategory1State" type="GlueTestProject.GumRuntimes.StateComponentRuntime.Category1?" />
+  </objecttype>
   <objecttype name="IWindowDerivedFromNoIWindow" />
   <objecttype name="PooledCollidable" />
   <objecttype name="PooledDontInheritFromThis" />

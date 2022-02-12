@@ -53,7 +53,7 @@ namespace GlueFormsCore.Managers
 
                     if (regenerateCode)
                     {
-                        CodeWriter.GenerateCode(entitySave);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(entitySave);
                     }
                 }
 
@@ -65,7 +65,7 @@ namespace GlueFormsCore.Managers
 
                     if (element != null)
                     {
-                        CodeWriter.GenerateCode(element);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(element);
                     }
 
                 }
@@ -83,7 +83,7 @@ namespace GlueFormsCore.Managers
 
                     if (regenerateCode)
                     {
-                        CodeWriter.GenerateCode(screenSave);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(screenSave);
                     }
                 }
             }

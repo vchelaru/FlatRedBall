@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.SaveClasses;
 using System;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
@@ -14,6 +15,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void GenerateCurrentElementCode();
 
         void GenerateElementCode(GlueElement element);
+
+        Task GenerateElementCodeAsync(GlueElement element);
 
         void GenerateGlobalContentCode();
         void GenerateGlobalContentCodeTask();

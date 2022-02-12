@@ -412,6 +412,14 @@
     <Compile Include="Entities\GumRuntimeEntity.Generated.cs">
       <DependentUpon>GumRuntimeEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\GumStateComponentContainer.cs" />
+    <Compile Include="Entities\GumStateComponentContainer.Generated.cs">
+      <DependentUpon>GumStateComponentContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\GumStateComponentContainerDerived.cs" />
+    <Compile Include="Entities\GumStateComponentContainerDerived.Generated.cs">
+      <DependentUpon>GumStateComponentContainerDerived.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\HasPublicPropertyEntity.cs" />
     <Compile Include="Entities\HasPublicPropertyEntity.Generated.cs">
       <DependentUpon>HasPublicPropertyEntity.cs</DependentUpon>
@@ -791,6 +799,7 @@
     <Compile Include="Factories\FactoryEntityDerivedFactory.Generated.cs" />
     <Compile Include="Factories\FactoryEntityWithNoListFactory.Generated.cs" />
     <Compile Include="Factories\GrandchildFactoryEntityFactory.Generated.cs" />
+    <Compile Include="Factories\GumStateComponentContainerFactory.Generated.cs" />
     <Compile Include="Factories\IWindowDerivedFromNoIWindowFactory.Generated.cs" />
     <Compile Include="Factories\PooledCollidableFactory.Generated.cs" />
     <Compile Include="Factories\PooledDontInheritFromThisFactory.Generated.cs" />
