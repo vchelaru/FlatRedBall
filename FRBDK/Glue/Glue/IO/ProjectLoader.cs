@@ -192,7 +192,7 @@ namespace FlatRedBall.Glue.IO
                 GlueState.Self.CurrentGlueProject.FixAllTypes();
                 if (shouldSaveGlux)
                 {
-                    GluxCommands.Self.SaveGlux();
+                    GluxCommands.Self.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
                 }
 
                 GlueCommands.Self.ProjectCommands.SaveProjects();

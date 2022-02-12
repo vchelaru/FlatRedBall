@@ -83,6 +83,7 @@ namespace GumPlugin.Managers
                 {
                     GumPluginCommands.Self.UpdateGumToGlueResolution();
                 }
+
                 GlueCommands.Self.GluxCommands.SaveGlux();
             }
         }

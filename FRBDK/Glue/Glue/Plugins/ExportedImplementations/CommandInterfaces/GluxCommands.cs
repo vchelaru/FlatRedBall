@@ -140,14 +140,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         /// <summary>
         /// Saves the glux if already in a task. Adds a glulx save task if not.
         /// </summary>
-        public void SaveGlux()
+        public void SaveGlux(TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Asap)
         {
             TaskManager.Self.AddOrRunIfTasked(
                 () => SaveGlueProjectImmediately(),
-                "Saving Glue Project", 
+                "Saving Glue Project",
                 // asap because otherwise this may get added
                 // after a reload command
-                TaskExecutionPreference.Asap);
+                taskExecutionPreference);
         }
 
         /// <summary>

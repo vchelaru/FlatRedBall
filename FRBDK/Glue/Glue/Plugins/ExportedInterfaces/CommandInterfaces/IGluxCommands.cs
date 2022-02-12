@@ -5,6 +5,7 @@ using GlueFormsCore.ViewModels;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Elements;
 using System.Threading.Tasks;
+using FlatRedBall.Glue.Managers;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
@@ -34,7 +35,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <summary>
         /// Saves the glue project immediately if in a task, and adds a task if not
         /// </summary>
-        void SaveGlux();
+        void SaveGlux(TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Asap);
 
         void SaveSettings();
 

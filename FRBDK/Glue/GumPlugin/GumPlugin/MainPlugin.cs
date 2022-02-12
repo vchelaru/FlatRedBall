@@ -595,7 +595,7 @@ namespace GumPlugin
             // Maybe we'll need this at some point:
             //var referencedFileSave = GlueState.Self.CurrentReferencedFileSave;
             //var absoluteFileName = GlueCommands.Self.GetAbsoluteFileName(referencedFileSave);
-            if(raiseViewModelEvents)
+            if(raiseViewModelEvents && !viewModel.IsUpdatingFromGlueObject)
             {
                 propertiesManager.HandlePropertyChanged(e.PropertyName);
             }
@@ -816,7 +816,11 @@ namespace GumPlugin
             if(AppState.Self.GumProjectSave != null)
             {
                 var rfs = GumProjectManager.Self.GetRfsForGumProject();
+                var wasUpdating = viewModel.IsUpdatingFromGlueObject;
+                viewModel.IsUpdatingFromGlueObject = true;
                 viewModel.SetFrom(AppState.Self.GumProjectSave, rfs);
+                viewModel.IsUpdatingFromGlueObject = wasUpdating;
+
             }
         }
 
