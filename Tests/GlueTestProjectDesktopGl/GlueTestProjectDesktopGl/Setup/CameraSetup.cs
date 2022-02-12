@@ -5,6 +5,7 @@
     {
         public class CameraSetupData
         {
+            public bool IsGenerateCameraDisplayCodeEnabled { get; set; }
             public float Scale { get; set; }
             public float ScaleGum { get; set; }
             public bool Is2D { get; set; }

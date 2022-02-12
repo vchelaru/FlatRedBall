@@ -653,7 +653,7 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
-      <Type>StateCategory1State</Type>
+      <Type>StateCategory1</Type>
       <Name>StateCategory1State</Name>
       <Value xsi:type="xsd:string">On</Value>
       <SetsValue>true</SetsValue>

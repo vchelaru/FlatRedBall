@@ -20802,6 +20802,17 @@
           <Properties>
             <PropertySave>
               <Name>Type</Name>
+              <ValueAsString>VariableState</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>TunneledStateWithoutCurrentStateInRoot</Name>
+          <SourceObject>StateEntityWithoutCurrentStateVariableInstance</SourceObject>
+          <SourceObjectProperty>CurrentState</SourceObjectProperty>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
               <ValueAsString>Texture2D</ValueAsString>
             </PropertySave>
             <PropertySave>
@@ -20928,17 +20939,6 @@
           </Properties>
           <Name>TunneledState</Name>
           <SourceObject>StateEntityInstance</SourceObject>
-          <SourceObjectProperty>CurrentState</SourceObjectProperty>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>VariableState</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>TunneledStateWithoutCurrentStateInRoot</Name>
-          <SourceObject>StateEntityWithoutCurrentStateVariableInstance</SourceObject>
           <SourceObjectProperty>CurrentState</SourceObjectProperty>
         </CustomVariable>
         <CustomVariable>

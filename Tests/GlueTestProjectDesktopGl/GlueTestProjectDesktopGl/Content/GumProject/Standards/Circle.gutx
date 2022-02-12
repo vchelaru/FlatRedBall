@@ -18,7 +18,7 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
-      <Type>CircleStateCategoryState</Type>
+      <Type>CircleStateCategory</Type>
       <Name>CircleStateCategoryState</Name>
       <SetsValue>false</SetsValue>
     </Variable>

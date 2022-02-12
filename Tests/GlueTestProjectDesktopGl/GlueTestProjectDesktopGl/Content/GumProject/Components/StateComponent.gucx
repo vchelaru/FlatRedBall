@@ -5,12 +5,12 @@
   <State>
     <Name>Default</Name>
     <Variable>
-      <Type>Category1State</Type>
+      <Type>Category1</Type>
       <Name>Category1State</Name>
       <SetsValue>false</SetsValue>
     </Variable>
     <Variable>
-      <Type>Category2State</Type>
+      <Type>Category2</Type>
       <Name>Category2State</Name>
       <SetsValue>false</SetsValue>
     </Variable>

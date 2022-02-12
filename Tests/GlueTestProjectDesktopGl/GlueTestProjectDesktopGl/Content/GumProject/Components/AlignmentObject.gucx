@@ -62,7 +62,7 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
-      <Type>PositionState</Type>
+      <Type>Position</Type>
       <Name>PositionState</Name>
       <SetsValue>false</SetsValue>
     </Variable>

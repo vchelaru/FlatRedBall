@@ -1054,6 +1054,14 @@ namespace FlatRedBall.Glue.Elements
                     {
                         (isState, category) = GetStateSaveCategory(variableInNosElement, nosElement);
                     }
+                    else if(nosElement != null && customVariable.Type == "VariableState")
+                    {
+                        // This is a special case where an object's VariableState is exposed directly.
+                        // While this is not recommended because all states should be categorized, we still
+                        // want to support old projects that may be doing this (and the auto test project too).
+                        isState = true;
+                        category = null;
+                    }
                 }
                 else
                 {

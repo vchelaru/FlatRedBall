@@ -67,7 +67,7 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
-      <Type>TestCategoryState</Type>
+      <Type>TestCategory</Type>
       <Name>TestCategoryState</Name>
       <SetsValue>false</SetsValue>
     </Variable>

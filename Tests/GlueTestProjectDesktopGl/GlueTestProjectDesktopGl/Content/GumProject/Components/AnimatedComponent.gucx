@@ -17,7 +17,7 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
-      <Type>ColorCategoryState</Type>
+      <Type>ColorCategory</Type>
       <Name>ColorCategoryState</Name>
       <SetsValue>false</SetsValue>
     </Variable>
@@ -85,7 +85,7 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
-      <Type>SizeCategoryState</Type>
+      <Type>SizeCategory</Type>
       <Name>SizeCategoryState</Name>
       <SetsValue>false</SetsValue>
     </Variable>
