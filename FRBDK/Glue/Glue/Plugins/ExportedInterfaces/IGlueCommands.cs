@@ -17,7 +17,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
         IDialogCommands DialogCommands { get; }
         IFileCommands FileCommands { get; }
 
+
         void CloseGlue();
+
+        void CloseGlueProject(bool shouldSave = true, bool isExiting = false, GlueFormsCore.Controls.InitializationWindowWpf initWindow = null);
+
         void DoOnUiThread(Action action);
         void TryMultipleTimes(Action action, int numberOfTimesToTry, int msSleepBetweenAttempts = 200);
 

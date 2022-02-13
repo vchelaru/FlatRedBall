@@ -87,7 +87,7 @@ namespace FlatRedBall.Glue.IO
             // close the project before turning off task processing...
             if (ProjectManager.ProjectBase != null)
             {
-                MainPanelControl.Self.ReactToCloseProject(shouldSave: false, isExiting: false, initWindow: initializationWindow);
+                GlueCommands.Self.CloseGlueProject(shouldSave: false, isExiting: false, initWindow: initializationWindow);
             }
 
             // Vic says - do we really want to wait for this to finish?

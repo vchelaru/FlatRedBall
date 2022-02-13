@@ -3,5 +3,11 @@
   <Name>DerivedOfDerivedScreenGum</Name>
   <State>
     <Name>Default</Name>
+    <Variable>
+      <Type>bool</Type>
+      <Name>IsXamarinFormsControl</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
   </State>
 </ScreenSave>
