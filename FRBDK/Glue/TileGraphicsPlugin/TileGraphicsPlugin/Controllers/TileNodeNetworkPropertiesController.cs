@@ -118,13 +118,21 @@ namespace TiledPluginCore.Controllers
                 viewModel.TmxObjectNames = new System.Collections.ObjectModel.ObservableCollection<string>();
             }
             viewModel.TmxObjectNames.Clear();
+
+            var tempList = new List<string>();
+
             foreach (var rfs in referencedFileSaves)
             {
-                viewModel.TmxObjectNames.Add(rfs.GetInstanceName());
+                tempList.Add(rfs.GetInstanceName());
             }
             foreach (var nos in namedObjects)
             {
-                viewModel.TmxObjectNames.Add(nos.InstanceName);
+                tempList.Add(nos.InstanceName);
+            }
+
+            foreach(var item in tempList.OrderBy(item => item))
+            {
+                viewModel.TmxObjectNames.Add(item);
             }
         }
 
