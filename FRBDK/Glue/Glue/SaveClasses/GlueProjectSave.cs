@@ -36,6 +36,7 @@ namespace FlatRedBall.Glue.SaveClasses
         // Version 0/1 didn't exist
         // Version 2 introduces a partial game class
         // Version 3 has lists associated with factory
+        // This is documented here: https://flatredball.com/documentation/tools/glue-reference/glujglux/
         public enum GluxVersions
         {
             PreVersion = 1,

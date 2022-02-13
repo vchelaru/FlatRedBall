@@ -817,6 +817,10 @@
     <Compile Include="Forms\Screens\BaseGlueScreenNotBaseGumForms.Generated.cs">
       <DependentUpon>BaseGlueScreenNotBaseGumForms.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Screens\DerivedOfDerivedScreenGumForms.cs" />
+    <Compile Include="Forms\Screens\DerivedOfDerivedScreenGumForms.Generated.cs">
+      <DependentUpon>DerivedOfDerivedScreenGumForms.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Screens\DerivedScreenGumForms.cs" />
     <Compile Include="Forms\Screens\DerivedScreenGumForms.Generated.cs">
       <DependentUpon>DerivedScreenGumForms.cs</DependentUpon>
@@ -996,6 +1000,10 @@
     <Compile Include="GumRuntimes\DefaultForms\UserControlRuntime.Generated.cs">
       <DependentUpon>UserControlRuntime.cs</DependentUpon>
     </Compile>
+    <Compile Include="GumRuntimes\DerivedOfDerivedScreenGumRuntime.cs" />
+    <Compile Include="GumRuntimes\DerivedOfDerivedScreenGumRuntime.Generated.cs">
+      <DependentUpon>DerivedOfDerivedScreenGumRuntime.cs</DependentUpon>
+    </Compile>
     <Compile Include="GumRuntimes\DerivedScreenGumRuntime.cs" />
     <Compile Include="GumRuntimes\DerivedScreenGumRuntime.Generated.cs">
       <DependentUpon>DerivedScreenGumRuntime.cs</DependentUpon>
@@ -1166,6 +1174,10 @@
     <Compile Include="Screens\CustomVariableScreen.cs" />
     <Compile Include="Screens\CustomVariableScreen.Generated.cs">
       <DependentUpon>CustomVariableScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\DerivedOfDerivedScreen.cs" />
+    <Compile Include="Screens\DerivedOfDerivedScreen.Generated.cs">
+      <DependentUpon>DerivedOfDerivedScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="Screens\DerivedScreen.cs" />
     <Compile Include="Screens\DerivedScreen.Generated.cs">
@@ -2071,6 +2083,10 @@
     <None Include="content\gumproject\screens\basegluescreennotbasegum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>basegluescreennotbasegum</Name>
+    </None>
+    <None Include="content\gumproject\screens\derivedofderivedscreengum.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>DerivedOfDerivedScreenGum</Name>
     </None>
     <None Include="content\gumproject\screens\derivedscreengum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

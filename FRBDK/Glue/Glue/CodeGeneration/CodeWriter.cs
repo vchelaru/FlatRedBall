@@ -440,7 +440,7 @@ namespace FlatRedBallAddOns.Entities
             return classCodeblock;
         }
 
-        private static void GenerateConstructors(IElement element, ICodeBlock codeBlock)
+        private static void GenerateConstructors(GlueElement element, ICodeBlock codeBlock)
         {
             ICodeBlock constructor;
 
@@ -470,16 +470,17 @@ namespace FlatRedBallAddOns.Entities
             {
                 string contentManagerName = $"\"{elementName}\"";
 
-                if (element.InheritsFromElement())
-                {
-                    contentManagerName = "";
-                }
-                else if (element.UseGlobalContent)
+                if (element.UseGlobalContent)
                 {
                     contentManagerName = "\"Global\"";
                 }
 
-                constructor = codeBlock.Constructor("public", elementName, "", $"base ({contentManagerName})");
+                // Feb 13, 2022
+                // This constructor enables the old FRB code to call in to this with no parameters without breaking reflection
+                // No need to change it since screens are almost never explicitly constructed
+                codeBlock.Constructor("public", elementName, "", $"this ({contentManagerName})");
+
+                constructor = codeBlock.Constructor("public", elementName, "string contentManagerName", $"base (contentManagerName)");
 
                 CallElementComponentCodeGeneratorGenerateConstructor(element, constructor);
             }

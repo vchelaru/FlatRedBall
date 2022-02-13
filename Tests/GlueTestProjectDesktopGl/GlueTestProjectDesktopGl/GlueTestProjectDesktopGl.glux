@@ -1277,6 +1277,48 @@
       <UseGlobalContent>false</UseGlobalContent>
       <ReferencedFiles>
         <ReferencedFileSave>
+          <Name>GumProject/Screens/DerivedOfDerivedScreenGum.gusx</Name>
+          <IsSharedStatic>true</IsSharedStatic>
+          <RuntimeType>GlueTestProject.GumRuntimes.DerivedOfDerivedScreenGumRuntime</RuntimeType>
+          <ProjectsToExcludeFrom />
+        </ReferencedFileSave>
+      </ReferencedFiles>
+      <IsHiddenInTreeView>false</IsHiddenInTreeView>
+      <NamedObjects>
+        <NamedObjectSave>
+          <InstanceName>LayerInstance</InstanceName>
+          <SourceClassType>Layer</SourceClassType>
+          <Properties>
+            <PropertySave>
+              <Name>SourceType</Name>
+              <ValueAsObject xsi:type="SourceType">FlatRedBallType</ValueAsObject>
+            </PropertySave>
+          </Properties>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile />
+          <SourceName />
+          <ExposedInDerived>true</ExposedInDerived>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <DefinedByBase>true</DefinedByBase>
+          <InstantiatedByBase>true</InstantiatedByBase>
+          <IndependentOfCamera>true</IndependentOfCamera>
+          <Is2D>true</Is2D>
+        </NamedObjectSave>
+      </NamedObjects>
+      <Name>Screens\DerivedOfDerivedScreen</Name>
+      <CustomClassesForExport />
+      <BaseScreen>Screens\DerivedScreen</BaseScreen>
+      <NextScreen>Screens\DisabledObjectScreen</NextScreen>
+    </ScreenSave>
+    <ScreenSave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
+      <UseGlobalContent>false</UseGlobalContent>
+      <ReferencedFiles>
+        <ReferencedFileSave>
           <Name>GumProject/Screens/DerivedScreenGum.gusx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Gum.GumIdb</RuntimeType>
@@ -1325,7 +1367,7 @@
       <Name>Screens\DerivedScreen</Name>
       <CustomClassesForExport />
       <BaseScreen>Screens\BaseScreen</BaseScreen>
-      <NextScreen>Screens\DisabledObjectScreen</NextScreen>
+      <NextScreen>Screens\DerivedOfDerivedScreen</NextScreen>
     </ScreenSave>
     <ScreenSave>
       <Tags>

@@ -32,8 +32,12 @@ namespace GlueTestProject.Screens
 		{
             base.LayerInstanceGum.Renderables.Contains(ToBeLayered.RenderableComponent as IRenderableIpso).ShouldBe(true);
 
-            GlueTestProject.GumRuntimes.BaseGlueScreenNotBaseGumRuntime.NumberOfTimesCustomInitializeCalled
-                .ShouldBe(2, "because the base screen comes before this, and that increments this value once");
+            // This class is the base class for DerivedOfDerived. In that case we don't want to run this test
+            if(this.GetType() == typeof(DerivedScreen))
+            {
+                GlueTestProject.GumRuntimes.BaseGlueScreenNotBaseGumRuntime.NumberOfTimesCustomInitializeCalled
+                    .ShouldBe(2, "because the base screen comes before this, and that increments this value once");
+            }
         }
 
 		void CustomActivity(bool firstTimeCalled)
