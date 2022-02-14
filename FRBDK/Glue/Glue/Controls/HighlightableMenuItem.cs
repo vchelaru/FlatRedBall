@@ -24,8 +24,8 @@ namespace GlueFormsCore.Controls
 
         public bool IsSelected
         {
-            get { return (bool)GetValue(IsSelectedProperty); }
-            set { SetValue(IsSelectedProperty, value); }
+            get => (bool)GetValue(IsSelectedProperty); 
+            set => SetValue(IsSelectedProperty, value); 
         }
 
 
