@@ -182,11 +182,18 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                 string returnValue = this.Directory + relativePath;
 
-                if (System.IO.Directory.Exists(returnValue) &&
-                    !returnValue.EndsWith("/") &&
-                    !returnValue.EndsWith("\\"))
+                // If we do a Directory.Exists here, it can be slow (especially since it's called so frequently
+                // Let's assume that if it has an extension it is not a directory
+                var extension = FileManager.GetExtension(returnValue);
+                if(!string.IsNullOrEmpty(extension))
                 {
-                    returnValue += "/";
+                    if (System.IO.Directory.Exists(returnValue) &&
+                        !returnValue.EndsWith("/") &&
+                        !returnValue.EndsWith("\\"))
+                    {
+                        returnValue += "/";
+                    }
+
                 }
 
                 returnValue = FileManager.Standardize(returnValue);
