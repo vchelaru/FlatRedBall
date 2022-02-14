@@ -21,6 +21,8 @@ namespace GlueFormsCore.Controls
     {
         ISearchBarViewModel ViewModel => DataContext as ISearchBarViewModel;
         public event Action ClearSearchButtonClicked;
+        public event Action EnterPressed;
+        public event Action<Key> ArrowKeyPushed;
         public SearchBar()
         {
             InitializeComponent();
@@ -32,6 +34,10 @@ namespace GlueFormsCore.Controls
             if (e.Key == Key.Escape)
             {
                 ViewModel.SearchBoxText = string.Empty;
+            }
+            else if(e.Key == Key.Enter)
+            {
+                EnterPressed?.Invoke();
             }
         }
 
@@ -52,5 +58,13 @@ namespace GlueFormsCore.Controls
         }
 
         public void FocusTextBox() => SearchTextBox.Focus();
+
+        private void SearchTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Up || e.Key == Key.Down)
+            {
+                ArrowKeyPushed?.Invoke(e.Key);
+            }
+        }
     }
 }

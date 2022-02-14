@@ -1,4 +1,6 @@
 ﻿using FlatRedBall.Glue;
+using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -26,6 +28,15 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public NodeViewModel GlobalContentRootNode { get; private set; }
 
         public NodeViewModel RootModel { get; set; }
+
+        public ObservableCollection<NodeViewModel> FlattenedItems { get; private set; } = new ObservableCollection<NodeViewModel>();
+
+        public NodeViewModel FlattenedSelectedItem
+        {
+            get => Get<NodeViewModel>();
+            set => Set(value);
+        }
+
 
         public IEnumerable Root
         {
@@ -74,7 +85,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                             )
                         {
                             SearchText = value.ToLowerInvariant().Substring(2);
-                            PrefixText = value.Substring(0, 1);
+                            PrefixText = value.Substring(0, 1).ToLowerInvariant();
 
                         }
                         else
@@ -96,6 +107,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         [DependsOn(nameof(SearchBoxText))]
         public Visibility SearchButtonVisibility => (!string.IsNullOrEmpty(SearchBoxText)).ToVisibility();
+
+        [DependsOn(nameof(SearchBoxText))]
+        public Visibility MainTreeViewVisibility => (string.IsNullOrEmpty(SearchBoxText)).ToVisibility();
+
+        [DependsOn(nameof(SearchBoxText))]
+        public Visibility SearchListVisibility => (!string.IsNullOrEmpty(SearchBoxText)).ToVisibility();
+
 
         [DependsOn(nameof(IsSearchBoxFocused))]
         [DependsOn(nameof(SearchBoxText))]
@@ -202,7 +220,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 {
                     if (element is ScreenSave screen)
                     {
-                        elementTreeNode = new GlueElementNodeViewModel(ScreenRootNode, element);
+                        elementTreeNode = new GlueElementNodeViewModel(ScreenRootNode, element, true);
                         ScreenRootNode.Children.Add(elementTreeNode);
                     }
                     else if (element is EntitySave entitySave)
@@ -438,7 +456,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
 
 
-            var treeNode = new GlueElementNodeViewModel(treeNodeToAddTo, entitySave);
+            var treeNode = new GlueElementNodeViewModel(treeNodeToAddTo, entitySave, true);
             treeNode.Text = FileManager.RemovePath(entitySave.Name);
             treeNode.Tag = entitySave;
 
@@ -761,25 +779,272 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         private void PushSearchToContainedObject()
         {
-            VisibleRoot.Clear();
+            var searchToLower = SearchText?.ToLowerInvariant();
 
-            if(PrefixText != "s")
+            if(searchToLower != null)
             {
-                VisibleRoot.Add(EntityRootNode);
-                EntityRootNode.UpdateToSearch();
+                RefreshFlattenedList();
+            }
+            else
+            {
+                bool shouldShowScreen = false;
+                bool shouldShowEntities = false;
+                bool shouldShowGlobalContent = false;
+
+                if (PrefixText != "s")
+                {
+                    shouldShowEntities = true;
+                }
+                if (PrefixText != "e")
+                {
+                    shouldShowScreen = true;
+                }
+                if (PrefixText != "s" && PrefixText != "e" && PrefixText != "o" && PrefixText != "v")
+                {
+                    shouldShowGlobalContent = true;
+                }
+
+                if (shouldShowEntities)
+                {
+                    if (!VisibleRoot.Contains(EntityRootNode))
+                    {
+                        VisibleRoot.Insert(0, EntityRootNode);
+                    }
+                    EntityRootNode.UpdateToSearch();
+                }
+                else
+                {
+                    if (VisibleRoot.Contains(EntityRootNode))
+                    {
+                        VisibleRoot.Remove(EntityRootNode);
+                    }
+
+                }
+
+                if (shouldShowScreen)
+                {
+                    if (!VisibleRoot.Contains(ScreenRootNode))
+                    {
+                        VisibleRoot.Insert(1, ScreenRootNode);
+                    }
+                    ScreenRootNode.UpdateToSearch();
+                }
+                else
+                {
+                    if (!VisibleRoot.Contains(ScreenRootNode))
+                    {
+                        VisibleRoot.Remove(ScreenRootNode);
+                    }
+                }
+
+                if (shouldShowGlobalContent)
+                {
+                    if (!VisibleRoot.Contains(GlobalContentRootNode))
+                    {
+                        VisibleRoot.Add(GlobalContentRootNode);
+                    }
+
+                    GlobalContentRootNode.UpdateToSearch();
+                }
+                else
+                {
+                    if (VisibleRoot.Contains(GlobalContentRootNode))
+                    {
+                        VisibleRoot.Remove(GlobalContentRootNode);
+                    }
+                }
+
             }
 
-            if(PrefixText != "e")
+
+
+        }
+
+        private void RefreshFlattenedList()
+        {
+            var searchToLower = SearchText?.ToLowerInvariant();
+
+            FlattenedItems.Clear();
+
+            var hasPrefix = !string.IsNullOrEmpty(PrefixText);
+
+            List<StateSaveCategory> categories = new List<StateSaveCategory>();
+            List<StateSave> states = new List<StateSave>();
+            List<NamedObjectSave> namedObjects = new List<NamedObjectSave>();
+            List<CustomVariable> variables = new List<CustomVariable>();
+            List<EventResponseSave> events = new List<EventResponseSave>(); 
+
+            var showStates = !hasPrefix;
+            var showCategories = !hasPrefix;
+            var showObjects = !hasPrefix || PrefixText == "o";
+            var showVariables = !hasPrefix || PrefixText == "v";
+            var showEvents = !hasPrefix;
+
+            foreach (var entity in GlueState.Self.CurrentGlueProject.Entities.ToArray())
             {
-                VisibleRoot.Add(ScreenRootNode);
-                ScreenRootNode.UpdateToSearch();
-            }
-            if(PrefixText != "s" && PrefixText != "e" && PrefixText != "o" && PrefixText != "v")
-            {
-                VisibleRoot.Add(GlobalContentRootNode);
-                GlobalContentRootNode.UpdateToSearch();
+                if(!hasPrefix || PrefixText == "e")
+                {
+                    if (entity.Name.ToLowerInvariant().Contains(searchToLower))
+                    {
+                        FlattenedItems.Add(new GlueElementNodeViewModel(null, entity, false));
+                    }
+                }
+
+                AddInternalObjectsToLists(entity);
             }
 
+            foreach (var screen in GlueState.Self.CurrentGlueProject.Screens.ToArray())
+            {
+                if(!hasPrefix || PrefixText == "s")
+                {
+                    if (screen.Name.ToLowerInvariant().Contains(searchToLower))
+                    {
+                        FlattenedItems.Add(new GlueElementNodeViewModel(null, screen, false));
+                    }
+                }
+
+                AddInternalObjectsToLists(screen);
+            }
+
+            if(!hasPrefix || PrefixText == "f")
+            {
+                foreach (var file in ObjectFinder.Self.GetAllReferencedFiles())
+                {
+                    if(file.Name.ToLowerInvariant().Contains(searchToLower))
+                    {
+                        FlattenedItems.Add(NodeFor(file));
+                    }
+                }
+            }
+
+            foreach(var nos in namedObjects)
+            {
+                var node = new NodeViewModel(null);
+                if(nos.IsLayer)
+                {
+                    node.ImageSource = NodeViewModel.LayerIcon;
+                }
+                else if(nos.IsCollisionRelationship())
+                {
+                    node.ImageSource = NodeViewModel.CollisionIcon;
+                }
+                else
+                {
+                    node.ImageSource = NodeViewModel.EntityInstanceIcon;
+                }
+                node.Text = nos.ToString();
+                node.Tag = nos;
+                //LayersTreeNode.SelectedImageKey = "layerList.png";
+                //LayersTreeNode.ImageKey = "layerList.png";
+                FlattenedItems.Add(node);
+            }
+
+            foreach(var category in categories)
+            {
+                var treeNode = new NodeViewModel(null);
+                treeNode.ImageSource = NodeViewModel.FolderClosedIcon;
+                treeNode.Text = category.ToString();
+                treeNode.Tag = category;
+                FlattenedItems.Add(treeNode);
+            }
+            foreach(var state in states)
+            {
+                var treeNode = new NodeViewModel(null);
+                treeNode.ImageSource = NodeViewModel.StateIcon;
+                treeNode.Text = state.ToString();
+                treeNode.Tag = state;
+                FlattenedItems.Add(treeNode);
+
+            }
+
+            foreach(var variable in variables)
+            {
+                var treeNode = new NodeViewModel(null);
+                treeNode.ImageSource = NodeViewModel.VariableIcon;
+                treeNode.Text = variable.ToString();
+                treeNode.Tag = variable;
+                FlattenedItems.Add(treeNode);
+
+            }
+
+            foreach(var eventItem in events)
+            {
+                var treeNode = new NodeViewModel(null);
+                treeNode.ImageSource = NodeViewModel.EventIcon; 
+                treeNode.Text = eventItem.ToString();
+                treeNode.Tag= eventItem;
+                FlattenedItems.Add(treeNode);
+            }
+
+            NodeViewModel NodeFor(ReferencedFileSave rfs)
+            {
+                var nodeForFile = new NodeViewModel(null);
+                nodeForFile.ImageSource = NodeViewModel.FileIcon;
+                nodeForFile.Tag = rfs;
+                nodeForFile.Text = rfs.ToString();
+                return nodeForFile;
+            }
+
+            void AddInternalObjectsToLists(GlueElement element)
+            {
+                if(showStates)
+                {
+                    foreach (var state in element.AllStates)
+                    {
+                        if (state.Name.ToLowerInvariant().Contains(searchToLower))
+                        {
+                            states.Add(state);
+                        }
+                    }
+
+                }
+                if(showCategories)
+                {
+                    foreach (var category in element.StateCategoryList)
+                    {
+                        if (category.Name.ToLowerInvariant().Contains(searchToLower))
+                        {
+                            categories.Add(category);
+                        }
+                    }
+                }
+
+                if(showObjects)
+                {
+                    foreach(var item in element.AllNamedObjects)
+                    {
+                        if(item.InstanceName.ToLowerInvariant().Contains(searchToLower))
+                        {
+                            namedObjects.Add(item);
+                        }
+                    }
+                }
+                if(showVariables)
+                {
+                    foreach(var variable in element.CustomVariables)
+                    {
+                        if(variable.Name.ToLowerInvariant().Contains(searchToLower))
+                        {
+                            variables.Add(variable);
+                        }
+                    }
+                }
+                if(showEvents)
+                {
+                    foreach(var eventItem in element.Events)
+                    {
+                        if(eventItem.EventName.ToLowerInvariant().Contains(searchToLower))
+                        {
+                            events.Add(eventItem);
+                        }
+                    }
+                }
+            }
+
+            if(FlattenedSelectedItem == null)
+            {
+                FlattenedSelectedItem = FlattenedItems.FirstOrDefault();
+            }
         }
     }
 }

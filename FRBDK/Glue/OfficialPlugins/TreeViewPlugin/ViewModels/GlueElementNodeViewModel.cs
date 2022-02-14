@@ -20,28 +20,31 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
 
 
-        public GlueElementNodeViewModel(NodeViewModel parent, GlueElement glueElement) : base(parent)
+        public GlueElementNodeViewModel(NodeViewModel parent, GlueElement glueElement, bool createChildrenNodes) : base(parent)
         {
             Tag = glueElement;
             this.glueElement = glueElement;
 
-            FilesNode = new ReferencedFilesRootNodeViewModel(this, glueElement) { Text = "Files" };
-            Children.Add(FilesNode);
+            if(createChildrenNodes)
+            {
+                FilesNode = new ReferencedFilesRootNodeViewModel(this, glueElement) { Text = "Files" };
+                Children.Add(FilesNode);
 
-            ObjectsNode = new NamedObjectsRootNodeViewModel(this, glueElement) { Text = "Objects" };
-            Children.Add(ObjectsNode);
+                ObjectsNode = new NamedObjectsRootNodeViewModel(this, glueElement) { Text = "Objects" };
+                Children.Add(ObjectsNode);
 
-            VariablesNode = new CustomVariablesRootNodeViewModel(this, glueElement) { Text = "Variables" };
-            Children.Add(VariablesNode);
+                VariablesNode = new CustomVariablesRootNodeViewModel(this, glueElement) { Text = "Variables" };
+                Children.Add(VariablesNode);
 
-            StatesNode = new StatesRootNodeViewModel(this, glueElement) { Text = "States" };
-            Children.Add(StatesNode);
+                StatesNode = new StatesRootNodeViewModel(this, glueElement) { Text = "States" };
+                Children.Add(StatesNode);
 
-            EventsNode = new EventsRootViewModel(this, glueElement) { Text = "Events" };
-            Children.Add(EventsNode);
+                EventsNode = new EventsRootViewModel(this, glueElement) { Text = "Events" };
+                Children.Add(EventsNode);
 
-            CodeNode = new CodeRootViewModel(this, glueElement) { Text = "Code" };
-            Children.Add(CodeNode);
+                CodeNode = new CodeRootViewModel(this, glueElement) { Text = "Code" };
+                Children.Add(CodeNode);
+            }
 
             if(glueElement is ScreenSave)
             {
@@ -51,6 +54,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 ImageSource = EntityIcon;
             }
+
+            Text = glueElement.GetStrippedName();
 
             IsExpanded = false;
         }

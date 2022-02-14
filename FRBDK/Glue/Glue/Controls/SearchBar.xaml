@@ -20,6 +20,7 @@
                         x:Name="SearchTextBox"
                         Text="{Binding SearchBoxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                         KeyDown="TextBox_KeyDown"
+                        PreviewKeyDown="SearchTextBox_PreviewKeyDown"
                         GotFocus="TextBox_GotFocus"
                         LostFocus="TextBox_LostFocus" Grid.ColumnSpan="2"
                         ></TextBox>

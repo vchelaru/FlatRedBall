@@ -51,8 +51,39 @@
             </Button>
 
         </StackPanel>
-        <controls:SearchBar Grid.Row="1" x:Name="SearchBar" ClearSearchButtonClicked="SearchBar_ClearSearchButtonClicked"></controls:SearchBar>
+        <controls:SearchBar Grid.Row="1" x:Name="SearchBar" 
+                            ClearSearchButtonClicked="SearchBar_ClearSearchButtonClicked" 
+                            ArrowKeyPushed="SearchBar_ArrowKeyPushed"
+                            EnterPressed="SearchBar_EnterPressed"
+                            ></controls:SearchBar>
+
+        <ListBox x:Name="FlatList" 
+                 ItemsSource= "{Binding FlattenedItems}"
+                 SelectedItem ="{Binding FlattenedSelectedItem}"
+                 Grid.Row="2"
+                 Visibility="{Binding SearchListVisibility}"
+                 PreviewMouseLeftButtonDown="FlatList_MouseLeftButtonDown"
+                 >
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid x:Name="ItemGrid">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Image Grid.Column="0" Source="{Binding ImageSource}" Width="18" Margin="0 0 4 0"/>
+                        <pt:EditableTextBlock Grid.Column="1" Text="{Binding Text}" 
+                                              FontWeight="{Binding FontWeight}" 
+                                              />
+                        <!--IsEditing="{Binding IsEditing}"-->
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        
         <pt:TreeListBox x:Name="MainTreeView" 
+                        Visibility="{Binding MainTreeViewVisibility}"
                         Grid.Row="2" 
                         SelectionMode="Single" 
                         AllowDrop="True"

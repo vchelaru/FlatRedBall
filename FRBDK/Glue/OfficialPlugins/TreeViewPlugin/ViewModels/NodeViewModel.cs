@@ -546,15 +546,16 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     IsExpanded = true;
                 }
 
-                VisibleChildren.Clear();
+                //VisibleChildren.Clear();
 
                 int expectedVisibleChildrenCount = 0;
 
                 for(int i = 0; i < children.Count; i++)
                 {
                     var child = children[i];
+                    var alreadyContained = VisibleChildren.Contains(child);
                     var shouldBeIncluded = child.IndirectlyMatchesSearch;
-                    if(shouldBeIncluded)
+                    if(shouldBeIncluded && !alreadyContained)
                     {
                         expectedVisibleChildrenCount++;
 
@@ -581,19 +582,16 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                             //}
                         }
                     }
-                    else
+                    else if(!shouldBeIncluded && alreadyContained)
                     {
-                        if(VisibleChildren.Contains(child))
-                        {
-                            VisibleChildren.Remove(child);
-                        }
+                        VisibleChildren.Remove(child);
                         child.IsExpanded = false;
                     }
                 }
 
                 // At this point all the visible children should match the normal Children, at least up to the
                 // Children.Count. If there are any extra VisibleTreeNodes, then they've been removed so let's get rid of them:
-                while(VisibleChildren.Count > expectedVisibleChildrenCount)
+                //while(VisibleChildren.Count > expectedVisibleChildrenCount)
 
                 if(Tag == null && VisibleChildren.Count == 0 && !string.IsNullOrWhiteSpace(MainTreeViewViewModel.PrefixText))
                 {

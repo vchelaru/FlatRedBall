@@ -1,8 +1,10 @@
-﻿using FlatRedBall.Glue.FormHelpers;
+﻿using FlatRedBall.Glue.Events;
+using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using OfficialPlugins.TreeViewPlugin.Logic;
 using OfficialPlugins.TreeViewPlugin.ViewModels;
@@ -303,33 +305,6 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             }
         }
 
-        #region Searching
-
-        private void TextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if(e.Key == Key.Escape)
-            {
-                ViewModel.SearchBoxText = string.Empty;
-            }
-        }
-
-        private void ClearSearchButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
-        {
-            ViewModel.IsSearchBoxFocused = true;
-        }
-
-        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            ViewModel.IsSearchBoxFocused = false;
-        }
-
-        #endregion
-
         // This makes the selection not happen on push+move as explained here:
         // https://stackoverflow.com/questions/2645265/wpf-listbox-click-and-drag-selects-other-items
         private void MainTreeView_MouseMove(object sender, MouseEventArgs e)
@@ -344,6 +319,8 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             GlueCommands.Self.TreeNodeCommands.HandleTreeNodeDoubleClicked(selectedNode);
         }
 
+        #region Back/Forward navigation
+
         private void BackButtonClicked(object sender, RoutedEventArgs e)
         {
             TreeNodeStackManager.Self.GoBack();
@@ -354,10 +331,14 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             TreeNodeStackManager.Self.GoForward();
         }
 
+        #endregion
+
         private void CollapseAllClicked(object sender, RoutedEventArgs e)
         {
             ViewModel.CollapseAll();
         }
+
+        #region Searching
 
         private void SearchBar_ClearSearchButtonClicked()
         {
@@ -373,5 +354,58 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 SelectionLogic.CurrentNode?.ExpandParentsRecursively();
             }
         }
+
+        private void FlatList_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var objectPushed = e.OriginalSource;
+            var frameworkElementPushed = (objectPushed as FrameworkElement);
+
+            var searchNodePushed = frameworkElementPushed?.DataContext as NodeViewModel;
+            SelectSearchNode(searchNodePushed);
+        }
+
+        private void SelectSearchNode(NodeViewModel searchNodePushed)
+        {
+            var foundSomething = true;
+            if (searchNodePushed?.Tag is ScreenSave screenSave) GlueState.Self.CurrentScreenSave = screenSave;
+            else if (searchNodePushed?.Tag is EntitySave entitySave) GlueState.Self.CurrentEntitySave = entitySave;
+            else if (searchNodePushed?.Tag is ReferencedFileSave rfs) GlueState.Self.CurrentReferencedFileSave = rfs;
+            else if (searchNodePushed?.Tag is NamedObjectSave nos) GlueState.Self.CurrentNamedObjectSave = nos;
+            else if (searchNodePushed?.Tag is StateSaveCategory stateSaveCategory) GlueState.Self.CurrentStateSaveCategory = stateSaveCategory;
+            else if (searchNodePushed?.Tag is StateSave stateSave) GlueState.Self.CurrentStateSave = stateSave;
+            else if (searchNodePushed?.Tag is CustomVariable variable) GlueState.Self.CurrentCustomVariable = variable;
+            else if (searchNodePushed?.Tag is EventResponseSave eventResponse) GlueState.Self.CurrentEventResponseSave = eventResponse;
+            else foundSomething = false;
+
+            if (foundSomething)
+            {
+                ViewModel.SearchBoxText = String.Empty;
+            }
+        }
+
+        private void SearchBar_ArrowKeyPushed(Key key)
+        {
+            var selectedIndex = this.FlatList.SelectedIndex;
+            if(key == Key.Up && selectedIndex > 0)
+            {
+                this.FlatList.SelectedIndex--;
+                this.FlatList.ScrollIntoView(this.FlatList.SelectedItem);
+            }
+            else if(key == Key.Down && selectedIndex < FlatList.Items.Count-1)
+            {
+                this.FlatList.SelectedIndex++;
+                this.FlatList.ScrollIntoView(this.FlatList.SelectedItem);
+            }
+        }
+        private void SearchBar_EnterPressed()
+        {
+            if(FlatList.SelectedItem != null)
+            {
+                SelectSearchNode(FlatList.SelectedItem as NodeViewModel);
+            }
+        }
+
+        #endregion
+
     }
 }
