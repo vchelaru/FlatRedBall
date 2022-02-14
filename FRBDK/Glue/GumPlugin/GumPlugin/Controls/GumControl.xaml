@@ -74,11 +74,6 @@
                 </StackPanel>
             </GroupBox>
 
-            <Button Click="Button_Click_2">Normal Task</Button>
-            <Button Click="Button_Click">Normal Task (5)</Button>
-            <Button Click="Button_Click_3">Async Task</Button>
-            <Button Click="Button_Click_1">Async Task (5)</Button>
-
         </StackPanel>
     </ScrollViewer>
 </UserControl>
