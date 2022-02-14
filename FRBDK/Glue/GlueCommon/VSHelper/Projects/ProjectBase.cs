@@ -187,9 +187,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 var extension = FileManager.GetExtension(returnValue);
                 if(!string.IsNullOrEmpty(extension))
                 {
-                    if (System.IO.Directory.Exists(returnValue) &&
-                        !returnValue.EndsWith("/") &&
-                        !returnValue.EndsWith("\\"))
+                    if (!returnValue.EndsWith("/") &&
+                        !returnValue.EndsWith("\\") &&
+                        // do the slow call last to early out
+                        System.IO.Directory.Exists(returnValue)
+                        )
                     {
                         returnValue += "/";
                     }
