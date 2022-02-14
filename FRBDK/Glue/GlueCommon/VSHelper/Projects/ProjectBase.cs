@@ -185,11 +185,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 // If we do a Directory.Exists here, it can be slow (especially since it's called so frequently
                 // Let's assume that if it has an extension it is not a directory
                 var extension = FileManager.GetExtension(returnValue);
-                if(!string.IsNullOrEmpty(extension))
+                if(string.IsNullOrEmpty(extension) && 
+                    !returnValue.EndsWith("/") &&
+                    !returnValue.EndsWith("\\"))
                 {
-                    if (!returnValue.EndsWith("/") &&
-                        !returnValue.EndsWith("\\") &&
-                        // do the slow call last to early out
+                    if (// do the slow call last to early out
                         System.IO.Directory.Exists(returnValue)
                         )
                     {

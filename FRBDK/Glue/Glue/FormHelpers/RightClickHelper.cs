@@ -326,7 +326,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 else if (((ITreeNode)Parent).IsGlobalContentContainerNode())
                 {
 
-                    string contentDirectory = ProjectManager.MakeAbsolute("GlobalContent", true);
+                    string contentDirectory = ProjectManager.MakeAbsolute("GlobalContent/", true);
 
                     string returnValue = contentDirectory + Text;
                     if (((ITreeNode)this).IsDirectoryNode())

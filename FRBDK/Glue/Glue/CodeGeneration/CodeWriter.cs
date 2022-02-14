@@ -2349,7 +2349,7 @@ namespace FlatRedBallAddOns.Entities
 
         public static List<FilePath> GetAllCodeFilesFor(IElement element)
         {
-            string directory = FileManager.GetDirectory(ProjectManager.MakeAbsolute(element.Name));
+            string directory = FileManager.GetDirectory(ProjectManager.MakeAbsolute(element.Name + "/"));
 
 
             List<FilePath> foundCsFiles = FileManager.GetAllFilesInDirectory(directory, "cs")
