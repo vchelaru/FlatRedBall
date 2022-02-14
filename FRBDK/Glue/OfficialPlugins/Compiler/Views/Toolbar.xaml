@@ -13,18 +13,25 @@
         <xctk:SplitButton x:Name="SplitButton" Width="148" Height="22" 
                           HorizontalContentAlignment="Left"
                           Visibility="{Binding PlayVisibility}"
-                          Click="HandleButtonClick" Closed="SplitButton_Closed">
+                          Click="HandleButtonClick"
+                          Opened="SplitButton_Opened"
+                          Closed="SplitButton_Closed">
             <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                 <Image ToolTip="Run Game" Source="/OfficialPluginsCore;component/Compiler/Icons/play.png"></Image>
                 <TextBlock Margin="5,0,0,0" Text="{Binding StartupScreenName}"></TextBlock>
             </StackPanel>
             <xctk:SplitButton.DropDownContent>
                 <StackPanel MinWidth="50">
-                    <controls:SearchBar ClearSearchButtonClicked="SearchBar_ClearSearchButtonClicked"></controls:SearchBar>
+                    <controls:SearchBar 
+                        ClearSearchButtonClicked="SearchBar_ClearSearchButtonClicked"
+                        ArrowKeyPushed="SearchBar_ArrowKeyPushed"
+                        EnterPressed="SearchBar_EnterPressed"
+                        
+                        ></controls:SearchBar>
                     <ItemsControl x:Name="ItemsControl" ItemsSource="{Binding AvailableScreens}" >
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <MenuItem Header="{Binding}" Click="MenuItem_Click"/>
+                                <controls:HighlightableMenuItem Header="{Binding}" IsSelected="{Binding IsSelected}" Click="MenuItem_Click"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

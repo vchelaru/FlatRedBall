@@ -1,13 +1,33 @@
 ﻿using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using System.Windows;
 
 namespace OfficialPluginsCore.Compiler.ViewModels
 {
+    #region ScreenReferenceViewModel class
+    public class ScreenReferenceViewModel : ViewModel
+    {
+        public string ScreenName
+        {
+            get;set;
+        }
+
+        public bool IsSelected
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public override string ToString() => ScreenName;
+    }
+    #endregion
+
     public class RunnerToolbarViewModel : ViewModel, ISearchBarViewModel
     {
         public string StartupScreenName
@@ -16,12 +36,12 @@ namespace OfficialPluginsCore.Compiler.ViewModels
             set => Set(value);
         }
 
-        public List<string> AllScreens { get; set; } = new List<string>();
+        public List<ScreenReferenceViewModel> AllScreens { get; set; } = new List<ScreenReferenceViewModel>();
 
-        public ObservableCollection<string> AvailableScreens
+        public ObservableCollection<ScreenReferenceViewModel> AvailableScreens
         {
             get; set;
-        } = new ObservableCollection<string>();
+        } = new ObservableCollection<ScreenReferenceViewModel>();
 
         public bool IsPlayVisible
         {
@@ -75,11 +95,17 @@ namespace OfficialPluginsCore.Compiler.ViewModels
             {
                 var shouldInclude =
                     string.IsNullOrWhiteSpace(searchTextToLowerInvariant) ||
-                    item.ToLowerInvariant().Contains(searchTextToLowerInvariant);
+                    item.ScreenName.ToLowerInvariant().Contains(searchTextToLowerInvariant);
                 if (shouldInclude)
                 {   
                     AvailableScreens.Add(item);
                 }
+            }
+
+            var selected = AvailableScreens.FirstOrDefault(item => item.IsSelected);
+            if(selected == null && AvailableScreens.Count > 0)
+            {
+                AvailableScreens[0].IsSelected = true;
             }
         }
     }

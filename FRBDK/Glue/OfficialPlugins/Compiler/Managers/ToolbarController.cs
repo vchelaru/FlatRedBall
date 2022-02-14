@@ -89,13 +89,19 @@ namespace OfficialPluginsCore.Compiler.Managers
         {
             toolbarViewModel.AllScreens.Clear();
 
-            if(GlueState.Self.CurrentGlueProject != null)
+            if (GlueState.Self.CurrentGlueProject != null)
             {
                 var sortedScreens = GlueState.Self.CurrentGlueProject.Screens
-                    .Select(item => ScreenName(item))
+                    .Select(item =>
+                    {
+                        return new ScreenReferenceViewModel()
+                        {
+                            ScreenName = ScreenName(item)
+                        };
+                    })
                     .ToList();
 
-                sortedScreens.Sort(StrCmpLogicalW);
+                sortedScreens.Sort((first, second) => StrCmpLogicalW(first.ScreenName, second.ScreenName));
 
                 toolbarViewModel.AllScreens.AddRange(sortedScreens);
                 toolbarViewModel.RefreshAvailableScreens();
