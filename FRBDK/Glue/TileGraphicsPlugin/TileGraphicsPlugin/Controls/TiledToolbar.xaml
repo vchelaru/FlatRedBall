@@ -16,12 +16,16 @@
             x:Name="DropDownButton">
             <xctk:SplitButton.DropDownContent>
                 <StackPanel x:Name="TiledDropdown" MinWidth="100">
-                    <controls:SearchBar ClearSearchButtonClicked="SearchBar_ClearSearchButtonClicked"></controls:SearchBar>
+                    <controls:SearchBar 
+                        ClearSearchButtonClicked="SearchBar_ClearSearchButtonClicked" 
+                        ArrowKeyPushed="SearchBar_ArrowKeyPushed"
+                        EnterPressed="SearchBar_EnterPressed"
+                        ></controls:SearchBar>
 
                     <ItemsControl x:Name="ItemsControl" ItemsSource="{Binding AvailableTmxFiles}" >
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <MenuItem Header="{Binding}" Click="MenuItem_Click"/>
+                                <controls:HighlightableMenuItem Header="{Binding}" IsSelected="{Binding IsSelected}" Click="MenuItem_Click" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

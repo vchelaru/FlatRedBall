@@ -368,6 +368,8 @@ namespace TileGraphicsPlugin
                 .ToList();
 
             tiledToolbar.FillDropdown(availableTmxFiles);
+
+            tiledToolbar.HighlightFirstItem();
         }
 
         private void ReactToNewFile(ReferencedFileSave newFile)

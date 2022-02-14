@@ -24,7 +24,7 @@ using System.Windows.Shapes;
 
 namespace TiledPluginCore.Controls
 {
-
+    #region TmxReferenceViewModel Class
     public class TmxReferenceViewModel : ViewModel
     {
         public FilePath FilePath
@@ -36,10 +36,18 @@ namespace TiledPluginCore.Controls
         [DependsOn(nameof(FilePath))]
         public string Display => FilePath.NoPath;
 
+        public bool IsSelected
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public override string ToString() => Display;
 
         public TmxReferenceViewModel(FilePath filePath) => FilePath = filePath;
     }
+
+    #endregion
 
     public class TiledToolbarViewModel : ViewModel, ISearchBarViewModel
     {
@@ -161,11 +169,17 @@ namespace TiledPluginCore.Controls
             }
 
             ViewModel.RefreshAvailableTmxFiles();
+
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             var vm = (sender as MenuItem).DataContext as TmxReferenceViewModel;
+            SelectTmxReference(vm);
+        }
+
+        private static void SelectTmxReference(TmxReferenceViewModel vm)
+        {
             var startInfo = new ProcessStartInfo();
             startInfo.FileName = vm.FilePath.FullPath;
             startInfo.UseShellExecute = true;
@@ -182,6 +196,73 @@ namespace TiledPluginCore.Controls
         private void DropDownButton_Closed(object sender, RoutedEventArgs e)
         {
             ViewModel.SearchBoxText = null;
+        }
+
+        private void SearchBar_ArrowKeyPushed(Key key)
+        {
+            if (key == Key.Up)
+            {
+                var highlighted = ViewModel.AvailableTmxFiles.FirstOrDefault(item => item.IsSelected);
+                if (highlighted != null)
+                {
+                    var index = ViewModel.AvailableTmxFiles.IndexOf(highlighted);
+
+                    if (index > 0)
+                    {
+                        highlighted.IsSelected = false;
+
+                        ViewModel.AvailableTmxFiles[index - 1].IsSelected = true;
+                    }
+                }
+                else
+                {
+                    var toSelect = ViewModel.AvailableTmxFiles.FirstOrDefault();
+                    if (toSelect != null)
+                    {
+                        toSelect.IsSelected = true;
+                    }
+                }
+            }
+            else if (key == Key.Down)
+            {
+                var highlighted = ViewModel.AvailableTmxFiles.FirstOrDefault(item => item.IsSelected);
+                if (highlighted != null)
+                {
+                    var index = ViewModel.AvailableTmxFiles.IndexOf(highlighted);
+
+                    if (index < ViewModel.AvailableTmxFiles.Count - 1)
+                    {
+                        highlighted.IsSelected = false;
+
+                        ViewModel.AvailableTmxFiles[index + 1].IsSelected = true;
+                    }
+                }
+                else
+                {
+                    var toSelect = ViewModel.AvailableTmxFiles.FirstOrDefault();
+                    if (toSelect != null)
+                    {
+                        toSelect.IsSelected = true;
+                    }
+                }
+            }
+        }
+
+        private void SearchBar_EnterPressed()
+        {
+            var highlighted = ViewModel.AvailableTmxFiles.FirstOrDefault(item => item.IsSelected);
+            if(highlighted != null)
+            {
+                SelectTmxReference(highlighted);
+            }
+        }
+
+        internal void HighlightFirstItem()
+        {
+            if(ViewModel.AvailableTmxFiles.Count > 0)
+            {
+                ViewModel.AvailableTmxFiles[0].IsSelected = true;
+            }
         }
     }
 
