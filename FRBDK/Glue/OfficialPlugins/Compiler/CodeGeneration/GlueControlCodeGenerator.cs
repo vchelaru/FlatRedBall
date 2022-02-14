@@ -33,7 +33,10 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             {
                 compilerDirectives += "#define SupportsEditMode\r\n";
             }
-            if((bool)PluginManager.CallPluginMethod("Gum Plugin", "HasGum"))
+
+            var hasGumResponse = PluginManager.CallPluginMethod("Gum Plugin", "HasGum");
+            var asBool = hasGumResponse as bool?;
+            if (asBool == true)
             {
                 compilerDirectives += "#define HasGum\r\n";
             }
