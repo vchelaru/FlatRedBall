@@ -388,7 +388,7 @@ namespace Glue
             return toReturn;
         }
 
-        public Task Invoke<T>(Func<Task> func)
+        public Task Invoke(Func<Task> func)
         {
             var wasInTask = TaskManager.Self.IsInTask();
             Task toReturn = Task.CompletedTask;

@@ -632,16 +632,18 @@ namespace OfficialPlugins.Compiler
 
                                 if (screen != null)
                                 {
-                                    await GlueCommands.Self.DoOnUiThread(async () =>
+                                    await GlueCommands.Self.DoOnUiThread(() =>
                                     {
                                         if(GlueState.Self.CurrentElement != screen)
                                         {
                                             GlueState.Self.CurrentElement = screen;
+
+                                            return Task.CompletedTask;
                                         }
                                         else
                                         {
                                             // the screens are the same, so push the object selection from Glue to the game:
-                                            await RefreshManager.Self.PushGlueSelectionToGame();
+                                            return RefreshManager.Self.PushGlueSelectionToGame();
                                         }
                                     });
                                 }
