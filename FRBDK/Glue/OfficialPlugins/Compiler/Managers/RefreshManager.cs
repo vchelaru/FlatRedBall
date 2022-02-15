@@ -591,7 +591,7 @@ namespace OfficialPlugins.Compiler.Managers
 
             // Determine these values before resetting the LastDtoPushedToGame...
             var needsScreenReload = LastDtoPushedToGame?.GlueElement == element &&
-                !string.IsNullOrEmpty(LastDtoPushedToGame.StateName) &&
+                !string.IsNullOrEmpty(LastDtoPushedToGame?.StateName) &&
                 string.IsNullOrEmpty(forcedStateName ?? GlueState.Self.CurrentStateSave?.Name);
 
             // ... now reset it

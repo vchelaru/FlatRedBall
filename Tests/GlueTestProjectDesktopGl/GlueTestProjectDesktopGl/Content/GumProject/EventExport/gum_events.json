@@ -1,5 +1,27 @@
 {
   "UserEvents": {
-    "vchel": []
+    "vchel": [
+      {
+        "NewName": "RedRectContainer",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 0,
+        "TimestampUtc": "2022-02-14T19:11:05.871193Z"
+      },
+      {
+        "NewName": "RedRectContainer.ColoredRectangleInstance",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-14T19:11:11.9270026Z"
+      },
+      {
+        "NewName": " InputScreenGum.ColoredRectangleInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2022-02-14T19:11:46.9216238Z"
+      }
+    ]
   }
 }

@@ -219,6 +219,11 @@
     <LinkType>ReferenceOriginal</LinkType>
   </ComponentReference>
   <ComponentReference>
+    <Name>RedRectContainer</Name>
+    <ElementType>Component</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </ComponentReference>
+  <ComponentReference>
     <Name>SameNameComponent</Name>
     <ElementType>Component</ElementType>
     <LinkType>ReferenceOriginal</LinkType>
