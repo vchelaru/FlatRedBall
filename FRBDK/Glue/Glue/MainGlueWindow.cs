@@ -1,57 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using FlatRedBall.Glue.AutomatedGlue;
-using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.IO;
-using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.FormHelpers;
-using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue;
 using FlatRedBall.Glue.Elements;
-using System.Diagnostics;
-using FlatRedBall.Glue.VSHelpers;
-using FlatRedBall.Utilities;
-using EditorObjects.Parsing;
 using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.FormHelpers.PropertyGrids;
 using FlatRedBall.Instructions;
-using FlatRedBall.Glue.ContentPipeline;
-using FlatRedBall.Glue.Projects;
 using FlatRedBall.Glue.Plugins;
-using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.TypeConversions;
-using System.Drawing;
 using FlatRedBall.Glue.Managers;
-using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
-using System.ServiceModel;
-//using GlueWcfServices;
-//using Glue.Wcf;
-//using FlatRedBall.Glue.Wcf;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Data;
-//using System.Management;
 using FlatRedBall.Glue.SetVariable;
-using Container = EditorObjects.IoC;
-using FlatRedBall.Glue.UnreferencedFiles;
-using FlatRedBall.Glue.Controls.ProjectSync;
-using System.Linq;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using System.Threading.Tasks;
 using FlatRedBall.Instructions.Reflection;
 using Microsoft.Xna.Framework.Audio;
-using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
 using System.Windows.Forms.Integration;
 using GlueFormsCore.Controls;
-using FlatRedBall.Glue.CodeGeneration;
-
-//using EnvDTE;
 
 namespace Glue
 {
@@ -99,6 +73,8 @@ namespace Glue
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Move += HandleWindowMoved;
 
+            //this.KeyPress += (sender, args) => HotkeyManager.Self.TryHandleKeys(args.Ke)
+
             // this fires continually, so instead overriding wndproc
             this.ResizeEnd += HandleResizeEnd;
 
@@ -108,183 +84,6 @@ namespace Glue
             this.Controls.Add(this.mMenu);
 
         }
-
-        private void HandleResizeEnd(object sender, EventArgs e)
-        {
-            PluginManager.ReactToMainWindowResizeEnd();
-        }
-
-        // I thought this was needed but I think it will work with ResizeEnd event, I had a bug initially.
-        //protected override void WndProc(ref Message m)
-        //{
-        //    const int WM_EXITSIZEMOVE = 0x232;
-
-        //    switch (m.Msg)
-        //    {
-        //        case WM_EXITSIZEMOVE:
-        //            base.WndProc(ref m);
-        //            GlueCommands.Self.PrintOutput("End resize");
-        //            PluginManager.ReactToMainWindowResizeEnd();
-        //            break;
-        //        default:
-        //            base.WndProc(ref m);
-        //            break;
-        //    }
-        //}
-
-        private void HandleWindowMoved(object sender, EventArgs e)
-        {
-            PluginManager.ReactToMainWindowMoved();
-        }
-
-        private void CreateMenuStrip()
-        {
-            this.mMenu = new System.Windows.Forms.MenuStrip();
-            // 
-            // mMenu
-            // 
-            this.mMenu.Location = new System.Drawing.Point(0, 0);
-            this.mMenu.Name = "mMenu";
-            this.mMenu.Size = new System.Drawing.Size(764, 24);
-            this.mMenu.TabIndex = 1;
-            this.mMenu.Text = "menuStrip1";
-            this.MainMenuStrip = this.mMenu;
-        }
-
-        private void CreateMainWpfPanel()
-        {
-            var wpfHost = new ElementHost();
-            wpfHost.Dock = DockStyle.Fill;
-            MainWpfControl = new MainPanelControl();
-            wpfHost.Child = MainWpfControl;
-            this.Controls.Add(wpfHost);
-            this.PerformLayout();
-        }
-
-        public void Invoke(Action action)
-        {
-            var wasInTask = TaskManager.Self.IsInTask();
-
-            this.Invoke((MethodInvoker)delegate
-            {
-                try
-                {
-                    if(wasInTask)
-                    {
-                        RunOnUiThreadTasked(action);
-                    }
-                    else
-                    {
-                        action();
-                    }
-                }
-                catch(Exception e)
-                {
-                    if(!IsDisposed && !ProjectManager.WantsToCloseProject)
-                    {
-                        throw e;
-                    }
-                    // otherwise, we don't care, they're exiting
-                }
-            });
-        }
-
-        public T Invoke<T>(Func<T> func)
-        {
-            var wasInTask = TaskManager.Self.IsInTask();
-
-            T toReturn = default(T);
-            base.Invoke((MethodInvoker)delegate
-            {
-                try
-                {
-                    if (wasInTask)
-                    {
-                        RunOnUiThreadTasked(func);
-                    }
-                    else
-                    {
-                        func();
-                    }
-                }
-                catch (Exception e)
-                {
-                    if (!IsDisposed)
-                    {
-                        throw e;
-                    }
-                    // otherwise, we don't care, they're exiting
-                }
-            });
-
-            return toReturn;
-        }
-
-        public Task Invoke<T>(Func<Task> func)
-        {
-            var wasInTask = TaskManager.Self.IsInTask();
-            Task toReturn = Task.CompletedTask;
-
-            base.Invoke((MethodInvoker)delegate
-            {
-                try
-                {
-                    if (wasInTask)
-                    {
-                        toReturn = RunOnUiThreadTasked(func);
-                    }
-                    else
-                    {
-                        toReturn = func();
-                    }
-                }
-                catch (Exception e)
-                {
-                    if (!IsDisposed)
-                    {
-                        throw e;
-                    }
-                    // otherwise, we don't care, they're exiting
-                }
-            });
-
-            return toReturn;
-        }
-
-        public Task<T> Invoke<T>(Func<Task<T>> func)
-        {
-            var wasInTask = TaskManager.Self.IsInTask();
-            Task<T> toReturn = Task.FromResult(default(T));
-
-            base.Invoke((MethodInvoker)delegate
-            {
-                try
-                {
-                    if (wasInTask)
-                    {
-                        toReturn = RunOnUiThreadTasked(func);
-                    }
-                    else
-                    {
-                        toReturn = func();
-                    }
-                }
-                catch (Exception e)
-                {
-                    if (!IsDisposed)
-                    {
-                        throw e;
-                    }
-                    // otherwise, we don't care, they're exiting
-                }
-            });
-
-            return toReturn;
-        }
-
-        private void RunOnUiThreadTasked(Action action) => action();
-        private T RunOnUiThreadTasked<T>(Func<T> action) => action();
-        private Task<T> RunOnUiThreadTasked<T>(Func<Task<T>> action) => action();
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -307,7 +106,6 @@ namespace Glue
                 }
             }
         }
-
         internal async void StartUpGlue()
         {
             // Some stuff can be parallelized.  We're going to run stuff
@@ -471,7 +269,192 @@ namespace Glue
                     this.BringToFront();
                 }
             }
+
+            // this gives the search bar focus, so hotkeys work
+            // If we don't wait a little bit, it won't work, so give 
+            // a small delay:
+            await Task.Delay(100);
+            PluginManager.ReactToCtrlF();
         }
+
+        private void HandleResizeEnd(object sender, EventArgs e)
+        {
+            PluginManager.ReactToMainWindowResizeEnd();
+        }
+
+        // I thought this was needed but I think it will work with ResizeEnd event, I had a bug initially.
+        //protected override void WndProc(ref Message m)
+        //{
+        //    const int WM_EXITSIZEMOVE = 0x232;
+
+        //    switch (m.Msg)
+        //    {
+        //        case WM_EXITSIZEMOVE:
+        //            base.WndProc(ref m);
+        //            GlueCommands.Self.PrintOutput("End resize");
+        //            PluginManager.ReactToMainWindowResizeEnd();
+        //            break;
+        //        default:
+        //            base.WndProc(ref m);
+        //            break;
+        //    }
+        //}
+
+        private void HandleWindowMoved(object sender, EventArgs e)
+        {
+            PluginManager.ReactToMainWindowMoved();
+        }
+
+        private void CreateMenuStrip()
+        {
+            this.mMenu = new System.Windows.Forms.MenuStrip();
+            // 
+            // mMenu
+            // 
+            this.mMenu.Location = new System.Drawing.Point(0, 0);
+            this.mMenu.Name = "mMenu";
+            this.mMenu.Size = new System.Drawing.Size(764, 24);
+            this.mMenu.TabIndex = 1;
+            this.mMenu.Text = "menuStrip1";
+            this.MainMenuStrip = this.mMenu;
+        }
+
+        private void CreateMainWpfPanel()
+        {
+            var wpfHost = new ElementHost();
+            wpfHost.Dock = DockStyle.Fill;
+            MainWpfControl = new MainPanelControl();
+            wpfHost.Child = MainWpfControl;
+            this.Controls.Add(wpfHost);
+            this.PerformLayout();
+        }
+
+        public void Invoke(Action action)
+        {
+            var wasInTask = TaskManager.Self.IsInTask();
+
+            this.Invoke((MethodInvoker)delegate
+            {
+                try
+                {
+                    if(wasInTask)
+                    {
+                        RunOnUiThreadTasked(action);
+                    }
+                    else
+                    {
+                        action();
+                    }
+                }
+                catch(Exception e)
+                {
+                    if(!IsDisposed && !ProjectManager.WantsToCloseProject)
+                    {
+                        throw e;
+                    }
+                    // otherwise, we don't care, they're exiting
+                }
+            });
+        }
+
+        public T Invoke<T>(Func<T> func)
+        {
+            var wasInTask = TaskManager.Self.IsInTask();
+
+            T toReturn = default(T);
+            base.Invoke((MethodInvoker)delegate
+            {
+                try
+                {
+                    if (wasInTask)
+                    {
+                        RunOnUiThreadTasked(func);
+                    }
+                    else
+                    {
+                        func();
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (!IsDisposed)
+                    {
+                        throw e;
+                    }
+                    // otherwise, we don't care, they're exiting
+                }
+            });
+
+            return toReturn;
+        }
+
+        public Task Invoke(Func<Task> func)
+        {
+            var wasInTask = TaskManager.Self.IsInTask();
+            Task toReturn = Task.CompletedTask;
+
+            base.Invoke((MethodInvoker)delegate
+            {
+                try
+                {
+                    if (wasInTask)
+                    {
+                        toReturn = RunOnUiThreadTasked(func);
+                    }
+                    else
+                    {
+                        toReturn = func();
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (!IsDisposed)
+                    {
+                        throw e;
+                    }
+                    // otherwise, we don't care, they're exiting
+                }
+            });
+
+            return toReturn;
+        }
+
+        public Task<T> Invoke<T>(Func<Task<T>> func)
+        {
+            var wasInTask = TaskManager.Self.IsInTask();
+            Task<T> toReturn = Task.FromResult(default(T));
+
+            base.Invoke((MethodInvoker)delegate
+            {
+                try
+                {
+                    if (wasInTask)
+                    {
+                        toReturn = RunOnUiThreadTasked(func);
+                    }
+                    else
+                    {
+                        toReturn = func();
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (!IsDisposed)
+                    {
+                        throw e;
+                    }
+                    // otherwise, we don't care, they're exiting
+                }
+            });
+
+            return toReturn;
+        }
+
+        private void RunOnUiThreadTasked(Action action) => action();
+        private T RunOnUiThreadTasked<T>(Func<T> action) => action();
+        private Task<T> RunOnUiThreadTasked<T>(Func<Task<T>> action) => action();
+
+
 
         private void AddErrorReporters()
         {

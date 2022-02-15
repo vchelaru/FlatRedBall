@@ -59,6 +59,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             MainGlueWindow.Self.Invoke(action);
         }
 
+        public Task DoOnUiThread(Func<Task> func) => MainGlueWindow.Self.Invoke(func);
+
         public T DoOnUiThread<T>(Func<T> func) => MainGlueWindow.Self.Invoke(func);
 
         public void CloseGlueProject(bool shouldSave = true, bool isExiting = false, GlueFormsCore.Controls.InitializationWindowWpf initWindow = null)
