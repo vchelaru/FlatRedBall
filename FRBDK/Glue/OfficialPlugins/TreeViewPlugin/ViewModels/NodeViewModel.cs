@@ -546,16 +546,15 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     IsExpanded = true;
                 }
 
-                //VisibleChildren.Clear();
+                VisibleChildren.Clear();
 
                 int expectedVisibleChildrenCount = 0;
 
                 for(int i = 0; i < children.Count; i++)
                 {
                     var child = children[i];
-                    var alreadyContained = VisibleChildren.Contains(child);
                     var shouldBeIncluded = child.IndirectlyMatchesSearch;
-                    if(shouldBeIncluded && !alreadyContained)
+                    if(shouldBeIncluded)
                     {
                         expectedVisibleChildrenCount++;
 
@@ -582,9 +581,12 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                             //}
                         }
                     }
-                    else if(!shouldBeIncluded && alreadyContained)
+                    else
                     {
-                        VisibleChildren.Remove(child);
+                        if (VisibleChildren.Contains(child))
+                        {
+                            VisibleChildren.Remove(child);
+                        }
                         child.IsExpanded = false;
                     }
                 }
