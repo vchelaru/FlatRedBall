@@ -258,9 +258,9 @@ namespace GlueFormsCore.Controls
             // If this is coming from a text box, don't try to apply hotkeys
             // Maybe in the future we want to be selective, like only apply certain
             // hotkeys (ctrl+f) but not others (delete)?
-            var shouldTryHandlingHotkey = e.OriginalSource is TextBox == false;
+            var isTextBox = e.OriginalSource is TextBox;
 
-            if (shouldTryHandlingHotkey && HotkeyManager.Self.TryHandleKeys(e))
+            if (HotkeyManager.Self.TryHandleKeys(e, isTextBox))
             {
                 e.Handled = true;
             }

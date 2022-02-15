@@ -59,7 +59,7 @@ namespace FlatRedBall.Glue.Managers
         }
 
 
-        public bool TryHandleKeys(System.Windows.Input.KeyEventArgs e)
+        public bool TryHandleKeys(System.Windows.Input.KeyEventArgs e, bool isTextBoxFocused)
         {
             var ctrlDown = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
             var altDown = (Keyboard.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt;

@@ -71,7 +71,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 HotkeyManager.HandleDeletePressed();
                 e.Handled = true;
             }
-            else if(HotkeyManager.Self.TryHandleKeys(e))
+            else if(HotkeyManager.Self.TryHandleKeys(e, isTextBoxFocused:false))
             {
                 e.Handled = true;
             }

@@ -1,57 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using FlatRedBall.Glue.AutomatedGlue;
-using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.IO;
-using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.FormHelpers;
-using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue;
 using FlatRedBall.Glue.Elements;
-using System.Diagnostics;
-using FlatRedBall.Glue.VSHelpers;
-using FlatRedBall.Utilities;
-using EditorObjects.Parsing;
 using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.FormHelpers.PropertyGrids;
 using FlatRedBall.Instructions;
-using FlatRedBall.Glue.ContentPipeline;
-using FlatRedBall.Glue.Projects;
 using FlatRedBall.Glue.Plugins;
-using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.TypeConversions;
-using System.Drawing;
 using FlatRedBall.Glue.Managers;
-using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
-using System.ServiceModel;
-//using GlueWcfServices;
-//using Glue.Wcf;
-//using FlatRedBall.Glue.Wcf;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Data;
-//using System.Management;
 using FlatRedBall.Glue.SetVariable;
-using Container = EditorObjects.IoC;
-using FlatRedBall.Glue.UnreferencedFiles;
-using FlatRedBall.Glue.Controls.ProjectSync;
-using System.Linq;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using System.Threading.Tasks;
 using FlatRedBall.Instructions.Reflection;
 using Microsoft.Xna.Framework.Audio;
-using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
 using System.Windows.Forms.Integration;
 using GlueFormsCore.Controls;
-using FlatRedBall.Glue.CodeGeneration;
-
-//using EnvDTE;
 
 namespace Glue
 {
@@ -99,6 +73,8 @@ namespace Glue
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Move += HandleWindowMoved;
 
+            //this.KeyPress += (sender, args) => HotkeyManager.Self.TryHandleKeys(args.Ke)
+
             // this fires continually, so instead overriding wndproc
             this.ResizeEnd += HandleResizeEnd;
 
@@ -107,6 +83,198 @@ namespace Glue
             //this.Controls.SetChildIndex(this.MainPanelSplitContainer, 0);
             this.Controls.Add(this.mMenu);
 
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                StartUpGlue();
+            }
+            catch (FileNotFoundException fnfe)
+            {
+                if (fnfe.ToString().Contains("Microsoft.Xna.Framework.dll"))
+                {
+                    var message = "Could not load Glue, probably because XNA 4 is not installed. Click OK to go to the XNA runtime page to install the XNA runtime, then run Glue again";
+                    MessageBox.Show(message);
+                    System.Diagnostics.Process.Start("https://www.microsoft.com/en-us/download/details.aspx?id=20914");
+                    this.Close();
+                }
+                else
+                {
+                    throw fnfe;
+                }
+            }
+        }
+        internal async void StartUpGlue()
+        {
+            // Some stuff can be parallelized.  We're going to run stuff
+            // that can be parallelized in parallel, and then block to wait for
+            // all tasks to finish when we need to
+
+            AddObjectsToIocContainer();
+
+            AddErrorReporters();
+
+            var initializationWindow = new InitializationWindowWpf();
+
+            // Initialize GlueGui before using it:
+            GlueGui.Initialize(mMenu);
+            initializationWindow.Show();
+
+            initializationWindow.Message = "Initializing Glue Systems";
+            Application.DoEvents();
+
+            // Add Glue.Common
+            PropertyValuePair.AdditionalAssemblies.Add(typeof(PlatformSpecificType).Assembly);
+
+            // Monogame:
+            PropertyValuePair.AdditionalAssemblies.Add(typeof(SoundEffectInstance).Assembly);
+
+            // Async stuff
+            {
+
+                initializationWindow.SubMessage = "Initializing EventManager"; Application.DoEvents();
+                TaskManager.Self.Add(() => EventManager.Initialize(), "Initializing EventManager");
+
+                Application.DoEvents();
+
+                initializationWindow.SubMessage = "Initializing ExposedVariableManager"; Application.DoEvents();
+                try
+                {
+                    ExposedVariableManager.Initialize();
+                }
+                catch (Exception excep)
+                {
+                    GlueGui.ShowException("Could not load assemblies - you probably need to rebuild Glue.", "Error", excep);
+                    return;
+                }
+            }
+
+            initializationWindow.SubMessage = "Initialize Error Reporting"; Application.DoEvents();
+            ErrorReporter.Initialize(this);
+
+            initializationWindow.SubMessage = "Initializing Right Click Menus"; Application.DoEvents();
+            RightClickHelper.Initialize();
+            initializationWindow.SubMessage = "Initializing Property Grids"; Application.DoEvents();
+            PropertyGridRightClickHelper.Initialize();
+            initializationWindow.SubMessage = "Initializing InstructionManager"; Application.DoEvents();
+            InstructionManager.Initialize();
+            initializationWindow.SubMessage = "Initializing TypeConverter"; Application.DoEvents();
+            TypeConverterHelper.InitializeClasses();
+
+            initializationWindow.SubMessage = "Initializing Navigation Stack"; Application.DoEvents();
+
+            initializationWindow.Message = "Loading Glue Settings"; Application.DoEvents();
+            // We need to load the glue settings before loading the plugins so that we can 
+            // shut off plugins according to settings
+            LoadGlueSettings(initializationWindow);
+
+
+            // Initialize before loading GlueSettings;
+            // Also initialize before loading plugins so that plugins
+            // can access the standard ATIs
+            string startupPath =
+                FileManager.GetDirectory(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
+            AvailableAssetTypes.Self.Initialize(startupPath);
+
+            initializationWindow.Message = "Loading Plugins"; Application.DoEvents();
+            List<string> pluginsToIgnore = new List<string>();
+            if (GlueState.Self.CurrentPluginSettings != null)
+            {
+                pluginsToIgnore = GlueState.Self.CurrentPluginSettings.PluginsToIgnore;
+            }
+
+            // This plugin initialization needs to happen before LoadGlueSettings
+            // EVentually we can break this out
+            // Vic asks - why does it need to happen first?
+            //mainExplorerPlugin = new MainExplorerPlugin();
+            //mainExplorerPlugin.Initialize();
+
+            PluginManager.Initialize(true, pluginsToIgnore);
+
+            ShareUiReferences(PluginCategories.All);
+
+            try
+            {
+                FileManager.PreserveCase = true;
+
+                initializationWindow.Message = "Initializing File Watch";
+                Application.DoEvents();
+                // Initialize the FileWatchManager before LoadGlueSettings
+                FileWatchManager.Initialize();
+
+                initializationWindow.Message = "Loading Custom Type Info";
+                Application.DoEvents();
+
+
+                Application.DoEvents();
+                // Gotta do this too before Loading Glue Settings
+                ProjectManager.Initialize();
+
+                initializationWindow.Message = "Loading Project";
+                Application.DoEvents();
+
+                // LoadSettings before loading projects
+                EditorData.LoadPreferenceSettings();
+
+                while (TaskManager.Self.AreAllAsyncTasksDone == false)
+                {
+                    System.Threading.Thread.Sleep(100);
+                }
+                await LoadProjectConsideringSettingsAndArgs(initializationWindow);
+
+                // This needs to happen after loading the project:
+                ShareUiReferences(PluginCategories.ProjectSpecific);
+
+                Application.DoEvents();
+                EditorData.FileAssociationSettings.LoadSettings();
+
+                EditorData.LoadGlueLayoutSettings();
+
+                //MainPanelSplitContainer.UpdateSizesFromSettings();
+
+                if (EditorData.GlueLayoutSettings.Maximized)
+                    WindowState = FormWindowState.Maximized;
+
+
+                //ProcessLocations.Initialize();
+
+                ProjectManager.mForm = this;
+
+            }
+            catch (Exception exc)
+            {
+                if (GlueGui.ShowGui)
+                {
+                    System.Windows.Forms.MessageBox.Show(exc.ToString());
+
+                    FileManager.SaveText(exc.ToString(),
+                                         FileManager.UserApplicationDataForThisApplication + "InitError.txt");
+                    PluginManager.ReceiveError(exc.ToString());
+
+                    HasErrorOccurred = true;
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            finally
+            {
+                if (GlueGui.ShowGui)
+                {
+                    initializationWindow.Close();
+                    this.BringToFront();
+                }
+            }
+
+            // this gives the search bar focus, so hotkeys work
+            // If we don't wait a little bit, it won't work, so give 
+            // a small delay:
+            await Task.Delay(100);
+            PluginManager.ReactToCtrlF();
         }
 
         private void HandleResizeEnd(object sender, EventArgs e)
@@ -286,192 +454,7 @@ namespace Glue
         private T RunOnUiThreadTasked<T>(Func<T> action) => action();
         private Task<T> RunOnUiThreadTasked<T>(Func<Task<T>> action) => action();
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            try
-            {
-                StartUpGlue();
-            }
-            catch (FileNotFoundException fnfe)
-            {
-                if (fnfe.ToString().Contains("Microsoft.Xna.Framework.dll"))
-                {
-                    var message = "Could not load Glue, probably because XNA 4 is not installed. Click OK to go to the XNA runtime page to install the XNA runtime, then run Glue again";
-                    MessageBox.Show(message);
-                    System.Diagnostics.Process.Start("https://www.microsoft.com/en-us/download/details.aspx?id=20914");
-                    this.Close();
-                }
-                else
-                {
-                    throw fnfe;
-                }
-            }
-        }
 
-        internal async void StartUpGlue()
-        {
-            // Some stuff can be parallelized.  We're going to run stuff
-            // that can be parallelized in parallel, and then block to wait for
-            // all tasks to finish when we need to
-
-            AddObjectsToIocContainer();
-
-            AddErrorReporters();
-
-            var initializationWindow = new InitializationWindowWpf();
-
-            // Initialize GlueGui before using it:
-            GlueGui.Initialize(mMenu);
-            initializationWindow.Show();
-
-            initializationWindow.Message = "Initializing Glue Systems";
-            Application.DoEvents();
-
-            // Add Glue.Common
-            PropertyValuePair.AdditionalAssemblies.Add(typeof(PlatformSpecificType).Assembly);
-
-            // Monogame:
-            PropertyValuePair.AdditionalAssemblies.Add(typeof(SoundEffectInstance).Assembly);
-
-            // Async stuff
-            {
-
-                initializationWindow.SubMessage = "Initializing EventManager"; Application.DoEvents();
-                TaskManager.Self.Add(() => EventManager.Initialize(), "Initializing EventManager");
-
-                Application.DoEvents();
-
-                initializationWindow.SubMessage = "Initializing ExposedVariableManager"; Application.DoEvents();
-                try
-                {
-                    ExposedVariableManager.Initialize();
-                }
-                catch (Exception excep)
-                {
-                    GlueGui.ShowException("Could not load assemblies - you probably need to rebuild Glue.", "Error", excep);
-                    return;
-                }
-            }
-
-            initializationWindow.SubMessage = "Initialize Error Reporting"; Application.DoEvents();
-            ErrorReporter.Initialize(this);
-
-            initializationWindow.SubMessage = "Initializing Right Click Menus"; Application.DoEvents();
-            RightClickHelper.Initialize();
-            initializationWindow.SubMessage = "Initializing Property Grids"; Application.DoEvents();
-            PropertyGridRightClickHelper.Initialize();
-            initializationWindow.SubMessage = "Initializing InstructionManager"; Application.DoEvents();
-            InstructionManager.Initialize();
-            initializationWindow.SubMessage = "Initializing TypeConverter"; Application.DoEvents();
-            TypeConverterHelper.InitializeClasses();
-
-            initializationWindow.SubMessage = "Initializing Navigation Stack"; Application.DoEvents();
-
-            initializationWindow.Message = "Loading Glue Settings"; Application.DoEvents();
-            // We need to load the glue settings before loading the plugins so that we can 
-            // shut off plugins according to settings
-            LoadGlueSettings(initializationWindow);
-
-
-            // Initialize before loading GlueSettings;
-            // Also initialize before loading plugins so that plugins
-            // can access the standard ATIs
-            string startupPath =
-                FileManager.GetDirectory(System.Reflection.Assembly.GetExecutingAssembly().Location);
-
-            AvailableAssetTypes.Self.Initialize(startupPath);
-
-            initializationWindow.Message = "Loading Plugins"; Application.DoEvents();
-            List<string> pluginsToIgnore = new List<string>();
-            if (GlueState.Self.CurrentPluginSettings != null)
-            {
-                pluginsToIgnore = GlueState.Self.CurrentPluginSettings.PluginsToIgnore;
-            }
-
-            // This plugin initialization needs to happen before LoadGlueSettings
-            // EVentually we can break this out
-            // Vic asks - why does it need to happen first?
-            //mainExplorerPlugin = new MainExplorerPlugin();
-            //mainExplorerPlugin.Initialize();
-
-            PluginManager.Initialize(true, pluginsToIgnore);
-
-            ShareUiReferences(PluginCategories.All);
-
-            try
-            {
-                FileManager.PreserveCase = true;
-
-                initializationWindow.Message = "Initializing File Watch";
-                Application.DoEvents();
-                // Initialize the FileWatchManager before LoadGlueSettings
-                FileWatchManager.Initialize();
-
-                initializationWindow.Message = "Loading Custom Type Info";
-                Application.DoEvents();
-
-
-                Application.DoEvents();
-                // Gotta do this too before Loading Glue Settings
-                ProjectManager.Initialize();
-
-                initializationWindow.Message = "Loading Project";
-                Application.DoEvents();
-
-                // LoadSettings before loading projects
-                EditorData.LoadPreferenceSettings();
-
-                while (TaskManager.Self.AreAllAsyncTasksDone == false)
-                {
-                    System.Threading.Thread.Sleep(100);
-                }
-                await LoadProjectConsideringSettingsAndArgs(initializationWindow);
-
-                // This needs to happen after loading the project:
-                ShareUiReferences(PluginCategories.ProjectSpecific);
-
-                Application.DoEvents();
-                EditorData.FileAssociationSettings.LoadSettings();
-
-                EditorData.LoadGlueLayoutSettings();
-
-                //MainPanelSplitContainer.UpdateSizesFromSettings();
-
-                if (EditorData.GlueLayoutSettings.Maximized)
-                    WindowState = FormWindowState.Maximized;
-
-
-                //ProcessLocations.Initialize();
-
-                ProjectManager.mForm = this;
-
-            }
-            catch (Exception exc)
-            {
-                if (GlueGui.ShowGui)
-                {
-                    System.Windows.Forms.MessageBox.Show(exc.ToString());
-
-                    FileManager.SaveText(exc.ToString(),
-                                         FileManager.UserApplicationDataForThisApplication + "InitError.txt");
-                    PluginManager.ReceiveError(exc.ToString());
-
-                    HasErrorOccurred = true;
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            finally
-            {
-                if (GlueGui.ShowGui)
-                {
-                    initializationWindow.Close();
-                    this.BringToFront();
-                }
-            }
-        }
 
         private void AddErrorReporters()
         {
