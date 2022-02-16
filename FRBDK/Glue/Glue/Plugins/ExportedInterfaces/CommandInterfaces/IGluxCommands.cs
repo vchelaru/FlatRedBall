@@ -70,7 +70,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
             EditorObjects.SaveClasses.BuildToolAssociation buildToolAssociation, bool isBuiltFile, object options,
             GlueElement sourceElement, string directoryOfTreeNode, bool selectFileAfterCreation = true);
 
-        void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateCode = true);
+        void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateAndSave = true);
 
         #endregion
 

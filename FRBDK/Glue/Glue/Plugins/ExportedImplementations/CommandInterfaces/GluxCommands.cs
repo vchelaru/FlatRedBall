@@ -758,14 +758,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        public void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateCode = true)
+        public void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateAndSave = true)
         {
             TaskManager.Self.AddOrRunIfTasked(() =>
-                RemoveReferencedFileInternal(referencedFileToRemove, additionalFilesToRemove, regenerateCode),
+                RemoveReferencedFileInternal(referencedFileToRemove, additionalFilesToRemove, regenerateAndSave),
                 $"Removing referenced file {referencedFileToRemove}");
         }
 
-        public void RemoveReferencedFileInternal(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateCode = true)
+        public void RemoveReferencedFileInternal(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateAndSave = true)
         { 
             var isContained = GlueState.Self.Find.IfReferencedFileSaveIsReferenced(referencedFileToRemove);
             /////////////////////////Early Out//////////////////////////////
@@ -855,7 +855,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                             }
                         }
                     }
-                    if (regenerateCode)
+                    if (regenerateAndSave)
                     {
                         GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
                     }
@@ -881,7 +881,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 var elements = ObjectFinder.Self.GetAllElementsReferencingFile(referencedFileToRemove.Name);
 
-                if (regenerateCode)
+                if (regenerateAndSave)
                 {
                     foreach (var element in elements)
                     {
@@ -955,7 +955,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             PluginManager.ReactToFileRemoved(container, referencedFileToRemove);
 
-            GluxCommands.Self.SaveGlux();
+            if(regenerateAndSave)
+            {
+                GluxCommands.Self.SaveGlux();
+            }
         }
 
         private static void ReactToRemovalIfCsv(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove)
@@ -2015,6 +2018,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
 
             FillWithCodeFilesForElement(filesThatCouldBeRemoved, entityToRemove);
+            FillWithJsonFilesForElement(filesThatCouldBeRemoved, entityToRemove);
 
             GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
 
@@ -2053,7 +2057,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // For more information see the RemoveEntity function
             for (int i = screenToRemove.ReferencedFiles.Count - 1; i > -1; i--)
             {
-                GluxCommands.Self.RemoveReferencedFile(screenToRemove.ReferencedFiles[i], filesThatCouldBeRemoved);
+                GluxCommands.Self.RemoveReferencedFile(screenToRemove.ReferencedFiles[i], filesThatCouldBeRemoved, regenerateAndSave:false);
             }
 
             ProjectManager.GlueProjectSave.Screens.Remove(screenToRemove);
@@ -2082,13 +2086,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            IElement element = screenToRemove;
-
             PluginManager.ReactToScreenRemoved(screenToRemove, filesThatCouldBeRemoved);
 
 
-            FillWithCodeFilesForElement(filesThatCouldBeRemoved, element);
-
+            FillWithCodeFilesForElement(filesThatCouldBeRemoved, screenToRemove);
+            FillWithJsonFilesForElement(filesThatCouldBeRemoved, screenToRemove);
 
             GlueCommands.Self.ProjectCommands.SaveProjects();
             GluxCommands.Self.SaveGlux();
@@ -2119,7 +2121,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        static void FillWithCodeFilesForElement(List<string> filesThatCouldBeRemoved, IElement element)
+        static void FillWithJsonFilesForElement(List<string> filesThatCouldBeRemoved, GlueElement element)
+        {
+            string extension = element is ScreenSave
+                ? GlueProjectSave.ScreenExtension
+                : GlueProjectSave.EntityExtension;
+            filesThatCouldBeRemoved.Add(element.Name + "." + extension);
+        }
+
+        static void FillWithCodeFilesForElement(List<string> filesThatCouldBeRemoved, GlueElement element)
         {
             string elementName = element.Name;
 
