@@ -1694,6 +1694,8 @@ namespace FlatRedBall.Glue.FormHelpers
                 glueState.CurrentReferencedFileSave ??
                 glueState.CurrentCustomVariable ??
                 glueState.CurrentEventResponseSave ??
+                // screens and entities will be current when the objects earlier in this statement are also current,
+                // so only make them the currentObject if the types above are not current.
                 (object)glueState.CurrentEntitySave ??
                 glueState.CurrentScreenSave;
 
@@ -1716,8 +1718,26 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
                 {
+                    GlueElement deletedElement = null;
                     #region Find out if the user really wants to remove this - don't ask if askAreYouSure is false
                     DialogResult reallyRemoveResult = DialogResult.Yes;
+
+                    // Some objects may use a custom delete dialog. Those types should be checked here first:
+                    if(currentObject is ScreenSave screenToRemove)
+                    {
+
+                        await TaskManager.Self.AddAsync(() =>
+                        {
+                            if (RemoveScreen(screenToRemove, filesToRemove))
+                            {
+                                deletedElement = screenToRemove;
+                            }
+
+                        }, "Removing Screen");
+
+                        askAreYouSure = false;
+                    }
+
 
                     if (askAreYouSure)
                     {
@@ -1730,7 +1750,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     if (reallyRemoveResult == DialogResult.Yes)
                     {
-                        GlueElement deletedElement = null;
                         #region If is NamedObjectSave
                         // handled above in AskToRemoveObject
                         #endregion
@@ -1808,22 +1827,6 @@ namespace FlatRedBall.Glue.FormHelpers
                         }
                         #endregion
 
-                        #region Else if is ScreenSave
-
-                        // Then test higher if deep didn't get removed
-                        else if (GlueState.Self.CurrentScreenSave != null)
-                        {
-                            var screenToRemove = GlueState.Self.CurrentScreenSave;
-                            await TaskManager.Self.AddAsync(() =>
-                            {
-                                RemoveScreen(screenToRemove, filesToRemove);
-                                deletedElement = screenToRemove;
-
-                            }, "Removing Screen");
-
-                        }
-
-                        #endregion
 
                         #region Else if is EntitySave
 
@@ -2001,31 +2004,30 @@ namespace FlatRedBall.Glue.FormHelpers
         }
 
 
-        public static void RemoveScreen(ScreenSave screenToRemove, List<string> filesThatCouldBeRemoved)
+        private static bool RemoveScreen(ScreenSave screenToRemove, List<string> filesThatCouldBeRemoved)
         {
+            string message = $"Are you sure you want to delete {screenToRemove}?";
+
             List<ScreenSave> inheritingScreens = ObjectFinder.Self.GetAllScreensThatInheritFrom(screenToRemove);
-            string message = null;
             if (inheritingScreens.Count != 0)
             {
-                message = "The Screen " + screenToRemove.ToString() + " is the base for the following Screens:";
+                message += "\n\nWarning: the Screen " + screenToRemove.GetStrippedName() + " is the base for the following Screens:";
                 for (int i = 0; i < inheritingScreens.Count; i++)
                 {
                     message += "\n" + inheritingScreens[i].ToString();
                 }
             }
-            DialogResult result = DialogResult.Yes;
-            if (message != null)
-            {
-                message += "\n\nDo you really want to remove this Screen?";
-                result = MessageBox.Show(message, "Are you sure?", MessageBoxButtons.YesNo);
-            }
 
+            DialogResult result = MessageBox.Show(message, "Are you sure?", MessageBoxButtons.YesNo);
+
+            var wasRemoved = false;
             if (result == DialogResult.Yes)
             {
-
+                wasRemoved = true;
 
                 GlueCommands.Self.GluxCommands.RemoveScreen(screenToRemove, filesThatCouldBeRemoved);
             }
+            return wasRemoved;
         }
 
         private static void AskToRemoveCustomVariablesWithoutState(IElement element)
