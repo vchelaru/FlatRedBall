@@ -60,7 +60,12 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         private void MainTreeView_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.Key == Key.Enter)
+            var ctrlDown = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
+            var altDown = (Keyboard.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt;
+            var shiftDown = (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
+
+
+            if (e.Key == Key.Enter)
             {
                 var selectedNode = SelectionLogic.CurrentNode;
                 GlueCommands.Self.TreeNodeCommands.HandleTreeNodeDoubleClicked(selectedNode);
@@ -70,6 +75,43 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             {
                 HotkeyManager.HandleDeletePressed();
                 e.Handled = true;
+            }
+            else if(e.Key==Key.N && ctrlDown)
+            {
+                ITreeNode currentNode = SelectionLogic.CurrentNode;
+                if(currentNode.IsFilesContainerNode())
+                {
+                    GlueCommands.Self.DialogCommands.ShowAddNewFileDialog();
+                }
+                else if(currentNode.IsRootNamedObjectNode())
+                {
+                    GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog();
+                }
+                else if(currentNode.IsRootCustomVariablesNode())
+                {
+                    GlueCommands.Self.DialogCommands.ShowAddNewVariableDialog();
+                }
+                else if(currentNode.IsRootStateNode())
+                {
+                    GlueCommands.Self.DialogCommands.ShowAddNewCategoryDialog();
+                }
+                else if(currentNode.IsStateCategoryNode())
+                {
+                    // show new state? That doesn't currently exist in the DialogCommands
+                }
+                else if(currentNode.IsRootEventsNode())
+                {
+                    GlueCommands.Self.DialogCommands.ShowAddNewEventDialog((NamedObjectSave)null);
+                }
+                else if(currentNode.IsRootEntityNode())
+                {
+                    GlueCommands.Self.DialogCommands.ShowAddNewEntityDialog();
+                }
+                else if(currentNode.IsScreenNode())
+                {
+                    GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog();
+                }
+                e.Handled=true;
             }
             else if(HotkeyManager.Self.TryHandleKeys(e, isTextBoxFocused:false))
             {
@@ -296,6 +338,8 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         #endregion
 
+        #region Selection
+
         private void MainTreeView_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if(nodeWaitingOnSelection != null)
@@ -313,11 +357,17 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 (sender as ListBox).ReleaseMouseCapture();
         }
 
+        #endregion
+
+        #region Double-click
+
         private void MainTreeView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             var selectedNode = SelectionLogic.CurrentNode;
             GlueCommands.Self.TreeNodeCommands.HandleTreeNodeDoubleClicked(selectedNode);
         }
+
+        #endregion
 
         #region Back/Forward navigation
 

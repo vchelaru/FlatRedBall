@@ -129,11 +129,6 @@ namespace FlatRedBall.Glue.FormHelpers
         public bool IsElementNode() => Tag is GlueElement;
         public bool IsReferencedFile() => Tag is ReferencedFileSave;
 
-        public bool IsRootObjectNode()
-        {
-            return Text == "Objects" && Tag == null;
-        }
-
         public ITreeNode GetContainingElementTreeNode()
         {
             if (IsElementNode())
@@ -609,7 +604,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #region IsRootObjectNode
 
-            else if (targetNode.IsRootObjectNode())
+            else if (targetNode.IsRootNamedObjectNode())
             {
                 bool isSameObject = false;
 

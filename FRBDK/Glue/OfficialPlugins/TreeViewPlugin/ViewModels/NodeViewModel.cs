@@ -490,7 +490,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     switch (MainTreeViewViewModel.PrefixText)
                     {
                         case "f":
-                            if(asITreeNode.IsRootCodeNode() || asITreeNode.IsRootObjectNode() || asITreeNode.IsRootCustomVariablesNode() || asITreeNode.IsRootStateNode() || asITreeNode.IsRootEventsNode())
+                            if(asITreeNode.IsRootCodeNode() || asITreeNode.IsRootNamedObjectNode() || asITreeNode.IsRootCustomVariablesNode() || asITreeNode.IsRootStateNode() || asITreeNode.IsRootEventsNode())
                             {
                                 forceExclude = true;
                             }
@@ -514,7 +514,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                             }
                             break;
                         case "v":
-                            if (asITreeNode.IsRootCodeNode() || asITreeNode.IsRootObjectNode() || asITreeNode.IsFilesContainerNode() || asITreeNode.IsRootStateNode() || asITreeNode.IsRootEventsNode())
+                            if (asITreeNode.IsRootCodeNode() || asITreeNode.IsRootNamedObjectNode() || asITreeNode.IsFilesContainerNode() || asITreeNode.IsRootStateNode() || asITreeNode.IsRootEventsNode())
                             {
                                 forceExclude = true;
                             }
