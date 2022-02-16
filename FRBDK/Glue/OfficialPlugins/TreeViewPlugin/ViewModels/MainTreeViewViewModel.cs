@@ -240,7 +240,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 }
                 else
                 {
-                    var treeNodeRelativeDirectory = ((ITreeNode) elementTreeNode).GetRelativePath();
+                    var treeNodeRelativeDirectory = ((ITreeNode) elementTreeNode).GetRelativeFilePath();
 
                     var elementNameModified = element.Name.Replace("\\", "/") + "/";
 
@@ -570,7 +570,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     if (((ITreeNode)treeNode).IsDirectoryNode())
                     {
 
-                        string directory = ProjectManager.MakeAbsolute(treeNode.GetRelativePath(), isGlobalContent);
+                        string directory = ProjectManager.MakeAbsolute(treeNode.GetRelativeFilePath(), isGlobalContent);
 
                         directory = FileManager.Standardize(directory.ToLower());
 

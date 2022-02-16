@@ -302,9 +302,14 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public ITreeNode Root => Parent?.Root ?? this;
 
-        public string GetRelativePath()
+        /// <summary>
+        /// Returns the file path of the selected node relative to the project root. Note that this is NOT the relative path considering
+        /// the tree nodes.
+        /// </summary>
+        /// <returns></returns>
+        public string GetRelativeFilePath()
         {
-
+            var asTreeNode = (ITreeNode)this;
             #region Directory tree node
             if (((ITreeNode)this).IsDirectoryNode())
             {
@@ -336,7 +341,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 else
                 {
                     // It's a tree node, so make it have a "/" at the end
-                    return Parent.GetRelativePath() + Text + "/";
+                    return Parent.GetRelativeFilePath() + Text + "/";
                 }
             }
             #endregion
@@ -356,25 +361,34 @@ namespace FlatRedBall.Glue.FormHelpers
             }
             #endregion
 
-            else if (((ITreeNode)this).IsFilesContainerNode())
+            else if (asTreeNode.IsFilesContainerNode())
             {
                 // don't append "Files" here, because adding "Files" causes problems when searching for files
 
                 //string valueToReturn = Parent.GetRelativePath() + this.Text + "/";
-                string valueToReturn = Parent.GetRelativePath();
+                string valueToReturn = Parent.GetRelativeFilePath();
 
 
 
                 return valueToReturn;
             }
-            else if (((ITreeNode)this).IsFolderInFilesContainerNode())
+            else if (asTreeNode.IsFolderInFilesContainerNode())
             {
-                return Parent.GetRelativePath() + Text + "/";
+                return Parent.GetRelativeFilePath() + Text + "/";
             }
-            else if (((ITreeNode)this).IsReferencedFile())
+            else if (asTreeNode.IsReferencedFile())
             {
-                string toReturn = Parent.GetRelativePath() + Text;
+                string toReturn = Parent.GetRelativeFilePath() + Text;
                 toReturn = toReturn.Replace("/", "\\");
+                return toReturn;
+            }
+            else if(asTreeNode.IsCodeNode())
+            {
+                var toReturn = Parent.GetRelativeFilePath();
+                // take of "code" and the name of the screen
+                toReturn = FileManager.GetDirectory(toReturn, RelativeType.Relative);
+                toReturn = FileManager.GetDirectory(toReturn, RelativeType.Relative);
+                toReturn = toReturn + Text;
                 return toReturn;
             }
             else
@@ -386,7 +400,12 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
                 else
                 {
-                    string valueToReturn = Parent.GetRelativePath() + this.Text + "/";
+                    var extension = FileManager.GetExtension(this.Text);
+                    string valueToReturn = Parent.GetRelativeFilePath() + this.Text;
+                    if(string.IsNullOrEmpty(extension))
+                    {
+                        valueToReturn += "/";
+                    }
                     return valueToReturn;
 
                 }
@@ -2099,11 +2118,11 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
                 else if (targetNode.IsDirectoryNode() || targetNode.IsGlobalContentContainerNode())
                 {
-                    locationToShow = ProjectManager.MakeAbsolute(targetNode.GetRelativePath(), true);
+                    locationToShow = ProjectManager.MakeAbsolute(targetNode.GetRelativeFilePath(), true);
                 }
                 else if (targetNode.IsFilesContainerNode() || targetNode.IsFolderInFilesContainerNode())
                 {
-                    string relativePath = targetNode.GetRelativePath();
+                    string relativePath = targetNode.GetRelativeFilePath();
 
                     // Victor Chelaru April 11, 2013
                     // RelativePath already includes "Screens/"
@@ -2125,8 +2144,9 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
                 else if (targetNode.Text.EndsWith(".cs"))
                 {
-                    locationToShow = ProjectManager.MakeAbsolute(targetNode.GetRelativePath(), false);
+                    var relativePath = targetNode.GetRelativeFilePath();
 
+                    locationToShow = ProjectManager.MakeAbsolute(relativePath, false);
                 }
 
                 string extension = FileManager.GetExtension(locationToShow);
@@ -2171,7 +2191,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (targetNode.IsDirectoryNode())
             {
-                string locationToShow = ProjectManager.MakeAbsolute(targetNode.GetRelativePath(), true);
+                string locationToShow = ProjectManager.MakeAbsolute(targetNode.GetRelativeFilePath(), true);
 
                 if (System.IO.Directory.Exists(locationToShow))
                 {
@@ -2210,7 +2230,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 forceContent = true;
             }
 
-            string absolutePath = ProjectManager.MakeAbsolute(targetNode.GetRelativePath(), forceContent);
+            string absolutePath = ProjectManager.MakeAbsolute(targetNode.GetRelativeFilePath(), forceContent);
 
             string[] files = null;
             string[] directories = null;
@@ -2282,7 +2302,7 @@ namespace FlatRedBall.Glue.FormHelpers
             if (dialogResult == DialogResult.OK)
             {
                 // entities use backslash:
-                directoryRenaming = treeNode.GetRelativePath().Replace("/", "\\");
+                directoryRenaming = treeNode.GetRelativeFilePath().Replace("/", "\\");
                 newDirectoryNameRelative = FileManager.GetDirectory(directoryRenaming, RelativeType.Relative) + inputWindow.Result + "\\";
                 newDirectoryNameAbsolute = GlueState.Self.CurrentGlueProjectDirectory + newDirectoryNameRelative;
 
@@ -2387,7 +2407,7 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             if (targetNode.IsDirectoryNode())
             {
-                string locationToShow = FileManager.RelativeDirectory + targetNode.GetRelativePath();
+                string locationToShow = FileManager.RelativeDirectory + targetNode.GetRelativeFilePath();
 
                 locationToShow = locationToShow.Replace("/", "\\");
                 Process.Start("explorer.exe", "/select," + locationToShow);

@@ -399,7 +399,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             var vm = treeNode as NodeViewModel;
             if (((ITreeNode)treeNode).IsDirectoryNode())
             {
-                string directory = treeNode.GetRelativePath();
+                string directory = treeNode.GetRelativeFilePath();
 
                 directory = ProjectManager.MakeAbsolute(directory, true);
 
@@ -432,7 +432,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 {
                     // The RFS may be contained, but see if the file names match
                     string rfsName = FileManager.Standardize(referencedFileSave.Name, null, false).ToLower();
-                    string treeNodeFile = FileManager.Standardize(treeNode.GetRelativePath(), null, false).ToLower();
+                    string treeNodeFile = FileManager.Standardize(treeNode.GetRelativeFilePath(), null, false).ToLower();
 
                     // We first need to make sure that the file is part of GlobalContentFiles.
                     // If it is, then we may have tree node in the wrong folder, so let's get rid

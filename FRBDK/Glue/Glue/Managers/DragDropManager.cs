@@ -813,7 +813,7 @@ namespace FlatRedBall.Glue.Managers
 
             EntitySave entitySave = treeNodeMoving.Tag as EntitySave;
 
-            string newRelativeDirectory = targetNode.GetRelativePath();
+            string newRelativeDirectory = targetNode.GetRelativeFilePath();
 
             string newName = newRelativeDirectory.Replace("/", "\\") + entitySave.ClassName;
 
@@ -1058,7 +1058,7 @@ namespace FlatRedBall.Glue.Managers
                 {
                     if (targetNode.GetContainingElementTreeNode() == null)
                     {
-                        string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativePath(), true);
+                        string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativeFilePath(), true);
                         MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
                     }
                     else
@@ -1070,7 +1070,7 @@ namespace FlatRedBall.Glue.Managers
                 }
                 else if (targetNode.IsFolderForGlobalContentFiles())
                 {
-                    string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativePath(), true);
+                    string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativeFilePath(), true);
                     MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
                 }
                 else if (targetNode.IsRootNamedObjectNode())
@@ -1168,7 +1168,7 @@ namespace FlatRedBall.Glue.Managers
 
                         if(isRelativeToElementBeforeMove)
                         {
-                            string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativePath(), true);
+                            string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativeFilePath(), true);
                             MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
                         }
                         else
@@ -1539,7 +1539,7 @@ namespace FlatRedBall.Glue.Managers
                 targetNode = targetNode.Parent;
             }
 
-            var directoryPath = directoryNode == null ? null : directoryNode.GetRelativePath();
+            var directoryPath = directoryNode == null ? null : directoryNode.GetRelativeFilePath();
 
             bool userCancelled = false;
             if (targetNode == null)
@@ -1576,7 +1576,7 @@ namespace FlatRedBall.Glue.Managers
 
                     if (string.IsNullOrEmpty(directoryPath))
                     {
-                        directoryPath = targetNode.GetRelativePath();
+                        directoryPath = targetNode.GetRelativeFilePath();
                     }
 
 

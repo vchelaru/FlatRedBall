@@ -193,7 +193,7 @@ namespace FlatRedBall.Glue.IO
                 var treeNode = GlueState.Self.CurrentTreeNode;
                 if (moveToSelectedFolderTreeNode && treeNode?.IsFolderForEntities() == true)
                 {
-                    var directory = treeNode.GetRelativePath();
+                    var directory = treeNode.GetRelativeFilePath();
                     GlueCommands.Self.GluxCommands.MoveEntityToDirectory(entitySave, directory);
 
                     shouldSave = true;

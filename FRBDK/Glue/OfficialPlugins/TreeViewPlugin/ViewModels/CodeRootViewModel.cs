@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Parsing;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using System;
@@ -26,7 +27,21 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 // See if there is already a tree node for this
                 NodeViewModel foundTreeNode = null;
-                string text = FileManager.MakeRelative(file.FullPath);
+                string text = file.FullPath;
+
+                if(glueElement is ScreenSave)
+                {
+                    var path = GlueState.Self.CurrentGlueProjectDirectory + "Screens/";
+                    text = FileManager.MakeRelative(text, path);
+                }
+                else
+                {
+                    var path = GlueState.Self.CurrentGlueProjectDirectory + "Entities/";
+                    text = FileManager.MakeRelative(text, path);
+                }
+                // else entity
+
+
                 foreach (var treeNode in Children)
                 {
                     if (treeNode.Text == text)

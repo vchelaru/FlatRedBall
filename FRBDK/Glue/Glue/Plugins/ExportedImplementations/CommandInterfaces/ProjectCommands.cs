@@ -623,7 +623,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 
                 //directory = GlueState.Self.ContentDirectory +
                 directory = GlueState.Self.CurrentGlueProjectDirectory +
-                        treeNodeToAddTo.GetRelativePath() +
+                        treeNodeToAddTo.GetRelativeFilePath() +
                         folderName;
                 directory = ProjectManager.MakeAbsolute(directory, true);
 
@@ -633,7 +633,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             else if (treeNodeToAddTo.IsFilesContainerNode() || treeNodeToAddTo.IsFolderInFilesContainerNode())
             {
                 string directory =
-                    treeNodeToAddTo.GetRelativePath() + folderName;
+                    treeNodeToAddTo.GetRelativeFilePath() + folderName;
 
                 Directory.CreateDirectory(ProjectManager.MakeAbsolute(directory, true));
 

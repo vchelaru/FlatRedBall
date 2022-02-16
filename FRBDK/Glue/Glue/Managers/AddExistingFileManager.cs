@@ -32,7 +32,7 @@ namespace FlatRedBall.Glue.Managers
 
             if(result == true)
             {
-                string directoryOfTreeNode = GlueState.Self.CurrentTreeNode.GetRelativePath();
+                string directoryOfTreeNode = GlueState.Self.CurrentTreeNode.GetRelativeFilePath();
                 bool userCancelled = false;
 
                 foreach(var file in viewModel.Files)

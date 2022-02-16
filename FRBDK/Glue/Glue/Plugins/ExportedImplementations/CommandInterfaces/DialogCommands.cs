@@ -495,7 +495,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     if (GlueState.Self.CurrentTreeNode?.IsDirectoryNode() == true)
                     {
-                        directory = GlueState.Self.CurrentTreeNode.GetRelativePath();
+                        directory = GlueState.Self.CurrentTreeNode.GetRelativeFilePath();
                         directory = directory.Replace('/', '\\');
                     }
 

@@ -84,7 +84,7 @@ namespace OfficialPlugins.TreeViewPlugin
                 }
                 else if(selectedTreeNode != null)
                 {
-                    SelectionLogic.SelectByPath(selectedTreeNode.GetRelativePath());
+                    SelectionLogic.SelectByPath(selectedTreeNode.GetRelativeFilePath());
                 }
                 else
                 {
