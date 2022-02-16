@@ -107,7 +107,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 {
                     GlueCommands.Self.DialogCommands.ShowAddNewEntityDialog();
                 }
-                else if(currentNode.IsScreenNode())
+                else if(currentNode.IsRootScreenNode())
                 {
                     GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog();
                 }
