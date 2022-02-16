@@ -1987,7 +1987,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // So we'll manually remove the RFS's first before removing the entire entity
             for (int i = entityToRemove.ReferencedFiles.Count - 1; i > -1; i--)
             {
-                GluxCommands.Self.RemoveReferencedFile(entityToRemove.ReferencedFiles[i], filesThatCouldBeRemoved);
+                GluxCommands.Self.RemoveReferencedFile(entityToRemove.ReferencedFiles[i], filesThatCouldBeRemoved, regenerateAndSave:false);
             }
 
 
