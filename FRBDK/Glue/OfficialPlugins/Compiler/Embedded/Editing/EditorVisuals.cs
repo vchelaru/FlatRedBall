@@ -32,6 +32,9 @@ namespace GlueControl.Editing
         static int nextRectangle = 0;
         static List<AxisAlignedRectangle> Rectangles = new List<AxisAlignedRectangle>();
 
+        static int nextCircle = 0;
+        static List<Circle> Circles = new List<Circle>();
+
         static int nextPolygon = 0;
         static List<Polygon> Polygons = new List<Polygon>();
 
@@ -214,6 +217,39 @@ namespace GlueControl.Editing
             return rectangle;
         }
 
+        public static Circle Circle(float radius, Vector3 position)
+        {
+            if (position.Z == Camera.Main.Z)
+            {
+                position.Z = 0;
+            }
+
+            Color color = Color.White;
+
+            // This screen is cleaning up, so don't make anymore objects:
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
+            {
+                return new FlatRedBall.Math.Geometry.Circle();
+            }
+
+            TryResetEveryFrameValues();
+
+            if (nextCircle == Circles.Count)
+            {
+                Circles.Add(ShapeManager.AddCircle());
+            }
+
+            var circle = Circles[nextCircle];
+            circle.Name = $"EditorVisuals Circle {nextCircle}";
+            circle.Visible = true;
+            circle.Radius = radius;
+            circle.Position = position;
+            circle.Color = color;
+            nextCircle++;
+
+            return circle;
+        }
+
         public static Polygon Polygon(Vector3 centerPosition, Color? color = null)
         {
             if (centerPosition.Z == Camera.Main.Z)
@@ -316,6 +352,10 @@ namespace GlueControl.Editing
                 {
                     rectangle.Visible = false;
                 }
+                foreach (var circle in Circles)
+                {
+                    circle.Visible = false;
+                }
                 foreach (var polygon in Polygons)
                 {
                     polygon.Visible = false;
@@ -325,6 +365,7 @@ namespace GlueControl.Editing
                 nextLine = 0;
                 nextSprite = 0;
                 nextRectangle = 0;
+                nextCircle = 0;
                 nextPolygon = 0;
             }
         }
@@ -360,6 +401,12 @@ namespace GlueControl.Editing
                 ShapeManager.Remove(rectangle);
             }
             Rectangles.Clear();
+
+            foreach (var circle in Circles)
+            {
+                ShapeManager.Remove(circle);
+            }
+            Circles.Clear();
 
             foreach (var polygon in Polygons)
             {
