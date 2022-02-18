@@ -39,7 +39,7 @@ namespace FlatRedBall.Glue.SaveClasses
             return false;
         }
 
-        public static void RefreshStatesToCustomVariables(this IElement element)
+        public static void SortStatesToCustomVariables(this IElement element)
         {
             foreach (StateSave stateSave in element.AllStates)
             {

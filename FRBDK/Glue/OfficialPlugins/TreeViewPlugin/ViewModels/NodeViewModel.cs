@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using OfficialPlugins.TreeViewPlugin.Logic;
@@ -111,10 +112,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             get => children;
         }
 
-        public ObservableCollection<NodeViewModel> VisibleChildren
-        {
-            get; set;
-        } = new ObservableCollection<NodeViewModel>();
+        public ObservableCollection<NodeViewModel> VisibleChildren => Children;
 
         IEnumerable<ITreeNode> ITreeNode.Children => children;
 
@@ -151,9 +149,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             get => Get<int>();
             set => Set(value);
         }
-
-        public bool DirectlyMatchesSearch { get; set; }
-        public bool IndirectlyMatchesSearch { get; set; }
 
         #endregion
 
@@ -197,15 +192,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             FontWeight = FontWeights.Normal;
 
             ImageSource = FolderClosedIcon;
-
-            children.CollectionChanged += (not, used) => UpdateToSearch();
         }
 
         #endregion
 
-        public virtual void RefreshTreeNodes()
+        public virtual void RefreshTreeNodes(TreeNodeRefreshType treeNodeRefreshType)
         {
-            UpdateToSearch();
+
         }
 
 
@@ -447,165 +440,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         #endregion
 
-        #region Search-based
-
-        public void UpdateToSearch()
-        {
-            IndirectlyMatchesSearch = false;
-            DirectlyMatchesSearch = false;
-
-            DirectlyMatchesSearch = string.IsNullOrEmpty(MainTreeViewViewModel.SearchText) || Text.ToLowerInvariant().Contains(MainTreeViewViewModel.SearchText);
-
-            if (DirectlyMatchesSearch && !string.IsNullOrEmpty(MainTreeViewViewModel.PrefixText))
-            {
-                if (Tag != null)
-                {
-                    switch (MainTreeViewViewModel.PrefixText)
-                    {
-                        case "f":
-                            DirectlyMatchesSearch = Tag is ReferencedFileSave;
-                            break;
-                        case "e":
-                            DirectlyMatchesSearch = Tag is EntitySave;
-                            break;
-                        case "s":
-                            DirectlyMatchesSearch = Tag is ScreenSave;
-                            break;
-                        case "o":
-                            DirectlyMatchesSearch = Tag is NamedObjectSave;
-                            break;
-                        case "v":
-                            DirectlyMatchesSearch = Tag is CustomVariable;
-                            break;
-                    }
-                }
-            }
-
-            bool forceExclude = false;
-            if ((IndirectlyMatchesSearch || DirectlyMatchesSearch) && !string.IsNullOrEmpty(MainTreeViewViewModel.PrefixText))
-            {
-                if (Tag == null)
-                {
-                    var asITreeNode = this as ITreeNode;
-                    switch (MainTreeViewViewModel.PrefixText)
-                    {
-                        case "f":
-                            if(asITreeNode.IsRootCodeNode() || asITreeNode.IsRootNamedObjectNode() || asITreeNode.IsRootCustomVariablesNode() || asITreeNode.IsRootStateNode() || asITreeNode.IsRootEventsNode())
-                            {
-                                forceExclude = true;
-                            }
-                            break;
-                        case "e":
-                            if(asITreeNode.IsRootScreenNode() || asITreeNode.IsGlobalContentContainerNode())
-                            {
-                                forceExclude = true;
-                            }
-                            break;
-                        case "s":
-                            if (asITreeNode.IsRootEntityNode() || asITreeNode.IsGlobalContentContainerNode())
-                            {
-                                forceExclude = true;
-                            }
-                            break;
-                        case "o":
-                            if (asITreeNode.IsRootCodeNode() || asITreeNode.IsFilesContainerNode() || asITreeNode.IsRootCustomVariablesNode() || asITreeNode.IsRootStateNode() || asITreeNode.IsRootEventsNode())
-                            {
-                                forceExclude = true;
-                            }
-                            break;
-                        case "v":
-                            if (asITreeNode.IsRootCodeNode() || asITreeNode.IsRootNamedObjectNode() || asITreeNode.IsFilesContainerNode() || asITreeNode.IsRootStateNode() || asITreeNode.IsRootEventsNode())
-                            {
-                                forceExclude = true;
-                            }
-                            break;
-                    }
-                }
-            }
-
-            if(forceExclude)
-            {
-                DirectlyMatchesSearch = false;
-                IndirectlyMatchesSearch = false;
-            }
-            else
-            {
-                var forceExpand = !string.IsNullOrWhiteSpace(MainTreeViewViewModel.SearchText);
-
-                bool childIndirectlyMatches = false;
-                foreach(var child in Children)
-                {
-                    child.UpdateToSearch();
-                    childIndirectlyMatches |= child.IndirectlyMatchesSearch;
-                }
-
-                IndirectlyMatchesSearch = DirectlyMatchesSearch || childIndirectlyMatches;
-
-                if(IndirectlyMatchesSearch && forceExpand)
-                {
-                    IsExpanded = true;
-                }
-
-                VisibleChildren.Clear();
-
-                int expectedVisibleChildrenCount = 0;
-
-                for(int i = 0; i < children.Count; i++)
-                {
-                    var child = children[i];
-                    var shouldBeIncluded = child.IndirectlyMatchesSearch;
-                    if(shouldBeIncluded)
-                    {
-                        expectedVisibleChildrenCount++;
-
-                        if (i >= VisibleChildren.Count)
-                        {
-                            // it's being added at the end:
-                            VisibleChildren.Add(child);
-                        }
-                        else if(VisibleChildren[i] != child)
-                        {
-                            var oldIndex = VisibleChildren.IndexOf(child);
-                            if(oldIndex > -1)
-                            {
-                                VisibleChildren.Move(oldIndex, i);
-                            }
-                            else
-                            {
-                                VisibleChildren.Insert(i, child);
-                            }
-
-                            //if(VisibleChildren.Contains(child))
-                            //{
-                            //    VisibleChildren.Remove(child);
-                            //}
-                        }
-                    }
-                    else
-                    {
-                        if (VisibleChildren.Contains(child))
-                        {
-                            VisibleChildren.Remove(child);
-                        }
-                        child.IsExpanded = false;
-                    }
-                }
-
-                // At this point all the visible children should match the normal Children, at least up to the
-                // Children.Count. If there are any extra VisibleTreeNodes, then they've been removed so let's get rid of them:
-                //while(VisibleChildren.Count > expectedVisibleChildrenCount)
-
-                if(Tag == null && VisibleChildren.Count == 0 && !string.IsNullOrWhiteSpace(MainTreeViewViewModel.PrefixText))
-                {
-                    IndirectlyMatchesSearch = false;
-                    DirectlyMatchesSearch = false;
-                }
-            }
-
-        }
-
-
-        #endregion
 
         public override string ToString()
         {

@@ -4,6 +4,14 @@ using System.Security.Cryptography;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
+    public enum TreeNodeRefreshType
+    {
+        All,
+        NamedObjects,
+        CustomVariables
+            // eventually add more here as needed
+    }
+
     public interface IRefreshCommands
     {
         /// <summary>
@@ -23,7 +31,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// IsHiddenInTreeView is set to true.
         /// </summary>
         /// <param name="element">GlueElement to update the tree node for</param>
-        void RefreshTreeNodeFor(GlueElement element);
+        void RefreshTreeNodeFor(GlueElement element, TreeNodeRefreshType treeNodeRefreshType = TreeNodeRefreshType.All);
 
         void RefreshUi(StateSaveCategory category);
 

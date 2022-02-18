@@ -42,6 +42,7 @@ using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
 using GlueFormsCore.FormHelpers;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 
 namespace FlatRedBall.Glue.FormHelpers
 {
@@ -2478,23 +2479,25 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     var oldIndexInListForIndexing = listForIndexing.IndexOf(objectToRemove);
                     var newIndexInListForIndexing = oldIndexInListForIndexing + direction;
-
-                    object objectToMoveBeforeOrAfter = objectToRemove;
-                    if (newIndexInListForIndexing >= 0 && newIndexInListForIndexing < listForIndexing.Count)
+                    if(newIndexInListForIndexing != -1 && newIndexInListForIndexing < listForIndexing.Count)
                     {
-                        objectToMoveBeforeOrAfter = listForIndexing[newIndexInListForIndexing];
-                    }
+                        object objectToMoveBeforeOrAfter = objectToRemove;
+                        if (newIndexInListForIndexing >= 0 && newIndexInListForIndexing < listForIndexing.Count)
+                        {
+                            objectToMoveBeforeOrAfter = listForIndexing[newIndexInListForIndexing];
+                        }
 
-                    //int newIndex = index + direction;
-                    int newIndex = listToRemoveFrom.IndexOf(objectToMoveBeforeOrAfter);
+                        //int newIndex = index + direction;
+                        int newIndex = listToRemoveFrom.IndexOf(objectToMoveBeforeOrAfter);
 
-                    if (newIndex >= 0 && newIndex < listToRemoveFrom.Count)
-                    {
-                        listToRemoveFrom.Remove(objectToRemove);
+                        if (newIndex >= 0 && newIndex < listToRemoveFrom.Count)
+                        {
+                            listToRemoveFrom.Remove(objectToRemove);
 
-                        listToRemoveFrom.Insert(newIndex, objectToRemove);
+                            listToRemoveFrom.Insert(newIndex, objectToRemove);
 
-                        PostMoveActivity();
+                            PostMoveActivity();
+                        }
                     }
                 }
 
@@ -2584,42 +2587,42 @@ namespace FlatRedBall.Glue.FormHelpers
             var currentCustomVariable = GlueState.Self.CurrentCustomVariable;
             var currentNamedObjectSave = GlueState.Self.CurrentNamedObjectSave;
 
-            GlueState.Self.CurrentElement.RefreshStatesToCustomVariables();
-
-            UpdateCurrentElementTreeNode();
-
             var element = GlueState.Self.CurrentElement;
-            var elementsToRegen = new List<IElement>();
 
-            foreach (NamedObjectSave nos in ObjectFinder.Self.GetAllNamedObjectsThatUseElement(element))
-            {
-                nos.UpdateCustomProperties();
-                var candidateToAdd = nos.GetContainer();
 
-                if (!elementsToRegen.Contains(candidateToAdd))
-                {
-
-                    elementsToRegen.Add(candidateToAdd);
-                }
-            }
-
-            foreach (var elementToRegen in elementsToRegen)
-            {
-                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(elementToRegen as GlueElement);
-            }
-
-            await System.Threading.Tasks.Task.Delay(10);
             // I think the variables are complete remade. I could make it preserve them, but it's easier to do this:
             if (currentCustomVariable != null)
             {
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element, TreeNodeRefreshType.CustomVariables);
                 //GlueState.Self.CurrentCustomVariable = null;
                 GlueState.Self.CurrentCustomVariable = currentCustomVariable;
             }
             else if (currentNamedObjectSave != null)
             {
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element, TreeNodeRefreshType.NamedObjects);
                 //GlueState.Self.CurrentNamedObjectSave = null;
                 GlueState.Self.CurrentNamedObjectSave = currentNamedObjectSave;
             }
+
+            GlueState.Self.CurrentElement.SortStatesToCustomVariables();
+            var elementsToRegen = new HashSet<GlueElement>();
+
+            foreach (NamedObjectSave nos in ObjectFinder.Self.GetAllNamedObjectsThatUseElement(element))
+            {
+                nos.UpdateCustomProperties();
+                elementsToRegen.Add(nos.GetContainer());
+            }
+
+            foreach (var elementToRegen in elementsToRegen)
+            {
+                // February 18, 2022
+                // performance note: This generates all elements that inherit from the argument, so this
+                // could re-generate lots of code over and over. This could be improved if needed, but I'm 
+                // writing this as I've already made tons of performance improvements to the post move activity
+                // method. Therefore, I'll leave this for a 2nd pass if we really need it.
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(elementToRegen);
+            }
+
 
             GluxCommands.Self.SaveGlux();
         }
@@ -2777,18 +2780,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
             GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
         }
-
-        private static void UpdateCurrentElementTreeNode()
-        {
-            var element = GlueState.Self.CurrentElement;
-            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
-            // Vic says - this seems wasteful and dishonest. I don't think this call
-            // should generate code. Need to search the usage of this and see if
-            // anywhere depends on it. If so, add explicit calls to generate code, then eventually
-            // remove this.
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-        }
-
 
         internal static void ErrorCheckClick()
         {

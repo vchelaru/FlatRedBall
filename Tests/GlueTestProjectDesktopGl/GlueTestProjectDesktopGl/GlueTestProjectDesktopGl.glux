@@ -21511,18 +21511,6 @@
           <Properties>
             <PropertySave>
               <Name>Type</Name>
-              <ValueAsString>Scene</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>SceneInstanceSourceFile</Name>
-          <DefaultValue xsi:type="xsd:string">SceneFileForSourceFileSet</DefaultValue>
-          <SourceObject>SceneInstance</SourceObject>
-          <SourceObjectProperty>SourceFile</SourceObjectProperty>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
               <ValueAsString>int</ValueAsString>
             </PropertySave>
             <PropertySave>
@@ -21538,15 +21526,21 @@
           <Properties>
             <PropertySave>
               <Name>Type</Name>
+              <ValueAsString>string</ValueAsString>
+            </PropertySave>
+            <PropertySave>
+              <Name>OverridingPropertyType</Name>
               <ValueAsString>float</ValueAsString>
             </PropertySave>
             <PropertySave>
-              <Name>CreatesProperties</Name>
-              <ValueAsBool>true</ValueAsBool>
+              <Name>TypeConverter</Name>
+              <ValueAsString>Minutes:Seconds.Hundredths</ValueAsString>
             </PropertySave>
           </Properties>
-          <Name>CustomVariable</Name>
-          <IsShared>true</IsShared>
+          <Name>TimeTextInstanceDisplayText</Name>
+          <DefaultValue xsi:type="xsd:float">123.4</DefaultValue>
+          <SourceObject>TimeTextInstance</SourceObject>
+          <SourceObjectProperty>DisplayText</SourceObjectProperty>
         </CustomVariable>
         <CustomVariable>
           <Properties>
@@ -21576,6 +21570,77 @@
           <Properties>
             <PropertySave>
               <Name>Type</Name>
+              <ValueAsString>Scene</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>SceneInstanceSourceFile</Name>
+          <DefaultValue xsi:type="xsd:string">SceneFileForSourceFileSet</DefaultValue>
+          <SourceObject>SceneInstance</SourceObject>
+          <SourceObjectProperty>SourceFile</SourceObjectProperty>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>byte</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>Red</Name>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+          </Properties>
+          <Name>FloatNormalVariable</Name>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float?</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+          </Properties>
+          <Name>FloatNullableVariable</Name>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>TextInheritingEntityInstanceCircleRadius</Name>
+          <DefaultValue xsi:type="xsd:float">250</DefaultValue>
+          <SourceObject>TextInheritingEntityInstance</SourceObject>
+          <SourceObjectProperty>CircleRadius</SourceObjectProperty>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>FloatWithNullValueInGlue</Name>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>byte</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>CustomByteVariable</Name>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
               <ValueAsString>float</ValueAsString>
             </PropertySave>
             <PropertySave>
@@ -21592,58 +21657,13 @@
               <Name>Type</Name>
               <ValueAsString>float</ValueAsString>
             </PropertySave>
-          </Properties>
-          <Name>FloatWithNullValueInGlue</Name>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
             <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>string</ValueAsString>
-            </PropertySave>
-            <PropertySave>
-              <Name>OverridingPropertyType</Name>
-              <ValueAsString>float</ValueAsString>
-            </PropertySave>
-            <PropertySave>
-              <Name>TypeConverter</Name>
-              <ValueAsString>Minutes:Seconds.Hundredths</ValueAsString>
+              <Name>CreatesProperties</Name>
+              <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <Name>TimeTextInstanceDisplayText</Name>
-          <DefaultValue xsi:type="xsd:float">123.4</DefaultValue>
-          <SourceObject>TimeTextInstance</SourceObject>
-          <SourceObjectProperty>DisplayText</SourceObjectProperty>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>byte</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>CustomByteVariable</Name>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>byte</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>Red</Name>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>float</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>TextInheritingEntityInstanceCircleRadius</Name>
-          <DefaultValue xsi:type="xsd:float">250</DefaultValue>
-          <SourceObject>TextInheritingEntityInstance</SourceObject>
-          <SourceObjectProperty>CircleRadius</SourceObjectProperty>
+          <Name>CustomVariable</Name>
+          <IsShared>true</IsShared>
         </CustomVariable>
         <CustomVariable>
           <Properties>

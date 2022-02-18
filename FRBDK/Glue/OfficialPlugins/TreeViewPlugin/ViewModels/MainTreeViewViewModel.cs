@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.ViewModels;
 using FlatRedBall.IO;
@@ -201,7 +202,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         #region Refresh
 
-        internal void RefreshTreeNodeFor(GlueElement element)
+        internal void RefreshTreeNodeFor(GlueElement element, TreeNodeRefreshType treeNodeRefreshType)
         {
             if (element == null)
             {
@@ -229,7 +230,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     {
                         elementTreeNode = AddEntityTreeNode(entitySave);
                     }
-                    elementTreeNode?.RefreshTreeNodes();
+                    elementTreeNode?.RefreshTreeNodes(treeNodeRefreshType);
                 }
             }
             else
@@ -240,24 +241,27 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 }
                 else
                 {
-                    var treeNodeRelativeDirectory = ((ITreeNode) elementTreeNode).GetRelativeFilePath();
-
-                    var elementNameModified = element.Name.Replace("\\", "/") + "/";
-
-                    if (treeNodeRelativeDirectory != elementNameModified)
+                    if(treeNodeRefreshType == TreeNodeRefreshType.All)
                     {
-                        var desiredFolderForElement = FileManager.GetDirectory(element.Name, RelativeType.Relative);
+                        var treeNodeRelativeDirectory = ((ITreeNode) elementTreeNode).GetRelativeFilePath();
 
-                        var newParentTreeNode = GetTreeNodeByRelativePath(desiredFolderForElement);
+                        var elementNameModified = element.Name.Replace("\\", "/") + "/";
 
-                        elementTreeNode.Parent.Remove(elementTreeNode);
+                        if (treeNodeRelativeDirectory != elementNameModified)
+                        {
+                            var desiredFolderForElement = FileManager.GetDirectory(element.Name, RelativeType.Relative);
 
-                        newParentTreeNode.Add(elementTreeNode);
-                        elementTreeNode.Parent = newParentTreeNode;
+                            var newParentTreeNode = GetTreeNodeByRelativePath(desiredFolderForElement);
+
+                            elementTreeNode.Parent.Remove(elementTreeNode);
+
+                            newParentTreeNode.Add(elementTreeNode);
+                            elementTreeNode.Parent = newParentTreeNode;
+                        }
                     }
 
 
-                    elementTreeNode?.RefreshTreeNodes();
+                    elementTreeNode?.RefreshTreeNodes(treeNodeRefreshType);
                 }
             }
         }
@@ -480,7 +484,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             EntityRootNode.SortByTextConsideringDirectories();
 
-            treeNode.RefreshTreeNodes();
+            treeNode.RefreshTreeNodes(TreeNodeRefreshType.All);
 
             return treeNode;
 
@@ -789,22 +793,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
             else
             {
-                bool shouldShowScreen = false;
-                bool shouldShowEntities = false;
-                bool shouldShowGlobalContent = false;
-
-                if (PrefixText != "s")
-                {
-                    shouldShowEntities = true;
-                }
-                if (PrefixText != "e")
-                {
-                    shouldShowScreen = true;
-                }
-                if (PrefixText != "s" && PrefixText != "e" && PrefixText != "o" && PrefixText != "v")
-                {
-                    shouldShowGlobalContent = true;
-                }
+                bool shouldShowScreen = true;
+                bool shouldShowEntities = true;
+                bool shouldShowGlobalContent = true;
 
                 if (shouldShowEntities)
                 {
@@ -812,7 +803,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     {
                         VisibleRoot.Insert(0, EntityRootNode);
                     }
-                    EntityRootNode.UpdateToSearch();
                 }
                 else
                 {
@@ -829,7 +819,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     {
                         VisibleRoot.Insert(1, ScreenRootNode);
                     }
-                    ScreenRootNode.UpdateToSearch();
                 }
                 else
                 {
@@ -845,8 +834,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     {
                         VisibleRoot.Add(GlobalContentRootNode);
                     }
-
-                    GlobalContentRootNode.UpdateToSearch();
                 }
                 else
                 {

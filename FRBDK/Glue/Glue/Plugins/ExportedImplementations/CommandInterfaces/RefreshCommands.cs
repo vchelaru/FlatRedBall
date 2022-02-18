@@ -52,17 +52,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        public void RefreshTreeNodeFor(GlueElement element)
+        public void RefreshTreeNodeFor(GlueElement element, TreeNodeRefreshType treeNodeRefreshType = TreeNodeRefreshType.All)
         {
             if(element == null)
             {
-                throw new NotImplementedException();
+                throw new ArgumentNullException(nameof(element));
             }
             if (ProjectManager.ProjectBase != null)
             {
                 GlueCommands.Self.DoOnUiThread(() =>
                 {
-                    PluginManager.RefreshTreeNodeFor(element);
+                    PluginManager.RefreshTreeNodeFor(element, treeNodeRefreshType);
                 });
             }
         }

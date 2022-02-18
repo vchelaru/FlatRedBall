@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.SaveClasses;
+﻿using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
+using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,7 +16,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             this.glueElement = glueElement;
         }
 
-        public override void RefreshTreeNodes()
+        public override void RefreshTreeNodes(TreeNodeRefreshType treeNodeRefreshType)
         {
             #region Update the states
 

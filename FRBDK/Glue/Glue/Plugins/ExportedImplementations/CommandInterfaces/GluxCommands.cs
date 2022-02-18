@@ -1591,7 +1591,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                 }
 
-                element.RefreshStatesToCustomVariables();
+                element.SortStatesToCustomVariables();
 
                 foreach (var derivedNamedObject in objectsToRemove.CollisionRelationships)
                 {
@@ -1762,7 +1762,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             else
             {
                 element.CustomVariables.Remove(customVariable);
-                element.RefreshStatesToCustomVariables();
+                element.SortStatesToCustomVariables();
 
                 List<EventResponseSave> eventsReferencedByVariable = element.GetEventsOnVariable(customVariable.Name);
 

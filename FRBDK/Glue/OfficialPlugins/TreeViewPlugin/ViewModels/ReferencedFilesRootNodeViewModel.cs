@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue;
 using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using System;
@@ -27,7 +28,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             this.glueElement = glueElement;
         }
 
-        public override void RefreshTreeNodes()
+        public override void RefreshTreeNodes(TreeNodeRefreshType treeNodeRefreshType)
         {
             string relativeDirectory = ((ITreeNode)this).GetRelativeFilePath();
 

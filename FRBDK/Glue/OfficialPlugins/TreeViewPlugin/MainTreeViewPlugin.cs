@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPlugins.TreeViewPlugin.Logic;
@@ -116,20 +117,23 @@ namespace OfficialPlugins.TreeViewPlugin
             MainViewModel.Clear();
         }
 
-        private void HandleRefreshTreeNodeFor(GlueElement element)
+        private void HandleRefreshTreeNodeFor(GlueElement element, TreeNodeRefreshType treeNodeRefreshType)
         {
             var oldTag = SelectionLogic.CurrentNode?.Tag;
             var oldNode = SelectionLogic.CurrentNode;
             var currentNode = SelectionLogic.CurrentNode;
-            MainViewModel.RefreshTreeNodeFor(element);
+            MainViewModel.RefreshTreeNodeFor(element, treeNodeRefreshType);
 
-            if(element is ScreenSave)
+            if(treeNodeRefreshType == TreeNodeRefreshType.All)
             {
-                MainViewModel.ScreenRootNode.SortByTextConsideringDirectories();
-            }
-            else // entity save
-            {
-                MainViewModel.EntityRootNode.SortByTextConsideringDirectories();
+                if(element is ScreenSave)
+                {
+                    MainViewModel.ScreenRootNode.SortByTextConsideringDirectories();
+                }
+                else // entity save
+                {
+                    MainViewModel.EntityRootNode.SortByTextConsideringDirectories();
+                }
             }
             if(currentNode?.Tag != null)
             {

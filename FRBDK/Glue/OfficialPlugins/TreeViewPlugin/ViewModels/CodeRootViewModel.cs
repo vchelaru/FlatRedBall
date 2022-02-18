@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using System;
@@ -17,7 +18,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             this.glueElement = glueElement;
         }
 
-        public override void RefreshTreeNodes()
+        public override void RefreshTreeNodes(TreeNodeRefreshType treeNodeRefreshType)
         {
             Children.Clear();
 

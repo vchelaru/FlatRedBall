@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             this.glueElement = glueElement;
         }
 
-        public override void RefreshTreeNodes()
+        public override void RefreshTreeNodes(TreeNodeRefreshType treeNodeRefreshType)
         {
             UpdateToNamedObjectSaves(glueElement.NamedObjects, this);
 

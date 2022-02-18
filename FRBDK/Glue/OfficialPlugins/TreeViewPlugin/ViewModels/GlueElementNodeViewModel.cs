@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
@@ -60,9 +61,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             IsExpanded = false;
         }
 
-        public override void RefreshTreeNodes()
+        public override void RefreshTreeNodes(TreeNodeRefreshType treeNodeRefreshType)
         {
-            base.RefreshTreeNodes();
+            base.RefreshTreeNodes(treeNodeRefreshType);
 
             Text = glueElement.GetStrippedName();
 
@@ -82,9 +83,21 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 }
             }
 
-            foreach(var node in Children)
+            if(treeNodeRefreshType == TreeNodeRefreshType.CustomVariables)
             {
-                node.RefreshTreeNodes();
+                VariablesNode.RefreshTreeNodes(treeNodeRefreshType);
+            }
+            else if(treeNodeRefreshType == TreeNodeRefreshType.NamedObjects)
+            {
+                ObjectsNode.RefreshTreeNodes(treeNodeRefreshType);
+            }
+            else
+            {
+                // could add more here for the sake of performance, but only if needed
+                foreach(var node in Children)
+                {
+                    node.RefreshTreeNodes(treeNodeRefreshType);
+                }
             }
         }
     }

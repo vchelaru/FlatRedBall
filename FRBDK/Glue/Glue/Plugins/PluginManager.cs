@@ -42,6 +42,7 @@ using GlueFormsCore.FormHelpers;
 using GlueFormsCore.ViewModels;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -2019,10 +2020,10 @@ namespace FlatRedBall.Glue.Plugins
                 (plugin) => plugin.ReactToMainWindowResizeEnd != null);
         }
 
-        public static void RefreshTreeNodeFor(GlueElement element)
+        public static void RefreshTreeNodeFor(GlueElement element, TreeNodeRefreshType treeNodeRefreshType)
         {
             CallMethodOnPlugin(
-                (plugin) => plugin.RefreshTreeNodeFor(element),
+                (plugin) => plugin.RefreshTreeNodeFor(element, treeNodeRefreshType),
                 (plugin) => plugin.RefreshTreeNodeFor != null);
         }
 

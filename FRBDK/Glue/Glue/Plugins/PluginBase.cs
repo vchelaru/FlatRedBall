@@ -28,6 +28,7 @@ using GeneralResponse = ToolsUtilities.GeneralResponse;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.FormHelpers;
 using GlueFormsCore.ViewModels;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -44,11 +45,13 @@ namespace FlatRedBall.Glue.Plugins
 
     #endregion
 
+    #region TreeNodeAction
     public enum TreeNodeAction
     {
         Grabbed,
         Released
     }
+    #endregion
 
     public enum StateCategoryVariableAction
     {
@@ -402,7 +405,7 @@ namespace FlatRedBall.Glue.Plugins
 
 
         // TreeNode Methods
-        public Action<GlueElement> RefreshTreeNodeFor;
+        public Action<GlueElement, TreeNodeRefreshType> RefreshTreeNodeFor;
         public Action RefreshGlobalContentTreeNode;
         public Action RefreshDirectoryTreeNodes;
         public Action<ITreeNode, TreeNodeAction> GrabbedTreeNodeChanged;
