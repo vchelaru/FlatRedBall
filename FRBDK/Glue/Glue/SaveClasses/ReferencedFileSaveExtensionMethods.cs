@@ -22,6 +22,21 @@ namespace FlatRedBall.Glue.SaveClasses
 {
     public static class ReferencedFileSaveExtensionMethods
     {
+        public static void FixAllTypes(this ReferencedFileSave referencedFileSave)
+        {
+            foreach(var property in referencedFileSave.Properties)
+            {
+                if (!string.IsNullOrEmpty(property.Type) && property.Value != null)
+                {
+                    object variableValue = property.Value;
+                    var type = property.Type;
+
+                    variableValue = CustomVariableExtensionMethods.FixValue(variableValue, type);
+
+                    property.Value = variableValue;
+                }
+            }
+        }
         public static string GetUnqualifiedTypeForCsv(this ReferencedFileSave referencedFileSave, string alternativeFileName = null)
         {
             string toReturn = GetTypeForCsvFile(referencedFileSave, alternativeFileName);

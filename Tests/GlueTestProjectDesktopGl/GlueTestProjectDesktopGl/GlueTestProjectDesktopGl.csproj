@@ -1051,6 +1051,8 @@
     </Compile>
     <Compile Include="GumRuntimes\PolygonRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\RectangleRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\RedRectContainerRuntime.cs" />
+    <Compile Include="GumRuntimes\RedRectContainerRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\RenderTargetScreenGumRuntime.cs" />
     <Compile Include="GumRuntimes\RenderTargetScreenGumRuntime.Generated.cs">
       <DependentUpon>RenderTargetScreenGumRuntime.cs</DependentUpon>
@@ -1999,6 +2001,10 @@
     <None Include="content\gumproject\components\parentstatecomponent.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>parentstatecomponent</Name>
+    </None>
+    <None Include="content\gumproject\components\redrectcontainer.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>redrectcontainer</Name>
     </None>
     <None Include="content\gumproject\components\samenamecomponent.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

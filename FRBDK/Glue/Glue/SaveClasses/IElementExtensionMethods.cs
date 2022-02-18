@@ -320,6 +320,10 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 customVariable.FixAllTypes();
             }
+            foreach(var file in element.ReferencedFiles)
+            {
+                file.FixAllTypes();
+            }
         }
 
         public static void FixEnumerationValues(this IElement instance)

@@ -105,6 +105,30 @@ namespace FlatRedBall.Glue.IO
 
         #region Methods
 
+
+        private static async Task<bool> ReactToChangedFile(string file)
+        {
+            bool wasAnythingChanged = false;
+
+            IgnoreReason reason;
+            bool isIgnored = IsFileIgnored(file, out reason);
+
+            if (!isIgnored)
+            {
+                bool handled = await UpdateReactor.UpdateFile(file);
+                wasAnythingChanged |= handled;
+            }
+            else if (reason == IgnoreReason.BuiltFile)
+            {
+                Plugins.PluginManager.ReactToChangedBuiltFile(file);
+                wasAnythingChanged = true;
+            }
+
+
+            return wasAnythingChanged;
+        }
+
+
         public static void FlushAndClearIgnores()
         {
             Flush();
@@ -177,28 +201,6 @@ namespace FlatRedBall.Glue.IO
                 IsFlushing = false;
             }
             semaphoreSlim.Release();
-        }
-
-        private static async Task<bool> ReactToChangedFile(string file)
-        {
-            bool wasAnythingChanged = false;
-
-            IgnoreReason reason;
-            bool isIgnored = IsFileIgnored(file, out reason);
-
-            if (!isIgnored)
-            {
-                bool handled = await UpdateReactor.UpdateFile(file);
-                wasAnythingChanged |= handled;
-            }
-            else if (reason == IgnoreReason.BuiltFile)
-            {
-                Plugins.PluginManager.ReactToChangedBuiltFile(file);
-                wasAnythingChanged = true;
-            }
-
-
-            return wasAnythingChanged;
         }
 
         public static void Initialize()

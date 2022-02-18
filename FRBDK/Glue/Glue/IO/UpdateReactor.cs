@@ -27,195 +27,201 @@ namespace FlatRedBall.Glue.IO
 {
     public static class UpdateReactor
     {
+        #region Fields/Properties
+
         public const string ReloadingProjectDescription = "Reloading Project";
         //static object mUpdateFileLock = new object();
+
+        #endregion
+
         public static async Task<bool> UpdateFile(string changedFile)
         {
-            bool shouldSave = false;
             bool handled = false;
-                
-            //lock (mUpdateFileLock)
+            ///////////////Early Out////////////////////
+            if(ProjectManager.ProjectBase == null)
             {
-                var projectFileName = ProjectManager.ProjectBase?.FullFileName.FullPath;
-                if(ProjectManager.ProjectBase != null)
+                return handled;
+            }
+            ////////////End Early Out//////////////////
+
+            bool shouldSave = false;
+                
+            var projectFileName = ProjectManager.ProjectBase?.FullFileName.FullPath;
+
+            handled = TryHandleProjectFileChanges(changedFile);
+            bool isGlueProjectOrElementFile = GetIfIsGlueProjectOrElementFile(changedFile, projectFileName);
+            if (!handled && isGlueProjectOrElementFile)
+            {
+                if (!ProjectManager.WantsToCloseProject)
                 {
-                    handled = TryHandleProjectFileChanges(changedFile);
-                    bool isGlueProjectOrElementFile = GetIfIsGlueProjectOrElementFile(changedFile, projectFileName);
-                    if (!handled && isGlueProjectOrElementFile)
+                    await ReloadGlux();
+                }
+                handled = true;
+            }
+
+            if (! handled && GlueCommands.Self.FileCommands.IsContent(changedFile))
+            {
+                PluginManager.ReactToChangedFile(changedFile);
+            }
+
+            #region If it's a CSV, then re-generate the code for the objects
+
+            string extension = FileManager.GetExtension(changedFile);
+
+            if (extension == "csv" ||
+                extension == "txt")
+            {
+                ReferencedFileSave rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(changedFile);
+
+                bool shouldGenerate = rfs != null &&
+                    (extension == "csv" || rfs.TreatAsCsv) &&
+                    rfs.IsDatabaseForLocalizing == false;
+
+                if (shouldGenerate)
+                {
+                    try
                     {
-                        if (!ProjectManager.WantsToCloseProject)
-                        {
-                            await ReloadGlux();
-                        }
+                        CsvCodeGenerator.GenerateAndSaveDataClass(rfs, rfs.CsvDelimiter);
+
+                        shouldSave = true;
+                    }
+                    catch (Exception e)
+                    {
+                        GlueCommands.Self.PrintError("Error saving Class from CSV " + rfs.Name +
+                            "\n" + e.ToString());
+                    }
+                }
+            }
+
+
+            #endregion
+
+            #region If it's a file that references other content we may need to update the project
+
+            if (FileHelper.DoesFileReferenceContent(changedFile))
+            {
+                ReferencedFileSave rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(changedFile);
+
+
+                if (rfs != null)
+                {
+                    string error;
+                    rfs.RefreshSourceFileCache(false, out error);
+
+                    if (!string.IsNullOrEmpty(error))
+                    {
+                        ErrorReporter.ReportError(rfs.Name, error, false);
+                    }
+                    else
+                    {
                         handled = true;
                     }
 
-                    if (ProjectManager.IsContent(changedFile))
+                    handled |= GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs);
+                    shouldSave = true;
+
+                    MainGlueWindow.Self.Invoke((MethodInvoker)delegate
                     {
-                        PluginManager.ReactToChangedFile(changedFile);
-                    }
-
-                    #region If it's a CSV, then re-generate the code for the objects
-
-                    string extension = FileManager.GetExtension(changedFile);
-
-                    if (extension == "csv" ||
-                        extension == "txt")
-                    {
-                        ReferencedFileSave rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(changedFile);
-
-                        bool shouldGenerate = rfs != null &&
-                            (extension == "csv" || rfs.TreatAsCsv) &&
-                            rfs.IsDatabaseForLocalizing == false;
-
-                        if (shouldGenerate)
+                        if (rfs.GetContainerType() == ContainerType.Entity)
                         {
-                            try
+                            if (GlueState.Self.CurrentEntitySave != null)
                             {
-                                CsvCodeGenerator.GenerateAndSaveDataClass(rfs, rfs.CsvDelimiter);
-
-                                shouldSave = true;
-                            }
-                            catch (Exception e)
-                            {
-                                GlueCommands.Self.PrintError("Error saving Class from CSV " + rfs.Name +
-                                    "\n" + e.ToString());
-                            }
-                        }
-                    }
-
-
-                    #endregion
-
-                    #region If it's a file that references other content we may need to update the project
-
-                    if (FileHelper.DoesFileReferenceContent(changedFile))
-                    {
-                        ReferencedFileSave rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(changedFile);
-
-
-                        if (rfs != null)
-                        {
-                            string error;
-                            rfs.RefreshSourceFileCache(false, out error);
-
-                            if (!string.IsNullOrEmpty(error))
-                            {
-                                ErrorReporter.ReportError(rfs.Name, error, false);
-                            }
-                            else
-                            {
-                                handled = true;
-                            }
-
-                            handled |= GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs);
-                            shouldSave = true;
-
-                            MainGlueWindow.Self.Invoke((MethodInvoker)delegate
-                            {
-                                if (rfs.GetContainerType() == ContainerType.Entity)
+                                if (GlueState.Self.CurrentEntitySave == rfs.GetContainer())
                                 {
-                                    if (GlueState.Self.CurrentEntitySave != null)
-                                    {
-                                        if (GlueState.Self.CurrentEntitySave == rfs.GetContainer())
-                                        {
-                                            PluginManager.RefreshCurrentElement();
-                                        }
-                                    }
+                                    PluginManager.RefreshCurrentElement();
                                 }
-                                else if (rfs.GetContainerType() == ContainerType.Screen)
+                            }
+                        }
+                        else if (rfs.GetContainerType() == ContainerType.Screen)
+                        {
+                            if (GlueState.Self.CurrentScreenSave != null)
+                            {
+                                if (GlueState.Self.CurrentScreenSave == rfs.GetContainer())
                                 {
-                                    if (GlueState.Self.CurrentScreenSave != null)
-                                    {
-                                        if (GlueState.Self.CurrentScreenSave == rfs.GetContainer())
-                                        {
-                                            PluginManager.RefreshCurrentElement();
-                                        }
-                                    }
+                                    PluginManager.RefreshCurrentElement();
                                 }
-                            });
+                            }
                         }
-                        else
-                        {
-                            // There may not be a RFS for this in Glue, but even if there's not,
-                            // this file may be referenced by other RFS's.  I don't want to do a full
-                            // project scan, so we'll just see if this file is part of Visual Studio.  If so
-                            // then let's add its children
-
-                            if (ProjectManager.ContentProject.IsFilePartOfProject(changedFile))
-                            {
-                                string relativePath = ProjectManager.MakeRelativeContent(changedFile);
-
-                                shouldSave |= GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(
-                                    ProjectManager.ProjectBase, relativePath, false, false);
-                                handled |= shouldSave;
-
-                            }
-
-                        }
-                    }
-
-                    #endregion
-
-                    #region If it's a .cs file, we should see if we've added a new .cs file, and if so refresh the Element for it
-                    if (extension == "cs")
-                    {
-                        TaskManager.Self.OnUiThread(() => ReactToChangedCodeFile(changedFile));
-
-                    }
-
-
-                    #endregion
-
-                    #region Maybe it's a directory that was added or removed
-
-                    if (FileManager.GetExtension(changedFile) == "")
-                    {
-                        MainGlueWindow.Self.Invoke((MethodInvoker)delegate
-                        {
-                            try
-                            {
-                                // It's a directory, so let's just rebuild our directory TreeNodes
-                                GlueCommands.Self.RefreshCommands.RefreshDirectoryTreeNodes();
-                            }
-                            catch (System.IO.IOException)
-                            {
-                                // this could be because something else is accessing the directory, so sleep, try again
-                                System.Threading.Thread.Sleep(100);
-                                GlueCommands.Self.RefreshCommands.RefreshDirectoryTreeNodes();
-                            }
-                        });
-                    }
-
-                    #endregion
-
-
-                    #region Check for broken references to objects in file - like an Entity may reference an object in a file but it may have been removed
-
-                    if (GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(changedFile) != null)
-                    {
-                        // This is a file that is part of the project, so let's see if any named objects are missing references
-                        CheckForBrokenReferencesToObjectsInFile(changedFile);
-                    }
-
-                    #endregion
-
-                    // This could be an externally built file:
-
-                    ProjectManager.UpdateExternallyBuiltFile(changedFile);
-
-                    if (handled)
-                    {
-                        PluginManager.ReceiveOutput("Handled changed file: " + changedFile);
-
-                    }
-
-                    if (shouldSave)
-                    {
-                        GlueCommands.Self.ProjectCommands.SaveProjects();
-                    }
+                    });
                 }
+                else
+                {
+                    // There may not be a RFS for this in Glue, but even if there's not,
+                    // this file may be referenced by other RFS's.  I don't want to do a full
+                    // project scan, so we'll just see if this file is part of Visual Studio.  If so
+                    // then let's add its children
 
+                    if (ProjectManager.ContentProject.IsFilePartOfProject(changedFile))
+                    {
+                        string relativePath = ProjectManager.MakeRelativeContent(changedFile);
+
+                        shouldSave |= GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(
+                            ProjectManager.ProjectBase, relativePath, false, false);
+                        handled |= shouldSave;
+
+                    }
+
+                }
+            }
+
+            #endregion
+
+            #region If it's a .cs file, we should see if we've added a new .cs file, and if so refresh the Element for it
+            if (extension == "cs")
+            {
+                TaskManager.Self.OnUiThread(() => ReactToChangedCodeFile(changedFile));
+
+            }
+
+
+            #endregion
+
+            #region Maybe it's a directory that was added or removed
+
+            if (FileManager.GetExtension(changedFile) == "")
+            {
+                MainGlueWindow.Self.Invoke((MethodInvoker)delegate
+                {
+                    try
+                    {
+                        // It's a directory, so let's just rebuild our directory TreeNodes
+                        GlueCommands.Self.RefreshCommands.RefreshDirectoryTreeNodes();
+                    }
+                    catch (System.IO.IOException)
+                    {
+                        // this could be because something else is accessing the directory, so sleep, try again
+                        System.Threading.Thread.Sleep(100);
+                        GlueCommands.Self.RefreshCommands.RefreshDirectoryTreeNodes();
+                    }
+                });
+            }
+
+            #endregion
+
+
+            #region Check for broken references to objects in file - like an Entity may reference an object in a file but it may have been removed
+
+            if (GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(changedFile) != null)
+            {
+                // This is a file that is part of the project, so let's see if any named objects are missing references
+                CheckForBrokenReferencesToObjectsInFile(changedFile);
+            }
+
+            #endregion
+
+            // This could be an externally built file:
+
+            ProjectManager.UpdateExternallyBuiltFile(changedFile);
+
+            if (handled)
+            {
+                PluginManager.ReceiveOutput("Handled changed file: " + changedFile);
+
+            }
+
+            if (shouldSave)
+            {
+                GlueCommands.Self.ProjectCommands.SaveProjects();
             }
 
             return handled;
@@ -346,78 +352,76 @@ namespace FlatRedBall.Glue.IO
 
             var parentElement = GlueState.Self.CurrentNamedObjectSave?.GetContainer();
 
-            bool usingQuickReload = true;
 
-            if (usingQuickReload)
+
+            GlueProjectSave newGlueProjectSave = null;
+            bool wasHandled = false;
+            ComparisonResult compareResult = null;
+
+            try
             {
-                GlueProjectSave newGlueProjectSave = null;
-                bool wasHandled = false;
-                ComparisonResult compareResult = null;
-
                 // March 1, 2020 - this can fail on int comparison so...we'll just tolerate it and do a full reload:
-                try
+                compareResult = ProjectManager.GlueProjectSave.ReloadUsingComparison(GlueState.Self.GlueProjectFileName.FullPath, out newGlueProjectSave);
+            }
+            catch
+            {
+                // write out put?
+            }
+
+            if (compareResult != null && compareResult.Differences.Count != 0)
+            {
+                // See if only a Screen or Entity changed.  If so, do a simple set of that and be done with it
+                wasHandled = true;
+
+                List<string> elementsAlreadyRefreshed = new List<string>();
+
+                //if (comparisonObject.Differences.Count == 1)
+				foreach(var comparison in compareResult.Differences)
                 {
-                    compareResult = ProjectManager.GlueProjectSave.ReloadUsingComparison(GlueState.Self.GlueProjectFileName.FullPath, out newGlueProjectSave);
-                }
-                catch
-                {
-                    // write out put?
-                }
+                        //comparisonObject.GetComparisonDifference(comparisonObject.Differences[0]);
+                    int indexInOld = 0;
+                    int indexInNew = 0;
+                    var element = GetElementFromObjectString(comparison.PropertyName, ProjectManager.GlueProjectSave, out indexInOld);
+                    GlueElement replacement = GetElementFromObjectString(comparison.PropertyName, newGlueProjectSave, out indexInNew);
 
-                if (compareResult != null && compareResult.Differences.Count != 0)
-                {
-                    // See if only a Screen or Entity changed.  If so, do a simple set of that and be done with it
-                    wasHandled = true;
-
-
-                    List<string> elementsAlreadyRefreshed = new List<string>();
-
-                    //if (comparisonObject.Differences.Count == 1)
-					foreach(var comparison in compareResult.Differences)
+                    NamedObjectSave existingFile = null;
+                    NamedObjectSave replacementFile = null;
+                    if(element == null && replacement == null)
                     {
-                            //comparisonObject.GetComparisonDifference(comparisonObject.Differences[0]);
-                        int indexInOld = 0;
-                        int indexInNew = 0;
-                        var element = GetElementFromObjectString(comparison.PropertyName, ProjectManager.GlueProjectSave, out indexInOld);
-                        GlueElement replacement = GetElementFromObjectString(comparison.PropertyName, newGlueProjectSave, out indexInNew);
-
-                        if (element != null && replacement != null && indexInNew == indexInOld)
-						{
-                            if (!elementsAlreadyRefreshed.Contains(element.Name))
-                            {
-                                elementsAlreadyRefreshed.Add(element.Name);
-                                if (element is ScreenSave)
-                                {
-                                    ProjectManager.GlueProjectSave.Screens[indexInOld] = newGlueProjectSave.Screens[indexInNew];
-                                }
-                                else // element is EntitySave
-                                {
-                                    ProjectManager.GlueProjectSave.Entities[indexInOld] = newGlueProjectSave.Entities[indexInNew];
-                                }
-
-
-                                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
-
-
-                                // Gotta regen this and update the UI and refresh the PropertyGrid if it's selected
-                                GlueCommands.Self.UpdateCommands.Update(replacement);
-
-                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-                            }
-						}
-						else
-						{
-							wasHandled = false;
-							break;
-						}
+                        //replacement = GetNamedObjectSaveFromObjectString(comparison.PropertyName, newGlueProjectSave, out indexInNew);
                     }
-                }
-                if (!wasHandled)
-                {
-                    await ProjectLoader.Self.LoadProject(ProjectManager.ProjectBase.FullFileName.FullPath);
+                    if (element != null && replacement != null && indexInNew == indexInOld)
+					{
+                        if (!elementsAlreadyRefreshed.Contains(element.Name))
+                        {
+                            elementsAlreadyRefreshed.Add(element.Name);
+                            if (element is ScreenSave)
+                            {
+                                ProjectManager.GlueProjectSave.Screens[indexInOld] = newGlueProjectSave.Screens[indexInNew];
+                            }
+                            else // element is EntitySave
+                            {
+                                ProjectManager.GlueProjectSave.Entities[indexInOld] = newGlueProjectSave.Entities[indexInNew];
+                            }
+
+
+                            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+
+
+                            // Gotta regen this and update the UI and refresh the PropertyGrid if it's selected
+                            GlueCommands.Self.UpdateCommands.Update(replacement);
+
+                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+                        }
+					}
+					else
+					{
+						wasHandled = false;
+						break;
+					}
                 }
             }
-            else
+            if (!wasHandled)
             {
                 await ProjectLoader.Self.LoadProject(ProjectManager.ProjectBase.FullFileName.FullPath);
             }

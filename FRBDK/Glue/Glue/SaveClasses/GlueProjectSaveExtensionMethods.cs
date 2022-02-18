@@ -353,6 +353,11 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 screen.FixAllTypes();
             }
+
+            foreach(var file in instance.GlobalFiles)
+            {
+                file.FixAllTypes();
+            }
         }
 
         public static void FixEnumerationValues(this GlueProjectSave instance)
@@ -406,7 +411,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
                     GlueProjectSave savedOld = ObjectFinder.Self.GlueProject;
                     ObjectFinder.Self.GlueProject = otherGlueProjectSave;
-                    otherGlueProjectSave.FixEnumerationValues();
+                    otherGlueProjectSave.FixAllTypes();
                     ObjectFinder.Self.GlueProject = savedOld;
 
 
