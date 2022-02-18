@@ -366,7 +366,12 @@ namespace FlatRedBall.Glue.IO
                 // write out put?
             }
 
-            if (compareResult != null && compareResult.Differences.Count != 0)
+            if(compareResult?.Differences.Count == 0)
+            {
+                // no changes!
+                wasHandled = true;
+            }
+            else if (compareResult != null && compareResult.Differences.Count != 0)
             {
                 // See if only a Screen or Entity changed.  If so, do a simple set of that and be done with it
                 wasHandled = true;

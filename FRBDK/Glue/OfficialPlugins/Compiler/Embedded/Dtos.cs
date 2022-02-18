@@ -72,6 +72,13 @@ namespace GlueControl.Dtos
     }
     #endregion
 
+
+    #region GoToDefinitionDto
+
+    class GoToDefinitionDto { }
+
+    #endregion
+
     #region GlueVariableSetData
     public enum AssignOrRecordOnly
     {

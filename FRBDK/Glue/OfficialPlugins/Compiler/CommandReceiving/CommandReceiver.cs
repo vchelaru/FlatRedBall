@@ -29,37 +29,71 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
     {
         static int gamePortNumber;
 
+        static System.Reflection.MethodInfo[] AllMethods;
+
+        static CommandReceiver()
+        {
+            AllMethods = typeof(CommandReceiver).GetMethods(
+                System.Reflection.BindingFlags.Static |
+                System.Reflection.BindingFlags.NonPublic)
+                .Where(item => item.Name == nameof(HandleDto))
+                .ToArray();
+        }
+
         #region General Functions
 
         public static void HandleCommandsFromGame(List<string> commands, int gamePortNumber)
         {
             foreach (var command in commands)
             {
-                HandleIndividualCommand(command, gamePortNumber);
+                Receive(command, gamePortNumber);
             }
         }
 
-        private static void HandleIndividualCommand(string command, int gamePortNumber)
+        private static void Receive(string message, int gamePortNumber)
         {
-            CommandReceiver.gamePortNumber = gamePortNumber;
-            var firstColon = command.IndexOf(":");
-            if(firstColon == -1)
+            string dtoTypeName = null;
+            string dtoSerialized = null;
+            if (message.Contains(":"))
             {
-                GlueCommands.Self.PrintOutput($"Received unknown command: {command}");
+                dtoTypeName = message.Substring(0, message.IndexOf(":"));
+                dtoSerialized = message.Substring(message.IndexOf(":") + 1);
             }
             else
             {
-                var action = command.Substring(0, firstColon);
-                var data = command.Substring(firstColon + 1);
+                throw new Exception($"The command {message} does not contain a : (colon) separator");
+            }
 
-                TaskManager.Self.AddAsync(() =>
+
+            CommandReceiver.gamePortNumber = gamePortNumber;
+
+            var matchingMethod =
+                AllMethods
+                .FirstOrDefault(item =>
                 {
-                    switch(action)
+                    var parameters = item.GetParameters();
+                    return parameters.Length == 1 && parameters[0].ParameterType.Name == dtoTypeName;
+                });
+
+            TaskManager.Self.AddAsync(() =>
+            {
+                if(matchingMethod != null)
+                {
+                    var dtoType = matchingMethod.GetParameters()[0].ParameterType;
+
+                    var dto = JsonConvert.DeserializeObject(dtoSerialized, dtoType);
+
+                    var response = ReceiveDto(dto);
+
+                }
+                else
+                {
+                    switch(dtoTypeName)
                     {
                         case nameof(AddObjectDto):
                             {
-                                var addObjectDto = JsonConvert.DeserializeObject<AddObjectDto>(data);
-                                var nos = JsonConvert.DeserializeObject<NamedObjectSave>(data);
+                                var addObjectDto = JsonConvert.DeserializeObject<AddObjectDto>(dtoSerialized);
+                                var nos = JsonConvert.DeserializeObject<NamedObjectSave>(dtoSerialized);
 
                                 ScreenSave screen = CommandSender.GetCurrentInGameScreen().Result;
                                 screen = screen ?? GlueState.Self.CurrentScreenSave;
@@ -69,32 +103,53 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                             break;
                         case nameof(SetVariableDto):
-                            HandleSetVariable(JsonConvert.DeserializeObject<SetVariableDto>(data));
+                            HandleSetVariable(JsonConvert.DeserializeObject<SetVariableDto>(dtoSerialized));
                             break;
                         case nameof(SetVariableDtoList):
-                            HandleSetVariableDtoList(JsonConvert.DeserializeObject<SetVariableDtoList>(data));
+                            HandleSetVariableDtoList(JsonConvert.DeserializeObject<SetVariableDtoList>(dtoSerialized));
                             break;
                         case nameof(SelectObjectDto):
-                            HandleSelectObject(JsonConvert.DeserializeObject<SelectObjectDto>(data));
+                            HandleSelectObject(JsonConvert.DeserializeObject<SelectObjectDto>(dtoSerialized));
                             break;
                         case nameof(RemoveObjectDto):
-                            HandleRemoveObject(JsonConvert.DeserializeObject<RemoveObjectDto>(data));
+                            HandleRemoveObject(JsonConvert.DeserializeObject<RemoveObjectDto>(dtoSerialized));
                             break;
                         case nameof(ModifyCollisionDto):
-                            HandleDto(JsonConvert.DeserializeObject<ModifyCollisionDto>(data));
+                            HandleDto(JsonConvert.DeserializeObject<ModifyCollisionDto>(dtoSerialized));
                             break;
                         case nameof(AddObjectDtoList):
-                            var deserializedList = JsonConvert.DeserializeObject<AddObjectDtoList>(data);
+                            var deserializedList = JsonConvert.DeserializeObject<AddObjectDtoList>(dtoSerialized);
                             HandleAddObjectDtoList(deserializedList);
                             break;
                         default:
                             int m = 3;
                             break;
                     }
-                },
-                $"Processing command of type {action}");
+                }
+            },
+            $"Processing command of type {dtoTypeName}");
+        }
 
+        public static object ReceiveDto(object dto)
+        {
+            var type = dto.GetType();
+
+            var method = AllMethods
+                .FirstOrDefault(item =>
+                {
+                    var parameters = item.GetParameters();
+                    return parameters.Length == 1 && parameters[0].ParameterType == type;
+                });
+
+
+            object toReturn = null;
+
+            if (method != null)
+            {
+                toReturn = method.Invoke(null, new object[] { dto });
             }
+
+            return toReturn;
         }
 
         private static async void HandleAddObjectDtoList(AddObjectDtoList deserializedList)
@@ -699,6 +754,16 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 mapLayer = tiledMapSave.Layers.Find(item => item.Name == "GameplayLayer");
             }
         }
+
+        #endregion
+
+        #region GoToDefinitionDto
+
+        private static async void HandleDto(GoToDefinitionDto dto)
+        {
+            GlueCommands.Self.DialogCommands.GoToDefinitionOfSelection();
+        }
+        
 
         #endregion
     }

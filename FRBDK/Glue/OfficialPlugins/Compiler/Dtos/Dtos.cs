@@ -69,6 +69,12 @@ namespace OfficialPlugins.Compiler.Dtos
     }
     #endregion
 
+    #region GoToDefinitionDto
+
+    class GoToDefinitionDto {}
+
+    #endregion
+
     #region GlueVariableSetData
     public enum AssignOrRecordOnly
     {

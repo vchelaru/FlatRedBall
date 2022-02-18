@@ -452,14 +452,8 @@ namespace FlatRedBall.Glue.SaveClasses
                 compareObjects.Config.MaxDifferences = int.MaxValue;
 
                 var compareResult = compareObjects.Compare(instance, otherGlueProjectSave);
-                if (compareResult.AreEqual == false)
-                {
-                    return compareResult;
-                }
-                else
-                {
-                    return null;
-                }
+                return compareResult;
+
             }
             else
             {

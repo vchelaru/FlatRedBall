@@ -410,12 +410,24 @@ namespace GlueControl.Editing
                 AddAndDestroyMarkersAccordingToItemsSelected();
             }
 
+            DoGoToDefinitionLogic();
+
             DoNudgeHotkeyLogic();
 
             CopyPasteManager.DoHotkeyLogic(itemsSelected, CurrentNamedObjects, itemGrabbed);
 
             CameraLogic.DoHotkeyLogic();
 
+        }
+
+        private void DoGoToDefinitionLogic()
+        {
+            var keyboard = InputManager.Keyboard;
+
+            if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.F12))
+            {
+                GlueControlManager.Self.SendToGlue(new Dtos.GoToDefinitionDto());
+            }
         }
 
         private void DoNudgeHotkeyLogic()
