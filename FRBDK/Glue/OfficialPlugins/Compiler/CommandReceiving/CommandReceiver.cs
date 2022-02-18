@@ -585,9 +585,12 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 {
                     GlueCommands.Self.DoOnUiThread(() =>
                     {
-                        RefreshManager.Self.IgnoreNextObjectSelect = true;
+                        if(GlueState.Self.CurrentNamedObjectSave != nos)
+                        {
+                            RefreshManager.Self.IgnoreNextObjectSelect = true;
 
-                        GlueState.Self.CurrentNamedObjectSave = nos;
+                            GlueState.Self.CurrentNamedObjectSave = nos;
+                        }
                         GlueCommands.Self.DialogCommands.FocusTab("Variables");
                     });
                 }
