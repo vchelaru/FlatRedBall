@@ -352,8 +352,6 @@ namespace FlatRedBall.Glue.IO
 
             var parentElement = GlueState.Self.CurrentNamedObjectSave?.GetContainer();
 
-
-
             GlueProjectSave newGlueProjectSave = null;
             bool wasHandled = false;
             ComparisonResult compareResult = null;
@@ -381,21 +379,25 @@ namespace FlatRedBall.Glue.IO
                         //comparisonObject.GetComparisonDifference(comparisonObject.Differences[0]);
                     int indexInOld = 0;
                     int indexInNew = 0;
-                    var element = GetElementFromObjectString(comparison.PropertyName, ProjectManager.GlueProjectSave, out indexInOld);
-                    GlueElement replacement = GetElementFromObjectString(comparison.PropertyName, newGlueProjectSave, out indexInNew);
+                    var oldElement = GetElementFromObjectString(comparison.PropertyName, ProjectManager.GlueProjectSave, out indexInOld);
+                    GlueElement replacementElement = GetElementFromObjectString(comparison.PropertyName, newGlueProjectSave, out indexInNew);
 
-                    NamedObjectSave existingFile = null;
-                    NamedObjectSave replacementFile = null;
-                    if(element == null && replacement == null)
+                    int fileIndexInOld = -1;
+                    int fileIndexInNew = -1;
+                    ReferencedFileSave oldFile = null;
+                    ReferencedFileSave replacementFile = null;
+                    if(oldElement == null && replacementElement == null)
                     {
+                        oldFile = GetFileFromObjectString(comparison.PropertyName, ProjectManager.GlueProjectSave, out fileIndexInOld);
+                        replacementFile = GetFileFromObjectString(comparison.PropertyName, newGlueProjectSave, out fileIndexInNew);
                         //replacement = GetNamedObjectSaveFromObjectString(comparison.PropertyName, newGlueProjectSave, out indexInNew);
                     }
-                    if (element != null && replacement != null && indexInNew == indexInOld)
+                    if (oldElement != null && replacementElement != null && indexInNew == indexInOld)
 					{
-                        if (!elementsAlreadyRefreshed.Contains(element.Name))
+                        if (!elementsAlreadyRefreshed.Contains(oldElement.Name))
                         {
-                            elementsAlreadyRefreshed.Add(element.Name);
-                            if (element is ScreenSave)
+                            elementsAlreadyRefreshed.Add(oldElement.Name);
+                            if (oldElement is ScreenSave)
                             {
                                 ProjectManager.GlueProjectSave.Screens[indexInOld] = newGlueProjectSave.Screens[indexInNew];
                             }
@@ -405,15 +407,23 @@ namespace FlatRedBall.Glue.IO
                             }
 
 
-                            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+                            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(oldElement);
 
 
                             // Gotta regen this and update the UI and refresh the PropertyGrid if it's selected
-                            GlueCommands.Self.UpdateCommands.Update(replacement);
+                            GlueCommands.Self.UpdateCommands.Update(replacementElement);
 
-                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(oldElement);
                         }
 					}
+                    else if(oldFile != null && replacementFile != null && fileIndexInOld == fileIndexInNew)
+                    {
+                        ProjectManager.GlueProjectSave.GlobalFiles[fileIndexInOld] = newGlueProjectSave.GlobalFiles[fileIndexInNew];
+
+                        GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
+
+                        GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
+                    }
 					else
 					{
 						wasHandled = false;
@@ -436,21 +446,15 @@ namespace FlatRedBall.Glue.IO
                 {
                     if(selectedObject != null && selectedObject is NamedObjectSave)
                     {
+                        GlueCommands.Self.DoOnUiThread(() =>
+                        {
+                            NamedObjectSave newNos = newElement.GetNamedObject(((NamedObjectSave)selectedObject).InstanceName);
 
-                        MainGlueWindow.Self.BeginInvoke(
-                         new EventHandler(delegate 
-                             {
-                                 NamedObjectSave newNos = newElement.GetNamedObject(((NamedObjectSave)selectedObject).InstanceName);
-
-                                 // forces a refresh:
-                                 GlueState.Self.CurrentNamedObjectSave = null;
-                                 GlueState.Self.CurrentNamedObjectSave = newNos;
-
-                             }));
-
-
+                            // forces a refresh:
+                            GlueState.Self.CurrentNamedObjectSave = null;
+                            GlueState.Self.CurrentNamedObjectSave = newNos;
+                        });
                     }
-
                 }                
             }
         }
@@ -484,7 +488,25 @@ namespace FlatRedBall.Glue.IO
             }
             index = -1;
 
-                return null;
+            return null;
+        }
+
+        private static ReferencedFileSave GetFileFromObjectString(string stringPattern, GlueProjectSave glueProjectSave, out int index)
+        {
+
+            var regex = new Regex(@"(GlobalFiles)\[[0-9]+\]");
+            var match = regex.Match(stringPattern);
+            if(match != Match.Empty && match.Groups.Count > 1)
+            {
+                string indexMatch = @"GlobalFiles\[([0-9]+)\]";
+                string indexAsString = Regex.Match(stringPattern, indexMatch).Groups[1].Value;
+                index = int.Parse(indexAsString);
+                return glueProjectSave.GlobalFiles[index];
+
+            }
+            index = -1;
+
+            return null;
         }
 
         private static void ReactToChangedCodeFile(string codeFileName)
