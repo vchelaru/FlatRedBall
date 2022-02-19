@@ -99,7 +99,7 @@
             this.JustifyPanel.Controls.Add(this.JustificationLabel);
             this.JustifyPanel.Location = new System.Drawing.Point(3, 45);
             this.JustifyPanel.Name = "JustifyPanel";
-            this.JustifyPanel.Size = new System.Drawing.Size(265, 164);
+            this.JustifyPanel.Size = new System.Drawing.Size(265, 732);
             this.JustifyPanel.TabIndex = 1;
             // 
             // InformationLabel
@@ -132,7 +132,7 @@
             // OkButton
             // 
             this.OkButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.OkButton.Location = new System.Drawing.Point(112, 215);
+            this.OkButton.Location = new System.Drawing.Point(112, 783);
             this.OkButton.Name = "OkButton";
             this.OkButton.Size = new System.Drawing.Size(75, 23);
             this.OkButton.TabIndex = 2;
@@ -143,7 +143,7 @@
             // CancelButton
             // 
             this.CancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.CancelButton.Location = new System.Drawing.Point(193, 215);
+            this.CancelButton.Location = new System.Drawing.Point(193, 783);
             this.CancelButton.Name = "CancelButton";
             this.CancelButton.Size = new System.Drawing.Size(75, 23);
             this.CancelButton.TabIndex = 3;
@@ -162,9 +162,9 @@
             this.AdjustAllPanel.Controls.Add(this.AdjustYLabel);
             this.AdjustAllPanel.Controls.Add(this.AdjustXLabel);
             this.AdjustAllPanel.Controls.Add(this.AdjustTypeGroupBox);
-            this.AdjustAllPanel.Location = new System.Drawing.Point(3, 40);
+            this.AdjustAllPanel.Location = new System.Drawing.Point(3, 121);
             this.AdjustAllPanel.Name = "AdjustAllPanel";
-            this.AdjustAllPanel.Size = new System.Drawing.Size(265, 164);
+            this.AdjustAllPanel.Size = new System.Drawing.Size(265, 388);
             this.AdjustAllPanel.TabIndex = 4;
             this.AdjustAllPanel.Visible = false;
             // 
@@ -255,7 +255,7 @@
             this.Controls.Add(this.JustifyPanel);
             this.Controls.Add(this.AdjustmentGroupBox);
             this.Name = "AdjustOffsetControl";
-            this.Size = new System.Drawing.Size(271, 244);
+            this.Size = new System.Drawing.Size(271, 812);
             this.AdjustmentGroupBox.ResumeLayout(false);
             this.AdjustmentGroupBox.PerformLayout();
             this.JustifyPanel.ResumeLayout(false);
