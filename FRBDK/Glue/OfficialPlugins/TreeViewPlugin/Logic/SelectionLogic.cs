@@ -178,17 +178,15 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             {
                 if (treeNode != null && (treeNode.IsSelected == false || treeNode != currentNode))
                 {
-                    
-                        treeNode.IsSelected = true;
-                    //}
-                    //else
-                    //{
-                        // When right-clicking on the Entities folder and adding a new entity, the new entity will (usually)
-                        // create a list in GameScreen. Sometimes this tree node is already selected by default (not sure why), but
-                        // even if it is, it differs from the current node, so since the selection is changing, we need to push that to
-                        // the SelectionLogic:
-                        // Update - actually this didn't matter, the bug was still here even after adding this:
-                        //SelectionLogic.HandleSelected(treeNode);
+                    if(currentNode?.IsSelected == true)
+                    {
+                        // Selecting a tree node deselects the current node, but that can take some time and cause
+                        // some inconsistent behavior. To solve this, we will forcefully deselect the current node 
+                        // so the consequence of selecting this node is immediate:
+                        currentNode.IsSelected = false;
+                    }
+                    treeNode.IsSelected = true;
+
                     treeNode.ExpandParentsRecursively();
                 }
                 // If we don't do this, sometimes it doesn't scroll into view...
