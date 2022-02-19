@@ -122,10 +122,22 @@ namespace FlatRedBall.AnimationEditorForms.ViewModels
         }
 
 
-
         public event PropertyChangedEventHandler PropertyChanged;
 
+    }
 
-
+    public static class BoolExtensions
+    {
+        public static System.Windows.Visibility ToVisibility(this bool value)
+        {
+            if (value)
+            {
+                return System.Windows.Visibility.Visible;
+            }
+            else
+            {
+                return System.Windows.Visibility.Collapsed;
+            }
+        }
     }
 }

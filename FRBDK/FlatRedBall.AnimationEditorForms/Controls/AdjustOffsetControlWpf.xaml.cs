@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlatRedBall.AnimationEditorForms.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,28 @@ namespace FlatRedBall.AnimationEditorForms.Controls
     /// </summary>
     public partial class AdjustOffsetControlWpf : UserControl
     {
+        AdjustOffsetViewModel ViewModel => DataContext as AdjustOffsetViewModel;
+
+        public event Action OkClick;
+        public event Action CancelClick;
+
         public AdjustOffsetControlWpf()
         {
             InitializeComponent();
+
+            this.DataContext = new AdjustOffsetViewModel();
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            OkClick();
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            CancelClick();
+        }
+
+
     }
 }

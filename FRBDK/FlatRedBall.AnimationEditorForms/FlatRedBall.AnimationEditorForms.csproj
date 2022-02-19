@@ -231,6 +231,7 @@
     <Compile Include="TimeManager.cs" />
     <Compile Include="Managers\TreeViewManager.cs" />
     <Compile Include="Managers\TreeViewManager.RightClick.cs" />
+    <Compile Include="ViewModels\AdjustOffsetViewModel.cs" />
     <Compile Include="ViewModels\ViewModel.cs" />
     <Compile Include="ViewModels\WireframeEditControlsViewModel.cs" />
     <Compile Include="Wireframe\Ruler.cs" />
