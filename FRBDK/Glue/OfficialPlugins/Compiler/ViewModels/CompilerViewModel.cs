@@ -91,6 +91,10 @@ namespace OfficialPlugins.Compiler.ViewModels
         [DependsOn(nameof(IsRunning))]
         public Visibility WhileRunningViewVisibility => IsRunning.ToVisibility();
 
+        [DependsOn(nameof(IsEditChecked))]
+        [DependsOn(nameof(IsRunning))]
+        public Visibility EditingToolsVisibility => (IsRunning && IsEditChecked).ToVisibility();
+
         [DependsOn(nameof(IsRunning))]
         [DependsOn(nameof(IsCompiling))]
         [DependsOn(nameof(IsWaitingForGameToStart))]

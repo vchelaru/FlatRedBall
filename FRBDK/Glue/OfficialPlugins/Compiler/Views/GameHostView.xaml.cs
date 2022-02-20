@@ -318,5 +318,12 @@ namespace OfficialPlugins.GameHost.Views
                 MainPanelControl.ViewModel.LeftPanelWidth = new GridLength(leftPixel);
             }
         }
+
+        public void RefreshAvailableTiles()
+        {
+            EditingTools.RefreshAvailableTiles();
+        }
+
+        public void UpdateToItemSelected() => EditingTools.UpdateToItemSelected();
     }
 }

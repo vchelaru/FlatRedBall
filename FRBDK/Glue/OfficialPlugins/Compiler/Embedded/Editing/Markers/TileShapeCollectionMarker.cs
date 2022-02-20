@@ -162,6 +162,7 @@ namespace GlueControl.Editing
             #region Update Highlight and X
             currentTileHighlight.X = MathFunctions.RoundFloat(cursor.WorldX - tileDimensionHalf, tileDimensions) + tileDimensionHalf;
             currentTileHighlight.Y = MathFunctions.RoundFloat(cursor.WorldY - tileDimensionHalf, tileDimensions) + tileDimensionHalf;
+            currentTileHighlight.Visible = cursor.IsInWindow();
 
             if (EditingMode == EditingMode.Adding)
             {
@@ -431,8 +432,15 @@ namespace GlueControl.Editing
                         tileWidth = tileset.Tilewidth;
                         tileHeight = tileset.Tileheight;
 
-                        var yIndex = textureTileId.Value / tileHeight;
-                        var xIndex = textureTileId.Value % tileWidth;
+                        int numberOfTilesWide = 512 / tileWidth;
+
+                        if (gameplayLayer.Texture != null)
+                        {
+                            numberOfTilesWide = gameplayLayer.Texture.Width / tileWidth;
+                        }
+
+                        var yIndex = textureTileId.Value / numberOfTilesWide;
+                        var xIndex = textureTileId.Value % numberOfTilesWide;
 
                         textureLeftPixel = xIndex * tileWidth;
                         textureTopPixel = yIndex * tileHeight;

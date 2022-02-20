@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="OfficialPlugins.Compiler.Views.EditingToolsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:OfficialPlugins.Compiler.Views"
+             mc:Ignorable="d" 
+             Height="28" d:DesignWidth="400">
+    <StackPanel Orientation="Horizontal">
+        <ToggleButton x:Name="SelectToggleButton" MinWidth="22" Click="SelectObjectsToggleClicked">
+            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/SelectObjectsIcon.png" ></Image>
+        </ToggleButton>
+        <StackPanel x:Name="TileButtonsStack" Orientation="Horizontal" Margin="2,0,0,0">
+        </StackPanel>
+    </StackPanel>
+</UserControl>

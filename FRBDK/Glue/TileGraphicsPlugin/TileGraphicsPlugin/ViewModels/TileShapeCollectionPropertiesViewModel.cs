@@ -329,6 +329,13 @@ namespace TileGraphicsPlugin.ViewModels
             set => SetAndPersist(value); 
         }
 
+        [SyncedProperty]
+        public string CollisionTileTypeName
+        {
+            get => Get<string>(); 
+            set => SetAndPersist(value); 
+        }
+
 
         #endregion
 
@@ -352,13 +359,6 @@ namespace TileGraphicsPlugin.ViewModels
             set => SetAndPersist(value); 
         }
 
-
-        [SyncedProperty]
-        public string CollisionTileTypeName
-        {
-            get => Get<string>(); 
-            set => SetAndPersist(value); 
-        }
 
         [SyncedProperty]
         public bool RemoveTilesAfterCreatingCollision

@@ -193,7 +193,7 @@ namespace OfficialPlugins.Compiler
             this.ReactToNamedObjectChangedValue += (string changedMember, object oldValue, NamedObjectSave namedObject) => 
                 RefreshManager.Self.HandleNamedObjectValueChanged(changedMember, oldValue, namedObject, Dtos.AssignOrRecordOnly.Assign);
             this.ReactToChangedStartupScreen += ToolbarController.Self.ReactToChangedStartupScreen;
-            this.ReactToItemSelectHandler += RefreshManager.Self.HandleItemSelected;
+            this.ReactToItemSelectHandler += HandleItemSelected;
             this.ReactToObjectContainerChanged += RefreshManager.Self.HandleObjectContainerChanged;
             // If a variable is added, that may be used later to control initialization.
             // The game won't reflect that until it has been restarted, so let's just take 
@@ -205,6 +205,12 @@ namespace OfficialPlugins.Compiler
             this.ReactToMainWindowResizeEnd += gameHostView.ReactToMainWindowResizeEnd;
             this.TryHandleTreeNodeDoubleClicked += RefreshManager.Self.HandleTreeNodeDoubleClicked;
             this.GrabbedTreeNodeChanged += HandleGrabbedTreeNodeChanged;
+        }
+
+        private void HandleItemSelected(ITreeNode selectedTreeNode)
+        {
+            RefreshManager.Self.HandleItemSelected(selectedTreeNode);
+            this.gameHostView.UpdateToItemSelected();
         }
 
 
@@ -459,6 +465,8 @@ namespace OfficialPlugins.Compiler
             }
 
             GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
+
+            gameHostView.RefreshAvailableTiles();
         }
 
         private void CreateToolbar()
