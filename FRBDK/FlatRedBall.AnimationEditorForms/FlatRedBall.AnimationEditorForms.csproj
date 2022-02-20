@@ -134,17 +134,11 @@
     <Compile Include="CommandsAndState\ApplicationEvents.cs" />
     <Compile Include="CommandsAndState\ApplicationState.cs" />
     <Compile Include="Content\DateCheckingContentLoader.cs" />
-    <Compile Include="Controls\AdjustOffsetControl.cs">
-      <SubType>UserControl</SubType>
+    <Compile Include="Controls\AdjustOffsetControlWpf.xaml.cs">
+      <DependentUpon>AdjustOffsetControlWpf.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\AdjustOffsetControl.Designer.cs">
-      <DependentUpon>AdjustOffsetControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\AdjustOffsetForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\AdjustOffsetForm.Designer.cs">
-      <DependentUpon>AdjustOffsetForm.cs</DependentUpon>
+    <Compile Include="Controls\AdjustOffsetWindow.xaml.cs">
+      <DependentUpon>AdjustOffsetWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\AnimationChainTimeScaleWindow.cs">
       <SubType>Form</SubType>
@@ -225,6 +219,7 @@
     <Compile Include="TimeManager.cs" />
     <Compile Include="Managers\TreeViewManager.cs" />
     <Compile Include="Managers\TreeViewManager.RightClick.cs" />
+    <Compile Include="ViewModels\AdjustOffsetViewModel.cs" />
     <Compile Include="ViewModels\ViewModel.cs" />
     <Compile Include="ViewModels\WireframeEditControlsViewModel.cs" />
     <Compile Include="Wireframe\Ruler.cs" />
@@ -240,12 +235,6 @@
     <EmbeddedResource Include="..\Glue\Glue\Controls\TextInputWindow.resx">
       <Link>Controls\TextInputWindow.resx</Link>
       <DependentUpon>TextInputWindow.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\AdjustOffsetControl.resx">
-      <DependentUpon>AdjustOffsetControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\AdjustOffsetForm.resx">
-      <DependentUpon>AdjustOffsetForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\AnimationChainTimeScaleWindow.resx">
       <DependentUpon>AnimationChainTimeScaleWindow.cs</DependentUpon>
@@ -310,6 +299,14 @@
     <Content Include="Libraries\Jillzhang.GifUtility.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\AdjustOffsetControlWpf.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\AdjustOffsetWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\AnimationsListToolBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

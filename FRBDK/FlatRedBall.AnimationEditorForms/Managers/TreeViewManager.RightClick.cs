@@ -456,10 +456,11 @@ namespace FlatRedBall.AnimationEditorForms
 
         private void AdjustOffsetsClick(object sender, EventArgs e)
         {
-            AdjustOffsetForm form = new AdjustOffsetForm();
-            var result = form.ShowDialog();
+            
+            var wpfForms = new AdjustOffsetWindow();
+            var result = wpfForms.ShowDialog();
 
-            if (result == DialogResult.OK)
+            if (result == true)
             {
                 CallAnimationChainsChange();
             }
