@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace FlatRedBall.AnimationEditorForms.ViewModels
 {
-    class AdjustOffsetViewModel : ViewModel
+    public class AdjustOffsetViewModel : ViewModel
     {
         #region Justify vs Adjust All
 

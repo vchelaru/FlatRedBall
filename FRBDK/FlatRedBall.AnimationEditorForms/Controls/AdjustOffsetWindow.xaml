@@ -7,6 +7,8 @@
              mc:Ignorable="d" 
              Height="250" Width="300">
     <Grid>
-        <local:AdjustOffsetControlWpf></local:AdjustOffsetControlWpf>
+        <local:AdjustOffsetControlWpf x:Name="AdjustOffsetControl"
+            OkClick="AdjustOffsetControlWpf_OkClick" 
+            CancelClick="AdjustOffsetControlWpf_CancelClick"></local:AdjustOffsetControlWpf>
     </Grid>
 </Window>

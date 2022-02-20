@@ -23,6 +23,19 @@ namespace FlatRedBall.AnimationEditorForms.Controls
         public AdjustOffsetWindow()
         {
             InitializeComponent();
+
+        }
+
+        private void AdjustOffsetControlWpf_OkClick()
+        {
+            AdjustOffsetControl.ViewModel.ApplyOffsets();
+
+            this.DialogResult = true;
+        }
+
+        private void AdjustOffsetControlWpf_CancelClick()
+        {
+            this.DialogResult = false;
         }
     }
 }

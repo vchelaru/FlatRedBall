@@ -21,7 +21,7 @@ namespace FlatRedBall.AnimationEditorForms.Controls
     /// </summary>
     public partial class AdjustOffsetControlWpf : UserControl
     {
-        AdjustOffsetViewModel ViewModel => DataContext as AdjustOffsetViewModel;
+        public AdjustOffsetViewModel ViewModel => DataContext as AdjustOffsetViewModel;
 
         public event Action OkClick;
         public event Action CancelClick;
