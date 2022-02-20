@@ -134,20 +134,8 @@
     <Compile Include="CommandsAndState\ApplicationEvents.cs" />
     <Compile Include="CommandsAndState\ApplicationState.cs" />
     <Compile Include="Content\DateCheckingContentLoader.cs" />
-    <Compile Include="Controls\AdjustOffsetControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\AdjustOffsetControl.Designer.cs">
-      <DependentUpon>AdjustOffsetControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="Controls\AdjustOffsetControlWpf.xaml.cs">
       <DependentUpon>AdjustOffsetControlWpf.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\AdjustOffsetForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\AdjustOffsetForm.Designer.cs">
-      <DependentUpon>AdjustOffsetForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\AdjustOffsetWindow.xaml.cs">
       <DependentUpon>AdjustOffsetWindow.xaml</DependentUpon>
@@ -247,12 +235,6 @@
     <EmbeddedResource Include="..\Glue\Glue\Controls\TextInputWindow.resx">
       <Link>Controls\TextInputWindow.resx</Link>
       <DependentUpon>TextInputWindow.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\AdjustOffsetControl.resx">
-      <DependentUpon>AdjustOffsetControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\AdjustOffsetForm.resx">
-      <DependentUpon>AdjustOffsetForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\AnimationChainTimeScaleWindow.resx">
       <DependentUpon>AnimationChainTimeScaleWindow.cs</DependentUpon>

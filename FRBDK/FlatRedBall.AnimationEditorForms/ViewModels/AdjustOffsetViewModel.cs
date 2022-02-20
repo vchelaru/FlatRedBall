@@ -9,6 +9,25 @@ using System.Windows;
 
 namespace FlatRedBall.AnimationEditorForms.ViewModels
 {
+    #region Enums
+    public enum Justification
+    {
+        Bottom
+    }
+    public enum AdjustmentType
+    {
+        None,
+        Justify,
+        AdjustOffset,
+    }
+    public enum OffSetType
+    {
+        None,
+        Absolute,
+        Relative,
+    }
+    #endregion
+
     public class AdjustOffsetViewModel : ViewModel
     {
         #region Justify vs Adjust All
@@ -140,15 +159,7 @@ namespace FlatRedBall.AnimationEditorForms.ViewModels
                     ApplyJustifyOffsets();
                     break;
                 case AdjustmentType.AdjustOffset:
-                    switch (this.OffsetType)
-                    {
-                        case OffSetType.Absolute:
-                            ApplyFrameOffsets(false);
-                            break;
-                        case OffSetType.Relative:
-                            ApplyFrameOffsets(true);
-                            break;
-                    }
+                    ApplyFrameOffsets();
                     break;
             }
 
@@ -157,12 +168,14 @@ namespace FlatRedBall.AnimationEditorForms.ViewModels
             PropertyGridManager.Self.Refresh();
         }
 
-        private void ApplyFrameOffsets(bool isRelative)
+        private void ApplyFrameOffsets()
         {
             var chain = SelectedState.Self.SelectedChain;
 
             if (chain != null)
             {
+                var isRelative = OffsetType == OffSetType.Relative;
+
                 foreach (var frame in chain.Frames)
                 {
                     var texture = WireframeManager.Self.GetTextureForFrame(frame);

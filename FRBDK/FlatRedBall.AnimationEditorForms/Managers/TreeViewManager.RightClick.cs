@@ -456,6 +456,7 @@ namespace FlatRedBall.AnimationEditorForms
 
         private void AdjustOffsetsClick(object sender, EventArgs e)
         {
+            
             var wpfForms = new AdjustOffsetWindow();
             var result = wpfForms.ShowDialog();
 
