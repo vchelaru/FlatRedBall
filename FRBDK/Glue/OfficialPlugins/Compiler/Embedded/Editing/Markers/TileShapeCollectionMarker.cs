@@ -26,7 +26,8 @@ namespace GlueControl.Editing
     {
         None,
         Adding,
-        Removing
+        Removing,
+        AddingLine
     }
 
     #endregion
@@ -75,6 +76,9 @@ namespace GlueControl.Editing
 
         EditingMode EditingMode { get; set; }
 
+        Vector2 PositionPushed;
+        Vector2 LastLineDrawingPosition;
+
         #endregion
 
         #region Events/Delegates
@@ -82,6 +86,8 @@ namespace GlueControl.Editing
         public event Action<INameable, string, object> PropertyChanged;
 
         #endregion
+
+        #region Constructor/Initialization
 
         public TileShapeCollectionMarker(INameable owner, Models.NamedObjectSave namedObjectSave)
         {
@@ -140,6 +146,8 @@ namespace GlueControl.Editing
             }
         }
 
+        #endregion
+
         public void Update(ResizeSide sideGrabbed)
         {
             ////////////////early out//////////////////////////////
@@ -152,6 +160,7 @@ namespace GlueControl.Editing
             #region Initial Variable Assignment
 
             var cursor = GuiManager.Cursor;
+            var keyboard = FlatRedBall.Input.InputManager.Keyboard;
 
             var tileDimensions = owner.GridSize;
 
@@ -182,7 +191,15 @@ namespace GlueControl.Editing
 
             if (cursor.PrimaryPush && EditingMode == EditingMode.None)
             {
-                EditingMode = EditingMode.Adding;
+                if (keyboard.IsShiftDown)
+                {
+                    EditingMode = EditingMode.AddingLine;
+                }
+                else
+                {
+                    EditingMode = EditingMode.Adding;
+                }
+                PositionPushed = cursor.WorldPosition;
             }
 
             #endregion
@@ -199,6 +216,10 @@ namespace GlueControl.Editing
                     PaintTileAtHighlight();
                 }
             }
+            else if (EditingMode == EditingMode.AddingLine)
+            {
+                UpdateTileHighlightsToLine();
+            }
 
             #endregion
 
@@ -206,12 +227,13 @@ namespace GlueControl.Editing
 
             if (cursor.PrimaryClick)
             {
-                if (EditingMode == EditingMode.Adding)
+                if (EditingMode == EditingMode.Adding || EditingMode == EditingMode.AddingLine)
                 {
                     CommitPaintedTiles();
                     RectanglesAddedOrRemoved.Clear();
                     EditingMode = EditingMode.None;
                 }
+
             }
 
             #endregion
@@ -501,47 +523,104 @@ namespace GlueControl.Editing
             RectanglesAddedOrRemoved.Add(newRect);
         }
 
-        public void Destroy()
+        private void UpdateTileHighlightsToLine()
         {
-            // If the owner was invisible, let's make it invisible again
-            // If it's visible, then this didn't change that at all, so it
-            // will remain visible. Setting Visible = true here may force visibility
-            // on an already-destroyed TileShapeCollection, so only setting it to false
-            // avoids multiple problems
-            if (owner != null && originalVisibility == false)
+            float startX, startY, endX, endY;
+            var currentCursorPosition = GuiManager.Cursor.WorldPosition;
+
+            endX = MathFunctions.RoundFloat(currentCursorPosition.X - owner.GridSize / 2.0f, owner.GridSize, owner.LeftSeedX);
+            endY = MathFunctions.RoundFloat(currentCursorPosition.Y - owner.GridSize / 2.0f, owner.GridSize, owner.BottomSeedY);
+
+            //////////////////early out///////////////////////////////////
+            if (endX == LastLineDrawingPosition.X && endY == LastLineDrawingPosition.Y)
             {
-                owner.Visible = originalVisibility;
+                return;
+            }
+            //////////////end early out///////////////////////////////////
+
+            LastLineDrawingPosition.X = endX;
+            LastLineDrawingPosition.Y = endY;
+
+            startX = MathFunctions.RoundFloat(PositionPushed.X - owner.GridSize / 2.0f, owner.GridSize, owner.LeftSeedX);
+            startY = MathFunctions.RoundFloat(PositionPushed.Y - owner.GridSize / 2.0f, owner.GridSize, owner.BottomSeedY);
+
+
+            var xDifference = Math.Abs(endX - startX);
+            var yDifference = Math.Abs(endY - startY);
+
+            var tileDimensions = owner.GridSize;
+
+            if (xDifference >= yDifference)
+            {
+                FlatRedBall.Debugging.Debugger.Write(xDifference);
+                // horizontal
+                var sign = Math.Sign(endX - startX);
+                var numberOfTiles = 1 + Math.Abs(MathFunctions.RoundToInt((endX - startX) / owner.GridSize));
+
+                ClearRectangles();
+
+                for (int i = 0; i < numberOfTiles; i++)
+                {
+                    var worldX = startX + sign * i * owner.GridSize;
+                    var worldY = startY;
+
+                    CreateLocalRectangleAt(worldX, worldY, i);
+                }
+                while (numberOfTiles < RectanglesAddedOrRemoved.Count)
+                {
+                    var rectToRemove = RectanglesAddedOrRemoved[RectanglesAddedOrRemoved.Count - 1];
+                    owner.RemoveCollisionAtWorld(rectToRemove.X, rectToRemove.Y);
+                    RectanglesAddedOrRemoved.RemoveAt(RectanglesAddedOrRemoved.Count - 1);
+                }
+            }
+            else
+            {
+                // vertical
+                var sign = Math.Sign(endY - startY);
+                var numberOfTiles = 1 + Math.Abs(MathFunctions.RoundToInt((endY - startY) / owner.GridSize));
+
+                ClearRectangles();
+
+                for (int i = 0; i < numberOfTiles; i++)
+                {
+                    var worldX = startX;
+                    var worldY = startY + sign * i * owner.GridSize;
+
+                    CreateLocalRectangleAt(worldX, worldY, i);
+                }
+                while (numberOfTiles < RectanglesAddedOrRemoved.Count)
+                {
+                    var rectToRemove = RectanglesAddedOrRemoved[RectanglesAddedOrRemoved.Count - 1];
+                    owner.RemoveCollisionAtWorld(rectToRemove.X, rectToRemove.Y);
+                    RectanglesAddedOrRemoved.RemoveAt(RectanglesAddedOrRemoved.Count - 1);
+                }
             }
 
-            currentTileHighlight.Visible = false;
-            boundsRectangle.Visible = false;
+            void ClearRectangles()
+            {
+                while (RectanglesAddedOrRemoved.Count > 0)
+                {
+                    var rectToRemove = RectanglesAddedOrRemoved[RectanglesAddedOrRemoved.Count - 1];
+                    owner.RemoveCollisionAtWorld(rectToRemove.X, rectToRemove.Y);
+                    RectanglesAddedOrRemoved.RemoveAt(RectanglesAddedOrRemoved.Count - 1);
+                }
+            }
 
-            ScreenManager.PersistentAxisAlignedRectangles.Remove(currentTileHighlight);
-            ScreenManager.PersistentAxisAlignedRectangles.Remove(boundsRectangle);
+            void CreateLocalRectangleAt(float worldX, float worldY, int i)
+            {
 
-        }
 
-        public void HandleCursorPushed()
-        {
-            throw new NotImplementedException();
-        }
+                owner.AddCollisionAtWorld(worldX, worldY);
 
-        public void HandleCursorRelease()
-        {
-            throw new NotImplementedException();
-        }
+                var newRect = owner.GetRectangleAtPosition(worldX, worldY);
 
-        public bool IsCursorOverThis()
-        {
-            // always say "true" because the user can paint when selecting a TileShapeCollection.
-            // Let them select something else in Glue
-            return true;
-        }
+                newRect.Visible = true;
+                newRect.Color = Color.Green;
+                newRect.Width = tileDimensions - 2;
+                newRect.Height = tileDimensions - 2;
 
-        public void MakePersistent()
-        {
-            ScreenManager.PersistentAxisAlignedRectangles.Add(currentTileHighlight);
-            ScreenManager.PersistentAxisAlignedRectangles.Add(boundsRectangle);
+                RectanglesAddedOrRemoved.Add(newRect);
+            }
         }
 
         public void PlayBumpAnimation(float endingExtraPaddingBeforeZoom, bool isSynchronized)
@@ -629,5 +708,52 @@ namespace GlueControl.Editing
 
             owner = shapeCollection;
         }
+
+        #region General ISelectionMarker implementations
+
+        public void Destroy()
+        {
+            // If the owner was invisible, let's make it invisible again
+            // If it's visible, then this didn't change that at all, so it
+            // will remain visible. Setting Visible = true here may force visibility
+            // on an already-destroyed TileShapeCollection, so only setting it to false
+            // avoids multiple problems
+            if (owner != null && originalVisibility == false)
+            {
+                owner.Visible = originalVisibility;
+            }
+
+            currentTileHighlight.Visible = false;
+            boundsRectangle.Visible = false;
+
+            ScreenManager.PersistentAxisAlignedRectangles.Remove(currentTileHighlight);
+            ScreenManager.PersistentAxisAlignedRectangles.Remove(boundsRectangle);
+
+        }
+        public void MakePersistent()
+        {
+            ScreenManager.PersistentAxisAlignedRectangles.Add(currentTileHighlight);
+            ScreenManager.PersistentAxisAlignedRectangles.Add(boundsRectangle);
+        }
+
+        public void HandleCursorPushed()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void HandleCursorRelease()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsCursorOverThis()
+        {
+            // always say "true" because the user can paint when selecting a TileShapeCollection.
+            // Let them select something else in Glue
+            return true;
+        }
+
+
+        #endregion
     }
 }

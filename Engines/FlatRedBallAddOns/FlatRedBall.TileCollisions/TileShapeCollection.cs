@@ -520,7 +520,7 @@ namespace FlatRedBall.TileCollisions
             int endExclusive = mShapes.AxisAlignedRectangles.GetFirstAfter(keyValueAfter, mSortAxis,
                 0, mShapes.AxisAlignedRectangles.Count);
 
-            AxisAlignedRectangle toReturn = GetRectangleAtPosition(worldX, worldY, startInclusive, endExclusive);
+            AxisAlignedRectangle toReturn = GetRectangleAtPosition(middleOfTileX, middleOfTileY, startInclusive, endExclusive);
 
             return toReturn;
         }
