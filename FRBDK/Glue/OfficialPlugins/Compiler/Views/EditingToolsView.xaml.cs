@@ -42,7 +42,13 @@ namespace OfficialPlugins.Compiler.Views
             InitializeComponent();
         }
 
-        public void RefreshAvailableTiles()
+        public void HandleGluxUnloaded()
+        {
+            StandardTilesetImage = null;
+            TileButtonsStack.Children.Clear();
+        }
+
+        public void HandleGluxLoaded()
         {
             //var filePath = asdf;
             if(StandardTilesetImage == null)

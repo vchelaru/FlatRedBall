@@ -319,9 +319,14 @@ namespace OfficialPlugins.GameHost.Views
             }
         }
 
-        public void RefreshAvailableTiles()
+        public void HandleGluxLoaded()
         {
-            EditingTools.RefreshAvailableTiles();
+            EditingTools.HandleGluxLoaded();
+        }
+
+        public void HandleGluxUnloaded()
+        {
+            EditingTools.HandleGluxUnloaded();
         }
 
         public void UpdateToItemSelected() => EditingTools.UpdateToItemSelected();

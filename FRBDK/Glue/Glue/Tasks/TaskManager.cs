@@ -551,9 +551,11 @@ namespace FlatRedBall.Glue.Managers
         {
             if(!IsInTask())
             {
-                var stackTrace = Environment.StackTrace;
+                // Vic says - there seems to be some issue with this method incorrectly reporting not in task when it really is. I think it might have to do
+                // with async but not sure exactly...
+                //var stackTrace = Environment.StackTrace;
 
-                GlueCommands.Self.DoOnUiThread(() => GlueCommands.Self.PrintOutput("Code not in task:\n" + stackTrace));
+                //GlueCommands.Self.DoOnUiThread(() => GlueCommands.Self.PrintOutput("Code not in task:\n" + stackTrace));
             }
         }
 

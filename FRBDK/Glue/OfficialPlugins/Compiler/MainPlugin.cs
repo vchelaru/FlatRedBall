@@ -392,6 +392,9 @@ namespace OfficialPlugins.Compiler
 
             glueViewSettingsTab.Hide();
 
+            gameHostView.HandleGluxUnloaded();
+
+
             ToolbarController.Self.HandleGluxUnloaded();
         }
 
@@ -466,7 +469,7 @@ namespace OfficialPlugins.Compiler
 
             GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
 
-            gameHostView.RefreshAvailableTiles();
+            gameHostView.HandleGluxLoaded();
         }
 
         private void CreateToolbar()
