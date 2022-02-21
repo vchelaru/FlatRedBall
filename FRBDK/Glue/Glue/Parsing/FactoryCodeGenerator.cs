@@ -34,12 +34,17 @@ namespace FlatRedBall.Glue.Parsing
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
         {
             // This needs to be before the base.Destroy(); call so that the derived class can make itself unused before the base class get a chance
-            if (element is EntitySave && (element as EntitySave).CreatedByOtherEntities && !IsAbstract(element))
+            if (element is EntitySave && (element as EntitySave).CreatedByOtherEntities)
             {
+                // Other generators rely on wasUsed being declared in the method whether or not the type is abstract
                 codeBlock.Line("var wasUsed = this.Used;");
-                codeBlock
-                    .If("Used")
-                        .Line(string.Format("Factories.{0}Factory.MakeUnused(this, false);", FileManager.RemovePath(element.Name)));
+
+                if (!IsAbstract(element))
+                {
+                    codeBlock
+                        .If("Used")
+                            .Line(string.Format("Factories.{0}Factory.MakeUnused(this, false);", FileManager.RemovePath(element.Name)));
+                }
             }
 
             return codeBlock;
@@ -91,7 +96,7 @@ namespace FlatRedBall.Glue.Parsing
             // the Destroy call on the first screen will wipe out
             // the Initialize call that was asynchronously called from
             // the second Screen.  We fix this by moving the Initialize
-            // method into AddToManagers so that it's not called asynchronously - 
+            // method into AddToManagers so that it's not called asynchronously -
             // instead it's called after the first screen has finished unloading itself.
 
             List<NamedObjectSave> entityLists;
@@ -142,7 +147,7 @@ namespace FlatRedBall.Glue.Parsing
                             codeBlock.Line($"{factoryName}.AddList({listNos.FieldName});");
                         }
 
-                    }    
+                    }
                 }
 
             }
@@ -699,7 +704,7 @@ namespace FlatRedBall.Glue.Parsing
                 .Line("/// the same whether your Entity is pooled or not.")
                 .Line("/// </summary>")
                 .Function("public static void", "MakeUnused", className + " objectToMakeUnused, bool callDestroy");
-                    
+
             if (poolObjects)
             {
                 codeBlock
