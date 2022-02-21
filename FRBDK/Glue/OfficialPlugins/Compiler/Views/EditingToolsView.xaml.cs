@@ -29,8 +29,6 @@ namespace OfficialPlugins.Compiler.Views
     {
         #region Properties
 
-        BitmapImage StandardTilesetImage;
-
         Dictionary<int, CroppedBitmap> CroppedBitmaps = new Dictionary<int, CroppedBitmap>();
 
         List<ToggleButton> tileToggleButtons = new List<ToggleButton>();
@@ -44,97 +42,37 @@ namespace OfficialPlugins.Compiler.Views
 
         public void HandleGluxUnloaded()
         {
-            StandardTilesetImage = null;
             TileButtonsStack.Children.Clear();
         }
 
         public void HandleGluxLoaded()
         {
             //var filePath = asdf;
-            if(StandardTilesetImage == null)
+            var tilesetImage = GlueState.Self.TiledCache.StandardTilesetImage;
+            var tileset = GlueState.Self.TiledCache.StandardTileset;
+            if (tilesetImage != null)
             {
-                var tmxFiles = ObjectFinder.Self.GetAllReferencedFiles()
-                    .Where(item => FileManager.GetExtension(item.Name) == "tmx");
-
-                // find one with a GameplayLayerb
-                TiledMapSave foundTiledMapSave = null;
-                FilePath tmxFilePath = null;
-                foreach(var rfs in tmxFiles)
+                foreach(var tile in tileset.Tiles)
                 {
-                    FilePath absolute = GlueCommands.Self.GetAbsoluteFileName(rfs);
-
-                    if(absolute.Exists())
+                    if(!string.IsNullOrEmpty(tile.Type))
                     {
-                        var candidateTiledMapSave = TiledMapSave.FromFile(absolute.FullPath);
-                        var gameplayLayer = candidateTiledMapSave.Layers.FirstOrDefault(item => item.Name?.ToLowerInvariant() == "gameplaylayer");
-
-                        if(gameplayLayer != null)
-                        {
-                            foundTiledMapSave = candidateTiledMapSave;
-                            tmxFilePath = absolute;
-                            break;
-                        }
+                        CreateButtonForTilesetTile(tile, tilesetImage);
                     }
-                }
-
-                FilePath pngFilePath = null;
-                Tileset tileset = null;
-                if (foundTiledMapSave != null)
-                {
-                    tileset = foundTiledMapSave.Tilesets.FirstOrDefault(item => item.Name == "TiledIcons");
-                    if(tileset != null)
-                    {
-                        FilePath tsxFilePath = tmxFilePath.GetDirectoryContainingThis() + tileset.Source;
-
-                        if(tileset != null)
-                        {
-                            var source = tileset.Images.FirstOrDefault()?.Source;
-
-                            pngFilePath = tsxFilePath.GetDirectoryContainingThis() + source;
-                        }
-                    }
-                }
-
-                if(pngFilePath?.Exists() == true)
-                {
-                    StandardTilesetImage = new BitmapImage();
-                    StandardTilesetImage.BeginInit();
-                    StandardTilesetImage.CacheOption = BitmapCacheOption.OnLoad;
-                    StandardTilesetImage.UriSource = new Uri(pngFilePath.FullPath, UriKind.Relative);
-                    StandardTilesetImage.EndInit();
-
-                }
-                if(StandardTilesetImage != null)
-                {
-                    foreach(var tile in tileset.Tiles)
-                    {
-                        if(!string.IsNullOrEmpty(tile.Type))
-                        {
-                            CreateButtonForTilesetTile(tile);
-                        }
-                    }
-
-
-                    //foreach (ToggleButton button in TileButtonsStack.Children)
-                    //{
-                    //    var image = button.Content as Image;
-                    //    image.Source = croppedBitmap;
-                    //}
                 }
             }
 
         }
 
-        private void CreateButtonForTilesetTile(mapTilesetTile tile)
+        private void CreateButtonForTilesetTile(mapTilesetTile tile, BitmapImage standardTilesetImage)
         {
             var unwrappedX = tile.id * 16;
-            var y = 16 * (unwrappedX / (int)StandardTilesetImage.Width);
-            var x = unwrappedX % (int)StandardTilesetImage.Width;
+            var y = 16 * (unwrappedX / (int)standardTilesetImage.Width);
+            var x = unwrappedX % (int)standardTilesetImage.Width;
 
             CroppedBitmap croppedBitmap = new CroppedBitmap();
             croppedBitmap.BeginInit();
             croppedBitmap.SourceRect = new Int32Rect(x, y, 16, 16);
-            croppedBitmap.Source = StandardTilesetImage;
+            croppedBitmap.Source = standardTilesetImage;
             croppedBitmap.EndInit();
 
             var button = new ToggleButton();

@@ -5,8 +5,10 @@ using FlatRedBall.IO;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 using TMXGlueLib;
 
 namespace FlatRedBall.Glue.Tiled
@@ -22,6 +24,32 @@ namespace FlatRedBall.Glue.Tiled
     public class TiledCache
     {
         Dictionary<FilePath, CachedTiledMapSave> CachedTiledMapSaves = new Dictionary<FilePath, CachedTiledMapSave>();
+
+        BitmapImage standardTilesetImage;
+        public BitmapImage StandardTilesetImage 
+        { 
+            get
+            {
+                if(standardTilesetImage == null)
+                {
+                    FindStandardTileset();
+                }
+                return standardTilesetImage;
+            }
+        }
+        Tileset standardTileset;
+        public Tileset StandardTileset
+        {
+            get
+            {
+                if(standardTileset == null)
+                {
+                    FindStandardTileset();
+                }
+                return standardTileset;
+            }
+        }
+
         public void RefreshCache()
         {
             List<FilePath> tmxFiles = new List<FilePath>();
@@ -104,6 +132,54 @@ namespace FlatRedBall.Glue.Tiled
             return tms;
         }
 
+        public IEnumerable<TiledMapSave> AllTiledMaps => CachedTiledMapSaves.Values.Select(item => item.TiledMapSave);
+        public IEnumerable<CachedTiledMapSave> AllCachedTiledMapSaveInstances => CachedTiledMapSaves.Values;
+
+        public void FindStandardTileset()
+        {
+            TiledMapSave foundTiledMapSave = null;
+            FilePath tmxFilePath = null;
+            // find one with a GameplayLayerb
+            foreach (var cachedMap in GlueState.Self.TiledCache.AllCachedTiledMapSaveInstances)
+            {
+                var gameplayLayer = cachedMap.TiledMapSave.Layers.FirstOrDefault(item => item.Name?.ToLowerInvariant() == "gameplaylayer");
+
+                if (gameplayLayer != null)
+                {
+                    foundTiledMapSave = cachedMap.TiledMapSave;
+                    tmxFilePath = cachedMap.FilePath;
+                    break;
+                }
+            }
+
+            FilePath pngFilePath = null;
+            
+            if (foundTiledMapSave != null)
+            {
+                standardTileset = foundTiledMapSave.Tilesets.FirstOrDefault(item => item.Name == "TiledIcons");
+                if (standardTileset != null)
+                {
+                    FilePath tsxFilePath = tmxFilePath.GetDirectoryContainingThis() + standardTileset.Source;
+
+                    if (standardTileset != null)
+                    {
+                        var source = standardTileset.Images.FirstOrDefault()?.Source;
+
+                        pngFilePath = tsxFilePath.GetDirectoryContainingThis() + source;
+                    }
+                }
+            }
+
+            if (pngFilePath?.Exists() == true)
+            {
+                standardTilesetImage = new BitmapImage();
+                standardTilesetImage.BeginInit();
+                standardTilesetImage.CacheOption = BitmapCacheOption.OnLoad;
+                standardTilesetImage.UriSource = new Uri(pngFilePath.FullPath, UriKind.Relative);
+                standardTilesetImage.EndInit();
+
+            }
+        }
     }
 
 }
