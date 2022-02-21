@@ -14,6 +14,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// </summary>
         void GenerateCurrentElementCode();
 
+        /// <summary>
+        /// Generates the argument element's code. Also generates all elements which inherit from this element.
+        /// </summary>
+        /// <param name="element"></param>
         void GenerateElementCode(GlueElement element);
 
         Task GenerateElementCodeAsync(GlueElement element);

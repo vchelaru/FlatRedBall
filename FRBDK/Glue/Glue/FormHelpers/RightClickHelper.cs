@@ -43,6 +43,7 @@ using GlueFormsCore.FormHelpers;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
+using FlatRedBall.Glue.Utilities;
 
 namespace FlatRedBall.Glue.FormHelpers
 {
@@ -2501,7 +2502,8 @@ namespace FlatRedBall.Glue.FormHelpers
                     }
                 }
 
-            }, "Moving object up or down", TaskExecutionPreference.Asap);
+            }, $"Moving {GlueState.Self.CurrentCustomVariable?.ToString() ?? GlueState.Self.CurrentNamedObjectSave?.ToString()} up or down", 
+            TaskExecutionPreference.Asap);
         }
 
 
@@ -2581,7 +2583,7 @@ namespace FlatRedBall.Glue.FormHelpers
         }
 
 
-        private static async void PostMoveActivity()
+        private static void PostMoveActivity()
         {
             // do this before refreshing the tree nodes
             var currentCustomVariable = GlueState.Self.CurrentCustomVariable;
@@ -2610,7 +2612,14 @@ namespace FlatRedBall.Glue.FormHelpers
             foreach (NamedObjectSave nos in ObjectFinder.Self.GetAllNamedObjectsThatUseElement(element))
             {
                 nos.UpdateCustomProperties();
-                elementsToRegen.Add(nos.GetContainer());
+
+                var container = nos.GetContainer();
+
+                var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(container);
+                if(!elementsToRegen.ContainsAny(baseElements))
+                {
+                    elementsToRegen.Add(container);
+                }
             }
 
             foreach (var elementToRegen in elementsToRegen)

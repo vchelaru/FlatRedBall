@@ -291,7 +291,9 @@ namespace FlatRedBall.Glue.Managers
 
         public GlueTask AddOrRunIfTasked(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
         {
-            if (IsInTask())
+            if (IsInTask() && 
+                // If the user is moving the tasks to the end, then we will push it at the end always
+                executionPreference != TaskExecutionPreference.AddOrMoveToEnd)
             {
                 // we're in a task:
                 var task = new GlueTask()

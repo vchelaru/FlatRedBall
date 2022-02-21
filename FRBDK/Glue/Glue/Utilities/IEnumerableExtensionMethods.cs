@@ -18,5 +18,17 @@ namespace FlatRedBall.Glue.Utilities
                 }
             }
         }
+
+        public static bool ContainsAny<T>(this IEnumerable<T> enumerable, IEnumerable<T> other)
+        {
+            foreach(var item in other)
+            {
+                if(enumerable.Contains(item))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }
