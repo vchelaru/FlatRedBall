@@ -392,6 +392,10 @@ namespace FlatRedBall.Glue.IO
                 SetInitWindowText("Refreshing Source File Cache...", initializationWindow);
                 RefreshSourceFileCache();
 
+                SetInitWindowText("Refreshing TiledCache", initializationWindow);
+                GlueState.Self.TiledCache.RefreshCache();
+
+
                 SetInitWindowText("Checking for additional missing files...", initializationWindow);
 
                 SetInitWindowText("Building out of date external files...", initializationWindow);

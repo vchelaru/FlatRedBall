@@ -720,7 +720,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         #region Old Code
         private static string GetDisplaySetupOld(ICodeBlock classContents)
         {
-            string fileContents = GlueFormsCore.Resources.Resource1.CameraSetupTemplate;
+            string fileContents = Resources.Resource1.CameraSetupTemplate;
             fileContents = CodeWriter.ReplaceNamespace(fileContents, ProjectManager.ProjectNamespace);
 
 

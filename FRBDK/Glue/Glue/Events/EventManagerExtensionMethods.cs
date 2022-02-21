@@ -22,7 +22,7 @@ namespace FlatRedBall.Glue.Events
 
             if (!FileManager.FileExists(currentFileName))
             {
-                string startingTemplate = GlueFormsCore.Resources.Resource1.EventTemplate;
+                string startingTemplate = Resources.Resource1.EventTemplate;
 
                 startingTemplate = startingTemplate.Replace("CLASS___NAME", className);
 

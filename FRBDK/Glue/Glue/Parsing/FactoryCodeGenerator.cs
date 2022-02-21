@@ -317,7 +317,7 @@ namespace FlatRedBall.Glue.Parsing
             string iEntityFactoryFileName = GlueState.Self.CurrentGlueProjectDirectory + @"Performance\IEntityFactory.Generated.cs";
 
 
-            string embeddedResourcePrefix = "GlueFormsCore.Resources.";
+            string embeddedResourcePrefix = "FlatRedBall.Glue.Resources.";
             var thisAssembly = typeof(FactoryCodeGenerator).Assembly;
 
             var byteArray = FileManager.GetByteArrayFromEmbeddedResource(thisAssembly, embeddedResourcePrefix + "PoolList.cs");

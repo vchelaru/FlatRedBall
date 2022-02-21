@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace GlueFormsCore.Resources {
+namespace FlatRedBall.Glue.Resources {
     using System;
     
     
@@ -19,7 +19,7 @@ namespace GlueFormsCore.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resource1 {
@@ -39,7 +39,7 @@ namespace GlueFormsCore.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("GlueFormsCore.Resources.Resource1", typeof(Resource1).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("FlatRedBall.Glue.Resources.Resource1", typeof(Resource1).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -251,14 +251,14 @@ namespace GlueFormsCore.Resources {
         ///{
         ///    public interface IEntityFactory
         ///    {
-        ///        object CreateNew();
+        ///        object CreateNew(float x = 0, float y = 0);
+        ///        object CreateNew(Microsoft.Xna.Framework.Vector3 position);
         ///        object CreateNew(FlatRedBall.Graphics.Layer layer);
         ///
         ///        void Initialize(string contentManager);
         ///        void ClearListsToAddTo();
-        ///    }
-        ///}
-        ///.
+        ///
+        ///        System.Collections.Generic.List&lt;System.Collections.IList&gt; ListsT [rest of string was truncated]&quot;;.
         /// </summary>
         public static string IEntityFactory {
             get {

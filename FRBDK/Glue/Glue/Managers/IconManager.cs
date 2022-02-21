@@ -13,7 +13,7 @@ namespace FlatRedBall.Glue.Managers
         {
             get
             {
-                return GlueFormsCore.Resources.Resource1.copyIcon;
+                return Resources.Resource1.copyIcon;
             }
         }
     }

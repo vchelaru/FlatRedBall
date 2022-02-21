@@ -16,6 +16,7 @@ using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Navigation;
+using FlatRedBall.Glue.Tiled;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 {
@@ -259,6 +260,35 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         #endregion
 
+        #region Sub-containers and Self
+
+        static GlueState mSelf;
+        public static GlueState Self
+        {
+            get
+            {
+                if (mSelf == null)
+                {
+                    mSelf = new GlueState();
+                }
+                return mSelf;
+            }
+        }
+        public IFindManager Find
+        {
+            get;
+            set;
+        }
+        public States.Clipboard Clipboard
+        {
+            get;
+            private set;
+        }
+
+        public TiledCache TiledCache { get; private set; } = new TiledCache();
+
+        #endregion
+
         #region Properties
 
         ITreeNode draggedTreeNode;
@@ -291,31 +321,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         }
 
         GlueStateSnapshot snapshot = new GlueStateSnapshot();
-
-        static GlueState mSelf;
-        public static GlueState Self
-        {
-            get
-            {
-                if (mSelf == null)
-                {
-                    mSelf = new GlueState();
-                }
-                return mSelf;
-            }
-        }
-
-        public IFindManager Find
-        {
-            get;
-            set;
-        }
-        public States.Clipboard Clipboard
-        {
-            get;
-            private set;
-        }
-
 
         public ErrorListViewModel ErrorList { get; private set; } = new ErrorListViewModel();
 

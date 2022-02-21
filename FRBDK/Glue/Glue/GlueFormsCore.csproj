@@ -8,6 +8,7 @@
     <Platforms>x86</Platforms>
     <Version>2020.06.01.1095</Version>
     <ApplicationIcon>Glue.ico</ApplicationIcon>
+    <RootNamespace>FlatRedBall.Glue</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">

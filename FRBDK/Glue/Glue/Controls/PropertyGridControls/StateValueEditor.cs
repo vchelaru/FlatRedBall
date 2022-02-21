@@ -35,11 +35,11 @@ namespace FlatRedBall.Glue.Controls.PropertyGridControls
             : base()
         {
 
-            mCanInterpolate = GlueFormsCore.Resources.Resource1.CanInterpolate;
+            mCanInterpolate = Resources.Resource1.CanInterpolate;
 
-            mCantInterpolate = GlueFormsCore.Resources.Resource1.CantInterpolate;
+            mCantInterpolate = Resources.Resource1.CantInterpolate;
 
-            mNeedsVelocityVariable = GlueFormsCore.Resources.Resource1.NeedsInterpolateVariable;
+            mNeedsVelocityVariable = Resources.Resource1.NeedsInterpolateVariable;
         }
 
         

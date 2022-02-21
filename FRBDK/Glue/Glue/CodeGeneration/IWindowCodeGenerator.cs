@@ -96,7 +96,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 propertyName = "FlatRedBall.Gui.IWindow.Enabled";
             }
 
-            codeBlock.Line(GlueFormsCore.Resources.Resource1.IWindowTemplate);
+            codeBlock.Line(Resources.Resource1.IWindowTemplate);
 
             var property = codeBlock.Property(prefix, propertyName);
 
