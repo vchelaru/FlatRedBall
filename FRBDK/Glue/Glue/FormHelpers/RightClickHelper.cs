@@ -2427,18 +2427,19 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             TaskManager.Self.Add(() =>
             {
-                object objectToRemove;
+                object objectToMove;
                 IList listToRemoveFrom;
                 IList listForIndexing;
-                GetObjectAndListForMoving(out objectToRemove, out listToRemoveFrom, out listForIndexing);
+                GetObjectAndListForMoving(out objectToMove, out listToRemoveFrom, out listForIndexing);
                 if (listToRemoveFrom != null)
                 {
-                    int index = listToRemoveFrom.IndexOf(objectToRemove);
+                    int index = listToRemoveFrom.IndexOf(objectToMove);
                     if (index > 0)
                     {
-                        listToRemoveFrom.Remove(objectToRemove);
-                        listToRemoveFrom.Insert(0, objectToRemove);
-                        PostMoveActivity();
+                        listToRemoveFrom.Remove(objectToMove);
+                        listToRemoveFrom.Insert(0, objectToMove);
+                        var variable = objectToMove as CustomVariable;
+                        PostMoveActivity(variable);
                     }
                 }
             }, "Moving to top", TaskExecutionPreference.Asap);
@@ -2470,19 +2471,19 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             TaskManager.Self.Add(() =>
             {
-                object objectToRemove;
+                object objectToMove;
                 IList listToRemoveFrom;
                 IList listForIndexing;
-                GetObjectAndListForMoving(out objectToRemove, out listToRemoveFrom, out listForIndexing);
+                GetObjectAndListForMoving(out objectToMove, out listToRemoveFrom, out listForIndexing);
                 if (listToRemoveFrom != null)
                 {
-                    int index = listToRemoveFrom.IndexOf(objectToRemove);
+                    int index = listToRemoveFrom.IndexOf(objectToMove);
 
-                    var oldIndexInListForIndexing = listForIndexing.IndexOf(objectToRemove);
+                    var oldIndexInListForIndexing = listForIndexing.IndexOf(objectToMove);
                     var newIndexInListForIndexing = oldIndexInListForIndexing + direction;
                     if(newIndexInListForIndexing != -1 && newIndexInListForIndexing < listForIndexing.Count)
                     {
-                        object objectToMoveBeforeOrAfter = objectToRemove;
+                        object objectToMoveBeforeOrAfter = objectToMove;
                         if (newIndexInListForIndexing >= 0 && newIndexInListForIndexing < listForIndexing.Count)
                         {
                             objectToMoveBeforeOrAfter = listForIndexing[newIndexInListForIndexing];
@@ -2493,11 +2494,11 @@ namespace FlatRedBall.Glue.FormHelpers
 
                         if (newIndex >= 0 && newIndex < listToRemoveFrom.Count)
                         {
-                            listToRemoveFrom.Remove(objectToRemove);
+                            listToRemoveFrom.Remove(objectToMove);
 
-                            listToRemoveFrom.Insert(newIndex, objectToRemove);
-
-                            PostMoveActivity();
+                            listToRemoveFrom.Insert(newIndex, objectToMove);
+                            var variable = objectToMove as CustomVariable;
+                            PostMoveActivity(variable);
                         }
                     }
                 }
@@ -2516,20 +2517,21 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             TaskManager.Self.Add(() =>
             {
-                object objectToRemove;
+                object objectToMove;
                 IList listToRemoveFrom;
                 IList throwaway;
-                GetObjectAndListForMoving(out objectToRemove, out listToRemoveFrom, out throwaway);
+                GetObjectAndListForMoving(out objectToMove, out listToRemoveFrom, out throwaway);
                 if (listToRemoveFrom != null)
                 {
 
-                    int index = listToRemoveFrom.IndexOf(objectToRemove);
+                    int index = listToRemoveFrom.IndexOf(objectToMove);
 
                     if (index < listToRemoveFrom.Count - 1)
                     {
-                        listToRemoveFrom.Remove(objectToRemove);
-                        listToRemoveFrom.Insert(listToRemoveFrom.Count, objectToRemove);
-                        PostMoveActivity();
+                        listToRemoveFrom.Remove(objectToMove);
+                        listToRemoveFrom.Insert(listToRemoveFrom.Count, objectToMove);
+                        var variable = objectToMove as CustomVariable;
+                        PostMoveActivity(variable);
                     }
                 }
             }, "Moving to bottom", TaskExecutionPreference.Asap);
@@ -2583,7 +2585,7 @@ namespace FlatRedBall.Glue.FormHelpers
         }
 
 
-        private static void PostMoveActivity()
+        private static void PostMoveActivity(CustomVariable variableMoved)
         {
             // do this before refreshing the tree nodes
             var currentCustomVariable = GlueState.Self.CurrentCustomVariable;
@@ -2613,12 +2615,31 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 nos.UpdateCustomProperties();
 
-                var container = nos.GetContainer();
+                // We only want to re-generate this if the object actually has this variable assigned.
+                // If it doesn't, then the re-order won't matter
 
-                var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(container);
-                if(!elementsToRegen.ContainsAny(baseElements))
+                var shouldRegenerateEntity = true;
+
+                if (variableMoved != null)
                 {
-                    elementsToRegen.Add(container);
+                    var doesNosAssignVariable = nos.InstructionSaves.Any(item => item.Member == variableMoved.Name);
+
+                    if(!doesNosAssignVariable)
+                    {
+                        shouldRegenerateEntity = false;
+                    }
+                }
+
+
+                if (shouldRegenerateEntity)
+                {
+                    var container = nos.GetContainer();
+
+                    var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(container);
+                    if(!elementsToRegen.ContainsAny(baseElements))
+                    {
+                        elementsToRegen.Add(container);
+                    }
                 }
             }
 
