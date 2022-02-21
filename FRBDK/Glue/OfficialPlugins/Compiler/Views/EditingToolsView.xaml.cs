@@ -82,13 +82,16 @@ namespace OfficialPlugins.Compiler.Views
                 if (foundTiledMapSave != null)
                 {
                     tileset = foundTiledMapSave.Tilesets.FirstOrDefault(item => item.Name == "TiledIcons");
-                    FilePath tsxFilePath = tmxFilePath.GetDirectoryContainingThis() + tileset.Source;
-
                     if(tileset != null)
                     {
-                        var source = tileset.Images.FirstOrDefault()?.Source;
+                        FilePath tsxFilePath = tmxFilePath.GetDirectoryContainingThis() + tileset.Source;
 
-                        pngFilePath = tsxFilePath.GetDirectoryContainingThis() + source;
+                        if(tileset != null)
+                        {
+                            var source = tileset.Images.FirstOrDefault()?.Source;
+
+                            pngFilePath = tsxFilePath.GetDirectoryContainingThis() + source;
+                        }
                     }
                 }
 
