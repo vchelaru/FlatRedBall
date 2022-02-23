@@ -144,6 +144,7 @@
     <Folder Include="Microsoft\XNA Game Studio\v4.0\" />
     <Folder Include="MonoGame\v3.0\" />
     <Folder Include="Tools\" />
+    <Folder Include="ViewModels\Interface\" />
   </ItemGroup>
 
   <ItemGroup>

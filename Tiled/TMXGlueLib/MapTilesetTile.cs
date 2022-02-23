@@ -41,6 +41,7 @@ namespace TMXGlueLib
             }
         }
 
+        // Vic asks - shouldn't this be a uint?
         /// <remarks/>
         [XmlAttribute()]
         public int id
@@ -72,6 +73,11 @@ namespace TMXGlueLib
         public override string ToString()
         {
             string toReturn = id.ToString();
+
+            if(!string.IsNullOrEmpty(Type))
+            {
+                toReturn += $" {Type} ";
+            }
 
             if(PropertyDictionary.Count != 0)
             {

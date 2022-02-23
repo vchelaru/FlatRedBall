@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TileGraphicsPlugin.Views"
+             xmlns:local="clr-namespace:TileGraphicsPlugin.Views" xmlns:controls="clr-namespace:FlatRedBall.Glue.Controls;assembly=GlueFormsCore"
              mc:Ignorable="d" 
              d:DesignWidth="300">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -144,6 +144,11 @@
                                   Text="{Binding CollisionTileTypeName}"
                                   ItemsSource="{Binding AvailableTypes}"
                                  KeyUp="TextBox_KeyEnterUpdate"></ComboBox>
+                        <controls:TilesetTileSelector 
+                            Text="TestText" 
+                            Source="{Binding SelectedTypeTileImage}"
+                            EntireTilesetSource="{Binding EntireTilesetImage}"
+                            ></controls:TilesetTileSelector>
                         <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding RemoveTilesAfterCreatingCollision}">Remove Tiles</CheckBox>
 
                     </StackPanel>

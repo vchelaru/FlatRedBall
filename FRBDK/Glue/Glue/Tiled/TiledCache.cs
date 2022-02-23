@@ -8,21 +8,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media.Imaging;
 using TMXGlueLib;
 
 namespace FlatRedBall.Glue.Tiled
 {
-
+    #region CachedTiledMapSave
     public class CachedTiledMapSave
     {
         public FilePath FilePath;
         public DateTime LastTimeChanged;
         public TiledMapSave TiledMapSave;
     }
+    #endregion
 
     public class TiledCache
     {
+        #region Fields/properties
         Dictionary<FilePath, CachedTiledMapSave> CachedTiledMapSaves = new Dictionary<FilePath, CachedTiledMapSave>();
 
         BitmapImage standardTilesetImage;
@@ -49,6 +52,13 @@ namespace FlatRedBall.Glue.Tiled
                 return standardTileset;
             }
         }
+        FilePath StandardTilesetFilePath;
+
+        public IEnumerable<TiledMapSave> AllTiledMaps => CachedTiledMapSaves.Values.Select(item => item.TiledMapSave);
+        public IEnumerable<CachedTiledMapSave> AllCachedTiledMapSaveInstances => CachedTiledMapSaves.Values;
+
+
+        #endregion
 
         public void RefreshCache()
         {
@@ -97,7 +107,6 @@ namespace FlatRedBall.Glue.Tiled
             }
         }
 
-
         public TiledMapSave GetTiledMap(FilePath filePath)
         {
             TiledMapSave tms = null;
@@ -131,10 +140,6 @@ namespace FlatRedBall.Glue.Tiled
 
             return tms;
         }
-
-        public IEnumerable<TiledMapSave> AllTiledMaps => CachedTiledMapSaves.Values.Select(item => item.TiledMapSave);
-        public IEnumerable<CachedTiledMapSave> AllCachedTiledMapSaveInstances => CachedTiledMapSaves.Values;
-
         public void FindStandardTileset()
         {
             TiledMapSave foundTiledMapSave = null;
@@ -159,13 +164,13 @@ namespace FlatRedBall.Glue.Tiled
                 standardTileset = foundTiledMapSave.Tilesets.FirstOrDefault(item => item.Name == "TiledIcons");
                 if (standardTileset != null)
                 {
-                    FilePath tsxFilePath = tmxFilePath.GetDirectoryContainingThis() + standardTileset.Source;
+                    StandardTilesetFilePath = tmxFilePath.GetDirectoryContainingThis() + standardTileset.Source;
 
                     if (standardTileset != null)
                     {
                         var source = standardTileset.Images.FirstOrDefault()?.Source;
 
-                        pngFilePath = tsxFilePath.GetDirectoryContainingThis() + source;
+                        pngFilePath = StandardTilesetFilePath.GetDirectoryContainingThis() + source;
                     }
                 }
             }
@@ -179,6 +184,50 @@ namespace FlatRedBall.Glue.Tiled
                 standardTilesetImage.EndInit();
 
             }
+        }
+
+        public CroppedBitmap GetBitmapForStandardTilesetId(int tileId)
+        {
+            if(standardTilesetImage == null)
+            {
+                return null;
+            }
+
+            var unwrappedX = tileId * 16;
+            var y = 16 * (unwrappedX / (int)standardTilesetImage.Width);
+            var x = unwrappedX % (int)standardTilesetImage.Width;
+
+            CroppedBitmap croppedBitmap = new CroppedBitmap();
+            croppedBitmap.BeginInit();
+            croppedBitmap.SourceRect = new Int32Rect(x, y, 16, 16);
+            croppedBitmap.Source = standardTilesetImage;
+            croppedBitmap.EndInit();
+
+            return croppedBitmap;
+        }
+
+        public int? GetTileIdFromType(string type)
+        {
+            if(standardTileset == null)
+            {
+                return null;
+            }
+
+            return standardTileset.Tiles.FirstOrDefault(item => item.Type == type)?.id;
+        }
+
+        public void SaveStandardTileset()
+        {
+            if(StandardTilesetFilePath == null)
+            {
+                return;
+            }
+
+            FileManager.XmlSerialize(StandardTileset, out string serialized);
+
+            // save it
+            int m = 3;
+
         }
     }
 

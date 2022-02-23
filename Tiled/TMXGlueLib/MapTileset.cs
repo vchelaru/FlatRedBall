@@ -202,6 +202,10 @@ namespace TMXGlueLib
 
         private IDictionary<uint, mapTilesetTile> _tileDictionaryField;
 
+        /// <summary>
+        /// Dictionary containing the tiles where the key is the tile.id. This makes searching
+        /// for tiles by id faster than a .Where call.
+        /// </summary>
         [XmlIgnore]
         public IDictionary<uint, mapTilesetTile> TileDictionary
         {

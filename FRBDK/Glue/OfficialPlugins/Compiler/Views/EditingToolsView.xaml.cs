@@ -65,15 +65,7 @@ namespace OfficialPlugins.Compiler.Views
 
         private void CreateButtonForTilesetTile(mapTilesetTile tile, BitmapImage standardTilesetImage)
         {
-            var unwrappedX = tile.id * 16;
-            var y = 16 * (unwrappedX / (int)standardTilesetImage.Width);
-            var x = unwrappedX % (int)standardTilesetImage.Width;
-
-            CroppedBitmap croppedBitmap = new CroppedBitmap();
-            croppedBitmap.BeginInit();
-            croppedBitmap.SourceRect = new Int32Rect(x, y, 16, 16);
-            croppedBitmap.Source = standardTilesetImage;
-            croppedBitmap.EndInit();
+            CroppedBitmap croppedBitmap = GlueState.Self.TiledCache.GetBitmapForStandardTilesetId(tile.id);
 
             var button = new ToggleButton();
             button.Tag = tile;

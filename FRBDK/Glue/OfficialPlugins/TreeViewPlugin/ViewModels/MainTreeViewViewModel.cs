@@ -921,7 +921,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 {
                     node.ImageSource = NodeViewModel.EntityInstanceIcon;
                 }
-                node.Text = nos.ToString();
+                // ToString leads with the type not the name, so let's lead with the name instead
+                //node.Text = nos.ToString();
+                node.Text = $"{nos.FieldName} ({nos.ClassType})";
                 node.Tag = nos;
                 //LayersTreeNode.SelectedImageKey = "layerList.png";
                 //LayersTreeNode.ImageKey = "layerList.png";

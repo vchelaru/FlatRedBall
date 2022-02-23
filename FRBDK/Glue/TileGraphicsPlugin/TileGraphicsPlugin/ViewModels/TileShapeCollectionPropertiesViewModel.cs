@@ -1,4 +1,6 @@
 ﻿using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 
 namespace TileGraphicsPlugin.ViewModels
 {
@@ -43,6 +46,7 @@ namespace TileGraphicsPlugin.ViewModels
             get => (CollisionCreationOptions)Get<int>(); 
             set => SetAndPersist((int)value); 
         }
+
 
         #region Empty
 
@@ -239,7 +243,13 @@ namespace TileGraphicsPlugin.ViewModels
 
         #endregion
 
-        #region From Type
+        #region Type
+
+        public ObservableCollection<string> TmxObjectNames
+        {
+            get => Get<ObservableCollection<string>>(); 
+            set => Set(value);
+        }
 
         [DependsOn(nameof(CollisionCreationOptions))]
         public bool IsFromTypeChecked
@@ -263,6 +273,36 @@ namespace TileGraphicsPlugin.ViewModels
             set => Set(value); 
         } 
 
+        public ImageSource SelectedTypeTileImage
+        {
+            get
+            {
+                if(!string.IsNullOrEmpty(CollisionTileTypeName))
+                {
+                    var image = GlueState.Self.TiledCache.StandardTilesetImage;
+                    var tileset = GlueState.Self.TiledCache.StandardTileset;
+                    if(image != null && tileset != null)
+                    {
+                        var tilesetTile = tileset.Tiles.FirstOrDefault(item => item.Type == CollisionTileTypeName);
+
+                        if(tilesetTile != null)
+                        {
+                            return GlueState.Self.TiledCache.GetBitmapForStandardTilesetId(tilesetTile.id);
+                        }
+                    }
+                }
+                return null;
+            }
+        }
+
+        public ImageSource EntireTilesetImage => GlueState.Self.TiledCache.StandardTilesetImage;
+
+        [SyncedProperty]
+        public string CollisionTileTypeName
+        {
+            get => Get<string>(); 
+            set => SetAndPersist(value); 
+        }
         #endregion
 
         #region From Properties
@@ -329,12 +369,6 @@ namespace TileGraphicsPlugin.ViewModels
             set => SetAndPersist(value); 
         }
 
-        [SyncedProperty]
-        public string CollisionTileTypeName
-        {
-            get => Get<string>(); 
-            set => SetAndPersist(value); 
-        }
 
 
         #endregion
@@ -344,12 +378,6 @@ namespace TileGraphicsPlugin.ViewModels
         {
             get => Get<bool>(); 
             set => SetAndPersist(value); 
-        }
-
-        public ObservableCollection<string> TmxObjectNames
-        {
-            get => Get<ObservableCollection<string>>(); 
-            set => Set(value);
         }
 
         [SyncedProperty]
