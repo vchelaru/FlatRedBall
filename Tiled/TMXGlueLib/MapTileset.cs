@@ -14,9 +14,46 @@ namespace TMXGlueLib
     public class Tileset
 // ReSharper restore InconsistentNaming
     {
+
+        /// <remarks/>
+        [XmlElement("image")]
+        public TilesetImage[] Images
+        {
+            get
+            {
+                return this._imageField;
+            }
+            set
+            {
+                if (this._imageField == null || this._imageField.Length == 0)
+                {
+                    this._imageField = value;
+                }
+            }
+        }
+        public bool ShouldSerializeImage()
+        {
+            return string.IsNullOrEmpty(this.Source);
+        }
+
+
+
         private TilesetImage[] _imageField;
 
         private mapTilesetTileOffset[] _tileOffsetField;
+
+        [XmlAttribute("version")]
+        public string Version { get; set; }
+
+        [XmlAttribute("tiledversion")]
+        public string TiledVersion { get; set; }
+
+        [XmlAttribute("tilecount")]
+        public int TileCount { get; set; }
+
+
+        [XmlAttribute("columns")]
+        public int Columns { get; set; }
 
         private string _sourceField;
 
@@ -66,59 +103,6 @@ namespace TMXGlueLib
             }
         }
 
-        private void LoadValuesFromSource()
-        {
-            if (!string.IsNullOrEmpty(this._sourceField))
-            {
-                _sourceField = _sourceField.Replace("/", "\\");
-
-                tileset xts = null;
-
-                try
-                {
-
-                    xts = FileManager.XmlDeserialize<tileset>(_sourceField);
-                }
-                catch (FileNotFoundException)
-                {
-                    string fileAttemptedToLoad = _sourceField;
-                    if (FileManager.IsRelative(_sourceField))
-                    {
-                        fileAttemptedToLoad = FileManager.RelativeDirectory + _sourceField;
-                    }
-
-                    string message = "Could not find the shared tsx file \n" + fileAttemptedToLoad + 
-                        "\nIf this is a relative file name, then the loader will use " +
-                        "the FileManager's RelativeDirectory to make the file absolute.  Therefore, be sure to set the FileManger's RelativeDirectory to the file represented by " +
-                        "this fileset before setting this property if setting this property manually.";
-
-
-                    throw new FileNotFoundException(message);
-                }
-
-                if (xts.image != null)
-                {
-
-                    Images = new TilesetImage[xts.image.Length];
-
-                    Parallel.For(0, xts.image.Length, count =>
-                    {
-                        this.Images[count] = new TilesetImage
-                        {
-                            Source = xts.image[count].source,
-                            height = xts.image[count].height != 0 ? xts.image[count].height : xts.tileheight,
-                            width = xts.image[count].width != 0 ? xts.image[count].width : xts.tilewidth
-                        };
-                    });
-                }
-                this.Name = xts.name;
-                this.Margin = xts.margin;
-                this.Spacing = xts.spacing;
-                this.Tileheight = xts.tileheight;
-                this.Tilewidth = xts.tilewidth;
-                this.Tiles = xts.tile;
-            }
-        }
 
         /// <remarks/>
         [XmlElement("tileoffset")]
@@ -135,30 +119,6 @@ namespace TMXGlueLib
                     this._tileOffsetField = value;
                 }
             }
-        }
-
-
-        /// <remarks/>
-        [XmlElement("image")]
-        public TilesetImage[] Images
-        {
-            get
-            {
-                return this._imageField;
-            }
-            set
-            {
-                if (this._imageField == null || this._imageField.Length == 0)
-                {
-                    this._imageField = value;
-                }
-            }
-        }
-
-
-        public bool ShouldSerializeImage()
-        {
-            return string.IsNullOrEmpty(this.Source);
         }
 
 
@@ -330,6 +290,8 @@ namespace TMXGlueLib
             return string.IsNullOrEmpty(this.Source);
         }
 
+        public List<wangset> wangsets { get; set; } = new List<wangset>();
+
         public override string ToString()
         {
             string toReturn = this.Name;
@@ -342,7 +304,69 @@ namespace TMXGlueLib
 
             return toReturn;
         }
+        private void LoadValuesFromSource()
+        {
+            if (!string.IsNullOrEmpty(this._sourceField))
+            {
+                _sourceField = _sourceField.Replace("/", "\\");
+
+                tileset xts = null;
+
+                try
+                {
+
+                    xts = FileManager.XmlDeserialize<tileset>(_sourceField);
+                }
+                catch (FileNotFoundException)
+                {
+                    string fileAttemptedToLoad = _sourceField;
+                    if (FileManager.IsRelative(_sourceField))
+                    {
+                        fileAttemptedToLoad = FileManager.RelativeDirectory + _sourceField;
+                    }
+
+                    string message = "Could not find the shared tsx file \n" + fileAttemptedToLoad + 
+                        "\nIf this is a relative file name, then the loader will use " +
+                        "the FileManager's RelativeDirectory to make the file absolute.  Therefore, be sure to set the FileManger's RelativeDirectory to the file represented by " +
+                        "this fileset before setting this property if setting this property manually.";
+
+
+                    throw new FileNotFoundException(message);
+                }
+
+                if (xts.image != null)
+                {
+
+                    Images = new TilesetImage[xts.image.Length];
+
+                    Parallel.For(0, xts.image.Length, count =>
+                    {
+                        this.Images[count] = new TilesetImage
+                        {
+                            Source = xts.image[count].source,
+                            height = xts.image[count].height != 0 ? xts.image[count].height : xts.tileheight,
+                            width = xts.image[count].width != 0 ? xts.image[count].width : xts.tilewidth
+                        };
+                    });
+                }
+                this.Name = xts.name;
+                this.Margin = xts.margin;
+                this.Spacing = xts.spacing;
+                this.Tileheight = xts.tileheight;
+                this.Tilewidth = xts.tilewidth;
+                this.Tiles = xts.tile;
+
+                this.Version = xts.Version;
+                this.TiledVersion = xts.TiledVersion;
+                this.Columns = xts.Columns;
+                this.TileCount = xts.TileCount;
+
+                this.wangsets = xts.wangsets;
+            }
+        }
     }
+
+
 
     public class mapTilesetTerrain
     {

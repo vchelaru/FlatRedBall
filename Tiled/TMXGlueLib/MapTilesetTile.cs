@@ -41,6 +41,8 @@ namespace TMXGlueLib
             }
         }
 
+        public bool ShouldSerializeproperties() => mProperties?.Count > 0;
+
         // Vic asks - shouldn't this be a uint?
         /// <remarks/>
         [XmlAttribute()]

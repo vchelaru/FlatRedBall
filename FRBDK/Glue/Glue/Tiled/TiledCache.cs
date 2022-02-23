@@ -5,11 +5,13 @@ using FlatRedBall.IO;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using System.Xml.Serialization;
 using TMXGlueLib;
 
 namespace FlatRedBall.Glue.Tiled
@@ -218,17 +220,33 @@ namespace FlatRedBall.Glue.Tiled
 
         public void SaveStandardTileset()
         {
-            if(StandardTilesetFilePath == null)
+            TestSerialization();
+
+            if (StandardTilesetFilePath == null)
             {
                 return;
             }
 
+            // Not sure why this has a source. If it does, the XML won't serialize properly so null it out
+            StandardTileset.Source = null;
             FileManager.XmlSerialize(StandardTileset, out string serialized);
 
             // save it
             int m = 3;
 
         }
+
+        void TestSerialization()
+        {
+            var tileset = new Tileset();
+
+            FileManager.XmlSerialize(tileset, out string serialized2);
+
+            int m = 3;
+        }
     }
+
+
+
 
 }
