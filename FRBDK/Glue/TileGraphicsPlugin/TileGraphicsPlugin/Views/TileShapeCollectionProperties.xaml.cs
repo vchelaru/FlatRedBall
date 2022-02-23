@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlatRedBall.Glue.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TileGraphicsPlugin.ViewModels;
 
 namespace TileGraphicsPlugin.Views
 {
@@ -20,6 +22,9 @@ namespace TileGraphicsPlugin.Views
     /// </summary>
     public partial class TileShapeCollectionProperties : UserControl
     {
+        TileShapeCollectionPropertiesViewModel ViewModel => DataContext as TileShapeCollectionPropertiesViewModel;
+
+
         public TileShapeCollectionProperties()
         {
             InitializeComponent();
@@ -47,6 +52,16 @@ namespace TileGraphicsPlugin.Views
                     if (binding != null) { binding.UpdateSource(); }
                 }
             }
+        }
+
+        private void TilesetTileSelector_NewTileSelected(TilesetTileSelectorFullViewModel vm)
+        {
+            var newName = vm.TileType;
+
+            // refresh the available types
+
+
+            this.ViewModel.CollisionTileTypeName = newName;
         }
     }
 }

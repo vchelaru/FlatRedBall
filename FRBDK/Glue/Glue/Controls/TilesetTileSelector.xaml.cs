@@ -89,7 +89,7 @@ namespace FlatRedBall.Glue.Controls
 
         #region Events
 
-        public event Action NewTileSelected;
+        public event Action<TilesetTileSelectorFullViewModel> NewTileSelected;
 
         #endregion
 
@@ -181,6 +181,7 @@ namespace FlatRedBall.Glue.Controls
 
             // 3. Set the property on the underlying view model - this is done through an event
             //     - this should regen and save etc
+            NewTileSelected?.Invoke(vm);
         }
     }
 }

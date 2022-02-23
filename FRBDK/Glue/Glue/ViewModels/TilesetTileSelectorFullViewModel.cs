@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace FlatRedBall.Glue.ViewModels
 {
-    internal class TilesetTileSelectorFullViewModel : ViewModel
+    public class TilesetTileSelectorFullViewModel : ViewModel
     {
         public int TileId
         {
