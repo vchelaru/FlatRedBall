@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
@@ -220,8 +221,6 @@ namespace FlatRedBall.Glue.Tiled
 
         public void SaveStandardTileset()
         {
-            TestSerialization();
-
             if (StandardTilesetFilePath == null)
             {
                 return;
@@ -229,21 +228,30 @@ namespace FlatRedBall.Glue.Tiled
 
             // Not sure why this has a source. If it does, the XML won't serialize properly so null it out
             StandardTileset.Source = null;
-            FileManager.XmlSerialize(StandardTileset, out string serialized);
 
-            // save it
-            int m = 3;
+            try
+            {
+                FileManager.XmlSerialize(StandardTileset, out string serialized);
 
+                // Here we're serializing a Tileset (capitalized) but we want to save it as a lower-case tileset which
+                // is the actual matching class. One way to do this would be to convert one type to another, but that's
+                // dangerous if we forget one property especially as we add more properties. Instead, we can just modify the 
+                // xml manually:
+                serialized = serialized
+                    .Replace("<mapTileset ", "<tileset ")
+                    .Replace("</mapTileset>", "</tileset>")
+                    .Replace("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"", "");
+
+                FileWatchManager.IgnoreNextChangeOnFile(StandardTilesetFilePath);
+                // save it
+                FileManager.SaveText(serialized, StandardTilesetFilePath.FullPath);
+            }
+            catch(Exception ex)
+            {
+                GlueCommands.Self.PrintError(ex.ToString());
+            }
         }
 
-        void TestSerialization()
-        {
-            var tileset = new Tileset();
-
-            FileManager.XmlSerialize(tileset, out string serialized2);
-
-            int m = 3;
-        }
     }
 
 

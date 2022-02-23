@@ -65,7 +65,7 @@ namespace FlatRedBall.Glue.ViewModels
                 string toReturn = null;
                 if (IsNullingOutExisting)
                 {
-                    toReturn += $"The tile {ExistingType} will have its type set to <NULL>.\n";
+                    toReturn += $"The tile {ExistingType} with ID {ExistingId} will have its type set to <NULL>.\n";
                 }
 
                 if(WillReferenceExistingTile)

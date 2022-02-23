@@ -60,8 +60,11 @@ namespace TileGraphicsPlugin.Views
 
             // refresh the available types
 
-
-            this.ViewModel.CollisionTileTypeName = newName;
+            // The property may be the same before and after, but the underlying
+            // ID may have changed. Therefore, let's force set it which raises the
+            // notifications to other properties
+            //this.ViewModel.CollisionTileTypeName = newName;
+            this.ViewModel.ForceSetCollisionTileTypeName(newName);
         }
     }
 }

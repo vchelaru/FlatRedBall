@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using FlatRedBall.IO;
 using System.IO;
+using System.Linq;
 
 namespace TMXGlueLib
 {
@@ -14,6 +15,7 @@ namespace TMXGlueLib
     public class Tileset
 // ReSharper restore InconsistentNaming
     {
+        #region Fields/Properties
 
         /// <remarks/>
         [XmlElement("image")]
@@ -292,18 +294,9 @@ namespace TMXGlueLib
 
         public List<wangset> wangsets { get; set; } = new List<wangset>();
 
-        public override string ToString()
-        {
-            string toReturn = this.Name;
 
-            if (!string.IsNullOrEmpty(Source))
-            {
-                string sourceWithoutPath = FileManager.RemovePath(Source);
-                toReturn += " (" + sourceWithoutPath + ")";
-            }
+        #endregion
 
-            return toReturn;
-        }
         private void LoadValuesFromSource()
         {
             if (!string.IsNullOrEmpty(this._sourceField))
@@ -363,6 +356,19 @@ namespace TMXGlueLib
 
                 this.wangsets = xts.wangsets;
             }
+        }
+
+        public override string ToString()
+        {
+            string toReturn = this.Name;
+
+            if (!string.IsNullOrEmpty(Source))
+            {
+                string sourceWithoutPath = FileManager.RemovePath(Source);
+                toReturn += " (" + sourceWithoutPath + ")";
+            }
+
+            return toReturn;
         }
     }
 

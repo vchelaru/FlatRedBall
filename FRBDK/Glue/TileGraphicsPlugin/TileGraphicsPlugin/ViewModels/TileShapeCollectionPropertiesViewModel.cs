@@ -273,6 +273,7 @@ namespace TileGraphicsPlugin.ViewModels
             set => Set(value); 
         } 
 
+        [DependsOn(nameof(CollisionTileTypeName))]
         public ImageSource SelectedTypeTileImage
         {
             get
@@ -303,6 +304,15 @@ namespace TileGraphicsPlugin.ViewModels
             get => Get<string>(); 
             set => SetAndPersist(value); 
         }
+
+        public void ForceSetCollisionTileTypeName(string value)
+        {
+            if(!SetAndPersist(value, nameof(CollisionTileTypeName)))
+            {
+                NotifyPropertyChanged(nameof(CollisionTileTypeName));
+            }
+        }
+
         #endregion
 
         #region From Properties

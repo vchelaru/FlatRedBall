@@ -8,7 +8,8 @@
     <StackPanel>
         <Grid Width="512" Height="512"  MouseLeave="PopupImage_MouseLeave"
                    MouseMove="PopupImage_MouseMove" 
-                   MouseLeftButtonDown="PopupImage_MouseLeftButtonDown">
+                   MouseLeftButtonDown="PopupImage_MouseLeftButtonDown"
+              >
             <Image x:Name="PopupImage" 
                   >
             </Image>

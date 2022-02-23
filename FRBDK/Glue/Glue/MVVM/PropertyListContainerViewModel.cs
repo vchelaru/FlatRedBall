@@ -141,7 +141,7 @@ namespace FlatRedBall.Glue.MVVM
         }
 
         // made public for reflection
-        public void SetAndPersist<T>(T propertyValue, [CallerMemberName]string propertyName = null, bool forcePersist = false)
+        public bool SetAndPersist<T>(T propertyValue, [CallerMemberName]string propertyName = null, bool forcePersist = false)
         {
             if(viewModelProperties.ContainsKey(propertyName) == false)
             {
@@ -248,7 +248,9 @@ namespace FlatRedBall.Glue.MVVM
                 {
                     GlueCommands.Self.GluxCommands.SaveGlux();
                 }
+                return true;
             }
+            return false;
         }
 
         public bool IsPropertySynced(string propertyName)

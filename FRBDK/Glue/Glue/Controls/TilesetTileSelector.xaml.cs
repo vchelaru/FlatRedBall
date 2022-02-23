@@ -57,8 +57,6 @@ namespace FlatRedBall.Glue.Controls
             typeof(TilesetTileSelector),
             new PropertyMetadata(null, null));
 
-
-
         public ImageSource EntireTilesetSource
         {
             get => (ImageSource)GetValue(EntireTilesetSourceProperty);
@@ -116,6 +114,10 @@ namespace FlatRedBall.Glue.Controls
                 if(collisionCreationOptions == "4" && !string.IsNullOrEmpty(collisionType))
                 {
                     vm.ExistingId = GlueState.Self.TiledCache.GetTileIdFromType(collisionType);
+                    if(vm.ExistingId != null)
+                    {
+                        vm.TileId = vm.ExistingId.Value;
+                    }
                 }
             }
 

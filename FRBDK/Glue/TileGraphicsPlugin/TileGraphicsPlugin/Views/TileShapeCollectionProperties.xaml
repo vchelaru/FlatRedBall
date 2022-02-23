@@ -146,7 +146,7 @@
                                  KeyUp="TextBox_KeyEnterUpdate"></ComboBox>
                         <controls:TilesetTileSelector 
                             x:Name="TilesetTileSelector"
-                            Text="TestText" 
+                            Text="{Binding CollisionTileTypeName}" 
                             Source="{Binding SelectedTypeTileImage}"
                             EntireTilesetSource="{Binding EntireTilesetImage}"
                             NewTileSelected="TilesetTileSelector_NewTileSelected"
