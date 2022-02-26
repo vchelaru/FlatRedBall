@@ -151,6 +151,16 @@ namespace FlatRedBall.TileCollisions
 
         public void AddToLayer(FlatRedBall.Graphics.Layer layer)
         {
+            // Note - the makeAutomaticallyUpdated method has been added in July 2021
+            // This is a necessary addition to make addition of TileshapeCollections much
+            // faster than before. Unfortunately this is not a generated file but a copied
+            // file so it cannot use the Glue project version to optionally make this call
+            // Therefore, older projects may experience compile errors here. To solve this you 
+            // can do one of the following:
+            // 1. Update the FRB libraries that your project references to get this latest method (recommended)
+            // 2. Downgrade to a version of Glue prior to July 2021 which will not include this method
+            // 3. Re-compile your own version of the plugin for Glue and modify this code
+            // 4. Remove this parameter by hand whenever this file is re-generated. This is painful!
             this.mShapes.AddToManagers(layer, makeAutomaticallyUpdated: false);
         }
 

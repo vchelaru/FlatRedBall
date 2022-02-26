@@ -47,7 +47,15 @@ namespace FlatRedBall.Glue.SaveClasses
             CsvInheritanceSupport = 5,
             NugetPackageInCsproj = 6,
             SupportsEditMode = 7,
+            // this was added late summer 2021
+            // There should have been another version
+            // inbetween 7 and 8, but there wasn't, and 
+            // this introduced a problem found late February '22
+            // with collision relationship subcollision generation.
+            // Therefore, we'll duplicate ScreensHaveActivityEditMode as a
+            // file version for supporting named subcollisions.
             ScreensHaveActivityEditMode = 8,
+            SupportsNamedSubcollisions = 8,
             GlueSavedToJson = 9,
             IEntityInFrb = 10,
             SeparateJsonFilesForElements = 11,

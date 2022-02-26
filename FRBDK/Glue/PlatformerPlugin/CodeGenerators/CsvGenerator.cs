@@ -44,16 +44,20 @@ namespace FlatRedBall.PlatformerPlugin.Generators
         }
 
 
-        internal void GenerateFor(EntitySave entity, bool inheritsFromPlatformer, PlatformerEntityViewModel viewModel)
+        internal Task GenerateFor(EntitySave entity, bool inheritsFromPlatformer, PlatformerEntityViewModel viewModel)
         {
-            string contents = GenerateCsvContents(inheritsFromPlatformer, viewModel);
-
-            var fileName = CsvFileFor(entity);
-
-            GlueCommands.Self.TryMultipleTimes(() =>
+            return TaskManager.Self.AddAsync(() =>
             {
-                FileManager.SaveText(contents, fileName.FullPath);
-            });
+                string contents = GenerateCsvContents(inheritsFromPlatformer, viewModel);
+
+                var fileName = CsvFileFor(entity);
+
+                GlueCommands.Self.TryMultipleTimes(() =>
+                {
+                    FileManager.SaveText(contents, fileName.FullPath);
+                });
+
+            }, $"Generating Platformer CSV for {entity}");
         }
 
         private string GenerateCsvContents(bool inheritsFromPlatformer, PlatformerEntityViewModel viewModel)

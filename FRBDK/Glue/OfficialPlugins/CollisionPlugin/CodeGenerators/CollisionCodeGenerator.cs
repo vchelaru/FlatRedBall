@@ -181,12 +181,23 @@ namespace OfficialPlugins.CollisionPlugin
                 codeBlock.Line($"FlatRedBall.Math.Collision.CollisionManager.Self.Relationships.Add({instanceName});");
             }
 
+            var doesGluxSupportNamedSubcollisions =
+                FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self.CurrentGlueProject.FileVersion >=
+                (int)GlueProjectSave.GluxVersions.SupportsNamedSubcollisions;
+
             if (!string.IsNullOrEmpty(firstSubCollision) && 
                 firstSubCollision != CollisionRelationshipViewModel.EntireObject &&
                 collisionType != CollisionType.PlatformerCloudCollision &&
                 collisionType != CollisionType.PlatformerSolidCollision)
             {
-                codeBlock.Line($"{instanceName}.SetFirstSubCollision(item => item.{firstSubCollision}, \"{firstSubCollision}\");");
+                if(doesGluxSupportNamedSubcollisions)
+                {
+                    codeBlock.Line($"{instanceName}.SetFirstSubCollision(item => item.{firstSubCollision}, \"{firstSubCollision}\");");
+                }
+                else
+                {
+                    codeBlock.Line($"{instanceName}.SetFirstSubCollision(item => item.{firstSubCollision});");
+                }
             }
             if(!string.IsNullOrEmpty(secondSubCollision) && 
                 secondSubCollision != CollisionRelationshipViewModel.EntireObject &&
@@ -195,7 +206,14 @@ namespace OfficialPlugins.CollisionPlugin
                 // delegate collision cannot specify subcollision, that can be done manually in the collision
                 collisionType != CollisionType.DelegateCollision)
             {
-                codeBlock.Line($"{instanceName}.SetSecondSubCollision(item => item.{secondSubCollision}, \"{secondSubCollision}\");");
+                if(doesGluxSupportNamedSubcollisions)
+                {
+                    codeBlock.Line($"{instanceName}.SetSecondSubCollision(item => item.{secondSubCollision}, \"{secondSubCollision}\");");
+                }
+                else
+                {
+                    codeBlock.Line($"{instanceName}.SetSecondSubCollision(item => item.{secondSubCollision});");
+                }
             }
 
             if(isFirstList && isSecondList)
