@@ -138,19 +138,31 @@
                                   ItemsSource="{Binding TmxObjectNames}"
                                   SelectedItem="{Binding SourceTmxName}"></ComboBox>
                         <TextBlock Margin="0,5,0,0">Type:</TextBlock>
-                        <ComboBox x:Name="CollisionTileTypeComboBox" 
-                                  IsEditable="True"
-                                  HorizontalAlignment="Left" Width="200" 
-                                  Text="{Binding CollisionTileTypeName}"
-                                  ItemsSource="{Binding AvailableTypes}"
-                                 KeyUp="TextBox_KeyEnterUpdate"></ComboBox>
-                        <controls:TilesetTileSelector 
-                            x:Name="TilesetTileSelector"
-                            Text="{Binding CollisionTileTypeName}" 
-                            Source="{Binding SelectedTypeTileImage}"
-                            EntireTilesetSource="{Binding EntireTilesetImage}"
-                            NewTileSelected="TilesetTileSelector_NewTileSelected"
-                            ></controls:TilesetTileSelector>
+                        <StackPanel Orientation="Horizontal">
+                            <controls:TilesetTileSelector 
+                                x:Name="TilesetTileSelector"
+                                Text=""
+                                TextVisibility="Collapsed"
+                                Source="{Binding SelectedTypeTileImage}"
+                                EntireTilesetSource="{Binding EntireTilesetImage}"
+                                NewTileSelected="TilesetTileSelector_NewTileSelected"
+                                >
+                                <controls:TilesetTileSelector.ToolTip>
+                                    <StackPanel>
+                                        <TextBlock FontWeight="Bold">Click to set tile</TextBlock>
+                                        <TextBlock>Changing the tile may also modify the underlying TSX</TextBlock>
+                                    </StackPanel>
+                                </controls:TilesetTileSelector.ToolTip>
+                            </controls:TilesetTileSelector>
+                            <ComboBox x:Name="CollisionTileTypeComboBox" 
+                                      IsEditable="True"
+                                      HorizontalAlignment="Left" Width="200" 
+                                      Text="{Binding CollisionTileTypeName}"
+                                      ItemsSource="{Binding AvailableTypes}"
+                                      VerticalAlignment="Center"
+                                     KeyUp="TextBox_KeyEnterUpdate"></ComboBox>
+
+                        </StackPanel>
                         <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding RemoveTilesAfterCreatingCollision}">Remove Tiles</CheckBox>
 
                     </StackPanel>

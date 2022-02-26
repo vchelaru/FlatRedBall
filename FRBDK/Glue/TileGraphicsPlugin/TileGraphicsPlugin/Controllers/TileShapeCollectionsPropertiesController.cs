@@ -81,7 +81,7 @@ namespace TileGraphicsPlugin.Controllers
 
         private void RefreshAvailableCollisionObjectNames()
         {
-            viewModel.AvailableTypes.Clear();
+            viewModel.AvailableTmxCollisions.Clear();
             var tmxName = viewModel.SourceTmxName;
 
             var types = GetAvailableTypes(tmxName).ToList();
@@ -179,7 +179,7 @@ namespace TileGraphicsPlugin.Controllers
             {
                 var fullPath = GlueCommands.Self.FileCommands.GetFullFileName(file);
 
-                TiledMapSave tiledMapSave = TiledMapSave.FromFile(fullPath);
+                var tiledMapSave = GlueState.Self.TiledCache.GetTiledMap(fullPath);
 
                 foreach (var tileset in tiledMapSave.Tilesets)
                 {

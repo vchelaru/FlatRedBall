@@ -85,6 +85,12 @@ namespace FlatRedBall.Glue.Controls
         public string Text { get => (string)GetValue(TextProperty); set => SetValue(TextProperty, value); }
         #endregion
 
+        public Visibility TextVisibility
+        {
+            get => Label.Visibility;
+            set => Label.Visibility = value;
+        }
+
         #region Events
 
         public event Action<TilesetTileSelectorFullViewModel> NewTileSelected;

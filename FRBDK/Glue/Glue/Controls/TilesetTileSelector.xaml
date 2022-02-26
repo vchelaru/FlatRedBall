@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:FlatRedBall.Glue.Controls"
              mc:Ignorable="d" >
     <StackPanel PreviewMouseDown="StackPanel_PreviewMouseDown">
-        <Image RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="Image" Width="32" Height="32"></Image>
+        <Image RenderOptions.BitmapScalingMode="NearestNeighbor" Margin="3" x:Name="Image" Width="32" Height="32"></Image>
         <Label x:Name="Label" HorizontalAlignment="Center"></Label>
     </StackPanel>
 </UserControl>

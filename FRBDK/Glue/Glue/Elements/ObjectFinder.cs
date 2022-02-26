@@ -910,7 +910,7 @@ namespace FlatRedBall.Glue.Elements
 
         public NamedObjectSave GetRootDefiningObject(NamedObjectSave derivedNos)
         {
-            if(derivedNos.SetByDerived == false)
+            if(derivedNos.DefinedByBase == false)
             {
                 return derivedNos;
             }

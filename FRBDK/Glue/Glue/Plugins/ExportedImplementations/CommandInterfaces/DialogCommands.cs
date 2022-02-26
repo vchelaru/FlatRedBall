@@ -928,13 +928,25 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             var selectedNode = GlueState.Self.CurrentTreeNode;
 
-            #region Double-clicked a named object
+            #region Named object
 
             if (selectedNode.IsNamedObjectNode())
             {
                 NamedObjectSave nos = selectedNode.Tag as NamedObjectSave;
 
-                if (nos.SourceType == SourceType.Entity)
+                if(nos.DefinedByBase)
+                {
+                    var baseNos = ObjectFinder.Self.GetRootDefiningObject(nos);
+                    if(baseNos != null)
+                    {
+                        GlueState.Self.CurrentNamedObjectSave = baseNos;
+                    }
+                    else
+                    {
+                        GlueCommands.Self.PrintOutput($"Could not find defining base object for {baseNos}");
+                    }
+                }
+                else if (nos.SourceType == SourceType.Entity)
                 {
                     GlueState.Self.CurrentEntitySave = ObjectFinder.Self.GetEntitySave(nos.SourceClassType);
 
@@ -959,7 +971,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             #endregion
 
-            #region Double-clicked a CustomVariable
+            #region CustomVariable
             else if (selectedNode.IsCustomVariable())
             {
                 CustomVariable customVariable = GlueState.Self.CurrentCustomVariable;
@@ -978,7 +990,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             #endregion
 
-            #region Double-click an Event
+            #region Event
 
             else if (selectedNode.IsEventResponseTreeNode())
             {
@@ -998,7 +1010,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             #endregion
 
-            #region Double-click an Enity/Screen
+            #region Enity/Screen
 
             else if (selectedNode.IsElementNode())
             {
