@@ -5,8 +5,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FlatRedBall.Glue.Controls"
              mc:Ignorable="d" >
-    <StackPanel PreviewMouseDown="StackPanel_PreviewMouseDown">
-        <Image RenderOptions.BitmapScalingMode="NearestNeighbor" Margin="3" x:Name="Image" Width="32" Height="32"></Image>
-        <Label x:Name="Label" HorizontalAlignment="Center"></Label>
-    </StackPanel>
+    <Border BorderBrush="Gray" BorderThickness="1" PreviewMouseDown="StackPanel_PreviewMouseDown" Background="#01ffffff">
+        <StackPanel IsHitTestVisible="False" Margin="3">
+            <Image IsHitTestVisible="False" RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="Image" Width="32" Height="32"></Image>
+            <Label IsHitTestVisible="False" x:Name="Label" HorizontalAlignment="Center"></Label>
+        </StackPanel>
+    </Border>
 </UserControl>
