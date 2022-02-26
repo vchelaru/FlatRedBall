@@ -179,15 +179,14 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             }
         }
 
-        private static void GenerateCsv(EntitySave entity, PlatformerEntityViewModel viewModel)
+        private static async void GenerateCsv(EntitySave entity, PlatformerEntityViewModel viewModel)
         {
             // this could fail so we're going to try multiple times, but we need it immediately because
             // subsequent selections depend on it
             var didGenerate = false;
             try
             {
-                GlueCommands.Self.TryMultipleTimes(
-                    () => CsvGenerator.Self.GenerateFor(entity, GetIfInheritsFromPlatformer(entity), viewModel));
+                await CsvGenerator.Self.GenerateFor(entity, GetIfInheritsFromPlatformer(entity), viewModel);
                 didGenerate = true;
             }
             catch(System.IO.IOException ioException)
@@ -197,7 +196,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
             if(didGenerate)
             {
-                TaskManager.Self.Add(
+                await TaskManager.Self.AddAsync(
                     () =>
                     {
                         string rfsName = entity.Name.Replace("\\", "/") + "/" + CsvGenerator.RelativeCsvFile;
@@ -283,20 +282,47 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             }
         }
 
+        public static async Task ForceCsvGenerationFor(EntitySave entitySave)
+        {
+            // assume this isn't the current entity so we'll create a new VM on the spot and go from there:
+            var vm = new PlatformerEntityViewModel();
+            UpdateViewModelTo(entitySave, vm);
+
+            var inheritsFromPlatformerEntity = GetIfInheritsFromPlatformer(entitySave);
+
+            // now that we have a prepared VM, generate it
+            await CsvGenerator.Self.GenerateFor(entitySave, inheritsFromPlatformerEntity, vm);
+        }
+
         public void UpdateTo(EntitySave currentEntitySave)
         {
             ignoresPropertyChanges = true;
 
-            viewModel.IsPlatformer = currentEntitySave.Properties.GetValue<bool>(nameof(viewModel.IsPlatformer));
-            var inheritsFromPlatformerEntity = GetIfInheritsFromPlatformer(currentEntitySave);
-            viewModel.InheritsFromPlatformer = inheritsFromPlatformerEntity;
-
-            RefreshPlatformerValues(currentEntitySave);
+            UpdateViewModelTo(currentEntitySave, viewModel);
+            
+            // now that they've all been set, += their property change
+            foreach (var platformerValuesViewModel in viewModel.PlatformerValues)
+            {
+                platformerValuesViewModel.PropertyChanged += HandlePlatformerValuesChanged;
+            }
 
             ignoresPropertyChanges = false;
         }
 
-        private void RefreshPlatformerValues(EntitySave currentEntitySave)
+        public static bool IsPlatformer(EntitySave entitySave) =>
+            entitySave.Properties.GetValue<bool>(nameof(PlatformerEntityViewModel.IsPlatformer));
+
+        static void UpdateViewModelTo(EntitySave entitySave, PlatformerEntityViewModel viewModel)
+        {
+            viewModel.IsPlatformer = IsPlatformer(entitySave);
+            var inheritsFromPlatformerEntity = GetIfInheritsFromPlatformer(entitySave);
+            viewModel.InheritsFromPlatformer = inheritsFromPlatformerEntity;
+
+            RefreshPlatformerValues(entitySave, viewModel);
+
+        }
+
+        private static void RefreshPlatformerValues(EntitySave currentEntitySave, PlatformerEntityViewModel viewModel)
         {
             PlatformerValuesCreationLogic.GetCsvValues(currentEntitySave,
                 out Dictionary<string, PlatformerValues> csvValues);
@@ -366,11 +392,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
                 }
             }
 
-            // now that they've all been set, += their property change
-            foreach (var platformerValuesViewModel in viewModel.PlatformerValues)
-            {
-                platformerValuesViewModel.PropertyChanged += HandlePlatformerValuesChanged;
-            }
+
         }
 
         private void HandlePlatformerValuesChanged(object sender, PropertyChangedEventArgs e)

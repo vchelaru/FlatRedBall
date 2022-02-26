@@ -65,7 +65,7 @@ namespace EntityInputMovementPlugin
             GlueCommands.Self.DialogCommands.FocusTab("Entity Input Movement");
         }
 
-        private void HandleGluxLoaded()
+        private async void HandleGluxLoaded()
         {
             bool didChangeGlux = UpdateTopDownCodePresenceInProject();
 
@@ -74,6 +74,18 @@ namespace EntityInputMovementPlugin
             if (didChangeGlux)
             {
                 GlueCommands.Self.GluxCommands.SaveGlux();
+            }
+
+            var firstPlatformerEntity = GlueState.Self.CurrentGlueProject.Entities.FirstOrDefault(item =>
+                // February 26, 2022
+                // Initially I wanted to get only entities which have no base class in case there
+                // are base platformers and derived platformers. But, a game may have the platformer
+                // entity (like Player) inherit from another base entity, and we still want to use that
+                // entity to regenerate CSVs. So we ignore inheritance and only check if it's a platformer.
+                FlatRedBall.PlatformerPlugin.Controllers.MainController.IsPlatformer(item));
+            if(firstPlatformerEntity != null)
+            {
+                await FlatRedBall.PlatformerPlugin.Controllers.MainController.ForceCsvGenerationFor(firstPlatformerEntity);
             }
         }
 
