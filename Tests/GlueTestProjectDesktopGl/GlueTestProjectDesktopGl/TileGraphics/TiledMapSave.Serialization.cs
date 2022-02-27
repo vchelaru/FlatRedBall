@@ -792,6 +792,15 @@ namespace TMXGlueLib
     {
         private mapObjectgroupObject[] objectField;
 
+        public bool ShouldSerializetintcolor() => false;
+        public bool ShouldSerializeopacity() => false;
+        public bool ShouldSerializeparallaxx() => false;
+        public bool ShouldSerializeparallaxy() => false;
+        public bool ShouldSerializeoffsetx() => false;
+        public bool ShouldSerializeoffsety() => false;
+
+        [XmlAttribute("draworder")]
+        public string DrawOrder { get; set; }
 
         List<property> mProperties = new List<property>();
 
@@ -803,6 +812,8 @@ namespace TMXGlueLib
                 mProperties = value;
             }
         }
+
+        public bool ShouldSerializeproperties() => properties?.Count > 0;
 
         private IDictionary<string, string> propertyDictionaryField = null;
 
@@ -925,6 +936,8 @@ namespace TMXGlueLib
                 mProperties = value;
             }
         }
+        public bool ShouldSerializeproperties() => properties?.Count > 0;
+
 
         [XmlElement("ellipse", Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public mapObjectgroupObjectEllipse ellipse
@@ -1002,6 +1015,8 @@ namespace TMXGlueLib
         /// <remarks/>
         [XmlAttribute()]
         public float height { get; set; }
+        public bool ShouldSerializeheight() => height != 0;
+
 
         [XmlAttribute("rotation")]
         public double Rotation
@@ -1009,6 +1024,8 @@ namespace TMXGlueLib
             get;
             set;
         }
+        public bool ShouldSerializeRotation() => Rotation != 0;
+
     }
 
     [XmlType(AnonymousType = true)]

@@ -384,7 +384,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return curBlock;
         }
 
-        private static ICodeBlock AssignValuesUsingStartingValues(IElement element, ICodeBlock curBlock, Dictionary<InstructionSave, InterpolationCharacteristic> mInterpolationCharacteristics)
+        private static ICodeBlock AssignValuesUsingStartingValues(GlueElement element, ICodeBlock curBlock, Dictionary<InstructionSave, InterpolationCharacteristic> mInterpolationCharacteristics)
         {
             foreach (KeyValuePair<InstructionSave, InterpolationCharacteristic> kvp in mInterpolationCharacteristics)
             {

@@ -503,7 +503,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return toReturn;
         }
 
-        private static ICodeBlock GenerateVariableAssignmentForState(IElement element, ICodeBlock codeBlock, StateSave stateSave, StateSaveCategory category, bool isElse)
+        private static ICodeBlock GenerateVariableAssignmentForState(GlueElement element, ICodeBlock codeBlock, StateSave stateSave, StateSaveCategory category, bool isElse)
         {
             string enumType = category?.Name ?? "VariableState";
 
@@ -796,7 +796,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         }
 
-        private static string GetLeftSideOfEquals(IElement element, CustomVariable customVariable, string member, bool switchToRelative)
+        private static string GetLeftSideOfEquals(GlueElement element, CustomVariable customVariable, string member, bool switchToRelative)
         {
             string leftSideOfEquals = member;
 
@@ -817,7 +817,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return leftSideOfEquals;
         }
 
-        private static bool GetDoesStateAssignAbsoluteValues(StateSave stateSave, IElement element)
+        private static bool GetDoesStateAssignAbsoluteValues(StateSave stateSave, GlueElement element)
         {
             bool returnValue = false;
             foreach (InstructionSave instruction in stateSave.InstructionSaves)
@@ -833,11 +833,22 @@ namespace FlatRedBall.Glue.CodeGeneration
             return returnValue;
         }
 
-        private static string RelativeValueForInstruction(string memberName, CustomVariable customVariable, IElement element)
+        private static string RelativeValueForInstruction(string memberName, CustomVariable customVariable, GlueElement element)
         {
-            if (!string.IsNullOrEmpty(customVariable.SourceObject))
+            var rootCustomVariable = ObjectFinder.Self.GetBaseCustomVariable(customVariable);
+
+            if (!string.IsNullOrEmpty(rootCustomVariable.SourceObject))
             {
-                string relativeMember = InstructionManager.GetRelativeForAbsolute(customVariable.SourceObjectProperty);
+                var namedObject = element.GetNamedObjectRecursively(rootCustomVariable.SourceObject);
+
+                var isGum = namedObject?.SourceType == SourceType.Gum;
+
+                string relativeMember = null;
+
+                if (!isGum)
+                {
+                    relativeMember = InstructionManager.GetRelativeForAbsolute(customVariable.SourceObjectProperty);
+                }
 
                 return relativeMember;
             }

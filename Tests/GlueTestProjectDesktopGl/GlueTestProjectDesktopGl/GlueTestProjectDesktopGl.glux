@@ -12813,6 +12813,30 @@
           </Properties>
           <Name>Z</Name>
         </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+          </Properties>
+          <Name>ObjectWithTunneledVariablesX</Name>
+          <SourceObject>ObjectWithTunneledVariables</SourceObject>
+          <SourceObjectProperty>X</SourceObjectProperty>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+          </Properties>
+          <Name>ObjectWithTunneledVariablesWidth</Name>
+          <SourceObject>ObjectWithTunneledVariables</SourceObject>
+          <SourceObjectProperty>Width</SourceObjectProperty>
+        </CustomVariable>
       </CustomVariables>
       <Properties>
         <PropertySave>
@@ -13063,7 +13087,50 @@
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
+        <NamedObjectSave>
+          <InstanceName>ObjectWithTunneledVariables</InstanceName>
+          <SourceClassType>GlueTestProject.GumRuntimes.ColoredRectangleRuntime</SourceClassType>
+          <Properties>
+            <PropertySave>
+              <Name>SourceType</Name>
+              <ValueAsObject xsi:type="SourceType">Gum</ValueAsObject>
+              <Type>SourceType</Type>
+            </PropertySave>
+          </Properties>
+          <SourceType>Gum</SourceType>
+          <SourceFile>ColoredRectangleRuntime</SourceFile>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>false</IndependentOfCamera>
+        </NamedObjectSave>
       </NamedObjects>
+      <StateCategoryList>
+        <StateSaveCategory>
+          <Name>CategorySettingTunneledGumVariables</Name>
+          <States>
+            <StateSave>
+              <Name>MyState</Name>
+              <InstructionSaves>
+                <InstructionSave>
+                  <Type>float</Type>
+                  <Member>ObjectWithTunneledVariablesX</Member>
+                  <ValueAsFloat>5</ValueAsFloat>
+                </InstructionSave>
+                <InstructionSave>
+                  <Type>float</Type>
+                  <Member>ObjectWithTunneledVariablesWidth</Member>
+                  <ValueAsFloat>60</ValueAsFloat>
+                </InstructionSave>
+              </InstructionSaves>
+            </StateSave>
+          </States>
+          <ExcludedVariables>
+            <string>X</string>
+            <string>Y</string>
+            <string>Z</string>
+          </ExcludedVariables>
+        </StateSaveCategory>
+      </StateCategoryList>
       <Name>Entities\GumComponentContainer</Name>
       <CustomClassesForExport />
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>

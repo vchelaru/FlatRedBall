@@ -29,7 +29,8 @@ namespace Microsoft.Xna.Framework
         }
 
         /// <summary>
-        /// Returns the angle in radians of the argument vector, where 0 is to the right, and increasing the angle moves counterclockwise. 
+        /// Returns the angle in radians of the argument vector, where 0 is to the right, 
+        /// and increasing the angle moves counterclockwise. 
         /// The Z value is ignored.
         /// </summary>
         /// <param name="vector">The argument vector.</param>
