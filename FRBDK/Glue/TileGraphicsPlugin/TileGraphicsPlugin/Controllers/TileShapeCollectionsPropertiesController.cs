@@ -65,6 +65,8 @@ namespace TileGraphicsPlugin.Controllers
 
         public void RefreshAvailableTypes()
         {
+            var oldCurrentType = viewModel.CollisionTileTypeName;
+            
             viewModel.AvailableTypes.Clear();
             var tmxName = viewModel.SourceTmxName;
 
@@ -76,6 +78,8 @@ namespace TileGraphicsPlugin.Controllers
             {
                 viewModel.AvailableTypes.Add(item);
             }
+            viewModel.CollisionTileTypeName = oldCurrentType;
+
         }
 
 

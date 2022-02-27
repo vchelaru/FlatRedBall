@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TileGraphicsPlugin.Controllers;
 using TileGraphicsPlugin.ViewModels;
 
 namespace TileGraphicsPlugin.Views
@@ -65,6 +66,8 @@ namespace TileGraphicsPlugin.Views
             // notifications to other properties
             //this.ViewModel.CollisionTileTypeName = newName;
             this.ViewModel.ForceSetCollisionTileTypeName(newName);
+
+            TileShapeCollectionsPropertiesController.Self.RefreshAvailableTypes();
         }
     }
 }

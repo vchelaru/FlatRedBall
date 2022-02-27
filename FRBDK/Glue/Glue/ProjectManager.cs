@@ -513,6 +513,9 @@ namespace FlatRedBall.Glue
             {
                 mProjectBase.Unload();
             }
+
+            GlueState.Self.TiledCache.ReactToClosedProject();
+
             mProjectBase = null;
 
             GlueProjectSave = null;

@@ -143,6 +143,9 @@ namespace FlatRedBall.Glue.Tiled
 
             return tms;
         }
+
+
+
         public void FindStandardTileset()
         {
             TiledMapSave foundTiledMapSave = null;
@@ -252,6 +255,13 @@ namespace FlatRedBall.Glue.Tiled
             }
         }
 
+        internal void ReactToClosedProject()
+        {
+            standardTilesetImage = null;
+            standardTileset = null;
+            StandardTilesetFilePath = null;
+            CachedTiledMapSaves?.Clear();
+        }
     }
 
 

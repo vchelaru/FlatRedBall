@@ -48,23 +48,30 @@ namespace GumPlugin.Managers
 
             }
 
-            if (isEitherScreenOrComponent)
+            ElementSave element = null;
+            if (isEitherScreenOrComponent && System.IO.File.Exists(absoluteFile))
             {
-
-                ElementSave element = null;
-
-
-                if (extension == GumProjectSave.ComponentExtension)
+                try
                 {
-                    element =
-                        FileManager.XmlDeserialize<ComponentSave>(absoluteFile);
+                    if (extension == GumProjectSave.ComponentExtension)
+                    {
+                        element =
+                            FileManager.XmlDeserialize<ComponentSave>(absoluteFile);
+                    }
+                    else
+                    {
+                        element =
+                            FileManager.XmlDeserialize<Gum.DataTypes.ScreenSave>(absoluteFile);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    element =
-                        FileManager.XmlDeserialize<Gum.DataTypes.ScreenSave>(absoluteFile);
+                    GlueCommands.Self.PrintOutput("Error trying to load element {} for filling available contained objects: \n" + ex.ToString());
                 }
+            }
 
+            if(element != null)
+            { 
                 // Victor Chelaru, November 1, 2015
                 // Initially I used a "this" syntax to
                 // get access to the Screen casted as its
