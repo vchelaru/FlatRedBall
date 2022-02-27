@@ -239,7 +239,13 @@ namespace TileGraphicsPlugin.CodeGeneration
                 var instanceName = namedObjectSave.FieldName;
                 // If we do FirstOrDefault this doesn't fail, but codegen will fail later on. This gives a more informative error
                 //codeBlock.Line($"{instanceName} = {mapName}.Collisions.FirstOrDefault(item => item.Name == \"{tmxCollisionName}\");");
-                codeBlock.Line($"{instanceName} = {mapName}.Collisions.First(item => item.Name == \"{tmxCollisionName}\");");
+                // Update Feb 27, 2022
+                // If a TileShapeCollection uses custom collision shapes, then the type will create a ShapeCollection and put it in the
+                // Collisions list. But if the current map doesn't use the tile, then the shape collection won't be created, and First will
+                // crash. We should not crash here, but rather rely on FRB Editor to report errors.
+                codeBlock.Line($"{instanceName} = {mapName}.Collisions.FirstOrDefault(item => item.Name == \"{tmxCollisionName}\")" +
+                    $" ?? new FlatRedBall.TileCollisions.TileShapeCollection();");
+
 
             }
         }
