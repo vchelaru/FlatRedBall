@@ -37,6 +37,7 @@ namespace TileGraphicsPlugin.Controllers
             {
                 case nameof(viewModel.SourceTmxName):
                     RefreshAvailableTypes();
+                    RefreshAvailableCollisionObjectNames();
                     break;
             }
 
@@ -85,6 +86,7 @@ namespace TileGraphicsPlugin.Controllers
 
         private void RefreshAvailableCollisionObjectNames()
         {
+            var oldCollisionName = viewModel.TmxCollisionName;
             viewModel.AvailableTmxCollisions.Clear();
             var tmxName = viewModel.SourceTmxName;
 
@@ -99,6 +101,9 @@ namespace TileGraphicsPlugin.Controllers
             {
                 viewModel.AvailableTmxCollisions.Add(item);
             }
+
+            viewModel.TmxCollisionName = oldCollisionName;
+
         }
 
         public static HashSet<string> GetAvailableLayers(string tmxName)
