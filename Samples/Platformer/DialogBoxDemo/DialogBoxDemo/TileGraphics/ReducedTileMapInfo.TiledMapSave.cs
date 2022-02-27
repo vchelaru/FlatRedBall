@@ -91,16 +91,39 @@ namespace TMXGlueLib.DataTypes
 
         }
 
+        static List<AbstractMapLayer> GetAllMapLayers(TiledMapSave tiledMapSave)
+        {
+            var layers = new List<AbstractMapLayer>();
+            layers.AddRange(tiledMapSave.MapLayers);
+
+            foreach (var group in tiledMapSave.Group)
+            {
+                GetAllMapLayers(group, layers);
+            }
+
+            return layers;
+        }
+
+        static void GetAllMapLayers(LayerGroup layerGroup, List<AbstractMapLayer> layers)
+        {
+            layers.AddRange(layerGroup.MapLayers);
+            foreach (var group in layerGroup.Group)
+            {
+                GetAllMapLayers(group, layers);
+            }
+        }
+
         private static void CreateFromTiledMapSave(TiledMapSave tiledMapSave, string tmxDirectory, FileReferenceType referenceType,
             ReducedTileMapInfo reducedTileMapInfo)
         {
             ReducedLayerInfo reducedLayerInfo = null;
 
-            for (int i = 0; i < tiledMapSave.MapLayers.Count; i++)
+            var allLayers = GetAllMapLayers(tiledMapSave);
+            for (int i = 0; i < allLayers.Count; i++)
             {
                 string directory = tmxDirectory;
 
-                var tiledLayer = tiledMapSave.MapLayers[i];
+                var tiledLayer = allLayers[i];
 
                 string texture = null;
 
@@ -117,7 +140,7 @@ namespace TMXGlueLib.DataTypes
                         firstGid = mapLayer.data[0].tiles.FirstOrDefault(item => item != 0);
                     }
                 }
-                else
+                else if (tiledLayer is mapObjectgroup)
                 {
                     var objectLayer = tiledLayer as mapObjectgroup;
 
@@ -126,6 +149,12 @@ namespace TMXGlueLib.DataTypes
                     var firstObjectWithTexture = objectLayer.@object?.FirstOrDefault(item => item.gid > 0);
 
                     firstGid = firstObjectWithTexture?.gid;
+                }
+                else
+                {
+                    //Image layers and any other future layer types in Tiled are not supported at
+                    //this time. Just move onto the next layer and ignore this one.
+                    continue;
                 }
 
                 if (firstGid > 0)
@@ -168,6 +197,8 @@ namespace TMXGlueLib.DataTypes
                     Name = tiledLayer.Name,
                     TileWidth = tileWidth,
                     TileHeight = tileHeight,
+                    ParallaxMultiplierX = tiledLayer.ParallaxX,
+                    ParallaxMultiplierY = tiledLayer.ParallaxY,
                 };
 
                 reducedTileMapInfo.Layers.Add(reducedLayerInfo);
@@ -193,7 +224,7 @@ namespace TMXGlueLib.DataTypes
         private static void AddTileLayerTiles(TiledMapSave tiledMapSave, ReducedLayerInfo reducedLayerInfo, int i, AbstractMapLayer tiledLayer, Tileset tileSet, int tileWidth, int tileHeight)
         {
             var asMapLayer = tiledLayer as MapLayer;
-            var count = asMapLayer.data[0].tiles.Count;
+            var count = asMapLayer.data[0].tiles.Length;
             for (int dataId = 0; dataId < count; dataId++)
             {
                 var dataAtIndex = asMapLayer.data[0].tiles[dataId];

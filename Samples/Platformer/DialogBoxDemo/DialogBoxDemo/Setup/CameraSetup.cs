@@ -5,6 +5,7 @@
     {
         public class CameraSetupData
         {
+            public bool IsGenerateCameraDisplayCodeEnabled { get; set; }
             public float Scale { get; set; }
             public float ScaleGum { get; set; }
             public bool Is2D { get; set; }
@@ -69,6 +70,7 @@
                 {
                     SetAspectRatioTo(Data.AspectRatio.Value, Data.DominantInternalCoordinates, Data.ResolutionWidth, Data.ResolutionHeight);
                 }
+                ResetGumResolutionValues();
             }
             internal static void SetupCamera (Camera cameraToSetUp, Microsoft.Xna.Framework.GraphicsDeviceManager graphicsDeviceManager) 
             {

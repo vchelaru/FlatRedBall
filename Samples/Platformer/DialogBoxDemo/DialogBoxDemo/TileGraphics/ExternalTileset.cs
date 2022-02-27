@@ -109,6 +109,7 @@ public partial class tileset
         }
     }
     
+
     /// <remarks/>
     [System.Xml.Serialization.XmlAttributeAttribute()]
     public int margin {
@@ -119,15 +120,75 @@ public partial class tileset
             this.marginField = value;
         }
     }
+
+
+    [XmlAttribute("version")]
+    public string Version { get; set; }
+
+    [XmlAttribute("tiledversion")]
+    public string TiledVersion { get; set; }
+
+    [XmlAttribute("tilecount")]
+    public int TileCount { get; set; }
+
+    [XmlAttribute("columns")]
+    public int Columns { get; set; }
+
+
+    public List<wangset> wangsets { get; set; } = new List<wangset>();
+
 }
 
+
+public class wangset
+{
+    [XmlAttribute("name")]
+    public string Name { get; set; }
+
+    [XmlAttribute("type")]
+    public string Type { get; set; }
+
+    [XmlAttribute("tile")]
+    public int Tile
+    {
+        get; set;
+    }
+
+    public wangcolor wangcolor { get; set; }
+
+    [XmlElement("wangtile")]
+    public List<wangtile> WangTiles { get; set; } = new List<wangtile>();
+}
+
+public class wangcolor
+{
+    [XmlAttribute]
+    public string name { get; set; }
+    [XmlAttribute]
+    public string color { get; set; }
+
+    [XmlAttribute]
+    public int tile { get; set; }
+
+    [XmlAttribute]
+    public double probability { get; set; }
+}
+
+public class wangtile
+{
+    [XmlAttribute]
+    public int tileid { get; set; }
+
+    [XmlAttribute]
+    public string wangid { get; set; }
+
+}
 
 [System.Xml.Serialization.XmlRootAttribute(ElementName = "tileset",  Namespace = "", IsNullable = false)]
 public class ExternalTileSet : Tileset
 {
-
-
 }
+
 
 
 /// <remarks/>

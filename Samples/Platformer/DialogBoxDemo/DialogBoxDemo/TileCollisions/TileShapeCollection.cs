@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.TileGraphics;
+using FlatRedBall.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,7 +11,7 @@ using AARect = FlatRedBall.Math.Geometry.AxisAlignedRectangle;
 
 namespace FlatRedBall.TileCollisions
 {
-    public partial class TileShapeCollection
+    public partial class TileShapeCollection : INameable
     {
         #region Fields
 
@@ -86,6 +87,11 @@ namespace FlatRedBall.TileCollisions
 
 
         public List<Polygon> LastCollisionPolygons => mShapes.LastCollisionPolygons;
+
+        /// <summary>
+        /// Returns the rectangles which collided in the last successful collision. These can be checked in a collision event
+        /// to perform custom physics logic.
+        /// </summary>
         public List<AxisAlignedRectangle> LastCollisionAxisAlignedRectangles => mShapes.LastCollisionAxisAlignedRectangles;
 
         public bool Visible
@@ -145,7 +151,17 @@ namespace FlatRedBall.TileCollisions
 
         public void AddToLayer(FlatRedBall.Graphics.Layer layer)
         {
-            this.mShapes.AddToManagers(layer);
+            // Note - the makeAutomaticallyUpdated method has been added in July 2021
+            // This is a necessary addition to make addition of TileshapeCollections much
+            // faster than before. Unfortunately this is not a generated file but a copied
+            // file so it cannot use the Glue project version to optionally make this call
+            // Therefore, older projects may experience compile errors here. To solve this you 
+            // can do one of the following:
+            // 1. Update the FRB libraries that your project references to get this latest method (recommended)
+            // 2. Downgrade to a version of Glue prior to July 2021 which will not include this method
+            // 3. Re-compile your own version of the plugin for Glue and modify this code
+            // 4. Remove this parameter by hand whenever this file is re-generated. This is painful!
+            this.mShapes.AddToManagers(layer, makeAutomaticallyUpdated: false);
         }
 
         public void AttachTo(PositionedObject newParent, bool changeRelative = true)
@@ -492,6 +508,12 @@ namespace FlatRedBall.TileCollisions
             return GetRectangleAtPosition(x, y);
         }
 
+        /// <summary>
+        /// Returns the AxisAlignedRectangle at the argument worldX and worldY position. If no rectangle is located at this position, null is returned.
+        /// </summary>
+        /// <param name="worldX">The world X coordinate</param>
+        /// <param name="worldY">The world Y coordinate</param>
+        /// <returns>The AxisAlignedRectangle at the location, or null if none is found.</returns>
         public AxisAlignedRectangle GetRectangleAtPosition(float worldX, float worldY)
         {
             float middleOfTileX = MathFunctions.RoundFloat(worldX, GridSize, LeftSeedX + GridSize / 2.0f);
@@ -508,7 +530,7 @@ namespace FlatRedBall.TileCollisions
             int endExclusive = mShapes.AxisAlignedRectangles.GetFirstAfter(keyValueAfter, mSortAxis,
                 0, mShapes.AxisAlignedRectangles.Count);
 
-            AxisAlignedRectangle toReturn = GetRectangleAtPosition(worldX, worldY, startInclusive, endExclusive);
+            AxisAlignedRectangle toReturn = GetRectangleAtPosition(middleOfTileX, middleOfTileY, startInclusive, endExclusive);
 
             return toReturn;
         }
@@ -525,11 +547,11 @@ namespace FlatRedBall.TileCollisions
             float keyValueAfter = keyValue + halfGridSize;
 
             int startInclusive = mShapes.Polygons.GetFirstAfter(keyValueBefore, mSortAxis,
-                0, mShapes.AxisAlignedRectangles.Count);
+                0, mShapes.Polygons.Count);
 
 
             int endExclusive = mShapes.Polygons.GetFirstAfter(keyValueAfter, mSortAxis,
-                0, mShapes.AxisAlignedRectangles.Count);
+                0, mShapes.Polygons.Count);
 
             var left = middleOfTileX - halfGridSize;
             var right = middleOfTileX + halfGridSize;
@@ -581,6 +603,7 @@ namespace FlatRedBall.TileCollisions
             AxisAlignedRectangle toReturn = null;
             for (int i = startInclusive; i < endExclusive; i++)
             {
+                var rect = mShapes.AxisAlignedRectangles[i];
                 if (mShapes.AxisAlignedRectangles[i].IsPointInside(x, y))
                 {
                     toReturn = mShapes.AxisAlignedRectangles[i];
@@ -623,21 +646,29 @@ namespace FlatRedBall.TileCollisions
             }
         }
 
-        public void InsertRectangle(AARect rectangle)
+        public void InsertRectangle(AARect rectangle, int forcedIndex = -1)
         {
             float roundedX = rectangle.Left;
             float roundedY = rectangle.Bottom;
 
-            float keyValue = GetCoordinateValueForPartitioning(roundedX, roundedY);
+            int index;
+            if (forcedIndex > -1)
+            {
+                index = forcedIndex;
+            }
+            else
+            {
+                float keyValue = GetCoordinateValueForPartitioning(roundedX, roundedY);
 
-            int index = mShapes.AxisAlignedRectangles.GetFirstAfter(keyValue, mSortAxis,
-                0, mShapes.AxisAlignedRectangles.Count);
+                index = mShapes.AxisAlignedRectangles.GetFirstAfter(keyValue, mSortAxis,
+                    0, mShapes.AxisAlignedRectangles.Count);
+            }
 
             mShapes.AxisAlignedRectangles.Insert(index, rectangle);
 
-            if(AdjustRepositionDirectionsOnAddAndRemove)
+            if (AdjustRepositionDirectionsOnAddAndRemove)
             {
-                var directions = UpdateRepositionForNeighborsAndGetThisRepositionDirection(rectangle);
+                var directions = UpdateRepositionDirections(rectangle);
 
                 rectangle.RepositionDirections = directions;
             }
@@ -645,12 +676,12 @@ namespace FlatRedBall.TileCollisions
 
         public void InsertShapes(TileShapeCollection source)
         {
-            foreach(var rectangle in source.Rectangles)
+            foreach (var rectangle in source.Rectangles)
             {
                 this.InsertRectangle(rectangle);
             }
 
-            if(source.Polygons.Count > 0)
+            if (source.Polygons.Count > 0)
             {
                 throw new InvalidOperationException("Inserting does not currently support TileShapeCollections with polygons");
             }
@@ -658,9 +689,9 @@ namespace FlatRedBall.TileCollisions
 
         public void InsertCollidables<T>(IList<T> collidables) where T : FlatRedBall.Math.Geometry.ICollidable
         {
-            foreach(var collidable in collidables)
+            foreach (var collidable in collidables)
             {
-                foreach(var rectangle in collidable.Collision.AxisAlignedRectangles)
+                foreach (var rectangle in collidable.Collision.AxisAlignedRectangles)
                 {
                     rectangle.ForceUpdateDependencies();
                     InsertRectangle(rectangle);
@@ -683,7 +714,7 @@ namespace FlatRedBall.TileCollisions
         {
             ShapeManager.Remove(existing);
 
-            if(AdjustRepositionDirectionsOnAddAndRemove)
+            if (AdjustRepositionDirectionsOnAddAndRemove)
             {
                 float keyValue = GetCoordinateValueForPartitioning(existing.X, existing.Y);
 
@@ -800,7 +831,121 @@ namespace FlatRedBall.TileCollisions
                 down != null && left != null && downLeft == null;
         }
 
-        private RepositionDirections UpdateRepositionForNeighborsAndGetThisRepositionDirection(PositionedObject positionedObject)
+        private RepositionDirections GetRepositionDirection(PositionedObject positionedObject, bool[] array, float collectionLeft, float collectionBottom, int numberTilesWide, out bool repositionHalfSize)
+        {
+            var worldX = positionedObject.Position.X;
+            var worldY = positionedObject.Position.Y;
+
+            var xIndex = MathFunctions.RoundToInt((worldX - collectionLeft) / mGridSize);
+            var yIndex = MathFunctions.RoundToInt((worldY - collectionBottom) / mGridSize);
+
+            bool ValueAt(int xIndexInner, int yIndexInner)
+            {
+                var absoluteIndex = xIndexInner + yIndexInner * numberTilesWide;
+
+                return xIndexInner >= 0 && xIndexInner < numberTilesWide && absoluteIndex < array.Length && absoluteIndex > -1 && array[absoluteIndex];
+            }
+
+            RepositionDirections directions = RepositionDirections.All;
+
+            bool left = ValueAt(xIndex - 1, yIndex);
+            bool right = ValueAt(xIndex + 1, yIndex);
+            bool up = ValueAt(xIndex, yIndex + 1);
+            var down = ValueAt(xIndex, yIndex - 1);
+
+            bool upLeft = ValueAt(xIndex - 1, yIndex + 1);
+            bool upRight = ValueAt(xIndex + 1, yIndex + 1);
+
+
+            bool downLeft = ValueAt(xIndex - 1, yIndex - 1);
+            bool downRight = ValueAt(xIndex + 1, yIndex - 1);
+
+            if (left)
+            {
+                directions -= RepositionDirections.Left;
+            }
+            else
+            {
+                //var polygon = GetPolygonAtPosition(leftOfX, middleY, polygonsBeforeIndex, polygonsAfterIndex);
+
+                //if (polygon != null)
+                //{
+                //    directions -= RepositionDirections.Left;
+                //    if ((polygon.RepositionDirections & RepositionDirections.Right) == RepositionDirections.Right)
+                //    {
+                //        polygon.RepositionDirections -= RepositionDirections.Right;
+                //    }
+                //}
+            }
+
+            if (right)
+            {
+                directions -= RepositionDirections.Right;
+            }
+            else
+            {
+                //var polygon = GetPolygonAtPosition(rightOfX, middleY, polygonsBeforeIndex, polygonsAfterIndex);
+
+                //if (polygon != null)
+                //{
+                //    directions -= RepositionDirections.Right;
+                //    if ((polygon.RepositionDirections & RepositionDirections.Left) == RepositionDirections.Left)
+                //    {
+                //        polygon.RepositionDirections -= RepositionDirections.Left;
+                //    }
+                //}
+            }
+
+
+            if (up)
+            {
+                directions -= RepositionDirections.Up;
+            }
+            else
+            {
+                //var polygon = GetPolygonAtPosition(middleX, aboveY, polygonsBeforeIndex, polygonsAfterIndex);
+
+                //if (polygon != null)
+                //{
+                //    directions -= RepositionDirections.Up;
+
+                //    if ((polygon.RepositionDirections & RepositionDirections.Down) == RepositionDirections.Down)
+                //    {
+                //        polygon.RepositionDirections -= RepositionDirections.Down;
+                //    }
+                //}
+            }
+
+            if (down)
+            {
+                directions -= RepositionDirections.Down;
+            }
+            else
+            {
+                //var polygon = GetPolygonAtPosition(middleX, belowY, polygonsBeforeIndex, polygonsAfterIndex);
+
+                //if (polygon != null)
+                //{
+                //    directions -= RepositionDirections.Down;
+
+                //    if ((polygon.RepositionDirections & RepositionDirections.Up) == RepositionDirections.Up)
+                //    {
+                //        polygon.RepositionDirections -= RepositionDirections.Up;
+                //    }
+                //}
+            }
+
+            // do the L-shaped:
+            repositionHalfSize =
+                (left && up && !upLeft) ||
+                (up && right && !upRight) ||
+                (right && down && !downRight) ||
+                (down && left && !downLeft);
+
+            return directions;
+        }
+
+        private RepositionDirections UpdateRepositionDirections(PositionedObject positionedObject, bool updateNeighbors = true, bool[] array = null, int numberTilesWide = 0)
         {
             // Let's see what is surrounding this rectangle and update it and the surrounding rects appropriately
             float keyValue = GetCoordinateValueForPartitioning(positionedObject.Position.X, positionedObject.Position.Y);
@@ -835,7 +980,7 @@ namespace FlatRedBall.TileCollisions
 
             void UpdateLShaped(AARect center)
             {
-                if(center != null)
+                if (center != null)
                 {
                     var left = GetRectangleAtPosition(center.X - GridSize, center.Y);
                     var upLeft = GetRectangleAtPosition(center.X - GridSize, center.Y + GridSize);
@@ -850,15 +995,22 @@ namespace FlatRedBall.TileCollisions
                 }
             }
 
-            UpdateLShapedPassNeighbors(positionedObject as AARect, rectangleLeftOf, rectangleUpLeft, rectangleAbove, rectangleUpRight, rectangleRightOf, rectangleDownRight, rectangleBelow, rectangleDownLeft);
-            UpdateLShaped(rectangleLeftOf);
-            UpdateLShaped(rectangleUpLeft);
-            UpdateLShaped(rectangleAbove);
-            UpdateLShaped(rectangleUpRight);
-            UpdateLShaped(rectangleRightOf);
-            UpdateLShaped(rectangleDownRight);
-            UpdateLShaped(rectangleBelow);
-            UpdateLShaped(rectangleDownLeft);
+            if (positionedObject is AARect asAaRect)
+            {
+                UpdateLShapedPassNeighbors(asAaRect, rectangleLeftOf, rectangleUpLeft, rectangleAbove, rectangleUpRight, rectangleRightOf, rectangleDownRight, rectangleBelow, rectangleDownLeft);
+            }
+
+            if (updateNeighbors)
+            {
+                UpdateLShaped(rectangleLeftOf);
+                UpdateLShaped(rectangleUpLeft);
+                UpdateLShaped(rectangleAbove);
+                UpdateLShaped(rectangleUpRight);
+                UpdateLShaped(rectangleRightOf);
+                UpdateLShaped(rectangleDownRight);
+                UpdateLShaped(rectangleBelow);
+                UpdateLShaped(rectangleDownLeft);
+            }
 
             RepositionDirections directions = RepositionDirections.All;
             if (rectangleLeftOf != null)
@@ -965,6 +1117,10 @@ namespace FlatRedBall.TileCollisions
             this.mShapes.MakeTwoWay();
         }
 
+        /// <summary>
+        /// Removes all shapes from managers (makes them invisible) and clears this TileShapeCollection.
+        /// </summary>
+        /// <seealso cref="RemoveFromManagersOneWay"/>
         public void RemoveFromManagers()
         {
             this.mShapes.RemoveFromManagers();
@@ -1004,14 +1160,17 @@ namespace FlatRedBall.TileCollisions
 
         public void RefreshAllRepositionDirections()
         {
+            var bytes = GetCollisionByteArray(out float left, out float bottom, out int numberTilesWide);
+
             var count = this.mShapes.AxisAlignedRectangles.Count;
             for (int i = 0; i < count; i++)
             {
                 var rectangle = this.mShapes.AxisAlignedRectangles[i];
 
-                var directions = UpdateRepositionForNeighborsAndGetThisRepositionDirection(rectangle);
-
+                var directions = // UpdateRepositionDirections(rectangle, false, bytes, numberTilesWide);
+                    GetRepositionDirection(rectangle, bytes, left, bottom, numberTilesWide, out bool repositionHalfSize);
                 rectangle.RepositionDirections = directions;
+                rectangle.RepositionHalfSize = repositionHalfSize;
             }
 
             count = this.mShapes.Polygons.Count;
@@ -1019,7 +1178,7 @@ namespace FlatRedBall.TileCollisions
             {
                 var polygon = this.mShapes.Polygons[i];
 
-                var directions = UpdateRepositionForNeighborsAndGetThisRepositionDirection(polygon);
+                var directions = UpdateRepositionDirections(polygon, false);
 
                 polygon.RepositionDirections = directions;
             }
@@ -1127,14 +1286,96 @@ namespace FlatRedBall.TileCollisions
             }
         }
 
+        public void UpdateShapesForCloudCollision()
+        {
+            var count = this.mShapes.AxisAlignedRectangles.Count;
+            for (int i = 0; i < count; i++)
+            {
+                var rectangle = this.mShapes.AxisAlignedRectangles[i];
+
+                rectangle.RepositionHalfSize = true;
+
+                rectangle.RepositionDirections = RepositionDirections.Up;
+            }
+        }
 
         public override string ToString()
         {
             return Name;
         }
+
+        bool[] GetCollisionByteArray(out float left, out float bottom, out int numberTilesWide)
+        {
+            bool[] toReturn;
+
+            left = 0;
+            bottom = 0;
+
+            if (mShapes.AxisAlignedRectangles.Count == 0)
+            {
+                numberTilesWide = 0;
+                toReturn = new bool[0];
+            }
+            else
+            {
+                var rectangles = mShapes.AxisAlignedRectangles;
+                var minX = rectangles[0].X;
+                var maxX = rectangles[0].X;
+
+                var minY = rectangles[0].Y;
+                var maxY = rectangles[0].Y;
+
+                for (int i = 1; i < mShapes.AxisAlignedRectangles.Count; i++)
+                {
+                    var rect = mShapes.AxisAlignedRectangles[i];
+
+                    if (rect.X < minX)
+                    {
+                        minX = rect.X;
+                    }
+                    if (rect.X > maxX)
+                    {
+                        maxX = rect.X;
+                    }
+
+                    if (rect.Y < minY)
+                    {
+                        minY = rect.Y;
+                    }
+                    if (rect.Y > maxY)
+                    {
+                        maxY = rect.Y;
+                    }
+                }
+
+                // now we know the mins and maxes
+                var numberOfXTiles = 1 + MathFunctions.RoundToInt((maxX - minX) / mGridSize);
+                var numberOfYTiles = 1 + MathFunctions.RoundToInt((maxY - minY) / mGridSize);
+
+                left = minX;
+                bottom = minY;
+
+                numberTilesWide = numberOfXTiles;
+
+                var numberOfTiles = numberOfXTiles * numberOfYTiles;
+
+                toReturn = new bool[numberOfTiles];
+
+                for (int i = 0; i < mShapes.AxisAlignedRectangles.Count; i++)
+                {
+                    var rect = mShapes.AxisAlignedRectangles[i];
+
+                    var xIndex = MathFunctions.RoundToInt((rect.Position.X - minX) / mGridSize);
+                    var yIndex = MathFunctions.RoundToInt((rect.Position.Y - minY) / mGridSize);
+
+                    var index = xIndex + yIndex * numberOfXTiles;
+
+                    toReturn[index] = true;
+                }
+            }
+            return toReturn;
+        }
     }
-
-
 
     public static class TileShapeCollectionLayeredTileMapExtensions
     {
@@ -1208,6 +1449,9 @@ namespace FlatRedBall.TileCollisions
 
             var properties = layeredTileMap.TileProperties;
 
+            var wasAdjusting = tileShapeCollection.AdjustRepositionDirectionsOnAddAndRemove;
+            tileShapeCollection.AdjustRepositionDirectionsOnAddAndRemove = false;
+
             foreach (var kvp in properties)
             {
                 string name = kvp.Key;
@@ -1233,6 +1477,10 @@ namespace FlatRedBall.TileCollisions
                         {
                             var indexList = dictionary[name];
 
+                            var GridSize = tileShapeCollection.GridSize;
+                            var LeftSeedX = tileShapeCollection.LeftSeedX;
+                            var BottomSeedY = tileShapeCollection.BottomSeedY;
+
                             foreach (var index in indexList)
                             {
                                 float left;
@@ -1241,22 +1489,50 @@ namespace FlatRedBall.TileCollisions
 
                                 var centerX = left + dimensionHalf;
                                 var centerY = bottom + dimensionHalf;
+
+                                // this performs a slower add because of all the checks internal. We can speed things
+                                // up by inlining and removing. Specifically, we won't do contains checks, and we'll
+                                // assume that everything is already ordered so we don't have to fetch indexes:
+
                                 tileShapeCollection.AddCollisionAtWorld(centerX,
                                     centerY);
 
+                                //float roundedX = MathFunctions.RoundFloat(centerX - GridSize / 2.0f, GridSize, LeftSeedX);
+                                //float roundedY = MathFunctions.RoundFloat(centerY - GridSize / 2.0f, GridSize, BottomSeedY);
+
+                                //AxisAlignedRectangle newAar = new AxisAlignedRectangle();
+                                //newAar.Width = GridSize;
+                                //newAar.Height = GridSize;
+                                //newAar.Left = roundedX;
+                                //newAar.Bottom = roundedY;
+
+                                //if (tileShapeCollection.Visible)
+                                //{
+                                //    newAar.Visible = true;
+                                //}
+
+                                //tileShapeCollection.InsertRectangle(newAar, tileShapeCollection.Rectangles.Count);
+
+
                             }
-                            if(removeTilesOnAdd)
+                            if (removeTilesOnAdd)
                             {
                                 indexesToRemove.AddRange(indexList);
                             }
                         }
 
-                        if(removeTilesOnAdd && indexesToRemove.Count > 0)
+                        if (removeTilesOnAdd && indexesToRemove.Count > 0)
                         {
                             layer.RemoveQuads(indexesToRemove);
                         }
                     }
                 }
+            }
+
+            tileShapeCollection.AdjustRepositionDirectionsOnAddAndRemove = wasAdjusting;
+            if (wasAdjusting)
+            {
+                tileShapeCollection.RefreshAllRepositionDirections();
             }
         }
 
@@ -1312,13 +1588,13 @@ namespace FlatRedBall.TileCollisions
                 layeredTileMap, (list) => list.Any(item => item.Name == propertyName), removeTilesOnAdd);
         }
 
-        public static void AddCollisionFromTilesWithType(this TileShapeCollection tileShapeCollection, 
+        public static void AddCollisionFromTilesWithType(this TileShapeCollection tileShapeCollection,
             LayeredTileMap layeredTileMap, string type, bool removeTilesOnAdd = false)
         {
-            if(layeredTileMap != null)
+            if (layeredTileMap != null)
             {
                 tileShapeCollection.AddCollisionFrom(
-                    layeredTileMap, 
+                    layeredTileMap,
                     (list) => list.Any(item => item.Name == "Type" && (item.Value as string) == type),
                     removeTilesOnAdd);
             }
@@ -1733,6 +2009,5 @@ namespace FlatRedBall.TileCollisions
                 removeTilesOnAdd);
         }
     }
-
 
 }

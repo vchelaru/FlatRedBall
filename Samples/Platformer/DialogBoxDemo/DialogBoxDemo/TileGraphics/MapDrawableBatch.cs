@@ -22,12 +22,16 @@ using VertexType = Microsoft.Xna.Framework.Graphics.VertexPositionTexture;
 
 namespace FlatRedBall.TileGraphics
 {
+    #region Enums
+
     public enum SortAxis
     {
         None,
         X,
         Y
     }
+
+    #endregion
 
     public class MapDrawableBatch : PositionedObject, IVisible, IDrawableBatch
     {
@@ -152,13 +156,7 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
-        public VertexPositionTexture[] Vertices
-        {
-            get
-            {
-                return mVertices;
-            }
-        }
+        public VertexPositionTexture[] Vertices => mVertices;
 
         public Texture2D Texture
         {
@@ -609,6 +607,9 @@ namespace FlatRedBall.TileGraphics
                 toReturn.RegisterName(quad.Name, tileIndex);
             }
 
+            toReturn.ParallaxMultiplierX = reducedLayerInfo.ParallaxMultiplierX;
+            toReturn.ParallaxMultiplierY = reducedLayerInfo.ParallaxMultiplierY;
+
             return toReturn;
         }
 
@@ -885,6 +886,50 @@ namespace FlatRedBall.TileGraphics
             y = vector.Y;
         }
 
+        public int? GetQuadIndex(float worldX, float worldY)
+        {
+            if (mVertices.Length == 0)
+            {
+                return null;
+            }
+
+            var firstVertIndex = 0;
+
+            var lastVertIndexExclusive = mVertices.Length;
+
+            float tileWidth = mVertices[1].Position.X - mVertices[0].Position.X;
+
+            if (mSortAxis == SortAxis.X)
+            {
+                firstVertIndex = GetFirstAfterX(mVertices, worldX - tileWidth);
+                lastVertIndexExclusive = GetFirstAfterX(mVertices, worldX + tileWidth);
+            }
+            else if (mSortAxis == SortAxis.Y)
+            {
+                firstVertIndex = GetFirstAfterY(mVertices, worldY - tileWidth);
+                lastVertIndexExclusive = GetFirstAfterY(mVertices, worldY + tileWidth);
+            }
+
+            for (int i = firstVertIndex; i < lastVertIndexExclusive; i += 4)
+            {
+                // Coords are
+                // 3   2
+                //
+                // 0   1
+
+                if (mVertices[i + 0].Position.X <= worldX && mVertices[i + 0].Position.Y <= worldY &&
+                    mVertices[i + 1].Position.X >= worldX && mVertices[i + 1].Position.Y <= worldY &&
+                    mVertices[i + 2].Position.X >= worldX && mVertices[i + 2].Position.Y >= worldY &&
+                    mVertices[i + 3].Position.X <= worldX && mVertices[i + 3].Position.Y >= worldY)
+                {
+                    return i / 4;
+                }
+            }
+
+
+            return null;
+        }
+
         /// <summary>
         /// Adds a tile to the tile map
         /// </summary>
@@ -1076,7 +1121,7 @@ namespace FlatRedBall.TileGraphics
             // on non-power-of-two textures.
             oldTextureAddressMode = Renderer.TextureAddressMode;
             Renderer.TextureAddressMode = TextureAddressMode.Clamp;
-            
+
             return effectTouse;
         }
 
@@ -1452,9 +1497,9 @@ namespace FlatRedBall.TileGraphics
                     newIndexes[destinationIndexIndex + 5] =
                         destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex + 5];
 
-                    if (invertedDictionaries[layerIndexToCopyFrom].ContainsKey(sourceVertIndex/4))
+                    if (invertedDictionaries[layerIndexToCopyFrom].ContainsKey(sourceVertIndex / 4))
                     {
-                        var newName = invertedDictionaries[layerIndexToCopyFrom][sourceVertIndex/4];
+                        var newName = invertedDictionaries[layerIndexToCopyFrom][sourceVertIndex / 4];
 
                         if (newNameIndexDictionary.ContainsKey(newName) == false)
                         {
@@ -1566,16 +1611,16 @@ namespace FlatRedBall.TileGraphics
                     newIndexes[destinationIndexIndex + 5] =
                         destinationVertIndex - firstVert + layers[toCopyFrom].mIndices[sourceIndexIndex + 5];
 
-                    if (invertedDictionaries[toCopyFrom].ContainsKey(sourceVertIndex/4))
+                    if (invertedDictionaries[toCopyFrom].ContainsKey(sourceVertIndex / 4))
                     {
-                        var newName = invertedDictionaries[toCopyFrom][sourceVertIndex/4];
+                        var newName = invertedDictionaries[toCopyFrom][sourceVertIndex / 4];
 
                         if (newNameIndexDictionary.ContainsKey(newName) == false)
                         {
                             newNameIndexDictionary[newName] = new List<int>();
                         }
 
-                        newNameIndexDictionary[newName].Add(destinationVertIndex/4);
+                        newNameIndexDictionary[newName].Add(destinationVertIndex / 4);
                     }
 
                     destinationVertIndex += 4;
@@ -1652,6 +1697,45 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
+        public void SortQuadsOnAxis(SortAxis sortAxis)
+        {
+            this.SortAxis = sortAxis;
+
+            List<Quad> quads = new List<Quad>();
+
+            for (int i = 0; i < Vertices.Count(); i += 4)
+            {
+                var quad = new Quad();
+                quad.Vertices[0] = Vertices[i + 0];
+                quad.Vertices[1] = Vertices[i + 1];
+                quad.Vertices[2] = Vertices[i + 2];
+                quad.Vertices[3] = Vertices[i + 3];
+
+                quads.Add(quad);
+            }
+
+            Quad[] sortedQuads = null;
+            if (sortAxis == SortAxis.X)
+            {
+                sortedQuads = quads.OrderBy(item => item.Position.X).ToArray();
+            }
+            else if (sortAxis == SortAxis.Y)
+            {
+                sortedQuads = quads.OrderBy(item => item.Position.Y).ToArray();
+            }
+            else
+            {
+                throw new ArgumentException($"Invalid sort axis: {sortAxis}");
+            }
+
+            for (int i = 0; i < sortedQuads.Length; i++)
+            {
+                Vertices[i * 4 + 0] = sortedQuads[i].Vertices[0];
+                Vertices[i * 4 + 1] = sortedQuads[i].Vertices[1];
+                Vertices[i * 4 + 2] = sortedQuads[i].Vertices[2];
+                Vertices[i * 4 + 3] = sortedQuads[i].Vertices[3];
+            }
+        }
 
         public void RemoveQuads(IEnumerable<int> quadIndexes)
         {
@@ -1719,8 +1803,14 @@ namespace FlatRedBall.TileGraphics
         #endregion
     }
 
+    #region Additional Classes
 
+    public class Quad
+    {
+        public Vector3 Position => Vertices[0].Position;
 
+        public VertexType[] Vertices = new VertexType[4];
+    }
 
     public static class MapDrawableBatchExtensionMethods
     {
@@ -1728,5 +1818,5 @@ namespace FlatRedBall.TileGraphics
 
     }
 
-
+    #endregion
 }
