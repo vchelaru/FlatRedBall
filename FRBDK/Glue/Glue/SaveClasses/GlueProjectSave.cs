@@ -59,6 +59,10 @@ namespace FlatRedBall.Glue.SaveClasses
             GlueSavedToJson = 9,
             IEntityInFrb = 10,
             SeparateJsonFilesForElements = 11,
+            // This was added long ago, but a new version 
+            // is being created here to not surprise existing
+            // games with a double-animation call
+            GumSupportsAchxAnimation = 12,
         }
 
         #endregion
@@ -67,9 +71,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        // Don't make 11 the default yet.
-        public const int LatestVersion = (int)GluxVersions.SeparateJsonFilesForElements;
-        //public const int LatestVersion = (int)GluxVersions.SeparateJsonFilesForElements;
+        public const int LatestVersion = (int)GluxVersions.GumSupportsAchxAnimation;
 
         public int FileVersion { get; set; }
 

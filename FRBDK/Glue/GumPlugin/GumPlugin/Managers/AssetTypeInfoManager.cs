@@ -573,6 +573,12 @@ namespace GumPlugin.Managers
                     return toReturn;
                 };
 
+                if(GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GlueProjectSave.GluxVersions.GumSupportsAchxAnimation)
+                {
+                    newAti.ActivityMethod = "this?.AnimateSelf()";
+                }
+
+
                 newAti.AddToManagersFunc = null;
                 newAti.AddToManagersMethod.Clear();
                 newAti.AddToManagersMethod.AddRange(screenAti.AddToManagersMethod);
