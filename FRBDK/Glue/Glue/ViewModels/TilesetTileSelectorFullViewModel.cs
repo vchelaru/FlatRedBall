@@ -21,7 +21,7 @@ namespace FlatRedBall.Glue.ViewModels
         {
             get
             {
-                return GlueState.Self.TiledCache.StandardTileset.Tiles.FirstOrDefault(item => item.id == TileId)?.Type;
+                return GlueState.Self.TiledCache.StandardTileset?.Tiles.FirstOrDefault(item => item.id == TileId)?.Type;
             }
         }
 
