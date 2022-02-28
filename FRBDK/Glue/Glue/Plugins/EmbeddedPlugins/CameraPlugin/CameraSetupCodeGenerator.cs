@@ -22,6 +22,21 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public static void GenerateCallInGame1(string gameFileName, bool whetherToCall)
         {
+            var hasCameraCodeInGeneratedCode =
+                 GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.StartupInGeneratedGame;
+
+            if (hasCameraCodeInGeneratedCode)
+            {
+                GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
+            }
+            else
+            {
+                GenerateCameraSetupInGame1(gameFileName, whetherToCall);
+            }
+        }
+
+        private static void GenerateCameraSetupInGame1(string gameFileName, bool whetherToCall)
+        {
             string contents = null;
             if (!string.IsNullOrEmpty(gameFileName))
             {
@@ -80,7 +95,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
 
                 // load to see if it's changed, and only change it if so:
-                var absoluteFile = new FilePath( FileManager.RelativeDirectory + gameFileName);
+                var absoluteFile = new FilePath(FileManager.RelativeDirectory + gameFileName);
 
                 var shouldSave = absoluteFile.Exists() == false;
 
@@ -90,7 +105,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     shouldSave = existingText != contents;
                 }
 
-                if(shouldSave)
+                if (shouldSave)
                 {
                     GlueCommands.Self.TryMultipleTimes(() =>
                     {

@@ -213,9 +213,22 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             CsvCodeGenerator.GenerateAllCustomClasses(GlueState.CurrentGlueProject);
         }
 
-        public void GenerateStartupScreenCode()
+        public async void GenerateStartupScreenCode()
         {
-            CodeWriter.RefreshStartupScreenCode();
+            var glueProjectVersion = GlueState.CurrentGlueProject.FileVersion;
+
+            if(glueProjectVersion < (int)GlueProjectSave.GluxVersions.StartupInGeneratedGame)
+            {
+                CodeWriter.RefreshStartupScreenCode();
+            }
+
+
+            // On Version 13 and later, we do this:
+            await TaskManager.Self.AddAsync(
+                GenerateGame1Internal,
+                "Generating Game1.Generated.cs",
+                TaskExecutionPreference.AddOrMoveToEnd
+                );
         }
 
         public void GenerateGame1()

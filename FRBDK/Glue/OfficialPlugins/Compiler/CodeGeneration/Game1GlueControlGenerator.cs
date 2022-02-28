@@ -24,28 +24,72 @@ namespace OfficialPlugins.Compiler.CodeGeneration
 
         public override void GenerateInitialize(ICodeBlock codeBlock)
         {
+            GenerateCameraSetup(codeBlock);
+
             GenerateGlueControlManagerInitialize(codeBlock);
 
             GenerateStartScreen(codeBlock);
         }
 
+        private void GenerateCameraSetup(ICodeBlock codeBlock)
+        {
+            if(HasStartupInGeneratedGame)
+            {
+                codeBlock.Line("CameraSetup.SetupCamera(FlatRedBall.Camera.Main, graphics);");
+            }
+        }
+
+        string GetStartupScreenUnqualified()
+        {
+            ScreenSave requiredScreen = null;
+
+            var project = GlueState.Self.CurrentGlueProject;
+            for (int i = 0; i < project.Screens.Count; i++)
+            {
+                ScreenSave screenSave = project.Screens[i];
+
+                if (screenSave.IsRequiredAtStartup)
+                {
+                    requiredScreen = screenSave;
+                    break;
+                }
+            }
+
+            var screenName = requiredScreen?.Name ?? project.StartUpScreen;
+
+            return screenName;
+        }
+
+        bool HasStartupInGeneratedGame =>
+            GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.StartupInGeneratedGame;
+
         private void GenerateStartScreen(ICodeBlock codeBlock)
         {
-            var project = GlueState.Self.CurrentGlueProject;
-            if(project.FileVersion >= (int)GlueProjectSave.GluxVersions.StartupInGeneratedGame)
+            if(HasStartupInGeneratedGame)
             {
-                codeBlock.Line("Type startScreenType = null");
+                var project = GlueState.Self.CurrentGlueProject;
+                var startUpScreen = GetStartupScreenUnqualified();
+                if(!string.IsNullOrEmpty(startUpScreen))
+                {
+                    startUpScreen = GlueState.Self.ProjectNamespace + "." + startUpScreen.Replace("\\", ".");
+                    codeBlock.Line($"System.Type startScreenType = typeof({startUpScreen});");
 
-                codeBlock.Line("var commandLineArgs = Environment.GetCommandLineArgs();");
+                }
+                else
+                {
+                    codeBlock.Line("System.Type startScreenType = null;");
+                }
+
+                codeBlock.Line("var commandLineArgs = System.Environment.GetCommandLineArgs();");
                 var ifBlock = codeBlock.If("commandLineArgs.Length > 0");
                 {
                     ifBlock.Line("var thisAssembly = this.GetType().Assembly;");
                     ifBlock.Line("// see if any of these are screens:");
-                    var foreachBlock = ifBlock.ForEach("var item in commandLineArgs)");
+                    var foreachBlock = ifBlock.ForEach("var item in commandLineArgs");
                     {
                         foreachBlock.Line("var type = thisAssembly.GetType(item);");
 
-                        var innerIf = foreachBlock.If("type != null)");
+                        var innerIf = foreachBlock.If("type != null");
                         {
                             innerIf.Line("startScreenType = type;");
                             innerIf.Line("break;");
@@ -53,7 +97,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration
                     }
                 }
 
-                var startScreenIf = codeBlock.If("startScreenType != null)");
+                var startScreenIf = codeBlock.If("startScreenType != null");
                 {
                     startScreenIf.Line("FlatRedBall.Screens.ScreenManager.Start(startScreenType);");
                 }

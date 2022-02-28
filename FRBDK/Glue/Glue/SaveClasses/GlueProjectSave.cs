@@ -73,7 +73,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.GumSupportsAchxAnimation;
+        public const int LatestVersion = (int)GluxVersions.StartupInGeneratedGame;
 
         public int FileVersion { get; set; }
 
