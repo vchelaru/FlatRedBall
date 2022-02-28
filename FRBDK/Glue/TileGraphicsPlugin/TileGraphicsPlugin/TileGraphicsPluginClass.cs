@@ -613,7 +613,7 @@ namespace TileGraphicsPlugin
             if(extension == "tsx")
             {
                 // oh boy, the user changed a shared tile set.  Time to rebuild everything that uses this tileset
-                var allReferencedFileSaves = FileReferenceManager.Self.GetReferencedFileSavesReferencingTsx(fileName);
+                var allReferencedFileSaves = FileReferenceManager.Self.GetReferencedFileSavesReferencingTsx(fileName).ToArray();
 
                 // build em!
                 foreach(var file in allReferencedFileSaves)
@@ -621,6 +621,16 @@ namespace TileGraphicsPlugin
                     file.PerformExternalBuild(runAsync:true);
                 }
                 shouldRefreshErrors = true;
+                if(allReferencedFileSaves.Length > 0)
+                {
+                    var nos = GlueState.Self.CurrentNamedObjectSave;
+                    var element = GlueState.Self.CurrentElement;
+                    if (collisionTab?.IsShown == true && nos != null)
+                    {
+                        TileShapeCollectionsPropertiesController.Self.RefreshViewModelTo(nos, element);
+                    }
+                }
+
             }
 
             // If a png changes, it may be resized. Tiled changes IDs of tiles when a PNG resizes if

@@ -18,11 +18,40 @@ using TMXGlueLib;
 namespace FlatRedBall.Glue.Tiled
 {
     #region CachedTiledMapSave
+
+    public class DatedFile
+    {
+        public FilePath FilePath;
+        public DateTime LastTimeChanged;
+    }
+
     public class CachedTiledMapSave
     {
         public FilePath FilePath;
         public DateTime LastTimeChanged;
         public TiledMapSave TiledMapSave;
+
+        public List<DatedFile> AdditionalFiles = new List<DatedFile>();
+
+        internal bool IsUpToDate()
+        {
+            var isUpToDate = FilePath.Exists() && System.IO.File.GetLastWriteTime(FilePath.FullPath) <= LastTimeChanged;
+
+            if(isUpToDate)
+            {
+                foreach(var file in AdditionalFiles)
+                {
+                    var isAdditionalFileUpToDate =
+                        file.FilePath.Exists() && System.IO.File.GetLastWriteTime(file.FilePath.FullPath) <= file.LastTimeChanged;
+                    if(!isAdditionalFileUpToDate)
+                    {
+                        isUpToDate = false;
+                    }
+                }
+            }
+
+            return isUpToDate;
+        }
     }
     #endregion
 
@@ -91,12 +120,7 @@ namespace FlatRedBall.Glue.Tiled
                 {
                     var tms = TiledMapSave.FromFile(fileName.FullPath);
 
-                    var cachedTiledMapSave = new CachedTiledMapSave
-                    {
-                        LastTimeChanged = DateTime.Now,
-                        FilePath = fileName,
-                        TiledMapSave = tms
-                    };
+                    CachedTiledMapSave cachedTiledMapSave = CreateCachedTiledMapSave(fileName, tms);
 
                     dictionary[fileName] = cachedTiledMapSave;
 
@@ -110,6 +134,31 @@ namespace FlatRedBall.Glue.Tiled
             }
         }
 
+        private static CachedTiledMapSave CreateCachedTiledMapSave(FilePath fileName, TiledMapSave tms)
+        {
+            var cachedTiledMapSave = new CachedTiledMapSave
+            {
+                LastTimeChanged = DateTime.Now,
+                FilePath = fileName,
+                TiledMapSave = tms
+            };
+
+            foreach (var tileset in tms.Tilesets)
+            {
+                FilePath fullFile = fileName.GetDirectoryContainingThis() + tileset.Source;
+                if (fullFile.Exists())
+                {
+                    cachedTiledMapSave.AdditionalFiles.Add(new DatedFile
+                    {
+                        FilePath = fullFile,
+                        LastTimeChanged = DateTime.Now,
+                    });
+                }
+            }
+
+            return cachedTiledMapSave;
+        }
+
         public TiledMapSave GetTiledMap(FilePath filePath)
         {
             TiledMapSave tms = null;
@@ -119,7 +168,7 @@ namespace FlatRedBall.Glue.Tiled
 
                 var date = cached.LastTimeChanged;
 
-                if (filePath.Exists() && System.IO.File.GetLastWriteTime(filePath.FullPath) <= cached.LastTimeChanged)
+                if (cached.IsUpToDate())
                 {
                     tms = cached.TiledMapSave;
                 }
@@ -132,12 +181,7 @@ namespace FlatRedBall.Glue.Tiled
                 {
                     tms = TiledMapSave.FromFile(filePath.FullPath);
 
-                    CachedTiledMapSaves[filePath] = new CachedTiledMapSave
-                    {
-                        LastTimeChanged = DateTime.Now,
-                        FilePath = filePath,
-                        TiledMapSave = tms
-                    };
+                    CachedTiledMapSaves[filePath] = CreateCachedTiledMapSave(filePath, tms);
                 }
             }
 

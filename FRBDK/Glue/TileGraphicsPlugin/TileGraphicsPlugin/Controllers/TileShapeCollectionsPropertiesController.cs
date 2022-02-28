@@ -84,7 +84,7 @@ namespace TileGraphicsPlugin.Controllers
         }
 
 
-        private void RefreshAvailableCollisionObjectNames()
+        public void RefreshAvailableCollisionObjectNames()
         {
             var oldCollisionName = viewModel.TmxCollisionName;
             viewModel.AvailableTmxCollisions.Clear();
