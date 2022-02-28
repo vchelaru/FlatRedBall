@@ -379,7 +379,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
 
             block.Line($"IsFullScreen = {displaySettings.RunInFullScreen.ToString().ToLowerInvariant()},");
-            block.Line($"AllowWidowResizing = {displaySettings.AllowWindowResizing.ToString().ToLowerInvariant()},");
+            block.Line($"AllowWindowResizing = {displaySettings.AllowWindowResizing.ToString().ToLowerInvariant()},");
             block.Line($"TextureFilter = Microsoft.Xna.Framework.Graphics.TextureFilter.{(TextureFilter)displaySettings.TextureFilter},");
             block.Line($"ResizeBehavior = ResizeBehavior.{displaySettings.ResizeBehavior},");
 
@@ -405,7 +405,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             classBlock.AutoProperty("public int", "ResolutionWidth");
             classBlock.AutoProperty("public int", "ResolutionHeight");
             classBlock.AutoProperty("public decimal?", "AspectRatio");
-            classBlock.AutoProperty("public bool", "AllowWidowResizing");
+            classBlock.AutoProperty("public bool", "AllowWindowResizing");
             classBlock.AutoProperty("public bool", "IsFullScreen");
             classBlock.AutoProperty("public ResizeBehavior", "ResizeBehavior");
             classBlock.AutoProperty("public ResizeBehavior", "ResizeBehaviorGum");
@@ -572,7 +572,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 methodContents.Line("#if WINDOWS || DESKTOP_GL");
 
                 // This needs to come before the fullscreen assignment, because if not it changes the border style
-                methodContents.Line($"FlatRedBall.FlatRedBallServices.Game.Window.AllowUserResizing = Data.AllowWidowResizing;");
+                methodContents.Line($"FlatRedBall.FlatRedBallServices.Game.Window.AllowUserResizing = Data.AllowWindowResizing;");
 
                 string widthVariable = "Data.ResolutionWidth";
                 string heightVariable = "Data.ResolutionHeight";

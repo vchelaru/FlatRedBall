@@ -17,11 +17,14 @@ namespace OfficialPlugins.Compiler.Managers
     {
         PluginTab glueViewSettingsTab;
         CompilerViewModel compilerViewModel;
+        GlueViewSettingsViewModel glueViewSettingsViewModel;
         MainControl mainControl;
-        public void Initialize(GameHostView gameHostControl, MainControl mainControl, CompilerViewModel compilerViewModel, GlueViewSettingsViewModel glueViewSettingsViewModel,
+        public void Initialize(GameHostView gameHostControl, MainControl mainControl, 
+            CompilerViewModel compilerViewModel, GlueViewSettingsViewModel glueViewSettingsViewModel,
             PluginTab glueViewSettingsTab)
         {
             this.compilerViewModel = compilerViewModel;
+            this.glueViewSettingsViewModel = glueViewSettingsViewModel;
             this.mainControl = mainControl;
             this.glueViewSettingsTab = glueViewSettingsTab;
             var runner = Runner.Self;
@@ -148,12 +151,55 @@ namespace OfficialPlugins.Compiler.Managers
                     {
                         commandLineArgs = "GlueControl.Screens.EntityViewingScreen";
                     }
+                    // todo - need to read this in the game before parsing command line args
+                    var cameraSetup = GlueState.Self.CurrentGlueProject.DisplaySettings;
+                    if (cameraSetup != null && cameraSetup.GenerateDisplayCode && cameraSetup.AllowWindowResizing &&
+                        glueViewSettingsViewModel.EmbedGameInGameTab)
+                    {
+                        commandLineArgs = "AllowWindowResizing=false";
+                    }
+
 
                     var runResponse = await runner.Run(preventFocus: false, runArguments:commandLineArgs);
                     if (runResponse.Succeeded)
                     {
                         compilerViewModel.IsEditChecked = true;
                     }
+                    succeeded = runResponse.Succeeded;
+                }
+
+                if(succeeded)
+                {
+                    //var dto = new SetCameraSetupDto();
+
+                    //// create values here...
+                    //var cameraSetup = GlueState.Self.CurrentGlueProject.DisplaySettings;
+                    //if(cameraSetup != null && cameraSetup.GenerateDisplayCode && cameraSetup.AllowWindowResizing &&
+                    //    glueViewSettingsViewModel.EmbedGameInGameTab)
+                    //{
+                    //    dto.IsGenerateCameraDisplayCodeEnabled = cameraSetup.GenerateDisplayCode;
+                    //    dto.Scale = cameraSetup.Scale;
+                    //    dto.ScaleGum = cameraSetup.ScaleGum;
+                    //    dto.Is2D = cameraSetup.Is2D;
+                    //    dto.ResolutionWidth = cameraSetup.ResolutionWidth;
+                    //    dto.ResolutionHeight = cameraSetup.ResolutionHeight;
+                    //    if(cameraSetup.AspectRatioHeight > 0)
+                    //    {
+                    //        dto.AspectRatio = cameraSetup.AspectRatioWidth / cameraSetup.AspectRatioHeight;
+                    //    }
+
+                    //    // don't allow this!
+                    //    dto.AllowWindowResizing = false;
+                    //    //dto.AllowWindowResizing = cameraSetup.AllowWindowResizing;
+                    //    dto.IsFullScreen = cameraSetup.RunInFullScreen;
+                    //    dto.ResizeBehavior = cameraSetup.ResizeBehavior;
+                    //    dto.ResizeBehaviorGum = cameraSetup.ResizeBehaviorGum;
+                    //    dto.DominantInternalCoordinates = cameraSetup.DominantInternalCoordinates;
+                    //    dto.TextureFilter = (Microsoft.Xna.Framework.Graphics.TextureFilter) cameraSetup.TextureFilter;
+
+                    //    await CommandSender.Send(dto);
+
+                    //}
                 }
 
             }, "Starting in edit mode", TaskExecutionPreference.AddOrMoveToEnd);

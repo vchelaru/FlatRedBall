@@ -63,6 +63,8 @@ namespace FlatRedBall.Glue.SaveClasses
             // is being created here to not surprise existing
             // games with a double-animation call
             GumSupportsAchxAnimation = 12,
+            // Added Feb 28, 2022
+            StartupInGeneratedGame = 13,
         }
 
         #endregion

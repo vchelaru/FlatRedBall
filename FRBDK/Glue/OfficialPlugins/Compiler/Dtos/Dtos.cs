@@ -203,6 +203,27 @@ namespace OfficialPlugins.Compiler.Dtos
     }
     #endregion
 
+    #region Set Camera Setup
+
+    public class SetCameraSetupDto
+    {
+        public bool IsGenerateCameraDisplayCodeEnabled { get; set; }
+        public float Scale { get; set; }
+        public float ScaleGum { get; set; }
+        public bool Is2D { get; set; }
+        public int ResolutionWidth { get; set; }
+        public int ResolutionHeight { get; set; }
+        public decimal? AspectRatio { get; set; }
+        public bool AllowWindowResizing { get; set; }
+        public bool IsFullScreen { get; set; }
+        public ResizeBehavior ResizeBehavior { get; set; }
+        public ResizeBehavior ResizeBehaviorGum { get; set; }
+        public WidthOrHeight DominantInternalCoordinates { get; set; }
+        public Microsoft.Xna.Framework.Graphics.TextureFilter TextureFilter { get; set; }
+    }
+
+    #endregion
+
     #region CreateNewEntityDto
     public class CreateNewEntityDto
     {

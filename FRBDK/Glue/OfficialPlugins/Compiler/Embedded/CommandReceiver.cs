@@ -261,6 +261,17 @@ namespace GlueControl
 
         #endregion
 
+        #region SetCameraSetupDto
+
+        private static void HandleDto(SetCameraSetupDto dto)
+        {
+            CameraSetup.Data = dto;
+
+            CameraSetup.ResetWindow();
+        }
+
+        #endregion
+
         #region Select Object
 
         private static void HandleDto(SelectObjectDto selectObjectDto)
@@ -877,10 +888,14 @@ namespace GlueControl
 
         #endregion
 
+        #region SetBorderless
+
         private static void HandleDto(SetBorderlessDto dto)
         {
             FlatRedBallServices.Game.Window.IsBorderless = dto.IsBorderless;
         }
+
+        #endregion
 
         private static void HandleDto(GlueViewSettingsDto dto)
         {

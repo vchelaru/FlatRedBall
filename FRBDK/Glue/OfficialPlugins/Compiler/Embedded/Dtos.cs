@@ -206,6 +206,15 @@ namespace GlueControl.Dtos
     }
     #endregion
 
+    #region Set Camera Setup
+
+    public class SetCameraSetupDto : CameraSetupData
+    {
+
+
+    }
+    #endregion
+
     #region CreateNewEntityDto
     public class CreateNewEntityDto
     {

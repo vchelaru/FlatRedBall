@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.CodeGeneration.Game1;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,44 @@ namespace OfficialPlugins.Compiler.CodeGeneration
 
         public override void GenerateInitialize(ICodeBlock codeBlock)
         {
+            GenerateGlueControlManagerInitialize(codeBlock);
+
+            GenerateStartScreen(codeBlock);
+        }
+
+        private void GenerateStartScreen(ICodeBlock codeBlock)
+        {
+            var project = GlueState.Self.CurrentGlueProject;
+            if(project.FileVersion >= (int)GlueProjectSave.GluxVersions.StartupInGeneratedGame)
+            {
+                codeBlock.Line("Type startScreenType = null");
+
+                codeBlock.Line("var commandLineArgs = Environment.GetCommandLineArgs();");
+                var ifBlock = codeBlock.If("commandLineArgs.Length > 0");
+                {
+                    ifBlock.Line("var thisAssembly = this.GetType().Assembly;");
+                    ifBlock.Line("// see if any of these are screens:");
+                    var foreachBlock = ifBlock.ForEach("var item in commandLineArgs)");
+                    {
+                        foreachBlock.Line("var type = thisAssembly.GetType(item);");
+
+                        var innerIf = foreachBlock.If("type != null)");
+                        {
+                            innerIf.Line("startScreenType = type;");
+                            innerIf.Line("break;");
+                        }
+                    }
+                }
+
+                var startScreenIf = codeBlock.If("startScreenType != null)");
+                {
+                    startScreenIf.Line("FlatRedBall.Screens.ScreenManager.Start(startScreenType);");
+                }
+            }
+        }
+
+        private void GenerateGlueControlManagerInitialize(ICodeBlock codeBlock)
+        {
             if (IsGlueControlManagerGenerationEnabled)
             {
                 codeBlock.Line($"glueControlManager = new GlueControl.GlueControlManager({PortNumber});");
@@ -42,11 +81,11 @@ namespace OfficialPlugins.Compiler.CodeGeneration
                 var innerBlock = codeBlock.Block();
                 innerBlock.Line("glueControlManager.ReRunAllGlueToGameCommands();");
                 var isFirst = true;
-                foreach(var entity in GlueState.Self.CurrentGlueProject.Entities)
+                foreach (var entity in GlueState.Self.CurrentGlueProject.Entities)
                 {
-                    if(entity.CreatedByOtherEntities)
+                    if (entity.CreatedByOtherEntities)
                     {
-                        if(isFirst)
+                        if (isFirst)
                         {
                             innerBlock.Line("// These get nulled out when screens are destroyed so we have to re-assign them");
                         }
