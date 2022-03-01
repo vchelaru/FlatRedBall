@@ -66,7 +66,7 @@ namespace FlatRedBall.Glue.SetVariable
         {
             var mPropertyGrid = MainGlueWindow.Self.PropertyGrid;
 
-
+            bool pushReactToChangedProperty = true;
             bool updateTreeView = true;
 
             #region EventResponseSave
@@ -130,7 +130,8 @@ namespace FlatRedBall.Glue.SetVariable
             #region Entity
             else if (GlueState.Self.CurrentEntitySave != null)
             {
-                Container.Get<EntitySaveSetPropertyLogic>().ReactToEntityChangedProperty(variableNameAsDisplayed, oldValue);
+                Container.Get<EntitySaveSetPropertyLogic>().ReactToEntityChangedProperty(variableNameAsDisplayed, oldValue, GlueState.Self.CurrentEntitySave);
+                pushReactToChangedProperty = false;
             }
 
             #endregion
@@ -163,7 +164,10 @@ namespace FlatRedBall.Glue.SetVariable
             }
             else
             {
-                PluginManager.ReactToChangedProperty(variableNameAsDisplayed, oldValue);
+                if(pushReactToChangedProperty)
+                {
+                    PluginManager.ReactToChangedProperty(variableNameAsDisplayed, oldValue, GlueState.Self.CurrentElement);
+                }
             }
 
             if (GlueState.Self.CurrentElement != null)

@@ -14,14 +14,15 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using GlueFormsCore.Managers;
 using GlueFormsCore.SetVariable.EntitySaves;
+using FlatRedBall.Glue.Plugins;
 
 namespace FlatRedBall.Glue.SetVariable
 {
     class EntitySaveSetPropertyLogic
     {
-        internal void ReactToEntityChangedProperty(string changedMember, object oldValue)
+        internal void ReactToEntityChangedProperty(string changedMember, object oldValue, EntitySave entitySave)
         {
-            EntitySave entitySave = GlueState.Self.CurrentEntitySave;
+            entitySave = entitySave ?? GlueState.Self.CurrentEntitySave;
 
             #region BaseEntity changed
 
@@ -116,7 +117,7 @@ namespace FlatRedBall.Glue.SetVariable
                     entitySave.ImplementsIVisible = true;
                 }
 
-                RegenerateAllContainersForNamedObjectsThatUseCurrentEntity();
+                RegenerateAllContainersForNamedObjectsThatUseEntity(entitySave);
 
             }
 
@@ -134,7 +135,7 @@ namespace FlatRedBall.Glue.SetVariable
             #region ImplementsIClickable
             else if (changedMember == "ImplementsIClickable")
             {
-                RegenerateAllContainersForNamedObjectsThatUseCurrentEntity();
+                RegenerateAllContainersForNamedObjectsThatUseEntity(entitySave);
             }
 
             #endregion
@@ -183,6 +184,8 @@ namespace FlatRedBall.Glue.SetVariable
             }
 
             #endregion
+
+            PluginManager.ReactToChangedProperty(changedMember, oldValue, entitySave);
         }
 
         private static void ReactToChangedImplementsIVisible(object oldValue, EntitySave entitySave)
@@ -287,9 +290,9 @@ namespace FlatRedBall.Glue.SetVariable
             #endregion
         }
 
-        private static void RegenerateAllContainersForNamedObjectsThatUseCurrentEntity()
+        private static void RegenerateAllContainersForNamedObjectsThatUseEntity(EntitySave entitySave)
         {
-            var namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(GlueState.Self.CurrentEntitySave);
+            var namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(entitySave);
             var elementsToGenerate = new List<GlueElement>();
             foreach (NamedObjectSave nos in namedObjects)
             {

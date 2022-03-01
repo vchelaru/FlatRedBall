@@ -32,7 +32,7 @@ namespace OfficialPlugins.PointEditingPlugin
             InitializeTab();
         }
 
-        private void HandlePropertyChanged(string changedMember, object oldValue)
+        private void HandlePropertyChanged(string changedMember, object oldValue, GlueElement glueElement)
         {
             var namedObjectSave = GlueState.Self.CurrentNamedObjectSave;
             if(changedMember == "Points" && namedObjectSave != null)

@@ -294,7 +294,7 @@ namespace TileGraphicsPlugin
 
             //TilesetController.Self.GetTsxDirectoryRelativeToTmx = () => "../Tilesets/";
 
-            this.ReactToChangedPropertyHandler += (changedMember, oldalue) =>
+            this.ReactToChangedPropertyHandler += (changedMember, oldalue, glueElement) =>
             {
                 if(GlueState.Self.CurrentCustomVariable != null)
                 {
@@ -304,7 +304,7 @@ namespace TileGraphicsPlugin
                     }
 
                 }
-                else if(GlueState.Self.CurrentEntitySave != null)
+                else if(glueElement != null)
                 {
                     if (changedMember == nameof(EntitySave.CreatedByOtherEntities))
                     {

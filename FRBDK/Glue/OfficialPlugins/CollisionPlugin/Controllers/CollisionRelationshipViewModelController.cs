@@ -337,9 +337,8 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             return availableValues;
         }
 
-        public static void HandleGlueObjectPropertyChanged(string changedMember, object oldValue)
+        public static void HandleGlueObjectPropertyChanged(string changedMember, object oldValue, GlueElement element)
         {
-            var element = GlueState.Self.CurrentElement;
             var namedObject = GlueState.Self.CurrentNamedObjectSave;
 
             if (changedMember == nameof(NamedObjectSave.InstanceName) && namedObject != null)

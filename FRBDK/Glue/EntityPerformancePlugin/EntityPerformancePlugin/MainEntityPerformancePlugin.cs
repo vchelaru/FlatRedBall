@@ -79,11 +79,10 @@ namespace EntityPerformancePlugin
             this.ReactToChangedPropertyHandler += HandlePropertyChanged;
         }
 
-        private void HandlePropertyChanged(string changedMember, object oldValue)
+        private void HandlePropertyChanged(string changedMember, object oldValue, GlueElement currentElement)
         {
-            var currentEntity = GlueState.Self.CurrentEntitySave;
+            var currentEntity = currentElement as EntitySave;
             var instance = GlueState.Self.CurrentNamedObjectSave;
-            var currentElement = GlueState.Self.CurrentElement;
 
             if (currentEntity != null && changedMember == nameof(EntitySave.Name) && instance == null)
             {
@@ -143,10 +142,10 @@ namespace EntityPerformancePlugin
             }
         }
 
-        private void HandleGluePropertyChanged(string changedMember, object oldValue)
+        private void HandleGluePropertyChanged(string changedMember, object oldValue, GlueElement element)
         {
             if(changedMember == nameof(EntitySave.IsManuallyUpdated) && 
-                GlueState.Self.CurrentElement != null &&
+                element != null &&
                 // make sure the entity is selected and not a named object,
                 // because if a named object is selected the plugin doesn't (currently) show
                 GlueState.Self.CurrentNamedObjectSave == null)

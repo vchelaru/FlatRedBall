@@ -225,8 +225,7 @@ namespace FlatRedBall.Glue.Plugins
         public OpenSolutionDelegate OpenSolutionHandler { get; protected set; }
 
         /// <summary>
-        /// Delegate raised whenever a property on either a variable or an element has changed. Implementations
-        /// should check the current object to handle this properly.
+        /// Delegate raised whenever a property on either a variable or an element has changed.
         /// </summary>
         public ReactToChangedPropertyDelegate ReactToChangedPropertyHandler { get; protected set; }
         public ReactToFileChangeDelegate ReactToFileChangeHandler { get; protected set; }
@@ -234,6 +233,9 @@ namespace FlatRedBall.Glue.Plugins
         public Action ReactToChangedStartupScreen { get; protected set; }
         public Action<FilePath> ReactToCodeFileChange { get; protected set; }
         public ReactToItemSelectDelegate ReactToItemSelectHandler { get; protected set; }
+        /// <summary>
+        /// Delegate raised when a NamedObjectSave's variable or property changed. 
+        /// </summary>
         public ReactToNamedObjectChangedValueDelegate ReactToNamedObjectChangedValue { get; protected set; }
         public Action<List<VariableChangeArguments>> ReactToNamedObjectChangedValueList { get; protected set; }
 

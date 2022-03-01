@@ -57,7 +57,7 @@ namespace GlueFormsCore.SetVariable.NamedObjectSaves
 
                 //EditorObjects.IoC.Container.Get<SetPropertyManager>().ReactToPropertyChanged(
                 //    nameof(entity.CreatedByOtherEntities), true, nameof(entity.CreatedByOtherEntities), null);
-                Container.Get<EntitySaveSetPropertyLogic>().ReactToEntityChangedProperty(nameof(entity.CreatedByOtherEntities), true);
+                Container.Get<EntitySaveSetPropertyLogic>().ReactToEntityChangedProperty(nameof(entity.CreatedByOtherEntities), true, entity);
 
 
 

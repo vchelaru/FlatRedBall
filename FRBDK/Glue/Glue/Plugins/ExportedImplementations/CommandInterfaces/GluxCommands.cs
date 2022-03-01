@@ -1741,7 +1741,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             TaskManager.Self.Add(() => EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors(), "Clear fixed errors");
 
-            PluginManager.ReactToChangedProperty(memberName, oldValue);
+            PluginManager.ReactToChangedProperty(memberName, oldValue, ObjectFinder.Self.GetElementContaining(nos));
         }
 
 

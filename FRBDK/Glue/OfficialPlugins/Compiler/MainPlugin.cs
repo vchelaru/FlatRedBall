@@ -138,8 +138,7 @@ namespace OfficialPlugins.Compiler
             // do this after creating the compiler, view model, and control
             AssignEvents();
 
-            this.ReactToLoadedGlux += () => pluginTab.Show();
-            this.ReactToUnloadedGlux += () => pluginTab.Hide();
+
 
             GameHostController.Self.Initialize(gameHostView, MainControl, 
                 CompilerViewModel, 
@@ -171,6 +170,7 @@ namespace OfficialPlugins.Compiler
             this.ReactToLoadedGlux += HandleGluxLoaded;
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
             this.ReactToNewFileHandler += RefreshManager.Self.HandleNewFile;
+            this.ReactToChangedPropertyHandler += HandlePropertyChanged;
 
             this.ReactToCodeFileChange += RefreshManager.Self.HandleFileChanged;
             this.NewEntityCreated += RefreshManager.Self.HandleNewEntityCreated;
@@ -189,9 +189,8 @@ namespace OfficialPlugins.Compiler
             this.ReactToObjectListRemoved += async (ownerList, list) =>
                 await RefreshManager.Self.HandleObjectListRemoved(ownerList, list);
 
-            this.ReactToElementVariableChange += RefreshManager.Self.HandleVariableChanged;
-            this.ReactToNamedObjectChangedValue += (string changedMember, object oldValue, NamedObjectSave namedObject) => 
-                RefreshManager.Self.HandleNamedObjectValueChanged(changedMember, oldValue, namedObject, Dtos.AssignOrRecordOnly.Assign);
+            this.ReactToElementVariableChange += HandleElementVariableChanged;
+            this.ReactToNamedObjectChangedValue += HandleNamedObjectVariableOrPropertyChanged;
             this.ReactToChangedStartupScreen += ToolbarController.Self.ReactToChangedStartupScreen;
             this.ReactToItemSelectHandler += HandleItemSelected;
             this.ReactToObjectContainerChanged += RefreshManager.Self.HandleObjectContainerChanged;
@@ -205,6 +204,28 @@ namespace OfficialPlugins.Compiler
             this.ReactToMainWindowResizeEnd += gameHostView.ReactToMainWindowResizeEnd;
             this.TryHandleTreeNodeDoubleClicked += RefreshManager.Self.HandleTreeNodeDoubleClicked;
             this.GrabbedTreeNodeChanged += HandleGrabbedTreeNodeChanged;
+
+            this.ReactToLoadedGlux += () => pluginTab.Show();
+            this.ReactToUnloadedGlux += () => pluginTab.Hide();
+        }
+
+        private void HandlePropertyChanged(string changedMember, object oldValue, GlueElement glueElement)
+        {
+            var currentEntity = glueElement as EntitySave;
+            if(changedMember == nameof(EntitySave.CreatedByOtherEntities) && currentEntity != null)
+            {
+                GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
+            }
+        }
+
+        private void HandleElementVariableChanged(IElement element, CustomVariable variable)
+        {
+            RefreshManager.Self.HandleVariableChanged(element, variable);
+        }
+
+        private void HandleNamedObjectVariableOrPropertyChanged(string changedMember, object oldValue, NamedObjectSave namedObject)
+        {
+            RefreshManager.Self.HandleNamedObjectValueChanged(changedMember, oldValue, namedObject, Dtos.AssignOrRecordOnly.Assign);
         }
 
         private void HandleItemSelected(ITreeNode selectedTreeNode)

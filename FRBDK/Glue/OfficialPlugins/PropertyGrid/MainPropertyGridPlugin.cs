@@ -50,7 +50,7 @@ namespace OfficialPlugins.VariableDisplay
             HandleItemSelect( GlueState.Self.CurrentTreeNode);
         }
 
-        private void HandleRefreshProperties(string changedMember, object oldValue)
+        private void HandleRefreshProperties(string changedMember, object oldValue, GlueElement glueElement)
         {
             if (this.variableGrid != null)
             {

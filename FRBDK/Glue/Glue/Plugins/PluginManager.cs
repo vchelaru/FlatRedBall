@@ -1510,6 +1510,12 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
+        /// <summary>
+        /// Event raised when either a NamedObject property or variable has changed.
+        /// </summary>
+        /// <param name="changedMember">The name of the variable or property.</param>
+        /// <param name="oldValue">The old value of the variable or property.</param>
+        /// <param name="namedObject">The new value of the vairable or property.</param>
         public static void ReactToNamedObjectChangedValue(string changedMember, object oldValue, NamedObjectSave namedObject)
         {
             CallMethodOnPlugin(
@@ -1555,14 +1561,11 @@ namespace FlatRedBall.Glue.Plugins
         /// <remarks>Although this has the word "Property" in the name, it applies to both properties and variables.</remarks>
         /// <param name="changedMember">The member that has changed</param>
         /// <param name="oldValue">The value of the member before the change</param>
-        public static void ReactToChangedProperty(string changedMember, object oldValue)
+        public static void ReactToChangedProperty(string changedMember, object oldValue, GlueElement owner)
         {
-            CallMethodOnPlugin((plugin) =>
-            {
-                plugin.ReactToChangedPropertyHandler(changedMember, oldValue);
-            },
-            (plugin) => plugin.ReactToChangedPropertyHandler != null,
-            nameof(PluginBase.ReactToChangedPropertyHandler));
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToChangedPropertyHandler(changedMember, oldValue, owner),
+                plugin => plugin.ReactToChangedPropertyHandler != null);
         }
 
         internal static void ReactToGluxUnload(bool isExiting)

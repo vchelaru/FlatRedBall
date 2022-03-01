@@ -68,7 +68,7 @@ namespace OfficialPluginsCore.DamageDealingPlugin
 
         }
 
-        private void HandleChangedProperty(string changedMember, object oldValue)
+        private void HandleChangedProperty(string changedMember, object oldValue, GlueElement glueElement)
         {
             CustomVariable GetTeamIndex()
             {
@@ -94,7 +94,7 @@ namespace OfficialPluginsCore.DamageDealingPlugin
 
             var wereVariablesAddedOrRemoved = false;
 
-            var currentEntity = GlueState.Self.CurrentEntitySave;
+            var currentEntity = glueElement as EntitySave;
 
             if (currentEntity != null)
             {
