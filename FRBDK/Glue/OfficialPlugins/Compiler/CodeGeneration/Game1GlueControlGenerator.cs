@@ -127,7 +127,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration
                 var isFirst = true;
                 foreach (var entity in GlueState.Self.CurrentGlueProject.Entities)
                 {
-                    if (entity.CreatedByOtherEntities)
+                    if (entity.CreatedByOtherEntities && !entity.IsAbstract)
                     {
                         if (isFirst)
                         {
