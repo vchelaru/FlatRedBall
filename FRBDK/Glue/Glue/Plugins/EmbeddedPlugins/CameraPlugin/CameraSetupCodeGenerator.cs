@@ -693,6 +693,9 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         private static void GenerateResetMethodNew(bool generateDisplayCode, ICodeBlock classContents)
         {
+            classContents.Line("/// Applies resolution and aspect ratio values to the FlatRedBall camera. If Gum is part of the project,");
+            classContents.Line("/// then the Gum resolution will be applied. Note that this does not call Layout on the contained Gum objects,");
+            classContents.Line("/// so this may need to be called explicitly if ResetCamera is called in custom code.");
             var resetMethod = classContents.Function(
                 "internal static void", "ResetCamera", "Camera cameraToReset = null");
             {

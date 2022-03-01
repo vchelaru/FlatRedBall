@@ -94,6 +94,30 @@ namespace GlueTestProject.Screens
             TestTextWidth();
 
             TestStronglyTypedGenericContainers();
+
+            TestResolutionChangeForcesLayout();
+
+        }
+
+        private void TestResolutionChangeForcesLayout()
+        {
+            var oldWidth = CameraSetup.Data.ResolutionWidth;
+            var rectangle = new ColoredRectangleRuntime();
+            rectangle.X = 0;
+            rectangle.XUnits = Gum.Converters.GeneralUnitType.PixelsFromLarge;
+            rectangle.AddToManagers();
+            rectangle.UpdateLayout();
+            rectangle.AbsoluteX.ShouldBe(oldWidth);
+
+
+            CameraSetup.Data.ResolutionWidth = 1234;
+            CameraSetup.ResetCamera();
+            rectangle.AbsoluteX.ShouldBe(1234);
+
+
+            CameraSetup.Data.ResolutionWidth = oldWidth;
+            CameraSetup.ResetCamera();
+
         }
 
         private void TestStronglyTypedGenericContainers()

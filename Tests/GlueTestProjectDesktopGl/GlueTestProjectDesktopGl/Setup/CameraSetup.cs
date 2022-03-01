@@ -12,7 +12,7 @@
             public int ResolutionWidth { get; set; }
             public int ResolutionHeight { get; set; }
             public decimal? AspectRatio { get; set; }
-            public bool AllowWidowResizing { get; set; }
+            public bool AllowWindowResizing { get; set; }
             public bool IsFullScreen { get; set; }
             public ResizeBehavior ResizeBehavior { get; set; }
             public ResizeBehavior ResizeBehaviorGum { get; set; }
@@ -39,7 +39,7 @@
                 ResolutionHeight = 600,
                 Is2D = true,
                 IsFullScreen = false,
-                AllowWidowResizing = true,
+                AllowWindowResizing = true,
                 TextureFilter = Microsoft.Xna.Framework.Graphics.TextureFilter.Linear,
                 ResizeBehavior = ResizeBehavior.StretchVisibleArea,
                 ScaleGum = 100f,
@@ -84,7 +84,7 @@
             internal static void ResetWindow () 
             {
                 #if WINDOWS || DESKTOP_GL
-                FlatRedBall.FlatRedBallServices.Game.Window.AllowUserResizing = Data.AllowWidowResizing;
+                FlatRedBall.FlatRedBallServices.Game.Window.AllowUserResizing = Data.AllowWindowResizing;
                 if (Data.IsFullScreen)
                 {
                     #if DESKTOP_GL
