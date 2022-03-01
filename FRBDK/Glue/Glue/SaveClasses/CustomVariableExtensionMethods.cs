@@ -195,6 +195,26 @@ namespace FlatRedBall.Glue.SaveClasses
                     variableValue = (float?)asDouble;
                 }
             }
+            else if(type == "List<Vector2>")
+            {
+                if(variableValue is Newtonsoft.Json.Linq.JArray jArray)
+                {
+                    List<Vector2> newList = new List<Vector2>();
+                    foreach(string innerValue in jArray)
+                    {
+                        var split = innerValue.Split(",").Select(item => item.Trim()).ToArray();
+
+                        if(split.Length == 2)
+                        {
+                            var firstValue = float.Parse(split[0], System.Globalization.CultureInfo.InvariantCulture);
+                            var secondValue = float.Parse(split[1], System.Globalization.CultureInfo.InvariantCulture);
+
+                            newList.Add(new Vector2(firstValue, secondValue));
+                        }
+                    }
+                    variableValue = newList;
+                }
+            }
 
             return variableValue;
         }

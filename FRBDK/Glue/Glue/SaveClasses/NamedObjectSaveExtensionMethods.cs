@@ -330,8 +330,15 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public static void FixAllTypes(this NamedObjectSave instance)
         {
+            var ati = instance.GetAssetTypeInfo();
             foreach (CustomVariableInNamedObject instruction in instance.InstructionSaves)
             {
+                if(instruction.Type == null)
+                {
+                    var existingVariableDefinition = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == instruction.Member);
+
+                    instruction.Type = existingVariableDefinition?.Type;
+                }
                 FixAllTypes(instruction);
             }
 
