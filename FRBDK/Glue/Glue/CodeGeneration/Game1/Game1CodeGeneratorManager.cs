@@ -13,7 +13,10 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
         public static List<Game1CodeGenerator> Generators { get; private set; } = new List<Game1CodeGenerator>();
         public static string GetGame1GeneratedContents()
         {
-            var namespaceBlock = new CodeBlockNamespace(null, GlueState.Self.ProjectNamespace);
+            var topBlock = new CodeDocument(0);
+            topBlock.Line("using System.Linq;");
+
+            var namespaceBlock = topBlock.Namespace( GlueState.Self.ProjectNamespace);
             var classBlock = namespaceBlock.Class("public partial", "Game1");
 
             GenerateClassScope(classBlock);
@@ -24,7 +27,7 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
 
             GenerateGeneratedDraw(classBlock);
 
-            return namespaceBlock.ToString();
+            return topBlock.ToString();
         }
 
         private static void GenerateClassScope(ICodeBlock classBlock)

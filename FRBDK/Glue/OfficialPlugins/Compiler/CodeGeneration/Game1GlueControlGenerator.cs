@@ -35,6 +35,19 @@ namespace OfficialPlugins.Compiler.CodeGeneration
         {
             if(HasStartupInGeneratedGame)
             {
+                codeBlock.Line("var args = System.Environment.GetCommandLineArgs();");
+                codeBlock.Line("bool? changeResize = null;");
+                codeBlock.Line("var resizeArgs = args.FirstOrDefault(item => item.StartsWith(\"AllowWindowResizing=\"));");
+                codeBlock.Line("if (!string.IsNullOrEmpty(resizeArgs))");
+                codeBlock.Line("{");
+                codeBlock.Line("    var afterEqual = resizeArgs.Split('=')[1];");
+                codeBlock.Line("    changeResize = bool.Parse(afterEqual);");
+                codeBlock.Line("}");
+                codeBlock.Line("if (changeResize != null)");
+                codeBlock.Line("{");
+                codeBlock.Line("    CameraSetup.Data.AllowWindowResizing = changeResize.Value;");
+                codeBlock.Line("}");
+
                 codeBlock.Line("CameraSetup.SetupCamera(FlatRedBall.Camera.Main, graphics);");
             }
         }

@@ -53,7 +53,7 @@ namespace OfficialPlugins.Compiler.Managers
                 var screenName = await CommandSending.CommandSender.GetScreenName();
                 // ...but we may not want to restart on this screen if it's the edit entity screen:
                 var isEntityViewingScreen = screenName == "GlueControl.Screens.EntityViewingScreen";
-                var screenCommandLineArg = isEntityViewingScreen ? null : screenName;
+                string commandLineArgs = await GetCommandLineArgs(isRunning:true);
 
                 compilerViewModel.IsPaused = false;
                 runner.KillGameProcess();
@@ -61,19 +61,19 @@ namespace OfficialPlugins.Compiler.Managers
                 GeneralResponse runResponse = GeneralResponse.UnsuccessfulResponse;
                 if (compileSucceeded)
                 {
-                    runResponse = await runner.Run(preventFocus: false, screenCommandLineArg);
+                    runResponse = await runner.Run(preventFocus: false, commandLineArgs);
                 }
                 if (wasEditChecked && runResponse.Succeeded)
                 {
                     compilerViewModel.IsEditChecked = true;
 
-                    if(isEntityViewingScreen)
+                    if (isEntityViewingScreen)
                     {
                         await RefreshManager.Self.PushGlueSelectionToGame();
                     }
                 }
 
-                if(!runResponse.Succeeded)
+                if (!runResponse.Succeeded)
                 {
                     mainControl.PrintOutput(runResponse.Message);
                 }
@@ -129,6 +129,51 @@ namespace OfficialPlugins.Compiler.Managers
 
         }
 
+        private async Task<string> GetCommandLineArgs(bool isRunning)
+        {
+            string args = null;
+            if (isRunning)
+            {
+
+                var screenName = await CommandSending.CommandSender.GetScreenName();
+                // ...but we may not want to restart on this screen if it's the edit entity screen:
+                var isEntityViewingScreen = screenName == "GlueControl.Screens.EntityViewingScreen";
+                args = isEntityViewingScreen ? null : screenName;
+            }
+            else
+            {
+                var currentScreen = GlueState.Self.CurrentScreenSave;
+                var currentEntity = GlueState.Self.CurrentEntitySave;
+
+                if (currentScreen != null && !currentScreen.IsAbstract)
+                {
+                    args =
+                       GlueState.Self.ProjectNamespace + "." + currentScreen.Name.Replace("\\", ".").Replace("/", ".");
+                }
+                else if (currentEntity != null)
+                {
+                    args = "GlueControl.Screens.EntityViewingScreen";
+                }
+                else if(!string.IsNullOrEmpty( GlueState.Self.CurrentGlueProject.StartUpScreen))
+                {
+                    args =
+                       GlueState.Self.ProjectNamespace + "." + GlueState.Self.CurrentGlueProject.StartUpScreen.Replace("\\", ".").Replace("/", ".");
+                }
+            }
+
+            var project = GlueState.Self.CurrentGlueProject;
+            if(project?.DisplaySettings?.AllowWindowResizing == true && glueViewSettingsViewModel.EmbedGameInGameTab)
+            {
+                if(!string.IsNullOrEmpty(args))
+                {
+                    args += " ";
+                }
+                args += "AllowWindowResizing=false";
+            }
+
+            return args;
+        }
+
         private void StarRunInEditMode(object sender, EventArgs e)
         {
             TaskManager.Self.Add(async () =>
@@ -138,27 +183,7 @@ namespace OfficialPlugins.Compiler.Managers
                 var succeeded = await Compile();
                 if (succeeded)
                 {
-                    string commandLineArgs = null;
-                    var currentScreen = GlueState.Self.CurrentScreenSave;
-                    var currentEntity = GlueState.Self.CurrentEntitySave;
-
-                    if(currentScreen != null && !currentScreen.IsAbstract)
-                    {
-                        commandLineArgs = 
-                           GlueState.Self.ProjectNamespace + "." + currentScreen.Name.Replace("\\", ".").Replace("/", ".");
-                    }
-                    if(currentEntity != null)
-                    {
-                        commandLineArgs = "GlueControl.Screens.EntityViewingScreen";
-                    }
-                    // todo - need to read this in the game before parsing command line args
-                    var cameraSetup = GlueState.Self.CurrentGlueProject.DisplaySettings;
-                    if (cameraSetup != null && cameraSetup.GenerateDisplayCode && cameraSetup.AllowWindowResizing &&
-                        glueViewSettingsViewModel.EmbedGameInGameTab)
-                    {
-                        commandLineArgs = "AllowWindowResizing=false";
-                    }
-
+                    string commandLineArgs = await GetCommandLineArgs(isRunning:false);
 
                     var runResponse = await runner.Run(preventFocus: false, runArguments:commandLineArgs);
                     if (runResponse.Succeeded)

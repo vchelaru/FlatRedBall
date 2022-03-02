@@ -34,6 +34,8 @@ namespace OfficialPlugins.Compiler
     }
     #endregion
 
+    #region WindowMover
+
     public static class WindowMover
     {
         #region DLL Import for GetWindowRect/MoveWindow
@@ -48,7 +50,7 @@ namespace OfficialPlugins.Compiler
 
         #endregion
     }
-
+    #endregion
 
     class Runner : Singleton<Runner>
     {
