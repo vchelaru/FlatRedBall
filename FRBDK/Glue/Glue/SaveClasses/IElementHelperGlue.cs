@@ -60,14 +60,15 @@ namespace FlatRedBall.Glue.SaveClasses
                     // inheritance.
                     elementToRename.Name = newNameFull;
 
+                    HashSet<GlueElement> elementsToRegenerate = new HashSet<GlueElement>();
 
                     if (elementToRename is EntitySave)
                     {
                         // Change any Entities that depend on this
                         for (int i = 0; i < ProjectManager.GlueProjectSave.Entities.Count; i++)
                         {
-                            EntitySave entitySave = ProjectManager.GlueProjectSave.Entities[i];
-                            if (entitySave.BaseEntity == oldNameFull)
+                            var entitySave = ProjectManager.GlueProjectSave.Entities[i];
+                            if (entitySave.BaseElement == oldNameFull)
                             {
                                 entitySave.BaseEntity = newNameFull;
                             }
@@ -78,6 +79,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
                         foreach (NamedObjectSave nos in namedObjects)
                         {
+                            elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(nos));
                             if (nos.SourceType == SourceType.Entity && nos.SourceClassType == oldNameFull)
                             {
                                 nos.SourceClassType = newNameFull;
@@ -101,7 +103,7 @@ namespace FlatRedBall.Glue.SaveClasses
                         // Change any Screens that depend on this
                         for (int i = 0; i < ProjectManager.GlueProjectSave.Screens.Count; i++)
                         {
-                            ScreenSave screenSave = ProjectManager.GlueProjectSave.Screens[i];
+                            var screenSave = ProjectManager.GlueProjectSave.Screens[i];
                             if (screenSave.BaseScreen == oldNameFull)
                             {
                                 screenSave.BaseScreen = newNameFull;
@@ -118,6 +120,13 @@ namespace FlatRedBall.Glue.SaveClasses
                         // Don't do anything with NamedObjects and Screens since they can't (currently) be named objects
 
                     }
+
+                    foreach(var element in elementsToRegenerate)
+                    {
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+                    }
+
+                    GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
 
                     GlueCommands.Self.ProjectCommands.SaveProjects();
                     

@@ -173,6 +173,24 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             }
         }
 
+        private void MainTreeView_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left && e.LeftButton == MouseButtonState.Pressed)
+            {
+                var timeSinceLastClick = DateTime.Now - lastClick;
+                if (timeSinceLastClick.TotalSeconds < .25)
+                {
+                    MainTreeView_MouseDoubleClick(this, null);
+                }
+                lastClick = DateTime.Now;
+                startPoint = e.GetPosition(null);
+            }
+            var objectPushed = e.OriginalSource;
+            var frameworkElementPushed = (objectPushed as FrameworkElement);
+
+            nodePushed = frameworkElementPushed?.DataContext as NodeViewModel;
+        }
+
         private bool ClickedOnGrid(FrameworkElement frameworkElement)
         {
             if(frameworkElement.Name == "ItemGrid")
@@ -222,10 +240,16 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                     DragDrop.DoDragDrop(e.OriginalSource as DependencyObject, dragData, DragDropEffects.Move);
                 }
             }
-            if(!isMouseButtonPressed)
+            if(!isMouseButtonPressed && nodePushed != null)
             {
                 nodePushed = null;
             }
+        }
+
+
+        private void MainTreeView_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            nodePushed = null;
         }
 
         private void MainTreeView_DragEnter(object sender, DragEventArgs e)
@@ -260,7 +284,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             DragDropManager.Self.HandleDropExternalFileOnTreeNode(droppedFiles, targetNode);
         }
 
-        private void HandleDropTreeNodeOnTreeNode(DragEventArgs e)
+        private async void HandleDropTreeNodeOnTreeNode(DragEventArgs e)
         {
             // There's a bug in the tree view when dragging quickly, which can result in the wrong item dropped.
             // To solve this, we're going to use the NodePushed. For more info on the bug, see this:
@@ -280,7 +304,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 if (ButtonPressed == LeftOrRight.Left || targetNode == nodePushed)
                 {
                     // do something here...
-                    DragDropManager.DragDropTreeNode(targetNode, nodePushed);
+                    await DragDropManager.DragDropTreeNode(targetNode, nodePushed);
                     if (ButtonPressed == LeftOrRight.Right)
                     {
                         RightClickContextMenu.IsOpen = true;// test this
@@ -300,6 +324,9 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                         var wpfItem = CreateWpfItemFor(item);
                         RightClickContextMenu.Items.Add(wpfItem);
                     }
+                    // Do this or it closes immediately
+                    // 100 too fast
+                    await System.Threading.Tasks.Task.Delay(300);
                     RightClickContextMenu.IsOpen = true;// test this
 
                 }
@@ -454,6 +481,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 SelectSearchNode(FlatList.SelectedItem as NodeViewModel);
             }
         }
+
 
         #endregion
 
