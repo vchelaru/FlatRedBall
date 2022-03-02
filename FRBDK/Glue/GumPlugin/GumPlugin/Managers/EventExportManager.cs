@@ -64,6 +64,11 @@ namespace GumPlugin.Managers
 
     public class EventExportManager : Singleton<EventExportManager>
     {
+        /// <summary>
+        /// The location where the file storing the last Gum response date.
+        /// This way, FRB editor doesn't re-apply the same changes over and over
+        /// from the gum_events.json file.
+        /// </summary>
         public FilePath GumLastChangeFilePath
         {
             get
