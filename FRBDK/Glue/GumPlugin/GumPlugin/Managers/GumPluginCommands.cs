@@ -145,7 +145,7 @@ namespace GumPlugin.Managers
 
         public string GetGumScreenNameFor(FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen) => FileManager.RemovePath(glueScreen.Name) + "Gum";
 
-        internal void AddScreenForGlueScreen(FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen)
+        internal async Task AddScreenForGlueScreen(FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen)
         {
             string gumScreenName = GetGumScreenNameFor(glueScreen);
 
@@ -160,7 +160,7 @@ namespace GumPlugin.Managers
 
                 AddScreenToGumProject(gumScreen);
 
-                SaveGumxAsync(saveAllElements: false);
+                await SaveGumxAsync(saveAllElements: false);
 
                 SaveScreen(gumScreen);
 
@@ -171,15 +171,19 @@ namespace GumPlugin.Managers
             RightClickManager.Self.AddScreenByName(gumScreenName, glueScreen);
         }
 
-        internal void RemoveScreen(ScreenSave gumScreen, bool save = true)
+        internal async Task RemoveScreen(ScreenSave gumScreen, bool save = true)
         {
-            AppState.Self.GumProjectSave.Screens.Remove(gumScreen);
-            AppState.Self.GumProjectSave.ScreenReferences.RemoveAll(item => item.Name == gumScreen.Name);
-
-            if(save)
+            await TaskManager.Self.AddAsync(async () =>
             {
-                SaveGumxAsync();
-            }
+                AppState.Self.GumProjectSave.Screens.Remove(gumScreen);
+                AppState.Self.GumProjectSave.ScreenReferences.RemoveAll(item => item.Name == gumScreen.Name);
+
+                if (save)
+                {
+                    await SaveGumxAsync();
+                }
+
+            }, $"Gum Plugin - Reacting to removed screen {gumScreen}");
 
         }
 

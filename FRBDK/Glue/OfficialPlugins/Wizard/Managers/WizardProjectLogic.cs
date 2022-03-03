@@ -62,11 +62,15 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             #endregion
 
+            #region AddGum
+
             // Add Gum before adding a GameScreen, so the GameScreen gets its Gum screen
             if (vm.AddGum)
             {
                 Add("Add Gum", () => HandleAddGum(vm));
             }
+
+            #endregion
 
             #region Add GameScreen
 
@@ -102,6 +106,8 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             #endregion
 
+            #region Create Levels
+
             // Create the levels *after* the player, so the player gets exposed in the levels
             if (vm.AddGameScreen && vm.CreateLevels)
             {
@@ -109,11 +115,17 @@ namespace OfficialPluginsCore.Wizard.Managers
                     HandleCreateLevels(vm, gameScreen));
             }
 
+            #endregion
+
+            #region AddCameraController
+
             if (vm.AddCameraController && vm.AddGameScreen)
             {
                 Add("Create Camera", () =>
                     ApplyCameraController(vm, gameScreen));
             }
+
+            #endregion
 
             if(vm.AdditionalNonGameScreens?.Count > 0)
             {
@@ -623,7 +635,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                 var levelScreen = GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(levelName);
                 levelScreen.BaseScreen = gameScreen.Name;
-                levelScreen.UpdateFromBaseType();
+                GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(levelScreen);
                 GlueState.Self.CurrentScreenSave = levelScreen;
 
 

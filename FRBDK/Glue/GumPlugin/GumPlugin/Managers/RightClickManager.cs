@@ -72,11 +72,11 @@ namespace GumPlugin.Managers
                 shouldContinue = false;
             }
 
-            var screen = rightClickedTreeNode.Tag as FlatRedBall.Glue.SaveClasses.ScreenSave;
+            var frbScreen = rightClickedTreeNode.Tag as FlatRedBall.Glue.SaveClasses.ScreenSave;
 
             if(shouldContinue)
             {
-                var alreadyHasScreen = screen.ReferencedFiles.Any(item => FileManager.GetExtension(item.Name) == "gusx");
+                var alreadyHasScreen = frbScreen.ReferencedFiles.Any(item => FileManager.GetExtension(item.Name) == "gusx");
 
                 if(alreadyHasScreen)
                 {
@@ -86,9 +86,9 @@ namespace GumPlugin.Managers
 
             if(shouldContinue)
             {
-                var newMenuItem = new GeneralToolStripMenuItem($"Create New Gum Screen for {FileManager.RemovePath(screen.Name)}");
+                var newMenuItem = new GeneralToolStripMenuItem($"Create New Gum Screen for {FileManager.RemovePath(frbScreen.Name)}");
                 menuToModify.Add(newMenuItem);
-                newMenuItem.Click += (not, used) => GumPluginCommands.Self.AddScreenForGlueScreen(screen);
+                newMenuItem.Click += async (not, used) => await TaskManager.Self.AddAsync(() =>  GumPluginCommands.Self.AddScreenForGlueScreen(frbScreen), $"Adding Gum screen for FRB screen {frbScreen}");
             }
         }
 

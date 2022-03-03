@@ -36,7 +36,7 @@ using System.Threading.Tasks;
 namespace GumPlugin
 {
     [Export(typeof(PluginBase))]
-    public class MainPlugin : PluginBase
+    public class MainGumPlugin : PluginBase
     {
         #region Fields
 
@@ -534,14 +534,18 @@ namespace GumPlugin
             EventCodeGenerator.Self.HandleGetEventSignatureArgs(namedObject, eventResponseSave, out type, out args);
         }
 
-        private void HandleNewScreen(FlatRedBall.Glue.SaveClasses.ScreenSave newGlueScreen)
+        private async void HandleNewScreen(FlatRedBall.Glue.SaveClasses.ScreenSave newFrbScreen)
         {
-            bool createGumScreen = propertiesManager.GetShouldAutoCreateGumScreens();
-
-            if(createGumScreen && AppState.Self.GumProjectSave != null)
+            await TaskManager.Self.AddAsync(async () =>
             {
-                GumPluginCommands.Self.AddScreenForGlueScreen(newGlueScreen);
-            }
+                bool createGumScreen = propertiesManager.GetShouldAutoCreateGumScreens();
+
+                if(createGumScreen && AppState.Self.GumProjectSave != null)
+                {
+                    await GumPluginCommands.Self.AddScreenForGlueScreen(newFrbScreen);
+                }
+
+            }, $"Gum Plugin - handle new FRB screen {newFrbScreen}");
         }
 
 
@@ -557,7 +561,7 @@ namespace GumPlugin
                 {
                     GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
                         $"Delete the Gum Screen {gumScreen.Name}\nfor {glueScreen}?", 
-                        () => GumPluginCommands.Self.RemoveScreen(gumScreen));
+                        async () => await GumPluginCommands.Self.RemoveScreen(gumScreen));
 
                 }
 
@@ -701,17 +705,17 @@ namespace GumPlugin
             AskToCreateGumProject();
         }
 
-        public void CreateGumProjectWithForms()
+        public async void CreateGumProjectWithForms()
         {
-            CreateGumProjectInternal(shouldAlsoAddForms: true);
+            await CreateGumProjectInternal(shouldAlsoAddForms: true);
         }
 
-        public void CreateGumProjectNoForms()
+        public async void CreateGumProjectNoForms()
         {
-            CreateGumProjectInternal(shouldAlsoAddForms: false);
+            await CreateGumProjectInternal(shouldAlsoAddForms: false);
         }
 
-        public void AskToCreateGumProject()
+        public async void AskToCreateGumProject()
         {
             var mbmb = new MultiButtonMessageBoxWpf();
             mbmb.AddButton("Include Forms Controls (Recommended)", true);
@@ -725,16 +729,16 @@ namespace GumPlugin
             {
 
                 var shouldAlsoAddForms = (bool)mbmb.ClickedResult;
-                CreateGumProjectInternal(shouldAlsoAddForms);
+                await CreateGumProjectInternal(shouldAlsoAddForms);
             }
 
 
 
         }
 
-        private void CreateGumProjectInternal(bool shouldAlsoAddForms)
+        private async Task CreateGumProjectInternal(bool shouldAlsoAddForms)
         {
-            TaskManager.Self.Add(() =>
+            await TaskManager.Self.AddAsync(() =>
             {
                 propertiesManager.IsReactingToProperyChanges = false;
                 var added = GumProjectManager.Self.TryAddNewGumProject();
