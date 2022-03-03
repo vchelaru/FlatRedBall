@@ -22,6 +22,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public void RefreshCurrentElementTreeNode()
         {
             var element = GlueState.Self.CurrentElement;
+            if(element == null)
+            {
+                throw new NullReferenceException("Attempting to refresh current element tree node but no element is selected");
+            }
             RefreshTreeNodeFor(element);
         }
 

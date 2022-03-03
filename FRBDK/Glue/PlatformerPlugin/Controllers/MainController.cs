@@ -115,7 +115,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             }
         }
 
-        private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private async void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             /////////// early out ///////////
             if (ignoresPropertyChanges)
@@ -150,7 +150,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
                 }
 
-                GenerateCsv(entity, viewModel);
+                await GenerateCsv(entity, viewModel);
             }
 
             if(shouldAddPlatformerVariables)
@@ -160,7 +160,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
             if (shouldGenerateEntity)
             {
-                TaskManager.Self.Add(
+                await TaskManager.Self.AddAsync(
                     () => GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity),
                     "Generating " + entity.Name);
 
@@ -179,7 +179,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             }
         }
 
-        private static async void GenerateCsv(EntitySave entity, PlatformerEntityViewModel viewModel)
+        private static async Task GenerateCsv(EntitySave entity, PlatformerEntityViewModel viewModel)
         {
             // this could fail so we're going to try multiple times, but we need it immediately because
             // subsequent selections depend on it

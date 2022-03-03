@@ -77,7 +77,7 @@ namespace TopDownPlugin.Controllers
             // property. But we'll just codegen that for now.
         }
 
-        private void HandleViewModelPropertyChange(object sender, PropertyChangedEventArgs e)
+        private async void HandleViewModelPropertyChange(object sender, PropertyChangedEventArgs e)
         {
             /////////// early out ///////////
             if (ignoresPropertyChanges)
@@ -114,7 +114,7 @@ namespace TopDownPlugin.Controllers
                     viewModel.TopDownValues.Add(newValues);
                 }
 
-                GenerateAndAddCsv(entity, viewModel);
+                await GenerateAndAddCsv(entity, viewModel);
             }
 
             if (shouldAddTopDownVariables)
@@ -124,27 +124,23 @@ namespace TopDownPlugin.Controllers
 
             if (shouldGenerateEntity)
             {
-                TaskManager.Self.Add(
+                await TaskManager.Self.AddAsync(
                     () => GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity),
                     "Generating " + entity.Name);
             }
 
             if (shouldAddTopDownVariables)
             {
-                TaskManager.Self.Add(() =>
+                await TaskManager.Self.AddAsync(() =>
                 {
-                    GlueCommands.Self.DoOnUiThread(() =>
-                    {
-                        GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-                        GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-                    });
-
-                }, "Refreshing UI after top down plugin values changed");
+                    GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(entity);
+                }, "Refreshing UI after top down plugin values changed", doOnUiThread:true);
             }
 
             if (shouldGenerateCsv || shouldGenerateEntity || shouldAddTopDownVariables)
             {
-                TaskManager.Self.Add(
+                await TaskManager.Self.AddAsync(
                     () =>
                     {
                         GlueCommands.Self.GluxCommands.SaveGlux();
@@ -237,14 +233,14 @@ namespace TopDownPlugin.Controllers
             }
         }
 
-        private void GenerateAndAddCsv(EntitySave entity, TopDownEntityViewModel viewModel)
+        private async Task GenerateAndAddCsv(EntitySave entity, TopDownEntityViewModel viewModel)
         {
-            TaskManager.Self.Add(
+            await TaskManager.Self.AddAsync(
                                 () => CsvGenerator.Self.GenerateFor(entity, GetIfInheritsFromTopDown(entity), viewModel, lastHeaders),
                                 "Generating Top Down CSV for " + entity.Name);
 
 
-            TaskManager.Self.Add(() =>
+            await TaskManager.Self.AddAsync(() =>
             {
                 string rfsName = entity.Name.Replace("\\", "/") + "/" + CsvGenerator.RelativeCsvFile;
                 bool isAlreadyAdded = entity.ReferencedFiles.FirstOrDefault(item => item.Name == rfsName) != null;

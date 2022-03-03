@@ -16,6 +16,7 @@ using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Managers;
 
 namespace FlatRedBall.Glue
 {
@@ -64,6 +65,7 @@ namespace FlatRedBall.Glue
 
         public static void GenerateAndSaveDataClass(ReferencedFileSave rfs, AvailableDelimiters delimiter)
         {
+            TaskManager.Self.WarnIfNotInTask();
             string fileName = rfs.Name;
             fileName = ProjectManager.MakeAbsolute(fileName);
 

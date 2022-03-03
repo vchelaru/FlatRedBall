@@ -68,6 +68,8 @@ namespace OfficialPluginsCore.Wizard.Managers
                 Add("Add Gum", () => HandleAddGum(vm));
             }
 
+            #region Add GameScreen
+
             if (vm.AddGameScreen)
             {
                 AddTask("Add GameScreen", async () =>
@@ -84,17 +86,21 @@ namespace OfficialPluginsCore.Wizard.Managers
                 });
             }
 
+            #endregion
+
+            #region Handle AddPlayerEntity
+
             if (vm.AddPlayerEntity)
             {
                 AddTask("Add Player", async () =>
                 {
                     var playerEntity = await HandleAddPlayerEntity(vm);
 
-
-
                     TaskManager.Self.AddOrRunIfTasked(() => HandleAddPlayerInstance(vm, gameScreen, solidCollisionNos, cloudCollisionNos, playerEntity), "Adding player instance");
                 });
             }
+
+            #endregion
 
             // Create the levels *after* the player, so the player gets exposed in the levels
             if (vm.AddGameScreen && vm.CreateLevels)

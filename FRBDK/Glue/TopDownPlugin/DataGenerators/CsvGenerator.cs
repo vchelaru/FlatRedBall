@@ -64,6 +64,13 @@ namespace TopDownPlugin.DataGenerators
             }
         }
 
+        /// <summary>
+        /// Converts the TopDownEntityViewModel to a CSV string.
+        /// </summary>
+        /// <param name="inheritsFromTopDown">Whether the entity being generated inherits from a top-down implementing entity.</param>
+        /// <param name="viewModel">The view model containing the values</param>
+        /// <param name="oldHeaders">The headers from the previously-loaded CSV</param>
+        /// <returns>The CSV string</returns>
         private string GenerateCsvContents(bool inheritsFromTopDown, TopDownEntityViewModel viewModel, CsvHeader[] oldHeaders)
         {
              List<TopDownValues> values = new List<TopDownValues>();

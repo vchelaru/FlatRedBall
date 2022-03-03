@@ -531,7 +531,8 @@ namespace FlatRedBall.Glue.Managers
 
         public bool IsInTask()
         {
-            if(System.Threading.Thread.CurrentThread.ManagedThreadId == TaskManager.Self.SyncTaskThreadId)
+            var currentThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+            if (currentThreadId == TaskManager.Self.SyncTaskThreadId)
             {
                 return true;
             }
@@ -546,18 +547,27 @@ namespace FlatRedBall.Glue.Managers
                     return true;
                 }
             }
-            return false;
+
+            // It seems async calls may change the thread ID from the task so we can't rely on the thread ID matching SyncTaskThreadId
+            // Therefore, we'll just make sure we are not on UI thread:
+
+            if(currentThreadId == global::Glue.MainGlueWindow.UiThreadId)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         public void WarnIfNotInTask()
         {
             if(!IsInTask())
             {
-                // Vic says - there seems to be some issue with this method incorrectly reporting not in task when it really is. I think it might have to do
-                // with async but not sure exactly...
-                //var stackTrace = Environment.StackTrace;
+                var stackTrace = Environment.StackTrace;
 
-                //GlueCommands.Self.DoOnUiThread(() => GlueCommands.Self.PrintOutput("Code not in task:\n" + stackTrace));
+                GlueCommands.Self.DoOnUiThread(() => GlueCommands.Self.PrintOutput("Code not in task:\n" + stackTrace));
             }
         }
 
