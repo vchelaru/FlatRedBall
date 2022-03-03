@@ -51,6 +51,7 @@ namespace FlatRedBall.Glue.Controls
             get => closeButton.Visibility == System.Windows.Visibility.Visible;
             set => closeButton.Visibility = value.ToVisibility();
         }
+        public Func<string, bool> IsPreferredDisplayerForType { get; internal set; } = (whatever) => false;
 
         #endregion
 

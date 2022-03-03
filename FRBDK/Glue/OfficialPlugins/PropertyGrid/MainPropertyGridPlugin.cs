@@ -233,6 +233,7 @@ namespace OfficialPlugins.VariableDisplay
                 variableGrid.DataContext = variableViewModel;
 
                 variableTab = this.CreateTab(variableGrid, "Variables");
+                variableTab.IsPreferredDisplayerForType = (typeName) => typeName == "Variables";
 
                 variableTab.TabShown += () =>
                 {

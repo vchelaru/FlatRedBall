@@ -1037,18 +1037,5 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 form.Owner = MainGlueWindow.Self;
         }
 
-        public List<T> ToList<T>(System.Collections.IList list)
-        {
-            List<T> toReturn = new List<T>();
-
-
-            foreach (T item in list)
-            {
-                toReturn.Add(item);
-            }
-
-            return toReturn;
-        }
-
     }
 }

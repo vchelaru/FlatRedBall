@@ -161,6 +161,11 @@ namespace FlatRedBall.Glue.Plugins
             return tabContainer;
         }
 
+        public Func<string, bool> IsPreferredDisplayerForType
+        {
+            get => page.IsPreferredDisplayerForType;
+            set => page.IsPreferredDisplayerForType = value;
+        }
     }
     #endregion
 

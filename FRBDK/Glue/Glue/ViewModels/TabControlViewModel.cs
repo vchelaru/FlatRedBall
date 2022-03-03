@@ -24,10 +24,11 @@ namespace GlueFormsCore.ViewModels
         public int Count => Tabs.Count;
         public ObservableCollection<PluginTabPage> Tabs { get; private set; } = new ObservableCollection<PluginTabPage>();
 
-        public Dictionary<Type, PluginTabPage> TabsForTypes { get; private set; } = new Dictionary<Type, PluginTabPage>();
+        public Dictionary<string, PluginTabPage> TabsForTypes { get; private set; } = new Dictionary<string, PluginTabPage>();
         public void SetTabForCurrentType(PluginTabPage tab)
         {
-            var selectedType = GlueState.Self.CurrentTreeNode?.Tag?.GetType();
+            var treeNode = GlueState.Self.CurrentTreeNode;
+            var selectedType = treeNode?.Tag?.GetType()?.Name ?? treeNode?.Text;
 
             if(selectedType != null)
             {
@@ -221,7 +222,7 @@ namespace GlueFormsCore.ViewModels
 
         internal void UpdateToSelection(ITreeNode selectedTreeNode)
         {
-            var selectedType = selectedTreeNode?.Tag?.GetType();
+            var selectedType = selectedTreeNode?.Tag?.GetType().Name ?? selectedTreeNode?.Text;
 
             ShowMostRecentTabFor(TopTabItems,
                 (item) => TopSelectedTab = item, 
@@ -245,19 +246,22 @@ namespace GlueFormsCore.ViewModels
         }
 
 
-        private static void ShowMostRecentTabFor(TabContainerViewModel items, Action<PluginTabPage> action, Type type)
+        private static void ShowMostRecentTabFor(TabContainerViewModel items, Action<PluginTabPage> action, string typeName)
         {
             if (items.Count > 1)
             {
                 // Is there a tab for this type?
-                if(type != null && items.TabsForTypes.ContainsKey(type))
+                if(typeName != null && items.TabsForTypes.ContainsKey(typeName))
                 {
-                    action(items.TabsForTypes[type]);
+                    action(items.TabsForTypes[typeName]);
 
                 }
                 else
                 {
-                    var ordered = items.Tabs.OrderByDescending(item => item.LastTimeClicked).ToList();
+
+                    var ordered = items.Tabs
+                        .OrderBy(item => !item.IsPreferredDisplayerForType(typeName))
+                        .ThenByDescending(item => item.LastTimeClicked).ToList();
 
                     if (ordered[0].LastTimeClicked != ordered[1].LastTimeClicked)
                     {

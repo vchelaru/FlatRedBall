@@ -87,24 +87,9 @@ namespace Glue
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            try
-            {
-                StartUpGlue();
-            }
-            catch (FileNotFoundException fnfe)
-            {
-                if (fnfe.ToString().Contains("Microsoft.Xna.Framework.dll"))
-                {
-                    var message = "Could not load Glue, probably because XNA 4 is not installed. Click OK to go to the XNA runtime page to install the XNA runtime, then run Glue again";
-                    MessageBox.Show(message);
-                    System.Diagnostics.Process.Start("https://www.microsoft.com/en-us/download/details.aspx?id=20914");
-                    this.Close();
-                }
-                else
-                {
-                    throw fnfe;
-                }
-            }
+
+            StartUpGlue();
+
         }
         internal async void StartUpGlue()
         {
