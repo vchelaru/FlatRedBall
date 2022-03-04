@@ -30,6 +30,13 @@ namespace OfficialPluginsCore.PropertiesTabOldPlugin
 
             pluginTab = this.CreateAndAddTab(PropertyGrid, "Properties", TabLocation.Right);
             pluginTab.CanClose = false;
+            pluginTab.IsPreferredDisplayerForType = (type) =>
+            {
+                if (type == nameof(CustomVariable)) return true;
+                if (type == nameof(ReferencedFileSave)) return true;
+
+                return false;
+            };
             this.ReactToItemSelectHandler += HandleItemSelected;
 
             HandleItemSelected(null);
