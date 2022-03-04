@@ -22,6 +22,13 @@ namespace OfficialPlugins.ErrorReportingPlugin
         public override void StartUp()
         {
             AddErrorReporter(new MainErrorReporter());
+
+            this.ReactToFileChangeHandler += HandleFileChanged;
+        }
+
+        private void HandleFileChanged(string fileName)
+        {
+            this.RefreshErrors();
         }
     }
 }

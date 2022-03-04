@@ -264,6 +264,10 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 treeNode.ImageSource = CollisionIcon;
             }
+            else if (namedObject.IsList)
+            {
+                treeNode.ImageSource = NodeViewModel.EntityInstanceListIcon;
+            }
             else
             {
                 treeNode.ImageSource = EntityInstanceIcon;

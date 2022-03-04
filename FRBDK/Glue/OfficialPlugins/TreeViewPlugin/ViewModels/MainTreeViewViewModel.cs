@@ -917,6 +917,10 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 {
                     node.ImageSource = NodeViewModel.CollisionIcon;
                 }
+                else if(nos.IsList)
+                {
+                    node.ImageSource = NodeViewModel.EntityInstanceListIcon;
+                }
                 else
                 {
                     node.ImageSource = NodeViewModel.EntityInstanceIcon;

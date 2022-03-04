@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Errors;
+using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPlugins.ErrorReportingPlugin.ViewModels;
@@ -18,7 +19,28 @@ namespace OfficialPlugins.ErrorReportingPlugin
 
             FillWithBadSetByDerived(errors);
 
+            // This could eventually be moved to an object file, but for now...
+            FillWithMissingSourceName(errors);
+
             return errors.ToArray();
+        }
+
+        private void FillWithMissingSourceName(List<ErrorViewModel> errors)
+        {
+            foreach (var nos in ObjectFinder.Self.GetAllNamedObjects())
+            {
+                if (nos.SourceType == SourceType.File && !string.IsNullOrEmpty(nos.SourceFile) &&
+                    !string.IsNullOrEmpty(nos.SourceName) && !nos.IsEntireFile)
+                {
+                    var availableObjects = AvailableNameablesStringConverter.GetAvailableNamedObjectSourceNames(nos);
+
+                    if(!availableObjects.Contains(nos.SourceName))
+                    {
+                        var error = new MissingNamedObjectSourceNameErrorViewModel(nos);
+                        errors.Add(error);
+                    }
+                }
+            }
         }
 
         private void FillWithBadSetByDerived(List<ErrorViewModel> errors)

@@ -16,6 +16,24 @@ namespace FlatRedBall.Glue.SaveClasses
         static IGlueState GlueState => EditorObjects.IoC.Container.Get<IGlueState>();
         static IGlueCommands GlueCommands => EditorObjects.IoC.Container.Get<IGlueCommands>();
 
+
+        public static ReferencedFileSave GetReferencedFileSaveRecursively(this IElement instance, FilePath filePath)
+        {
+            ReferencedFileSave rfs = FileReferencerHelper.GetReferencedFileSave(instance, filePath);
+
+            if (rfs == null && !string.IsNullOrEmpty(instance.BaseObject))
+            {
+                EntitySave baseEntitySave = GlueState.CurrentGlueProject.GetEntitySave(instance.BaseObject);
+                if (baseEntitySave != null)
+                {
+                    rfs = baseEntitySave.GetReferencedFileSaveRecursively(filePath);
+                }
+            }
+
+            return rfs;
+        }
+
+
         public static ReferencedFileSave GetReferencedFileSaveRecursively(this IElement instance, string fileName)
         {
             ReferencedFileSave rfs = FileReferencerHelper.GetReferencedFileSave(instance, fileName);

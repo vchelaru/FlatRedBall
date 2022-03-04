@@ -48,6 +48,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public static ImageSource CollisionIcon;
         public static ImageSource EntityIcon;
         public static ImageSource EntityInstanceIcon;
+        public static ImageSource EntityInstanceListIcon;
         public static ImageSource EventIcon;
         public static ImageSource FileIcon;
         public static ImageSource FolderClosedIcon;
@@ -161,6 +162,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             CollisionsIcon = LoadIcon("icon_collisions");
             EntityIcon = LoadIcon("icon_entity");
             EntityInstanceIcon = LoadIcon("icon_entity_instance");
+            EntityInstanceListIcon = LoadIcon("icon_entity_list");
             EventIcon = LoadIcon("icon_event");
             FileIcon = LoadIcon("icon_file_standard");
             FolderClosedIcon = LoadIcon("icon_folder");

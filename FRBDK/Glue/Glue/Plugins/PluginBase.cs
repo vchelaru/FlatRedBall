@@ -584,6 +584,9 @@ namespace FlatRedBall.Glue.Plugins
             EditorObjects.IoC.Container.Get<GlueErrorManager>().Add(errorReporter);
         }
 
+        /// <summary>
+        /// Refreshes all errors for all ErrorReporters referenced by this plugin.
+        /// </summary>
         protected void RefreshErrors()
         {
             foreach(var reporter in ErrorReporters)
