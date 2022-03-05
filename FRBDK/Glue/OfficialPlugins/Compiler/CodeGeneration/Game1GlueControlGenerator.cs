@@ -126,8 +126,9 @@ namespace OfficialPlugins.Compiler.CodeGeneration
                 codeBlock.Line("this.Exiting += (not, used) => glueControlManager.Kill();");
                 codeBlock.Line("FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += (not, used) =>");
                 var sizeChangedInnerBlock = codeBlock.Block();
-                sizeChangedInnerBlock = sizeChangedInnerBlock.If("FlatRedBall.Screens.ScreenManager.IsInEditMode");
-                sizeChangedInnerBlock.Line("GlueControl.Editing.CameraLogic.UpdateCameraToZoomLevel(zoomAroundCursorPosition: false);");
+                var sizeChangedInnerBlockIf = sizeChangedInnerBlock.If("FlatRedBall.Screens.ScreenManager.IsInEditMode");
+                sizeChangedInnerBlockIf.Line("GlueControl.Editing.CameraLogic.UpdateCameraToZoomLevel(zoomAroundCursorPosition: false);");
+                sizeChangedInnerBlock.Line("GlueControl.Editing.CameraLogic.PushZoomLevelToEditor();");
                 codeBlock.Line(";");
 
                 // Vic says - We run all Glue commands before running custom initialize. The reason is - custom initialize

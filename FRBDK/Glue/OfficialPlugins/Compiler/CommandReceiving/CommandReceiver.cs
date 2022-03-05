@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using OfficialPlugins.Compiler.CommandSending;
 using OfficialPlugins.Compiler.Dtos;
 using OfficialPlugins.Compiler.Managers;
+using OfficialPlugins.Compiler.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -30,6 +31,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         static int gamePortNumber;
 
         static System.Reflection.MethodInfo[] AllMethods;
+
+        public static CompilerViewModel CompilerViewModel { get; set; }
 
         static CommandReceiver()
         {
@@ -762,11 +765,31 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region GoToDefinitionDto
 
-        private static async void HandleDto(GoToDefinitionDto dto)
+        private static void HandleDto(GoToDefinitionDto dto)
         {
             GlueCommands.Self.DialogCommands.GoToDefinitionOfSelection();
         }
-        
+
+
+        #endregion
+
+        #region CurrentDisplayInfoDto
+
+        private static async void HandleDto(CurrentDisplayInfoDto dto)
+        {
+            var zoomValue = dto.ZoomPercentage;
+
+            if(GlueState.Self.CurrentGlueProject?.DisplaySettings != null)
+            {
+                zoomValue *= (decimal)(dto.DestinationRectangleHeight / (decimal)GlueState.Self.CurrentGlueProject.DisplaySettings.ResolutionHeight);
+            }
+
+            zoomValue = (int)zoomValue; // to prevent lots of trailing decimals
+
+            GlueCommands.Self.DoOnUiThread(() =>
+                CompilerViewModel.CurrentZoomLevelDisplay = zoomValue.ToString() + "%");
+
+        }
 
         #endregion
     }

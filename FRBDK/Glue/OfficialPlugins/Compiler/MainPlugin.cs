@@ -350,7 +350,7 @@ namespace OfficialPlugins.Compiler
             {
                 try
                 {
-                    if (CompilerViewModel.IsEditChecked && CompilerViewModel.IsRunning)
+                    if (CompilerViewModel.IsRunning)
                     {
                         lastGetCall = DateTime.Now;
 
@@ -527,6 +527,7 @@ namespace OfficialPlugins.Compiler
             Runner.Self.ViewModel = CompilerViewModel;
             RefreshManager.Self.ViewModel = CompilerViewModel;
             DragDropManagerGameWindow.CompilerViewModel = CompilerViewModel;
+            CommandReceiver.CompilerViewModel = CompilerViewModel;
             RefreshManager.Self.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
 
             VariableSendingManager.Self.ViewModel = CompilerViewModel;

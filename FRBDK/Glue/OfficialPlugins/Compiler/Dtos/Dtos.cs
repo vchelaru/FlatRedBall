@@ -118,13 +118,26 @@ namespace OfficialPlugins.Compiler.Dtos
 
     #endregion
 
+    #region CurrentDisplayInfoDto
+
+    public class CurrentDisplayInfoDto
+    {
+        public decimal ZoomPercentage { get; set; }
+        public int DestinationRectangleWidth { get; set; }
+        public int DestinationRectangleHeight { get; set; }
+
+        public float OrthogonalWidth { get; set; }
+        public float OrthogonalHeight { get; set; }
+    }
+
+    #endregion
+
     #region GetCameraPosition
     public class GetCameraPosition
     {
         // no members I think...
     }
     #endregion
-
 
     #region GetCameraPositionResponse
     public class GetCameraPositionResponse

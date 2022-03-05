@@ -209,6 +209,12 @@ namespace OfficialPlugins.Compiler.ViewModels
             set => Set(value);
         }
 
+        public string CurrentZoomLevelDisplay
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public PlayOrEdit PlayOrEdit
         {
             get => Get<PlayOrEdit>();

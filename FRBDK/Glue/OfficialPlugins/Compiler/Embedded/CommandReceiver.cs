@@ -773,6 +773,7 @@ namespace GlueControl
                 if (CameraSetup.Data.IsGenerateCameraDisplayCodeEnabled)
                 {
                     CameraLogic.UpdateCameraToZoomLevel(zoomAroundCursorPosition: false, forceTo100: !isInEditMode);
+                    CameraLogic.PushZoomLevelToEditor();
                 }
 
                 if (FlatRedBall.Screens.ScreenManager.IsInEditMode)

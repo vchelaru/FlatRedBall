@@ -85,19 +85,26 @@ namespace GlueControl.Editing
                 DoMouseDownScrollingLogic(cursor);
             }
 
+            DoMouseWheelZoomingLogic(cursor);
+
+            CameraXMovement = camera.X - xBefore;
+            CameraYMovement = camera.Y - yBefore;
+        }
+
+        private static void DoMouseWheelZoomingLogic(Cursor cursor)
+        {
             if (cursor.ZVelocity < 0)
             {
                 currentZoomLevelIndex = Math.Min(currentZoomLevelIndex + 1, zoomLevels.Length - 1);
                 UpdateCameraToZoomLevel();
+                PushZoomLevelToEditor();
             }
             if (cursor.ZVelocity > 0)
             {
                 currentZoomLevelIndex = Math.Max(currentZoomLevelIndex - 1, 0);
                 UpdateCameraToZoomLevel();
+                PushZoomLevelToEditor();
             }
-
-            CameraXMovement = camera.X - xBefore;
-            CameraYMovement = camera.Y - yBefore;
         }
 
         private static void DoMouseDownScrollingLogic(Cursor cursor)
@@ -208,11 +215,13 @@ namespace GlueControl.Editing
                 {
                     currentZoomLevelIndex = Math.Max(currentZoomLevelIndex - 1, 0);
                     UpdateCameraToZoomLevel(zoomAroundCursorPosition: false);
+                    PushZoomLevelToEditor();
                 }
                 if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.OemMinus))
                 {
                     currentZoomLevelIndex = Math.Min(currentZoomLevelIndex + 1, zoomLevels.Length - 1);
                     UpdateCameraToZoomLevel(zoomAroundCursorPosition: false);
+                    PushZoomLevelToEditor();
                 }
             }
         }
@@ -245,6 +254,17 @@ namespace GlueControl.Editing
 
                 }
             }
+        }
+
+        public static void PushZoomLevelToEditor()
+        {
+            var dto = new Dtos.CurrentDisplayInfoDto();
+            dto.ZoomPercentage = zoomLevels[currentZoomLevelIndex];
+            dto.DestinationRectangleWidth = Camera.Main.DestinationRectangle.Width;
+            dto.DestinationRectangleHeight = Camera.Main.DestinationRectangle.Height;
+            dto.OrthogonalWidth = Camera.Main.OrthogonalWidth;
+            dto.OrthogonalHeight = Camera.Main.OrthogonalHeight;
+            GlueControlManager.Self.SendToGlue(dto);
         }
     }
 }
