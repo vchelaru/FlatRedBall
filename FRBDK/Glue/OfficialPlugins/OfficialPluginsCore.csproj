@@ -60,6 +60,7 @@
     <None Remove="Compiler\Icons\FocusOnSelection.png" />
     <None Remove="Compiler\Icons\HotReload.pdn" />
     <None Remove="Compiler\Icons\HotReload.png" />
+    <None Remove="Compiler\Icons\icon_magnify.png" />
     <None Remove="Compiler\Icons\icon_minus.png" />
     <None Remove="Compiler\Icons\icon_plus.png" />
     <None Remove="Compiler\Icons\Pause.png" />
@@ -159,10 +160,10 @@
     <Resource Include="Compiler\Icons\EditDeselected.png" />
     <Resource Include="Compiler\Icons\FirewallEnablePopup.png" />
     <Resource Include="Compiler\Icons\FocusOnSelection.png" />
+    <Resource Include="Compiler\Icons\icon_magnify.png" />
     <Resource Include="Compiler\Icons\icon_minus.png" />
     <Resource Include="Compiler\Icons\icon_plus.png" />
     <Resource Include="Compiler\Icons\Run.png" />
-    <Resource Include="Compiler\Icons\RunDeselected.png" />
     <Resource Include="Compiler\Icons\SelectObjectsIcon.png" />
     <Resource Include="Compiler\Icons\Settings.png" />
     <Resource Include="Content\Icons\CopyIcon.png" />

@@ -70,32 +70,18 @@
                 </Button>
             </StackPanel>
         </Grid>
-        <!--put this before the while running view so it doesn't block the view on narrow screens-->
-
-        <!--<Grid Grid.Row="1"
-                AllowDrop="True"
-                DragEnter="WinformsHost_DragEnter"
-                Drop="WinformsHost_Drop"
-              Background="#1E1E1E">
-            <Grid>
-                <TextBlock TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                </TextBlock>
-
-
-                <TextBlock TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Foreground="White">
-                    Drag + drop here to add a new object
-                </TextBlock>
-
-            </Grid>
-        </Grid>-->
 
         <Grid x:Name="ToolbarAndGame" Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
 
-            <StackPanel Width="24" x:Name="ToolsSidePanel" Margin="2,2,2,0" Visibility="{Binding EditingToolsVisibility}" >
+            <StackPanel Width="24" x:Name="ToolsSidePanel" Margin="2,2,2,0" Visibility="{Binding EditingToolsVisibility}" Grid.RowSpan="2" >
                 <StackPanel Orientation="Horizontal"
                             Visibility="{Binding WhileRunningViewVisibility}">
                     <Button Click="FocusButtonClicked" 
@@ -134,7 +120,8 @@
             </Grid>
             <controls:ActivitySpinner Visibility="{Binding BuildingActivitySpinnerVisibility}" 
                                       Grid.Column="1"></controls:ActivitySpinner>
-        </Grid>
+            <views:BottomStatusBar Visibility="{Binding WhileRunningViewVisibility}" Grid.Row="1" Grid.Column="1"></views:BottomStatusBar>
 
+        </Grid>
     </Grid>
 </UserControl>

@@ -252,6 +252,17 @@ namespace GlueControl
 
         #endregion
 
+        private static object HandleDto(GetCameraPosition dto)
+        {
+            var toReturn = string.Empty;
+
+            var getCameraPositionResponse = new GlueControl.Dtos.GetCameraPositionResponse();
+            getCameraPositionResponse.X = Camera.Main.X;
+            getCameraPositionResponse.Y = Camera.Main.Y;
+            getCameraPositionResponse.Z = Camera.Main.Z;
+            return getCameraPositionResponse;
+        }
+
         #region Set Camera Position
 
         private static void HandleDto(SetCameraPositionDto dto)

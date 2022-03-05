@@ -261,19 +261,6 @@ namespace GlueControl
                 case "GetCurrentScreen":
                     isGet = true;
                     return screen?.GetType().FullName;
-
-                case nameof(GlueControl.Dtos.GetCameraPosition):
-                    var toReturn = string.Empty;
-#if SupportsEditMode
-
-                    isGet = true;
-                    var getCameraPositionResponse = new GlueControl.Dtos.GetCameraPositionResponse();
-                    getCameraPositionResponse.X = Camera.Main.X;
-                    getCameraPositionResponse.Y = Camera.Main.Y;
-                    getCameraPositionResponse.Z = Camera.Main.Z;
-                    toReturn = Newtonsoft.Json.JsonConvert.SerializeObject(getCameraPositionResponse);
-#endif
-                    return toReturn;
             }
 
             var response = "true";
