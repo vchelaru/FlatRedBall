@@ -5,12 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPlugins.Compiler.Views"
              mc:Ignorable="d" 
-             Height="28" d:DesignWidth="400">
-    <StackPanel Orientation="Horizontal">
-        <ToggleButton x:Name="SelectToggleButton" MinWidth="22" Click="SelectObjectsToggleClicked">
+             d:DesignWidth="28">
+    <StackPanel>
+        <ToggleButton x:Name="SelectToggleButton" Height="24" Width="24" Click="SelectObjectsToggleClicked">
             <Image Source="/OfficialPluginsCore;component/Compiler/Icons/SelectObjectsIcon.png" ></Image>
         </ToggleButton>
-        <StackPanel x:Name="TileButtonsStack" Orientation="Horizontal" Margin="2,0,0,0">
+        <StackPanel x:Name="TileButtonsStack">
         </StackPanel>
     </StackPanel>
 </UserControl>

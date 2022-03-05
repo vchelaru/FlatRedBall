@@ -74,11 +74,11 @@ namespace OfficialPlugins.Compiler.Views
             innerImage.Height = 16;
             innerImage.Margin = new Thickness(2);
             innerImage.Source = croppedBitmap;
+
             button.Content = innerImage;
             button.Click += HandleToggleButtonClicked;
-
             button.ToolTip = tile.Type;
-
+            button.Width = 24;
             tileToggleButtons.Add(button);
             TileButtonsStack.Children.Add(button);
         }

@@ -15,22 +15,6 @@
             </Button>
             <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Margin="3,2,3,2">
 
-            <ToggleButton IsChecked="{Binding IsPlayChecked}" Width="24" 
-                        Background="Transparent" BorderBrush="Transparent"
-                        VerticalContentAlignment="Stretch">
-                <ToggleButton.ToolTip>
-                    <ToolTip>
-                        <StackPanel>
-                            <TextBlock FontWeight="Bold">Running Mode</TextBlock>
-                            <TextBlock>The game will run regularly with no editor interaction.</TextBlock>
-                        </StackPanel>
-                    </ToolTip>
-                </ToggleButton.ToolTip>
-                <Grid>
-                    <Image Source="/OfficialPluginsCore;component/Compiler/Icons/Run.png" Margin="0,0,0,0"/>
-                    <Rectangle Height="1" Fill="#3978A8" HorizontalAlignment="Stretch"  VerticalAlignment="Bottom" Visibility="{Binding RunIconVisibility}"></Rectangle>
-                </Grid>
-            </ToggleButton>
             <ToggleButton IsChecked="{Binding IsEditChecked}" Margin="0,0,0,0" Width="24" 
                         Background="Transparent" BorderBrush="Transparent"
                         VerticalContentAlignment="Stretch">
@@ -45,6 +29,22 @@
                 <Grid VerticalAlignment="Stretch">
                     <Image Source="/OfficialPluginsCore;component/Compiler/Icons/Edit.png" Margin="0,0,0,0"/>
                     <Rectangle Height="1" Fill="#3978A8" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Visibility="{Binding EditIconVisibility}"></Rectangle>
+                </Grid>
+            </ToggleButton>
+            <ToggleButton IsChecked="{Binding IsPlayChecked}" Width="24" 
+                        Background="Transparent" BorderBrush="Transparent"
+                        VerticalContentAlignment="Stretch">
+                <ToggleButton.ToolTip>
+                    <ToolTip>
+                        <StackPanel>
+                            <TextBlock FontWeight="Bold">Running Mode</TextBlock>
+                            <TextBlock>The game will run regularly with no editor interaction.</TextBlock>
+                        </StackPanel>
+                    </ToolTip>
+                </ToggleButton.ToolTip>
+                <Grid>
+                    <Image Source="/OfficialPluginsCore;component/Compiler/Icons/Run.png" Margin="0,0,0,0"/>
+                    <Rectangle Height="1" Fill="#3978A8" HorizontalAlignment="Stretch"  VerticalAlignment="Bottom" Visibility="{Binding RunIconVisibility}"></Rectangle>
                 </Grid>
             </ToggleButton>
         </StackPanel>
